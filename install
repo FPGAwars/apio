@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import json
+import urllib2
+from os import makedirs, remove
+from os.path import isdir, isfile, join, expanduser
+
+from downloader import FileDownloader
+from unpacker import FileUnpacker
+
+package_dir = join(expanduser("~"), '.platformio/packages/')
+
+
+def get_url():
+    releases_url = 'https://api.github.com/repos/bqlabs/toolchain-icestorm/releases/latest'
+    response = urllib2.urlopen(releases_url)
+    packages = json.loads(response.read())
+    return packages['assets'][0]['browser_download_url']
+
+
+def download(url, dest_dir, sha1=None):
+    fd = FileDownloader(url, dest_dir)
+    fd.start()
+    fd.verify(sha1)
+    return fd.get_filepath()
+
+
+def unpack(pkgpath, dest_dir):
+    fu = FileUnpacker(pkgpath, dest_dir)
+    return fu.start()
+
+
+def main():
+    try:
+        if not isdir(package_dir):
+            makedirs(package_dir)
+        assert isdir(package_dir)
+        url = get_url()
+        dlpath = download(url, package_dir)
+        assert isfile(dlpath)
+        unpack(dlpath, package_dir)
+        remove(dlpath)
+
+    except Exception as e:
+        print('Error: ' + str(e))
+
+
+if __name__ == '__main__':
+    main()
