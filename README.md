@@ -1,1 +1,7 @@
 # apio
+
+## Execute
+
+```bash
+./install
+```
