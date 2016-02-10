@@ -20,8 +20,8 @@ from zipfile import ZipFile
 
 import click
 
-from platformio import app, util
-from platformio.exception import UnsupportedArchiveType
+import util
+from exception import UnsupportedArchiveType
 
 
 class ArchiveBase(object):
@@ -92,13 +92,8 @@ class FileUnpacker(object):
             raise UnsupportedArchiveType(archpath)
 
     def start(self):
-        if app.is_disabled_progressbar():
-            click.echo("Unpacking...")
-            for item in self._unpacker.get_items():
+        with click.progressbar(self._unpacker.get_items(),
+                               label="Unpacking") as pb:
+            for item in pb:
                 self._unpacker.extract_item(item, self._dest_dir)
-        else:
-            with click.progressbar(self._unpacker.get_items(),
-                                   label="Unpacking") as pb:
-                for item in pb:
-                    self._unpacker.extract_item(item, self._dest_dir)
         return True
