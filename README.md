@@ -1,13 +1,10 @@
 # apio
 
 ## Install
-```bash
-pip install .
-```
 
 For development
 ```bash
-pip install --editable .
+pip install apio
 ```
 
 ## Execute
