@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='apio',
-    version='0.0.2',
+    version='0.0.3',
     packages=['apio'],
     include_package_data=True,
     install_requires=[

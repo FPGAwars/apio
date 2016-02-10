@@ -26,6 +26,11 @@ def install():
     installer.install('toolchain-icestorm')
 
 
+@cli.command('clean')
+def clean():
+    subprocess.call(['python', join(package_dir, 'tool-scons', 'script', 'scons'), '-c'])
+
+
 @cli.command('build')
 def build():
     subprocess.call(['python', join(package_dir, 'tool-scons', 'script', 'scons')])
