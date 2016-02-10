@@ -4,7 +4,7 @@
 
 For development
 ```bash
-python setup.py install
+pip install apio
 ```
 
 ## Execute
