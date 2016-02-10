@@ -25,6 +25,8 @@ class Installer(object):
                 makedirs(self._package_dir)
             assert isdir(self._package_dir)
             url = self._get_url[tool]()
+            if isdir(join(self._package_dir, tool)):
+                shutil.rmtree(join(self._package_dir, tool))
             try:
                 dlpath = self.download(url, self._package_dir)
                 assert isfile(dlpath)
@@ -32,10 +34,10 @@ class Installer(object):
             finally:
                 if dlpath:
                     remove(dlpath)
-            if mv:
-                shutil.rmtree(join(self._package_dir, tool))
-                rename(join(self._package_dir, splitext(splitext(basename(dlpath))[0])[0]),
-                       join(self._package_dir, tool))
+                name = splitext(splitext(basename(dlpath))[0])[0]
+                if mv:
+                    rename(join(self._package_dir, name),
+                           join(self._package_dir, tool))
 
     def get_latest_icestorm(self):
         releases_url = 'https://api.github.com/repos/bqlabs/toolchain-icestorm/releases/latest'

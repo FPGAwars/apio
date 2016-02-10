@@ -20,8 +20,8 @@ from time import mktime
 import click
 import requests
 
-from platformio import app, util
-from platformio.exception import (FDSHASumMismatch, FDSizeMismatch,
+import util
+from exception import (FDSHASumMismatch, FDSizeMismatch,
                                   FDUnrecognizedStatusCode)
 
 
@@ -63,14 +63,9 @@ class FileDownloader(object):
         f = open(self._destination, "wb")
         chunks = int(ceil(self.get_size() / float(self.CHUNK_SIZE)))
 
-        if app.is_disabled_progressbar():
-            click.echo("Downloading...")
-            for _ in range(0, chunks):
+        with click.progressbar(length=chunks, label="Downloading") as pb:
+            for _ in pb:
                 f.write(next(itercontent))
-        else:
-            with click.progressbar(length=chunks, label="Downloading") as pb:
-                for _ in pb:
-                    f.write(next(itercontent))
         f.close()
         self._request.close()
 
@@ -109,4 +104,3 @@ class FileDownloader(object):
     def __del__(self):
         if self._request:
             self._request.close()
-
