@@ -6,11 +6,17 @@ Experimental open source micro-ecosystem for open FPGAs. Based on [platformio](h
 
 For development
 ```bash
-pip install apio
+sudo pip install apio
 ```
 
 ## Execute
 
 ```bash
-apio
+apio install
+```
+
+```bash
+apio clean
+apio build
+apio upload
 ```

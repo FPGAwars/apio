@@ -21,8 +21,7 @@ import click
 import requests
 
 import util
-from exception import (FDSHASumMismatch, FDSizeMismatch,
-                                  FDUnrecognizedStatusCode)
+from exception import (FDSHASumMismatch, FDSizeMismatch, FDUnrecognizedStatusCode)
 
 
 class FileDownloader(object):
