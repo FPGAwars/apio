@@ -21,6 +21,7 @@ class Installer(object):
 
     def install(self, tool, mv=False):
         if tool in self._get_url:
+            print('Install ' + tool)
             if not isdir(self._package_dir):
                 makedirs(self._package_dir)
             assert isdir(self._package_dir)
@@ -28,6 +29,7 @@ class Installer(object):
             if isdir(join(self._package_dir, tool)):
                 shutil.rmtree(join(self._package_dir, tool))
             try:
+                dlpath = None
                 dlpath = self.download(url, self._package_dir)
                 assert isfile(dlpath)
                 self.unpack(dlpath, self._package_dir)
@@ -50,6 +52,7 @@ class Installer(object):
 
     def download(self, url, dest_dir, sha1=None):
         fd = FileDownloader(url, dest_dir)
+        print('Download ' + basename(fd.get_filepath()))
         fd.start()
         fd.verify(sha1)
         return fd.get_filepath()

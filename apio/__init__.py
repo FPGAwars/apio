@@ -8,6 +8,7 @@ from install import Installer
 from os.path import join, expanduser
 
 package_dir = join(expanduser("~"), '.platformio/packages/')
+scons_dir = join(package_dir, 'tool-scons', 'script', 'scons')
 
 
 @click.group()
@@ -20,22 +21,30 @@ def cli():
 @cli.command('install')
 def install():
     installer = Installer(package_dir)
-    print('Install tool-scons')
     installer.install('tool-scons', True)
-    print('Install toolchain-icestorm')
     installer.install('toolchain-icestorm')
 
 
 @cli.command('clean')
 def clean():
-    subprocess.call(['python', join(package_dir, 'tool-scons', 'script', 'scons'), '-c'])
+    subprocess.call(['python', scons_dir, '-c'])
 
 
 @cli.command('build')
 def build():
-    subprocess.call(['python', join(package_dir, 'tool-scons', 'script', 'scons')])
+    subprocess.call(['python', scons_dir])
 
 
 @cli.command('upload')
 def upload():
-    subprocess.call(['python', join(package_dir, 'tool-scons', 'script', 'scons'), "upload"])
+    subprocess.call(['python', scons_dir, "upload"])
+
+
+@cli.command('time')
+def time():
+    subprocess.call(['python', scons_dir, "time"])
+
+
+@cli.command('sim')
+def sim():
+    subprocess.call(['python', scons_dir, "sim"])
