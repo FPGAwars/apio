@@ -27,6 +27,13 @@ def install():
     installer.install('toolchain-icestorm')
 
 
+@cli.command('uninstall')
+def uninstall():
+    installer = Installer(package_dir)
+    installer.uninstall('tool-scons')
+    installer.uninstall('toolchain-icestorm')
+
+
 @cli.command('clean')
 def clean():
     subprocess.call(['python', scons_dir, '-c'])

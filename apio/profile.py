@@ -15,6 +15,10 @@ class Profile(object):
     def check_version(self, name, filename):
         return not ((name in self.packages.keys()) and (self.packages[name] <= filename))
 
+    def remove(self, name):
+        if name in self.packages.keys():
+            del self.packages[name]
+
     def load(self):
         if isfile(self._profile_path):
             with open(self._profile_path, 'r') as profile:
