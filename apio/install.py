@@ -22,7 +22,7 @@ class Installer(object):
         self._profile = Profile()
         self._profile.load()
 
-    def install(self, tool, move=False):
+    def install(self, tool):
         if tool in self._get_url:
             print('Install ' + tool)
             if not isdir(self._package_dir):
@@ -41,7 +41,7 @@ class Installer(object):
                 if dlpath:
                     remove(dlpath)
                     filename = splitext(splitext(basename(dlpath))[0])[0]
-                    if move:
+                    if tool == 'tool-scons':
                         rename(join(self._package_dir, filename),
                                join(self._package_dir, tool))
                     self._profile.packages[tool] = basename(dlpath)
