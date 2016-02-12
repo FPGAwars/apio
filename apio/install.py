@@ -6,6 +6,7 @@ import urllib2
 from os import makedirs, rename, remove
 from os.path import isdir, isfile, join, basename, splitext
 
+from profile import Profile
 from downloader import FileDownloader
 from unpacker import FileUnpacker
 
@@ -18,8 +19,10 @@ class Installer(object):
             'tool-scons': self.get_latest_scons
         }
         self._package_dir = package_dir
+        self._profile = Profile()
+        self._profile.load()
 
-    def install(self, tool, mv=False):
+    def install(self, tool, move=False):
         if tool in self._get_url:
             print('Install ' + tool)
             if not isdir(self._package_dir):
@@ -30,16 +33,19 @@ class Installer(object):
                 shutil.rmtree(join(self._package_dir, tool))
             try:
                 dlpath = None
-                dlpath = self.download(url, self._package_dir)
-                assert isfile(dlpath)
-                self.unpack(dlpath, self._package_dir)
+                dlpath = self.download(tool, url, self._package_dir)
+                if dlpath:
+                    assert isfile(dlpath)
+                    self.unpack(dlpath, self._package_dir)
             finally:
                 if dlpath:
                     remove(dlpath)
-                name = splitext(splitext(basename(dlpath))[0])[0]
-                if mv:
-                    rename(join(self._package_dir, name),
-                           join(self._package_dir, tool))
+                    filename = splitext(splitext(basename(dlpath))[0])[0]
+                    if move:
+                        rename(join(self._package_dir, filename),
+                               join(self._package_dir, tool))
+                    self._profile.packages[tool] = basename(dlpath)
+                    self._profile.save()
 
     def get_latest_icestorm(self):
         releases_url = 'https://api.github.com/repos/bqlabs/toolchain-icestorm/releases/latest'
@@ -50,12 +56,16 @@ class Installer(object):
     def get_latest_scons(self):
         return 'http://sourceforge.net/projects/scons/files/scons/2.4.1/scons-2.4.1.tar.gz'
 
-    def download(self, url, dest_dir, sha1=None):
+    def download(self, tool, url, dest_dir, sha1=None):
         fd = FileDownloader(url, dest_dir)
-        print('Download ' + basename(fd.get_filepath()))
-        fd.start()
-        fd.verify(sha1)
-        return fd.get_filepath()
+        if self._profile.check_version(tool, basename(fd.get_filepath())):
+            print('Download ' + basename(fd.get_filepath()))
+            fd.start()
+            fd.verify(sha1)
+            return fd.get_filepath()
+        else:
+            print('Package {0} is already the newest version'.format(tool))
+            return None
 
     def unpack(self, pkgpath, dest_dir):
         fu = FileUnpacker(pkgpath, dest_dir)
