@@ -13,7 +13,7 @@ class Profile(object):
         self._profile_path = join(self._apio_dir, 'profile.json')
 
     def check_version(self, name, filename):
-        return not ((name in self.packages.keys()) and (self.packages[name] <= filename))
+        return not ((name in self.packages.keys()) and (self.packages[name] >= filename))
 
     def remove(self, name):
         if name in self.packages.keys():
