@@ -23,15 +23,17 @@ def cli():
 @cli.command('install')
 def install():
     installer = Installer(package_dir)
-    installer.install('tool-scons', True)
+    installer.install('tool-scons')
     installer.install('toolchain-icestorm')
 
 
 @cli.command('uninstall')
 def uninstall():
-    installer = Installer(package_dir)
-    installer.uninstall('tool-scons')
-    installer.uninstall('toolchain-icestorm')
+    key = raw_input('Are you sure? [Y/N]: ')
+    if key == 'y' or key == 'Y':
+        installer = Installer(package_dir)
+        installer.uninstall('tool-scons')
+        installer.uninstall('toolchain-icestorm')
 
 
 @cli.command('clean')
