@@ -13,10 +13,13 @@ sudo pip install apio
 
 ```bash
 apio install
+apio uninstall
 ```
 
 ```bash
 apio clean
 apio build
 apio upload
+apio time
+apio sim
 ```
