@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 import click
 import subprocess
 
@@ -9,6 +10,7 @@ from os.path import join, expanduser
 
 package_dir = join(expanduser("~"), '.platformio/packages/')
 scons_dir = join(package_dir, 'tool-scons', 'script', 'scons')
+os.environ['PATH'] = os.environ['PATH'] + ":" + join(package_dir, 'toolchain-icestorm', 'bin')
 
 
 @click.group()
