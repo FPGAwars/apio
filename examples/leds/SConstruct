@@ -1,0 +1,61 @@
+# ----------------------------------------------------------------------
+# -- Scons script for Sintesizing the hello world verilog hardware
+# -- on an icestick board
+# ----------------------------------------------------------------------
+import os
+from SCons.Script import (Builder, Environment, Default, AlwaysBuild,
+                          GetOption)
+
+# -- Source filename
+NAME = 'leds'
+
+# -- pcf file
+PCF = NAME + '.pcf'
+
+# -- Target name
+TARGET = 'hardware'
+
+
+# -- Define the Sintesizing Builder
+synth = Builder(action='yosys -p \"synth_ice40 -blif $TARGET\" $SOURCE',
+                suffix='.blif',
+                src_suffix='.v')
+
+pnr = Builder(action='arachne-pnr -d 1k -o $TARGET -p {} $SOURCE'.format(PCF),
+              suffix='.asc',
+              src_suffix='.blif')
+
+bitstream = Builder(action='icepack $SOURCE $TARGET',
+                    suffix='.bin',
+                    src_suffix='.asc')
+
+# -- Icetime builder
+time_rpt = Builder(action='icetime -d hx1k -mtr $TARGET $SOURCE',
+                   suffix='.rpt',
+                   src_suffix='.asc')
+
+# -- Build the environment
+env = Environment(BUILDERS={'Synth': synth, 'PnR': pnr,
+                            'Bin': bitstream, 'Time': time_rpt},
+                  ENV=os.environ)
+
+# -- Generate the bitstream
+blif = env.Synth(TARGET, NAME)
+asc = env.PnR(TARGET, [blif, PCF])
+bitstream = env.Bin(TARGET, asc)
+
+# -- Upload the bitstream into FPGA
+upload = env.Alias('upload', bitstream, 'iceprog $SOURCE')
+AlwaysBuild(upload)
+
+# -- Target time: calculate the time
+rpt = env.Time(asc)
+t = env.Alias('time', rpt)
+AlwaysBuild(t)
+
+
+Default(bitstream)
+
+# -- These is for cleaning the files generated using the alias targets
+if GetOption('clean'):
+    env.Default(t)
