@@ -1,3 +1,4 @@
+.sconsign.dblite
 *.pyc
 *.egg-info
 build/
