@@ -1,5 +1,8 @@
 .sconsign.dblite
 *.pyc
+*.asc
+*.bin
+*.blif
 *.egg-info
 build/
 dist/
