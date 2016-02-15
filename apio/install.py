@@ -49,9 +49,11 @@ class Installer(object):
 
     def uninstall(self, tool):
         if tool in self._get_url:
-            print('Uninstall package {0}'.format(tool))
             if isdir(join(self._package_dir, tool)):
+                print('Uninstall package {0}'.format(tool))
                 shutil.rmtree(join(self._package_dir, tool))
+            else:
+                print('Package {0} is not installed'.format(tool))
             self._profile.remove(tool)
             self._profile.save()
 

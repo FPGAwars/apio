@@ -6,16 +6,13 @@ setup(
     name='apio',
     author='Jesús Arroyo Torrens',
     email='jesus.arroyo@bq.com',
-    version='0.0.3.7',
+    version='0.0.3.8',
     packages=['apio'],
     package_data={
         'apio': ['rules/*']
     },
     install_requires=[
         'click'
-    ],
-    data_files=[
-        ('/etc/udev/rules.d', ['apio/rules/80-icestick.rules'])
     ],
     entry_points={
         'console_scripts': ['apio=apio:cli']
