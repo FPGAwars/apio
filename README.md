@@ -8,7 +8,10 @@ Experimental open source micro-ecosystem for open FPGAs. Based on [platformio](h
 
 ```bash
 sudo apt-get install libftdi1
-sudo pip install apio
+```
+
+```bash
+pip install apio
 ```
 
 ## Documentation
