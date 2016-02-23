@@ -20,8 +20,8 @@ from time import mktime
 import click
 import requests
 
-import util
-from exception import (FDSHASumMismatch, FDSizeMismatch, FDUnrecognizedStatusCode)
+from . import util
+from .exception import FDSHASumMismatch, FDSizeMismatch, FDUnrecognizedStatusCode
 
 
 class FileDownloader(object):

@@ -20,8 +20,8 @@ from zipfile import ZipFile
 
 import click
 
-import util
-from exception import UnsupportedArchiveType
+from . import util
+from .exception import UnsupportedArchiveType
 
 
 class ArchiveBase(object):
@@ -56,7 +56,7 @@ class ZIPArchive(ArchiveBase):
 
     @staticmethod
     def preserve_permissions(item, dest_dir):
-        attrs = item.external_attr >> 16L
+        attrs = item.external_attr >> 16
         if attrs:
             chmod(join(dest_dir, item.filename), attrs)
 
