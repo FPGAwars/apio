@@ -1,7 +1,7 @@
 # Toolchain scons class
 
 from os import rename
-from os.path import join
+from os.path import isdir, join
 from ..installer import Installer
 
 
@@ -19,7 +19,8 @@ class SconsInstaller(Installer):
         # Rename unpacked dir to package dir
         unpack_dir = join(self.packages_dir, self.name + '-' + self.version)
         package_dir = join(self.packages_dir, self.package)
-        rename(unpack_dir, package_dir)
+        if isdir(unpack_dir):
+            rename(unpack_dir, package_dir)
 
     def _get_download_url(self):
         url = '{0}/{1}/{2}'.format(
