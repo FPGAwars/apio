@@ -4,18 +4,18 @@
 import os
 import click
 import subprocess
-from os.path import join, expanduser, dirname, isfile
 
-from .install import Installer
+from .util import get_systype
+from .installer import Installer
+from .packages.icestorm import IcestormInstaller
+from .packages.scons import SconsInstaller
+from .packages.rules import RulesInstaller
 
-package_dir = join(expanduser("~"), '.platformio/packages/')
-scons_dir = join(package_dir, 'tool-scons', 'script', 'scons')
-rules_local_path = join(dirname(__file__), 'rules', '80-icestick.rules')
-rules_system_path = '/etc/udev/rules.d/80-icestick.rules'
-
-# -- Give the priority to the packages installed by apio
-os.environ['PATH'] = (join(package_dir, 'toolchain-icestorm', 'bin') +
-                      ":" + os.environ['PATH'])
+# Give the priority to the packages installed by apio
+os.environ['PATH'] = (
+    os.path.join(Installer.packages_dir, 'toolchain-icestorm', 'bin') + ":" +
+    os.path.join(Installer.packages_dir, 'tool-scons', 'script') + ":" +
+    os.environ['PATH'])
 
 
 @click.group()
@@ -25,55 +25,47 @@ def cli():
     """
 
 
+@cli.command('debug')
+def debug():
+    print('Platform: ' + get_systype())
+
+
 @cli.command('install')
 def install():
-    installer = Installer(package_dir)
-    installer.install('tool-scons')
-    installer.install('toolchain-icestorm')
-
-    print('Install icestick.rules')
-    if not isfile(rules_system_path):
-        print(rules_local_path)
-        subprocess.call(['sudo', 'cp', rules_local_path, rules_system_path])
-    else:
-        print('Package icestick.rules is already the newest version')
+    IcestormInstaller().install()
+    SconsInstaller().install()
+    RulesInstaller().install()
 
 
 @cli.command('uninstall')
 def uninstall():
     key = raw_input('Are you sure? [Y/N]: ')
     if key == 'y' or key == 'Y':
-        installer = Installer(package_dir)
-        installer.uninstall('tool-scons')
-        installer.uninstall('toolchain-icestorm')
-
-        if isfile(rules_system_path):
-            print('Uninstall package icestick.rules')
-            subprocess.call(['sudo', 'rm', rules_system_path])
-        else:
-            print('Package icestick.rules is not installed')
+        IcestormInstaller().uninstall()
+        SconsInstaller().uninstall()
+        RulesInstaller().uninstall()
 
 
 @cli.command('clean')
 def clean():
-    subprocess.call(['python', scons_dir, '-c'])
+    subprocess.call(['scons', '-c'])
 
 
 @cli.command('build')
 def build():
-    subprocess.call(['python', scons_dir])
+    subprocess.call(['scons'])
 
 
 @cli.command('upload')
 def upload():
-    subprocess.call(['python', scons_dir, "upload"])
+    subprocess.call(['scons', 'upload'])
 
 
 @cli.command('time')
 def time():
-    subprocess.call(['python', scons_dir, "time"])
+    subprocess.call(['scons', 'time'])
 
 
 @cli.command('sim')
 def sim():
-    subprocess.call(['python', scons_dir, "sim"])
+    subprocess.call(['scons', 'sim'])
