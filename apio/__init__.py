@@ -14,8 +14,9 @@ from .packages.rules import RulesInstaller
 # Give the priority to the packages installed by apio
 os.environ['PATH'] = (
     os.path.join(Installer.packages_dir, 'toolchain-icestorm', 'bin') + ":" +
-    os.path.join(Installer.packages_dir, 'tool-scons', 'script') + ":" +
     os.environ['PATH'])
+
+scons_path = os.path.join(Installer.packages_dir, 'tool-scons', 'script', 'scons')
 
 
 @click.group()
@@ -48,24 +49,24 @@ def uninstall():
 
 @cli.command('clean')
 def clean():
-    subprocess.call(['scons', '-c'])
+    subprocess.call(['python', scons_path, '-c'])
 
 
 @cli.command('build')
 def build():
-    subprocess.call(['scons'])
+    subprocess.call(['python', scons_path])
 
 
 @cli.command('upload')
 def upload():
-    subprocess.call(['scons', 'upload'])
+    subprocess.call(['python', scons_path, 'upload'])
 
 
 @cli.command('time')
 def time():
-    subprocess.call(['scons', 'time'])
+    subprocess.call(['python', scons_path, 'time'])
 
 
 @cli.command('sim')
 def sim():
-    subprocess.call(['scons', 'sim'])
+    subprocess.call(['python', scons_path, 'sim'])
