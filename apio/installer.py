@@ -33,10 +33,8 @@ class Installer(object):
                     package_dir = join(self.packages_dir, self.package)
                     if isdir(package_dir):
                         shutil.rmtree(package_dir)
-                    makedirs(package_dir)
-                    self._unpack(dlpath, package_dir)
-            except Exception as e:
-                print(str(e))
+                    self._unpack(dlpath, self.packages_dir)
+            except Exception:
                 print('Package {0} is not found'.format(self._get_package_name()))
             finally:
                 if dlpath:
@@ -53,10 +51,6 @@ class Installer(object):
                 print('Package {0} is not installed'.format(self.package))
             self.profile.remove(self.package)
             self.profile.save()
-
-    """
-    def get_latest_scons(self):
-        return 'http://sourceforge.net/projects/scons/files/scons/2.4.1/scons-2.4.1.tar.gz'"""
 
     def _get_platform(self):
         return get_systype()

@@ -1,7 +1,8 @@
 # Toolchain icestorm class
 
-import os
 import requests
+from os import rename
+from os.path import join
 
 from ..installer import Installer
 
@@ -10,9 +11,18 @@ class IcestormInstaller(Installer):
 
     def __init__(self):
         self.package = 'toolchain-icestorm'
+        self.name = 'toolchain-icestorm'
         self.platform = 'x86_64'  # self._get_platform()
         self.version = self._get_version()
         self.extension = 'tar.gz'
+
+    def install(self):
+        super(IcestormInstaller, self).install()
+
+        # Rename unpacked dir to package dir
+        unpack_dir = join(self.packages_dir, self.name)
+        package_dir = join(self.packages_dir, self.package)
+        rename(unpack_dir, package_dir)
 
     def _get_download_url(self):
         url = '{0}/0.{1}/{2}'.format(
@@ -23,7 +33,7 @@ class IcestormInstaller(Installer):
 
     def _get_package_name(self):
         name = '{0}-{1}-{2}.{3}'.format(
-            self.package,
+            self.name,
             self.platform,
             self.version,
             self.extension)
