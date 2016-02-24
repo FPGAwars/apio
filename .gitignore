@@ -2,6 +2,7 @@
 *.pyc
 *.asc
 *.bin
+*.rpt
 *.blif
 *.egg-info
 build/
