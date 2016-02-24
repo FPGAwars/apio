@@ -49,24 +49,24 @@ def uninstall():
 
 @cli.command('clean')
 def clean():
-    subprocess.call(['python', scons_path, '-c'])
+    subprocess.call(['python2', scons_path, '-c'])
 
 
 @cli.command('build')
 def build():
-    subprocess.call(['python', scons_path])
+    subprocess.call(['python2', scons_path])
 
 
 @cli.command('upload')
 def upload():
-    subprocess.call(['python', scons_path, 'upload'])
+    subprocess.call(['python2', scons_path, 'upload'])
 
 
 @cli.command('time')
 def time():
-    subprocess.call(['python', scons_path, 'time'])
+    subprocess.call(['python2', scons_path, 'time'])
 
 
 @cli.command('sim')
 def sim():
-    subprocess.call(['python', scons_path, 'sim'])
+    subprocess.call(['python2', scons_path, 'sim'])
