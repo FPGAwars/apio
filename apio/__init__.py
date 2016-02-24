@@ -4,9 +4,9 @@
 import os
 import click
 import subprocess
-
-from install import Installer
 from os.path import join, expanduser, dirname, isfile
+
+from .install import Installer
 
 package_dir = join(expanduser("~"), '.platformio/packages/')
 scons_dir = join(package_dir, 'tool-scons', 'script', 'scons')
@@ -33,7 +33,7 @@ def install():
 
     print('Install icestick.rules')
     if not isfile(rules_system_path):
-        print rules_local_path
+        print(rules_local_path)
         subprocess.call(['sudo', 'cp', rules_local_path, rules_system_path])
     else:
         print('Package icestick.rules is already the newest version')

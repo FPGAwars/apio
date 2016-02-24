@@ -24,7 +24,7 @@ from os.path import abspath, basename, dirname, expanduser, isdir, isfile, join
 from platform import system, uname
 from threading import Thread
 
-import exception
+from . import exception
 
 __apiurl__ = None
 __version__ = None

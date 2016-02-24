@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
-import json
 import shutil
-import urllib2
 from os import makedirs, rename, remove
 from os.path import isdir, isfile, join, basename, splitext
 
-from profile import Profile
-from downloader import FileDownloader
-from unpacker import FileUnpacker
+import requests
+
+from .profile import Profile
+from .downloader import FileDownloader
+from .unpacker import FileUnpacker
 
 
 class Installer(object):
@@ -59,8 +59,8 @@ class Installer(object):
 
     def get_latest_icestorm(self):
         releases_url = 'https://api.github.com/repos/bqlabs/toolchain-icestorm/releases/latest'
-        response = urllib2.urlopen(releases_url)
-        packages = json.loads(response.read())
+        response = requests.get(releases_url)
+        packages = response.json()
         return packages['assets'][0]['browser_download_url']
 
     def get_latest_scons(self):
