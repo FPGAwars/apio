@@ -11,6 +11,7 @@ class Profile(object):
         self.packages = {}
         self._apio_dir = join(expanduser("~"), '.apio/')
         self._profile_path = join(self._apio_dir, 'profile.json')
+        self.load()
 
     def check_version(self, name, filename):
         return not ((name in self.packages.keys()) and (self.packages[name] >= filename))
