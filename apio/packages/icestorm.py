@@ -14,10 +14,6 @@ class IcestormInstaller(Installer):
         self.version = self._get_version()
         self.extension = 'tar.gz'
 
-        # Give the priority to the packages installed by apio
-        os.environ['PATH'] = (os.path.join(self.packages_dir, 'toolchain-icestorm', 'bin') +
-                              ":" + os.environ['PATH'])
-
     def _get_download_url(self):
         url = '{0}/0.{1}/{2}'.format(
             'https://github.com/bqlabs/toolchain-icestorm/releases/download',

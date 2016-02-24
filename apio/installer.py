@@ -54,20 +54,7 @@ class Installer(object):
             self.profile.remove(self.package)
             self.profile.save()
 
-    """def install_rules(self):
-        print('Install icestick.rules')
-        if not isfile(rules_system_path):
-            subprocess.call(['sudo', 'cp', rules_local_path, rules_system_path])
-        else:
-            print('Package icestick.rules is already the newest version')
-
-    def uninstall_rules(self):
-        if isfile(rules_system_path):
-            print('Uninstall package icestick.rules')
-            subprocess.call(['sudo', 'rm', rules_system_path])
-        else:
-            print('Package icestick.rules is not installed')
-
+    """
     def get_latest_scons(self):
         return 'http://sourceforge.net/projects/scons/files/scons/2.4.1/scons-2.4.1.tar.gz'"""
 

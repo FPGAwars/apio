@@ -9,7 +9,7 @@ setup(
     version='0.0.3.9',
     packages=['apio'],
     package_data={
-        'apio': ['packages/*', 'rules/*']
+        'apio': ['packages/*']
     },
     install_requires=[
         'click',
