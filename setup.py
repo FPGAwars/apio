@@ -6,10 +6,10 @@ setup(
     name='apio',
     author='Jesús Arroyo Torrens',
     email='jesus.arroyo@bq.com',
-    version='0.0.3.9',
+    version='0.0.4',
     packages=['apio'],
     package_data={
-        'apio': ['rules/*']
+        'apio': ['packages/*']
     },
     install_requires=[
         'click',
