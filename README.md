@@ -6,16 +6,24 @@ Experimental open source micro-ecosystem for open FPGAs. Based on [platformio](h
 
 ## Install
 
+* 1. [Setup your system](https://github.com/bqlabs/apio/wiki/Installation)
+
+* 2. Install apio
 ```bash
 pip install apio
 ```
 
+* 3. Install fpga toolchain
+```bash
+apio install
+```
+
 Tested
 * Linux (32 bit, 64 bit)
+* Windows
 
 Experimental
 * Darwin
-* Windows
 
 ## Documentation
 
