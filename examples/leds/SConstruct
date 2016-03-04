@@ -3,7 +3,7 @@
 # -- on an icestick board
 # ----------------------------------------------------------------------
 import os
-from SCons.Script import (Builder, Environment, Default, AlwaysBuild,
+from SCons.Script import (Builder, DefaultEnvironment, Default, AlwaysBuild,
                           GetOption)
 
 # -- Source filename
@@ -35,9 +35,9 @@ time_rpt = Builder(action='icetime -d hx1k -mtr $TARGET $SOURCE',
                    src_suffix='.asc')
 
 # -- Build the environment
-env = Environment(BUILDERS={'Synth': synth, 'PnR': pnr,
-                            'Bin': bitstream, 'Time': time_rpt},
-                  ENV=os.environ)
+env = DefaultEnvironment(BUILDERS={'Synth': synth, 'PnR': pnr,
+                                   'Bin': bitstream, 'Time': time_rpt},
+                         ENV=os.environ, tools=[])
 
 # -- Generate the bitstream
 blif = env.Synth(TARGET, NAME)
