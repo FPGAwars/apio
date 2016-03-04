@@ -6,13 +6,18 @@ Experimental open source micro-ecosystem for open FPGAs. Based on [platformio](h
 
 ## Install
 
-```bash
-sudo apt-get install libftdi1
-```
+1. [Install dependencies](https://github.com/bqlabs/apio/wiki/Installation)
 
-```bash
-pip install apio
-```
+2. Install latest apio: ```pip install -U apio```
+
+3. Install fpga toolchain: ```apio install```
+
+Tested
+* Linux (32 bit, 64 bit)
+* Windows
+
+Experimental
+* Darwin
 
 ## Documentation
 

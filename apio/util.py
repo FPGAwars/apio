@@ -128,8 +128,10 @@ def singleton(cls):
 
 def get_systype():
     data = uname()
+    arch = ''
     type_ = data[0].lower()
-    arch = data[4].lower() if data[4] else ""
+    if type_ == 'linux':
+        arch = data[4].lower() if data[4] else ""
     return "%s_%s" % (type_, arch) if arch else type_
 
 

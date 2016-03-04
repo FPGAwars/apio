@@ -1,22 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
 import click
-import subprocess
 
 from .util import get_systype
-from .installer import Installer
-from .packages.icestorm import IcestormInstaller
+from .execute import run_scons
 from .packages.scons import SconsInstaller
-from .packages.rules import RulesInstaller
-
-# Give the priority to the packages installed by apio
-os.environ['PATH'] = (
-    os.path.join(Installer.packages_dir, 'toolchain-icestorm', 'bin') + ":" +
-    os.environ['PATH'])
-
-scons_path = os.path.join(Installer.packages_dir, 'tool-scons', 'script', 'scons')
+from .packages.icestorm import IcestormInstaller
+from .packages.driver import DriverInstaller
 
 
 @click.group()
@@ -33,40 +24,40 @@ def debug():
 
 @cli.command('install')
 def install():
-    IcestormInstaller().install()
     SconsInstaller().install()
-    RulesInstaller().install()
+    IcestormInstaller().install()
+    DriverInstaller().install()
 
 
 @cli.command('uninstall')
 def uninstall():
     key = raw_input('Are you sure? [Y/N]: ')
     if key == 'y' or key == 'Y':
-        IcestormInstaller().uninstall()
         SconsInstaller().uninstall()
-        RulesInstaller().uninstall()
+        IcestormInstaller().uninstall()
+        DriverInstaller().uninstall()
 
 
 @cli.command('clean')
 def clean():
-    subprocess.call(['python2', scons_path, '-c'])
+    run_scons(['-c'])
 
 
 @cli.command('build')
 def build():
-    subprocess.call(['python2', scons_path])
+    run_scons()
 
 
 @cli.command('upload')
 def upload():
-    subprocess.call(['python2', scons_path, 'upload'])
+    run_scons(['upload'])
 
 
 @cli.command('time')
 def time():
-    subprocess.call(['python2', scons_path, 'time'])
+    run_scons(['time'])
 
 
 @cli.command('sim')
 def sim():
-    subprocess.call(['python2', scons_path, 'sim'])
+    run_scons(['sim'])
