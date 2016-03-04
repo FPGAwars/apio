@@ -3,9 +3,9 @@
 import shutil
 
 from os import makedirs, remove
-from os.path import isdir, join, basename, expanduser
+from os.path import isdir, join, basename
 
-from .util import get_systype
+import util
 from .profile import Profile
 from .downloader import FileDownloader
 from .unpacker import FileUnpacker
@@ -15,7 +15,7 @@ class Installer(object):
 
     # Main packages dir
     profile = Profile()
-    packages_dir = join(expanduser('~'), '.platformio', 'packages')
+    packages_dir = join(util.get_home_dir(), 'packages')
 
     def __init__(self):
         self.package = None
@@ -53,7 +53,7 @@ class Installer(object):
             self.profile.save()
 
     def _get_platform(self):
-        return get_systype()
+        return util.get_systype()
 
     def _get_download_url(self):
         raise NotImplementedError
