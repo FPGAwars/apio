@@ -15,8 +15,6 @@ Experimental open source micro-ecosystem for open FPGAs. Based on [platformio](h
 Tested
 * Linux (32 bit, 64 bit)
 * Windows
-
-Experimental
 * Darwin
 
 ## Documentation
