@@ -14,7 +14,10 @@ class IcestormInstaller(Installer):
         self.name = 'toolchain-icestorm'
         self.platform = self._get_platform()
         self.version = self._get_version()
-        self.extension = 'tar.gz'
+        if 'windows' in self.platform:
+            self.extension = 'zip'
+        else:
+            self.extension = 'tar.gz'
 
     def install(self):
         super(IcestormInstaller, self).install()

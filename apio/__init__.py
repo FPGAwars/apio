@@ -9,7 +9,7 @@ from .util import get_systype
 from .installer import Installer
 from .packages.icestorm import IcestormInstaller
 from .packages.scons import SconsInstaller
-from .packages.rules import RulesInstaller
+from .packages.driver import DriverInstaller
 
 # Give the priority to the packages installed by apio
 os.environ['PATH'] = (
@@ -35,7 +35,7 @@ def debug():
 def install():
     IcestormInstaller().install()
     SconsInstaller().install()
-    RulesInstaller().install()
+    DriverInstaller().install()
 
 
 @cli.command('uninstall')
@@ -44,7 +44,7 @@ def uninstall():
     if key == 'y' or key == 'Y':
         IcestormInstaller().uninstall()
         SconsInstaller().uninstall()
-        RulesInstaller().uninstall()
+        DriverInstaller().uninstall()
 
 
 @cli.command('clean')
