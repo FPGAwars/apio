@@ -7,7 +7,6 @@ from .util import get_systype
 from .execute import run_scons
 from .packages.scons import SconsInstaller
 from .packages.icestorm import IcestormInstaller
-from .packages.driver import DriverInstaller
 
 
 @click.group()
@@ -26,7 +25,6 @@ def debug():
 def install():
     SconsInstaller().install()
     IcestormInstaller().install()
-    DriverInstaller().install()
 
 
 @cli.command('uninstall')
@@ -35,7 +33,6 @@ def uninstall():
     if key == 'y' or key == 'Y':
         SconsInstaller().uninstall()
         IcestormInstaller().uninstall()
-        DriverInstaller().uninstall()
 
 
 @cli.command('clean')

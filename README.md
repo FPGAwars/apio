@@ -6,7 +6,7 @@ Experimental open source micro-ecosystem for open FPGAs. Based on [platformio](h
 
 ## Install
 
-1. [Install dependencies](https://github.com/bqlabs/apio/wiki/Installation)
+1. [Install dependencies and drivers](https://github.com/bqlabs/apio/wiki/Installation)
 
 2. Install latest apio: ```pip install -U apio```
 

@@ -6,7 +6,7 @@ setup(
     name='apio',
     author='Jesús Arroyo Torrens',
     email='jesus.arroyo@bq.com',
-    version='0.0.4.4',
+    version='0.0.4.5',
     packages=['apio'],
     package_data={
         'apio': ['packages/*']
