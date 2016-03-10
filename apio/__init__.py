@@ -14,74 +14,67 @@ from .packages.driver import DriverInstaller
 @click.version_option()
 def cli():
     """
+    Environment for icestorm toolchain management
     """
 
 
 @cli.command('debug')
 def debug():
+    """Show system information."""
     print('Platform: ' + get_systype())
 
 
-@cli.group()
-def install():
-    """
-    """
+@cli.command('install')
+@click.option('--driver', is_flag=True)
+def install(driver):
+    """Install icestorm toolchain."""
+    if (driver):
+        DriverInstaller().install()
+    else:
+        SconsInstaller().install()
+        IcestormInstaller().install()
 
 
-@install.command('toolchain')
-def install_toolchain():
-    SconsInstaller().install()
-    IcestormInstaller().install()
-
-
-@install.command('drivers')
-def install_drivers():
-    DriverInstaller().install()
-
-
-@cli.group()
-def uninstall():
-    """
-    """
-
-
-@uninstall.command('toolchain')
-def uninstall_toolchain():
+@cli.command('uninstall')
+@click.option('--driver', is_flag=True)
+def uninstall(driver):
+    """Uninstall icestorm toolchain."""
     key = raw_input('Are you sure? [Y/N]: ')
     if key == 'y' or key == 'Y':
-        SconsInstaller().uninstall()
-        IcestormInstaller().uninstall()
-
-
-@uninstall.command('drivers')
-def uninstall_drivers():
-    key = raw_input('Are you sure? [Y/N]: ')
-    if key == 'y' or key == 'Y':
-        DriverInstaller().uninstall()
+        if (driver):
+            DriverInstaller().uninstall()
+        else:
+            SconsInstaller().uninstall()
+            IcestormInstaller().uninstall()
 
 
 @cli.command('clean')
 def clean():
+    """Remove previous bitstream."""
     run_scons(['-c'])
 
 
 @cli.command('build')
 def build():
+    """Synthesize the bitstream."""
     run_scons()
 
 
 @cli.command('upload')
 def upload():
+    """Upload bitstream to FPGA."""
     run_scons(['upload'])
 
 
 @cli.command('time')
 def time():
+    """Bitstream timing analysis."""
     run_scons(['time'])
 
 
 @cli.command('sim')
 def sim():
+    """Launch verilog simulation."""
     run_scons(['sim'])
 
 
