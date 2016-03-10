@@ -47,11 +47,18 @@ class DriverInstaller(object):
     def _install_darwin(self):
         # TODO: return if brew is not installed
         subprocess.call(['brew', 'install', 'libftdi0'])
-        subprocess.call(['sudo', 'kextunload', '-b', 'com.FTDI.driver.FTDIUSBSerialDriver'])
-        subprocess.call(['sudo', 'kextunload', '-b', 'com.apple.driver.AppleUSBFTDI'])
+        print('Configure FTDI drivers for FPGA')
+        subprocess.call(['sudo', 'kextunload', '-b',
+                         'com.FTDI.driver.FTDIUSBSerialDriver', '>/dev/null'])
+        subprocess.call(['sudo', 'kextunload', '-b',
+                         'com.apple.driver.AppleUSBFTDI', '>/dev/null'])
 
     def _uninstall_darwin(self):
-        pass
+        print('Revert FTDI drivers\' configuration')
+        subprocess.call(['sudo', 'kextload', '-b',
+                         'com.FTDI.driver.FTDIUSBSerialDriver', '>/dev/null'])
+        subprocess.call(['sudo', 'kextload', '-b',
+                         'com.apple.driver.AppleUSBFTDI', '>/dev/null'])
 
     def _install_windows(self):
         pass

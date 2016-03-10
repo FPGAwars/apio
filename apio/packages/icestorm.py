@@ -1,6 +1,8 @@
 # Toolchain icestorm class
 
 import requests
+requests.packages.urllib3.disable_warnings()
+
 from os import rename
 from os.path import isdir, join
 
