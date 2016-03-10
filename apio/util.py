@@ -24,6 +24,9 @@ from os.path import abspath, basename, dirname, expanduser, isdir, isfile, join
 from platform import system, uname
 from threading import Thread
 
+import requests
+requests.packages.urllib3.disable_warnings()
+
 from . import exception
 
 __apiurl__ = None
@@ -320,14 +323,12 @@ def get_logicaldisks():
 
 
 def get_request_defheaders():
-    import requests
     return {"User-Agent": "PlatformIO/%s CI/%d %s" % (
         __version__, int(is_ci()), requests.utils.default_user_agent()
     )}
 
 
 def get_api_result(path, params=None, data=None):
-    import requests
     result = None
     r = None
 
