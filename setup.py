@@ -9,7 +9,7 @@ setup(
     version='0.0.4.6',
     packages=['apio'],
     package_data={
-        'apio': ['packages/*']
+        'apio': ['SConstruct', 'packages/*']
     },
     install_requires=[
         'click',
