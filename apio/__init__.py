@@ -4,7 +4,7 @@
 import click
 
 from .util import get_systype
-from .execute import run_scons
+from .execute import SConsExecute
 from .packages.scons import SconsInstaller
 from .packages.icestorm import IcestormInstaller
 from .packages.driver import DriverInstaller
@@ -51,31 +51,31 @@ def uninstall(driver):
 @cli.command('clean')
 def clean():
     """Remove previous bitstream."""
-    run_scons(['-c'])
+    SConsExecute().run_scons(['-c'])
 
 
 @cli.command('build')
 def build():
     """Synthesize the bitstream."""
-    run_scons()
+    SConsExecute().run_scons()
 
 
 @cli.command('upload')
 def upload():
     """Upload bitstream to FPGA."""
-    run_scons(['upload'])
+    SConsExecute().run_scons(['upload'])
 
 
 @cli.command('time')
 def time():
     """Bitstream timing analysis."""
-    run_scons(['time'])
+    SConsExecute().run_scons(['time'])
 
 
 @cli.command('sim')
 def sim():
     """Launch verilog simulation."""
-    run_scons(['sim'])
+    SConsExecute().run_scons(['sim'])
 
 
 if __name__ == '__main__':
