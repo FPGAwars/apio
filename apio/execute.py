@@ -5,16 +5,16 @@ import sys
 import util
 import click
 
-from os.path import join, dirname
+from os.path import join, dirname, isfile
 
 
-class SConsExecute(object):
+class SCons(object):
 
     def __init__(self):
         self.err_enable = True
         self.scons_variables = []
 
-    def run_scons(self, variables=[]):
+    def run(self, variables=[]):
         self.scons_variables = variables
 
         packages_dir = os.path.join(util.get_home_dir(), 'packages')
@@ -40,7 +40,21 @@ class SConsExecute(object):
         if 'No SConstruct file found' in line:
             self.err_enable = False
             click.secho('Using default SConstruct file\n')
-            self.run_scons(self.scons_variables + ['-f', join(dirname(__file__), 'SConstruct')])
+            self.run(self.scons_variables + ['-f', join(dirname(__file__), 'SConstruct')])
 
         if self.err_enable:
             click.secho(line)
+
+    def create_sconstruct(self):
+        sconstruct_name = 'SConstruct'
+        sconstruct_path = join(os.getcwd(), sconstruct_name)
+        local_sconstruct_path = join(dirname(__file__), sconstruct_name)
+
+        if not isfile(sconstruct_path):
+            click.echo('Creating SConstruct file...')
+            with open(sconstruct_path, 'w') as sconstruct:
+                with open(local_sconstruct_path, 'r') as local_sconstruct:
+                    sconstruct.write(local_sconstruct.read())
+                    click.echo('Done')
+        else:
+            click.echo('Warning: SConstruct file already exists')
