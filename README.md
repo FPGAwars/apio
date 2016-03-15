@@ -24,6 +24,7 @@ Tested
 ## Authors
 
 * Jesús Arroyo
+* Juan González (Obijuan)
 
 ## Contributors
 
