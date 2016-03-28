@@ -4,6 +4,7 @@
 *.bin
 *.rpt
 *.blif
+*.eggs
 *.egg-info
 build/
 dist/
