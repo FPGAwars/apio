@@ -4,7 +4,7 @@
 import click
 
 from .util import get_systype
-from .execute import SCons
+from .execute import SCons, System
 from .packages.scons import SconsInstaller
 from .packages.icestorm import IcestormInstaller
 from .packages.driver import DriverInstaller
@@ -34,6 +34,17 @@ def debug():
 def init():
     """Creates default SConstruct file."""
     SCons().create_sconstruct()
+
+
+@cli.group()
+def system():
+    """System development tools."""
+
+
+@system.command('lsusb')
+def lsusb():
+    """List all connected USB devices."""
+    System().lsusb()
 
 
 @cli.command('install')
