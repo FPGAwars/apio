@@ -19,6 +19,9 @@ class System(object):
     def lsusb(self):
         self._run('listdevs')
 
+    def lsftdi(self):
+        self._run('find_all')
+
     def _run(self, command):
         system_dir = join(expanduser('~'), '.apio', 'system')
         tools_usb_ftdi_dir = join(system_dir, 'tools-usb-ftdi')

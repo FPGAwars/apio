@@ -47,6 +47,12 @@ def lsusb():
     System().lsusb()
 
 
+@system.command('lsftdi')
+def lsftdi():
+    """List all connected FTDI devices."""
+    System().lsftdi()
+
+
 @cli.command('install')
 @click.option('--driver', is_flag=True)
 @click.option('--system', is_flag=True)
