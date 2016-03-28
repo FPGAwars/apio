@@ -21,6 +21,16 @@ Tested
 
 [The project documentation is located in the wiki](https://github.com/bqlabs/apio/wiki)
 
+## Tests
+
+```bash
+pip install nose
+```
+
+```bash
+nosetests
+```
+
 ## Authors
 
 * Jesús Arroyo

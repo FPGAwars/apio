@@ -32,6 +32,11 @@ from . import exception
 __apiurl__ = None
 __version__ = None
 
+try:
+    basestring
+except NameError:
+    basestring = str
+
 # pylint: disable=wrong-import-order
 try:
     from configparser import ConfigParser
@@ -268,7 +273,7 @@ def exec_command(*args, **kwargs):
         if isinstance(kwargs[s], AsyncPipe):
             result[s[3:]] = "\n".join(kwargs[s].get_buffer())
 
-    for k, v in result.iteritems():
+    for k, v in result.items():
         if v and isinstance(v, basestring):
             result[k].strip()
 

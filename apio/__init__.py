@@ -45,7 +45,7 @@ def install(driver):
 @click.option('--driver', is_flag=True)
 def uninstall(driver):
     """Uninstall icestorm toolchain."""
-    key = raw_input('Are you sure? [Y/N]: ')
+    key = input('Are you sure? [Y/N]: ')
     if key == 'y' or key == 'Y':
         if (driver):
             DriverInstaller().uninstall()

@@ -2,10 +2,11 @@
 
 import os
 import sys
-import util
 import click
 
 from os.path import join, dirname, isfile
+
+from . import util
 
 
 class SCons(object):
