@@ -1,21 +1,16 @@
 ![][apio-logo]
 
+[![Build Status](https://travis-ci.org/bqlabs/apio.svg?branch=develop)](https://travis-ci.org/bqlabs/apio)
+
 Experimental open source micro-ecosystem for open FPGAs. Based on [platformio](https://github.com/platformio/platformio). It includes scons, pre-built static toolchain-icestorm and icestick rules file auto-installation. Also clean, build, upload commands using scons.
 
 ![](https://github.com/bqlabs/apio/raw/master/doc/apio.jpg)
 
-## Install
+## Installation ![][ubuntu-logo] ![][macosx-logo] ![][windows-logo]
 
-1. [Install dependencies and drivers](https://github.com/bqlabs/apio/wiki/Installation)
+1. [Install dependencies](https://github.com/bqlabs/apio/wiki/Dependencies)
 
 2. Install latest apio: ```pip install -U apio```
-
-3. Install fpga toolchain: ```apio install```
-
-Tested
-* Linux (32 bit, 64 bit)
-* Windows
-* Darwin
 
 ## Documentation
 
@@ -25,9 +20,6 @@ Tested
 
 ```bash
 pip install nose
-```
-
-```bash
 nosetests
 ```
 
@@ -46,3 +38,6 @@ nosetests
 Licensed under a GPL v2 and [Creative Commons Attribution-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-sa/4.0/)
 
 [apio-logo]: doc/apio-logo.png
+[ubuntu-logo]: doc/ubuntu.png
+[macosx-logo]: doc/macosx.png
+[windows-logo]: doc/windows.png
