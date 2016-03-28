@@ -3,10 +3,41 @@
 import os
 import sys
 import click
+import platform
 
-from os.path import join, dirname, isfile
+from os.path import join, dirname, isdir, isfile, expanduser
 
 from . import util
+
+
+class System(object):
+    def __init__(self):
+        self.ext = ''
+        if 'Windows' == platform.system():
+            self.ext = '.exe'
+
+    def lsusb(self):
+        self._run('listdevs')
+
+    def lsftdi(self):
+        self._run('find_all')
+
+    def _run(self, command):
+        system_dir = join(expanduser('~'), '.apio', 'system')
+        tools_usb_ftdi_dir = join(system_dir, 'tools-usb-ftdi')
+
+        if isdir(tools_usb_ftdi_dir):
+            util.exec_command(
+                os.path.join(tools_usb_ftdi_dir, command + self.ext),
+                stdout=util.AsyncPipe(self._on_run_out),
+                stderr=util.AsyncPipe(self._on_run_out)
+            )
+        else:
+            print('System tools are not installed. Please run:\n'
+                  '  apio install --system')
+
+    def _on_run_out(self, line):
+        click.secho(line)
 
 
 class SCons(object):
@@ -30,14 +61,14 @@ class SCons(object):
                 os.path.join(packages_dir, 'tool-scons', 'script', 'scons'),
                 '-Q'
             ] + variables,
-            stdout=util.AsyncPipe(self.on_run_out),
-            stderr=util.AsyncPipe(self.on_run_err)
+            stdout=util.AsyncPipe(self._on_run_out),
+            stderr=util.AsyncPipe(self._on_run_err)
         )
 
-    def on_run_out(self, line):
+    def _on_run_out(self, line):
         click.secho(line)
 
-    def on_run_err(self, line):
+    def _on_run_err(self, line):
         if 'No SConstruct file found' in line:
             self.err_enable = False
             click.secho('Using default SConstruct file\n')

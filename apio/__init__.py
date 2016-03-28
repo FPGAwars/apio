@@ -4,10 +4,16 @@
 import click
 
 from .util import get_systype
-from .execute import SCons
+from .execute import SCons, System
 from .packages.scons import SconsInstaller
 from .packages.icestorm import IcestormInstaller
 from .packages.driver import DriverInstaller
+from .packages.system import SystemInstaller
+
+try:
+    input = raw_input
+except NameError:
+    pass
 
 
 @click.group()
@@ -30,12 +36,32 @@ def init():
     SCons().create_sconstruct()
 
 
+@cli.group()
+def system():
+    """System development tools."""
+
+
+@system.command('lsusb')
+def lsusb():
+    """List all connected USB devices."""
+    System().lsusb()
+
+
+@system.command('lsftdi')
+def lsftdi():
+    """List all connected FTDI devices."""
+    System().lsftdi()
+
+
 @cli.command('install')
 @click.option('--driver', is_flag=True)
-def install(driver):
+@click.option('--system', is_flag=True)
+def install(driver, system):
     """Install icestorm toolchain."""
     if (driver):
         DriverInstaller().install()
+    elif (system):
+        SystemInstaller().install()
     else:
         SconsInstaller().install()
         IcestormInstaller().install()
@@ -43,12 +69,15 @@ def install(driver):
 
 @cli.command('uninstall')
 @click.option('--driver', is_flag=True)
-def uninstall(driver):
+@click.option('--system', is_flag=True)
+def uninstall(driver, system):
     """Uninstall icestorm toolchain."""
     key = input('Are you sure? [Y/N]: ')
     if key == 'y' or key == 'Y':
         if (driver):
             DriverInstaller().uninstall()
+        elif (system):
+            SystemInstaller().uninstall()
         else:
             SconsInstaller().uninstall()
             IcestormInstaller().uninstall()
