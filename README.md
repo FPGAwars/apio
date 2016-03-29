@@ -6,7 +6,7 @@ Experimental open source micro-ecosystem for open FPGAs. Based on [platformio](h
 
 ![](https://github.com/bqlabs/apio/raw/master/doc/apio.jpg)
 
-## Installation ![][ubuntu-logo] ![][macosx-logo] ![][windows-logo]
+## Installation ![][ubuntu-logo] ![][raspbian-logo] ![][macosx-logo] ![][windows-logo]
 
 1. [Install dependencies](https://github.com/bqlabs/apio/wiki/Dependencies)
 
@@ -39,5 +39,6 @@ Licensed under a GPL v2 and [Creative Commons Attribution-ShareAlike 4.0 Interna
 
 [apio-logo]: doc/apio-logo.png
 [ubuntu-logo]: doc/ubuntu.png
+[raspbian-logo]: doc/raspbian.png
 [macosx-logo]: doc/macosx.png
 [windows-logo]: doc/windows.png
