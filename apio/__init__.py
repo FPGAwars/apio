@@ -36,9 +36,13 @@ def init():
     SCons().create_sconstruct()
 
 
+# System #
+
+
 @cli.group()
 def system():
-    """System development tools."""
+    """System development tools.\n
+       Install with `apio install system`."""
 
 
 @system.command('lsusb')
@@ -53,34 +57,90 @@ def lsftdi():
     System().lsftdi()
 
 
-@cli.command('install')
-@click.option('--driver', is_flag=True)
-@click.option('--system', is_flag=True)
-def install(driver, system):
-    """Install icestorm toolchain."""
-    if (driver):
-        DriverInstaller().install()
-    elif (system):
+# Install #
+
+
+@cli.group('install', invoke_without_command=True)
+@click.pass_context
+@click.option('--all', is_flag=True, help='Install all toolchains.')
+def install(ctx, all):
+    """Install development tools."""
+    if ctx.invoked_subcommand is None:
         SystemInstaller().install()
-    else:
         SconsInstaller().install()
         IcestormInstaller().install()
 
 
-@cli.command('uninstall')
-@click.option('--driver', is_flag=True)
-@click.option('--system', is_flag=True)
-def uninstall(driver, system):
+@install.command('driver')
+def install_driver():
+    """Install open FPGA drivers."""
+    DriverInstaller().install()
+
+
+@install.command('system')
+def install_system():
+    """Install system development tools."""
+    SystemInstaller().install()
+
+
+@install.command('scons')
+def install_scons():
+    """Install scons toolchain."""
+    SconsInstaller().install()
+
+
+@install.command('icestorm')
+def install_icestorm():
+    """Install icestorm toolchain."""
+    IcestormInstaller().install()
+
+
+# Uninstall #
+
+
+@cli.group('uninstall', invoke_without_command=True)
+@click.pass_context
+@click.option('--all', is_flag=True, help='Uninstall all toolchains.')
+def uninstall(ctx, all):
+    """Uninstall development tools."""
+    if ctx.invoked_subcommand is None:
+        _uninstall(SystemInstaller().uninstall,
+                   SconsInstaller().uninstall,
+                   IcestormInstaller().uninstall)
+
+
+@uninstall.command('driver')
+def uninstall_driver():
+    """Uninstall open FPGA drivers."""
+    _uninstall(DriverInstaller().uninstall)
+
+
+@uninstall.command('system')
+def uninstall_system():
+    """Uninstall system development tools."""
+    _uninstall(SystemInstaller().uninstall)
+
+
+@uninstall.command('scons')
+def uninstall_scons():
+    """Uninstall scons toolchain."""
+    _uninstall(SconsInstaller().uninstall)
+
+
+@uninstall.command('icestorm')
+def uninstall_icestorm():
     """Uninstall icestorm toolchain."""
+    _uninstall(IcestormInstaller().uninstall)
+
+
+def _uninstall(*functions):
     key = input('Are you sure? [Y/N]: ')
     if key == 'y' or key == 'Y':
-        if (driver):
-            DriverInstaller().uninstall()
-        elif (system):
-            SystemInstaller().uninstall()
-        else:
-            SconsInstaller().uninstall()
-            IcestormInstaller().uninstall()
+        for count, function in enumerate(functions):
+            function()
+
+
+# Synthesize #
 
 
 @cli.command('clean')

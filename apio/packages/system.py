@@ -34,7 +34,7 @@ class SystemInstaller(Installer):
 
     def _get_download_url(self):
         url = '{0}/v0.{1}/{2}'.format(
-            'https://github.com/bqlabs/tools-usb-ftdi/releases/download',
+            'https://github.com/FPGAwars/tools-usb-ftdi/releases/download',
             self.version,
             self._get_package_name())
         return url
@@ -48,7 +48,7 @@ class SystemInstaller(Installer):
         return name
 
     def _get_version(self):
-        releases_url = 'https://api.github.com/repos/bqlabs/tools-usb-ftdi/releases/latest'
+        releases_url = 'https://api.github.com/repos/FPGAwars/tools-usb-ftdi/releases/latest'
         response = requests.get(releases_url)
         releases = response.json()
         version = releases['tag_name'].split('.')[1]  # v0.X -> X

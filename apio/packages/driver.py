@@ -63,7 +63,7 @@ class DriverInstaller(object):
 
     def _install_windows(self):
         import webbrowser
-        url = 'https://github.com/bqlabs/apio/wiki/Installation#windows'
+        url = 'https://github.com/FPGAwars/apio/wiki/Installation#windows'
         print('Follow the next instructions: ' + url)
         webbrowser.open(url)
 

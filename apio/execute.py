@@ -33,8 +33,8 @@ class System(object):
                 stderr=util.AsyncPipe(self._on_run_out)
             )
         else:
-            print('System tools are not installed. Please run:\n'
-                  '  apio install --system')
+            print('System tools are not installed. Please run:\n\n'
+                  '  apio install system\n')
 
     def _on_run_out(self, line):
         click.secho(line)
@@ -50,20 +50,30 @@ class SCons(object):
         self.scons_variables = variables
 
         packages_dir = os.path.join(util.get_home_dir(), 'packages')
+        icestorm_dir = os.path.join(packages_dir, 'toolchain-icestorm', 'bin')
+        scons_dir = os.path.join(packages_dir, 'tool-scons', 'script')
 
         # Give the priority to the packages installed by apio
-        os.environ['PATH'] = os.pathsep.join(
-            [os.path.join(packages_dir, 'toolchain-icestorm', 'bin'), os.environ['PATH']])
+        os.environ['PATH'] = os.pathsep.join([icestorm_dir, os.environ['PATH']])
 
-        util.exec_command(
-            [
-                os.path.normpath(sys.executable),
-                os.path.join(packages_dir, 'tool-scons', 'script', 'scons'),
-                '-Q'
-            ] + variables,
-            stdout=util.AsyncPipe(self._on_run_out),
-            stderr=util.AsyncPipe(self._on_run_err)
-        )
+        if not isdir(icestorm_dir):
+            print('Icestorm toolchain is not installed. Please run:\n\n'
+                  '  apio install icestorm\n')
+
+        if not isdir(scons_dir):
+            print('Scons toolchain is not installed. Please run:\n\n'
+                  '  apio install scons\n')
+
+        if isdir(scons_dir) and isdir(icestorm_dir):
+            util.exec_command(
+                [
+                    os.path.normpath(sys.executable),
+                    os.path.join(scons_dir, 'scons'),
+                    '-Q'
+                ] + variables,
+                stdout=util.AsyncPipe(self._on_run_out),
+                stderr=util.AsyncPipe(self._on_run_err)
+            )
 
     def _on_run_out(self, line):
         click.secho(line)
