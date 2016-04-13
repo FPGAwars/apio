@@ -12,9 +12,9 @@ setup(
         'apio': ['SConstruct',
                  'packages/*.py',
                  'packages/*.rules'],
-        'examples': ['leds/leds.v',
-                     'leds/leds.pcf']
+        'examples': ['*/*']
     },
+    include_package_data=True,
     install_requires=[
         'click',
         'requests'

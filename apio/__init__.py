@@ -4,7 +4,7 @@
 import click
 
 from .util import get_systype
-from .example import Example
+from .examples import Examples
 from .execute import SCons, System
 from .packages.scons import SconsInstaller
 from .packages.icestorm import IcestormInstaller
@@ -13,6 +13,11 @@ from .packages.system import SystemInstaller
 
 try:
     input = raw_input
+except NameError:
+    pass
+
+try:
+    unicode = str
 except NameError:
     pass
 
@@ -37,10 +42,21 @@ def init():
     SCons().create_sconstruct()
 
 
-@cli.command('example')
-def example():
-    """Create default verilog example."""
-    Example().create_example()
+@cli.command('examples')
+@click.pass_context
+@click.option('-l', '--list', is_flag=True, help='List all available examples.')
+@click.option('-c', '--copy', type=unicode, help='Copy the selected example.')
+def examples(ctx, list, copy):
+    """Manage default verilog examples."""
+    if list:
+        examples = Examples().list_examples()
+        print('')
+        for example in examples:
+            print(' > ' + example)
+    elif copy:
+        Examples().copy_example(copy)
+    else:
+        print(ctx.get_help())
 
 
 # System #
