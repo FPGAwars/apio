@@ -52,6 +52,10 @@ else:
 # -------- testbench
 src_synth = [f for f in src_sim if f not in list_tb]
 
+if len(src_synth) == 0:
+    print("------->   WARNING: no verilog files found (.v)")
+    Exit(1)
+
 # -- For debugging
 print("----> Testbench: {}".format(testbench))
 # print("SIM NAME: {}".format(SIMULNAME))
