@@ -38,7 +38,8 @@ def init():
 
 @cli.group()
 def system():
-    """System development tools."""
+    """System development tools.\n
+       Install with `apio install --system`."""
 
 
 @system.command('lsusb')
@@ -54,8 +55,8 @@ def lsftdi():
 
 
 @cli.command('install')
-@click.option('--driver', is_flag=True)
-@click.option('--system', is_flag=True)
+@click.option('--driver', is_flag=True, help='Install open FPGA drivers.')
+@click.option('--system', is_flag=True, help='Install system development tools.')
 def install(driver, system):
     """Install icestorm toolchain."""
     if (driver):
@@ -68,8 +69,8 @@ def install(driver, system):
 
 
 @cli.command('uninstall')
-@click.option('--driver', is_flag=True)
-@click.option('--system', is_flag=True)
+@click.option('--driver', is_flag=True, help='Uninstall open FPGA drivers.')
+@click.option('--system', is_flag=True, help='Uninstall system development tools.')
 def uninstall(driver, system):
     """Uninstall icestorm toolchain."""
     key = input('Are you sure? [Y/N]: ')
