@@ -6,10 +6,14 @@ setup(
     name='apio',
     author='Jesús Arroyo Torrens',
     email='jesus.jkhlg@gmail.com',
-    version='0.0.5.1',
-    packages=['apio'],
+    version='0.0.5.2',
+    packages=['apio', 'examples'],
     package_data={
-        'apio': ['SConstruct', 'packages/*.py', 'packages/*.rules']
+        'apio': ['SConstruct',
+                 'packages/*.py',
+                 'packages/*.rules'],
+        'examples': ['leds/leds.v',
+                     'leds/leds.pcf']
     },
     install_requires=[
         'click',

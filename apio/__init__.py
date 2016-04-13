@@ -4,6 +4,7 @@
 import click
 
 from .util import get_systype
+from .example import Example
 from .execute import SCons, System
 from .packages.scons import SconsInstaller
 from .packages.icestorm import IcestormInstaller
@@ -32,8 +33,14 @@ def debug():
 
 @cli.command('init')
 def init():
-    """Creates default SConstruct file."""
+    """Create default SConstruct file."""
     SCons().create_sconstruct()
+
+
+@cli.command('example')
+def example():
+    """Create default verilog example."""
+    Example().create_example()
 
 
 # System #
