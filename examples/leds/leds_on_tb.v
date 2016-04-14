@@ -2,7 +2,8 @@
 //-- leds_on_tb.v
 //-- Testbench
 //-------------------------------------------------------------------
-//-- BQ March 2016. Written by Juan Gonzalez (Obijuan)
+//-- Juan Gonzalez (Obijuan)
+//-- GPL license
 //-------------------------------------------------------------------
 `default_nettype none
 `timescale 100 ns / 10 ns

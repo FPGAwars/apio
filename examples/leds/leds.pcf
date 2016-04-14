@@ -1,5 +1,10 @@
+## -- Constraints for the ICESTICK board or compatible
+
+#-- Green leds
 set_io LED4 99
 set_io LED3 98
 set_io LED2 97
 set_io LED1 96
-set_io LED0 95
+
+#-- Red led
+set_io LED0 95   
