@@ -6,7 +6,7 @@ setup(
     name='apio',
     author='Jesús Arroyo Torrens',
     email='jesus.jkhlg@gmail.com',
-    version='0.0.5.3',
+    version='0.1.0',
     packages=['apio', 'examples'],
     package_data={
         'apio': ['SConstruct',
