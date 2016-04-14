@@ -45,7 +45,8 @@ def init():
 @cli.command('examples')
 @click.pass_context
 @click.option('-l', '--list', is_flag=True, help='List all available examples.')
-@click.option('-c', '--copy', type=unicode, help='Copy the selected example.')
+@click.option('-c', '--copy', type=unicode, help='Copy the selected example.',
+              metavar='NAME')
 def examples(ctx, list, copy):
     """Manage default verilog examples."""
     if list:
