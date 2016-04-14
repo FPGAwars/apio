@@ -9,6 +9,11 @@ from os.path import join, dirname, isdir, isfile, expanduser
 
 from . import util
 
+try:
+    input = raw_input
+except NameError:
+    pass
+
 
 class System(object):
     def __init__(self):
@@ -42,16 +47,11 @@ class System(object):
 
 class SCons(object):
 
-    def __init__(self):
-        self.err_enable = True
-        self.scons_variables = []
-
     def run(self, variables=[]):
-        self.scons_variables = variables
-
         packages_dir = os.path.join(util.get_home_dir(), 'packages')
         icestorm_dir = os.path.join(packages_dir, 'toolchain-icestorm', 'bin')
         scons_dir = os.path.join(packages_dir, 'tool-scons', 'script')
+        sconstruct_name = 'SConstruct'
 
         # Give the priority to the packages installed by apio
         os.environ['PATH'] = os.pathsep.join([icestorm_dir, os.environ['PATH']])
@@ -63,6 +63,10 @@ class SCons(object):
         if not isdir(scons_dir):
             print('Scons toolchain is not installed. Please run:\n\n'
                   '  apio install scons\n')
+
+        if not isfile(join(os.getcwd(), sconstruct_name)):
+            click.secho('Using default SConstruct file\n')
+            variables += ['-f', join(dirname(__file__), sconstruct_name)]
 
         if isdir(scons_dir) and isdir(icestorm_dir):
             util.exec_command(
@@ -79,24 +83,23 @@ class SCons(object):
         click.secho(line)
 
     def _on_run_err(self, line):
-        if 'No SConstruct file found' in line:
-            self.err_enable = False
-            click.secho('Using default SConstruct file\n')
-            self.run(self.scons_variables + ['-f', join(dirname(__file__), 'SConstruct')])
-
-        if self.err_enable:
-            click.secho(line)
+        click.secho(line)
 
     def create_sconstruct(self):
         sconstruct_name = 'SConstruct'
         sconstruct_path = join(os.getcwd(), sconstruct_name)
         local_sconstruct_path = join(dirname(__file__), sconstruct_name)
 
-        if not isfile(sconstruct_path):
-            click.echo('Creating SConstruct file...')
-            with open(sconstruct_path, 'w') as sconstruct:
-                with open(local_sconstruct_path, 'r') as local_sconstruct:
-                    sconstruct.write(local_sconstruct.read())
-                    click.echo('Done')
+        if isfile(sconstruct_path):
+            click.echo('Warning: ' + sconstruct_name + ' file already exists')
+            key = input('Do you want to replace it? [Y/N]: ')
+            if key == 'y' or key == 'Y':
+                self._copy_file(sconstruct_name, sconstruct_path, local_sconstruct_path)
         else:
-            click.echo('Warning: SConstruct file already exists')
+            self._copy_file(sconstruct_name, sconstruct_path, local_sconstruct_path)
+
+    def _copy_file(self, sconstruct_name, sconstruct_path, local_sconstruct_path):
+        click.echo('Creating ' + sconstruct_name + ' file')
+        with open(sconstruct_path, 'w') as sconstruct:
+            with open(local_sconstruct_path, 'r') as local_sconstruct:
+                sconstruct.write(local_sconstruct.read())
