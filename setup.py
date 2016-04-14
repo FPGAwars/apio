@@ -4,9 +4,11 @@ from setuptools import setup
 
 setup(
     name='apio',
+    version='0.1.0.1',
     author='Jesús Arroyo Torrens',
-    email='jesus.jkhlg@gmail.com',
-    version='0.1.0',
+    author_email='jesus.jkhlg@gmail.com',
+    url='https://github.com/FPGAwars/apio',
+    license='GPLv2',
     packages=['apio', 'examples'],
     package_data={
         'apio': ['SConstruct',
@@ -14,7 +16,6 @@ setup(
                  'packages/*.rules'],
         'examples': ['*/*']
     },
-    include_package_data=True,
     install_requires=[
         'click',
         'requests'
