@@ -5,7 +5,7 @@ import shutil
 from os import makedirs, remove
 from os.path import isdir, join, basename
 
-import util
+from . import util
 from .profile import Profile
 from .downloader import FileDownloader
 from .unpacker import FileUnpacker

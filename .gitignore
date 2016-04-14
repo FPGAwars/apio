@@ -1,9 +1,10 @@
-.sconsign.dblite
+*.sconsign.dblite
 *.pyc
 *.asc
 *.bin
 *.rpt
 *.blif
+*.eggs
 *.egg-info
 build/
 dist/

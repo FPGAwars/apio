@@ -1,0 +1,136 @@
+# ----------------------------------------------------------------------
+# -- Generic Scons script for Sintesizing hardware with APIO or scons
+# -- on an icestick or Icezum Alhambra
+# ----------------------------------------------------------------------
+import os
+from os.path import join
+import platform
+import glob
+from SCons.Script import (Builder, DefaultEnvironment, Default, AlwaysBuild,
+                          GetOption, Environment, Exit, COMMAND_LINE_TARGETS)
+
+# -- Executables extension
+EXT = ''
+if 'Windows' == platform.system():
+    EXT = '.exe'
+
+# -- Target name
+TARGET = 'hardware'
+
+# -- Get a list of all the verilog files in the src folfer, in ASCII, with
+# -- the full path. All these files are used for the simulation
+v_nodes = glob.glob('*.v')
+src_sim = ["{}".format(f) for f in v_nodes]
+
+# --------- Get the Testbench file (there should be only 1)
+# -- Create a list with all the files finished in _tb.v. It should contain
+# -- the test bench
+list_tb = [f for f in src_sim if f[-5:].upper() == "_TB.V"]
+
+if len(list_tb) > 1:
+    print("---> WARNING: More than one testbenches used")
+
+# -- Error checking
+try:
+    testbench = list_tb[0]
+
+# -- there is no testbench
+except IndexError:
+    testbench = None
+
+if 'sim' in COMMAND_LINE_TARGETS:
+    if testbench is None:
+        print("ERROR!!! NO testbench found for simulation")
+        Exit(1)
+
+    # -- Simulation name
+    SIMULNAME, ext = os.path.splitext(testbench)
+else:
+    SIMULNAME = ''
+
+# -------- Get the synthesis files.  They are ALL the files except the
+# -------- testbench
+src_synth = [f for f in src_sim if f not in list_tb]
+
+if len(src_synth) == 0:
+    print("------->   WARNING: no verilog files found (.v)")
+    Exit(1)
+
+# -- For debugging
+print("----> Testbench: {}".format(testbench))
+# print("SIM NAME: {}".format(SIMULNAME))
+
+# -- Get the PCF file
+PCF_list = glob.glob('*.pcf')
+
+try:
+    PCF = PCF_list[0]
+except IndexError:
+    print("\n--------> WARNING: no .pcf file found <----------\n")
+    PCF = 'ERROR.pcf'
+
+# -- Debug
+print("----> PCF Found: {}".format(PCF))
+
+
+# -- Define the Sintesizing Builder
+synth = Builder(action='yosys{0} -p \"synth_ice40 -blif $TARGET\" $SOURCE'.format(EXT),
+                suffix='.blif',
+                src_suffix='.v')
+
+pnr = Builder(action='arachne-pnr{0} -d 1k -o $TARGET -p {1} $SOURCE'.format(EXT, PCF),
+              suffix='.asc',
+              src_suffix='.blif')
+
+bitstream = Builder(action='icepack{0} $SOURCE $TARGET'.format(EXT),
+                    suffix='.bin',
+                    src_suffix='.asc')
+
+# -- Icetime builder
+time_rpt = Builder(action='icetime{0} -d hx1k -mtr $TARGET $SOURCE'.format(EXT),
+                   suffix='.rpt',
+                   src_suffix='.asc')
+
+# -- Build the environment
+env = DefaultEnvironment(BUILDERS={'Synth': synth, 'PnR': pnr,
+                                   'Bin': bitstream, 'Time': time_rpt},
+                         ENV=os.environ, tools=[])
+
+# -- Generate the bitstream
+blif = env.Synth(TARGET, [src_synth])
+asc = env.PnR(TARGET, [blif, PCF])
+bitstream = env.Bin(TARGET, asc)
+
+# -- Upload the bitstream into FPGA
+upload = env.Alias('upload', bitstream, 'iceprog{0} $SOURCE'.format(EXT))
+AlwaysBuild(upload)
+
+# -- Target time: calculate the time
+rpt = env.Time(asc)
+t = env.Alias('time', rpt)
+AlwaysBuild(t)
+
+# -------------------- Simulation ------------------
+# -- Constructor para generar simulacion: icarus Verilog
+iverilog = Builder(action='iverilog -o $TARGET $SOURCES',
+                   suffix='.out',
+                   src_suffix='.v')
+
+vcd = Builder(action=join(glob.os.getcwd(), "$SOURCE"),
+              suffix='.vcd', src_suffix='.out')
+
+simenv = Environment(BUILDERS={'IVerilog': iverilog, 'VCD': vcd},
+                     ENV=os.environ)
+
+out = simenv.IVerilog(SIMULNAME, src_sim)
+vcd_file = simenv.VCD(SIMULNAME, out)
+
+waves = simenv.Alias('sim', SIMULNAME+'.vcd', 'gtkwave ' +
+                     "{} ".format(vcd_file[0]) + " " + SIMULNAME + ".gtkw")
+AlwaysBuild(waves)
+
+Default(bitstream)
+
+# -- These is for cleaning the files generated using the alias targets
+if GetOption('clean'):
+    env.Default([out, t, vcd_file])

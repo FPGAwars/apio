@@ -34,6 +34,7 @@ class DriverInstaller(object):
         print('Install icestick.rules')
         if not isfile(self.rules_system_path):
             subprocess.call(['sudo', 'cp', self.rules_local_path, self.rules_system_path])
+            subprocess.call(['sudo', 'service', 'udev', 'restart'])
         else:
             print('Package icestick.rules is already the newest version')
 
@@ -47,14 +48,24 @@ class DriverInstaller(object):
     def _install_darwin(self):
         # TODO: return if brew is not installed
         subprocess.call(['brew', 'install', 'libftdi0'])
-        subprocess.call(['sudo', 'kextunload', '-b', 'com.FTDI.driver.FTDIUSBSerialDriver'])
-        subprocess.call(['sudo', 'kextunload', '-b', 'com.apple.driver.AppleUSBFTDI'])
+        print('Configure FTDI drivers for FPGA')
+        subprocess.call(['sudo', 'kextunload', '-b',
+                         'com.FTDI.driver.FTDIUSBSerialDriver'])
+        subprocess.call(['sudo', 'kextunload', '-b',
+                         'com.apple.driver.AppleUSBFTDI'])
 
     def _uninstall_darwin(self):
-        pass
+        print('Revert FTDI drivers\' configuration')
+        subprocess.call(['sudo', 'kextload', '-b',
+                         'com.FTDI.driver.FTDIUSBSerialDriver'])
+        subprocess.call(['sudo', 'kextload', '-b',
+                         'com.apple.driver.AppleUSBFTDI'])
 
     def _install_windows(self):
-        pass
+        import webbrowser
+        url = 'https://github.com/FPGAwars/apio/wiki/Installation#windows'
+        print('Follow the next instructions: ' + url)
+        webbrowser.open(url)
 
     def _uninstall_windows(self):
         pass

@@ -24,10 +24,18 @@ from os.path import abspath, basename, dirname, expanduser, isdir, isfile, join
 from platform import system, uname
 from threading import Thread
 
+import requests
+requests.packages.urllib3.disable_warnings()
+
 from . import exception
 
 __apiurl__ = None
 __version__ = None
+
+try:
+    basestring
+except NameError:
+    basestring = str
 
 # pylint: disable=wrong-import-order
 try:
@@ -265,7 +273,7 @@ def exec_command(*args, **kwargs):
         if isinstance(kwargs[s], AsyncPipe):
             result[s[3:]] = "\n".join(kwargs[s].get_buffer())
 
-    for k, v in result.iteritems():
+    for k, v in result.items():
         if v and isinstance(v, basestring):
             result[k].strip()
 
@@ -320,14 +328,12 @@ def get_logicaldisks():
 
 
 def get_request_defheaders():
-    import requests
     return {"User-Agent": "PlatformIO/%s CI/%d %s" % (
         __version__, int(is_ci()), requests.utils.default_user_agent()
     )}
 
 
 def get_api_result(path, params=None, data=None):
-    import requests
     result = None
     r = None
 
