@@ -1,0 +1,4 @@
+## -- Constraints for the IceZUM Alhambra or compatible
+
+set_io in  144  #-- D13 on icezum Alhambra
+set_io out 95   #-- Led0 on icezum Alhambra
