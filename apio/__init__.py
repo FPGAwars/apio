@@ -54,6 +54,9 @@ def examples(ctx, list, copy):
         print('')
         for example in examples:
             print(' > ' + example)
+        print('')
+        print('To get and example, use the command:')
+        print('apio examples -c name')
     elif copy:
         Examples().copy_example(copy)
     else:
