@@ -10,6 +10,7 @@ from .packages.scons import SconsInstaller
 from .packages.icestorm import IcestormInstaller
 from .packages.driver import DriverInstaller
 from .packages.system import SystemInstaller
+from .packages.piofpga import PiofpgaInstaller
 
 try:
     input = raw_input
@@ -120,6 +121,15 @@ def install_scons():
 def install_icestorm():
     """Install icestorm toolchain."""
     IcestormInstaller().install()
+
+
+@install.command('pio-fpga')
+def intall_pio_fpga():
+    """Install platformio-fpga support"""
+    PiofpgaInstaller().install()
+    print("> Now execute the following command:")
+    print("")
+    print("pio platforms install lattice_ice40")
 
 
 # Uninstall #
