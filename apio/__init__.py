@@ -127,6 +127,9 @@ def install_icestorm():
 def intall_pio_fpga():
     """Install platformio-fpga support"""
     PiofpgaInstaller().install()
+    print("> Now execute the following command:")
+    print("")
+    print("pio platforms install lattice_ice40")
 
 
 # Uninstall #
