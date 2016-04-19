@@ -36,7 +36,7 @@ class PiofpgaInstaller(object):
             path, name = os.path.split(f)
             name, ext = os.path.splitext(name)
             if not self._is_pyc(f):
-                shutil.copy(f, join(platform_dest_dir, name+'-builder.py'))
+                shutil.copy(f, join(platform_dest_dir, name + '-builder.py'))
 
     def _copy_files(self, src, dest):
         """Copy files from src to dest folder. Files .pyc are not copied"""

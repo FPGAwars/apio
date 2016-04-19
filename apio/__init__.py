@@ -46,9 +46,11 @@ def init():
 @cli.command('examples')
 @click.pass_context
 @click.option('-l', '--list', is_flag=True, help='List all available examples.')
-@click.option('-c', '--copy', type=unicode, help='Copy the selected example.',
+@click.option('-d', '--dir', type=unicode, help='Copy the selected example directory.',
               metavar='NAME')
-def examples(ctx, list, copy):
+@click.option('-f', '--files', type=unicode, help='Copy the selected example files.',
+              metavar='NAME')
+def examples(ctx, list, dir, files):
     """Manage default verilog examples."""
     if list:
         examples = Examples().list_examples()
@@ -57,9 +59,11 @@ def examples(ctx, list, copy):
             print(' > ' + example)
         print('')
         print('To get and example, use the command:')
-        print('apio examples -c name')
-    elif copy:
-        Examples().copy_example(copy)
+        print('apio examples -d/-f name')
+    elif dir:
+        Examples().copy_example_dir(dir)
+    elif files:
+        Examples().copy_example_files(files)
     else:
         print(ctx.get_help())
 
@@ -70,7 +74,7 @@ def examples(ctx, list, copy):
 @cli.group()
 def system():
     """System development tools.\n
-       Install with `apio install system`."""
+       Install with `apio install system`"""
 
 
 @system.command('lsusb')
@@ -90,7 +94,7 @@ def lsftdi():
 
 @cli.group('install', invoke_without_command=True)
 @click.pass_context
-@click.option('--all', is_flag=True, help='Install all toolchains.')
+@click.option('--all', is_flag=True, help='Install all toolchains')
 def install(ctx, all):
     """Install development tools."""
     if ctx.invoked_subcommand is None:
@@ -125,7 +129,7 @@ def install_icestorm():
 
 @install.command('pio-fpga')
 def intall_pio_fpga():
-    """Install platformio-fpga support"""
+    """Install platformio-fpga support."""
     PiofpgaInstaller().install()
     print("> Now execute the following command:")
     print("")
@@ -137,7 +141,7 @@ def intall_pio_fpga():
 
 @cli.group('uninstall', invoke_without_command=True)
 @click.pass_context
-@click.option('--all', is_flag=True, help='Uninstall all toolchains.')
+@click.option('--all', is_flag=True, help='Uninstall all toolchains')
 def uninstall(ctx, all):
     """Uninstall development tools."""
     if ctx.invoked_subcommand is None:

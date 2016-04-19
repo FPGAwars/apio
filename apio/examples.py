@@ -1,10 +1,11 @@
 # Execute functions
 
 import os
+import glob
 import click
 import shutil
 
-from os.path import join, dirname, isdir
+from os.path import join, isdir, isfile, dirname, basename
 
 try:
     input = raw_input
@@ -20,7 +21,7 @@ class Examples(object):
     def list_examples(self):
         return sorted(os.listdir(self.examples_dir))
 
-    def copy_example(self, example):
+    def copy_example_dir(self, example):
         example_path = join(os.getcwd(), example)
         local_example_path = join(self.examples_dir, example)
 
@@ -36,6 +37,28 @@ class Examples(object):
         else:
             click.echo('Sorry, this example does not exist.')
 
-    def _copy_dir(self, example, local_example_path, example_path):
-        click.echo(' Creating ' + example + ' example')
-        shutil.copytree(local_example_path, example_path)
+    def copy_example_files(self, example):
+        example_path = os.getcwd()
+        local_example_path = join(self.examples_dir, example)
+
+        if isdir(local_example_path):
+            self._copy_files(example, local_example_path, example_path)
+        else:
+            click.echo('Sorry, this example does not exist.')
+
+    def _copy_files(self, example, src_path, dest_path):
+        click.echo(' Copying ' + example + ' example')
+        example_files = glob.glob(join(src_path, '*'))
+        for f in example_files:
+            filename = basename(f)
+            if isfile(join(dest_path, filename)):
+                click.echo('Warning: ' + filename + ' file already exists')
+                key = input('Do you want to replace it? [Y/N]: ')
+                if key == 'y' or key == 'Y':
+                    shutil.copy(f, dest_path)
+            else:
+                shutil.copy(f, dest_path)
+
+    def _copy_dir(self, example, src_path, dest_path):
+        click.echo(' Creating ' + example + ' directory')
+        shutil.copytree(src_path, dest_path)
