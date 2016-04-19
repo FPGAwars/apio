@@ -35,9 +35,11 @@ class PiofpgaInstaller(object):
         for f in builder_files:
             path, name = os.path.split(f)
             name, ext = os.path.splitext(name)
-            shutil.copy(f, join(platform_dest_dir, name+'-builder.py'))
+            if not self._is_pyc(f):
+                shutil.copy(f, join(platform_dest_dir, name+'-builder.py'))
 
     def _copy_files(self, src, dest):
+        """Copy files from src to dest folder. Files .pyc are not copied"""
 
         # -- Check for the dest dir
         if isdir(dest):
@@ -45,7 +47,16 @@ class PiofpgaInstaller(object):
             # -- It exists
             board_files = glob.glob(join(src, '*'))
             for f in board_files:
-                shutil.copy(f, dest)
+                if not self._is_pyc(f):
+                    shutil.copy(f, dest)
+                else:
+                    print("Ignorig {}".format(f))
         else:
             # -- dest directory does not exist
             shutil.copytree(src, dest)
+
+    def _is_pyc(self, filename):
+        """return True if it is a .pyc file"""
+
+        name, ext = os.path.splitext(filename)
+        return ext.upper() == ".PYC"
