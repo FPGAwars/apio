@@ -1,0 +1,26 @@
+[*]
+[*] GTKWave Analyzer v3.3.66 (w)1999-2015 BSI
+[*] Thu Apr 21 06:22:40 2016
+[*]
+[dumpfile] "/home/obijuan/develop/apio/examples/Makefile/leds_tb.vcd"
+[dumpfile_mtime] "Thu Apr 21 06:22:11 2016"
+[dumpfile_size] 616
+[savefile] "/home/obijuan/develop/apio/examples/Makefile/leds_tb.gtkw"
+[timestart] 0
+[size] 1000 600
+[pos] 12 -89
+*0.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] leds_tb.
+[sst_width] 223
+[signals_width] 78
+[sst_expanded] 1
+[sst_vpaned_height] 160
+@28
+leds_tb.UUT.LED0
+leds_tb.UUT.LED1
+leds_tb.UUT.LED2
+leds_tb.UUT.LED3
+@29
+leds_tb.UUT.LED4
+[pattern_trace] 1
+[pattern_trace] 0
