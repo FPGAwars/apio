@@ -12,6 +12,11 @@ try:
 except NameError:
     pass
 
+# -- Error messages
+EXAMPLE_NOT_FOUND_MSG = """
+Sorry, this example does not exist
+Use "apio examples -l" for listing all the available examples"""
+
 
 class Examples(object):
 
@@ -35,7 +40,7 @@ class Examples(object):
             else:
                 self._copy_dir(example, local_example_path, example_path)
         else:
-            click.echo('Sorry, this example does not exist.')
+            click.echo(EXAMPLE_NOT_FOUND_MSG)
 
     def copy_example_files(self, example):
         example_path = os.getcwd()
@@ -44,7 +49,7 @@ class Examples(object):
         if isdir(local_example_path):
             self._copy_files(example, local_example_path, example_path)
         else:
-            click.echo('Sorry, this example does not exist.')
+            click.echo(EXAMPLE_NOT_FOUND_MSG)
 
     def _copy_files(self, example, src_path, dest_path):
         click.echo(' Copying ' + example + ' example')
