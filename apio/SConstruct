@@ -8,7 +8,7 @@ import platform
 import glob
 from SCons.Script import (Builder, DefaultEnvironment, Default, AlwaysBuild,
                           GetOption, Environment, Exit, COMMAND_LINE_TARGETS,
-                          ARGUMENTS)
+                          ARGUMENTS, Variables, Help)
 
 # -----------------------------------------------------------------------------
 # -- FLAGs:
@@ -38,6 +38,13 @@ FPGA_TYPE_DFL = 'hx'
 # --   cb81, cb121, cb132, vq100, tq144, ct256
 FPGA_PACK_DFL = 'tq144'
 # -------------------------------------------------------------------
+
+# -- Add the FPGA flags as variables to be shown with the -h scons option
+vars = Variables()
+vars.Add('fpga_pack', 'Set the ICE40 FPGA packages', FPGA_PACK_DFL)
+vars.Add('fpga_type', 'Set the ICE40 FPGA type (hx/lp)', FPGA_TYPE_DFL)
+vars.Add('fpga_size', 'Set the ICE40 FPGA size (1k/8k)', FPGA_SIZE_DFL)
+
 
 # -- Get the value for the FPGA flags: either default value or passed through
 # -- the scons parameters
@@ -143,7 +150,12 @@ time_rpt = Builder(
 # -- Build the environment
 env = DefaultEnvironment(BUILDERS={'Synth': synth, 'PnR': pnr,
                                    'Bin': bitstream, 'Time': time_rpt},
-                         ENV=os.environ, tools=[])
+                         ENV=os.environ,
+                         tools=[],
+                         variables=vars)
+
+# -- Show all the flags defined, when scons is invoked with -h
+Help(vars.GenerateHelpText(env))
 
 # -- Generate the bitstream
 blif = env.Synth(TARGET, [src_synth])
