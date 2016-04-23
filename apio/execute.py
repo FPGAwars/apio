@@ -48,6 +48,8 @@ class System(object):
 class SCons(object):
 
     def run(self, variables=[]):
+        """Executes scons for building"""
+
         packages_dir = os.path.join(util.get_home_dir(), 'packages')
         icestorm_dir = os.path.join(packages_dir, 'toolchain-icestorm', 'bin')
         scons_dir = os.path.join(packages_dir, 'tool-scons', 'script')
@@ -69,6 +71,7 @@ class SCons(object):
             variables += ['-f', join(dirname(__file__), sconstruct_name)]
 
         if isdir(scons_dir) and isdir(icestorm_dir):
+            print("Executing: scons -Q {}".format(variables))
             util.exec_command(
                 [
                     os.path.normpath(sys.executable),

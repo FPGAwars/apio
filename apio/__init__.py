@@ -190,6 +190,18 @@ def _uninstall(*functions):
 
 
 # Synthesize #
+def format_vars(pack, type, size):
+    """Format the given vars in the form: 'flag=value'"""
+
+    if pack is not None:
+        pack = "fpga_pack={}".format(pack)
+    if type is not None:
+        type = "fpga_type={}".format(type)
+    if size is not None:
+        size = "fpga_size={}".format(size)
+
+    vars = [f for f in [pack, type, size] if f is not None]
+    return vars
 
 
 @cli.command('clean')
@@ -199,15 +211,64 @@ def clean():
 
 
 @cli.command('build')
-def build():
+@click.pass_context
+@click.option('--pack', type=unicode, metavar='package',
+              help='Set the FPGA package')
+@click.option('--type', type=unicode, metavar='type',
+              help='Set the FPGA type (hx/lp)')
+@click.option('--size', type=unicode, metavar='size',
+              help='Set the FPGA type (1k/8k)')
+def build(ctx, pack, type, size):
     """Synthesize the bitstream."""
-    SCons().run()
+
+    # -- Get the variables and change them in the form 'flag=value'
+    vars = format_vars(pack, type, size)
+
+    # -- Run scons
+    SCons().run(vars)
+
+# -- Notes on the Upload target:
+# -- (Notes for advanced user)
+# --
+# -- The upload target first build the project if there was some modification
+# --   and then upload the .bin file. For that reason, upload is also a kind
+# --   of "build". The same fpga flags than build should be passed.
+# --
+# --  For example:
+# --
+# --  apio build --pack vq100
+# --
+# --  It will create the .bin file for an ice40 hx1k - vq100 FPGA
+# --  (like in the nandland go-board)
+# --
+# --  If now we upload it using:
+# --
+# --  apio upload
+# --
+# --  The default flags are used. So the package tq144 is used and the
+# --  bitstream is generated again
+# --
+# -- In order for it to work correctly, we should pass the same flags than
+# -- in the build target:
+# --
+# --  apio upload --pack vq100
 
 
 @cli.command('upload')
-def upload():
+@click.pass_context
+@click.option('--pack', type=unicode, metavar='package',
+              help='Set the FPGA package')
+@click.option('--type', type=unicode, metavar='type',
+              help='Set the FPGA type (hx/lp)')
+@click.option('--size', type=unicode, metavar='size',
+              help='Set the FPGA type (1k/8k)')
+def upload(ctx, pack, type, size):
     """Upload bitstream to FPGA."""
-    SCons().run(['upload'])
+
+    # -- Get the variables and change them in the form 'flag=value'
+    vars = format_vars(pack, type, size)
+
+    SCons().run(['upload'] + vars)
 
 
 @cli.command('time')
