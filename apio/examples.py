@@ -59,6 +59,8 @@ class Examples(object):
                 if key == 'y' or key == 'Y':
                     shutil.rmtree(example_path)
                     self._copy_dir(example, local_example_path, example_path)
+            elif isfile(example_path):
+                click.echo('Warning: ' + example + ' is already a file')
             else:
                 self._copy_dir(example, local_example_path, example_path)
         else:
@@ -78,13 +80,16 @@ class Examples(object):
         example_files = glob.glob(join(src_path, '*'))
         for f in example_files:
             filename = basename(f)
-            if isfile(join(dest_path, filename)):
-                click.echo('Warning: ' + filename + ' file already exists')
-                key = input('Do you want to replace it? [Y/N]: ')
-                if key == 'y' or key == 'Y':
+            if filename != 'info':
+                if isfile(join(dest_path, filename)):
+                    click.echo('Warning: ' + filename + ' file already exists')
+                    key = input('Do you want to replace it? [Y/N]: ')
+                    if key == 'y' or key == 'Y':
+                        shutil.copy(f, dest_path)
+                elif isdir(join(dest_path, filename)):
+                    click.echo('Warning: ' + filename + ' is already a directory')
+                else:
                     shutil.copy(f, dest_path)
-            else:
-                shutil.copy(f, dest_path)
 
     def _copy_dir(self, example, src_path, dest_path):
         click.echo(' Creating ' + example + ' directory')
