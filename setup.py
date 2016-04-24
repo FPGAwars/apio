@@ -16,7 +16,8 @@ setup(
                  'packages/*.rules',
                  'packages/platformio/boards/*',
                  'packages/platformio/builder/scripts/*.py',
-                 'packages/platformio/platforms/*.py'],
+                 'packages/platformio/platforms/*.py',
+                 'config/boards.json'],
         'examples': ['*/*']
     },
     install_requires=[
