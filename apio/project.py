@@ -1,6 +1,6 @@
 # Apio project managment
 
-# import os
+import sys
 import json
 
 from os.path import isfile
@@ -49,9 +49,18 @@ class Project(object):
             project_str = f.read()
 
         # -- Decode the jsonj
-        project = json.loads(project_str)
+        try:
+            project = json.loads(project_str)
+        except:
+            print("Error: Invalid {} project file".format(PROJECT_FILENAME))
+            sys.exit(1)
 
         # -- TODO: error checking
 
         # -- Update the board
-        self.board = project['board']
+        try:
+            self.board = project['board']
+        except:
+            print("Error: Invalid {} project file".format(PROJECT_FILENAME))
+            print("No 'board' field defined in project file")
+            sys.exit(1)
