@@ -1,0 +1,18 @@
+# -----------------------------------------------------------------------------
+#- Leds example for the Nanland go-board
+#- Constraint file (.pcf)
+#- By Juan Gonzalez (Obijuan)
+#- April - 2016
+#- GPL license
+#- Data obtained from the go-board official constraint file:
+#-   https://www.nandland.com/goboard/Go_Board_Constraints.pcf
+#-
+# -----------------------------------------------------------------------------
+# --  Board info: https://www.nandland.com/goboard/introduction.html
+# --  Pinout: https://www.nandland.com/goboard/images/Go_Board_V1.pdf
+
+# ------------ User Leds ------------------------------------------------------
+set_io  LED1  56
+set_io  LED2  57
+set_io  LED3  59
+set_io  LED4  60
