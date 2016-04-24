@@ -49,8 +49,7 @@ def scons():
 @click.option('--board', type=unicode, help='Create a new apio project')
 def init(ctx, board):
     """Create the project file"""
-    Project(board).new()
-
+    Project().new(board)
 
 
 @cli.command('examples')
