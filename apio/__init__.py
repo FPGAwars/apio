@@ -6,6 +6,7 @@ import click
 from .util import get_systype
 from .examples import Examples
 from .execute import SCons, System
+from .project import Project
 from .packages.scons import SconsInstaller
 from .packages.icestorm import IcestormInstaller
 from .packages.driver import DriverInstaller
@@ -44,9 +45,12 @@ def scons():
 
 
 @cli.command('init')
-def init():
-    """Create default SConstruct file."""
-    SCons().create_sconstruct()
+@click.pass_context
+@click.option('--board', type=unicode, help='Create a new apio project')
+def init(ctx, board):
+    """Create the project file"""
+    Project(board).new()
+
 
 EXAMPLE_OF_USE_CAD = """
 Example of use:

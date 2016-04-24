@@ -58,18 +58,25 @@ class SCons(object):
         # Give the priority to the packages installed by apio
         os.environ['PATH'] = os.pathsep.join([icestorm_dir, os.environ['PATH']])
 
+        # -- Check for the icestorm tools
         if not isdir(icestorm_dir):
             print('Icestorm toolchain is not installed. Please run:\n\n'
                   '  apio install icestorm\n')
 
+        # -- Check for the scons
         if not isdir(scons_dir):
             print('Scons toolchain is not installed. Please run:\n\n'
                   '  apio install scons\n')
 
+        # -- Check for the SConstruct file
         if not isfile(join(os.getcwd(), sconstruct_name)):
             click.secho('Using default SConstruct file\n')
             variables += ['-f', join(dirname(__file__), sconstruct_name)]
 
+        # -- Check for the project configuration file
+        
+
+        # -- Execute scons
         if isdir(scons_dir) and isdir(icestorm_dir):
             print("Executing: scons -Q {}".format(variables))
             util.exec_command(
@@ -97,11 +104,14 @@ class SCons(object):
             click.echo('Warning: ' + sconstruct_name + ' file already exists')
             key = input('Do you want to replace it? [Y/N]: ')
             if key == 'y' or key == 'Y':
-                self._copy_file(sconstruct_name, sconstruct_path, local_sconstruct_path)
+                self._copy_file(sconstruct_name, sconstruct_path,
+                                local_sconstruct_path)
         else:
-            self._copy_file(sconstruct_name, sconstruct_path, local_sconstruct_path)
+            self._copy_file(sconstruct_name, sconstruct_path,
+                            local_sconstruct_path)
 
-    def _copy_file(self, sconstruct_name, sconstruct_path, local_sconstruct_path):
+    def _copy_file(self, sconstruct_name, sconstruct_path,
+                   local_sconstruct_path):
         click.echo('Creating ' + sconstruct_name + ' file')
         with open(sconstruct_path, 'w') as sconstruct:
             with open(local_sconstruct_path, 'r') as local_sconstruct:
