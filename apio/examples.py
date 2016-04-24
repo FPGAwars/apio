@@ -59,6 +59,8 @@ class Examples(object):
                 if key == 'y' or key == 'Y':
                     shutil.rmtree(example_path)
                     self._copy_dir(example, local_example_path, example_path)
+            elif isfile(example_path):
+                click.echo('Warning: ' + example + ' is already a file')
             else:
                 self._copy_dir(example, local_example_path, example_path)
         else:
@@ -83,6 +85,8 @@ class Examples(object):
                 key = input('Do you want to replace it? [Y/N]: ')
                 if key == 'y' or key == 'Y':
                     shutil.copy(f, dest_path)
+            elif isdir(join(dest_path, filename)):
+                click.echo('Warning: ' + filename + ' is already a directory')
             else:
                 shutil.copy(f, dest_path)
 
