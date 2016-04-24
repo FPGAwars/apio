@@ -12,10 +12,20 @@ try:
 except NameError:
     pass
 
+
 # -- Error messages
 EXAMPLE_NOT_FOUND_MSG = """
 Sorry, this example does not exist
 Use "apio examples -l" for listing all the available examples"""
+
+EXAMPLE_OF_USE_CAD = """
+Example of use:
+  apio examples -f leds
+Copy the leds example files to the current directory"""
+
+EXAMPLE_DIR_FILE = """
+To get an example, use the command:
+   apio examples -d/-f name"""
 
 
 class Examples(object):
@@ -24,7 +34,19 @@ class Examples(object):
         self.examples_dir = join(dirname(__file__), '..', 'examples')
 
     def list_examples(self):
-        return sorted(os.listdir(self.examples_dir))
+        examples = sorted(os.listdir(self.examples_dir))
+        click.echo('')
+        for example in examples:
+            example_dir = join(self.examples_dir, example)
+            info_path = join(example_dir, 'info')
+            info = ''
+            if isfile(info_path):
+                with open(info_path, 'r') as info_file:
+                    info = info_file.read().replace('\n', '')
+            click.echo(' > ' + example + '  ' + info)
+        click.echo(EXAMPLE_DIR_FILE)
+        click.echo(EXAMPLE_OF_USE_CAD)
+        return
 
     def copy_example_dir(self, example):
         example_path = join(os.getcwd(), example)
@@ -67,3 +89,6 @@ class Examples(object):
     def _copy_dir(self, example, src_path, dest_path):
         click.echo(' Creating ' + example + ' directory')
         shutil.copytree(src_path, dest_path)
+
+    def examples_of_use_cad(self):
+        return EXAMPLE_OF_USE_CAD
