@@ -6,7 +6,7 @@ import click
 import platform
 
 from os.path import join, dirname, isdir, isfile, expanduser
-from project import Project
+from .project import Project
 
 from . import util
 
