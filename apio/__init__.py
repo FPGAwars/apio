@@ -37,6 +37,12 @@ def debug():
     print('Platform: ' + get_systype())
 
 
+@cli.command('scons')
+def scons():
+    """Create default SConstruct file."""
+    SCons().create_sconstruct()
+
+
 @cli.command('init')
 def init():
     """Create default SConstruct file."""
