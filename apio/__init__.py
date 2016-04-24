@@ -7,6 +7,7 @@ from .util import get_systype
 from .examples import Examples
 from .execute import SCons, System
 from .project import Project
+from .config import Boards
 from .packages.scons import SconsInstaller
 from .packages.icestorm import IcestormInstaller
 from .packages.driver import DriverInstaller
@@ -30,6 +31,12 @@ def cli():
     """
     Environment for icestorm toolchain management
     """
+
+
+@cli.command('boards')
+def boards():
+    """List all the supported FPGA boards"""
+    Boards().list()
 
 
 @cli.command('debug')
