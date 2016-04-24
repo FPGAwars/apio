@@ -52,16 +52,11 @@ def init(ctx, board):
     Project(board).new()
 
 
-EXAMPLE_OF_USE_CAD = """
-Example of use:
-  apio examples -f leds
-Copy the leds example files to the current directory
-"""
-
 
 @cli.command('examples')
 @click.pass_context
-@click.option('-l', '--list', is_flag=True, help='List all available examples.')
+@click.option('-l', '--list', is_flag=True,
+              help='List all available examples.')
 @click.option('-d', '--dir', type=unicode, metavar='NAME',
               help='Copy the selected example directory.')
 @click.option('-f', '--files', type=unicode, metavar='NAME',
@@ -69,21 +64,14 @@ Copy the leds example files to the current directory
 def examples(ctx, list, dir, files):
     """Manage default verilog examples."""
     if list:
-        examples = Examples().list_examples()
-        print('')
-        for example in examples:
-            print(' > ' + example)
-        print('')
-        print('To get and example, use the command:')
-        print('apio examples -d/-f name')
-        print(EXAMPLE_OF_USE_CAD)
+        Examples().list_examples()
     elif dir:
         Examples().copy_example_dir(dir)
     elif files:
         Examples().copy_example_files(files)
     else:
         print(ctx.get_help())
-        print(EXAMPLE_OF_USE_CAD)
+        print(Examples().examples_of_use_cad())
 
 
 # System #
