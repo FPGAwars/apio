@@ -42,7 +42,8 @@ def boards():
 @cli.command('debug')
 def debug():
     """Show system information."""
-    print('Platform: ' + get_systype())
+    click.secho('Platform: ', nl=False)
+    click.secho(get_systype(), fg='green')
 
 
 @cli.command('scons')
@@ -76,8 +77,8 @@ def examples(ctx, list, dir, files):
     elif files:
         Examples().copy_example_files(files)
     else:
-        print(ctx.get_help())
-        print(Examples().examples_of_use_cad())
+        click.secho(ctx.get_help())
+        click.secho(Examples().examples_of_use_cad())
 
 
 # System #
@@ -143,9 +144,6 @@ def install_icestorm():
 def intall_pio_fpga():
     """Install platformio-fpga support."""
     PiofpgaInstaller().install()
-    print("> Now execute the following command:")
-    print("")
-    print("pio platforms install lattice_ice40")
 
 
 # Uninstall #

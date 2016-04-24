@@ -1,5 +1,6 @@
 # Installer class
 
+import click
 import shutil
 
 from os import makedirs, remove
@@ -22,7 +23,8 @@ class Installer(object):
 
     def install(self):
         if self.package is not None:
-            print('Install ' + self.package)
+            click.secho('Install ', nl=False)
+            click.secho(self.package, fg='cyan')
             if not isdir(self.packages_dir):
                 makedirs(self.packages_dir)
             assert isdir(self.packages_dir)
@@ -35,7 +37,8 @@ class Installer(object):
                         shutil.rmtree(package_dir)
                     self._unpack(dlpath, self.packages_dir)
             except Exception:
-                print('Package {0} is not found'.format(self._get_package_name()))
+                click.secho('Package {0} is not found'.format(
+                    self._get_package_name(), fg='red'))
             finally:
                 if dlpath:
                     remove(dlpath)
@@ -45,10 +48,12 @@ class Installer(object):
     def uninstall(self):
         if self.package is not None:
             if isdir(join(self.packages_dir, self.package)):
-                print('Uninstall package {0}'.format(self.package))
+                click.secho('Uninstall package ', nl=False)
+                click.secho(self.package, fg='cyan')
                 shutil.rmtree(join(self.packages_dir, self.package))
             else:
-                print('Package {0} is not installed'.format(self.package))
+                click.secho('Package {0} is not installed'.format(
+                    self.package), fg='yellow')
             self.profile.remove(self.package)
             self.profile.save()
 
@@ -64,12 +69,13 @@ class Installer(object):
     def _download(self, url, sha1=None):
         fd = FileDownloader(url, self.packages_dir)
         if self.profile.check_version(self.package, basename(fd.get_filepath())):
-            print('Download ' + basename(fd.get_filepath()))
+            click.secho('Download ' + basename(fd.get_filepath()))
             fd.start()
             fd.verify(sha1)
             return fd.get_filepath()
         else:
-            print('Package {0} is already the newest version'.format(self.package))
+            click.secho('Package {0} is already the newest version'.format(
+                self.package), fg='green')
             return None
 
     def _unpack(self, pkgpath, pkgdir):
