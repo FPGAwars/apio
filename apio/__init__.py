@@ -190,9 +190,11 @@ def _uninstall(*functions):
 
 
 # Synthesize #
-def format_vars(pack, type, size):
+def format_vars(board, pack, type, size):
     """Format the given vars in the form: 'flag=value'"""
 
+    if board is not None:
+        board = "board={}".format(board)
     if pack is not None:
         pack = "fpga_pack={}".format(pack)
     if type is not None:
@@ -200,7 +202,7 @@ def format_vars(pack, type, size):
     if size is not None:
         size = "fpga_size={}".format(size)
 
-    vars = [f for f in [pack, type, size] if f is not None]
+    vars = [f for f in [board, pack, type, size] if f is not None]
     return vars
 
 
@@ -212,17 +214,19 @@ def clean():
 
 @cli.command('build')
 @click.pass_context
+@click.option('--board', type=unicode, metavar='package',
+              help='Set the FPGA board')
 @click.option('--pack', type=unicode, metavar='package',
               help='Set the FPGA package')
 @click.option('--type', type=unicode, metavar='type',
               help='Set the FPGA type (hx/lp)')
 @click.option('--size', type=unicode, metavar='size',
               help='Set the FPGA type (1k/8k)')
-def build(ctx, pack, type, size):
+def build(ctx, board, pack, type, size):
     """Synthesize the bitstream."""
 
     # -- Get the variables and change them in the form 'flag=value'
-    vars = format_vars(pack, type, size)
+    vars = format_vars(board, pack, type, size)
 
     # -- Run scons
     SCons().run(vars)
@@ -256,17 +260,19 @@ def build(ctx, pack, type, size):
 
 @cli.command('upload')
 @click.pass_context
+@click.option('--board', type=unicode, metavar='package',
+              help='Set the FPGA board')
 @click.option('--pack', type=unicode, metavar='package',
               help='Set the FPGA package')
 @click.option('--type', type=unicode, metavar='type',
               help='Set the FPGA type (hx/lp)')
 @click.option('--size', type=unicode, metavar='size',
               help='Set the FPGA type (1k/8k)')
-def upload(ctx, pack, type, size):
+def upload(ctx, board, pack, type, size):
     """Upload bitstream to FPGA."""
 
     # -- Get the variables and change them in the form 'flag=value'
-    vars = format_vars(pack, type, size)
+    vars = format_vars(board, pack, type, size)
 
     SCons().run(['upload'] + vars)
 
