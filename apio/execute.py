@@ -6,6 +6,7 @@ import click
 import platform
 
 from os.path import join, dirname, isdir, isfile, expanduser
+from project import Project
 
 from . import util
 
@@ -74,7 +75,16 @@ class SCons(object):
             variables += ['-f', join(dirname(__file__), sconstruct_name)]
 
         # -- Check for the project configuration file
-        
+        p = Project()
+        p.read()
+        board_flag = "board={}".format(p.board)
+        variables.append(board_flag)
+
+        # if isfile('apio.ini'):
+        #    print("APIO ini file")
+        #    p.read()
+        # else:
+        #    print("WRNING: APIO.INI file not found")
 
         # -- Execute scons
         if isdir(scons_dir) and isdir(icestorm_dir):
