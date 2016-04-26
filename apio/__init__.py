@@ -15,11 +15,6 @@ from .packages.system import SystemInstaller
 from .packages.piofpga import PiofpgaInstaller
 
 try:
-    input = raw_input
-except NameError:
-    pass
-
-try:
     unicode = str
 except NameError:
     pass
@@ -42,7 +37,8 @@ def boards():
 @cli.command('debug')
 def debug():
     """Show system information."""
-    print('Platform: ' + get_systype())
+    click.secho('Platform: ', nl=False)
+    click.secho(get_systype(), fg='green')
 
 
 @cli.command('scons')
@@ -76,8 +72,8 @@ def examples(ctx, list, dir, files):
     elif files:
         Examples().copy_example_files(files)
     else:
-        print(ctx.get_help())
-        print(Examples().examples_of_use_cad())
+        click.secho(ctx.get_help())
+        click.secho(Examples().examples_of_use_cad())
 
 
 # System #
@@ -143,9 +139,6 @@ def install_icestorm():
 def intall_pio_fpga():
     """Install platformio-fpga support."""
     PiofpgaInstaller().install()
-    print("> Now execute the following command:")
-    print("")
-    print("pio platforms install lattice_ice40")
 
 
 # Uninstall #
@@ -187,10 +180,11 @@ def uninstall_icestorm():
 
 
 def _uninstall(*functions):
-    key = input('Are you sure? [Y/N]: ')
-    if key == 'y' or key == 'Y':
+    if click.confirm('Do you want to continue?'):
         for count, function in enumerate(functions):
             function()
+    else:
+        click.secho('Abort!', fg='red')
 
 
 # Synthesize #

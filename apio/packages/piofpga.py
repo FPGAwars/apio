@@ -1,4 +1,5 @@
 import os
+import click
 import shutil
 import glob
 
@@ -11,7 +12,7 @@ class PiofpgaInstaller(object):
     """Support for FPGA in platformio(pio) plug-in installer"""
 
     def install(self):
-        print("Installing FPGA support for platformio...")
+        click.secho("Installing FPGA support for platformio...")
         pio_dir = os.path.join(dirname(__file__), 'platformio')
 
         # -- Source dirs
@@ -38,6 +39,10 @@ class PiofpgaInstaller(object):
             if not self._is_pyc(f):
                 shutil.copy(f, join(platform_dest_dir, name + '-builder.py'))
 
+        click.secho("\nNow execute the following command:")
+        click.secho("")
+        click.secho("  pio platforms install lattice_ice40", fg='green')
+
     def _copy_files(self, src, dest):
         """Copy files from src to dest folder. Files .pyc are not copied"""
 
@@ -50,7 +55,7 @@ class PiofpgaInstaller(object):
                 if not self._is_pyc(f):
                     shutil.copy(f, dest)
                 else:
-                    print("Ignorig {}".format(f))
+                    click.secho("Ignorig {}".format(f), fg='yellow')
         else:
             # -- dest directory does not exist
             shutil.copytree(src, dest)

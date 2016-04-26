@@ -1,5 +1,6 @@
 # Rules icestick class
 
+import click
 import subprocess
 
 from os.path import join, dirname, isfile
@@ -31,31 +32,43 @@ class DriverInstaller(object):
             self._uninstall_windows()
 
     def _install_linux(self):
-        print('Install icestick.rules')
+        click.secho('Installing ', nl=False)
+        click.secho('icestick.rules', fg='cyan', nl=False)
+        click.secho(' package:')
         if not isfile(self.rules_system_path):
-            subprocess.call(['sudo', 'cp', self.rules_local_path, self.rules_system_path])
+            subprocess.call(['sudo', 'cp',
+                             self.rules_local_path, self.rules_system_path])
             subprocess.call(['sudo', 'service', 'udev', 'restart'])
+            click.secho(
+                'Package \'icestick.rules\' has been successfully installed!',
+                fg='green')
         else:
-            print('Package icestick.rules is already the newest version')
+            click.secho('Already installed', fg='yellow')
+
 
     def _uninstall_linux(self):
         if isfile(self.rules_system_path):
-            print('Uninstall package icestick.rules')
+            click.secho('Uninstalling ', nl=False)
+            click.secho('icestick.rules', fg='cyan', nl=False)
+            click.secho(' package:')
             subprocess.call(['sudo', 'rm', self.rules_system_path])
+            click.secho(
+                'Package \'icestick.rules\' has been successfully uninstalled!',
+                fg='green')
         else:
-            print('Package icestick.rules is not installed')
+            click.secho('Package \'icestick.rules\' is not installed', fg='red')
 
     def _install_darwin(self):
         # TODO: return if brew is not installed
         subprocess.call(['brew', 'install', 'libftdi0'])
-        print('Configure FTDI drivers for FPGA')
+        click.secho('Configure FTDI drivers for FPGA')
         subprocess.call(['sudo', 'kextunload', '-b',
                          'com.FTDI.driver.FTDIUSBSerialDriver'])
         subprocess.call(['sudo', 'kextunload', '-b',
                          'com.apple.driver.AppleUSBFTDI'])
 
     def _uninstall_darwin(self):
-        print('Revert FTDI drivers\' configuration')
+        click.secho('Revert FTDI drivers\' configuration')
         subprocess.call(['sudo', 'kextload', '-b',
                          'com.FTDI.driver.FTDIUSBSerialDriver'])
         subprocess.call(['sudo', 'kextload', '-b',
@@ -64,7 +77,7 @@ class DriverInstaller(object):
     def _install_windows(self):
         import webbrowser
         url = 'https://github.com/FPGAwars/apio/wiki/Installation#windows'
-        print('Follow the next instructions: ' + url)
+        click.secho('Follow the next instructions: ' + url)
         webbrowser.open(url)
 
     def _uninstall_windows(self):

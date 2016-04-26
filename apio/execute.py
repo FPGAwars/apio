@@ -2,8 +2,10 @@
 
 import os
 import sys
+import time
 import click
 import platform
+import datetime
 
 from os.path import join, dirname, isdir, isfile, expanduser
 from .project import Project
@@ -39,8 +41,9 @@ class System(object):
                 stderr=util.AsyncPipe(self._on_run_out)
             )
         else:
-            print('System tools are not installed. Please run:\n\n'
-                  '  apio install system\n')
+            click.secho('Error: system tools are not installed', fg='red')
+            click.secho('Please run:\n'
+                        '   apio install system', fg='yellow')
 
     def _on_run_out(self, line):
         click.secho(line)
@@ -57,21 +60,24 @@ class SCons(object):
         sconstruct_name = 'SConstruct'
 
         # Give the priority to the packages installed by apio
-        os.environ['PATH'] = os.pathsep.join([icestorm_dir, os.environ['PATH']])
+        os.environ['PATH'] = os.pathsep.join(
+            [icestorm_dir, os.environ['PATH']])
 
         # -- Check for the icestorm tools
         if not isdir(icestorm_dir):
-            print('Icestorm toolchain is not installed. Please run:\n\n'
-                  '  apio install icestorm\n')
+            click.secho('Error: icestorm toolchain is not installed', fg='red')
+            click.secho('Please run:\n'
+                        '   apio install icestorm', fg='yellow')
 
         # -- Check for the scons
         if not isdir(scons_dir):
-            print('Scons toolchain is not installed. Please run:\n\n'
-                  '  apio install scons\n')
+            click.secho('Error: scons toolchain is not installed', fg='red')
+            click.secho('Please run:\n'
+                        '   apio install scons', fg='yellow')
 
         # -- Check for the SConstruct file
         if not isfile(join(os.getcwd(), sconstruct_name)):
-            click.secho('Using default SConstruct file\n')
+            click.secho('Using default SConstruct file', fg='yellow')
             variables += ['-f', join(dirname(__file__), sconstruct_name)]
 
         # -- Check for the project configuration file
@@ -80,16 +86,18 @@ class SCons(object):
         board_flag = "board={}".format(p.board)
         variables.append(board_flag)
 
-        # if isfile('apio.ini'):
-        #    print("APIO ini file")
-        #    p.read()
-        # else:
-        #    print("WRNING: APIO.INI file not found")
-
         # -- Execute scons
         if isdir(scons_dir) and isdir(icestorm_dir):
-            print("Executing: scons -Q {}".format(variables))
-            util.exec_command(
+            terminal_width, _ = click.get_terminal_size()
+            start_time = time.time()
+
+            click.echo("[%s] Processing %s" % (
+                datetime.datetime.now().strftime("%c"),
+                click.style(p.board, fg="cyan", bold=True)))
+            click.secho("-" * terminal_width, bold=True)
+
+            click.secho("Executing: scons -Q {}".format(' '.join(variables)))
+            result = util.exec_command(
                 [
                     os.path.normpath(sys.executable),
                     os.path.join(scons_dir, 'scons'),
@@ -99,11 +107,26 @@ class SCons(object):
                 stderr=util.AsyncPipe(self._on_run_err)
             )
 
+            # -- Print result
+            is_error = result['returncode'] != 0
+            summary_text = " Took %.2f seconds " % (time.time() - start_time)
+            half_line = "=" * ((terminal_width - len(summary_text) - 10) / 2)
+            click.echo("%s [%s]%s%s" % (
+                half_line,
+                (click.style(" ERROR ", fg="red", bold=True)
+                 if is_error else click.style("SUCCESS", fg="green", bold=True)),
+                summary_text,
+                half_line
+            ), err=is_error)
+
     def _on_run_out(self, line):
-        click.secho(line)
+        fg = 'green' if 'is up to date' in line else None
+        click.secho(line, fg=fg)
 
     def _on_run_err(self, line):
-        click.secho(line)
+        time.sleep(0.01)  # Delay
+        fg = 'red' if 'error' in line.lower() else 'yellow'
+        click.secho(line, fg=fg)
 
     def create_sconstruct(self):
         sconstruct_name = 'SConstruct'
@@ -111,18 +134,21 @@ class SCons(object):
         local_sconstruct_path = join(dirname(__file__), sconstruct_name)
 
         if isfile(sconstruct_path):
-            click.echo('Warning: ' + sconstruct_name + ' file already exists')
-            key = input('Do you want to replace it? [Y/N]: ')
-            if key == 'y' or key == 'Y':
+            click.secho('Warning: ' + sconstruct_name + ' file already exists',
+                        fg='yellow')
+            if click.confirm('Do you want to replace it?'):
                 self._copy_file(sconstruct_name, sconstruct_path,
                                 local_sconstruct_path)
         else:
             self._copy_file(sconstruct_name, sconstruct_path,
                             local_sconstruct_path)
 
-    def _copy_file(self, sconstruct_name, sconstruct_path,
-                   local_sconstruct_path):
-        click.echo('Creating ' + sconstruct_name + ' file')
+    def _copy_file(self, sconstruct_name,
+                   sconstruct_path, local_sconstruct_path):
+        click.secho('Creating ' + sconstruct_name + ' file ...')
         with open(sconstruct_path, 'w') as sconstruct:
             with open(local_sconstruct_path, 'r') as local_sconstruct:
                 sconstruct.write(local_sconstruct.read())
+                click.secho(
+                    'File \'' + sconstruct_name + '\' has been successfully created!',
+                    fg='green')
