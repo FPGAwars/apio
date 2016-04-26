@@ -15,11 +15,6 @@ from .packages.system import SystemInstaller
 from .packages.piofpga import PiofpgaInstaller
 
 try:
-    input = raw_input
-except NameError:
-    pass
-
-try:
     unicode = str
 except NameError:
     pass
@@ -185,10 +180,11 @@ def uninstall_icestorm():
 
 
 def _uninstall(*functions):
-    key = input('Are you sure? [Y/N]: ')
-    if key == 'y' or key == 'Y':
+    if click.confirm('Do you want to continue?'):
         for count, function in enumerate(functions):
             function()
+    else:
+        click.secho('Abort!', fg='red')
 
 
 # Synthesize #

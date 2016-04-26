@@ -32,23 +32,31 @@ class DriverInstaller(object):
             self._uninstall_windows()
 
     def _install_linux(self):
-        click.secho('Install ', nl=False)
-        click.secho('icestick.rules', fg='cyan')
+        click.secho('Installing ', nl=False)
+        click.secho('icestick.rules', fg='cyan', nl=False)
+        click.secho(' package:')
         if not isfile(self.rules_system_path):
             subprocess.call(['sudo', 'cp',
                              self.rules_local_path, self.rules_system_path])
             subprocess.call(['sudo', 'service', 'udev', 'restart'])
+            click.secho(
+                'Package \'icestick.rules\' has been successfully installed!',
+                fg='green')
         else:
-            click.secho('Package icestick.rules is already the newest version',
-                        fg='green')
+            click.secho('Already installed', fg='yellow')
+
 
     def _uninstall_linux(self):
         if isfile(self.rules_system_path):
-            click.secho('Uninstall package ', nl=False)
-            click.secho('icestick.rules', fg='cyan')
+            click.secho('Uninstalling ', nl=False)
+            click.secho('icestick.rules', fg='cyan', nl=False)
+            click.secho(' package:')
             subprocess.call(['sudo', 'rm', self.rules_system_path])
+            click.secho(
+                'Package \'icestick.rules\' has been successfully uninstalled!',
+                fg='green')
         else:
-            click.secho('Package icestick.rules is not installed', fg='yellow')
+            click.secho('Package \'icestick.rules\' is not installed', fg='red')
 
     def _install_darwin(self):
         # TODO: return if brew is not installed
