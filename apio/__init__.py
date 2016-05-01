@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import click
+from sys import exit as sys_exit
 
 from .util import get_systype
 from .examples import Examples
@@ -227,7 +228,8 @@ def build(ctx, board, pack, type, size):
     vars = format_vars(board, pack, type, size)
 
     # -- Run scons
-    SCons().run(vars)
+    exit_code = SCons().run(vars)
+    ctx.exit(exit_code)
 
 # -- Notes on the Upload target:
 # -- (Notes for advanced user)
@@ -272,20 +274,25 @@ def upload(ctx, board, pack, type, size):
     # -- Get the variables and change them in the form 'flag=value'
     vars = format_vars(board, pack, type, size)
 
-    SCons().run(['upload'] + vars)
+    exit_code = SCons().run(['upload'] + vars)
+    ctx.exit(exit_code)
 
 
 @cli.command('time')
-def time():
+@click.pass_context
+def time(ctx):
     """Bitstream timing analysis."""
-    SCons().run(['time'])
+    exit_code = SCons().run(['time'])
+    ctx.exit(exit_code)
 
 
 @cli.command('sim')
-def sim():
+@click.pass_context
+def sim(ctx):
     """Launch verilog simulation."""
-    SCons().run(['sim'])
+    exit_code = SCons().run(['sim'])
+    ctx.exit(exit_code)
 
 
 if __name__ == '__main__':
-    cli()
+    sys_exit(cli())
