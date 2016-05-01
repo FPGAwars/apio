@@ -108,16 +108,20 @@ class SCons(object):
             )
 
             # -- Print result
-            is_error = result['returncode'] != 0
+            exit_code = result['returncode']
+            is_error = exit_code != 0
             summary_text = " Took %.2f seconds " % (time.time() - start_time)
             half_line = "=" * ((terminal_width - len(summary_text) - 10) / 2)
             click.echo("%s [%s]%s%s" % (
                 half_line,
                 (click.style(" ERROR ", fg="red", bold=True)
-                 if is_error else click.style("SUCCESS", fg="green", bold=True)),
+                 if is_error else click.style("SUCCESS", fg="green",
+                                              bold=True)),
                 summary_text,
                 half_line
             ), err=is_error)
+
+            return exit_code
 
     def _on_run_out(self, line):
         fg = 'green' if 'is up to date' in line else None
@@ -150,5 +154,6 @@ class SCons(object):
             with open(local_sconstruct_path, 'r') as local_sconstruct:
                 sconstruct.write(local_sconstruct.read())
                 click.secho(
-                    'File \'' + sconstruct_name + '\' has been successfully created!',
+                    'File \'' + sconstruct_name +
+                    '\' has been successfully created!',
                     fg='green')
