@@ -52,9 +52,11 @@ def scons():
 @cli.command('init')
 @click.pass_context
 @click.option('--board', type=unicode, help='Set the FPGA board.')
-def init(ctx, board):
+@click.option('--project-dir', type=unicode,
+              help='Set the target directory for the project')
+def init(ctx, board, project_dir):
     """Create a new apio project."""
-    Project().new(board)
+    Project().new(board, project_dir)
 
 
 @cli.command('examples')
