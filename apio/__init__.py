@@ -112,6 +112,7 @@ def install(ctx, all):
         SystemInstaller().install()
         SconsInstaller().install()
         IcestormInstaller().install()
+        ExamplesInstaller().install()
 
 
 @install.command('driver')
@@ -161,7 +162,8 @@ def uninstall(ctx, all):
     if ctx.invoked_subcommand is None:
         _uninstall(SystemInstaller().uninstall,
                    SconsInstaller().uninstall,
-                   IcestormInstaller().uninstall)
+                   IcestormInstaller().uninstall,
+                   ExamplesInstaller().uninstall)
 
 
 @uninstall.command('driver')
