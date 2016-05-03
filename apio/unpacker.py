@@ -33,8 +33,9 @@ class ArchiveBase(object):
         raise NotImplementedError()
 
     def extract_item(self, item, dest_dir):
-        self._afo.extract(item, dest_dir)
-        self.after_extract(item, dest_dir)
+        if not item.filename.endswith('.gitignore'):
+            self._afo.extract(item, dest_dir)
+            self.after_extract(item, dest_dir)
 
     def after_extract(self, item, dest_dir):
         pass

@@ -66,7 +66,8 @@ def init(ctx, board):
 @click.option('-f', '--files', type=unicode, metavar='NAME',
               help='Copy the selected example files.')
 def examples(ctx, list, dir, files):
-    """Manage default verilog examples."""
+    """Manage default verilog examples.\n
+       Install with `apio install examples`"""
     if list:
         Examples().list_examples()
     elif dir:

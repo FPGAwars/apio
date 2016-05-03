@@ -111,7 +111,7 @@ class SCons(object):
             exit_code = result['returncode']
             is_error = exit_code != 0
             summary_text = " Took %.2f seconds " % (time.time() - start_time)
-            half_line = "=" * ((terminal_width - len(summary_text) - 10) / 2)
+            half_line = "=" * int(((terminal_width - len(summary_text) - 10) / 2))
             click.echo("%s [%s]%s%s" % (
                 half_line,
                 (click.style(" ERROR ", fg="red", bold=True)
