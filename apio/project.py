@@ -6,7 +6,7 @@
 import sys
 import json
 
-from os.path import isfile
+from os.path import isfile, join
 
 # ----------- Project default configurations
 
@@ -22,18 +22,24 @@ class Project(object):
     def __init__(self):
         self.board = DEFAULT_BOARD
 
-    def new(self, board=DEFAULT_BOARD):
+    def new(self, board=DEFAULT_BOARD, project_dir=''):
         """Creates a new apio project file"""
 
         if board is None:
             board = DEFAULT_BOARD
+
+        if project_dir is None:
+            project_dir = ''
 
         # -- Creates the project dictionary
         project = {"board": board}
 
         # -- Dump the project into the apio.ini file
         project_str = json.dumps(project)
-        with open(PROJECT_FILENAME, 'w') as f:
+
+        project_path = join(project_dir, PROJECT_FILENAME)
+
+        with open(project_path, 'w') as f:
             f.write(project_str)
         f.closed
 
