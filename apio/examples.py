@@ -5,7 +5,7 @@ import glob
 import click
 import shutil
 
-from os.path import join, isdir, isfile, dirname, basename
+from os.path import join, isdir, isfile, basename, expanduser
 
 
 # -- Error messages
@@ -26,54 +26,68 @@ To get an example, use the command:
 class Examples(object):
 
     def __init__(self):
-        self.examples_dir = join(dirname(__file__), '..', 'examples')
+        self.examples_dir = join(expanduser('~'), '.apio', 'examples')
 
     def list_examples(self):
-        examples = sorted(os.listdir(self.examples_dir))
-        click.secho('')
-        for example in examples:
-            example_dir = join(self.examples_dir, example)
-            info_path = join(example_dir, 'info')
-            info = ''
-            if isfile(info_path):
-                with open(info_path, 'r') as info_file:
-                    info = info_file.read().replace('\n', '')
-            click.secho(' ' + example, fg='blue', bold=True)
-            click.secho('-' * click.get_terminal_size()[0])
-            click.secho(' ' + info)
+        if isdir(self.examples_dir):
+            examples = sorted(os.listdir(self.examples_dir))
             click.secho('')
-        click.secho(EXAMPLE_DIR_FILE, fg='green')
-        click.secho(EXAMPLE_OF_USE_CAD, fg='green')
-        return
+            for example in examples:
+                example_dir = join(self.examples_dir, example)
+                info_path = join(example_dir, 'info')
+                info = ''
+                if isfile(info_path):
+                    with open(info_path, 'r') as info_file:
+                        info = info_file.read().replace('\n', '')
+                click.secho(' ' + example, fg='blue', bold=True)
+                click.secho('-' * click.get_terminal_size()[0])
+                click.secho(' ' + info)
+                click.secho('')
+            click.secho(EXAMPLE_DIR_FILE, fg='green')
+            click.secho(EXAMPLE_OF_USE_CAD, fg='green')
+        else:
+            click.secho('Error: examples are not installed', fg='red')
+            click.secho('Please run:\n'
+                        '   apio install examples', fg='yellow')
 
     def copy_example_dir(self, example):
-        example_path = join(os.getcwd(), example)
-        local_example_path = join(self.examples_dir, example)
+        if isdir(self.examples_dir):
+            example_path = join(os.getcwd(), example)
+            local_example_path = join(self.examples_dir, example)
 
-        if isdir(local_example_path):
-            if isdir(example_path):
-                click.secho(
-                    'Warning: ' + example + ' directory already exists',
-                    fg='yellow')
-                if click.confirm('Do you want to replace it?'):
-                    shutil.rmtree(example_path)
+            if isdir(local_example_path):
+                if isdir(example_path):
+                    click.secho(
+                        'Warning: ' + example + ' directory already exists',
+                        fg='yellow')
+                    if click.confirm('Do you want to replace it?'):
+                        shutil.rmtree(example_path)
+                        self._copy_dir(example, local_example_path, example_path)
+                elif isfile(example_path):
+                    click.secho(
+                        'Warning: ' + example + ' is already a file', fg='yellow')
+                else:
                     self._copy_dir(example, local_example_path, example_path)
-            elif isfile(example_path):
-                click.secho(
-                    'Warning: ' + example + ' is already a file', fg='yellow')
             else:
-                self._copy_dir(example, local_example_path, example_path)
+                click.secho(EXAMPLE_NOT_FOUND_MSG, fg='yellow')
         else:
-            click.secho(EXAMPLE_NOT_FOUND_MSG, fg='yellow')
+            click.secho('Error: examples are not installed', fg='red')
+            click.secho('Please run:\n'
+                        '   apio install examples', fg='yellow')
 
     def copy_example_files(self, example):
-        example_path = os.getcwd()
-        local_example_path = join(self.examples_dir, example)
+        if isdir(self.examples_dir):
+            example_path = os.getcwd()
+            local_example_path = join(self.examples_dir, example)
 
-        if isdir(local_example_path):
-            self._copy_files(example, local_example_path, example_path)
+            if isdir(local_example_path):
+                self._copy_files(example, local_example_path, example_path)
+            else:
+                click.secho(EXAMPLE_NOT_FOUND_MSG, fg='yellow')
         else:
-            click.secho(EXAMPLE_NOT_FOUND_MSG, fg='yellow')
+            click.secho('Error: examples are not installed', fg='red')
+            click.secho('Please run:\n'
+                        '   apio install examples', fg='yellow')
 
     def _copy_files(self, example, src_path, dest_path):
         click.secho('Copying ' + example + ' example files ...')

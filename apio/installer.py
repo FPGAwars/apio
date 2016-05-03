@@ -40,7 +40,7 @@ class Installer(object):
             except Exception:
                 click.secho('Package {0} is not found'.format(
                     self._get_package_name(), fg='red'))
-            finally:
+            else:
                 if dlpath:
                     remove(dlpath)
                     self.profile.packages[self.package] = basename(dlpath)
@@ -81,10 +81,11 @@ class Installer(object):
         if self.profile.check_version(self.package, basename(fd.get_filepath())):
             click.secho('Download ' + basename(fd.get_filepath()))
             fd.start()
-            fd.verify(sha1)
+            # fd.verify(sha1)
+
             return fd.get_filepath()
         else:
-            click.secho('Already installed', fg='yellow')
+            click.secho('Already installed. Version {0}'.format(self.version), fg='yellow')
             return None
 
     def _unpack(self, pkgpath, pkgdir):

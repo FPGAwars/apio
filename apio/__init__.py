@@ -14,6 +14,7 @@ from .packages.icestorm import IcestormInstaller
 from .packages.driver import DriverInstaller
 from .packages.system import SystemInstaller
 from .packages.piofpga import PiofpgaInstaller
+from .packages.examples import ExamplesInstaller
 
 try:
     unicode = str
@@ -31,7 +32,7 @@ def cli():
 
 @cli.command('boards')
 def boards():
-    """List all the supported FPGA boards"""
+    """List all the supported FPGA boards."""
     Boards().list()
 
 
@@ -50,7 +51,7 @@ def scons():
 
 @cli.command('init')
 @click.pass_context
-@click.option('--board', type=unicode, help='Set the FPGA board')
+@click.option('--board', type=unicode, help='Set the FPGA board.')
 def init(ctx, board):
     """Create a new apio project."""
     Project().new(board)
@@ -65,7 +66,8 @@ def init(ctx, board):
 @click.option('-f', '--files', type=unicode, metavar='NAME',
               help='Copy the selected example files.')
 def examples(ctx, list, dir, files):
-    """Manage default verilog examples."""
+    """Manage default verilog examples.\n
+       Install with `apio install examples`"""
     if list:
         Examples().list_examples()
     elif dir:
@@ -142,6 +144,12 @@ def intall_pio_fpga():
     PiofpgaInstaller().install()
 
 
+@install.command('examples')
+def intall_examples():
+    """Install verilog examples."""
+    ExamplesInstaller().install()
+
+
 # Uninstall #
 
 
@@ -178,6 +186,12 @@ def uninstall_scons():
 def uninstall_icestorm():
     """Uninstall icestorm toolchain."""
     _uninstall(IcestormInstaller().uninstall)
+
+
+@uninstall.command('examples')
+def uninstall_examples():
+    """Uninstall verilog examples."""
+    _uninstall(ExamplesInstaller().uninstall)
 
 
 def _uninstall(*functions):
