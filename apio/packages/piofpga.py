@@ -1,67 +1,46 @@
-import os
+# PioFPGA icestorm class
+
 import click
-import shutil
-import glob
+import requests
+requests.packages.urllib3.disable_warnings()
 
-from os.path import join, isdir, dirname
+from os.path import join, expanduser
 
-from .. import util
+from ..installer import Installer
 
 
-class PiofpgaInstaller(object):
-    """Support for FPGA in platformio(pio) plug-in installer"""
+class PioFPGAInstaller(Installer):
+
+    def __init__(self):
+        self.packages_dir = join(expanduser('~'), '.platformio')
+
+        self.package = 'pio-fpga'
+        self.version = self._get_version()
+        self.extension = 'zip'
 
     def install(self):
         click.secho("Installing FPGA support for platformio...")
-        pio_dir = os.path.join(dirname(__file__), 'platformio')
+        super(PioFPGAInstaller, self).install()
+        click.secho("Now execute the following command:", fg='green')
+        click.secho("   pio platforms install lattice_ice40", fg='green')
 
-        # -- Source dirs
-        board_dir = os.path.join(pio_dir, 'boards')
-        builder_dir = os.path.join(pio_dir, 'builder', 'scripts')
-        platform_dir = os.path.join(pio_dir, 'platforms')
+    def _get_download_url(self):
+        url = '{0}/v0.{1}/{2}'.format(
+            'https://github.com/FPGAwars/Platformio-FPGA/releases/download',
+            self.version,
+            self._get_package_name())
+        return url
 
-        # -- Dest dirs
-        dest_dir = util.get_home_dir()
-        board_dest_dir = join(dest_dir, 'boards')
-        platform_dest_dir = join(dest_dir, 'platforms')
+    def _get_package_name(self):
+        name = '{0}-{1}.{2}'.format(
+            self.package,
+            self.version,
+            self.extension)
+        return name
 
-        # -- Install board files
-        self._copy_files(src=board_dir, dest=board_dest_dir)
-
-        # -- Install platform files
-        self._copy_files(src=platform_dir, dest=platform_dest_dir)
-
-        # -- Install build script
-        builder_files = glob.glob(join(builder_dir, '*'))
-        for f in builder_files:
-            path, name = os.path.split(f)
-            name, ext = os.path.splitext(name)
-            if not self._is_pyc(f):
-                shutil.copy(f, join(platform_dest_dir, name + '-builder.py'))
-
-        click.secho("\nNow execute the following command:")
-        click.secho("")
-        click.secho("  pio platforms install lattice_ice40", fg='green')
-
-    def _copy_files(self, src, dest):
-        """Copy files from src to dest folder. Files .pyc are not copied"""
-
-        # -- Check for the dest dir
-        if isdir(dest):
-
-            # -- It exists
-            board_files = glob.glob(join(src, '*'))
-            for f in board_files:
-                if not self._is_pyc(f):
-                    shutil.copy(f, dest)
-                else:
-                    click.secho("Ignorig {}".format(f), fg='yellow')
-        else:
-            # -- dest directory does not exist
-            shutil.copytree(src, dest)
-
-    def _is_pyc(self, filename):
-        """return True if it is a .pyc file"""
-
-        name, ext = os.path.splitext(filename)
-        return ext.upper() == ".PYC"
+    def _get_version(self):
+        releases_url = 'https://api.github.com/repos/FPGAwars/Platformio-FPGA/releases/latest'
+        response = requests.get(releases_url)
+        releases = response.json()
+        version = releases['tag_name'].split('.')[1]  # 0.X -> X
+        return version

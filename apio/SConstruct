@@ -213,7 +213,7 @@ simenv = Environment(BUILDERS={'IVerilog': iverilog, 'VCD': vcd},
 out = simenv.IVerilog(SIMULNAME, src_sim)
 vcd_file = simenv.VCD(SIMULNAME, out)
 
-waves = simenv.Alias('sim', SIMULNAME+'.vcd', 'gtkwave ' +
+waves = simenv.Alias('sim', SIMULNAME + '.vcd', 'gtkwave ' +
                      "{} ".format(vcd_file[0]) + " " + SIMULNAME + ".gtkw")
 AlwaysBuild(waves)
 

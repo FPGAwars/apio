@@ -13,7 +13,7 @@ from .packages.scons import SconsInstaller
 from .packages.icestorm import IcestormInstaller
 from .packages.driver import DriverInstaller
 from .packages.system import SystemInstaller
-from .packages.piofpga import PiofpgaInstaller
+from .packages.piofpga import PioFPGAInstaller
 from .packages.examples import ExamplesInstaller
 
 try:
@@ -144,7 +144,7 @@ def install_icestorm():
 @install.command('pio-fpga')
 def intall_pio_fpga():
     """Install platformio-fpga support."""
-    PiofpgaInstaller().install()
+    PioFPGAInstaller().install()
 
 
 @install.command('examples')
