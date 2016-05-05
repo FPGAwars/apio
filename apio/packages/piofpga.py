@@ -1,12 +1,11 @@
 # PioFPGA icestorm class
 
 import click
-import requests
-requests.packages.urllib3.disable_warnings()
 
 from os.path import join, expanduser
 
 from ..installer import Installer
+from ..api import api_request
 
 
 class PioFPGAInstaller(Installer):
@@ -39,9 +38,7 @@ class PioFPGAInstaller(Installer):
         return name
 
     def _get_version(self):
-        releases_url = 'https://api.github.com/repos/FPGAwars/Platformio-FPGA/releases/latest'
-        response = requests.get(releases_url, headers=self._get_headers())
-        releases = response.json()
-        if 'tag_name' in releases:
+        releases = api_request('Platformio-FPGA/releases/latest')
+        if releases is not None and 'tag_name' in releases:
             version = releases['tag_name'].split('.')[1]  # 0.X -> X
             return version

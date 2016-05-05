@@ -1,12 +1,10 @@
 # System class
 
-import requests
-requests.packages.urllib3.disable_warnings()
-
 from os import rename
 from os.path import isdir, join, expanduser
 
 from ..installer import Installer
+from ..api import api_request
 
 
 class SystemInstaller(Installer):
@@ -49,9 +47,7 @@ class SystemInstaller(Installer):
         return name
 
     def _get_version(self):
-        releases_url = 'https://api.github.com/repos/FPGAwars/tools-usb-ftdi/releases/latest'
-        response = requests.get(releases_url, headers=self._get_headers())
-        releases = response.json()
-        if 'tag_name' in releases:
+        releases = api_request('tools-usb-ftdi/releases/latest')
+        if releases is not None and 'tag_name' in releases:
             version = releases['tag_name'].split('.')[1]  # v0.X -> X
             return version

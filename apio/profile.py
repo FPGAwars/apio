@@ -23,6 +23,9 @@ class Profile(object):
         if name in self.packages.keys():
             del self.packages[name]
 
+    def get_version(self, name):
+        return self.packages[name]['version']
+
     def load(self):
         if isfile(self._profile_path):
             with open(self._profile_path, 'r') as profile:

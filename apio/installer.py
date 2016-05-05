@@ -70,9 +70,6 @@ class Installer(object):
     def _get_platform(self):
         return util.get_systype()
 
-    def _get_headers(self):
-        return {'Authorization': 'token 35637034c3d4cb3d4b84ac09eee5c4b0aac2c661'}
-
     def _get_download_url(self):
         raise NotImplementedError
 
@@ -87,7 +84,8 @@ class Installer(object):
             # fd.verify(sha1)
             return fd.get_filepath()
         else:
-            click.secho('Already installed. Version {0}'.format(self.version), fg='yellow')
+            click.secho('Already installed. Version {0}'.format(
+                self.profile.get_version(self.package)), fg='yellow')
             return None
 
     def _unpack(self, pkgpath, pkgdir):
