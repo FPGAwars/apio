@@ -40,7 +40,8 @@ class PioFPGAInstaller(Installer):
 
     def _get_version(self):
         releases_url = 'https://api.github.com/repos/FPGAwars/Platformio-FPGA/releases/latest'
-        response = requests.get(releases_url)
+        response = requests.get(releases_url, headers=self._get_headers())
         releases = response.json()
-        version = releases['tag_name'].split('.')[1]  # 0.X -> X
-        return version
+        if 'tag_name' in releases:
+            version = releases['tag_name'].split('.')[1]  # 0.X -> X
+            return version

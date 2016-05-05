@@ -16,7 +16,7 @@ class ExamplesInstaller(Installer):
 
         self.package = 'examples'
         self.version = self._get_version()
-        self.name = 'apio-examples-' + self.version
+        self.name = 'apio-examples-' + str(self.version)
         self.extension = 'zip'
 
     def install(self):
@@ -42,7 +42,9 @@ class ExamplesInstaller(Installer):
 
     def _get_version(self):
         tags_url = 'https://api.github.com/repos/FPGAwars/apio-examples/tags'
-        response = requests.get(tags_url)
+        response = requests.get(tags_url, headers=self._get_headers())
         tags = response.json()
-        version = tags[0]['name']
-        return version
+        if tags is not None and type(tags) == list and \
+           len(tags) > 0 and 'name' in tags[0]:
+            version = tags[0]['name']
+            return version

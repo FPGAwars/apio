@@ -70,6 +70,9 @@ class Installer(object):
     def _get_platform(self):
         return util.get_systype()
 
+    def _get_headers(self):
+        return {'Authorization': 'token 35637034c3d4cb3d4b84ac09eee5c4b0aac2c661'}
+
     def _get_download_url(self):
         raise NotImplementedError
 
