@@ -23,9 +23,7 @@ class Installer(object):
 
     def install(self):
         if self.package is not None:
-            click.secho('Installing ', nl=False)
-            click.secho(self.package, fg='cyan', nl=False)
-            click.secho(' package:')
+            click.echo("Installing %s package:" % click.style(self.package, fg="cyan"))
             if not isdir(self.packages_dir):
                 makedirs(self.packages_dir)
             assert isdir(self.packages_dir)
@@ -53,9 +51,7 @@ class Installer(object):
     def uninstall(self):
         if self.package is not None:
             if isdir(join(self.packages_dir, self.package)):
-                click.secho('Uninstalling ', nl=False)
-                click.secho(self.package, fg='cyan', nl=False)
-                click.secho(' package')
+                click.echo("Uninstalling %s package" % click.style(name, fg="cyan"))
                 shutil.rmtree(join(self.packages_dir, self.package))
                 click.secho(
                     'Package \'{0}\' has been successfully uninstalled!'.format(
