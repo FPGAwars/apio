@@ -1,12 +1,10 @@
 # Examples class
 
-import requests
-requests.packages.urllib3.disable_warnings()
-
 from os import rename
 from os.path import isdir, join, expanduser
 
 from ..installer import Installer
+from ..api import api_request
 
 
 class ExamplesInstaller(Installer):
@@ -16,7 +14,7 @@ class ExamplesInstaller(Installer):
 
         self.package = 'examples'
         self.version = self._get_version()
-        self.name = 'apio-examples-' + self.version
+        self.name = 'apio-examples-' + str(self.version)
         self.extension = 'zip'
 
     def install(self):
@@ -41,8 +39,8 @@ class ExamplesInstaller(Installer):
         return name
 
     def _get_version(self):
-        tags_url = 'https://api.github.com/repos/FPGAwars/apio-examples/tags'
-        response = requests.get(tags_url)
-        tags = response.json()
-        version = tags[0]['name']
-        return version
+        tags = api_request('apio-examples/tags')
+        if tags is not None and type(tags) == list and \
+           len(tags) > 0 and 'name' in tags[0]:
+            version = tags[0]['name']
+            return version
