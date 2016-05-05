@@ -39,11 +39,11 @@ class Installer(object):
                     self._unpack(dlpath, self.packages_dir)
             except Exception:
                 click.secho('Package {0} is not found'.format(
-                    self._get_package_name(), fg='red'))
+                    self._get_package_name()), fg='red')
             else:
                 if dlpath:
                     remove(dlpath)
-                    self.profile.packages[self.package] = basename(dlpath)
+                    self.profile.add(self.package, self.version)
                     self.profile.save()
                     click.secho(
                         'Package \'{0}\' has been successfully installed!'.format(
@@ -77,12 +77,11 @@ class Installer(object):
         raise NotImplementedError
 
     def _download(self, url, sha1=None):
-        fd = FileDownloader(url, self.packages_dir)
-        if self.profile.check_version(self.package, basename(fd.get_filepath())):
+        if self.profile.check_version(self.package, self.version):
+            fd = FileDownloader(url, self.packages_dir)
             click.secho('Download ' + basename(fd.get_filepath()))
             fd.start()
             # fd.verify(sha1)
-
             return fd.get_filepath()
         else:
             click.secho('Already installed. Version {0}'.format(self.version), fg='yellow')
