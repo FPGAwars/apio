@@ -51,7 +51,7 @@ class Installer(object):
     def uninstall(self):
         if self.package is not None:
             if isdir(join(self.packages_dir, self.package)):
-                click.echo("Uninstalling %s package" % click.style(name, fg="cyan"))
+                click.echo("Uninstalling %s package" % click.style(self.package, fg="cyan"))
                 shutil.rmtree(join(self.packages_dir, self.package))
                 click.secho(
                     'Package \'{0}\' has been successfully uninstalled!'.format(
