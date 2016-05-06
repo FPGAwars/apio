@@ -69,15 +69,18 @@ def init(ctx, board, project_dir):
               help='Copy the selected example files.')
 @click.option('--project-dir', type=unicode, metavar='PATH',
               help='Set the target directory for the examples')
-def examples(ctx, list, dir, files, project_dir):
+@click.option('-n', '--sayno', is_flag=True,
+              help='Automatically answer NO to all the questions')
+def examples(ctx, list, dir, files, project_dir, sayno):
     """Manage default verilog examples.\n
        Install with `apio install examples`"""
+
     if list:
         Examples().list_examples()
     elif dir:
-        Examples().copy_example_dir(dir, project_dir)
+        Examples().copy_example_dir(dir, project_dir, sayno)
     elif files:
-        Examples().copy_example_files(files, project_dir)
+        Examples().copy_example_files(files, project_dir, sayno)
     else:
         click.secho(ctx.get_help())
         click.secho(Examples().examples_of_use_cad())

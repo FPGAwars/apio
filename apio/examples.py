@@ -50,7 +50,7 @@ class Examples(object):
             click.secho('Please run:\n'
                         '   apio install examples', fg='yellow')
 
-    def copy_example_dir(self, example, project_dir):
+    def copy_example_dir(self, example, project_dir, sayno):
         if isdir(self.examples_dir):
 
             # -- Target dir not specified
@@ -65,13 +65,17 @@ class Examples(object):
 
             if isdir(local_example_path):
                 if isdir(example_path):
-                    click.secho(
-                        'Warning: ' + example + ' directory already exists',
-                        fg='yellow')
-                    if click.confirm('Do you want to replace it?'):
-                        shutil.rmtree(example_path)
-                        self._copy_dir(example, local_example_path,
-                                       example_path)
+
+                    # -- If sayno, do not copy anythin
+                    if not sayno:
+                        click.secho(
+                            'Warning: ' + example +
+                            ' directory already exists', fg='yellow')
+
+                        if click.confirm('Do you want to replace it?'):
+                            shutil.rmtree(example_path)
+                            self._copy_dir(example, local_example_path,
+                                           example_path)
                 elif isfile(example_path):
                     click.secho(
                         'Warning: ' + example + ' is already a file',
@@ -85,7 +89,7 @@ class Examples(object):
             click.secho('Please run:\n'
                         '   apio install examples', fg='yellow')
 
-    def copy_example_files(self, example, project_dir):
+    def copy_example_files(self, example, project_dir, sayno):
         if isdir(self.examples_dir):
 
             if project_dir is not None:
@@ -96,7 +100,8 @@ class Examples(object):
             local_example_path = join(self.examples_dir, example)
 
             if isdir(local_example_path):
-                self._copy_files(example, local_example_path, example_path)
+                self._copy_files(example, local_example_path,
+                                 example_path, sayno)
             else:
                 click.secho(EXAMPLE_NOT_FOUND_MSG, fg='yellow')
         else:
@@ -104,13 +109,18 @@ class Examples(object):
             click.secho('Please run:\n'
                         '   apio install examples', fg='yellow')
 
-    def _copy_files(self, example, src_path, dest_path):
+    def _copy_files(self, example, src_path, dest_path, sayno):
         click.secho('Copying ' + example + ' example files ...')
         example_files = glob.glob(join(src_path, '*'))
         for f in example_files:
             filename = basename(f)
             if filename != 'info':
                 if isfile(join(dest_path, filename)):
+
+                    # -- If sayno, do not copy the file. Move to the next
+                    if sayno:
+                        break
+
                     click.secho(
                         'Warning: ' + filename + ' file already exists',
                         fg='yellow')
