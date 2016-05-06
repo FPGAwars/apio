@@ -50,9 +50,17 @@ class Examples(object):
             click.secho('Please run:\n'
                         '   apio install examples', fg='yellow')
 
-    def copy_example_dir(self, example):
+    def copy_example_dir(self, example, project_dir):
         if isdir(self.examples_dir):
-            example_path = join(os.getcwd(), example)
+
+            # -- Target dir not specified
+            if project_dir is not None:
+                example_path = join(project_dir, example)
+            else:
+                # -- Not specified: use the current working dir
+                example_path = join(os.getcwd(), example)
+
+            # -- Get the local example path
             local_example_path = join(self.examples_dir, example)
 
             if isdir(local_example_path):
@@ -62,10 +70,12 @@ class Examples(object):
                         fg='yellow')
                     if click.confirm('Do you want to replace it?'):
                         shutil.rmtree(example_path)
-                        self._copy_dir(example, local_example_path, example_path)
+                        self._copy_dir(example, local_example_path,
+                                       example_path)
                 elif isfile(example_path):
                     click.secho(
-                        'Warning: ' + example + ' is already a file', fg='yellow')
+                        'Warning: ' + example + ' is already a file',
+                        fg='yellow')
                 else:
                     self._copy_dir(example, local_example_path, example_path)
             else:
@@ -75,9 +85,14 @@ class Examples(object):
             click.secho('Please run:\n'
                         '   apio install examples', fg='yellow')
 
-    def copy_example_files(self, example):
+    def copy_example_files(self, example, project_dir):
         if isdir(self.examples_dir):
-            example_path = os.getcwd()
+
+            if project_dir is not None:
+                example_path = project_dir
+            else:
+                example_path = os.getcwd()
+
             local_example_path = join(self.examples_dir, example)
 
             if isdir(local_example_path):
