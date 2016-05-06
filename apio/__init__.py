@@ -52,7 +52,7 @@ def scons():
 @cli.command('init')
 @click.pass_context
 @click.option('--board', type=unicode, help='Set the FPGA board.')
-@click.option('--project-dir', type=unicode,
+@click.option('--project-dir', type=unicode, metavar='PATH',
               help='Set the target directory for the project')
 def init(ctx, board, project_dir):
     """Create a new apio project."""
@@ -67,15 +67,17 @@ def init(ctx, board, project_dir):
               help='Copy the selected example directory.')
 @click.option('-f', '--files', type=unicode, metavar='NAME',
               help='Copy the selected example files.')
-def examples(ctx, list, dir, files):
+@click.option('--project-dir', type=unicode, metavar='PATH',
+              help='Set the target directory for the examples')
+def examples(ctx, list, dir, files, project_dir):
     """Manage default verilog examples.\n
        Install with `apio install examples`"""
     if list:
         Examples().list_examples()
     elif dir:
-        Examples().copy_example_dir(dir)
+        Examples().copy_example_dir(dir, project_dir)
     elif files:
-        Examples().copy_example_files(files)
+        Examples().copy_example_files(files, project_dir)
     else:
         click.secho(ctx.get_help())
         click.secho(Examples().examples_of_use_cad())
