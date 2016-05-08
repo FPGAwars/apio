@@ -119,7 +119,7 @@ class Examples(object):
 
                     # -- If sayno, do not copy the file. Move to the next
                     if sayno:
-                        break
+                        continue
 
                     click.secho(
                         'Warning: ' + filename + ' file already exists',
