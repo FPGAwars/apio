@@ -9,6 +9,7 @@ from ..api import api_request
 
 
 class PioFPGAInstaller(Installer):
+    """Support for FPGA in platformio(pio) plug-in installer"""
 
     def __init__(self):
         self.packages_dir = join(expanduser('~'), '.platformio')

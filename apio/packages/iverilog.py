@@ -7,12 +7,12 @@ from ..installer import Installer
 from ..api import api_request
 
 
-class SystemInstaller(Installer):
+class IverilogInstaller(Installer):
 
     def __init__(self):
-        self.packages_dir = join(expanduser('~'), '.apio', 'system')
+        self.packages_dir = join(expanduser('~'), '.apio', 'iverilog')
 
-        self.package = 'tools-usb-ftdi'
+        self.package = 'iverilog'
         self.name = 'bin'
         self.platform = self._get_platform()
         self.version = self._get_version()
@@ -32,7 +32,7 @@ class SystemInstaller(Installer):
 
     def _get_download_url(self):
         url = '{0}/v0.{1}/{2}'.format(
-            'https://github.com/FPGAwars/tools-usb-ftdi/releases/download',
+            'https://github.com/FPGAwars/iverilog/releases/download',
             self.version,
             self._get_package_name())
         return url
@@ -46,7 +46,7 @@ class SystemInstaller(Installer):
         return name
 
     def _get_version(self):
-        releases = api_request('tools-usb-ftdi/releases/latest')
+        releases = api_request('iverilog/releases/latest')
         if releases is not None and 'tag_name' in releases:
             version = releases['tag_name'].split('.')[1]  # v0.X -> X
             return version

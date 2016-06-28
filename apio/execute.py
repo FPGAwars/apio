@@ -157,3 +157,26 @@ class SCons(object):
                     'File \'' + sconstruct_name +
                     '\' has been successfully created!',
                     fg='green')
+
+class Iverilog(object):
+    def __init__(self):
+        self.ext = ''
+        if 'Windows' == platform.system():
+            self.ext = '.exe'
+
+    def run(self):
+        iverilog_dir = join(expanduser('~'), '.apio', 'iverilog')
+
+        if isdir(iverilog_dir):
+            util.exec_command(
+                os.path.join(iverilog_dir, 'iverilog' + self.ext),
+                stdout=util.AsyncPipe(self._on_run_out),
+                stderr=util.AsyncPipe(self._on_run_out)
+            )
+        else:
+            click.secho('Error: iverilog toolchain is not installed', fg='red')
+            click.secho('Please run:\n'
+                        '   apio install iverilog', fg='yellow')
+
+    def _on_run_out(self, line):
+        click.secho(line)

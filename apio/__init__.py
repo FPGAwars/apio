@@ -6,10 +6,11 @@ from sys import exit as sys_exit
 
 from .util import get_systype
 from .examples import Examples
-from .execute import SCons, System
+from .execute import SCons, System, Iverilog
 from .project import Project
 from .config import Boards
 from .packages.scons import SconsInstaller
+from .packages.iverilog import IverilogInstaller
 from .packages.icestorm import IcestormInstaller
 from .packages.driver import DriverInstaller
 from .packages.system import SystemInstaller
@@ -118,6 +119,7 @@ def install(ctx, all):
     if ctx.invoked_subcommand is None:
         SystemInstaller().install()
         SconsInstaller().install()
+        IverilogInstaller().install()
         IcestormInstaller().install()
         ExamplesInstaller().install()
 
@@ -138,6 +140,11 @@ def install_system():
 def install_scons():
     """Install scons toolchain."""
     SconsInstaller().install()
+
+@install.command('iverilog')
+def install_iverilog():
+    """Install iverilog toolchain."""
+    IverilogInstaller().install()
 
 
 @install.command('icestorm')
@@ -169,6 +176,7 @@ def uninstall(ctx, all):
     if ctx.invoked_subcommand is None:
         _uninstall(SystemInstaller().uninstall,
                    SconsInstaller().uninstall,
+                   IverilogInstaller().uninstall,
                    IcestormInstaller().uninstall,
                    ExamplesInstaller().uninstall)
 
@@ -189,6 +197,11 @@ def uninstall_system():
 def uninstall_scons():
     """Uninstall scons toolchain."""
     _uninstall(SconsInstaller().uninstall)
+
+@uninstall.command('iverilog')
+def uninstall_iverilog():
+    """Uninstall iverilog toolchain."""
+    _uninstall(IverilogInstaller().uninstall)
 
 
 @uninstall.command('icestorm')
@@ -231,6 +244,12 @@ def format_vars(board, pack, type, size):
 @cli.command('clean')
 def clean():
     """Remove previous bitstream."""
+    SCons().run(['-c'])
+
+
+@cli.command('verify')
+def clean():
+    """Verify the bitstream."""
     SCons().run(['-c'])
 
 
