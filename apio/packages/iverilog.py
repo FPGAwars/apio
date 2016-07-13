@@ -10,10 +10,8 @@ from ..api import api_request
 class IverilogInstaller(Installer):
 
     def __init__(self):
-        self.packages_dir = join(expanduser('~'), '.apio', 'iverilog')
-
-        self.package = 'iverilog'
-        self.name = 'bin'
+        self.package = 'toolchain-iverilog'
+        self.name = 'toolchain-iverilog'
         self.platform = self._get_platform()
         self.version = self._get_version()
         if 'windows' in self.platform:
@@ -22,7 +20,7 @@ class IverilogInstaller(Installer):
             self.extension = 'tar.bz2'
 
     def install(self):
-        super(SystemInstaller, self).install()
+        super(IverilogInstaller, self).install()
 
         # Rename unpacked dir to package dir
         unpack_dir = join(self.packages_dir, self.name)
@@ -32,7 +30,7 @@ class IverilogInstaller(Installer):
 
     def _get_download_url(self):
         url = '{0}/v0.{1}/{2}'.format(
-            'https://github.com/FPGAwars/iverilog/releases/download',
+            'https://github.com/FPGAwars/toolchain-iverilog/releases/download',
             self.version,
             self._get_package_name())
         return url
@@ -46,7 +44,7 @@ class IverilogInstaller(Installer):
         return name
 
     def _get_version(self):
-        releases = api_request('iverilog/releases/latest')
+        releases = api_request('toolchain-iverilog/releases/latest')
         if releases is not None and 'tag_name' in releases:
             version = releases['tag_name'].split('.')[1]  # v0.X -> X
             return version

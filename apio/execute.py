@@ -56,18 +56,25 @@ class SCons(object):
 
         packages_dir = os.path.join(util.get_home_dir(), 'packages')
         icestorm_dir = os.path.join(packages_dir, 'toolchain-icestorm', 'bin')
+        iverilog_dir = os.path.join(packages_dir, 'toolchain-iverilog', 'bin')
         scons_dir = os.path.join(packages_dir, 'tool-scons', 'script')
         sconstruct_name = 'SConstruct'
 
         # Give the priority to the packages installed by apio
         os.environ['PATH'] = os.pathsep.join(
-            [icestorm_dir, os.environ['PATH']])
+            [iverilog_dir, icestorm_dir, os.environ['PATH']])
 
         # -- Check for the icestorm tools
         if not isdir(icestorm_dir):
             click.secho('Error: icestorm toolchain is not installed', fg='red')
             click.secho('Please run:\n'
                         '   apio install icestorm', fg='yellow')
+
+        # -- Check for the iverilog tools
+        if not isdir(iverilog_dir):
+            click.secho('Error: iverilog toolchain is not installed', fg='red')
+            click.secho('Please run:\n'
+                        '   apio install iverilog', fg='yellow')
 
         # -- Check for the scons
         if not isdir(scons_dir):
@@ -157,26 +164,3 @@ class SCons(object):
                     'File \'' + sconstruct_name +
                     '\' has been successfully created!',
                     fg='green')
-
-class Iverilog(object):
-    def __init__(self):
-        self.ext = ''
-        if 'Windows' == platform.system():
-            self.ext = '.exe'
-
-    def run(self):
-        iverilog_dir = join(expanduser('~'), '.apio', 'iverilog')
-
-        if isdir(iverilog_dir):
-            util.exec_command(
-                os.path.join(iverilog_dir, 'iverilog' + self.ext),
-                stdout=util.AsyncPipe(self._on_run_out),
-                stderr=util.AsyncPipe(self._on_run_out)
-            )
-        else:
-            click.secho('Error: iverilog toolchain is not installed', fg='red')
-            click.secho('Please run:\n'
-                        '   apio install iverilog', fg='yellow')
-
-    def _on_run_out(self, line):
-        click.secho(line)

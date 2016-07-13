@@ -6,7 +6,7 @@ from sys import exit as sys_exit
 
 from .util import get_systype
 from .examples import Examples
-from .execute import SCons, System, Iverilog
+from .execute import SCons, System
 from .project import Project
 from .config import Boards
 from .packages.scons import SconsInstaller
@@ -248,9 +248,11 @@ def clean():
 
 
 @cli.command('verify')
-def clean():
+@click.pass_context
+def verify(ctx):
     """Verify the bitstream."""
-    SCons().run(['-c'])
+    exit_code = SCons().run(['verify'])
+    ctx.exit(exit_code)
 
 
 @cli.command('build')
