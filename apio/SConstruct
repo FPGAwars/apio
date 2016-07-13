@@ -14,19 +14,20 @@ from SCons.Script import (Builder, DefaultEnvironment, Default, AlwaysBuild,
 # -- Board types: icestick, icezum, go-board
 # -- Each board has its own paramaters for the FPGA: type, size and package
 # ---------------------------------------------------------------------------
-boards = {'ICESTICK': ['hx', '1k', 'tq144'],
-          'ICEZUM': ['hx', '1k', 'tq144'],
-          'GO-BOARD': ['hx', '1k', 'vq100']
+boards = {
+          'icestick': ['hx', '1k', 'tq144'],
+          'icezum': ['hx', '1k', 'tq144'],
+          'go-board': ['hx', '1k', 'vq100']
           }
 
 # -- Default board
-BOARD_DFL = 'ICESTICK'
+BOARD_DFL = 'icezum'
 
 # -- Get the board type from the command line
 vars = Variables()
 vars.Add('board', 'Set the FPGA board', BOARD_DFL)
 
-BOARD = ARGUMENTS.get('board', BOARD_DFL).upper()
+BOARD = ARGUMENTS.get('board', BOARD_DFL).lower()
 
 # -- Set the fpga flags according to the board type
 try:

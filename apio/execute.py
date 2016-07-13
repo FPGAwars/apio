@@ -82,16 +82,27 @@ class SCons(object):
             click.secho('Please run:\n'
                         '   apio install scons', fg='yellow')
 
+        # -- Check for the project configuration file
+
+        board = ''
+        board_in_variables = [v for v in variables if 'board=' in v]
+
+        if (len(board_in_variables) == 0):
+            # Get board from project
+            p = Project()
+            p.read()
+            board = p.board
+            board_flag = "board={}".format(p.board)
+            variables.append(board_flag)
+
+        elif (len(board_in_variables) == 1):
+            # Get board from input args
+            board = board_in_variables[0][6:]
+
         # -- Check for the SConstruct file
         if not isfile(join(os.getcwd(), sconstruct_name)):
             click.secho('Using default SConstruct file', fg='yellow')
             variables += ['-f', join(dirname(__file__), sconstruct_name)]
-
-        # -- Check for the project configuration file
-        p = Project()
-        p.read()
-        board_flag = "board={}".format(p.board)
-        variables.append(board_flag)
 
         # -- Execute scons
         if isdir(scons_dir) and isdir(icestorm_dir):
@@ -100,7 +111,7 @@ class SCons(object):
 
             click.echo("[%s] Processing %s" % (
                 datetime.datetime.now().strftime("%c"),
-                click.style(p.board, fg="cyan", bold=True)))
+                click.style(board, fg="cyan", bold=True)))
             click.secho("-" * terminal_width, bold=True)
 
             click.secho("Executing: scons -Q {}".format(' '.join(variables)))
