@@ -2,7 +2,9 @@
 
 from os import rename
 from os.path import isdir, join
+
 from ..installer import Installer
+from ..api import api_request
 
 
 class SconsInstaller(Installer):
@@ -10,7 +12,7 @@ class SconsInstaller(Installer):
     def __init__(self):
         self.package = 'tool-scons'
         self.name = 'scons'
-        self.version = '2.4.1'
+        self.version = self._get_version()
         self.extension = 'tar.gz'
 
     def install(self):
@@ -23,8 +25,8 @@ class SconsInstaller(Installer):
             rename(unpack_dir, package_dir)
 
     def _get_download_url(self):
-        url = '{0}/{1}/{2}'.format(
-            'http://sourceforge.net/projects/scons/files/scons',
+        url = '{0}/v{1}/{2}'.format(
+            'https://github.com/FPGAwars/tool-scons/releases/download',
             self.version,
             self._get_package_name())
         return url
@@ -35,3 +37,9 @@ class SconsInstaller(Installer):
             self.version,
             self.extension)
         return name
+
+    def _get_version(self):
+        releases = api_request('tool-scons/releases/latest')
+        if releases is not None and 'tag_name' in releases:
+            version = releases['tag_name'][1:] # vX -> X
+            return version
