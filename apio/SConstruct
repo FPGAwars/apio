@@ -199,7 +199,7 @@ t = env.Alias('time', rpt)
 AlwaysBuild(t)
 
 # -------------------- Simulation ------------------
-# -- Constructor para generar simulacion: icarus Verilog
+# -- Constructor to generate the simulation: icarus Verilog
 iverilog = Builder(action='iverilog -o $TARGET $SOURCES',
                    suffix='.out',
                    src_suffix='.v')
@@ -210,15 +210,29 @@ vcd = Builder(action=join(glob.os.getcwd(), "$SOURCE"),
 simenv = Environment(BUILDERS={'IVerilog': iverilog, 'VCD': vcd},
                      ENV=os.environ)
 
-out = simenv.IVerilog(SIMULNAME, src_sim)
-vcd_file = simenv.VCD(SIMULNAME, out)
+sout = simenv.IVerilog(SIMULNAME, src_sim)
+vcd_file = simenv.VCD(SIMULNAME, sout)
 
 waves = simenv.Alias('sim', SIMULNAME + '.vcd', 'gtkwave ' +
                      "{} ".format(vcd_file[0]) + " " + SIMULNAME + ".gtkw")
 AlwaysBuild(waves)
 
+# -------------------- Verification ----------------------
+# -- Constructor to generate the verification: icarus Verilog
+iverilog = Builder(action='iverilog -o $TARGET $SOURCES',
+                   suffix='.out',
+                   src_suffix='.v')
+
+verenv = Environment(BUILDERS={'IVerilog': iverilog},
+                     ENV=os.environ)
+
+vout = verenv.IVerilog(TARGET, src_synth)
+
+verify = verenv.Alias('verify', vout)
+AlwaysBuild(verify)
+
 Default(bitstream)
 
 # -- These is for cleaning the files generated using the alias targets
 if GetOption('clean'):
-    env.Default([out, t, vcd_file])
+    env.Default([vout, sout, t, vcd_file])
