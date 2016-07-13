@@ -63,6 +63,8 @@ class SCons(object):
         # Give the priority to the packages installed by apio
         os.environ['PATH'] = os.pathsep.join(
             [iverilog_dir, icestorm_dir, os.environ['PATH']])
+        os.environ['IVL'] = os.path.join(
+            packages_dir, 'toolchain-iverilog', 'lib', 'ivl')
 
         # -- Check for the icestorm tools
         if not isdir(icestorm_dir):

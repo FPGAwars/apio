@@ -162,9 +162,10 @@ pnr = Builder(
     suffix='.asc',
     src_suffix='.blif')
 
-bitstream = Builder(action='icepack{0} $SOURCE $TARGET'.format(EXT),
-                    suffix='.bin',
-                    src_suffix='.asc')
+bitstream = Builder(
+    action='icepack{0} $SOURCE $TARGET'.format(EXT),
+    suffix='.bin',
+    src_suffix='.asc')
 
 # -- Icetime builder
 time_rpt = Builder(
@@ -201,9 +202,10 @@ AlwaysBuild(t)
 
 # -------------------- Simulation ------------------
 # -- Constructor to generate the simulation: icarus Verilog
-iverilog = Builder(action='iverilog -o $TARGET $SOURCES',
-                   suffix='.out',
-                   src_suffix='.v')
+iverilog = Builder(
+    action='iverilog -o $TARGET $SOURCES -B {0}'.format(os.environ['IVL']),
+    suffix='.out',
+    src_suffix='.v')
 
 vcd = Builder(action=join(glob.os.getcwd(), "$SOURCE"),
               suffix='.vcd', src_suffix='.out')
@@ -220,9 +222,10 @@ AlwaysBuild(waves)
 
 # -------------------- Verification ----------------------
 # -- Constructor to generate the verification: icarus Verilog
-iverilog = Builder(action='iverilog -o $TARGET $SOURCES',
-                   suffix='.out',
-                   src_suffix='.v')
+iverilog = Builder(
+    action='iverilog -o $TARGET $SOURCES -B {0}'.format(os.environ['IVL']),
+    suffix='.out',
+    src_suffix='.v')
 
 verenv = Environment(BUILDERS={'IVerilog': iverilog},
                      ENV=os.environ)
