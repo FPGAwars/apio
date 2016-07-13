@@ -257,7 +257,7 @@ def verify(ctx):
 
 @cli.command('build')
 @click.pass_context
-@click.option('--board', type=unicode, metavar='package',
+@click.option('--board', type=unicode, metavar='board',
               help='Set the FPGA board')
 @click.option('--pack', type=unicode, metavar='package',
               help='Set the FPGA package')
@@ -304,7 +304,7 @@ def build(ctx, board, pack, type, size):
 
 @cli.command('upload')
 @click.pass_context
-@click.option('--board', type=unicode, metavar='package',
+@click.option('--board', type=unicode, metavar='board',
               help='Set the FPGA board')
 @click.option('--pack', type=unicode, metavar='package',
               help='Set the FPGA package')
