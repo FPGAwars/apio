@@ -92,7 +92,7 @@ BASE = ''
 if 'Windows' == platform.system():
     EXT = '.exe'
 elif 'Linux' == platform.system():
-    BASE = '-B {0}'.format(os.environ['IVL'])
+    BASE = os.environ['IVL']
 
 # -- Target name
 TARGET = 'hardware'
@@ -206,13 +206,16 @@ AlwaysBuild(t)
 # -------------------- Simulation ------------------
 # -- Constructor to generate the simulation: icarus Verilog
 iverilog = Builder(
-    action='iverilog{0} -o $TARGET $SOURCES {1}'.format(
+    action='iverilog{0} -B {1} -o $TARGET $SOURCES'.format(
         EXT, BASE),
     suffix='.out',
     src_suffix='.v')
 
-vcd = Builder(action=join(glob.os.getcwd(), "$SOURCE"),
-              suffix='.vcd', src_suffix='.out')
+vcd = Builder(
+    action='vvp{0} -M {1} $SOURCE'.format(
+        EXT, BASE),
+    suffix='.vcd',
+    src_suffix='.out')
 
 simenv = Environment(BUILDERS={'IVerilog': iverilog, 'VCD': vcd},
                      ENV=os.environ)
@@ -227,7 +230,7 @@ AlwaysBuild(waves)
 # -------------------- Verification ----------------------
 # -- Constructor to generate the verification: icarus Verilog
 iverilog = Builder(
-    action='iverilog{0} -o $TARGET $SOURCES {1}'.format(
+    action='iverilog{0} -B {1} -o $TARGET $SOURCES'.format(
         EXT, BASE),
     suffix='.out',
     src_suffix='.v')
