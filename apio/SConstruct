@@ -91,7 +91,7 @@ EXT = ''
 BASE = ''
 if 'Windows' == platform.system():
     EXT = '.exe'
-else:
+elif 'Linux' == platform.system():
     BASE = '-B {0}'.format(os.environ['IVL'])
 
 # -- Target name
