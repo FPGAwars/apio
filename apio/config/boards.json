@@ -1,0 +1,20 @@
+{
+  "icestick": {
+    "type": "hx",
+    "size": "1k",
+    "pack": "tq144"
+  },
+
+  "icezum": {
+    "type": "hx",
+    "size": "1k",
+    "pack": "tq144"
+  },
+
+  "go-board": {
+    "type": "hx",
+    "size": "1k",
+    "pack": "vq100"
+  }
+
+}

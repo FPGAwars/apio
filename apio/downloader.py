@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from email.utils import parsedate_tz
+from email.utils import parsedate_tz, formatdate
 from math import ceil
 from os.path import getsize, join
 from time import mktime
@@ -53,7 +53,8 @@ class FileDownloader(object):
         return self._destination
 
     def get_lmtime(self):
-        return self._request.headers['last-modified']
+        if 'last-modified' in self._request.headers:
+            return self._request.headers['last-modified']
 
     def get_size(self):
         return int(self._request.headers['content-length'])
@@ -97,9 +98,10 @@ class FileDownloader(object):
                 raise FDSHASumMismatch(dlsha1, self._fname, sha1)
 
     def _preserve_filemtime(self, lmdate):
-        timedata = parsedate_tz(lmdate)
-        lmtime = mktime(timedata[:9])
-        util.change_filemtime(self._destination, lmtime)
+        if lmdate is not None:
+            timedata = parsedate_tz(lmdate)
+            lmtime = mktime(timedata[:9])
+            util.change_filemtime(self._destination, lmtime)
 
     def __del__(self):
         if self._request:

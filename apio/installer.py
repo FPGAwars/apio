@@ -1,5 +1,6 @@
 # Installer class
 
+import click
 import shutil
 
 from os import makedirs, remove
@@ -22,7 +23,7 @@ class Installer(object):
 
     def install(self):
         if self.package is not None:
-            print('Install ' + self.package)
+            click.echo("Installing %s package:" % click.style(self.package, fg="cyan"))
             if not isdir(self.packages_dir):
                 makedirs(self.packages_dir)
             assert isdir(self.packages_dir)
@@ -35,20 +36,30 @@ class Installer(object):
                         shutil.rmtree(package_dir)
                     self._unpack(dlpath, self.packages_dir)
             except Exception:
-                print('Package {0} is not found'.format(self._get_package_name()))
-            finally:
+                click.secho('Package {0} is not found'.format(
+                    self._get_package_name()), fg='red')
+            else:
                 if dlpath:
                     remove(dlpath)
-                    self.profile.packages[self.package] = basename(dlpath)
+                    self.profile.add(self.package, self.version)
                     self.profile.save()
+                    click.secho(
+                        'Package \'{0}\' has been successfully installed!'.format(
+                            self.package
+                        ), fg='green')
 
     def uninstall(self):
         if self.package is not None:
             if isdir(join(self.packages_dir, self.package)):
-                print('Uninstall package {0}'.format(self.package))
+                click.echo("Uninstalling %s package" % click.style(self.package, fg="cyan"))
                 shutil.rmtree(join(self.packages_dir, self.package))
+                click.secho(
+                    'Package \'{0}\' has been successfully uninstalled!'.format(
+                        self.package
+                    ), fg='green')
             else:
-                print('Package {0} is not installed'.format(self.package))
+                click.secho('Package \'{0}\' is not installed'.format(
+                    self.package), fg='red')
             self.profile.remove(self.package)
             self.profile.save()
 
@@ -62,14 +73,15 @@ class Installer(object):
         raise NotImplementedError
 
     def _download(self, url, sha1=None):
-        fd = FileDownloader(url, self.packages_dir)
-        if self.profile.check_version(self.package, basename(fd.get_filepath())):
-            print('Download ' + basename(fd.get_filepath()))
+        if self.profile.check_version(self.package, self.version):
+            fd = FileDownloader(url, self.packages_dir)
+            click.secho('Download ' + basename(fd.get_filepath()))
             fd.start()
-            fd.verify(sha1)
+            # fd.verify(sha1)
             return fd.get_filepath()
         else:
-            print('Package {0} is already the newest version'.format(self.package))
+            click.secho('Already installed. Version {0}'.format(
+                self.profile.get_version(self.package)), fg='yellow')
             return None
 
     def _unpack(self, pkgpath, pkgdir):

@@ -8,7 +8,7 @@ Experimental open source micro-ecosystem for open FPGAs. Based on [platformio](h
 
 ## Installation ![][ubuntu-logo] ![][raspbian-logo] ![][macosx-logo] ![][windows-logo]
 
-1. [Install dependencies](https://github.com/FPGAwars/apio/wiki/Dependencies)
+1. [Install dependencies](https://github.com/FPGAwars/apio/wiki/Dependencies) (Python 2.7 and pip)
 
 2. Install latest apio: ```pip install -U apio```
 
@@ -19,8 +19,12 @@ Experimental open source micro-ecosystem for open FPGAs. Based on [platformio](h
 ## Tests
 
 ```bash
-pip install nose
+pip install nose coverage
+```
+
+```bash
 nosetests
+nosetests --with-coverage  --cover-package=apio --cover-html
 ```
 
 ## Authors

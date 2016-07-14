@@ -6,6 +6,8 @@
 *.blif
 *.eggs
 *.egg-info
+.coverage
 build/
 dist/
+cover/
 __pycache__/

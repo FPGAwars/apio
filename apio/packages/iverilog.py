@@ -1,26 +1,26 @@
-# Toolchain icestorm class
+# System class
 
 from os import rename
-from os.path import isdir, join
+from os.path import isdir, join, expanduser
 
 from ..installer import Installer
 from ..api import api_request
 
 
-class IcestormInstaller(Installer):
+class IverilogInstaller(Installer):
 
     def __init__(self):
-        self.package = 'toolchain-icestorm'
-        self.name = 'toolchain-icestorm'
+        self.package = 'toolchain-iverilog'
+        self.name = 'toolchain-iverilog'
         self.platform = self._get_platform()
         self.version = self._get_version()
         if 'windows' in self.platform:
             self.extension = 'zip'
         else:
-            self.extension = 'tar.gz'
+            self.extension = 'tar.bz2'
 
     def install(self):
-        super(IcestormInstaller, self).install()
+        super(IverilogInstaller, self).install()
 
         # Rename unpacked dir to package dir
         unpack_dir = join(self.packages_dir, self.name)
@@ -29,22 +29,22 @@ class IcestormInstaller(Installer):
             rename(unpack_dir, package_dir)
 
     def _get_download_url(self):
-        url = '{0}/0.{1}/{2}'.format(
-            'https://github.com/FPGAwars/toolchain-icestorm/releases/download',
+        url = '{0}/v0.{1}/{2}'.format(
+            'https://github.com/FPGAwars/toolchain-iverilog/releases/download',
             self.version,
             self._get_package_name())
         return url
 
     def _get_package_name(self):
         name = '{0}-{1}-{2}.{3}'.format(
-            self.name,
+            self.package,
             self.platform,
             self.version,
             self.extension)
         return name
 
     def _get_version(self):
-        releases = api_request('toolchain-icestorm/releases/latest')
+        releases = api_request('toolchain-iverilog/releases/latest')
         if releases is not None and 'tag_name' in releases:
-            version = releases['tag_name'].split('.')[1]  # 0.X -> X
+            version = releases['tag_name'].split('.')[1]  # v0.X -> X
             return version

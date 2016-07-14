@@ -4,17 +4,18 @@ from setuptools import setup
 
 setup(
     name='apio',
+    version='0.1.1.1',
     author='Jesús Arroyo Torrens',
-    email='jesus.jkhlg@gmail.com',
-    version='0.1.0',
-    packages=['apio', 'examples'],
+    author_email='jesus.jkhlg@gmail.com',
+    url='https://github.com/FPGAwars/apio',
+    license='GPLv2',
+    packages=['apio'],
     package_data={
         'apio': ['SConstruct',
                  'packages/*.py',
-                 'packages/*.rules'],
-        'examples': ['*/*']
+                 'packages/*.rules',
+                 'config/boards.json']
     },
-    include_package_data=True,
     install_requires=[
         'click',
         'requests'
@@ -22,9 +23,10 @@ setup(
     entry_points={
         'console_scripts': ['apio=apio:cli']
     },
-    classifiers=['Development Status :: 4 - Beta',
-                 'Environment :: Console',
-                 'Intended Audience :: Developers',
-                 'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
-                 'Programming Language :: Python']
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
+        'Programming Language :: Python']
 )

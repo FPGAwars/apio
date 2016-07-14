@@ -33,6 +33,9 @@ class ArchiveBase(object):
         raise NotImplementedError()
 
     def extract_item(self, item, dest_dir):
+        if hasattr(item, 'filename') and \
+           item.filename.endswith('.gitignore'):
+            return
         self._afo.extract(item, dest_dir)
         self.after_extract(item, dest_dir)
 
@@ -64,7 +67,7 @@ class ZIPArchive(ArchiveBase):
     def preserve_mtime(item, dest_dir):
         util.change_filemtime(
             join(dest_dir, item.filename),
-            mktime(list(item.date_time) + [0] * 3)
+            mktime(tuple(list(item.date_time) + [0] * 3))
         )
 
     def get_items(self):
