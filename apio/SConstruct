@@ -88,8 +88,11 @@ print("FPGA_PACK: {}".format(FPGA_PACK))
 
 # -- Executables extension
 EXT = ''
+BASE = ''
 if 'Windows' == platform.system():
     EXT = '.exe'
+else:
+    BASE = '-B {0}'.format(os.environ['IVL'])
 
 # -- Target name
 TARGET = 'hardware'
@@ -203,7 +206,8 @@ AlwaysBuild(t)
 # -------------------- Simulation ------------------
 # -- Constructor to generate the simulation: icarus Verilog
 iverilog = Builder(
-    action='iverilog -o $TARGET $SOURCES -B {0}'.format(os.environ['IVL']),
+    action='iverilog{0} -o $TARGET $SOURCES {1}'.format(
+        EXT, BASE),
     suffix='.out',
     src_suffix='.v')
 
@@ -223,7 +227,8 @@ AlwaysBuild(waves)
 # -------------------- Verification ----------------------
 # -- Constructor to generate the verification: icarus Verilog
 iverilog = Builder(
-    action='iverilog -o $TARGET $SOURCES -B {0}'.format(os.environ['IVL']),
+    action='iverilog{0} -o $TARGET $SOURCES {1}'.format(
+        EXT, BASE),
     suffix='.out',
     src_suffix='.v')
 
