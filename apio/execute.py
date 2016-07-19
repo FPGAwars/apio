@@ -12,11 +12,6 @@ from .project import Project
 
 from . import util
 
-try:
-    input = raw_input
-except NameError:
-    pass
-
 
 class System(object):
     def __init__(self):
@@ -63,8 +58,12 @@ class SCons(object):
         # Give the priority to the packages installed by apio
         os.environ['PATH'] = os.pathsep.join(
             [iverilog_dir, icestorm_dir, os.environ['PATH']])
+
+        # Add environment variables
         os.environ['IVL'] = os.path.join(
             packages_dir, 'toolchain-iverilog', 'lib', 'ivl')
+        os.environ['VLIB'] = os.path.join(
+            packages_dir, 'toolchain-iverilog', 'vlib')
 
         # -- Check for the icestorm tools
         if not isdir(icestorm_dir):
