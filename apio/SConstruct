@@ -92,7 +92,7 @@ EXT = ''
 # -- Resources paths
 VVP_PATH = ''
 IVER_PATH = ''
-VLIB_PATH = '{0}/*.v'.format(os.environ['VLIB'])
+VLIB_PATH = os.environ['VLIB']
 
 if 'Windows' == platform.system():
     EXT = '.exe'

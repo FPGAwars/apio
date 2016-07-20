@@ -63,7 +63,7 @@ class SCons(object):
         os.environ['IVL'] = os.path.join(
             packages_dir, 'toolchain-iverilog', 'lib', 'ivl')
         os.environ['VLIB'] = os.path.join(
-            packages_dir, 'toolchain-iverilog', 'vlib')
+            packages_dir, 'toolchain-iverilog', 'vlib', 'system.v')
 
         # -- Check for the icestorm tools
         if not isdir(icestorm_dir):
