@@ -318,6 +318,10 @@ def upload(ctx, board, pack, type, size):
     # -- Get the variables and change them in the form 'flag=value'
     vars = format_vars(board, pack, type, size)
 
+    detected_boards = System().detect_boards()
+
+    print(detected_boards)
+
     exit_code = SCons().run(['upload'] + vars)
     ctx.exit(exit_code)
 
