@@ -76,11 +76,20 @@ class System(object):
             board = {
                 "index": index[i],
                 "manufacturer": manufacturer[i],
-                "description": description[i]
+                "description": description[i],
+                "board": self.obtain_board(description[i])
             }
             detected_boards.append(board)
 
         return detected_boards
+
+    def obtain_board(self, description):
+        if 'Lattice FTUSB Interface Cable' in description:
+            return 'icestick'
+        if 'IceZUM Alhambra' in description:
+            return 'icezum'
+        if 'Dual RS232-HS' in description:
+            return 'go-board'
 
 
 class SCons(object):

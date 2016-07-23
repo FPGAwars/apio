@@ -315,14 +315,23 @@ def build(ctx, board, pack, type, size):
 def upload(ctx, board, pack, type, size):
     """Upload bitstream to FPGA."""
 
+    device = -1
+    detected_boards = System().detect_boards()
+
+    for b in detected_boards:
+        if board:
+            if board == b['board']:
+                device = b['index']
+                break
+        else:
+            device = b['index']
+            board = b['board']
+            break
+
     # -- Get the variables and change them in the form 'flag=value'
     vars = format_vars(board, pack, type, size)
 
-    detected_boards = System().detect_boards()
-
-    print(detected_boards)
-
-    exit_code = SCons().run(['upload'] + vars)
+    exit_code = SCons().run(['upload', 'device={0}'.format(device)] + vars)
     ctx.exit(exit_code)
 
 
