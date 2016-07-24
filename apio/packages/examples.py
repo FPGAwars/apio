@@ -17,8 +17,8 @@ class ExamplesInstaller(Installer):
         self.name = 'apio-examples-' + str(self.version)
         self.extension = 'zip'
 
-    def install(self):
-        super(ExamplesInstaller, self).install()
+    def install(self, version=None):
+        super(ExamplesInstaller, self).install(version)
 
         # Rename unpacked dir to package dir
         unpack_dir = join(self.packages_dir, self.name)

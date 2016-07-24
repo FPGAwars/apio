@@ -131,38 +131,50 @@ def install_driver():
 
 
 @install.command('system')
-def install_system():
+@click.option('--version',  type=unicode, metavar='version',
+    help='Specific version of the package')
+def install_system(version):
     """Install system development tools."""
-    SystemInstaller().install()
+    SystemInstaller().install(version)
 
 
 @install.command('scons')
-def install_scons():
+@click.option('--version',  type=unicode, metavar='version',
+    help='Specific version of the package')
+def install_scons(version):
     """Install scons toolchain."""
-    SconsInstaller().install()
+    SconsInstaller().install(version)
 
 @install.command('iverilog')
-def install_iverilog():
+@click.option('--version',  type=unicode, metavar='version',
+    help='Specific version of the package')
+def install_iverilog(version):
     """Install iverilog toolchain."""
-    IverilogInstaller().install()
+    IverilogInstaller().install(version)
 
 
 @install.command('icestorm')
-def install_icestorm():
+@click.option('--version',  type=unicode, metavar='version',
+    help='Specific version of the package')
+def install_icestorm(version):
     """Install icestorm toolchain."""
-    IcestormInstaller().install()
+    IcestormInstaller().install(version)
 
 
 @install.command('pio-fpga')
-def intall_pio_fpga():
+@click.option('--version',  type=unicode, metavar='version',
+    help='Specific version of the package')
+def intall_pio_fpga(version):
     """Install platformio-fpga support."""
-    PioFPGAInstaller().install()
+    PioFPGAInstaller().install(version)
 
 
 @install.command('examples')
-def intall_examples():
+@click.option('--version',  type=unicode, metavar='version',
+    help='Specific version of the package')
+def intall_examples(version):
     """Install verilog examples."""
-    ExamplesInstaller().install()
+    ExamplesInstaller().install(version)
 
 
 # Uninstall #

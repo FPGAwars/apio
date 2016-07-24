@@ -15,8 +15,8 @@ class SconsInstaller(Installer):
         self.version = self._get_version()
         self.extension = 'tar.gz'
 
-    def install(self):
-        super(SconsInstaller, self).install()
+    def install(self, version=None):
+        super(SconsInstaller, self).install(version)
 
         # Rename unpacked dir to package dir
         unpack_dir = join(self.packages_dir, self.name + '-' + self.version)
