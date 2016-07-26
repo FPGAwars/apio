@@ -18,9 +18,9 @@ class PioFPGAInstaller(Installer):
         self.version = self._get_version()
         self.extension = 'zip'
 
-    def install(self):
+    def install(self, version=None):
         click.secho("Installing FPGA support for platformio...")
-        super(PioFPGAInstaller, self).install()
+        super(PioFPGAInstaller, self).install(version)
         click.secho("Now execute the following command:", fg='green')
         click.secho("   pio platforms install lattice_ice40", fg='green')
 
