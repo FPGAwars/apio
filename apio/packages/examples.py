@@ -42,7 +42,6 @@ class ExamplesInstaller(Installer):
 
     def _get_version(self):
         releases = api_request('apio-examples/releases/latest')
-        print(releases)
         if releases is not None and 'tag_name' in releases:
             version = releases['tag_name']
             return version

@@ -198,7 +198,9 @@ vcd = Builder(
     src_suffix='.out')
 
 simenv = Environment(BUILDERS={'IVerilog': iverilog, 'VCD': vcd},
-                     ENV=os.environ)
+                     ENV=os.environ,
+                     tools=[],
+                     variables=vars)
 
 sout = simenv.IVerilog(SIMULNAME, src_sim)
 vcd_file = simenv.VCD(SIMULNAME, sout)
@@ -216,7 +218,9 @@ iverilog = Builder(
     src_suffix='.v')
 
 verenv = Environment(BUILDERS={'IVerilog': iverilog},
-                     ENV=os.environ)
+                     ENV=os.environ,
+                     tools=[],
+                     variables=vars)
 
 vout = verenv.IVerilog(TARGET, src_synth)
 
