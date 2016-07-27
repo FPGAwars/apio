@@ -60,7 +60,7 @@ class DriverInstaller(object):
 
     def _install_darwin(self):
         # TODO: return if brew is not installed
-        subprocess.call(['brew', 'install', 'libftdi0'])
+        subprocess.call(['brew', 'install', 'libftdi'])
         click.secho('Configure FTDI drivers for FPGA')
         subprocess.call(['sudo', 'kextunload', '-b',
                          'com.FTDI.driver.FTDIUSBSerialDriver'])
