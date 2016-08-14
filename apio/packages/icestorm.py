@@ -19,8 +19,8 @@ class IcestormInstaller(Installer):
         else:
             self.extension = 'tar.gz'
 
-    def install(self):
-        super(IcestormInstaller, self).install()
+    def install(self, version=None):
+        super(IcestormInstaller, self).install(version)
 
         # Rename unpacked dir to package dir
         unpack_dir = join(self.packages_dir, self.name)

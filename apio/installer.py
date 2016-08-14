@@ -21,7 +21,9 @@ class Installer(object):
     def __init__(self):
         self.package = None
 
-    def install(self):
+    def install(self, version=None):
+        if version:
+            self.version = version
         if self.package is not None:
             click.echo("Installing %s package:" % click.style(self.package, fg="cyan"))
             if not isdir(self.packages_dir):

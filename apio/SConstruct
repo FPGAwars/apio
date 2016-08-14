@@ -20,64 +20,29 @@ boards = {
           'go-board': ['hx', '1k', 'vq100']
           }
 
-# -- Default board
-BOARD_DFL = 'icezum'
+DEVICE = ARGUMENTS.get('device', '-1')
+BOARD = ARGUMENTS.get('board', 'icezum').lower()
 
 # -- Get the board type from the command line
 vars = Variables()
-vars.Add('board', 'Set the FPGA board', BOARD_DFL)
-
-BOARD = ARGUMENTS.get('board', BOARD_DFL).lower()
+vars.Add('board', 'Set the FPGA board', BOARD)
 
 # -- Set the fpga flags according to the board type
 try:
     (FPGA_TYPE, FPGA_SIZE, FPGA_PACK) = boards[BOARD]
 except KeyError:
-    print("\n--> Unkown board: {}".format(BOARD))
+    print("\n> Error: unkown board: {}".format(BOARD))
     exit(1)
 
-
-# -- This is obsolete. Will be removed in fugure
-# -----------------------------------------------------------------------------
-# -- FLAGs:
-# --
-# -- Default values compatible with the icestick and icezum alhambra boards
-# --
-# -----------------------------------------------------------------------------
-# -------- Icestick / IceZUM Alhambra boards:
-# -- FPGA_SIZE_DFL = 1k
-# -- FPGA_TYPE_DFL = hx
-# -- FPGA_PACK_DFL = tq144
-#
-# -------- Nandland go board
-# -- FPGA_SIZE_DFL = 1k
-# -- FPGA_TYPE_DFL = hx
-# -- FPGA_PACK_DFL = vq100
-# --
-# -----------------------------------------------------------------------------
-#
 # -- Size. Possible values: 1k, 8k
-FPGA_SIZE_DFL = '1k'
-
 # -- Type. Possible values: hx, lp
-FPGA_TYPE_DFL = 'hx'
-
 # -- Package. Possible values: swg16tr, cm36, cm49, cm81, cm121, cm225, qn84,
 # --   cb81, cb121, cb132, vq100, tq144, ct256
-FPGA_PACK_DFL = 'tq144'
-# -------------------------------------------------------------------
 
 # -- Add the FPGA flags as variables to be shown with the -h scons option
-vars.Add('fpga_pack', 'Set the ICE40 FPGA packages', FPGA_PACK_DFL)
-vars.Add('fpga_type', 'Set the ICE40 FPGA type (hx/lp)', FPGA_TYPE_DFL)
-vars.Add('fpga_size', 'Set the ICE40 FPGA size (1k/8k)', FPGA_SIZE_DFL)
-
-
-# -- Get the value for the FPGA flags: either default value or passed through
-# -- the scons parameters
-# FPGA_SIZE = ARGUMENTS.get('fpga_size', FPGA_SIZE_DFL)
-# FPGA_TYPE = ARGUMENTS.get('fpga_type', FPGA_TYPE_DFL)
-# FPGA_PACK = ARGUMENTS.get('fpga_pack', FPGA_PACK_DFL)
+vars.Add('fpga_pack', 'Set the ICE40 FPGA packages', FPGA_PACK)
+vars.Add('fpga_type', 'Set the ICE40 FPGA type (hx/lp)', FPGA_TYPE)
+vars.Add('fpga_size', 'Set the ICE40 FPGA size (1k/8k)', FPGA_SIZE)
 
 # -- Just for debugging
 print("BOARD: {}".format(BOARD))
@@ -85,16 +50,27 @@ print("FPGA_SIZE: {}".format(FPGA_SIZE))
 print("FPGA_TYPE: {}".format(FPGA_TYPE))
 print("FPGA_PACK: {}".format(FPGA_PACK))
 
+if 'upload' in COMMAND_LINE_TARGETS:
+
+    if DEVICE == '-1':
+        print("\n> Error: board not detected")
+        exit(1)
+
+    print("DEVICE: {}".format(DEVICE))
 
 # -- Executables extension
 EXT = ''
+
+# -- Resources paths
 VVP_PATH = ''
-IVER_BASE = ''
+IVER_PATH = ''
+VLIB_PATH = os.environ['VLIB']
+
 if 'Windows' == platform.system():
     EXT = '.exe'
 else:
     VVP_PATH = '-M {0}'.format(os.environ['IVL'])
-    IVER_BASE = '-B {0}'.format(os.environ['IVL'])
+    IVER_PATH = '-B {0}'.format(os.environ['IVL'])
 
 # -- Target name
 TARGET = 'hardware'
@@ -197,7 +173,9 @@ asc = env.PnR(TARGET, [blif, PCF])
 bitstream = env.Bin(TARGET, asc)
 
 # -- Upload the bitstream into FPGA
-upload = env.Alias('upload', bitstream, 'iceprog{0} $SOURCE'.format(EXT))
+upload = env.Alias(
+    'upload', bitstream, 'iceprog{0} -d i:0x0403:0x6010:{1} $SOURCE'.format(
+        EXT, DEVICE))
 AlwaysBuild(upload)
 
 # -- Target time: calculate the time
@@ -208,8 +186,8 @@ AlwaysBuild(t)
 # -------------------- Simulation ------------------
 # -- Constructor to generate the simulation: icarus Verilog
 iverilog = Builder(
-    action='iverilog{0} {1} -o $TARGET $SOURCES'.format(
-        EXT, IVER_BASE),
+    action='iverilog{0} {1} {2} -o $TARGET $SOURCES'.format(
+        EXT, IVER_PATH, VLIB_PATH),
     suffix='.out',
     src_suffix='.v')
 
@@ -220,7 +198,9 @@ vcd = Builder(
     src_suffix='.out')
 
 simenv = Environment(BUILDERS={'IVerilog': iverilog, 'VCD': vcd},
-                     ENV=os.environ)
+                     ENV=os.environ,
+                     tools=[],
+                     variables=vars)
 
 sout = simenv.IVerilog(SIMULNAME, src_sim)
 vcd_file = simenv.VCD(SIMULNAME, sout)
@@ -232,13 +212,15 @@ AlwaysBuild(waves)
 # -------------------- Verification ----------------------
 # -- Constructor to generate the verification: icarus Verilog
 iverilog = Builder(
-    action='iverilog{0} {1} -o $TARGET $SOURCES'.format(
-        EXT, IVER_BASE),
+    action='iverilog{0} {1} -o $TARGET {2} $SOURCES'.format(
+        EXT, IVER_PATH, VLIB_PATH),
     suffix='.out',
     src_suffix='.v')
 
 verenv = Environment(BUILDERS={'IVerilog': iverilog},
-                     ENV=os.environ)
+                     ENV=os.environ,
+                     tools=[],
+                     variables=vars)
 
 vout = verenv.IVerilog(TARGET, src_synth)
 

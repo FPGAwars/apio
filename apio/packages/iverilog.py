@@ -19,8 +19,8 @@ class IverilogInstaller(Installer):
         else:
             self.extension = 'tar.bz2'
 
-    def install(self):
-        super(IverilogInstaller, self).install()
+    def install(self, version=None):
+        super(IverilogInstaller, self).install(version)
 
         # Rename unpacked dir to package dir
         unpack_dir = join(self.packages_dir, self.name)

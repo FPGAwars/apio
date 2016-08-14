@@ -1,6 +1,7 @@
 # Execute functions
 
 import os
+import re
 import sys
 import time
 import click
@@ -11,11 +12,6 @@ from os.path import join, dirname, isdir, isfile, expanduser
 from .project import Project
 
 from . import util
-
-try:
-    input = raw_input
-except NameError:
-    pass
 
 
 class System(object):
@@ -30,23 +26,70 @@ class System(object):
     def lsftdi(self):
         self._run('find_all')
 
+    def detect_boards(self):
+        detected_boards = []
+        result = self._run('find_all')
+
+        if result and result['returncode'] == 0:
+            detected_boards = self.parse_out(result['out'])
+
+        return detected_boards
+
     def _run(self, command):
+        result = []
         system_dir = join(expanduser('~'), '.apio', 'system')
         tools_usb_ftdi_dir = join(system_dir, 'tools-usb-ftdi')
 
         if isdir(tools_usb_ftdi_dir):
-            util.exec_command(
+            result = util.exec_command(
                 os.path.join(tools_usb_ftdi_dir, command + self.ext),
                 stdout=util.AsyncPipe(self._on_run_out),
                 stderr=util.AsyncPipe(self._on_run_out)
-            )
+                )
         else:
             click.secho('Error: system tools are not installed', fg='red')
             click.secho('Please run:\n'
                         '   apio install system', fg='yellow')
 
+        return result
+
     def _on_run_out(self, line):
         click.secho(line)
+
+    def parse_out(self, text):
+        pattern = 'Number\sof\sFTDI\sdevices\sfound:\s(?P<n>\d+?)\n'
+        match = re.search(pattern, text)
+        n = int(match.group('n')) if match else 0
+
+        pattern = '.*Checking\sdevice:\s(?P<index>.*?)\n.*'
+        index = re.findall(pattern, text)
+
+        pattern = '.*Manufacturer:\s(?P<n>.*?),.*'
+        manufacturer = re.findall(pattern, text)
+
+        pattern = '.*Description:\s(?P<n>.*?)\n.*'
+        description = re.findall(pattern, text)
+
+        detected_boards = []
+
+        for i in range(n):
+            board = {
+                "index": index[i],
+                "manufacturer": manufacturer[i],
+                "description": description[i],
+                "board": self.obtain_board(description[i])
+            }
+            detected_boards.append(board)
+
+        return detected_boards
+
+    def obtain_board(self, description):
+        if 'Lattice FTUSB Interface Cable' in description:
+            return 'icestick'
+        if 'IceZUM Alhambra' in description:
+            return 'icezum'
+        if 'Dual RS232-HS' in description:
+            return 'go-board'
 
 
 class SCons(object):
@@ -63,8 +106,12 @@ class SCons(object):
         # Give the priority to the packages installed by apio
         os.environ['PATH'] = os.pathsep.join(
             [iverilog_dir, icestorm_dir, os.environ['PATH']])
+
+        # Add environment variables
         os.environ['IVL'] = os.path.join(
             packages_dir, 'toolchain-iverilog', 'lib', 'ivl')
+        os.environ['VLIB'] = os.path.join(
+            packages_dir, 'toolchain-iverilog', 'vlib', 'system.v')
 
         # -- Check for the icestorm tools
         if not isdir(icestorm_dir):

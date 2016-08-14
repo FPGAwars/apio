@@ -17,8 +17,10 @@ class ExamplesInstaller(Installer):
         self.name = 'apio-examples-' + str(self.version)
         self.extension = 'zip'
 
-    def install(self):
-        super(ExamplesInstaller, self).install()
+    def install(self, version=None):
+        if version:
+            self.name = 'apio-examples-' + str(self.version)
+        super(ExamplesInstaller, self).install(version)
 
         # Rename unpacked dir to package dir
         unpack_dir = join(self.packages_dir, self.name)
@@ -27,20 +29,20 @@ class ExamplesInstaller(Installer):
             rename(unpack_dir, package_dir)
 
     def _get_download_url(self):
-        url = '{0}/{1}.zip'.format(
-            'https://github.com/FPGAwars/apio-examples/archive',
-            self.version)
+        url = '{0}/{1}/{2}'.format(
+            'https://github.com/FPGAwars/apio-examples/releases/download',
+            self.version,
+            self._get_package_name())
         return url
 
     def _get_package_name(self):
         name = '{0}.{1}'.format(
-            self.version,
+            self.name,
             self.extension)
         return name
 
     def _get_version(self):
-        tags = api_request('apio-examples/tags')
-        if tags is not None and type(tags) == list and \
-           len(tags) > 0 and 'name' in tags[0]:
-            version = tags[0]['name']
+        releases = api_request('apio-examples/releases/latest')
+        if releases is not None and 'tag_name' in releases:
+            version = releases['tag_name']
             return version

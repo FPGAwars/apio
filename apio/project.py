@@ -10,7 +10,7 @@ from os.path import isfile, join
 # ----------- Project default configurations
 
 # -- Default FPGA board
-DEFAULT_BOARD = 'icestick'
+DEFAULT_BOARD = 'icezum'
 
 # -- Project file name
 PROJECT_FILENAME = 'apio.ini'
