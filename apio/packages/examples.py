@@ -33,7 +33,6 @@ class ExamplesInstaller(Installer):
             'https://github.com/FPGAwars/apio-examples/releases/download',
             self.version,
             self._get_package_name())
-        print(url)
         return url
 
     def _get_package_name(self):
