@@ -29,14 +29,16 @@ class ExamplesInstaller(Installer):
             rename(unpack_dir, package_dir)
 
     def _get_download_url(self):
-        url = '{0}/{1}.zip'.format(
-            'https://github.com/FPGAwars/apio-examples/archive',
-            self.version)
+        url = '{0}/{1}/{2}'.format(
+            'https://github.com/FPGAwars/apio-examples/releases/download',
+            self.version,
+            self._get_package_name())
+        print(url)
         return url
 
     def _get_package_name(self):
         name = '{0}.{1}'.format(
-            self.version,
+            self.name,
             self.extension)
         return name
 
