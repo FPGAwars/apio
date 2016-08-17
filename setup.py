@@ -14,7 +14,7 @@ setup(
         'apio': ['SConstruct',
                  'packages/*.py',
                  'packages/*.rules',
-                 'config/boards.json']
+                 'config/*.json']
     },
     install_requires=[
         'click',
