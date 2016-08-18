@@ -77,23 +77,17 @@ class System(object):
             board = {
                 "index": index[i],
                 "manufacturer": manufacturer[i],
-                "description": description[i],
-                "board": self.obtain_board(description[i])
+                "description": description[i]
             }
             detected_boards.append(board)
 
         return detected_boards
 
-    def obtain_board(self, description):
-        if 'Lattice FTUSB Interface Cable' in description:
-            return 'icestick'
-        if 'IceZUM Alhambra' in description:
-            return 'icezum'
-        if 'Dual RS232-HS' in description:
-            return 'go-board'
-
 
 class SCons(object):
+
+    def __init__(self):
+        self.current_boards = Boards()
 
     def clean(self):
         self.run('-c')
@@ -112,12 +106,33 @@ class SCons(object):
             variables, board = ret
         return self.run('build', variables, board)
 
-    def upload(self, args, device):
+    def upload(self, args):
         ret = self.process_arguments(args)
         if isinstance(ret, int):
             return ret
         if isinstance(ret, tuple):
             variables, board = ret
+
+        # Detect device
+        device = -1
+        detected_boards = System().detect_boards()
+
+        if board:
+            desc = self.current_boards.boards[board]['ftdi-desc']
+            for b in detected_boards:
+                if desc in b['description']:
+                    # Select the first board that validates the ftdi description
+                    device = b['index']
+                    break
+        else:
+            # Board argument is needed
+            pass
+
+        if device == -1:
+            # Board not detected
+            click.secho('Error: board not detected', fg='red')
+            return 1
+
         return self.run('upload', variables + ['device={0}'.format(device)], board)
 
     def time(self, args):
@@ -216,8 +231,6 @@ class SCons(object):
             return exit_code
 
     def process_arguments(self, args):
-        current_boards = Boards()
-
         # -- Check arguments
         var_board =  args['board']
         var_fpga = args['fpga']
@@ -228,18 +241,18 @@ class SCons(object):
         # TODO: reduce code size
 
         if var_board:
-            if var_board in current_boards.boards:
-                fpga = current_boards.boards[var_board]['fpga']
-                if fpga in current_boards.fpgas:
-                    fpga_size = current_boards.fpgas[fpga]['size']
-                    fpga_type = current_boards.fpgas[fpga]['type']
-                    fpga_pack = current_boards.fpgas[fpga]['pack']
+            if var_board in self.current_boards.boards:
+                fpga = self.current_boards.boards[var_board]['fpga']
+                if fpga in self.current_boards.fpgas:
+                    fpga_size = self.current_boards.fpgas[fpga]['size']
+                    fpga_type = self.current_boards.fpgas[fpga]['type']
+                    fpga_pack = self.current_boards.fpgas[fpga]['pack']
 
                     redundant_arguments = []
                     contradictory_arguments = []
 
                     if var_fpga:
-                        if var_fpga in current_boards.fpgas:
+                        if var_fpga in self.current_boards.fpgas:
                             if var_fpga == fpga:
                                 # Redundant argument
                                 redundant_arguments += ['fpga']
@@ -301,10 +314,10 @@ class SCons(object):
                 return 1
         else:
             if var_fpga:
-                if var_fpga in current_boards.fpgas:
-                    fpga_size = current_boards.fpgas[var_fpga]['size']
-                    fpga_type = current_boards.fpgas[var_fpga]['type']
-                    fpga_pack = current_boards.fpgas[var_fpga]['pack']
+                if var_fpga in self.current_boards.fpgas:
+                    fpga_size = self.current_boards.fpgas[var_fpga]['size']
+                    fpga_type = self.current_boards.fpgas[var_fpga]['type']
+                    fpga_pack = self.current_boards.fpgas[var_fpga]['pack']
 
                     redundant_arguments = []
                     contradictory_arguments = []
@@ -365,10 +378,10 @@ class SCons(object):
                         click.secho(
                             'Warning: default board: {}'.format(var_board),
                             fg='yellow')
-                        fpga = current_boards.boards[var_board]['fpga']
-                        fpga_size = current_boards.fpgas[fpga]['size']
-                        fpga_type = current_boards.fpgas[fpga]['type']
-                        fpga_pack = current_boards.fpgas[fpga]['pack']
+                        fpga = self.current_boards.boards[var_board]['fpga']
+                        fpga_size = self.current_boards.fpgas[fpga]['size']
+                        fpga_type = self.current_boards.fpgas[fpga]['type']
+                        fpga_pack = self.current_boards.fpgas[fpga]['pack']
                     else:
                         # Insufficient arguments
                         missing = []

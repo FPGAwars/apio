@@ -292,19 +292,6 @@ def build(ctx, board, fpga, pack, type, size):
 def upload(ctx, board, fpga, pack, type, size):
     """Upload bitstream to FPGA."""
 
-    device = -1
-    detected_boards = System().detect_boards()
-
-    for b in detected_boards:
-        if board:
-            if board == b['board']:
-                device = b['index']
-                break
-        else:
-            device = b['index']
-            board = b['board']
-            break
-
     # -- Run scons
     exit_code = SCons().upload({
         "board": board,
@@ -312,7 +299,7 @@ def upload(ctx, board, fpga, pack, type, size):
         "size": size,
         "type": type,
         "pack": pack
-    }, device)
+    })
     ctx.exit(exit_code)
 
 # -- Advances notes: https://github.com/FPGAwars/apio/wiki/Commands#apio-upload

@@ -27,20 +27,16 @@ vars.Add('fpga_size', 'Set the ICE40 FPGA size (1k/8k)', FPGA_SIZE)
 vars.Add('fpga_type', 'Set the ICE40 FPGA type (hx/lp)', FPGA_TYPE)
 vars.Add('fpga_pack', 'Set the ICE40 FPGA packages', FPGA_PACK)
 
+# -- Just for debugging
 if 'build' in COMMAND_LINE_TARGETS or \
    'upload' in COMMAND_LINE_TARGETS or \
    'time' in COMMAND_LINE_TARGETS:
-
-    # -- Just for debugging
+    
     print("FPGA_SIZE: {}".format(FPGA_SIZE))
     print("FPGA_TYPE: {}".format(FPGA_TYPE))
     print("FPGA_PACK: {}".format(FPGA_PACK))
 
     if 'upload' in COMMAND_LINE_TARGETS:
-
-        if DEVICE == '-1':
-            print("\n> Error: board not detected")
-            exit(1)
 
         print("DEVICE: {}".format(DEVICE))
 
