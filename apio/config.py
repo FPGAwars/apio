@@ -24,9 +24,6 @@ class Boards(object):
         self.boards = None
         self.fpgas = None
 
-    def list(self):
-        """Return a list with all the supported boards"""
-
         # -- Get config dir
         config_dir = os.path.join(os.path.dirname(__file__), 'config')
 
@@ -44,6 +41,9 @@ class Boards(object):
             fpgas_str = f.read()
             self.fpgas = json.loads(fpgas_str)
 
+    def list(self):
+        """Return a list with all the supported boards"""
+
         # -- Print table
         click.echo('Supported boards:\n')
 
@@ -57,7 +57,7 @@ class Boards(object):
         click.echo('-' * terminal_width)
 
         for board in self.boards:
-            fpga = self.boards[board]['fpga'];
+            fpga = self.boards[board]['fpga']
             click.echo(BOARDLIST_TPL.format(
                 name=click.style(board, fg='cyan'), fpga=fpga, type=self.fpgas[fpga]['type'],
                 size=self.fpgas[fpga]['size'], pack=self.fpgas[fpga]['pack']))

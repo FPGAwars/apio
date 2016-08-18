@@ -1,8 +1,8 @@
 {
-  "icestick": {
+  "icezum": {
     "fpga": "iCE40-HX1K-TQ144"
   },
-  "icezum": {
+  "icestick": {
     "fpga": "iCE40-HX1K-TQ144"
   },
   "go-board": {

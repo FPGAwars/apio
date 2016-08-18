@@ -10,29 +10,11 @@ from SCons.Script import (Builder, DefaultEnvironment, Default, AlwaysBuild,
                           GetOption, Environment, Exit, COMMAND_LINE_TARGETS,
                           ARGUMENTS, Variables, Help)
 
-# --------------------------------------------------------------------------
-# -- Board types: icestick, icezum, go-board
-# -- Each board has its own paramaters for the FPGA: type, size and package
-# ---------------------------------------------------------------------------
-boards = {
-          'icestick': ['hx', '1k', 'tq144'],
-          'icezum': ['hx', '1k', 'tq144'],
-          'go-board': ['hx', '1k', 'vq100']
-          }
-
+# -- Load arguments
 DEVICE = ARGUMENTS.get('device', '-1')
-BOARD = ARGUMENTS.get('board', 'icezum').lower()
-
-# -- Get the board type from the command line
-vars = Variables()
-vars.Add('board', 'Set the FPGA board', BOARD)
-
-# -- Set the fpga flags according to the board type
-try:
-    (FPGA_TYPE, FPGA_SIZE, FPGA_PACK) = boards[BOARD]
-except KeyError:
-    print("\n> Error: unkown board: {}".format(BOARD))
-    exit(1)
+FPGA_SIZE = ARGUMENTS.get('fpga_size', '')
+FPGA_TYPE = ARGUMENTS.get('fpga_type', '')
+FPGA_PACK = ARGUMENTS.get('fpga_pack', '')
 
 # -- Size. Possible values: 1k, 8k
 # -- Type. Possible values: hx, lp
@@ -40,23 +22,27 @@ except KeyError:
 # --   cb81, cb121, cb132, vq100, tq144, ct256
 
 # -- Add the FPGA flags as variables to be shown with the -h scons option
-vars.Add('fpga_pack', 'Set the ICE40 FPGA packages', FPGA_PACK)
-vars.Add('fpga_type', 'Set the ICE40 FPGA type (hx/lp)', FPGA_TYPE)
+vars = Variables()
 vars.Add('fpga_size', 'Set the ICE40 FPGA size (1k/8k)', FPGA_SIZE)
+vars.Add('fpga_type', 'Set the ICE40 FPGA type (hx/lp)', FPGA_TYPE)
+vars.Add('fpga_pack', 'Set the ICE40 FPGA packages', FPGA_PACK)
 
-# -- Just for debugging
-print("BOARD: {}".format(BOARD))
-print("FPGA_SIZE: {}".format(FPGA_SIZE))
-print("FPGA_TYPE: {}".format(FPGA_TYPE))
-print("FPGA_PACK: {}".format(FPGA_PACK))
+if 'build' in COMMAND_LINE_TARGETS or \
+   'upload' in COMMAND_LINE_TARGETS or \
+   'sim' in COMMAND_LINE_TARGETS:
 
-if 'upload' in COMMAND_LINE_TARGETS:
+    # -- Just for debugging
+    print("FPGA_SIZE: {}".format(FPGA_SIZE))
+    print("FPGA_TYPE: {}".format(FPGA_TYPE))
+    print("FPGA_PACK: {}".format(FPGA_PACK))
 
-    if DEVICE == '-1':
-        print("\n> Error: board not detected")
-        exit(1)
+    if 'upload' in COMMAND_LINE_TARGETS:
 
-    print("DEVICE: {}".format(DEVICE))
+        if DEVICE == '-1':
+            print("\n> Error: board not detected")
+            exit(1)
+
+        print("DEVICE: {}".format(DEVICE))
 
 # -- Executables extension
 EXT = ''
@@ -115,7 +101,7 @@ if len(src_synth) == 0:
     Exit(1)
 
 # -- For debugging
-print("----> Testbench: {}".format(testbench))
+# print("----> Testbench: {}".format(testbench))
 # print("SIM NAME: {}".format(SIMULNAME))
 
 # -- Get the PCF file
@@ -128,7 +114,7 @@ except IndexError:
     PCF = 'ERROR.pcf'
 
 # -- Debug
-print("----> PCF Found: {}".format(PCF))
+# print("----> PCF Found: {}".format(PCF))
 
 
 # -- Define the Sintesizing Builder
@@ -171,6 +157,9 @@ Help(vars.GenerateHelpText(env))
 blif = env.Synth(TARGET, [src_synth])
 asc = env.PnR(TARGET, [blif, PCF])
 bitstream = env.Bin(TARGET, asc)
+
+build = env.Alias('build', bitstream)
+AlwaysBuild(build)
 
 # -- Upload the bitstream into FPGA
 upload = env.Alias(
