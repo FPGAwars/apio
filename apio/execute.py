@@ -99,12 +99,123 @@ class SCons(object):
         self.run('-c')
 
     def verify(self):
-        self.run('verify')
+        return self.run('verify')
 
     def sim(self):
-        self.run('sim')
+        return self.run('sim')
 
     def build(self, args):
+        ret = self.process_arguments(args)
+        if isinstance(ret, int):
+            return ret
+        if isinstance(ret, tuple):
+            variables, board = ret
+        return self.run('build', variables, board)
+
+    def upload(self, args, device):
+        ret = self.process_arguments(args)
+        if isinstance(ret, int):
+            return ret
+        if isinstance(ret, tuple):
+            variables, board = ret
+        return self.run('upload', variables + ['device={0}'.format(device)], board)
+
+    def time(self, args):
+        ret = self.process_arguments(args)
+        if isinstance(ret, int):
+            return ret
+        if isinstance(ret, tuple):
+            variables, board = ret
+        return self.run('time', variables, board)
+
+    def run(self, command, variables=[], board=None):
+        """Executes scons for building"""
+
+        packages_dir = os.path.join(util.get_home_dir(), 'packages')
+        icestorm_dir = os.path.join(packages_dir, 'toolchain-icestorm', 'bin')
+        iverilog_dir = os.path.join(packages_dir, 'toolchain-iverilog', 'bin')
+        scons_dir = os.path.join(packages_dir, 'tool-scons', 'script')
+        sconstruct_name = 'SConstruct'
+
+        # Give the priority to the packages installed by apio
+        os.environ['PATH'] = os.pathsep.join(
+            [iverilog_dir, icestorm_dir, os.environ['PATH']])
+
+        # Add environment variables
+        os.environ['IVL'] = os.path.join(
+            packages_dir, 'toolchain-iverilog', 'lib', 'ivl')
+        os.environ['VLIB'] = os.path.join(
+            packages_dir, 'toolchain-iverilog', 'vlib', 'system.v')
+
+        # -- Check for the icestorm tools
+        if not isdir(icestorm_dir):
+            click.secho('Error: icestorm toolchain is not installed', fg='red')
+            click.secho('Please run:\n'
+                        '   apio install icestorm', fg='yellow')
+
+        # -- Check for the iverilog tools
+        if not isdir(iverilog_dir):
+            click.secho('Error: iverilog toolchain is not installed', fg='red')
+            click.secho('Please run:\n'
+                        '   apio install iverilog', fg='yellow')
+
+        # -- Check for the scons
+        if not isdir(scons_dir):
+            click.secho('Error: scons toolchain is not installed', fg='red')
+            click.secho('Please run:\n'
+                        '   apio install scons', fg='yellow')
+
+        # -- Check for the SConstruct file
+        if not isfile(join(os.getcwd(), sconstruct_name)):
+            click.secho('Using default SConstruct file', fg='yellow')
+            variables += ['-f', join(dirname(__file__), sconstruct_name)]
+
+        # -- Execute scons
+        if isdir(scons_dir) and isdir(icestorm_dir):
+            terminal_width, _ = click.get_terminal_size()
+            start_time = time.time()
+
+            if command == 'build' or \
+               command == 'upload' or \
+               command == 'time':
+                if board:
+                    processing_board = board
+                else:
+                    processing_board = 'custom board'
+                click.echo("[%s] Processing %s" % (
+                    datetime.datetime.now().strftime("%c"),
+                    click.style(processing_board, fg="cyan", bold=True)))
+                click.secho("-" * terminal_width, bold=True)
+
+            click.secho("Executing: scons -Q {0} {1}".format(command, ' '.join(variables)))
+            result = util.exec_command(
+                [
+                    os.path.normpath(sys.executable),
+                    os.path.join(scons_dir, 'scons'),
+                    '-Q',
+                    command
+                ] + variables,
+                stdout=util.AsyncPipe(self._on_run_out),
+                stderr=util.AsyncPipe(self._on_run_err)
+            )
+
+            # -- Print result
+            exit_code = result['returncode']
+            is_error = exit_code != 0
+            summary_text = " Took %.2f seconds " % (time.time() - start_time)
+            half_line = "=" * int(((terminal_width - len(summary_text) - 10) / 2))
+            click.echo("%s [%s]%s%s" % (
+                half_line,
+                (click.style(" ERROR ", fg="red", bold=True)
+                 if is_error else click.style("SUCCESS", fg="green",
+                                              bold=True)),
+                summary_text,
+                half_line
+            ), err=is_error)
+
+            return exit_code
+
+    def process_arguments(self, args):
         current_boards = Boards()
 
         # -- Check arguments
@@ -245,19 +356,33 @@ class SCons(object):
                     fpga_type = var_type
                     fpga_pack = var_pack
                 else:
-                    # Insufficient arguments
-                    missing = []
-                    if not var_size:
-                        missing += ['size']
-                    if not var_type:
-                        missing += ['type']
-                    if not var_pack:
-                        missing += ['pack']
-                    pass
-                    click.secho(
-                        'Error: insufficient arguments: missing {0}'.format(
-                            ', '.join(missing)), fg='red')
-                    return 1
+                    if not var_size and not var_type and not var_pack:
+                        # No arguments: use default board
+                        # Get board from project
+                        p = Project()
+                        p.read()
+                        var_board = p.board
+                        click.secho(
+                            'Warning: default board: {}'.format(var_board),
+                            fg='yellow')
+                        fpga = current_boards.boards[var_board]['fpga']
+                        fpga_size = current_boards.fpgas[fpga]['size']
+                        fpga_type = current_boards.fpgas[fpga]['type']
+                        fpga_pack = current_boards.fpgas[fpga]['pack']
+                    else:
+                        # Insufficient arguments
+                        missing = []
+                        if not var_size:
+                            missing += ['size']
+                        if not var_type:
+                            missing += ['type']
+                        if not var_pack:
+                            missing += ['pack']
+                        pass
+                        click.secho(
+                            'Error: insufficient arguments: missing {0}'.format(
+                                ', '.join(missing)), fg='red')
+                        return 1
 
         # -- Build Scons variables list
         variables = self.format_vars({
@@ -266,111 +391,7 @@ class SCons(object):
             "fpga_pack": fpga_pack
         })
 
-        self.run('build', variables, var_board)
-
-    def upload(self, args):
-        # TODO: + args
-        self.run('upload')
-
-    def time(self):
-        # TODO: + args
-        self.run('time')
-
-    def run(self, command, variables=[], board=None):
-        """Executes scons for building"""
-
-        packages_dir = os.path.join(util.get_home_dir(), 'packages')
-        icestorm_dir = os.path.join(packages_dir, 'toolchain-icestorm', 'bin')
-        iverilog_dir = os.path.join(packages_dir, 'toolchain-iverilog', 'bin')
-        scons_dir = os.path.join(packages_dir, 'tool-scons', 'script')
-        sconstruct_name = 'SConstruct'
-
-        # Give the priority to the packages installed by apio
-        os.environ['PATH'] = os.pathsep.join(
-            [iverilog_dir, icestorm_dir, os.environ['PATH']])
-
-        # Add environment variables
-        os.environ['IVL'] = os.path.join(
-            packages_dir, 'toolchain-iverilog', 'lib', 'ivl')
-        os.environ['VLIB'] = os.path.join(
-            packages_dir, 'toolchain-iverilog', 'vlib', 'system.v')
-
-        # -- Check for the icestorm tools
-        if not isdir(icestorm_dir):
-            click.secho('Error: icestorm toolchain is not installed', fg='red')
-            click.secho('Please run:\n'
-                        '   apio install icestorm', fg='yellow')
-
-        # -- Check for the iverilog tools
-        if not isdir(iverilog_dir):
-            click.secho('Error: iverilog toolchain is not installed', fg='red')
-            click.secho('Please run:\n'
-                        '   apio install iverilog', fg='yellow')
-
-        # -- Check for the scons
-        if not isdir(scons_dir):
-            click.secho('Error: scons toolchain is not installed', fg='red')
-            click.secho('Please run:\n'
-                        '   apio install scons', fg='yellow')
-
-        # -- Check for the project configuration file
-        """if (len(board_in_variables) == 0):
-            # Get board from project
-            p = Project()
-            p.read()
-            board = p.board
-            board_flag = "board={}".format(p.board)
-            variables.append(board_flag)"""
-
-        # -- Check for the SConstruct file
-        if not isfile(join(os.getcwd(), sconstruct_name)):
-            click.secho('Using default SConstruct file', fg='yellow')
-            variables += ['-f', join(dirname(__file__), sconstruct_name)]
-
-        # -- Execute scons
-        if isdir(scons_dir) and isdir(icestorm_dir):
-            terminal_width, _ = click.get_terminal_size()
-            start_time = time.time()
-
-            if command == 'build' or \
-               command == 'upload' or \
-               command == 'time':
-                if board:
-                    processing_board = board
-                else:
-                    processing_board = 'custom board'
-                click.echo("[%s] Processing %s" % (
-                    datetime.datetime.now().strftime("%c"),
-                    click.style(processing_board, fg="cyan", bold=True)))
-                click.secho("-" * terminal_width, bold=True)
-
-            click.secho("Executing: scons -Q {0} {1}".format(command, ' '.join(variables)))
-            result = util.exec_command(
-                [
-                    os.path.normpath(sys.executable),
-                    os.path.join(scons_dir, 'scons'),
-                    '-Q',
-                    command
-                ] + variables,
-                stdout=util.AsyncPipe(self._on_run_out),
-                stderr=util.AsyncPipe(self._on_run_err)
-            )
-
-            # -- Print result
-            exit_code = result['returncode']
-            is_error = exit_code != 0
-            summary_text = " Took %.2f seconds " % (time.time() - start_time)
-            half_line = "=" * int(((terminal_width - len(summary_text) - 10) / 2))
-            click.echo("%s [%s]%s%s" % (
-                half_line,
-                (click.style(" ERROR ", fg="red", bold=True)
-                 if is_error else click.style("SUCCESS", fg="green",
-                                              bold=True)),
-                summary_text,
-                half_line
-            ), err=is_error)
-
-            return exit_code
+        return variables, var_board
 
     def format_vars(self, args):
         """Format the given vars in the form: 'flag=value'"""

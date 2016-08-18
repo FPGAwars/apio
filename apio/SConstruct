@@ -29,7 +29,7 @@ vars.Add('fpga_pack', 'Set the ICE40 FPGA packages', FPGA_PACK)
 
 if 'build' in COMMAND_LINE_TARGETS or \
    'upload' in COMMAND_LINE_TARGETS or \
-   'sim' in COMMAND_LINE_TARGETS:
+   'time' in COMMAND_LINE_TARGETS:
 
     # -- Just for debugging
     print("FPGA_SIZE: {}".format(FPGA_SIZE))
@@ -72,7 +72,7 @@ src_sim = ["{}".format(f) for f in v_nodes]
 list_tb = [f for f in src_sim if f[-5:].upper() == "_TB.V"]
 
 if len(list_tb) > 1:
-    print("---> WARNING: More than one testbenches used")
+    print("---> WARNING: more than one testbenches used")
 
 # -- Error checking
 try:
@@ -84,7 +84,7 @@ except IndexError:
 
 if 'sim' in COMMAND_LINE_TARGETS:
     if testbench is None:
-        print("ERROR!!! NO testbench found for simulation")
+        print("---> ERROR: NO testbench found for simulation")
         Exit(1)
 
     # -- Simulation name
@@ -97,7 +97,7 @@ else:
 src_synth = [f for f in src_sim if f not in list_tb]
 
 if len(src_synth) == 0:
-    print("------->   WARNING: no verilog files found (.v)")
+    print("---> ERROR: no verilog files found (.v)")
     Exit(1)
 
 # -- For debugging
@@ -110,7 +110,7 @@ PCF_list = glob.glob('*.pcf')
 try:
     PCF = PCF_list[0]
 except IndexError:
-    print("\n--------> WARNING: no .pcf file found <----------\n")
+    print("\n---> WARNING: no .pcf file found <---\n")
     PCF = 'ERROR.pcf'
 
 # -- Debug
