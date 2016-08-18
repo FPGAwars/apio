@@ -114,6 +114,8 @@ class SCons(object):
         var_type = args['type']
         var_pack = args['pack']
 
+        # TODO: reduce code size
+
         if var_board:
             if var_board in current_boards.boards:
                 fpga = current_boards.boards[var_board]['fpga']
@@ -121,8 +123,66 @@ class SCons(object):
                     fpga_size = current_boards.fpgas[fpga]['size']
                     fpga_type = current_boards.fpgas[fpga]['type']
                     fpga_pack = current_boards.fpgas[fpga]['pack']
+
+                    redundant_arguments = []
+                    contradictory_arguments = []
+
+                    if var_fpga:
+                        if var_fpga in current_boards.fpgas:
+                            if var_fpga == fpga:
+                                # Redundant argument
+                                redundant_arguments += ['fpga']
+                            else:
+                                # Contradictory argument
+                                contradictory_arguments += ['fpga']
+                        else:
+                            # Unknown fpga
+                            click.secho(
+                                'Error: unkown fpga: {0}'.format(
+                                    var_fpga), fg='red')
+                            return 1
+
+                    if var_size:
+                        if var_size == fpga_size:
+                            # Redundant argument
+                            redundant_arguments += ['size']
+                        else:
+                            # Contradictory argument
+                            contradictory_arguments += ['size']
+
+                    if var_type:
+                        if var_type == fpga_type:
+                            # Redundant argument
+                            redundant_arguments += ['type']
+                        else:
+                            # Contradictory argument
+                            contradictory_arguments += ['type']
+
+                    if var_pack:
+                        if var_pack == fpga_pack:
+                            # Redundant argument
+                            redundant_arguments += ['pack']
+                        else:
+                            # Contradictory argument
+                            contradictory_arguments += ['pack']
+
+                    if redundant_arguments:
+                        # Redundant argument
+                        click.secho(
+                            'Warning: redundant arguments: {}'.format(
+                                ', '.join(redundant_arguments)), fg='yellow')
+
+                    if contradictory_arguments:
+                        # Contradictory argument
+                        click.secho(
+                            'Error: contradictory arguments: {}'.format(
+                                ', '.join(contradictory_arguments)), fg='red')
+                        return 1
                 else:
-                    pass
+                    # Unknown fpga
+                    click.secho(
+                        'Error: unkown fpga: {0}'.format(fpga), fg='red')
+                    return 1
             else:
                 # Unknown board
                 click.secho(
@@ -134,6 +194,46 @@ class SCons(object):
                     fpga_size = current_boards.fpgas[var_fpga]['size']
                     fpga_type = current_boards.fpgas[var_fpga]['type']
                     fpga_pack = current_boards.fpgas[var_fpga]['pack']
+
+                    redundant_arguments = []
+                    contradictory_arguments = []
+
+                    if var_size:
+                        if var_size == fpga_size:
+                            # Redundant argument
+                            redundant_arguments += ['size']
+                        else:
+                            # Contradictory argument
+                            contradictory_arguments += ['size']
+
+                    if var_type:
+                        if var_type == fpga_type:
+                            # Redundant argument
+                            redundant_arguments += ['type']
+                        else:
+                            # Contradictory argument
+                            contradictory_arguments += ['type']
+
+                    if var_pack:
+                        if var_pack == fpga_pack:
+                            # Redundant argument
+                            redundant_arguments += ['pack']
+                        else:
+                            # Contradictory argument
+                            contradictory_arguments += ['pack']
+
+                    if redundant_arguments:
+                        # Redundant argument
+                        click.secho(
+                            'Warning: redundant arguments: {}'.format(
+                                ', '.join(redundant_arguments)), fg='yellow')
+
+                    if contradictory_arguments:
+                        # Contradictory argument
+                        click.secho(
+                            'Error: contradictory arguments: {}'.format(
+                                ', '.join(contradictory_arguments)), fg='red')
+                        return 1
                 else:
                     # Unknown fpga
                     click.secho(
