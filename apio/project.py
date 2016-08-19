@@ -19,7 +19,7 @@ PROJECT_FILENAME = 'apio.ini'
 class Project(object):
 
     def __init__(self):
-        self.board = DEFAULT_BOARD
+        self.board = None
 
     def new(self, board=DEFAULT_BOARD, project_dir=''):
         """Creates a new apio project file"""
@@ -49,7 +49,7 @@ class Project(object):
 
         # -- If no project finel found, just return
         if not isfile(PROJECT_FILENAME):
-            print("Warning: No apio.ini file")
+            print("Info: No apio.ini file")
             return
 
         # -- Open the project file

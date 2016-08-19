@@ -179,7 +179,6 @@ def intall_examples(version):
 
 # Uninstall #
 
-
 @cli.group('uninstall', invoke_without_command=True)
 @click.pass_context
 @click.option('--all', is_flag=True, help='Uninstall all toolchains')
@@ -236,122 +235,101 @@ def _uninstall(*functions):
         click.secho('Abort!', fg='red')
 
 
-# Synthesize #
-def format_vars(board, pack, type, size):
-    """Format the given vars in the form: 'flag=value'"""
-
-    if board is not None:
-        board = "board={}".format(board)
-    if pack is not None:
-        pack = "fpga_pack={}".format(pack)
-    if type is not None:
-        type = "fpga_type={}".format(type)
-    if size is not None:
-        size = "fpga_size={}".format(size)
-
-    vars = [f for f in [board, pack, type, size] if f is not None]
-    return vars
-
-
 @cli.command('clean')
 def clean():
-    """Remove previous bitstream."""
-    SCons().run(['-c'])
+    """Remove the previous generated files."""
+    SCons().clean()
 
 
 @cli.command('verify')
 @click.pass_context
 def verify(ctx):
-    """Verify the bitstream."""
-    exit_code = SCons().run(['verify'])
+    """Verify the verilog code."""
+    exit_code = SCons().verify()
     ctx.exit(exit_code)
 
 
 @cli.command('build')
 @click.pass_context
 @click.option('--board', type=unicode, metavar='board',
-              help='Set the FPGA board')
-@click.option('--pack', type=unicode, metavar='package',
-              help='Set the FPGA package')
-@click.option('--type', type=unicode, metavar='type',
-              help='Set the FPGA type (hx/lp)')
+              help='Set the board')
+@click.option('--fpga', type=unicode, metavar='fpga',
+              help='Set the FPGA')
 @click.option('--size', type=unicode, metavar='size',
               help='Set the FPGA type (1k/8k)')
-def build(ctx, board, pack, type, size):
+@click.option('--type', type=unicode, metavar='type',
+              help='Set the FPGA type (hx/lp)')
+@click.option('--pack', type=unicode, metavar='package',
+            help='Set the FPGA package')
+def build(ctx, board, fpga, pack, type, size):
     """Synthesize the bitstream."""
 
-    # -- Get the variables and change them in the form 'flag=value'
-    vars = format_vars(board, pack, type, size)
-
     # -- Run scons
-    exit_code = SCons().run(vars)
+    exit_code = SCons().build({
+        "board": board,
+        "fpga": fpga,
+        "size": size,
+        "type": type,
+        "pack": pack
+    })
     ctx.exit(exit_code)
 
-# -- Notes on the Upload target:
-# -- (Notes for advanced user)
-# --
-# -- The upload target first build the project if there was some modification
-# --   and then upload the .bin file. For that reason, upload is also a kind
-# --   of "build". The same fpga flags than build should be passed.
-# --
-# --  For example:
-# --
-# --  apio build --pack vq100
-# --
-# --  It will create the .bin file for an ice40 hx1k - vq100 FPGA
-# --  (like in the nandland go-board)
-# --
-# --  If now we upload it using:
-# --
-# --  apio upload
-# --
-# --  The default flags are used. So the package tq144 is used and the
-# --  bitstream is generated again
-# --
-# -- In order for it to work correctly, we should pass the same flags than
-# -- in the build target:
-# --
-# --  apio upload --pack vq100
+# -- Advances notes: https://github.com/FPGAwars/apio/wiki/Commands#apio-build
 
 
 @cli.command('upload')
 @click.pass_context
+@click.option('--device', type=unicode, metavar='board',
+              help='Set the board')
 @click.option('--board', type=unicode, metavar='board',
-              help='Set the FPGA board')
-@click.option('--pack', type=unicode, metavar='package',
-              help='Set the FPGA package')
-@click.option('--type', type=unicode, metavar='type',
-              help='Set the FPGA type (hx/lp)')
+              help='Set the board')
+@click.option('--fpga', type=unicode, metavar='fpga',
+              help='Set the FPGA')
 @click.option('--size', type=unicode, metavar='size',
               help='Set the FPGA type (1k/8k)')
-def upload(ctx, board, pack, type, size):
+@click.option('--type', type=unicode, metavar='type',
+              help='Set the FPGA type (hx/lp)')
+@click.option('--pack', type=unicode, metavar='package',
+            help='Set the FPGA package')
+def upload(ctx, device, board, fpga, pack, type, size):
     """Upload bitstream to FPGA."""
 
-    device = -1
-    detected_boards = System().detect_boards()
-
-    for b in detected_boards:
-        if board:
-            if board == b['board']:
-                device = b['index']
-                break
-        else:
-            device = b['index']
-            board = b['board']
-            break
-
-    # -- Get the variables and change them in the form 'flag=value'
-    vars = format_vars(board, pack, type, size)
-
-    exit_code = SCons().run(['upload', 'device={0}'.format(device)] + vars)
+    # -- Run scons
+    exit_code = SCons().upload({
+        "board": board,
+        "fpga": fpga,
+        "size": size,
+        "type": type,
+        "pack": pack
+    }, device)
     ctx.exit(exit_code)
+
+# -- Advances notes: https://github.com/FPGAwars/apio/wiki/Commands#apio-upload
 
 
 @cli.command('time')
 @click.pass_context
-def time(ctx):
+@click.option('--board', type=unicode, metavar='board',
+              help='Set the board')
+@click.option('--fpga', type=unicode, metavar='fpga',
+              help='Set the FPGA')
+@click.option('--size', type=unicode, metavar='size',
+              help='Set the FPGA type (1k/8k)')
+@click.option('--type', type=unicode, metavar='type',
+              help='Set the FPGA type (hx/lp)')
+@click.option('--pack', type=unicode, metavar='package',
+            help='Set the FPGA package')
+def time(ctx, board, fpga, pack, type, size):
     """Bitstream timing analysis."""
-    exit_code = SCons().run(['time'])
+
+    # -- Run scons
+    exit_code = SCons().time({
+        "board": board,
+        "fpga": fpga,
+        "size": size,
+        "type": type,
+        "pack": pack
+    })
     ctx.exit(exit_code)
 
 
@@ -359,7 +337,7 @@ def time(ctx):
 @click.pass_context
 def sim(ctx):
     """Launch verilog simulation."""
-    exit_code = SCons().run(['sim'])
+    exit_code = SCons().sim()
     ctx.exit(exit_code)
 
 
