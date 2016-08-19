@@ -279,6 +279,8 @@ def build(ctx, board, fpga, pack, type, size):
 
 @cli.command('upload')
 @click.pass_context
+@click.option('--device', type=unicode, metavar='board',
+              help='Set the board')
 @click.option('--board', type=unicode, metavar='board',
               help='Set the board')
 @click.option('--fpga', type=unicode, metavar='fpga',
@@ -289,7 +291,7 @@ def build(ctx, board, fpga, pack, type, size):
               help='Set the FPGA type (hx/lp)')
 @click.option('--pack', type=unicode, metavar='package',
             help='Set the FPGA package')
-def upload(ctx, board, fpga, pack, type, size):
+def upload(ctx, device, board, fpga, pack, type, size):
     """Upload bitstream to FPGA."""
 
     # -- Run scons
@@ -299,7 +301,7 @@ def upload(ctx, board, fpga, pack, type, size):
         "size": size,
         "type": type,
         "pack": pack
-    })
+    }, device)
     ctx.exit(exit_code)
 
 # -- Advances notes: https://github.com/FPGAwars/apio/wiki/Commands#apio-upload

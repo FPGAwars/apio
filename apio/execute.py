@@ -106,27 +106,48 @@ class SCons(object):
             variables, board = ret
         return self.run('build', variables, board)
 
-    def upload(self, args):
+    def upload(self, args, device):
         ret = self.process_arguments(args)
         if isinstance(ret, int):
             return ret
         if isinstance(ret, tuple):
             variables, board = ret
 
-        # Detect device
-        device = -1
         detected_boards = System().detect_boards()
 
-        if board:
-            desc = self.current_boards.boards[board]['ftdi-desc']
-            for b in detected_boards:
-                if desc in b['description']:
-                    # Select the first board that validates the ftdi description
-                    device = b['index']
-                    break
+        if device:
+            # Check device argument
+            if board:
+                desc = self.current_boards.boards[board]['ftdi-desc']
+                check = False
+                for b in detected_boards:
+                    # Selected board
+                    if device == b['index']:
+                        # Check the device ftdi description
+                        if desc in b['description']:
+                            check = True
+                        break
+                if not check:
+                    device = -1
+            else:
+                # Check device id
+                if int(device) >= len(detected_boards):
+                    device = -1
         else:
-            # Board argument is needed
-            pass
+            # Detect device
+            device = -1
+            if board:
+                desc = self.current_boards.boards[board]['ftdi-desc']
+                for b in detected_boards:
+                    if desc in b['description']:
+                        # Select the first board that validates the ftdi description
+                        device = b['index']
+                        break
+            else:
+                # Insufficient arguments
+                click.secho('Error: insufficient arguments: device or board',
+                            fg='red')
+                return 1
 
         if device == -1:
             # Board not detected
@@ -374,6 +395,7 @@ class SCons(object):
                         # Get board from project
                         p = Project()
                         p.read()
+                        # Error: message: create init file
                         var_board = p.board
                         click.secho(
                             'Warning: default board: {}'.format(var_board),
