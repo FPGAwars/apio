@@ -22,12 +22,24 @@ def _secure_remove(filename):
 
 
 def test_apio_clean():
-    scons.run(['-c'])
+    scons.clean()
 
 
 def test_apio_build():
-    scons.run()
+    scons.build({
+        'board': 'icezum',
+        'fpga': '',
+        'size': '',
+        'type': '',
+        'pack': ''
+    })
 
 
 def test_apio_upload():
-    scons.run(['upload'])
+    scons.upload({
+        'board': 'icezum',
+        'fpga': '',
+        'size': '',
+        'type': '',
+        'pack': ''
+    })

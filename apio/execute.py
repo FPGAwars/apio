@@ -106,7 +106,7 @@ class SCons(object):
             variables, board = ret
         return self.run('build', variables, board)
 
-    def upload(self, args, device):
+    def upload(self, args, device=-1):
         ret = self.process_arguments(args)
         if isinstance(ret, int):
             return ret

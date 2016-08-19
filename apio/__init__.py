@@ -266,11 +266,11 @@ def build(ctx, board, fpga, pack, type, size):
 
     # -- Run scons
     exit_code = SCons().build({
-        "board": board,
-        "fpga": fpga,
-        "size": size,
-        "type": type,
-        "pack": pack
+        'board': board,
+        'fpga': fpga,
+        'size': size,
+        'type': type,
+        'pack': pack
     })
     ctx.exit(exit_code)
 
@@ -296,11 +296,11 @@ def upload(ctx, device, board, fpga, pack, type, size):
 
     # -- Run scons
     exit_code = SCons().upload({
-        "board": board,
-        "fpga": fpga,
-        "size": size,
-        "type": type,
-        "pack": pack
+        'board': board,
+        'fpga': fpga,
+        'size': size,
+        'type': type,
+        'pack': pack
     }, device)
     ctx.exit(exit_code)
 
@@ -324,11 +324,11 @@ def time(ctx, board, fpga, pack, type, size):
 
     # -- Run scons
     exit_code = SCons().time({
-        "board": board,
-        "fpga": fpga,
-        "size": size,
-        "type": type,
-        "pack": pack
+        'board': board,
+        'fpga': fpga,
+        'size': size,
+        'type': type,
+        'pack': pack
     })
     ctx.exit(exit_code)
 
