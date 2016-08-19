@@ -147,6 +147,13 @@ class SCons(object):
                 # Insufficient arguments
                 click.secho('Error: insufficient arguments: device or board',
                             fg='red')
+                click.secho(
+                    'You have two options:\n' +
+                    '  1) Execute your command with\n' +
+                    '       `--device <deviceid>`\n' +
+                    '  2) Execute your command with\n' +
+                    '       `--board <boardname>`',
+                    fg='yellow')
                 return 1
 
         if device == -1:
@@ -262,6 +269,8 @@ class SCons(object):
         # TODO: reduce code size
 
         if var_board:
+            if isfile('apio.ini'):
+                click.secho('Info: ignore apio.ini board', fg='yellow')
             if var_board in self.current_boards.boards:
                 fpga = self.current_boards.boards[var_board]['fpga']
                 if fpga in self.current_boards.fpgas:
@@ -335,6 +344,8 @@ class SCons(object):
                 return 1
         else:
             if var_fpga:
+                if isfile('apio.ini'):
+                    click.secho('Info: ignore apio.ini board', fg='yellow')
                 if var_fpga in self.current_boards.fpgas:
                     fpga_size = self.current_boards.fpgas[var_fpga]['size']
                     fpga_type = self.current_boards.fpgas[var_fpga]['type']
@@ -386,25 +397,39 @@ class SCons(object):
                     return 1
             else:
                 if var_size and var_type and var_pack:
+                    if isfile('apio.ini'):
+                        click.secho('Info: ignore apio.ini board', fg='yellow')
                     fpga_size = var_size
                     fpga_type = var_type
                     fpga_pack = var_pack
                 else:
                     if not var_size and not var_type and not var_pack:
-                        # No arguments: use default board
-                        # Get board from project
+                        # No arguments: use apio.ini board
                         p = Project()
                         p.read()
-                        # Error: message: create init file
-                        var_board = p.board
-                        click.secho(
-                            'Warning: default board: {}'.format(var_board),
-                            fg='yellow')
-                        fpga = self.current_boards.boards[var_board]['fpga']
-                        fpga_size = self.current_boards.fpgas[fpga]['size']
-                        fpga_type = self.current_boards.fpgas[fpga]['type']
-                        fpga_pack = self.current_boards.fpgas[fpga]['pack']
+                        if p.board:
+                            var_board = p.board
+                            click.secho(
+                                'Info: use apio.ini board: {}'.format(var_board))
+                            fpga = self.current_boards.boards[var_board]['fpga']
+                            fpga_size = self.current_boards.fpgas[fpga]['size']
+                            fpga_type = self.current_boards.fpgas[fpga]['type']
+                            fpga_pack = self.current_boards.fpgas[fpga]['pack']
+                        else:
+                            click.secho(
+                                'Error: insufficient arguments: missing board',
+                                fg='red')
+                            click.secho(
+                                'You have two options:\n' +
+                                '  1) Execute your command with\n' +
+                                '       `--board <boardname>`\n' +
+                                '  2) Create an ini file using\n' +
+                                '       `apio init --board <boardname>`',
+                                fg='yellow')
+                            return 1
                     else:
+                        if isfile('apio.ini'):
+                            click.secho('Info: ignore apio.ini file', fg='yellow')
                         # Insufficient arguments
                         missing = []
                         if not var_size:
