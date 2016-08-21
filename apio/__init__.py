@@ -8,14 +8,15 @@ from .util import get_systype
 from .examples import Examples
 from .execute import SCons, System
 from .project import Project
-from .config import Boards
+from .config import Config
 from .packages.scons import SconsInstaller
 from .packages.iverilog import IverilogInstaller
 from .packages.icestorm import IcestormInstaller
 from .packages.driver import DriverInstaller
 from .packages.system import SystemInstaller
 from .packages.piofpga import PioFPGAInstaller
-from .packages.examples import ExamplesInstaller
+
+from .new_installer import NewInstaller
 
 try:
     unicode = str
@@ -34,7 +35,7 @@ def cli():
 @cli.command('boards')
 def boards():
     """List all the supported FPGA boards."""
-    Boards().list()
+    Config().list_boards()
 
 
 @cli.command('debug')
@@ -174,7 +175,7 @@ def intall_pio_fpga(version):
     help='Specific version of the package')
 def intall_examples(version):
     """Install verilog examples."""
-    ExamplesInstaller().install(version)
+    NewInstaller('examples').install(version)
 
 
 # Uninstall #
@@ -224,7 +225,7 @@ def uninstall_icestorm():
 @uninstall.command('examples')
 def uninstall_examples():
     """Uninstall verilog examples."""
-    _uninstall(ExamplesInstaller().uninstall)
+    _uninstall(NewInstaller('examples').uninstall)
 
 
 def _uninstall(*functions):

@@ -1,0 +1,14 @@
+{
+  "examples" : {
+    "repository": {
+      "name": "apio-examples",
+      "organization": "FPGAwars"
+    },
+    "release": {
+      "tag_name": "%V",
+      "compressed_name": "apio-examples-%V",
+      "uncompressed_name": "apio-examples-%V",
+      "extension": "zip"
+    }
+  }
+}

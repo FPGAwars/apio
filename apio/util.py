@@ -170,7 +170,7 @@ def _get_projconf_option_dir(name, default=None):
 def get_home_dir():
     home_dir = _get_projconf_option_dir(
         "home_dir",
-        join(expanduser("~"), ".platformio")
+        join(expanduser("~"), ".apio")
     )
 
     if not isdir(home_dir):
