@@ -10,7 +10,6 @@ from .execute import SCons, System
 from .project import Project
 from .config import Config
 from .packages.iverilog import IverilogInstaller
-from .packages.icestorm import IcestormInstaller
 from .packages.driver import DriverInstaller
 from .packages.piofpga import PioFPGAInstaller
 
@@ -157,7 +156,7 @@ def install_iverilog(version):
     help='Specific version of the package')
 def install_icestorm(version):
     """Install icestorm toolchain."""
-    IcestormInstaller().install(version)
+    NewInstaller('icestorm').install(version)
 
 
 @install.command('pio-fpga')
@@ -217,7 +216,7 @@ def uninstall_iverilog():
 @uninstall.command('icestorm')
 def uninstall_icestorm():
     """Uninstall icestorm toolchain."""
-    _uninstall(IcestormInstaller().uninstall)
+    _uninstall(NewInstaller('icestorm').uninstall)
 
 
 @uninstall.command('examples')

@@ -25,6 +25,23 @@
       "extension": "tar.gz"
     }
   },
+  "icestorm" : {
+    "repository": {
+      "name": "toolchain-icestorm",
+      "organization": "FPGAwars"
+    },
+    "release": {
+      "tag_name": "0.%V",
+      "compressed_name": "toolchain-icestorm-%A-%V",
+      "uncompressed_name": "toolchain-icestorm",
+      "package_name": "toolchain-icestorm",
+      "extension": {
+        "linux": "tar.gz",
+        "darwin": "tar.gz",
+        "windows": "zip"
+      }
+    }
+  },
   "system" : {
     "repository": {
       "name": "tools-usb-ftdi",
