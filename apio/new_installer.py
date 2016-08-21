@@ -5,7 +5,7 @@ import click
 import shutil
 
 from os import makedirs, remove, rename
-from os.path import isdir, join, basename
+from os.path import isdir, join, basename, expanduser
 
 from . import util
 from .api import api_request
@@ -57,7 +57,10 @@ class NewInstaller(object):
             self.tarball
         )
 
-        self.packages_dir = join(util.get_home_dir(), 'packages')
+        if 'main_dir' in data.keys():
+            self.packages_dir = join(expanduser('~'), data['main_dir'])
+        else:
+            self.packages_dir = join(util.get_home_dir(), 'packages')
 
     def install(self, version=None):
         if version:
@@ -89,10 +92,11 @@ class NewInstaller(object):
                         ), fg='green')
 
         # Rename unpacked dir to package dir
-        unpack_dir = join(self.packages_dir, self.uncompressed_name)
-        package_dir = join(self.packages_dir, self.package_name)
-        if isdir(unpack_dir):
-            rename(unpack_dir, package_dir)
+        if self.uncompressed_name:
+            unpack_dir = join(self.packages_dir, self.uncompressed_name)
+            package_dir = join(self.packages_dir, self.package_name)
+            if isdir(unpack_dir):
+                rename(unpack_dir, package_dir)
 
     def uninstall(self):
         if self.package is not None:

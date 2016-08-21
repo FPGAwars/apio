@@ -10,7 +10,6 @@ from .execute import SCons, System
 from .project import Project
 from .config import Config
 from .packages.driver import DriverInstaller
-from .packages.piofpga import PioFPGAInstaller
 
 from .new_installer import NewInstaller
 
@@ -163,7 +162,9 @@ def install_icestorm(version):
     help='Specific version of the package')
 def intall_pio_fpga(version):
     """Install platformio-fpga support."""
-    PioFPGAInstaller().install(version)
+    NewInstaller('pio-fpga').install(version)
+    click.secho("Now execute the following command:", fg='green')
+    click.secho("   pio platforms install lattice_ice40", fg='green')
 
 
 @install.command('examples')

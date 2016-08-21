@@ -75,5 +75,19 @@
         "windows": "zip"
       }
     }
+  },
+  "pio-fpga" : {
+    "repository": {
+      "name": "Platformio-FPGA",
+      "organization": "FPGAwars"
+    },
+    "release": {
+      "tag_name": "v0.%V",
+      "compressed_name": "pio-fpga-%V",
+      "uncompressed_name": "",
+      "package_name": "pio-fpga",
+      "extension": "zip"
+    },
+    "main_dir": ".platformio"
   }
 }
