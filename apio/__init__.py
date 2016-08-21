@@ -10,8 +10,7 @@ from .execute import SCons, System
 from .project import Project
 from .config import Config
 from .packages.driver import DriverInstaller
-
-from .new_installer import NewInstaller
+from .installer import Installer
 
 try:
     unicode = str
@@ -27,17 +26,71 @@ def cli():
     """
 
 
+# Install #
+
+@cli.command('install')
+@click.pass_context
+@click.argument('packages', nargs=-1)
+@click.option('-a', '--all', is_flag=True, help='Install all packages')
+@click.option('-l', '--list', is_flag=True, help='List all available packages.')
+def install(ctx, packages, all, list):
+    """Install packages."""
+
+    if packages:
+        for package in packages:
+            Installer(package).install()
+    elif all:
+        packages = Config().packages
+        for package in packages:
+            Installer(package).install()
+    elif list:
+        # TODO
+        Config().list_all_packages()
+    else:
+        click.secho(ctx.get_help())
+
+
+# Uninstall #
+
+@cli.command('uninstall')
+@click.pass_context
+@click.argument('packages', nargs=-1)
+@click.option('-a', '--all', is_flag=True, help='Uninstall all packages')
+@click.option('-l', '--list', is_flag=True, help='List all installed packages.')
+def install(ctx, packages, all, list):
+    """Uninstall packages."""
+
+    if packages:
+        for package in packages:
+            _uninstall(Installer(package).uninstall)
+    elif all:
+        packages = Config().packages
+        for package in packages:
+            _uninstall(Installer(package).uninstall)
+    elif list:
+        # TODO
+        Config().list_installed_packages()
+    else:
+        click.secho(ctx.get_help())
+
+def _uninstall(*functions):
+    if click.confirm('Do you want to continue?'):
+        for count, function in enumerate(functions):
+            function()
+    else:
+        click.secho('Abort!', fg='red')
+
+
+@cli.command('drivers')
+def boards():
+    """Drivers for the FPGAs"""
+    pass
+
+
 @cli.command('boards')
 def boards():
     """List all the supported FPGA boards."""
     Config().list_boards()
-
-
-@cli.command('debug')
-def debug():
-    """Show system information."""
-    click.secho('Platform: ', nl=False)
-    click.secho(get_systype(), fg='green')
 
 
 @cli.command('scons')
@@ -85,7 +138,6 @@ def examples(ctx, list, dir, files, project_dir, sayno):
 
 # System #
 
-
 @cli.group()
 def system():
     """System development tools.\n
@@ -104,133 +156,11 @@ def lsftdi():
     System().lsftdi()
 
 
-# Install #
-
-
-@cli.group('install', invoke_without_command=True)
-@click.pass_context
-@click.option('--all', is_flag=True, help='Install all toolchains')
-def install(ctx, all):
-    """Install development tools."""
-    if ctx.invoked_subcommand is None:
-        SystemInstaller().install()
-        SconsInstaller().install()
-        IverilogInstaller().install()
-        IcestormInstaller().install()
-        ExamplesInstaller().install()
-
-
-@install.command('driver')
-def install_driver():
-    """Install open FPGA drivers."""
-    DriverInstaller().install()
-
-
-@install.command('system')
-@click.option('--version',  type=unicode, metavar='version',
-    help='Specific version of the package')
-def install_system(version):
-    """Install system development tools."""
-    NewInstaller('system').install(version)
-
-
-@install.command('scons')
-@click.option('--version',  type=unicode, metavar='version',
-    help='Specific version of the package')
-def install_scons(version):
-    """Install scons toolchain."""
-    NewInstaller('scons').install(version)
-
-@install.command('iverilog')
-@click.option('--version',  type=unicode, metavar='version',
-    help='Specific version of the package')
-def install_iverilog(version):
-    """Install iverilog toolchain."""
-    NewInstaller('iverilog').install(version)
-
-
-@install.command('icestorm')
-@click.option('--version',  type=unicode, metavar='version',
-    help='Specific version of the package')
-def install_icestorm(version):
-    """Install icestorm toolchain."""
-    NewInstaller('icestorm').install(version)
-
-
-@install.command('pio-fpga')
-@click.option('--version',  type=unicode, metavar='version',
-    help='Specific version of the package')
-def intall_pio_fpga(version):
-    """Install platformio-fpga support."""
-    NewInstaller('pio-fpga').install(version)
-    click.secho("Now execute the following command:", fg='green')
-    click.secho("   pio platforms install lattice_ice40", fg='green')
-
-
-@install.command('examples')
-@click.option('--version',  type=unicode, metavar='version',
-    help='Specific version of the package')
-def intall_examples(version):
-    """Install verilog examples."""
-    NewInstaller('examples').install(version)
-
-
-# Uninstall #
-
-@cli.group('uninstall', invoke_without_command=True)
-@click.pass_context
-@click.option('--all', is_flag=True, help='Uninstall all toolchains')
-def uninstall(ctx, all):
-    """Uninstall development tools."""
-    if ctx.invoked_subcommand is None:
-        _uninstall(SystemInstaller().uninstall,
-                   SconsInstaller().uninstall,
-                   IverilogInstaller().uninstall,
-                   IcestormInstaller().uninstall,
-                   ExamplesInstaller().uninstall)
-
-
-@uninstall.command('driver')
-def uninstall_driver():
-    """Uninstall open FPGA drivers."""
-    _uninstall(DriverInstaller().uninstall)
-
-
-@uninstall.command('system')
-def uninstall_system():
-    """Uninstall system development tools."""
-    _uninstall(NewInstaller('system').uninstall)
-
-
-@uninstall.command('scons')
-def uninstall_scons():
-    """Uninstall scons toolchain."""
-    _uninstall(NewInstaller('scons').uninstall)
-
-@uninstall.command('iverilog')
-def uninstall_iverilog():
-    """Uninstall iverilog toolchain."""
-    _uninstall(NewInstaller('iverilog').uninstall)
-
-
-@uninstall.command('icestorm')
-def uninstall_icestorm():
-    """Uninstall icestorm toolchain."""
-    _uninstall(NewInstaller('icestorm').uninstall)
-
-
-@uninstall.command('examples')
-def uninstall_examples():
-    """Uninstall verilog examples."""
-    _uninstall(NewInstaller('examples').uninstall)
-
-
-def _uninstall(*functions):
-    if click.confirm('Do you want to continue?'):
-        for count, function in enumerate(functions):
-            function()
-    else:
-        click.secho('Abort!', fg='red')
+@system.command('platform')
+def platform():
+    """Show system information."""
+    click.secho('Platform: ', nl=False)
+    click.secho(get_systype(), fg='green')
 
 
 @cli.command('clean')

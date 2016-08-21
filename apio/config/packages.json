@@ -10,7 +10,8 @@
       "uncompressed_name": "apio-examples-%V",
       "package_name": "examples",
       "extension": "zip"
-    }
+    },
+    "description": "Verilog examples"
   },
   "scons" : {
     "repository": {
@@ -23,7 +24,8 @@
       "uncompressed_name": "scons-%V",
       "package_name": "tool-scons",
       "extension": "tar.gz"
-    }
+    },
+    "description": "Scons toolchain"
   },
   "icestorm" : {
     "repository": {
@@ -40,7 +42,8 @@
         "darwin": "tar.gz",
         "windows": "zip"
       }
-    }
+    },
+    "description": "Icestorm toolchain"
   },
   "iverilog" : {
     "repository": {
@@ -57,7 +60,8 @@
         "darwin": "tar.bz2",
         "windows": "zip"
       }
-    }
+    },
+    "description": "Icarus Verilog toolchain"
   },
   "system" : {
     "repository": {
@@ -74,7 +78,8 @@
         "darwin": "tar.bz2",
         "windows": "zip"
       }
-    }
+    },
+    "description": "System development tools"
   },
   "pio-fpga" : {
     "repository": {
@@ -88,6 +93,7 @@
       "package_name": "pio-fpga",
       "extension": "zip"
     },
-    "main_dir": ".platformio"
+    "main_dir": ".platformio",
+    "description": "Platformio-fpga support"
   }
 }

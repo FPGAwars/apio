@@ -11,7 +11,7 @@ BOARDS_FILENAME = 'boards.json'
 FPGAS_FILENAME = 'fpgas.json'
 PACKAGES_FILENAME = 'packages.json'
 
-EXAMPLE_MSG = """
+BOARDS_MSG = """
 Use `apio init --board <boardname>` for creating a new apio """ \
 """proyect for that board"""
 
@@ -67,4 +67,4 @@ class Config(object):
                 name=click.style(board, fg='cyan'), fpga=fpga, type=self.fpgas[fpga]['type'],
                 size=self.fpgas[fpga]['size'], pack=self.fpgas[fpga]['pack']))
 
-        click.secho(EXAMPLE_MSG, fg='green')
+        click.secho(BOARDS_MSG, fg='green')
