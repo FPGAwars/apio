@@ -42,6 +42,23 @@
       }
     }
   },
+  "iverilog" : {
+    "repository": {
+      "name": "toolchain-iverilog",
+      "organization": "FPGAwars"
+    },
+    "release": {
+      "tag_name": "v0.%V",
+      "compressed_name": "toolchain-iverilog-%A-%V",
+      "uncompressed_name": "toolchain-iverilog",
+      "package_name": "toolchain-iverilog",
+      "extension": {
+        "linux": "tar.bz2",
+        "darwin": "tar.bz2",
+        "windows": "zip"
+      }
+    }
+  },
   "system" : {
     "repository": {
       "name": "tools-usb-ftdi",

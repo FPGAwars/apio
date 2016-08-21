@@ -9,7 +9,6 @@ from .examples import Examples
 from .execute import SCons, System
 from .project import Project
 from .config import Config
-from .packages.iverilog import IverilogInstaller
 from .packages.driver import DriverInstaller
 from .packages.piofpga import PioFPGAInstaller
 
@@ -148,7 +147,7 @@ def install_scons(version):
     help='Specific version of the package')
 def install_iverilog(version):
     """Install iverilog toolchain."""
-    IverilogInstaller().install(version)
+    NewInstaller('iverilog').install(version)
 
 
 @install.command('icestorm')
@@ -210,7 +209,7 @@ def uninstall_scons():
 @uninstall.command('iverilog')
 def uninstall_iverilog():
     """Uninstall iverilog toolchain."""
-    _uninstall(IverilogInstaller().uninstall)
+    _uninstall(NewInstaller('iverilog').uninstall)
 
 
 @uninstall.command('icestorm')
