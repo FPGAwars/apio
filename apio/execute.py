@@ -38,12 +38,11 @@ class System(object):
 
     def _run(self, command):
         result = []
-        system_dir = join(expanduser('~'), '.apio', 'system')
-        tools_usb_ftdi_dir = join(system_dir, 'tools-usb-ftdi')
+        system_dir = os.path.join(util.get_home_dir(), 'packages', 'system')
 
-        if isdir(tools_usb_ftdi_dir):
+        if isdir(system_dir):
             result = util.exec_command(
-                os.path.join(tools_usb_ftdi_dir, command + self.ext),
+                os.path.join(system_dir, command + self.ext),
                 stdout=util.AsyncPipe(self._on_run_out),
                 stderr=util.AsyncPipe(self._on_run_out)
                 )

@@ -12,7 +12,6 @@ from .config import Config
 from .packages.iverilog import IverilogInstaller
 from .packages.icestorm import IcestormInstaller
 from .packages.driver import DriverInstaller
-from .packages.system import SystemInstaller
 from .packages.piofpga import PioFPGAInstaller
 
 from .new_installer import NewInstaller
@@ -135,7 +134,7 @@ def install_driver():
     help='Specific version of the package')
 def install_system(version):
     """Install system development tools."""
-    SystemInstaller().install(version)
+    NewInstaller('system').install(version)
 
 
 @install.command('scons')
@@ -201,7 +200,7 @@ def uninstall_driver():
 @uninstall.command('system')
 def uninstall_system():
     """Uninstall system development tools."""
-    _uninstall(SystemInstaller().uninstall)
+    _uninstall(NewInstaller('system').uninstall)
 
 
 @uninstall.command('scons')

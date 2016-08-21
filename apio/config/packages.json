@@ -24,5 +24,22 @@
       "package_name": "tool-scons",
       "extension": "tar.gz"
     }
+  },
+  "system" : {
+    "repository": {
+      "name": "tools-usb-ftdi",
+      "organization": "FPGAwars"
+    },
+    "release": {
+      "tag_name": "v0.%V",
+      "compressed_name": "tools-usb-ftdi-%A-%V",
+      "uncompressed_name": "bin",
+      "package_name": "system",
+      "extension": {
+        "linux": "tar.bz2",
+        "darwin": "tar.bz2",
+        "windows": "zip"
+      }
+    }
   }
 }

@@ -32,13 +32,22 @@ class NewInstaller(object):
             data['release']['tag_name']
         )
 
-        self.compressed_name = data['release']['compressed_name'].replace('%V', self.version)
-        self.uncompressed_name = data['release']['uncompressed_name'].replace('%V', self.version)
+        self.arch = self._get_architecture()
+
+        self.compressed_name = data['release']['compressed_name'].replace('%V', self.version).replace('%A', self.arch)
+        self.uncompressed_name = data['release']['uncompressed_name'].replace('%V', self.version).replace('%A', self.arch)
         self.package_name = data['release']['package_name']
+
+        if isinstance(data['release']['extension'], dict):
+            for os in ['linux', 'darwin', 'windows']:
+                if os in self.arch:
+                    self.extension = data['release']['extension'][os]
+        else:
+            self.extension = data['release']['extension']
 
         self.tarball = self._get_tarball_name(
             self.compressed_name,
-            data['release']['extension']
+            self.extension
         )
 
         self.download_url = self._get_download_url(
@@ -100,7 +109,7 @@ class NewInstaller(object):
             self.profile.remove(self.package)
             self.profile.save()
 
-    def _get_platform(self):
+    def _get_architecture(self):
         return util.get_systype()
 
     def _get_download_url(self, name, organization, tag, tarball):
