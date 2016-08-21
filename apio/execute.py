@@ -12,7 +12,7 @@ from os.path import join, dirname, isdir, isfile, expanduser
 from .project import Project
 
 from . import util
-from .config import Config
+from .resources import Resources
 
 
 class System(object):
@@ -86,7 +86,7 @@ class System(object):
 class SCons(object):
 
     def __init__(self):
-        self.config = Config()
+        self.resources = Resources()
 
     def clean(self):
         self.run('-c')
@@ -117,7 +117,7 @@ class SCons(object):
         if device:
             # Check device argument
             if board:
-                desc = self.config.boards[board]['ftdi-desc']
+                desc = self.resources.boards[board]['ftdi-desc']
                 check = False
                 for b in detected_boards:
                     # Selected board
@@ -136,7 +136,7 @@ class SCons(object):
             # Detect device
             device = -1
             if board:
-                desc = self.config.boards[board]['ftdi-desc']
+                desc = self.resources.boards[board]['ftdi-desc']
                 for b in detected_boards:
                     if desc in b['description']:
                         # Select the first board that validates the ftdi description
@@ -270,18 +270,18 @@ class SCons(object):
         if var_board:
             if isfile('apio.ini'):
                 click.secho('Info: ignore apio.ini board', fg='yellow')
-            if var_board in self.config.boards:
-                fpga = self.config.boards[var_board]['fpga']
-                if fpga in self.config.fpgas:
-                    fpga_size = self.config.fpgas[fpga]['size']
-                    fpga_type = self.config.fpgas[fpga]['type']
-                    fpga_pack = self.config.fpgas[fpga]['pack']
+            if var_board in self.resources.boards:
+                fpga = self.resources.boards[var_board]['fpga']
+                if fpga in self.resources.fpgas:
+                    fpga_size = self.resources.fpgas[fpga]['size']
+                    fpga_type = self.resources.fpgas[fpga]['type']
+                    fpga_pack = self.resources.fpgas[fpga]['pack']
 
                     redundant_arguments = []
                     contradictory_arguments = []
 
                     if var_fpga:
-                        if var_fpga in self.config.fpgas:
+                        if var_fpga in self.resources.fpgas:
                             if var_fpga == fpga:
                                 # Redundant argument
                                 redundant_arguments += ['fpga']
@@ -345,10 +345,10 @@ class SCons(object):
             if var_fpga:
                 if isfile('apio.ini'):
                     click.secho('Info: ignore apio.ini board', fg='yellow')
-                if var_fpga in self.config.fpgas:
-                    fpga_size = self.config.fpgas[var_fpga]['size']
-                    fpga_type = self.config.fpgas[var_fpga]['type']
-                    fpga_pack = self.config.fpgas[var_fpga]['pack']
+                if var_fpga in self.resources.fpgas:
+                    fpga_size = self.resources.fpgas[var_fpga]['size']
+                    fpga_type = self.resources.fpgas[var_fpga]['type']
+                    fpga_pack = self.resources.fpgas[var_fpga]['pack']
 
                     redundant_arguments = []
                     contradictory_arguments = []
@@ -410,10 +410,10 @@ class SCons(object):
                             var_board = p.board
                             click.secho(
                                 'Info: use apio.ini board: {}'.format(var_board))
-                            fpga = self.config.boards[var_board]['fpga']
-                            fpga_size = self.config.fpgas[fpga]['size']
-                            fpga_type = self.config.fpgas[fpga]['type']
-                            fpga_pack = self.config.fpgas[fpga]['pack']
+                            fpga = self.resources.boards[var_board]['fpga']
+                            fpga_size = self.resources.fpgas[fpga]['size']
+                            fpga_type = self.resources.fpgas[fpga]['type']
+                            fpga_pack = self.resources.fpgas[fpga]['pack']
                         else:
                             click.secho(
                                 'Error: insufficient arguments: missing board',

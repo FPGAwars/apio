@@ -9,7 +9,7 @@ from os.path import isdir, join, basename, expanduser
 
 from . import util
 from .api import api_request
-from .config import Config
+from .resources import Resources
 from .profile import Profile
 
 from .downloader import FileDownloader
@@ -21,10 +21,10 @@ class Installer(object):
     def __init__(self, package):
         self.package = package
 
-        self.config = Config()
+        self.resources = Resources()
         self.profile = Profile()
 
-        data = self.config.packages[package]
+        data = self.resources.packages[package]
 
         self.version = self._get_version(
             data['repository']['name'],

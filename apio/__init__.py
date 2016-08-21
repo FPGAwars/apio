@@ -8,7 +8,7 @@ from .util import get_systype
 from .examples import Examples
 from .execute import SCons, System
 from .project import Project
-from .config import Config
+from .resources import Resources
 from .drivers import Drivers
 from .installer import Installer
 
@@ -40,12 +40,12 @@ def install(ctx, packages, all, list):
         for package in packages:
             Installer(package).install()
     elif all:
-        packages = Config().packages
+        packages = Resources().packages
         for package in packages:
             Installer(package).install()
     elif list:
         # TODO
-        Config().list_all_packages()
+        Resources().list_all_packages()
     else:
         click.secho(ctx.get_help())
 
@@ -64,12 +64,12 @@ def install(ctx, packages, all, list):
         for package in packages:
             _uninstall(Installer(package).uninstall)
     elif all:
-        packages = Config().packages
+        packages = Resources().packages
         for package in packages:
             _uninstall(Installer(package).uninstall)
     elif list:
         # TODO
-        Config().list_installed_packages()
+        Resources().list_installed_packages()
     else:
         click.secho(ctx.get_help())
 
@@ -99,7 +99,7 @@ def drivers(ctx, enable, disable):
 @cli.command('boards')
 def boards():
     """List all the supported FPGA boards."""
-    Config().list_boards()
+    Resources().list_boards()
 
 
 @cli.command('scons')

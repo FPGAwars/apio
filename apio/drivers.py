@@ -1,4 +1,4 @@
-# Rules icestick class
+# Drivers class
 
 import click
 import subprocess

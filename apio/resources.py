@@ -16,7 +16,7 @@ Use `apio init --board <boardname>` for creating a new apio """ \
 """proyect for that board"""
 
 
-class Config(object):
+class Resources(object):
 
     def __init__(self):
         self.boards = None
@@ -24,7 +24,7 @@ class Config(object):
         self.packages = None
 
         # -- Get config dir
-        config_dir = os.path.join(os.path.dirname(__file__), 'config')
+        config_dir = os.path.join(os.path.dirname(__file__), 'resources')
 
         # -- Get the fully boards_filename with path
         boards_filename = os.path.join(config_dir, BOARDS_FILENAME)
