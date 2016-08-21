@@ -12,7 +12,7 @@ from os.path import join, dirname, isdir, isfile, expanduser
 from .project import Project
 
 from . import util
-from .config import Boards
+from .resources import Resources
 
 
 class System(object):
@@ -38,12 +38,11 @@ class System(object):
 
     def _run(self, command):
         result = []
-        system_dir = join(expanduser('~'), '.apio', 'system')
-        tools_usb_ftdi_dir = join(system_dir, 'tools-usb-ftdi')
+        system_dir = os.path.join(util.get_home_dir(), 'packages', 'system')
 
-        if isdir(tools_usb_ftdi_dir):
+        if isdir(system_dir):
             result = util.exec_command(
-                os.path.join(tools_usb_ftdi_dir, command + self.ext),
+                os.path.join(system_dir, command + self.ext),
                 stdout=util.AsyncPipe(self._on_run_out),
                 stderr=util.AsyncPipe(self._on_run_out)
                 )
@@ -87,7 +86,7 @@ class System(object):
 class SCons(object):
 
     def __init__(self):
-        self.current_boards = Boards()
+        self.resources = Resources()
 
     def clean(self):
         self.run('-c')
@@ -118,7 +117,7 @@ class SCons(object):
         if device:
             # Check device argument
             if board:
-                desc = self.current_boards.boards[board]['ftdi-desc']
+                desc = self.resources.boards[board]['ftdi-desc']
                 check = False
                 for b in detected_boards:
                     # Selected board
@@ -137,7 +136,7 @@ class SCons(object):
             # Detect device
             device = -1
             if board:
-                desc = self.current_boards.boards[board]['ftdi-desc']
+                desc = self.resources.boards[board]['ftdi-desc']
                 for b in detected_boards:
                     if desc in b['description']:
                         # Select the first board that validates the ftdi description
@@ -210,7 +209,7 @@ class SCons(object):
 
         # -- Check for the SConstruct file
         if not isfile(join(os.getcwd(), sconstruct_name)):
-            click.secho('Using default SConstruct file', fg='yellow')
+            click.secho('Using default SConstruct file')
             variables += ['-f', join(dirname(__file__), sconstruct_name)]
 
         # -- Execute scons
@@ -271,18 +270,18 @@ class SCons(object):
         if var_board:
             if isfile('apio.ini'):
                 click.secho('Info: ignore apio.ini board', fg='yellow')
-            if var_board in self.current_boards.boards:
-                fpga = self.current_boards.boards[var_board]['fpga']
-                if fpga in self.current_boards.fpgas:
-                    fpga_size = self.current_boards.fpgas[fpga]['size']
-                    fpga_type = self.current_boards.fpgas[fpga]['type']
-                    fpga_pack = self.current_boards.fpgas[fpga]['pack']
+            if var_board in self.resources.boards:
+                fpga = self.resources.boards[var_board]['fpga']
+                if fpga in self.resources.fpgas:
+                    fpga_size = self.resources.fpgas[fpga]['size']
+                    fpga_type = self.resources.fpgas[fpga]['type']
+                    fpga_pack = self.resources.fpgas[fpga]['pack']
 
                     redundant_arguments = []
                     contradictory_arguments = []
 
                     if var_fpga:
-                        if var_fpga in self.current_boards.fpgas:
+                        if var_fpga in self.resources.fpgas:
                             if var_fpga == fpga:
                                 # Redundant argument
                                 redundant_arguments += ['fpga']
@@ -346,10 +345,10 @@ class SCons(object):
             if var_fpga:
                 if isfile('apio.ini'):
                     click.secho('Info: ignore apio.ini board', fg='yellow')
-                if var_fpga in self.current_boards.fpgas:
-                    fpga_size = self.current_boards.fpgas[var_fpga]['size']
-                    fpga_type = self.current_boards.fpgas[var_fpga]['type']
-                    fpga_pack = self.current_boards.fpgas[var_fpga]['pack']
+                if var_fpga in self.resources.fpgas:
+                    fpga_size = self.resources.fpgas[var_fpga]['size']
+                    fpga_type = self.resources.fpgas[var_fpga]['type']
+                    fpga_pack = self.resources.fpgas[var_fpga]['pack']
 
                     redundant_arguments = []
                     contradictory_arguments = []
@@ -411,10 +410,10 @@ class SCons(object):
                             var_board = p.board
                             click.secho(
                                 'Info: use apio.ini board: {}'.format(var_board))
-                            fpga = self.current_boards.boards[var_board]['fpga']
-                            fpga_size = self.current_boards.fpgas[fpga]['size']
-                            fpga_type = self.current_boards.fpgas[fpga]['type']
-                            fpga_pack = self.current_boards.fpgas[fpga]['pack']
+                            fpga = self.resources.boards[var_board]['fpga']
+                            fpga_size = self.resources.fpgas[fpga]['size']
+                            fpga_type = self.resources.fpgas[fpga]['type']
+                            fpga_pack = self.resources.fpgas[fpga]['pack']
                         else:
                             click.secho(
                                 'Error: insufficient arguments: missing board',

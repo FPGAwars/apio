@@ -1,64 +1,56 @@
-# Rules icestick class
+# Drivers class
 
 import click
 import subprocess
 
 from os.path import join, dirname, isfile
 
-from ..util import get_systype
+from .util import get_systype
 
 platform = get_systype()
 
 
-class DriverInstaller(object):
+class Drivers(object):
 
-    rules_local_path = join(dirname(__file__), '80-icestick.rules')
+    rules_local_path = join(dirname(__file__), 'config', '80-icestick.rules')
     rules_system_path = '/etc/udev/rules.d/80-icestick.rules'
 
-    def install(self):
+    def enable(self):
         if 'linux' in platform:
-            self._install_linux()
+            self._enable_linux()
         elif 'darwin' in platform:
-            self._install_darwin()
+            self._enable_darwin()
         elif 'windows' in platform:
-            self._install_windows()
+            self._enable_windows()
 
-    def uninstall(self):
+    def disable(self):
         if 'linux' in platform:
-            self._uninstall_linux()
+            self._disable_linux()
         elif 'darwin' in platform:
-            self._uninstall_darwin()
+            self._disable_darwin()
         elif 'windows' in platform:
-            self._uninstall_windows()
+            self._disable_windows()
 
-    def _install_linux(self):
-        click.secho('Installing ', nl=False)
-        click.secho('icestick.rules', fg='cyan', nl=False)
-        click.secho(' package:')
+    def _enable_linux(self):
+        click.secho('Configure FTDI drivers for FPGA')
         if not isfile(self.rules_system_path):
             subprocess.call(['sudo', 'cp',
                              self.rules_local_path, self.rules_system_path])
             subprocess.call(['sudo', 'service', 'udev', 'restart'])
-            click.secho(
-                'Package \'icestick.rules\' has been successfully installed!',
-                fg='green')
+            click.secho('FPGA drivers enabled', fg='green')
         else:
-            click.secho('Already installed', fg='yellow')
+            click.secho('Already enabled', fg='yellow')
 
 
-    def _uninstall_linux(self):
+    def _disable_linux(self):
         if isfile(self.rules_system_path):
-            click.secho('Uninstalling ', nl=False)
-            click.secho('icestick.rules', fg='cyan', nl=False)
-            click.secho(' package:')
+            click.secho('Revert FTDI drivers\' configuration')
             subprocess.call(['sudo', 'rm', self.rules_system_path])
-            click.secho(
-                'Package \'icestick.rules\' has been successfully uninstalled!',
-                fg='green')
+            click.secho('FPGA drivers disabled', fg='green')
         else:
-            click.secho('Package \'icestick.rules\' is not installed', fg='red')
+            click.secho('Already disabled', fg='red')
 
-    def _install_darwin(self):
+    def _enable_darwin(self):
         # TODO: return if brew is not installed
         subprocess.call(['brew', 'install', 'libftdi'])
         click.secho('Configure FTDI drivers for FPGA')
@@ -66,19 +58,21 @@ class DriverInstaller(object):
                          'com.FTDI.driver.FTDIUSBSerialDriver'])
         subprocess.call(['sudo', 'kextunload', '-b',
                          'com.apple.driver.AppleUSBFTDI'])
+        click.secho('FPGA drivers enabled', fg='green')
 
-    def _uninstall_darwin(self):
+    def _disable_darwin(self):
         click.secho('Revert FTDI drivers\' configuration')
         subprocess.call(['sudo', 'kextload', '-b',
                          'com.FTDI.driver.FTDIUSBSerialDriver'])
         subprocess.call(['sudo', 'kextload', '-b',
                          'com.apple.driver.AppleUSBFTDI'])
+        click.secho('FPGA drivers disabled', fg='green')
 
-    def _install_windows(self):
+    def _enable_windows(self):
         import webbrowser
-        url = 'https://github.com/FPGAwars/apio/wiki/Installation#windows'
+        url = 'https://github.com/FPGAwars/apio/wiki/enableation#windows'
         click.secho('Follow the next instructions: ' + url)
         webbrowser.open(url)
 
-    def _uninstall_windows(self):
+    def _disable_windows(self):
         pass

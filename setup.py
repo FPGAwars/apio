@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='apio',
-    version='0.1.2.2',
+    version='0.1.2.3',
     author='Jesús Arroyo Torrens',
     author_email='jesus.jkhlg@gmail.com',
     url='https://github.com/FPGAwars/apio',
@@ -12,9 +12,8 @@ setup(
     packages=['apio'],
     package_data={
         'apio': ['SConstruct',
-                 'packages/*.py',
-                 'packages/*.rules',
-                 'config/*.json']
+                 'resources/*.rules',
+                 'resources/*.json']
     },
     install_requires=[
         'click',
