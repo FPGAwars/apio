@@ -9,7 +9,7 @@ from .examples import Examples
 from .execute import SCons, System
 from .project import Project
 from .config import Config
-from .packages.driver import DriverInstaller
+from .drivers import Drivers
 from .installer import Installer
 
 try:
@@ -82,9 +82,18 @@ def _uninstall(*functions):
 
 
 @cli.command('drivers')
-def boards():
+@click.pass_context
+@click.option('-e', '--enable', is_flag=True, help='Enable FPGA drivers')
+@click.option('-d', '--disable', is_flag=True, help='Disable FPGA drivers')
+def drivers(ctx, enable, disable):
     """Drivers for the FPGAs"""
-    pass
+
+    if enable:
+        Drivers().enable()
+    elif disable:
+        Drivers().disable()
+    else:
+        click.secho(ctx.get_help())
 
 
 @cli.command('boards')

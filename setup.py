@@ -12,8 +12,7 @@ setup(
     packages=['apio'],
     package_data={
         'apio': ['SConstruct',
-                 'packages/*.py',
-                 'packages/*.rules',
+                 'config/*.rules',
                  'config/*.json']
     },
     install_requires=[
