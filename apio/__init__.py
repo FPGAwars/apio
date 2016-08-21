@@ -12,6 +12,7 @@ from .resources import Resources
 from .drivers import Drivers
 from .installer import Installer
 
+# Python3 compat
 try:
     unicode = str
 except NameError:
@@ -31,7 +32,7 @@ def cli():
 @cli.command('install')
 @click.pass_context
 @click.argument('packages', nargs=-1)
-@click.option('-a', '--all', is_flag=True, help='Install all packages')
+@click.option('-a', '--all', is_flag=True, help='Install all packages.')
 @click.option('-l', '--list', is_flag=True, help='List all available packages.')
 def install(ctx, packages, all, list):
     """Install packages."""
@@ -44,8 +45,7 @@ def install(ctx, packages, all, list):
         for package in packages:
             Installer(package).install()
     elif list:
-        # TODO
-        Resources().list_all_packages()
+        Resources().list_packages(installed=True, notinstalled=True)
     else:
         click.secho(ctx.get_help())
 
@@ -55,28 +55,25 @@ def install(ctx, packages, all, list):
 @cli.command('uninstall')
 @click.pass_context
 @click.argument('packages', nargs=-1)
-@click.option('-a', '--all', is_flag=True, help='Uninstall all packages')
+@click.option('-a', '--all', is_flag=True, help='Uninstall all packages.')
 @click.option('-l', '--list', is_flag=True, help='List all installed packages.')
 def install(ctx, packages, all, list):
     """Uninstall packages."""
 
     if packages:
-        for package in packages:
-            _uninstall(Installer(package).uninstall)
+        _uninstall(packages)
     elif all:
         packages = Resources().packages
-        for package in packages:
-            _uninstall(Installer(package).uninstall)
+        _uninstall(packages)
     elif list:
-        # TODO
-        Resources().list_installed_packages()
+        Resources().list_packages(installed=True, notinstalled=False)
     else:
         click.secho(ctx.get_help())
 
-def _uninstall(*functions):
+def _uninstall(packages):
     if click.confirm('Do you want to continue?'):
-        for count, function in enumerate(functions):
-            function()
+        for package in packages:
+            Installer(package).uninstall()
     else:
         click.secho('Abort!', fg='red')
 
@@ -97,10 +94,15 @@ def drivers(ctx, enable, disable):
 
 
 @cli.command('boards')
-def boards():
-    """List all the supported FPGA boards."""
-    Resources().list_boards()
+@click.pass_context
+@click.option('-l', '--list', is_flag=True, help='List all supported FPGA boards.')
+def boards(ctx, list):
+    """Manage FPGA boards."""
 
+    if list:
+        Resources().list_boards()
+    else:
+        click.secho(ctx.get_help())
 
 @cli.command('scons')
 def scons():

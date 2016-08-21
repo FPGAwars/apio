@@ -209,7 +209,7 @@ class SCons(object):
 
         # -- Check for the SConstruct file
         if not isfile(join(os.getcwd(), sconstruct_name)):
-            click.secho('Using default SConstruct file', fg='yellow')
+            click.secho('Using default SConstruct file')
             variables += ['-f', join(dirname(__file__), sconstruct_name)]
 
         # -- Execute scons

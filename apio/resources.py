@@ -1,15 +1,10 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# Resources class
 
 import os
 import json
 import click
 
-# --------- Configuration
-
-BOARDS_FILENAME = 'boards.json'
-FPGAS_FILENAME = 'fpgas.json'
-PACKAGES_FILENAME = 'packages.json'
+from .profile import Profile
 
 BOARDS_MSG = """
 Use `apio init --board <boardname>` for creating a new apio """ \
@@ -19,38 +14,84 @@ Use `apio init --board <boardname>` for creating a new apio """ \
 class Resources(object):
 
     def __init__(self):
-        self.boards = None
-        self.fpgas = None
-        self.packages = None
+        self.packages = self._load_resource('packages')
+        self.boards = self._load_resource('boards')
+        self.fpgas = self._load_resource('fpgas')
 
-        # -- Get config dir
-        config_dir = os.path.join(os.path.dirname(__file__), 'resources')
+    def _load_resource(self, name):
+        resource = None
+        filepath = os.path.join(os.path.dirname(__file__), 'resources', name + '.json')
+        with open(filepath, 'r') as f:
+            # Load the JSON file
+            resource = json.loads(f.read())
+        return resource
 
-        # -- Get the fully boards_filename with path
-        boards_filename = os.path.join(config_dir, BOARDS_FILENAME)
-        fpgas_filename = os.path.join(config_dir, FPGAS_FILENAME)
-        packages_filename = os.path.join(config_dir, PACKAGES_FILENAME)
+    def list_packages(self, installed=True, notinstalled=True):
+        """Return a list with all the installed/notinstalled packages"""
 
-        # -- Load the boards file
-        with open(boards_filename, 'r') as f:
-            boards_str = f.read()
-            self.boards = json.loads(boards_str)
+        self.profile = Profile()
 
-        # -- Load the fpgas file
-        with open(fpgas_filename, 'r') as f:
-            fpgas_str = f.read()
-            self.fpgas = json.loads(fpgas_str)
+        # Classify packages
+        installed_packages = []
+        notinstalled_packages = []
 
-        # -- Load the packages file
-        with open(packages_filename, 'r') as f:
-            packages_str = f.read()
-            self.packages = json.loads(packages_str)
+        for package in self.packages:
+            data = {
+                'name': package,
+                'version': None,
+                'description': self.packages[package]['description']
+            }
+            if self.profile.check_package(package):
+                data['version'] = self.profile.get_version(package)
+                installed_packages += [data]
+            else:
+                notinstalled_packages += [data]
+
+        # Print tables
+        terminal_width, _ = click.get_terminal_size()
+
+        if installed and installed_packages:
+
+            # - Print installed packages table
+            click.echo('\nInstalled packages:\n')
+
+            PACKAGELIST_TPL = ('{name:20} {description:30} {version:<8}')
+
+            click.echo('-' * terminal_width)
+            click.echo(PACKAGELIST_TPL.format(
+                name=click.style('Name', fg='cyan'), version='Version',
+                description='Description'))
+            click.echo('-' * terminal_width)
+
+            for package in installed_packages:
+                click.echo(PACKAGELIST_TPL.format(
+                    name=click.style(package['name'], fg='cyan'),
+                    version=package['version'],
+                    description=package['description']))
+
+        if notinstalled and notinstalled_packages:
+
+            # - Print not installed packages table
+            click.echo('\nNot installed packages:\n')
+
+            PACKAGELIST_TPL = ('{name:20} {description:30}')
+
+            click.echo('-' * terminal_width)
+            click.echo(PACKAGELIST_TPL.format(
+                name=click.style('Name', fg='yellow'),
+                description='Description'))
+            click.echo('-' * terminal_width)
+
+            for package in notinstalled_packages:
+                click.echo(PACKAGELIST_TPL.format(
+                    name=click.style(package['name'], fg='yellow'),
+                    description=package['description']))
 
     def list_boards(self):
         """Return a list with all the supported boards"""
 
-        # -- Print table
-        click.echo('Supported boards:\n')
+        # Print table
+        click.echo('\nSupported boards:\n')
 
         BOARDLIST_TPL = ('{name:22} {fpga:20} {type:<5} {size:<5} {pack:<10}')
         terminal_width, _ = click.get_terminal_size()
@@ -64,7 +105,10 @@ class Resources(object):
         for board in self.boards:
             fpga = self.boards[board]['fpga']
             click.echo(BOARDLIST_TPL.format(
-                name=click.style(board, fg='cyan'), fpga=fpga, type=self.fpgas[fpga]['type'],
-                size=self.fpgas[fpga]['size'], pack=self.fpgas[fpga]['pack']))
+                name=click.style(board, fg='cyan'),
+                fpga=fpga,
+                type=self.fpgas[fpga]['type'],
+                size=self.fpgas[fpga]['size'],
+                pack=self.fpgas[fpga]['pack']))
 
         click.secho(BOARDS_MSG, fg='green')
