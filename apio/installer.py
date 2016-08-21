@@ -20,52 +20,56 @@ class Installer(object):
 
     def __init__(self, package):
         self.package = package
+        self.version = None
 
         self.resources = Resources()
         self.profile = Profile()
 
-        data = self.resources.packages[package]
+        if package in self.resources.packages:
 
-        self.version = self._get_version(
-            data['repository']['name'],
-            data['repository']['organization'],
-            data['release']['tag_name']
-        )
+            data = self.resources.packages[package]
 
-        self.arch = self._get_architecture()
+            self.version = self._get_version(
+                data['repository']['name'],
+                data['repository']['organization'],
+                data['release']['tag_name']
+            )
 
-        self.compressed_name = data['release']['compressed_name'].replace('%V', self.version).replace('%A', self.arch)
-        self.uncompressed_name = data['release']['uncompressed_name'].replace('%V', self.version).replace('%A', self.arch)
-        self.package_name = data['release']['package_name']
+            self.arch = self._get_architecture()
 
-        if isinstance(data['release']['extension'], dict):
-            for os in ['linux', 'darwin', 'windows']:
-                if os in self.arch:
-                    self.extension = data['release']['extension'][os]
+            self.compressed_name = data['release']['compressed_name'].replace('%V', self.version).replace('%A', self.arch)
+            self.uncompressed_name = data['release']['uncompressed_name'].replace('%V', self.version).replace('%A', self.arch)
+            self.package_name = data['release']['package_name']
+
+            if isinstance(data['release']['extension'], dict):
+                for os in ['linux', 'darwin', 'windows']:
+                    if os in self.arch:
+                        self.extension = data['release']['extension'][os]
+            else:
+                self.extension = data['release']['extension']
+
+            self.tarball = self._get_tarball_name(
+                self.compressed_name,
+                self.extension
+            )
+
+            self.download_url = self._get_download_url(
+                data['repository']['name'],
+                data['repository']['organization'],
+                data['release']['tag_name'].replace('%V', self.version),
+                self.tarball
+            )
+
+            if 'main_dir' in data.keys():
+                self.packages_dir = join(expanduser('~'), data['main_dir'])
+            else:
+                self.packages_dir = join(util.get_home_dir(), 'packages')
+
+    def install(self):
+        if self.version is None:
+            click.secho(
+                'Package \'{0}\' does not exist'.format(self.package), fg='red')
         else:
-            self.extension = data['release']['extension']
-
-        self.tarball = self._get_tarball_name(
-            self.compressed_name,
-            self.extension
-        )
-
-        self.download_url = self._get_download_url(
-            data['repository']['name'],
-            data['repository']['organization'],
-            data['release']['tag_name'].replace('%V', self.version),
-            self.tarball
-        )
-
-        if 'main_dir' in data.keys():
-            self.packages_dir = join(expanduser('~'), data['main_dir'])
-        else:
-            self.packages_dir = join(util.get_home_dir(), 'packages')
-
-    def install(self, version=None):
-        if version:
-            self.version = version
-        if self.package is not None:
             click.echo("Installing %s package:" % click.style(self.package, fg="cyan"))
             if not isdir(self.packages_dir):
                 makedirs(self.packages_dir)
@@ -91,15 +95,18 @@ class Installer(object):
                             self.package
                         ), fg='green')
 
-        # Rename unpacked dir to package dir
-        if self.uncompressed_name:
-            unpack_dir = join(self.packages_dir, self.uncompressed_name)
-            package_dir = join(self.packages_dir, self.package_name)
-            if isdir(unpack_dir):
-                rename(unpack_dir, package_dir)
+            # Rename unpacked dir to package dir
+            if self.uncompressed_name:
+                unpack_dir = join(self.packages_dir, self.uncompressed_name)
+                package_dir = join(self.packages_dir, self.package_name)
+                if isdir(unpack_dir):
+                    rename(unpack_dir, package_dir)
 
     def uninstall(self):
-        if self.package is not None:
+        if self.version is None:
+            click.secho(
+                'Package \'{0}\' does not exist'.format(self.package), fg='red')
+        else:
             if isdir(join(self.packages_dir, self.package_name)):
                 click.echo("Uninstalling %s package" % click.style(self.package, fg="cyan"))
                 shutil.rmtree(join(self.packages_dir, self.package_name))
