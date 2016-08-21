@@ -8,7 +8,21 @@
       "tag_name": "%V",
       "compressed_name": "apio-examples-%V",
       "uncompressed_name": "apio-examples-%V",
+      "package_name": "examples",
       "extension": "zip"
+    }
+  },
+  "scons" : {
+    "repository": {
+      "name": "tool-scons",
+      "organization": "FPGAwars"
+    },
+    "release": {
+      "tag_name": "v%V",
+      "compressed_name": "scons-%V",
+      "uncompressed_name": "scons-%V",
+      "package_name": "tool-scons",
+      "extension": "tar.gz"
     }
   }
 }

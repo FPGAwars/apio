@@ -32,21 +32,21 @@ class NewInstaller(object):
             data['release']['tag_name']
         )
 
-        self.compressed_tarball = data['release']['compressed_name'].replace('%V', self.version)
-        self.uncompressed_tarball = data['release']['uncompressed_name'].replace('%V', self.version)
+        self.compressed_name = data['release']['compressed_name'].replace('%V', self.version)
+        self.uncompressed_name = data['release']['uncompressed_name'].replace('%V', self.version)
+        self.package_name = data['release']['package_name']
 
         self.tarball = self._get_tarball_name(
-            self.compressed_tarball,
+            self.compressed_name,
             data['release']['extension']
         )
 
         self.download_url = self._get_download_url(
             data['repository']['name'],
             data['repository']['organization'],
-            self.version,
+            data['release']['tag_name'].replace('%V', self.version),
             self.tarball
         )
-
 
         self.packages_dir = join(util.get_home_dir(), 'packages')
 
@@ -80,16 +80,16 @@ class NewInstaller(object):
                         ), fg='green')
 
         # Rename unpacked dir to package dir
-        unpack_dir = join(self.packages_dir, self.uncompressed_tarball)
-        package_dir = join(self.packages_dir, self.package)
+        unpack_dir = join(self.packages_dir, self.uncompressed_name)
+        package_dir = join(self.packages_dir, self.package_name)
         if isdir(unpack_dir):
             rename(unpack_dir, package_dir)
 
     def uninstall(self):
         if self.package is not None:
-            if isdir(join(self.packages_dir, self.package)):
+            if isdir(join(self.packages_dir, self.package_name)):
                 click.echo("Uninstalling %s package" % click.style(self.package, fg="cyan"))
-                shutil.rmtree(join(self.packages_dir, self.package))
+                shutil.rmtree(join(self.packages_dir, self.package_name))
                 click.secho(
                     'Package \'{0}\' has been successfully uninstalled!'.format(
                         self.package
@@ -103,11 +103,11 @@ class NewInstaller(object):
     def _get_platform(self):
         return util.get_systype()
 
-    def _get_download_url(self, name, organization, version, tarball):
+    def _get_download_url(self, name, organization, tag, tarball):
         url = 'https://github.com/{0}/{1}/releases/download/{2}/{3}'.format(
             organization,
             name,
-            version,
+            tag,
             tarball)
         return url
 

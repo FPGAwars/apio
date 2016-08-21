@@ -7,6 +7,7 @@ import shutil
 
 from os.path import join, isdir, isfile, basename, expanduser
 
+from . import util
 
 # -- Error messages
 EXAMPLE_NOT_FOUND_MSG = """
@@ -26,7 +27,7 @@ To get an example, use the command:
 class Examples(object):
 
     def __init__(self):
-        self.examples_dir = join(expanduser('~'), '.apio', 'examples')
+        self.examples_dir = join(util.get_home_dir(), 'packages', 'examples')
 
     def list_examples(self):
         if isdir(self.examples_dir):

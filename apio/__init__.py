@@ -9,7 +9,6 @@ from .examples import Examples
 from .execute import SCons, System
 from .project import Project
 from .config import Config
-from .packages.scons import SconsInstaller
 from .packages.iverilog import IverilogInstaller
 from .packages.icestorm import IcestormInstaller
 from .packages.driver import DriverInstaller
@@ -144,7 +143,7 @@ def install_system(version):
     help='Specific version of the package')
 def install_scons(version):
     """Install scons toolchain."""
-    SconsInstaller().install(version)
+    NewInstaller('scons').install(version)
 
 @install.command('iverilog')
 @click.option('--version',  type=unicode, metavar='version',
@@ -208,7 +207,7 @@ def uninstall_system():
 @uninstall.command('scons')
 def uninstall_scons():
     """Uninstall scons toolchain."""
-    _uninstall(SconsInstaller().uninstall)
+    _uninstall(NewInstaller('scons').uninstall)
 
 @uninstall.command('iverilog')
 def uninstall_iverilog():
