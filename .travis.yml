@@ -4,4 +4,5 @@ python:
   - "3.5"
 install:
   - pip install .
+  - apio install --all
 script: nosetests
