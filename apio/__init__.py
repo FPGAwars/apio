@@ -32,10 +32,24 @@ def cli(ctx):
 
     # Update help structure
     if ctx.invoked_subcommand is None:
-        help = ctx.get_help()
+        env_help = []
+        env_commands = ['boards', 'drivers', 'examples', 'init',
+                        'install', 'system', 'uninstall']
 
-        # help = help.replace('Commands:\n', 'Code commands:\n')
-        # env_commands = ['boards', 'drivers', 'examples', 'init', 'install', 'system', 'uninstall']
+        help = ctx.get_help()
+        help = help.split('\n')
+
+        # Find env commands' lines
+        for line in list(help):
+            for command in env_commands:
+                if (' ' + command) in line:
+                    help.remove(line)
+                    env_help.append(line)
+
+        help = '\n'.join(help)
+        help = help.replace('Commands:\n', 'Code commands:\n')
+        help += "\n\nEnvironment commands:\n"
+        help += '\n'.join(env_help)
 
         click.secho(help)
 
@@ -95,7 +109,7 @@ def _uninstall(packages):
 @click.option('-e', '--enable', is_flag=True, help='Enable FPGA drivers')
 @click.option('-d', '--disable', is_flag=True, help='Disable FPGA drivers')
 def drivers(ctx, enable, disable):
-    """Drivers for the FPGAs"""
+    """Drivers for the FPGAs."""
 
     if enable:
         Drivers().enable()
@@ -248,7 +262,7 @@ def build(ctx, board, fpga, pack, type, size):
 @click.option('--pack', type=unicode, metavar='package',
             help='Set the FPGA package')
 def upload(ctx, device, board, fpga, pack, type, size):
-    """Upload bitstream to FPGA."""
+    """Upload the bitstream to the FPGA."""
 
     # Run scons
     exit_code = SCons().upload({
@@ -292,7 +306,7 @@ def time(ctx, board, fpga, pack, type, size):
 @cli.command('sim')
 @click.pass_context
 def sim(ctx):
-    """Launch verilog simulation."""
+    """Launch the verilog simulation."""
     exit_code = SCons().sim()
     ctx.exit(exit_code)
 
