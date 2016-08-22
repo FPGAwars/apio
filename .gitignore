@@ -8,7 +8,8 @@
 *.egg-info
 .coverage
 .tox/
+.cache/
 build/
 dist/
-cover/
+htmlcov/
 __pycache__/

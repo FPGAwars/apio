@@ -1,8 +1,7 @@
 language: python
-python:
-  - "2.7"
-  - "3.5"
 install:
   - pip install .
+  - pip install -U tox
   - apio install --all
-script: nosetests
+script:
+  - tox
