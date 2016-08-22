@@ -22,15 +22,26 @@ except NameError:
     pass
 
 
-@click.group()
+@click.group(invoke_without_command=True)
+@click.pass_context
 @click.version_option()
-def cli():
+def cli(ctx):
     """
     Environment for icestorm toolchain management
     """
 
+    # Update help structure
+    if ctx.invoked_subcommand is None:
+        help = ctx.get_help()
 
-# Install #
+        # help = help.replace('Commands:\n', 'Code commands:\n')
+        # env_commands = ['boards', 'drivers', 'examples', 'init', 'install', 'system', 'uninstall']
+
+        click.secho(help)
+
+
+# -- Environment commands
+
 
 @cli.command('install')
 @click.pass_context
@@ -52,8 +63,6 @@ def install(ctx, packages, all, list):
     else:
         click.secho(ctx.get_help())
 
-
-# Uninstall #
 
 @cli.command('uninstall')
 @click.pass_context
@@ -107,20 +116,24 @@ def boards(ctx, list):
     else:
         click.secho(ctx.get_help())
 
-@cli.command('scons')
-def scons():
-    """Create default SConstruct file."""
-    SCons().create_sconstruct()
-
 
 @cli.command('init')
 @click.pass_context
-@click.option('--board', type=unicode, help='Set the FPGA board.')
+@click.option('-s', '--scons', is_flag=True,
+              help='Create default SConstruct file.')
+@click.option('-b', '--board', type=unicode, metavar='BOARD',
+              help='Create init file with the selected board.')
 @click.option('--project-dir', type=unicode, metavar='PATH',
               help='Set the target directory for the project')
-def init(ctx, board, project_dir):
+def init(ctx, board, scons, project_dir):
     """Create a new apio project."""
-    Project().new(board, project_dir)
+
+    if scons:
+        Project().scons(project_dir)
+    elif board:
+        Project().new(board, project_dir)
+    else:
+        click.secho(ctx.get_help())
 
 
 @cli.command('examples')
@@ -150,8 +163,6 @@ def examples(ctx, list, dir, files, project_dir, sayno):
         click.secho(Examples().examples_of_use_cad())
 
 
-# System #
-
 @cli.group()
 def system():
     """System development tools.\n
@@ -175,6 +186,9 @@ def platform():
     """Show system information."""
     click.secho('Platform: ', nl=False)
     click.secho(get_systype(), fg='green')
+
+
+# -- Code commands
 
 
 @cli.command('clean')
@@ -206,7 +220,7 @@ def verify(ctx):
 def build(ctx, board, fpga, pack, type, size):
     """Synthesize the bitstream."""
 
-    # -- Run scons
+    # Run scons
     exit_code = SCons().build({
         'board': board,
         'fpga': fpga,
@@ -216,7 +230,7 @@ def build(ctx, board, fpga, pack, type, size):
     })
     ctx.exit(exit_code)
 
-# -- Advances notes: https://github.com/FPGAwars/apio/wiki/Commands#apio-build
+# Advances notes: https://github.com/FPGAwars/apio/wiki/Commands#apio-build
 
 
 @cli.command('upload')
@@ -236,7 +250,7 @@ def build(ctx, board, fpga, pack, type, size):
 def upload(ctx, device, board, fpga, pack, type, size):
     """Upload bitstream to FPGA."""
 
-    # -- Run scons
+    # Run scons
     exit_code = SCons().upload({
         'board': board,
         'fpga': fpga,
@@ -246,7 +260,7 @@ def upload(ctx, device, board, fpga, pack, type, size):
     }, device)
     ctx.exit(exit_code)
 
-# -- Advances notes: https://github.com/FPGAwars/apio/wiki/Commands#apio-upload
+# Advances notes: https://github.com/FPGAwars/apio/wiki/Commands#apio-upload
 
 
 @cli.command('time')
@@ -264,7 +278,7 @@ def upload(ctx, device, board, fpga, pack, type, size):
 def time(ctx, board, fpga, pack, type, size):
     """Bitstream timing analysis."""
 
-    # -- Run scons
+    # Run scons
     exit_code = SCons().time({
         'board': board,
         'fpga': fpga,
