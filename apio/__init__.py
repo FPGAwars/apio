@@ -151,9 +151,9 @@ def init(ctx, board, scons, project_dir):
     """Create a new apio project."""
 
     if scons:
-        Project().scons(project_dir)
+        Project().create_sconstruct(project_dir)
     elif board:
-        Project().new(board, project_dir)
+        Project().new_ini(board, project_dir)
     else:
         click.secho(ctx.get_help())
 

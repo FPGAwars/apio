@@ -479,29 +479,3 @@ class SCons(object):
         time.sleep(0.01)  # Delay
         fg = 'red' if 'error' in line.lower() else 'yellow'
         click.secho(line, fg=fg)
-
-    def create_sconstruct(self):
-        sconstruct_name = 'SConstruct'
-        sconstruct_path = join(os.getcwd(), sconstruct_name)
-        local_sconstruct_path = join(dirname(__file__), sconstruct_name)
-
-        if isfile(sconstruct_path):
-            click.secho('Warning: ' + sconstruct_name + ' file already exists',
-                        fg='yellow')
-            if click.confirm('Do you want to replace it?'):
-                self._copy_file(sconstruct_name, sconstruct_path,
-                                local_sconstruct_path)
-        else:
-            self._copy_file(sconstruct_name, sconstruct_path,
-                            local_sconstruct_path)
-
-    def _copy_file(self, sconstruct_name,
-                   sconstruct_path, local_sconstruct_path):
-        click.secho('Creating ' + sconstruct_name + ' file ...')
-        with open(sconstruct_path, 'w') as sconstruct:
-            with open(local_sconstruct_path, 'r') as local_sconstruct:
-                sconstruct.write(local_sconstruct.read())
-                click.secho(
-                    'File \'' + sconstruct_name +
-                    '\' has been successfully created!',
-                    fg='green')
