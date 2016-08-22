@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+# -- This file is part of the Apio project
+# -- (C) 2016 FPGAwars
+# -- Author Juan González
+# -- Licence GPLv2
 
 # Apio project managment
 
