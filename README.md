@@ -19,22 +19,23 @@ Experimental open source micro-ecosystem for open FPGAs. Based on [platformio](h
 ## Tests
 
 ```bash
-pip install nose coverage
+pip install tox
 ```
 
 ```bash
-nosetests
-nosetests --with-coverage  --cover-package=apio --cover-html
+tox
+tox -e flake8
+tox -e coverage
 ```
 
 ## Authors
 
-* Jesús Arroyo
-* Juan González (Obijuan)
+* [Jesús Arroyo Torrens](https://github.com/Jesus89)
+* [Juan González (Obijuan)](https://github.com/Obijuan)
 
 ## Contributors
 
-* Miguel Sánchez de León Peque
+* [Miguel Sánchez de León Peque](https://github.com/peque)
 
 ## License
 ![](https://github.com/FPGAwars/apio/raw/master/doc/bq-logo-cc-sa-small-150px.png)

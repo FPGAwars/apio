@@ -1,7 +1,12 @@
+# -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# -- Generic Scons script for Sintesizing hardware with APIO or scons
-# -- on an icestick or Icezum Alhambra
+# -- Generic Scons script for Sintesizing hardware on an FPGA and more.
+# -- This file is part of the Apio project
+# -- (C) 2016 FPGAwars
+# -- Authors Juan Gonzáles, Jesús Arroyo
+# -- Licence GPLv2
 # ----------------------------------------------------------------------
+
 import os
 from os.path import join
 import platform
@@ -31,7 +36,7 @@ vars.Add('fpga_pack', 'Set the ICE40 FPGA packages', FPGA_PACK)
 if 'build' in COMMAND_LINE_TARGETS or \
    'upload' in COMMAND_LINE_TARGETS or \
    'time' in COMMAND_LINE_TARGETS:
-    
+
     print("FPGA_SIZE: {}".format(FPGA_SIZE))
     print("FPGA_TYPE: {}".format(FPGA_TYPE))
     print("FPGA_PACK: {}".format(FPGA_PACK))

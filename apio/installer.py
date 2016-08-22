@@ -1,4 +1,8 @@
-# Installer class
+# -*- coding: utf-8 -*-
+# -- This file is part of the Apio project
+# -- (C) 2016 FPGAwars
+# -- Author Jesús Arroyo
+# -- Licence GPLv2
 
 import re
 import click
@@ -37,8 +41,11 @@ class Installer(object):
 
             self.arch = self._get_architecture()
 
-            self.compressed_name = data['release']['compressed_name'].replace('%V', self.version).replace('%A', self.arch)
-            self.uncompressed_name = data['release']['uncompressed_name'].replace('%V', self.version).replace('%A', self.arch)
+            release = data['release']
+            self.compressed_name = release['compressed_name'].replace(
+                '%V', self.version).replace('%A', self.arch)
+            self.uncompressed_name = release['uncompressed_name'].replace(
+                '%V', self.version).replace('%A', self.arch)
             self.package_name = data['release']['package_name']
 
             if isinstance(data['release']['extension'], dict):
@@ -68,9 +75,11 @@ class Installer(object):
     def install(self):
         if self.version is None:
             click.secho(
-                'Package \'{0}\' does not exist'.format(self.package), fg='red')
+                'Package \'{0}\' does not exist'.format(self.package),
+                fg='red')
         else:
-            click.echo("Installing %s package:" % click.style(self.package, fg="cyan"))
+            click.echo("Installing %s package:" % click.style(
+                self.package, fg="cyan"))
             if not isdir(self.packages_dir):
                 makedirs(self.packages_dir)
             assert isdir(self.packages_dir)
@@ -91,9 +100,9 @@ class Installer(object):
                     self.profile.add(self.package, self.version)
                     self.profile.save()
                     click.secho(
-                        'Package \'{0}\' has been successfully installed!'.format(
-                            self.package
-                        ), fg='green')
+                        """Package \'{}\' has been """
+                        """successfully installed!""".format(self.package),
+                        fg='green')
 
             # Rename unpacked dir to package dir
             if self.uncompressed_name:
@@ -105,15 +114,17 @@ class Installer(object):
     def uninstall(self):
         if self.version is None:
             click.secho(
-                'Package \'{0}\' does not exist'.format(self.package), fg='red')
+                'Package \'{0}\' does not exist'.format(self.package),
+                fg='red')
         else:
             if isdir(join(self.packages_dir, self.package_name)):
-                click.echo("Uninstalling %s package" % click.style(self.package, fg="cyan"))
+                click.echo("Uninstalling %s package" % click.style(
+                    self.package, fg="cyan"))
                 shutil.rmtree(join(self.packages_dir, self.package_name))
                 click.secho(
-                    'Package \'{0}\' has been successfully uninstalled!'.format(
-                        self.package
-                    ), fg='green')
+                    """Package \'{}\' has been """
+                    """successfully uninstalled!""".format(self.package),
+                    fg='green')
             else:
                 click.secho('Package \'{0}\' is not installed'.format(
                     self.package), fg='red')

@@ -1,5 +1,8 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# -- This file is part of the Apio project
+# -- (C) 2016 FPGAwars
+# -- Author Jesús Arroyo
+# -- Licence GPLv2
 
 import click
 from sys import exit as sys_exit
@@ -15,25 +18,52 @@ from .installer import Installer
 # Python3 compat
 try:
     unicode = str
-except NameError:
+except NameError:  # pragma: no cover
     pass
 
 
-@click.group()
+@click.group(invoke_without_command=True)
+@click.pass_context
 @click.version_option()
-def cli():
+def cli(ctx):
     """
     Environment for icestorm toolchain management
     """
 
+    # Update help structure
+    if ctx.invoked_subcommand is None:
+        env_help = []
+        env_commands = ['boards', 'drivers', 'examples', 'init',
+                        'install', 'system', 'uninstall']
 
-# Install #
+        help = ctx.get_help()
+        help = help.split('\n')
+
+        # Find env commands' lines
+        for line in list(help):
+            for command in env_commands:
+                if (' ' + command) in line:
+                    help.remove(line)
+                    env_help.append(line)
+
+        help = '\n'.join(help)
+        help = help.replace('Commands:\n', 'Code commands:\n')
+        help += "\n\nEnvironment commands:\n"
+        help += '\n'.join(env_help)
+
+        click.secho(help)
+
+
+# -- Environment commands
+
 
 @cli.command('install')
 @click.pass_context
 @click.argument('packages', nargs=-1)
-@click.option('-a', '--all', is_flag=True, help='Install all packages.')
-@click.option('-l', '--list', is_flag=True, help='List all available packages.')
+@click.option('-a', '--all', is_flag=True,
+              help='Install all packages.')
+@click.option('-l', '--list', is_flag=True,
+              help='List all available packages.')
 def install(ctx, packages, all, list):
     """Install packages."""
 
@@ -50,14 +80,14 @@ def install(ctx, packages, all, list):
         click.secho(ctx.get_help())
 
 
-# Uninstall #
-
 @cli.command('uninstall')
 @click.pass_context
 @click.argument('packages', nargs=-1)
-@click.option('-a', '--all', is_flag=True, help='Uninstall all packages.')
-@click.option('-l', '--list', is_flag=True, help='List all installed packages.')
-def install(ctx, packages, all, list):
+@click.option('-a', '--all', is_flag=True,
+              help='Uninstall all packages.')
+@click.option('-l', '--list', is_flag=True,
+              help='List all installed packages.')
+def uninstall(ctx, packages, all, list):
     """Uninstall packages."""
 
     if packages:
@@ -70,6 +100,7 @@ def install(ctx, packages, all, list):
     else:
         click.secho(ctx.get_help())
 
+
 def _uninstall(packages):
     if click.confirm('Do you want to continue?'):
         for package in packages:
@@ -80,10 +111,12 @@ def _uninstall(packages):
 
 @cli.command('drivers')
 @click.pass_context
-@click.option('-e', '--enable', is_flag=True, help='Enable FPGA drivers')
-@click.option('-d', '--disable', is_flag=True, help='Disable FPGA drivers')
+@click.option('-e', '--enable', is_flag=True,
+              help='Enable FPGA drivers')
+@click.option('-d', '--disable', is_flag=True,
+              help='Disable FPGA drivers')
 def drivers(ctx, enable, disable):
-    """Drivers for the FPGAs"""
+    """Drivers for the FPGAs."""
 
     if enable:
         Drivers().enable()
@@ -95,7 +128,8 @@ def drivers(ctx, enable, disable):
 
 @cli.command('boards')
 @click.pass_context
-@click.option('-l', '--list', is_flag=True, help='List all supported FPGA boards.')
+@click.option('-l', '--list', is_flag=True,
+              help='List all supported FPGA boards.')
 def boards(ctx, list):
     """Manage FPGA boards."""
 
@@ -104,20 +138,24 @@ def boards(ctx, list):
     else:
         click.secho(ctx.get_help())
 
-@cli.command('scons')
-def scons():
-    """Create default SConstruct file."""
-    SCons().create_sconstruct()
-
 
 @cli.command('init')
 @click.pass_context
-@click.option('--board', type=unicode, help='Set the FPGA board.')
+@click.option('-s', '--scons', is_flag=True,
+              help='Create default SConstruct file.')
+@click.option('-b', '--board', type=unicode, metavar='BOARD',
+              help='Create init file with the selected board.')
 @click.option('--project-dir', type=unicode, metavar='PATH',
               help='Set the target directory for the project')
-def init(ctx, board, project_dir):
+def init(ctx, board, scons, project_dir):
     """Create a new apio project."""
-    Project().new(board, project_dir)
+
+    if scons:
+        Project().create_sconstruct(project_dir)
+    elif board:
+        Project().new_ini(board, project_dir)
+    else:
+        click.secho(ctx.get_help())
 
 
 @cli.command('examples')
@@ -147,8 +185,6 @@ def examples(ctx, list, dir, files, project_dir, sayno):
         click.secho(Examples().examples_of_use_cad())
 
 
-# System #
-
 @cli.group()
 def system():
     """System development tools.\n
@@ -172,6 +208,9 @@ def platform():
     """Show system information."""
     click.secho('Platform: ', nl=False)
     click.secho(get_systype(), fg='green')
+
+
+# -- Code commands
 
 
 @cli.command('clean')
@@ -199,11 +238,11 @@ def verify(ctx):
 @click.option('--type', type=unicode, metavar='type',
               help='Set the FPGA type (hx/lp)')
 @click.option('--pack', type=unicode, metavar='package',
-            help='Set the FPGA package')
+              help='Set the FPGA package')
 def build(ctx, board, fpga, pack, type, size):
     """Synthesize the bitstream."""
 
-    # -- Run scons
+    # Run scons
     exit_code = SCons().build({
         'board': board,
         'fpga': fpga,
@@ -213,7 +252,7 @@ def build(ctx, board, fpga, pack, type, size):
     })
     ctx.exit(exit_code)
 
-# -- Advances notes: https://github.com/FPGAwars/apio/wiki/Commands#apio-build
+# Advances notes: https://github.com/FPGAwars/apio/wiki/Commands#apio-build
 
 
 @cli.command('upload')
@@ -229,11 +268,11 @@ def build(ctx, board, fpga, pack, type, size):
 @click.option('--type', type=unicode, metavar='type',
               help='Set the FPGA type (hx/lp)')
 @click.option('--pack', type=unicode, metavar='package',
-            help='Set the FPGA package')
+              help='Set the FPGA package')
 def upload(ctx, device, board, fpga, pack, type, size):
-    """Upload bitstream to FPGA."""
+    """Upload the bitstream to the FPGA."""
 
-    # -- Run scons
+    # Run scons
     exit_code = SCons().upload({
         'board': board,
         'fpga': fpga,
@@ -243,7 +282,7 @@ def upload(ctx, device, board, fpga, pack, type, size):
     }, device)
     ctx.exit(exit_code)
 
-# -- Advances notes: https://github.com/FPGAwars/apio/wiki/Commands#apio-upload
+# Advances notes: https://github.com/FPGAwars/apio/wiki/Commands#apio-upload
 
 
 @cli.command('time')
@@ -257,11 +296,11 @@ def upload(ctx, device, board, fpga, pack, type, size):
 @click.option('--type', type=unicode, metavar='type',
               help='Set the FPGA type (hx/lp)')
 @click.option('--pack', type=unicode, metavar='package',
-            help='Set the FPGA package')
+              help='Set the FPGA package')
 def time(ctx, board, fpga, pack, type, size):
     """Bitstream timing analysis."""
 
-    # -- Run scons
+    # Run scons
     exit_code = SCons().time({
         'board': board,
         'fpga': fpga,
@@ -275,7 +314,7 @@ def time(ctx, board, fpga, pack, type, size):
 @cli.command('sim')
 @click.pass_context
 def sim(ctx):
-    """Launch verilog simulation."""
+    """Launch the verilog simulation."""
     exit_code = SCons().sim()
     ctx.exit(exit_code)
 

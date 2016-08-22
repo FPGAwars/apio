@@ -1,4 +1,8 @@
-# Drivers class
+# -*- coding: utf-8 -*-
+# -- This file is part of the Apio project
+# -- (C) 2016 FPGAwars
+# -- Author Jesús Arroyo
+# -- Licence GPLv2
 
 import click
 import subprocess
@@ -10,7 +14,7 @@ from .util import get_systype
 platform = get_systype()
 
 
-class Drivers(object):
+class Drivers(object):  # pragma: no cover
 
     rules_local_path = join(dirname(__file__), 'config', '80-icestick.rules')
     rules_system_path = '/etc/udev/rules.d/80-icestick.rules'
@@ -40,7 +44,6 @@ class Drivers(object):
             click.secho('FPGA drivers enabled', fg='green')
         else:
             click.secho('Already enabled', fg='yellow')
-
 
     def _disable_linux(self):
         if isfile(self.rules_system_path):

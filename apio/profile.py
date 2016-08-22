@@ -1,4 +1,8 @@
-# Profile class
+# -*- coding: utf-8 -*-
+# -- This file is part of the Apio project
+# -- (C) 2016 FPGAwars
+# -- Author Jesús Arroyo
+# -- Licence GPLv2
 
 import json
 from os import makedirs
@@ -17,7 +21,8 @@ class Profile(object):
         return (name in self.packages.keys())
 
     def check_version(self, name, version):
-        return not ((name in self.packages.keys()) and (self.packages[name]['version'] >= version))
+        return not ((name in self.packages.keys()) and
+                    (self.packages[name]['version'] >= version))
 
     def add(self, name, version):
         self.packages[name] = {'version': version}

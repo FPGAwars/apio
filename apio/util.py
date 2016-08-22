@@ -1,16 +1,12 @@
-# Copyright 2014-2016 Ivan Kravets <me@ikravets.com>
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#    http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# -*- coding: utf-8 -*-
+# -- This file is part of the Apio project
+# -- (C) 2016 FPGAwars
+# -- Author Jesús Arroyo
+# -- Licence GPLv2
+# -- Derived from:
+# ---- Platformio project
+# ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
+# ---- Licence Apache v2
 
 import collections
 import functools
@@ -24,18 +20,19 @@ from os.path import abspath, basename, dirname, expanduser, isdir, isfile, join
 from platform import system, uname
 from threading import Thread
 
+from . import exception
+
 import requests
 requests.packages.urllib3.disable_warnings()
-
-from . import exception
 
 __apiurl__ = None
 __version__ = None
 
+# Python3 compat
 try:
-    basestring
+    unicode = str
 except NameError:
-    basestring = str
+    pass
 
 # pylint: disable=wrong-import-order
 try:
@@ -274,7 +271,7 @@ def exec_command(*args, **kwargs):
             result[s[3:]] = "\n".join(kwargs[s].get_buffer())
 
     for k, v in result.items():
-        if v and isinstance(v, basestring):
+        if v and isinstance(v, unicode):
             result[k].strip()
 
     return result

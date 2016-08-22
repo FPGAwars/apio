@@ -1,4 +1,8 @@
-# Execute functions
+# -*- coding: utf-8 -*-
+# -- This file is part of the Apio project
+# -- (C) 2016 FPGAwars
+# -- Author Jesús Arroyo
+# -- Licence GPLv2
 
 import os
 import re
@@ -8,7 +12,7 @@ import click
 import platform
 import datetime
 
-from os.path import join, dirname, isdir, isfile, expanduser
+from os.path import join, dirname, isdir, isfile
 from .project import Project
 
 from . import util
@@ -139,7 +143,8 @@ class SCons(object):
                 desc = self.resources.boards[board]['ftdi-desc']
                 for b in detected_boards:
                     if desc in b['description']:
-                        # Select the first board that validates the ftdi description
+                        # Select the first board that validates
+                        # the ftdi description
                         device = b['index']
                         break
             else:
@@ -160,7 +165,9 @@ class SCons(object):
             click.secho('Error: board not detected', fg='red')
             return 1
 
-        return self.run('upload', variables + ['device={0}'.format(device)], board)
+        return self.run('upload',
+                        variables + ['device={0}'.format(device)],
+                        board)
 
     def time(self, args):
         ret = self.process_arguments(args)
@@ -229,7 +236,8 @@ class SCons(object):
                     click.style(processing_board, fg="cyan", bold=True)))
                 click.secho("-" * terminal_width, bold=True)
 
-            click.secho("Executing: scons -Q {0} {1}".format(command, ' '.join(variables)))
+            click.secho("Executing: scons -Q {0} {1}".format(
+                            command, ' '.join(variables)))
             result = util.exec_command(
                 [
                     os.path.normpath(sys.executable),
@@ -245,7 +253,8 @@ class SCons(object):
             exit_code = result['returncode']
             is_error = exit_code != 0
             summary_text = " Took %.2f seconds " % (time.time() - start_time)
-            half_line = "=" * int(((terminal_width - len(summary_text) - 10) / 2))
+            half_line = "=" * int(
+                ((terminal_width - len(summary_text) - 10) / 2))
             click.echo("%s [%s]%s%s" % (
                 half_line,
                 (click.style(" ERROR ", fg="red", bold=True)
@@ -259,7 +268,7 @@ class SCons(object):
 
     def process_arguments(self, args):
         # -- Check arguments
-        var_board =  args['board']
+        var_board = args['board']
         var_fpga = args['fpga']
         var_size = args['size']
         var_type = args['type']
@@ -409,7 +418,8 @@ class SCons(object):
                         if p.board:
                             var_board = p.board
                             click.secho(
-                                'Info: use apio.ini board: {}'.format(var_board))
+                                'Info: use apio.ini board: {}'.format(
+                                    var_board))
                             fpga = self.resources.boards[var_board]['fpga']
                             fpga_size = self.resources.fpgas[fpga]['size']
                             fpga_type = self.resources.fpgas[fpga]['type']
@@ -428,7 +438,8 @@ class SCons(object):
                             return 1
                     else:
                         if isfile('apio.ini'):
-                            click.secho('Info: ignore apio.ini file', fg='yellow')
+                            click.secho('Info: ignore apio.ini file',
+                                        fg='yellow')
                         # Insufficient arguments
                         missing = []
                         if not var_size:
@@ -439,7 +450,7 @@ class SCons(object):
                             missing += ['pack']
                         pass
                         click.secho(
-                            'Error: insufficient arguments: missing {0}'.format(
+                            'Error: insufficient arguments: missing {}'.format(
                                 ', '.join(missing)), fg='red')
                         return 1
 
@@ -468,29 +479,3 @@ class SCons(object):
         time.sleep(0.01)  # Delay
         fg = 'red' if 'error' in line.lower() else 'yellow'
         click.secho(line, fg=fg)
-
-    def create_sconstruct(self):
-        sconstruct_name = 'SConstruct'
-        sconstruct_path = join(os.getcwd(), sconstruct_name)
-        local_sconstruct_path = join(dirname(__file__), sconstruct_name)
-
-        if isfile(sconstruct_path):
-            click.secho('Warning: ' + sconstruct_name + ' file already exists',
-                        fg='yellow')
-            if click.confirm('Do you want to replace it?'):
-                self._copy_file(sconstruct_name, sconstruct_path,
-                                local_sconstruct_path)
-        else:
-            self._copy_file(sconstruct_name, sconstruct_path,
-                            local_sconstruct_path)
-
-    def _copy_file(self, sconstruct_name,
-                   sconstruct_path, local_sconstruct_path):
-        click.secho('Creating ' + sconstruct_name + ' file ...')
-        with open(sconstruct_path, 'w') as sconstruct:
-            with open(local_sconstruct_path, 'r') as local_sconstruct:
-                sconstruct.write(local_sconstruct.read())
-                click.secho(
-                    'File \'' + sconstruct_name +
-                    '\' has been successfully created!',
-                    fg='green')
