@@ -21,7 +21,8 @@ class Profile(object):
         return (name in self.packages.keys())
 
     def check_version(self, name, version):
-        return not ((name in self.packages.keys()) and (self.packages[name]['version'] >= version))
+        return not ((name in self.packages.keys()) and
+                    (self.packages[name]['version'] >= version))
 
     def add(self, name, version):
         self.packages[name] = {'version': version}

@@ -24,6 +24,7 @@ pip install tox
 
 ```bash
 tox
+tox -e flake8
 tox -e coverage
 ```
 

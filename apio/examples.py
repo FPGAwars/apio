@@ -9,7 +9,7 @@ import glob
 import click
 import shutil
 
-from os.path import join, isdir, isfile, basename, expanduser
+from os.path import join, isdir, isfile, basename
 
 from . import util
 
@@ -139,8 +139,9 @@ class Examples(object):
                 else:
                     shutil.copy(f, dest_path)
         click.secho(
-            'Example files \'' + example + '\' have been successfully created!',
-            fg='green')
+            'Example files \'{}\' have been successfully created!'.format(
+                example
+            ), fg='green')
 
     def _copy_dir(self, example, src_path, dest_path):
         click.secho('Creating ' + example + ' directory ...')

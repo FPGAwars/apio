@@ -8,17 +8,18 @@
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
 # ---- Licence Apache v2
 
-from email.utils import parsedate_tz, formatdate
+from email.utils import parsedate_tz
 from math import ceil
 from os.path import getsize, join
 from time import mktime
 
+from . import util
+from .exception import FDSHASumMismatch, FDSizeMismatch, \
+                       FDUnrecognizedStatusCode
+
 import click
 import requests
 requests.packages.urllib3.disable_warnings()
-
-from . import util
-from .exception import FDSHASumMismatch, FDSizeMismatch, FDUnrecognizedStatusCode
 
 
 class FileDownloader(object):

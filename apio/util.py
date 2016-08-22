@@ -20,18 +20,19 @@ from os.path import abspath, basename, dirname, expanduser, isdir, isfile, join
 from platform import system, uname
 from threading import Thread
 
+from . import exception
+
 import requests
 requests.packages.urllib3.disable_warnings()
-
-from . import exception
 
 __apiurl__ = None
 __version__ = None
 
+# Python3 compat
 try:
-    basestring
+    unicode = str
 except NameError:
-    basestring = str
+    pass
 
 # pylint: disable=wrong-import-order
 try:
@@ -270,7 +271,7 @@ def exec_command(*args, **kwargs):
             result[s[3:]] = "\n".join(kwargs[s].get_buffer())
 
     for k, v in result.items():
-        if v and isinstance(v, basestring):
+        if v and isinstance(v, unicode):
             result[k].strip()
 
     return result

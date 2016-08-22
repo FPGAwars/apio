@@ -16,7 +16,10 @@ def api_request(command, organization='FPGAwars'):
     result = None
     r = None
     try:
-        r = requests.get('https://api.github.com/repos/{0}/{1}'.format(organization, command), headers=_get_headers())
+        r = requests.get(
+            'https://api.github.com/repos/{0}/{1}'.format(
+                organization, command),
+            headers=_get_headers())
         result = r.json()
         r.raise_for_status()
     except requests.exceptions.ConnectionError:

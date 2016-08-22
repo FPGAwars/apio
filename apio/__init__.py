@@ -60,8 +60,10 @@ def cli(ctx):
 @cli.command('install')
 @click.pass_context
 @click.argument('packages', nargs=-1)
-@click.option('-a', '--all', is_flag=True, help='Install all packages.')
-@click.option('-l', '--list', is_flag=True, help='List all available packages.')
+@click.option('-a', '--all', is_flag=True,
+              help='Install all packages.')
+@click.option('-l', '--list', is_flag=True,
+              help='List all available packages.')
 def install(ctx, packages, all, list):
     """Install packages."""
 
@@ -81,9 +83,11 @@ def install(ctx, packages, all, list):
 @cli.command('uninstall')
 @click.pass_context
 @click.argument('packages', nargs=-1)
-@click.option('-a', '--all', is_flag=True, help='Uninstall all packages.')
-@click.option('-l', '--list', is_flag=True, help='List all installed packages.')
-def install(ctx, packages, all, list):
+@click.option('-a', '--all', is_flag=True,
+              help='Uninstall all packages.')
+@click.option('-l', '--list', is_flag=True,
+              help='List all installed packages.')
+def uninstall(ctx, packages, all, list):
     """Uninstall packages."""
 
     if packages:
@@ -96,6 +100,7 @@ def install(ctx, packages, all, list):
     else:
         click.secho(ctx.get_help())
 
+
 def _uninstall(packages):
     if click.confirm('Do you want to continue?'):
         for package in packages:
@@ -106,8 +111,10 @@ def _uninstall(packages):
 
 @cli.command('drivers')
 @click.pass_context
-@click.option('-e', '--enable', is_flag=True, help='Enable FPGA drivers')
-@click.option('-d', '--disable', is_flag=True, help='Disable FPGA drivers')
+@click.option('-e', '--enable', is_flag=True,
+              help='Enable FPGA drivers')
+@click.option('-d', '--disable', is_flag=True,
+              help='Disable FPGA drivers')
 def drivers(ctx, enable, disable):
     """Drivers for the FPGAs."""
 
@@ -121,7 +128,8 @@ def drivers(ctx, enable, disable):
 
 @cli.command('boards')
 @click.pass_context
-@click.option('-l', '--list', is_flag=True, help='List all supported FPGA boards.')
+@click.option('-l', '--list', is_flag=True,
+              help='List all supported FPGA boards.')
 def boards(ctx, list):
     """Manage FPGA boards."""
 
@@ -230,7 +238,7 @@ def verify(ctx):
 @click.option('--type', type=unicode, metavar='type',
               help='Set the FPGA type (hx/lp)')
 @click.option('--pack', type=unicode, metavar='package',
-            help='Set the FPGA package')
+              help='Set the FPGA package')
 def build(ctx, board, fpga, pack, type, size):
     """Synthesize the bitstream."""
 
@@ -260,7 +268,7 @@ def build(ctx, board, fpga, pack, type, size):
 @click.option('--type', type=unicode, metavar='type',
               help='Set the FPGA type (hx/lp)')
 @click.option('--pack', type=unicode, metavar='package',
-            help='Set the FPGA package')
+              help='Set the FPGA package')
 def upload(ctx, device, board, fpga, pack, type, size):
     """Upload the bitstream to the FPGA."""
 
@@ -288,7 +296,7 @@ def upload(ctx, device, board, fpga, pack, type, size):
 @click.option('--type', type=unicode, metavar='type',
               help='Set the FPGA type (hx/lp)')
 @click.option('--pack', type=unicode, metavar='package',
-            help='Set the FPGA package')
+              help='Set the FPGA package')
 def time(ctx, board, fpga, pack, type, size):
     """Bitstream timing analysis."""
 

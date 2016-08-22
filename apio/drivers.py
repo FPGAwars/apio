@@ -45,7 +45,6 @@ class Drivers(object):
         else:
             click.secho('Already enabled', fg='yellow')
 
-
     def _disable_linux(self):
         if isfile(self.rules_system_path):
             click.secho('Revert FTDI drivers\' configuration')

@@ -24,7 +24,8 @@ class Resources(object):
 
     def _load_resource(self, name):
         resource = None
-        filepath = os.path.join(os.path.dirname(__file__), 'resources', name + '.json')
+        filepath = os.path.join(
+            os.path.dirname(__file__), 'resources', name + '.json')
         with open(filepath, 'r') as f:
             # Load the JSON file
             resource = json.loads(f.read())
