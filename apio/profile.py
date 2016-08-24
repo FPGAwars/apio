@@ -8,13 +8,14 @@ import json
 from os import makedirs
 from os.path import isdir, isfile, join, expanduser
 
+from . import util
+
 
 class Profile(object):
 
     def __init__(self):
         self.packages = {}
-        self._apio_dir = join(expanduser("~"), '.apio/')
-        self._profile_path = join(self._apio_dir, 'profile.json')
+        self._profile_path = join(util.get_home_dir(), 'profile.json')
         self.load()
 
     def check_package(self, name):
@@ -47,8 +48,8 @@ class Profile(object):
                 profile.close()
 
     def save(self):
-        if not isdir(self._apio_dir):
-            makedirs(self._apio_dir)
+        if not isdir(util.get_home_dir()):
+            makedirs(util.get_home_dir())
         with open(self._profile_path, 'w') as profile:
             json.dump(self.packages, profile)
             profile.close()

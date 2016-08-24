@@ -1,5 +1,5 @@
-import pytest
 import os
+import pytest
 from click.testing import CliRunner
 
 
@@ -15,15 +15,3 @@ def validate_cliresult():
         assert not result.exception
         assert "error" not in result.output.lower()
     return decorator
-
-
-@pytest.fixture(scope="module")
-def isolated_apio_home(request, tmpdir_factory):
-    home_dir = tmpdir_factory.mktemp(".apio")
-    os.environ['APIO_HOME_DIR'] = str(home_dir)
-
-    def fin():
-        del os.environ['APIO_HOME_DIR']
-
-    request.addfinalizer(fin)
-    return home_dir

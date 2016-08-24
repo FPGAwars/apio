@@ -147,15 +147,15 @@ def pioversion_to_intstr():
 
 
 def _get_projconf_option_dir(name, default=None):
-    _env_name = "PLATFORMIO_%s" % name.upper()
+    _env_name = "APIO_%s" % name.upper()
     if _env_name in os.environ:
         return os.getenv(_env_name)
 
     try:
         config = get_project_config()
-        if (config.has_section("platformio") and
-                config.has_option("platformio", name)):
-            option_dir = config.get("platformio", name)
+        if (config.has_section("apio") and
+                config.has_option("apio", name)):
+            option_dir = config.get("apio", name)
             if option_dir.startswith("~"):
                 option_dir = expanduser(option_dir)
             return abspath(option_dir)
