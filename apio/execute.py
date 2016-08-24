@@ -266,8 +266,7 @@ class SCons(object):
 
             if False:
                 if is_error:
-                    print(
-"""
+                    print("""
   ______                     _
  |  ____|                   | |
  | |__   _ __ _ __ ___  _ __| |
@@ -276,8 +275,7 @@ class SCons(object):
  |______|_|  |_|  \___/|_|  (_)
 """)
                 else:
-                    print(
-"""
+                    print("""
    _____                             _
   / ____|                           | |
  | (___  _   _  ___ ___ ___  ___ ___| |

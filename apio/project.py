@@ -12,11 +12,6 @@ import click
 
 from os.path import isfile, join, dirname
 
-# ----------- Project default configurations
-
-# -- Default FPGA board
-DEFAULT_BOARD = 'icezum'
-
 # -- Project file name
 PROJECT_FILENAME = 'apio.ini'
 
@@ -56,11 +51,8 @@ class Project(object):
                     '\' has been successfully created!',
                     fg='green')
 
-    def new_ini(self, board=DEFAULT_BOARD, project_dir=''):
+    def new_ini(self, board, project_dir=''):
         """Creates a new apio project file"""
-
-        if board is None:
-            board = DEFAULT_BOARD
 
         if project_dir is None:
             project_dir = ''
