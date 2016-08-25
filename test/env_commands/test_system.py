@@ -9,11 +9,13 @@ def test_system(clirunner, validate_cliresult):
 def test_system_lsftdi(clirunner):
     result = clirunner.invoke(cmd_system, ['--lsftdi'])
     assert result.exit_code == 0
+    assert 'apio install system' in result.output
 
 
 def test_system_lsusb(clirunner):
     result = clirunner.invoke(cmd_system, ['--lsusb'])
     assert result.exit_code == 0
+    assert 'apio install system' in result.output
 
 
 def test_system_info(clirunner):

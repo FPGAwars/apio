@@ -64,7 +64,7 @@ class Examples(object):
                 example_path = join(project_dir, example)
             else:
                 # -- Not specified: use the current working dir
-                example_path = join(os.getcwd(), example)
+                example_path = join(util.get_project_dir(), example)
 
             # -- Get the local example path
             local_example_path = join(self.examples_dir, example)
@@ -101,7 +101,7 @@ class Examples(object):
             if project_dir is not None:
                 example_path = project_dir
             else:
-                example_path = os.getcwd()
+                example_path = util.get_project_dir()
 
             local_example_path = join(self.examples_dir, example)
 

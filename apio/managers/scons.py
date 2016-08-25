@@ -146,7 +146,7 @@ class SCons(object):
                         '   apio install scons', fg='yellow')
 
         # -- Check for the SConstruct file
-        if not isfile(join(os.getcwd(), sconstruct_name)):
+        if not isfile(join(util.get_project_dir(), sconstruct_name)):
             click.secho('Using default SConstruct file')
             variables += ['-f', join(
                 dirname(__file__), '..', 'resources', sconstruct_name)]

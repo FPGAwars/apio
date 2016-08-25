@@ -29,7 +29,7 @@ class ArchiveBase(object):
     def __init__(self, arhfileobj):
         self._afo = arhfileobj
 
-    def get_items(self):
+    def get_items(self):  # pragma: no cover
         raise NotImplementedError()
 
     def extract_item(self, item, dest_dir):

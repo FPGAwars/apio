@@ -22,7 +22,7 @@ __version__ = None
 # Python3 compat
 try:
     unicode = str
-except NameError:
+except NameError:  # pragma: no cover
     pass
 
 
