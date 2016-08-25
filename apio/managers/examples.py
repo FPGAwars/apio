@@ -11,7 +11,7 @@ import shutil
 
 from os.path import join, isdir, isfile, basename
 
-from . import util
+from apio import util
 
 # -- Error messages
 EXAMPLE_NOT_FOUND_MSG = """
@@ -39,15 +39,16 @@ class Examples(object):
             click.secho('')
             for example in examples:
                 example_dir = join(self.examples_dir, example)
-                info_path = join(example_dir, 'info')
-                info = ''
-                if isfile(info_path):
-                    with open(info_path, 'r') as info_file:
-                        info = info_file.read().replace('\n', '')
-                click.secho(' ' + example, fg='blue', bold=True)
-                click.secho('-' * click.get_terminal_size()[0])
-                click.secho(' ' + info)
-                click.secho('')
+                if isdir(example_dir):
+                    info_path = join(example_dir, 'info')
+                    info = ''
+                    if isfile(info_path):
+                        with open(info_path, 'r') as info_file:
+                            info = info_file.read().replace('\n', '')
+                    click.secho(' ' + example, fg='blue', bold=True)
+                    click.secho('-' * click.get_terminal_size()[0])
+                    click.secho(' ' + info)
+                    click.secho('')
             click.secho(EXAMPLE_DIR_FILE, fg='green')
             click.secho(EXAMPLE_OF_USE_CAD, fg='green')
         else:
@@ -63,7 +64,7 @@ class Examples(object):
                 example_path = join(project_dir, example)
             else:
                 # -- Not specified: use the current working dir
-                example_path = join(os.getcwd(), example)
+                example_path = join(util.get_project_dir(), example)
 
             # -- Get the local example path
             local_example_path = join(self.examples_dir, example)
@@ -100,7 +101,7 @@ class Examples(object):
             if project_dir is not None:
                 example_path = project_dir
             else:
-                example_path = os.getcwd()
+                example_path = util.get_project_dir()
 
             local_example_path = join(self.examples_dir, example)
 

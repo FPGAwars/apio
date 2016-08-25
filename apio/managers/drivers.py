@@ -9,14 +9,15 @@ import subprocess
 
 from os.path import join, dirname, isfile
 
-from .util import get_systype
+from apio.util import get_systype
 
 platform = get_systype()
 
 
 class Drivers(object):  # pragma: no cover
 
-    rules_local_path = join(dirname(__file__), 'config', '80-icestick.rules')
+    rules_local_path = join(
+        dirname(__file__), '..', 'resources', '80-icestick.rules')
     rules_system_path = '/etc/udev/rules.d/80-icestick.rules'
 
     def enable(self):
@@ -49,7 +50,7 @@ class Drivers(object):  # pragma: no cover
         if isfile(self.rules_system_path):
             click.secho('Revert FTDI drivers\' configuration')
             subprocess.call(['sudo', 'rm', self.rules_system_path])
-            click.secho('FPGA drivers disabled', fg='green')
+            click.secho('FPGA drivers disabled', fg='yellow')
         else:
             click.secho('Already disabled', fg='red')
 

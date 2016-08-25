@@ -5,16 +5,16 @@
 # -- Licence GPLv2
 
 import json
-from os import makedirs
-from os.path import isdir, isfile, join, expanduser
+from os.path import isfile, join
+
+from apio.util import get_home_dir
 
 
 class Profile(object):
 
     def __init__(self):
         self.packages = {}
-        self._apio_dir = join(expanduser("~"), '.apio/')
-        self._profile_path = join(self._apio_dir, 'profile.json')
+        self._profile_path = join(get_home_dir(), 'profile.json')
         self.load()
 
     def check_package(self, name):
@@ -31,24 +31,20 @@ class Profile(object):
         if name in self.packages.keys():
             del self.packages[name]
 
-    def get_package(self, name):
-        return self.packages[name]
-
     def get_version(self, name):
         return self.packages[name]['version']
 
     def load(self):
+        self.packages = {}
         if isfile(self._profile_path):
             with open(self._profile_path, 'r') as profile:
                 try:
                     self.packages = json.load(profile)
                 except:
-                    self.packages = {}
+                    pass
                 profile.close()
 
     def save(self):
-        if not isdir(self._apio_dir):
-            makedirs(self._apio_dir)
         with open(self._profile_path, 'w') as profile:
             json.dump(self.packages, profile)
             profile.close()

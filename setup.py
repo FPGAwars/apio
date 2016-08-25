@@ -4,16 +4,16 @@ from setuptools import setup
 
 setup(
     name='apio',
-    version='0.1.2.3',
+    version='0.1.3',
     author='Jesús Arroyo Torrens',
     author_email='jesus.jkhlg@gmail.com',
     url='https://github.com/FPGAwars/apio',
     license='GPLv2',
     packages=['apio'],
     package_data={
-        'apio': ['SConstruct',
-                 'resources/*.rules',
-                 'resources/*.json']
+        'apio': ['commands/*.py',
+                 'managers/*.py',
+                 'resources/*']
     },
     install_requires=[
         'click',

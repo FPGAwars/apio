@@ -4,18 +4,11 @@
 # -- Author Juan González, Jesús Arroyo
 # -- Licence GPLv2
 
-# Apio project managment
-
 import sys
 import json
 import click
 
 from os.path import isfile, join, dirname
-
-# ----------- Project default configurations
-
-# -- Default FPGA board
-DEFAULT_BOARD = 'icezum'
 
 # -- Project file name
 PROJECT_FILENAME = 'apio.ini'
@@ -33,7 +26,8 @@ class Project(object):
             project_dir = ''
         sconstruct_name = 'SConstruct'
         sconstruct_path = join(project_dir, sconstruct_name)
-        local_sconstruct_path = join(dirname(__file__), sconstruct_name)
+        local_sconstruct_path = join(
+            dirname(__file__), '..', 'resources', sconstruct_name)
 
         if isfile(sconstruct_path):
             click.secho('Warning: ' + sconstruct_name + ' file already exists',
@@ -56,11 +50,8 @@ class Project(object):
                     '\' has been successfully created!',
                     fg='green')
 
-    def new_ini(self, board=DEFAULT_BOARD, project_dir=''):
+    def new_ini(self, board, project_dir=''):
         """Creates a new apio project file"""
-
-        if board is None:
-            board = DEFAULT_BOARD
 
         if project_dir is None:
             project_dir = ''

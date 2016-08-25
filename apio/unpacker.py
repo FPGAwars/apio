@@ -16,8 +16,12 @@ from zipfile import ZipFile
 
 import click
 
-from . import util
-from .exception import UnsupportedArchiveType
+from apio import util
+
+
+class UnsupportedArchiveType(util.ApioException):
+
+    MESSAGE = "Can not unpack file '{0}'"
 
 
 class ArchiveBase(object):
@@ -25,7 +29,7 @@ class ArchiveBase(object):
     def __init__(self, arhfileobj):
         self._afo = arhfileobj
 
-    def get_items(self):
+    def get_items(self):  # pragma: no cover
         raise NotImplementedError()
 
     def extract_item(self, item, dest_dir):

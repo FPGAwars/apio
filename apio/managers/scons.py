@@ -5,86 +5,17 @@
 # -- Licence GPLv2
 
 import os
-import re
 import sys
 import time
 import click
-import platform
 import datetime
 
 from os.path import join, dirname, isdir, isfile
-from .project import Project
 
-from . import util
-from .resources import Resources
-
-
-class System(object):
-    def __init__(self):
-        self.ext = ''
-        if 'Windows' == platform.system():
-            self.ext = '.exe'
-
-    def lsusb(self):
-        self._run('listdevs')
-
-    def lsftdi(self):
-        self._run('find_all')
-
-    def detect_boards(self):
-        detected_boards = []
-        result = self._run('find_all')
-
-        if result and result['returncode'] == 0:
-            detected_boards = self.parse_out(result['out'])
-
-        return detected_boards
-
-    def _run(self, command):
-        result = []
-        system_dir = os.path.join(util.get_home_dir(), 'packages', 'system')
-
-        if isdir(system_dir):
-            result = util.exec_command(
-                os.path.join(system_dir, command + self.ext),
-                stdout=util.AsyncPipe(self._on_run_out),
-                stderr=util.AsyncPipe(self._on_run_out)
-                )
-        else:
-            click.secho('Error: system tools are not installed', fg='red')
-            click.secho('Please run:\n'
-                        '   apio install system', fg='yellow')
-
-        return result
-
-    def _on_run_out(self, line):
-        click.secho(line)
-
-    def parse_out(self, text):
-        pattern = 'Number\sof\sFTDI\sdevices\sfound:\s(?P<n>\d+?)\n'
-        match = re.search(pattern, text)
-        n = int(match.group('n')) if match else 0
-
-        pattern = '.*Checking\sdevice:\s(?P<index>.*?)\n.*'
-        index = re.findall(pattern, text)
-
-        pattern = '.*Manufacturer:\s(?P<n>.*?),.*'
-        manufacturer = re.findall(pattern, text)
-
-        pattern = '.*Description:\s(?P<n>.*?)\n.*'
-        description = re.findall(pattern, text)
-
-        detected_boards = []
-
-        for i in range(n):
-            board = {
-                "index": index[i],
-                "manufacturer": manufacturer[i],
-                "description": description[i]
-            }
-            detected_boards.append(board)
-
-        return detected_boards
+from apio import util
+from apio.resources import Resources
+from apio.managers.system import System
+from apio.managers.project import Project
 
 
 class SCons(object):
@@ -215,9 +146,10 @@ class SCons(object):
                         '   apio install scons', fg='yellow')
 
         # -- Check for the SConstruct file
-        if not isfile(join(os.getcwd(), sconstruct_name)):
+        if not isfile(join(util.get_project_dir(), sconstruct_name)):
             click.secho('Using default SConstruct file')
-            variables += ['-f', join(dirname(__file__), sconstruct_name)]
+            variables += ['-f', join(
+                dirname(__file__), '..', 'resources', sconstruct_name)]
 
         # -- Execute scons
         if isdir(scons_dir) and isdir(icestorm_dir):
@@ -264,6 +196,26 @@ class SCons(object):
                 half_line
             ), err=is_error)
 
+            if False:
+                if is_error:
+                    print("""
+  ______                     _
+ |  ____|                   | |
+ | |__   _ __ _ __ ___  _ __| |
+ |  __| | '__| '__/ _ \| '__| |
+ | |____| |  | | | (_) | |  |_|
+ |______|_|  |_|  \___/|_|  (_)
+""")
+                else:
+                    print("""
+   _____                             _
+  / ____|                           | |
+ | (___  _   _  ___ ___ ___  ___ ___| |
+  \___ \| | | |/ __/ __/ _ \/ __/ __| |
+  ____) | |_| | (_| (_|  __/\__ \__ \_|
+ |_____/ \__,_|\___\___\___||___/___(_)
+""")
+
             return exit_code
 
     def process_arguments(self, args):
@@ -300,7 +252,7 @@ class SCons(object):
                         else:
                             # Unknown fpga
                             click.secho(
-                                'Error: unkown fpga: {0}'.format(
+                                'Error: unknown fpga: {0}'.format(
                                     var_fpga), fg='red')
                             return 1
 
@@ -342,13 +294,11 @@ class SCons(object):
                         return 1
                 else:
                     # Unknown fpga
-                    click.secho(
-                        'Error: unkown fpga: {0}'.format(fpga), fg='red')
-                    return 1
+                    pass
             else:
                 # Unknown board
                 click.secho(
-                    'Error: unkown board: {0}'.format(var_board), fg='red')
+                    'Error: unknown board: {0}'.format(var_board), fg='red')
                 return 1
         else:
             if var_fpga:
@@ -401,7 +351,7 @@ class SCons(object):
                 else:
                     # Unknown fpga
                     click.secho(
-                        'Error: unkown fpga: {0}'.format(var_fpga), fg='red')
+                        'Error: unknown fpga: {0}'.format(var_fpga), fg='red')
                     return 1
             else:
                 if var_size and var_type and var_pack:
@@ -438,7 +388,7 @@ class SCons(object):
                             return 1
                     else:
                         if isfile('apio.ini'):
-                            click.secho('Info: ignore apio.ini file',
+                            click.secho('Info: ignore apio.ini board',
                                         fg='yellow')
                         # Insufficient arguments
                         missing = []

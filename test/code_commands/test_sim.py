@@ -1,6 +1,10 @@
-import apio
+from os import environ, getcwd
+from apio.commands.sim import cli as cmd_sim
 
 
-def test_apio_sim(clirunner):
-    result = clirunner.invoke(apio.sim)
-    assert result.exit_code == 1
+def test_sim(clirunner):
+    with clirunner.isolated_filesystem():
+        environ['APIO_HOME_DIR'] = getcwd()
+        result = clirunner.invoke(cmd_sim)
+        assert result.exit_code == 1
+        assert 'apio install scons' in result.output
