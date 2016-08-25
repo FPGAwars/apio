@@ -50,7 +50,7 @@ class Drivers(object):  # pragma: no cover
         if isfile(self.rules_system_path):
             click.secho('Revert FTDI drivers\' configuration')
             subprocess.call(['sudo', 'rm', self.rules_system_path])
-            click.secho('FPGA drivers disabled', fg='green')
+            click.secho('FPGA drivers disabled', fg='yellow')
         else:
             click.secho('Already disabled', fg='red')
 
