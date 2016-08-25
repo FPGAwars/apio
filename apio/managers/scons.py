@@ -252,7 +252,7 @@ class SCons(object):
                         else:
                             # Unknown fpga
                             click.secho(
-                                'Error: unkown fpga: {0}'.format(
+                                'Error: unknown fpga: {0}'.format(
                                     var_fpga), fg='red')
                             return 1
 
@@ -294,13 +294,11 @@ class SCons(object):
                         return 1
                 else:
                     # Unknown fpga
-                    click.secho(
-                        'Error: unkown fpga: {0}'.format(fpga), fg='red')
-                    return 1
+                    pass
             else:
                 # Unknown board
                 click.secho(
-                    'Error: unkown board: {0}'.format(var_board), fg='red')
+                    'Error: unknown board: {0}'.format(var_board), fg='red')
                 return 1
         else:
             if var_fpga:
@@ -353,7 +351,7 @@ class SCons(object):
                 else:
                     # Unknown fpga
                     click.secho(
-                        'Error: unkown fpga: {0}'.format(var_fpga), fg='red')
+                        'Error: unknown fpga: {0}'.format(var_fpga), fg='red')
                     return 1
             else:
                 if var_size and var_type and var_pack:
@@ -390,7 +388,7 @@ class SCons(object):
                             return 1
                     else:
                         if isfile('apio.ini'):
-                            click.secho('Info: ignore apio.ini file',
+                            click.secho('Info: ignore apio.ini board',
                                         fg='yellow')
                         # Insufficient arguments
                         missing = []

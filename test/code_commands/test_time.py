@@ -5,7 +5,7 @@ from apio.commands.time import cli as cmd_time
 def test_time(clirunner):
     with clirunner.isolated_filesystem():
         environ['APIO_HOME_DIR'] = getcwd()
-        result = clirunner.invoke(cmd_upload)
+        result = clirunner.invoke(cmd_time)
         assert result.exit_code == 1
         assert 'Info: No apio.ini file' in result.output
         assert 'Error: insufficient arguments: missing board' in result.output
