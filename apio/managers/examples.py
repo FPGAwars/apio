@@ -39,15 +39,16 @@ class Examples(object):
             click.secho('')
             for example in examples:
                 example_dir = join(self.examples_dir, example)
-                info_path = join(example_dir, 'info')
-                info = ''
-                if isfile(info_path):
-                    with open(info_path, 'r') as info_file:
-                        info = info_file.read().replace('\n', '')
-                click.secho(' ' + example, fg='blue', bold=True)
-                click.secho('-' * click.get_terminal_size()[0])
-                click.secho(' ' + info)
-                click.secho('')
+                if isdir(example_dir):
+                    info_path = join(example_dir, 'info')
+                    info = ''
+                    if isfile(info_path):
+                        with open(info_path, 'r') as info_file:
+                            info = info_file.read().replace('\n', '')
+                    click.secho(' ' + example, fg='blue', bold=True)
+                    click.secho('-' * click.get_terminal_size()[0])
+                    click.secho(' ' + info)
+                    click.secho('')
             click.secho(EXAMPLE_DIR_FILE, fg='green')
             click.secho(EXAMPLE_OF_USE_CAD, fg='green')
         else:

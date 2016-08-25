@@ -11,13 +11,13 @@ import shutil
 from os import makedirs, remove, rename
 from os.path import isdir, join, basename, expanduser
 
-from . import util
-from .api import api_request
-from .resources import Resources
-from .profile import Profile
+from apio import util
+from apio.api import api_request
+from apio.resources import Resources
+from apio.profile import Profile
 
-from .downloader import FileDownloader
-from .unpacker import FileUnpacker
+from apio.downloader import FileDownloader
+from apio.unpacker import FileUnpacker
 
 
 class Installer(object):
@@ -75,7 +75,7 @@ class Installer(object):
     def install(self):
         if self.version is None:
             click.secho(
-                'Package \'{0}\' does not exist'.format(self.package),
+                'Error: No such package \'{0}\''.format(self.package),
                 fg='red')
         else:
             click.echo("Installing %s package:" % click.style(
@@ -158,12 +158,11 @@ class Installer(object):
                 version = match.group('v')
         return version
 
-    def _download(self, url, sha1=None, forced=False):
+    def _download(self, url, forced=False):
         if self.profile.check_version(self.package, self.version) or forced:
             fd = FileDownloader(url, self.packages_dir)
             click.secho('Download ' + basename(fd.get_filepath()))
             fd.start()
-            # fd.verify(sha1)
             return fd.get_filepath()
         else:
             click.secho('Already installed. Version {0}'.format(

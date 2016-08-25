@@ -16,8 +16,12 @@ from zipfile import ZipFile
 
 import click
 
-from . import util
-from .exception import UnsupportedArchiveType
+from apio import util
+
+
+class UnsupportedArchiveType(util.ApioException):
+
+    MESSAGE = "Can not unpack file '{0}'"
 
 
 class ArchiveBase(object):

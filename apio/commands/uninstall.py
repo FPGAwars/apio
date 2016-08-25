@@ -22,7 +22,7 @@ def cli(ctx, packages, all, list):
 
     if packages:
         _uninstall(packages)
-    elif all:
+    elif all:  # pragma: no cover
         packages = Resources().packages
         _uninstall(packages)
     elif list:

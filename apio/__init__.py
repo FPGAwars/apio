@@ -5,18 +5,20 @@
 # -- Licence GPLv2
 
 import click
-import os
 
+from os import listdir
+from os.path import isfile, join, dirname
 from sys import exit as sys_exit
 
-commands_folder = os.path.join(os.path.dirname(__file__), 'commands')
+
+commands_folder = join(dirname(__file__), 'commands')
 
 
 class ApioCLI(click.MultiCommand):
 
     def list_commands(self, ctx):
         rv = []
-        for filename in os.listdir(commands_folder):
+        for filename in listdir(commands_folder):
             if filename.startswith("__init__"):
                 continue
             if filename.endswith('.py'):
@@ -26,11 +28,12 @@ class ApioCLI(click.MultiCommand):
 
     def get_command(self, ctx, name):
         ns = {}
-        fn = os.path.join(commands_folder, name + '.py')
-        with open(fn) as f:
-            code = compile(f.read(), fn, 'exec')
-            eval(code, ns, ns)
-        return ns['cli']
+        fn = join(commands_folder, name + '.py')
+        if isfile(fn):
+            with open(fn) as f:
+                code = compile(f.read(), fn, 'exec')
+                eval(code, ns, ns)
+            return ns['cli']
 
 
 @click.command(cls=ApioCLI, invoke_without_command=True)
@@ -66,5 +69,5 @@ def cli(ctx):
         click.secho(help)
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     sys_exit(cli())

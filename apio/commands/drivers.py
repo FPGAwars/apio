@@ -18,9 +18,9 @@ from apio.managers.drivers import Drivers
 def cli(ctx, enable, disable):
     """Manage FPGA drivers."""
 
-    if enable:
+    if enable:   # pragma: no cover
         Drivers().enable()
-    elif disable:
+    elif disable:   # pragma: no cover
         Drivers().disable()
     else:
         click.secho(ctx.get_help())

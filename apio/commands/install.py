@@ -23,7 +23,7 @@ def cli(ctx, packages, all, list):
     if packages:
         for package in packages:
             Installer(package).install()
-    elif all:
+    elif all:  # pragma: no cover
         packages = Resources().packages
         for package in packages:
             Installer(package).install()

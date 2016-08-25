@@ -8,18 +8,22 @@
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
 # ---- Licence Apache v2
 
-from email.utils import parsedate_tz
-from math import ceil
-from os.path import getsize, join
-from time import mktime
-
-from . import util
-from .exception import FDSHASumMismatch, FDSizeMismatch, \
-                       FDUnrecognizedStatusCode
-
 import click
 import requests
+
+from email.utils import parsedate_tz
+from math import ceil
+from os.path import join
+from time import mktime
+
+from apio import util
+
 requests.packages.urllib3.disable_warnings()
+
+
+class FDUnrecognizedStatusCode(util.ApioException):
+
+    MESSAGE = "Got an unrecognized status code '{0}' when downloaded {1}"
 
 
 class FileDownloader(object):
@@ -68,31 +72,6 @@ class FileDownloader(object):
         self._request.close()
 
         self._preserve_filemtime(self.get_lmtime())
-
-    def verify(self, sha1=None):
-        _dlsize = getsize(self._destination)
-        if _dlsize != self.get_size():
-            raise FDSizeMismatch(_dlsize, self._fname, self.get_size())
-
-        if not sha1:
-            return
-
-        dlsha1 = None
-        try:
-            result = util.exec_command(["sha1sum", self._destination])
-            dlsha1 = result['out']
-        except (OSError, ValueError):
-            try:
-                result = util.exec_command(
-                    ["shasum", "-a", "1", self._destination])
-                dlsha1 = result['out']
-            except (OSError, ValueError):
-                pass
-
-        if dlsha1:
-            dlsha1 = dlsha1[1:41] if dlsha1.startswith("\\") else dlsha1[:40]
-            if sha1 != dlsha1:
-                raise FDSHASumMismatch(dlsha1, self._fname, sha1)
 
     def _preserve_filemtime(self, lmdate):
         if lmdate is not None:

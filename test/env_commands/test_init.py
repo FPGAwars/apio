@@ -43,6 +43,6 @@ def test_init_multiple_scons(clirunner, validate_cliresult):
             result = clirunner.invoke(cmd_init, ['--scons'])
         validate_cliresult(result)
         validate_scons(getcwd())
-        # TODO: send y confirmation click.echo('y')
         assert 'file already exists' in result.output
         assert 'Do you want to replace it?' in result.output
+        # TODO: [y/N] test
