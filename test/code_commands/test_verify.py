@@ -1,6 +1,6 @@
-import apio
+from apio.commands.verify import cli as cmd_verify
 
 
 def test_apio_verify(clirunner):
-    result = clirunner.invoke(apio.verify)
+    result = clirunner.invoke(cmd_verify)
     assert result.exit_code == 1

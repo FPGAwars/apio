@@ -6,7 +6,7 @@
 
 import json
 from os import makedirs
-from os.path import isdir, isfile, join, expanduser
+from os.path import isdir, isfile, join
 
 from . import util
 

@@ -1,7 +1,7 @@
 from os import getcwd
 from os.path import join, isfile, getsize
 
-from apio import init as cmd_init
+from apio.commands.init import cli as cmd_init
 
 
 def validate_apio_ini(current_dir):

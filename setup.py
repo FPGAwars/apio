@@ -11,9 +11,9 @@ setup(
     license='GPLv2',
     packages=['apio'],
     package_data={
-        'apio': ['SConstruct',
-                 'resources/*.rules',
-                 'resources/*.json']
+        'apio': ['commands/*.py',
+                 'managers/*.py',
+                 'resources/*']
     },
     install_requires=[
         'click',

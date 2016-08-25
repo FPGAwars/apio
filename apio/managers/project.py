@@ -4,8 +4,6 @@
 # -- Author Juan González, Jesús Arroyo
 # -- Licence GPLv2
 
-# Apio project managment
-
 import sys
 import json
 import click
@@ -28,7 +26,8 @@ class Project(object):
             project_dir = ''
         sconstruct_name = 'SConstruct'
         sconstruct_path = join(project_dir, sconstruct_name)
-        local_sconstruct_path = join(dirname(__file__), sconstruct_name)
+        local_sconstruct_path = join(
+            dirname(__file__), '..', 'resources', sconstruct_name)
 
         if isfile(sconstruct_path):
             click.secho('Warning: ' + sconstruct_name + ' file already exists',

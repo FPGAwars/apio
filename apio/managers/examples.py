@@ -11,7 +11,7 @@ import shutil
 
 from os.path import join, isdir, isfile, basename
 
-from . import util
+from apio import util
 
 # -- Error messages
 EXAMPLE_NOT_FOUND_MSG = """

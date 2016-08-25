@@ -1,5 +1,6 @@
 import os
-from apio import install as cmd_install
+
+from apio.commands.install import cli as cmd_install
 
 
 def test_install_list(clirunner, validate_cliresult):
