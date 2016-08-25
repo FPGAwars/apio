@@ -6,5 +6,5 @@ install:
   - pip install .
   - pip install -U tox tox-travis
 script:
-  - tox -e flake8
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.5' ]]; then tox -e flake8; fi
   - tox
