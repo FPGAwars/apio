@@ -42,7 +42,7 @@ class AbortedByUser(ApioException):
     MESSAGE = "Aborted by user"
 
 
-class AsyncPipe(Thread):
+class AsyncPipe(Thread):  # pragma: no cover
 
     def __init__(self, outcallback=None):
         Thread.__init__(self)
@@ -116,7 +116,7 @@ def is_ci():
     return os.getenv("CI", "").lower() == "true"
 
 
-def exec_command(*args, **kwargs):
+def exec_command(*args, **kwargs):  # pragma: no cover
     result = {
         "out": None,
         "err": None,

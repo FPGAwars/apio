@@ -5,7 +5,6 @@ from apio.commands.install import cli as cmd_install
 from apio.commands.uninstall import cli as cmd_uninstall
 from apio.commands.init import cli as cmd_init
 from apio.commands.upload import cli as cmd_upload
-from apio.commands.system import cli as cmd_system
 from apio.commands.examples import cli as cmd_examples
 
 
@@ -23,13 +22,12 @@ def test_complete(clirunner, validate_cliresult):
     with clirunner.isolated_filesystem():
         environ['APIO_HOME_DIR'] = getcwd()
 
-        # apio uninstall examples system
+        # apio uninstall examples
         result = clirunner.invoke(
-            cmd_uninstall, ['examples', 'system'], input='y')
+            cmd_uninstall, ['examples'], input='y')
         validate_cliresult(result)
         assert 'Do you want to continue?' in result.output
         assert 'Package \'examples\' is not installed' in result.output
-        assert 'Package \'system\' is not installed' in result.output
 
         # apio install examples
         result = clirunner.invoke(cmd_install, ['examples'])
@@ -45,14 +43,6 @@ def test_complete(clirunner, validate_cliresult):
         assert 'Installing examples package' in result.output
         assert 'Already installed. Version ' in result.output
 
-        # apio install system
-        result = clirunner.invoke(cmd_install, ['system'])
-        validate_cliresult(result)
-        assert 'Installing system package' in result.output
-        assert 'Downloading' in result.output
-        assert 'Unpacking' in result.output
-        assert 'has been successfully installed!' in result.output
-
         # apio install --list
         result = clirunner.invoke(cmd_install, ['--list'])
         validate_cliresult(result)
@@ -66,18 +56,6 @@ def test_complete(clirunner, validate_cliresult):
         result = clirunner.invoke(cmd_upload)
         assert result.exit_code == 1
         assert 'Info: use apio.ini board: icezum' in result.output
-        assert 'Number of FTDI devices found:' in result.output
-
-        # apio system --lsftdi
-        result = clirunner.invoke(cmd_system, ['--lsftdi'])
-        validate_cliresult(result)
-        assert 'Number of FTDI devices found:' in result.output
-
-        # apio system --lsusb
-        result = clirunner.invoke(cmd_system, ['--lsusb'])
-        validate_cliresult(result)
-        assert 'bus' in result.output
-        assert 'device' in result.output
 
         # apio examples --list
         result = clirunner.invoke(cmd_examples, ['--list'])
@@ -114,13 +92,13 @@ def test_complete(clirunner, validate_cliresult):
         validate_dir_leds(getcwd())
 
         # apio uninstall examples
+        result = clirunner.invoke(cmd_uninstall, ['examples'], input='n')
+        validate_cliresult(result)
+        assert 'Abort!' in result.output
+
+        # apio uninstall examples
         result = clirunner.invoke(cmd_uninstall, ['examples'], input='y')
         validate_cliresult(result)
         assert 'Uninstalling examples package' in result.output
         assert 'Do you want to continue?' in result.output
         assert 'has been successfully uninstalled!' in result.output
-
-        # apio uninstall system
-        result = clirunner.invoke(cmd_uninstall, ['system'], input='n')
-        validate_cliresult(result)
-        assert 'Abort!' in result.output

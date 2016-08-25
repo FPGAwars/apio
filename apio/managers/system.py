@@ -13,7 +13,7 @@ from os.path import join, isdir
 from apio import util
 
 
-class System(object):
+class System(object):  # pragma: no cover
     def __init__(self):
         self.ext = ''
         if 'Windows' == platform.system():

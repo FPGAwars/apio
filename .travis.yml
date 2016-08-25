@@ -6,5 +6,5 @@ install:
   - pip install .
   - pip install -U tox tox-travis
 script:
-  - tox
   - tox -e flake8
+  - tox
