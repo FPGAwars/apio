@@ -1,6 +1,6 @@
 import pytest
 
-from os import environ, getcwd, listdir
+from os import environ, getcwd, listdir, mkdir
 from os.path import join, isfile, isdir, getsize
 
 from apio.commands.install import cli as cmd_install
@@ -68,7 +68,7 @@ def test_complete(clirunner, validate_cliresult):
         assert 'leds' in result.output
         assert 'icezum' in result.output
 
-        # apio examples --files leds
+        # apio examples --files missing_example
         result = clirunner.invoke(cmd_examples, ['--files', 'missing_example'])
         validate_cliresult(result)
         assert 'Warning: this example does not exist' in result.output
@@ -95,6 +95,25 @@ def test_complete(clirunner, validate_cliresult):
         assert 'Creating leds directory ...' in result.output
         assert 'has been successfully created!' in result.output
         validate_dir_leds(getcwd())
+
+        dir_name = 'tmp'
+        mkdir(dir_name)
+
+        # apio examples --files leds --project-dir=tmp
+        result = clirunner.invoke(
+            cmd_examples, ['--files', 'leds', '--project-dir=tmp'])
+        validate_cliresult(result)
+        assert 'Copying leds example files ...' in result.output
+        assert 'have been successfully created!' in result.output
+        validate_files_leds(join(getcwd(), dir_name))
+
+        # apio examples --dir leds --project-dir=tmp
+        result = clirunner.invoke(
+            cmd_examples, ['--dir', 'leds', '--project-dir=tmp'])
+        validate_cliresult(result)
+        assert 'Creating leds directory ...' in result.output
+        assert 'has been successfully created!' in result.output
+        validate_dir_leds(join(getcwd(), dir_name))
 
         # apio uninstall examples
         result = clirunner.invoke(cmd_uninstall, ['examples'], input='n')

@@ -1,4 +1,4 @@
-from os import getcwd
+from os import getcwd, mkdir
 from os.path import join, isfile, getsize
 
 from apio.commands.init import cli as cmd_init
@@ -64,4 +64,17 @@ def test_init_scons(clirunner, validate_cliresult):
         assert 'Warning' in result.output
         assert 'file already exists' in result.output
         assert 'Do you want to replace it?' in result.output
+        assert 'has been successfully created!' in result.output
+
+
+def test_init_scons_project_dir(clirunner, validate_cliresult):
+    with clirunner.isolated_filesystem():
+        dir_name = 'tmp'
+        mkdir(dir_name)
+
+        # apio init --scons --project-dir=tmp
+        result = clirunner.invoke(cmd_init, ['--scons', '--project-dir=tmp'])
+        validate_cliresult(result)
+        validate_scons(join(getcwd(), dir_name))
+        assert 'Creating SConstruct file ...' in result.output
         assert 'has been successfully created!' in result.output

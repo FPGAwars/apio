@@ -2,6 +2,7 @@ import pytest
 
 from apio.api import api_request
 
+
 @pytest.mark.skipif(pytest.config.getvalue('offline'),
                     reason="requires internet connection")
 def test_api_request(capsys):
