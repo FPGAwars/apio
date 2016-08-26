@@ -8,7 +8,7 @@ apio boards
 Usage
 -----
 
-.. code-block:: bash
+.. code::
 
     apio boards [OPTIONS]
 
@@ -16,6 +16,18 @@ Usage
 Description
 -----------
 
+Show FPGA boards information.
+
+All supported boards:
+
+* `iCEstick <http://www.pighixxx.com/test/portfolio-items/icestick/>`_
+* `Icezum Alhambra <https://github.com/FPGAwars/icezum>`_
+* `Nandland Go board <https://www.nandland.com/goboard/introduction.html>`_
+* `iCE40-HX8K Breakout Board <http://www.latticesemi.com/en/Products/DevelopmentBoardsAndKits/iCE40HX8KBreakoutBoard.aspx>`_
+
+.. note::
+
+  All supported FPGAs are shown in `Project IceStorm web page <http://www.clifford.at/icestorm>`_
 
 Options
 -------
@@ -25,12 +37,12 @@ Options
 .. option::
     -l, --list
 
-List supported boards
+List all supported boards
 
 .. option::
     -f, --fpga
 
-List supported FPGAs
+List all supported FPGAs
 
 
 Examples
@@ -38,23 +50,23 @@ Examples
 
 1. Show all available boards
 
-.. code-block:: bash
+.. code::
 
-    $ apio boards --list
+  $ apio boards --list
 
-    Supported boards:
+  Supported boards:
 
-    ------------------------------------------------------
-    Board         FPGA                 Type  Size  Pack
-    ------------------------------------------------------
-    iCE40-HX8K    iCE40-HX8K-CT256     hx    8k    ct256
-    icestick      iCE40-HX1K-TQ144     hx    1k    tq144
-    icezum        iCE40-HX1K-TQ144     hx    1k    tq144
-    go-board      iCE40-HX1K-VQ100     hx    1k    vq100
+  ------------------------------------------------------
+  Board         FPGA                 Type  Size  Pack
+  ------------------------------------------------------
+  iCE40-HX8K    iCE40-HX8K-CT256     hx    8k    ct256
+  icestick      iCE40-HX1K-TQ144     hx    1k    tq144
+  icezum        iCE40-HX1K-TQ144     hx    1k    tq144
+  go-board      iCE40-HX1K-VQ100     hx    1k    vq100
 
 2. Show all available FPGAs
 
-.. code-block:: bash
+.. code::
 
   $ apio boards --fpga
 

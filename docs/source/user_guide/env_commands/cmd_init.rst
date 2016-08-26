@@ -8,7 +8,7 @@ apio init
 Usage
 -----
 
-.. code-block:: bash
+.. code::
 
     apio init [OPTIONS]
 
@@ -32,7 +32,7 @@ Examples
 
 1.
 
-.. code-block:: bash
+.. code::
 
     $ apio init
 

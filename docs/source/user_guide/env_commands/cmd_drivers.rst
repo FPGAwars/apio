@@ -8,7 +8,7 @@ apio drivers
 Usage
 -----
 
-.. code-block:: bash
+.. code::
 
     apio drivers [OPTIONS]
 
@@ -16,6 +16,15 @@ Usage
 Description
 -----------
 
+Enable/Disable the FTDI drivers.
+
+* Linux: add a rules file. It requires to reboot.
+* Mac OSX: configures FTDIUSBSerialDriver and AppleUSBFTDI keys.
+* Windows: opens a web browser with a tutorial.
+
+.. note::
+
+  More information in https://github.com/FPGAwars/apio/wiki/Installation
 
 Options
 -------
@@ -23,17 +32,32 @@ Options
 .. program:: apio drivers
 
 .. option::
-    -b, --board
+    -e, --enable
 
-text
+Enable FPGA drivers
+
+.. option::
+    -d, --disable
+
+Disable FPGA drivers
 
 Examples
 --------
 
-1.
+1. Enable the FTDI drivers on Linux
 
-.. code-block:: bash
+.. code::
 
-    $ apio drivers
+  $ apio drivers --enable
+  Configure FTDI drivers for FPGA
+  [sudo] password for user:
+  FPGA drivers enabled
 
-    output.....
+1. Disable the FTDI drivers on Linux
+
+.. code::
+
+  $ apio drivers --disable
+  Revert FTDI drivers configuration
+  [sudo] password for user:
+  FPGA drivers disabled

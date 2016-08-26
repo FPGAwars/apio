@@ -8,7 +8,7 @@ apio uninstall
 Usage
 -----
 
-.. code-block:: bash
+.. code::
 
     apio uninstall [OPTIONS]
 
@@ -32,7 +32,7 @@ Examples
 
 1.
 
-.. code-block:: bash
+.. code::
 
     $ apio uninstall
 

@@ -30,7 +30,7 @@ Examples
 --------
 
 
-1. Simulate the leds example
+1. Simulate the *leds example*
 
 .. code::
 

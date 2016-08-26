@@ -8,7 +8,7 @@ apio install
 Usage
 -----
 
-.. code-block:: bash
+.. code::
 
     apio install [OPTIONS]
 
@@ -32,7 +32,7 @@ Examples
 
 1.
 
-.. code-block:: bash
+.. code::
 
     $ apio install
 

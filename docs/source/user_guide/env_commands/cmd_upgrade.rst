@@ -8,7 +8,7 @@ apio upgrade
 Usage
 -----
 
-.. code-block:: bash
+.. code::
 
     apio upgrade [OPTIONS]
 
@@ -32,7 +32,7 @@ Examples
 
 1.
 
-.. code-block:: bash
+.. code::
 
     $ apio upgrade
 

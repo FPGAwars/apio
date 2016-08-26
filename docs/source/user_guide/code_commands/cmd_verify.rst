@@ -24,7 +24,7 @@ Examples
 --------
 
 
-1. Verify the leds example
+1. Verify the *leds example*
 
 .. code::
 

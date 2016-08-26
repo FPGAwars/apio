@@ -6,6 +6,7 @@ Experimental open source micro-ecosystem for open FPGAs. Based on [platformio](h
 
 ![](https://github.com/FPGAwars/apio/raw/master/doc/apio.jpg)
 
+
 ## Installation ![][ubuntu-logo] ![][raspbian-logo] ![][macosx-logo] ![][windows-logo]
 
 1. [Install dependencies](https://github.com/FPGAwars/apio/wiki/Dependencies) (Python 2.7 and pip)
@@ -13,6 +14,13 @@ Experimental open source micro-ecosystem for open FPGAs. Based on [platformio](h
 2. Install latest apio: ```pip install -U apio```
 
 ## Documentation
+
+Supported boards:
+
+* [iCEstick](http://www.pighixxx.com/test/portfolio-items/icestick/)
+* [Icezum Alhambra](https://github.com/FPGAwars/icezum)
+* [Nandland Go board](https://www.nandland.com/goboard/introduction.html)
+* [iCE40-HX8K Breakout Board](http://www.latticesemi.com/en/Products/DevelopmentBoardsAndKits/iCE40HX8KBreakoutBoard.aspx)
 
 [The project documentation is located in the wiki](https://github.com/FPGAwars/apio/wiki)
 

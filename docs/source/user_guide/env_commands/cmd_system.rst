@@ -8,7 +8,7 @@ apio system
 Usage
 -----
 
-.. code-block:: bash
+.. code::
 
     apio system [OPTIONS]
 
@@ -32,7 +32,7 @@ Examples
 
 1.
 
-.. code-block:: bash
+.. code::
 
     $ apio system
 

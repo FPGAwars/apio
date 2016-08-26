@@ -23,7 +23,7 @@ This command requires the ``scons`` package.
 Examples
 --------
 
-1. Clean the leds example
+1. Clean the *leds example*
 
 .. code::
 

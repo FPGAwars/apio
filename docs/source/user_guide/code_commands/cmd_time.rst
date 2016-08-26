@@ -47,7 +47,7 @@ Select a specific FPGA size, type and pack.
 Examples
 --------
 
-1. Timing analysis for the leds example
+1. Timing analysis for the *leds example*
 
 .. code::
 

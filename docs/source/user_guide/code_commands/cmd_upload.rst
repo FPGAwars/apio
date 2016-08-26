@@ -58,7 +58,7 @@ Select a specific FPGA size, type and pack.
 Examples
 --------
 
-1. Upload the leds example
+1. Upload the *leds example*
 
 .. code::
 

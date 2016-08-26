@@ -47,7 +47,7 @@ Select a specific FPGA size, type and pack.
 Examples
 --------
 
-1. Process the leds example
+1. Process the *leds example*
 
 .. code::
 

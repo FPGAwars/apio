@@ -11,9 +11,4 @@ Welcome to apio's documentation!
 
    source/installation
    source/quick_start
-
-.. toctree::
-   :caption: User Guide
-   :maxdepth: 2
-
    source/user_guide/index
