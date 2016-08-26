@@ -98,22 +98,44 @@ class Resources(object):
         # Print table
         click.echo('\nSupported boards:\n')
 
-        BOARDLIST_TPL = ('{name:22} {fpga:20} {type:<5} {size:<5} {pack:<10}')
+        BOARDLIST_TPL = ('{board:22} {fpga:20} {type:<5} {size:<5} {pack:<10}')
         terminal_width, _ = click.get_terminal_size()
 
         click.echo('-' * terminal_width)
         click.echo(BOARDLIST_TPL.format(
-            name=click.style('Name', fg='cyan'), fpga='FPGA', type='Type',
+            board=click.style('Board', fg='cyan'), fpga='FPGA', type='Type',
             size='Size', pack='Pack'))
         click.echo('-' * terminal_width)
 
         for board in self.boards:
             fpga = self.boards[board]['fpga']
             click.echo(BOARDLIST_TPL.format(
-                name=click.style(board, fg='cyan'),
+                board=click.style(board, fg='cyan'),
                 fpga=fpga,
                 type=self.fpgas[fpga]['type'],
                 size=self.fpgas[fpga]['size'],
                 pack=self.fpgas[fpga]['pack']))
 
         click.secho(BOARDS_MSG, fg='green')
+
+    def list_fpgas(self):
+        """Return a list with all the supported FPGAs"""
+
+        # Print table
+        click.echo('\nSupported FPGAs:\n')
+
+        FPGALIST_TPL = ('{fpga:30} {type:<5} {size:<5} {pack:<10}')
+        terminal_width, _ = click.get_terminal_size()
+
+        click.echo('-' * terminal_width)
+        click.echo(FPGALIST_TPL.format(
+            fpga=click.style('FPGA', fg='cyan'), type='Type',
+            size='Size', pack='Pack'))
+        click.echo('-' * terminal_width)
+
+        for fpga in self.fpgas:
+            click.echo(FPGALIST_TPL.format(
+                fpga=click.style(fpga, fg='cyan'),
+                type=self.fpgas[fpga]['type'],
+                size=self.fpgas[fpga]['size'],
+                pack=self.fpgas[fpga]['pack']))

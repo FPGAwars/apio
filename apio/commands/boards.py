@@ -13,10 +13,14 @@ from apio.resources import Resources
 @click.pass_context
 @click.option('-l', '--list', is_flag=True,
               help='List all supported FPGA boards.')
-def cli(ctx, list):
+@click.option('-f', '--fpga', is_flag=True,
+              help='List all supported FPGA chips.')
+def cli(ctx, list, fpga):
     """Manage FPGA boards."""
 
     if list:
         Resources().list_boards()
+    elif fpga:
+        Resources().list_fpgas()
     else:
         click.secho(ctx.get_help())
