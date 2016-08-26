@@ -10,6 +10,8 @@ from apio.managers.scons import SCons
 
 
 @click.command('clean')
-def cli():
+@click.pass_context
+def cli(ctx):
     """Clean the previous generated files."""
-    SCons().clean()
+    exit_code = SCons().clean()
+    ctx.exit(exit_code)

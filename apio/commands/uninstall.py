@@ -34,6 +34,8 @@ def cli(ctx, packages, all, list):
 def _uninstall(packages):
     if click.confirm('Do you want to continue?'):
         for package in packages:
+            if package == 'pio-fpga':  # skip pio-fpga
+                continue
             Installer(package).uninstall()
     else:
         click.secho('Abort!', fg='red')

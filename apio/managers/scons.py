@@ -24,7 +24,7 @@ class SCons(object):
         self.resources = Resources()
 
     def clean(self):
-        self.run('-c')
+        return self.run('-c')
 
     def verify(self):
         return self.run('verify')
@@ -127,6 +127,12 @@ class SCons(object):
         os.environ['VLIB'] = os.path.join(
             packages_dir, 'toolchain-iverilog', 'vlib', 'system.v')
 
+        # -- Check for the scons
+        if not isdir(scons_dir):
+            click.secho('Error: scons toolchain is not installed', fg='red')
+            click.secho('Please run:\n'
+                        '   apio install scons', fg='yellow')
+
         # -- Check for the icestorm tools
         if not isdir(icestorm_dir):
             click.secho('Error: icestorm toolchain is not installed', fg='red')
@@ -139,12 +145,6 @@ class SCons(object):
             click.secho('Please run:\n'
                         '   apio install iverilog', fg='yellow')
 
-        # -- Check for the scons
-        if not isdir(scons_dir):
-            click.secho('Error: scons toolchain is not installed', fg='red')
-            click.secho('Please run:\n'
-                        '   apio install scons', fg='yellow')
-
         # -- Check for the SConstruct file
         if not isfile(join(util.get_project_dir(), sconstruct_name)):
             click.secho('Using default SConstruct file')
@@ -152,7 +152,7 @@ class SCons(object):
                 dirname(__file__), '..', 'resources', sconstruct_name)]
 
         # -- Execute scons
-        if isdir(scons_dir) and isdir(icestorm_dir):
+        if isdir(scons_dir) and isdir(icestorm_dir) and isdir(iverilog_dir):
             terminal_width, _ = click.get_terminal_size()
             start_time = time.time()
 
@@ -217,6 +217,8 @@ class SCons(object):
 """)
 
             return exit_code
+        else:
+            return 1
 
     def process_arguments(self, args):
         # -- Check arguments

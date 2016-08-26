@@ -33,11 +33,25 @@ def test_complete(clirunner, validate_cliresult):
         assert 'Do you want to continue?' in result.output
         assert 'Package \'examples\' is not installed' in result.output
 
+        # apio install examples@X
+        result = clirunner.invoke(cmd_install, ['examples@X'])
+        assert 'Error: package \'examples\' has no version X' in result.output
+
+        # apio install examples@0.0.2
+        result = clirunner.invoke(cmd_install, ['examples@0.0.2'])
+        validate_cliresult(result)
+        assert 'Installing examples package' in result.output
+        assert 'Downloading' in result.output
+        assert '0.0.2' in result.output
+        assert 'Unpacking' in result.output
+        assert 'has been successfully installed!' in result.output
+
         # apio install examples
         result = clirunner.invoke(cmd_install, ['examples'])
         validate_cliresult(result)
         assert 'Installing examples package' in result.output
         assert 'Downloading' in result.output
+        assert '0.0.2' not in result.output
         assert 'Unpacking' in result.output
         assert 'has been successfully installed!' in result.output
 

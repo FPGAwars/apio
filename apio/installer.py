@@ -23,21 +23,45 @@ from apio.unpacker import FileUnpacker
 class Installer(object):
 
     def __init__(self, package):
-        self.package = package
-        self.version = None
+
+        # Parse version
+        if '@' in package:
+            split = package.split('@')
+            self.package = split[0]
+            self.version = split[1]
+        else:
+            self.package = package
+            self.version = None
+
+        self.forced_install = False
+        self.valid_version = True
 
         self.resources = Resources()
         self.profile = Profile()
 
-        if package in self.resources.packages:
+        if self.package in self.resources.packages:
 
-            data = self.resources.packages[package]
+            data = self.resources.packages[self.package]
 
-            self.version = self._get_version(
-                data['repository']['name'],
-                data['repository']['organization'],
-                data['release']['tag_name']
-            )
+            if self.version:
+                # Validate version
+                valid = self._validate_version(
+                    data['repository']['name'],
+                    data['repository']['organization'],
+                    data['release']['tag_name'],
+                    self.version
+                )
+                if valid:
+                    self.forced_install = True
+                else:
+                    self.valid_version = False
+            else:
+                # Get latest version
+                self.version = self._get_latest_version(
+                    data['repository']['name'],
+                    data['repository']['organization'],
+                    data['release']['tag_name']
+                )
 
             self.arch = self._get_architecture()
 
@@ -76,6 +100,11 @@ class Installer(object):
         if self.version is None:
             click.secho(
                 'Error: No such package \'{0}\''.format(self.package),
+                fg='red')
+        elif not self.valid_version:
+            click.secho(
+                'Error: package \'{0}\' has no version {1}'.format(
+                    self.package, self.version),
                 fg='red')
         else:
             click.echo("Installing %s package:" % click.style(
@@ -148,18 +177,27 @@ class Installer(object):
             extension)
         return tarball
 
-    def _get_version(self, name, organization, tag_name):
+    def _validate_version(self, name, organization, tag_name, version):
+        releases = api_request('{}/releases'.format(name), organization)
+        if releases is not None:
+            for release in releases:
+                if 'tag_name' in release and \
+                   release['tag_name'] == tag_name.replace('%V', version):
+                    return True
+        return False
+
+    def _get_latest_version(self, name, organization, tag_name):
         version = ''
-        releases = api_request('{}/releases/latest'.format(name), organization)
-        if releases is not None and 'tag_name' in releases:
+        latest_release = api_request('{}/releases/latest'.format(name), organization)
+        if latest_release is not None and 'tag_name' in latest_release:
             pattern = tag_name.replace('%V', '(?P<v>.*?)') + '$'
-            match = re.search(pattern, releases['tag_name'])
+            match = re.search(pattern, latest_release['tag_name'])
             if match:
                 version = match.group('v')
         return version
 
-    def _download(self, url, forced=False):
-        if self.profile.check_version(self.package, self.version) or forced:
+    def _download(self, url):
+        if self.profile.check_version(self.package, self.version) or self.forced_install:
             fd = FileDownloader(url, self.packages_dir)
             click.secho('Download ' + basename(fd.get_filepath()))
             fd.start()
