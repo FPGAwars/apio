@@ -1,3 +1,5 @@
+import pytest
+
 from os import environ, getcwd, listdir
 from os.path import join, isfile, isdir, getsize
 
@@ -18,6 +20,8 @@ def validate_dir_leds(apioproject_dir):
     assert isdir(path) and len(listdir(path)) > 0
 
 
+@pytest.mark.skipif(pytest.config.getvalue('offline'),
+                    reason="requires internet connection")
 def test_complete(clirunner, validate_cliresult):
     with clirunner.isolated_filesystem():
         environ['APIO_HOME_DIR'] = getcwd()
