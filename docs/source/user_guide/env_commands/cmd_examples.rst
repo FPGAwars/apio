@@ -12,7 +12,6 @@ Usage
 
     apio examples [OPTIONS]
 
-
 Description
 -----------
 

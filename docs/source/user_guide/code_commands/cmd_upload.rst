@@ -12,7 +12,6 @@ Usage
 
     apio upload [OPTIONS]
 
-
 Description
 -----------
 

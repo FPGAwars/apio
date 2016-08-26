@@ -12,7 +12,6 @@ Usage
 
     apio time [OPTIONS]
 
-
 Description
 -----------
 

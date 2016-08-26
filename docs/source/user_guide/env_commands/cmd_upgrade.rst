@@ -12,28 +12,18 @@ Usage
 
     apio upgrade [OPTIONS]
 
-
 Description
 -----------
 
-
-Options
--------
-
-.. program:: apio upgrade
-
-.. option::
-    -b, --board
-
-text
+Check latest Apio version in https://pypi.python.org/pypi/apio.
 
 Examples
 --------
 
-1.
+1. Check the Apio version
 
 .. code::
 
-    $ apio upgrade
-
-    output.....
+  $ apio upgrade
+  You're up-to-date!
+  Apio 0.1.4 is currently the newest version available.

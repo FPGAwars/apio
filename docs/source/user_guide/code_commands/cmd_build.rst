@@ -12,7 +12,6 @@ Usage
 
     apio build [OPTIONS]
 
-
 Description
 -----------
 

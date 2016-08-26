@@ -26,6 +26,8 @@ def cli(ctx, packages, all, list):
     elif all:  # pragma: no cover
         packages = Resources().packages
         for package in packages:
+            if package == 'pio-fpga':  # skip pio-fpga
+                continue
             Installer(package).install()
     elif list:
         Resources().list_packages(installed=True, notinstalled=True)

@@ -12,7 +12,6 @@ Usage
 
     apio sim [OPTIONS]
 
-
 Description
 -----------
 

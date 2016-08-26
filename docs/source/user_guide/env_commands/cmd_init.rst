@@ -12,10 +12,10 @@ Usage
 
     apio init [OPTIONS]
 
-
 Description
 -----------
 
+Manage apio projects. In addition to the code, an apio project may include a configuration file **apio.ini** and a Scons script **SConstruct**.
 
 Options
 -------
@@ -23,17 +23,31 @@ Options
 .. program:: apio init
 
 .. option::
+    -s, --scons
+
+Create a default SConstruct file. This file can be modified and it will be used instead of the default script.
+
+.. option::
     -b, --board
 
-text
+Create a configuration file with the selected board. This will be the default board used in :ref:`cmd_build`, :ref:`cmd_time` and :ref:`cmd_upload` commands.
 
 Examples
 --------
 
-1.
+1. Create a SConstruct file.
 
 .. code::
 
-    $ apio init
+  $ apio init --scons
+  Creating SConstruct file ...
+  File 'SConstruct' has been successfully created!
 
-    output.....
+
+2. Create an apio.ini file with the icezum board
+
+.. code::
+
+  $ apio init --board icezum
+  Creating apio.ini file ...
+  File 'apio.ini' has been successfully created!

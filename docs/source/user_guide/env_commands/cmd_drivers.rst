@@ -12,13 +12,12 @@ Usage
 
     apio drivers [OPTIONS]
 
-
 Description
 -----------
 
 Enable/Disable the FTDI drivers.
 
-* Linux: add a rules file. It requires to reboot.
+* Linux: add a rules file. It may require a reboot.
 * Mac OSX: configures FTDIUSBSerialDriver and AppleUSBFTDI keys.
 * Windows: opens a web browser with a tutorial.
 

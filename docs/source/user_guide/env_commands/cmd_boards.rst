@@ -12,7 +12,6 @@ Usage
 
     apio boards [OPTIONS]
 
-
 Description
 -----------
 
