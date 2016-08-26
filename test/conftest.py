@@ -14,3 +14,13 @@ def validate_cliresult():
         assert not result.exception
         assert "error" not in result.output.lower()
     return decorator
+
+
+def pytest_addoption(parser):
+    parser.addoption('--offline', action='store_true',
+                     help='Run tests in offline mode')
+
+
+@pytest.fixture
+def offline(request):
+    return request.config.getoption("--offline")

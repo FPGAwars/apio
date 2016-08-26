@@ -1,4 +1,6 @@
-from os import environ, getcwd, listdir
+import pytest
+
+from os import environ, getcwd, listdir, mkdir
 from os.path import join, isfile, isdir, getsize
 
 from apio.commands.install import cli as cmd_install
@@ -18,6 +20,8 @@ def validate_dir_leds(apioproject_dir):
     assert isdir(path) and len(listdir(path)) > 0
 
 
+@pytest.mark.skipif(pytest.config.getvalue('offline'),
+                    reason="requires internet connection")
 def test_complete(clirunner, validate_cliresult):
     with clirunner.isolated_filesystem():
         environ['APIO_HOME_DIR'] = getcwd()
@@ -29,11 +33,25 @@ def test_complete(clirunner, validate_cliresult):
         assert 'Do you want to continue?' in result.output
         assert 'Package \'examples\' is not installed' in result.output
 
+        # apio install examples@X
+        result = clirunner.invoke(cmd_install, ['examples@X'])
+        assert 'Error: package \'examples\' has no version X' in result.output
+
+        # apio install examples@0.0.2
+        result = clirunner.invoke(cmd_install, ['examples@0.0.2'])
+        validate_cliresult(result)
+        assert 'Installing examples package' in result.output
+        assert 'Downloading' in result.output
+        assert '0.0.2' in result.output
+        assert 'Unpacking' in result.output
+        assert 'has been successfully installed!' in result.output
+
         # apio install examples
         result = clirunner.invoke(cmd_install, ['examples'])
         validate_cliresult(result)
         assert 'Installing examples package' in result.output
         assert 'Downloading' in result.output
+        assert '0.0.2' not in result.output
         assert 'Unpacking' in result.output
         assert 'has been successfully installed!' in result.output
 
@@ -50,7 +68,8 @@ def test_complete(clirunner, validate_cliresult):
         # apio init --board icezum
         result = clirunner.invoke(cmd_init, ['--board', 'icezum'])
         validate_cliresult(result)
-        assert 'apio.ini file created' in result.output
+        assert 'Creating apio.ini file ...' in result.output
+        assert 'has been successfully created!' in result.output
 
         # apio upload
         result = clirunner.invoke(cmd_upload)
@@ -63,7 +82,7 @@ def test_complete(clirunner, validate_cliresult):
         assert 'leds' in result.output
         assert 'icezum' in result.output
 
-        # apio examples --files leds
+        # apio examples --files missing_example
         result = clirunner.invoke(cmd_examples, ['--files', 'missing_example'])
         validate_cliresult(result)
         assert 'Warning: this example does not exist' in result.output
@@ -90,6 +109,25 @@ def test_complete(clirunner, validate_cliresult):
         assert 'Creating leds directory ...' in result.output
         assert 'has been successfully created!' in result.output
         validate_dir_leds(getcwd())
+
+        dir_name = 'tmp'
+        mkdir(dir_name)
+
+        # apio examples --files leds --project-dir=tmp
+        result = clirunner.invoke(
+            cmd_examples, ['--files', 'leds', '--project-dir=tmp'])
+        validate_cliresult(result)
+        assert 'Copying leds example files ...' in result.output
+        assert 'have been successfully created!' in result.output
+        validate_files_leds(join(getcwd(), dir_name))
+
+        # apio examples --dir leds --project-dir=tmp
+        result = clirunner.invoke(
+            cmd_examples, ['--dir', 'leds', '--project-dir=tmp'])
+        validate_cliresult(result)
+        assert 'Creating leds directory ...' in result.output
+        assert 'has been successfully created!' in result.output
+        validate_dir_leds(join(getcwd(), dir_name))
 
         # apio uninstall examples
         result = clirunner.invoke(cmd_uninstall, ['examples'], input='n')

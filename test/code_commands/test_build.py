@@ -159,7 +159,8 @@ def test_build_init(clirunner):
         # apio init --board icezum
         result = clirunner.invoke(cmd_init, ['--board', 'icezum'])
         assert result.exit_code == 0
-        assert 'apio.ini file created' in result.output
+        assert 'Creating apio.ini file ...' in result.output
+        assert 'has been successfully created!' in result.output
 
         # apio build
         result = clirunner.invoke(cmd_build)
