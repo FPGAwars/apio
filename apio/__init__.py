@@ -48,7 +48,7 @@ def cli(ctx):
     if ctx.invoked_subcommand is None:
         env_help = []
         env_commands = ['boards', 'drivers', 'examples', 'init',
-                        'install', 'system', 'uninstall']
+                        'install', 'system', 'uninstall', 'upgrade']
 
         help = ctx.get_help()
         help = help.split('\n')

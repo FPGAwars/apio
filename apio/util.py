@@ -157,3 +157,10 @@ def get_request_defheaders():
     return {"User-Agent": "PlatformIO/%s CI/%d %s" % (
         __version__, int(is_ci()), requests.utils.default_user_agent()
     )}
+
+
+def get_pypi_latest_version():
+    r = requests.get("https://pypi.python.org/pypi/apio/json",
+                     headers=get_request_defheaders())
+    r.raise_for_status()
+    return r.json()['info']['version']

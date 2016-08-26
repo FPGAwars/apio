@@ -188,7 +188,8 @@ class Installer(object):
 
     def _get_latest_version(self, name, organization, tag_name):
         version = ''
-        latest_release = api_request('{}/releases/latest'.format(name), organization)
+        latest_release = api_request(
+            '{}/releases/latest'.format(name), organization)
         if latest_release is not None and 'tag_name' in latest_release:
             pattern = tag_name.replace('%V', '(?P<v>.*?)') + '$'
             match = re.search(pattern, latest_release['tag_name'])
@@ -197,7 +198,8 @@ class Installer(object):
         return version
 
     def _download(self, url):
-        if self.profile.check_version(self.package, self.version) or self.forced_install:
+        if self.profile.check_version(self.package, self.version) or \
+           self.forced_install:
             fd = FileDownloader(url, self.packages_dir)
             click.secho('Download ' + basename(fd.get_filepath()))
             fd.start()
