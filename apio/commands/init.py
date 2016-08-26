@@ -29,6 +29,6 @@ def cli(ctx, board, scons, project_dir):
     if scons:
         Project().create_sconstruct(project_dir)
     elif board:
-        Project().new_ini(board, project_dir)
+        Project().create_ini(board, project_dir)
     else:
         click.secho(ctx.get_help())

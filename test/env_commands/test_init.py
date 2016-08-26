@@ -20,12 +20,31 @@ def test_init_default(clirunner, validate_cliresult):
         validate_cliresult(result)
 
 
+def test_init_wrong_board(clirunner, validate_cliresult):
+    with clirunner.isolated_filesystem():
+        result = clirunner.invoke(cmd_init, ['--board', 'missed_board'])
+        assert result.exit_code == 1
+        assert 'Error: No such board' in result.output
+
+
 def test_init_board(clirunner, validate_cliresult):
     with clirunner.isolated_filesystem():
+
+        # apio init --board icezum
         result = clirunner.invoke(cmd_init, ['--board', 'icezum'])
         validate_cliresult(result)
         validate_apio_ini(getcwd())
-        assert 'apio.ini file created' in result.output
+        assert 'Creating apio.ini file ...' in result.output
+        assert 'has been successfully created!' in result.output
+
+        # apio init --board icezum
+        result = clirunner.invoke(cmd_init, ['--board', 'icezum'], input='y')
+        validate_cliresult(result)
+        validate_apio_ini(getcwd())
+        assert 'Warning' in result.output
+        assert 'file already exists' in result.output
+        assert 'Do you want to replace it?' in result.output
+        assert 'has been successfully created!' in result.output
 
 
 def test_init_scons(clirunner, validate_cliresult):

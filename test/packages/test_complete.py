@@ -50,7 +50,8 @@ def test_complete(clirunner, validate_cliresult):
         # apio init --board icezum
         result = clirunner.invoke(cmd_init, ['--board', 'icezum'])
         validate_cliresult(result)
-        assert 'apio.ini file created' in result.output
+        assert 'Creating apio.ini file ...' in result.output
+        assert 'has been successfully created!' in result.output
 
         # apio upload
         result = clirunner.invoke(cmd_upload)

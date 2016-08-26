@@ -8,7 +8,7 @@ import os
 import json
 import click
 
-from .profile import Profile
+from apio.profile import Profile
 
 BOARDS_MSG = """
 Use `apio init --board <boardname>` for creating a new apio """ \
