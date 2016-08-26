@@ -1,4 +1,4 @@
-.. sec-installation
+.. installation
 
 Installation
 ============

@@ -16,4 +16,4 @@ Welcome to apio's documentation!
    :caption: User Guide
    :maxdepth: 2
 
-   source/user_guide
+   source/user_guide/index

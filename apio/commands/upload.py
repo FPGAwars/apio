@@ -17,8 +17,8 @@ except NameError:  # pragma: no cover
 
 @click.command('upload')
 @click.pass_context
-@click.option('--device', type=unicode, metavar='board',
-              help='Set the board')
+@click.option('--device', type=unicode, metavar='device',
+              help='Set the device')
 @click.option('--board', type=unicode, metavar='board',
               help='Set the board')
 @click.option('--fpga', type=unicode, metavar='fpga',

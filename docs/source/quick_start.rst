@@ -1,4 +1,4 @@
-.. sec-quick-start
+.. quick_start
 
 Quick Start
 ===========
