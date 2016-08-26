@@ -1,0 +1,4 @@
+.. sec-installation
+
+Installation
+============
