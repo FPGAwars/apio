@@ -13,3 +13,4 @@ build/
 dist/
 htmlcov/
 __pycache__/
+docs/_build/*
