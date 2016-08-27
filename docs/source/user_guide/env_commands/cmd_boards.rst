@@ -19,7 +19,7 @@ Show FPGA boards information.
 
 All supported boards:
 
-* `iCEstick <http://www.pighixxx.com/test/portfolio-items/icestick/>`_
+* `iCEstick Evaluation Kit <http://www.pighixxx.com/test/portfolio-items/icestick/>`_
 * `Icezum Alhambra <https://github.com/FPGAwars/icezum>`_
 * `Nandland Go board <https://www.nandland.com/goboard/introduction.html>`_
 * `iCE40-HX8K Breakout Board <http://www.latticesemi.com/en/Products/DevelopmentBoardsAndKits/iCE40HX8KBreakoutBoard.aspx>`_

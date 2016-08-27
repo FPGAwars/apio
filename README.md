@@ -20,19 +20,19 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 
 ## Installation
 
-1. Install [Python 2.7]() and [pip]()
+1. Install [Python 2.7](https://www.python.org/downloads) and [pip](https://pip.pypa.io)
 
 2. Install latest apio: ```pip install -U apio```
 
-## Packages
+## Apio packages
 
-| Package | Installation | Description
-|---------|------------- |---------------
-| [examples](https://github.com/FPGAwars/apio-examples)  | apio install examples | Verilog basic examples, pinouts, etc
-| [icestorm](https://github.com/FPGAwars/toolchain-icestorm)  | apio install icestorm | Lattice iCE40 FPGA synthesis, place & route and configuration tools. [Icestorm project](http://www.clifford.at/icestorm)
+| Package | Installation   | Description
+|---------|----------------|---------------
+| [icestorm](https://github.com/FPGAwars/toolchain-icestorm)  | apio install icestorm | iCE40 FPGA synthesis, place & route and configuration tools. [Icestorm project](http://www.clifford.at/icestorm/)
 | [iverilog](https://github.com/FPGAwars/toolchain-iverilog)  | apio install iverilog | Verilog simulation and synthesis tool. [Icarus Verilog project](http://iverilog.icarus.com/)
 | [scons](https://github.com/FPGAwars/tool-scons)  | apio install scons | A software construction tool. [Scons project](http://scons.org/)
 | [system](https://github.com/FPGAwars/tools-usb-ftdi)  | apio install system | Tools for listing the USB devices and retrieving information from the FTDI chips
+| [examples](https://github.com/FPGAwars/apio-examples)  | apio install examples | Verilog basic examples, pinouts, etc
 | [pio-fpga](https://github.com/FPGAwars/Platformio-FPGA)  | apio install pio-fpga | PlatformIO experimental configuration for supporting Lattice FPGA boards
 
 Supported architectures: *linux_x86_64, linux_i686, linux_armv7l, linux_aarch64, darwin, windows*.

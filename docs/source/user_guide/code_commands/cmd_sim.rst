@@ -19,7 +19,7 @@ Launch the verilog simulation using `GTKWave <http://gtkwave.sourceforge.net>`_ 
 
 This command requires the ``scons`` and ``iverilog`` packages.
 
-[TODO: image]
+.. image:: ../../../resources/images/gtkwave-simulation.png
 
 .. note::
 
