@@ -51,6 +51,9 @@ a few options here:
 * Run the command in a `virtualenv <https://virtualenv.pypa.io>`_ local to a
   specific project working set.
 
+
+.. _install_drivers:
+
 Install FPGA FTDI drivers
 -------------------------
 
@@ -86,7 +89,6 @@ Install `homebrew <http://brew.sh/>`_ and libftdi
 
 .. code::
 
-    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     brew install libftdi
 
 Configure the drivers

@@ -23,7 +23,7 @@ Enable/Disable the FTDI drivers.
 
 .. note::
 
-  More information in https://github.com/FPGAwars/apio/wiki/Installation
+  More information in :ref:`install_drivers`
 
 Options
 -------
