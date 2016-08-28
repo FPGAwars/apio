@@ -13,7 +13,7 @@ def test_system_lsftdi(clirunner):
     with clirunner.isolated_filesystem():
         environ['APIO_HOME_DIR'] = getcwd()
         result = clirunner.invoke(cmd_system, ['--lsftdi'])
-        assert result.exit_code == 0
+        assert result.exit_code == 1
         assert 'apio install system' in result.output
 
 
@@ -21,7 +21,7 @@ def test_system_lsusb(clirunner):
     with clirunner.isolated_filesystem():
         environ['APIO_HOME_DIR'] = getcwd()
         result = clirunner.invoke(cmd_system, ['--lsusb'])
-        assert result.exit_code == 0
+        assert result.exit_code == 1
         assert 'apio install system' in result.output
 
 

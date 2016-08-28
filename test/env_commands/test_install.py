@@ -14,7 +14,7 @@ def test_install_list(clirunner, validate_cliresult):
         validate_cliresult(result)
 
 
-def test_install_wrong_package(clirunner, validate_cliresult):
+def test_install_wrong_package(clirunner):
     with clirunner.isolated_filesystem():
         environ['APIO_HOME_DIR'] = getcwd()
         result = clirunner.invoke(cmd_install, ['missing_package'])

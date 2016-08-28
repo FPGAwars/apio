@@ -143,7 +143,7 @@ class Installer(object):
     def uninstall(self):
         if self.version is None:
             click.secho(
-                'Package \'{0}\' does not exist'.format(self.package),
+                'Error: No such package \'{0}\''.format(self.package),
                 fg='red')
         else:
             if isdir(join(self.packages_dir, self.package_name)):

@@ -31,12 +31,16 @@ def cli(ctx, list, dir, files, project_dir, sayno):
     """Manage verilog examples.\n
        Install with `apio install examples`"""
 
+    exit_code = 0
+
     if list:
-        Examples().list_examples()
+        exit_code = Examples().list_examples()
     elif dir:
-        Examples().copy_example_dir(dir, project_dir, sayno)
+        exit_code = Examples().copy_example_dir(dir, project_dir, sayno)
     elif files:
-        Examples().copy_example_files(files, project_dir, sayno)
+        exit_code = Examples().copy_example_files(files, project_dir, sayno)
     else:
         click.secho(ctx.get_help())
         click.secho(Examples().examples_of_use_cad())
+
+    ctx.exit(exit_code)

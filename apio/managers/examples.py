@@ -55,6 +55,8 @@ class Examples(object):
             click.secho('Error: examples are not installed', fg='red')
             click.secho('Please run:\n'
                         '   apio install examples', fg='yellow')
+            return 1
+        return 0
 
     def copy_example_dir(self, example, project_dir, sayno):
         if isdir(self.examples_dir):
@@ -94,6 +96,8 @@ class Examples(object):
             click.secho('Error: examples are not installed', fg='red')
             click.secho('Please run:\n'
                         '   apio install examples', fg='yellow')
+            return 1
+        return 0
 
     def copy_example_files(self, example, project_dir, sayno):
         if isdir(self.examples_dir):
@@ -114,6 +118,8 @@ class Examples(object):
             click.secho('Error: examples are not installed', fg='red')
             click.secho('Please run:\n'
                         '   apio install examples', fg='yellow')
+            return 1
+        return 0
 
     def _copy_files(self, example, src_path, dest_path, sayno):
         click.secho('Copying ' + example + ' example files ...')

@@ -22,12 +22,16 @@ def cli(ctx, lsftdi, lsusb, info):
     """System tools.\n
        Install with `apio install system`"""
 
+    exit_code = 0
+
     if lsftdi:
-        System().lsftdi()
+        exit_code = System().lsftdi()
     elif lsusb:
-        System().lsusb()
+        exit_code = System().lsusb()
     elif info:
         click.secho('Platform: ', nl=False)
         click.secho(get_systype(), fg='yellow')
     else:
         click.secho(ctx.get_help())
+
+    ctx.exit(exit_code)

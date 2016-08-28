@@ -20,14 +20,17 @@ class System(object):  # pragma: no cover
             self.ext = '.exe'
 
     def lsusb(self):
-        self._run('listdevs')
+        return self._run('listdevs')
 
     def lsftdi(self):
-        self._run('find_all')
+        return self._run('find_all')
 
     def detect_boards(self):
         detected_boards = []
         result = self._run('find_all')
+
+        if isinstance(result, int):
+            return result
 
         if result and result['returncode'] == 0:
             detected_boards = self.parse_out(result['out'])
@@ -48,6 +51,7 @@ class System(object):  # pragma: no cover
             click.secho('Error: system tools are not installed', fg='red')
             click.secho('Please run:\n'
                         '   apio install system', fg='yellow')
+            return 1
 
         return result
 

@@ -49,6 +49,9 @@ class SCons(object):
 
         detected_boards = System().detect_boards()
 
+        if isinstance(detected_boards, int):
+            return detected_boards
+
         if device:
             # Check device argument
             if board:
