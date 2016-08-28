@@ -4,17 +4,17 @@ from setuptools import setup
 
 setup(
     name='apio',
-    version='0.1.2',
+    version='0.1.5',
+    description='Experimental micro-ecosystem for open FPGAs',
     author='Jesús Arroyo Torrens',
     author_email='jesus.jkhlg@gmail.com',
     url='https://github.com/FPGAwars/apio',
     license='GPLv2',
     packages=['apio'],
     package_data={
-        'apio': ['SConstruct',
-                 'packages/*.py',
-                 'packages/*.rules',
-                 'config/boards.json']
+        'apio': ['commands/*.py',
+                 'managers/*.py',
+                 'resources/*']
     },
     install_requires=[
         'click',
@@ -24,7 +24,7 @@ setup(
         'console_scripts': ['apio=apio:cli']
     },
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',

@@ -1,0 +1,18 @@
+{
+  "icezum": {
+    "fpga": "iCE40-HX1K-TQ144",
+    "ftdi-desc": "IceZUM Alhambra"
+  },
+  "icestick": {
+    "fpga": "iCE40-HX1K-TQ144",
+    "ftdi-desc": "Lattice FTUSB Interface Cable"
+  },
+  "go-board": {
+    "fpga": "iCE40-HX1K-VQ100",
+    "ftdi-desc": "Dual RS232-HS"
+  },
+  "iCE40-HX8K": {
+    "fpga": "iCE40-HX8K-CT256",
+    "ftdi-desc": "Lattice FTUSB Interface Cable"
+  }
+}

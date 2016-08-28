@@ -1,0 +1,99 @@
+{
+  "examples" : {
+    "repository": {
+      "name": "apio-examples",
+      "organization": "FPGAwars"
+    },
+    "release": {
+      "tag_name": "%V",
+      "compressed_name": "apio-examples-%V",
+      "uncompressed_name": "apio-examples-%V",
+      "package_name": "examples",
+      "extension": "zip"
+    },
+    "description": "Verilog examples"
+  },
+  "scons" : {
+    "repository": {
+      "name": "tool-scons",
+      "organization": "FPGAwars"
+    },
+    "release": {
+      "tag_name": "v%V",
+      "compressed_name": "scons-%V",
+      "uncompressed_name": "scons-%V",
+      "package_name": "tool-scons",
+      "extension": "tar.gz"
+    },
+    "description": "Scons toolchain"
+  },
+  "icestorm" : {
+    "repository": {
+      "name": "toolchain-icestorm",
+      "organization": "FPGAwars"
+    },
+    "release": {
+      "tag_name": "0.%V",
+      "compressed_name": "toolchain-icestorm-%A-%V",
+      "uncompressed_name": "toolchain-icestorm",
+      "package_name": "toolchain-icestorm",
+      "extension": {
+        "linux": "tar.gz",
+        "darwin": "tar.gz",
+        "windows": "zip"
+      }
+    },
+    "description": "Icestorm toolchain"
+  },
+  "iverilog" : {
+    "repository": {
+      "name": "toolchain-iverilog",
+      "organization": "FPGAwars"
+    },
+    "release": {
+      "tag_name": "v0.%V",
+      "compressed_name": "toolchain-iverilog-%A-%V",
+      "uncompressed_name": "toolchain-iverilog",
+      "package_name": "toolchain-iverilog",
+      "extension": {
+        "linux": "tar.bz2",
+        "darwin": "tar.bz2",
+        "windows": "zip"
+      }
+    },
+    "description": "Icarus Verilog toolchain"
+  },
+  "system" : {
+    "repository": {
+      "name": "tools-usb-ftdi",
+      "organization": "FPGAwars"
+    },
+    "release": {
+      "tag_name": "v0.%V",
+      "compressed_name": "tools-usb-ftdi-%A-%V",
+      "uncompressed_name": "bin",
+      "package_name": "system",
+      "extension": {
+        "linux": "tar.bz2",
+        "darwin": "tar.bz2",
+        "windows": "zip"
+      }
+    },
+    "description": "System development tools"
+  },
+  "pio-fpga" : {
+    "repository": {
+      "name": "Platformio-FPGA",
+      "organization": "FPGAwars"
+    },
+    "release": {
+      "tag_name": "v0.%V",
+      "compressed_name": "pio-fpga-%V",
+      "uncompressed_name": "",
+      "package_name": "pio-fpga",
+      "extension": "zip"
+    },
+    "main_dir": ".platformio",
+    "description": "Platformio-fpga support"
+  }
+}

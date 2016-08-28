@@ -1,0 +1,112 @@
+{
+  "iCE40-LP1K-SWG16TR": {
+    "type": "lp",
+    "size": "1k",
+    "pack": "swg16tr"
+  },
+  "iCE40-LP1K-CM36": {
+    "type": "lp",
+    "size": "1k",
+    "pack": "cm36"
+  },
+  "iCE40-LP1K-CM49": {
+    "type": "lp",
+    "size": "1k",
+    "pack": "cm49"
+  },
+  "iCE40-LP1K-CM81": {
+    "type": "lp",
+    "size": "1k",
+    "pack": "cm81"
+  },
+  "iCE40-LP4K-CM81": {
+    "type": "lp",
+    "size": "8k",
+    "pack": "cm81:4k"
+  },
+  "iCE40-LP8K-CM81": {
+    "type": "lp",
+    "size": "8k",
+    "pack": "cm81"
+  },
+  "iCE40-LP1K-CM121": {
+    "type": "lp",
+    "size": "1k",
+    "pack": "cm121"
+  },
+  "iCE40-LP4K-CM121": {
+    "type": "lp",
+    "size": "8k",
+    "pack": "cm121:4k"
+  },
+  "iCE40-LP8K-CM121": {
+    "type": "lp",
+    "size": "8k",
+    "pack": "cm121"
+  },
+  "iCE40-LP4K-CM225": {
+    "type": "lp",
+    "size": "8k",
+    "pack": "cm225:4k"
+  },
+  "iCE40-LP8K-CM225": {
+    "type": "lp",
+    "size": "8k",
+    "pack": "cm225"
+  },
+  "iCE40-HX8K-CM225": {
+    "type": "hx",
+    "size": "8k",
+    "pack": "cm225"
+  },
+  "iCE40-LP1K-QN84": {
+    "type": "lp",
+    "size": "1k",
+    "pack": "qn84"
+  },
+  "iCE40-LP1K-CB81": {
+    "type": "lp",
+    "size": "1k",
+    "pack": "cb81"
+  },
+  "iCE40-LP1K-CB121": {
+    "type": "lp",
+    "size": "1k",
+    "pack": "cb121"
+  },
+  "iCE40-HX1K-CB132": {
+    "type": "hx",
+    "size": "1k",
+    "pack": "cb132"
+  },
+  "iCE40-HX4K-CB132": {
+    "type": "hx",
+    "size": "8k",
+    "pack": "cb132:4k"
+  },
+  "iCE40-HX8K-CB132": {
+    "type": "hx",
+    "size": "8k",
+    "pack": "cb132"
+  },
+  "iCE40-HX1K-VQ100": {
+    "type": "hx",
+    "size": "1k",
+    "pack": "vq100"
+  },
+  "iCE40-HX1K-TQ144": {
+    "type": "hx",
+    "size": "1k",
+    "pack": "tq144"
+  },
+  "iCE40-HX4K-TQ144": {
+    "type": "hx",
+    "size": "8k",
+    "pack": "tq144:4k"
+  },
+  "iCE40-HX8K-CT256": {
+    "type": "hx",
+    "size": "8k",
+    "pack": "ct256"
+  }
+}

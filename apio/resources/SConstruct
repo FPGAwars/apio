@@ -1,0 +1,224 @@
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# -- Generic Scons script for Sintesizing hardware on an FPGA and more.
+# -- This file is part of the Apio project
+# -- (C) 2016 FPGAwars
+# -- Authors Juan Gonzáles, Jesús Arroyo
+# -- Licence GPLv2
+# ----------------------------------------------------------------------
+
+import os
+from os.path import join
+import platform
+import glob
+from SCons.Script import (Builder, DefaultEnvironment, Default, AlwaysBuild,
+                          GetOption, Environment, Exit, COMMAND_LINE_TARGETS,
+                          ARGUMENTS, Variables, Help)
+
+# -- Load arguments
+DEVICE = ARGUMENTS.get('device', '-1')
+FPGA_SIZE = ARGUMENTS.get('fpga_size', '')
+FPGA_TYPE = ARGUMENTS.get('fpga_type', '')
+FPGA_PACK = ARGUMENTS.get('fpga_pack', '')
+
+# -- Size. Possible values: 1k, 8k
+# -- Type. Possible values: hx, lp
+# -- Package. Possible values: swg16tr, cm36, cm49, cm81, cm121, cm225, qn84,
+# --   cb81, cb121, cb132, vq100, tq144, ct256
+
+# -- Add the FPGA flags as variables to be shown with the -h scons option
+vars = Variables()
+vars.Add('fpga_size', 'Set the ICE40 FPGA size (1k/8k)', FPGA_SIZE)
+vars.Add('fpga_type', 'Set the ICE40 FPGA type (hx/lp)', FPGA_TYPE)
+vars.Add('fpga_pack', 'Set the ICE40 FPGA packages', FPGA_PACK)
+
+# -- Just for debugging
+if 'build' in COMMAND_LINE_TARGETS or \
+   'upload' in COMMAND_LINE_TARGETS or \
+   'time' in COMMAND_LINE_TARGETS:
+
+    print("FPGA_SIZE: {}".format(FPGA_SIZE))
+    print("FPGA_TYPE: {}".format(FPGA_TYPE))
+    print("FPGA_PACK: {}".format(FPGA_PACK))
+
+    if 'upload' in COMMAND_LINE_TARGETS:
+
+        print("DEVICE: {}".format(DEVICE))
+
+# -- Executables extension
+EXT = ''
+
+# -- Resources paths
+VVP_PATH = ''
+IVER_PATH = ''
+VLIB_PATH = os.environ['VLIB']
+
+if 'Windows' == platform.system():
+    EXT = '.exe'
+else:
+    VVP_PATH = '-M {0}'.format(os.environ['IVL'])
+    IVER_PATH = '-B {0}'.format(os.environ['IVL'])
+
+# -- Target name
+TARGET = 'hardware'
+
+# -- Get a list of all the verilog files in the src folfer, in ASCII, with
+# -- the full path. All these files are used for the simulation
+v_nodes = glob.glob('*.v')
+src_sim = ["{}".format(f) for f in v_nodes]
+
+# --------- Get the Testbench file (there should be only 1)
+# -- Create a list with all the files finished in _tb.v. It should contain
+# -- the test bench
+list_tb = [f for f in src_sim if f[-5:].upper() == "_TB.V"]
+
+if len(list_tb) > 1:
+    print("---> WARNING: more than one testbenches used")
+
+# -- Error checking
+try:
+    testbench = list_tb[0]
+
+# -- there is no testbench
+except IndexError:
+    testbench = None
+
+if 'sim' in COMMAND_LINE_TARGETS:
+    if testbench is None:
+        print("---> ERROR: NO testbench found for simulation")
+        Exit(1)
+
+    # -- Simulation name
+    SIMULNAME, ext = os.path.splitext(testbench)
+else:
+    SIMULNAME = ''
+
+# -------- Get the synthesis files.  They are ALL the files except the
+# -------- testbench
+src_synth = [f for f in src_sim if f not in list_tb]
+
+if len(src_synth) == 0:
+    print("---> ERROR: no verilog files found (.v)")
+    Exit(1)
+
+# -- For debugging
+# print("----> Testbench: {}".format(testbench))
+# print("SIM NAME: {}".format(SIMULNAME))
+
+# -- Get the PCF file
+PCF_list = glob.glob('*.pcf')
+
+try:
+    PCF = PCF_list[0]
+except IndexError:
+    print("\n---> WARNING: no .pcf file found <---\n")
+    PCF = 'ERROR.pcf'
+
+# -- Debug
+# print("----> PCF Found: {}".format(PCF))
+
+
+# -- Define the Sintesizing Builder
+synth = Builder(
+    action='yosys{0} -p \"synth_ice40 -blif $TARGET\" $SOURCE'.format(EXT),
+    suffix='.blif',
+    src_suffix='.v')
+
+pnr = Builder(
+    action='arachne-pnr{0} -d {1} -P {2} -p {3} -o $TARGET $SOURCE'.format(
+        EXT, FPGA_SIZE, FPGA_PACK, PCF),
+    suffix='.asc',
+    src_suffix='.blif')
+
+bitstream = Builder(
+    action='icepack{0} $SOURCE $TARGET'.format(EXT),
+    suffix='.bin',
+    src_suffix='.asc')
+
+# -- Icetime builder
+time_rpt = Builder(
+    action='icetime{0} -d {1}{2} -P {3} -mtr $TARGET $SOURCE'.format(
+        EXT, FPGA_TYPE, FPGA_SIZE, FPGA_PACK),
+    suffix='.rpt',
+    src_suffix='.asc')
+
+# icetime -d $(FPGA_TYPE)$(FPGA_SIZE) -P $(FPGA_PACK) -mtr $@ $^
+
+# -- Build the environment
+env = DefaultEnvironment(BUILDERS={'Synth': synth, 'PnR': pnr,
+                                   'Bin': bitstream, 'Time': time_rpt},
+                         ENV=os.environ,
+                         tools=[],
+                         variables=vars)
+
+# -- Show all the flags defined, when scons is invoked with -h
+Help(vars.GenerateHelpText(env))
+
+# -- Generate the bitstream
+blif = env.Synth(TARGET, [src_synth])
+asc = env.PnR(TARGET, [blif, PCF])
+bitstream = env.Bin(TARGET, asc)
+
+build = env.Alias('build', bitstream)
+AlwaysBuild(build)
+
+# -- Upload the bitstream into FPGA
+upload = env.Alias(
+    'upload', bitstream, 'iceprog{0} -d i:0x0403:0x6010:{1} $SOURCE'.format(
+        EXT, DEVICE))
+AlwaysBuild(upload)
+
+# -- Target time: calculate the time
+rpt = env.Time(asc)
+t = env.Alias('time', rpt)
+AlwaysBuild(t)
+
+# -------------------- Simulation ------------------
+# -- Constructor to generate the simulation: icarus Verilog
+iverilog = Builder(
+    action='iverilog{0} {1} {2} -o $TARGET $SOURCES'.format(
+        EXT, IVER_PATH, VLIB_PATH),
+    suffix='.out',
+    src_suffix='.v')
+
+vcd = Builder(
+    action='vvp{0} {1} $SOURCE'.format(
+        EXT, VVP_PATH),
+    suffix='.vcd',
+    src_suffix='.out')
+
+simenv = Environment(BUILDERS={'IVerilog': iverilog, 'VCD': vcd},
+                     ENV=os.environ,
+                     tools=[],
+                     variables=vars)
+
+sout = simenv.IVerilog(SIMULNAME, src_sim)
+vcd_file = simenv.VCD(SIMULNAME, sout)
+
+waves = simenv.Alias('sim', SIMULNAME + '.vcd', 'gtkwave ' +
+                     "{} ".format(vcd_file[0]) + " " + SIMULNAME + ".gtkw")
+AlwaysBuild(waves)
+
+# -------------------- Verification ----------------------
+# -- Constructor to generate the verification: icarus Verilog
+iverilog = Builder(
+    action='iverilog{0} {1} -o $TARGET {2} $SOURCES'.format(
+        EXT, IVER_PATH, VLIB_PATH),
+    suffix='.out',
+    src_suffix='.v')
+
+verenv = Environment(BUILDERS={'IVerilog': iverilog},
+                     ENV=os.environ,
+                     tools=[],
+                     variables=vars)
+
+vout = verenv.IVerilog(TARGET, src_synth)
+
+verify = verenv.Alias('verify', vout)
+AlwaysBuild(verify)
+
+Default(bitstream)
+
+# -- These is for cleaning the files generated using the alias targets
+if GetOption('clean'):
+    env.Default([vout, sout, t, vcd_file])
