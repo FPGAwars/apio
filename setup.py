@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='apio',
-    version='0.1.4',
+    version='0.1.5',
     description='Experimental micro-ecosystem for open FPGAs',
     author='Jesús Arroyo Torrens',
     author_email='jesus.jkhlg@gmail.com',
@@ -24,7 +24,7 @@ setup(
         'console_scripts': ['apio=apio:cli']
     },
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',

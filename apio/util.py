@@ -9,6 +9,7 @@
 # ---- Licence Apache v2
 
 import os
+import click
 import subprocess
 from os.path import expanduser, isdir, join
 from platform import system, uname
@@ -112,10 +113,6 @@ def change_filemtime(path, time):
     os.utime(path, (time, time))
 
 
-def is_ci():
-    return os.getenv("CI", "").lower() == "true"
-
-
 def exec_command(*args, **kwargs):  # pragma: no cover
     result = {
         "out": None,
@@ -153,14 +150,19 @@ def exec_command(*args, **kwargs):  # pragma: no cover
     return result
 
 
-def get_request_defheaders():
-    return {"User-Agent": "PlatformIO/%s CI/%d %s" % (
-        __version__, int(is_ci()), requests.utils.default_user_agent()
-    )}
-
-
 def get_pypi_latest_version():
-    r = requests.get("https://pypi.python.org/pypi/apio/json",
-                     headers=get_request_defheaders())
-    r.raise_for_status()
-    return r.json()['info']['version']
+    r = None
+    version = None
+    try:
+        r = requests.get("https://pypi.python.org/pypi/apio/json")
+        version = r.json()['info']['version']
+        r.raise_for_status()
+    except requests.exceptions.ConnectionError:
+        click.secho('Error: Could not connect to Pypi.\n'
+                    'Check your internet connection and try again', fg='red')
+    except Exception as e:
+        click.secho('Error: ' + str(e), fg='red')
+    finally:
+        if r:
+            r.close()
+    return version

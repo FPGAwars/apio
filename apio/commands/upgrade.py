@@ -12,11 +12,15 @@ from apio.util import get_pypi_latest_version
 
 
 @click.command('upgrade')
-def cli():
+@click.pass_context
+def cli(ctx):
     """Check the latest Apio version."""
 
     current_version = get_distribution('apio').version
     latest_version = get_pypi_latest_version()
+
+    if latest_version is None:
+        ctx.exit(1)
 
     if latest_version == current_version:
         click.secho('You\'re up-to-date!\nApio {} is currently the '
