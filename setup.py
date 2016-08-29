@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='apio',
-    version='0.1.5',
+    version='0.1.5.1',
     description='Experimental micro-ecosystem for open FPGAs',
     author='Jesús Arroyo Torrens',
     author_email='jesus.jkhlg@gmail.com',

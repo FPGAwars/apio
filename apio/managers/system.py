@@ -20,10 +20,22 @@ class System(object):  # pragma: no cover
             self.ext = '.exe'
 
     def lsusb(self):
-        return self._run('listdevs')
+        result = self._run('listdevs')
+
+        if isinstance(result, int):
+            return result
+
+        if result:
+            return result['returncode']
 
     def lsftdi(self):
-        return self._run('find_all')
+        result = self._run('find_all')
+
+        if isinstance(result, int):
+            return result
+
+        if result:
+            return result['returncode']
 
     def detect_boards(self):
         detected_boards = []
@@ -38,7 +50,7 @@ class System(object):  # pragma: no cover
         return detected_boards
 
     def _run(self, command):
-        result = []
+        result = {}
         system_dir = join(util.get_home_dir(), 'packages', 'system')
 
         if isdir(system_dir):
