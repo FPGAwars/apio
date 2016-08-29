@@ -71,6 +71,10 @@ tox -e flake8
 tox -e coverage
 ```
 
+## Videos
+
+[![Apio: an easy multi-platform toolbox for open FPGAs](http://img.youtube.com/vi/UJ6-_42P5BE/0.jpg)](https://www.youtube.com/watch?v=UJ6-_42P5BE "Apio: an easy multi-platform toolbox for open FPGAs")
+
 ## Authors
 
 * [Jesús Arroyo Torrens](https://github.com/Jesus89)
