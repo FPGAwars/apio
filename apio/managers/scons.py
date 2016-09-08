@@ -47,60 +47,89 @@ class SCons(object):
         if isinstance(ret, tuple):
             variables, board = ret
 
-        detected_boards = System().detect_boards()
-
-        if isinstance(detected_boards, int):
-            return detected_boards
-
-        if device:
-            # Check device argument
-            if board:
-                desc = self.resources.boards[board]['ftdi-desc']
-                check = False
-                for b in detected_boards:
-                    # Selected board
-                    if device == b['index']:
-                        # Check the device ftdi description
-                        if desc in b['description']:
-                            check = True
-                        break
-                if not check:
-                    device = -1
-            else:
-                # Check device id
-                if int(device) >= len(detected_boards):
-                    device = -1
+        # Get programmer value
+        if board:
+            programmer = self.resources.boards[board]['prog']
         else:
-            # Detect device
-            device = -1
-            if board:
-                desc = self.resources.boards[board]['ftdi-desc']
-                for b in detected_boards:
-                    if desc in b['description']:
-                        # Select the first board that validates
-                        # the ftdi description
-                        device = b['index']
-                        break
-            else:
-                # Insufficient arguments
-                click.secho('Error: insufficient arguments: device or board',
-                            fg='red')
+            programmer = 'ftdi'  # Defaut value
+
+        # -- RPI2 GPIO
+        if programmer == 'gpio':
+            # Icoboard + RPI2
+            # Device argument is ignored
+            if device and device != -1:
                 click.secho(
-                    'You have two options:\n' +
-                    '  1) Execute your command with\n' +
-                    '       `--device <deviceid>`\n' +
-                    '  2) Execute your command with\n' +
-                    '       `--board <boardname>`',
+                    'Info: ignore device argument {0}'.format(device),
                     fg='yellow')
+            # Check architecture
+            arch = self.resources.boards[board]['check']['arch']
+            current_arch = util.get_systype()
+            if arch != current_arch:
+                # Incorrect architecture
+                click.secho(
+                    'Error: incorrect architecture: RPI2 required',
+                    fg='red')
                 return 1
 
-        if device == -1:
-            # Board not detected
-            click.secho('Error: board not detected', fg='red')
-            return 1
+        # -- FTDI USB
+        elif programmer == 'ftdi':
+
+            detected_boards = System().detect_boards()
+
+            if isinstance(detected_boards, int):
+                return detected_boards
+
+            if device:
+                # Check device argument
+                if board:
+                    desc = self.resources.boards[board]['check']['ftdi-desc']
+                    check = False
+                    for b in detected_boards:
+                        # Selected board
+                        if device == b['index']:
+                            # Check the device ftdi description
+                            if desc in b['description']:
+                                check = True
+                            break
+                    if not check:
+                        device = -1
+                else:
+                    # Check device id
+                    if int(device) >= len(detected_boards):
+                        device = -1
+            else:
+                # Detect device
+                device = -1
+                if board:
+                    desc = self.resources.boards[board]['check']['ftdi-desc']
+                    for b in detected_boards:
+                        if desc in b['description']:
+                            # Select the first board that validates
+                            # the ftdi description
+                            device = b['index']
+                            break
+                else:
+                    # Insufficient arguments
+                    click.secho(
+                        'Error: insufficient arguments: device or board',
+                        fg='red')
+                    click.secho(
+                        'You have two options:\n' +
+                        '  1) Execute your command with\n' +
+                        '       `--device <deviceid>`\n' +
+                        '  2) Execute your command with\n' +
+                        '       `--board <boardname>`',
+                        fg='yellow')
+                    return 1
+
+            if device == -1:
+                # Board not detected
+                click.secho('Error: board not detected', fg='red')
+                return 1
 
         return self.run('upload',
-                        variables + ['device={0}'.format(device)],
+                        variables + ['device={0}'.format(device),
+                                     'prog={0}'.format(programmer)],
                         board)
 
     def time(self, args):
