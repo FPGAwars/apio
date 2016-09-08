@@ -16,6 +16,7 @@ from SCons.Script import (Builder, DefaultEnvironment, Default, AlwaysBuild,
                           ARGUMENTS, Variables, Help)
 
 # -- Load arguments
+PROG = ARGUMENTS.get('prog', '')
 DEVICE = ARGUMENTS.get('device', '-1')
 FPGA_SIZE = ARGUMENTS.get('fpga_size', '')
 FPGA_TYPE = ARGUMENTS.get('fpga_type', '')
@@ -43,6 +44,7 @@ if 'build' in COMMAND_LINE_TARGETS or \
 
     if 'upload' in COMMAND_LINE_TARGETS:
 
+        print("PROG: {}".format(PROG))
         print("DEVICE: {}".format(DEVICE))
 
 # -- Executables extension
@@ -163,9 +165,15 @@ build = env.Alias('build', bitstream)
 AlwaysBuild(build)
 
 # -- Upload the bitstream into FPGA
-upload = env.Alias(
-    'upload', bitstream, 'iceprog{0} -d i:0x0403:0x6010:{1} $SOURCE'.format(
-        EXT, DEVICE))
+upload_cmd = ''
+if PROG == 'ftdi':
+    upload_cmd = 'iceprog{0} -d i:0x0403:0x6010:{1} $SOURCE'.format(
+        EXT, DEVICE)
+elif PROG == 'gpio':
+    # Icoboard + RPI2: sram
+    upload_cmd = 'export WIRINGPI_GPIOMEM=1; icoprog -p < $SOURCE'
+
+upload = env.Alias('upload', bitstream, upload_cmd)
 AlwaysBuild(upload)
 
 # -- Target time: calculate the time
