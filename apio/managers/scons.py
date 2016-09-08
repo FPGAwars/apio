@@ -51,15 +51,16 @@ class SCons(object):
         if board:
             programmer = self.resources.boards[board]['prog']
         else:
-            programmer = 'ftdi' # Defaut value
+            programmer = 'ftdi'  # Defaut value
 
         # -- RPI2 GPIO
         if programmer == 'gpio':
             # Icoboard + RPI2
             # Device argument is ignored
             if device and device != -1:
-                click.secho('Info: ignore device argument {0}'.format(device),
-                             fg='yellow')
+                click.secho(
+                    'Info: ignore device argument {0}'.format(device),
+                    fg='yellow')
             # Check architecture
             arch = self.resources.boards[board]['check']['arch']
             current_arch = util.get_systype()
