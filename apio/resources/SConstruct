@@ -165,6 +165,7 @@ build = env.Alias('build', bitstream)
 AlwaysBuild(build)
 
 # -- Upload the bitstream into FPGA
+upload_cmd = ''
 if PROG == 'ftdi':
     upload_cmd = 'iceprog{0} -d i:0x0403:0x6010:{1} $SOURCE'.format(
         EXT, DEVICE)
