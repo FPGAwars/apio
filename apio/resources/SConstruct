@@ -122,7 +122,7 @@ except IndexError:
 
 # -- Define the Sintesizing Builder
 synth = Builder(
-    action='yosys{0} -p \"synth_ice40 -blif $TARGET\" $SOURCE'.format(EXT),
+    action='yosys{0} -p \"synth_ice40 -blif $TARGET\" $SOURCES'.format(EXT),
     suffix='.blif',
     src_suffix='.v')
 
