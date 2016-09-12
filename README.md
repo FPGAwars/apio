@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/FPGAwars/apio.svg?branch=develop)](https://travis-ci.org/FPGAwars/apio)
 [![Latest Version](https://img.shields.io/pypi/v/apio.svg)](https://pypi.python.org/pypi/apio/)
 [![License](http://img.shields.io/:license-gpl-blue.svg)](http://opensource.org/licenses/GPL-2.0)
+[![Documentation Status](https://readthedocs.org/projects/apiodoc/badge/?version=stable)](http://apiodoc.readthedocs.io/en/stable/)
 
 ![][linux-logo]
 &nbsp;
@@ -42,10 +43,11 @@ Supported architectures: *linux_x86_64, linux_i686, linux_armv7l, linux_aarch64,
 
 | Board
 |-------
-| [iCEstick Evaluation Kit ](http://www.pighixxx.com/test/portfolio-items/icestick/)
 | [Icezum Alhambra](https://github.com/FPGAwars/icezum)
 | [Nandland Go board](https://www.nandland.com/goboard/introduction.html)
+| [iCEstick Evaluation Kit ](http://www.pighixxx.com/test/portfolio-items/icestick/)
 | [iCE40-HX8K Breakout Board](http://www.latticesemi.com/en/Products/DevelopmentBoardsAndKits/iCE40HX8KBreakoutBoard.aspx)
+| [icoBOARD 1.0](http://icoboard.org/icoboard-1-0.html)
 
 NOTE: all supported [Icestorm FPGAs](http://www.clifford.at/icestorm/) can be used with [--fpga, --size, --type and --pack options](http://apiodoc.readthedocs.io/en/develop/source/user_guide/code_commands/cmd_build.html#options).
 
@@ -74,6 +76,8 @@ tox -e coverage
 
 ## Videos
 
+[![Apio in RPI2: iCEstick, Icezum and icoBOARD ](http://img.youtube.com/vi/xLb7T4pw9iY/0.jpg)](https://www.youtube.com/watch?v=xLb7T4pw9iY "Apio in RPI2: iCEstick, Icezum and icoBOARD ")
+
 [![Apio: an easy multi-platform toolbox for open FPGAs](http://img.youtube.com/vi/UJ6-_42P5BE/0.jpg)](https://www.youtube.com/watch?v=UJ6-_42P5BE "Apio: an easy multi-platform toolbox for open FPGAs")
 
 ## Authors
@@ -86,9 +90,9 @@ tox -e coverage
 * [Miguel Sánchez de León Peque](https://github.com/peque)
 
 ## License
-![](https://github.com/FPGAwars/apio/raw/master/doc/bq-logo-cc-sa-small-150px.png)
+![](https://github.com/FPGAwars/apio/raw/master/docs/resources/images/bq-logo-cc-sa-small-150px.png)
 
-Licensed under a GPL v2 and [Creative Commons Attribution-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-sa/4.0/)
+Licensed under a [GPL v2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html) and [Creative Commons Attribution-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-sa/4.0/)
 
 [apio-logo]: docs/resources/images/apio-logo-mini.png
 [linux-logo]: docs/resources/images/linux.png
