@@ -33,5 +33,12 @@
     "check": {
       "arch": "linux_armv7l"
     }
+  },
+  "Cat-board": {
+    "fpga": "iCE40-HX8K-CT256",
+    "prog": "litterbox",
+    "check": {
+      "arch": "linux_armv7l"
+    }
   }
 }
