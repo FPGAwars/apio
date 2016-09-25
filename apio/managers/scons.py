@@ -127,6 +127,24 @@ class SCons(object):
                 click.secho('Error: board not detected', fg='red')
                 return 1
 
+        # -- Litterbox
+        elif programmer == 'litterbox':
+            # Cat Board + RPI2,3
+            # Device argument is ignored
+            if device and device != -1:
+                click.secho(
+                    'Info: ignore device argument {0}'.format(device),
+                    fg='yellow')
+            # Check architecture
+            arch = self.resources.boards[board]['check']['arch']
+            current_arch = util.get_systype()
+            if arch != current_arch:
+                # Incorrect architecture
+                click.secho(
+                    'Error: incorrect architecture: RPI2 or RPI3 required',
+                    fg='red')
+                return 1
+
         return self.run('upload',
                         variables + ['device={0}'.format(device),
                                      'prog={0}'.format(programmer)],
