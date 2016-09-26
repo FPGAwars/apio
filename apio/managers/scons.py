@@ -53,9 +53,9 @@ class SCons(object):
         else:
             programmer = 'ftdi'  # Defaut value
 
-        # -- RPI2 GPIO
-        if programmer == 'gpio':
-            # Icoboard + RPI2
+        # -- Icoprog
+        if programmer == 'icoprog':
+            # Icoboard + RPI2,3
             # Device argument is ignored
             if device and device != -1:
                 click.secho(
@@ -67,7 +67,7 @@ class SCons(object):
             if arch != current_arch:
                 # Incorrect architecture
                 click.secho(
-                    'Error: incorrect architecture: RPI2 required',
+                    'Error: incorrect architecture: RPI2 or RPI3 required',
                     fg='red')
                 return 1
 

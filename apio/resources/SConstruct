@@ -169,8 +169,8 @@ upload_cmd = ''
 if PROG == 'ftdi':
     upload_cmd = 'iceprog{0} -d i:0x0403:0x6010:{1} $SOURCE'.format(
         EXT, DEVICE)
-elif PROG == 'gpio':
-    # Icoboard + RPI2: sram
+elif PROG == 'icoprog':
+    # Icoboard + RPI2,3: sram
     upload_cmd = 'export WIRINGPI_GPIOMEM=1; icoprog -p < $SOURCE'
 elif PROG == 'litterbox':
     # Cat Board + RPI2,3
