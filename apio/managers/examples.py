@@ -37,8 +37,8 @@ class Examples(object):
         if isdir(self.examples_dir):
             # examples = sorted(os.listdir(self.examples_dir))
             examples = [dirname(y).replace(self.examples_dir + '/', '')
-                            for x in os.walk(self.examples_dir)
-                                for y in glob.glob(join(x[0], 'info'))]
+                        for x in os.walk(self.examples_dir)
+                        for y in glob.glob(join(x[0], 'info'))]
             click.secho('')
             for example in examples:
                 example_dir = join(self.examples_dir, example)
