@@ -29,7 +29,7 @@
   },
   "icoboard": {
     "fpga": "iCE40-HX8K-CT256",
-    "prog": "gpio",
+    "prog": "icoprog",
     "check": {
       "arch": "linux_armv7l"
     }

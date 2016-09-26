@@ -36,10 +36,12 @@ Find your board in the list
   -----------------------------------------------------------
   Board         FPGA                 Type  Size  Pack
   -----------------------------------------------------------
-  iCE40-HX8K    iCE40-HX8K-CT256     hx    8k    ct256
-  icestick      iCE40-HX1K-TQ144     hx    1k    tq144
+  icoboard      iCE40-HX8K-CT256     hx    8k    ct256
   icezum        iCE40-HX1K-TQ144     hx    1k    tq144
+  Cat-board     iCE40-HX8K-CT256     hx    8k    ct256
+  icestick      iCE40-HX1K-TQ144     hx    1k    tq144
   go-board      iCE40-HX1K-VQ100     hx    1k    vq100
+  iCE40-HX8K    iCE40-HX8K-CT256     hx    8k    ct256
 
 Create an apio.ini file with your board
 

@@ -9,7 +9,7 @@ import glob
 import click
 import shutil
 
-from os.path import join, isdir, isfile, basename
+from os.path import join, isdir, isfile, dirname, basename
 
 from apio import util
 
@@ -35,7 +35,10 @@ class Examples(object):
 
     def list_examples(self):
         if isdir(self.examples_dir):
-            examples = sorted(os.listdir(self.examples_dir))
+            # examples = sorted(os.listdir(self.examples_dir))
+            examples = [dirname(y).replace(self.examples_dir + '/', '')
+                        for x in os.walk(self.examples_dir)
+                        for y in glob.glob(join(x[0], 'info'))]
             click.secho('')
             for example in examples:
                 example_dir = join(self.examples_dir, example)
