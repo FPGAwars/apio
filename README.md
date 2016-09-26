@@ -48,6 +48,7 @@ Supported architectures: *linux_x86_64, linux_i686, linux_armv7l, linux_aarch64,
 | [iCEstick Evaluation Kit ](http://www.pighixxx.com/test/portfolio-items/icestick/)
 | [iCE40-HX8K Breakout Board](http://www.latticesemi.com/en/Products/DevelopmentBoardsAndKits/iCE40HX8KBreakoutBoard.aspx)
 | [icoBOARD 1.0](http://icoboard.org/icoboard-1-0.html)
+| [CAT Board](https://hackaday.io/project/7982-cat-board)
 
 NOTE: all supported [Icestorm FPGAs](http://www.clifford.at/icestorm/) can be used with [--fpga, --size, --type and --pack options](http://apiodoc.readthedocs.io/en/develop/source/user_guide/code_commands/cmd_build.html#options).
 
@@ -88,6 +89,7 @@ tox -e coverage
 ## Contributors
 
 * [Miguel Sánchez de León Peque](https://github.com/peque)
+* [devbisme](https://github.com/devbisme)
 
 ## License
 ![](https://github.com/FPGAwars/apio/raw/master/docs/resources/images/bq-logo-cc-sa-small-150px.png)
