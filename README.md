@@ -125,13 +125,13 @@ PlatformIO Lattice FPGA support was added in the [2.9.0](https://github.com/plat
 
 It was an initial attempt to try to fit the new open FPGA project concept into a classic microcontroller ecosystem.
 
-No further support has happened since then because Apio give us more flexibility and development speed for this experimental FPGA ecosystem. But all the knowledge and the development that we are doing could be added in PlatformIO in the future.
+In Platformio 3.0 a more flexible contribution method was implemented. Then, more contributions were made to support [platform-lattice_iCE40](https://github.com/platformio/platform-lattice_ice40) using the work and knowledge generated in the Apio project.
 
 ### Differences between Apio and PlatformIO?
 
 Apio is a micro-ecosystem focused only on *open FPGAs* while PlatformIO is an ecosystem focused on *embedded platforms and microcontrollers*. Apio has also a different API from PlatformIO.
 
-Apio contains direct commands to verify, simulate, analyze, build, upload *verilog code*. It also contains system utilities, drivers configuration, generic examples and package management.
+Apio contains direct commands to verify, simulate, analyze, build, upload *verilog code*. It also contains system utilities, drivers configuration, generic examples, package management and board detection.
 
 ```
 $ apio
