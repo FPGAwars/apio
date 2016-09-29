@@ -23,12 +23,14 @@ except NameError:  # pragma: no cover
               help='Create init file with the selected board.')
 @click.option('--project-dir', type=unicode, metavar='PATH',
               help='Set the target directory for the project')
-def cli(ctx, board, scons, project_dir):
+@click.option('-y', '--sayyes', is_flag=True,
+              help='Automatically answer YES to all the questions')
+def cli(ctx, board, scons, project_dir, sayyes):
     """Manage apio projects."""
 
     if scons:
-        Project().create_sconstruct(project_dir)
+        Project().create_sconstruct(project_dir, sayyes)
     elif board:
-        Project().create_ini(board, project_dir)
+        Project().create_ini(board, project_dir, sayyes)
     else:
         click.secho(ctx.get_help())

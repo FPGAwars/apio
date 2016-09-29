@@ -77,7 +77,7 @@ class Examples(object):
             if isdir(local_example_path):
                 if isdir(example_path):
 
-                    # -- If sayno, do not copy anythin
+                    # -- If sayno, do not copy anything
                     if not sayno:
                         click.secho(
                             'Warning: ' + example +
