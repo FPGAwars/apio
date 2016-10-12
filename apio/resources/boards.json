@@ -52,5 +52,15 @@
     "check": {
       "arch": "linux_armv7l"
     }
+  },
+  "kefir": {
+    "fpga": "iCE40-HX4K-TQ144",
+    "programmer": {
+      "type": "iceprog",
+      "args": "-I B"
+    },
+    "check": {
+      "ftdi-desc": ""
+    }
   }
 }
