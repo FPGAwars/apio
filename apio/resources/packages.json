@@ -51,15 +51,11 @@
       "organization": "FPGAwars"
     },
     "release": {
-      "tag_name": "v0.%V",
+      "tag_name": "v%V",
       "compressed_name": "toolchain-iverilog-%A-%V",
-      "uncompressed_name": "toolchain-iverilog",
+      "uncompressed_name": "",
       "package_name": "toolchain-iverilog",
-      "extension": {
-        "linux": "tar.bz2",
-        "darwin": "tar.bz2",
-        "windows": "zip"
-      }
+      "extension": "tar.gz"
     },
     "description": "Icarus Verilog toolchain"
   },

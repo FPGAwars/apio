@@ -49,40 +49,26 @@ class SCons(object):
 
         # Get programmer value
         if board:
-            programmer = self.resources.boards[board]['prog']
+            p = self.resources.boards[board]['programmer']
+            programmer = p['type']
+            programmer_args = p['args'] if 'args' in p else ''
         else:
-            programmer = 'ftdi'  # Defaut value
+            programmer = 'iceprog'
+            programmer_args = ''
 
-        # -- Icoprog
-        if programmer == 'icoprog':
-            # Icoboard + RPI2,3
-            # Device argument is ignored
-            if device and device != -1:
-                click.secho(
-                    'Info: ignore device argument {0}'.format(device),
-                    fg='yellow')
-            # Check architecture
-            arch = self.resources.boards[board]['check']['arch']
-            current_arch = util.get_systype()
-            if arch != current_arch:
-                # Incorrect architecture
-                click.secho(
-                    'Error: incorrect architecture: RPI2 or RPI3 required',
-                    fg='red')
-                return 1
+        # -- Check
+        check = self.resources.boards[board]['check']
 
-        # -- FTDI USB
-        elif programmer == 'ftdi':
-
+        # Check FTDI description
+        if 'ftdi-desc' in check:
             detected_boards = System().detect_boards()
-
             if isinstance(detected_boards, int):
                 return detected_boards
 
             if device:
                 # Check device argument
                 if board:
-                    desc = self.resources.boards[board]['check']['ftdi-desc']
+                    desc = check['ftdi-desc']
                     check = False
                     for b in detected_boards:
                         # Selected board
@@ -101,7 +87,7 @@ class SCons(object):
                 # Detect device
                 device = -1
                 if board:
-                    desc = self.resources.boards[board]['check']['ftdi-desc']
+                    desc = check['ftdi-desc']
                     for b in detected_boards:
                         if desc in b['description']:
                             # Select the first board that validates
@@ -127,27 +113,32 @@ class SCons(object):
                 click.secho('Error: board not detected', fg='red')
                 return 1
 
-        # -- Litterbox
-        elif programmer == 'litterbox':
-            # Cat Board + RPI2,3
+        # Check architectures
+        if 'arch' in check:
             # Device argument is ignored
             if device and device != -1:
                 click.secho(
                     'Info: ignore device argument {0}'.format(device),
                     fg='yellow')
-            # Check architecture
-            arch = self.resources.boards[board]['check']['arch']
+
+            arch = check['arch']
             current_arch = util.get_systype()
             if arch != current_arch:
                 # Incorrect architecture
-                click.secho(
-                    'Error: incorrect architecture: RPI2 or RPI3 required',
-                    fg='red')
+                if arch == 'linux_armv7l':
+                    click.secho(
+                        'Error: incorrect architecture: RPI2 or RPI3 required',
+                        fg='red')
+                else:
+                    click.secho(
+                        'Error: incorrect architecture {0}'.format(arch),
+                        fg='red')
                 return 1
 
         return self.run('upload',
                         variables + ['device={0}'.format(device),
-                                     'prog={0}'.format(programmer)],
+                                     'prog={0}'.format(programmer),
+                                     'prog_args={0}'.format(programmer_args)],
                         board)
 
     def time(self, args):
@@ -177,7 +168,13 @@ class SCons(object):
         os.environ['VLIB'] = os.path.join(
             packages_dir, 'toolchain-iverilog', 'vlib', 'system.v')
 
-        # -- Check for the scons
+        # -- Check for the SConstruct file
+        if not isfile(join(util.get_project_dir(), sconstruct_name)):
+            click.secho('Using default SConstruct file')
+            variables += ['-f', join(
+                dirname(__file__), '..', 'resources', sconstruct_name)]
+
+        # -- Check for the scons tools
         if not isdir(scons_dir):
             click.secho('Error: scons toolchain is not installed', fg='red')
             click.secho('Please run:\n'
@@ -194,12 +191,6 @@ class SCons(object):
             click.secho('Error: iverilog toolchain is not installed', fg='red')
             click.secho('Please run:\n'
                         '   apio install iverilog', fg='yellow')
-
-        # -- Check for the SConstruct file
-        if not isfile(join(util.get_project_dir(), sconstruct_name)):
-            click.secho('Using default SConstruct file')
-            variables += ['-f', join(
-                dirname(__file__), '..', 'resources', sconstruct_name)]
 
         # -- Execute scons
         if isdir(scons_dir) and isdir(icestorm_dir) and isdir(iverilog_dir):

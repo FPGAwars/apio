@@ -1,42 +1,54 @@
 {
   "icezum": {
     "fpga": "iCE40-HX1K-TQ144",
-    "prog": "ftdi",
+    "programmer": {
+      "type": "iceprog"
+    },
     "check": {
       "ftdi-desc": "IceZUM Alhambra"
     }
   },
   "icestick": {
     "fpga": "iCE40-HX1K-TQ144",
-    "prog": "ftdi",
+    "programmer": {
+      "type": "iceprog"
+    },
     "check": {
       "ftdi-desc": "Lattice FTUSB Interface Cable"
     }
   },
   "go-board": {
     "fpga": "iCE40-HX1K-VQ100",
-    "prog": "ftdi",
+    "programmer": {
+      "type": "iceprog"
+    },
     "check": {
       "ftdi-desc": "Dual RS232-HS"
     }
   },
   "iCE40-HX8K": {
     "fpga": "iCE40-HX8K-CT256",
-    "prog": "ftdi",
+    "programmer": {
+      "type": "iceprog"
+    },
     "check": {
       "ftdi-desc": "Lattice FTUSB Interface Cable"
     }
   },
   "icoboard": {
     "fpga": "iCE40-HX8K-CT256",
-    "prog": "icoprog",
+    "programmer": {
+      "type": "icoprog"
+    },
     "check": {
       "arch": "linux_armv7l"
     }
   },
   "Cat-board": {
     "fpga": "iCE40-HX8K-CT256",
-    "prog": "litterbox",
+    "programmer": {
+      "type": "litterbox"
+    },
     "check": {
       "arch": "linux_armv7l"
     }

@@ -119,7 +119,11 @@ class Installer(object):
                     package_dir = join(self.packages_dir, self.package)
                     if isdir(package_dir):
                         shutil.rmtree(package_dir)
-                    self._unpack(dlpath, self.packages_dir)
+                    if self.uncompressed_name:
+                        self._unpack(dlpath, self.packages_dir)
+                    else:
+                        self._unpack(dlpath, join(
+                            self.packages_dir, self.package_name))
             except Exception:
                 click.secho('Package {0} not found'.format(
                     self.tarball), fg='red')
