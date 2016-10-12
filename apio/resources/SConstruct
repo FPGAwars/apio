@@ -161,7 +161,7 @@ AlwaysBuild(build)
 
 # -- Upload the bitstream into FPGA
 upload_cmd = ''
-if PROG == 'ftdi':
+if PROG == 'iceprog':
     upload_cmd = 'iceprog -d i:0x0403:0x6010:{0} $SOURCE'.format(
         DEVICE)
 elif PROG == 'icoprog':
