@@ -49,9 +49,12 @@ class SCons(object):
 
         # Get programmer value
         if board:
-            programmer = self.resources.boards[board]['prog']
+            p = self.resources.boards[board]['programmer']
+            programmer = p['type']
+            programmer_args = p['args'] if 'args' in p else ''
         else:
             programmer = 'iceprog'
+            programmer_args = ''
 
         # -- Check
         check = self.resources.boards[board]['check']
@@ -134,7 +137,8 @@ class SCons(object):
 
         return self.run('upload',
                         variables + ['device={0}'.format(device),
-                                     'prog={0}'.format(programmer)],
+                                     'prog={0}'.format(programmer),
+                                     'prog_args={0}'.format(programmer_args)],
                         board)
 
     def time(self, args):

@@ -17,6 +17,7 @@ from SCons.Script import (Builder, DefaultEnvironment, Default, AlwaysBuild,
 
 # -- Load arguments
 PROG = ARGUMENTS.get('prog', '')
+PROG_ARGS = ARGUMENTS.get('prog_args', '')
 DEVICE = ARGUMENTS.get('device', '-1')
 FPGA_SIZE = ARGUMENTS.get('fpga_size', '')
 FPGA_TYPE = ARGUMENTS.get('fpga_type', '')
@@ -53,6 +54,8 @@ if 'build' in COMMAND_LINE_TARGETS or \
     if 'upload' in COMMAND_LINE_TARGETS:
 
         print("PROG: {}".format(PROG))
+        if PROG_ARGS:
+            print("PROG_ARGS: {}".format(PROG_ARGS))
         print("DEVICE: {}".format(DEVICE))
 
 # -- Resources paths
@@ -171,7 +174,8 @@ elif PROG == 'litterbox':
     # Cat Board + RPI2,3
     upload_cmd = 'sudo litterbox -c $SOURCE'
 
-upload = env.Alias('upload', bitstream, upload_cmd)
+upload = env.Alias('upload', bitstream, '{0} {1}'.format(
+    upload_cmd, PROG_ARGS))
 AlwaysBuild(upload)
 
 # -- Target time: calculate the time
