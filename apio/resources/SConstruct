@@ -201,11 +201,11 @@ verify = env.Alias('verify', vout)
 AlwaysBuild(verify)
 
 # --- Simulation
-sout = env.IVerilog(TARGET_SIM, src_sim)
+sout = env.IVerilog(SIMULNAME, src_sim)
 vcd_file = env.VCD(sout)
 
-waves = simenv.Alias('sim', SIMULNAME + '.vcd', 'gtkwave ' +
-                     "{} ".format(vcd_file[0]) + " " + SIMULNAME + ".gtkw")
+waves = env.Alias('sim', SIMULNAME + '.vcd', 'gtkwave ' +
+                  '{} '.format(vcd_file[0]) + " " + SIMULNAME + ".gtkw")
 AlwaysBuild(waves)
 
 Default(bitstream)
