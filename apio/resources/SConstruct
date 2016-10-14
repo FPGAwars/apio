@@ -90,16 +90,21 @@ try:
 except IndexError:
     testbench = None
 
-if 'sim' in COMMAND_LINE_TARGETS or len(COMMAND_LINE_TARGETS) == 0:
+SIMULNAME = ''
+
+# clean
+if len(COMMAND_LINE_TARGETS) == 0:
+    if testbench is not None:
+        # -- Simulation name
+        SIMULNAME, ext = os.path.splitext(testbench)
+# sim
+elif 'sim' in COMMAND_LINE_TARGETS:
     if testbench is None:
         print("---> ERROR: NO testbench found for simulation")
         Exit(1)
 
     # -- Simulation name
-    # testbench_file = os.path.split(testbench)[-1]
     SIMULNAME, ext = os.path.splitext(testbench)
-else:
-    SIMULNAME = ''
 
 # -- Target sim name
 TARGET_SIM = SIMULNAME
