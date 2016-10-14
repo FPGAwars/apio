@@ -72,7 +72,7 @@ TARGET = 'hardware'
 # -- Get a list of all the verilog files in the src folfer, in ASCII, with
 # -- the full path. All these files are used for the simulation
 v_nodes = Glob('*.v')
-src_sim = ["{}".format(f) for f in v_nodes]
+src_sim = [str(f) for f in v_nodes]
 
 # --------- Get the Testbench file (there should be only 1)
 # -- Create a list with all the files finished in _tb.v. It should contain
@@ -90,15 +90,19 @@ try:
 except IndexError:
     testbench = None
 
-if 'sim' in COMMAND_LINE_TARGETS:
+if 'sim' in COMMAND_LINE_TARGETS or len(COMMAND_LINE_TARGETS) == 0:
     if testbench is None:
         print("---> ERROR: NO testbench found for simulation")
         Exit(1)
 
     # -- Simulation name
+    # testbench_file = os.path.split(testbench)[-1]
     SIMULNAME, ext = os.path.splitext(testbench)
 else:
     SIMULNAME = ''
+
+# -- Target sim name
+TARGET_SIM = SIMULNAME
 
 # -------- Get the synthesis files.  They are ALL the files except the
 # -------- testbench
@@ -185,11 +189,12 @@ AlwaysBuild(t)
 
 # -- Icarus Verilog builders
 iverilog = Builder(
-    action='iverilog {0} -o $TARGET {1} $SOURCES'.format(
-        IVER_PATH, VLIB_PATH),
-   suffix='.out',
-   src_suffix='.v')
+    action='iverilog {0} -o $TARGET {1} -D VCD_OUTPUT={2} $SOURCES'.format(
+        IVER_PATH, VLIB_PATH, TARGET_SIM),
+    suffix='.out',
+    src_suffix='.v')
 
+# NOTE: output file name is defined in the iverilog call using VCD_OUTPUT macro
 vcd = Builder(
     action='vvp {0} $SOURCE'.format(
         VVP_PATH),
@@ -205,11 +210,11 @@ verify = env.Alias('verify', vout)
 AlwaysBuild(verify)
 
 # --- Simulation
-sout = env.IVerilog(SIMULNAME, src_sim)
+sout = env.IVerilog(TARGET_SIM, src_sim)
 vcd_file = env.VCD(sout)
 
-waves = env.Alias('sim', SIMULNAME + '.vcd', 'gtkwave ' +
-                  '{} '.format(vcd_file[0]) + " " + SIMULNAME + ".gtkw")
+waves = env.Alias('sim', vcd_file, 'gtkwave {0} {1}.gtkw'.format(
+    vcd_file[0], SIMULNAME))
 AlwaysBuild(waves)
 
 Default(bitstream)
