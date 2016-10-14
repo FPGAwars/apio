@@ -60,7 +60,7 @@
       "args": "-I B"
     },
     "check": {
-      "ftdi-desc": ""
+      "ftdi-desc": "Milk JTAG:u"
     }
   }
 }
