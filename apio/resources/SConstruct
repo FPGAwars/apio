@@ -62,9 +62,9 @@ if 'build' in COMMAND_LINE_TARGETS or \
 IVL_PATH = os.environ['IVL']
 VLIB_PATH = os.environ['VLIB']
 
-isWindows = 'Windows' != system()
-VVP_PATH = '-M {0}'.format(IVL_PATH) if isWindows else ''
-IVER_PATH = '-B {0}'.format(IVL_PATH) if isWindows else ''
+isWindows = 'Windows' == system()
+VVP_PATH = '' if isWindows else '-M {0}'.format(IVL_PATH)
+IVER_PATH = '' if isWindows else '-B {0}'.format(IVL_PATH)
 
 # -- Target name
 TARGET = 'hardware'
@@ -122,13 +122,13 @@ if len(src_synth) == 0:
 # print("SIM NAME: {}".format(SIMULNAME))
 
 # -- Get the PCF file
+PCF = ''
 PCF_list = Glob('*.pcf')
 
 try:
     PCF = PCF_list[0]
 except IndexError:
-    print("\n---> WARNING: no .pcf file found <---\n")
-    Exit(1)
+    print("\n---> WARNING: no .pcf file found\n")
 
 # -- Debug
 # print("----> PCF Found: {}".format(PCF))
