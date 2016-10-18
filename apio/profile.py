@@ -28,8 +28,8 @@ class Profile(object):
     def add_package(self, name, version):
         self.packages[name] = {'version': version}
 
-    def add_config(self, native):
-        self.config = {'native': native}
+    def add_config(self, exe):
+        self.config = {'exe': exe}
 
     def remove_package(self, name):
         if name in self.packages.keys():
@@ -38,11 +38,11 @@ class Profile(object):
     def get_package_version(self, name):
         return self.packages[name]['version']
 
-    def get_config_native(self, native):
-        if 'config' in self.config.keys():
-            return self.config['native']
+    def get_config_exe(self):
+        if 'exe' in self.config.keys():
+            return self.config['exe']
         else:
-            return False
+            return 'apio'
 
     def load(self):
         data = {}

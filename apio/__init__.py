@@ -47,7 +47,7 @@ def cli(ctx):
     # Update help structure
     if ctx.invoked_subcommand is None:
         env_help = []
-        env_commands = ['boards', 'drivers', 'examples', 'init',
+        env_commands = ['boards', 'config', 'drivers', 'examples', 'init',
                         'install', 'system', 'uninstall', 'upgrade']
 
         help = ctx.get_help()
