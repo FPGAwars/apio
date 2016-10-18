@@ -91,6 +91,7 @@ except IndexError:
     testbench = None
 
 SIMULNAME = ''
+TARGET_SIM = ''
 
 # clean
 if len(COMMAND_LINE_TARGETS) == 0:
@@ -107,7 +108,8 @@ elif 'sim' in COMMAND_LINE_TARGETS:
     SIMULNAME, ext = os.path.splitext(testbench)
 
 # -- Target sim name
-TARGET_SIM = SIMULNAME
+if SIMULNAME:
+    TARGET_SIM = SIMULNAME  # .replace('\\', '\\\\')
 
 # -------- Get the synthesis files.  They are ALL the files except the
 # -------- testbench
