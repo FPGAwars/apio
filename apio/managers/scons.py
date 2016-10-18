@@ -152,10 +152,10 @@ class SCons(object):
     def run(self, command, variables=[], board=None):
         """Executes scons for building"""
 
-        packages_dir = os.path.join(util.get_home_dir(), 'packages')
-        icestorm_dir = os.path.join(packages_dir, 'toolchain-icestorm', 'bin')
-        iverilog_dir = os.path.join(packages_dir, 'toolchain-iverilog', 'bin')
-        scons_dir = os.path.join(packages_dir, 'tool-scons', 'script')
+        icestorm_dir = os.path.join(util.get_package_dir('toolchain-icestorm'), 'bin')
+        iverilog_base_dir = util.get_package_dir('toolchain-iverilog')
+        iverilog_dir = os.path.join(iverilog_base_dir, 'bin')
+        scons_dir = os.path.join(util.get_package_dir('tool-scons'), 'script')
         sconstruct_name = 'SConstruct'
 
         # Give the priority to the packages installed by apio
@@ -163,10 +163,8 @@ class SCons(object):
             [iverilog_dir, icestorm_dir, os.environ['PATH']])
 
         # Add environment variables
-        os.environ['IVL'] = os.path.join(
-            packages_dir, 'toolchain-iverilog', 'lib', 'ivl')
-        os.environ['VLIB'] = os.path.join(
-            packages_dir, 'toolchain-iverilog', 'vlib', 'system.v')
+        os.environ['IVL'] = os.path.join(iverilog_base_dir, 'lib', 'ivl')
+        os.environ['VLIB'] = os.path.join(iverilog_base_dir, 'vlib', 'system.v')
 
         # -- Check for the SConstruct file
         if not isfile(join(util.get_project_dir(), sconstruct_name)):
