@@ -9,15 +9,14 @@
 # ---- Licence Apache v2
 
 import os
+import re
+import json
 import click
 import subprocess
-import json
-import re
 from os.path import expanduser, isdir, join, isfile
 from os import pathsep
 from platform import system, uname
 from threading import Thread
-from string import split
 
 import requests
 requests.packages.urllib3.disable_warnings()
@@ -84,52 +83,38 @@ def get_systype():
     return "%s_%s" % (type_, arch) if arch else type_
 
 
-class ConfigLoader:
-    __shared_state = {}
-    loaded = 0
+def _get_config_data():
+    config_data = None
+    filepath = os.path.join(os.sep, 'etc', 'apio.json')
+    if isfile(filepath):
+        with open(filepath, 'r') as f:
+            # Load the JSON file
+            # click.echo('Loading json config\n')
+            config_data = json.loads(f.read())
+    return config_data
 
-    def __init__(self):
-        self.__dict__ = self.__shared_state
-        if not self.loaded:
-            self.config_data = None
-            filepath = os.path.join(os.sep, 'etc', 'apio.json')
-            if isfile(filepath):
-                with open(filepath, 'r') as f:
-                    # Load the JSON file
-                    # click.echo('Loading json config\n')
-                    self.loaded = 1
-                    self.config_data = json.loads(f.read())
+
+config_data = _get_config_data()
 
 
 def _get_projconf_option_dir(name, default=None):
-    _env_name = "APIO_%s" % name.upper()
+    _env_name = 'APIO_%s' % name.upper()
     if _env_name in os.environ:
         return os.getenv(_env_name)
-    from_config = ConfigLoader().config_data[_env_name]
-    if from_config:
-        return from_config
+    if config_data and _env_name in config_data.keys():
+        return config_data[_env_name]
     return default
 
 
-def _is_writable(directory):
-    try:
-        filename = os.path.join(directory, '__test__')
-        f = open(filename, "w")
-        f.close()
-        os.remove(filename)
-        return True
-    except Exception:
-        return False
-
-
 def get_home_dir():
-    home_dir = _get_projconf_option_dir("home_dir", "~/.apio")
-    home_dir = re.sub(r'\~', expanduser("~"), home_dir)
+    home_dir = _get_projconf_option_dir('home_dir', '~/.apio')
+    home_dir = re.sub(r'\~', expanduser('~'), home_dir)
 
-    paths = split(home_dir, pathsep)
+    paths = home_dir.split(pathsep)
     for path in paths:
         if isdir(path):
-            if _is_writable(path):
+            if os.access(path, os.W_OK):
+                # Path is writable
                 return path
 
     for path in paths:
@@ -139,31 +124,25 @@ def get_home_dir():
                 return path
             except OSError as ioex:
                 if ioex.errno == 13:
-                    click.secho('Warning: can\'t create '+home_dir,
+                    click.secho('Warning: can\'t create ' + home_dir,
                                 fg='yellow')
-                    pass
 
     click.secho('Error: no usable home directory', fg='red')
-    return path
+    return ''
 
 
 def get_package_dir(pkg_name):
-    home_dir = _get_projconf_option_dir("home_dir", "~/.apio")
-    home_dir = re.sub(r'\~', expanduser("~"), home_dir)
+    home_dir = _get_projconf_option_dir('home_dir', '~/.apio')
+    home_dir = re.sub(r'\~', expanduser('~'), home_dir)
 
-    file_found = 0
-    paths = split(home_dir, pathsep)
+    paths = home_dir.split(pathsep)
     for path in paths:
-        try_name = join(path, 'packages', pkg_name)
+        package_dir = join(path, 'packages', pkg_name)
         # click.echo('Trying '+try_name)
-        if isdir(try_name):
-            file_found = 1
-            break
+        if isdir(package_dir):
+            return package_dir
 
-    if file_found:
-        return try_name
-    else:
-        return join(paths[0], 'packages', pkg_name)
+    return ''
 
 
 def get_project_dir():

@@ -19,7 +19,7 @@ class ApioCLI(click.MultiCommand):
     def list_commands(self, ctx):
         rv = []
         for filename in listdir(commands_folder):
-            if filename.startswith("__init__"):
+            if filename.startswith('__init__'):
                 continue
             if filename.endswith('.py'):
                 rv.append(filename[:-3])

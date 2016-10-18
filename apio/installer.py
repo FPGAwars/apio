@@ -11,7 +11,7 @@ import shutil
 from os import makedirs, remove, rename
 from os.path import isdir, join, basename, expanduser
 
-from apio import util
+from apio.util import get_home_dir, get_systype
 from apio.api import api_request
 from apio.resources import Resources
 from apio.profile import Profile
@@ -94,7 +94,7 @@ class Installer(object):
             if 'main_dir' in data.keys():
                 self.packages_dir = join(expanduser('~'), data['main_dir'])
             else:
-                self.packages_dir = join(util.get_home_dir(), 'packages')
+                self.packages_dir = join(get_home_dir(), 'packages')
 
     def install(self):
         if self.version is None:
@@ -165,7 +165,7 @@ class Installer(object):
             self.profile.save()
 
     def _get_architecture(self):
-        return util.get_systype()
+        return get_systype()
 
     def _get_download_url(self, name, organization, tag, tarball):
         url = 'https://github.com/{0}/{1}/releases/download/{2}/{3}'.format(
