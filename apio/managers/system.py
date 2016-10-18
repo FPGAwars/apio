@@ -51,7 +51,7 @@ class System(object):  # pragma: no cover
 
     def _run(self, command):
         result = {}
-        system_dir = join(util.get_home_dir(), 'packages', 'system')
+        system_dir = util.get_package_dir('system')
 
         if isdir(system_dir):
             result = util.exec_command(
