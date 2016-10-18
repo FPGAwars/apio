@@ -15,7 +15,7 @@ from apio.profile import Profile
               help='List all configuration parameters.')
 @click.option('-e', '--exe', type=click.Choice(['apio', 'native']),
               help='Configure executables: `apio` selects apio packages, ' +
-                   '`native` selects system binaries')
+                   '`native` selects system binaries.')
 def cli(ctx, list, exe):
     """Apio configuration."""
 

@@ -25,6 +25,9 @@ class Profile(object):
         return not (self.check_package(name) and
                     (self.get_package_version(name) >= version))
 
+    def check_exe_apio(self):
+        return self.get_config_exe() == 'apio'
+
     def add_package(self, name, version):
         self.packages[name] = {'version': version}
 

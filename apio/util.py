@@ -38,11 +38,6 @@ class ApioException(Exception):
             return Exception.__str__(self)
 
 
-class AbortedByUser(ApioException):
-
-    MESSAGE = "Aborted by user"
-
-
 class AsyncPipe(Thread):  # pragma: no cover
 
     def __init__(self, outcallback=None):
@@ -128,12 +123,16 @@ def exec_command(*args, **kwargs):  # pragma: no cover
     default.update(kwargs)
     kwargs = default
 
-    p = subprocess.Popen(*args, **kwargs)
     try:
+        p = subprocess.Popen(*args, **kwargs)
         result['out'], result['err'] = p.communicate()
         result['returncode'] = p.returncode
     except KeyboardInterrupt:
-        raise AbortedByUser()
+        click.secho('Aborted by user', fg='red')
+        exit(1)
+    except Exception as e:
+        click.secho(str(e), fg='red')
+        exit(1)
     finally:
         for s in ("stdout", "stderr"):
             if isinstance(kwargs[s], AsyncPipe):

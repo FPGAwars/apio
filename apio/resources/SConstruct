@@ -59,12 +59,12 @@ if 'build' in COMMAND_LINE_TARGETS or \
         print("DEVICE: {}".format(DEVICE))
 
 # -- Resources paths
-IVL_PATH = os.environ['IVL']
-VLIB_PATH = os.environ['VLIB']
+IVL_PATH = os.environ['IVL'] if 'IVL' in os.environ else ''
+VLIB_PATH = os.environ['VLIB'] if 'VLIB' in os.environ else ''
 
 isWindows = 'Windows' == system()
-VVP_PATH = '' if isWindows else '-M {0}'.format(IVL_PATH)
-IVER_PATH = '' if isWindows else '-B {0}'.format(IVL_PATH)
+VVP_PATH = '' if isWindows or not IVL_PATH else '-M {0}'.format(IVL_PATH)
+IVER_PATH = '' if isWindows or not IVL_PATH else '-B {0}'.format(IVL_PATH)
 
 # -- Target name
 TARGET = 'hardware'
