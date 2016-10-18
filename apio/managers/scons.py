@@ -16,11 +16,13 @@ from apio import util
 from apio.resources import Resources
 from apio.managers.system import System
 from apio.managers.project import Project
+from apio.profile import Profile
 
 
 class SCons(object):
 
     def __init__(self):
+        self.profile = Profile()
         self.resources = Resources()
 
     def clean(self):
@@ -158,42 +160,51 @@ class SCons(object):
         scons_dir = os.path.join(packages_dir, 'tool-scons', 'script')
         sconstruct_name = 'SConstruct'
 
-        # Give the priority to the packages installed by apio
-        os.environ['PATH'] = os.pathsep.join(
-            [iverilog_dir, icestorm_dir, os.environ['PATH']])
-
-        # Add environment variables
-        os.environ['IVL'] = os.path.join(
-            packages_dir, 'toolchain-iverilog', 'lib', 'ivl')
-        os.environ['VLIB'] = os.path.join(
-            packages_dir, 'toolchain-iverilog', 'vlib', 'system.v')
-
         # -- Check for the SConstruct file
         if not isfile(join(util.get_project_dir(), sconstruct_name)):
             click.secho('Using default SConstruct file')
             variables += ['-f', join(
                 dirname(__file__), '..', 'resources', sconstruct_name)]
 
-        # -- Check for the scons tools
-        if not isdir(scons_dir):
-            click.secho('Error: scons toolchain is not installed', fg='red')
-            click.secho('Please run:\n'
-                        '   apio install scons', fg='yellow')
+        if self.profile.check_exe_apio():
 
-        # -- Check for the icestorm tools
-        if not isdir(icestorm_dir):
-            click.secho('Error: icestorm toolchain is not installed', fg='red')
-            click.secho('Please run:\n'
-                        '   apio install icestorm', fg='yellow')
+            # Give the priority to the packages installed by apio
+            os.environ['PATH'] = os.pathsep.join(
+                [iverilog_dir, icestorm_dir, os.environ['PATH']])
 
-        # -- Check for the iverilog tools
-        if not isdir(iverilog_dir):
-            click.secho('Error: iverilog toolchain is not installed', fg='red')
-            click.secho('Please run:\n'
-                        '   apio install iverilog', fg='yellow')
+            # Add environment variables
+            os.environ['IVL'] = os.path.join(
+                packages_dir, 'toolchain-iverilog', 'lib', 'ivl')
+            os.environ['VLIB'] = os.path.join(
+                packages_dir, 'toolchain-iverilog', 'vlib', 'system.v')
+
+            # -- Check for the scons tools
+            if not isdir(scons_dir):
+                click.secho(
+                    'Error: scons toolchain is not installed', fg='red')
+                click.secho('Please run:\n'
+                            '   apio install scons', fg='yellow')
+
+            # -- Check for the icestorm tools
+            if not isdir(icestorm_dir):
+                click.secho(
+                    'Error: icestorm toolchain is not installed', fg='red')
+                click.secho('Please run:\n'
+                            '   apio install icestorm', fg='yellow')
+
+            # -- Check for the iverilog tools
+            if not isdir(iverilog_dir):
+                click.secho(
+                    'Error: iverilog toolchain is not installed', fg='red')
+                click.secho('Please run:\n'
+                            '   apio install iverilog', fg='yellow')
 
         # -- Execute scons
-        if isdir(scons_dir) and isdir(icestorm_dir) and isdir(iverilog_dir):
+        if not self.profile.check_exe_apio() or \
+           (isdir(scons_dir) and
+           isdir(icestorm_dir) and
+           isdir(iverilog_dir)):
+
             terminal_width, _ = click.get_terminal_size()
             start_time = time.time()
 
@@ -211,13 +222,15 @@ class SCons(object):
 
             click.secho("Executing: scons -Q {0} {1}".format(
                             command, ' '.join(variables)))
+
+            if self.profile.check_exe_apio():
+                scons = [os.path.normpath(sys.executable),
+                         os.path.join(scons_dir, 'scons')]
+            else:
+                scons = ['scons']
+
             result = util.exec_command(
-                [
-                    os.path.normpath(sys.executable),
-                    os.path.join(scons_dir, 'scons'),
-                    '-Q',
-                    command
-                ] + variables,
+                scons + ['-Q', command] + variables,
                 stdout=util.AsyncPipe(self._on_run_out),
                 stderr=util.AsyncPipe(self._on_run_err)
             )

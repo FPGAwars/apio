@@ -130,7 +130,7 @@ class Installer(object):
             else:
                 if dlpath:
                     remove(dlpath)
-                    self.profile.add(self.package, self.version)
+                    self.profile.add_package(self.package, self.version)
                     self.profile.save()
                     click.secho(
                         """Package \'{}\' has been """
@@ -161,7 +161,7 @@ class Installer(object):
             else:
                 click.secho('Package \'{0}\' is not installed'.format(
                     self.package), fg='red')
-            self.profile.remove(self.package)
+            self.profile.remove_package(self.package)
             self.profile.save()
 
     def _get_architecture(self):
@@ -202,7 +202,7 @@ class Installer(object):
         return version
 
     def _download(self, url):
-        if self.profile.check_version(self.package, self.version) or \
+        if self.profile.check_package_version(self.package, self.version) or \
            self.forced_install:
             fd = FileDownloader(url, self.packages_dir)
             click.secho('Download ' + basename(fd.get_filepath()))
@@ -210,7 +210,7 @@ class Installer(object):
             return fd.get_filepath()
         else:
             click.secho('Already installed. Version {0}'.format(
-                self.profile.get_version(self.package)), fg='yellow')
+                self.profile.get_package_version(self.package)), fg='yellow')
             return None
 
     def _unpack(self, pkgpath, pkgdir):

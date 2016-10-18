@@ -59,12 +59,12 @@ if 'build' in COMMAND_LINE_TARGETS or \
         print("DEVICE: {}".format(DEVICE))
 
 # -- Resources paths
-IVL_PATH = os.environ['IVL']
-VLIB_PATH = os.environ['VLIB']
+IVL_PATH = os.environ['IVL'] if 'IVL' in os.environ else ''
+VLIB_PATH = os.environ['VLIB'] if 'VLIB' in os.environ else ''
 
 isWindows = 'Windows' == system()
-VVP_PATH = '' if isWindows else '-M {0}'.format(IVL_PATH)
-IVER_PATH = '' if isWindows else '-B {0}'.format(IVL_PATH)
+VVP_PATH = '' if isWindows or not IVL_PATH else '-M {0}'.format(IVL_PATH)
+IVER_PATH = '' if isWindows or not IVL_PATH else '-B {0}'.format(IVL_PATH)
 
 # -- Target name
 TARGET = 'hardware'
@@ -91,6 +91,7 @@ except IndexError:
     testbench = None
 
 SIMULNAME = ''
+TARGET_SIM = ''
 
 # clean
 if len(COMMAND_LINE_TARGETS) == 0:
@@ -107,7 +108,8 @@ elif 'sim' in COMMAND_LINE_TARGETS:
     SIMULNAME, ext = os.path.splitext(testbench)
 
 # -- Target sim name
-TARGET_SIM = SIMULNAME
+if SIMULNAME:
+    TARGET_SIM = SIMULNAME  # .replace('\\', '\\\\')
 
 # -------- Get the synthesis files.  They are ALL the files except the
 # -------- testbench
