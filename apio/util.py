@@ -107,11 +107,11 @@ class ConfigLoader:
 
 def _get_projconf_option_dir(name, default=None):
     _env_name = "APIO_%s" % name.upper()
+    if _env_name in os.environ:
+        return os.getenv(_env_name)
     from_config = ConfigLoader().config_data[_env_name];
     if from_config:
         return from_config
-    if _env_name in os.environ:
-        return os.getenv(_env_name)
     return default
 
 
