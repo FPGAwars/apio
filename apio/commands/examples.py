@@ -24,9 +24,9 @@ except NameError:  # pragma: no cover
 @click.option('-f', '--files', type=unicode, metavar='NAME',
               help='Copy the selected example files.')
 @click.option('--project-dir', type=unicode, metavar='PATH',
-              help='Set the target directory for the examples')
+              help='Set the target directory for the examples.')
 @click.option('-n', '--sayno', is_flag=True,
-              help='Automatically answer NO to all the questions')
+              help='Automatically answer NO to all the questions.')
 def cli(ctx, list, dir, files, project_dir, sayno):
     """Manage verilog examples.\n
        Install with `apio install examples`"""
