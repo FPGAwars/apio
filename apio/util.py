@@ -92,24 +92,25 @@ def get_systype():
 class ConfigLoader:
     __shared_state = {}
     loaded = 0
+
     def __init__(self):
         self.__dict__ = self.__shared_state
         if not self.loaded:
-           self.config_data = None
-           filepath = os.path.join(os.sep, 'etc', 'apio.json')
-           if isfile(filepath):
-               with open(filepath, 'r') as f:
-                   # Load the JSON file
-                   #click.echo('Loading json config\n')
-                   self.loaded = 1
-                   self.config_data = json.loads(f.read())
+            self.config_data = None
+            filepath = os.path.join(os.sep, 'etc', 'apio.json')
+            if isfile(filepath):
+                with open(filepath, 'r') as f:
+                    # Load the JSON file
+                    # click.echo('Loading json config\n')
+                    self.loaded = 1
+                    self.config_data = json.loads(f.read())
 
 
 def _get_projconf_option_dir(name, default=None):
     _env_name = "APIO_%s" % name.upper()
     if _env_name in os.environ:
         return os.getenv(_env_name)
-    from_config = ConfigLoader().config_data[_env_name];
+    from_config = ConfigLoader().config_data[_env_name]
     if from_config:
         return from_config
     return default
@@ -122,8 +123,9 @@ def _is_writable(directory):
         f.close()
         os.remove(filename)
         return True
-    except Exception as e:
+    except Exception:
         return False
+
 
 def get_home_dir():
     home_dir = _get_projconf_option_dir("home_dir", "~/.apio")
@@ -132,18 +134,18 @@ def get_home_dir():
     paths = split(home_dir, pathsep)
     for path in paths:
         if isdir(path):
-           if _is_writable(path):
-              return path
+            if _is_writable(path):
+                return path
 
     for path in paths:
         if not isdir(path):
-           try:
-               os.makedirs(path)
-               return path
-           except OSError as ioex:
-               if ioex.errno == 13:
+            try:
+                os.makedirs(path)
+                return path
+            except OSError as ioex:
+                if ioex.errno == 13:
                     click.secho('Warning: can\'t create '+home_dir,
-                         fg='yellow')
+                                fg='yellow')
                     pass
 
     click.secho('Error: no usable home directory', fg='red')
@@ -158,15 +160,15 @@ def get_package_dir(pkg_name):
     paths = split(home_dir, pathsep)
     for path in paths:
         try_name = join(path, 'packages', pkg_name)
-        #click.echo('Trying '+try_name)
+        # click.echo('Trying '+try_name)
         if isdir(try_name):
-           file_found = 1
-           break
+            file_found = 1
+            break
 
     if file_found:
-       return try_name
+        return try_name
     else:
-       return join(paths[0], 'packages', pkg_name)
+        return join(paths[0], 'packages', pkg_name)
 
 
 def get_project_dir():

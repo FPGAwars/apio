@@ -152,7 +152,8 @@ class SCons(object):
     def run(self, command, variables=[], board=None):
         """Executes scons for building"""
 
-        icestorm_dir = os.path.join(util.get_package_dir('toolchain-icestorm'), 'bin')
+        icestorm_dir = os.path.join(util.get_package_dir('toolchain-icestorm'),
+                                    'bin')
         iverilog_base_dir = util.get_package_dir('toolchain-iverilog')
         iverilog_dir = os.path.join(iverilog_base_dir, 'bin')
         scons_dir = os.path.join(util.get_package_dir('tool-scons'), 'script')
@@ -164,7 +165,8 @@ class SCons(object):
 
         # Add environment variables
         os.environ['IVL'] = os.path.join(iverilog_base_dir, 'lib', 'ivl')
-        os.environ['VLIB'] = os.path.join(iverilog_base_dir, 'vlib', 'system.v')
+        os.environ['VLIB'] = os.path.join(iverilog_base_dir, 'vlib',
+                                          'system.v')
 
         # -- Check for the SConstruct file
         if not isfile(join(util.get_project_dir(), sconstruct_name)):
@@ -208,7 +210,7 @@ class SCons(object):
                 click.secho("-" * terminal_width, bold=True)
 
             click.secho("Executing: scons -Q {0} {1}".format(
-                            command, ' '.join(variables)))
+                        command, ' '.join(variables)))
             result = util.exec_command(
                 [
                     os.path.normpath(sys.executable),
