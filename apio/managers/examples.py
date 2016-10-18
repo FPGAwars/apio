@@ -31,7 +31,7 @@ To get an example, use the command:
 class Examples(object):
 
     def __init__(self):
-        self.examples_dir = join(util.get_home_dir(), 'packages', 'examples')
+        self.examples_dir = util.get_package_dir('examples')
 
     def list_examples(self):
         if isdir(self.examples_dir):

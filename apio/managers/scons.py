@@ -154,10 +154,11 @@ class SCons(object):
     def run(self, command, variables=[], board=None):
         """Executes scons for building"""
 
-        packages_dir = os.path.join(util.get_home_dir(), 'packages')
-        icestorm_dir = os.path.join(packages_dir, 'toolchain-icestorm', 'bin')
-        iverilog_dir = os.path.join(packages_dir, 'toolchain-iverilog', 'bin')
-        scons_dir = os.path.join(packages_dir, 'tool-scons', 'script')
+        icestorm_dir = os.path.join(util.get_package_dir('toolchain-icestorm'),
+                                    'bin')
+        iverilog_base_dir = util.get_package_dir('toolchain-iverilog')
+        iverilog_dir = os.path.join(iverilog_base_dir, 'bin')
+        scons_dir = os.path.join(util.get_package_dir('tool-scons'), 'script')
         sconstruct_name = 'SConstruct'
 
         # -- Check for the SConstruct file
@@ -173,10 +174,9 @@ class SCons(object):
                 [iverilog_dir, icestorm_dir, os.environ['PATH']])
 
             # Add environment variables
-            os.environ['IVL'] = os.path.join(
-                packages_dir, 'toolchain-iverilog', 'lib', 'ivl')
-            os.environ['VLIB'] = os.path.join(
-                packages_dir, 'toolchain-iverilog', 'vlib', 'system.v')
+            os.environ['IVL'] = os.path.join(iverilog_base_dir, 'lib', 'ivl')
+            os.environ['VLIB'] = os.path.join(iverilog_base_dir, 'vlib',
+                                              'system.v')
 
             # -- Check for the scons tools
             if not isdir(scons_dir):
@@ -215,12 +215,12 @@ class SCons(object):
                     processing_board = board
                 else:
                     processing_board = 'custom board'
-                click.echo("[%s] Processing %s" % (
-                    datetime.datetime.now().strftime("%c"),
-                    click.style(processing_board, fg="cyan", bold=True)))
-                click.secho("-" * terminal_width, bold=True)
+                click.echo('[%s] Processing %s' % (
+                    datetime.datetime.now().strftime('%c'),
+                    click.style(processing_board, fg='cyan', bold=True)))
+                click.secho('-' * terminal_width, bold=True)
 
-            click.secho("Executing: scons -Q {0} {1}".format(
+            click.secho('Executing: scons -Q {0} {1}'.format(
                             command, ' '.join(variables)))
 
             if self.profile.check_exe_apio():
@@ -238,13 +238,13 @@ class SCons(object):
             # -- Print result
             exit_code = result['returncode']
             is_error = exit_code != 0
-            summary_text = " Took %.2f seconds " % (time.time() - start_time)
-            half_line = "=" * int(
+            summary_text = ' Took %.2f seconds ' % (time.time() - start_time)
+            half_line = '=' * int(
                 ((terminal_width - len(summary_text) - 10) / 2))
-            click.echo("%s [%s]%s%s" % (
+            click.echo('%s [%s]%s%s' % (
                 half_line,
-                (click.style(" ERROR ", fg="red", bold=True)
-                 if is_error else click.style("SUCCESS", fg="green",
+                (click.style(' ERROR ', fg='red', bold=True)
+                 if is_error else click.style('SUCCESS', fg='green',
                                               bold=True)),
                 summary_text,
                 half_line
@@ -462,9 +462,9 @@ class SCons(object):
 
         # -- Build Scons variables list
         variables = self.format_vars({
-            "fpga_size": fpga_size,
-            "fpga_type": fpga_type,
-            "fpga_pack": fpga_pack
+            'fpga_size': fpga_size,
+            'fpga_type': fpga_type,
+            'fpga_pack': fpga_pack
         })
 
         return variables, var_board
@@ -474,7 +474,7 @@ class SCons(object):
         variables = []
         for key, value in args.items():
             if value:
-                variables += ["{0}={1}".format(key, value)]
+                variables += ['{0}={1}'.format(key, value)]
         return variables
 
     def _on_run_out(self, line):
