@@ -47,7 +47,6 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 | [scons](https://github.com/FPGAwars/tool-scons)  | apio install scons | A software construction tool. [Scons project](http://scons.org/)
 | [system](https://github.com/FPGAwars/tools-usb-ftdi)  | apio install system | Tools for listing the USB devices and retrieving information from the FTDI chips
 | [examples](https://github.com/FPGAwars/apio-examples)  | apio install examples | Verilog basic examples, pinouts, etc
-| [pio-fpga](https://github.com/FPGAwars/Platformio-FPGA)  | apio install pio-fpga | PlatformIO experimental configuration for supporting Lattice FPGA boards
 
 Supported architectures: *linux_x86_64, linux_i686, linux_armv7l, linux_aarch64, darwin, windows*.
 
@@ -153,6 +152,7 @@ Code commands:
 
 Environment commands:
   boards     Manage FPGA boards.
+  config     Apio configuration.
   drivers    Manage FPGA drivers.
   examples   Manage verilog examples.
   init       Manage apio projects.
