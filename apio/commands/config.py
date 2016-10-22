@@ -13,8 +13,8 @@ from apio.profile import Profile
 @click.pass_context
 @click.option('-l', '--list', is_flag=True,
               help='List all configuration parameters.')
-@click.option('-e', '--exe', type=click.Choice(['apio', 'native']),
-              help='Configure executables: `apio` selects apio packages, ' +
+@click.option('-e', '--exe', type=click.Choice(['default', 'native']),
+              help='Configure executables: `default` selects apio packages, ' +
                    '`native` selects system binaries.')
 def cli(ctx, list, exe):
     """Apio configuration."""

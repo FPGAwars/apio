@@ -10,11 +10,11 @@
 
 import os
 import re
+import sys
 import json
 import click
 import subprocess
 from os.path import expanduser, isdir, join, isfile
-from os import pathsep
 from platform import system, uname
 from threading import Thread
 
@@ -110,7 +110,7 @@ def get_home_dir():
     home_dir = _get_projconf_option_dir('home_dir', '~/.apio')
     home_dir = re.sub(r'\~', expanduser('~'), home_dir)
 
-    paths = home_dir.split(pathsep)
+    paths = home_dir.split(os.pathsep)
     for path in paths:
         if isdir(path):
             if os.access(path, os.W_OK):
@@ -132,10 +132,10 @@ def get_home_dir():
 
 
 def get_package_dir(pkg_name):
-    home_dir = _get_projconf_option_dir('home_dir', '~/.apio')
+    home_dir = _get_projconf_option_dir('pkg_dir', '~/.apio')
     home_dir = re.sub(r'\~', expanduser('~'), home_dir)
 
-    paths = home_dir.split(pathsep)
+    paths = home_dir.split(os.pathsep)
     for path in paths:
         package_dir = join(path, 'packages', pkg_name)
         # click.echo('Trying '+try_name)
@@ -147,6 +147,60 @@ def get_package_dir(pkg_name):
 
 def get_project_dir():
     return os.getcwd()
+
+
+scons_command = ['scons']
+
+
+def resolve_packages():
+
+    base_dir = {
+        'scons': get_package_dir('tool-scons'),
+        'icestorm': get_package_dir('toolchain-icestorm'),
+        'iverilog': get_package_dir('toolchain-iverilog')
+    }
+
+    bin_dir = {
+        'scons': os.path.join(base_dir['scons'], 'script'),
+        'icestorm': os.path.join(base_dir['icestorm'], 'bin'),
+        'iverilog': os.path.join(base_dir['iverilog'], 'bin')
+    }
+
+    # -- Check packages
+    check = True
+    if not config_data:
+        # /etc/apio.json file does not exist
+        for package in bin_dir:
+            check &= _check_package(package, bin_dir[package])
+
+    # -- Load packages
+    if check:
+
+        # Give the priority to the packages installed by apio
+        os.environ['PATH'] = os.pathsep.join(
+            [bin_dir['icestorm'], bin_dir['iverilog'], os.environ['PATH']])
+
+        # Add environment variables
+        os.environ['IVL'] = os.path.join(
+            base_dir['iverilog'], 'lib', 'ivl')
+        os.environ['VLIB'] = os.path.join(
+            base_dir['iverilog'], 'vlib', 'system.v')
+
+        global scons_command
+        scons_command = [os.path.normpath(sys.executable),
+                         os.path.join(bin_dir['scons'], 'scons')]
+
+    return check
+
+
+def _check_package(name, path):
+    is_dir = isdir(path)
+    if not is_dir:
+        click.secho(
+            'Error: {} toolchain is not installed'.format(name), fg='red')
+        click.secho('Please run:\n'
+                    '   apio install {}'.format(name), fg='yellow')
+    return is_dir
 
 
 def change_filemtime(path, time):

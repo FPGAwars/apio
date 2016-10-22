@@ -4,13 +4,11 @@
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
-import os
-import sys
 import time
 import click
 import datetime
 
-from os.path import join, dirname, isdir, isfile
+from os.path import join, dirname, isfile
 
 from apio import util
 from apio.resources import Resources
@@ -22,7 +20,6 @@ from apio.profile import Profile
 class SCons(object):
 
     def __init__(self):
-        self.profile = Profile()
         self.resources = Resources()
 
     def clean(self):
@@ -154,105 +151,62 @@ class SCons(object):
     def run(self, command, variables=[], board=None):
         """Executes scons for building"""
 
-        icestorm_dir = os.path.join(util.get_package_dir('toolchain-icestorm'),
-                                    'bin')
-        iverilog_base_dir = util.get_package_dir('toolchain-iverilog')
-        iverilog_dir = os.path.join(iverilog_base_dir, 'bin')
-        scons_dir = os.path.join(util.get_package_dir('tool-scons'), 'script')
-        sconstruct_name = 'SConstruct'
-
         # -- Check for the SConstruct file
-        if not isfile(join(util.get_project_dir(), sconstruct_name)):
+        if not isfile(join(util.get_project_dir(), 'SConstruct')):
             click.secho('Using default SConstruct file')
             variables += ['-f', join(
-                dirname(__file__), '..', 'resources', sconstruct_name)]
+                dirname(__file__), '..', 'resources', 'SConstruct')]
 
-        if self.profile.check_exe_apio():
-
-            # Give the priority to the packages installed by apio
-            os.environ['PATH'] = os.pathsep.join(
-                [iverilog_dir, icestorm_dir, os.environ['PATH']])
-
-            # Add environment variables
-            os.environ['IVL'] = os.path.join(iverilog_base_dir, 'lib', 'ivl')
-            os.environ['VLIB'] = os.path.join(iverilog_base_dir, 'vlib',
-                                              'system.v')
-
-            # -- Check for the scons tools
-            if not isdir(scons_dir):
-                click.secho(
-                    'Error: scons toolchain is not installed', fg='red')
-                click.secho('Please run:\n'
-                            '   apio install scons', fg='yellow')
-
-            # -- Check for the icestorm tools
-            if not isdir(icestorm_dir):
-                click.secho(
-                    'Error: icestorm toolchain is not installed', fg='red')
-                click.secho('Please run:\n'
-                            '   apio install icestorm', fg='yellow')
-
-            # -- Check for the iverilog tools
-            if not isdir(iverilog_dir):
-                click.secho(
-                    'Error: iverilog toolchain is not installed', fg='red')
-                click.secho('Please run:\n'
-                            '   apio install iverilog', fg='yellow')
+        # -- Resolve packages
+        if Profile().check_exe_default():
+            # Run on `default` config mode
+            if not util.resolve_packages():
+                # Exit if a package is not installed
+                return 1
 
         # -- Execute scons
-        if not self.profile.check_exe_apio() or \
-           (isdir(scons_dir) and
-           isdir(icestorm_dir) and
-           isdir(iverilog_dir)):
+        terminal_width, _ = click.get_terminal_size()
+        start_time = time.time()
 
-            terminal_width, _ = click.get_terminal_size()
-            start_time = time.time()
-
-            if command == 'build' or \
-               command == 'upload' or \
-               command == 'time':
-                if board:
-                    processing_board = board
-                else:
-                    processing_board = 'custom board'
-                click.echo('[%s] Processing %s' % (
-                    datetime.datetime.now().strftime('%c'),
-                    click.style(processing_board, fg='cyan', bold=True)))
-                click.secho('-' * terminal_width, bold=True)
-
-            click.secho('Executing: scons -Q {0} {1}'.format(
-                            command, ' '.join(variables)))
-
-            if self.profile.check_exe_apio():
-                scons = [os.path.normpath(sys.executable),
-                         os.path.join(scons_dir, 'scons')]
+        if command == 'build' or \
+           command == 'upload' or \
+           command == 'time':
+            if board:
+                processing_board = board
             else:
-                scons = ['scons']
+                processing_board = 'custom board'
+            click.echo('[%s] Processing %s' % (
+                datetime.datetime.now().strftime('%c'),
+                click.style(processing_board, fg='cyan', bold=True)))
+            click.secho('-' * terminal_width, bold=True)
 
-            result = util.exec_command(
-                scons + ['-Q', command] + variables,
-                stdout=util.AsyncPipe(self._on_run_out),
-                stderr=util.AsyncPipe(self._on_run_err)
-            )
+        click.secho('Executing: scons -Q {0} {1}'.format(
+                        command, ' '.join(variables)))
 
-            # -- Print result
-            exit_code = result['returncode']
-            is_error = exit_code != 0
-            summary_text = ' Took %.2f seconds ' % (time.time() - start_time)
-            half_line = '=' * int(
-                ((terminal_width - len(summary_text) - 10) / 2))
-            click.echo('%s [%s]%s%s' % (
-                half_line,
-                (click.style(' ERROR ', fg='red', bold=True)
-                 if is_error else click.style('SUCCESS', fg='green',
-                                              bold=True)),
-                summary_text,
-                half_line
-            ), err=is_error)
+        result = util.exec_command(
+            util.scons_command + ['-Q', command] + variables,
+            stdout=util.AsyncPipe(self._on_run_out),
+            stderr=util.AsyncPipe(self._on_run_err)
+        )
 
-            if False:
-                if is_error:
-                    print("""
+        # -- Print result
+        exit_code = result['returncode']
+        is_error = exit_code != 0
+        summary_text = ' Took %.2f seconds ' % (time.time() - start_time)
+        half_line = '=' * int(
+            ((terminal_width - len(summary_text) - 10) / 2))
+        click.echo('%s [%s]%s%s' % (
+            half_line,
+            (click.style(' ERROR ', fg='red', bold=True)
+             if is_error else click.style('SUCCESS', fg='green',
+                                          bold=True)),
+            summary_text,
+            half_line
+        ), err=is_error)
+
+        if False:
+            if is_error:
+                print("""
   ______                     _
  |  ____|                   | |
  | |__   _ __ _ __ ___  _ __| |
@@ -260,8 +214,8 @@ class SCons(object):
  | |____| |  | | | (_) | |  |_|
  |______|_|  |_|  \___/|_|  (_)
 """)
-                else:
-                    print("""
+            else:
+                print("""
    _____                             _
   / ____|                           | |
  | (___  _   _  ___ ___ ___  ___ ___| |
@@ -270,9 +224,7 @@ class SCons(object):
  |_____/ \__,_|\___\___\___||___/___(_)
 """)
 
-            return exit_code
-        else:
-            return 1
+        return exit_code
 
     def process_arguments(self, args):
         # -- Check arguments

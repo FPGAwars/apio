@@ -28,9 +28,25 @@ Options
 List all configuration parameters
 
 .. option::
-    -e, --exe [apio|native]
+    -e, --exe [default|native]
 
-Configure executables: `apio` selects apio packages, `native` selects system binaries
+Configure executables: `default` selects apio packages, `native` selects native binaries (except system package)
+
+.. note::
+
+   In **debian** systems, if /etc/apio.json defines a new APIO_PKG_DIR, this new path will be used to load the packages.
+
++--------------------------+------+------+----------+
+| **Mode**                 | **default** |**native**|
++--------------------------+------+------+----------+
+| /ect/apio.json           | No   | Yes  |          |
++--------------------------+------+------+----------+
+| Load installed packages  | Yes  | Yes *| No       |
++--------------------------+------+------+----------+
+| Check installed packages | Yes  | No   | No       |
++--------------------------+------+------+----------+
+
+\* load APIO_PKG_DIR from /etc/apio.json
 
 Examples
 --------
@@ -40,7 +56,7 @@ Examples
 .. code::
 
   $ apio config --list
-  Executable mode: apio
+  Executable mode: default
 
 2. Enable native mode for executable binaries
 

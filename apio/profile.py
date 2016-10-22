@@ -25,8 +25,8 @@ class Profile(object):
         return not (self.check_package(name) and
                     (self.get_package_version(name) >= version))
 
-    def check_exe_apio(self):
-        return self.get_config_exe() == 'apio'
+    def check_exe_default(self):
+        return self.get_config_exe() == 'default'
 
     def add_package(self, name, version):
         self.packages[name] = {'version': version}
@@ -45,7 +45,7 @@ class Profile(object):
         if 'exe' in self.config.keys():
             return self.config['exe']
         else:
-            return 'apio'
+            return 'default'
 
     def load(self):
         data = {}
@@ -61,10 +61,8 @@ class Profile(object):
                         self.packages = data  # Backward compatibility
                 except:
                     pass
-                profile.close()
 
     def save(self):
         with open(self._profile_path, 'w') as profile:
             data = {'config': self.config, 'packages': self.packages}
             json.dump(data, profile)
-            profile.close()
