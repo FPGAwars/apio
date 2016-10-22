@@ -132,7 +132,9 @@ def get_home_dir():
 
 
 def get_package_dir(pkg_name):
-    home_dir = _get_projconf_option_dir('pkg_dir', '~/.apio')
+    home_dir = _get_projconf_option_dir('pkg_dir', '')
+    if not home_dir:
+        home_dir = _get_projconf_option_dir('home_dir', '~/.apio')
     home_dir = re.sub(r'\~', expanduser('~'), home_dir)
 
     paths = home_dir.split(os.pathsep)
@@ -181,8 +183,9 @@ def resolve_packages():
             [bin_dir['icestorm'], bin_dir['iverilog'], os.environ['PATH']])
 
         # Add environment variables
-        os.environ['IVL'] = os.path.join(
-            base_dir['iverilog'], 'lib', 'ivl')
+        if not config_data:
+            os.environ['IVL'] = os.path.join(
+                base_dir['iverilog'], 'lib', 'ivl')
         os.environ['VLIB'] = os.path.join(
             base_dir['iverilog'], 'vlib', 'system.v')
 
