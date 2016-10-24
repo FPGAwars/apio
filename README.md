@@ -87,6 +87,12 @@ tox -e flake8
 tox -e coverage
 ```
 
+### Debian packaging
+
+Also you can find the debian scripts to package the full application and all the packages here: https://github.com/set-soft/apio-debian.
+
+Thanks Salvador E. Tropea!
+
 ## FAQ
 
 ### What is Apio?
@@ -221,6 +227,7 @@ Yes.
 
 ## Contributors
 
+* [Salvador E. Tropea](https://github.com/set-soft)
 * [Miguel Sánchez de León Peque](https://github.com/peque)
 * [devbisme](https://github.com/devbisme)
 
