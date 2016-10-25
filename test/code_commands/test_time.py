@@ -17,3 +17,4 @@ def test_time_board(clirunner, configenv):
         assert result.exit_code != 0
         if result.exit_code == 1:
             assert 'apio install scons' in result.output
+            assert 'apio install icestorm' in result.output

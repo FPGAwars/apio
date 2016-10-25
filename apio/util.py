@@ -216,11 +216,12 @@ def _check_package(name, path=''):
 def _check_apt_get():
     """Check if apio can be installed through apt-get"""
     check = False
-    result = exec_command(['dpkg', '-l', 'apio'])
-    if result and result['returncode'] == 0:
-        match = re.findall('rc\s+apio', result['out']) + \
-                re.findall('ii\s+apio', result['out'])
-        check = len(match) > 0
+    if 'TESTING' not in os.environ:
+        result = exec_command(['dpkg', '-l', 'apio'])
+        if result and result['returncode'] == 0:
+            match = re.findall('rc\s+apio', result['out']) + \
+                    re.findall('ii\s+apio', result['out'])
+            check = len(match) > 0
     return check
 
 

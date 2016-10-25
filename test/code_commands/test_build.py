@@ -17,9 +17,8 @@ def test_build_board(clirunner, configenv):
         result = clirunner.invoke(cmd_build, ['--board', 'icezum'])
         assert result.exit_code != 0
         if result.exit_code == 1:
-            assert 'apio install icestorm' in result.output
-            assert 'apio install iverilog' in result.output
-            assert 'apio install scons' in result.output
+            assert 'install icestorm' in result.output
+            assert 'install scons' in result.output
 
 
 def test_build_complete(clirunner, configenv):

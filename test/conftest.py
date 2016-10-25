@@ -23,6 +23,7 @@ def configenv():
         cwd = getcwd()
         environ['APIO_HOME_DIR'] = cwd
         environ['APIO_PKG_DIR'] = cwd
+        environ['TESTING'] = ''
     return decorator
 
 
