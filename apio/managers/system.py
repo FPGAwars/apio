@@ -60,9 +60,7 @@ class System(object):  # pragma: no cover
                 stderr=util.AsyncPipe(self._on_run_out)
                 )
         else:
-            click.secho('Error: system tools are not installed', fg='red')
-            click.secho('Please run:\n'
-                        '   apio install system', fg='yellow')
+            util._check_package('system')
             return 1
 
         return result

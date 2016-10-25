@@ -194,7 +194,7 @@ def resolve_packages(deps=[]):
     return check
 
 
-def _check_package(name, path):
+def _check_package(name, path=''):
     is_dir = isdir(path)
     if not is_dir:
         click.secho(
