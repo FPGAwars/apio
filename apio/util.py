@@ -60,7 +60,7 @@ class AsyncPipe(Thread):  # pragma: no cover
         return self._fd_write
 
     def run(self):
-        for line in iter(self._pipe_reader.readline, ""):
+        for line in iter(self._pipe_reader.readline, ''):
             line = line.strip()
             self._buffer.append(line)
             if self.outcallback:
@@ -79,8 +79,8 @@ def get_systype():
     arch = ''
     type_ = data[0].lower()
     if type_ == 'linux':
-        arch = data[4].lower() if data[4] else ""
-    return "%s_%s" % (type_, arch) if arch else type_
+        arch = data[4].lower() if data[4] else ''
+    return '%s_%s' % (type_, arch) if arch else type_
 
 
 def _get_config_data():
@@ -154,7 +154,7 @@ def get_project_dir():
 scons_command = ['scons']
 
 
-def resolve_packages():
+def resolve_packages(deps=[]):
 
     base_dir = {
         'scons': get_package_dir('tool-scons'),
@@ -170,10 +170,8 @@ def resolve_packages():
 
     # -- Check packages
     check = True
-    if not config_data:
-        # /etc/apio.json file does not exist
-        for package in bin_dir:
-            check &= _check_package(package, bin_dir[package])
+    for package in deps:
+        check &= _check_package(package, bin_dir[package])
 
     # -- Load packages
     if check:
@@ -201,9 +199,29 @@ def _check_package(name, path):
     if not is_dir:
         click.secho(
             'Error: {} toolchain is not installed'.format(name), fg='red')
-        click.secho('Please run:\n'
-                    '   apio install {}'.format(name), fg='yellow')
+        if config_data:  # /etc/apio.json file exists
+            if _check_apt_get():
+                click.secho('Please run:\n'
+                            '   apt-get install apio-{}'.format(name),
+                            fg='yellow')
+            else:
+                click.secho('Please run:\n'
+                            '   apio install {}'.format(name), fg='yellow')
+        else:
+            click.secho('Please run:\n'
+                        '   apio install {}'.format(name), fg='yellow')
     return is_dir
+
+
+def _check_apt_get():
+    """Check if apio can be installed through apt-get"""
+    check = False
+    result = exec_command(['dpkg', '-l', 'apio'])
+    if result and result['returncode'] == 0:
+        match = re.findall('rc\s+apio', result['out']) + \
+                re.findall('ii\s+apio', result['out'])
+        check = len(match) > 0
+    return check
 
 
 def change_filemtime(path, time):
@@ -212,15 +230,15 @@ def change_filemtime(path, time):
 
 def exec_command(*args, **kwargs):  # pragma: no cover
     result = {
-        "out": None,
-        "err": None,
-        "returncode": None
+        'out': None,
+        'err': None,
+        'returncode': None
     }
 
     default = dict(
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        shell=system() == "Windows"
+        shell=system() == 'Windows'
     )
     default.update(kwargs)
     kwargs = default
@@ -236,13 +254,13 @@ def exec_command(*args, **kwargs):  # pragma: no cover
         click.secho(str(e), fg='red')
         exit(1)
     finally:
-        for s in ("stdout", "stderr"):
+        for s in ('stdout', 'stderr'):
             if isinstance(kwargs[s], AsyncPipe):
                 kwargs[s].close()
 
-    for s in ("stdout", "stderr"):
+    for s in ('stdout', 'stderr'):
         if isinstance(kwargs[s], AsyncPipe):
-            result[s[3:]] = "\n".join(kwargs[s].get_buffer())
+            result[s[3:]] = '\n'.join(kwargs[s].get_buffer())
 
     for k, v in result.items():
         if v and isinstance(v, unicode):
@@ -255,7 +273,7 @@ def get_pypi_latest_version():
     r = None
     version = None
     try:
-        r = requests.get("https://pypi.python.org/pypi/apio/json")
+        r = requests.get('https://pypi.python.org/pypi/apio/json')
         version = r.json()['info']['version']
         r.raise_for_status()
     except requests.exceptions.ConnectionError:

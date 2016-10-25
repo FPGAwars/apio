@@ -23,13 +23,13 @@ class SCons(object):
         self.resources = Resources()
 
     def clean(self):
-        return self.run('-c')
+        return self.run('-c', deps=['scons'])
 
     def verify(self):
-        return self.run('verify')
+        return self.run('verify', deps=['scons', 'iverilog'])
 
     def sim(self):
-        return self.run('sim')
+        return self.run('sim', deps=['scons', 'iverilog'])
 
     def build(self, args):
         ret = self.process_arguments(args)
@@ -37,7 +37,7 @@ class SCons(object):
             return ret
         if isinstance(ret, tuple):
             variables, board = ret
-        return self.run('build', variables, board)
+        return self.run('build', variables, board, deps=['scons', 'icestorm'])
 
     def upload(self, args, device=-1):
         ret = self.process_arguments(args)
@@ -138,7 +138,8 @@ class SCons(object):
                         variables + ['device={0}'.format(device),
                                      'prog={0}'.format(programmer),
                                      'prog_args={0}'.format(programmer_args)],
-                        board)
+                        board,
+                        deps=['scons', 'icestorm'])
 
     def time(self, args):
         ret = self.process_arguments(args)
@@ -146,9 +147,9 @@ class SCons(object):
             return ret
         if isinstance(ret, tuple):
             variables, board = ret
-        return self.run('time', variables, board)
+        return self.run('time', variables, board, deps=['scons', 'icestorm'])
 
-    def run(self, command, variables=[], board=None):
+    def run(self, command, variables=[], board=None, deps=[]):
         """Executes scons for building"""
 
         # -- Check for the SConstruct file
@@ -160,7 +161,7 @@ class SCons(object):
         # -- Resolve packages
         if Profile().check_exe_default():
             # Run on `default` config mode
-            if not util.resolve_packages():
+            if not util.resolve_packages(deps):
                 # Exit if a package is not installed
                 return 1
 
