@@ -61,20 +61,16 @@
   },
   "system" : {
     "repository": {
-      "name": "tools-usb-ftdi",
+      "name": "tools-system",
       "organization": "FPGAwars"
     },
     "release": {
-      "tag_name": "v0.%V",
-      "compressed_name": "tools-usb-ftdi-%A-%V",
-      "uncompressed_name": "bin",
+      "tag_name": "v%V",
+      "compressed_name": "tools-system-%A-%V",
+      "uncompressed_name": "",
       "package_name": "system",
-      "extension": {
-        "linux": "tar.bz2",
-        "darwin": "tar.bz2",
-        "windows": "zip"
-      }
+      "extension": "tar.gz"
     },
-    "description": "System development tools"
+    "description": "System tools"
   }
 }

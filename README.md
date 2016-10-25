@@ -45,7 +45,7 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 | [icestorm](https://github.com/FPGAwars/toolchain-icestorm)  | apio install icestorm | iCE40 FPGA synthesis, place & route and configuration tools. [Icestorm project](http://www.clifford.at/icestorm/)
 | [iverilog](https://github.com/FPGAwars/toolchain-iverilog)  | apio install iverilog | Verilog simulation and synthesis tool. [Icarus Verilog project](http://iverilog.icarus.com/)
 | [scons](https://github.com/FPGAwars/tool-scons)  | apio install scons | A software construction tool. [Scons project](http://scons.org/)
-| [system](https://github.com/FPGAwars/tools-usb-ftdi)  | apio install system | Tools for listing the USB devices and retrieving information from the FTDI chips
+| [system](https://github.com/FPGAwars/tools-system)  | apio install system | Tools for listing the USB devices and retrieving information from the FTDI chips
 | [examples](https://github.com/FPGAwars/apio-examples)  | apio install examples | Verilog basic examples, pinouts, etc
 
 Supported architectures: *linux_x86_64, linux_i686, linux_armv7l, linux_aarch64, darwin, windows*.
