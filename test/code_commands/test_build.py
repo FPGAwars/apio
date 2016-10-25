@@ -1,20 +1,19 @@
-from os import environ, getcwd
 from apio.commands.build import cli as cmd_build
 from apio.commands.init import cli as cmd_init
 
 
-def test_build(clirunner):
+def test_build(clirunner, configenv):
     with clirunner.isolated_filesystem():
-        environ['APIO_HOME_DIR'] = getcwd()
+        configenv()
         result = clirunner.invoke(cmd_build)
         assert result.exit_code != 0
         assert 'Info: No apio.ini file' in result.output
         assert 'Error: insufficient arguments: missing board' in result.output
 
 
-def test_build_board(clirunner):
+def test_build_board(clirunner, configenv):
     with clirunner.isolated_filesystem():
-        environ['APIO_HOME_DIR'] = getcwd()
+        configenv()
         result = clirunner.invoke(cmd_build, ['--board', 'icezum'])
         assert result.exit_code != 0
         if result.exit_code == 1:
@@ -23,9 +22,9 @@ def test_build_board(clirunner):
             assert 'apio install scons' in result.output
 
 
-def test_build_complete(clirunner):
+def test_build_complete(clirunner, configenv):
     with clirunner.isolated_filesystem():
-        environ['APIO_HOME_DIR'] = getcwd()
+        configenv()
 
         # apio build --board icestick
         result = clirunner.invoke(cmd_build, ['--board', 'icestick'])
@@ -153,9 +152,9 @@ def test_build_complete(clirunner):
         assert 'Error: unknown fpga: iCE40-FAKE' in result.output
 
 
-def test_build_init(clirunner):
+def test_build_init(clirunner, configenv):
     with clirunner.isolated_filesystem():
-        environ['APIO_HOME_DIR'] = getcwd()
+        configenv()
 
         # apio init --board icezum
         result = clirunner.invoke(cmd_init, ['--board', 'icezum'])

@@ -1,4 +1,3 @@
-from os import environ, getcwd
 from apio.commands.install import cli as cmd_install
 
 
@@ -7,16 +6,16 @@ def test_install(clirunner, validate_cliresult):
     validate_cliresult(result)
 
 
-def test_install_list(clirunner, validate_cliresult):
+def test_install_list(clirunner, validate_cliresult, configenv):
     with clirunner.isolated_filesystem():
-        environ['APIO_HOME_DIR'] = getcwd()
+        configenv()
         result = clirunner.invoke(cmd_install, ['--list'])
         validate_cliresult(result)
 
 
-def test_install_wrong_package(clirunner):
+def test_install_wrong_package(clirunner, configenv):
     with clirunner.isolated_filesystem():
-        environ['APIO_HOME_DIR'] = getcwd()
+        configenv()
         result = clirunner.invoke(cmd_install, ['missing_package'])
         assert result.exit_code == 0
         assert 'Error: No such package' in result.output
