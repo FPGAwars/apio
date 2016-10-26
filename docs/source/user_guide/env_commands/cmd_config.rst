@@ -36,17 +36,19 @@ Configure executables: `default` selects apio packages, `native` selects native 
 
    In **debian** systems, if /etc/apio.json defines a new APIO_PKG_DIR, this new path will be used to load the packages.
 
-+--------------------------+------+------+----------+
-| **Mode**                 | **default** |**native**|
-+--------------------------+------+------+----------+
-| /ect/apio.json           | No   | Yes  |          |
-+--------------------------+------+------+----------+
-| Load installed packages  | Yes  | Yes *| No       |
-+--------------------------+------+------+----------+
-| Check installed packages | Yes  | No   | No       |
-+--------------------------+------+------+----------+
++--------------------------+------+-------+----------+
+| **Mode**                 | **default**  |**native**|
++--------------------------+------+-------+----------+
+| /ect/apio.json           | No   | Yes   |          |
++--------------------------+------+-------+----------+
+| Load installed packages  | Yes  | Yes * | No       |
++--------------------------+------+-------+----------+
+| Check installed packages | Yes  | Yes **| No       |
++--------------------------+------+-------+----------+
 
 \* load APIO_PKG_DIR from /etc/apio.json
+
+\*\* Suggest message `apt-get install apio-[pkg]`
 
 Examples
 --------

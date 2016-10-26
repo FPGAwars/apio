@@ -59,6 +59,7 @@ a few options here:
 
         $ curl -sSL http://fpgalibre.sf.net/debian/go | sudo sh
         $ sudo apt-get install apio
+        $ sudo apt-get install apio-scons apio-icestorm apio-iverilog apio-examples apio-system
 
 .. _install_drivers:
 

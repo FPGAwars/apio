@@ -32,6 +32,16 @@ Create a default SConstruct file. This file can be modified and it will be used 
 
 Create a configuration file with the selected board. This will be the default board used in :ref:`cmd_build`, :ref:`cmd_time` and :ref:`cmd_upload` commands.
 
+.. option::
+    --project-dir
+
+Set the target directory for the examples
+
+.. option::
+    -y, --sayyes
+
+Automatically answer YES to all the questions
+
 Examples
 --------
 
