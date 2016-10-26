@@ -78,3 +78,21 @@ Examples
   // Creating timing netlist..
   // Timing estimate: 0.24 ns (4161.98 MHz)
   ================================== [SUCCESS] Took 1.10 seconds =================================
+
+
+  $ cat hardware.rpt
+
+  icetime topological timing analysis report
+  ==========================================
+
+  Warning: This timing analysis report is an estimate!
+  Info: max_span_hack is enabled: estimate is conservative.
+
+  Report for critical path:
+  -------------------------
+
+          pre_io_13_11_0 (PRE_IO) [clk] -> PADOUT: 0.240 ns
+       0.240 ns io_pad_13_11_0_din
+
+  Total number of logic levels: 0
+  Total path delay: 0.24 ns (4161.98 MHz)

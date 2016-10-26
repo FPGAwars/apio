@@ -154,34 +154,38 @@ def get_project_dir():
 scons_command = ['scons']
 
 
-def resolve_packages(deps=[]):
+def resolve_packages(packages, deps=[]):
 
     base_dir = {
         'scons': get_package_dir('tool-scons'),
         'icestorm': get_package_dir('toolchain-icestorm'),
-        'iverilog': get_package_dir('toolchain-iverilog')
+        'iverilog': get_package_dir('toolchain-iverilog'),
+        'gtkwave': get_package_dir('tool-gtkwave')
     }
 
     bin_dir = {
         'scons': os.path.join(base_dir['scons'], 'script'),
         'icestorm': os.path.join(base_dir['icestorm'], 'bin'),
-        'iverilog': os.path.join(base_dir['iverilog'], 'bin')
+        'iverilog': os.path.join(base_dir['iverilog'], 'bin'),
+        'gtkwave': os.path.join(base_dir['gtkwave'], 'bin')
     }
 
     # -- Check packages
     check = True
     for package in deps:
-        check &= _check_package(package, bin_dir[package])
+        if package in packages:
+            check &= _check_package(package, bin_dir[package])
 
     # -- Load packages
     if check:
 
         # Give the priority to the packages installed by apio
         os.environ['PATH'] = os.pathsep.join(
-            [bin_dir['icestorm'], bin_dir['iverilog'], os.environ['PATH']])
+            [bin_dir['icestorm'], bin_dir['iverilog'], bin_dir['gtkwave'],
+             os.environ['PATH']])
 
         # Add environment variables
-        if not config_data:
+        if not config_data:  # /etc/apio.json file does not exist
             os.environ['IVL'] = os.path.join(
                 base_dir['iverilog'], 'lib', 'ivl')
         os.environ['VLIB'] = os.path.join(

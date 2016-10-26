@@ -23,7 +23,15 @@ This command requires the ``scons`` and ``iverilog`` packages.
 
 .. note::
 
-  GTKWave must be installed and be accesible to the console.
+  GTKWave must be installed.
+
+  +---------+-------------------------+
+  | Debian  | apt-get install gtkwave |
+  +---------+-------------------------+
+  | Mac OSX | brew install gtkwave    |
+  +---------+-------------------------+
+  | Windows | apio install gtkwave    |
+  +---------+-------------------------+
 
 Examples
 --------
@@ -36,11 +44,10 @@ Examples
   $ apio sim
   Using default SConstruct file
   Executing: scons -Q sim -f /path/to/SConstruct
-  iverilog -B /path/to/lib/ivl /path/to/vlib/system.v -o leds_tb.out leds_tb.v leds.v
+  iverilog -B /path/to/lib/ivl -o leds_tb.out -D VCD_OUTPUT=leds_tb /path/to/vlib/system.v leds.v leds_tb.v
   vvp -M /path/to/lib/ivl leds_tb.out
   VCD info: dumpfile leds_tb.vcd opened for output.
   End of simulation
-
   gtkwave leds_tb.vcd leds_tb.gtkw
 
   GTKWave Analyzer v3.3.66 (w)1999-2015 BSI

@@ -36,6 +36,8 @@ class Installer(object):
         self.forced_install = False
         self.valid_version = True
 
+        self.packages_dir = None
+
         self.resources = Resources()
         self.profile = Profile()
 
@@ -97,7 +99,7 @@ class Installer(object):
                 self.packages_dir = join(get_home_dir(), 'packages')
 
     def install(self):
-        if self.version is None:
+        if self.packages_dir is None or self.version is None:
             click.secho(
                 'Error: No such package \'{0}\''.format(self.package),
                 fg='red')

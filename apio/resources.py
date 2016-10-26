@@ -7,8 +7,10 @@
 import os
 import json
 import click
+from collections import OrderedDict
 
 from apio.profile import Profile
+from apio.util import get_systype
 
 BOARDS_MSG = """
 Use `apio init --board <boardname>` for creating a new apio """ \
@@ -21,6 +23,17 @@ class Resources(object):
         self.packages = self._load_resource('packages')
         self.boards = self._load_resource('boards')
         self.fpgas = self._load_resource('fpgas')
+
+        # Check available packages
+        self.packages = self._check_packages(self.packages)
+
+        # Sort resources
+        self.packages = OrderedDict(sorted(self.packages.items(),
+                                           key=lambda t: t[0]))
+        self.boards = OrderedDict(sorted(self.boards.items(),
+                                         key=lambda t: t[0]))
+        self.fpgas = OrderedDict(sorted(self.fpgas.items(),
+                                        key=lambda t: t[0]))
 
     def _load_resource(self, name):
         resource = None
@@ -139,3 +152,17 @@ class Resources(object):
                 type=self.fpgas[fpga]['type'],
                 size=self.fpgas[fpga]['size'],
                 pack=self.fpgas[fpga]['pack']))
+
+    def _check_packages(self, packages):
+        filtered_packages = {}
+        for pkg in packages.keys():
+            check = True
+            release = packages[pkg]['release']
+            if 'available_archs' in release:
+                archs = release['available_archs']
+                check = False
+                for arch in archs:
+                    check |= get_systype() in arch
+            if check:
+                filtered_packages[pkg] = packages[pkg]
+        return filtered_packages

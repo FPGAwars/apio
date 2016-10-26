@@ -36,12 +36,13 @@ Find your board in the list
   -----------------------------------------------------------
   Board         FPGA                 Type  Size  Pack
   -----------------------------------------------------------
-  icoboard      iCE40-HX8K-CT256     hx    8k    ct256
-  icezum        iCE40-HX1K-TQ144     hx    1k    tq144
   Cat-board     iCE40-HX8K-CT256     hx    8k    ct256
-  icestick      iCE40-HX1K-TQ144     hx    1k    tq144
   go-board      iCE40-HX1K-VQ100     hx    1k    vq100
   iCE40-HX8K    iCE40-HX8K-CT256     hx    8k    ct256
+  icestick      iCE40-HX1K-TQ144     hx    1k    tq144
+  icezum        iCE40-HX1K-TQ144     hx    1k    tq144
+  icoboard      iCE40-HX8K-CT256     hx    8k    ct256
+  kefir         iCE40-HX4K-TQ144     hx    8k    tq144:4k
 
 Create an apio.ini file with your board
 
@@ -75,7 +76,15 @@ Simulate your test bench using `Icarus Verilog <http://iverilog.icarus.com/>`_ a
 
 .. note::
 
-  GTKWave must be installed and be accesible to the console.
+  GTKWave must be installed.
+
+  +---------+-------------------------+
+  | Debian  | apt-get install gtkwave |
+  +---------+-------------------------+
+  | Mac OSX | brew install gtkwave    |
+  +---------+-------------------------+
+  | Windows | apio install gtkwave    |
+  +---------+-------------------------+
 
 Build
 ~~~~~~
