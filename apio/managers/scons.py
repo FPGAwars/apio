@@ -29,7 +29,7 @@ class SCons(object):
         return self.run('verify', deps=['scons', 'iverilog'])
 
     def sim(self):
-        return self.run('sim', deps=['scons', 'iverilog'])
+        return self.run('sim', deps=['scons', 'iverilog', 'gtkwave'])
 
     def build(self, args):
         ret = self.process_arguments(args)
@@ -161,7 +161,7 @@ class SCons(object):
         # -- Resolve packages
         if Profile().check_exe_default():
             # Run on `default` config mode
-            if not util.resolve_packages(deps):
+            if not util.resolve_packages(self.resources.packages, deps):
                 # Exit if a package is not installed
                 return 1
 

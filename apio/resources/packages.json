@@ -25,7 +25,7 @@
       "package_name": "tool-scons",
       "extension": "tar.gz"
     },
-    "description": "Scons toolchain"
+    "description": "Scons tool"
   },
   "icestorm" : {
     "repository": {
@@ -72,5 +72,22 @@
       "extension": "tar.gz"
     },
     "description": "System tools"
+  },
+  "gtkwave" : {
+    "repository": {
+      "name": "tool-gtkwave",
+      "organization": "FPGAwars"
+    },
+    "release": {
+      "tag_name": "v%V",
+      "compressed_name": "tools-gtkwave-%A-%V",
+      "uncompressed_name": "",
+      "package_name": "gtkwave",
+      "extension": "tar.gz",
+      "available_archs": [
+        "windows", "darwin"
+      ]
+    },
+    "description": "GTKWave tool"
   }
 }
