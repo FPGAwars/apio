@@ -7,6 +7,7 @@
 import os
 import json
 import click
+from collections import OrderedDict
 
 from apio.profile import Profile
 from apio.util import get_systype
@@ -25,6 +26,14 @@ class Resources(object):
 
         # Check available packages
         self.packages = self._check_packages(self.packages)
+
+        # Sort resources
+        self.packages = OrderedDict(sorted(self.packages.items(),
+                                           key=lambda t: t[0]))
+        self.boards = OrderedDict(sorted(self.boards.items(),
+                                         key=lambda t: t[0]))
+        self.fpgas = OrderedDict(sorted(self.fpgas.items(),
+                                        key=lambda t: t[0]))
 
     def _load_resource(self, name):
         resource = None

@@ -80,9 +80,9 @@
     },
     "release": {
       "tag_name": "v%V",
-      "compressed_name": "tools-gtkwave-%A-%V",
+      "compressed_name": "tool-gtkwave-%A-%V",
       "uncompressed_name": "",
-      "package_name": "gtkwave",
+      "package_name": "tool-gtkwave",
       "extension": "tar.gz",
       "available_archs": [
         "windows", "darwin"
