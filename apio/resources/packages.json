@@ -85,7 +85,7 @@
       "package_name": "tool-gtkwave",
       "extension": "tar.gz",
       "available_archs": [
-        "windows", "darwin"
+        "windows"
       ]
     },
     "description": "GTKWave tool"
