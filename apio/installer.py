@@ -11,7 +11,7 @@ import shutil
 from os import makedirs, remove, rename
 from os.path import isdir, join, basename, expanduser
 
-from apio import util
+from apio.util import get_home_dir, get_systype
 from apio.api import api_request
 from apio.resources import Resources
 from apio.profile import Profile
@@ -35,6 +35,8 @@ class Installer(object):
 
         self.forced_install = False
         self.valid_version = True
+
+        self.packages_dir = None
 
         self.resources = Resources()
         self.profile = Profile()
@@ -94,10 +96,10 @@ class Installer(object):
             if 'main_dir' in data.keys():
                 self.packages_dir = join(expanduser('~'), data['main_dir'])
             else:
-                self.packages_dir = join(util.get_home_dir(), 'packages')
+                self.packages_dir = join(get_home_dir(), 'packages')
 
     def install(self):
-        if self.version is None:
+        if self.packages_dir is None or self.version is None:
             click.secho(
                 'Error: No such package \'{0}\''.format(self.package),
                 fg='red')
@@ -119,14 +121,18 @@ class Installer(object):
                     package_dir = join(self.packages_dir, self.package)
                     if isdir(package_dir):
                         shutil.rmtree(package_dir)
-                    self._unpack(dlpath, self.packages_dir)
+                    if self.uncompressed_name:
+                        self._unpack(dlpath, self.packages_dir)
+                    else:
+                        self._unpack(dlpath, join(
+                            self.packages_dir, self.package_name))
             except Exception:
                 click.secho('Package {0} not found'.format(
                     self.tarball), fg='red')
             else:
                 if dlpath:
                     remove(dlpath)
-                    self.profile.add(self.package, self.version)
+                    self.profile.add_package(self.package, self.version)
                     self.profile.save()
                     click.secho(
                         """Package \'{}\' has been """
@@ -157,11 +163,11 @@ class Installer(object):
             else:
                 click.secho('Package \'{0}\' is not installed'.format(
                     self.package), fg='red')
-            self.profile.remove(self.package)
+            self.profile.remove_package(self.package)
             self.profile.save()
 
     def _get_architecture(self):
-        return util.get_systype()
+        return get_systype()
 
     def _get_download_url(self, name, organization, tag, tarball):
         url = 'https://github.com/{0}/{1}/releases/download/{2}/{3}'.format(
@@ -198,7 +204,7 @@ class Installer(object):
         return version
 
     def _download(self, url):
-        if self.profile.check_version(self.package, self.version) or \
+        if self.profile.check_package_version(self.package, self.version) or \
            self.forced_install:
             fd = FileDownloader(url, self.packages_dir)
             click.secho('Download ' + basename(fd.get_filepath()))
@@ -206,7 +212,7 @@ class Installer(object):
             return fd.get_filepath()
         else:
             click.secho('Already installed. Version {0}'.format(
-                self.profile.get_version(self.package)), fg='yellow')
+                self.profile.get_package_version(self.package)), fg='yellow')
             return None
 
     def _unpack(self, pkgpath, pkgdir):

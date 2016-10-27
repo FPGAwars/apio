@@ -1,6 +1,6 @@
 import pytest
 
-from os import environ, getcwd, listdir, mkdir
+from os import getcwd, listdir, mkdir
 from os.path import join, isfile, isdir, getsize
 
 from apio.commands.install import cli as cmd_install
@@ -22,9 +22,9 @@ def validate_dir_leds(apioproject_dir):
 
 @pytest.mark.skipif(pytest.config.getvalue('offline'),
                     reason="requires internet connection")
-def test_complete(clirunner, validate_cliresult):
+def test_complete(clirunner, validate_cliresult, configenv):
     with clirunner.isolated_filesystem():
-        environ['APIO_HOME_DIR'] = getcwd()
+        configenv()
 
         # apio uninstall examples
         result = clirunner.invoke(

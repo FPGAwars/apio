@@ -19,7 +19,7 @@ class ApioCLI(click.MultiCommand):
     def list_commands(self, ctx):
         rv = []
         for filename in listdir(commands_folder):
-            if filename.startswith("__init__"):
+            if filename.startswith('__init__'):
                 continue
             if filename.endswith('.py'):
                 rv.append(filename[:-3])
@@ -47,7 +47,7 @@ def cli(ctx):
     # Update help structure
     if ctx.invoked_subcommand is None:
         env_help = []
-        env_commands = ['boards', 'drivers', 'examples', 'init',
+        env_commands = ['boards', 'config', 'drivers', 'examples', 'init',
                         'install', 'system', 'uninstall', 'upgrade']
 
         help = ctx.get_help()

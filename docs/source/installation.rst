@@ -38,7 +38,7 @@ Python Package Manager (`pip <https://pip.pypa.io>`_) as follows:
 
 .. code::
 
-    pip install -U apio
+    $ pip install -U apio
 
 If ``pip`` command is not available run ``easy_install pip``.
 
@@ -51,6 +51,15 @@ a few options here:
 * Run the command in a `virtualenv <https://virtualenv.pypa.io>`_ local to a
   specific project working set.
 
+.. note::
+
+    Debian users can also install the application and its packages by executing:
+
+    .. code::
+
+        $ curl -sSL http://fpgalibre.sf.net/debian/go | sudo sh
+        $ sudo apt-get install apio
+        $ sudo apt-get install apio-scons apio-icestorm apio-iverilog apio-examples apio-system
 
 .. _install_drivers:
 
@@ -62,13 +71,13 @@ Using apio
 
 .. code::
 
-    apio drivers --enable
+    $ apio drivers --enable
 
 To revert the FTDI drivers configuration
 
 .. code::
 
-    apio drivers --disable
+    $ apio drivers --disable
 
 Manually
 ~~~~~~~~
@@ -79,8 +88,8 @@ Download `80-icestick.rules <https://github.com/FPGAwars/apio/blob/develop/apio/
 
 .. code::
 
-    sudo cp 80-icestick.rules /etc/udev/rules.d/
-    sudo service udev restart
+    $ sudo cp 80-icestick.rules /etc/udev/rules.d/
+    $ sudo service udev restart
 
 
 **Mac OS X**
@@ -89,21 +98,21 @@ Install `homebrew <http://brew.sh/>`_ and libftdi
 
 .. code::
 
-    brew install libftdi
+    $ brew install libftdi
 
 Configure the drivers
 
 .. code::
 
-  sudo kextunload -b com.FTDI.driver.FTDIUSBSerialDriver
-  sudo kextunload -b com.apple.driver.AppleUSBFTDI
+  $ sudo kextunload -b com.FTDI.driver.FTDIUSBSerialDriver
+  $ sudo kextunload -b com.apple.driver.AppleUSBFTDI
 
 To revert the drivers configuration
 
 .. code::
 
-  sudo kextload -b com.FTDI.driver.FTDIUSBSerialDriver
-  sudo kextload -b com.apple.driver.AppleUSBFTDI
+  $ sudo kextload -b com.FTDI.driver.FTDIUSBSerialDriver
+  $ sudo kextload -b com.apple.driver.AppleUSBFTDI
 
 
 **Windows**

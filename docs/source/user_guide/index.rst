@@ -48,6 +48,7 @@ Environment Commands
     :maxdepth: 1
 
     env_commands/cmd_boards
+    env_commands/cmd_config
     env_commands/cmd_drivers
     env_commands/cmd_examples
     env_commands/cmd_init

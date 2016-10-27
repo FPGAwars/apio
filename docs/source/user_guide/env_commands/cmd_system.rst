@@ -15,7 +15,7 @@ Usage
 Description
 -----------
 
-System tools: https://github.com/FPGAwars/tools-usb-ftdi
+System tools: https://github.com/FPGAwars/tools-system
 
 This command requires the ``system`` package.
 

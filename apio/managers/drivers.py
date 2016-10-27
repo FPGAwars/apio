@@ -59,17 +59,17 @@ class Drivers(object):  # pragma: no cover
         subprocess.call(['brew', 'install', 'libftdi'])
         click.secho('Configure FTDI drivers for FPGA')
         subprocess.call(['sudo', 'kextunload', '-b',
-                         'com.FTDI.driver.FTDIUSBSerialDriver'])
+                         'com.FTDI.driver.FTDIUSBSerialDriver', '-q'])
         subprocess.call(['sudo', 'kextunload', '-b',
-                         'com.apple.driver.AppleUSBFTDI'])
+                         'com.apple.driver.AppleUSBFTDI', '-q'])
         click.secho('FPGA drivers enabled', fg='green')
 
     def _disable_darwin(self):
         click.secho('Revert FTDI drivers\' configuration')
         subprocess.call(['sudo', 'kextload', '-b',
-                         'com.FTDI.driver.FTDIUSBSerialDriver'])
+                         'com.FTDI.driver.FTDIUSBSerialDriver', '-q'])
         subprocess.call(['sudo', 'kextload', '-b',
-                         'com.apple.driver.AppleUSBFTDI'])
+                         'com.apple.driver.AppleUSBFTDI', '-q'])
         click.secho('FPGA drivers disabled', fg='green')
 
     def _enable_windows(self):

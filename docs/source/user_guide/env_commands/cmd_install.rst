@@ -22,20 +22,20 @@ Available packages
 ==========  ======================  ============
 Package     Installation            Description
 ==========  ======================  ============
-icestorm_   apio install icestorm   iCE40 FPGA synthesis, place & route and configuration tools. `Icestorm project <http://www.clifford.at/icestorm>`_
-iverilog_   apio install iverilog   Verilog simulation and synthesis tool. `Icarus Verilog project <http://iverilog.icarus.com/>`_
-scons_      apio install scons      A software construction tool. `Scons project <http://scons.org/>`_
-system_     apio install system     Tools for listing the USB devices and retrieving information from the FTDI chips
 examples_   apio install examples   Verilog basic examples, pinouts, etc
-pio-fpga_   apio install pio-fpga   PlatformIO experimental configuration for supporting Lattice FPGA boards
+gtkwave_    apio install gtkwave    Simulation viewer. `GTKWave project <http://gtkwave.sourceforge.net>`_ (only for Windows)
+icestorm_   apio install icestorm   iCE40 FPGA synthesis, place & route and configuration tools. `Icestorm project <http://www.clifford.at/icestorm>`_
+iverilog_   apio install iverilog   Verilog simulation and synthesis tool. `Icarus Verilog project <http://iverilog.icarus.com>`_
+scons_      apio install scons      A software construction tool. `Scons project <http://scons.org>`_
+system_     apio install system     Tools for listing the USB devices and retrieving information from the FTDI chips
 ==========  ======================  ============
 
+.. _examples: https://github.com/FPGAwars/apio-examples
+.. _gtkwave: https://github.com/FPGAwars/tool-gtkwave
 .. _icestorm: https://github.com/FPGAwars/toolchain-icestorm
 .. _iverilog: https://github.com/FPGAwars/toolchain-iverilog
 .. _scons: https://github.com/FPGAwars/tool-scons
-.. _system: https://github.com/FPGAwars/tools-usb-ftdi
-.. _examples: https://github.com/FPGAwars/apio-examples
-.. _pio-fpga: https://github.com/FPGAwars/Platformio-FPGA
+.. _system: https://github.com/FPGAwars/tools-system
 
 Options
 -------
@@ -62,7 +62,7 @@ Examples
 
   $ apio install system scons
   Installing system package:
-  Download tools-usb-ftdi-linux_x86_64-1.tar.bz2
+  Download tools-system-linux_x86_64-1.0.0.tar.gz
   Downloading  [####################################]  100%
   Unpacking  [####################################]  100%
   Package 'system' has been successfully installed!
@@ -72,13 +72,13 @@ Examples
   Unpacking  [####################################]  100%
   Package 'scons' has been successfully installed!
 
-2. Install ``examples`` package version 0.0.2
+2. Install ``examples`` package version 0.0.8
 
 .. code::
 
-  $ apio install examples@0.0.2
+  $ apio install examples@0.0.8
   Installing examples package:
-  Download apio-examples-0.0.2.zip
+  Download apio-examples-0.0.8.zip
   Downloading  [####################################]  100%
   Unpacking  [####################################]  100%
   Package 'examples' has been successfully installed!
@@ -94,9 +94,9 @@ Examples
   -----------------------------------------------------------------------------
   Name        Description                    Version
   -----------------------------------------------------------------------------
-  system      System development tools       1
-  scons       Scons toolchain                2.4.1
-  examples    Verilog examples               0.0.2
+  examples    Verilog examples               0.0.8
+  scons       Scons tool                     2.4.1
+  system      System tools                   1.0.0
 
   Not installed packages:
 
@@ -104,7 +104,6 @@ Examples
   Name        Description
   -----------------------------------------------------------------------------
   icestorm    Icestorm toolchain
-  pio-fpga    Platformio-fpga support
   iverilog    Icarus Verilog toolchain
 
 4. Install and update all packages
@@ -112,22 +111,19 @@ Examples
 .. code::
 
   $ apio install --all
+  Installing examples package:
+  Already installed. Version 0.0.8
   Installing icestorm package:
   Download toolchain-icestorm-linux_x86_64-9.tar.gz
   Downloading  [####################################]  100%
   Unpacking  [####################################]  100%
   Package 'icestorm' has been successfully installed!
-  Installing system package:
-  Already installed. Version 1
   Installing iverilog package:
-  Download toolchain-iverilog-linux_x86_64-3.tar.bz2
+  Download toolchain-iverilog-linux_x86_64-1.0.0.tar.gz
   Downloading  [####################################]  100%
   Unpacking  [####################################]  100%
   Package 'iverilog' has been successfully installed!
   Installing scons package:
   Already installed. Version 2.4.1
-  Installing examples package:
-  Download apio-examples-0.0.3.zip
-  Downloading  [####################################]  100%
-  Unpacking  [####################################]  100%
-  Package 'examples' has been successfully installed!
+  Installing system package:
+  Already installed. Version 1.0.0

@@ -4,18 +4,17 @@
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
-import os
-import sys
 import time
 import click
 import datetime
 
-from os.path import join, dirname, isdir, isfile
+from os.path import join, dirname, isfile
 
 from apio import util
 from apio.resources import Resources
 from apio.managers.system import System
 from apio.managers.project import Project
+from apio.profile import Profile
 
 
 class SCons(object):
@@ -24,13 +23,13 @@ class SCons(object):
         self.resources = Resources()
 
     def clean(self):
-        return self.run('-c')
+        return self.run('-c', deps=['scons'])
 
     def verify(self):
-        return self.run('verify')
+        return self.run('verify', deps=['scons', 'iverilog'])
 
     def sim(self):
-        return self.run('sim')
+        return self.run('sim', deps=['scons', 'iverilog', 'gtkwave'])
 
     def build(self, args):
         ret = self.process_arguments(args)
@@ -38,7 +37,7 @@ class SCons(object):
             return ret
         if isinstance(ret, tuple):
             variables, board = ret
-        return self.run('build', variables, board)
+        return self.run('build', variables, board, deps=['scons', 'icestorm'])
 
     def upload(self, args, device=-1):
         ret = self.process_arguments(args)
@@ -47,61 +46,100 @@ class SCons(object):
         if isinstance(ret, tuple):
             variables, board = ret
 
-        detected_boards = System().detect_boards()
-
-        if isinstance(detected_boards, int):
-            return detected_boards
-
-        if device:
-            # Check device argument
-            if board:
-                desc = self.resources.boards[board]['ftdi-desc']
-                check = False
-                for b in detected_boards:
-                    # Selected board
-                    if device == b['index']:
-                        # Check the device ftdi description
-                        if desc in b['description']:
-                            check = True
-                        break
-                if not check:
-                    device = -1
-            else:
-                # Check device id
-                if int(device) >= len(detected_boards):
-                    device = -1
+        # Get programmer value
+        if board:
+            p = self.resources.boards[board]['programmer']
+            programmer = p['type']
+            programmer_args = p['args'] if 'args' in p else ''
         else:
-            # Detect device
-            device = -1
-            if board:
-                desc = self.resources.boards[board]['ftdi-desc']
-                for b in detected_boards:
-                    if desc in b['description']:
-                        # Select the first board that validates
-                        # the ftdi description
-                        device = b['index']
-                        break
+            programmer = 'iceprog'
+            programmer_args = ''
+
+        # -- Check
+        check = self.resources.boards[board]['check']
+
+        # Check FTDI description
+        if 'ftdi-desc' in check:
+            detected_boards = System().detect_boards()
+            if isinstance(detected_boards, int):
+                return detected_boards
+
+            if device:
+                # Check device argument
+                if board:
+                    desc = check['ftdi-desc']
+                    check = False
+                    for b in detected_boards:
+                        # Selected board
+                        if device == b['index']:
+                            # Check the device ftdi description
+                            if desc in b['description']:
+                                check = True
+                            break
+                    if not check:
+                        device = -1
+                else:
+                    # Check device id
+                    if int(device) >= len(detected_boards):
+                        device = -1
             else:
-                # Insufficient arguments
-                click.secho('Error: insufficient arguments: device or board',
-                            fg='red')
-                click.secho(
-                    'You have two options:\n' +
-                    '  1) Execute your command with\n' +
-                    '       `--device <deviceid>`\n' +
-                    '  2) Execute your command with\n' +
-                    '       `--board <boardname>`',
-                    fg='yellow')
+                # Detect device
+                device = -1
+                if board:
+                    desc = check['ftdi-desc']
+                    for b in detected_boards:
+                        if desc in b['description']:
+                            # Select the first board that validates
+                            # the ftdi description
+                            device = b['index']
+                            break
+                else:
+                    # Insufficient arguments
+                    click.secho(
+                        'Error: insufficient arguments: device or board',
+                        fg='red')
+                    click.secho(
+                        'You have two options:\n' +
+                        '  1) Execute your command with\n' +
+                        '       `--device <deviceid>`\n' +
+                        '  2) Execute your command with\n' +
+                        '       `--board <boardname>`',
+                        fg='yellow')
+                    return 1
+
+            if device == -1:
+                # Board not detected
+                click.secho('Error: board not detected', fg='red')
                 return 1
 
-        if device == -1:
-            # Board not detected
-            click.secho('Error: board not detected', fg='red')
-            return 1
+        # Check architectures
+        if 'arch' in check:
+            # Device argument is ignored
+            if device and device != -1:
+                click.secho(
+                    'Info: ignore device argument {0}'.format(device),
+                    fg='yellow')
+
+            arch = check['arch']
+            current_arch = util.get_systype()
+            if arch != current_arch:
+                # Incorrect architecture
+                if arch == 'linux_armv7l':
+                    click.secho(
+                        'Error: incorrect architecture: RPI2 or RPI3 required',
+                        fg='red')
+                else:
+                    click.secho(
+                        'Error: incorrect architecture {0}'.format(arch),
+                        fg='red')
+                return 1
 
         return self.run('upload',
-                        variables + ['device={0}'.format(device)],
-                        board)
+                        variables + ['device={0}'.format(device),
+                                     'prog={0}'.format(programmer),
+                                     'prog_args={0}'.format(programmer_args)],
+                        board,
+                        deps=['scons', 'icestorm'])
 
     def time(self, args):
         ret = self.process_arguments(args)
@@ -109,99 +147,67 @@ class SCons(object):
             return ret
         if isinstance(ret, tuple):
             variables, board = ret
-        return self.run('time', variables, board)
+        return self.run('time', variables, board, deps=['scons', 'icestorm'])
 
-    def run(self, command, variables=[], board=None):
+    def run(self, command, variables=[], board=None, deps=[]):
         """Executes scons for building"""
 
-        packages_dir = os.path.join(util.get_home_dir(), 'packages')
-        icestorm_dir = os.path.join(packages_dir, 'toolchain-icestorm', 'bin')
-        iverilog_dir = os.path.join(packages_dir, 'toolchain-iverilog', 'bin')
-        scons_dir = os.path.join(packages_dir, 'tool-scons', 'script')
-        sconstruct_name = 'SConstruct'
-
-        # Give the priority to the packages installed by apio
-        os.environ['PATH'] = os.pathsep.join(
-            [iverilog_dir, icestorm_dir, os.environ['PATH']])
-
-        # Add environment variables
-        os.environ['IVL'] = os.path.join(
-            packages_dir, 'toolchain-iverilog', 'lib', 'ivl')
-        os.environ['VLIB'] = os.path.join(
-            packages_dir, 'toolchain-iverilog', 'vlib', 'system.v')
-
-        # -- Check for the scons
-        if not isdir(scons_dir):
-            click.secho('Error: scons toolchain is not installed', fg='red')
-            click.secho('Please run:\n'
-                        '   apio install scons', fg='yellow')
-
-        # -- Check for the icestorm tools
-        if not isdir(icestorm_dir):
-            click.secho('Error: icestorm toolchain is not installed', fg='red')
-            click.secho('Please run:\n'
-                        '   apio install icestorm', fg='yellow')
-
-        # -- Check for the iverilog tools
-        if not isdir(iverilog_dir):
-            click.secho('Error: iverilog toolchain is not installed', fg='red')
-            click.secho('Please run:\n'
-                        '   apio install iverilog', fg='yellow')
-
         # -- Check for the SConstruct file
-        if not isfile(join(util.get_project_dir(), sconstruct_name)):
+        if not isfile(join(util.get_project_dir(), 'SConstruct')):
             click.secho('Using default SConstruct file')
             variables += ['-f', join(
-                dirname(__file__), '..', 'resources', sconstruct_name)]
+                dirname(__file__), '..', 'resources', 'SConstruct')]
+
+        # -- Resolve packages
+        if Profile().check_exe_default():
+            # Run on `default` config mode
+            if not util.resolve_packages(self.resources.packages, deps):
+                # Exit if a package is not installed
+                return 1
 
         # -- Execute scons
-        if isdir(scons_dir) and isdir(icestorm_dir) and isdir(iverilog_dir):
-            terminal_width, _ = click.get_terminal_size()
-            start_time = time.time()
+        terminal_width, _ = click.get_terminal_size()
+        start_time = time.time()
 
-            if command == 'build' or \
-               command == 'upload' or \
-               command == 'time':
-                if board:
-                    processing_board = board
-                else:
-                    processing_board = 'custom board'
-                click.echo("[%s] Processing %s" % (
-                    datetime.datetime.now().strftime("%c"),
-                    click.style(processing_board, fg="cyan", bold=True)))
-                click.secho("-" * terminal_width, bold=True)
+        if command == 'build' or \
+           command == 'upload' or \
+           command == 'time':
+            if board:
+                processing_board = board
+            else:
+                processing_board = 'custom board'
+            click.echo('[%s] Processing %s' % (
+                datetime.datetime.now().strftime('%c'),
+                click.style(processing_board, fg='cyan', bold=True)))
+            click.secho('-' * terminal_width, bold=True)
 
-            click.secho("Executing: scons -Q {0} {1}".format(
-                            command, ' '.join(variables)))
-            result = util.exec_command(
-                [
-                    os.path.normpath(sys.executable),
-                    os.path.join(scons_dir, 'scons'),
-                    '-Q',
-                    command
-                ] + variables,
-                stdout=util.AsyncPipe(self._on_run_out),
-                stderr=util.AsyncPipe(self._on_run_err)
-            )
+        click.secho('Executing: scons -Q {0} {1}'.format(
+                        command, ' '.join(variables)))
 
-            # -- Print result
-            exit_code = result['returncode']
-            is_error = exit_code != 0
-            summary_text = " Took %.2f seconds " % (time.time() - start_time)
-            half_line = "=" * int(
-                ((terminal_width - len(summary_text) - 10) / 2))
-            click.echo("%s [%s]%s%s" % (
-                half_line,
-                (click.style(" ERROR ", fg="red", bold=True)
-                 if is_error else click.style("SUCCESS", fg="green",
-                                              bold=True)),
-                summary_text,
-                half_line
-            ), err=is_error)
+        result = util.exec_command(
+            util.scons_command + ['-Q', command] + variables,
+            stdout=util.AsyncPipe(self._on_run_out),
+            stderr=util.AsyncPipe(self._on_run_err)
+        )
 
-            if False:
-                if is_error:
-                    print("""
+        # -- Print result
+        exit_code = result['returncode']
+        is_error = exit_code != 0
+        summary_text = ' Took %.2f seconds ' % (time.time() - start_time)
+        half_line = '=' * int(
+            ((terminal_width - len(summary_text) - 10) / 2))
+        click.echo('%s [%s]%s%s' % (
+            half_line,
+            (click.style(' ERROR ', fg='red', bold=True)
+             if is_error else click.style('SUCCESS', fg='green',
+                                          bold=True)),
+            summary_text,
+            half_line
+        ), err=is_error)
+
+        if False:
+            if is_error:
+                print("""
   ______                     _
  |  ____|                   | |
  | |__   _ __ _ __ ___  _ __| |
@@ -209,8 +215,8 @@ class SCons(object):
  | |____| |  | | | (_) | |  |_|
  |______|_|  |_|  \___/|_|  (_)
 """)
-                else:
-                    print("""
+            else:
+                print("""
    _____                             _
   / ____|                           | |
  | (___  _   _  ___ ___ ___  ___ ___| |
@@ -219,9 +225,7 @@ class SCons(object):
  |_____/ \__,_|\___\___\___||___/___(_)
 """)
 
-            return exit_code
-        else:
-            return 1
+        return exit_code
 
     def process_arguments(self, args):
         # -- Check arguments
@@ -411,9 +415,9 @@ class SCons(object):
 
         # -- Build Scons variables list
         variables = self.format_vars({
-            "fpga_size": fpga_size,
-            "fpga_type": fpga_type,
-            "fpga_pack": fpga_pack
+            'fpga_size': fpga_size,
+            'fpga_type': fpga_type,
+            'fpga_pack': fpga_pack
         })
 
         return variables, var_board
@@ -423,7 +427,7 @@ class SCons(object):
         variables = []
         for key, value in args.items():
             if value:
-                variables += ["{0}={1}".format(key, value)]
+                variables += ['{0}={1}'.format(key, value)]
         return variables
 
     def _on_run_out(self, line):

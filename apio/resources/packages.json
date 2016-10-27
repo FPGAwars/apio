@@ -25,7 +25,7 @@
       "package_name": "tool-scons",
       "extension": "tar.gz"
     },
-    "description": "Scons toolchain"
+    "description": "Scons tool"
   },
   "icestorm" : {
     "repository": {
@@ -51,49 +51,43 @@
       "organization": "FPGAwars"
     },
     "release": {
-      "tag_name": "v0.%V",
+      "tag_name": "v%V",
       "compressed_name": "toolchain-iverilog-%A-%V",
-      "uncompressed_name": "toolchain-iverilog",
+      "uncompressed_name": "",
       "package_name": "toolchain-iverilog",
-      "extension": {
-        "linux": "tar.bz2",
-        "darwin": "tar.bz2",
-        "windows": "zip"
-      }
+      "extension": "tar.gz"
     },
     "description": "Icarus Verilog toolchain"
   },
   "system" : {
     "repository": {
-      "name": "tools-usb-ftdi",
+      "name": "tools-system",
       "organization": "FPGAwars"
     },
     "release": {
-      "tag_name": "v0.%V",
-      "compressed_name": "tools-usb-ftdi-%A-%V",
-      "uncompressed_name": "bin",
-      "package_name": "system",
-      "extension": {
-        "linux": "tar.bz2",
-        "darwin": "tar.bz2",
-        "windows": "zip"
-      }
-    },
-    "description": "System development tools"
-  },
-  "pio-fpga" : {
-    "repository": {
-      "name": "Platformio-FPGA",
-      "organization": "FPGAwars"
-    },
-    "release": {
-      "tag_name": "v0.%V",
-      "compressed_name": "pio-fpga-%V",
+      "tag_name": "v%V",
+      "compressed_name": "tools-system-%A-%V",
       "uncompressed_name": "",
-      "package_name": "pio-fpga",
-      "extension": "zip"
+      "package_name": "system",
+      "extension": "tar.gz"
     },
-    "main_dir": ".platformio",
-    "description": "Platformio-fpga support"
+    "description": "System tools"
+  },
+  "gtkwave" : {
+    "repository": {
+      "name": "tool-gtkwave",
+      "organization": "FPGAwars"
+    },
+    "release": {
+      "tag_name": "v%V",
+      "compressed_name": "tool-gtkwave-%A-%V",
+      "uncompressed_name": "",
+      "package_name": "tool-gtkwave",
+      "extension": "tar.gz",
+      "available_archs": [
+        "windows"
+      ]
+    },
+    "description": "GTKWave tool"
   }
 }

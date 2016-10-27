@@ -20,7 +20,7 @@ class Project(object):
     def __init__(self):
         self.board = None
 
-    def create_sconstruct(self, project_dir=''):
+    def create_sconstruct(self, project_dir='', sayyes=False):
         """Creates a default SConstruct file"""
 
         if project_dir is None:
@@ -32,19 +32,27 @@ class Project(object):
             dirname(__file__), '..', 'resources', sconstruct_name)
 
         if isfile(sconstruct_path):
-            click.secho(
-                'Warning: {} file already exists'.format(sconstruct_name),
-                fg='yellow')
-            if click.confirm('Do you want to replace it?'):
+            # -- If sayyes, skip the question
+            if sayyes:
                 self._copy_sconstruct_file(sconstruct_name, sconstruct_path,
                                            local_sconstruct_path)
             else:
-                click.secho('Abort!', fg='red')
+                click.secho(
+                    'Warning: {} file already exists'.format(sconstruct_name),
+                    fg='yellow')
+
+                if click.confirm('Do you want to replace it?'):
+                    self._copy_sconstruct_file(sconstruct_name,
+                                               sconstruct_path,
+                                               local_sconstruct_path)
+                else:
+                    click.secho('Abort!', fg='red')
+
         else:
             self._copy_sconstruct_file(sconstruct_name, sconstruct_path,
                                        local_sconstruct_path)
 
-    def create_ini(self, board, project_dir=''):
+    def create_ini(self, board, project_dir='', sayyes=False):
         """Creates a new apio project file"""
 
         if project_dir is None:
@@ -61,13 +69,17 @@ class Project(object):
             sys.exit(1)
 
         if isfile(ini_path):
-            click.secho(
-                'Warning: {} file already exists'.format(PROJECT_FILENAME),
-                fg='yellow')
-            if click.confirm('Do you want to replace it?'):
+            # -- If sayyes, skip the question
+            if sayyes:
                 self._create_ini_file(board, ini_path, PROJECT_FILENAME)
             else:
-                click.secho('Abort!', fg='red')
+                click.secho(
+                    'Warning: {} file already exists'.format(PROJECT_FILENAME),
+                    fg='yellow')
+                if click.confirm('Do you want to replace it?'):
+                    self._create_ini_file(board, ini_path, PROJECT_FILENAME)
+                else:
+                    click.secho('Abort!', fg='red')
         else:
             self._create_ini_file(board, ini_path, PROJECT_FILENAME)
 
