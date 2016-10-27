@@ -44,6 +44,9 @@ class Resources(object):
             resource = json.loads(f.read())
         return resource
 
+    def get_package_release_name(self, package):
+        return self.packages[package]['release']['package_name']
+
     def list_packages(self, installed=True, notinstalled=True):
         """Return a list with all the installed/notinstalled packages"""
 
@@ -59,8 +62,10 @@ class Resources(object):
                 'version': None,
                 'description': self.packages[package]['description']
             }
-            if self.profile.check_package(package):
-                data['version'] = self.profile.get_package_version(package)
+            if self.profile.check_package(package,
+               self.get_package_release_name(package)):
+                data['version'] = self.profile.get_package_version(
+                    package, self.get_package_release_name(package))
                 installed_packages += [data]
             else:
                 notinstalled_packages += [data]

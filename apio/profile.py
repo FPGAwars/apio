@@ -5,9 +5,9 @@
 # -- Licence GPLv2
 
 import json
-from os.path import isfile, join
+from os.path import isfile, isdir, join
 
-from apio.util import get_home_dir
+from apio.util import get_home_dir, get_package_dir
 
 
 class Profile(object):
@@ -18,12 +18,14 @@ class Profile(object):
         self._profile_path = join(get_home_dir(), 'profile.json')
         self.load()
 
-    def check_package(self, name):
-        return (name in self.packages.keys())
+    def check_package(self, name, release_name):
+        if name in self.packages.keys():
+            return True
+        return isdir(get_package_dir(release_name))
 
-    def check_package_version(self, name, version):
-        return not (self.check_package(name) and
-                    (self.get_package_version(name) >= version))
+    def check_package_version(self, name, release_name, version):
+        return not (self.check_package(name, release_name) and
+                    (self.get_package_version(name, release_name) >= version))
 
     def check_exe_default(self):
         return self.get_config_exe() == 'default'
@@ -38,8 +40,21 @@ class Profile(object):
         if name in self.packages.keys():
             del self.packages[name]
 
-    def get_package_version(self, name):
-        return self.packages[name]['version']
+    def get_package_version(self, name, release_name):
+        if name in self.packages.keys():
+            return self.packages[name]['version']
+        if not release_name:
+            return 0
+        dir_name = get_package_dir(release_name)
+        if isdir(dir_name):
+            with open(join(dir_name, 'package.json'), 'r') as json_file:
+                try:
+                    tmp_data = json.load(json_file)
+                    if 'version' in tmp_data.keys():
+                        return tmp_data['version']
+                except:
+                    pass
+        return 'UNKNOWN'
 
     def get_config_exe(self):
         if 'exe' in self.config.keys():
