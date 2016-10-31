@@ -207,8 +207,8 @@ class Installer(object):
         # Note: here we check only for the version of locally installed
         # packages. For this reason we don't say what's the installation
         # path.
-        if self.profile.check_package_version(self.package, '', self.version) or \
-           self.forced_install:
+        if self.profile.check_package_version(self.package, '', self.version) \
+           or self.forced_install:
             fd = FileDownloader(url, self.packages_dir)
             click.secho('Download ' + basename(fd.get_filepath()))
             fd.start()
