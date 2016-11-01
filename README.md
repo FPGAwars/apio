@@ -134,6 +134,8 @@ It was an initial attempt to try to fit the new open FPGA project concept into a
 
 In Platformio 3.0 a more flexible contribution method was implemented. Then, more contributions were made to support [platform-lattice_iCE40](https://github.com/platformio/platform-lattice_ice40) using the work and knowledge generated in the Apio project.
 
+![][apio-pio-development]
+
 ### Differences between Apio and PlatformIO?
 
 Apio is a micro-ecosystem focused only on *open FPGAs* while PlatformIO is an ecosystem focused on *embedded platforms and microcontrollers*. Apio has also a different API from PlatformIO.
@@ -245,4 +247,5 @@ Licensed under a [GPL v2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 [ubuntu-logo]: docs/resources/images/ubuntu.png
 [raspbian-logo]: docs/resources/images/raspbian.png
 [apio-pio]: docs/resources/images/apio-pio-min.png
+[apio-pio-development]: docs/resources/images/apio-pio-development.png
 [bq-license]: docs/resources/images/bq-logo-cc-sa-small-150px.png
