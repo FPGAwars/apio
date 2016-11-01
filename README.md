@@ -247,5 +247,5 @@ Licensed under a [GPL v2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 [ubuntu-logo]: docs/resources/images/ubuntu.png
 [raspbian-logo]: docs/resources/images/raspbian.png
 [apio-pio]: docs/resources/images/apio-pio-min.png
-[apio-pio-development]: docs/resources/images/apio-pio-development.png
+[apio-pio-development]: docs/resources/images/apio-pio-development-min.png
 [bq-license]: docs/resources/images/bq-logo-cc-sa-small-150px.png
