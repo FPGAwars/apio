@@ -19,11 +19,10 @@ class Profile(object):
         self.load()
 
     def check_package(self, name, release_name):
-        if name in self.packages.keys():
-            return True
-        return isdir(get_package_dir(release_name))
+        return (name in self.packages.keys()) or \
+               isdir(get_package_dir(release_name))
 
-    def check_package_version(self, name, release_name, version):
+    def check_package_version(self, name, version, release_name=''):
         return not (self.check_package(name, release_name) and
                     (self.get_package_version(name, release_name) >= version))
 
@@ -40,7 +39,7 @@ class Profile(object):
         if name in self.packages.keys():
             del self.packages[name]
 
-    def get_package_version(self, name, release_name):
+    def get_package_version(self, name, release_name=''):
         if name in self.packages.keys():
             return self.packages[name]['version']
         if not release_name:
