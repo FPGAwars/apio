@@ -44,7 +44,7 @@ class Profile(object):
         if name in self.packages.keys():
             return self.packages[name]['version']
         if not release_name:
-            return 0
+            return '0'
         dir_name = get_package_dir(release_name)
         if isdir(dir_name):
             with open(join(dir_name, 'package.json'), 'r') as json_file:
@@ -54,7 +54,7 @@ class Profile(object):
                         return tmp_data['version']
                 except:
                     pass
-        return 'UNKNOWN'
+        return '0'
 
     def get_config_exe(self):
         if 'exe' in self.config.keys():
