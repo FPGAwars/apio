@@ -61,7 +61,7 @@ Supported architectures: *linux_x86_64, linux_i686, linux_armv7l, linux_aarch64,
 | [iCE40-HX8K Breakout Board](http://www.latticesemi.com/en/Products/DevelopmentBoardsAndKits/iCE40HX8KBreakoutBoard.aspx)
 | [icoBOARD 1.0](http://icoboard.org/icoboard-1-0.html)
 | [CAT Board](https://hackaday.io/project/7982-cat-board)
-| [Kéfir I]()
+| [Kéfir I](http://fpgalibre.sourceforge.net/Kefir/)
 
 NOTE: all supported [Icestorm FPGAs](http://www.clifford.at/icestorm/) can be used with [--fpga, --size, --type and --pack options](http://apiodoc.readthedocs.io/en/develop/source/user_guide/code_commands/cmd_build.html#options).
 
