@@ -109,8 +109,8 @@ class Installer(object):
                     self.package, self.version),
                 fg='red')
         else:
-            click.echo("Installing %s package:" % click.style(
-                self.package, fg="cyan"))
+            click.echo('Installing %s package:' % click.style(
+                self.package, fg='cyan'))
             if not isdir(self.packages_dir):
                 makedirs(self.packages_dir)
             assert isdir(self.packages_dir)
@@ -126,9 +126,8 @@ class Installer(object):
                     else:
                         self._unpack(dlpath, join(
                             self.packages_dir, self.package_name))
-            except Exception:
-                click.secho('Package {0} not found'.format(
-                    self.tarball), fg='red')
+            except Exception as e:
+                click.secho('Error: ' + str(e), fg='red')
             else:
                 if dlpath:
                     remove(dlpath)
@@ -153,8 +152,8 @@ class Installer(object):
                 fg='red')
         else:
             if isdir(join(self.packages_dir, self.package_name)):
-                click.echo("Uninstalling %s package" % click.style(
-                    self.package, fg="cyan"))
+                click.echo('Uninstalling %s package' % click.style(
+                    self.package, fg='cyan'))
                 shutil.rmtree(join(self.packages_dir, self.package_name))
                 click.secho(
                     """Package \'{}\' has been """
