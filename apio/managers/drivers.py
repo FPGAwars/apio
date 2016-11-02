@@ -7,11 +7,11 @@
 import click
 import subprocess
 
-from os.path import join, dirname, isfile
+from os.path import join, dirname, isfile, isdir
 
-from apio.util import get_systype
+from apio import util
 
-platform = get_systype()
+platform = util.get_systype()
 
 
 class Drivers(object):  # pragma: no cover
@@ -73,10 +73,35 @@ class Drivers(object):  # pragma: no cover
         click.secho('FPGA drivers disabled', fg='green')
 
     def _enable_windows(self):
-        import webbrowser
-        url = 'https://github.com/FPGAwars/apio/wiki/enableation#windows'
-        click.secho('Follow the next instructions: ' + url)
-        webbrowser.open(url)
+        click.secho('Launch FTDI driver configuration tool')
+
+        result = self._run('zadig.exe')
+
+        if isinstance(result, int):
+            return result
+
+        if result:
+            return result['returncode']
 
     def _disable_windows(self):
         pass
+
+    def _run(self, command):
+        result = {}
+        drivers_base_dir = util.get_package_dir('tools-drivers')
+        drivers_bin_dir = join(drivers_base_dir, 'bin')
+
+        if isdir(drivers_bin_dir):
+            result = util.exec_command(
+                join(drivers_bin_dir, command),
+                stdout=util.AsyncPipe(self._on_run_out),
+                stderr=util.AsyncPipe(self._on_run_out)
+                )
+        else:
+            util._check_package('tools-drivers')
+            return 1
+
+        return result
+
+    def _on_run_out(self, line):
+        click.secho(line)
