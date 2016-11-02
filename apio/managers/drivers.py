@@ -75,19 +75,23 @@ class Drivers(object):  # pragma: no cover
         if isfile(self.rules_system_path):
             click.secho('Revert FTDI drivers\' configuration')
             subprocess.call(['sudo', 'rm', self.rules_system_path])
-            click.secho('FPGA drivers disabled', fg='yellow')
+            click.secho('FPGA drivers disabled', fg='green')
         else:
-            click.secho('Already disabled', fg='red')
+            click.secho('Already disabled', fg='yellow')
 
     def _enable_darwin(self):
-        # TODO: return if brew is not installed
-        subprocess.call(['brew', 'install', 'libftdi'])
-        click.secho('Configure FTDI drivers for FPGA')
-        subprocess.call(['sudo', 'kextunload', '-b',
-                         'com.FTDI.driver.FTDIUSBSerialDriver', '-q'])
-        subprocess.call(['sudo', 'kextunload', '-b',
-                         'com.apple.driver.AppleUSBFTDI', '-q'])
-        click.secho('FPGA drivers enabled', fg='green')
+        # Check homebrew
+        brew = subprocess.call('which brew > /dev/null', shell=True)
+        if brew != 0:
+            click.secho('Error: homebrew is required', fg='red')
+        else:
+            click.secho('Configure FTDI drivers for FPGA')
+            subprocess.call(['brew', 'install', 'libftdi'])
+            subprocess.call(['sudo', 'kextunload', '-b',
+                             'com.FTDI.driver.FTDIUSBSerialDriver', '-q'])
+            subprocess.call(['sudo', 'kextunload', '-b',
+                             'com.apple.driver.AppleUSBFTDI', '-q'])
+            click.secho('FPGA drivers enabled', fg='green')
 
     def _disable_darwin(self):
         click.secho('Revert FTDI drivers\' configuration')
