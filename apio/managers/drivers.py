@@ -67,7 +67,10 @@ class Drivers(object):  # pragma: no cover
             subprocess.call(['sudo', 'cp',
                              self.rules_local_path, self.rules_system_path])
             subprocess.call(['sudo', 'service', 'udev', 'restart'])
+            # subprocess.call(['sudo', 'udevadm', 'control', '--reload-rules'])
+            # subprocess.call(['sudo', 'udevadm', 'trigger'])
             click.secho('FPGA drivers enabled', fg='green')
+            click.secho('Unplug and reconnect your board', fg='yellow')
         else:
             click.secho('Already enabled', fg='yellow')
 
@@ -75,6 +78,9 @@ class Drivers(object):  # pragma: no cover
         if isfile(self.rules_system_path):
             click.secho('Revert FTDI drivers\' configuration')
             subprocess.call(['sudo', 'rm', self.rules_system_path])
+            subprocess.call(['sudo', 'service', 'udev', 'restart'])
+            # subprocess.call(['sudo', 'udevadm', 'control', '--reload-rules'])
+            # subprocess.call(['sudo', 'udevadm', 'trigger'])
             click.secho('FPGA drivers disabled', fg='green')
         else:
             click.secho('Already disabled', fg='yellow')
@@ -92,6 +98,7 @@ class Drivers(object):  # pragma: no cover
             subprocess.call(['sudo', 'kextunload', '-b',
                              'com.apple.driver.AppleUSBFTDI', '-q'])
             click.secho('FPGA drivers enabled', fg='green')
+            click.secho('Unplug and reconnect your board', fg='yellow')
 
     def _disable_darwin(self):
         click.secho('Revert FTDI drivers\' configuration')
