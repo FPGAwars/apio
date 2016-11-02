@@ -89,7 +89,6 @@ def _get_config_data():
     if isfile(filepath):
         with open(filepath, 'r') as f:
             # Load the JSON file
-            # click.echo('Loading json config\n')
             config_data = json.loads(f.read())
     return config_data
 
@@ -140,7 +139,6 @@ def get_package_dir(pkg_name):
     paths = home_dir.split(os.pathsep)
     for path in paths:
         package_dir = join(path, 'packages', pkg_name)
-        # click.echo('Trying '+try_name)
         if isdir(package_dir):
             return package_dir
 

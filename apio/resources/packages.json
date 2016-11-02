@@ -89,5 +89,22 @@
       ]
     },
     "description": "GTKWave tool"
+  },
+  "drivers" : {
+    "repository": {
+      "name": "tools-drivers",
+      "organization": "FPGAwars"
+    },
+    "release": {
+      "tag_name": "v%V",
+      "compressed_name": "tools-drivers-%A-%V",
+      "uncompressed_name": "",
+      "package_name": "tools-drivers",
+      "extension": "tar.gz",
+      "available_archs": [
+        "windows"
+      ]
+    },
+    "description": "Drivers tools"
   }
 }
