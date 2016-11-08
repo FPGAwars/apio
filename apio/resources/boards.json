@@ -57,7 +57,7 @@
     "fpga": "iCE40-HX4K-TQ144",
     "programmer": {
       "type": "iceprog",
-      "args": "-I B"
+      "extra_args": "-I B"
     },
     "check": {
       "ftdi-desc": "Milk JTAG:u"

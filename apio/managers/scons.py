@@ -47,13 +47,15 @@ class SCons(object):
             variables, board = ret
 
         # Get programmer value
+        programmer = ''
         if board:
             p = self.resources.boards[board]['programmer']
-            programmer = p['type']
-            programmer_args = p['args'] if 'args' in p else ''
-        else:
-            programmer = 'iceprog'
-            programmer_args = ''
+            type = p['type']
+            content = self.resources.programmers[type]
+            extra_args = p['extra_args'] if 'extra_args' in p else ''
+            command = content['command'] if 'command' in content else ''
+            args = content['args'] if 'args' in content else ''
+            programmer = '{0} {1} {2}'.format(command, args, extra_args)
 
         # -- Check
         check = self.resources.boards[board]['check']
@@ -68,15 +70,15 @@ class SCons(object):
                 # Check device argument
                 if board:
                     desc = check['ftdi-desc']
-                    check = False
+                    found = False
                     for b in detected_boards:
                         # Selected board
                         if device == b['index']:
                             # Check the device ftdi description
                             if desc in b['description']:
-                                check = True
+                                found = True
                             break
-                    if not check:
+                    if not found:
                         device = -1
                 else:
                     # Check device id
@@ -136,8 +138,7 @@ class SCons(object):
 
         return self.run('upload',
                         variables + ['device={0}'.format(device),
-                                     'prog={0}'.format(programmer),
-                                     'prog_args={0}'.format(programmer_args)],
+                                     'prog={0}'.format(programmer)],
                         board,
                         deps=['scons', 'icestorm'])
 

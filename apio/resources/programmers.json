@@ -1,0 +1,14 @@
+{
+  "iceprog": {
+    "command": "iceprog",
+    "args": "-d i:0x0403:0x6010:%DEVICE"
+  },
+  "icoprog": {
+    "command": "export WIRINGPI_GPIOMEM=1; icoprog",
+    "args": "-p <"
+  },
+  "litterbox": {
+    "command": "sudo litterbox",
+    "args": "-c"
+  }
+}

@@ -17,7 +17,6 @@ from SCons.Script import (Builder, DefaultEnvironment, Default, AlwaysBuild,
 
 # -- Load arguments
 PROG = ARGUMENTS.get('prog', '')
-PROG_ARGS = ARGUMENTS.get('prog_args', '')
 DEVICE = ARGUMENTS.get('device', '-1')
 FPGA_SIZE = ARGUMENTS.get('fpga_size', '')
 FPGA_TYPE = ARGUMENTS.get('fpga_type', '')
@@ -47,16 +46,19 @@ if 'build' in COMMAND_LINE_TARGETS or \
    'upload' in COMMAND_LINE_TARGETS or \
    'time' in COMMAND_LINE_TARGETS:
 
-    print("FPGA_SIZE: {}".format(FPGA_SIZE))
-    print("FPGA_TYPE: {}".format(FPGA_TYPE))
-    print("FPGA_PACK: {}".format(FPGA_PACK))
+    print('FPGA_SIZE: {}'.format(FPGA_SIZE))
+    print('FPGA_TYPE: {}'.format(FPGA_TYPE))
+    print('FPGA_PACK: {}'.format(FPGA_PACK))
 
     if 'upload' in COMMAND_LINE_TARGETS:
 
-        print("PROG: {}".format(PROG))
-        if PROG_ARGS:
-            print("PROG_ARGS: {}".format(PROG_ARGS))
-        print("DEVICE: {}".format(DEVICE))
+        if PROG == '':
+            print('---> ERROR: NO programmer command found')
+            Exit(1)
+
+        print('PROG: {}'.format(PROG))
+        if DEVICE != '':
+            print('DEVICE: {}'.format(DEVICE))
 
 # -- Resources paths
 IVL_PATH = os.environ['IVL'] if 'IVL' in os.environ else ''
@@ -77,10 +79,10 @@ src_sim = [str(f) for f in v_nodes]
 # --------- Get the Testbench file (there should be only 1)
 # -- Create a list with all the files finished in _tb.v. It should contain
 # -- the test bench
-list_tb = [f for f in src_sim if f[-5:].upper() == "_TB.V"]
+list_tb = [f for f in src_sim if f[-5:].upper() == '_TB.V']
 
 if len(list_tb) > 1:
-    print("---> WARNING: more than one testbenches used")
+    print('---> WARNING: more than one testbenches used')
 
 # -- Error checking
 try:
@@ -101,7 +103,7 @@ if len(COMMAND_LINE_TARGETS) == 0:
 # sim
 elif 'sim' in COMMAND_LINE_TARGETS:
     if testbench is None:
-        print("---> ERROR: NO testbench found for simulation")
+        print('---> ERROR: NO testbench found for simulation')
         Exit(1)
 
     # -- Simulation name
@@ -116,12 +118,12 @@ if SIMULNAME:
 src_synth = [f for f in src_sim if f not in list_tb]
 
 if len(src_synth) == 0:
-    print("---> ERROR: no verilog files found (.v)")
+    print('---> ERROR: no verilog files found (.v)')
     Exit(1)
 
 # -- For debugging
-# print("----> Testbench: {}".format(testbench))
-# print("SIM NAME: {}".format(SIMULNAME))
+# print('----> Testbench: {}'.format(testbench))
+# print('SIM NAME: {}'.format(SIMULNAME))
 
 # -- Get the PCF file
 PCF = ''
@@ -130,10 +132,10 @@ PCF_list = Glob('*.pcf')
 try:
     PCF = PCF_list[0]
 except IndexError:
-    print("\n---> WARNING: no .pcf file found\n")
+    print('\n---> WARNING: no .pcf file found\n')
 
 # -- Debug
-# print("----> PCF Found: {}".format(PCF))
+# print('----> PCF Found: {}'.format(PCF))
 
 # -- Define the Sintesizing Builder
 synth = Builder(
@@ -174,19 +176,8 @@ build = env.Alias('build', bitstream)
 AlwaysBuild(build)
 
 # -- Upload the bitstream into FPGA
-upload_cmd = ''
-if PROG == 'iceprog':
-    upload_cmd = 'iceprog -d i:0x0403:0x6010:{0} $SOURCE'.format(
-        DEVICE)
-elif PROG == 'icoprog':
-    # Icoboard + RPI2,3: sram
-    upload_cmd = 'export WIRINGPI_GPIOMEM=1; icoprog -p < $SOURCE'
-elif PROG == 'litterbox':
-    # Cat Board + RPI2,3
-    upload_cmd = 'sudo litterbox -c $SOURCE'
-
-upload = env.Alias('upload', bitstream, '{0} {1}'.format(
-    upload_cmd, PROG_ARGS))
+upload = env.Alias('upload', bitstream, '{0} $SOURCE'.format(
+    PROG.replace('%DEVICE', DEVICE)))
 AlwaysBuild(upload)
 
 # -- Target time: calculate the time
