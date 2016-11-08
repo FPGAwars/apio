@@ -104,15 +104,15 @@ Configure the drivers
 
 .. code::
 
-  $ sudo kextunload -b com.FTDI.driver.FTDIUSBSerialDriver
-  $ sudo kextunload -b com.apple.driver.AppleUSBFTDI
+  $ sudo kextunload -b com.FTDI.driver.FTDIUSBSerialDriver -q
+  $ sudo kextunload -b com.apple.driver.AppleUSBFTDI -q
 
 To revert the drivers configuration
 
 .. code::
 
-  $ sudo kextload -b com.FTDI.driver.FTDIUSBSerialDriver
-  $ sudo kextload -b com.apple.driver.AppleUSBFTDI
+  $ sudo kextload -b com.FTDI.driver.FTDIUSBSerialDriver -q
+  $ sudo kextload -b com.apple.driver.AppleUSBFTDI -q
 
 
 **Windows**

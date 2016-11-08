@@ -59,7 +59,7 @@ Supported architectures: *linux_x86_64, linux_i686, linux_armv7l, linux_aarch64,
 | [Nandland Go board](https://www.nandland.com/goboard/introduction.html)
 | [iCEstick Evaluation Kit ](http://www.pighixxx.com/test/portfolio-items/icestick/)
 | [iCE40-HX8K Breakout Board](http://www.latticesemi.com/en/Products/DevelopmentBoardsAndKits/iCE40HX8KBreakoutBoard.aspx)
-| [icoBOARD 1.0](http://icoboard.org/icoboard-1-0.html)
+| [icoBOARD 1.0](http://icoboard.org/about-icoboard.html)
 | [CAT Board](https://hackaday.io/project/7982-cat-board)
 | [Kéfir I](http://fpgalibre.sourceforge.net/Kefir/)
 

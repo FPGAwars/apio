@@ -25,8 +25,11 @@ def cli(ctx, list, exe):
         click.secho('Executable mode: ' + exe_mode, fg='yellow')
     elif exe:  # pragma: no cover
         profile = Profile()
-        profile.add_config(exe)
-        profile.save()
-        click.secho('Executable mode updated: ' + exe, fg='green')
+        if profile.get_config_exe() != exe:
+            profile.add_config(exe)
+            profile.save()
+            click.secho('Executable mode updated: ' + exe, fg='green')
+        else:
+            click.secho('Executable mode already ' + exe, fg='yellow')
     else:
         click.secho(ctx.get_help())

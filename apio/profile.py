@@ -23,8 +23,22 @@ class Profile(object):
                isdir(get_package_dir(release_name))
 
     def check_package_version(self, name, version, release_name=''):
-        return not (self.check_package(name, release_name) and
-                    (self.get_package_version(name, release_name) >= version))
+        ret = False
+        if self.check_package(name, release_name):
+            pkg_version = self.get_package_version(name, release_name)
+            pkg_version = self._convert_old_version(pkg_version)
+            version = self._convert_old_version(version)
+            ret = (pkg_version < version)
+        return ret
+
+    def _convert_old_version(self, version):
+        # Convert old versions to new format
+        try:
+            v = int(version)
+            version = '1.{}.0'.format(v)
+        except ValueError:
+            pass
+        return version
 
     def check_exe_default(self):
         return self.get_config_exe() == 'default'
@@ -40,20 +54,20 @@ class Profile(object):
             del self.packages[name]
 
     def get_package_version(self, name, release_name=''):
+        version = '0.0.0'
         if name in self.packages.keys():
-            return self.packages[name]['version']
-        if not release_name:
-            return '0'
-        dir_name = get_package_dir(release_name)
-        if isdir(dir_name):
-            with open(join(dir_name, 'package.json'), 'r') as json_file:
-                try:
-                    tmp_data = json.load(json_file)
-                    if 'version' in tmp_data.keys():
-                        return tmp_data['version']
-                except:
-                    pass
-        return '0'
+            version = self.packages[name]['version']
+        elif release_name:
+            dir_name = get_package_dir(release_name)
+            if isdir(dir_name):
+                with open(join(dir_name, 'package.json'), 'r') as json_file:
+                    try:
+                        tmp_data = json.load(json_file)
+                        if 'version' in tmp_data.keys():
+                            version = tmp_data['version']
+                    except:
+                        pass
+        return version
 
     def get_config_exe(self):
         if 'exe' in self.config.keys():

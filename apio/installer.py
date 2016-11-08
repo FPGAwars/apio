@@ -9,7 +9,7 @@ import click
 import shutil
 
 from os import makedirs, remove, rename
-from os.path import isdir, join, basename, expanduser
+from os.path import isfile, isdir, join, basename, expanduser
 
 from apio.util import get_home_dir, get_systype
 from apio.api import api_request
@@ -209,9 +209,16 @@ class Installer(object):
         if self.profile.check_package_version(self.package, self.version) \
            or self.forced_install:
             fd = FileDownloader(url, self.packages_dir)
-            click.secho('Download ' + basename(fd.get_filepath()))
-            fd.start()
-            return fd.get_filepath()
+            filepath = fd.get_filepath()
+            click.secho('Download ' + basename(filepath))
+            try:
+                fd.start()
+            except KeyboardInterrupt:
+                if isfile(filepath):
+                    remove(filepath)
+                click.secho('Abort download!', fg='red')
+                exit(1)
+            return filepath
         else:
             click.secho('Already installed. Version {0}'.format(
                 self.profile.get_package_version(self.package)), fg='yellow')

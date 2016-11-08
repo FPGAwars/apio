@@ -32,7 +32,7 @@ class FileDownloader(object):
 
     def __init__(self, url, dest_dir=None):
         self._url = url
-        self._fname = url.split("/")[-1]
+        self._fname = url.split('/')[-1]
 
         self._destination = self._fname
         if dest_dir:
@@ -61,10 +61,10 @@ class FileDownloader(object):
 
     def start(self):
         itercontent = self._request.iter_content(chunk_size=self.CHUNK_SIZE)
-        f = open(self._destination, "wb")
+        f = open(self._destination, 'wb')
         chunks = int(ceil(self.get_size() / float(self.CHUNK_SIZE)))
 
-        with click.progressbar(length=chunks, label="Downloading") as pb:
+        with click.progressbar(length=chunks, label='Downloading') as pb:
             for _ in pb:
                 f.write(next(itercontent))
         f.close()
