@@ -6,7 +6,7 @@
 
 import click
 
-from apio.installer import Installer
+from apio.managers.installer import Installer
 from apio.resources import Resources
 
 

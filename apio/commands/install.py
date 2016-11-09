@@ -6,8 +6,21 @@
 
 import click
 
-from apio.installer import Installer
+from apio.managers.installer import Installer
 from apio.resources import Resources
+
+# Python3 compat
+try:
+    unicode = str
+except NameError:  # pragma: no cover
+    pass
+
+platforms = ['linux_x86_64',
+             'linux_i686',
+             'linux_armv7l',
+             'linux_aarch64',
+             'windows',
+             'darwmin']
 
 
 @click.command('install')
@@ -17,18 +30,23 @@ from apio.resources import Resources
               help='Install all packages.')
 @click.option('-l', '--list', is_flag=True,
               help='List all available packages.')
-def cli(ctx, packages, all, list):
+@click.option('-d', '--dir', type=unicode, metavar='path',
+              help='Set the target directory for the packages.')
+@click.option('-p', '--platform', type=click.Choice(platforms),
+              metavar='platform',
+              help='Set the platform ({}).'.format(', '.join(platforms)))
+def cli(ctx, packages, all, list, dir, platform):
     """Install packages."""
 
     if packages:
         for package in packages:
-            Installer(package).install()
+            Installer(package, dir, platform).install()
     elif all:  # pragma: no cover
         packages = Resources().packages
         for package in packages:
             if package == 'pio-fpga':  # skip pio-fpga
                 continue
-            Installer(package).install()
+            Installer(package, dir, platform).install()
     elif list:
         Resources().list_packages(installed=True, notinstalled=True)
     else:

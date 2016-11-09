@@ -9,20 +9,20 @@ import click
 import shutil
 
 from os import makedirs, remove, rename
-from os.path import isfile, isdir, join, basename, expanduser
+from os.path import isfile, isdir, join, basename
 
 from apio.util import get_home_dir, get_systype
 from apio.api import api_request
 from apio.resources import Resources
 from apio.profile import Profile
 
-from apio.downloader import FileDownloader
-from apio.unpacker import FileUnpacker
+from apio.managers.downloader import FileDownloader
+from apio.managers.unpacker import FileUnpacker
 
 
 class Installer(object):
 
-    def __init__(self, package):
+    def __init__(self, package, pkg_dir='', platform=''):
 
         # Parse version
         if '@' in package:
@@ -65,18 +65,18 @@ class Installer(object):
                     data['release']['tag_name']
                 )
 
-            self.arch = self._get_architecture()
+            self.platform = platform if platform else self._get_platform()
 
             release = data['release']
             self.compressed_name = release['compressed_name'].replace(
-                '%V', self.version).replace('%A', self.arch)
+                '%V', self.version).replace('%P', self.platform)
             self.uncompressed_name = release['uncompressed_name'].replace(
-                '%V', self.version).replace('%A', self.arch)
+                '%V', self.version).replace('%P', self.platform)
             self.package_name = data['release']['package_name']
 
             if isinstance(data['release']['extension'], dict):
                 for os in ['linux', 'darwin', 'windows']:
-                    if os in self.arch:
+                    if os in self.platform:
                         self.extension = data['release']['extension'][os]
             else:
                 self.extension = data['release']['extension']
@@ -93,10 +93,15 @@ class Installer(object):
                 self.tarball
             )
 
-            if 'main_dir' in data.keys():
-                self.packages_dir = join(expanduser('~'), data['main_dir'])
+            dirname = 'packages'
+
+            if platform or pkg_dir:
+                dirname += '-{}'.format(self.platform)
+                pkg_dir = pkg_dir or '.'
+                self.packages_dir = join(pkg_dir, dirname)
+                self.forced_install = True
             else:
-                self.packages_dir = join(get_home_dir(), 'packages')
+                self.packages_dir = join(get_home_dir(), dirname)
 
     def install(self):
         if self.packages_dir is None or self.version is None:
@@ -165,7 +170,7 @@ class Installer(object):
             self.profile.remove_package(self.package)
             self.profile.save()
 
-    def _get_architecture(self):
+    def _get_platform(self):
         return get_systype()
 
     def _get_download_url(self, name, organization, tag, tarball):
