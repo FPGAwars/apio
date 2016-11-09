@@ -8,6 +8,11 @@ import sys
 import json
 import click
 
+try:
+    import ConfigParser
+except ImportError:
+    import configparser as ConfigParser
+
 from os.path import isfile, join, dirname
 
 from apio.resources import Resources
@@ -84,15 +89,12 @@ class Project(object):
             self._create_ini_file(board, ini_path, PROJECT_FILENAME)
 
     def _create_ini_file(self, board, ini_path, ini_name):
-        # Creates the project dictionary
-        project = {"board": board}
-
-        # Dump the project into the apio.ini file
-        project_str = json.dumps(project)
-
         click.secho('Creating {} file ...'.format(ini_name))
         with open(ini_path, 'w') as file:
-            file.write(project_str)
+            config = ConfigParser.ConfigParser()
+            config.add_section('env')
+            config.set('env', 'board', board)
+            config.write(file)
             click.secho(
                 'File \'{}\' has been successfully created!'.format(
                     ini_name),
@@ -114,26 +116,35 @@ class Project(object):
 
         # -- If no project finel found, just return
         if not isfile(PROJECT_FILENAME):
-            print("Info: No apio.ini file")
+            print('Info: No {} file'.format(PROJECT_FILENAME))
             return
 
-        # -- Open the project file
+        board = ''
+
+        # -- Read config file: old JSON format
         with open(PROJECT_FILENAME, 'r') as f:
-            project_str = f.read()
+            try:
+                data = json.loads(f.read())
+                board = data['board']
+            except Exception as e:
+                pass
+                # print('Error: {}'.format(str(e)))
 
-        # -- Decode the jsonj
-        try:
-            project = json.loads(project_str)
-        except:
-            print("Error: Invalid {} project file".format(PROJECT_FILENAME))
-            sys.exit(1)
-
-        # -- TODO: error checking
+        # -- Read config file: new CFG format
+        if board == '':
+            try:
+                config = ConfigParser.ConfigParser()
+                config.read(PROJECT_FILENAME)
+                board = config.get('env', 'board')
+            except:
+                print('Error: Invalid {} project file'.format(
+                    PROJECT_FILENAME))
+                sys.exit(1)
 
         # -- Update the board
-        try:
-            self.board = project['board']
-        except:
-            print("Error: Invalid {} project file".format(PROJECT_FILENAME))
-            print("No 'board' field defined in project file")
+        self.board = board
+        if not board:
+            print('Error: Invalid {} project file'.format(
+                PROJECT_FILENAME))
+            print('No \'board\' field defined in project file')
             sys.exit(1)
