@@ -5,6 +5,7 @@
 # -- Licence GPLv2
 
 import json
+import click
 from os.path import isfile, isdir, join
 
 from apio.util import get_home_dir, get_package_dir
@@ -13,7 +14,8 @@ from apio.util import get_home_dir, get_package_dir
 class Profile(object):
 
     def __init__(self):
-        self.config = {}
+        self.config = {'exe': 'default', 'verbose': 0}
+        self.labels = {'exe': 'Executable', 'verbose': 'Verbose'}
         self.packages = {}
         self._profile_path = join(get_home_dir(), 'profile.json')
         self.load()
@@ -41,17 +43,27 @@ class Profile(object):
         return version
 
     def check_exe_default(self):
-        return self.get_config_exe() == 'default'
+        return self.config['exe'] == 'default'
 
     def add_package(self, name, version):
         self.packages[name] = {'version': version}
 
-    def add_config(self, exe):
-        self.config = {'exe': exe}
+    def add_config(self, key, value):
+        if self.config[key] != value:
+            self.config[key] = value
+            self.save()
+            click.secho('{0} mode updated: {1}'.format(
+                self.labels[key], value), fg='green')
+        else:
+            click.secho('{0} mode already {1}'.format(
+                self.labels[key], value), fg='yellow')
 
     def remove_package(self, name):
         if name in self.packages.keys():
             del self.packages[name]
+
+    def get_verbose_mode(self):
+        return int(self.config['verbose'])
 
     def get_package_version(self, name, release_name=''):
         version = '0.0.0'
@@ -69,12 +81,6 @@ class Profile(object):
                         pass
         return version
 
-    def get_config_exe(self):
-        if 'exe' in self.config.keys():
-            return self.config['exe']
-        else:
-            return 'default'
-
     def load(self):
         data = {}
         if isfile(self._profile_path):
@@ -83,6 +89,10 @@ class Profile(object):
                     data = json.load(profile)
                     if 'config' in data.keys():
                         self.config = data['config']
+                        if 'exe' not in self.config.keys():
+                            self.config['exe'] = 'default'
+                        if 'verbose' not in self.config.keys():
+                            self.config['verbose'] = 0
                     if 'packages' in data.keys():
                         self.packages = data['packages']
                     else:
@@ -94,3 +104,8 @@ class Profile(object):
         with open(self._profile_path, 'w') as profile:
             data = {'config': self.config, 'packages': self.packages}
             json.dump(data, profile)
+
+    def list(self):
+        for key in self.config:
+            click.secho('{0} mode: {1}'.format(
+                self.labels[key], self.config[key]), fg='yellow')

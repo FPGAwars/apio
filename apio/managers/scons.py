@@ -21,6 +21,7 @@ class SCons(object):
 
     def __init__(self):
         self.resources = Resources()
+        self.profile = Profile()
 
     def clean(self):
         return self.run('-c', deps=['scons'])
@@ -160,7 +161,7 @@ class SCons(object):
                 dirname(__file__), '..', 'resources', 'SConstruct')]
 
         # -- Resolve packages
-        if Profile().check_exe_default():
+        if self.profile.check_exe_default():
             # Run on `default` config mode
             if not util.resolve_packages(self.resources.packages, deps):
                 # Exit if a package is not installed
@@ -182,8 +183,9 @@ class SCons(object):
                 click.style(processing_board, fg='cyan', bold=True)))
             click.secho('-' * terminal_width, bold=True)
 
-        click.secho('Executing: scons -Q {0} {1}'.format(
-                        command, ' '.join(variables)))
+        if self.profile.get_verbose_mode() > 0:
+            click.secho('Executing: scons -Q {0} {1}'.format(
+                            command, ' '.join(variables)))
 
         result = util.exec_command(
             util.scons_command + ['-Q', command] + variables,
