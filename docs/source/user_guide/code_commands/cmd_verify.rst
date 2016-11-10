@@ -29,6 +29,7 @@ Examples
 
   $ apio verify
   Using default SConstruct file
-  Executing: scons -Q verify -f /path/to/SConstruct
   iverilog -B /path/to/lib/ivl -o hardware.out -D VCD_OUTPUT= /path/to/vlib/system.v leds.v
   ================================== [SUCCESS] Took 0.17 seconds =================================
+
+..  Executing: scons -Q verify -f /path/to/SConstruct

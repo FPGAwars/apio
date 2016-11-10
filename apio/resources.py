@@ -23,6 +23,8 @@ class Resources(object):
         self.packages = self._load_resource('packages')
         self.boards = self._load_resource('boards')
         self.fpgas = self._load_resource('fpgas')
+        self.programmers = self._load_resource('programmers')
+        self.distribution = self._load_resource('distribution')
 
         # Check available packages
         self.packages = self._check_packages(self.packages)
@@ -44,6 +46,9 @@ class Resources(object):
             resource = json.loads(f.read())
         return resource
 
+    def get_package_release_name(self, package):
+        return self.packages[package]['release']['package_name']
+
     def list_packages(self, installed=True, notinstalled=True):
         """Return a list with all the installed/notinstalled packages"""
 
@@ -59,8 +64,10 @@ class Resources(object):
                 'version': None,
                 'description': self.packages[package]['description']
             }
-            if self.profile.check_package(package):
-                data['version'] = self.profile.get_package_version(package)
+            if self.profile.check_package(package,
+               self.get_package_release_name(package)):
+                data['version'] = self.profile.get_package_version(
+                    package, self.get_package_release_name(package))
                 installed_packages += [data]
             else:
                 notinstalled_packages += [data]
@@ -158,11 +165,11 @@ class Resources(object):
         for pkg in packages.keys():
             check = True
             release = packages[pkg]['release']
-            if 'available_archs' in release:
-                archs = release['available_archs']
+            if 'available_platforms' in release:
+                platforms = release['available_platforms']
                 check = False
-                for arch in archs:
-                    check |= get_systype() in arch
+                for platform in platforms:
+                    check |= get_systype() in platform
             if check:
                 filtered_packages[pkg] = packages[pkg]
         return filtered_packages

@@ -25,7 +25,7 @@ All supported boards:
 * `iCEstick Evaluation Kit <http://www.pighixxx.com/test/portfolio-items/icestick/>`_
 * `IceZUM Alhambra <https://github.com/FPGAwars/icezum>`_
 * `icoBOARD 1.0 <http://icoboard.org/icoboard-1-0.html>`_
-* `Kéfir I <>`_
+* `Kéfir I <http://fpgalibre.sourceforge.net/Kefir/>`_
 
 .. note::
 

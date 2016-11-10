@@ -35,14 +35,14 @@ def test_complete(clirunner, validate_cliresult, configenv):
 
         # apio install examples@X
         result = clirunner.invoke(cmd_install, ['examples@X'])
-        assert 'Error: package \'examples\' has no version X' in result.output
+        assert 'Error: No valid version found' in result.output
 
-        # apio install examples@0.0.2
-        result = clirunner.invoke(cmd_install, ['examples@0.0.2'])
+        # apio install examples@0.0.7
+        result = clirunner.invoke(cmd_install, ['examples@0.0.7'])
         validate_cliresult(result)
         assert 'Installing examples package' in result.output
         assert 'Downloading' in result.output
-        assert '0.0.2' in result.output
+        assert '0.0.7' in result.output
         assert 'Unpacking' in result.output
         assert 'has been successfully installed!' in result.output
 
@@ -51,7 +51,7 @@ def test_complete(clirunner, validate_cliresult, configenv):
         validate_cliresult(result)
         assert 'Installing examples package' in result.output
         assert 'Downloading' in result.output
-        assert '0.0.2' not in result.output
+        assert '0.0.7' not in result.output
         assert 'Unpacking' in result.output
         assert 'has been successfully installed!' in result.output
 
@@ -60,6 +60,15 @@ def test_complete(clirunner, validate_cliresult, configenv):
         validate_cliresult(result)
         assert 'Installing examples package' in result.output
         assert 'Already installed. Version ' in result.output
+
+        # apio install examples -p windows
+        result = clirunner.invoke(cmd_install, [
+            'examples', '--platform', 'windows', '--force'])
+        validate_cliresult(result)
+        assert 'Installing examples package' in result.output
+        assert 'Downloading' in result.output
+        assert 'Unpacking' in result.output
+        assert 'has been successfully installed!' in result.output
 
         # apio install --list
         result = clirunner.invoke(cmd_install, ['--list'])

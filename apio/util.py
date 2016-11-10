@@ -14,7 +14,7 @@ import sys
 import json
 import click
 import subprocess
-from os.path import expanduser, isdir, join, isfile
+from os.path import expanduser, join, isdir, isfile, normpath
 from platform import system, uname
 from threading import Thread
 
@@ -85,11 +85,10 @@ def get_systype():
 
 def _get_config_data():
     config_data = None
-    filepath = os.path.join(os.sep, 'etc', 'apio.json')
+    filepath = join(os.sep, 'etc', 'apio.json')
     if isfile(filepath):
         with open(filepath, 'r') as f:
             # Load the JSON file
-            # click.echo('Loading json config\n')
             config_data = json.loads(f.read())
     return config_data
 
@@ -140,7 +139,6 @@ def get_package_dir(pkg_name):
     paths = home_dir.split(os.pathsep)
     for path in paths:
         package_dir = join(path, 'packages', pkg_name)
-        # click.echo('Trying '+try_name)
         if isdir(package_dir):
             return package_dir
 
@@ -164,10 +162,10 @@ def resolve_packages(packages, deps=[]):
     }
 
     bin_dir = {
-        'scons': os.path.join(base_dir['scons'], 'script'),
-        'icestorm': os.path.join(base_dir['icestorm'], 'bin'),
-        'iverilog': os.path.join(base_dir['iverilog'], 'bin'),
-        'gtkwave': os.path.join(base_dir['gtkwave'], 'bin')
+        'scons': join(base_dir['scons'], 'script'),
+        'icestorm': join(base_dir['icestorm'], 'bin'),
+        'iverilog': join(base_dir['iverilog'], 'bin'),
+        'gtkwave': join(base_dir['gtkwave'], 'bin')
     }
 
     # -- Check packages
@@ -186,14 +184,14 @@ def resolve_packages(packages, deps=[]):
 
         # Add environment variables
         if not config_data:  # /etc/apio.json file does not exist
-            os.environ['IVL'] = os.path.join(
+            os.environ['IVL'] = join(
                 base_dir['iverilog'], 'lib', 'ivl')
-        os.environ['VLIB'] = os.path.join(
+        os.environ['VLIB'] = join(
             base_dir['iverilog'], 'vlib', 'system.v')
 
         global scons_command
-        scons_command = [os.path.normpath(sys.executable),
-                         os.path.join(bin_dir['scons'], 'scons')]
+        scons_command = [normpath(sys.executable),
+                         join(bin_dir['scons'], 'scons')]
 
     return check
 

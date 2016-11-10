@@ -18,3 +18,4 @@ Contents
    source/installation
    source/quick_start
    source/user_guide/index
+   source/contribute/index

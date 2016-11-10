@@ -41,7 +41,7 @@
       "type": "icoprog"
     },
     "check": {
-      "arch": "linux_armv7l"
+      "platform": "linux_armv7l"
     }
   },
   "Cat-board": {
@@ -50,14 +50,14 @@
       "type": "litterbox"
     },
     "check": {
-      "arch": "linux_armv7l"
+      "platform": "linux_armv7l"
     }
   },
   "kefir": {
     "fpga": "iCE40-HX4K-TQ144",
     "programmer": {
       "type": "iceprog",
-      "args": "-I B"
+      "extra_args": "-I B"
     },
     "check": {
       "ftdi-desc": "Milk JTAG:u"

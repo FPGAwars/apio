@@ -5,47 +5,84 @@
 # -- Licence GPLv2
 
 import json
-from os.path import isfile, join
+import click
+import semantic_version
 
-from apio.util import get_home_dir
+from os.path import isfile, isdir, join
+
+from apio.util import get_home_dir, get_package_dir
 
 
 class Profile(object):
 
     def __init__(self):
-        self.config = {}
+        self.config = {'exe': 'default', 'verbose': 0}
+        self.labels = {'exe': 'Executable', 'verbose': 'Verbose'}
         self.packages = {}
         self._profile_path = join(get_home_dir(), 'profile.json')
         self.load()
 
-    def check_package(self, name):
-        return (name in self.packages.keys())
+    def check_package(self, name, release_name):
+        return (name in self.packages.keys()) or \
+               isdir(get_package_dir(release_name))
 
-    def check_package_version(self, name, version):
-        return not (self.check_package(name) and
-                    (self.get_package_version(name) >= version))
+    def check_package_version(self, name, version, release_name=''):
+        ret = False
+        if self.check_package(name, release_name):
+            pkg_version = self.get_package_version(name, release_name)
+            pkg_version = self._convert_old_version(pkg_version)
+            version = self._convert_old_version(version)
+            ret = (semantic_version.Version(pkg_version) <
+                   semantic_version.Version(version))
+        return ret
+
+    def _convert_old_version(self, version):
+        # Convert old versions to new format
+        try:
+            v = int(version)
+            version = '1.{}.0'.format(v)
+        except ValueError:
+            pass
+        return version
 
     def check_exe_default(self):
-        return self.get_config_exe() == 'default'
+        return self.config['exe'] == 'default'
 
     def add_package(self, name, version):
         self.packages[name] = {'version': version}
 
-    def add_config(self, exe):
-        self.config = {'exe': exe}
+    def add_config(self, key, value):
+        if self.config[key] != value:
+            self.config[key] = value
+            self.save()
+            click.secho('{0} mode updated: {1}'.format(
+                self.labels[key], value), fg='green')
+        else:
+            click.secho('{0} mode already {1}'.format(
+                self.labels[key], value), fg='yellow')
 
     def remove_package(self, name):
         if name in self.packages.keys():
             del self.packages[name]
 
-    def get_package_version(self, name):
-        return self.packages[name]['version']
+    def get_verbose_mode(self):
+        return int(self.config['verbose'])
 
-    def get_config_exe(self):
-        if 'exe' in self.config.keys():
-            return self.config['exe']
-        else:
-            return 'default'
+    def get_package_version(self, name, release_name=''):
+        version = '0.0.0'
+        if name in self.packages.keys():
+            version = self.packages[name]['version']
+        elif release_name:
+            dir_name = get_package_dir(release_name)
+            if isdir(dir_name):
+                with open(join(dir_name, 'package.json'), 'r') as json_file:
+                    try:
+                        tmp_data = json.load(json_file)
+                        if 'version' in tmp_data.keys():
+                            version = tmp_data['version']
+                    except:
+                        pass
+        return version
 
     def load(self):
         data = {}
@@ -55,6 +92,10 @@ class Profile(object):
                     data = json.load(profile)
                     if 'config' in data.keys():
                         self.config = data['config']
+                        if 'exe' not in self.config.keys():
+                            self.config['exe'] = 'default'
+                        if 'verbose' not in self.config.keys():
+                            self.config['verbose'] = 0
                     if 'packages' in data.keys():
                         self.packages = data['packages']
                     else:
@@ -66,3 +107,8 @@ class Profile(object):
         with open(self._profile_path, 'w') as profile:
             data = {'config': self.config, 'packages': self.packages}
             json.dump(data, profile)
+
+    def list(self):
+        for key in self.config:
+            click.secho('{0} mode: {1}'.format(
+                self.labels[key], self.config[key]), fg='yellow')

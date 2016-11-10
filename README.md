@@ -49,7 +49,7 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 | [scons](https://github.com/FPGAwars/tool-scons)  | apio install scons | A software construction tool. [Scons project](http://scons.org)
 | [system](https://github.com/FPGAwars/tools-system)  | apio install system | Tools for listing the USB devices and retrieving information from the FTDI chips
 
-Supported architectures: *linux_x86_64, linux_i686, linux_armv7l, linux_aarch64, darwin, windows*.
+Supported platforms: *linux_x86_64, linux_i686, linux_armv7l, linux_aarch64, darwin, windows*.
 
 ## Supported boards
 
@@ -59,9 +59,9 @@ Supported architectures: *linux_x86_64, linux_i686, linux_armv7l, linux_aarch64,
 | [Nandland Go board](https://www.nandland.com/goboard/introduction.html)
 | [iCEstick Evaluation Kit ](http://www.pighixxx.com/test/portfolio-items/icestick/)
 | [iCE40-HX8K Breakout Board](http://www.latticesemi.com/en/Products/DevelopmentBoardsAndKits/iCE40HX8KBreakoutBoard.aspx)
-| [icoBOARD 1.0](http://icoboard.org/icoboard-1-0.html)
+| [icoBOARD 1.0](http://icoboard.org/about-icoboard.html)
 | [CAT Board](https://hackaday.io/project/7982-cat-board)
-| [Kéfir I]()
+| [Kéfir I](http://fpgalibre.sourceforge.net/Kefir/)
 
 NOTE: all supported [Icestorm FPGAs](http://www.clifford.at/icestorm/) can be used with [--fpga, --size, --type and --pack options](http://apiodoc.readthedocs.io/en/develop/source/user_guide/code_commands/cmd_build.html#options).
 
@@ -133,6 +133,8 @@ PlatformIO Lattice FPGA support was added in the [2.9.0](https://github.com/plat
 It was an initial attempt to try to fit the new open FPGA project concept into a classic microcontroller ecosystem.
 
 In Platformio 3.0 a more flexible contribution method was implemented. Then, more contributions were made to support [platform-lattice_iCE40](https://github.com/platformio/platform-lattice_ice40) using the work and knowledge generated in the Apio project.
+
+![][apio-pio-development]
 
 ### Differences between Apio and PlatformIO?
 
@@ -245,4 +247,5 @@ Licensed under a [GPL v2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 [ubuntu-logo]: docs/resources/images/ubuntu.png
 [raspbian-logo]: docs/resources/images/raspbian.png
 [apio-pio]: docs/resources/images/apio-pio-min.png
+[apio-pio-development]: docs/resources/images/apio-pio-development-min.png
 [bq-license]: docs/resources/images/bq-logo-cc-sa-small-150px.png

@@ -55,7 +55,6 @@ Examples
   Using default SConstruct file
   [] Processing icezum
   -------------------------------------------------------------------------------------------------
-  Executing: scons -Q build fpga_type=hx fpga_pack=tq144 fpga_size=1k -f /path/to/SConstruct
   FPGA_SIZE: 1k
   FPGA_TYPE: hx
   FPGA_PACK: tq144
@@ -76,3 +75,5 @@ Examples
   route time 0.01s
   write_txt hardware.asc...
   ================================== [SUCCESS] Took 0.99 seconds =================================
+
+.. Executing: scons -Q build fpga_type=hx fpga_pack=tq144 fpga_size=1k -f /path/to/SConstruct

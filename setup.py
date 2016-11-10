@@ -2,14 +2,18 @@
 
 from setuptools import setup
 
+from apio import (__author__, __description__, __email__, __license__,
+                  __title__, __url__, __version__)
+
+
 setup(
-    name='apio',
-    version='0.1.8',
-    description='Experimental micro-ecosystem for open FPGAs',
-    author='Jesús Arroyo Torrens',
-    author_email='jesus.jkhlg@gmail.com',
-    url='https://github.com/FPGAwars/apio',
-    license='GPLv2',
+    name=__title__,
+    version=__version__,
+    description=__description__,
+    author=__author__,
+    author_email=__email__,
+    url=__url__,
+    license=__license__,
     packages=['apio'],
     package_data={
         'apio': ['commands/*.py',
@@ -17,11 +21,13 @@ setup(
                  'resources/*']
     },
     install_requires=[
-        'click',
-        'requests'
+        'click>=5,<7',
+        'semantic_version>=2.5.0',
+        'requests>=2.4.0,<3',
+        'colorama'
     ],
     entry_points={
-        'console_scripts': ['apio=apio:cli']
+        'console_scripts': ['apio=apio.__main__:cli']
     },
     classifiers=[
         'Development Status :: 4 - Beta',
