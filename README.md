@@ -42,6 +42,7 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 
 | Package | Installation   | Description
 |---------|----------------|---------------
+| [drivers](https://github.com/FPGAwars/tools-drivers)  | apio install drivers | Drivers tools (only for Windows)
 | [examples](https://github.com/FPGAwars/apio-examples)  | apio install examples | Verilog basic examples, pinouts, etc
 | [gtkwave](https://github.com/FPGAwars/tool-gtkwave)  | apio install gtkwave | Simulation viewer. [GTKWave project](http://gtkwave.sourceforge.net) (only for Windows)
 | [icestorm](https://github.com/FPGAwars/toolchain-icestorm)  | apio install icestorm | iCE40 FPGA synthesis, place & route and configuration tools. [Icestorm project](http://www.clifford.at/icestorm)
