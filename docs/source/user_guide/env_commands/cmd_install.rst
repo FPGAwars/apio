@@ -55,11 +55,6 @@ Install all packages
 List all available packages
 
 .. option::
-    -d, --dir
-
-Set the target directory for the packages
-
-.. option::
     -p, --platform
 
     Set the platform (linux_x86_64, linux_i686, linux_armv7l, linux_aarch64, windows, darwin)

@@ -61,15 +61,16 @@ def test_complete(clirunner, validate_cliresult, configenv):
         assert 'Installing examples package' in result.output
         assert 'Already installed. Version ' in result.output
 
-        # apio install examples -p windows -d local
+        # apio install examples -p windows
         result = clirunner.invoke(cmd_install, [
-            'examples', '-p', 'windows', '-d', 'local'])
+            'examples', '-p', 'windows'])
         validate_cliresult(result)
         assert 'Installing examples package' in result.output
         assert 'Downloading' in result.output
         assert 'Unpacking' in result.output
         assert 'has been successfully installed!' in result.output
-        assert isdir(join('local', 'packages-windows', 'examples'))
+        assert isdir(join('packages', 'examples'))
+        assert isfile('profile.json')
 
         # apio install --list
         result = clirunner.invoke(cmd_install, ['--list'])

@@ -22,7 +22,7 @@ from apio.managers.unpacker import FileUnpacker
 
 class Installer(object):
 
-    def __init__(self, package, pkg_dir='', platform=''):
+    def __init__(self, package, platform=''):
 
         # Parse version
         if '@' in package:
@@ -39,9 +39,10 @@ class Installer(object):
         self.packages_dir = None
 
         self.resources = Resources()
-        self.profile = Profile()
 
         if self.package in self.resources.packages:
+
+            self.profile = Profile()
 
             data = self.resources.packages[self.package]
 
@@ -94,11 +95,8 @@ class Installer(object):
             )
 
             dirname = 'packages'
-
-            if platform or pkg_dir:
-                dirname += '-{}'.format(self.platform)
-                pkg_dir = pkg_dir or '.'
-                self.packages_dir = join(pkg_dir, dirname)
+            if platform:
+                self.packages_dir = join('.', dirname)
                 self.forced_install = True
             else:
                 self.packages_dir = join(get_home_dir(), dirname)
