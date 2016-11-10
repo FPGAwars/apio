@@ -24,21 +24,24 @@ platforms = ['linux_x86_64',
               help='Install all packages.')
 @click.option('-l', '--list', is_flag=True,
               help='List all available packages.')
+@click.option('-f', '--force', is_flag=True,
+              help='Force the packages installation.')
 @click.option('-p', '--platform', type=click.Choice(platforms),
               metavar='platform',
-              help='Set the platform ({}).'.format(', '.join(platforms)))
-def cli(ctx, packages, all, list, platform):
+              help='Set the platform [{}] (Advanced).'.format(
+                ', '.join(platforms)))
+def cli(ctx, packages, all, list, force, platform):
     """Install packages."""
 
     if packages:
         for package in packages:
-            Installer(package, platform).install()
+            Installer(package, force, platform).install()
     elif all:  # pragma: no cover
         packages = Resources().packages
         for package in packages:
             if package == 'pio-fpga':  # skip pio-fpga
                 continue
-            Installer(package, platform).install()
+            Installer(package, force, platform).install()
     elif list:
         Resources().list_packages(installed=True, notinstalled=True)
     else:

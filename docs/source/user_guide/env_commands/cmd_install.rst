@@ -55,9 +55,14 @@ Install all packages
 List all available packages
 
 .. option::
+    -f, --force
+
+Force the packages installation
+
+.. option::
     -p, --platform
 
-    Set the platform (linux_x86_64, linux_i686, linux_armv7l, linux_aarch64, windows, darwin)
+    Set the platform [linux_x86_64, linux_i686, linux_armv7l, linux_aarch64, windows, darwin] (Advanced)
 
 Examples
 --------

@@ -1,7 +1,7 @@
 {
   "packages": {
     "drivers": "^1.0.0",
-    "examples": "~0.0.8",
+    "examples": "~0.0.7",
     "gtkwave": "~3.3.77",
     "icestorm": "9",
     "iverilog": "^1.0.0",

@@ -23,7 +23,7 @@ from apio.managers.unpacker import FileUnpacker
 
 class Installer(object):
 
-    def __init__(self, package, platform=''):
+    def __init__(self, package, force=False, platform=''):
 
         # Parse version
         if '@' in package:
@@ -34,10 +34,8 @@ class Installer(object):
             self.package = package
             self.version = None
 
-        self.forced_install = False
-        self.valid_version = True
-
-        self.packages_dir = None
+        self.forced_install = force
+        self.packages_dir = ''
 
         self.resources = Resources()
 
@@ -45,81 +43,66 @@ class Installer(object):
 
             self.profile = Profile()
 
+            dirname = 'packages'
+            self.packages_dir = join(get_home_dir(), dirname)
+
+            # Check version
             data = self.resources.packages[self.package]
             distribution = self.resources.distribution
             self.specversion = distribution['packages'][self.package]
 
-            if self.version:
-                # Validate version
-                valid = self._validate_version(
-                    data['repository']['name'],
-                    data['repository']['organization'],
-                    data['release']['tag_name'],
-                    self.version
-                )
-                if valid:
-                    self.forced_install = True
-                else:
-                    self.valid_version = False
-            else:
-                # Get latest version
-                self.version = self._get_latest_version(
-                    data['repository']['name'],
-                    data['repository']['organization'],
-                    data['release']['tag_name'],
-                    self.specversion
-                )
-
-            self.platform = platform if platform else self._get_platform()
-
-            release = data['release']
-            self.compressed_name = release['compressed_name'].replace(
-                '%V', self.version).replace('%P', self.platform)
-            self.uncompressed_name = release['uncompressed_name'].replace(
-                '%V', self.version).replace('%P', self.platform)
-            self.package_name = data['release']['package_name']
-
-            if isinstance(data['release']['extension'], dict):
-                for os in ['linux', 'darwin', 'windows']:
-                    if os in self.platform:
-                        self.extension = data['release']['extension'][os]
-            else:
-                self.extension = data['release']['extension']
-
-            self.tarball = self._get_tarball_name(
-                self.compressed_name,
-                self.extension
-            )
-
-            self.download_url = self._get_download_url(
+            version = self._get_valid_version(
                 data['repository']['name'],
                 data['repository']['organization'],
-                data['release']['tag_name'].replace('%V', self.version),
-                self.tarball
+                data['release']['tag_name'],
+                self.version,
+                self.specversion
             )
 
-            dirname = 'packages'
-            if platform:
-                self.packages_dir = join('.', dirname)
+            # Valid version added with @
+            if version and self.version:
                 self.forced_install = True
-            else:
-                self.packages_dir = join(get_home_dir(), dirname)
+            self.version = version if version else ''
+
+            # Valid version
+            if version:
+                self.platform = platform if platform else self._get_platform()
+
+                release = data['release']
+                self.compressed_name = release['compressed_name'].replace(
+                    '%V', self.version).replace('%P', self.platform)
+                self.uncompressed_name = release['uncompressed_name'].replace(
+                    '%V', self.version).replace('%P', self.platform)
+                self.package_name = data['release']['package_name']
+
+                if isinstance(data['release']['extension'], dict):
+                    for os in ['linux', 'darwin', 'windows']:
+                        if os in self.platform:
+                            self.extension = data['release']['extension'][os]
+                else:
+                    self.extension = data['release']['extension']
+
+                self.tarball = self._get_tarball_name(
+                    self.compressed_name,
+                    self.extension
+                )
+
+                self.download_url = self._get_download_url(
+                    data['repository']['name'],
+                    data['repository']['organization'],
+                    data['release']['tag_name'].replace('%V', self.version),
+                    self.tarball
+                )
 
     def install(self):
-        if self.packages_dir is None or self.version is None:
+        if self.packages_dir == '':
             click.secho(
                 'Error: No such package \'{0}\''.format(self.package),
                 fg='red')
-        elif not self.valid_version:
+        elif self.version == '':
             click.secho(
-                'Error: package \'{0}\' has no version {1}'.format(
-                    self.package, self.version),
-                fg='red')
-        elif not self.version:
-            click.secho(
-                'Error: package \'{0}\' has no '
-                'version that satisfies {1}'.format(
-                    self.package, self.specversion),
+                'Error: No valid version found. Semantic {0}'.format(
+                    self.specversion),
                 fg='red')
         else:
             click.echo('Installing %s package:' % click.style(
@@ -195,46 +178,40 @@ class Installer(object):
             extension)
         return tarball
 
-    def _validate_version(self, name, organization, tag_name, version):
+    def _get_valid_version(self, name, organization, tag_name,
+                           version='', specversion=''):
+        # Check spec version
+        try:
+            spec = semantic_version.Spec(specversion)
+        except ValueError:
+            click.secho('Invalid distribution version {0}: {1}'.format(
+                        name, specversion), fg='red')
+            exit(1)
+
+        # Download latest releases list
         releases = api_request('{}/releases'.format(name), organization)
         if releases is not None:
             for release in releases:
-                if 'tag_name' in release and \
-                   release['tag_name'] == tag_name.replace('%V', version):
-                    return True
-        return False
+                if 'tag_name' in release:
+                    if version:
+                        # Version number via @
+                        tag = tag_name.replace('%V', version)
+                        if tag == release['tag_name']:
+                            return self._check_sem_version(version, spec)
+                    else:
+                        pattern = tag_name.replace('%V', '(?P<v>.*?)') + '$'
+                        match = re.search(pattern, release['tag_name'])
+                        if match:
+                            version = match.group('v')
+                            return self._check_sem_version(version, spec)
 
-    def _get_latest_version(self, name, organization, tag_name, specver=''):
-        version = ''
-
+    def _check_sem_version(self, version, spec):
         try:
-            spec = semantic_version.Spec(specver)
+            if semantic_version.Version(version) in spec:
+                return version
         except ValueError:
-            click.secho('Invalid distribution version {0}: {1}'.format(
-                        name, specver), fg='red')
-            exit(1)
-
-        pattern = tag_name.replace('%V', '(?P<v>.*?)') + '$'
-        # Download latest releases list
-        releases = api_request(
-            '{}/releases'.format(name), organization)
-
-        # Check latest valid versions
-        for release in releases:
-            if 'tag_name' in release:
-                match = re.search(pattern, release['tag_name'])
-                if match:
-                    ver = match.group('v')
-                    try:
-                        if semantic_version.Version(ver) in spec:
-                            version = ver
-                            break
-                    except ValueError:
-                        if ver in str(spec):
-                            version = ver
-                            break
-
-        return str(version)
+            if version in str(spec):
+                return version
 
     def _download(self, url):
         # Note: here we check only for the version of locally installed
