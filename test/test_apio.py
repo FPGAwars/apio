@@ -1,4 +1,4 @@
-from apio import cli as cmd_apio
+from apio.__main__ import cli as cmd_apio
 
 
 def test_apio(clirunner, validate_cliresult):
