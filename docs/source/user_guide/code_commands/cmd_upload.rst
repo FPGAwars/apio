@@ -70,7 +70,6 @@ Examples
   Using default SConstruct file
   [] Processing icezum
   -------------------------------------------------------------------------------------------------
-  Executing: scons -Q upload fpga_type=hx fpga_pack=tq144 fpga_size=1k device=0 -f /path/to/SConstruct
   FPGA_SIZE: 1k
   FPGA_TYPE: hx
   FPGA_PACK: tq144
@@ -89,3 +88,5 @@ Examples
   cdone: high
   Bye.
   ================================== [SUCCESS] Took 1.96 seconds =================================
+
+.. Executing: scons -Q upload fpga_type=hx fpga_pack=tq144 fpga_size=1k device=0 -f /path/to/SConstruct

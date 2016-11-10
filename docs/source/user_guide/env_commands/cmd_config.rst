@@ -28,6 +28,11 @@ Options
 List all configuration parameters
 
 .. option::
+    -v, --verbose [0|1]
+
+Verbose mode: `0` General, `1` Information
+
+.. option::
     -e, --exe [default|native]
 
 Configure executables: `default` selects apio packages, `native` selects native binaries (except system package)
@@ -59,6 +64,8 @@ Examples
 
   $ apio config --list
   Executable mode: default
+  Verbose mode: 0
+
 
 2. Enable native mode for executable binaries
 
@@ -66,3 +73,10 @@ Examples
 
   $ apio config --exe native
   Executable mode updated: native
+
+3. Enable verbose mode 1
+
+.. code::
+
+  $ apio config --verbose 1
+  Verbose mode updated: 1

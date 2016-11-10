@@ -55,7 +55,6 @@ Examples
   Using default SConstruct file
   [] Processing icezum
   -------------------------------------------------------------------------------------------------
-  Executing: scons -Q time fpga_type=hx fpga_pack=tq144 fpga_size=1k -f /path/to/SConstruct
   FPGA_SIZE: 1k
   FPGA_TYPE: hx
   FPGA_PACK: tq144
@@ -79,7 +78,6 @@ Examples
   // Timing estimate: 0.24 ns (4161.98 MHz)
   ================================== [SUCCESS] Took 1.10 seconds =================================
 
-
   $ cat hardware.rpt
 
   icetime topological timing analysis report
@@ -96,3 +94,5 @@ Examples
 
   Total number of logic levels: 0
   Total path delay: 0.24 ns (4161.98 MHz)
+
+.. Executing: scons -Q time fpga_type=hx fpga_pack=tq144 fpga_size=1k -f /path/to/SConstruct

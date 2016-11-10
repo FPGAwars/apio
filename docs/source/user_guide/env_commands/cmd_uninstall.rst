@@ -22,6 +22,7 @@ Available packages
 ==========  ======================  ============
 Package     Installation            Description
 ==========  ======================  ============
+drivers_    apio install drivers    Drivers tools (only for Windows)
 examples_   apio install examples   Verilog basic examples, pinouts, etc
 gtkwave_    apio install gtkwave    Simulation viewer. `GTKWave project <http://gtkwave.sourceforge.net>`_ (only for Windows)
 icestorm_   apio install icestorm   iCE40 FPGA synthesis, place & route and configuration tools. `Icestorm project <http://www.clifford.at/icestorm>`_
@@ -30,6 +31,7 @@ scons_      apio install scons      A software construction tool. `Scons project
 system_     apio install system     Tools for listing the USB devices and retrieving information from the FTDI chips
 ==========  ======================  ============
 
+.. _drivers: https://github.com/FPGAwars/tools-drivers
 .. _examples: https://github.com/FPGAwars/apio-examples
 .. _gtkwave: https://github.com/FPGAwars/tool-gtkwave
 .. _icestorm: https://github.com/FPGAwars/toolchain-icestorm

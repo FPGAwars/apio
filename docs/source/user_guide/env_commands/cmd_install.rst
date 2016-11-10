@@ -22,6 +22,7 @@ Available packages
 ==========  ======================  ============
 Package     Installation            Description
 ==========  ======================  ============
+drivers_    apio install drivers    Drivers tools (only for Windows)
 examples_   apio install examples   Verilog basic examples, pinouts, etc
 gtkwave_    apio install gtkwave    Simulation viewer. `GTKWave project <http://gtkwave.sourceforge.net>`_ (only for Windows)
 icestorm_   apio install icestorm   iCE40 FPGA synthesis, place & route and configuration tools. `Icestorm project <http://www.clifford.at/icestorm>`_
@@ -30,6 +31,7 @@ scons_      apio install scons      A software construction tool. `Scons project
 system_     apio install system     Tools for listing the USB devices and retrieving information from the FTDI chips
 ==========  ======================  ============
 
+.. _drivers: https://github.com/FPGAwars/tools-drivers
 .. _examples: https://github.com/FPGAwars/apio-examples
 .. _gtkwave: https://github.com/FPGAwars/tool-gtkwave
 .. _icestorm: https://github.com/FPGAwars/toolchain-icestorm
@@ -52,6 +54,15 @@ Install all packages
 
 List all available packages
 
+.. option::
+    -d, --dir
+
+Set the target directory for the packages
+
+.. option::
+    -p, --platform
+
+    Set the platform (linux_x86_64, linux_i686, linux_armv7l, linux_aarch64, windows, darwin)
 
 Examples
 --------
@@ -127,3 +138,24 @@ Examples
   Already installed. Version 2.4.1
   Installing system package:
   Already installed. Version 1.0.0
+
+5. Install the ``system`` for **darwin** in a linux platform
+
+.. code::
+
+
+  $ apio install system --platform darwin --dir test_pkg
+  Installing system package:
+  Download tools-system-darwin-1.0.0.tar.gz
+  Downloading  [####################################]  100%
+  Unpacking  [####################################]  100%
+  Package 'system' has been successfully installed!
+
+  $ tree test_pkg/
+  test_pkg/
+  └── packages-darwin
+      └── system
+          ├── bin
+          │   ├── lsftdi
+          │   └── lsusb
+          └── package.json

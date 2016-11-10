@@ -43,7 +43,6 @@ Examples
 
   $ apio sim
   Using default SConstruct file
-  Executing: scons -Q sim -f /path/to/SConstruct
   iverilog -B /path/to/lib/ivl -o leds_tb.out -D VCD_OUTPUT=leds_tb /path/to/vlib/system.v leds.v leds_tb.v
   vvp -M /path/to/lib/ivl leds_tb.out
   VCD info: dumpfile leds_tb.vcd opened for output.
@@ -56,3 +55,5 @@ Examples
   [1000] end time.
   WM Destroy
   ================================== [SUCCESS] Took 1.96 seconds =================================
+
+.. Executing: scons -Q sim -f /path/to/SConstruct

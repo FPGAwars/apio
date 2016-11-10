@@ -20,7 +20,7 @@ platforms = ['linux_x86_64',
              'linux_armv7l',
              'linux_aarch64',
              'windows',
-             'darwmin']
+             'darwin']
 
 
 @click.command('install')
