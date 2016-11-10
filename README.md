@@ -49,7 +49,7 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 | [scons](https://github.com/FPGAwars/tool-scons)  | apio install scons | A software construction tool. [Scons project](http://scons.org)
 | [system](https://github.com/FPGAwars/tools-system)  | apio install system | Tools for listing the USB devices and retrieving information from the FTDI chips
 
-Supported architectures: *linux_x86_64, linux_i686, linux_armv7l, linux_aarch64, darwin, windows*.
+Supported platforms: *linux_x86_64, linux_i686, linux_armv7l, linux_aarch64, darwin, windows*.
 
 ## Supported boards
 

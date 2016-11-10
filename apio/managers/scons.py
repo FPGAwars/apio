@@ -115,25 +115,25 @@ class SCons(object):
                 click.secho('Error: board not detected', fg='red')
                 return 1
 
-        # Check architectures
-        if 'arch' in check:
+        # Check platforms
+        if 'platform' in check:
             # Device argument is ignored
             if device and device != -1:
                 click.secho(
                     'Info: ignore device argument {0}'.format(device),
                     fg='yellow')
 
-            arch = check['arch']
-            current_arch = util.get_systype()
-            if arch != current_arch:
-                # Incorrect architecture
-                if arch == 'linux_armv7l':
+            platform = check['platform']
+            current_platform = util.get_systype()
+            if platform != current_platform:
+                # Incorrect platform
+                if platform == 'linux_armv7l':
                     click.secho(
-                        'Error: incorrect architecture: RPI2 or RPI3 required',
+                        'Error: incorrect platform: RPI2 or RPI3 required',
                         fg='red')
                 else:
                     click.secho(
-                        'Error: incorrect architecture {0}'.format(arch),
+                        'Error: incorrect platform {0}'.format(platform),
                         fg='red')
                 return 1
 

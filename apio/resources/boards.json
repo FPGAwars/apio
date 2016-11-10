@@ -41,7 +41,7 @@
       "type": "icoprog"
     },
     "check": {
-      "arch": "linux_armv7l"
+      "platform": "linux_armv7l"
     }
   },
   "Cat-board": {
@@ -50,7 +50,7 @@
       "type": "litterbox"
     },
     "check": {
-      "arch": "linux_armv7l"
+      "platform": "linux_armv7l"
     }
   },
   "kefir": {

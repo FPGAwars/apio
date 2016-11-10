@@ -164,11 +164,11 @@ class Resources(object):
         for pkg in packages.keys():
             check = True
             release = packages[pkg]['release']
-            if 'available_archs' in release:
-                archs = release['available_archs']
+            if 'available_platforms' in release:
+                platforms = release['available_platforms']
                 check = False
-                for arch in archs:
-                    check |= get_systype() in arch
+                for platform in platforms:
+                    check |= get_systype() in platform
             if check:
                 filtered_packages[pkg] = packages[pkg]
         return filtered_packages

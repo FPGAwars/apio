@@ -84,7 +84,7 @@
       "uncompressed_name": "",
       "package_name": "tool-gtkwave",
       "extension": "tar.gz",
-      "available_archs": [
+      "available_platforms": [
         "windows"
       ]
     },
@@ -101,7 +101,7 @@
       "uncompressed_name": "",
       "package_name": "tools-drivers",
       "extension": "tar.gz",
-      "available_archs": [
+      "available_platforms": [
         "windows"
       ]
     },
