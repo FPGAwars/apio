@@ -7,6 +7,7 @@
 import re
 import click
 import shutil
+import semantic_version
 
 from os import makedirs, remove, rename
 from os.path import isfile, isdir, join, basename
@@ -45,6 +46,8 @@ class Installer(object):
             self.profile = Profile()
 
             data = self.resources.packages[self.package]
+            distribution = self.resources.distribution
+            self.specversion = distribution['packages'][self.package]
 
             if self.version:
                 # Validate version
@@ -63,7 +66,8 @@ class Installer(object):
                 self.version = self._get_latest_version(
                     data['repository']['name'],
                     data['repository']['organization'],
-                    data['release']['tag_name']
+                    data['release']['tag_name'],
+                    self.specversion
                 )
 
             self.platform = platform if platform else self._get_platform()
@@ -110,6 +114,12 @@ class Installer(object):
             click.secho(
                 'Error: package \'{0}\' has no version {1}'.format(
                     self.package, self.version),
+                fg='red')
+        elif not self.version:
+            click.secho(
+                'Error: package \'{0}\' has no '
+                'version that satisfies {1}'.format(
+                    self.package, self.specversion),
                 fg='red')
         else:
             click.echo('Installing %s package:' % click.style(
@@ -194,16 +204,37 @@ class Installer(object):
                     return True
         return False
 
-    def _get_latest_version(self, name, organization, tag_name):
+    def _get_latest_version(self, name, organization, tag_name, specver=''):
         version = ''
-        latest_release = api_request(
-            '{}/releases/latest'.format(name), organization)
-        if latest_release is not None and 'tag_name' in latest_release:
-            pattern = tag_name.replace('%V', '(?P<v>.*?)') + '$'
-            match = re.search(pattern, latest_release['tag_name'])
-            if match:
-                version = match.group('v')
-        return version
+
+        try:
+            spec = semantic_version.Spec(specver)
+        except ValueError:
+            click.secho('Invalid distribution version {0}: {1}'.format(
+                        name, specver), fg='red')
+            exit(1)
+
+        pattern = tag_name.replace('%V', '(?P<v>.*?)') + '$'
+        # Download latest releases list
+        releases = api_request(
+            '{}/releases'.format(name), organization)
+
+        # Check latest valid versions
+        for release in releases:
+            if 'tag_name' in release:
+                match = re.search(pattern, release['tag_name'])
+                if match:
+                    ver = match.group('v')
+                    try:
+                        if semantic_version.Version(ver) in spec:
+                            version = ver
+                            break
+                    except ValueError:
+                        if ver in str(spec):
+                            version = ver
+                            break
+
+        return str(version)
 
     def _download(self, url):
         # Note: here we check only for the version of locally installed

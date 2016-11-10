@@ -24,6 +24,7 @@ class Resources(object):
         self.boards = self._load_resource('boards')
         self.fpgas = self._load_resource('fpgas')
         self.programmers = self._load_resource('programmers')
+        self.distribution = self._load_resource('distribution')
 
         # Check available packages
         self.packages = self._check_packages(self.packages)

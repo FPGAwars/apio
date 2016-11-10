@@ -6,6 +6,8 @@
 
 import json
 import click
+import semantic_version
+
 from os.path import isfile, isdir, join
 
 from apio.util import get_home_dir, get_package_dir
@@ -30,7 +32,8 @@ class Profile(object):
             pkg_version = self.get_package_version(name, release_name)
             pkg_version = self._convert_old_version(pkg_version)
             version = self._convert_old_version(version)
-            ret = (pkg_version < version)
+            ret = (semantic_version.Version(pkg_version) <
+                   semantic_version.Version(version))
         return ret
 
     def _convert_old_version(self, version):
