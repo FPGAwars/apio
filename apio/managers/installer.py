@@ -37,7 +37,7 @@ class Installer(object):
         self.forced_install = force
         self.packages_dir = ''
 
-        self.resources = Resources()
+        self.resources = Resources(platform)
 
         if self.package in self.resources.packages:
 

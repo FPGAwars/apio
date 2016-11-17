@@ -19,7 +19,7 @@ Use `apio init --board <boardname>` for creating a new apio """ \
 
 class Resources(object):
 
-    def __init__(self):
+    def __init__(self, platform=''):
         self.packages = self._load_resource('packages')
         self.boards = self._load_resource('boards')
         self.fpgas = self._load_resource('fpgas')
@@ -27,7 +27,7 @@ class Resources(object):
         self.distribution = self._load_resource('distribution')
 
         # Check available packages
-        self.packages = self._check_packages(self.packages)
+        self.packages = self._check_packages(self.packages, platform)
 
         # Sort resources
         self.packages = OrderedDict(sorted(self.packages.items(),
@@ -160,7 +160,7 @@ class Resources(object):
                 size=self.fpgas[fpga]['size'],
                 pack=self.fpgas[fpga]['pack']))
 
-    def _check_packages(self, packages):
+    def _check_packages(self, packages, current_platform=''):
         filtered_packages = {}
         for pkg in packages.keys():
             check = True
@@ -168,8 +168,9 @@ class Resources(object):
             if 'available_platforms' in release:
                 platforms = release['available_platforms']
                 check = False
+                current_platform = current_platform or get_systype()
                 for platform in platforms:
-                    check |= get_systype() in platform
+                    check |= current_platform in platform
             if check:
                 filtered_packages[pkg] = packages[pkg]
         return filtered_packages
