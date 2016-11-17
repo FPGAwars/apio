@@ -23,7 +23,7 @@ from apio.managers.unpacker import FileUnpacker
 
 class Installer(object):
 
-    def __init__(self, package, force=False, platform=''):
+    def __init__(self, package, platform='', force=False):
 
         # Parse version
         if '@' in package:
@@ -66,7 +66,7 @@ class Installer(object):
 
             # Valid version
             if version:
-                self.platform = platform if platform else self._get_platform()
+                self.platform = platform or self._get_platform()
 
                 release = data['release']
                 self.compressed_name = release['compressed_name'].replace(
@@ -142,7 +142,7 @@ class Installer(object):
                     rename(unpack_dir, package_dir)
 
     def uninstall(self):
-        if self.version is None:
+        if self.packages_dir == '':
             click.secho(
                 'Error: No such package \'{0}\''.format(self.package),
                 fg='red')
