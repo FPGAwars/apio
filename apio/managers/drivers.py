@@ -91,7 +91,9 @@ class Drivers(object):  # pragma: no cover
             click.secho('Error: homebrew is required', fg='red')
         else:
             click.secho('Configure FTDI drivers for FPGA')
+            subprocess.call(['brew', 'update'])
             subprocess.call(['brew', 'install', 'libftdi'])
+            subprocess.call(['brew', 'link', '--overwrite', 'libftdi'])
             subprocess.call(['sudo', 'kextunload', '-b',
                              'com.FTDI.driver.FTDIUSBSerialDriver', '-q'])
             subprocess.call(['sudo', 'kextunload', '-b',
