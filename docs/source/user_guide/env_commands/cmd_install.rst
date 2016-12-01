@@ -139,23 +139,13 @@ Examples
   Installing system package:
   Already installed. Version 1.0.0
 
-5. Install the ``system`` for **darwin** in a linux platform
+5. Install the ``drivers`` package for **windows** in a linux platform
 
 .. code::
 
-
-  $ apio install system --platform darwin --dir test_pkg
-  Installing system package:
-  Download tools-system-darwin-1.0.0.tar.gz
+  $ apio install drivers --platform windows
+  Installing drivers package:
+  Download tools-drivers-windows-1.0.0.tar.gz
   Downloading  [####################################]  100%
   Unpacking  [####################################]  100%
-  Package 'system' has been successfully installed!
-
-  $ tree test_pkg/
-  test_pkg/
-  └── packages-darwin
-      └── system
-          ├── bin
-          │   ├── lsftdi
-          │   └── lsusb
-          └── package.json
+  Package 'drivers' has been successfully installed!

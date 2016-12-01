@@ -17,9 +17,11 @@ Description
 
 Enable/Disable the FTDI drivers.
 
-* Linux: add a rules file. It may require a reboot.
-* Mac OSX: configures FTDIUSBSerialDriver and AppleUSBFTDI keys.
-* Windows: opens a web browser with a tutorial.
+* Linux: add the rules file. It may require a reboot or to uplug and reconnect the board.
+* Mac OSX: configure FTDIUSBSerialDriver and AppleUSBFTDI keys and install libftdi.
+* Windows: open zadig to replace the current driver by libusbK. It requires to uplug and reconnect the board.
+
+This command requires the ``driver`` package (only for Windows).
 
 .. note::
 

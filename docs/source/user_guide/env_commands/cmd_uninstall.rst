@@ -55,6 +55,11 @@ Uninstall all packages
 
 List all installed packages
 
+.. option::
+    -p, --platform
+
+    Set the platform [linux_x86_64, linux_i686, linux_armv7l, linux_aarch64, windows, darwin] (Advanced)
+
 Examples
 --------
 
@@ -66,3 +71,12 @@ Examples
   Do you want to continue? [y/N]: y
   Uninstalling examples package
   Package 'examples' has been successfully uninstalled!
+
+2. Uninstall the ``drivers`` package for **windows** in a linux platform
+
+.. code::
+
+  $ apio uninstall drivers --platform windows
+  Do you want to continue? [y/N]: y
+  Uninstalling drivers package
+  Package 'drivers' has been successfully uninstalled!

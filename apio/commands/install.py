@@ -35,14 +35,14 @@ def cli(ctx, packages, all, list, force, platform):
 
     if packages:
         for package in packages:
-            Installer(package, force, platform).install()
+            Installer(package, platform, force).install()
     elif all:  # pragma: no cover
-        packages = Resources().packages
+        packages = Resources(platform).packages
         for package in packages:
             if package == 'pio-fpga':  # skip pio-fpga
                 continue
-            Installer(package, force, platform).install()
+            Installer(package, platform, force).install()
     elif list:
-        Resources().list_packages(installed=True, notinstalled=True)
+        Resources(platform).list_packages(installed=True, notinstalled=True)
     else:
         click.secho(ctx.get_help())

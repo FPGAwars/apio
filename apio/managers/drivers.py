@@ -23,10 +23,6 @@ FTDI_INSTALL_DRIVER_INSTRUCTIONS = """
       3. Replace driver by "libusbK"
       4. Reconnect the board
       5. Check `apio system --lsftdi`
-
-   NOTE: Windows 10 + USB 3.0 also requires:
-
-      Select (Interface 1) and replace driver by "libusb-win32"
 """
 
 FTDI_UNINSTALL_DRIVER_INSTRUCTIONS = """
@@ -93,7 +89,9 @@ class Drivers(object):  # pragma: no cover
             click.secho('Error: homebrew is required', fg='red')
         else:
             click.secho('Configure FTDI drivers for FPGA')
+            subprocess.call(['brew', 'update'])
             subprocess.call(['brew', 'install', 'libftdi'])
+            subprocess.call(['brew', 'link', '--overwrite', 'libftdi'])
             subprocess.call(['sudo', 'kextunload', '-b',
                              'com.FTDI.driver.FTDIUSBSerialDriver', '-q'])
             subprocess.call(['sudo', 'kextunload', '-b',

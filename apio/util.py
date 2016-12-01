@@ -107,7 +107,7 @@ def _get_projconf_option_dir(name, default=None):
 
 def get_home_dir():
     home_dir = _get_projconf_option_dir('home_dir', '~/.apio')
-    home_dir = re.sub(r'\~', expanduser('~'), home_dir)
+    home_dir = re.sub(r'\~', expanduser('~').replace('\\', '/'), home_dir)
 
     paths = home_dir.split(os.pathsep)
     for path in paths:
@@ -134,7 +134,7 @@ def get_package_dir(pkg_name):
     home_dir = _get_projconf_option_dir('pkg_dir', '')
     if not home_dir:
         home_dir = _get_projconf_option_dir('home_dir', '~/.apio')
-    home_dir = re.sub(r'\~', expanduser('~'), home_dir)
+    home_dir = re.sub(r'\~', expanduser('~').replace('\\', '/'), home_dir)
 
     paths = home_dir.split(os.pathsep)
     for path in paths:
