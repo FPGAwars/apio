@@ -23,8 +23,6 @@ FTDI_INSTALL_DRIVER_INSTRUCTIONS = """
       3. Replace driver by "libusbK"
       4. Reconnect the board
       5. Check `apio system --lsftdi`
-
-   NOTE: not fully working with Windows 10 + USB 3.0
 """
 
 FTDI_UNINSTALL_DRIVER_INSTRUCTIONS = """
