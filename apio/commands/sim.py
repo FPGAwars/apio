@@ -8,6 +8,12 @@ import click
 
 from apio.managers.scons import SCons
 
+# Python3 compat
+try:
+    unicode = str
+except NameError:  # pragma: no cover
+    pass
+
 
 @click.command('sim')
 @click.pass_context

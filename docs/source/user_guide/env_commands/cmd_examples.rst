@@ -27,28 +27,27 @@ Options
 .. option::
     -l, --list
 
-List all available examples
+List all available examples.
 
 .. option::
     -d, --dir
 
-Copy the selected example directory
+Copy the selected example directory.
 
 .. option::
     -f, --files
 
-Copy the selected example files
+Copy the selected example files.
 
 .. option::
-    --project-dir
+    -p, --project-dir
 
-Set the target directory for the examples
-
+Set the target directory for the examples.
 
 .. option::
     -n, --sayno
 
-Automatically answer NO to all the questions
+Automatically answer NO to all the questions.
 
 Examples
 --------

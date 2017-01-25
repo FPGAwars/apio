@@ -48,17 +48,17 @@ Options
 .. option::
     -a, --all
 
-Uninstall all packages
+Uninstall all packages.
 
 .. option::
     -l, --list
 
-List all installed packages
+List all installed packages.
 
 .. option::
     -p, --platform
 
-    Set the platform [linux_x86_64, linux_i686, linux_armv7l, linux_aarch64, windows, darwin] (Advanced)
+    Set the platform [linux_x86_64, linux_i686, linux_armv7l, linux_aarch64, windows, darwin] (Advanced).
 
 Examples
 --------

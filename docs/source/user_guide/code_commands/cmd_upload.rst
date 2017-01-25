@@ -31,12 +31,12 @@ Options
 .. program:: apio upload
 
 .. option::
-    --device
+    -d, --device
 
 Select a specific device index. This numerical index is provided by **libftdi1**, that is different from *libftdi0*.
 
 .. option::
-    --board
+    -b, --board
 
 Select a specific board.
 
@@ -49,6 +49,11 @@ Select a specific FPGA.
     --size --type --pack
 
 Select a specific FPGA size, type and pack.
+
+.. option::
+    -p, --project-dir
+
+Set the target directory for the project.
 
 .. note::
 
@@ -65,7 +70,7 @@ Examples
   Info: use apio.ini board: icezum
   Number of FTDI devices found: 1
   Checking device: 0
-  Manufacturer: bqlabs, Description: IceZUM Alhambra - 5 (bqlabs)
+  Manufacturer: Mareldem, Description: IceZUM Alhambra v1.1 - B01-020
 
   Using default SConstruct file
   [] Processing icezum

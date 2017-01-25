@@ -19,6 +19,14 @@ Clean the previous generated files: **blif**, **asc**, **bin**, **rpt** and **ou
 
 This command requires the ``scons`` package.
 
+Options
+-------
+
+.. option::
+    -p, --project-dir
+
+Set the target directory for the project.
+
 Examples
 --------
 

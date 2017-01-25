@@ -25,17 +25,17 @@ Options
 .. option::
     -l, --list
 
-List all configuration parameters
+List all configuration parameters.
 
 .. option::
     -v, --verbose [0|1]
 
-Verbose mode: `0` General, `1` Information
+Verbose mode: `0` General, `1` Information.
 
 .. option::
     -e, --exe [default|native]
 
-Configure executables: `default` selects apio packages, `native` selects native binaries (except system package)
+Configure executables: `default` selects apio packages, `native` selects native binaries (except system package).
 
 .. note::
 
