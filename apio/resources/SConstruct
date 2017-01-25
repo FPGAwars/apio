@@ -65,8 +65,8 @@ IVL_PATH = os.environ['IVL'] if 'IVL' in os.environ else ''
 VLIB_PATH = os.environ['VLIB'] if 'VLIB' in os.environ else ''
 
 isWindows = 'Windows' == system()
-VVP_PATH = '' if isWindows or not IVL_PATH else '-M {0}'.format(IVL_PATH)
-IVER_PATH = '' if isWindows or not IVL_PATH else '-B {0}'.format(IVL_PATH)
+VVP_PATH = '' if isWindows or not IVL_PATH else '-M "{0}"'.format(IVL_PATH)
+IVER_PATH = '' if isWindows or not IVL_PATH else '-B "{0}"'.format(IVL_PATH)
 
 # -- Target name
 TARGET = 'hardware'
@@ -187,7 +187,7 @@ AlwaysBuild(t)
 
 # -- Icarus Verilog builders
 iverilog = Builder(
-    action='iverilog {0} -o $TARGET -D VCD_OUTPUT={1} {2} $SOURCES'.format(
+    action='iverilog {0} -o $TARGET -D VCD_OUTPUT={1} "{2}" $SOURCES'.format(
         IVER_PATH, TARGET_SIM, VLIB_PATH),
     suffix='.out',
     src_suffix='.v')
