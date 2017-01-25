@@ -126,7 +126,7 @@ class Project(object):
             try:
                 data = json.loads(f.read())
                 board = data['board']
-            except Exception as e:
+            except Exception:
                 pass
                 # print('Error: {}'.format(str(e)))
 

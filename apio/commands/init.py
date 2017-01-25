@@ -21,7 +21,7 @@ except NameError:  # pragma: no cover
               help='Create default SConstruct file.')
 @click.option('-b', '--board', type=unicode, metavar='board',
               help='Create init file with the selected board.')
-@click.option('--project-dir', type=unicode, metavar='path',
+@click.option('-p', '--project-dir', type=unicode, metavar='path',
               help='Set the target directory for the project.')
 @click.option('-y', '--sayyes', is_flag=True,
               help='Automatically answer YES to all the questions.')

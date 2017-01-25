@@ -4,6 +4,7 @@
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
+import os
 import time
 import click
 import datetime
@@ -19,9 +20,13 @@ from apio.profile import Profile
 
 class SCons(object):
 
-    def __init__(self):
+    def __init__(self, project_dir=''):
         self.resources = Resources()
         self.profile = Profile()
+
+        if project_dir is not None:
+            # Move to project dir
+            os.chdir(project_dir)
 
     def clean(self):
         return self.run('-c', deps=['scons'])

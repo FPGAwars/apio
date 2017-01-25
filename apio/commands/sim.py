@@ -11,8 +11,10 @@ from apio.managers.scons import SCons
 
 @click.command('sim')
 @click.pass_context
-def cli(ctx):
+@click.option('-p', '--project-dir', type=unicode, metavar='path',
+              help='Set the target directory for the project.')
+def cli(ctx, project_dir):
     """Launch the verilog simulation."""
 
-    exit_code = SCons().sim()
+    exit_code = SCons(project_dir).sim()
     ctx.exit(exit_code)

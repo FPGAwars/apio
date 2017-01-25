@@ -23,7 +23,7 @@ except NameError:  # pragma: no cover
               help='Copy the selected example directory.')
 @click.option('-f', '--files', type=unicode, metavar='NAME',
               help='Copy the selected example files.')
-@click.option('--project-dir', type=unicode, metavar='PATH',
+@click.option('-p', '--project-dir', type=unicode, metavar='PATH',
               help='Set the target directory for the examples.')
 @click.option('-n', '--sayno', is_flag=True,
               help='Automatically answer NO to all the questions.')
