@@ -13,8 +13,9 @@ try:
 except ImportError:
     import configparser as ConfigParser
 
-from os.path import isfile, join, dirname
+from os.path import isfile, join
 
+from apio import util
 from apio.resources import Resources
 
 PROJECT_FILENAME = 'apio.ini'
@@ -34,7 +35,7 @@ class Project(object):
         sconstruct_name = 'SConstruct'
         sconstruct_path = join(project_dir, sconstruct_name)
         local_sconstruct_path = join(
-            dirname(__file__), '..', 'resources', sconstruct_name)
+            util.get_folder('resources'), sconstruct_name)
 
         if isfile(sconstruct_path):
             # -- If sayyes, skip the question

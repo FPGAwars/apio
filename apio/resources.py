@@ -4,13 +4,13 @@
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
-import os
 import json
 import click
+from os.path import join
 from collections import OrderedDict
 
+from apio import util
 from apio.profile import Profile
-from apio.util import get_systype
 
 BOARDS_MSG = """
 Use `apio init --board <boardname>` for creating a new apio """ \
@@ -39,8 +39,7 @@ class Resources(object):
 
     def _load_resource(self, name):
         resource = None
-        filepath = os.path.join(
-            os.path.dirname(__file__), 'resources', name + '.json')
+        filepath = join(util.get_folder('resources'), name + '.json')
         with open(filepath, 'r') as f:
             # Load the JSON file
             resource = json.loads(f.read())
@@ -168,7 +167,7 @@ class Resources(object):
             if 'available_platforms' in release:
                 platforms = release['available_platforms']
                 check = False
-                current_platform = current_platform or get_systype()
+                current_platform = current_platform or util.get_systype()
                 for platform in platforms:
                     check |= current_platform in platform
             if check:

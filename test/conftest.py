@@ -1,26 +1,28 @@
+# -*- coding: utf-8 -*-
+
 import pytest
-from os import environ, getcwd
+from os import environ, getcwd, path
 from click.testing import CliRunner
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope='module')
 def clirunner():
     return CliRunner()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope='session')
 def validate_cliresult():
     def decorator(result):
         assert result.exit_code == 0
         assert not result.exception
-        assert "error" not in result.output.lower()
+        assert 'error' not in result.output.lower()
     return decorator
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope='session')
 def configenv():
     def decorator():
-        cwd = getcwd()
+        cwd = path.join(getcwd(), ' ñ')
         environ['APIO_HOME_DIR'] = cwd
         environ['APIO_PKG_DIR'] = cwd
         environ['TESTING'] = ''
@@ -34,4 +36,4 @@ def pytest_addoption(parser):
 
 @pytest.fixture
 def offline(request):
-    return request.config.getoption("--offline")
+    return request.config.getoption('--offline')

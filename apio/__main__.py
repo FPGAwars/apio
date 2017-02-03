@@ -7,10 +7,12 @@
 import click
 
 from os import listdir
-from os.path import isfile, join, dirname
+from os.path import isfile, join
 from sys import exit as sys_exit
 
-commands_folder = join(dirname(__file__), 'commands')
+from apio import util
+
+commands_folder = util.get_folder('commands')
 
 
 class ApioCLI(click.MultiCommand):

@@ -9,7 +9,7 @@ import time
 import click
 import datetime
 
-from os.path import join, dirname, isfile
+from os.path import join, isfile
 
 from apio import util
 from apio.resources import Resources
@@ -162,8 +162,8 @@ class SCons(object):
         # -- Check for the SConstruct file
         if not isfile(join(util.get_project_dir(), 'SConstruct')):
             click.secho('Using default SConstruct file')
-            variables += ['-f', join(
-                dirname(__file__), '..', 'resources', 'SConstruct')]
+            variables += ['-f']
+            variables += [join(util.get_folder('resources'), 'SConstruct')]
 
         # -- Resolve packages
         if self.profile.check_exe_default():

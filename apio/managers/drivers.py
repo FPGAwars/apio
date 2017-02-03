@@ -8,7 +8,7 @@ import os
 import click
 import subprocess
 
-from os.path import join, dirname, isfile, isdir
+from os.path import join, isfile, isdir
 
 from apio import util
 
@@ -37,8 +37,7 @@ FTDI_UNINSTALL_DRIVER_INSTRUCTIONS = """
 
 class Drivers(object):  # pragma: no cover
 
-    rules_local_path = join(
-        dirname(__file__), '..', 'resources', '80-icestick.rules')
+    rules_local_path = join(util.get_folder('resources'), '80-icestick.rules')
     rules_system_path = '/etc/udev/rules.d/80-icestick.rules'
 
     def enable(self):

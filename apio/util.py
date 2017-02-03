@@ -14,7 +14,7 @@ import sys
 import json
 import click
 import subprocess
-from os.path import expanduser, join, isdir, isfile, normpath
+from os.path import expanduser, join, isdir, isfile, normpath, dirname
 from platform import system, uname
 from threading import Thread
 
@@ -114,13 +114,13 @@ def get_home_dir():
         if isdir(path):
             if os.access(path, os.W_OK):
                 # Path is writable
-                return path
+                return utf8(path)
 
     for path in paths:
         if not isdir(path):
             try:
                 os.makedirs(path)
-                return path
+                return utf8(path)
             except OSError as ioex:
                 if ioex.errno == 13:
                     click.secho('Warning: can\'t create ' + home_dir,
@@ -138,7 +138,7 @@ def get_package_dir(pkg_name):
 
     paths = home_dir.split(os.pathsep)
     for path in paths:
-        package_dir = join(path, 'packages', pkg_name)
+        package_dir = join(utf8(path), 'packages', pkg_name)
         if isdir(package_dir):
             return package_dir
 
@@ -288,3 +288,19 @@ def get_pypi_latest_version():
         if r:
             r.close()
     return version
+
+
+def get_folder(folder):
+    return join(utf8(dirname(__file__)), folder)
+
+
+def utf8(text):
+    if (sys.version_info > (3, 0)):
+        # Python 3
+        return text
+    else:
+        # Python 2
+        if system() == 'Windows':
+            pass
+        else:
+            return text.decode('utf-8')
