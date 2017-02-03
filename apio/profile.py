@@ -10,7 +10,7 @@ import semantic_version
 
 from os.path import isfile, isdir, join
 
-from apio.util import get_home_dir, get_package_dir
+from apio import util
 
 
 class Profile(object):
@@ -19,12 +19,12 @@ class Profile(object):
         self.config = {'exe': 'default', 'verbose': 0}
         self.labels = {'exe': 'Executable', 'verbose': 'Verbose'}
         self.packages = {}
-        self._profile_path = join(get_home_dir(), 'profile.json')
+        self._profile_path = join(util.get_home_dir(), 'profile.json')
         self.load()
 
     def check_package(self, name, release_name):
         return (name in self.packages.keys()) or \
-               isdir(get_package_dir(release_name))
+               isdir(util.get_package_dir(release_name))
 
     def check_package_version(self, name, version, release_name=''):
         ret = False
@@ -73,7 +73,7 @@ class Profile(object):
         if name in self.packages.keys():
             version = self.packages[name]['version']
         elif release_name:
-            dir_name = get_package_dir(release_name)
+            dir_name = util.get_package_dir(release_name)
             if isdir(dir_name):
                 with open(join(dir_name, 'package.json'), 'r') as json_file:
                     try:
@@ -104,6 +104,7 @@ class Profile(object):
                     pass
 
     def save(self):
+        util.mkdir(self._profile_path)
         with open(self._profile_path, 'w') as profile:
             data = {'config': self.config, 'packages': self.packages}
             json.dump(data, profile)

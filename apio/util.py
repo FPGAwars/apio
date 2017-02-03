@@ -14,7 +14,7 @@ import sys
 import json
 import click
 import subprocess
-from os.path import expanduser, join, isdir, isfile, normpath, dirname
+from os.path import expanduser, join, isdir, isfile, normpath, dirname, exists
 from platform import system, uname
 from threading import Thread
 
@@ -293,6 +293,18 @@ def get_pypi_latest_version():
 def get_folder(folder):
     return join(utf8(dirname(__file__)), folder)
 
+def mkdir(path):
+    path = dirname(path)
+    if (sys.version_info > (3, 0)):
+        # Python 3
+        os.makedirs(path, exist_ok=True)
+    else:
+        # Python 2
+        if not exists(path):
+            try:
+                os.makedirs(path)
+            except OSError as e:
+                pass
 
 def utf8(text):
     if (sys.version_info > (3, 0)):
@@ -300,7 +312,4 @@ def utf8(text):
         return text
     else:
         # Python 2
-        if system() == 'Windows':
-            pass
-        else:
-            return text.decode('utf-8')
+        return text.decode('utf-8')
