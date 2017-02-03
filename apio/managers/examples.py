@@ -62,14 +62,8 @@ class Examples(object):
     def copy_example_dir(self, example, project_dir, sayno):
         if isdir(self.examples_dir):
 
-            # -- Target dir not specified
-            if project_dir is not None:
-                example_path = join(project_dir, example)
-            else:
-                # -- Not specified: use the current working dir
-                example_path = join(util.get_project_dir(), example)
-
-            # -- Get the local example path
+            project_dir = util.check_dir(project_dir)
+            example_path = join(project_dir, example)
             local_example_path = join(self.examples_dir, example)
 
             if isdir(local_example_path):
@@ -103,11 +97,8 @@ class Examples(object):
     def copy_example_files(self, example, project_dir, sayno):
         if isdir(self.examples_dir):
 
-            if project_dir is not None:
-                example_path = project_dir
-            else:
-                example_path = util.get_project_dir()
-
+            project_dir = util.check_dir(project_dir)
+            example_path = project_dir
             local_example_path = join(self.examples_dir, example)
 
             if isdir(local_example_path):
@@ -128,7 +119,8 @@ class Examples(object):
         for f in example_files:
             filename = basename(f)
             if filename != 'info':
-                if isfile(join(dest_path, filename)):
+                filepath = join(dest_path, filename)
+                if isfile(filepath):
 
                     # -- If sayno, do not copy the file. Move to the next
                     if sayno:
@@ -139,13 +131,13 @@ class Examples(object):
                         fg='yellow')
                     if click.confirm('Do you want to replace it?'):
                         shutil.copy(f, dest_path)
-                elif isdir(join(dest_path, filename)):
+                elif isdir(filepath):
                     click.secho(
                         'Warning: ' + filename + ' is already a directory',
                         fg='yellow')
                     return
                 else:
-                    shutil.copy(f, dest_path)
+                    shutil.copy(f, filepath)
         click.secho(
             'Example files \'{}\' have been successfully created!'.format(
                 example

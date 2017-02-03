@@ -293,6 +293,7 @@ def get_pypi_latest_version():
 def get_folder(folder):
     return join(utf8(dirname(__file__)), folder)
 
+
 def mkdir(path):
     path = dirname(path)
     if not exists(path):
@@ -300,6 +301,25 @@ def mkdir(path):
             os.makedirs(path)
         except OSError as e:
             pass
+
+
+def check_dir(_dir):
+    if _dir is None:
+        _dir = os.getcwd()
+
+    if isfile(_dir):
+        click.secho(
+            'Error: project directory is already a file: {0}'.format(_dir),
+            fg='red')
+        exit(1)
+
+    if not exists(_dir):
+        try:
+            os.makedirs(_dir)
+        except OSError as e:
+            pass
+    return _dir
+
 
 def utf8(text):
     if (sys.version_info > (3, 0)):

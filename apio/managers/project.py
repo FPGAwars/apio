@@ -29,8 +29,7 @@ class Project(object):
     def create_sconstruct(self, project_dir='', sayyes=False):
         """Creates a default SConstruct file"""
 
-        if project_dir is None:
-            project_dir = ''
+        project_dir = util.check_dir(project_dir)
 
         sconstruct_name = 'SConstruct'
         sconstruct_path = join(project_dir, sconstruct_name)
@@ -61,8 +60,7 @@ class Project(object):
     def create_ini(self, board, project_dir='', sayyes=False):
         """Creates a new apio project file"""
 
-        if project_dir is None:
-            project_dir = ''
+        project_dir = util.check_dir(project_dir)
 
         ini_path = join(project_dir, PROJECT_FILENAME)
 
@@ -91,7 +89,6 @@ class Project(object):
 
     def _create_ini_file(self, board, ini_path, ini_name):
         click.secho('Creating {} file ...'.format(ini_name))
-        util.mkdir(ini_path)
         with open(ini_path, 'w') as file:
             config = ConfigParser.ConfigParser()
             config.add_section('env')
@@ -105,7 +102,6 @@ class Project(object):
     def _copy_sconstruct_file(self, sconstruct_name,
                               sconstruct_path, local_sconstruct_path):
         click.secho('Creating {} file ...'.format(sconstruct_name))
-        util.mkdir(sconstruct_path)
         with open(sconstruct_path, 'w') as sconstruct:
             with open(local_sconstruct_path, 'r') as local_sconstruct:
                 sconstruct.write(local_sconstruct.read())

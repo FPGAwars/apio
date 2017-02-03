@@ -26,6 +26,7 @@ class SCons(object):
 
         if project_dir is not None:
             # Move to project dir
+            project_dir = util.check_dir(project_dir)
             os.chdir(project_dir)
 
     def clean(self):
