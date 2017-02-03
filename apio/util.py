@@ -295,16 +295,11 @@ def get_folder(folder):
 
 def mkdir(path):
     path = dirname(path)
-    if (sys.version_info > (3, 0)):
-        # Python 3
-        os.makedirs(path, exist_ok=True)
-    else:
-        # Python 2
-        if not exists(path):
-            try:
-                os.makedirs(path)
-            except OSError as e:
-                pass
+    if not exists(path):
+        try:
+            os.makedirs(path)
+        except OSError as e:
+            pass
 
 def utf8(text):
     if (sys.version_info > (3, 0)):
