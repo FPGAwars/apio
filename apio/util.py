@@ -107,20 +107,20 @@ def _get_projconf_option_dir(name, default=None):
 
 def get_home_dir():
     home_dir = _get_projconf_option_dir('home_dir', '~/.apio')
-    home_dir = re.sub(r'\~', expanduser('~').replace('\\', '/'), home_dir)
+    home_dir = utf8(re.sub(r'\~', expanduser('~').replace('\\', '/'), home_dir))
 
     paths = home_dir.split(os.pathsep)
     for path in paths:
         if isdir(path):
             if os.access(path, os.W_OK):
                 # Path is writable
-                return utf8(path)
+                return path
 
     for path in paths:
         if not isdir(path):
             try:
                 os.makedirs(path)
-                return utf8(path)
+                return path
             except OSError as ioex:
                 if ioex.errno == 13:
                     click.secho('Warning: can\'t create ' + home_dir,
@@ -134,11 +134,11 @@ def get_package_dir(pkg_name):
     home_dir = _get_projconf_option_dir('pkg_dir', '')
     if not home_dir:
         home_dir = _get_projconf_option_dir('home_dir', '~/.apio')
-    home_dir = re.sub(r'\~', expanduser('~').replace('\\', '/'), home_dir)
+    home_dir = utf8(re.sub(r'\~', expanduser('~').replace('\\', '/'), home_dir))
 
     paths = home_dir.split(os.pathsep)
     for path in paths:
-        package_dir = join(utf8(path), 'packages', pkg_name)
+        package_dir = join(path, 'packages', pkg_name)
         if isdir(package_dir):
             return package_dir
 
