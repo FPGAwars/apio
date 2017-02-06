@@ -7,6 +7,7 @@
 import os
 import glob
 import click
+import codecs
 import shutil
 
 from os.path import sep, isdir, isfile, dirname, basename
@@ -46,7 +47,7 @@ class Examples(object):
                     info_path = util.safe_join(example_dir, 'info')
                     info = ''
                     if isfile(info_path):
-                        with open(info_path, 'r') as info_file:
+                        with codecs.open(info_path, 'r', 'utf-8') as info_file:
                             info = info_file.read().replace('\n', '')
                     click.secho(' ' + example, fg='blue', bold=True)
                     click.secho('-' * click.get_terminal_size()[0])

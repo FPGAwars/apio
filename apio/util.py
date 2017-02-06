@@ -337,7 +337,7 @@ def mkdir(path):
     if not exists(path):
         try:
             os.makedirs(path)
-        except OSError as e:
+        except OSError:
             pass
 
 
@@ -354,6 +354,6 @@ def check_dir(_dir):
     if not exists(_dir):
         try:
             os.makedirs(_dir)
-        except OSError as e:
+        except OSError:
             pass
     return _dir
