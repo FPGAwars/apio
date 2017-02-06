@@ -6,7 +6,6 @@
 
 import json
 import click
-from os.path import join
 from collections import OrderedDict
 
 from apio import util
@@ -39,7 +38,7 @@ class Resources(object):
 
     def _load_resource(self, name):
         resource = None
-        filepath = join(util.get_folder('resources'), name + '.json')
+        filepath = util.safe_join(util.get_folder('resources'), name + '.json')
         with open(filepath, 'r') as f:
             # Load the JSON file
             resource = json.loads(f.read())

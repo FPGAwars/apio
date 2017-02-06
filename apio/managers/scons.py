@@ -9,7 +9,7 @@ import time
 import click
 import datetime
 
-from os.path import join, isfile
+from os.path import isfile
 
 from apio import util
 from apio.resources import Resources
@@ -161,10 +161,11 @@ class SCons(object):
         """Executes scons for building"""
 
         # -- Check for the SConstruct file
-        if not isfile(join(util.get_project_dir(), 'SConstruct')):
-            click.secho('Using default SConstruct file')
+        if not isfile(util.safe_join(util.get_project_dir(), 'SConstruct')):
+            click.secho('Info: default SConstruct file')
             variables += ['-f']
-            variables += [join(util.get_folder('resources'), 'SConstruct')]
+            variables += [util.safe_join(
+                util.get_folder('resources'), 'SConstruct')]
 
         # -- Resolve packages
         if self.profile.check_exe_default():
@@ -172,6 +173,8 @@ class SCons(object):
             if not util.resolve_packages(self.resources.packages, deps):
                 # Exit if a package is not installed
                 return 1
+        else:
+            click.secho('Info: native config mode')
 
         # -- Execute scons
         terminal_width, _ = click.get_terminal_size()
@@ -386,7 +389,7 @@ class SCons(object):
                         if p.board:
                             var_board = p.board
                             click.secho(
-                                'Info: use apio.ini board: {}'.format(
+                                'Info: apio.ini board {}'.format(
                                     var_board))
                             fpga = self.resources.boards[var_board]['fpga']
                             fpga_size = self.resources.fpgas[fpga]['size']

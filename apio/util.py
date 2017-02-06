@@ -14,7 +14,7 @@ import sys
 import json
 import click
 import subprocess
-from os.path import expanduser, join, isdir, isfile, normpath, dirname, exists
+from os.path import expanduser, isdir, isfile, normpath, dirname, exists
 from platform import system, uname
 from threading import Thread
 
@@ -74,6 +74,32 @@ class AsyncPipe(Thread):  # pragma: no cover
         self.join()
 
 
+def unicoder(p):
+    """ Make sure a Unicode string is returned
+        When `force` is True, ignore filesystem encoding
+    """
+    if isinstance(p, unicode):
+        return p
+    if isinstance(p, str):
+        try:
+            return p.decode('utf-8')
+        except:
+            return p
+    else:
+        return unicode(str(p))
+
+
+def safe_join(*paths):
+    """ Join paths in a Unicode-safe way """
+    try:
+        return os.path.join(*paths)
+    except UnicodeDecodeError:
+        npaths = ()
+        for path in paths:
+            npaths += (unicoder(path),)
+        return os.path.join(*npaths)
+
+
 def get_systype():
     data = uname()
     arch = ''
@@ -85,7 +111,7 @@ def get_systype():
 
 def _get_config_data():
     config_data = None
-    filepath = join(os.sep, 'etc', 'apio.json')
+    filepath = safe_join(os.sep, 'etc', 'apio.json')
     if isfile(filepath):
         with open(filepath, 'r') as f:
             # Load the JSON file
@@ -107,7 +133,7 @@ def _get_projconf_option_dir(name, default=None):
 
 def get_home_dir():
     home_dir = _get_projconf_option_dir('home_dir', '~/.apio')
-    home_dir = utf8(re.sub(r'\~', expanduser('~').replace('\\', '/'), home_dir))
+    home_dir = re.sub(r'\~', expanduser('~').replace('\\', '/'), home_dir)
 
     paths = home_dir.split(os.pathsep)
     for path in paths:
@@ -134,11 +160,11 @@ def get_package_dir(pkg_name):
     home_dir = _get_projconf_option_dir('pkg_dir', '')
     if not home_dir:
         home_dir = _get_projconf_option_dir('home_dir', '~/.apio')
-    home_dir = utf8(re.sub(r'\~', expanduser('~').replace('\\', '/'), home_dir))
+    home_dir = re.sub(r'\~', expanduser('~').replace('\\', '/'), home_dir)
 
     paths = home_dir.split(os.pathsep)
     for path in paths:
-        package_dir = join(path, 'packages', pkg_name)
+        package_dir = safe_join(path, 'packages', pkg_name)
         if isdir(package_dir):
             return package_dir
 
@@ -162,10 +188,10 @@ def resolve_packages(packages, deps=[]):
     }
 
     bin_dir = {
-        'scons': join(base_dir['scons'], 'script'),
-        'icestorm': join(base_dir['icestorm'], 'bin'),
-        'iverilog': join(base_dir['iverilog'], 'bin'),
-        'gtkwave': join(base_dir['gtkwave'], 'bin')
+        'scons': safe_join(base_dir['scons'], 'script'),
+        'icestorm': safe_join(base_dir['icestorm'], 'bin'),
+        'iverilog': safe_join(base_dir['iverilog'], 'bin'),
+        'gtkwave': safe_join(base_dir['gtkwave'], 'bin')
     }
 
     # -- Check packages
@@ -184,14 +210,14 @@ def resolve_packages(packages, deps=[]):
 
         # Add environment variables
         if not config_data:  # /etc/apio.json file does not exist
-            os.environ['IVL'] = join(
+            os.environ['IVL'] = safe_join(
                 base_dir['iverilog'], 'lib', 'ivl')
-        os.environ['VLIB'] = join(
+        os.environ['VLIB'] = safe_join(
             base_dir['iverilog'], 'vlib', 'system.v')
 
         global scons_command
         scons_command = [normpath(sys.executable),
-                         join(bin_dir['scons'], 'scons')]
+                         safe_join(bin_dir['scons'], 'scons')]
 
     return check
 
@@ -291,7 +317,7 @@ def get_pypi_latest_version():
 
 
 def get_folder(folder):
-    return join(utf8(dirname(__file__)), folder)
+    return safe_join(dirname(__file__), folder)
 
 
 def mkdir(path):
@@ -319,12 +345,3 @@ def check_dir(_dir):
         except OSError as e:
             pass
     return _dir
-
-
-def utf8(text):
-    if (sys.version_info > (3, 0)):
-        # Python 3
-        return text
-    else:
-        # Python 2
-        return text.decode('utf-8')

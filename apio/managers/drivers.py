@@ -8,7 +8,7 @@ import os
 import click
 import subprocess
 
-from os.path import join, isfile, isdir
+from os.path import isfile, isdir
 
 from apio import util
 
@@ -37,7 +37,8 @@ FTDI_UNINSTALL_DRIVER_INSTRUCTIONS = """
 
 class Drivers(object):  # pragma: no cover
 
-    rules_local_path = join(util.get_folder('resources'), '80-icestick.rules')
+    rules_local_path = util.safe_join(
+        util.get_folder('resources'), '80-icestick.rules')
     rules_system_path = '/etc/udev/rules.d/80-icestick.rules'
 
     def enable(self):
@@ -109,9 +110,9 @@ class Drivers(object):  # pragma: no cover
 
     def _enable_windows(self):
         drivers_base_dir = util.get_package_dir('tools-drivers')
-        drivers_bin_dir = join(drivers_base_dir, 'bin')
-        drivers_share_dir = join(drivers_base_dir, 'share')
-        zadig_ini_path = join(drivers_share_dir, 'zadig.ini')
+        drivers_bin_dir = util.safe_join(drivers_base_dir, 'bin')
+        drivers_share_dir = util.safe_join(drivers_base_dir, 'share')
+        zadig_ini_path = util.safe_join(drivers_share_dir, 'zadig.ini')
         zadig_ini = 'zadig.ini'
 
         try:
@@ -123,7 +124,8 @@ class Drivers(object):  # pragma: no cover
                     with open(zadig_ini_path, 'r') as local_ini_file:
                         ini_file.write(local_ini_file.read())
 
-                result = util.exec_command(join(drivers_bin_dir, 'zadig.exe'))
+                result = util.exec_command(
+                    util.safe_join(drivers_bin_dir, 'zadig.exe'))
                 click.secho('FPGA drivers configuration finished', fg='green')
             else:
                 util._check_package('drivers')

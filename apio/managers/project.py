@@ -13,7 +13,7 @@ try:
 except ImportError:
     import configparser as ConfigParser
 
-from os.path import isfile, join
+from os.path import isfile
 
 from apio import util
 from apio.resources import Resources
@@ -32,8 +32,8 @@ class Project(object):
         project_dir = util.check_dir(project_dir)
 
         sconstruct_name = 'SConstruct'
-        sconstruct_path = join(project_dir, sconstruct_name)
-        local_sconstruct_path = join(
+        sconstruct_path = util.safe_join(project_dir, sconstruct_name)
+        local_sconstruct_path = util.safe_join(
             util.get_folder('resources'), sconstruct_name)
 
         if isfile(sconstruct_path):
@@ -62,7 +62,7 @@ class Project(object):
 
         project_dir = util.check_dir(project_dir)
 
-        ini_path = join(project_dir, PROJECT_FILENAME)
+        ini_path = util.safe_join(project_dir, PROJECT_FILENAME)
 
         # Check board
         boards = Resources().boards

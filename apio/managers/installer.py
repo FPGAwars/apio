@@ -10,9 +10,9 @@ import shutil
 import semantic_version
 
 from os import makedirs, remove, rename
-from os.path import isfile, isdir, join, basename
+from os.path import isfile, isdir, basename
 
-from apio.util import get_home_dir, get_systype
+from apio import util
 from apio.api import api_request
 from apio.resources import Resources
 from apio.profile import Profile
@@ -44,7 +44,7 @@ class Installer(object):
             self.profile = Profile()
 
             dirname = 'packages'
-            self.packages_dir = join(get_home_dir(), dirname)
+            self.packages_dir = util.safe_join(util.get_home_dir(), dirname)
 
             # Check version
             data = self.resources.packages[self.package]
@@ -114,13 +114,14 @@ class Installer(object):
                 dlpath = None
                 dlpath = self._download(self.download_url)
                 if dlpath:
-                    package_dir = join(self.packages_dir, self.package)
+                    package_dir = util.safe_join(
+                        self.packages_dir, self.package)
                     if isdir(package_dir):
                         shutil.rmtree(package_dir)
                     if self.uncompressed_name:
                         self._unpack(dlpath, self.packages_dir)
                     else:
-                        self._unpack(dlpath, join(
+                        self._unpack(dlpath, util.safe_join(
                             self.packages_dir, self.package_name))
             except Exception as e:
                 click.secho('Error: ' + str(e), fg='red')
@@ -136,8 +137,10 @@ class Installer(object):
 
             # Rename unpacked dir to package dir
             if self.uncompressed_name:
-                unpack_dir = join(self.packages_dir, self.uncompressed_name)
-                package_dir = join(self.packages_dir, self.package_name)
+                unpack_dir = util.safe_join(
+                    self.packages_dir, self.uncompressed_name)
+                package_dir = util.safe_join(
+                    self.packages_dir, self.package_name)
                 if isdir(unpack_dir):
                     rename(unpack_dir, package_dir)
 
@@ -147,10 +150,11 @@ class Installer(object):
                 'Error: No such package \'{0}\''.format(self.package),
                 fg='red')
         else:
-            if isdir(join(self.packages_dir, self.package_name)):
+            if isdir(util.safe_join(self.packages_dir, self.package_name)):
                 click.echo('Uninstalling %s package' % click.style(
                     self.package, fg='cyan'))
-                shutil.rmtree(join(self.packages_dir, self.package_name))
+                shutil.rmtree(
+                    util.safe_join(self.packages_dir, self.package_name))
                 click.secho(
                     """Package \'{}\' has been """
                     """successfully uninstalled!""".format(self.package),
@@ -162,7 +166,7 @@ class Installer(object):
             self.profile.save()
 
     def _get_platform(self):
-        return get_systype()
+        return util.get_systype()
 
     def _get_download_url(self, name, organization, tag, tarball):
         url = 'https://github.com/{0}/{1}/releases/download/{2}/{3}'.format(

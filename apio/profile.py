@@ -8,7 +8,7 @@ import json
 import click
 import semantic_version
 
-from os.path import isfile, isdir, join
+from os.path import isfile, isdir
 
 from apio import util
 
@@ -19,7 +19,8 @@ class Profile(object):
         self.config = {'exe': 'default', 'verbose': 0}
         self.labels = {'exe': 'Executable', 'verbose': 'Verbose'}
         self.packages = {}
-        self._profile_path = join(util.get_home_dir(), 'profile.json')
+        self._profile_path = util.safe_join(
+            util.get_home_dir(), 'profile.json')
         self.load()
 
     def check_package(self, name, release_name):
@@ -75,7 +76,8 @@ class Profile(object):
         elif release_name:
             dir_name = util.get_package_dir(release_name)
             if isdir(dir_name):
-                with open(join(dir_name, 'package.json'), 'r') as json_file:
+                filepath = util.safe_join(dir_name, 'package.json')
+                with open(filepath, 'r') as json_file:
                     try:
                         tmp_data = json.load(json_file)
                         if 'version' in tmp_data.keys():

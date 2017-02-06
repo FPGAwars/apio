@@ -9,7 +9,7 @@
 # ---- Licence Apache v2
 
 from os import chmod
-from os.path import join, splitext
+from os.path import splitext
 from tarfile import open as tarfile_open
 from time import mktime
 from zipfile import ZipFile
@@ -61,12 +61,12 @@ class ZIPArchive(ArchiveBase):
     def preserve_permissions(item, dest_dir):
         attrs = item.external_attr >> 16
         if attrs:
-            chmod(join(dest_dir, item.filename), attrs)
+            chmod(util.safe_join(dest_dir, item.filename), attrs)
 
     @staticmethod
     def preserve_mtime(item, dest_dir):
         util.change_filemtime(
-            join(dest_dir, item.filename),
+            util.safe_join(dest_dir, item.filename),
             mktime(tuple(list(item.date_time) + [0] * 3))
         )
 

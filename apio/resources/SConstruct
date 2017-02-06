@@ -8,7 +8,6 @@
 # ----------------------------------------------------------------------
 
 import os
-from os.path import join
 from platform import system
 
 from SCons.Script import (Builder, DefaultEnvironment, Default, AlwaysBuild,
