@@ -13,6 +13,7 @@ import re
 import sys
 import json
 import click
+import locale
 import subprocess
 from os.path import expanduser, isdir, isfile, normpath, dirname, exists
 from platform import system, uname
@@ -74,6 +75,26 @@ class AsyncPipe(Thread):  # pragma: no cover
         self.join()
 
 
+def get_systype():
+    data = uname()
+    arch = ''
+    type_ = data[0].lower()
+    if type_ == 'linux':
+        arch = data[4].lower() if data[4] else ''
+    return '%s_%s' % (type_, arch) if arch else type_
+
+
+try:
+    codepage = locale.getdefaultlocale()[1]
+    if 'darwin' in get_systype():
+        UTF = True
+    else:
+        UTF = codepage.lower().find('utf') >= 0
+except:
+    # Incorrect locale implementation, assume the worst
+    UTF = False
+
+
 def unicoder(p):
     """ Make sure a Unicode string is returned
         When `force` is True, ignore filesystem encoding
@@ -81,10 +102,12 @@ def unicoder(p):
     if isinstance(p, unicode):
         return p
     if isinstance(p, str):
-        try:
-            return p.decode('utf-8')
-        except:
-            return p
+        if UTF:
+            try:
+                return p.decode('utf-8')
+            except:
+                return p.decode(codepage)
+        return p.decode(codepage)
     else:
         return unicode(str(p))
 
@@ -98,15 +121,6 @@ def safe_join(*paths):
         for path in paths:
             npaths += (unicoder(path),)
         return os.path.join(*npaths)
-
-
-def get_systype():
-    data = uname()
-    arch = ''
-    type_ = data[0].lower()
-    if type_ == 'linux':
-        arch = data[4].lower() if data[4] else ''
-    return '%s_%s' % (type_, arch) if arch else type_
 
 
 def _get_config_data():
