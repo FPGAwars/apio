@@ -9,10 +9,9 @@ import click
 from apio.managers.project import Project
 
 # Python3 compat
-try:
+import sys
+if (sys.version_info > (3, 0)):
     unicode = str
-except NameError:  # pragma: no cover
-    pass
 
 
 @click.command('init')

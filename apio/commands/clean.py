@@ -9,10 +9,9 @@ import click
 from apio.managers.scons import SCons
 
 # Python3 compat
-try:
+import sys
+if (sys.version_info > (3, 0)):
     unicode = str
-except NameError:  # pragma: no cover
-    pass
 
 
 @click.command('clean')

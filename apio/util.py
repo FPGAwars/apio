@@ -25,10 +25,8 @@ requests.packages.urllib3.disable_warnings()
 __version__ = None
 
 # Python3 compat
-try:
+if (sys.version_info > (3, 0)):
     unicode = str
-except NameError:  # pragma: no cover
-    pass
 
 
 class ApioException(Exception):
