@@ -78,9 +78,11 @@ class Installer(object):
 
                 # Valid version
                 if version:
-                    self.compressed_name = data['release']['compressed_name'].replace(
+                    compressed_name = data['release']['compressed_name']
+                    self.compressed_name = compressed_name.replace(
                         '%V', self.version).replace('%P', self.platform)
-                    self.uncompressed_name = data['release']['uncompressed_name'].replace(
+                    uncompressed_name = data['release']['uncompressed_name']
+                    self.uncompressed_name = uncompressed_name.replace(
                         '%V', self.version).replace('%P', self.platform)
 
                     self.tarball = self._get_tarball_name(
@@ -91,7 +93,8 @@ class Installer(object):
                     self.download_url = self._get_download_url(
                         data['repository']['name'],
                         data['repository']['organization'],
-                        data['release']['tag_name'].replace('%V', self.version),
+                        data['release']['tag_name'].replace(
+                            '%V', self.version),
                         self.tarball
                     )
 

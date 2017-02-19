@@ -77,13 +77,13 @@ class Profile(object):
             dir_name = util.get_package_dir(release_name)
             if isdir(dir_name):
                 filepath = util.safe_join(dir_name, 'package.json')
-                with open(filepath, 'r') as json_file:
-                    try:
+                try:
+                    with open(filepath, 'r') as json_file:
                         tmp_data = json.load(json_file)
                         if 'version' in tmp_data.keys():
                             version = tmp_data['version']
-                    except:
-                        pass
+                except:
+                    pass
         return version
 
     def load(self):
