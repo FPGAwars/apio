@@ -33,7 +33,7 @@
       "organization": "FPGAwars"
     },
     "release": {
-      "tag_name": "0.%V",
+      "tag_name": "v%V",
       "compressed_name": "toolchain-icestorm-%P-%V",
       "uncompressed_name": "toolchain-icestorm",
       "package_name": "toolchain-icestorm",

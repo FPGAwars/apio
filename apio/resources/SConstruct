@@ -62,6 +62,8 @@ if 'build' in COMMAND_LINE_TARGETS or \
 # -- Resources paths
 IVL_PATH = os.environ['IVL'] if 'IVL' in os.environ else ''
 VLIB_PATH = os.environ['VLIB'] if 'VLIB' in os.environ else ''
+ICEBOX_PATH = os.environ['ICEBOX'] if 'ICEBOX' in os.environ else ''
+CHIPDB_PATH = os.path.join(ICEBOX_PATH, 'chipdb-{0}.txt'.format(FPGA_SIZE))
 
 isWindows = 'Windows' == system()
 VVP_PATH = '' if isWindows or not IVL_PATH else '-M "{0}"'.format(IVL_PATH)
@@ -154,11 +156,10 @@ bitstream = Builder(
     src_suffix='.asc')
 
 # -- Icetime builder
-#       update on toolchain-icestorm 1.10.0
 # https://github.com/cliffordwolf/icestorm/issues/57
 time_rpt = Builder(
-    action='icetime -d {0}{1} -P {2} -mtr $TARGET $SOURCE'.format(
-        FPGA_TYPE, FPGA_SIZE, FPGA_PACK),
+    action='icetime -d {0}{1} -P {2} -C "{3}" -mtr $TARGET $SOURCE'.format(
+        FPGA_TYPE, FPGA_SIZE, FPGA_PACK, CHIPDB_PATH),
     suffix='.rpt',
     src_suffix='.asc')
 

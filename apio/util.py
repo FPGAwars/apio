@@ -226,6 +226,8 @@ def resolve_packages(packages, deps=[]):
                 base_dir['iverilog'], 'lib', 'ivl')
         os.environ['VLIB'] = safe_join(
             base_dir['iverilog'], 'vlib', 'system.v')
+        os.environ['ICEBOX'] = safe_join(
+            base_dir['icestorm'], 'share', 'icebox')
 
         global scons_command
         scons_command = [normpath(sys.executable),

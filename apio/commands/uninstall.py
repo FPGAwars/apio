@@ -47,6 +47,6 @@ def _uninstall(packages, platform):
         for package in packages:
             if package == 'pio-fpga':  # skip pio-fpga
                 continue
-            Installer(package, platform).uninstall()
+            Installer(package, platform, checkversion=False).uninstall()
     else:
         click.secho('Abort!', fg='red')

@@ -23,7 +23,7 @@ from apio.managers.unpacker import FileUnpacker
 
 class Installer(object):
 
-    def __init__(self, package, platform='', force=False):
+    def __init__(self, package, platform='', force=False, checkversion=True):
 
         # Parse version
         if '@' in package:
@@ -46,53 +46,54 @@ class Installer(object):
             dirname = 'packages'
             self.packages_dir = util.safe_join(util.get_home_dir(), dirname)
 
-            # Check version
+            # Get data
             data = self.resources.packages[self.package]
             distribution = self.resources.distribution
+
             self.specversion = distribution['packages'][self.package]
+            self.package_name = data['release']['package_name']
+            self.platform = platform or self._get_platform()
 
-            version = self._get_valid_version(
-                data['repository']['name'],
-                data['repository']['organization'],
-                data['release']['tag_name'],
-                self.version,
-                self.specversion
-            )
+            if isinstance(data['release']['extension'], dict):
+                for os in ['linux', 'darwin', 'windows']:
+                    if os in self.platform:
+                        self.extension = data['release']['extension'][os]
+            else:
+                self.extension = data['release']['extension']
 
-            # Valid version added with @
-            if version and self.version:
-                self.forced_install = True
-            self.version = version if version else ''
-
-            # Valid version
-            if version:
-                self.platform = platform or self._get_platform()
-
-                release = data['release']
-                self.compressed_name = release['compressed_name'].replace(
-                    '%V', self.version).replace('%P', self.platform)
-                self.uncompressed_name = release['uncompressed_name'].replace(
-                    '%V', self.version).replace('%P', self.platform)
-                self.package_name = data['release']['package_name']
-
-                if isinstance(data['release']['extension'], dict):
-                    for os in ['linux', 'darwin', 'windows']:
-                        if os in self.platform:
-                            self.extension = data['release']['extension'][os]
-                else:
-                    self.extension = data['release']['extension']
-
-                self.tarball = self._get_tarball_name(
-                    self.compressed_name,
-                    self.extension
-                )
-
-                self.download_url = self._get_download_url(
+            if checkversion:
+                # Check version
+                version = self._get_valid_version(
                     data['repository']['name'],
                     data['repository']['organization'],
-                    data['release']['tag_name'].replace('%V', self.version),
-                    self.tarball
+                    data['release']['tag_name'],
+                    self.version,
+                    self.specversion
                 )
+
+                # Valid version added with @
+                if version and self.version:
+                    self.forced_install = True
+                self.version = version if version else ''
+
+                # Valid version
+                if version:
+                    self.compressed_name = data['release']['compressed_name'].replace(
+                        '%V', self.version).replace('%P', self.platform)
+                    self.uncompressed_name = data['release']['uncompressed_name'].replace(
+                        '%V', self.version).replace('%P', self.platform)
+
+                    self.tarball = self._get_tarball_name(
+                        self.compressed_name,
+                        self.extension
+                    )
+
+                    self.download_url = self._get_download_url(
+                        data['repository']['name'],
+                        data['repository']['organization'],
+                        data['release']['tag_name'].replace('%V', self.version),
+                        self.tarball
+                    )
 
     def install(self):
         if self.packages_dir == '':
