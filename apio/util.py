@@ -14,9 +14,9 @@ import sys
 import json
 import click
 import locale
+import platform
 import subprocess
 from os.path import expanduser, isdir, isfile, normpath, dirname, exists
-from platform import system, uname
 from threading import Thread
 
 import requests
@@ -74,12 +74,11 @@ class AsyncPipe(Thread):  # pragma: no cover
 
 
 def get_systype():
-    data = uname()
-    arch = ''
-    type_ = data[0].lower()
-    if type_ == 'linux':
-        arch = data[4].lower() if data[4] else ''
-    return '%s_%s' % (type_, arch) if arch else type_
+    type_ = platform.system().lower()
+    arch = platform.machine().lower()
+    if type_ == "windows":
+        arch = "amd64" if platform.architecture()[0] == "64bit" else "x86"
+    return "%s_%s" % (type_, arch) if arch else type_
 
 
 try:
@@ -225,7 +224,7 @@ def resolve_packages(packages, deps=[]):
             os.environ['IVL'] = safe_join(
                 base_dir['iverilog'], 'lib', 'ivl')
         os.environ['VLIB'] = safe_join(
-            base_dir['iverilog'], 'vlib', 'system.v')
+            base_dir['iverilog'], 'vlib')
         os.environ['ICEBOX'] = safe_join(
             base_dir['icestorm'], 'share', 'icebox')
 
@@ -281,7 +280,7 @@ def exec_command(*args, **kwargs):  # pragma: no cover
     default = dict(
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        shell=system() == 'Windows'
+        shell=platform.system() == 'Windows'
     )
     default.update(kwargs)
     kwargs = default

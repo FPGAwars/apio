@@ -35,13 +35,9 @@
     "release": {
       "tag_name": "v%V",
       "compressed_name": "toolchain-icestorm-%P-%V",
-      "uncompressed_name": "toolchain-icestorm",
+      "uncompressed_name": "",
       "package_name": "toolchain-icestorm",
-      "extension": {
-        "linux": "tar.gz",
-        "darwin": "tar.gz",
-        "windows": "zip"
-      }
+      "extension":  "tar.gz"
     },
     "description": "Icestorm toolchain"
   },

@@ -27,7 +27,6 @@ platforms = ['linux_x86_64',
 @click.option('-f', '--force', is_flag=True,
               help='Force the packages installation.')
 @click.option('-p', '--platform', type=click.Choice(platforms),
-              metavar='platform',
               help='Set the platform [{}] (Advanced).'.format(
                 ', '.join(platforms)))
 def cli(ctx, packages, all, list, force, platform):
