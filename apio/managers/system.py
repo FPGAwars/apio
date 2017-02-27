@@ -51,7 +51,7 @@ class System(object):  # pragma: no cover
 
     def _run(self, command):
         result = {}
-        system_base_dir = util.get_package_dir('system')
+        system_base_dir = util.get_package_dir('tools-system')
         system_bin_dir = util.safe_join(system_base_dir, 'bin')
 
         if isdir(system_bin_dir):

@@ -64,7 +64,7 @@
       "tag_name": "v%V",
       "compressed_name": "tools-system-%P-%V",
       "uncompressed_name": "",
-      "package_name": "system",
+      "package_name": "tools-system",
       "extension": "tar.gz"
     },
     "description": "System tools"
