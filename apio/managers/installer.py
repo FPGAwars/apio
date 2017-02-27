@@ -142,7 +142,7 @@ class Installer(object):
                         fg='red')
             if dlpath:
                 package_dir = util.safe_join(
-                    self.packages_dir, self.package)
+                    self.packages_dir, self.package_name)
                 if isdir(package_dir):
                     shutil.rmtree(package_dir)
                 if self.uncompressed_name:
