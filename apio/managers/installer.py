@@ -62,7 +62,8 @@ class Installer(object):
                     data['repository']['organization'],
                     data['release']['tag_name'],
                     self.version,
-                    self.specversion
+                    self.specversion,
+                    force
                 )
 
                 # Valid version added with @
@@ -207,7 +208,7 @@ class Installer(object):
         return tarball
 
     def _get_valid_version(self, name, organization, tag_name,
-                           version='', specversion=''):
+                           version='', specversion='', force=False):
         # Check spec version
         try:
             spec = semantic_version.Spec(specversion)
@@ -220,7 +221,7 @@ class Installer(object):
         releases = api_request('{}/releases'.format(name), organization)
         if releases is not None:
             for release in releases:
-                if 'tag_name' in release and not release['prerelease']:
+                if 'tag_name' in release and (not release['prerelease'] or force):
                     if version:
                         # Version number via @
                         tag = tag_name.replace('%V', version)
