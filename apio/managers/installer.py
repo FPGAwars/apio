@@ -220,7 +220,7 @@ class Installer(object):
         releases = api_request('{}/releases'.format(name), organization)
         if releases is not None:
             for release in releases:
-                if 'tag_name' in release:
+                if 'tag_name' in release and not release['prerelease']:
                     if version:
                         # Version number via @
                         tag = tag_name.replace('%V', version)
