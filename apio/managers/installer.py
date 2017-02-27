@@ -150,15 +150,14 @@ class Installer(object):
                 else:
                     self._unpack(dlpath, util.safe_join(
                         self.packages_dir, self.package_name))
-            else:
-                if dlpath:
-                    remove(dlpath)
-                    self.profile.add_package(self.package, self.version)
-                    self.profile.save()
-                    click.secho(
-                        """Package \'{}\' has been """
-                        """successfully installed!""".format(self.package),
-                        fg='green')
+
+                remove(dlpath)
+                self.profile.add_package(self.package, self.version)
+                self.profile.save()
+                click.secho(
+                    """Package \'{}\' has been """
+                    """successfully installed!""".format(self.package),
+                    fg='green')
 
             # Rename unpacked dir to package dir
             if self.uncompressed_name:
@@ -221,7 +220,8 @@ class Installer(object):
         releases = api_request('{}/releases'.format(name), organization)
         if releases is not None:
             for release in releases:
-                if 'tag_name' in release and (not release['prerelease'] or force):
+                prerelease = 'prerelease' in release and release['prerelease']
+                if 'tag_name' in release and (not prerelease or force):
                     if version:
                         # Version number via @
                         tag = tag_name.replace('%V', version)
