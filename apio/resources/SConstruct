@@ -16,7 +16,6 @@ from SCons.Script import (Builder, DefaultEnvironment, Default, AlwaysBuild,
 
 # -- Load arguments
 PROG = ARGUMENTS.get('prog', '')
-DEVICE = ARGUMENTS.get('device', '-1')
 FPGA_SIZE = ARGUMENTS.get('fpga_size', '')
 FPGA_TYPE = ARGUMENTS.get('fpga_type', '')
 FPGA_PACK = ARGUMENTS.get('fpga_pack', '')
@@ -56,8 +55,6 @@ if 'build' in COMMAND_LINE_TARGETS or \
             Exit(1)
 
         print('PROG: {}'.format(PROG))
-        if DEVICE != '':
-            print('DEVICE: {}'.format(DEVICE))
 
 # -- Resources paths
 IVL_PATH = os.environ['IVL'] if 'IVL' in os.environ else ''
@@ -177,8 +174,7 @@ build = env.Alias('build', bitstream)
 AlwaysBuild(build)
 
 # -- Upload the bitstream into FPGA
-upload = env.Alias('upload', bitstream, '{0} $SOURCE'.format(
-    PROG.replace('%DEVICE', DEVICE)))
+upload = env.Alias('upload', bitstream, '{0} $SOURCE'.format(PROG))
 AlwaysBuild(upload)
 
 # -- Target time: calculate the time

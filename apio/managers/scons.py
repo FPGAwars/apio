@@ -144,8 +144,8 @@ class SCons(object):
                 return 1
 
         return self.run('upload',
-                        variables + ['device={0}'.format(device),
-                                     'prog={0}'.format(programmer)],
+                        variables + ['prog={0}'.format(
+                                        programmer.replace('%D%', device))],
                         board,
                         deps=['scons', 'icestorm'])
 
