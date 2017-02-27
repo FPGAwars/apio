@@ -81,7 +81,7 @@
       "package_name": "tool-gtkwave",
       "extension": "tar.gz",
       "available_platforms": [
-        "windows"
+        "windows", "windows_x86", "windows_amd64"
       ]
     },
     "description": "GTKWave tool"
@@ -98,7 +98,7 @@
       "package_name": "tools-drivers",
       "extension": "tar.gz",
       "available_platforms": [
-        "windows"
+        "windows", "windows_x86", "windows_amd64"
       ]
     },
     "description": "Drivers tools"

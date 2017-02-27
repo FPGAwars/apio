@@ -52,14 +52,8 @@ class Installer(object):
 
             self.specversion = distribution['packages'][self.package]
             self.package_name = data['release']['package_name']
-            self.platform = platform or self._get_platform()
-
-            if isinstance(data['release']['extension'], dict):
-                for os in ['linux', 'darwin', 'windows']:
-                    if os in self.platform:
-                        self.extension = data['release']['extension'][os]
-            else:
-                self.extension = data['release']['extension']
+            self.extension = data['release']['extension']
+            platform = platform or self._get_platform()
 
             if checkversion:
                 # Check version
@@ -78,25 +72,34 @@ class Installer(object):
 
                 # Valid version
                 if version:
-                    compressed_name = data['release']['compressed_name']
-                    self.compressed_name = compressed_name.replace(
-                        '%V', self.version).replace('%P', self.platform)
-                    uncompressed_name = data['release']['uncompressed_name']
-                    self.uncompressed_name = uncompressed_name.replace(
-                        '%V', self.version).replace('%P', self.platform)
+                    # e.g., [linux_x86_64, linux]
+                    self.download_urls = [
+                        self.get_download_url(data, platform),
+                        self.get_download_url(data, platform.split('_')[0])
+                    ]
 
-                    self.tarball = self._get_tarball_name(
-                        self.compressed_name,
-                        self.extension
-                    )
+    def get_download_url(self, data, platform):
+        compressed_name = data['release']['compressed_name']
+        self.compressed_name = compressed_name.replace(
+            '%V', self.version).replace('%P', platform)
+        uncompressed_name = data['release']['uncompressed_name']
+        self.uncompressed_name = uncompressed_name.replace(
+            '%V', self.version).replace('%P', platform)
 
-                    self.download_url = self._get_download_url(
-                        data['repository']['name'],
-                        data['repository']['organization'],
-                        data['release']['tag_name'].replace(
-                            '%V', self.version),
-                        self.tarball
-                    )
+        tarball = self._get_tarball_name(
+            self.compressed_name,
+            self.extension
+        )
+
+        download_url = self._get_download_url(
+            data['repository']['name'],
+            data['repository']['organization'],
+            data['release']['tag_name'].replace(
+                '%V', self.version),
+            tarball
+        )
+
+        return download_url
 
     def install(self):
         if self.packages_dir == '':
@@ -114,21 +117,38 @@ class Installer(object):
             if not isdir(self.packages_dir):
                 makedirs(self.packages_dir)
             assert isdir(self.packages_dir)
+            dlpath = None
             try:
-                dlpath = None
-                dlpath = self._download(self.download_url)
-                if dlpath:
-                    package_dir = util.safe_join(
-                        self.packages_dir, self.package)
-                    if isdir(package_dir):
-                        shutil.rmtree(package_dir)
-                    if self.uncompressed_name:
-                        self._unpack(dlpath, self.packages_dir)
-                    else:
-                        self._unpack(dlpath, util.safe_join(
-                            self.packages_dir, self.package_name))
+                # Try full platform
+                platform_download_url = self.download_urls[0]
+                dlpath = self._download(platform_download_url)
             except Exception as e:
-                click.secho('Error: ' + str(e), fg='red')
+                # Try os name
+                os_download_url = self.download_urls[1]
+                if platform_download_url != os_download_url:
+                    click.secho(
+                        'Warnig: full platform do not match. Trying OS name',
+                        fg='yellow')
+                    try:
+                        dlpath = self._download(os_download_url)
+                    except Exception as e:
+                        click.secho(
+                            'Error: package not availabe for this platform',
+                            fg='red')
+                else:
+                    click.secho(
+                        'Error: package not availabe for this platform',
+                        fg='red')
+            if dlpath:
+                package_dir = util.safe_join(
+                    self.packages_dir, self.package)
+                if isdir(package_dir):
+                    shutil.rmtree(package_dir)
+                if self.uncompressed_name:
+                    self._unpack(dlpath, self.packages_dir)
+                else:
+                    self._unpack(dlpath, util.safe_join(
+                        self.packages_dir, self.package_name))
             else:
                 if dlpath:
                     remove(dlpath)

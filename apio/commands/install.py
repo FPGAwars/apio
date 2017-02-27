@@ -9,11 +9,14 @@ import click
 from apio.managers.installer import Installer
 from apio.resources import Resources
 
-platforms = ['linux_x86_64',
+platforms = ['linux',
+             'linux_x86_64',
              'linux_i686',
              'linux_armv7l',
              'linux_aarch64',
              'windows',
+             'windows_x86',
+             'windows_amd64',
              'darwin']
 
 
@@ -27,7 +30,7 @@ platforms = ['linux_x86_64',
 @click.option('-f', '--force', is_flag=True,
               help='Force the packages installation.')
 @click.option('-p', '--platform', type=click.Choice(platforms),
-              help='Set the platform [{}] (Advanced).'.format(
+              metavar='', help='Set the platform [{}] (Advanced).'.format(
                 ', '.join(platforms)))
 def cli(ctx, packages, all, list, force, platform):
     """Install packages."""
