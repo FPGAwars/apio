@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016 FPGAwars
+# -- (C) 2016-2017 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
@@ -10,9 +10,9 @@ import shutil
 import semantic_version
 
 from os import makedirs, remove, rename
-from os.path import isfile, isdir, join, basename
+from os.path import isfile, isdir, basename
 
-from apio.util import get_home_dir, get_systype
+from apio import util
 from apio.api import api_request
 from apio.resources import Resources
 from apio.profile import Profile
@@ -23,7 +23,7 @@ from apio.managers.unpacker import FileUnpacker
 
 class Installer(object):
 
-    def __init__(self, package, platform='', force=False):
+    def __init__(self, package, platform='', force=False, checkversion=True):
 
         # Parse version
         if '@' in package:
@@ -44,55 +44,63 @@ class Installer(object):
             self.profile = Profile()
 
             dirname = 'packages'
-            self.packages_dir = join(get_home_dir(), dirname)
+            self.packages_dir = util.safe_join(util.get_home_dir(), dirname)
 
-            # Check version
+            # Get data
             data = self.resources.packages[self.package]
             distribution = self.resources.distribution
+
             self.specversion = distribution['packages'][self.package]
+            self.package_name = data['release']['package_name']
+            self.extension = data['release']['extension']
+            platform = platform or self._get_platform()
 
-            version = self._get_valid_version(
-                data['repository']['name'],
-                data['repository']['organization'],
-                data['release']['tag_name'],
-                self.version,
-                self.specversion
-            )
-
-            # Valid version added with @
-            if version and self.version:
-                self.forced_install = True
-            self.version = version if version else ''
-
-            # Valid version
-            if version:
-                self.platform = platform or self._get_platform()
-
-                release = data['release']
-                self.compressed_name = release['compressed_name'].replace(
-                    '%V', self.version).replace('%P', self.platform)
-                self.uncompressed_name = release['uncompressed_name'].replace(
-                    '%V', self.version).replace('%P', self.platform)
-                self.package_name = data['release']['package_name']
-
-                if isinstance(data['release']['extension'], dict):
-                    for os in ['linux', 'darwin', 'windows']:
-                        if os in self.platform:
-                            self.extension = data['release']['extension'][os]
-                else:
-                    self.extension = data['release']['extension']
-
-                self.tarball = self._get_tarball_name(
-                    self.compressed_name,
-                    self.extension
-                )
-
-                self.download_url = self._get_download_url(
+            if checkversion:
+                # Check version
+                version = self._get_valid_version(
                     data['repository']['name'],
                     data['repository']['organization'],
-                    data['release']['tag_name'].replace('%V', self.version),
-                    self.tarball
+                    data['release']['tag_name'],
+                    self.version,
+                    self.specversion,
+                    force
                 )
+
+                # Valid version added with @
+                if version and self.version:
+                    self.forced_install = True
+                self.version = version if version else ''
+
+                # Valid version
+                if version:
+                    # e.g., [linux_x86_64, linux]
+                    self.download_urls = [
+                        self.get_download_url(data, platform),
+                        self.get_download_url(data, platform.split('_')[0])
+                    ]
+
+    def get_download_url(self, data, platform):
+        compressed_name = data['release']['compressed_name']
+        self.compressed_name = compressed_name.replace(
+            '%V', self.version).replace('%P', platform)
+        uncompressed_name = data['release']['uncompressed_name']
+        self.uncompressed_name = uncompressed_name.replace(
+            '%V', self.version).replace('%P', platform)
+
+        tarball = self._get_tarball_name(
+            self.compressed_name,
+            self.extension
+        )
+
+        download_url = self._get_download_url(
+            data['repository']['name'],
+            data['repository']['organization'],
+            data['release']['tag_name'].replace(
+                '%V', self.version),
+            tarball
+        )
+
+        return download_url
 
     def install(self):
         if self.packages_dir == '':
@@ -110,34 +118,53 @@ class Installer(object):
             if not isdir(self.packages_dir):
                 makedirs(self.packages_dir)
             assert isdir(self.packages_dir)
+            dlpath = None
             try:
-                dlpath = None
-                dlpath = self._download(self.download_url)
-                if dlpath:
-                    package_dir = join(self.packages_dir, self.package)
-                    if isdir(package_dir):
-                        shutil.rmtree(package_dir)
-                    if self.uncompressed_name:
-                        self._unpack(dlpath, self.packages_dir)
-                    else:
-                        self._unpack(dlpath, join(
-                            self.packages_dir, self.package_name))
+                # Try full platform
+                platform_download_url = self.download_urls[0]
+                dlpath = self._download(platform_download_url)
             except Exception as e:
-                click.secho('Error: ' + str(e), fg='red')
-            else:
-                if dlpath:
-                    remove(dlpath)
-                    self.profile.add_package(self.package, self.version)
-                    self.profile.save()
+                # Try os name
+                os_download_url = self.download_urls[1]
+                if platform_download_url != os_download_url:
                     click.secho(
-                        """Package \'{}\' has been """
-                        """successfully installed!""".format(self.package),
-                        fg='green')
+                        'Warnig: full platform do not match. Trying OS name',
+                        fg='yellow')
+                    try:
+                        dlpath = self._download(os_download_url)
+                    except Exception as e:
+                        click.secho(
+                            'Error: package not availabe for this platform',
+                            fg='red')
+                else:
+                    click.secho(
+                        'Error: package not availabe for this platform',
+                        fg='red')
+            if dlpath:
+                package_dir = util.safe_join(
+                    self.packages_dir, self.package_name)
+                if isdir(package_dir):
+                    shutil.rmtree(package_dir)
+                if self.uncompressed_name:
+                    self._unpack(dlpath, self.packages_dir)
+                else:
+                    self._unpack(dlpath, util.safe_join(
+                        self.packages_dir, self.package_name))
+
+                remove(dlpath)
+                self.profile.add_package(self.package, self.version)
+                self.profile.save()
+                click.secho(
+                    """Package \'{}\' has been """
+                    """successfully installed!""".format(self.package),
+                    fg='green')
 
             # Rename unpacked dir to package dir
             if self.uncompressed_name:
-                unpack_dir = join(self.packages_dir, self.uncompressed_name)
-                package_dir = join(self.packages_dir, self.package_name)
+                unpack_dir = util.safe_join(
+                    self.packages_dir, self.uncompressed_name)
+                package_dir = util.safe_join(
+                    self.packages_dir, self.package_name)
                 if isdir(unpack_dir):
                     rename(unpack_dir, package_dir)
 
@@ -147,10 +174,11 @@ class Installer(object):
                 'Error: No such package \'{0}\''.format(self.package),
                 fg='red')
         else:
-            if isdir(join(self.packages_dir, self.package_name)):
+            if isdir(util.safe_join(self.packages_dir, self.package_name)):
                 click.echo('Uninstalling %s package' % click.style(
                     self.package, fg='cyan'))
-                shutil.rmtree(join(self.packages_dir, self.package_name))
+                shutil.rmtree(
+                    util.safe_join(self.packages_dir, self.package_name))
                 click.secho(
                     """Package \'{}\' has been """
                     """successfully uninstalled!""".format(self.package),
@@ -162,7 +190,7 @@ class Installer(object):
             self.profile.save()
 
     def _get_platform(self):
-        return get_systype()
+        return util.get_systype()
 
     def _get_download_url(self, name, organization, tag, tarball):
         url = 'https://github.com/{0}/{1}/releases/download/{2}/{3}'.format(
@@ -179,7 +207,7 @@ class Installer(object):
         return tarball
 
     def _get_valid_version(self, name, organization, tag_name,
-                           version='', specversion=''):
+                           version='', specversion='', force=False):
         # Check spec version
         try:
             spec = semantic_version.Spec(specversion)
@@ -192,7 +220,8 @@ class Installer(object):
         releases = api_request('{}/releases'.format(name), organization)
         if releases is not None:
             for release in releases:
-                if 'tag_name' in release:
+                prerelease = 'prerelease' in release and release['prerelease']
+                if 'tag_name' in release and (not prerelease or force):
                     if version:
                         # Version number via @
                         tag = tag_name.replace('%V', version)

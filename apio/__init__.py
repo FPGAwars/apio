@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016 FPGAwars
+# -- (C) 2016-2017 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
-VERSION = (0, 2, 0)
+VERSION = (0, 2, 2)
 __version__ = ".".join([str(s) for s in VERSION])
 
 __title__ = 'apio'

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016 FPGAwars
+# -- (C) 2016-2017 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 # -- Derived from:
@@ -13,9 +13,10 @@ import re
 import sys
 import json
 import click
+import locale
+import platform
 import subprocess
-from os.path import expanduser, join, isdir, isfile, normpath
-from platform import system, uname
+from os.path import expanduser, isdir, isfile, normpath, dirname, exists
 from threading import Thread
 
 import requests
@@ -24,10 +25,8 @@ requests.packages.urllib3.disable_warnings()
 __version__ = None
 
 # Python3 compat
-try:
+if (sys.version_info > (3, 0)):
     unicode = str
-except NameError:  # pragma: no cover
-    pass
 
 
 class ApioException(Exception):
@@ -75,17 +74,55 @@ class AsyncPipe(Thread):  # pragma: no cover
 
 
 def get_systype():
-    data = uname()
-    arch = ''
-    type_ = data[0].lower()
-    if type_ == 'linux':
-        arch = data[4].lower() if data[4] else ''
-    return '%s_%s' % (type_, arch) if arch else type_
+    type_ = platform.system().lower()
+    arch = platform.machine().lower()
+    if type_ == "windows":
+        arch = "amd64" if platform.architecture()[0] == "64bit" else "x86"
+    return "%s_%s" % (type_, arch) if arch else type_
+
+
+try:
+    codepage = locale.getdefaultlocale()[1]
+    if 'darwin' in get_systype():
+        UTF = True
+    else:
+        UTF = codepage.lower().find('utf') >= 0
+except:
+    # Incorrect locale implementation, assume the worst
+    UTF = False
+
+
+def unicoder(p):
+    """ Make sure a Unicode string is returned
+        When `force` is True, ignore filesystem encoding
+    """
+    if isinstance(p, unicode):
+        return p
+    if isinstance(p, str):
+        if UTF:
+            try:
+                return p.decode('utf-8')
+            except:
+                return p.decode(codepage)
+        return p.decode(codepage)
+    else:
+        return unicode(str(p))
+
+
+def safe_join(*paths):
+    """ Join paths in a Unicode-safe way """
+    try:
+        return os.path.join(*paths)
+    except UnicodeDecodeError:
+        npaths = ()
+        for path in paths:
+            npaths += (unicoder(path),)
+        return os.path.join(*npaths)
 
 
 def _get_config_data():
     config_data = None
-    filepath = join(os.sep, 'etc', 'apio.json')
+    filepath = safe_join(os.sep, 'etc', 'apio.json')
     if isfile(filepath):
         with open(filepath, 'r') as f:
             # Load the JSON file
@@ -138,7 +175,7 @@ def get_package_dir(pkg_name):
 
     paths = home_dir.split(os.pathsep)
     for path in paths:
-        package_dir = join(path, 'packages', pkg_name)
+        package_dir = safe_join(path, 'packages', pkg_name)
         if isdir(package_dir):
             return package_dir
 
@@ -162,10 +199,10 @@ def resolve_packages(packages, deps=[]):
     }
 
     bin_dir = {
-        'scons': join(base_dir['scons'], 'script'),
-        'icestorm': join(base_dir['icestorm'], 'bin'),
-        'iverilog': join(base_dir['iverilog'], 'bin'),
-        'gtkwave': join(base_dir['gtkwave'], 'bin')
+        'scons': safe_join(base_dir['scons'], 'script'),
+        'icestorm': safe_join(base_dir['icestorm'], 'bin'),
+        'iverilog': safe_join(base_dir['iverilog'], 'bin'),
+        'gtkwave': safe_join(base_dir['gtkwave'], 'bin')
     }
 
     # -- Check packages
@@ -184,14 +221,16 @@ def resolve_packages(packages, deps=[]):
 
         # Add environment variables
         if not config_data:  # /etc/apio.json file does not exist
-            os.environ['IVL'] = join(
+            os.environ['IVL'] = safe_join(
                 base_dir['iverilog'], 'lib', 'ivl')
-        os.environ['VLIB'] = join(
-            base_dir['iverilog'], 'vlib', 'system.v')
+        os.environ['VLIB'] = safe_join(
+            base_dir['iverilog'], 'vlib')
+        os.environ['ICEBOX'] = safe_join(
+            base_dir['icestorm'], 'share', 'icebox')
 
         global scons_command
         scons_command = [normpath(sys.executable),
-                         join(bin_dir['scons'], 'scons')]
+                         safe_join(bin_dir['scons'], 'scons')]
 
     return check
 
@@ -241,7 +280,7 @@ def exec_command(*args, **kwargs):  # pragma: no cover
     default = dict(
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        shell=system() == 'Windows'
+        shell=platform.system() == 'Windows'
     )
     default.update(kwargs)
     kwargs = default
@@ -288,3 +327,34 @@ def get_pypi_latest_version():
         if r:
             r.close()
     return version
+
+
+def get_folder(folder):
+    return safe_join(dirname(__file__), folder)
+
+
+def mkdir(path):
+    path = dirname(path)
+    if not exists(path):
+        try:
+            os.makedirs(path)
+        except OSError:
+            pass
+
+
+def check_dir(_dir):
+    if _dir is None:
+        _dir = os.getcwd()
+
+    if isfile(_dir):
+        click.secho(
+            'Error: project directory is already a file: {0}'.format(_dir),
+            fg='red')
+        exit(1)
+
+    if not exists(_dir):
+        try:
+            os.makedirs(_dir)
+        except OSError:
+            pass
+    return _dir

@@ -28,17 +28,17 @@ Options
 .. option::
     --lsftdi
 
-List all connected FTDI devices
+List all connected FTDI devices.
 
 .. option::
     --lsusb
 
-List all connected USB devices
+List all connected USB devices.
 
 .. option::
     -i, --info
 
-Show system information
+Show system information.
 
 Examples
 --------
@@ -50,7 +50,7 @@ Examples
   $ apio system --lsftdi
   Number of FTDI devices found: 2
   Checking device: 0
-  Manufacturer: bqlabs, Description: IceZUM Alhambra - 5 (bqlabs)
+  Manufacturer: Mareldem, Description: IceZUM Alhambra v1.1 - B01-020
 
   Checking device: 1
   Manufacturer: Lattice, Description: Lattice FTUSB Interface Cable

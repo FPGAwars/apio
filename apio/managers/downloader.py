@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016 FPGAwars
+# -- (C) 2016-2017 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 # -- Derived from:
@@ -13,7 +13,6 @@ import requests
 
 from email.utils import parsedate_tz
 from math import ceil
-from os.path import join
 from time import mktime
 
 from apio import util
@@ -36,7 +35,7 @@ class FileDownloader(object):
 
         self._destination = self._fname
         if dest_dir:
-            self.set_destination(join(dest_dir, self._fname))
+            self.set_destination(util.safe_join(dest_dir, self._fname))
 
         self._progressbar = None
         self._request = None

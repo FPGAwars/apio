@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016 FPGAwars
+# -- (C) 2016-2017 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
@@ -9,10 +9,9 @@ import click
 from apio.managers.project import Project
 
 # Python3 compat
-try:
+import sys
+if (sys.version_info > (3, 0)):
     unicode = str
-except NameError:  # pragma: no cover
-    pass
 
 
 @click.command('init')
@@ -21,7 +20,7 @@ except NameError:  # pragma: no cover
               help='Create default SConstruct file.')
 @click.option('-b', '--board', type=unicode, metavar='board',
               help='Create init file with the selected board.')
-@click.option('--project-dir', type=unicode, metavar='path',
+@click.option('-p', '--project-dir', type=unicode, metavar='path',
               help='Set the target directory for the project.')
 @click.option('-y', '--sayyes', is_flag=True,
               help='Automatically answer YES to all the questions.')

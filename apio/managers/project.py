@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016 FPGAwars
+# -- (C) 2016-2017 FPGAwars
 # -- Author Juan González, Jesús Arroyo
 # -- Licence GPLv2
 
@@ -13,8 +13,9 @@ try:
 except ImportError:
     import configparser as ConfigParser
 
-from os.path import isfile, join, dirname
+from os.path import isfile
 
+from apio import util
 from apio.resources import Resources
 
 PROJECT_FILENAME = 'apio.ini'
@@ -28,13 +29,12 @@ class Project(object):
     def create_sconstruct(self, project_dir='', sayyes=False):
         """Creates a default SConstruct file"""
 
-        if project_dir is None:
-            project_dir = ''
+        project_dir = util.check_dir(project_dir)
 
         sconstruct_name = 'SConstruct'
-        sconstruct_path = join(project_dir, sconstruct_name)
-        local_sconstruct_path = join(
-            dirname(__file__), '..', 'resources', sconstruct_name)
+        sconstruct_path = util.safe_join(project_dir, sconstruct_name)
+        local_sconstruct_path = util.safe_join(
+            util.get_folder('resources'), sconstruct_name)
 
         if isfile(sconstruct_path):
             # -- If sayyes, skip the question
@@ -60,10 +60,9 @@ class Project(object):
     def create_ini(self, board, project_dir='', sayyes=False):
         """Creates a new apio project file"""
 
-        if project_dir is None:
-            project_dir = ''
+        project_dir = util.check_dir(project_dir)
 
-        ini_path = join(project_dir, PROJECT_FILENAME)
+        ini_path = util.safe_join(project_dir, PROJECT_FILENAME)
 
         # Check board
         boards = Resources().boards
@@ -126,7 +125,7 @@ class Project(object):
             try:
                 data = json.loads(f.read())
                 board = data['board']
-            except Exception as e:
+            except Exception:
                 pass
                 # print('Error: {}'.format(str(e)))
 

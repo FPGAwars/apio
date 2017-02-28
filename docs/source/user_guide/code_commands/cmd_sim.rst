@@ -33,6 +33,14 @@ This command requires the ``scons`` and ``iverilog`` packages.
   | Windows | apio install gtkwave    |
   +---------+-------------------------+
 
+Options
+-------
+
+.. option::
+    -p, --project-dir
+
+Set the target directory for the project.
+
 Examples
 --------
 

@@ -25,7 +25,7 @@ Options
 .. program:: apio time
 
 .. option::
-    --board
+    -b, --board
 
 Select a specific board.
 
@@ -38,6 +38,11 @@ Select a specific FPGA.
     --size --type --pack
 
 Select a specific FPGA size, type and pack.
+
+.. option::
+    -p, --project-dir
+
+Set the target directory for the project.
 
 .. note::
 

@@ -39,12 +39,12 @@ Options
 .. option::
     -l, --list
 
-List all supported boards
+List all supported boards.
 
 .. option::
     -f, --fpga
 
-List all supported FPGAs
+List all supported FPGAs.
 
 
 Examples

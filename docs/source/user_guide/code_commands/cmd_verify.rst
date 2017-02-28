@@ -19,6 +19,14 @@ Verify the **verilog** code. It is agnostic of the FPGA. It does not use the *pc
 
 This command requires the ``scons`` and ``iverilog`` packages.
 
+Options
+-------
+
+.. option::
+    -p, --project-dir
+
+Set the target directory for the project.
+
 Examples
 --------
 

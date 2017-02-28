@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016 FPGAwars
+# -- (C) 2016-2017 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
 import click
 
 from os import listdir
-from os.path import isfile, join, dirname
+from os.path import isfile
 from sys import exit as sys_exit
 
-commands_folder = join(dirname(__file__), 'commands')
+from apio import util
+
+commands_folder = util.get_folder('commands')
 
 
 class ApioCLI(click.MultiCommand):
@@ -27,7 +29,7 @@ class ApioCLI(click.MultiCommand):
 
     def get_command(self, ctx, name):
         ns = {}
-        fn = join(commands_folder, name + '.py')
+        fn = util.safe_join(commands_folder, name + '.py')
         if isfile(fn):
             with open(fn) as f:
                 code = compile(f.read(), fn, 'exec')

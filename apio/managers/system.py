@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016 FPGAwars
+# -- (C) 2016-2017 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
@@ -8,7 +8,7 @@ import re
 import click
 import platform
 
-from os.path import join, isdir
+from os.path import isdir
 
 from apio import util
 
@@ -51,12 +51,12 @@ class System(object):  # pragma: no cover
 
     def _run(self, command):
         result = {}
-        system_base_dir = util.get_package_dir('system')
-        system_bin_dir = join(system_base_dir, 'bin')
+        system_base_dir = util.get_package_dir('tools-system')
+        system_bin_dir = util.safe_join(system_base_dir, 'bin')
 
         if isdir(system_bin_dir):
             result = util.exec_command(
-                join(system_bin_dir, command + self.ext),
+                util.safe_join(system_bin_dir, command + self.ext),
                 stdout=util.AsyncPipe(self._on_run_out),
                 stderr=util.AsyncPipe(self._on_run_out)
                 )

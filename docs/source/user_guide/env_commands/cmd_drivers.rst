@@ -35,12 +35,12 @@ Options
 .. option::
     -e, --enable
 
-Enable FPGA drivers
+Enable FPGA drivers.
 
 .. option::
     -d, --disable
 
-Disable FPGA drivers
+Disable FPGA drivers.
 
 Examples
 --------

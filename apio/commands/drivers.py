@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016 FPGAwars
+# -- (C) 2016-2017 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
@@ -12,9 +12,9 @@ from apio.managers.drivers import Drivers
 @click.command('drivers')
 @click.pass_context
 @click.option('-e', '--enable', is_flag=True,
-              help='Enable FPGA drivers')
+              help='Enable FPGA drivers.')
 @click.option('-d', '--disable', is_flag=True,
-              help='Disable FPGA drivers')
+              help='Disable FPGA drivers.')
 def cli(ctx, enable, disable):
     """Manage FPGA drivers."""
 

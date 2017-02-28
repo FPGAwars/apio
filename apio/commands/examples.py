@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016 FPGAwars
+# -- (C) 2016-2017 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
@@ -9,21 +9,20 @@ import click
 from apio.managers.examples import Examples
 
 # Python3 compat
-try:
+import sys
+if (sys.version_info > (3, 0)):
     unicode = str
-except NameError:  # pragma: no cover
-    pass
 
 
 @click.command('examples')
 @click.pass_context
 @click.option('-l', '--list', is_flag=True,
               help='List all available examples.')
-@click.option('-d', '--dir', type=unicode, metavar='NAME',
+@click.option('-d', '--dir', type=unicode, metavar='name',
               help='Copy the selected example directory.')
-@click.option('-f', '--files', type=unicode, metavar='NAME',
+@click.option('-f', '--files', type=unicode, metavar='name',
               help='Copy the selected example files.')
-@click.option('--project-dir', type=unicode, metavar='PATH',
+@click.option('-p', '--project-dir', type=unicode, metavar='path',
               help='Set the target directory for the examples.')
 @click.option('-n', '--sayno', is_flag=True,
               help='Automatically answer NO to all the questions.')

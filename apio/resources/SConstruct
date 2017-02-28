@@ -2,13 +2,12 @@
 # ----------------------------------------------------------------------
 # -- Generic Scons script for Sintesizing hardware on an FPGA and more.
 # -- This file is part of the Apio project
-# -- (C) 2016 FPGAwars
+# -- (C) 2016-2017 FPGAwars
 # -- Authors Juan Gonzáles, Jesús Arroyo
 # -- Licence GPLv2
 # ----------------------------------------------------------------------
 
 import os
-from os.path import join
 from platform import system
 
 from SCons.Script import (Builder, DefaultEnvironment, Default, AlwaysBuild,
@@ -17,7 +16,6 @@ from SCons.Script import (Builder, DefaultEnvironment, Default, AlwaysBuild,
 
 # -- Load arguments
 PROG = ARGUMENTS.get('prog', '')
-DEVICE = ARGUMENTS.get('device', '-1')
 FPGA_SIZE = ARGUMENTS.get('fpga_size', '')
 FPGA_TYPE = ARGUMENTS.get('fpga_type', '')
 FPGA_PACK = ARGUMENTS.get('fpga_pack', '')
@@ -57,16 +55,17 @@ if 'build' in COMMAND_LINE_TARGETS or \
             Exit(1)
 
         print('PROG: {}'.format(PROG))
-        if DEVICE != '':
-            print('DEVICE: {}'.format(DEVICE))
 
 # -- Resources paths
 IVL_PATH = os.environ['IVL'] if 'IVL' in os.environ else ''
 VLIB_PATH = os.environ['VLIB'] if 'VLIB' in os.environ else ''
+VLIB_FILES = ' '.join(['"{}"'.format(f) for f in Glob(os.path.join(VLIB_PATH, '*.v'))]) if VLIB_PATH else ''
+ICEBOX_PATH = os.environ['ICEBOX'] if 'ICEBOX' in os.environ else ''
+CHIPDB_PATH = os.path.join(ICEBOX_PATH, 'chipdb-{0}.txt'.format(FPGA_SIZE))
 
 isWindows = 'Windows' == system()
-VVP_PATH = '' if isWindows or not IVL_PATH else '-M {0}'.format(IVL_PATH)
-IVER_PATH = '' if isWindows or not IVL_PATH else '-B {0}'.format(IVL_PATH)
+VVP_PATH = '' if isWindows or not IVL_PATH else '-M "{0}"'.format(IVL_PATH)
+IVER_PATH = '' if isWindows or not IVL_PATH else '-B "{0}"'.format(IVL_PATH)
 
 # -- Target name
 TARGET = 'hardware'
@@ -139,7 +138,7 @@ except IndexError:
 
 # -- Define the Sintesizing Builder
 synth = Builder(
-    action='yosys -p \"synth_ice40 -blif $TARGET\" $SOURCES',
+    action='yosys -p \"synth_ice40 -blif $TARGET\" -q $SOURCES',
     suffix='.blif',
     src_suffix='.v')
 
@@ -155,11 +154,10 @@ bitstream = Builder(
     src_suffix='.asc')
 
 # -- Icetime builder
-#       update on toolchain-icestorm 1.10.0
 # https://github.com/cliffordwolf/icestorm/issues/57
 time_rpt = Builder(
-    action='icetime -d {0}{1} -P {2} -mtr $TARGET $SOURCE'.format(
-        FPGA_TYPE, FPGA_SIZE, FPGA_PACK),
+    action='icetime -d {0}{1} -P {2} -C "{3}" -mtr $TARGET $SOURCE'.format(
+        FPGA_TYPE, FPGA_SIZE, FPGA_PACK, CHIPDB_PATH),
     suffix='.rpt',
     src_suffix='.asc')
 
@@ -176,8 +174,7 @@ build = env.Alias('build', bitstream)
 AlwaysBuild(build)
 
 # -- Upload the bitstream into FPGA
-upload = env.Alias('upload', bitstream, '{0} $SOURCE'.format(
-    PROG.replace('%DEVICE', DEVICE)))
+upload = env.Alias('upload', bitstream, '{0} $SOURCE'.format(PROG))
 AlwaysBuild(upload)
 
 # -- Target time: calculate the time
@@ -188,7 +185,7 @@ AlwaysBuild(t)
 # -- Icarus Verilog builders
 iverilog = Builder(
     action='iverilog {0} -o $TARGET -D VCD_OUTPUT={1} {2} $SOURCES'.format(
-        IVER_PATH, TARGET_SIM, VLIB_PATH),
+        IVER_PATH, TARGET_SIM, VLIB_FILES),
     suffix='.out',
     src_suffix='.v')
 

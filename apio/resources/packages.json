@@ -33,15 +33,11 @@
       "organization": "FPGAwars"
     },
     "release": {
-      "tag_name": "0.%V",
+      "tag_name": "v%V",
       "compressed_name": "toolchain-icestorm-%P-%V",
-      "uncompressed_name": "toolchain-icestorm",
+      "uncompressed_name": "",
       "package_name": "toolchain-icestorm",
-      "extension": {
-        "linux": "tar.gz",
-        "darwin": "tar.gz",
-        "windows": "zip"
-      }
+      "extension":  "tar.gz"
     },
     "description": "Icestorm toolchain"
   },
@@ -68,7 +64,7 @@
       "tag_name": "v%V",
       "compressed_name": "tools-system-%P-%V",
       "uncompressed_name": "",
-      "package_name": "system",
+      "package_name": "tools-system",
       "extension": "tar.gz"
     },
     "description": "System tools"
@@ -85,7 +81,7 @@
       "package_name": "tool-gtkwave",
       "extension": "tar.gz",
       "available_platforms": [
-        "windows"
+        "windows", "windows_x86", "windows_amd64"
       ]
     },
     "description": "GTKWave tool"
@@ -102,7 +98,7 @@
       "package_name": "tools-drivers",
       "extension": "tar.gz",
       "available_platforms": [
-        "windows"
+        "windows", "windows_x86", "windows_amd64"
       ]
     },
     "description": "Drivers tools"

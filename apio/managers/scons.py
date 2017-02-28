@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016 FPGAwars
+# -- (C) 2016-2017 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
+import os
 import time
 import click
 import datetime
 
-from os.path import join, dirname, isfile
+from os.path import isfile
 
 from apio import util
 from apio.resources import Resources
@@ -19,9 +20,14 @@ from apio.profile import Profile
 
 class SCons(object):
 
-    def __init__(self):
+    def __init__(self, project_dir=''):
         self.resources = Resources()
         self.profile = Profile()
+
+        if project_dir is not None:
+            # Move to project dir
+            project_dir = util.check_dir(project_dir)
+            os.chdir(project_dir)
 
     def clean(self):
         return self.run('-c', deps=['scons'])
@@ -138,8 +144,8 @@ class SCons(object):
                 return 1
 
         return self.run('upload',
-                        variables + ['device={0}'.format(device),
-                                     'prog={0}'.format(programmer)],
+                        variables + ['prog={0}'.format(
+                                        programmer.replace('%D%', device))],
                         board,
                         deps=['scons', 'icestorm'])
 
@@ -155,10 +161,11 @@ class SCons(object):
         """Executes scons for building"""
 
         # -- Check for the SConstruct file
-        if not isfile(join(util.get_project_dir(), 'SConstruct')):
-            click.secho('Using default SConstruct file')
-            variables += ['-f', join(
-                dirname(__file__), '..', 'resources', 'SConstruct')]
+        if not isfile(util.safe_join(util.get_project_dir(), 'SConstruct')):
+            click.secho('Info: default SConstruct file')
+            variables += ['-f']
+            variables += [util.safe_join(
+                util.get_folder('resources'), 'SConstruct')]
 
         # -- Resolve packages
         if self.profile.check_exe_default():
@@ -166,6 +173,8 @@ class SCons(object):
             if not util.resolve_packages(self.resources.packages, deps):
                 # Exit if a package is not installed
                 return 1
+        else:
+            click.secho('Info: native config mode')
 
         # -- Execute scons
         terminal_width, _ = click.get_terminal_size()
@@ -380,7 +389,7 @@ class SCons(object):
                         if p.board:
                             var_board = p.board
                             click.secho(
-                                'Info: use apio.ini board: {}'.format(
+                                'Info: apio.ini board {}'.format(
                                     var_board))
                             fpga = self.resources.boards[var_board]['fpga']
                             fpga_size = self.resources.fpgas[fpga]['size']
