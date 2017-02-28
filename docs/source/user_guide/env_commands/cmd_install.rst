@@ -62,7 +62,7 @@ Force the packages installation.
 .. option::
     -p, --platform
 
-    Set the platform [linux_x86_64, linux_i686, linux_armv7l, linux_aarch64, windows, darwin] (Advanced).
+    Set the platform [linux, linux_x86_64, linux_i686, linux_armv7l, linux_aarch64, windows, windows_amd64, windows_x86, darwin] (Advanced).
 
 Examples
 --------
