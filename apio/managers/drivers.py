@@ -108,16 +108,16 @@ class Drivers(object):  # pragma: no cover
             subprocess.call(['brew', 'link', '--overwrite', 'libftdi'])
             subprocess.call(['brew', 'install', 'libffi'])
             subprocess.call(['brew', 'link', '--overwrite', 'libffi'])
-            self.profile.add_config('macos_drivers', True)
+            self.profile.add_setting('macos_drivers', True)
             click.secho('FPGA drivers enabled', fg='green')
 
     def _disable_darwin(self):
         click.secho('Disable FTDI drivers\' configuration')
-        self.profile.add_config('macos_drivers', False)
+        self.profile.add_setting('macos_drivers', False)
         click.secho('FPGA drivers disabled', fg='green')
 
     def _pre_upload_darwin(self):
-        if self.profile.config.get('macos_drivers', False):
+        if self.profile.settings.get('macos_drivers', False):
             # Check and unload the drivers
             driverA = 'com.FTDI.driver.FTDIUSBSerialDriver'
             driverB = 'com.apple.driver.AppleUSBFTDI'
@@ -129,7 +129,7 @@ class Drivers(object):  # pragma: no cover
                 self.driverC = driverB
 
     def _post_upload_darwin(self):
-        if self.profile.config.get('macos_drivers', False):
+        if self.profile.settings.get('macos_drivers', False):
             # Restore previous driver configuration
             if self.driverC:
                 subprocess.call(['sudo', 'kextload', '-b', self.driverC])

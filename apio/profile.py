@@ -18,6 +18,7 @@ class Profile(object):
     def __init__(self):
         self.config = {'exe': 'default', 'verbose': 0}
         self.labels = {'exe': 'Executable', 'verbose': 'Verbose'}
+        self.settings = {};
         self.packages = {}
         self._profile_path = util.safe_join(
             util.get_home_dir(), 'profile.json')
@@ -51,6 +52,9 @@ class Profile(object):
 
     def add_package(self, name, version):
         self.packages[name] = {'version': version}
+
+    def add_setting(self, key, value):
+        self.settings[key] = value
 
     def add_config(self, key, value):
         if self.config.get(key, None) != value:
@@ -98,6 +102,8 @@ class Profile(object):
                             self.config['exe'] = 'default'
                         if 'verbose' not in self.config.keys():
                             self.config['verbose'] = 0
+                    if 'settings' in data.keys():
+                        self.settings = data['settings']
                     if 'packages' in data.keys():
                         self.packages = data['packages']
                     else:
@@ -108,7 +114,11 @@ class Profile(object):
     def save(self):
         util.mkdir(self._profile_path)
         with open(self._profile_path, 'w') as profile:
-            data = {'config': self.config, 'packages': self.packages}
+            data = {
+                'config': self.config,
+                'settings': self.settings,
+                'packages': self.packages
+            }
             json.dump(data, profile)
 
     def list(self):
