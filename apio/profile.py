@@ -47,27 +47,27 @@ class Profile(object):
         return version
 
     def check_exe_default(self):
-        return self.config['exe'] == 'default'
+        return self.config.get('exe', '') == 'default'
 
     def add_package(self, name, version):
         self.packages[name] = {'version': version}
 
     def add_config(self, key, value):
-        if self.config[key] != value:
+        if self.config.get(key, None) != value:
             self.config[key] = value
             self.save()
             click.secho('{0} mode updated: {1}'.format(
-                self.labels[key], value), fg='green')
+                self.labels.get(key, ''), value), fg='green')
         else:
             click.secho('{0} mode already {1}'.format(
-                self.labels[key], value), fg='yellow')
+                self.labels.get(key, ''), value), fg='yellow')
 
     def remove_package(self, name):
         if name in self.packages.keys():
             del self.packages[name]
 
     def get_verbose_mode(self):
-        return int(self.config['verbose'])
+        return int(self.config.get('verbose', False))
 
     def get_package_version(self, name, release_name=''):
         version = '0.0.0'
@@ -114,4 +114,5 @@ class Profile(object):
     def list(self):
         for key in self.config:
             click.secho('{0} mode: {1}'.format(
-                self.labels[key], self.config[key]), fg='yellow')
+                    self.labels.get(key, ''), self.config.get(key, '')),
+                fg='yellow')

@@ -7,6 +7,7 @@
 import click
 
 from apio.managers.scons import SCons
+from apio.managers.drivers import Drivers
 
 # Python3 compat
 import sys
@@ -33,6 +34,8 @@ if (sys.version_info > (3, 0)):
 def cli(ctx, device, board, fpga, pack, type, size, project_dir):
     """Upload the bitstream to the FPGA."""
 
+    drivers = Drivers()
+    drivers.pre_upload()
     # Run scons
     exit_code = SCons(project_dir).upload({
         'board': board,
@@ -41,6 +44,7 @@ def cli(ctx, device, board, fpga, pack, type, size, project_dir):
         'type': type,
         'pack': pack
     }, device)
+    drivers.post_upload()
     ctx.exit(exit_code)
 
 # Advances notes: https://github.com/FPGAwars/apio/wiki/Commands#apio-upload
