@@ -18,7 +18,7 @@ class Profile(object):
     def __init__(self):
         self.config = {'exe': 'default', 'verbose': 0}
         self.labels = {'exe': 'Executable', 'verbose': 'Verbose'}
-        self.settings = {};
+        self.settings = {}
         self.packages = {}
         self._profile_path = util.safe_join(
             util.get_home_dir(), 'profile.json')
