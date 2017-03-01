@@ -128,7 +128,7 @@ class Installer(object):
                 os_download_url = self.download_urls[1]
                 if platform_download_url != os_download_url:
                     click.secho(
-                        'Warnig: full platform do not match. Trying OS name',
+                        'Warnig: full platform does not match. Trying OS name',
                         fg='yellow')
                     try:
                         dlpath = self._download(os_download_url)
