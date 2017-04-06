@@ -87,7 +87,7 @@ try:
         UTF = True
     else:
         UTF = codepage.lower().find('utf') >= 0
-except:
+except Exception:
     # Incorrect locale implementation, assume the worst
     UTF = False
 
@@ -102,7 +102,7 @@ def unicoder(p):
         if UTF:
             try:
                 return p.decode('utf-8')
-            except:
+            except Exception:
                 return p.decode(codepage)
         return p.decode(codepage)
     else:
@@ -152,6 +152,9 @@ def get_home_dir():
             if os.access(path, os.W_OK):
                 # Path is writable
                 return path
+            else:
+                click.secho('Warning: can\'t write in path ' + path,
+                            fg='yellow')
 
     for path in paths:
         if not isdir(path):
@@ -160,10 +163,11 @@ def get_home_dir():
                 return path
             except OSError as ioex:
                 if ioex.errno == 13:
-                    click.secho('Warning: can\'t create ' + home_dir,
+                    click.secho('Warning: can\'t create ' + path,
                                 fg='yellow')
 
-    click.secho('Error: no usable home directory', fg='red')
+    click.secho('Error: no usable home directory ' + path, fg='red')
+    click.secho('Using {} as home directory'.format(get_project_dir()))
     return ''
 
 
