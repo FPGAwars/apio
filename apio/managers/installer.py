@@ -44,7 +44,7 @@ class Installer(object):
             self.profile = Profile()
 
             dirname = 'packages'
-            self.packages_dir = util.safe_join(util.get_home_dir(), dirname)
+            self.packages_dir = util.safe_join(util.home_dir, dirname)
 
             # Get data
             data = self.resources.packages[self.package]
@@ -74,9 +74,16 @@ class Installer(object):
                 # Valid version
                 if version:
                     # e.g., [linux_x86_64, linux]
+                    platform_os = platform.split('_')[0]
                     self.download_urls = [
-                        self.get_download_url(data, platform),
-                        self.get_download_url(data, platform.split('_')[0])
+                        {
+                            'url': self.get_download_url(data, platform),
+                            'platform': platform
+                        },
+                        {
+                            'url': self.get_download_url(data, platform_os),
+                            'platform': platform_os
+                        }
                     ]
 
     def get_download_url(self, data, platform):
@@ -121,14 +128,23 @@ class Installer(object):
             dlpath = None
             try:
                 # Try full platform
-                platform_download_url = self.download_urls[0]
+                platform_download_url = self.download_urls[0]['url']
                 dlpath = self._download(platform_download_url)
+            except IOError as e:
+                click.secho('Warning: permission denied in packages directory',
+                            fg='yellow')
+                click.secho(str(e), fg='red')
             except Exception as e:
                 # Try os name
-                os_download_url = self.download_urls[1]
+                os_download_url = self.download_urls[1]['url']
                 if platform_download_url != os_download_url:
                     click.secho(
-                        'Warnig: full platform does not match. Trying OS name',
+                        'Warning: full platform does not match: {}\
+                        '.format(self.download_urls[0]['platform']),
+                        fg='yellow')
+                    click.secho(
+                        '         Trying OS name: {}\
+                        '.format(self.download_urls[1]['platform']),
                         fg='yellow')
                     try:
                         dlpath = self._download(os_download_url)

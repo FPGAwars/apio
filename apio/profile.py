@@ -21,7 +21,7 @@ class Profile(object):
         self.settings = {}
         self.packages = {}
         self._profile_path = util.safe_join(
-            util.get_home_dir(), 'profile.json')
+            util.home_dir, 'profile.json')
         self.load()
 
     def check_package(self, name, release_name):
@@ -86,7 +86,7 @@ class Profile(object):
                         tmp_data = json.load(json_file)
                         if 'version' in tmp_data.keys():
                             version = tmp_data['version']
-                except:
+                except Exception:
                     pass
         return version
 
@@ -108,7 +108,7 @@ class Profile(object):
                         self.packages = data['packages']
                     else:
                         self.packages = data  # Backward compatibility
-                except:
+                except Exception:
                     pass
 
     def save(self):
