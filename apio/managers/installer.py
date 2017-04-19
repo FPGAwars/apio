@@ -44,7 +44,7 @@ class Installer(object):
             self.profile = Profile()
 
             dirname = 'packages'
-            self.packages_dir = util.safe_join(util.home_dir, dirname)
+            self.packages_dir = util.safe_join(util.get_home_dir(), dirname)
 
             # Get data
             data = self.resources.packages[self.package]

@@ -42,8 +42,6 @@ class Drivers(object):  # pragma: no cover
         util.get_folder('resources'), '80-icestick.rules')
     rules_system_path = '/etc/udev/rules.d/80-icestick.rules'
 
-    profile = Profile()
-
     # Driver to restore: mac os
     driverC = ''
 
@@ -51,6 +49,7 @@ class Drivers(object):  # pragma: no cover
         if 'linux' in platform:
             return self._enable_linux()
         elif 'darwin' in platform:
+            self.profile = Profile()
             return self._enable_darwin()
         elif 'windows' in platform:
             return self._enable_windows()
@@ -59,6 +58,7 @@ class Drivers(object):  # pragma: no cover
         if 'linux' in platform:
             return self._disable_linux()
         elif 'darwin' in platform:
+            self.profile = Profile()
             return self._disable_darwin()
         elif 'windows' in platform:
             return self._disable_windows()

@@ -21,7 +21,7 @@ class Profile(object):
         self.settings = {}
         self.packages = {}
         self._profile_path = util.safe_join(
-            util.home_dir, 'profile.json')
+            util.get_home_dir(), 'profile.json')
         self.load()
 
     def check_package(self, name, release_name):

@@ -167,8 +167,7 @@ def get_home_dir():
                                 fg='yellow')
 
     click.secho('Error: no usable home directory ' + path, fg='red')
-    click.secho('Using {} as home directory'.format(get_project_dir()))
-    return ''
+    exit(1)
 
 
 def get_package_dir(pkg_name):
@@ -188,9 +187,6 @@ def get_package_dir(pkg_name):
 
 def get_project_dir():
     return os.getcwd()
-
-
-home_dir = get_home_dir()
 
 
 scons_command = ['scons']

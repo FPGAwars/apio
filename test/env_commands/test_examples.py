@@ -2,10 +2,8 @@ from apio.commands.examples import cli as cmd_examples
 
 
 def test_examples(clirunner, validate_cliresult, configenv):
-    with clirunner.isolated_filesystem():
-        configenv()
-        result = clirunner.invoke(cmd_examples)
-        validate_cliresult(result)
+    result = clirunner.invoke(cmd_examples)
+    validate_cliresult(result)
 
 
 def test_examples_list(clirunner, configenv):
