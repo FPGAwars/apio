@@ -1,10 +1,11 @@
 language: python
+
 python:
-  - "2.7"
-  - "3.5"
+  - 2.7
+  - 3.5
+
 install:
-  - pip install .
-  - pip install -U tox tox-travis
+  - pip install tox tox-travis
+
 script:
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.5' ]]; then tox -e flake8; fi
   - tox
