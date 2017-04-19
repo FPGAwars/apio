@@ -85,7 +85,10 @@ pip install tox
 
 ```bash
 tox
-tox -e flake8
+```
+
+```bash
+tox -e offline
 tox -e coverage
 ```
 
