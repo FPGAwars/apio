@@ -4,10 +4,20 @@
     "size": "1k",
     "pack": "swg16tr"
   },
+  "iCE40-LP384-CM36": {
+    "type": "lp",
+    "size": "384",
+    "pack": "cm36"
+  },
   "iCE40-LP1K-CM36": {
     "type": "lp",
     "size": "1k",
     "pack": "cm36"
+  },
+  "iCE40-LP384-CM49": {
+    "type": "lp",
+    "size": "384",
+    "pack": "cm49"
   },
   "iCE40-LP1K-CM49": {
     "type": "lp",
@@ -58,6 +68,11 @@
     "type": "hx",
     "size": "8k",
     "pack": "cm225"
+  },
+  "iCE40-LP384-QN32": {
+    "type": "lp",
+    "size": "384",
+    "pack": "qn32"
   },
   "iCE40-LP1K-QN84": {
     "type": "lp",
