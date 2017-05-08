@@ -18,6 +18,6 @@ def test_uninstall_wrong_package(clirunner, configenv):
         configenv()
         result = clirunner.invoke(
             cmd_uninstall, ['missing_package'], input='y')
-        assert result.exit_code == 0
+        assert result.exit_code == 1
         assert 'Do you want to continue?' in result.output
         assert 'Error: No such package' in result.output

@@ -46,12 +46,6 @@ class Installer(object):
             dirname = 'packages'
             self.packages_dir = util.safe_join(util.get_home_dir(), dirname)
 
-            if self.packages_dir == '':
-                click.secho(
-                    'Error: No such package \'{0}\''.format(self.package),
-                    fg='red')
-                exit(1)
-
             # Get data
             data = self.resources.packages[self.package]
             distribution = self.resources.distribution
@@ -93,6 +87,12 @@ class Installer(object):
                         'platform': platform_os
                     }
                 ]
+
+        if self.packages_dir == '':
+            click.secho(
+                'Error: No such package \'{0}\''.format(self.package),
+                fg='red')
+            exit(1)
 
     def get_download_url(self, data, platform):
         compressed_name = data['release']['compressed_name']
