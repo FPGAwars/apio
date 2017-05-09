@@ -2,10 +2,8 @@ from apio.commands.system import cli as cmd_system
 
 
 def test_system(clirunner, validate_cliresult, configenv):
-    with clirunner.isolated_filesystem():
-        configenv()
-        result = clirunner.invoke(cmd_system)
-        validate_cliresult(result)
+    result = clirunner.invoke(cmd_system)
+    validate_cliresult(result)
 
 
 def test_system_lsftdi(clirunner, configenv):

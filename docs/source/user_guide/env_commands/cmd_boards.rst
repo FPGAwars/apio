@@ -97,6 +97,9 @@ Examples
   iCE40-LP1K-CM81       lp    1k    cm81
   iCE40-LP1K-QN84       lp    1k    qn84
   iCE40-LP1K-SWG16TR    lp    1k    swg16tr
+  iCE40-LP384-CM36      lp    384   cm36
+  iCE40-LP384-CM49      lp    384   cm49
+  iCE40-LP384-QN32      lp    384   qn32
   iCE40-LP4K-CM121      lp    8k    cm121:4k
   iCE40-LP4K-CM225      lp    8k    cm225:4k
   iCE40-LP4K-CM81       lp    8k    cm81:4k

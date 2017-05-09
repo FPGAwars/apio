@@ -34,7 +34,7 @@ class Installer(object):
             self.package = package
             self.version = None
 
-        self.forced_install = force
+        self.force_install = force
         self.packages_dir = ''
 
         self.resources = Resources(platform)
@@ -57,7 +57,7 @@ class Installer(object):
 
             if checkversion:
                 # Check version
-                version = self._get_valid_version(
+                valid_version = self._get_valid_version(
                     data['repository']['name'],
                     data['repository']['organization'],
                     data['release']['tag_name'],
@@ -65,19 +65,34 @@ class Installer(object):
                     self.specversion,
                     force
                 )
-
-                # Valid version added with @
-                if version and self.version:
-                    self.forced_install = True
-                self.version = version if version else ''
-
                 # Valid version
-                if version:
-                    # e.g., [linux_x86_64, linux]
-                    self.download_urls = [
-                        self.get_download_url(data, platform),
-                        self.get_download_url(data, platform.split('_')[0])
-                    ]
+                if not valid_version:
+                    # Error
+                    click.secho(
+                        'Error: No version {} found'.format(self.version),
+                        fg='red')
+                    exit(1)
+
+                self.version = valid_version
+
+                # e.g., [linux_x86_64, linux]
+                platform_os = platform.split('_')[0]
+                self.download_urls = [
+                    {
+                        'url': self.get_download_url(data, platform),
+                        'platform': platform
+                    },
+                    {
+                        'url': self.get_download_url(data, platform_os),
+                        'platform': platform_os
+                    }
+                ]
+
+        if self.packages_dir == '':
+            click.secho(
+                'Error: No such package \'{0}\''.format(self.package),
+                fg='red')
+            exit(1)
 
     def get_download_url(self, data, platform):
         compressed_name = data['release']['compressed_name']
@@ -103,91 +118,85 @@ class Installer(object):
         return download_url
 
     def install(self):
-        if self.packages_dir == '':
-            click.secho(
-                'Error: No such package \'{0}\''.format(self.package),
-                fg='red')
-        elif self.version == '':
-            click.secho(
-                'Error: No valid version found. Semantic {0}'.format(
-                    self.specversion),
-                fg='red')
-        else:
-            click.echo('Installing %s package:' % click.style(
-                self.package, fg='cyan'))
-            if not isdir(self.packages_dir):
-                makedirs(self.packages_dir)
-            assert isdir(self.packages_dir)
-            dlpath = None
-            try:
-                # Try full platform
-                platform_download_url = self.download_urls[0]
-                dlpath = self._download(platform_download_url)
-            except Exception as e:
-                # Try os name
-                os_download_url = self.download_urls[1]
-                if platform_download_url != os_download_url:
-                    click.secho(
-                        'Warnig: full platform do not match. Trying OS name',
+        click.echo('Installing %s package:' % click.style(
+            self.package, fg='cyan'))
+        if not isdir(self.packages_dir):
+            makedirs(self.packages_dir)
+        assert isdir(self.packages_dir)
+        dlpath = None
+        try:
+            # Try full platform
+            platform_download_url = self.download_urls[0]['url']
+            dlpath = self._download(platform_download_url)
+        except IOError as e:
+            click.secho('Warning: permission denied in packages directory',
                         fg='yellow')
-                    try:
-                        dlpath = self._download(os_download_url)
-                    except Exception as e:
-                        click.secho(
-                            'Error: package not availabe for this platform',
-                            fg='red')
-                else:
+            click.secho(str(e), fg='red')
+        except Exception as e:
+            # Try os name
+            os_download_url = self.download_urls[1]['url']
+            if platform_download_url != os_download_url:
+                click.secho(
+                    'Warning: full platform does not match: {}\
+                    '.format(self.download_urls[0]['platform']),
+                    fg='yellow')
+                click.secho(
+                    '         Trying OS name: {}\
+                    '.format(self.download_urls[1]['platform']),
+                    fg='yellow')
+                try:
+                    dlpath = self._download(os_download_url)
+                except Exception as e:
                     click.secho(
                         'Error: package not availabe for this platform',
                         fg='red')
-            if dlpath:
-                package_dir = util.safe_join(
-                    self.packages_dir, self.package_name)
-                if isdir(package_dir):
-                    shutil.rmtree(package_dir)
-                if self.uncompressed_name:
-                    self._unpack(dlpath, self.packages_dir)
-                else:
-                    self._unpack(dlpath, util.safe_join(
-                        self.packages_dir, self.package_name))
-
-                remove(dlpath)
-                self.profile.add_package(self.package, self.version)
-                self.profile.save()
+            else:
                 click.secho(
-                    """Package \'{}\' has been """
-                    """successfully installed!""".format(self.package),
-                    fg='green')
-
-            # Rename unpacked dir to package dir
+                    'Error: package not availabe for this platform',
+                    fg='red')
+        if dlpath:
+            package_dir = util.safe_join(
+                self.packages_dir, self.package_name)
+            if isdir(package_dir):
+                shutil.rmtree(package_dir)
             if self.uncompressed_name:
-                unpack_dir = util.safe_join(
-                    self.packages_dir, self.uncompressed_name)
-                package_dir = util.safe_join(
-                    self.packages_dir, self.package_name)
-                if isdir(unpack_dir):
-                    rename(unpack_dir, package_dir)
+                self._unpack(dlpath, self.packages_dir)
+            else:
+                self._unpack(dlpath, util.safe_join(
+                    self.packages_dir, self.package_name))
+
+            remove(dlpath)
+            self.profile.add_package(self.package, self.version)
+            self.profile.save()
+            click.secho(
+                """Package \'{}\' has been """
+                """successfully installed!""".format(self.package),
+                fg='green')
+
+        # Rename unpacked dir to package dir
+        if self.uncompressed_name:
+            unpack_dir = util.safe_join(
+                self.packages_dir, self.uncompressed_name)
+            package_dir = util.safe_join(
+                self.packages_dir, self.package_name)
+            if isdir(unpack_dir):
+                rename(unpack_dir, package_dir)
 
     def uninstall(self):
-        if self.packages_dir == '':
+        if isdir(util.safe_join(self.packages_dir, self.package_name)):
+            click.echo('Uninstalling %s package' % click.style(
+                self.package, fg='cyan'))
+            shutil.rmtree(
+                util.safe_join(self.packages_dir, self.package_name))
             click.secho(
-                'Error: No such package \'{0}\''.format(self.package),
-                fg='red')
+                """Package \'{}\' has been """
+                """successfully uninstalled!""".format(self.package),
+                fg='green')
         else:
-            if isdir(util.safe_join(self.packages_dir, self.package_name)):
-                click.echo('Uninstalling %s package' % click.style(
-                    self.package, fg='cyan'))
-                shutil.rmtree(
-                    util.safe_join(self.packages_dir, self.package_name))
-                click.secho(
-                    """Package \'{}\' has been """
-                    """successfully uninstalled!""".format(self.package),
-                    fg='green')
-            else:
-                click.secho('Package \'{0}\' is not installed'.format(
-                    self.package), fg='red')
-            self.profile.remove_package(self.package)
-            self.profile.save()
+            click.secho('Package \'{0}\' is not installed'.format(
+                self.package), fg='red')
+        self.profile.remove_package(self.package)
+        self.profile.save()
 
     def _get_platform(self):
         return util.get_systype()
@@ -207,7 +216,7 @@ class Installer(object):
         return tarball
 
     def _get_valid_version(self, name, organization, tag_name,
-                           version='', specversion='', force=False):
+                           req_version='', specversion='', force=False):
         # Check spec version
         try:
             spec = semantic_version.Spec(specversion)
@@ -218,19 +227,32 @@ class Installer(object):
 
         # Download latest releases list
         releases = api_request('{}/releases'.format(name), organization)
-        if releases is not None:
+
+        if req_version:
+            # Find required version via @
+            version = self._check_sem_version(req_version, spec)
             for release in releases:
                 prerelease = 'prerelease' in release and release['prerelease']
-                if 'tag_name' in release and (not prerelease or force):
-                    if version:
-                        # Version number via @
-                        tag = tag_name.replace('%V', version)
-                        if tag == release['tag_name']:
-                            return self._check_sem_version(version, spec)
-                    else:
-                        pattern = tag_name.replace('%V', '(?P<v>.*?)') + '$'
-                        match = re.search(pattern, release['tag_name'])
-                        if match:
+                if 'tag_name' in release:
+                    tag = tag_name.replace('%V', req_version)
+                    if tag == release['tag_name']:
+                        if prerelease and not force:
+                            click.secho(
+                                'Warning: ' + req_version + ' is' +
+                                ' a pre-release.\n' +
+                                '         Use --force to install',
+                                fg='yellow')
+                            exit(2)
+                        return version
+        else:
+            # Find latest release
+            for release in releases:
+                prerelease = 'prerelease' in release and release['prerelease']
+                if 'tag_name' in release:
+                    pattern = tag_name.replace('%V', '(?P<v>.*?)') + '$'
+                    match = re.search(pattern, release['tag_name'])
+                    if match:
+                        if not prerelease:
                             version = match.group('v')
                             return self._check_sem_version(version, spec)
 
@@ -238,16 +260,25 @@ class Installer(object):
         try:
             if semantic_version.Version(version) in spec:
                 return version
+            else:
+                click.secho(
+                    'Error: Invalid semantic version ({0})'.format(
+                        self.specversion),
+                    fg='red')
+                exit(1)
         except ValueError:
-            if version in str(spec):
-                return version
+            click.secho(
+                'Error: Invalid semantic version ({0})'.format(
+                    self.specversion),
+                fg='red')
+            exit(1)
 
     def _download(self, url):
         # Note: here we check only for the version of locally installed
         # packages. For this reason we don't say what's the installation
         # path.
         if self.profile.check_package_version(self.package, self.version) \
-           or self.forced_install:
+           or self.force_install:
             fd = FileDownloader(url, self.packages_dir)
             filepath = fd.get_filepath()
             click.secho('Download ' + basename(filepath))

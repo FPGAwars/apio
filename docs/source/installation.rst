@@ -98,23 +98,38 @@ Install `homebrew <http://brew.sh/>`_ and libftdi
 
 .. code::
 
+    $ brew update
     $ brew install libftdi
+    $ brew install libffi
 
 Configure the drivers
 
+If **com.FTDI.driver.FTDIUSBSerialDriver** is loaded (``kextstat | grep FTDIUSBSerialDriver``), unload it:
+
 .. code::
 
-  $ sudo kextunload -b com.FTDI.driver.FTDIUSBSerialDriver -q
-  $ sudo kextunload -b com.apple.driver.AppleUSBFTDI -q
+  $ sudo kextunload -b com.FTDI.driver.FTDIUSBSerialDriver
 
-To revert the drivers configuration
+If **com.apple.driver.AppleUSBFTDI** is loaded (``kextstat | grep AppleUSBFTDI``), unload it:
+
+.. code::
+
+  $ sudo kextunload -b com.apple.driver.AppleUSBFTDI
+
+Then upload the bitstream. And finally revert the drivers configuration:
 
 .. code::
 
   $ sudo kextload -b com.FTDI.driver.FTDIUSBSerialDriver -q
+
+or
+
+.. code::
+
   $ sudo kextload -b com.apple.driver.AppleUSBFTDI -q
 
+`More information <https://github.com/FPGAwars/apio/wiki/FTDI-Drivers-flowchart-Mac-OS>`_.
 
 **Windows**
 
-Go to this `tutorial <https://github.com/FPGAwars/libftdi-cross-builder/wiki#driver-installation>`_ and follow its steps
+Go to this `tutorial <https://github.com/FPGAwars/libftdi-cross-builder/wiki#driver-installation>`_.

@@ -14,10 +14,9 @@ def validate_scons(apioproject_dir):
     assert isfile(path) and getsize(path) > 0
 
 
-def test_init_default(clirunner, validate_cliresult):
-    with clirunner.isolated_filesystem():
-        result = clirunner.invoke(cmd_init)
-        validate_cliresult(result)
+def test_init(clirunner, validate_cliresult):
+    result = clirunner.invoke(cmd_init)
+    validate_cliresult(result)
 
 
 def test_init_wrong_board(clirunner, validate_cliresult):

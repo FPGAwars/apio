@@ -19,10 +19,10 @@ import subprocess
 from os.path import expanduser, isdir, isfile, normpath, dirname, exists
 from threading import Thread
 
+from apio import LOAD_CONFIG_DATA
+
 import requests
 requests.packages.urllib3.disable_warnings()
-
-__version__ = None
 
 # Python3 compat
 if (sys.version_info > (3, 0)):
@@ -76,9 +76,9 @@ class AsyncPipe(Thread):  # pragma: no cover
 def get_systype():
     type_ = platform.system().lower()
     arch = platform.machine().lower()
-    if type_ == "windows":
-        arch = "amd64" if platform.architecture()[0] == "64bit" else "x86"
-    return "%s_%s" % (type_, arch) if arch else type_
+    if type_ == 'windows':
+        arch = 'amd64' if platform.architecture()[0] == '64bit' else 'x86'
+    return '%s_%s' % (type_, arch) if arch else type_
 
 
 try:
@@ -87,7 +87,7 @@ try:
         UTF = True
     else:
         UTF = codepage.lower().find('utf') >= 0
-except:
+except Exception:
     # Incorrect locale implementation, assume the worst
     UTF = False
 
@@ -102,7 +102,7 @@ def unicoder(p):
         if UTF:
             try:
                 return p.decode('utf-8')
-            except:
+            except Exception:
                 return p.decode(codepage)
         return p.decode(codepage)
     else:
@@ -122,11 +122,12 @@ def safe_join(*paths):
 
 def _get_config_data():
     config_data = None
-    filepath = safe_join(os.sep, 'etc', 'apio.json')
-    if isfile(filepath):
-        with open(filepath, 'r') as f:
-            # Load the JSON file
-            config_data = json.loads(f.read())
+    if LOAD_CONFIG_DATA:
+        filepath = safe_join(os.sep, 'etc', 'apio.json')
+        if isfile(filepath):
+            with open(filepath, 'r') as f:
+                # Load the JSON file
+                config_data = json.loads(f.read())
     return config_data
 
 
@@ -152,6 +153,9 @@ def get_home_dir():
             if os.access(path, os.W_OK):
                 # Path is writable
                 return path
+            else:
+                click.secho('Warning: can\'t write in path ' + path,
+                            fg='yellow')
 
     for path in paths:
         if not isdir(path):
@@ -160,11 +164,11 @@ def get_home_dir():
                 return path
             except OSError as ioex:
                 if ioex.errno == 13:
-                    click.secho('Warning: can\'t create ' + home_dir,
+                    click.secho('Warning: can\'t create ' + path,
                                 fg='yellow')
 
-    click.secho('Error: no usable home directory', fg='red')
-    return ''
+    click.secho('Error: no usable home directory ' + path, fg='red')
+    exit(1)
 
 
 def get_package_dir(pkg_name):

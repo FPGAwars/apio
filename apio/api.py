@@ -31,6 +31,9 @@ def api_request(command, organization='FPGAwars'):
     finally:
         if r:
             r.close()
+    if result is None:
+        click.secho('Error: wrong data from GitHub API', fg='red')
+        exit(1)
     return result
 
 

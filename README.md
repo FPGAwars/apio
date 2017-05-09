@@ -3,7 +3,6 @@
 [![Build Status](https://travis-ci.org/FPGAwars/apio.svg?branch=develop)](https://travis-ci.org/FPGAwars/apio)
 [![Latest Version](https://img.shields.io/pypi/v/apio.svg)](https://pypi.python.org/pypi/apio/)
 [![License](http://img.shields.io/:license-gpl-blue.svg)](http://opensource.org/licenses/GPL-2.0)
-[![Documentation Status](https://readthedocs.org/projects/apiodoc/badge/?version=latest)](http://apiodoc.readthedocs.io/en/latest/)
 [![Documentation Status](https://readthedocs.org/projects/apiodoc/badge/?version=stable)](http://apiodoc.readthedocs.io/en/stable/)
 
 ![][linux-logo]
@@ -86,7 +85,10 @@ pip install tox
 
 ```bash
 tox
-tox -e flake8
+```
+
+```bash
+tox -e offline
 tox -e coverage
 ```
 
@@ -217,7 +219,7 @@ Yes.
 
 * **[Icestudio](https://github.com/FPGAwars/icestudio)**: is an experimental visual hardware editor built with web technologies.
 
- <img src="https://github.com/FPGAwars/icestudio/raw/develop/doc/images/icestudio-0.2.1.png" width="600">
+ <img src="https://github.com/FPGAwars/icestudio/raw/develop/doc/images/main.png" width="600">
 
 ## Videos
 
@@ -236,10 +238,15 @@ Yes.
 * [Miguel Sánchez de León Peque](https://github.com/peque)
 * [devbisme](https://github.com/devbisme)
 
-## License
-![](https://github.com/FPGAwars/apio/raw/master/docs/resources/images/bq-logo-cc-sa-small-150px.png)
+## Credits
 
-Licensed under a [GPL v2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html) and [Creative Commons Attribution-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-sa/4.0/)
+* [BQ](https://www.bq.com) sponsored this project from 02/2016 to 11/2016. Thanks
+
+  <img src="https://github.com/FPGAwars/icezum/raw/master/wiki/bq-logo.png" width="80">
+
+## License
+
+Licensed under [GPL 2.0](http://opensource.org/licenses/GPL-2.0) and [Creative Commons Attribution-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-sa/4.0/).
 
 [apio-logo]: docs/resources/images/apio-logo-mini.png
 [linux-logo]: docs/resources/images/linux.png
@@ -249,4 +256,3 @@ Licensed under a [GPL v2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 [raspbian-logo]: docs/resources/images/raspbian.png
 [apio-pio]: docs/resources/images/apio-pio-min.png
 [apio-pio-development]: docs/resources/images/apio-pio-development-min.png
-[bq-license]: docs/resources/images/bq-logo-cc-sa-small-150px.png
