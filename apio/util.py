@@ -19,10 +19,10 @@ import subprocess
 from os.path import expanduser, isdir, isfile, normpath, dirname, exists
 from threading import Thread
 
+from apio import LOAD_CONFIG_DATA
+
 import requests
 requests.packages.urllib3.disable_warnings()
-
-__version__ = None
 
 # Python3 compat
 if (sys.version_info > (3, 0)):
@@ -122,11 +122,12 @@ def safe_join(*paths):
 
 def _get_config_data():
     config_data = None
-    filepath = safe_join(os.sep, 'etc', 'apio.json')
-    if isfile(filepath):
-        with open(filepath, 'r') as f:
-            # Load the JSON file
-            config_data = json.loads(f.read())
+    if LOAD_CONFIG_DATA:
+        filepath = safe_join(os.sep, 'etc', 'apio.json')
+        if isfile(filepath):
+            with open(filepath, 'r') as f:
+                # Load the JSON file
+                config_data = json.loads(f.read())
     return config_data
 
 

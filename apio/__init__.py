@@ -15,3 +15,7 @@ __author__ = 'Jesús Arroyo Torrens'
 __email__ = 'jesus.jkhlg@gmail.com'
 
 __license__ = 'GPLv2'
+
+# Enable this flag to load data from /etc/apio.json file
+# Used in apio-debian distribution
+LOAD_CONFIG_DATA = False
