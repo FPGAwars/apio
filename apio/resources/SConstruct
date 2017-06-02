@@ -8,11 +8,12 @@
 # ----------------------------------------------------------------------
 
 import os
+import re
 from platform import system
 
 from SCons.Script import (Builder, DefaultEnvironment, Default, AlwaysBuild,
-                          GetOption, Environment, Exit, COMMAND_LINE_TARGETS,
-                          ARGUMENTS, Variables, Help, Glob)
+                          GetOption, Exit, COMMAND_LINE_TARGETS, ARGUMENTS,
+                          Variables, Help, Glob)
 
 # -- Load arguments
 PROG = ARGUMENTS.get('prog', '')
@@ -59,7 +60,8 @@ if 'build' in COMMAND_LINE_TARGETS or \
 # -- Resources paths
 IVL_PATH = os.environ['IVL'] if 'IVL' in os.environ else ''
 VLIB_PATH = os.environ['VLIB'] if 'VLIB' in os.environ else ''
-VLIB_FILES = ' '.join(['"{}"'.format(f) for f in Glob(os.path.join(VLIB_PATH, '*.v'))]) if VLIB_PATH else ''
+VLIB_F = ['"{}"'.format(f) for f in Glob(os.path.join(VLIB_PATH, '*.v'))]
+VLIB_FILES = ' '.join(VLIB_F) if VLIB_PATH else ''
 ICEBOX_PATH = os.environ['ICEBOX'] if 'ICEBOX' in os.environ else ''
 CHIPDB_PATH = os.path.join(ICEBOX_PATH, 'chipdb-{0}.txt'.format(FPGA_SIZE))
 
@@ -69,6 +71,18 @@ IVER_PATH = '' if isWindows or not IVL_PATH else '-B "{0}"'.format(IVL_PATH)
 
 # -- Target name
 TARGET = 'hardware'
+
+# -- Scan required .list files
+list_files_re = re.compile(r'[\n|\s][^\/]?\"(.*\.list?)\"', re.M)
+
+
+def list_files_scan(node, env, path):
+    contents = node.get_text_contents()
+    includes = list_files_re.findall(contents)
+    return env.File(includes)
+
+
+list_scanner = env.Scanner(function=list_files_scan)
 
 # -- Get a list of all the verilog files in the src folfer, in ASCII, with
 # -- the full path. All these files are used for the simulation
@@ -140,7 +154,8 @@ except IndexError:
 synth = Builder(
     action='yosys -p \"synth_ice40 -blif $TARGET\" -q $SOURCES',
     suffix='.blif',
-    src_suffix='.v')
+    src_suffix='.v',
+    source_scanner=list_scanner)
 
 pnr = Builder(
     action='arachne-pnr -d {0} -P {1} -p {2} -o $TARGET $SOURCE'.format(
@@ -187,7 +202,8 @@ iverilog = Builder(
     action='iverilog {0} -o $TARGET -D VCD_OUTPUT={1} {2} $SOURCES'.format(
         IVER_PATH, TARGET_SIM, VLIB_FILES),
     suffix='.out',
-    src_suffix='.v')
+    src_suffix='.v',
+    source_scanner=list_scanner)
 
 # NOTE: output file name is defined in the iverilog call using VCD_OUTPUT macro
 vcd = Builder(
