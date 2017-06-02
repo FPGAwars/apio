@@ -148,7 +148,7 @@ class Installer(object):
                     dlpath = self._download(os_download_url)
                 except Exception as e:
                     click.secho(
-                        'Error: package not availabe for this platform',
+                        'Error: {}'.format(str(e)),
                         fg='red')
             else:
                 click.secho(
