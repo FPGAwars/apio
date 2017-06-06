@@ -65,10 +65,12 @@ class Drivers(object):  # pragma: no cover
 
     def pre_upload(self):
         if 'darwin' in platform:
+            self.profile = Profile()
             self._pre_upload_darwin()
 
     def post_upload(self):
         if 'darwin' in platform:
+            self.profile = Profile()
             self._post_upload_darwin()
 
     def _enable_linux(self):
