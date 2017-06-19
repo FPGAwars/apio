@@ -41,4 +41,4 @@ def cli(ctx, board, fpga, pack, type, size, project_dir):
     })
     ctx.exit(exit_code)
 
-# Advances notes: https://github.com/FPGAwars/apio/wiki/Commands#apio-build
+# Advanced notes: https://github.com/FPGAwars/apio/wiki/Commands#apio-build

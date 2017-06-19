@@ -134,26 +134,37 @@ class Installer(object):
             click.secho(str(e), fg='red')
         except Exception as e:
             # Try os name
-            os_download_url = self.download_urls[1]['url']
-            if platform_download_url != os_download_url:
+            dlpath = self._install_os_package(platform_download_url)
+
+        # Install downloaded package
+        self._install_package(dlpath)
+
+        # Rename unpacked dir to package dir
+        self._rename_unpacked_dir()
+
+    def _install_os_package(self, platform_download_url):
+        os_download_url = self.download_urls[1]['url']
+        if platform_download_url != os_download_url:
+            click.secho(
+                'Warning: full platform does not match: {}\
+                '.format(self.download_urls[0]['platform']),
+                fg='yellow')
+            click.secho(
+                '         Trying OS name: {}\
+                '.format(self.download_urls[1]['platform']),
+                fg='yellow')
+            try:
+                return self._download(os_download_url)
+            except Exception as e:
                 click.secho(
-                    'Warning: full platform does not match: {}\
-                    '.format(self.download_urls[0]['platform']),
-                    fg='yellow')
-                click.secho(
-                    '         Trying OS name: {}\
-                    '.format(self.download_urls[1]['platform']),
-                    fg='yellow')
-                try:
-                    dlpath = self._download(os_download_url)
-                except Exception as e:
-                    click.secho(
-                        'Error: {}'.format(str(e)),
-                        fg='red')
-            else:
-                click.secho(
-                    'Error: package not availabe for this platform',
+                    'Error: {}'.format(str(e)),
                     fg='red')
+        else:
+            click.secho(
+                'Error: package not availabe for this platform',
+                fg='red')
+
+    def _install_package(self, dlpath):
         if dlpath:
             package_dir = util.safe_join(
                 self.packages_dir, self.package_name)
@@ -173,7 +184,7 @@ class Installer(object):
                 """successfully installed!""".format(self.package),
                 fg='green')
 
-        # Rename unpacked dir to package dir
+    def _rename_unpacked_dir(self):
         if self.uncompressed_name:
             unpack_dir = util.safe_join(
                 self.packages_dir, self.uncompressed_name)
@@ -230,31 +241,40 @@ class Installer(object):
 
         if req_version:
             # Find required version via @
-            version = self._check_sem_version(req_version, spec)
-            for release in releases:
-                prerelease = 'prerelease' in release and release['prerelease']
-                if 'tag_name' in release:
-                    tag = tag_name.replace('%V', req_version)
-                    if tag == release['tag_name']:
-                        if prerelease and not force:
-                            click.secho(
-                                'Warning: ' + req_version + ' is' +
-                                ' a pre-release.\n' +
-                                '         Use --force to install',
-                                fg='yellow')
-                            exit(2)
-                        return version
+            return self._find_required_version(
+                releases, tag_name, req_version, spec, force)
         else:
-            # Find latest release
-            for release in releases:
-                prerelease = 'prerelease' in release and release['prerelease']
-                if 'tag_name' in release:
-                    pattern = tag_name.replace('%V', '(?P<v>.*?)') + '$'
-                    match = re.search(pattern, release['tag_name'])
-                    if match:
-                        if not prerelease:
-                            version = match.group('v')
-                            return self._check_sem_version(version, spec)
+            # Find latest version release
+            return self._find_latest_version(
+                releases, tag_name, req_version, spec)
+
+    def _find_required_version(self, releases, tag_name, req_version, spec,
+                               force):
+        version = self._check_sem_version(req_version, spec)
+        for release in releases:
+            prerelease = 'prerelease' in release and release['prerelease']
+            if 'tag_name' in release:
+                tag = tag_name.replace('%V', req_version)
+                if tag == release['tag_name']:
+                    if prerelease and not force:
+                        click.secho(
+                            'Warning: ' + req_version + ' is' +
+                            ' a pre-release.\n' +
+                            '         Use --force to install',
+                            fg='yellow')
+                        exit(2)
+                    return version
+
+    def _find_latest_version(self, releases, tag_name, req_version, spec):
+        for release in releases:
+            prerelease = 'prerelease' in release and release['prerelease']
+            if 'tag_name' in release:
+                pattern = tag_name.replace('%V', '(?P<v>.*?)') + '$'
+                match = re.search(pattern, release['tag_name'])
+                if match:
+                    if not prerelease:
+                        version = match.group('v')
+                        return self._check_sem_version(version, spec)
 
     def _check_sem_version(self, version, spec):
         try:

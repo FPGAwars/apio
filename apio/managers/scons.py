@@ -12,10 +12,10 @@ import datetime
 from os.path import isfile
 
 from apio import util
-from apio.resources import Resources
+from apio.managers.arguments import process_arguments
 from apio.managers.system import System
-from apio.managers.project import Project
 from apio.profile import Profile
+from apio.resources import Resources
 
 
 class SCons(object):
@@ -29,31 +29,37 @@ class SCons(object):
             project_dir = util.check_dir(project_dir)
             os.chdir(project_dir)
 
+    @util.command
     def clean(self):
         return self.run('-c', deps=['scons'])
 
+    @util.command
     def verify(self):
         return self.run('verify', deps=['scons', 'iverilog'])
 
+    @util.command
     def sim(self):
         return self.run('sim', deps=['scons', 'iverilog', 'gtkwave'])
 
+    @util.command
     def build(self, args):
-        ret = self.process_arguments(args)
-        if isinstance(ret, int):
-            return ret
-        if isinstance(ret, tuple):
-            variables, board = ret
+        variables, board = process_arguments(args, self.resources)
         return self.run('build', variables, board, deps=['scons', 'icestorm'])
 
-    def upload(self, args, device=-1):
-        ret = self.process_arguments(args)
-        if isinstance(ret, int):
-            return ret
-        if isinstance(ret, tuple):
-            variables, board = ret
+    @util.command
+    def time(self, args):
+        variables, board = process_arguments(args, self.resources)
+        return self.run('time', variables, board, deps=['scons', 'icestorm'])
 
-        # Get programmer value
+    @util.command
+    def upload(self, args, device=-1):
+        variables, board = process_arguments(args, self.resources)
+        device = self.get_device(board, device)
+        programmer = self.get_programmer(board)
+        variables += ['prog={0}'.format(programmer.replace('%D%', device))]
+        return self.run('upload', variables, board, deps=['scons', 'icestorm'])
+
+    def get_programmer(self, board):
         programmer = ''
         if board:
             p = self.resources.boards[board]['programmer']
@@ -63,26 +69,33 @@ class SCons(object):
             command = content['command'] if 'command' in content else ''
             args = content['args'] if 'args' in content else ''
             programmer = '{0} {1} {2}'.format(command, args, extra_args)
+        return programmer
 
-        # -- Check
-        check = self.resources.boards[board]['check']
-
+    def get_device(self, board, device):
+        check_info = self.resources.boards[board]['check']
         # Check FTDI description
+        device = self._check_ftdi(check_info, device, board)
+        if device == -1:
+            # Board not detected
+            raise Exception('board not detected')
+        # Check platform
+        self._check_platform(check_info, device)
+        return device
+
+    def _check_ftdi(self, check, device, board):  # noqa
         if 'ftdi-desc' in check:
+            ftdi_desc = check['ftdi-desc']
             detected_boards = System().detect_boards()
-            if isinstance(detected_boards, int):
-                return detected_boards
 
             if device:
                 # Check device argument
                 if board:
-                    desc = check['ftdi-desc']
                     found = False
                     for b in detected_boards:
                         # Selected board
                         if device == b['index']:
                             # Check the device ftdi description
-                            if desc in b['description']:
+                            if ftdi_desc in b['description']:
                                 found = True
                             break
                     if not found:
@@ -95,9 +108,8 @@ class SCons(object):
                 # Detect device
                 device = -1
                 if board:
-                    desc = check['ftdi-desc']
                     for b in detected_boards:
-                        if desc in b['description']:
+                        if ftdi_desc in b['description']:
                             # Select the first board that validates
                             # the ftdi description
                             device = b['index']
@@ -114,14 +126,9 @@ class SCons(object):
                         '  2) Execute your command with\n' +
                         '       `--board <boardname>`',
                         fg='yellow')
-                    return 1
+        return device
 
-            if device == -1:
-                # Board not detected
-                click.secho('Error: board not detected', fg='red')
-                return 1
-
-        # Check platforms
+    def _check_platform(self, check, device):
         if 'platform' in check:
             # Device argument is ignored
             if device and device != -1:
@@ -134,28 +141,11 @@ class SCons(object):
             if platform != current_platform:
                 # Incorrect platform
                 if platform == 'linux_armv7l':
-                    click.secho(
-                        'Error: incorrect platform: RPI2 or RPI3 required',
-                        fg='red')
+                    raise Exception(
+                        'incorrect platform: RPI2 or RPI3 required')
                 else:
-                    click.secho(
-                        'Error: incorrect platform {0}'.format(platform),
-                        fg='red')
-                return 1
-
-        return self.run('upload',
-                        variables + ['prog={0}'.format(
-                                        programmer.replace('%D%', device))],
-                        board,
-                        deps=['scons', 'icestorm'])
-
-    def time(self, args):
-        ret = self.process_arguments(args)
-        if isinstance(ret, int):
-            return ret
-        if isinstance(ret, tuple):
-            variables, board = ret
-        return self.run('time', variables, board, deps=['scons', 'icestorm'])
+                    raise Exception(
+                        'incorrect platform {0}'.format(platform))
 
     def run(self, command, variables=[], board=None, deps=[]):
         """Executes scons for building"""
@@ -172,11 +162,14 @@ class SCons(object):
             # Run on `default` config mode
             if not util.resolve_packages(self.resources.packages, deps):
                 # Exit if a package is not installed
-                return 1
+                raise Exception
         else:
             click.secho('Info: native config mode')
 
         # -- Execute scons
+        return self._execute_scons(command, variables, board)
+
+    def _execute_scons(self, command, variables, board):
         terminal_width, _ = click.get_terminal_size()
         start_time = time.time()
 
@@ -217,230 +210,7 @@ class SCons(object):
             half_line
         ), err=is_error)
 
-        if False:
-            if is_error:
-                print("""
-  ______                     _
- |  ____|                   | |
- | |__   _ __ _ __ ___  _ __| |
- |  __| | '__| '__/ _ \| '__| |
- | |____| |  | | | (_) | |  |_|
- |______|_|  |_|  \___/|_|  (_)
-""")
-            else:
-                print("""
-   _____                             _
-  / ____|                           | |
- | (___  _   _  ___ ___ ___  ___ ___| |
-  \___ \| | | |/ __/ __/ _ \/ __/ __| |
-  ____) | |_| | (_| (_|  __/\__ \__ \_|
- |_____/ \__,_|\___\___\___||___/___(_)
-""")
-
         return exit_code
-
-    def process_arguments(self, args):
-        # -- Check arguments
-        var_board = args['board']
-        var_fpga = args['fpga']
-        var_size = args['size']
-        var_type = args['type']
-        var_pack = args['pack']
-
-        # TODO: reduce code size
-
-        if var_board:
-            if isfile('apio.ini'):
-                click.secho('Info: ignore apio.ini board', fg='yellow')
-            if var_board in self.resources.boards:
-                fpga = self.resources.boards[var_board]['fpga']
-                if fpga in self.resources.fpgas:
-                    fpga_size = self.resources.fpgas[fpga]['size']
-                    fpga_type = self.resources.fpgas[fpga]['type']
-                    fpga_pack = self.resources.fpgas[fpga]['pack']
-
-                    redundant_arguments = []
-                    contradictory_arguments = []
-
-                    if var_fpga:
-                        if var_fpga in self.resources.fpgas:
-                            if var_fpga == fpga:
-                                # Redundant argument
-                                redundant_arguments += ['fpga']
-                            else:
-                                # Contradictory argument
-                                contradictory_arguments += ['fpga']
-                        else:
-                            # Unknown fpga
-                            click.secho(
-                                'Error: unknown fpga: {0}'.format(
-                                    var_fpga), fg='red')
-                            return 1
-
-                    if var_size:
-                        if var_size == fpga_size:
-                            # Redundant argument
-                            redundant_arguments += ['size']
-                        else:
-                            # Contradictory argument
-                            contradictory_arguments += ['size']
-
-                    if var_type:
-                        if var_type == fpga_type:
-                            # Redundant argument
-                            redundant_arguments += ['type']
-                        else:
-                            # Contradictory argument
-                            contradictory_arguments += ['type']
-
-                    if var_pack:
-                        if var_pack == fpga_pack:
-                            # Redundant argument
-                            redundant_arguments += ['pack']
-                        else:
-                            # Contradictory argument
-                            contradictory_arguments += ['pack']
-
-                    if redundant_arguments:
-                        # Redundant argument
-                        click.secho(
-                            'Warning: redundant arguments: {}'.format(
-                                ', '.join(redundant_arguments)), fg='yellow')
-
-                    if contradictory_arguments:
-                        # Contradictory argument
-                        click.secho(
-                            'Error: contradictory arguments: {}'.format(
-                                ', '.join(contradictory_arguments)), fg='red')
-                        return 1
-                else:
-                    # Unknown fpga
-                    pass
-            else:
-                # Unknown board
-                click.secho(
-                    'Error: unknown board: {0}'.format(var_board), fg='red')
-                return 1
-        else:
-            if var_fpga:
-                if isfile('apio.ini'):
-                    click.secho('Info: ignore apio.ini board', fg='yellow')
-                if var_fpga in self.resources.fpgas:
-                    fpga_size = self.resources.fpgas[var_fpga]['size']
-                    fpga_type = self.resources.fpgas[var_fpga]['type']
-                    fpga_pack = self.resources.fpgas[var_fpga]['pack']
-
-                    redundant_arguments = []
-                    contradictory_arguments = []
-
-                    if var_size:
-                        if var_size == fpga_size:
-                            # Redundant argument
-                            redundant_arguments += ['size']
-                        else:
-                            # Contradictory argument
-                            contradictory_arguments += ['size']
-
-                    if var_type:
-                        if var_type == fpga_type:
-                            # Redundant argument
-                            redundant_arguments += ['type']
-                        else:
-                            # Contradictory argument
-                            contradictory_arguments += ['type']
-
-                    if var_pack:
-                        if var_pack == fpga_pack:
-                            # Redundant argument
-                            redundant_arguments += ['pack']
-                        else:
-                            # Contradictory argument
-                            contradictory_arguments += ['pack']
-
-                    if redundant_arguments:
-                        # Redundant argument
-                        click.secho(
-                            'Warning: redundant arguments: {}'.format(
-                                ', '.join(redundant_arguments)), fg='yellow')
-
-                    if contradictory_arguments:
-                        # Contradictory argument
-                        click.secho(
-                            'Error: contradictory arguments: {}'.format(
-                                ', '.join(contradictory_arguments)), fg='red')
-                        return 1
-                else:
-                    # Unknown fpga
-                    click.secho(
-                        'Error: unknown fpga: {0}'.format(var_fpga), fg='red')
-                    return 1
-            else:
-                if var_size and var_type and var_pack:
-                    if isfile('apio.ini'):
-                        click.secho('Info: ignore apio.ini board', fg='yellow')
-                    fpga_size = var_size
-                    fpga_type = var_type
-                    fpga_pack = var_pack
-                else:
-                    if not var_size and not var_type and not var_pack:
-                        # No arguments: use apio.ini board
-                        p = Project()
-                        p.read()
-                        if p.board:
-                            var_board = p.board
-                            click.secho(
-                                'Info: apio.ini board {}'.format(
-                                    var_board))
-                            fpga = self.resources.boards[var_board]['fpga']
-                            fpga_size = self.resources.fpgas[fpga]['size']
-                            fpga_type = self.resources.fpgas[fpga]['type']
-                            fpga_pack = self.resources.fpgas[fpga]['pack']
-                        else:
-                            click.secho(
-                                'Error: insufficient arguments: missing board',
-                                fg='red')
-                            click.secho(
-                                'You have two options:\n' +
-                                '  1) Execute your command with\n' +
-                                '       `--board <boardname>`\n' +
-                                '  2) Create an ini file using\n' +
-                                '       `apio init --board <boardname>`',
-                                fg='yellow')
-                            return 1
-                    else:
-                        if isfile('apio.ini'):
-                            click.secho('Info: ignore apio.ini board',
-                                        fg='yellow')
-                        # Insufficient arguments
-                        missing = []
-                        if not var_size:
-                            missing += ['size']
-                        if not var_type:
-                            missing += ['type']
-                        if not var_pack:
-                            missing += ['pack']
-                        pass
-                        click.secho(
-                            'Error: insufficient arguments: missing {}'.format(
-                                ', '.join(missing)), fg='red')
-                        return 1
-
-        # -- Build Scons variables list
-        variables = self.format_vars({
-            'fpga_size': fpga_size,
-            'fpga_type': fpga_type,
-            'fpga_pack': fpga_pack
-        })
-
-        return variables, var_board
-
-    def format_vars(self, args):
-        """Format the given vars in the form: 'flag=value'"""
-        variables = []
-        for key, value in args.items():
-            if value:
-                variables += ['{0}={1}'.format(key, value)]
-        return variables
 
     def _on_run_out(self, line):
         fg = 'green' if 'is up to date' in line else None

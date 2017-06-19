@@ -20,29 +20,26 @@ class System(object):  # pragma: no cover
             self.ext = '.exe'
 
     def lsusb(self):
+        returncode = 1
         result = self._run('lsusb')
 
-        if isinstance(result, int):
-            return result
-
         if result:
-            return result['returncode']
+            returncode = result['returncode']
+
+        return returncode
 
     def lsftdi(self):
+        returncode = 1
         result = self._run('lsftdi')
 
-        if isinstance(result, int):
-            return result
-
         if result:
-            return result['returncode']
+            returncode = result['returncode']
+
+        return returncode
 
     def detect_boards(self):
         detected_boards = []
         result = self._run('lsftdi')
-
-        if isinstance(result, int):
-            return result
 
         if result and result['returncode'] == 0:
             detected_boards = self.parse_out(result['out'])
@@ -58,11 +55,9 @@ class System(object):  # pragma: no cover
             result = util.exec_command(
                 util.safe_join(system_bin_dir, command + self.ext),
                 stdout=util.AsyncPipe(self._on_run_out),
-                stderr=util.AsyncPipe(self._on_run_out)
-                )
+                stderr=util.AsyncPipe(self._on_run_out))
         else:
             util._check_package('system')
-            return 1
 
         return result
 

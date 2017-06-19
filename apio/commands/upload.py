@@ -47,4 +47,4 @@ def cli(ctx, device, board, fpga, pack, type, size, project_dir):
     drivers.post_upload()
     ctx.exit(exit_code)
 
-# Advances notes: https://github.com/FPGAwars/apio/wiki/Commands#apio-upload
+# Advanced notes: https://github.com/FPGAwars/apio/wiki/Commands#apio-upload

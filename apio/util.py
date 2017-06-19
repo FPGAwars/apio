@@ -148,27 +148,42 @@ def get_home_dir():
     home_dir = re.sub(r'\~', expanduser('~').replace('\\', '/'), home_dir)
 
     paths = home_dir.split(os.pathsep)
+    path = _check_writable(paths)
+    if not path:
+        path = _create_path(paths)
+        if not path:
+            click.secho('Error: no usable home directory ' + path, fg='red')
+            exit(1)
+    return path
+
+
+def _check_writable(paths):
+    ret = ''
     for path in paths:
         if isdir(path):
             if os.access(path, os.W_OK):
                 # Path is writable
-                return path
+                ret = path
+                break
             else:
                 click.secho('Warning: can\'t write in path ' + path,
                             fg='yellow')
+    return ret
 
+
+def _create_path(paths):
+    ret = ''
     for path in paths:
         if not isdir(path):
             try:
                 os.makedirs(path)
-                return path
+                ret = path
+                break
             except OSError as ioex:
                 if ioex.errno == 13:
                     click.secho('Warning: can\'t create ' + path,
                                 fg='yellow')
-
-    click.secho('Error: no usable home directory ' + path, fg='red')
-    exit(1)
+    return ret
 
 
 def get_package_dir(pkg_name):
@@ -304,6 +319,12 @@ def exec_command(*args, **kwargs):  # pragma: no cover
             if isinstance(kwargs[s], AsyncPipe):
                 kwargs[s].close()
 
+    _parse_result(kwargs, result)
+
+    return result
+
+
+def _parse_result(kwargs, result):
     for s in ('stdout', 'stderr'):
         if isinstance(kwargs[s], AsyncPipe):
             result[s[3:]] = '\n'.join(kwargs[s].get_buffer())
@@ -311,8 +332,6 @@ def exec_command(*args, **kwargs):  # pragma: no cover
     for k, v in result.items():
         if v and isinstance(v, unicode):
             result[k].strip()
-
-    return result
 
 
 def get_pypi_latest_version():
@@ -362,3 +381,17 @@ def check_dir(_dir):
         except OSError:
             pass
     return _dir
+
+
+def command(function):
+    """Command decorator"""
+    def decorate(*args, **kwargs):
+        exit_code = 1
+        try:
+            exit_code = function(*args, **kwargs)
+        except Exception as e:
+            if str(e):
+                click.secho('Error: ' + str(e), fg='red')
+        finally:
+            return exit_code
+    return decorate

@@ -91,25 +91,27 @@ class Profile(object):
         return version
 
     def load(self):
-        data = {}
         if isfile(self._profile_path):
             with open(self._profile_path, 'r') as profile:
                 try:
-                    data = json.load(profile)
-                    if 'config' in data.keys():
-                        self.config = data['config']
-                        if 'exe' not in self.config.keys():
-                            self.config['exe'] = 'default'
-                        if 'verbose' not in self.config.keys():
-                            self.config['verbose'] = 0
-                    if 'settings' in data.keys():
-                        self.settings = data['settings']
-                    if 'packages' in data.keys():
-                        self.packages = data['packages']
-                    else:
-                        self.packages = data  # Backward compatibility
+                    self._load_profile(profile)
                 except Exception:
                     pass
+
+    def _load_profile(self, profile):
+        data = json.load(profile)
+        if 'config' in data.keys():
+            self.config = data['config']
+            if 'exe' not in self.config.keys():
+                self.config['exe'] = 'default'
+            if 'verbose' not in self.config.keys():
+                self.config['verbose'] = 0
+        if 'settings' in data.keys():
+            self.settings = data['settings']
+        if 'packages' in data.keys():
+            self.packages = data['packages']
+        else:
+            self.packages = data  # Backward compatibility
 
     def save(self):
         util.mkdir(self._profile_path)
