@@ -56,12 +56,12 @@ Supported platforms: *linux_x86_64, linux_i686, linux_armv7l, linux_aarch64, dar
 | Board
 |-------
 | [Icezum Alhambra](https://github.com/FPGAwars/icezum)
+| [Kéfir I ice40-HX4K](http://fpgalibre.sourceforge.net/Kefir/)
 | [Nandland Go board](https://www.nandland.com/goboard/introduction.html)
-| [iCEstick Evaluation Kit ](http://www.pighixxx.com/test/portfolio-items/icestick/)
 | [iCE40-HX8K Breakout Board](http://www.latticesemi.com/en/Products/DevelopmentBoardsAndKits/iCE40HX8KBreakoutBoard.aspx)
+| [iCEstick Evaluation Kit ](http://www.pighixxx.com/test/portfolio-items/icestick/)
 | [icoBOARD 1.0](http://icoboard.org/about-icoboard.html)
 | [CAT Board](https://hackaday.io/project/7982-cat-board)
-| [Kéfir I](http://fpgalibre.sourceforge.net/Kefir/)
 
 NOTE: all supported [Icestorm FPGAs](http://www.clifford.at/icestorm/) can be used with [--fpga, --size, --type and --pack options](http://apiodoc.readthedocs.io/en/develop/source/user_guide/code_commands/cmd_build.html#options).
 
