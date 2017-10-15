@@ -11,6 +11,7 @@
 import os
 import re
 import sys
+import jwt
 import json
 import click
 import locale
@@ -395,3 +396,7 @@ def command(function):
         finally:
             return exit_code
     return decorate
+
+
+def decode(text):
+    return jwt.decode(text, 'secret', algorithm='HS256')
