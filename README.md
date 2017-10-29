@@ -49,21 +49,25 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 | [scons](https://github.com/FPGAwars/tool-scons)  | apio install scons | A software construction tool. [Scons project](http://scons.org)
 | [system](https://github.com/FPGAwars/tools-system)  | apio install system | Tools for listing the USB devices and retrieving information from the FTDI chips
 
-Supported platforms: *linux_x86_64, linux_i686, linux_armv7l, linux_aarch64, darwin, windows*.
+**Supported platforms**
+
+*linux_x86_64, linux_i686, linux_armv7l, linux_aarch64, windows_x86, windows_amd64, darwin*.
 
 ## Supported boards
 
-| Board
-|-------
-| [Icezum Alhambra](https://github.com/FPGAwars/icezum)
-| [Kéfir I ice40-HX4K](http://fpgalibre.sourceforge.net/Kefir/)
-| [Nandland Go board](https://www.nandland.com/goboard/introduction.html)
-| [iCE40-HX8K Breakout Board](http://www.latticesemi.com/en/Products/DevelopmentBoardsAndKits/iCE40HX8KBreakoutBoard.aspx)
-| [iCEstick Evaluation Kit ](http://www.pighixxx.com/test/portfolio-items/icestick/)
-| [icoBOARD 1.0](http://icoboard.org/about-icoboard.html)
-| [CAT Board](https://hackaday.io/project/7982-cat-board)
+| Board name | GNU/Linux | Windows | Mac OS |
+|:-|:-:|:-:|:-:|
+| [IceZUM Alhambra](https://github.com/FPGAwars/icezum) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| [Kéfir I iCE40-HX4K](http://fpgalibre.sourceforge.net/Kefir/) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| [Nandland Go board](https://www.nandland.com/goboard/introduction.html) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| [iCE40-HX8K Breakout Board](http://www.latticesemi.com/Products/DevelopmentBoardsAndKits/iCE40HX8KBreakoutBoard.aspx) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| [iCEstick Evaluation Kit](http://www.pighixxx.com/test/portfolio-items/icestick/) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| [icoBOARD 1.0](http://icoboard.org/about-icoboard.html) |  &nbsp;&nbsp;:white_check_mark:&nbsp;**\*** | - |  - |
+| [CAT Board](https://hackaday.io/project/7982-cat-board) | &nbsp;&nbsp;:white_check_mark:&nbsp;**\*** | - |  - |
 
-NOTE: all supported [Icestorm FPGAs](http://www.clifford.at/icestorm/) can be used with [--fpga, --size, --type and --pack options](http://apiodoc.readthedocs.io/en/develop/source/user_guide/code_commands/cmd_build.html#options).
+**\*** Use with Raspberry Pi
+
+NOTE: all supported [Icestorm FPGAs](http://www.clifford.at/icestorm/) can be used with [--fpga or --size, --type and --pack options](http://apiodoc.readthedocs.io/en/develop/source/user_guide/code_commands/cmd_build.html#options).
 
 ## Documentation
 
