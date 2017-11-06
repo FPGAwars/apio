@@ -400,3 +400,34 @@ def command(function):
 
 def decode(text):
     return jwt.decode(text, 'secret', algorithm='HS256')
+
+
+def get_serialports(filter_hwid=False):
+    try:
+        from serial.tools.list_ports import comports
+    except ImportError:
+        click.secho('Error: could not import pyserial', fg='red')
+        click.secho('Please run:\n'
+                        '   pip install -U pyserial', fg='yellow')
+        return []
+
+    result = []
+    for p, d, h in comports():
+        if not p:
+            continue
+        if platform.system() == "Windows":
+            try:
+                d = unicode(d, errors="ignore")
+            except TypeError:
+                pass
+        if not filter_hwid or "VID:PID" in h:
+            result.append({"port": p, "description": d, "hwid": h})
+
+    # if filter_hwid:
+    #     return result
+
+    # fix for PySerial
+    # if not result and platform.system() == "Darwin":
+    #     for p in glob("/dev/tty.*"):
+    #         result.append({"port": p, "description": "n/a", "hwid": "n/a"})
+    return result
