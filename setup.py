@@ -27,7 +27,8 @@ setup(
         'pyjwt>=1.5.3,<2',
         'colorama',
         'pyserial>=3,<4,!=3.3',
-        'tinyfpgab'
+        'tinyfpgab',
+        'blackiceprog',
     ],
     entry_points={
         'console_scripts': ['apio=apio.__main__:cli']

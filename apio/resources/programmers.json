@@ -12,7 +12,7 @@
     "args": "-c"
   },
   "blackiceprog": {
-    "command": "black-iceprog.py",
+    "command": "black-iceprog",
     "args": "%D% "
   },
   "tinyfpgab": {
