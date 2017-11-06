@@ -75,7 +75,7 @@ class SCons(object):
         check_info = self.resources.boards[board]['check']
         # Check FTDI description
         device = self._check_ftdi(check_info, device, board)
-         # Search serial device by USB id
+        # Search serial device by USB id
         device = self._check_serial_usbid(check_info, device, board)
         if device == -1:
             # Board not detected
@@ -152,7 +152,7 @@ class SCons(object):
     def _check_serial_usbid(self, check, device, board):
         if device and device != -1:
             return device
-        if not 'serial-usbid' in check:
+        if 'serial-usbid' not in check:
             return device
 
         for item in util.get_serialports(True):

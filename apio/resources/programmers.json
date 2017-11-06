@@ -17,6 +17,6 @@
   },
   "tinyfpgab": {
     "command": "tinyfpgab",
-    "args": "--program "
+    "args": "-c %D% --program "
   }
 }

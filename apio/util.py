@@ -403,31 +403,26 @@ def decode(text):
 
 
 def get_serialports(filter_hwid=False):
+    result = []
+
     try:
         from serial.tools.list_ports import comports
     except ImportError:
         click.secho('Error: could not import pyserial', fg='red')
         click.secho('Please run:\n'
-                        '   pip install -U pyserial', fg='yellow')
-        return []
+                    '   pip install -U pyserial', fg='yellow')
+        return result
 
-    result = []
     for p, d, h in comports():
         if not p:
             continue
-        if platform.system() == "Windows":
-            try:
-                d = unicode(d, errors="ignore")
-            except TypeError:
-                pass
+        # This is isnt really needed and makes mccabe complain...
+        # if platform.system() == "Windows":
+        #     try:
+        #         d = unicode(d, errors="ignore")
+        #     except TypeError:
+        #         pass
         if not filter_hwid or "VID:PID" in h:
             result.append({"port": p, "description": d, "hwid": h})
 
-    # if filter_hwid:
-    #     return result
-
-    # fix for PySerial
-    # if not result and platform.system() == "Darwin":
-    #     for p in glob("/dev/tty.*"):
-    #         result.append({"port": p, "description": "n/a", "hwid": "n/a"})
     return result
