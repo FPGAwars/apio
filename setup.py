@@ -25,7 +25,10 @@ setup(
         'semantic_version>=2.5.0',
         'requests>=2.4.0,<3',
         'pyjwt>=1.5.3,<2',
-        'colorama'
+        'colorama',
+        'pyserial>=3,<4,!=3.3',
+        'tinyfpgab',
+        'blackiceprog',
     ],
     entry_points={
         'console_scripts': ['apio=apio.__main__:cli']

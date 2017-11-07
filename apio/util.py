@@ -400,3 +400,29 @@ def command(function):
 
 def decode(text):
     return jwt.decode(text, 'secret', algorithm='HS256')
+
+
+def get_serialports(filter_hwid=False):
+    result = []
+
+    try:
+        from serial.tools.list_ports import comports
+    except ImportError:
+        click.secho('Error: could not import pyserial', fg='red')
+        click.secho('Please run:\n'
+                    '   pip install -U pyserial', fg='yellow')
+        return result
+
+    for p, d, h in comports():
+        if not p:
+            continue
+        # This is isnt really needed and makes mccabe complain...
+        # if platform.system() == "Windows":
+        #     try:
+        #         d = unicode(d, errors="ignore")
+        #     except TypeError:
+        #         pass
+        if not filter_hwid or "VID:PID" in h:
+            result.append({"port": p, "description": d, "hwid": h})
+
+    return result

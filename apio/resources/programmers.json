@@ -10,5 +10,13 @@
   "litterbox": {
     "command": "sudo litterbox",
     "args": "-c"
+  },
+  "blackiceprog": {
+    "command": "black-iceprog",
+    "args": "%D% "
+  },
+  "tinyfpgab": {
+    "command": "tinyfpgab",
+    "args": "-c %D% --program "
   }
 }

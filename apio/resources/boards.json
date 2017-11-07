@@ -62,5 +62,23 @@
     "check": {
       "ftdi-desc": "Milk JTAG:u"
     }
+  },
+  "blackice": {
+    "fpga": "iCE40-HX4K-TQ144",
+    "programmer": {
+      "type": "blackiceprog"
+    },
+    "check": {
+      "serial-usbid": "0483:5740"
+    }
+  },
+  "TinyFPGA-B2": {
+    "fpga": "iCE40-LP8K-CM81",
+    "programmer": {
+      "type": "tinyfpgab"
+    },
+    "check": {
+      "serial-usbid": "1209:2100"
+    }
   }
 }
