@@ -213,6 +213,7 @@ def resolve_packages(packages, deps=[]):
 
     base_dir = {
         'scons': get_package_dir('tool-scons'),
+        'system': get_package_dir('tools-system'),
         'icestorm': get_package_dir('toolchain-icestorm'),
         'iverilog': get_package_dir('toolchain-iverilog'),
         'gtkwave': get_package_dir('tool-gtkwave')
@@ -220,6 +221,7 @@ def resolve_packages(packages, deps=[]):
 
     bin_dir = {
         'scons': safe_join(base_dir['scons'], 'script'),
+        'system': safe_join(base_dir['system'], 'bin'),
         'icestorm': safe_join(base_dir['icestorm'], 'bin'),
         'iverilog': safe_join(base_dir['iverilog'], 'bin'),
         'gtkwave': safe_join(base_dir['gtkwave'], 'bin')
@@ -402,27 +404,18 @@ def decode(text):
     return jwt.decode(text, 'secret', algorithm='HS256')
 
 
-def get_serialports(filter_hwid=False):
+def get_serial_ports():
+    from serial.tools.list_ports import comports
     result = []
 
-    try:
-        from serial.tools.list_ports import comports
-    except ImportError:
-        click.secho('Error: could not import pyserial', fg='red')
-        click.secho('Please run:\n'
-                    '   pip install -U pyserial', fg='yellow')
-        return result
-
-    for p, d, h in comports():
-        if not p:
+    for port, description, hwid in comports():
+        if not port:
             continue
-        # This is isnt really needed and makes mccabe complain...
-        # if platform.system() == "Windows":
-        #     try:
-        #         d = unicode(d, errors="ignore")
-        #     except TypeError:
-        #         pass
-        if not filter_hwid or "VID:PID" in h:
-            result.append({"port": p, "description": d, "hwid": h})
+        if 'VID:PID' in hwid:
+            result.append({
+                'port': port,
+                'description': description,
+                'hwid': hwid
+            })
 
     return result

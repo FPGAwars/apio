@@ -21,32 +21,32 @@ class System(object):  # pragma: no cover
 
     def lsusb(self):
         returncode = 1
-        result = self._run('lsusb')
+        result = self._run_command('lsusb')
 
         if result:
-            returncode = result['returncode']
+            returncode = result.get('returncode')
 
         return returncode
 
     def lsftdi(self):
         returncode = 1
-        result = self._run('lsftdi')
+        result = self._run_command('lsftdi')
 
         if result:
-            returncode = result['returncode']
+            returncode = result.get('returncode')
 
         return returncode
 
-    def detect_boards(self):
-        detected_boards = []
-        result = self._run('lsftdi')
+    def get_ftdi_devices(self):
+        ftdi_devices = []
+        result = self._run_command('lsftdi')
 
-        if result and result['returncode'] == 0:
-            detected_boards = self.parse_out(result['out'])
+        if result and result.get('returncode') == 0:
+            ftdi_devices = self._parse_ftdi_devices(result.get('out'))
 
-        return detected_boards
+        return ftdi_devices
 
-    def _run(self, command):
+    def _run_command(self, command):
         result = {}
         system_base_dir = util.get_package_dir('tools-system')
         system_bin_dir = util.safe_join(system_base_dir, 'bin')
@@ -64,7 +64,7 @@ class System(object):  # pragma: no cover
     def _on_run_out(self, line):
         click.secho(line)
 
-    def parse_out(self, text):
+    def _parse_ftdi_devices(self, text):
         pattern = 'Number\sof\sFTDI\sdevices\sfound:\s(?P<n>\d+?)\n'
         match = re.search(pattern, text)
         n = int(match.group('n')) if match else 0
@@ -78,14 +78,14 @@ class System(object):  # pragma: no cover
         pattern = '.*Description:\s(?P<n>.*?)\n.*'
         description = re.findall(pattern, text)
 
-        detected_boards = []
+        ftdi_devices = []
 
         for i in range(n):
-            board = {
-                "index": index[i],
-                "manufacturer": manufacturer[i],
-                "description": description[i]
+            ftdi_device = {
+                'index': index[i],
+                'manufacturer': manufacturer[i],
+                'description': description[i]
             }
-            detected_boards.append(board)
+            ftdi_devices.append(ftdi_device)
 
-        return detected_boards
+        return ftdi_devices

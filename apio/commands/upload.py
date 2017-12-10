@@ -17,8 +17,6 @@ if (sys.version_info > (3, 0)):
 
 @click.command('upload')
 @click.pass_context
-@click.option('-d', '--device', type=unicode, metavar='device',
-              help='Set the device.')
 @click.option('-b', '--board', type=unicode, metavar='board',
               help='Set the board.')
 @click.option('--fpga', type=unicode, metavar='fpga',
@@ -31,7 +29,13 @@ if (sys.version_info > (3, 0)):
               help='Set the FPGA package.')
 @click.option('-p', '--project-dir', type=unicode, metavar='path',
               help='Set the target directory for the project.')
-def cli(ctx, device, board, fpga, pack, type, size, project_dir):
+@click.option('--device', type=unicode, metavar='device',
+              help='Set the serial device.')
+@click.option('--ftdi-id', type=unicode, metavar='ftdi-id',
+              help='Set the FTDI id.')
+def cli(ctx, board, fpga, pack, type, size,
+        project_dir, device, ftdi_id):
+
     """Upload the bitstream to the FPGA."""
 
     drivers = Drivers()
@@ -43,7 +47,7 @@ def cli(ctx, device, board, fpga, pack, type, size, project_dir):
         'size': size,
         'type': type,
         'pack': pack
-    }, device)
+    }, device, ftdi_id)
     drivers.post_upload()
     ctx.exit(exit_code)
 

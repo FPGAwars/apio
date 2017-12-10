@@ -5,6 +5,7 @@
 # -- Licence GPLv2
 
 import os
+import re
 import time
 import click
 import datetime
@@ -52,115 +53,126 @@ class SCons(object):
         return self.run('time', variables, board, deps=['scons', 'icestorm'])
 
     @util.command
-    def upload(self, args, device=-1):
+    def upload(self, args, device, ftdi_id):
         variables, board = process_arguments(args, self.resources)
-        device = self.get_device(board, device)
-        programmer = self.get_programmer(board)
-        variables += ['prog={0}'.format(programmer.replace('%D%', device))]
-        return self.run('upload', variables, board, deps=['scons', 'icestorm'])
+        programmer = self.get_programmer(board, device, ftdi_id)
+        variables += ['prog={0}'.format(programmer)]
+        return self.run('upload', variables, board,
+                        deps=['scons', 'system', 'icestorm'])
 
-    def get_programmer(self, board):
+    def get_programmer(self, board, ext_device, ext_ftdi_id):
         programmer = ''
+
         if board:
-            p = self.resources.boards[board]['programmer']
-            type = p['type']
-            content = self.resources.programmers[type]
-            extra_args = p['extra_args'] if 'extra_args' in p else ''
-            command = content['command'] if 'command' in content else ''
-            args = content['args'] if 'args' in content else ''
-            programmer = '{0} {1} {2}'.format(command, args, extra_args)
+            board_data = self.resources.boards[board]
+
+            # Check platform
+            self.check_platform(board_data)
+
+            # Serialize programmer command
+            programmer = self.serialize_programmer(board_data)
+
+            # Replace hwid
+            if '${VID}' in programmer or '${PID}' in programmer:
+                serial_usb_data = board_data.get('serial_usb')
+                vid = serial_usb_data.get('vid')
+                pid = serial_usb_data.get('pid')
+                programmer = programmer.replace('${VID}', vid)
+                programmer = programmer.replace('${PID}', pid)
+
+            # Replace serial device
+            if '${DEVICE}' in programmer or '${FTDI_ID}' in programmer:
+                device = self.get_serial_device(board_data, ext_device)
+                programmer = programmer.replace('${DEVICE}', device)
+
+            # Replace FTDI index
+            if '${FTDI_ID}' in programmer:
+                ftdi_id = self.get_ftdi_id(board_data, ext_ftdi_id)
+                programmer = programmer.replace('${FTDI_ID}', ftdi_id)
+
         return programmer
 
-    def get_device(self, board, device):
-        check_info = self.resources.boards[board]['check']
-        # Check FTDI description
-        device = self._check_ftdi(check_info, device, board)
-        # Search serial device by USB id
-        device = self._check_serial_usbid(check_info, device, board)
-        if device == -1:
-            # Board not detected
-            raise Exception('board not detected')
-        # Check platform
-        self._check_platform(check_info, device)
-        return device
+    def check_platform(self, board_data):
+        if 'platform' not in board_data:
+            return
 
-    def _check_ftdi(self, check, device, board):  # noqa
-        if 'ftdi-desc' in check:
-            ftdi_desc = check['ftdi-desc']
-            detected_boards = System().detect_boards()
-
-            if device:
-                # Check device argument
-                if board:
-                    found = False
-                    for b in detected_boards:
-                        # Selected board
-                        if device == b['index']:
-                            # Check the device ftdi description
-                            if ftdi_desc in b['description']:
-                                found = True
-                            break
-                    if not found:
-                        device = -1
-                else:
-                    # Check device id
-                    if int(device) >= len(detected_boards):
-                        device = -1
+        platform = board_data.get('platform')
+        current_platform = util.get_systype()
+        if platform != current_platform:
+            # Incorrect platform
+            if platform == 'linux_armv7l':
+                raise Exception(
+                    'incorrect platform: RPI2 or RPI3 required')
             else:
-                # Detect device
-                device = -1
-                if board:
-                    for b in detected_boards:
-                        if ftdi_desc in b['description']:
-                            # Select the first board that validates
-                            # the ftdi description
-                            device = b['index']
-                            break
-                else:
-                    # Insufficient arguments
-                    click.secho(
-                        'Error: insufficient arguments: device or board',
-                        fg='red')
-                    click.secho(
-                        'You have two options:\n' +
-                        '  1) Execute your command with\n' +
-                        '       `--device <deviceid>`\n' +
-                        '  2) Execute your command with\n' +
-                        '       `--board <boardname>`',
-                        fg='yellow')
+                raise Exception(
+                    'incorrect platform {0}'.format(platform))
+
+    def serialize_programmer(self, board_data):
+        prog_info = board_data.get('programmer')
+        content = self.resources.programmers[prog_info.get('type')]
+        command = content.get('command') or ''
+        args = content.get('args') or ''
+        extra_args = prog_info.get('extra_args') or ''
+        return '{0} {1} {2}'.format(command, args, extra_args)
+
+    def get_serial_device(self, board_data, ext_device):
+        # Search serial device by USB id
+        device = self._check_serial(board_data, ext_device)
+        if device is None:
+            # Board not connected
+            raise Exception('board not connected')
         return device
 
-    def _check_platform(self, check, device):
-        if 'platform' in check:
-            # Device argument is ignored
-            if device and device != -1:
-                click.secho(
-                    'Info: ignore device argument {0}'.format(device),
-                    fg='yellow')
+    def _check_serial(self, board_data, ext_device):
+        if 'serial_usb' not in board_data:
+            return
 
-            platform = check['platform']
-            current_platform = util.get_systype()
-            if platform != current_platform:
-                # Incorrect platform
-                if platform == 'linux_armv7l':
-                    raise Exception(
-                        'incorrect platform: RPI2 or RPI3 required')
-                else:
-                    raise Exception(
-                        'incorrect platform {0}'.format(platform))
+        serial_usb_data = board_data.get('serial_usb')
+        desc_pattern = '^' + serial_usb_data.get('desc') + '$'
+        hwid = '{0}:{1}'.format(
+            serial_usb_data.get('vid'),
+            serial_usb_data.get('pid')
+        )
 
-    def _check_serial_usbid(self, check, device, board):
-        if device and device != -1:
-            return device
-        if 'serial-usbid' not in check:
-            return device
+        # Match the discovered serial ports
+        for serial_port in util.get_serial_ports():
+            port = serial_port.get('port')
+            if ext_device and ext_device != port:
+                # If the --device options is set but it doesn't match
+                # with the detected port, skip the port.
+                continue
+            if hwid in serial_port.get('hwid') and \
+               re.match(desc_pattern, serial_port.get('description')):
+                # If the hwid and the description pattern matches
+                # return the device for the port.
+                return port
 
-        for item in util.get_serialports(True):
-            if check['serial-usbid'] in item['hwid']:
-                print('Found device at: %s' % item['port'])
-                return item['port']
+    def get_ftdi_id(self, board_data, ext_ftdi_id):
+        # Search device by FTDI id
+        ftdi_id = self._check_ftdi(board_data, ext_ftdi_id)
+        if ftdi_id is None:
+            # Board not available
+            raise Exception('board not available')
+        return ftdi_id
 
-        return -1
+    def _check_ftdi(self, board_data, ext_ftdi_id):
+        if 'serial_usb' not in board_data:
+            return
+
+        serial_usb_data = board_data.get('serial_usb')
+        desc_pattern = '^' + serial_usb_data.get('desc') + '$'
+
+        # Match the discovered FTDI chips
+        for ftdi_device in System().get_ftdi_devices():
+            index = ftdi_device.get('index')
+            if ext_ftdi_id and ext_ftdi_id != index:
+                # If the --device options is set but it doesn't match
+                # with the detected index, skip the port.
+                continue
+            if re.match(desc_pattern, ftdi_device.get('description')):
+                # If matches the description pattern
+                # return the index for the FTDI device.
+                return index
 
     def run(self, command, variables=[], board=None, deps=[]):
         """Executes scons for building"""
@@ -219,8 +231,7 @@ class SCons(object):
         click.echo('%s [%s]%s%s' % (
             half_line,
             (click.style(' ERROR ', fg='red', bold=True)
-             if is_error else click.style('SUCCESS', fg='green',
-                                          bold=True)),
+             if is_error else click.style('SUCCESS', fg='green', bold=True)),
             summary_text,
             half_line
         ), err=is_error)
