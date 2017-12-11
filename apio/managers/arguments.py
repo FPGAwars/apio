@@ -13,11 +13,11 @@ from apio.managers.project import Project
 
 def process_arguments(args, resources):  # noqa
     # -- Check arguments
-    var_board = args['board']
-    var_fpga = args['fpga']
-    var_size = args['size']
-    var_type = args['type']
-    var_pack = args['pack']
+    var_board = args.get('board')
+    var_fpga = args.get('fpga')
+    var_size = args.get('size')
+    var_type = args.get('type')
+    var_pack = args.get('pack')
 
     if var_board:
         if isfile('apio.ini'):

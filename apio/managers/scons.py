@@ -64,10 +64,13 @@ class SCons(object):
         programmer = ''
 
         if board:
-            board_data = self.resources.boards[board]
+            board_data = self.resources.boards.get(board)
 
             # Check platform
             self.check_platform(board_data)
+
+            # Check pip dependencies
+            self.check_pip_dependencies(board_data)
 
             # Serialize programmer command
             programmer = self.serialize_programmer(board_data)
@@ -107,9 +110,23 @@ class SCons(object):
                 raise Exception(
                     'incorrect platform {0}'.format(platform))
 
+    def check_pip_dependencies(self, board_data):
+        prog_info = board_data.get('programmer')
+        content = self.resources.programmers.get(prog_info.get('type'))
+        pip_deps = content.get('pip_deps') or []
+        for dep in pip_deps:
+            try:
+                __import__(dep)
+            except ImportError, e:
+                click.secho(
+                    'Error: {} is not installed'.format(dep), fg='red')
+                click.secho('Please run:\n'
+                            '   pip install {}'.format(dep), fg='yellow')
+                raise Exception
+
     def serialize_programmer(self, board_data):
         prog_info = board_data.get('programmer')
-        content = self.resources.programmers[prog_info.get('type')]
+        content = self.resources.programmers.get(prog_info.get('type'))
         command = content.get('command') or ''
         args = content.get('args') or ''
         extra_args = prog_info.get('extra_args') or ''
@@ -128,7 +145,7 @@ class SCons(object):
             return
 
         serial_usb_data = board_data.get('serial_usb')
-        desc_pattern = '^' + serial_usb_data.get('desc') + '$'
+        desc_pattern = '^' + (serial_usb_data.get('desc') or '.*') + '$'
         hwid = '{0}:{1}'.format(
             serial_usb_data.get('vid'),
             serial_usb_data.get('pid')
@@ -223,7 +240,7 @@ class SCons(object):
         )
 
         # -- Print result
-        exit_code = result['returncode']
+        exit_code = result.get('returncode')
         is_error = exit_code != 0
         summary_text = ' Took %.2f seconds ' % (time.time() - start_time)
         half_line = '=' * int(

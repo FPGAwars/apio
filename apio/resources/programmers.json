@@ -9,14 +9,17 @@
   },
   "litterbox": {
     "command": "sudo litterbox",
-    "args": "-c"
+    "args": "-c",
+    "pip_deps": [ "litterbox" ]
   },
   "blackiceprog": {
     "command": "black-iceprog",
-    "args": "${DEVICE}"
+    "args": "${DEVICE}",
+    "pip_deps": [ "blackiceprog" ]
   },
   "tinyfpgab": {
     "command": "tinyfpgab",
-    "args": "-c ${DEVICE} --program "
+    "args": "-c ${DEVICE} --program",
+    "pip_deps": [ "tinyfpgab" ]
   }
 }

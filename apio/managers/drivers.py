@@ -174,7 +174,7 @@ class Drivers(object):  # pragma: no cover
                 os.remove(zadig_ini)
 
         if not isinstance(result, int):
-            result = result['returncode']
+            result = result.get('returncode')
         return result
 
     def _disable_windows(self):
@@ -182,4 +182,4 @@ class Drivers(object):  # pragma: no cover
         click.secho(FTDI_UNINSTALL_DRIVER_INSTRUCTIONS, fg='yellow')
 
         result = util.exec_command('mmc devmgmt.msc')
-        return result['returncode']
+        return result.get('returncode')

@@ -25,8 +25,7 @@ if (sys.version_info > (3, 0)):
               help='Set the serial device.')
 @click.option('--ftdi-id', type=unicode, metavar='ftdi-id',
               help='Set the FTDI id.')
-def cli(ctx, board, fpga, pack, type, size,
-        project_dir, device, ftdi_id):
+def cli(ctx, board, project_dir, device, ftdi_id):
 
     """Upload the bitstream to the FPGA."""
 
