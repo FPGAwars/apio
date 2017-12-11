@@ -32,25 +32,25 @@ class SCons(object):
 
     @util.command
     def clean(self):
-        return self.run('-c', deps=['scons'])
+        return self.run('-c', deps=[])
 
     @util.command
     def verify(self):
-        return self.run('verify', deps=['scons', 'iverilog'])
+        return self.run('verify', deps=['iverilog'])
 
     @util.command
     def sim(self):
-        return self.run('sim', deps=['scons', 'iverilog', 'gtkwave'])
+        return self.run('sim', deps=['iverilog', 'gtkwave'])
 
     @util.command
     def build(self, args):
         variables, board = process_arguments(args, self.resources)
-        return self.run('build', variables, board, deps=['scons', 'icestorm'])
+        return self.run('build', variables, board, deps=['icestorm'])
 
     @util.command
     def time(self, args):
         variables, board = process_arguments(args, self.resources)
-        return self.run('time', variables, board, deps=['scons', 'icestorm'])
+        return self.run('time', variables, board, deps=['icestorm'])
 
     @util.command
     def upload(self, args, device, ftdi_id):
@@ -58,7 +58,7 @@ class SCons(object):
         programmer = self.get_programmer(board, device, ftdi_id)
         variables += ['prog={0}'.format(programmer)]
         return self.run('upload', variables, board,
-                        deps=['scons', 'system', 'icestorm'])
+                        deps=['icestorm', 'system'])
 
     def get_programmer(self, board, ext_device, ext_ftdi_id):
         programmer = ''

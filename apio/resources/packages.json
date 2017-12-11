@@ -13,20 +13,6 @@
     },
     "description": "Verilog examples"
   },
-  "scons" : {
-    "repository": {
-      "name": "tool-scons",
-      "organization": "FPGAwars"
-    },
-    "release": {
-      "tag_name": "v%V",
-      "compressed_name": "scons-%V",
-      "uncompressed_name": "scons-%V",
-      "package_name": "tool-scons",
-      "extension": "tar.gz"
-    },
-    "description": "Scons tool"
-  },
   "icestorm" : {
     "repository": {
       "name": "toolchain-icestorm",

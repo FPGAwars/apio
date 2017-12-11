@@ -212,7 +212,6 @@ scons_command = ['scons']
 def resolve_packages(packages, deps=[]):
 
     base_dir = {
-        'scons': get_package_dir('tool-scons'),
         'system': get_package_dir('tools-system'),
         'icestorm': get_package_dir('toolchain-icestorm'),
         'iverilog': get_package_dir('toolchain-iverilog'),
@@ -220,7 +219,6 @@ def resolve_packages(packages, deps=[]):
     }
 
     bin_dir = {
-        'scons': safe_join(base_dir['scons'], 'script'),
         'system': safe_join(base_dir['system'], 'bin'),
         'icestorm': safe_join(base_dir['icestorm'], 'bin'),
         'iverilog': safe_join(base_dir['iverilog'], 'bin'),
@@ -249,10 +247,6 @@ def resolve_packages(packages, deps=[]):
             base_dir['iverilog'], 'vlib')
         os.environ['ICEBOX'] = safe_join(
             base_dir['icestorm'], 'share', 'icebox')
-
-        global scons_command
-        scons_command = [normpath(sys.executable),
-                         safe_join(bin_dir['scons'], 'scons')]
 
     return check
 

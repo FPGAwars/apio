@@ -27,6 +27,7 @@ setup(
         'pyjwt>=1.5.3,<2',
         'colorama',
         'pyserial>=3,<4,!=3.3',
+        'scons==3.0.1',
         'tinyfpgab',
         'blackiceprog',
     ],
