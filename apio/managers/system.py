@@ -43,6 +43,8 @@ class System(object):  # pragma: no cover
 
         if result and result.get('returncode') == 0:
             ftdi_devices = self._parse_ftdi_devices(result.get('out'))
+        else:
+            raise Exception
 
         return ftdi_devices
 

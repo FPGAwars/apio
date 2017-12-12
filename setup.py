@@ -26,7 +26,7 @@ setup(
         'requests>=2.4.0,<3',
         'pyjwt>=1.5.3,<2',
         'colorama',
-        'pyserial>=3,<4,!=3.3',
+        'pyserial>=3,<4',
         'scons==3.0.1'
     ],
     entry_points={

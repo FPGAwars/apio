@@ -17,7 +17,7 @@ import click
 import locale
 import platform
 import subprocess
-from os.path import expanduser, isdir, isfile, normpath, dirname, exists
+from os.path import expanduser, isdir, isfile, dirname, exists
 from threading import Thread
 
 from apio import LOAD_CONFIG_DATA

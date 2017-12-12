@@ -57,8 +57,7 @@ class SCons(object):
         variables, board = process_arguments(args, self.resources)
         programmer = self.get_programmer(board, device, ftdi_id)
         variables += ['prog={0}'.format(programmer)]
-        return self.run('upload', variables, board,
-                        deps=['icestorm', 'system'])
+        return self.run('upload', variables, board, deps=['icestorm'])
 
     def get_programmer(self, board, ext_device, ext_ftdi_id):
         programmer = ''
@@ -117,7 +116,7 @@ class SCons(object):
         for dep in pip_deps:
             try:
                 __import__(dep)
-            except ImportError, e:
+            except ImportError:
                 click.secho(
                     'Error: {} is not installed'.format(dep), fg='red')
                 click.secho('Please run:\n'
