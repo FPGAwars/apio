@@ -23,11 +23,11 @@ def process_arguments(args, resources):  # noqa
         if isfile('apio.ini'):
             click.secho('Info: ignore apio.ini board', fg='yellow')
         if var_board in resources.boards:
-            fpga = resources.boards[var_board]['fpga']
+            fpga = resources.boards.get(var_board).get('fpga')
             if fpga in resources.fpgas:
-                fpga_size = resources.fpgas[fpga]['size']
-                fpga_type = resources.fpgas[fpga]['type']
-                fpga_pack = resources.fpgas[fpga]['pack']
+                fpga_size = resources.fpgas.get(fpga).get('size')
+                fpga_type = resources.fpgas.get(fpga).get('type')
+                fpga_pack = resources.fpgas.get(fpga).get('pack')
 
                 redundant_arguments = []
                 contradictory_arguments = []
@@ -89,9 +89,9 @@ def process_arguments(args, resources):  # noqa
             if isfile('apio.ini'):
                 click.secho('Info: ignore apio.ini board', fg='yellow')
             if var_fpga in resources.fpgas:
-                fpga_size = resources.fpgas[var_fpga]['size']
-                fpga_type = resources.fpgas[var_fpga]['type']
-                fpga_pack = resources.fpgas[var_fpga]['pack']
+                fpga_size = resources.fpgas.get(var_fpga).get('size')
+                fpga_type = resources.fpgas.get(var_fpga).get('type')
+                fpga_pack = resources.fpgas.get(var_fpga).get('pack')
 
                 redundant_arguments = []
                 contradictory_arguments = []
@@ -150,10 +150,10 @@ def process_arguments(args, resources):  # noqa
                         click.secho(
                             'Info: apio.ini board {}'.format(
                                 var_board))
-                        fpga = resources.boards[var_board]['fpga']
-                        fpga_size = resources.fpgas[fpga]['size']
-                        fpga_type = resources.fpgas[fpga]['type']
-                        fpga_pack = resources.fpgas[fpga]['pack']
+                        fpga = resources.boards.get(var_board).get('fpga')
+                        fpga_size = resources.fpgas.get(fpga).get('size')
+                        fpga_type = resources.fpgas.get(fpga).get('type')
+                        fpga_pack = resources.fpgas.get(fpga).get('pack')
                     else:
                         click.secho(
                             'Error: insufficient arguments: missing board',

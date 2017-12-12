@@ -140,7 +140,7 @@ def _get_projconf_option_dir(name, default=None):
     if _env_name in os.environ:
         return os.getenv(_env_name)
     if config_data and _env_name in config_data.keys():
-        return config_data[_env_name]
+        return config_data.get(_env_name)
     return default
 
 
@@ -219,34 +219,34 @@ def resolve_packages(packages, deps=[]):
     }
 
     bin_dir = {
-        'system': safe_join(base_dir['system'], 'bin'),
-        'icestorm': safe_join(base_dir['icestorm'], 'bin'),
-        'iverilog': safe_join(base_dir['iverilog'], 'bin'),
-        'gtkwave': safe_join(base_dir['gtkwave'], 'bin')
+        'system': safe_join(base_dir.get('system'), 'bin'),
+        'icestorm': safe_join(base_dir.get('icestorm'), 'bin'),
+        'iverilog': safe_join(base_dir.get('iverilog'), 'bin'),
+        'gtkwave': safe_join(base_dir.get('gtkwave'), 'bin')
     }
 
     # -- Check packages
     check = True
     for package in deps:
         if package in packages:
-            check &= _check_package(package, bin_dir[package])
+            check &= _check_package(package, bin_dir.get(package))
 
     # -- Load packages
     if check:
 
         # Give the priority to the packages installed by apio
         os.environ['PATH'] = os.pathsep.join(
-            [bin_dir['icestorm'], bin_dir['iverilog'], bin_dir['gtkwave'],
-             os.environ['PATH']])
+            [bin_dir.get('icestorm'), bin_dir.get('iverilog'),
+             bin_dir.get('gtkwave'), os.environ['PATH']])
 
         # Add environment variables
         if not config_data:  # /etc/apio.json file does not exist
             os.environ['IVL'] = safe_join(
-                base_dir['iverilog'], 'lib', 'ivl')
+                base_dir.get('iverilog'), 'lib', 'ivl')
         os.environ['VLIB'] = safe_join(
-            base_dir['iverilog'], 'vlib')
+            base_dir.get('iverilog'), 'vlib')
         os.environ['ICEBOX'] = safe_join(
-            base_dir['icestorm'], 'share', 'icebox')
+            base_dir.get('icestorm'), 'share', 'icebox')
 
     return check
 
@@ -275,9 +275,9 @@ def _check_apt_get():
     check = False
     if 'TESTING' not in os.environ:
         result = exec_command(['dpkg', '-l', 'apio'])
-        if result and result['returncode'] == 0:
-            match = re.findall('rc\s+apio', result['out']) + \
-                    re.findall('ii\s+apio', result['out'])
+        if result and result.get('returncode') == 0:
+            match = re.findall('rc\s+apio', result.get('out')) + \
+                    re.findall('ii\s+apio', result.get('out'))
             check = len(match) > 0
     return check
 
@@ -336,7 +336,7 @@ def get_pypi_latest_version():
     version = None
     try:
         r = requests.get('https://pypi.python.org/pypi/apio/json')
-        version = r.json()['info']['version']
+        version = r.json().get('info').get('version')
         r.raise_for_status()
     except requests.exceptions.ConnectionError:
         click.secho('Error: Could not connect to Pypi.\n'
