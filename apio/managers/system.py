@@ -37,6 +37,22 @@ class System(object):  # pragma: no cover
 
         return returncode
 
+    def lsserial(self):
+        returncode = 0
+        serial_ports = util.get_serial_ports()
+        click.secho(
+            'Number of Serial devices found: {}\n'.format(len(serial_ports)))
+
+        for serial_port in serial_ports:
+            port = serial_port.get('port')
+            description = serial_port.get('description')
+            hwid = serial_port.get('hwid')
+            click.secho(port, fg='cyan')
+            click.secho('Description: {}'.format(description))
+            click.secho('Hardware info: {}\n'.format(hwid))
+
+        return returncode
+
     def get_ftdi_devices(self):
         ftdi_devices = []
         result = self._run_command('lsftdi')
