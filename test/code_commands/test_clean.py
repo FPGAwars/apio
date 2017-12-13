@@ -6,5 +6,3 @@ def test_clean(clirunner, configenv):
         configenv()
         result = clirunner.invoke(cmd_clean)
         assert result.exit_code != 0
-        if result.exit_code == 1:
-            assert 'apio install scons' in result.output

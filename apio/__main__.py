@@ -34,7 +34,7 @@ class ApioCLI(click.MultiCommand):
             with open(fn) as f:
                 code = compile(f.read(), fn, 'exec')
                 eval(code, ns, ns)
-            return ns['cli']
+            return ns.get('cli')
 
 
 @click.command(cls=ApioCLI, invoke_without_command=True)

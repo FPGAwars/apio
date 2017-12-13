@@ -12,10 +12,10 @@ System requirements
 -------------------
 
 :Operating System: Linux (+ARM), Mac OS X or Windows
-:Python Interpreter: Python 2.7
+:Python Interpreter: Python 2.7, Python 3.5+
 
   .. attention::
-      **Windows Users**: Please `Download the latest Python 2.7.x
+      **Windows Users**: Please `Download the latest Python
       <https://www.python.org/downloads/>`_ and install it.
       **DON'T FORGET** to select ``Add python.exe to Path`` feature on the
       "Customize" stage, otherwise Python Package Manager ``pip`` command
@@ -71,13 +71,13 @@ Using apio
 
 .. code::
 
-    $ apio drivers --enable
+    $ apio drivers --ftdi-enable
 
 To revert the FTDI drivers configuration
 
 .. code::
 
-    $ apio drivers --disable
+    $ apio drivers --ftdi-disable
 
 Manually
 ~~~~~~~~

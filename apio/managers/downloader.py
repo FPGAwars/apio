@@ -53,10 +53,10 @@ class FileDownloader(object):
 
     def get_lmtime(self):
         if 'last-modified' in self._request.headers:
-            return self._request.headers['last-modified']
+            return self._request.headers.get('last-modified')
 
     def get_size(self):
-        return int(self._request.headers['content-length'])
+        return int(self._request.headers.get('content-length'))
 
     def start(self):
         itercontent = self._request.iter_content(chunk_size=self.CHUNK_SIZE)

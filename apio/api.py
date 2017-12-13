@@ -44,4 +44,4 @@ def _get_headers():
     enc = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwdWJsaWNfdG9rZW4iOiJ0' + \
           'b2tlbiBhNTk2OTUwNjFhYzRkMjBkZjEwNTFlZDljOWZjNGI4M2Q0NzAyYzA3I' + \
           'n0.POR6Iae_pSt0m6h-AaRi1X6QaRcnnfl9aZbTSV0BUJw'
-    return {'Authorization': util.decode(enc)['public_token']}
+    return {'Authorization': util.decode(enc).get('public_token')}

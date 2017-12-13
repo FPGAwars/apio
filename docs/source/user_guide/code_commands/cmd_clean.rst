@@ -17,8 +17,6 @@ Description
 
 Clean the previous generated files: **blif**, **asc**, **bin**, **rpt** and **out**.
 
-This command requires the ``scons`` package.
-
 Options
 -------
 

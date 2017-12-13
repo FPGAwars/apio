@@ -11,18 +11,18 @@ from apio.managers.drivers import Drivers
 
 @click.command('drivers')
 @click.pass_context
-@click.option('-e', '--enable', is_flag=True,
+@click.option('-e', '--ftdi-enable', is_flag=True,
               help='Enable FPGA drivers.')
-@click.option('-d', '--disable', is_flag=True,
+@click.option('-d', '--ftdi-disable', is_flag=True,
               help='Disable FPGA drivers.')
-def cli(ctx, enable, disable):
+def cli(ctx, ftdi_enable, ftdi_disable):
     """Manage FPGA drivers."""
 
     exit_code = 0
 
-    if enable:   # pragma: no cover
+    if ftdi_enable:   # pragma: no cover
         exit_code = Drivers().enable()
-    elif disable:   # pragma: no cover
+    elif ftdi_disable:   # pragma: no cover
         exit_code = Drivers().disable()
     else:
         click.secho(ctx.get_help())

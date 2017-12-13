@@ -136,7 +136,7 @@ class Project(object):
         with open(PROJECT_FILENAME, 'r') as f:
             try:
                 data = json.loads(f.read())
-                board = data['board']
+                board = data.get('board')
             except Exception:
                 pass
 

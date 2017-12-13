@@ -17,7 +17,7 @@ Description
 
 Synthesize the bitstream: generates a **bin** file from a **verilog** and a **pcf** files.
 
-This command requires the ``scons`` and ``icestorm`` packages.
+This command requires the ``icestorm`` package.
 
 Options
 -------

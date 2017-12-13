@@ -76,7 +76,7 @@ class Profile(object):
     def get_package_version(self, name, release_name=''):
         version = '0.0.0'
         if name in self.packages.keys():
-            version = self.packages[name]['version']
+            version = self.packages.get(name).get('version')
         elif release_name:
             dir_name = util.get_package_dir(release_name)
             if isdir(dir_name):
@@ -85,7 +85,7 @@ class Profile(object):
                     with open(filepath, 'r') as json_file:
                         tmp_data = json.load(json_file)
                         if 'version' in tmp_data.keys():
-                            version = tmp_data['version']
+                            version = tmp_data.get('version')
                 except Exception:
                     pass
         return version
@@ -101,15 +101,15 @@ class Profile(object):
     def _load_profile(self, profile):
         data = json.load(profile)
         if 'config' in data.keys():
-            self.config = data['config']
+            self.config = data.get('config')
             if 'exe' not in self.config.keys():
                 self.config['exe'] = 'default'
             if 'verbose' not in self.config.keys():
                 self.config['verbose'] = 0
         if 'settings' in data.keys():
-            self.settings = data['settings']
+            self.settings = data.get('settings')
         if 'packages' in data.keys():
-            self.packages = data['packages']
+            self.packages = data.get('packages')
         else:
             self.packages = data  # Backward compatibility
 

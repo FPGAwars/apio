@@ -4,7 +4,7 @@
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
-VERSION = (0, 2, 4, 3)
+VERSION = (0, 3, 0, 'dev')
 __version__ = ".".join([str(s) for s in VERSION])
 
 __title__ = 'apio'

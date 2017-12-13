@@ -1,84 +1,101 @@
 {
   "icezum": {
+    "name": "IceZUM Alhambra",
     "fpga": "iCE40-HX1K-TQ144",
     "programmer": {
       "type": "iceprog"
     },
-    "check": {
-      "ftdi-desc": "IceZUM Alhambra"
+    "serial_usb": {
+      "vid": "0403",
+      "pid": "6010",
+      "desc": "IceZUM Alhambra.*"
     }
   },
   "icestick": {
+    "name": "iCEstick Evaluation Kit",
     "fpga": "iCE40-HX1K-TQ144",
     "programmer": {
       "type": "iceprog"
     },
-    "check": {
-      "ftdi-desc": "Lattice FTUSB Interface Cable"
+    "serial_usb": {
+      "vid": "0403",
+      "pid": "6010",
+      "desc": "Lattice FTUSB Interface Cable"
     }
   },
   "go-board": {
+    "name": "Nandland Go board",
     "fpga": "iCE40-HX1K-VQ100",
     "programmer": {
       "type": "iceprog"
     },
-    "check": {
-      "ftdi-desc": "Dual RS232-HS"
+    "serial_usb": {
+      "vid": "0403",
+      "pid": "6010",
+      "desc": "Dual RS232-HS"
     }
   },
   "iCE40-HX8K": {
+    "name": "iCE40-HX8K Breakout Board",
     "fpga": "iCE40-HX8K-CT256",
     "programmer": {
       "type": "iceprog"
     },
-    "check": {
-      "ftdi-desc": "Lattice FTUSB Interface Cable"
+    "serial_usb": {
+      "vid": "0403",
+      "pid": "6010",
+      "desc": "Lattice FTUSB Interface Cable"
     }
   },
   "icoboard": {
+    "name": "icoBOARD 1.0",
     "fpga": "iCE40-HX8K-CT256",
     "programmer": {
       "type": "icoprog"
     },
-    "check": {
-      "platform": "linux_armv7l"
-    }
+    "platform": "linux_armv7l"
   },
   "Cat-board": {
+    "name": "CAT Board",
     "fpga": "iCE40-HX8K-CT256",
     "programmer": {
       "type": "litterbox"
     },
-    "check": {
-      "platform": "linux_armv7l"
-    }
+    "platform": "linux_armv7l"
   },
   "kefir": {
+    "name": "Kéfir I iCE40-HX4K",
     "fpga": "iCE40-HX4K-TQ144",
     "programmer": {
       "type": "iceprog",
       "extra_args": "-I B"
     },
-    "check": {
-      "ftdi-desc": "Milk JTAG:u"
+    "serial_usb": {
+      "vid": "0403",
+      "vid": "6010",
+      "desc": "Milk JTAG:u"
     }
   },
   "blackice": {
+    "name": "BlackIce",
     "fpga": "iCE40-HX4K-TQ144",
     "programmer": {
       "type": "blackiceprog"
     },
-    "check": {
-      "serial-usbid": "0483:5740"
+    "serial_usb": {
+      "vid": "0483",
+      "pid": "5740"
     }
   },
   "TinyFPGA-B2": {
+    "name": "TinyFPGA B2",
     "fpga": "iCE40-LP8K-CM81",
     "programmer": {
       "type": "tinyfpgab"
     },
-    "check": {
-      "serial-usbid": "1209:2100"
+    "serial_usb": {
+      "vid": "1209",
+      "pid": "2100"
     }
   }
 }

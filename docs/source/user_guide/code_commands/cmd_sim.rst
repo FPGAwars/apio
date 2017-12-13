@@ -17,7 +17,7 @@ Description
 
 Launch the verilog simulation using `GTKWave <http://gtkwave.sourceforge.net>`_ from a **verilog test bench**.
 
-This command requires the ``scons`` and ``iverilog`` packages.
+This command requires the ``iverilog`` package.
 
 .. image:: ../../../resources/images/gtkwave-simulation.png
 

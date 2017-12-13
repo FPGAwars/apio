@@ -19,7 +19,7 @@ Upload the bitstream to the FPGA. It builds the project if required.
 
 It also performs an automatic discovery and validation of the FTDI chip depending on the selected board.
 
-This command requires the ``system``, ``scons`` and ``icestorm`` packages.
+This command requires the ``system`` and ``icestorm`` packages.
 
 .. note::
 
@@ -31,29 +31,25 @@ Options
 .. program:: apio upload
 
 .. option::
-    -d, --device
-
-Select a specific device index. This numerical index is provided by **libftdi1**, that is different from *libftdi0*.
-
-.. option::
     -b, --board
 
 Select a specific board.
 
 .. option::
-    --fpga
-
-Select a specific FPGA.
-
-.. option::
-    --size --type --pack
-
-Select a specific FPGA size, type and pack.
-
-.. option::
     -p, --project-dir
 
 Set the target directory for the project.
+
+.. option::
+    --device
+
+Select a specific serial device name. You can check the available serial devices with the command ``apio system --lsserial``.
+
+.. option::
+    --ftdi-id
+
+Select a specific FTDI index. You can check the available FTDI indexes with the command ``apio system --lsftdi``.
+This numerical index is provided by **libftdi1**, that is different from *libftdi0*.
 
 .. note::
 
