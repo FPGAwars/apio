@@ -33,7 +33,7 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 
 ## Installation
 
-1. Install [Python 2.7](https://www.python.org/downloads) and [pip](https://pip.pypa.io)
+1. Install [Python](https://www.python.org/downloads) and [pip](https://pip.pypa.io)
 
 2. Install the latest apio: ```pip install -U apio```
 
