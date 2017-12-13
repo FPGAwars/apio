@@ -17,7 +17,7 @@ Description
 
 Bitstream timing analysis: generates a **rpt** file with a topological timing analysis report, from a **verilog** and a **pcf** files.
 
-This command requires the ``scons`` and ``icestorm`` packages.
+This command requires the ``icestorm`` package.
 
 Options
 -------

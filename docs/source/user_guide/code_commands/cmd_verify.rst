@@ -17,7 +17,7 @@ Description
 
 Verify the **verilog** code. It is agnostic of the FPGA. It does not use the *pcf* file.
 
-This command requires the ``scons`` and ``iverilog`` packages.
+This command requires the ``iverilog`` package.
 
 Options
 -------

@@ -71,13 +71,13 @@ Using apio
 
 .. code::
 
-    $ apio drivers --enable
+    $ apio drivers --ftdi-enable
 
 To revert the FTDI drivers configuration
 
 .. code::
 
-    $ apio drivers --disable
+    $ apio drivers --ftdi-disable
 
 Manually
 ~~~~~~~~

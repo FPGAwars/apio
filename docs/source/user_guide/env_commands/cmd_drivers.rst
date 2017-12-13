@@ -33,12 +33,12 @@ Options
 .. program:: apio drivers
 
 .. option::
-    -e, --enable
+    -e, --ftdi-enable
 
 Enable FPGA drivers.
 
 .. option::
-    -d, --disable
+    -d, --ftdi-disable
 
 Disable FPGA drivers.
 
@@ -49,7 +49,7 @@ Examples
 
 .. code::
 
-  $ apio drivers --enable
+  $ apio drivers --ftdi-enable
   Configure FTDI drivers for FPGA
   [sudo] password for user:
   FPGA drivers enabled
@@ -58,7 +58,7 @@ Examples
 
 .. code::
 
-  $ apio drivers --disable
+  $ apio drivers --ftdi-disable
   Revert FTDI drivers configuration
   [sudo] password for user:
   FPGA drivers disabled
