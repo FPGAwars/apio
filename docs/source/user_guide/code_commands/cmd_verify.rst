@@ -36,7 +36,6 @@ Examples
 .. code::
 
   $ apio verify
-  Using default SConstruct file
   iverilog -B /path/to/lib/ivl -o hardware.out -D VCD_OUTPUT= /path/to/vlib/system.v leds.v
   ================================== [SUCCESS] Took 0.17 seconds =================================
 

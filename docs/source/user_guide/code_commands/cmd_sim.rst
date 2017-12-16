@@ -50,7 +50,6 @@ Examples
 .. code::
 
   $ apio sim
-  Using default SConstruct file
   iverilog -B /path/to/lib/ivl -o leds_tb.out -D VCD_OUTPUT=leds_tb /path/to/vlib/system.v leds.v leds_tb.v
   vvp -M /path/to/lib/ivl leds_tb.out
   VCD info: dumpfile leds_tb.vcd opened for output.

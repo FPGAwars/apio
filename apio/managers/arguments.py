@@ -148,7 +148,7 @@ def process_arguments(args, resources):  # noqa
                     if p.board:
                         var_board = p.board
                         click.secho(
-                            'Info: apio.ini board {}'.format(
+                            'Board: {}'.format(
                                 var_board))
                         fpga = resources.boards.get(var_board).get('fpga')
                         fpga_size = resources.fpgas.get(fpga).get('size')

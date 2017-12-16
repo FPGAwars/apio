@@ -33,7 +33,6 @@ Examples
 .. code::
 
   $ apio clean
-  Using default SConstruct file
   Removed hardware.blif
   Removed hardware.asc
   Removed hardware.bin

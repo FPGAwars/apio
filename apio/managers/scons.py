@@ -195,10 +195,11 @@ class SCons(object):
 
         # -- Check for the SConstruct file
         if not isfile(util.safe_join(util.get_project_dir(), 'SConstruct')):
-            click.secho('Info: default SConstruct file')
             variables += ['-f']
             variables += [util.safe_join(
                 util.get_folder('resources'), 'SConstruct')]
+        else:
+            click.secho('Info: use custom SConstruct file')
 
         # -- Resolve packages
         if self.profile.check_exe_default():

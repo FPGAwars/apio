@@ -63,12 +63,11 @@ Examples
 .. code::
 
   $ apio upload
-  Info: use apio.ini board: icezum
+  Board: icezum
   Number of FTDI devices found: 1
   Checking device: 0
   Manufacturer: Mareldem, Description: IceZUM Alhambra v1.1 - B01-020
 
-  Using default SConstruct file
   [] Processing icezum
   -------------------------------------------------------------------------------------------------
   FPGA_SIZE: 1k

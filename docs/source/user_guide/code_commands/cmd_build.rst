@@ -56,8 +56,7 @@ Examples
 .. code::
 
   $ apio build
-  Info: use apio.ini board: icezum
-  Using default SConstruct file
+  Board: icezum
   [] Processing icezum
   -------------------------------------------------------------------------------------------------
   FPGA_SIZE: 1k
