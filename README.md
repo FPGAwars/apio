@@ -63,6 +63,8 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 | [iCEstick Evaluation Kit](http://www.pighixxx.com/test/portfolio-items/icestick/) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [icoBOARD 1.0](http://icoboard.org/about-icoboard.html) |  &nbsp;&nbsp;:white_check_mark:&nbsp;**\*** | - |  - |
 | [CAT Board](https://hackaday.io/project/7982-cat-board) | &nbsp;&nbsp;:white_check_mark:&nbsp;**\*** | - |  - |
+| [BlackIce](https://mystorm.uk/) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| [TinyFPGA B2](http://tinyfpga.com/) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 
 **\*** Use with Raspberry Pi
 

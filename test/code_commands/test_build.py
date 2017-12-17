@@ -163,7 +163,7 @@ def test_build_init(clirunner, configenv):
         # apio build
         result = clirunner.invoke(cmd_build)
         assert result.exit_code != 0
-        assert 'Info: apio.ini board icezum' in result.output
+        assert 'Board: icezum' in result.output
 
         # apio build --board icezum
         result = clirunner.invoke(cmd_build, ['--board', 'icestick'])
