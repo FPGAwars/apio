@@ -11,9 +11,9 @@ from apio.managers.drivers import Drivers
 
 @click.command('drivers')
 @click.pass_context
-@click.option('-e', '--ftdi-enable', is_flag=True,
+@click.option('--ftdi-enable', is_flag=True,
               help='Enable FPGA drivers.')
-@click.option('-d', '--ftdi-disable', is_flag=True,
+@click.option('--ftdi-disable', is_flag=True,
               help='Disable FPGA drivers.')
 def cli(ctx, ftdi_enable, ftdi_disable):
     """Manage FPGA drivers."""
