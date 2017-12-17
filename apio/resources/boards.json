@@ -5,9 +5,11 @@
     "programmer": {
       "type": "iceprog"
     },
-    "serial_usb": {
+    "usb": {
       "vid": "0403",
-      "pid": "6010",
+      "pid": "6010"
+    },
+    "ftdi": {
       "desc": "IceZUM Alhambra.*"
     }
   },
@@ -17,9 +19,11 @@
     "programmer": {
       "type": "iceprog"
     },
-    "serial_usb": {
+    "usb": {
       "vid": "0403",
-      "pid": "6010",
+      "pid": "6010"
+    },
+    "ftdi": {
       "desc": "Lattice FTUSB Interface Cable"
     }
   },
@@ -29,9 +33,11 @@
     "programmer": {
       "type": "iceprog"
     },
-    "serial_usb": {
+    "usb": {
       "vid": "0403",
-      "pid": "6010",
+      "pid": "6010"
+    },
+    "ftdi": {
       "desc": "Dual RS232-HS"
     }
   },
@@ -41,9 +47,11 @@
     "programmer": {
       "type": "iceprog"
     },
-    "serial_usb": {
+    "usb": {
       "vid": "0403",
-      "pid": "6010",
+      "pid": "6010"
+    },
+    "ftdi": {
       "desc": "Lattice FTUSB Interface Cable"
     }
   },
@@ -70,9 +78,11 @@
       "type": "iceprog",
       "extra_args": "-I B"
     },
-    "serial_usb": {
+    "usb": {
       "vid": "0403",
-      "vid": "6010",
+      "pid": "6010"
+    },
+    "ftdi": {
       "desc": "Milk JTAG:u"
     }
   },
@@ -82,7 +92,7 @@
     "programmer": {
       "type": "blackiceprog"
     },
-    "serial_usb": {
+    "usb": {
       "vid": "0483",
       "pid": "5740"
     }
@@ -93,7 +103,7 @@
     "programmer": {
       "type": "tinyfpgab"
     },
-    "serial_usb": {
+    "usb": {
       "vid": "1209",
       "pid": "2100"
     }

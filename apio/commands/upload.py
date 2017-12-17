@@ -21,11 +21,11 @@ if (sys.version_info > (3, 0)):
               help='Set the board.')
 @click.option('-p', '--project-dir', type=unicode, metavar='path',
               help='Set the target directory for the project.')
-@click.option('--device', type=unicode, metavar='device',
-              help='Set the serial device.')
+@click.option('--serial-port', type=unicode, metavar='serial-port',
+              help='Set the serial port.')
 @click.option('--ftdi-id', type=unicode, metavar='ftdi-id',
               help='Set the FTDI id.')
-def cli(ctx, board, project_dir, device, ftdi_id):
+def cli(ctx, board, project_dir, serial_port, ftdi_id):
 
     """Upload the bitstream to the FPGA."""
 
@@ -34,7 +34,7 @@ def cli(ctx, board, project_dir, device, ftdi_id):
     # Run scons
     exit_code = SCons(project_dir).upload({
         'board': board
-    }, device, ftdi_id)
+    }, serial_port, ftdi_id)
     drivers.post_upload()
     ctx.exit(exit_code)
 

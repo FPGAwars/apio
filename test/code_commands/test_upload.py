@@ -10,10 +10,10 @@ def test_upload(clirunner, configenv):
         assert 'Error: insufficient arguments: missing board' in result.output
 
 
-def test_upload_device(clirunner, configenv):
+def test_upload_serial_port(clirunner, configenv):
     with clirunner.isolated_filesystem():
         configenv()
-        result = clirunner.invoke(cmd_upload, ['--device', 'COM0'])
+        result = clirunner.invoke(cmd_upload, ['--serial-port', 'COM0'])
         assert result.exit_code == 1
         assert 'Info: No apio.ini file' in result.output
         assert 'Error: insufficient arguments: missing board' in result.output
@@ -35,11 +35,11 @@ def test_upload_board(clirunner, configenv):
         assert result.exit_code == 1
 
 
-def test_upload_board_device(clirunner, configenv):
+def test_upload_board_serial_port(clirunner, configenv):
     with clirunner.isolated_filesystem():
         configenv()
         result = clirunner.invoke(cmd_upload, [
-            '--board', 'icezum', '--device', 'COM0'])
+            '--board', 'icezum', '--serial-port', 'COM0'])
         assert result.exit_code == 1
 
 

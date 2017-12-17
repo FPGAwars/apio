@@ -53,9 +53,20 @@ class System(object):  # pragma: no cover
 
         return returncode
 
+    def get_usb_devices(self):
+        usb_devices = []
+        result = self._run_command('lsusb', silent=True)
+
+        if result and result.get('returncode') == 0:
+            usb_devices = self._parse_usb_devices(result.get('out'))
+        else:
+            raise Exception
+
+        return usb_devices
+
     def get_ftdi_devices(self):
         ftdi_devices = []
-        result = self._run_command('lsftdi')
+        result = self._run_command('lsftdi', silent=True)
 
         if result and result.get('returncode') == 0:
             ftdi_devices = self._parse_ftdi_devices(result.get('out'))
@@ -64,23 +75,43 @@ class System(object):  # pragma: no cover
 
         return ftdi_devices
 
-    def _run_command(self, command):
+    def _run_command(self, command, silent=False):
         result = {}
         system_base_dir = util.get_package_dir('tools-system')
         system_bin_dir = util.safe_join(system_base_dir, 'bin')
 
+        on_stdout = None if silent else self._on_stdout
+        on_stderr = self._on_stderr
+
         if isdir(system_bin_dir):
             result = util.exec_command(
                 util.safe_join(system_bin_dir, command + self.ext),
-                stdout=util.AsyncPipe(self._on_run_out),
-                stderr=util.AsyncPipe(self._on_run_out))
+                stdout=util.AsyncPipe(on_stdout),
+                stderr=util.AsyncPipe(on_stderr))
         else:
             util._check_package('system')
 
         return result
 
-    def _on_run_out(self, line):
+    def _on_stdout(self, line):
         click.secho(line)
+
+    def _on_stderr(self, line):
+        click.secho(line, fg='red')
+
+    def _parse_usb_devices(self, text):
+        pattern = '(?P<hwid>[a-f0-9]{4}:[a-f0-9]{4}?)\s'
+        hwids = re.findall(pattern, text)
+
+        usb_devices = []
+
+        for hwid in hwids:
+            usb_device = {
+                'hwid': hwid
+            }
+            usb_devices.append(usb_device)
+
+        return usb_devices
 
     def _parse_ftdi_devices(self, text):
         pattern = 'Number\sof\sFTDI\sdevices\sfound:\s(?P<n>\d+?)\n'

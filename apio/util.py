@@ -65,8 +65,6 @@ class AsyncPipe(Thread):  # pragma: no cover
             self._buffer.append(line)
             if self.outcallback:
                 self.outcallback(line)
-            else:
-                print(line)
         self._pipe_reader.close()
 
     def close(self):

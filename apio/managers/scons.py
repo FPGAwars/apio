@@ -53,13 +53,13 @@ class SCons(object):
         return self.run('time', variables, board, deps=['icestorm'])
 
     @util.command
-    def upload(self, args, device, ftdi_id):
+    def upload(self, args, serial_port, ftdi_id):
         variables, board = process_arguments(args, self.resources)
-        programmer = self.get_programmer(board, device, ftdi_id)
+        programmer = self.get_programmer(board, serial_port, ftdi_id)
         variables += ['prog={0}'.format(programmer)]
         return self.run('upload', variables, board, deps=['icestorm'])
 
-    def get_programmer(self, board, ext_device, ext_ftdi_id):
+    def get_programmer(self, board, ext_serial_port, ext_ftdi_id):
         programmer = ''
 
         if board:
@@ -74,23 +74,27 @@ class SCons(object):
             # Serialize programmer command
             programmer = self.serialize_programmer(board_data)
 
-            # Replace hwid
-            if '${VID}' in programmer or '${PID}' in programmer:
-                serial_usb_data = board_data.get('serial_usb')
-                vid = serial_usb_data.get('vid')
-                pid = serial_usb_data.get('pid')
+            # Replace USB vendor id
+            if '${VID}' in programmer:
+                vid = board_data.get('usb').get('vid')
                 programmer = programmer.replace('${VID}', vid)
-                programmer = programmer.replace('${PID}', pid)
 
-            # Replace serial device
-            if '${DEVICE}' in programmer or '${FTDI_ID}' in programmer:
-                device = self.get_serial_device(board_data, ext_device)
-                programmer = programmer.replace('${DEVICE}', device)
+            # Replace USB product id
+            if '${PID}' in programmer:
+                pid = board_data.get('usb').get('pid')
+                programmer = programmer.replace('${PID}', pid)
 
             # Replace FTDI index
             if '${FTDI_ID}' in programmer:
+                self.check_usb(board_data)
                 ftdi_id = self.get_ftdi_id(board_data, ext_ftdi_id)
                 programmer = programmer.replace('${FTDI_ID}', ftdi_id)
+
+            # Replace Serial port
+            if '${SERIAL_PORT}' in programmer:
+                self.check_usb(board_data)
+                device = self.get_serial_port(board_data, ext_serial_port)
+                programmer = programmer.replace('${SERIAL_PORT}', device)
 
         return programmer
 
@@ -131,34 +135,53 @@ class SCons(object):
         extra_args = prog_info.get('extra_args') or ''
         return '{0} {1} {2}'.format(command, args, extra_args)
 
-    def get_serial_device(self, board_data, ext_device):
-        # Search serial device by USB id
-        device = self._check_serial(board_data, ext_device)
-        if device is None:
+    def check_usb(self, board_data):
+        if 'usb' not in board_data:
+            raise Exception('Missing board configuration: usb')
+
+        usb_data = board_data.get('usb')
+        hwid = '{0}:{1}'.format(
+            usb_data.get('vid'),
+            usb_data.get('pid')
+        )
+        found = False
+        for usb_device in System().get_usb_devices():
+            if usb_device.get('hwid') == hwid:
+                found = True
+                break
+
+        if not found:
             # Board not connected
             raise Exception('board not connected')
+
+    def get_serial_port(self, board_data, ext_serial_port):
+        # Search Serial port by USB id
+        device = self._check_serial(board_data, ext_serial_port)
+        if device is None:
+            # Board not available
+            raise Exception('board not available')
         return device
 
-    def _check_serial(self, board_data, ext_device):
-        if 'serial_usb' not in board_data:
-            return
+    def _check_serial(self, board_data, ext_serial_port):
+        if 'usb' not in board_data:
+            raise Exception('Missing board configuration: usb')
 
-        serial_usb_data = board_data.get('serial_usb')
-        desc_pattern = '^' + (serial_usb_data.get('desc') or '.*') + '$'
+        usb_data = board_data.get('usb')
+        desc_pattern = '^' + (usb_data.get('desc') or '.*') + '$'
         hwid = '{0}:{1}'.format(
-            serial_usb_data.get('vid'),
-            serial_usb_data.get('pid')
+            usb_data.get('vid'),
+            usb_data.get('pid')
         )
 
         # Match the discovered serial ports
-        for serial_port in util.get_serial_ports():
-            port = serial_port.get('port')
-            if ext_device and ext_device != port:
+        for serial_port_data in util.get_serial_ports():
+            port = serial_port_data.get('port')
+            if ext_serial_port and ext_serial_port != port:
                 # If the --device options is set but it doesn't match
                 # with the detected port, skip the port.
                 continue
-            if hwid in serial_port.get('hwid') and \
-               re.match(desc_pattern, serial_port.get('description')):
+            if hwid in serial_port_data.get('hwid') and \
+               re.match(desc_pattern, serial_port_data.get('description')):
                 # If the hwid and the description pattern matches
                 # return the device for the port.
                 return port
@@ -172,11 +195,11 @@ class SCons(object):
         return ftdi_id
 
     def _check_ftdi(self, board_data, ext_ftdi_id):
-        if 'serial_usb' not in board_data:
-            return
+        if 'ftdi' not in board_data:
+            raise Exception('Missing board configuration: ftdi')
 
-        serial_usb_data = board_data.get('serial_usb')
-        desc_pattern = '^' + serial_usb_data.get('desc') + '$'
+        ftdi_data = board_data.get('ftdi')
+        desc_pattern = '^' + ftdi_data.get('desc') + '$'
 
         # Match the discovered FTDI chips
         for ftdi_device in System().get_ftdi_devices():
@@ -235,8 +258,8 @@ class SCons(object):
 
         result = util.exec_command(
             util.scons_command + ['-Q', command] + variables,
-            stdout=util.AsyncPipe(self._on_run_out),
-            stderr=util.AsyncPipe(self._on_run_err)
+            stdout=util.AsyncPipe(self._on_stdout),
+            stderr=util.AsyncPipe(self._on_stderr)
         )
 
         # -- Print result
@@ -255,11 +278,11 @@ class SCons(object):
 
         return exit_code
 
-    def _on_run_out(self, line):
+    def _on_stdout(self, line):
         fg = 'green' if 'is up to date' in line else None
         click.secho(line, fg=fg)
 
-    def _on_run_err(self, line):
+    def _on_stderr(self, line):
         time.sleep(0.01)  # Delay
         fg = 'red' if 'error' in line.lower() else 'yellow'
         click.secho(line, fg=fg)

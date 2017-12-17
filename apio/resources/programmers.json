@@ -14,12 +14,12 @@
   },
   "blackiceprog": {
     "command": "black-iceprog",
-    "args": "${DEVICE}",
+    "args": "${SERIAL_PORT}",
     "pip_deps": [ "blackiceprog" ]
   },
   "tinyfpgab": {
     "command": "tinyfpgab",
-    "args": "-c ${DEVICE} --program",
+    "args": "-c ${SERIAL_PORT} --program",
     "pip_deps": [ "tinyfpgab" ]
   }
 }
