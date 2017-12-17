@@ -28,6 +28,15 @@ def test_upload_ftdi_id(clirunner, configenv):
         assert 'Error: insufficient arguments: missing board' in result.output
 
 
+def test_upload_sram(clirunner, configenv):
+    with clirunner.isolated_filesystem():
+        configenv()
+        result = clirunner.invoke(cmd_upload, ['--sram'])
+        assert result.exit_code == 1
+        assert 'Info: No apio.ini file' in result.output
+        assert 'Error: insufficient arguments: missing board' in result.output
+
+
 def test_upload_board(clirunner, configenv):
     with clirunner.isolated_filesystem():
         configenv()
@@ -48,4 +57,12 @@ def test_upload_board_ftdi_id(clirunner, configenv):
         configenv()
         result = clirunner.invoke(cmd_upload, [
             '--board', 'icezum', '--ftdi-id', '0'])
+        assert result.exit_code == 1
+
+
+def test_upload_board_sram(clirunner, configenv):
+    with clirunner.isolated_filesystem():
+        configenv()
+        result = clirunner.invoke(cmd_upload, [
+            '--board', 'icezum', '--sram'])
         assert result.exit_code == 1

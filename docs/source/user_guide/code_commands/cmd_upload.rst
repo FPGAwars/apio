@@ -36,11 +36,6 @@ Options
 Select a specific board.
 
 .. option::
-    -p, --project-dir
-
-Set the target directory for the project.
-
-.. option::
     --serial-port
 
 Select a specific serial port. You can check the available serial devices with the command ``apio system --lsserial``.
@@ -50,6 +45,16 @@ Select a specific serial port. You can check the available serial devices with t
 
 Select a specific FTDI index. You can check the available FTDI indexes with the command ``apio system --lsftdi``.
 This numerical index is provided by **libftdi1**, that is different from *libftdi0*.
+
+.. option::
+    -s, --sram
+
+Perform SRAM programming. Only available for `iceprog` compatible boards.
+
+.. option::
+    -p, --project-dir
+
+Set the target directory for the project.
 
 .. note::
 

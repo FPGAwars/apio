@@ -53,13 +53,13 @@ class SCons(object):
         return self.run('time', variables, board, deps=['icestorm'])
 
     @util.command
-    def upload(self, args, serial_port, ftdi_id):
+    def upload(self, args, serial_port, ftdi_id, sram):
         variables, board = process_arguments(args, self.resources)
-        programmer = self.get_programmer(board, serial_port, ftdi_id)
+        programmer = self.get_programmer(board, serial_port, ftdi_id, sram)
         variables += ['prog={0}'.format(programmer)]
         return self.run('upload', variables, board, deps=['icestorm'])
 
-    def get_programmer(self, board, ext_serial_port, ext_ftdi_id):
+    def get_programmer(self, board, ext_serial_port, ext_ftdi_id, sram):
         programmer = ''
 
         if board:
@@ -72,7 +72,7 @@ class SCons(object):
             self.check_pip_dependencies(board_data)
 
             # Serialize programmer command
-            programmer = self.serialize_programmer(board_data)
+            programmer = self.serialize_programmer(board_data, sram)
 
             # Replace USB vendor id
             if '${VID}' in programmer:
@@ -116,6 +116,7 @@ class SCons(object):
     def check_pip_dependencies(self, board_data):
         prog_info = board_data.get('programmer')
         content = self.resources.programmers.get(prog_info.get('type'))
+
         pip_deps = content.get('pip_deps') or []
         for dep in pip_deps:
             try:
@@ -127,13 +128,27 @@ class SCons(object):
                             '   pip install {}'.format(dep), fg='yellow')
                 raise Exception
 
-    def serialize_programmer(self, board_data):
+    def serialize_programmer(self, board_data, sram):
         prog_info = board_data.get('programmer')
         content = self.resources.programmers.get(prog_info.get('type'))
-        command = content.get('command') or ''
-        args = content.get('args') or ''
-        extra_args = prog_info.get('extra_args') or ''
-        return '{0} {1} {2}'.format(command, args, extra_args)
+
+        programmer = content.get('command')
+
+        # Add args
+        if content.get('args'):
+            programmer += ' {}'.format(content.get('args'))
+
+        # Add extra args
+        if content.get('extra_args'):
+            programmer += ' {}'.format(content.get('extra_args'))
+
+        # Enable SRAM programming
+        if sram:
+            # Only for iceprog programmer
+            if programmer.startswith('iceprog'):
+                programmer += ' -S'
+
+        return programmer
 
     def check_usb(self, board_data):
         if 'usb' not in board_data:
