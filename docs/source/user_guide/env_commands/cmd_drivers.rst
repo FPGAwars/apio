@@ -33,12 +33,12 @@ Options
 .. program:: apio drivers
 
 .. option::
-    -e, --ftdi-enable
+    --ftdi-enable
 
 Enable FPGA drivers.
 
 .. option::
-    -d, --ftdi-disable
+    --ftdi-disable
 
 Disable FPGA drivers.
 

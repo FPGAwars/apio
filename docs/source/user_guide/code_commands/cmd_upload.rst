@@ -41,9 +41,9 @@ Select a specific board.
 Set the target directory for the project.
 
 .. option::
-    --device
+    --serial-port
 
-Select a specific serial device name. You can check the available serial devices with the command ``apio system --lsserial``.
+Select a specific serial port. You can check the available serial devices with the command ``apio system --lsserial``.
 
 .. option::
     --ftdi-id
@@ -64,10 +64,6 @@ Examples
 
   $ apio upload
   Board: icezum
-  Number of FTDI devices found: 1
-  Checking device: 0
-  Manufacturer: Mareldem, Description: IceZUM Alhambra v1.1 - B01-020
-
   [] Processing icezum
   -------------------------------------------------------------------------------------------------
   FPGA_SIZE: 1k
