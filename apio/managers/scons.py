@@ -139,8 +139,8 @@ class SCons(object):
             programmer += ' {}'.format(content.get('args'))
 
         # Add extra args
-        if content.get('extra_args'):
-            programmer += ' {}'.format(content.get('extra_args'))
+        if prog_info.get('extra_args'):
+            programmer += ' {}'.format(prog_info.get('extra_args'))
 
         # Enable SRAM programming
         if sram:
