@@ -12,18 +12,26 @@ from apio.managers.drivers import Drivers
 @click.command('drivers')
 @click.pass_context
 @click.option('--ftdi-enable', is_flag=True,
-              help='Enable FPGA drivers.')
+              help='Enable FTDI drivers.')
 @click.option('--ftdi-disable', is_flag=True,
-              help='Disable FPGA drivers.')
-def cli(ctx, ftdi_enable, ftdi_disable):
-    """Manage FPGA drivers."""
+              help='Disable FTDI drivers.')
+@click.option('--serial-enable', is_flag=True,
+              help='Enable Serial drivers.')
+@click.option('--serial-disable', is_flag=True,
+              help='Disable Serial drivers.')
+def cli(ctx, ftdi_enable, ftdi_disable, serial_enable, serial_disable):
+    """Manage FPGA boards drivers."""
 
     exit_code = 0
 
     if ftdi_enable:   # pragma: no cover
-        exit_code = Drivers().enable()
+        exit_code = Drivers().ftdi_enable()
     elif ftdi_disable:   # pragma: no cover
-        exit_code = Drivers().disable()
+        exit_code = Drivers().ftdi_disable()
+    elif serial_enable:   # pragma: no cover
+        exit_code = Drivers().serial_enable()
+    elif serial_disable:   # pragma: no cover
+        exit_code = Drivers().serial_disable()
     else:
         click.secho(ctx.get_help())
 
