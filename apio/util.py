@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2017 FPGAwars
+# -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 # -- Derived from:
@@ -92,9 +92,7 @@ except Exception:
 
 
 def unicoder(p):
-    """ Make sure a Unicode string is returned
-        When `force` is True, ignore filesystem encoding
-    """
+    """ Make sure a Unicode string is returned """
     if isinstance(p, unicode):
         return p
     if isinstance(p, str):

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # -- Generic Scons script for Sintesizing hardware on an FPGA and more.
 # -- This file is part of the Apio project
-# -- (C) 2016-2017 FPGAwars
+# -- (C) 2016-2018 FPGAwars
 # -- Authors Juan Gonzáles, Jesús Arroyo
 # -- Licence GPLv2
 # ----------------------------------------------------------------------
