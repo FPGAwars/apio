@@ -177,7 +177,13 @@ class Drivers(object):  # pragma: no cover
             click.secho('Error: homebrew is required', fg='red')
         else:
             click.secho('Enable FTDI drivers for FPGA')
-            self._install_homebrew_dependencies()
+            subprocess.call(['brew', 'update'])
+            subprocess.call(['brew', 'install', '--force', 'libftdi'])
+            subprocess.call(['brew', 'unlink', 'libftdi'])
+            subprocess.call(['brew', 'link', '--force', 'libftdi'])
+            subprocess.call(['brew', 'install', '--force', 'libffi'])
+            subprocess.call(['brew', 'unlink', 'libffi'])
+            subprocess.call(['brew', 'link', '--force', 'libffi'])
             self.profile.add_setting('macos_ftdi_drivers', True)
             self.profile.save()
             click.secho('FTDI drivers enabled', fg='green')
@@ -195,7 +201,10 @@ class Drivers(object):  # pragma: no cover
             click.secho('Error: homebrew is required', fg='red')
         else:
             click.secho('Enable FTDI drivers for FPGA')
-            self._install_homebrew_dependencies()
+            subprocess.call(['brew', 'update'])
+            subprocess.call(['brew', 'install', '--force', 'libffi'])
+            subprocess.call(['brew', 'unlink', 'libffi'])
+            subprocess.call(['brew', 'link', '--force', 'libffi'])
             # self.profile.add_setting('macos_serial_drivers', True)
             # self.profile.save()
             click.secho('FTDI drivers enabled', fg='green')
@@ -205,15 +214,6 @@ class Drivers(object):  # pragma: no cover
         # self.profile.add_setting('macos_serial_drivers', False)
         # self.profile.save()
         click.secho('FTDI drivers disabled', fg='green')
-
-    def _install_homebrew_dependencies(self):
-        subprocess.call(['brew', 'update'])
-        subprocess.call(['brew', 'install', '--force', 'libftdi'])
-        subprocess.call(['brew', 'unlink', 'libftdi'])
-        subprocess.call(['brew', 'link', '--force', 'libftdi'])
-        subprocess.call(['brew', 'install', '--force', 'libffi'])
-        subprocess.call(['brew', 'unlink', 'libffi'])
-        subprocess.call(['brew', 'link', '--force', 'libffi'])
 
     def _pre_upload_darwin(self):
         if self.profile.settings.get('macos_ftdi_drivers', False):
@@ -254,7 +254,8 @@ class Drivers(object):  # pragma: no cover
 
                 result = util.exec_command(
                     util.safe_join(drivers_bin_dir, 'zadig.exe'))
-                click.secho('FPGA drivers configuration finished', fg='green')
+                click.secho('FTDI drivers configuration finished',
+                            fg='green')
             else:
                 util._check_package('drivers')
                 result = 1
@@ -278,7 +279,27 @@ class Drivers(object):  # pragma: no cover
         return result.get('returncode')
 
     def _serial_enable_windows(self):
-        pass
+        drivers_base_dir = util.get_package_dir('tools-drivers')
+        drivers_bin_dir = util.safe_join(drivers_base_dir, 'bin')
+
+        try:
+            if isdir(drivers_bin_dir):
+                click.secho('Launch drivers configuration tool')
+                click.secho(SERIAL_INSTALL_DRIVER_INSTRUCTIONS, fg='yellow')
+                result = util.exec_command(
+                    util.safe_join(drivers_bin_dir, 'serial_install.exe'))
+                click.secho('Serial drivers configuration finished',
+                            fg='green')
+            else:
+                util._check_package('drivers')
+                result = 1
+        except Exception as e:
+            click.secho('Error: ' + str(e), fg='red')
+            result = 1
+
+        if not isinstance(result, int):
+            result = result.get('returncode')
+        return result
 
     def _serial_disable_windows(self):
         click.secho('Launch device manager')

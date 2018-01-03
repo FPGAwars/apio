@@ -1,6 +1,6 @@
 {
   "packages": {
-    "drivers": "~1.0.0",
+    "drivers": "~1.1.0",
     "examples": "~0.0.7",
     "gtkwave": "~3.3.77",
     "icestorm": "~1.10.1",
