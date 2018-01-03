@@ -409,3 +409,7 @@ def get_serial_ports():
             })
 
     return result
+
+
+def get_python_version():
+    return '{0}.{1}'.format(sys.version_info[0], sys.version_info[1])

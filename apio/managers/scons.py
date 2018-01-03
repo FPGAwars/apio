@@ -127,6 +127,12 @@ class SCons(object):
                 click.secho('Please run:\n'
                             '   pip install {}'.format(dep), fg='yellow')
                 raise Exception
+            except Exception as e:
+                # Exit if a package is not working
+                v = util.get_python_version()
+                message = '`{0}` not compatible with Python {1}'.format(dep, v)
+                message += '\n       {}'.format(e)
+                raise Exception(message)
 
     def serialize_programmer(self, board_data, sram):
         prog_info = board_data.get('programmer')
