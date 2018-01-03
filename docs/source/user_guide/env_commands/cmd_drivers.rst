@@ -42,6 +42,17 @@ Enable FPGA drivers.
 
 Disable FPGA drivers.
 
+.. option::
+    --serial-enable
+
+Enable Serial drivers.
+
+.. option::
+    --serial-disable
+
+Disable Serial drivers.
+
+
 Examples
 --------
 
@@ -52,13 +63,36 @@ Examples
   $ apio drivers --ftdi-enable
   Configure FTDI drivers for FPGA
   [sudo] password for user:
-  FPGA drivers enabled
+  FTDI drivers enabled
+  Unplug and reconnect your board
 
-1. Disable the FTDI drivers on Linux
+2. Disable the FTDI drivers on Linux
 
 .. code::
 
   $ apio drivers --ftdi-disable
   Revert FTDI drivers configuration
   [sudo] password for user:
-  FPGA drivers disabled
+  FTDI drivers disabled
+  Unplug and reconnect your board
+
+
+3. Enable the Serial drivers on Linux
+
+.. code::
+
+  $ apio drivers --serial-enable
+  Configure Serial drivers for FPGA
+  [sudo] password for user:
+  Serial drivers enabled
+  Unplug and reconnect your board
+
+4. Disable the Serial drivers on Linux
+
+.. code::
+
+  $ apio drivers --serial-disable
+  Revert Serial drivers configuration
+  [sudo] password for user:
+  Serial drivers disabled
+  Unplug and reconnect your board

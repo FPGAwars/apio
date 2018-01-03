@@ -63,11 +63,10 @@ a few options here:
 
 .. _install_drivers:
 
-Install FPGA FTDI drivers
+Install FTDI drivers
 -------------------------
 
-Using apio
-~~~~~~~~~~
+For boards with a FTDI interface.
 
 .. code::
 
@@ -79,57 +78,18 @@ To revert the FTDI drivers configuration
 
     $ apio drivers --ftdi-disable
 
-Manually
-~~~~~~~~
 
-**Linux**
+Install Serial drivers
+-------------------------
 
-Download `80-icestick.rules <https://github.com/FPGAwars/apio/blob/develop/apio/resources/80-icestick.rules>`_ and execute
-
-.. code::
-
-    $ sudo cp 80-icestick.rules /etc/udev/rules.d/
-    $ sudo service udev restart
-
-
-**Mac OS X**
-
-Install `homebrew <http://brew.sh/>`_ and libftdi
+For boards with a Serial interface.
 
 .. code::
 
-    $ brew update
-    $ brew install libftdi
-    $ brew install libffi
+    $ apio drivers --serial-enable
 
-Configure the drivers
-
-If **com.FTDI.driver.FTDIUSBSerialDriver** is loaded (``kextstat | grep FTDIUSBSerialDriver``), unload it:
+To revert the Serial drivers configuration
 
 .. code::
 
-  $ sudo kextunload -b com.FTDI.driver.FTDIUSBSerialDriver
-
-If **com.apple.driver.AppleUSBFTDI** is loaded (``kextstat | grep AppleUSBFTDI``), unload it:
-
-.. code::
-
-  $ sudo kextunload -b com.apple.driver.AppleUSBFTDI
-
-Then upload the bitstream. And finally revert the drivers configuration:
-
-.. code::
-
-  $ sudo kextload -b com.FTDI.driver.FTDIUSBSerialDriver -q
-
-or
-
-.. code::
-
-  $ sudo kextload -b com.apple.driver.AppleUSBFTDI -q
-
-`More information <https://github.com/FPGAwars/apio/wiki/FTDI-Drivers-flowchart-Mac-OS>`_.
-
-**Windows**
-
-Go to this `tutorial <https://github.com/FPGAwars/libftdi-cross-builder/wiki#driver-installation>`_.
+    $ apio drivers --serial-disable
