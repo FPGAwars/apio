@@ -18,6 +18,7 @@ def process_arguments(args, resources):  # noqa
     var_size = args.get('size')
     var_type = args.get('type')
     var_pack = args.get('pack')
+    var_verbose = args.get('verbose')
 
     if var_board:
         if isfile('apio.ini'):
@@ -186,7 +187,8 @@ def process_arguments(args, resources):  # noqa
     variables = format_vars({
         'fpga_size': fpga_size,
         'fpga_type': fpga_type,
-        'fpga_pack': fpga_pack
+        'fpga_pack': fpga_pack,
+        'verbose': var_verbose
     })
 
     return variables, var_board

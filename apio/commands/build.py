@@ -28,7 +28,9 @@ if (sys.version_info > (3, 0)):
               help='Set the FPGA package.')
 @click.option('-p', '--project-dir', type=unicode, metavar='path',
               help='Set the target directory for the project.')
-def cli(ctx, board, fpga, pack, type, size, project_dir):
+@click.option('-v', '--verbose', is_flag=True,
+              help='Show the entire output of the command.')
+def cli(ctx, board, fpga, pack, type, size, project_dir, verbose):
     """Synthesize the bitstream."""
 
     # Run scons
@@ -37,7 +39,8 @@ def cli(ctx, board, fpga, pack, type, size, project_dir):
         'fpga': fpga,
         'size': size,
         'type': type,
-        'pack': pack
+        'pack': pack,
+        'verbose': verbose
     })
     ctx.exit(exit_code)
 

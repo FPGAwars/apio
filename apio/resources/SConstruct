@@ -17,6 +17,7 @@ from SCons.Script import (Builder, DefaultEnvironment, Default, AlwaysBuild,
 
 # -- Load arguments
 PROG = ARGUMENTS.get('prog', '')
+QUIET = '' if ARGUMENTS.get('verbose', False) else '-q'
 FPGA_SIZE = ARGUMENTS.get('fpga_size', '')
 FPGA_TYPE = ARGUMENTS.get('fpga_type', '')
 FPGA_PACK = ARGUMENTS.get('fpga_pack', '')
@@ -152,14 +153,16 @@ except IndexError:
 
 # -- Define the Sintesizing Builder
 synth = Builder(
-    action='yosys -p \"synth_ice40 -blif $TARGET\" -q $SOURCES',
+    action='yosys -p \"synth_ice40 -blif $TARGET\" {} $SOURCES'.format(
+        QUIET
+    ),
     suffix='.blif',
     src_suffix='.v',
     source_scanner=list_scanner)
 
 pnr = Builder(
-    action='arachne-pnr -d {0} -P {1} -p {2} -o $TARGET $SOURCE'.format(
-        FPGA_SIZE, FPGA_PACK, PCF),
+    action='arachne-pnr -d {0} -P {1} -p {2} -o $TARGET {3} $SOURCE'.format(
+        FPGA_SIZE, FPGA_PACK, PCF, QUIET),
     suffix='.asc',
     src_suffix='.blif')
 
