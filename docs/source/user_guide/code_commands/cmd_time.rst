@@ -44,6 +44,11 @@ Select a specific FPGA size, type and pack.
 
 Set the target directory for the project.
 
+.. option::
+    -v, --verbose
+
+Show the entire output of the command.
+
 .. note::
 
   All available boards, FPGAs, sizes, types and packs are showed in :ref:`cmd_boards`
