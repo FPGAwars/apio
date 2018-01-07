@@ -178,12 +178,8 @@ class Drivers(object):  # pragma: no cover
         else:
             click.secho('Enable FTDI drivers for FPGA')
             subprocess.call(['brew', 'update'])
-            subprocess.call(['brew', 'install', '--force', 'libftdi'])
-            subprocess.call(['brew', 'unlink', 'libftdi'])
-            subprocess.call(['brew', 'link', '--force', 'libftdi'])
-            subprocess.call(['brew', 'install', '--force', 'libffi'])
-            subprocess.call(['brew', 'unlink', 'libffi'])
-            subprocess.call(['brew', 'link', '--force', 'libffi'])
+            self._brew_install('libftdi')
+            self._brew_install('libffi')
             self.profile.add_setting('macos_ftdi_drivers', True)
             self.profile.save()
             click.secho('FTDI drivers enabled', fg='green')
@@ -202,9 +198,8 @@ class Drivers(object):  # pragma: no cover
         else:
             click.secho('Enable FTDI drivers for FPGA')
             subprocess.call(['brew', 'update'])
-            subprocess.call(['brew', 'install', '--force', 'libffi'])
-            subprocess.call(['brew', 'unlink', 'libffi'])
-            subprocess.call(['brew', 'link', '--force', 'libffi'])
+            self._brew_install('libusb')
+            self._brew_install('libffi')
             # self.profile.add_setting('macos_serial_drivers', True)
             # self.profile.save()
             click.secho('FTDI drivers enabled', fg='green')
@@ -214,6 +209,11 @@ class Drivers(object):  # pragma: no cover
         # self.profile.add_setting('macos_serial_drivers', False)
         # self.profile.save()
         click.secho('FTDI drivers disabled', fg='green')
+
+    def _brew_install(package):
+        subprocess.call(['brew', 'install', '--force', package])
+        subprocess.call(['brew', 'unlink', package])
+        subprocess.call(['brew', 'link', '--force', package])
 
     def _pre_upload_darwin(self):
         if self.profile.settings.get('macos_ftdi_drivers', False):
