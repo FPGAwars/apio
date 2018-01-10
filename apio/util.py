@@ -205,7 +205,7 @@ def get_project_dir():
 scons_command = ['scons']
 
 
-def resolve_packages(packages, deps=[]):
+def resolve_packages(all_packages, packages=[]):
 
     base_dir = {
         'system': get_package_dir('tools-system'),
@@ -223,8 +223,8 @@ def resolve_packages(packages, deps=[]):
 
     # -- Check packages
     check = True
-    for package in deps:
-        if package in packages:
+    for package in packages:
+        if package in all_packages:
             check &= _check_package(package, bin_dir.get(package))
 
     # -- Load packages

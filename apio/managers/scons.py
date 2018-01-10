@@ -32,32 +32,32 @@ class SCons(object):
 
     @util.command
     def clean(self):
-        return self.run('-c', deps=[])
+        return self.run('-c', packages=[])
 
     @util.command
     def verify(self):
-        return self.run('verify', deps=['iverilog'])
+        return self.run('verify', packages=['iverilog'])
 
     @util.command
     def sim(self):
-        return self.run('sim', deps=['iverilog', 'gtkwave'])
+        return self.run('sim', packages=['iverilog', 'gtkwave'])
 
     @util.command
     def build(self, args):
         variables, board = process_arguments(args, self.resources)
-        return self.run('build', variables, board, deps=['icestorm'])
+        return self.run('build', variables, board, packages=['icestorm'])
 
     @util.command
     def time(self, args):
         variables, board = process_arguments(args, self.resources)
-        return self.run('time', variables, board, deps=['icestorm'])
+        return self.run('time', variables, board, packages=['icestorm'])
 
     @util.command
     def upload(self, args, serial_port, ftdi_id, sram):
         variables, board = process_arguments(args, self.resources)
         programmer = self.get_programmer(board, serial_port, ftdi_id, sram)
         variables += ['prog={0}'.format(programmer)]
-        return self.run('upload', variables, board, deps=['icestorm'])
+        return self.run('upload', variables, board, packages=['icestorm'])
 
     def get_programmer(self, board, ext_serial_port, ext_ftdi_id, sram):
         programmer = ''
@@ -68,8 +68,8 @@ class SCons(object):
             # Check platform
             self.check_platform(board_data)
 
-            # Check pip dependencies
-            self.check_pip_dependencies(board_data)
+            # Check pip packages
+            self.check_pip_packages(board_data)
 
             # Serialize programmer command
             programmer = self.serialize_programmer(board_data, sram)
@@ -113,24 +113,25 @@ class SCons(object):
                 raise Exception(
                     'incorrect platform {0}'.format(platform))
 
-    def check_pip_dependencies(self, board_data):
+    def check_pip_packages(self, board_data):
         prog_info = board_data.get('programmer')
         content = self.resources.programmers.get(prog_info.get('type'))
 
-        pip_deps = content.get('pip_deps') or []
-        for dep in pip_deps:
+        pip_packages = content.get('pip_packages') or []
+        for pip_pkg in pip_packages:
             try:
-                __import__(dep)
+                __import__(pip_pkg)
             except ImportError:
                 click.secho(
-                    'Error: {} is not installed'.format(dep), fg='red')
+                    'Error: {} is not installed'.format(pip_pkg), fg='red')
                 click.secho('Please run:\n'
-                            '   pip install {}'.format(dep), fg='yellow')
+                            '   pip install {}'.format(pip_pkg), fg='yellow')
                 raise Exception
             except Exception as e:
                 # Exit if a package is not working
-                v = util.get_python_version()
-                message = '`{0}` not compatible with Python {1}'.format(dep, v)
+                python_version = util.get_python_version()
+                message = '`{0}` not compatible with '.format(pip_pkg)
+                message += 'Python {1}'.format(python_version)
                 message += '\n       {}'.format(e)
                 raise Exception(message)
 
@@ -234,7 +235,7 @@ class SCons(object):
                 # return the index for the FTDI device.
                 return index
 
-    def run(self, command, variables=[], board=None, deps=[]):
+    def run(self, command, variables=[], board=None, packages=[]):
         """Executes scons for building"""
 
         # -- Check for the SConstruct file
@@ -248,7 +249,7 @@ class SCons(object):
         # -- Resolve packages
         if self.profile.check_exe_default():
             # Run on `default` config mode
-            if not util.resolve_packages(self.resources.packages, deps):
+            if not util.resolve_packages(self.resources.packages, packages):
                 # Exit if a package is not installed
                 raise Exception
         else:

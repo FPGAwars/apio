@@ -30,7 +30,7 @@ FTDI_UNINSTALL_DRIVER_INSTRUCTIONS = """
    FTDI driver uninstallation:
    Usage instructions
 
-      1. Find the FPGA USB Devices
+      1. Find the FPGA USB Device
       2. Right click
       3. Select "Uninstall"
       4. Accept the dialog
@@ -50,7 +50,7 @@ SERIAL_UNINSTALL_DRIVER_INSTRUCTIONS = """
    Serial driver uninstallation:
    Usage instructions
 
-      1. Find the FPGA USB Devices
+      1. Find the FPGA USB Device
       2. Right click
       3. Select "Uninstall"
       4. Accept the dialog

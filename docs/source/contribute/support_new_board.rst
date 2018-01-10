@@ -52,7 +52,7 @@ In order to support a new board based on FPGA Lattice iCE40 family, follow these
     "tinyfpgab": {
       "command": "tinyfpgab",
       "args": "-c ${SERIAL_PORT} --program",
-      "pip_deps": [ "tinyfpgab" ]
+      "pip_packages": [ "tinyfpgab" ]
     }
 
 3. **Add your board** in `boards.json <https://github.com/FPGAwars/apio/blob/develop/apio/resources/boards.json>`_ with the following format:
