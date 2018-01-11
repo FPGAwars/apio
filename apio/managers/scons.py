@@ -142,7 +142,7 @@ class SCons(object):
                     'Error: {} is not installed'.format(pip_pkg),
                     fg='red')
                 click.secho('Please run:\n'
-                            '   pip install apio[{}]'.format(pip_pkg),
+                            '   pip install -U apio[{}]'.format(pip_pkg),
                             fg='yellow')
                 raise Exception
             try:
