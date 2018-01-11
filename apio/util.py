@@ -230,14 +230,24 @@ def resolve_packages(all_packages, packages=[]):
     # -- Load packages
     if check:
 
-        # Give the priority to the packages installed by apio
-        os.environ['PATH'] = os.pathsep.join(
-            [bin_dir.get('icestorm'), bin_dir.get('iverilog'),
-             bin_dir.get('gtkwave'), os.environ['PATH']])
-
         # Give the priority to the python packages installed with apio
-        os.environ['PATH'] = os.pathsep.join(
-            [dirname(sys.executable), os.environ['PATH']])
+        os.environ['PATH'] = os.pathsep.join([
+            dirname(sys.executable),
+            os.environ['PATH']
+        ])
+
+        # Give the priority to the packages installed by apio
+        os.environ['PATH'] = os.pathsep.join([
+            bin_dir.get('icestorm'),
+            bin_dir.get('iverilog'),
+            os.environ['PATH']
+        ])
+
+        if platform.system() == 'Windows':
+            os.environ['PATH'] = os.pathsep.join([
+                bin_dir.get('gtkwave'),
+                os.environ['PATH']
+            ])
 
         # Add environment variables
         if not config_data:  # /etc/apio.json file does not exist
