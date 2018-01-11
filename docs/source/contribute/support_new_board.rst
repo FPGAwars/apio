@@ -55,7 +55,17 @@ In order to support a new board based on FPGA Lattice iCE40 family, follow these
       "pip_packages": [ "tinyfpgab" ]
     }
 
-3. **Add your board** in `boards.json <https://github.com/FPGAwars/apio/blob/develop/apio/resources/boards.json>`_ with the following format:
+  NOTE: if your programmer uses a python package, add this package and its version range to `distribution.json <https://github.com/FPGAwars/apio/blob/develop/apio/resources/distribution.json>`_.
+
+  .. code-block:: javascript
+
+    "pip_packages": {
+      "blackiceprog": "==2.0.0,<2.1.0",
+      "litterbox": "==0.2.1,<0.3.0",
+      "tinyfpgab": "==1.0.3,<1.1.0"
+    }
+
+3. **Add your board** to `boards.json <https://github.com/FPGAwars/apio/blob/develop/apio/resources/boards.json>`_ with the following format:
 
   .. code-block:: javascript
 
