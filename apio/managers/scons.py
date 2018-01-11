@@ -9,6 +9,8 @@ import re
 import time
 import click
 import datetime
+import pkg_resources
+import semantic_version
 
 from os.path import isfile
 
@@ -116,17 +118,36 @@ class SCons(object):
     def check_pip_packages(self, board_data):
         prog_info = board_data.get('programmer')
         content = self.resources.programmers.get(prog_info.get('type'))
+        all_pip_packages = self.resources.distribution.get('pip_packages')
 
         pip_packages = content.get('pip_packages') or []
         for pip_pkg in pip_packages:
             try:
-                __import__(pip_pkg)
-            except ImportError:
+                # Check pip_package version
+                spec = semantic_version.Spec(all_pip_packages.get(pip_pkg, ''))
+                pkg_version = pkg_resources.get_distribution(pip_pkg).version
+                version = semantic_version.Version(pkg_version)
+                if not spec.match(version):
+                    click.secho(
+                        'Error: \'{}\' '.format(pip_pkg) +
+                        'version ({}) '.format(version) +
+                        'does not match {}'.format(spec),
+                        fg='red')
+                    click.secho('Please run:\n'
+                                '   pip install -U apio[{}]'.format(pip_pkg),
+                                fg='yellow')
+                    raise Exception
+            except pkg_resources.DistributionNotFound:
                 click.secho(
-                    'Error: {} is not installed'.format(pip_pkg), fg='red')
+                    'Error: {} is not installed'.format(pip_pkg),
+                    fg='red')
                 click.secho('Please run:\n'
-                            '   pip install {}'.format(pip_pkg), fg='yellow')
+                            '   pip install apio[{}]'.format(pip_pkg),
+                            fg='yellow')
                 raise Exception
+            try:
+                # Check pip_package itself
+                __import__(pip_pkg)
             except Exception as e:
                 # Exit if a package is not working
                 python_version = util.get_python_version()

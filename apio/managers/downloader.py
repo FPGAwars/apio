@@ -22,7 +22,7 @@ requests.packages.urllib3.disable_warnings()
 
 class FDUnrecognizedStatusCode(util.ApioException):
 
-    MESSAGE = "Got an unrecognized status code '{0}' when downloaded {1}"
+    MESSAGE = 'Got an unrecognized status code \'{0}\' when downloaded {1}'
 
 
 class FileDownloader(object):

@@ -21,7 +21,7 @@ from apio import util
 
 class UnsupportedArchiveType(util.ApioException):
 
-    MESSAGE = "Can not unpack file '{0}'"
+    MESSAGE = 'Can not unpack file \'{0}\''
 
 
 class ArchiveBase(object):
@@ -80,15 +80,15 @@ class ZIPArchive(ArchiveBase):
 
 class FileUnpacker(object):
 
-    def __init__(self, archpath, dest_dir="."):
+    def __init__(self, archpath, dest_dir='.'):
         self._archpath = archpath
         self._dest_dir = dest_dir
         self._unpacker = None
 
         _, archext = splitext(archpath.lower())
-        if archext in (".gz", ".bz2"):
+        if archext in ('.gz', '.bz2'):
             self._unpacker = TARArchive(archpath)
-        elif archext == ".zip":
+        elif archext == '.zip':
             self._unpacker = ZIPArchive(archpath)
 
         if not self._unpacker:
@@ -96,7 +96,7 @@ class FileUnpacker(object):
 
     def start(self):
         with click.progressbar(self._unpacker.get_items(),
-                               label="Unpacking") as pb:
+                               label='Unpacking') as pb:
             for item in pb:
                 self._unpacker.extract_item(item, self._dest_dir)
         return True

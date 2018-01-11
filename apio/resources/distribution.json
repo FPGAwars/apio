@@ -6,5 +6,10 @@
     "icestorm": "~1.10.1",
     "iverilog": "~1.1.0",
     "system": "~1.1.0"
+  },
+  "pip_packages": {
+    "blackiceprog": "==2.0.0,<2.1.0",
+    "litterbox": "==0.2.1,<0.3.0",
+    "tinyfpgab": "==1.0.3,<1.1.0"
   }
 }
