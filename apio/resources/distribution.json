@@ -8,8 +8,8 @@
     "system": "~1.1.0"
   },
   "pip_packages": {
-    "blackiceprog": "==2.0.0,<2.1.0",
-    "litterbox": "==0.2.1,<0.3.0",
-    "tinyfpgab": "==1.0.3,<1.1.0"
+    "blackiceprog": ">=2.0.0,<3.0.0",
+    "litterbox": ">=0.2.1,<0.3.0",
+    "tinyfpgab": ">=1.0.4,<1.1.0"
   }
 }
