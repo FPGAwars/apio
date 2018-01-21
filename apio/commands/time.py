@@ -30,7 +30,12 @@ if (sys.version_info > (3, 0)):
               help='Set the target directory for the project.')
 @click.option('-v', '--verbose', is_flag=True,
               help='Show the entire output of the command.')
-def cli(ctx, board, fpga, pack, type, size, project_dir, verbose):
+@click.option('--verbose-yosys', is_flag=True,
+              help='Show the yosys output of the command.')
+@click.option('--verbose-arachne', is_flag=True,
+              help='Show the arachne output of the command.')
+def cli(ctx, board, fpga, pack, type, size, project_dir,
+        verbose, verbose_yosys, verbose_arachne):
     """Bitstream timing analysis."""
 
     # Run scons
@@ -40,6 +45,10 @@ def cli(ctx, board, fpga, pack, type, size, project_dir, verbose):
         'size': size,
         'type': type,
         'pack': pack,
-        'verbose': verbose
+        'verbose': {
+            'all': verbose,
+            'yosys': verbose_yosys,
+            'arachne': verbose_arachne
+        }
     })
     ctx.exit(exit_code)
