@@ -61,6 +61,16 @@ Set the target directory for the project.
 
 Show the entire output of the command.
 
+.. option::
+    --verbose-yosys
+
+Show the yosys output of the command.
+
+.. option::
+    --verbose-arachne
+
+Show the arachne output of the command.
+
 .. note::
 
   All available boards, FPGAs, sizes, types and packs are showed in :ref:`cmd_boards`
@@ -76,10 +86,7 @@ Examples
   Board: icezum
   [] Processing icezum
   -------------------------------------------------------------------------------------------------
-  FPGA_SIZE: 1k
-  FPGA_TYPE: hx
-  FPGA_PACK: tq144
-  DEVICE: 0
+  [...]
   iceprog -d i:0x0403:0x6010:0 hardware.bin
   init..
   cdone: high
