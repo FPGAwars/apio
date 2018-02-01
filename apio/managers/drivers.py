@@ -196,21 +196,21 @@ class Drivers(object):  # pragma: no cover
         if brew != 0:
             click.secho('Error: homebrew is required', fg='red')
         else:
-            click.secho('Enable FTDI drivers for FPGA')
+            click.secho('Enable Serial drivers for FPGA')
             subprocess.call(['brew', 'update'])
             self._brew_install('libusb')
             self._brew_install('libffi')
             # self.profile.add_setting('macos_serial_drivers', True)
             # self.profile.save()
-            click.secho('FTDI drivers enabled', fg='green')
+            click.secho('Serial drivers enabled', fg='green')
 
     def _serial_disable_darwin(self):
-        click.secho('Disable FTDI drivers\' configuration')
+        click.secho('Disable Serial drivers\' configuration')
         # self.profile.add_setting('macos_serial_drivers', False)
         # self.profile.save()
-        click.secho('FTDI drivers disabled', fg='green')
+        click.secho('Serial drivers disabled', fg='green')
 
-    def _brew_install(package):
+    def _brew_install(self, package):
         subprocess.call(['brew', 'install', '--force', package])
         subprocess.call(['brew', 'unlink', package])
         subprocess.call(['brew', 'link', '--force', package])
@@ -220,10 +220,10 @@ class Drivers(object):  # pragma: no cover
             # Check and unload the drivers
             driverA = 'com.FTDI.driver.FTDIUSBSerialDriver'
             driverB = 'com.apple.driver.AppleUSBFTDI'
-            if self._check_driver_darwin(driverA):
+            if self._check_ftdi_driver_darwin(driverA):
                 subprocess.call(['sudo', 'kextunload', '-b', driverA])
                 self.driverC = driverA
-            elif self._check_driver_darwin(driverB):
+            elif self._check_ftdi_driver_darwin(driverB):
                 subprocess.call(['sudo', 'kextunload', '-b', driverB])
                 self.driverC = driverB
 
