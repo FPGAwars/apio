@@ -60,9 +60,9 @@ In order to support a new board based on FPGA Lattice iCE40 family, follow these
   .. code-block:: javascript
 
     "pip_packages": {
-      "blackiceprog": "==2.0.0,<2.1.0",
-      "litterbox": "==0.2.1,<0.3.0",
-      "tinyfpgab": "==1.0.3,<1.1.0"
+      "blackiceprog": ">=2.0.0,<3.0.0",
+      "litterbox": ">=0.2.1,<0.3.0",
+      "tinyfpgab": ">=1.0.3,<1.1.0"
     }
 
 3. **Add your board** to `boards.json <https://github.com/FPGAwars/apio/blob/develop/apio/resources/boards.json>`_ with the following format:
