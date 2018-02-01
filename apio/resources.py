@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2017 FPGAwars
+# -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
@@ -45,7 +45,7 @@ class Resources(object):
         return resource
 
     def get_package_release_name(self, package):
-        return self.packages[package]['release']['package_name']
+        return self.packages.get(package).get('release').get('package_name')
 
     def list_packages(self, installed=True, notinstalled=True):
         """Return a list with all the installed/notinstalled packages"""
@@ -60,7 +60,7 @@ class Resources(object):
             data = {
                 'name': package,
                 'version': None,
-                'description': self.packages[package]['description']
+                'description': self.packages.get(package).get('description')
             }
             if self.profile.check_package(package,
                self.get_package_release_name(package)):
@@ -88,9 +88,9 @@ class Resources(object):
 
             for package in installed_packages:
                 click.echo(PACKAGELIST_TPL.format(
-                    name=click.style(package['name'], fg='cyan'),
-                    version=package['version'],
-                    description=package['description']))
+                    name=click.style(package.get('name'), fg='cyan'),
+                    version=package.get('version'),
+                    description=package.get('description')))
 
         if notinstalled and notinstalled_packages:
 
@@ -107,8 +107,8 @@ class Resources(object):
 
             for package in notinstalled_packages:
                 click.echo(PACKAGELIST_TPL.format(
-                    name=click.style(package['name'], fg='yellow'),
-                    description=package['description']))
+                    name=click.style(package.get('name'), fg='yellow'),
+                    description=package.get('description')))
 
     def list_boards(self):
         """Return a list with all the supported boards"""
@@ -126,13 +126,13 @@ class Resources(object):
         click.echo('-' * terminal_width)
 
         for board in self.boards:
-            fpga = self.boards[board]['fpga']
+            fpga = self.boards.get(board).get('fpga')
             click.echo(BOARDLIST_TPL.format(
                 board=click.style(board, fg='cyan'),
                 fpga=fpga,
-                type=self.fpgas[fpga]['type'],
-                size=self.fpgas[fpga]['size'],
-                pack=self.fpgas[fpga]['pack']))
+                type=self.fpgas.get(fpga).get('type'),
+                size=self.fpgas.get(fpga).get('size'),
+                pack=self.fpgas.get(fpga).get('pack')))
 
         click.secho(BOARDS_MSG, fg='green')
 
@@ -154,21 +154,21 @@ class Resources(object):
         for fpga in self.fpgas:
             click.echo(FPGALIST_TPL.format(
                 fpga=click.style(fpga, fg='cyan'),
-                type=self.fpgas[fpga]['type'],
-                size=self.fpgas[fpga]['size'],
-                pack=self.fpgas[fpga]['pack']))
+                type=self.fpgas.get(fpga).get('type'),
+                size=self.fpgas.get(fpga).get('size'),
+                pack=self.fpgas.get(fpga).get('pack')))
 
     def _check_packages(self, packages, current_platform=''):
         filtered_packages = {}
         for pkg in packages.keys():
             check = True
-            release = packages[pkg]['release']
+            release = packages.get(pkg).get('release')
             if 'available_platforms' in release:
-                platforms = release['available_platforms']
+                platforms = release.get('available_platforms')
                 check = False
                 current_platform = current_platform or util.get_systype()
                 for platform in platforms:
                     check |= current_platform in platform
             if check:
-                filtered_packages[pkg] = packages[pkg]
+                filtered_packages[pkg] = packages.get(pkg)
         return filtered_packages

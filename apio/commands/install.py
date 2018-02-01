@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2017 FPGAwars
+# -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
@@ -41,8 +41,6 @@ def cli(ctx, packages, all, list, force, platform):
     elif all:  # pragma: no cover
         packages = Resources(platform).packages
         for package in packages:
-            if package == 'pio-fpga':  # skip pio-fpga
-                continue
             Installer(package, platform, force).install()
     elif list:
         Resources(platform).list_packages(installed=True, notinstalled=True)

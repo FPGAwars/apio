@@ -17,7 +17,7 @@ Description
 
 Launch the verilog simulation using `GTKWave <http://gtkwave.sourceforge.net>`_ from a **verilog test bench**.
 
-This command requires the ``scons`` and ``iverilog`` packages.
+This command requires the ``iverilog`` package.
 
 .. image:: ../../../resources/images/gtkwave-simulation.png
 
@@ -50,7 +50,6 @@ Examples
 .. code::
 
   $ apio sim
-  Using default SConstruct file
   iverilog -B /path/to/lib/ivl -o leds_tb.out -D VCD_OUTPUT=leds_tb /path/to/vlib/system.v leds.v leds_tb.v
   vvp -M /path/to/lib/ivl leds_tb.out
   VCD info: dumpfile leds_tb.vcd opened for output.

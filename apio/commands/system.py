@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2017 FPGAwars
+# -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
@@ -16,9 +16,11 @@ from apio.managers.system import System
               help='List all connected FTDI devices.')
 @click.option('--lsusb', is_flag=True,
               help='List all connected USB devices.')
+@click.option('--lsserial', is_flag=True,
+              help='List all connected Serial devices.')
 @click.option('-i', '--info', is_flag=True,
               help='Show system information.')
-def cli(ctx, lsftdi, lsusb, info):
+def cli(ctx, lsftdi, lsusb, lsserial, info):
     """System tools.\n
        Install with `apio install system`"""
 
@@ -28,6 +30,8 @@ def cli(ctx, lsftdi, lsusb, info):
         exit_code = System().lsftdi()
     elif lsusb:
         exit_code = System().lsusb()
+    elif lsserial:
+        exit_code = System().lsserial()
     elif info:
         click.secho('Platform: ', nl=False)
         click.secho(get_systype(), fg='yellow')

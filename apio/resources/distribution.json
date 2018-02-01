@@ -1,11 +1,15 @@
 {
   "packages": {
-    "drivers": "~1.0.0",
+    "drivers": "~1.1.0",
     "examples": "~0.0.7",
     "gtkwave": "~3.3.77",
     "icestorm": "~1.10.1",
     "iverilog": "~1.1.0",
-    "scons": "~2.4.1",
     "system": "~1.1.0"
+  },
+  "pip_packages": {
+    "blackiceprog": ">=2.0.0,<3.0.0",
+    "litterbox": ">=0.2.1,<0.3.0",
+    "tinyfpgab": ">=1.0.4,<1.1.0"
   }
 }

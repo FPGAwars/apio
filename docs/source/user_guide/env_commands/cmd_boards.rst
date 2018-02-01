@@ -19,13 +19,15 @@ Show FPGA boards information.
 
 All supported boards:
 
-* `Cat board <https://hackaday.io/project/7982-cat-board>`_
+* `IceZUM Alhambra <https://github.com/FPGAwars/icezum>`_
+* `Kéfir I <http://fpgalibre.sourceforge.net/Kefir/>`_
 * `Nandland Go board <https://www.nandland.com/goboard/introduction.html>`_
 * `iCE40-HX8K Breakout Board <http://www.latticesemi.com/en/Products/DevelopmentBoardsAndKits/iCE40HX8KBreakoutBoard.aspx>`_
 * `iCEstick Evaluation Kit <http://www.pighixxx.com/test/portfolio-items/icestick/>`_
-* `IceZUM Alhambra <https://github.com/FPGAwars/icezum>`_
 * `icoBOARD 1.0 <http://icoboard.org/icoboard-1-0.html>`_
-* `Kéfir I <http://fpgalibre.sourceforge.net/Kefir/>`_
+* `CAT board <https://hackaday.io/project/7982-cat-board>`_
+* `BlackIce <https://mystorm.uk/>`_
+* `TinyFPGA B2 <http://tinyfpga.com/>`_
 
 .. note::
 
@@ -62,13 +64,14 @@ Examples
   Board         FPGA                 Type  Size  Pack
   --------------------------------------------------------
   Cat-board     iCE40-HX8K-CT256     hx    8k    ct256
+  TinyFPGA-B2   iCE40-LP8K-CM81      lp    8k    cm81
+  blackice      iCE40-HX4K-TQ144     hx    8k    tq144:4k
   go-board      iCE40-HX1K-VQ100     hx    1k    vq100
   iCE40-HX8K    iCE40-HX8K-CT256     hx    8k    ct256
   icestick      iCE40-HX1K-TQ144     hx    1k    tq144
   icezum        iCE40-HX1K-TQ144     hx    1k    tq144
   icoboard      iCE40-HX8K-CT256     hx    8k    ct256
   kefir         iCE40-HX4K-TQ144     hx    8k    tq144:4k
-
 
 2. Show all available FPGAs
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2017 FPGAwars
+# -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
@@ -34,7 +34,7 @@ class ApioCLI(click.MultiCommand):
             with open(fn) as f:
                 code = compile(f.read(), fn, 'exec')
                 eval(code, ns, ns)
-            return ns['cli']
+            return ns.get('cli')
 
 
 @click.command(cls=ApioCLI, invoke_without_command=True)

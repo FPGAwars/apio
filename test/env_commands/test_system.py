@@ -22,6 +22,12 @@ def test_system_lsusb(clirunner, configenv):
         assert 'apio install system' in result.output
 
 
+def test_system_lsserial(clirunner, configenv):
+    with clirunner.isolated_filesystem():
+        configenv()
+        clirunner.invoke(cmd_system, ['--lsserial'])
+
+
 def test_system_info(clirunner, configenv):
     with clirunner.isolated_filesystem():
         configenv()

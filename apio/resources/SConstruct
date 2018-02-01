@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # -- Generic Scons script for Sintesizing hardware on an FPGA and more.
 # -- This file is part of the Apio project
-# -- (C) 2016-2017 FPGAwars
+# -- (C) 2016-2018 FPGAwars
 # -- Authors Juan Gonzáles, Jesús Arroyo
 # -- Licence GPLv2
 # ----------------------------------------------------------------------
@@ -20,6 +20,9 @@ PROG = ARGUMENTS.get('prog', '')
 FPGA_SIZE = ARGUMENTS.get('fpga_size', '')
 FPGA_TYPE = ARGUMENTS.get('fpga_type', '')
 FPGA_PACK = ARGUMENTS.get('fpga_pack', '')
+VERBOSE_ALL = ARGUMENTS.get('verbose_all', False)
+VERBOSE_YOSYS = ARGUMENTS.get('verbose_yosys', False)
+VERBOSE_ARACHNE = ARGUMENTS.get('verbose_arachne', False)
 
 # -- Size. Possible values: 1k, 8k
 # -- Type. Possible values: hx, lp
@@ -45,17 +48,17 @@ if 'build' in COMMAND_LINE_TARGETS or \
    'upload' in COMMAND_LINE_TARGETS or \
    'time' in COMMAND_LINE_TARGETS:
 
-    print('FPGA_SIZE: {}'.format(FPGA_SIZE))
-    print('FPGA_TYPE: {}'.format(FPGA_TYPE))
-    print('FPGA_PACK: {}'.format(FPGA_PACK))
+    # print('FPGA_SIZE: {}'.format(FPGA_SIZE))
+    # print('FPGA_TYPE: {}'.format(FPGA_TYPE))
+    # print('FPGA_PACK: {}'.format(FPGA_PACK))
 
     if 'upload' in COMMAND_LINE_TARGETS:
 
         if PROG == '':
-            print('---> ERROR: NO programmer command found')
+            print('Error: no programmer command found')
             Exit(1)
 
-        print('PROG: {}'.format(PROG))
+        # print('PROG: {}'.format(PROG))
 
 # -- Resources paths
 IVL_PATH = os.environ['IVL'] if 'IVL' in os.environ else ''
@@ -95,7 +98,7 @@ src_sim = [str(f) for f in v_nodes]
 list_tb = [f for f in src_sim if f[-5:].upper() == '_TB.V']
 
 if len(list_tb) > 1:
-    print('---> WARNING: more than one testbenches used')
+    print('Warning: more than one testbenches used')
 
 # -- Error checking
 try:
@@ -116,7 +119,7 @@ if len(COMMAND_LINE_TARGETS) == 0:
 # sim
 elif 'sim' in COMMAND_LINE_TARGETS:
     if testbench is None:
-        print('---> ERROR: NO testbench found for simulation')
+        print('Error: no testbench found for simulation')
         Exit(1)
 
     # -- Simulation name
@@ -131,11 +134,11 @@ if SIMULNAME:
 src_synth = [f for f in src_sim if f not in list_tb]
 
 if len(src_synth) == 0:
-    print('---> ERROR: no verilog files found (.v)')
+    print('Error: no verilog files found (.v)')
     Exit(1)
 
 # -- For debugging
-# print('----> Testbench: {}'.format(testbench))
+# print('Testbench: {}'.format(testbench))
 # print('SIM NAME: {}'.format(SIMULNAME))
 
 # -- Get the PCF file
@@ -145,21 +148,24 @@ PCF_list = Glob('*.pcf')
 try:
     PCF = PCF_list[0]
 except IndexError:
-    print('\n---> WARNING: no .pcf file found\n')
+    print('\n---> WARNING: no PCF file found (.pcf)\n')
 
 # -- Debug
-# print('----> PCF Found: {}'.format(PCF))
+# print('PCF Found: {}'.format(PCF))
 
 # -- Define the Sintesizing Builder
 synth = Builder(
-    action='yosys -p \"synth_ice40 -blif $TARGET\" -q $SOURCES',
+    action='yosys -p \"synth_ice40 -blif $TARGET\" {} $SOURCES'.format(
+        '' if VERBOSE_ALL or VERBOSE_YOSYS else '-q'
+    ),
     suffix='.blif',
     src_suffix='.v',
     source_scanner=list_scanner)
 
 pnr = Builder(
-    action='arachne-pnr -d {0} -P {1} -p {2} -o $TARGET $SOURCE'.format(
-        FPGA_SIZE, FPGA_PACK, PCF),
+    action='arachne-pnr -d {0} -P {1} -p {2} -o $TARGET {3} $SOURCE'.format(
+        FPGA_SIZE, FPGA_PACK, PCF,
+        '' if VERBOSE_ALL or VERBOSE_ARACHNE else '-q'),
     suffix='.asc',
     src_suffix='.blif')
 

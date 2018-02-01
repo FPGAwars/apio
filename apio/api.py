@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2017 FPGAwars
+# -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
 import click
 import requests
+
+from apio import util
+
 requests.packages.urllib3.disable_warnings()
 
 ERROR_MESSAGE = """Error: Could not connect to GitHub API.
@@ -38,4 +41,7 @@ def api_request(command, organization='FPGAwars'):
 
 
 def _get_headers():
-    return {'Authorization': 'token 35637034c3d4cb3d4b84ac09eee5c4b0aac2c661'}
+    enc = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwdWJsaWNfdG9rZW4iOiJ0' + \
+          'b2tlbiBhNTk2OTUwNjFhYzRkMjBkZjEwNTFlZDljOWZjNGI4M2Q0NzAyYzA3I' + \
+          'n0.POR6Iae_pSt0m6h-AaRi1X6QaRcnnfl9aZbTSV0BUJw'
+    return {'Authorization': util.decode(enc).get('public_token')}

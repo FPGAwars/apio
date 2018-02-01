@@ -1,0 +1,4 @@
+# Disable ModemManager for BlackIce
+ATTRS{idVendor}=="0483", ATTRS{idProduct}=="5740", ENV{ID_MM_DEVICE_IGNORE}="1"
+# Disable ModemManager for TinyFPGA B2
+ATTRS{idVendor}=="1209", ATTRS{idProduct}=="2100", ENV{ID_MM_DEVICE_IGNORE}="1"

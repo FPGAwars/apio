@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2017 FPGAwars
+# -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
@@ -20,56 +20,100 @@ class System(object):  # pragma: no cover
             self.ext = '.exe'
 
     def lsusb(self):
-        result = self._run('lsusb')
-
-        if isinstance(result, int):
-            return result
+        returncode = 1
+        result = self._run_command('lsusb')
 
         if result:
-            return result['returncode']
+            returncode = result.get('returncode')
+
+        return returncode
 
     def lsftdi(self):
-        result = self._run('lsftdi')
-
-        if isinstance(result, int):
-            return result
+        returncode = 1
+        result = self._run_command('lsftdi')
 
         if result:
-            return result['returncode']
+            returncode = result.get('returncode')
 
-    def detect_boards(self):
-        detected_boards = []
-        result = self._run('lsftdi')
+        return returncode
 
-        if isinstance(result, int):
-            return result
+    def lsserial(self):
+        returncode = 0
+        serial_ports = util.get_serial_ports()
+        click.secho(
+            'Number of Serial devices found: {}\n'.format(len(serial_ports)))
 
-        if result and result['returncode'] == 0:
-            detected_boards = self.parse_out(result['out'])
+        for serial_port in serial_ports:
+            port = serial_port.get('port')
+            description = serial_port.get('description')
+            hwid = serial_port.get('hwid')
+            click.secho(port, fg='cyan')
+            click.secho('Description: {}'.format(description))
+            click.secho('Hardware info: {}\n'.format(hwid))
 
-        return detected_boards
+        return returncode
 
-    def _run(self, command):
+    def get_usb_devices(self):
+        usb_devices = []
+        result = self._run_command('lsusb', silent=True)
+
+        if result and result.get('returncode') == 0:
+            usb_devices = self._parse_usb_devices(result.get('out'))
+        else:
+            raise Exception
+
+        return usb_devices
+
+    def get_ftdi_devices(self):
+        ftdi_devices = []
+        result = self._run_command('lsftdi', silent=True)
+
+        if result and result.get('returncode') == 0:
+            ftdi_devices = self._parse_ftdi_devices(result.get('out'))
+        else:
+            raise Exception
+
+        return ftdi_devices
+
+    def _run_command(self, command, silent=False):
         result = {}
         system_base_dir = util.get_package_dir('tools-system')
         system_bin_dir = util.safe_join(system_base_dir, 'bin')
 
+        on_stdout = None if silent else self._on_stdout
+        on_stderr = self._on_stderr
+
         if isdir(system_bin_dir):
             result = util.exec_command(
                 util.safe_join(system_bin_dir, command + self.ext),
-                stdout=util.AsyncPipe(self._on_run_out),
-                stderr=util.AsyncPipe(self._on_run_out)
-                )
+                stdout=util.AsyncPipe(on_stdout),
+                stderr=util.AsyncPipe(on_stderr))
         else:
             util._check_package('system')
-            return 1
 
         return result
 
-    def _on_run_out(self, line):
+    def _on_stdout(self, line):
         click.secho(line)
 
-    def parse_out(self, text):
+    def _on_stderr(self, line):
+        click.secho(line, fg='red')
+
+    def _parse_usb_devices(self, text):
+        pattern = '(?P<hwid>[a-f0-9]{4}:[a-f0-9]{4}?)\s'
+        hwids = re.findall(pattern, text)
+
+        usb_devices = []
+
+        for hwid in hwids:
+            usb_device = {
+                'hwid': hwid
+            }
+            usb_devices.append(usb_device)
+
+        return usb_devices
+
+    def _parse_ftdi_devices(self, text):
         pattern = 'Number\sof\sFTDI\sdevices\sfound:\s(?P<n>\d+?)\n'
         match = re.search(pattern, text)
         n = int(match.group('n')) if match else 0
@@ -83,14 +127,14 @@ class System(object):  # pragma: no cover
         pattern = '.*Description:\s(?P<n>.*?)\n.*'
         description = re.findall(pattern, text)
 
-        detected_boards = []
+        ftdi_devices = []
 
         for i in range(n):
-            board = {
-                "index": index[i],
-                "manufacturer": manufacturer[i],
-                "description": description[i]
+            ftdi_device = {
+                'index': index[i],
+                'manufacturer': manufacturer[i],
+                'description': description[i]
             }
-            detected_boards.append(board)
+            ftdi_devices.append(ftdi_device)
 
-        return detected_boards
+        return ftdi_devices

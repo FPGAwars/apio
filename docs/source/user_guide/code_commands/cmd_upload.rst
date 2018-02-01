@@ -19,7 +19,7 @@ Upload the bitstream to the FPGA. It builds the project if required.
 
 It also performs an automatic discovery and validation of the FTDI chip depending on the selected board.
 
-This command requires the ``system``, ``scons`` and ``icestorm`` packages.
+This command requires the ``system`` and ``icestorm`` packages.
 
 .. note::
 
@@ -31,29 +31,45 @@ Options
 .. program:: apio upload
 
 .. option::
-    -d, --device
-
-Select a specific device index. This numerical index is provided by **libftdi1**, that is different from *libftdi0*.
-
-.. option::
     -b, --board
 
 Select a specific board.
 
 .. option::
-    --fpga
+    --serial-port
 
-Select a specific FPGA.
+Select a specific serial port. You can check the available serial devices with the command ``apio system --lsserial``.
 
 .. option::
-    --size --type --pack
+    --ftdi-id
 
-Select a specific FPGA size, type and pack.
+Select a specific FTDI index. You can check the available FTDI indexes with the command ``apio system --lsftdi``.
+This numerical index is provided by **libftdi1**, that is different from *libftdi0*.
+
+.. option::
+    -s, --sram
+
+Perform SRAM programming. Only available for `iceprog` compatible boards.
 
 .. option::
     -p, --project-dir
 
 Set the target directory for the project.
+
+.. option::
+    -v, --verbose
+
+Show the entire output of the command.
+
+.. option::
+    --verbose-yosys
+
+Show the yosys output of the command.
+
+.. option::
+    --verbose-arachne
+
+Show the arachne output of the command.
 
 .. note::
 
@@ -67,18 +83,10 @@ Examples
 .. code::
 
   $ apio upload
-  Info: use apio.ini board: icezum
-  Number of FTDI devices found: 1
-  Checking device: 0
-  Manufacturer: Mareldem, Description: IceZUM Alhambra v1.1 - B01-020
-
-  Using default SConstruct file
+  Board: icezum
   [] Processing icezum
   -------------------------------------------------------------------------------------------------
-  FPGA_SIZE: 1k
-  FPGA_TYPE: hx
-  FPGA_PACK: tq144
-  DEVICE: 0
+  [...]
   iceprog -d i:0x0403:0x6010:0 hardware.bin
   init..
   cdone: high

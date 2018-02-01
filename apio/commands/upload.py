@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2017 FPGAwars
+# -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
@@ -17,21 +17,24 @@ if (sys.version_info > (3, 0)):
 
 @click.command('upload')
 @click.pass_context
-@click.option('-d', '--device', type=unicode, metavar='device',
-              help='Set the device.')
 @click.option('-b', '--board', type=unicode, metavar='board',
               help='Set the board.')
-@click.option('--fpga', type=unicode, metavar='fpga',
-              help='Set the FPGA.')
-@click.option('--size', type=unicode, metavar='size',
-              help='Set the FPGA type (1k/8k).')
-@click.option('--type', type=unicode, metavar='type',
-              help='Set the FPGA type (hx/lp).')
-@click.option('--pack', type=unicode, metavar='package',
-              help='Set the FPGA package.')
+@click.option('--serial-port', type=unicode, metavar='serial-port',
+              help='Set the serial port.')
+@click.option('--ftdi-id', type=unicode, metavar='ftdi-id',
+              help='Set the FTDI id.')
+@click.option('-s', '--sram', is_flag=True,
+              help='Perform SRAM programming.')
 @click.option('-p', '--project-dir', type=unicode, metavar='path',
               help='Set the target directory for the project.')
-def cli(ctx, device, board, fpga, pack, type, size, project_dir):
+@click.option('-v', '--verbose', is_flag=True,
+              help='Show the entire output of the command.')
+@click.option('--verbose-yosys', is_flag=True,
+              help='Show the yosys output of the command.')
+@click.option('--verbose-arachne', is_flag=True,
+              help='Show the arachne output of the command.')
+def cli(ctx, board, serial_port, ftdi_id, sram, project_dir,
+        verbose, verbose_yosys, verbose_arachne):
     """Upload the bitstream to the FPGA."""
 
     drivers = Drivers()
@@ -39,12 +42,13 @@ def cli(ctx, device, board, fpga, pack, type, size, project_dir):
     # Run scons
     exit_code = SCons(project_dir).upload({
         'board': board,
-        'fpga': fpga,
-        'size': size,
-        'type': type,
-        'pack': pack
-    }, device)
+        'verbose': {
+            'all': verbose,
+            'yosys': verbose_yosys,
+            'arachne': verbose_arachne
+        }
+    }, serial_port, ftdi_id, sram)
     drivers.post_upload()
     ctx.exit(exit_code)
 
-# Advances notes: https://github.com/FPGAwars/apio/wiki/Commands#apio-upload
+# Advanced notes: https://github.com/FPGAwars/apio/wiki/Commands#apio-upload

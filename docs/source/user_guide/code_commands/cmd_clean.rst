@@ -17,8 +17,6 @@ Description
 
 Clean the previous generated files: **blif**, **asc**, **bin**, **rpt** and **out**.
 
-This command requires the ``scons`` package.
-
 Options
 -------
 
@@ -35,7 +33,6 @@ Examples
 .. code::
 
   $ apio clean
-  Using default SConstruct file
   Removed hardware.blif
   Removed hardware.asc
   Removed hardware.bin

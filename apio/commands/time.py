@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2017 FPGAwars
+# -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
@@ -28,7 +28,14 @@ if (sys.version_info > (3, 0)):
               help='Set the FPGA package.')
 @click.option('-p', '--project-dir', type=unicode, metavar='path',
               help='Set the target directory for the project.')
-def cli(ctx, board, fpga, pack, type, size, project_dir):
+@click.option('-v', '--verbose', is_flag=True,
+              help='Show the entire output of the command.')
+@click.option('--verbose-yosys', is_flag=True,
+              help='Show the yosys output of the command.')
+@click.option('--verbose-arachne', is_flag=True,
+              help='Show the arachne output of the command.')
+def cli(ctx, board, fpga, pack, type, size, project_dir,
+        verbose, verbose_yosys, verbose_arachne):
     """Bitstream timing analysis."""
 
     # Run scons
@@ -37,6 +44,11 @@ def cli(ctx, board, fpga, pack, type, size, project_dir):
         'fpga': fpga,
         'size': size,
         'type': type,
-        'pack': pack
+        'pack': pack,
+        'verbose': {
+            'all': verbose,
+            'yosys': verbose_yosys,
+            'arachne': verbose_arachne
+        }
     })
     ctx.exit(exit_code)

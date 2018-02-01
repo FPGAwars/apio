@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2017 FPGAwars
+# -- (C) 2016-2018 FPGAwars
 # -- Author Juan González, Jesús Arroyo
 # -- Licence GPLv2
 
@@ -118,16 +118,27 @@ class Project(object):
             print('Info: No {} file'.format(PROJECT_FILENAME))
             return
 
+        # -- Read stored board
+        board = self._read_board()
+
+        # -- Update board
+        self.board = board
+        if not board:
+            print('Error: Invalid {} project file'.format(
+                PROJECT_FILENAME))
+            print('No \'board\' field defined in project file')
+            sys.exit(1)
+
+    def _read_board(self):
         board = ''
 
         # -- Read config file: old JSON format
         with open(PROJECT_FILENAME, 'r') as f:
             try:
                 data = json.loads(f.read())
-                board = data['board']
+                board = data.get('board')
             except Exception:
                 pass
-                # print('Error: {}'.format(str(e)))
 
         # -- Read config file: new CFG format
         if board == '':
@@ -135,15 +146,9 @@ class Project(object):
                 config = ConfigParser.ConfigParser()
                 config.read(PROJECT_FILENAME)
                 board = config.get('env', 'board')
-            except:
+            except Exception:
                 print('Error: Invalid {} project file'.format(
                     PROJECT_FILENAME))
                 sys.exit(1)
 
-        # -- Update the board
-        self.board = board
-        if not board:
-            print('Error: Invalid {} project file'.format(
-                PROJECT_FILENAME))
-            print('No \'board\' field defined in project file')
-            sys.exit(1)
+        return board

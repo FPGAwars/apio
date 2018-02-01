@@ -7,5 +7,4 @@ def test_verify(clirunner, configenv):
         result = clirunner.invoke(cmd_verify)
         assert result.exit_code != 0
         if result.exit_code == 1:
-            assert 'apio install scons' in result.output
             assert 'apio install iverilog' in result.output

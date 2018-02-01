@@ -18,7 +18,6 @@ def test_build_board(clirunner, configenv):
         assert result.exit_code != 0
         if result.exit_code == 1:
             assert 'install icestorm' in result.output
-            assert 'install scons' in result.output
 
 
 def test_build_complete(clirunner, configenv):
@@ -136,19 +135,19 @@ def test_build_complete(clirunner, configenv):
         # apio build --fpga iCE40-FAKE
         result = clirunner.invoke(cmd_build, ['--fpga', 'iCE40-FAKE'])
         assert result.exit_code != 0
-        assert 'Error: unknown fpga: iCE40-FAKE' in result.output
+        assert 'Error: unknown FPGA: iCE40-FAKE' in result.output
 
         # apio build --fpga iCE40-FAKE --size 8k
         result = clirunner.invoke(cmd_build, [
             '--fpga', 'iCE40-FAKE', '--size', '8k'])
         assert result.exit_code != 0
-        assert 'Error: unknown fpga: iCE40-FAKE' in result.output
+        assert 'Error: unknown FPGA: iCE40-FAKE' in result.output
 
         # apio build --board icezum --fpga iCE40-FAKE
         result = clirunner.invoke(cmd_build, [
             '--board', 'icezum', '--fpga', 'iCE40-FAKE'])
         assert result.exit_code != 0
-        assert 'Error: unknown fpga: iCE40-FAKE' in result.output
+        assert 'Error: unknown FPGA: iCE40-FAKE' in result.output
 
 
 def test_build_init(clirunner, configenv):
@@ -164,7 +163,7 @@ def test_build_init(clirunner, configenv):
         # apio build
         result = clirunner.invoke(cmd_build)
         assert result.exit_code != 0
-        assert 'Info: apio.ini board icezum' in result.output
+        assert 'Board: icezum' in result.output
 
         # apio build --board icezum
         result = clirunner.invoke(cmd_build, ['--board', 'icestick'])

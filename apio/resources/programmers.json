@@ -1,7 +1,7 @@
 {
   "iceprog": {
     "command": "iceprog",
-    "args": "-d i:0x0403:0x6010:%D%"
+    "args": "-d i:0x${VID}:0x${PID}:${FTDI_ID}"
   },
   "icoprog": {
     "command": "export WIRINGPI_GPIOMEM=1; icoprog",
@@ -9,6 +9,17 @@
   },
   "litterbox": {
     "command": "sudo litterbox",
-    "args": "-c"
+    "args": "-c",
+    "pip_packages": [ "litterbox" ]
+  },
+  "blackiceprog": {
+    "command": "black-iceprog",
+    "args": "${SERIAL_PORT}",
+    "pip_packages": [ "blackiceprog" ]
+  },
+  "tinyfpgab": {
+    "command": "tinyfpgab",
+    "args": "-c ${SERIAL_PORT} --program",
+    "pip_packages": [ "tinyfpgab" ]
   }
 }

@@ -1,21 +1,24 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2017 FPGAwars
+# -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
 import os
+import re
 import time
 import click
 import datetime
+import pkg_resources
+import semantic_version
 
 from os.path import isfile
 
 from apio import util
-from apio.resources import Resources
+from apio.managers.arguments import process_arguments
 from apio.managers.system import System
-from apio.managers.project import Project
 from apio.profile import Profile
+from apio.resources import Resources
 
 
 class SCons(object):
@@ -29,154 +32,254 @@ class SCons(object):
             project_dir = util.check_dir(project_dir)
             os.chdir(project_dir)
 
+    @util.command
     def clean(self):
-        return self.run('-c', deps=['scons'])
+        return self.run('-c', packages=[])
 
+    @util.command
     def verify(self):
-        return self.run('verify', deps=['scons', 'iverilog'])
+        return self.run('verify', packages=['iverilog'])
 
+    @util.command
     def sim(self):
-        return self.run('sim', deps=['scons', 'iverilog', 'gtkwave'])
+        return self.run('sim', packages=['iverilog', 'gtkwave'])
 
+    @util.command
     def build(self, args):
-        ret = self.process_arguments(args)
-        if isinstance(ret, int):
-            return ret
-        if isinstance(ret, tuple):
-            variables, board = ret
-        return self.run('build', variables, board, deps=['scons', 'icestorm'])
+        variables, board = process_arguments(args, self.resources)
+        return self.run('build', variables, board, packages=['icestorm'])
 
-    def upload(self, args, device=-1):
-        ret = self.process_arguments(args)
-        if isinstance(ret, int):
-            return ret
-        if isinstance(ret, tuple):
-            variables, board = ret
-
-        # Get programmer value
-        programmer = ''
-        if board:
-            p = self.resources.boards[board]['programmer']
-            type = p['type']
-            content = self.resources.programmers[type]
-            extra_args = p['extra_args'] if 'extra_args' in p else ''
-            command = content['command'] if 'command' in content else ''
-            args = content['args'] if 'args' in content else ''
-            programmer = '{0} {1} {2}'.format(command, args, extra_args)
-
-        # -- Check
-        check = self.resources.boards[board]['check']
-
-        # Check FTDI description
-        if 'ftdi-desc' in check:
-            detected_boards = System().detect_boards()
-            if isinstance(detected_boards, int):
-                return detected_boards
-
-            if device:
-                # Check device argument
-                if board:
-                    desc = check['ftdi-desc']
-                    found = False
-                    for b in detected_boards:
-                        # Selected board
-                        if device == b['index']:
-                            # Check the device ftdi description
-                            if desc in b['description']:
-                                found = True
-                            break
-                    if not found:
-                        device = -1
-                else:
-                    # Check device id
-                    if int(device) >= len(detected_boards):
-                        device = -1
-            else:
-                # Detect device
-                device = -1
-                if board:
-                    desc = check['ftdi-desc']
-                    for b in detected_boards:
-                        if desc in b['description']:
-                            # Select the first board that validates
-                            # the ftdi description
-                            device = b['index']
-                            break
-                else:
-                    # Insufficient arguments
-                    click.secho(
-                        'Error: insufficient arguments: device or board',
-                        fg='red')
-                    click.secho(
-                        'You have two options:\n' +
-                        '  1) Execute your command with\n' +
-                        '       `--device <deviceid>`\n' +
-                        '  2) Execute your command with\n' +
-                        '       `--board <boardname>`',
-                        fg='yellow')
-                    return 1
-
-            if device == -1:
-                # Board not detected
-                click.secho('Error: board not detected', fg='red')
-                return 1
-
-        # Check platforms
-        if 'platform' in check:
-            # Device argument is ignored
-            if device and device != -1:
-                click.secho(
-                    'Info: ignore device argument {0}'.format(device),
-                    fg='yellow')
-
-            platform = check['platform']
-            current_platform = util.get_systype()
-            if platform != current_platform:
-                # Incorrect platform
-                if platform == 'linux_armv7l':
-                    click.secho(
-                        'Error: incorrect platform: RPI2 or RPI3 required',
-                        fg='red')
-                else:
-                    click.secho(
-                        'Error: incorrect platform {0}'.format(platform),
-                        fg='red')
-                return 1
-
-        return self.run('upload',
-                        variables + ['prog={0}'.format(
-                                        programmer.replace('%D%', device))],
-                        board,
-                        deps=['scons', 'icestorm'])
-
+    @util.command
     def time(self, args):
-        ret = self.process_arguments(args)
-        if isinstance(ret, int):
-            return ret
-        if isinstance(ret, tuple):
-            variables, board = ret
-        return self.run('time', variables, board, deps=['scons', 'icestorm'])
+        variables, board = process_arguments(args, self.resources)
+        return self.run('time', variables, board, packages=['icestorm'])
 
-    def run(self, command, variables=[], board=None, deps=[]):
+    @util.command
+    def upload(self, args, serial_port, ftdi_id, sram):
+        variables, board = process_arguments(args, self.resources)
+        programmer = self.get_programmer(board, serial_port, ftdi_id, sram)
+        variables += ['prog={0}'.format(programmer)]
+        return self.run('upload', variables, board, packages=['icestorm'])
+
+    def get_programmer(self, board, ext_serial_port, ext_ftdi_id, sram):
+        programmer = ''
+
+        if board:
+            board_data = self.resources.boards.get(board)
+
+            # Check platform
+            self.check_platform(board_data)
+
+            # Check pip packages
+            self.check_pip_packages(board_data)
+
+            # Serialize programmer command
+            programmer = self.serialize_programmer(board_data, sram)
+
+            # Replace USB vendor id
+            if '${VID}' in programmer:
+                vid = board_data.get('usb').get('vid')
+                programmer = programmer.replace('${VID}', vid)
+
+            # Replace USB product id
+            if '${PID}' in programmer:
+                pid = board_data.get('usb').get('pid')
+                programmer = programmer.replace('${PID}', pid)
+
+            # Replace FTDI index
+            if '${FTDI_ID}' in programmer:
+                self.check_usb(board_data)
+                ftdi_id = self.get_ftdi_id(board_data, ext_ftdi_id)
+                programmer = programmer.replace('${FTDI_ID}', ftdi_id)
+
+            # Replace Serial port
+            if '${SERIAL_PORT}' in programmer:
+                self.check_usb(board_data)
+                device = self.get_serial_port(board_data, ext_serial_port)
+                programmer = programmer.replace('${SERIAL_PORT}', device)
+
+        return programmer
+
+    def check_platform(self, board_data):
+        if 'platform' not in board_data:
+            return
+
+        platform = board_data.get('platform')
+        current_platform = util.get_systype()
+        if platform != current_platform:
+            # Incorrect platform
+            if platform == 'linux_armv7l':
+                raise Exception(
+                    'incorrect platform: RPI2 or RPI3 required')
+            else:
+                raise Exception(
+                    'incorrect platform {0}'.format(platform))
+
+    def check_pip_packages(self, board_data):
+        prog_info = board_data.get('programmer')
+        content = self.resources.programmers.get(prog_info.get('type'))
+        all_pip_packages = self.resources.distribution.get('pip_packages')
+
+        pip_packages = content.get('pip_packages') or []
+        for pip_pkg in pip_packages:
+            try:
+                # Check pip_package version
+                spec = semantic_version.Spec(all_pip_packages.get(pip_pkg, ''))
+                pkg_version = pkg_resources.get_distribution(pip_pkg).version
+                version = semantic_version.Version(pkg_version)
+                if not spec.match(version):
+                    click.secho(
+                        'Error: \'{}\' '.format(pip_pkg) +
+                        'version ({}) '.format(version) +
+                        'does not match {}'.format(spec),
+                        fg='red')
+                    click.secho('Please run:\n'
+                                '   pip install -U apio[{}]'.format(pip_pkg),
+                                fg='yellow')
+                    raise Exception
+            except pkg_resources.DistributionNotFound:
+                click.secho(
+                    'Error: {} is not installed'.format(pip_pkg),
+                    fg='red')
+                click.secho('Please run:\n'
+                            '   pip install -U apio[{}]'.format(pip_pkg),
+                            fg='yellow')
+                raise Exception
+            try:
+                # Check pip_package itself
+                __import__(pip_pkg)
+            except Exception as e:
+                # Exit if a package is not working
+                python_version = util.get_python_version()
+                message = '`{}` not compatible with '.format(pip_pkg)
+                message += 'Python {}'.format(python_version)
+                message += '\n       {}'.format(e)
+                raise Exception(message)
+
+    def serialize_programmer(self, board_data, sram):
+        prog_info = board_data.get('programmer')
+        content = self.resources.programmers.get(prog_info.get('type'))
+
+        programmer = content.get('command')
+
+        # Add args
+        if content.get('args'):
+            programmer += ' {}'.format(content.get('args'))
+
+        # Add extra args
+        if prog_info.get('extra_args'):
+            programmer += ' {}'.format(prog_info.get('extra_args'))
+
+        # Enable SRAM programming
+        if sram:
+            # Only for iceprog programmer
+            if programmer.startswith('iceprog'):
+                programmer += ' -S'
+
+        return programmer
+
+    def check_usb(self, board_data):
+        if 'usb' not in board_data:
+            raise Exception('Missing board configuration: usb')
+
+        usb_data = board_data.get('usb')
+        hwid = '{0}:{1}'.format(
+            usb_data.get('vid'),
+            usb_data.get('pid')
+        )
+        found = False
+        for usb_device in System().get_usb_devices():
+            if usb_device.get('hwid') == hwid:
+                found = True
+                break
+
+        if not found:
+            # Board not connected
+            raise Exception('board not connected')
+
+    def get_serial_port(self, board_data, ext_serial_port):
+        # Search Serial port by USB id
+        device = self._check_serial(board_data, ext_serial_port)
+        if device is None:
+            # Board not available
+            raise Exception('board not available')
+        return device
+
+    def _check_serial(self, board_data, ext_serial_port):
+        if 'usb' not in board_data:
+            raise Exception('Missing board configuration: usb')
+
+        usb_data = board_data.get('usb')
+        desc_pattern = '^' + (usb_data.get('desc') or '.*') + '$'
+        hwid = '{0}:{1}'.format(
+            usb_data.get('vid'),
+            usb_data.get('pid')
+        )
+
+        # Match the discovered serial ports
+        for serial_port_data in util.get_serial_ports():
+            port = serial_port_data.get('port')
+            if ext_serial_port and ext_serial_port != port:
+                # If the --device options is set but it doesn't match
+                # with the detected port, skip the port.
+                continue
+            if hwid in serial_port_data.get('hwid') and \
+               re.match(desc_pattern, serial_port_data.get('description')):
+                # If the hwid and the description pattern matches
+                # return the device for the port.
+                return port
+
+    def get_ftdi_id(self, board_data, ext_ftdi_id):
+        # Search device by FTDI id
+        ftdi_id = self._check_ftdi(board_data, ext_ftdi_id)
+        if ftdi_id is None:
+            # Board not available
+            raise Exception('board not available')
+        return ftdi_id
+
+    def _check_ftdi(self, board_data, ext_ftdi_id):
+        if 'ftdi' not in board_data:
+            raise Exception('Missing board configuration: ftdi')
+
+        ftdi_data = board_data.get('ftdi')
+        desc_pattern = '^' + ftdi_data.get('desc') + '$'
+
+        # Match the discovered FTDI chips
+        for ftdi_device in System().get_ftdi_devices():
+            index = ftdi_device.get('index')
+            if ext_ftdi_id and ext_ftdi_id != index:
+                # If the --device options is set but it doesn't match
+                # with the detected index, skip the port.
+                continue
+            if re.match(desc_pattern, ftdi_device.get('description')):
+                # If matches the description pattern
+                # return the index for the FTDI device.
+                return index
+
+    def run(self, command, variables=[], board=None, packages=[]):
         """Executes scons for building"""
 
         # -- Check for the SConstruct file
         if not isfile(util.safe_join(util.get_project_dir(), 'SConstruct')):
-            click.secho('Info: default SConstruct file')
             variables += ['-f']
             variables += [util.safe_join(
                 util.get_folder('resources'), 'SConstruct')]
+        else:
+            click.secho('Info: use custom SConstruct file')
 
         # -- Resolve packages
         if self.profile.check_exe_default():
             # Run on `default` config mode
-            if not util.resolve_packages(self.resources.packages, deps):
+            if not util.resolve_packages(self.resources.packages, packages):
                 # Exit if a package is not installed
-                return 1
+                raise Exception
         else:
             click.secho('Info: native config mode')
 
         # -- Execute scons
+        return self._execute_scons(command, variables, board)
+
+    def _execute_scons(self, command, variables, board):
         terminal_width, _ = click.get_terminal_size()
         start_time = time.time()
 
@@ -198,12 +301,12 @@ class SCons(object):
 
         result = util.exec_command(
             util.scons_command + ['-Q', command] + variables,
-            stdout=util.AsyncPipe(self._on_run_out),
-            stderr=util.AsyncPipe(self._on_run_err)
+            stdout=util.AsyncPipe(self._on_stdout),
+            stderr=util.AsyncPipe(self._on_stderr)
         )
 
         # -- Print result
-        exit_code = result['returncode']
+        exit_code = result.get('returncode')
         is_error = exit_code != 0
         summary_text = ' Took %.2f seconds ' % (time.time() - start_time)
         half_line = '=' * int(
@@ -211,242 +314,18 @@ class SCons(object):
         click.echo('%s [%s]%s%s' % (
             half_line,
             (click.style(' ERROR ', fg='red', bold=True)
-             if is_error else click.style('SUCCESS', fg='green',
-                                          bold=True)),
+             if is_error else click.style('SUCCESS', fg='green', bold=True)),
             summary_text,
             half_line
         ), err=is_error)
 
-        if False:
-            if is_error:
-                print("""
-  ______                     _
- |  ____|                   | |
- | |__   _ __ _ __ ___  _ __| |
- |  __| | '__| '__/ _ \| '__| |
- | |____| |  | | | (_) | |  |_|
- |______|_|  |_|  \___/|_|  (_)
-""")
-            else:
-                print("""
-   _____                             _
-  / ____|                           | |
- | (___  _   _  ___ ___ ___  ___ ___| |
-  \___ \| | | |/ __/ __/ _ \/ __/ __| |
-  ____) | |_| | (_| (_|  __/\__ \__ \_|
- |_____/ \__,_|\___\___\___||___/___(_)
-""")
-
         return exit_code
 
-    def process_arguments(self, args):
-        # -- Check arguments
-        var_board = args['board']
-        var_fpga = args['fpga']
-        var_size = args['size']
-        var_type = args['type']
-        var_pack = args['pack']
-
-        # TODO: reduce code size
-
-        if var_board:
-            if isfile('apio.ini'):
-                click.secho('Info: ignore apio.ini board', fg='yellow')
-            if var_board in self.resources.boards:
-                fpga = self.resources.boards[var_board]['fpga']
-                if fpga in self.resources.fpgas:
-                    fpga_size = self.resources.fpgas[fpga]['size']
-                    fpga_type = self.resources.fpgas[fpga]['type']
-                    fpga_pack = self.resources.fpgas[fpga]['pack']
-
-                    redundant_arguments = []
-                    contradictory_arguments = []
-
-                    if var_fpga:
-                        if var_fpga in self.resources.fpgas:
-                            if var_fpga == fpga:
-                                # Redundant argument
-                                redundant_arguments += ['fpga']
-                            else:
-                                # Contradictory argument
-                                contradictory_arguments += ['fpga']
-                        else:
-                            # Unknown fpga
-                            click.secho(
-                                'Error: unknown fpga: {0}'.format(
-                                    var_fpga), fg='red')
-                            return 1
-
-                    if var_size:
-                        if var_size == fpga_size:
-                            # Redundant argument
-                            redundant_arguments += ['size']
-                        else:
-                            # Contradictory argument
-                            contradictory_arguments += ['size']
-
-                    if var_type:
-                        if var_type == fpga_type:
-                            # Redundant argument
-                            redundant_arguments += ['type']
-                        else:
-                            # Contradictory argument
-                            contradictory_arguments += ['type']
-
-                    if var_pack:
-                        if var_pack == fpga_pack:
-                            # Redundant argument
-                            redundant_arguments += ['pack']
-                        else:
-                            # Contradictory argument
-                            contradictory_arguments += ['pack']
-
-                    if redundant_arguments:
-                        # Redundant argument
-                        click.secho(
-                            'Warning: redundant arguments: {}'.format(
-                                ', '.join(redundant_arguments)), fg='yellow')
-
-                    if contradictory_arguments:
-                        # Contradictory argument
-                        click.secho(
-                            'Error: contradictory arguments: {}'.format(
-                                ', '.join(contradictory_arguments)), fg='red')
-                        return 1
-                else:
-                    # Unknown fpga
-                    pass
-            else:
-                # Unknown board
-                click.secho(
-                    'Error: unknown board: {0}'.format(var_board), fg='red')
-                return 1
-        else:
-            if var_fpga:
-                if isfile('apio.ini'):
-                    click.secho('Info: ignore apio.ini board', fg='yellow')
-                if var_fpga in self.resources.fpgas:
-                    fpga_size = self.resources.fpgas[var_fpga]['size']
-                    fpga_type = self.resources.fpgas[var_fpga]['type']
-                    fpga_pack = self.resources.fpgas[var_fpga]['pack']
-
-                    redundant_arguments = []
-                    contradictory_arguments = []
-
-                    if var_size:
-                        if var_size == fpga_size:
-                            # Redundant argument
-                            redundant_arguments += ['size']
-                        else:
-                            # Contradictory argument
-                            contradictory_arguments += ['size']
-
-                    if var_type:
-                        if var_type == fpga_type:
-                            # Redundant argument
-                            redundant_arguments += ['type']
-                        else:
-                            # Contradictory argument
-                            contradictory_arguments += ['type']
-
-                    if var_pack:
-                        if var_pack == fpga_pack:
-                            # Redundant argument
-                            redundant_arguments += ['pack']
-                        else:
-                            # Contradictory argument
-                            contradictory_arguments += ['pack']
-
-                    if redundant_arguments:
-                        # Redundant argument
-                        click.secho(
-                            'Warning: redundant arguments: {}'.format(
-                                ', '.join(redundant_arguments)), fg='yellow')
-
-                    if contradictory_arguments:
-                        # Contradictory argument
-                        click.secho(
-                            'Error: contradictory arguments: {}'.format(
-                                ', '.join(contradictory_arguments)), fg='red')
-                        return 1
-                else:
-                    # Unknown fpga
-                    click.secho(
-                        'Error: unknown fpga: {0}'.format(var_fpga), fg='red')
-                    return 1
-            else:
-                if var_size and var_type and var_pack:
-                    if isfile('apio.ini'):
-                        click.secho('Info: ignore apio.ini board', fg='yellow')
-                    fpga_size = var_size
-                    fpga_type = var_type
-                    fpga_pack = var_pack
-                else:
-                    if not var_size and not var_type and not var_pack:
-                        # No arguments: use apio.ini board
-                        p = Project()
-                        p.read()
-                        if p.board:
-                            var_board = p.board
-                            click.secho(
-                                'Info: apio.ini board {}'.format(
-                                    var_board))
-                            fpga = self.resources.boards[var_board]['fpga']
-                            fpga_size = self.resources.fpgas[fpga]['size']
-                            fpga_type = self.resources.fpgas[fpga]['type']
-                            fpga_pack = self.resources.fpgas[fpga]['pack']
-                        else:
-                            click.secho(
-                                'Error: insufficient arguments: missing board',
-                                fg='red')
-                            click.secho(
-                                'You have two options:\n' +
-                                '  1) Execute your command with\n' +
-                                '       `--board <boardname>`\n' +
-                                '  2) Create an ini file using\n' +
-                                '       `apio init --board <boardname>`',
-                                fg='yellow')
-                            return 1
-                    else:
-                        if isfile('apio.ini'):
-                            click.secho('Info: ignore apio.ini board',
-                                        fg='yellow')
-                        # Insufficient arguments
-                        missing = []
-                        if not var_size:
-                            missing += ['size']
-                        if not var_type:
-                            missing += ['type']
-                        if not var_pack:
-                            missing += ['pack']
-                        pass
-                        click.secho(
-                            'Error: insufficient arguments: missing {}'.format(
-                                ', '.join(missing)), fg='red')
-                        return 1
-
-        # -- Build Scons variables list
-        variables = self.format_vars({
-            'fpga_size': fpga_size,
-            'fpga_type': fpga_type,
-            'fpga_pack': fpga_pack
-        })
-
-        return variables, var_board
-
-    def format_vars(self, args):
-        """Format the given vars in the form: 'flag=value'"""
-        variables = []
-        for key, value in args.items():
-            if value:
-                variables += ['{0}={1}'.format(key, value)]
-        return variables
-
-    def _on_run_out(self, line):
+    def _on_stdout(self, line):
         fg = 'green' if 'is up to date' in line else None
         click.secho(line, fg=fg)
 
-    def _on_run_err(self, line):
+    def _on_stderr(self, line):
         time.sleep(0.01)  # Delay
         fg = 'red' if 'error' in line.lower() else 'yellow'
         click.secho(line, fg=fg)

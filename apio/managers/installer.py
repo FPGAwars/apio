@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2017 FPGAwars
+# -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
@@ -47,20 +47,20 @@ class Installer(object):
             self.packages_dir = util.safe_join(util.get_home_dir(), dirname)
 
             # Get data
-            data = self.resources.packages[self.package]
+            data = self.resources.packages.get(self.package)
             distribution = self.resources.distribution
 
-            self.specversion = distribution['packages'][self.package]
-            self.package_name = data['release']['package_name']
-            self.extension = data['release']['extension']
+            self.specversion = distribution.get('packages').get(self.package)
+            self.package_name = data.get('release').get('package_name')
+            self.extension = data.get('release').get('extension')
             platform = platform or self._get_platform()
 
             if checkversion:
                 # Check version
                 valid_version = self._get_valid_version(
-                    data['repository']['name'],
-                    data['repository']['organization'],
-                    data['release']['tag_name'],
+                    data.get('repository').get('name'),
+                    data.get('repository').get('organization'),
+                    data.get('release').get('tag_name'),
                     self.version,
                     self.specversion,
                     force
@@ -95,10 +95,10 @@ class Installer(object):
             exit(1)
 
     def get_download_url(self, data, platform):
-        compressed_name = data['release']['compressed_name']
+        compressed_name = data.get('release').get('compressed_name')
         self.compressed_name = compressed_name.replace(
             '%V', self.version).replace('%P', platform)
-        uncompressed_name = data['release']['uncompressed_name']
+        uncompressed_name = data.get('release').get('uncompressed_name')
         self.uncompressed_name = uncompressed_name.replace(
             '%V', self.version).replace('%P', platform)
 
@@ -108,9 +108,9 @@ class Installer(object):
         )
 
         download_url = self._get_download_url(
-            data['repository']['name'],
-            data['repository']['organization'],
-            data['release']['tag_name'].replace(
+            data.get('repository').get('name'),
+            data.get('repository').get('organization'),
+            data.get('release').get('tag_name').replace(
                 '%V', self.version),
             tarball
         )
@@ -126,7 +126,7 @@ class Installer(object):
         dlpath = None
         try:
             # Try full platform
-            platform_download_url = self.download_urls[0]['url']
+            platform_download_url = self.download_urls[0].get('url')
             dlpath = self._download(platform_download_url)
         except IOError as e:
             click.secho('Warning: permission denied in packages directory',
@@ -134,26 +134,37 @@ class Installer(object):
             click.secho(str(e), fg='red')
         except Exception as e:
             # Try os name
-            os_download_url = self.download_urls[1]['url']
-            if platform_download_url != os_download_url:
+            dlpath = self._install_os_package(platform_download_url)
+
+        # Install downloaded package
+        self._install_package(dlpath)
+
+        # Rename unpacked dir to package dir
+        self._rename_unpacked_dir()
+
+    def _install_os_package(self, platform_download_url):
+        os_download_url = self.download_urls[1].get('url')
+        if platform_download_url != os_download_url:
+            click.secho(
+                'Warning: full platform does not match: {}\
+                '.format(self.download_urls[0].get('platform')),
+                fg='yellow')
+            click.secho(
+                '         Trying OS name: {}\
+                '.format(self.download_urls[1].get('platform')),
+                fg='yellow')
+            try:
+                return self._download(os_download_url)
+            except Exception as e:
                 click.secho(
-                    'Warning: full platform does not match: {}\
-                    '.format(self.download_urls[0]['platform']),
-                    fg='yellow')
-                click.secho(
-                    '         Trying OS name: {}\
-                    '.format(self.download_urls[1]['platform']),
-                    fg='yellow')
-                try:
-                    dlpath = self._download(os_download_url)
-                except Exception as e:
-                    click.secho(
-                        'Error: {}'.format(str(e)),
-                        fg='red')
-            else:
-                click.secho(
-                    'Error: package not availabe for this platform',
+                    'Error: {}'.format(str(e)),
                     fg='red')
+        else:
+            click.secho(
+                'Error: package not availabe for this platform',
+                fg='red')
+
+    def _install_package(self, dlpath):
         if dlpath:
             package_dir = util.safe_join(
                 self.packages_dir, self.package_name)
@@ -173,7 +184,7 @@ class Installer(object):
                 """successfully installed!""".format(self.package),
                 fg='green')
 
-        # Rename unpacked dir to package dir
+    def _rename_unpacked_dir(self):
         if self.uncompressed_name:
             unpack_dir = util.safe_join(
                 self.packages_dir, self.uncompressed_name)
@@ -230,31 +241,40 @@ class Installer(object):
 
         if req_version:
             # Find required version via @
-            version = self._check_sem_version(req_version, spec)
-            for release in releases:
-                prerelease = 'prerelease' in release and release['prerelease']
-                if 'tag_name' in release:
-                    tag = tag_name.replace('%V', req_version)
-                    if tag == release['tag_name']:
-                        if prerelease and not force:
-                            click.secho(
-                                'Warning: ' + req_version + ' is' +
-                                ' a pre-release.\n' +
-                                '         Use --force to install',
-                                fg='yellow')
-                            exit(2)
-                        return version
+            return self._find_required_version(
+                releases, tag_name, req_version, spec, force)
         else:
-            # Find latest release
-            for release in releases:
-                prerelease = 'prerelease' in release and release['prerelease']
-                if 'tag_name' in release:
-                    pattern = tag_name.replace('%V', '(?P<v>.*?)') + '$'
-                    match = re.search(pattern, release['tag_name'])
-                    if match:
-                        if not prerelease:
-                            version = match.group('v')
-                            return self._check_sem_version(version, spec)
+            # Find latest version release
+            return self._find_latest_version(
+                releases, tag_name, req_version, spec)
+
+    def _find_required_version(self, releases, tag_name, req_version, spec,
+                               force):
+        version = self._check_sem_version(req_version, spec)
+        for release in releases:
+            prerelease = 'prerelease' in release and release.get('prerelease')
+            if 'tag_name' in release:
+                tag = tag_name.replace('%V', req_version)
+                if tag == release.get('tag_name'):
+                    if prerelease and not force:
+                        click.secho(
+                            'Warning: ' + req_version + ' is' +
+                            ' a pre-release.\n' +
+                            '         Use --force to install',
+                            fg='yellow')
+                        exit(2)
+                    return version
+
+    def _find_latest_version(self, releases, tag_name, req_version, spec):
+        for release in releases:
+            prerelease = 'prerelease' in release and release.get('prerelease')
+            if 'tag_name' in release:
+                pattern = tag_name.replace('%V', '(?P<v>.*?)') + '$'
+                match = re.search(pattern, release.get('tag_name'))
+                if match:
+                    if not prerelease:
+                        version = match.group('v')
+                        return self._check_sem_version(version, spec)
 
     def _check_sem_version(self, version, spec):
         try:

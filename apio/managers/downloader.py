@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2017 FPGAwars
+# -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 # -- Derived from:
@@ -22,7 +22,7 @@ requests.packages.urllib3.disable_warnings()
 
 class FDUnrecognizedStatusCode(util.ApioException):
 
-    MESSAGE = "Got an unrecognized status code '{0}' when downloaded {1}"
+    MESSAGE = 'Got an unrecognized status code \'{0}\' when downloaded {1}'
 
 
 class FileDownloader(object):
@@ -53,10 +53,10 @@ class FileDownloader(object):
 
     def get_lmtime(self):
         if 'last-modified' in self._request.headers:
-            return self._request.headers['last-modified']
+            return self._request.headers.get('last-modified')
 
     def get_size(self):
-        return int(self._request.headers['content-length'])
+        return int(self._request.headers.get('content-length'))
 
     def start(self):
         itercontent = self._request.iter_content(chunk_size=self.CHUNK_SIZE)

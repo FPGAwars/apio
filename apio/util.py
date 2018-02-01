@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2017 FPGAwars
+# -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 # -- Derived from:
@@ -11,12 +11,13 @@
 import os
 import re
 import sys
+import jwt
 import json
 import click
 import locale
 import platform
 import subprocess
-from os.path import expanduser, isdir, isfile, normpath, dirname, exists
+from os.path import expanduser, isdir, isfile, dirname, exists
 from threading import Thread
 
 from apio import LOAD_CONFIG_DATA
@@ -64,8 +65,6 @@ class AsyncPipe(Thread):  # pragma: no cover
             self._buffer.append(line)
             if self.outcallback:
                 self.outcallback(line)
-            else:
-                print(line)
         self._pipe_reader.close()
 
     def close(self):
@@ -93,9 +92,7 @@ except Exception:
 
 
 def unicoder(p):
-    """ Make sure a Unicode string is returned
-        When `force` is True, ignore filesystem encoding
-    """
+    """ Make sure a Unicode string is returned """
     if isinstance(p, unicode):
         return p
     if isinstance(p, str):
@@ -139,7 +136,7 @@ def _get_projconf_option_dir(name, default=None):
     if _env_name in os.environ:
         return os.getenv(_env_name)
     if config_data and _env_name in config_data.keys():
-        return config_data[_env_name]
+        return config_data.get(_env_name)
     return default
 
 
@@ -148,27 +145,42 @@ def get_home_dir():
     home_dir = re.sub(r'\~', expanduser('~').replace('\\', '/'), home_dir)
 
     paths = home_dir.split(os.pathsep)
+    path = _check_writable(paths)
+    if not path:
+        path = _create_path(paths)
+        if not path:
+            click.secho('Error: no usable home directory ' + path, fg='red')
+            exit(1)
+    return path
+
+
+def _check_writable(paths):
+    ret = ''
     for path in paths:
         if isdir(path):
             if os.access(path, os.W_OK):
                 # Path is writable
-                return path
+                ret = path
+                break
             else:
                 click.secho('Warning: can\'t write in path ' + path,
                             fg='yellow')
+    return ret
 
+
+def _create_path(paths):
+    ret = ''
     for path in paths:
         if not isdir(path):
             try:
                 os.makedirs(path)
-                return path
+                ret = path
+                break
             except OSError as ioex:
                 if ioex.errno == 13:
                     click.secho('Warning: can\'t create ' + path,
                                 fg='yellow')
-
-    click.secho('Error: no usable home directory ' + path, fg='red')
-    exit(1)
+    return ret
 
 
 def get_package_dir(pkg_name):
@@ -193,48 +205,58 @@ def get_project_dir():
 scons_command = ['scons']
 
 
-def resolve_packages(packages, deps=[]):
+def resolve_packages(all_packages, packages=[]):
 
     base_dir = {
-        'scons': get_package_dir('tool-scons'),
+        'system': get_package_dir('tools-system'),
         'icestorm': get_package_dir('toolchain-icestorm'),
         'iverilog': get_package_dir('toolchain-iverilog'),
         'gtkwave': get_package_dir('tool-gtkwave')
     }
 
     bin_dir = {
-        'scons': safe_join(base_dir['scons'], 'script'),
-        'icestorm': safe_join(base_dir['icestorm'], 'bin'),
-        'iverilog': safe_join(base_dir['iverilog'], 'bin'),
-        'gtkwave': safe_join(base_dir['gtkwave'], 'bin')
+        'system': safe_join(base_dir.get('system'), 'bin'),
+        'icestorm': safe_join(base_dir.get('icestorm'), 'bin'),
+        'iverilog': safe_join(base_dir.get('iverilog'), 'bin'),
+        'gtkwave': safe_join(base_dir.get('gtkwave'), 'bin')
     }
 
     # -- Check packages
     check = True
-    for package in deps:
-        if package in packages:
-            check &= _check_package(package, bin_dir[package])
+    for package in packages:
+        if package in all_packages:
+            check &= _check_package(package, bin_dir.get(package))
 
     # -- Load packages
     if check:
 
+        # Give the priority to the python packages installed with apio
+        os.environ['PATH'] = os.pathsep.join([
+            dirname(sys.executable),
+            os.environ['PATH']
+        ])
+
         # Give the priority to the packages installed by apio
-        os.environ['PATH'] = os.pathsep.join(
-            [bin_dir['icestorm'], bin_dir['iverilog'], bin_dir['gtkwave'],
-             os.environ['PATH']])
+        os.environ['PATH'] = os.pathsep.join([
+            bin_dir.get('icestorm'),
+            bin_dir.get('iverilog'),
+            os.environ['PATH']
+        ])
+
+        if platform.system() == 'Windows':
+            os.environ['PATH'] = os.pathsep.join([
+                bin_dir.get('gtkwave'),
+                os.environ['PATH']
+            ])
 
         # Add environment variables
         if not config_data:  # /etc/apio.json file does not exist
             os.environ['IVL'] = safe_join(
-                base_dir['iverilog'], 'lib', 'ivl')
+                base_dir.get('iverilog'), 'lib', 'ivl')
         os.environ['VLIB'] = safe_join(
-            base_dir['iverilog'], 'vlib')
+            base_dir.get('iverilog'), 'vlib')
         os.environ['ICEBOX'] = safe_join(
-            base_dir['icestorm'], 'share', 'icebox')
-
-        global scons_command
-        scons_command = [normpath(sys.executable),
-                         safe_join(bin_dir['scons'], 'scons')]
+            base_dir.get('icestorm'), 'share', 'icebox')
 
     return check
 
@@ -263,9 +285,9 @@ def _check_apt_get():
     check = False
     if 'TESTING' not in os.environ:
         result = exec_command(['dpkg', '-l', 'apio'])
-        if result and result['returncode'] == 0:
-            match = re.findall('rc\s+apio', result['out']) + \
-                    re.findall('ii\s+apio', result['out'])
+        if result and result.get('returncode') == 0:
+            match = re.findall('rc\s+apio', result.get('out')) + \
+                    re.findall('ii\s+apio', result.get('out'))
             check = len(match) > 0
     return check
 
@@ -304,6 +326,12 @@ def exec_command(*args, **kwargs):  # pragma: no cover
             if isinstance(kwargs[s], AsyncPipe):
                 kwargs[s].close()
 
+    _parse_result(kwargs, result)
+
+    return result
+
+
+def _parse_result(kwargs, result):
     for s in ('stdout', 'stderr'):
         if isinstance(kwargs[s], AsyncPipe):
             result[s[3:]] = '\n'.join(kwargs[s].get_buffer())
@@ -312,15 +340,13 @@ def exec_command(*args, **kwargs):  # pragma: no cover
         if v and isinstance(v, unicode):
             result[k].strip()
 
-    return result
-
 
 def get_pypi_latest_version():
     r = None
     version = None
     try:
         r = requests.get('https://pypi.python.org/pypi/apio/json')
-        version = r.json()['info']['version']
+        version = r.json().get('info').get('version')
         r.raise_for_status()
     except requests.exceptions.ConnectionError:
         click.secho('Error: Could not connect to Pypi.\n'
@@ -362,3 +388,42 @@ def check_dir(_dir):
         except OSError:
             pass
     return _dir
+
+
+def command(function):
+    """Command decorator"""
+    def decorate(*args, **kwargs):
+        exit_code = 1
+        try:
+            exit_code = function(*args, **kwargs)
+        except Exception as e:
+            if str(e):
+                click.secho('Error: ' + str(e), fg='red')
+        finally:
+            return exit_code
+    return decorate
+
+
+def decode(text):
+    return jwt.decode(text, 'secret', algorithm='HS256')
+
+
+def get_serial_ports():
+    from serial.tools.list_ports import comports
+    result = []
+
+    for port, description, hwid in comports():
+        if not port:
+            continue
+        if 'VID:PID' in hwid:
+            result.append({
+                'port': port,
+                'description': description,
+                'hwid': hwid
+            })
+
+    return result
+
+
+def get_python_version():
+    return '{0}.{1}'.format(sys.version_info[0], sys.version_info[1])
