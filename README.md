@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/FPGAwars/apio.svg?branch=develop)](https://travis-ci.org/FPGAwars/apio)
 [![Latest Version](https://img.shields.io/pypi/v/apio.svg)](https://pypi.python.org/pypi/apio/)
 [![License](http://img.shields.io/:license-gpl-blue.svg)](http://opensource.org/licenses/GPL-2.0)
-[![Documentation Status](https://readthedocs.org/projects/apiodoc/badge/?version=stable)](http://apiodoc.readthedocs.io/en/stable/)
+[![Documentation Status](https://readthedocs.org/projects/apiodoc/badge/?version=latest)](http://apiodoc.readthedocs.io/en/latest/)
 
 ![][linux-logo]
 &nbsp;
