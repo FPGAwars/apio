@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/FPGAwars/apio.svg?branch=develop)](https://travis-ci.org/FPGAwars/apio)
 [![Latest Version](https://img.shields.io/pypi/v/apio.svg)](https://pypi.python.org/pypi/apio/)
 [![License](http://img.shields.io/:license-gpl-blue.svg)](http://opensource.org/licenses/GPL-2.0)
-[![Documentation Status](https://readthedocs.org/projects/apiodoc/badge/?version=stable)](http://apiodoc.readthedocs.io/en/stable/)
+[![Documentation Status](https://readthedocs.org/projects/apiodoc/badge/?version=latest)](http://apiodoc.readthedocs.io/en/latest/)
 
 ![][linux-logo]
 &nbsp;
@@ -59,13 +59,13 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 | [IceZUM Alhambra](https://github.com/FPGAwars/icezum) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [Kéfir I iCE40-HX4K](http://fpgalibre.sourceforge.net/Kefir/) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [Nandland Go board](https://www.nandland.com/goboard/introduction.html) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| [iCE40-HX8K Breakout Board](http://www.latticesemi.com/Products/DevelopmentBoardsAndKits/iCE40HX8KBreakoutBoard.aspx) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| [iCEstick Evaluation Kit](http://www.pighixxx.com/test/portfolio-items/icestick/) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| [iCE40-HX8K Breakout Board](http://www.latticesemi.com/Products/DevelopmentBoardsAndKits/iCE40HX8KBreakoutBoard) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| [iCEstick Evaluation Kit](http://www.latticesemi.com/icestick) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [icoBOARD 1.0](http://icoboard.org/about-icoboard.html) |  &nbsp;&nbsp;:white_check_mark:&nbsp;**\*** | - |  - |
 | [CAT Board](https://hackaday.io/project/7982-cat-board) | &nbsp;&nbsp;:white_check_mark:&nbsp;**\*** | - |  - |
-| [BlackIce](https://mystorm.uk/) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| [BlackIce II](https://mystorm.uk/) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| [TinyFPGA B2](http://tinyfpga.com/TinyFPGA-B-Series) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| [BlackIce](https://hackaday.io/project/12930-blackice-low-cost-open-hardware-fpga-dev-board) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| [BlackIce II](https://github.com/mystorm-org/BlackIce-II) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| [TinyFPGA B2](http://tinyfpga.com/b-series-guide.html) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 
 **\*** Use with Raspberry Pi
 

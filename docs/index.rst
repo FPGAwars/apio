@@ -9,6 +9,8 @@ Experimental open source micro-ecosystem for **open FPGAs**. Based on `platformi
 
 Apio is used by `Icestudio <https://github.com/FPGAwars/icestudio>`_.
 
+**Source code**: https://github.com/FPGAwars/apio
+
 Contents
 ````````
 

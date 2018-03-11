@@ -234,7 +234,7 @@ class Drivers(object):  # pragma: no cover
                 subprocess.call(['sudo', 'kextload', '-b', self.driverC])
 
     def _check_ftdi_driver_darwin(self, driver):
-        return driver in subprocess.check_output(['kextstat'])
+        return driver in str(subprocess.check_output(['kextstat']))
 
     def _ftdi_enable_windows(self):
         drivers_base_dir = util.get_package_dir('tools-drivers')
