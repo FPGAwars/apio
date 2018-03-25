@@ -118,5 +118,60 @@
       "vid": "1209",
       "pid": "2100"
     }
+  },
+  "upduino": {
+    "name": "UPDuino v.1.0",
+    "fpga": "iCE40-UP5K-SG48",
+    "programmer": {
+      "type": "iceprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6014"
+    }
+  },
+  "upduino2": {
+    "name": "UPDuino v.2.0",
+    "fpga": "iCE40-UP5K-SG48",
+    "programmer": {
+      "type": "iceprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6014"
+    }
+  },
+  "iCEBreaker": {
+    "name": "iCEBreaker",
+    "fpga": "iCE40-UP5K-SG48",
+    "programmer": {
+      "type": "iceprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6010"
+    }
+  },
+  "iCEBreaker-bitsy": {
+    "name": "iCEBreaker bitsy",
+    "fpga": "iCE40-UP5K-SG48",
+    "programmer": {
+      "type": "iceprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6010"
+    }
+  },
+  "fpga101": {
+    "name": "FPGA 101 - Workshop Badge",
+    "fpga": "iCE40-UP5K-SG48",
+    "programmer": {
+      "type": "iceprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6014"
+    }
   }
 }
