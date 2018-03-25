@@ -128,6 +128,9 @@
     "usb": {
       "vid": "0403",
       "pid": "6014"
+    },
+    "ftdi": {
+      "desc": "Single RS232-HS"
     }
   },
   "upduino2": {
@@ -139,6 +142,9 @@
     "usb": {
       "vid": "0403",
       "pid": "6014"
+    },
+    "ftdi": {
+      "desc": "Single RS232-HS"
     }
   },
   "iCEBreaker": {
@@ -150,6 +156,9 @@
     "usb": {
       "vid": "0403",
       "pid": "6010"
+    },
+    "ftdi": {
+      "desc": "Dual RS232-HS"
     }
   },
   "iCEBreaker-bitsy": {
@@ -161,6 +170,9 @@
     "usb": {
       "vid": "0403",
       "pid": "6010"
+    },
+    "ftdi": {
+      "desc": "Dual RS232-HS"
     }
   },
   "fpga101": {
@@ -172,6 +184,9 @@
     "usb": {
       "vid": "0403",
       "pid": "6014"
+    },
+    "ftdi": {
+      "desc": "Single RS232-HS"
     }
   }
 }
