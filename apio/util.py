@@ -17,11 +17,10 @@ import click
 import locale
 import platform
 import subprocess
-from os.path import expanduser, isdir, isfile, dirname, exists, join
+from os.path import expanduser, isdir, isfile, dirname, exists, normpath
 from threading import Thread
 
 from apio import LOAD_CONFIG_DATA
-from __main__ import __file__ as APIO_MAIN_FILE
 
 import requests
 requests.packages.urllib3.disable_warnings()
@@ -29,11 +28,6 @@ requests.packages.urllib3.disable_warnings()
 # Python3 compat
 if (sys.version_info > (3, 0)):
     unicode = str
-
-scons_command = [
-    sys.executable,
-    join(dirname(APIO_MAIN_FILE), 'scons')
-]
 
 
 class ApioException(Exception):
