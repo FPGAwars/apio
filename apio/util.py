@@ -17,11 +17,10 @@ import click
 import locale
 import platform
 import subprocess
-from os.path import expanduser, isdir, isfile, dirname, exists, join
+from os.path import expanduser, isdir, isfile, dirname, exists, normpath
 from threading import Thread
 
 from apio import LOAD_CONFIG_DATA
-from __main__ import __file__ as APIO_MAIN_FILE
 
 import requests
 requests.packages.urllib3.disable_warnings()
@@ -29,11 +28,6 @@ requests.packages.urllib3.disable_warnings()
 # Python3 compat
 if (sys.version_info > (3, 0)):
     unicode = str
-
-scons_command = [
-    sys.executable,
-    join(dirname(APIO_MAIN_FILE), 'scons')
-]
 
 
 class ApioException(Exception):
@@ -211,6 +205,7 @@ def get_project_dir():
 def resolve_packages(all_packages, packages=[]):
 
     base_dir = {
+        'scons': get_package_dir('tool-scons'),
         'system': get_package_dir('tools-system'),
         'icestorm': get_package_dir('toolchain-icestorm'),
         'iverilog': get_package_dir('toolchain-iverilog'),
@@ -218,6 +213,7 @@ def resolve_packages(all_packages, packages=[]):
     }
 
     bin_dir = {
+        'scons': safe_join(base_dir.get('scons'), 'script'),
         'system': safe_join(base_dir.get('system'), 'bin'),
         'icestorm': safe_join(base_dir.get('icestorm'), 'bin'),
         'iverilog': safe_join(base_dir.get('iverilog'), 'bin'),
@@ -260,6 +256,10 @@ def resolve_packages(all_packages, packages=[]):
             base_dir.get('iverilog'), 'vlib')
         os.environ['ICEBOX'] = safe_join(
             base_dir.get('icestorm'), 'share', 'icebox')
+
+        global scons_command
+        scons_command = [normpath(sys.executable),
+                         safe_join(bin_dir['scons'], 'scons')]
 
     return check
 

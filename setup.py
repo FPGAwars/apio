@@ -36,8 +36,7 @@ setup(
         'requests>=2.4.0,<3',
         'pyjwt>=1.5.3,<2',
         'colorama',
-        'pyserial>=3,<4',
-        'scons==3.0.1'
+        'pyserial>=3,<4'
     ],
     extras_require=extras_require,
     entry_points={
