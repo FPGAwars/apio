@@ -247,6 +247,10 @@ Yes.
 
 ## Credits
 
+* [FPGAwars](http://fpgawars.github.io/) community has been developed this project in a voluntary and altruistic way since 11/2016.
+
+  <img src="https://avatars3.githubusercontent.com/u/18257418?s=100">
+
 * [BQ](https://www.bq.com) sponsored this project from 02/2016 to 11/2016. Thanks
 
   <img src="https://github.com/FPGAwars/icezum/raw/master/wiki/bq-logo.png" width="80">
