@@ -247,7 +247,7 @@ Yes.
 
 ## Credits
 
-* [FPGAwars](http://fpgawars.github.io/) community has been developed this project in a voluntary and altruistic way since 11/2016.
+* [FPGAwars](http://fpgawars.github.io/) community has developed this project in a voluntary and altruistic way since 11/2016.
 
   <img src="https://avatars3.githubusercontent.com/u/18257418?s=100">
 
