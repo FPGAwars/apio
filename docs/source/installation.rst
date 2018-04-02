@@ -30,16 +30,6 @@ System requirements
   application (Terminal). For Mac OS X and Linux OS - *Terminal* application,
   for Windows OS – ``cmd.exe`` application.
 
-:Setuptools and Wheel:
-
-  Make sure that you have installed the latest version of `setuptools` and `wheel`
-  packages in Python. This is required to install the `SCons <https://pypi.python.org/pypi/SCons>`_ package.
-
-  .. code::
-
-    pip install -U setuptools
-    pip install -U wheel
-
 Install Apio
 ------------
 
