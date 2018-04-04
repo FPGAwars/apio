@@ -120,7 +120,7 @@
     }
   },
   "upduino": {
-    "name": "UPDuino v.1.0",
+    "name": "UPDuino v1.0",
     "fpga": "iCE40-UP5K-SG48",
     "programmer": {
       "type": "iceprog"
@@ -134,7 +134,7 @@
     }
   },
   "upduino2": {
-    "name": "UPDuino v.2.0",
+    "name": "UPDuino v2.0",
     "fpga": "iCE40-UP5K-SG48",
     "programmer": {
       "type": "iceprog"
