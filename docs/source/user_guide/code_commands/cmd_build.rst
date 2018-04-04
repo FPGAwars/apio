@@ -71,7 +71,6 @@ Examples
 .. code::
 
   $ apio build
-  Board: icezum
   [] Processing icezum
   -------------------------------------------------------------------------------------------------
   yosys -p "synth_ice40 -blif hardware.blif" -q leds.v
