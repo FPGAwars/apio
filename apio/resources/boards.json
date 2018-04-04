@@ -188,5 +188,19 @@
     "ftdi": {
       "desc": "Single RS232-HS"
     }
+  },
+  "iCE40-UP5K": {
+    "name": "iCE40 UltraPlus Breakout Board",
+    "fpga": "iCE40-UP5K-SG48",
+    "programmer": {
+      "type": "iceprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6010"
+    },
+    "ftdi": {
+      "desc": "Lattice iCE40UP5K Breakout"
+    }
   }
 }
