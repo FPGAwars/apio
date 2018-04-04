@@ -61,7 +61,7 @@ class SCons(object):
         var += ['prog={0}'.format(programmer)]
         return self.run('upload', var, board, packages=['scons', 'icestorm'])
 
-    def get_programmer(self, board, ext_serial_port, ext_ftdi_id, sram):
+    def get_programmer(self, board, ext_serial, ext_ftdi_id, sram):
         programmer = ''
 
         if board:
@@ -88,14 +88,14 @@ class SCons(object):
 
             # Replace FTDI index
             if '${FTDI_ID}' in programmer:
-                self.check_usb(board_data)
-                ftdi_id = self.get_ftdi_id(board_data, ext_ftdi_id)
+                self.check_usb(board, board_data)
+                ftdi_id = self.get_ftdi_id(board, board_data, ext_ftdi_id)
                 programmer = programmer.replace('${FTDI_ID}', ftdi_id)
 
             # Replace Serial port
             if '${SERIAL_PORT}' in programmer:
-                self.check_usb(board_data)
-                device = self.get_serial_port(board_data, ext_serial_port)
+                self.check_usb(board, board_data)
+                device = self.get_serial_port(board, board_data, ext_serial)
                 programmer = programmer.replace('${SERIAL_PORT}', device)
 
         return programmer
@@ -178,7 +178,7 @@ class SCons(object):
 
         return programmer
 
-    def check_usb(self, board_data):
+    def check_usb(self, board, board_data):
         if 'usb' not in board_data:
             raise Exception('Missing board configuration: usb')
 
@@ -195,14 +195,14 @@ class SCons(object):
 
         if not found:
             # Board not connected
-            raise Exception('board not connected')
+            raise Exception('board ' + board + ' not connected')
 
-    def get_serial_port(self, board_data, ext_serial_port):
+    def get_serial_port(self, board, board_data, ext_serial_port):
         # Search Serial port by USB id
         device = self._check_serial(board_data, ext_serial_port)
         if device is None:
             # Board not available
-            raise Exception('board not available')
+            raise Exception('board ' + board + ' not available')
         return device
 
     def _check_serial(self, board_data, ext_serial_port):
@@ -229,12 +229,12 @@ class SCons(object):
                 # return the device for the port.
                 return port
 
-    def get_ftdi_id(self, board_data, ext_ftdi_id):
+    def get_ftdi_id(self, board, board_data, ext_ftdi_id):
         # Search device by FTDI id
         ftdi_id = self._check_ftdi(board_data, ext_ftdi_id)
         if ftdi_id is None:
             # Board not available
-            raise Exception('board not available')
+            raise Exception('board ' + board + ' not available')
         return ftdi_id
 
     def _check_ftdi(self, board_data, ext_ftdi_id):

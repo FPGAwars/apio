@@ -148,9 +148,6 @@ def process_arguments(args, resources):  # noqa
                     p.read()
                     if p.board:
                         var_board = p.board
-                        click.secho(
-                            'Board: {}'.format(
-                                var_board))
                         fpga = resources.boards.get(var_board).get('fpga')
                         fpga_size = resources.fpgas.get(fpga).get('size')
                         fpga_type = resources.fpgas.get(fpga).get('type')
