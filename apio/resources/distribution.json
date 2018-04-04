@@ -4,7 +4,7 @@
     "examples": "~0.0.7",
     "gtkwave": "~3.3.77",
     "icestorm": "~1.10.2",
-    "iverilog": "~1.1.0",
+    "iverilog": "~1.2.0",
     "scons": "~3.0.1",
     "system": "~1.1.0"
   },
