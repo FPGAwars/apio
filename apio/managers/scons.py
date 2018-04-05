@@ -16,6 +16,7 @@ from os.path import isfile
 
 from apio import util
 from apio.managers.arguments import process_arguments
+from apio.managers.arguments import format_vars
 from apio.managers.system import System
 from apio.profile import Profile
 from apio.resources import Resources
@@ -39,6 +40,13 @@ class SCons(object):
     @util.command
     def verify(self):
         return self.run('verify', packages=['scons', 'iverilog'])
+
+    @util.command
+    def lint(self,args):
+        var = format_vars({
+            'all': args.get('all')
+        }) 
+        return self.run('lint', var, packages=['scons', 'verilator'])
 
     @util.command
     def sim(self):

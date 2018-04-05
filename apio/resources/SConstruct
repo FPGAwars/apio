@@ -23,6 +23,7 @@ FPGA_PACK = ARGUMENTS.get('fpga_pack', '')
 VERBOSE_ALL = ARGUMENTS.get('verbose_all', False)
 VERBOSE_YOSYS = ARGUMENTS.get('verbose_yosys', False)
 VERBOSE_ARACHNE = ARGUMENTS.get('verbose_arachne', False)
+VERILATOR_ALL = ARGUMENTS.get('all', False)
 
 # -- Size. Possible values: 1k, 8k
 # -- Type. Possible values: hx, lp
@@ -67,6 +68,7 @@ VLIB_F = ['"{}"'.format(f) for f in Glob(os.path.join(VLIB_PATH, '*.v'))]
 VLIB_FILES = ' '.join(VLIB_F) if VLIB_PATH else ''
 ICEBOX_PATH = os.environ['ICEBOX'] if 'ICEBOX' in os.environ else ''
 CHIPDB_PATH = os.path.join(ICEBOX_PATH, 'chipdb-{0}.txt'.format(FPGA_SIZE))
+VERILATOR_PATH = os.environ['VERLIB'] if 'VERLIB' in os.environ else ''
 
 isWindows = 'Windows' == system()
 VVP_PATH = '' if isWindows or not IVL_PATH else '-M "{0}"'.format(IVL_PATH)
@@ -233,6 +235,22 @@ vcd_file = env.VCD(sout)
 waves = env.Alias('sim', vcd_file, 'gtkwave {0} {1}.gtkw'.format(
     vcd_file[0], SIMULNAME))
 AlwaysBuild(waves)
+
+# -- Verilator builder
+verilator = Builder(
+    action='verilator --lint-only $SOURCES -I{0} {1}'.format(
+        VERILATOR_PATH,
+        '-Wall' if VERILATOR_ALL else ''),
+    src_suffix='.v',
+    source_scanner=list_scanner)
+
+env.Append(BUILDERS={'Verilator': verilator})
+
+# --- Lint
+lout = env.Verilator(TARGET, src_synth)
+
+lint = env.Alias('lint', lout)
+AlwaysBuild(lint)
 
 Default(bitstream)
 
