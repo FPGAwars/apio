@@ -272,7 +272,7 @@ class Installer(object):
                 pattern = tag_name.replace('%V', '(?P<v>.*?)') + '$'
                 match = re.search(pattern, release.get('tag_name'))
                 if match:
-                    if not prerelease:
+                    if not prerelease or True:  # TEMP: Allow prerelease
                         version = match.group('v')
                         return self._check_sem_version(version, spec)
 

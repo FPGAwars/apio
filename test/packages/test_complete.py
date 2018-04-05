@@ -81,7 +81,6 @@ def test_complete(clirunner, validate_cliresult, configenv):
         # apio upload
         result = clirunner.invoke(cmd_upload)
         assert result.exit_code == 1
-        assert 'Board: icezum' in result.output
 
         # apio examples --list
         result = clirunner.invoke(cmd_examples, ['--list'])
