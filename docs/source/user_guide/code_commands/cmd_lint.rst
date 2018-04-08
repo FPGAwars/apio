@@ -17,7 +17,7 @@ Description
 
 Lint the **verilog** code. It is agnostic of the FPGA. It does not use the *pcf* file.
 
-This command requires the ``verilator`` package.
+Required packages: ``scons``, ``verilator``.
 
 Options
 -------
@@ -40,6 +40,6 @@ Examples
 
   $ apio lint
   verilator --lint-only -I/path/to/share leds.v
-  ========================= [SUCCESS] Took 0.20 seconds =========================
+  ================================== [SUCCESS] Took 0.20 seconds ==============================
 
 ..  Executing: scons -Q lint -f /path/to/SConstruct

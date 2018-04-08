@@ -17,7 +17,7 @@ Description
 
 Verify the **verilog** code. It is agnostic of the FPGA. It does not use the *pcf* file.
 
-This command requires the ``iverilog`` package.
+Required packages: ``scons``, ``iverilog``.
 
 Options
 -------
@@ -37,6 +37,6 @@ Examples
 
   $ apio verify
   iverilog -B /path/to/lib/ivl -o hardware.out -D VCD_OUTPUT= /path/to/vlib/system.v leds.v
-  ================================== [SUCCESS] Took 0.17 seconds =================================
+  ================================== [SUCCESS] Took 0.17 seconds ==============================
 
 ..  Executing: scons -Q verify -f /path/to/SConstruct
