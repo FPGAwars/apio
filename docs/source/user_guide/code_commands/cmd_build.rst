@@ -17,7 +17,7 @@ Description
 
 Synthesize the bitstream: generates a **bin** file from a **verilog** and a **pcf** files.
 
-This command requires the ``icestorm`` package.
+Required packages: ``scons``, ``icestorm``.
 
 Options
 -------
@@ -72,10 +72,10 @@ Examples
 
   $ apio build
   [] Processing icezum
-  -------------------------------------------------------------------------------------------------
+  ---------------------------------------------------------------------------------------------
   yosys -p "synth_ice40 -blif hardware.blif" -q leds.v
   arachne-pnr -d 1k -P tq144 -p leds.pcf -o hardware.asc -q hardware.blif
   icepack hardware.asc hardware.bin
-  ================================== [SUCCESS] Took 0.72 seconds =================================
+  ================================== [SUCCESS] Took 0.72 seconds ==============================
 
 .. Executing: scons -Q build fpga_type=hx fpga_pack=tq144 fpga_size=1k -f /path/to/SConstruct

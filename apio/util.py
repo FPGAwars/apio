@@ -209,6 +209,7 @@ def resolve_packages(all_packages, packages=[]):
         'system': get_package_dir('tools-system'),
         'icestorm': get_package_dir('toolchain-icestorm'),
         'iverilog': get_package_dir('toolchain-iverilog'),
+        'verilator': get_package_dir('toolchain-verilator'),
         'gtkwave': get_package_dir('tool-gtkwave')
     }
 
@@ -217,6 +218,7 @@ def resolve_packages(all_packages, packages=[]):
         'system': safe_join(base_dir.get('system'), 'bin'),
         'icestorm': safe_join(base_dir.get('icestorm'), 'bin'),
         'iverilog': safe_join(base_dir.get('iverilog'), 'bin'),
+        'verilator': safe_join(base_dir.get('verilator'), 'bin'),
         'gtkwave': safe_join(base_dir.get('gtkwave'), 'bin')
     }
 
@@ -239,6 +241,7 @@ def resolve_packages(all_packages, packages=[]):
         os.environ['PATH'] = os.pathsep.join([
             bin_dir.get('icestorm'),
             bin_dir.get('iverilog'),
+            bin_dir.get('verilator'),
             os.environ['PATH']
         ])
 
@@ -256,6 +259,8 @@ def resolve_packages(all_packages, packages=[]):
             base_dir.get('iverilog'), 'vlib')
         os.environ['ICEBOX'] = safe_join(
             base_dir.get('icestorm'), 'share', 'icebox')
+        os.environ['VERLIB'] = safe_join(
+            base_dir.get('verilator'), 'share')
 
         global scons_command
         scons_command = [normpath(sys.executable),

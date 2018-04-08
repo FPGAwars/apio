@@ -17,6 +17,8 @@ Description
 
 Clean the previous generated files: **blif**, **asc**, **bin**, **rpt** and **out**.
 
+Required packages: ``scons``.
+
 Options
 -------
 
@@ -37,6 +39,6 @@ Examples
   Removed hardware.asc
   Removed hardware.bin
   Removed hardware.out
-  ================================== [SUCCESS] Took 0.17 seconds =================================
+  ================================== [SUCCESS] Took 0.17 seconds ==============================
 
 .. Executing: scons -Q -c -f /path/to/SConstruct

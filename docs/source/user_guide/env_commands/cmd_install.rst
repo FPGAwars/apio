@@ -27,7 +27,9 @@ examples_   apio install examples   Verilog basic examples, pinouts, etc
 gtkwave_    apio install gtkwave    Simulation viewer. `GTKWave project <http://gtkwave.sourceforge.net>`_ (only for Windows)
 icestorm_   apio install icestorm   iCE40 FPGA synthesis, place & route and configuration tools. `Icestorm project <http://www.clifford.at/icestorm>`_
 iverilog_   apio install iverilog   Verilog simulation and synthesis tool. `Icarus Verilog project <http://iverilog.icarus.com>`_
+scons_      apio install scons      A software construction tool. `Scons project <http://scons.org>`_
 system_     apio install system     Tools for listing the USB devices and retrieving information from the FTDI chips
+verilator_  apio install verilator  Verilog HDL simulator. `Verilator project <https://www.veripool.org/wiki/verilator>`_
 ==========  ======================  ============
 
 .. _drivers: https://github.com/FPGAwars/tools-drivers
@@ -35,7 +37,9 @@ system_     apio install system     Tools for listing the USB devices and retrie
 .. _gtkwave: https://github.com/FPGAwars/tool-gtkwave
 .. _icestorm: https://github.com/FPGAwars/toolchain-icestorm
 .. _iverilog: https://github.com/FPGAwars/toolchain-iverilog
+.. _scons: https://github.com/FPGAwars/tool-scons
 .. _system: https://github.com/FPGAwars/tools-system
+.. _verilator: https://github.com/FPGAwars/toolchain-verilator
 
 Options
 -------
@@ -76,18 +80,18 @@ Examples
   Unpacking  [####################################]  100%
   Package 'system' has been successfully installed!
   Installing icestorm package:
-  Download toolchain-icestorm-linux_x86_64-1.10.1.tar.gz
+  Download toolchain-icestorm-linux_x86_64-1.11.0.tar.gz
   Downloading  [####################################]  100%
   Unpacking  [####################################]  100%
   Package 'icestorm' has been successfully installed!
 
-2. Install ``examples`` package version 0.0.8
+2. Install ``examples`` package version 0.0.11
 
 .. code::
 
-  $ apio install examples@0.0.8
+  $ apio install examples@0.0.11
   Installing examples package:
-  Download apio-examples-0.0.8.zip
+  Download apio-examples-0.0.11.zip
   Downloading  [####################################]  100%
   Unpacking  [####################################]  100%
   Package 'examples' has been successfully installed!
@@ -103,8 +107,8 @@ Examples
   -----------------------------------------------------------------------------
   Name        Description                    Version
   -----------------------------------------------------------------------------
-  examples    Verilog examples               0.0.8
-  icestorm    Icestorm toolchain             1.10.1
+  examples    Verilog examples               0.0.11
+  icestorm    Icestorm toolchain             1.11.0
   system      System tools                   1.1.0
 
   Not installed packages:
@@ -113,6 +117,8 @@ Examples
   Name        Description
   -----------------------------------------------------------------------------
   iverilog    Icarus Verilog toolchain
+  scons       Scons tool
+  verilator   Verilator toolchain
 
 4. Install and update all packages
 
@@ -120,16 +126,26 @@ Examples
 
   $ apio install --all
   Installing examples package:
-  Already installed. Version 0.0.8
+  Already installed. Version 0.0.11
   Installing icestorm package:
-  Already installed. Version 1.10.1
+  Already installed. Version 1.11.0
   Installing iverilog package:
-  Download toolchain-iverilog-linux_x86_64-1.1.0.tar.gz
+  Download toolchain-iverilog-linux_x86_64-1.2.0.tar.gz
   Downloading  [####################################]  100%
   Unpacking  [####################################]  100%
   Package 'iverilog' has been successfully installed!
+  Installing scons package:
+  Download scons-3.0.1.tar.gz
+  Downloading  [####################################]  100%
+  Unpacking  [####################################]  100%
+  Package 'scons' has been successfully installed!
   Installing system package:
   Already installed. Version 1.1.0
+  Installing verilator package:
+  Download toolchain-verilator-linux_x86_64-1.0.0.tar.gz
+  Downloading  [####################################]  100%
+  Unpacking  [####################################]  100%
+  Package 'verilator' has been successfully installed!
 
 5. Install the ``drivers`` package for **windows** in a linux platform
 
@@ -137,7 +153,7 @@ Examples
 
   $ apio install drivers --platform windows
   Installing drivers package:
-  Download tools-drivers-windows-1.0.0.tar.gz
+  Download tools-drivers-windows-1.1.0.tar.gz
   Downloading  [####################################]  100%
   Unpacking  [####################################]  100%
   Package 'drivers' has been successfully installed!

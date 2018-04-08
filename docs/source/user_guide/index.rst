@@ -36,6 +36,7 @@ Code Commands
 
     code_commands/cmd_build
     code_commands/cmd_clean
+    code_commands/cmd_lint
     code_commands/cmd_sim
     code_commands/cmd_time
     code_commands/cmd_upload
