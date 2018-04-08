@@ -44,7 +44,10 @@ class SCons(object):
     @util.command
     def lint(self, args):
         var = format_vars({
-            'all': args.get('all')
+            'all': args.get('all'),
+            'top': args.get('top'),
+            'nowarn': args.get('nowarn'),
+            'nostyle': args.get('nostyle')
         })
         return self.run('lint', var, packages=['scons', 'verilator'])
 

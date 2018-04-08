@@ -24,6 +24,13 @@ VERBOSE_ALL = ARGUMENTS.get('verbose_all', False)
 VERBOSE_YOSYS = ARGUMENTS.get('verbose_yosys', False)
 VERBOSE_ARACHNE = ARGUMENTS.get('verbose_arachne', False)
 VERILATOR_ALL = ARGUMENTS.get('all', False)
+VERILATOR_NO_STYLE = ARGUMENTS.get('nostyle', False)
+VERILATOR_NO_WARN = ARGUMENTS.get('nowarn', '').split(",")
+VERILATOR_TOP = ARGUMENTS.get('top', '')
+VERILATOR_NO_WARN_STR = ''
+for warn in VERILATOR_NO_WARN:
+    if warn != '':
+        VERILATOR_NO_WARN_STR += " -Wno-" + warn
 
 # -- Size. Possible values: 1k, 8k
 # -- Type. Possible values: hx, lp
@@ -238,9 +245,12 @@ AlwaysBuild(waves)
 
 # -- Verilator builder
 verilator = Builder(
-    action='verilator --lint-only -I{0} {1} $SOURCES'.format(
+    action='verilator --lint-only -I{0} {1} {2} {3} {4} $SOURCES'.format(
         VERILATOR_PATH,
-        '-Wall' if VERILATOR_ALL else ''),
+        '-Wall' if VERILATOR_ALL else '',
+        '-Wno-style' if VERILATOR_NO_STYLE else '',
+        VERILATOR_NO_WARN_STR if VERILATOR_NO_WARN_STR else '',
+        '--top-module '+ VERILATOR_TOP if VERILATOR_TOP else ''),
     src_suffix='.v',
     source_scanner=list_scanner)
 
