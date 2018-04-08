@@ -102,5 +102,19 @@
       ]
     },
     "description": "Drivers tools"
+  },
+  "verilator" : {
+    "repository": {
+      "name": "toolchain-verilator",
+      "organization": "FPGAwars"
+    },
+    "release": {
+      "tag_name": "v%V",
+      "compressed_name": "toolchain-verilator-%P-%V",
+      "uncompressed_name": "",
+      "package_name": "toolchain-verilator",
+      "extension": "tar.gz"
+    },
+    "description": "Verilator toolchain"
   }
 }

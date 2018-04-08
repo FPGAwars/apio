@@ -6,7 +6,8 @@
     "icestorm": "~1.11.0-beta",
     "iverilog": "~1.2.0",
     "scons": "~3.0.1",
-    "system": "~1.1.0"
+    "system": "~1.1.0",
+    "verilator": "~1.0.0"
   },
   "pip_packages": {
     "blackiceprog": ">=2.0.0,<3.0.0",
