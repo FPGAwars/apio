@@ -23,16 +23,19 @@ if (sys.version_info > (3, 0)):
 @click.option('--nostyle', is_flag=True,
               help='Disable all style warnings.')
 @click.option('--nowarn', type=unicode, metavar='nowarn',
-              help='Disable specific warning.')
+              help='Disable specific warning(s).')
+@click.option('--warn', type=unicode, metavar='warn',
+              help='Enable specific warning(s).')
 @click.option('-p', '--project-dir', type=unicode, metavar='path',
               help='Set the target directory for the project.')
-def cli(ctx, all, top, nostyle, nowarn, project_dir):
+def cli(ctx, all, top, nostyle, nowarn, warn, project_dir):
     """Lint the verilog code."""
 
     exit_code = SCons(project_dir).lint({
         'all': all,
         'top': top,
         'nostyle': nostyle,
-        'nowarn': nowarn
+        'nowarn': nowarn,
+        'warn': warn
     })
     ctx.exit(exit_code)

@@ -47,6 +47,7 @@ class SCons(object):
             'all': args.get('all'),
             'top': args.get('top'),
             'nowarn': args.get('nowarn'),
+            'warn': args.get('warn'),
             'nostyle': args.get('nostyle')
         })
         return self.run('lint', var, packages=['scons', 'verilator'])

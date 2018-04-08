@@ -26,11 +26,16 @@ VERBOSE_ARACHNE = ARGUMENTS.get('verbose_arachne', False)
 VERILATOR_ALL = ARGUMENTS.get('all', False)
 VERILATOR_NO_STYLE = ARGUMENTS.get('nostyle', False)
 VERILATOR_NO_WARN = ARGUMENTS.get('nowarn', '').split(",")
+VERILATOR_WARN = ARGUMENTS.get('warn', '').split(",")
 VERILATOR_TOP = ARGUMENTS.get('top', '')
-VERILATOR_NO_WARN_STR = ''
+VERILATOR_PARAM_STR = ''
 for warn in VERILATOR_NO_WARN:
     if warn != '':
-        VERILATOR_NO_WARN_STR += " -Wno-" + warn
+        VERILATOR_PARAM_STR += " -Wno-" + warn
+
+for warn in VERILATOR_WARN:
+    if warn != '':
+        VERILATOR_PARAM_STR += " -Wwarn-" + warn
 
 # -- Size. Possible values: 1k, 8k
 # -- Type. Possible values: hx, lp
@@ -249,7 +254,7 @@ verilator = Builder(
         VERILATOR_PATH,
         '-Wall' if VERILATOR_ALL else '',
         '-Wno-style' if VERILATOR_NO_STYLE else '',
-        VERILATOR_NO_WARN_STR if VERILATOR_NO_WARN_STR else '',
+        VERILATOR_PARAM_STR if VERILATOR_PARAM_STR else '',
         '--top-module '+ VERILATOR_TOP if VERILATOR_TOP else ''),
     src_suffix='.v',
     source_scanner=list_scanner)
