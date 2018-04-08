@@ -187,6 +187,7 @@ Options:
 Code commands:
   build      Synthesize the bitstream.
   clean      Clean the previous generated files.
+  lint       Lint the verilog code.
   sim        Launch the verilog simulation.
   time       Bitstream timing analysis.
   upload     Upload the bitstream to the FPGA.
@@ -195,7 +196,7 @@ Code commands:
 Environment commands:
   boards     Manage FPGA boards.
   config     Apio configuration.
-  drivers    Manage FPGA drivers.
+  drivers    Manage FPGA boards drivers.
   examples   Manage verilog examples.
   init       Manage apio projects.
   install    Install packages.
@@ -266,6 +267,7 @@ Yes.
 * [Salvador E. Tropea](https://github.com/set-soft)
 * [Miguel Sánchez de León Peque](https://github.com/peque)
 * [devbisme](https://github.com/devbisme)
+* [Miodrag Milanovic](https://github.com/mmicko)
 
 ## Credits
 

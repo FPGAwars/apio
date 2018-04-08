@@ -238,7 +238,7 @@ AlwaysBuild(waves)
 
 # -- Verilator builder
 verilator = Builder(
-    action='verilator --lint-only $SOURCES -I{0} {1}'.format(
+    action='verilator --lint-only -I{0} {1} $SOURCES'.format(
         VERILATOR_PATH,
         '-Wall' if VERILATOR_ALL else ''),
     src_suffix='.v',
