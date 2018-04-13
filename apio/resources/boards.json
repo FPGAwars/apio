@@ -27,6 +27,17 @@
       "desc": "Lattice FTUSB Interface Cable"
     }
   },
+  "iceblink40-hx1k" : {
+    "name": "iCEblink40-HX1K", 
+    "fpga": "iCE40-HX1K-VQ100", 
+    "programmer": {
+      "type": "iCEburn"
+    }, 
+    "usb": {
+      "vid": "1443", 
+      "pid": "0007"
+    }
+  },
   "go-board": {
     "name": "Nandland Go board",
     "fpga": "iCE40-HX1K-VQ100",

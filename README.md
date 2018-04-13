@@ -63,6 +63,7 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 | [IceZUM Alhambra](https://github.com/FPGAwars/icezum) | FTDI |
 | [Nandland Go board](https://www.nandland.com/goboard/introduction.html) | FTDI |
 | [iCEstick Evaluation Kit](http://www.latticesemi.com/icestick) | FTDI |
+| [iCEblink40-HX1K](http://www.latticesemi.com/iCEblink40-HX1K) | Digilent Adept |
 
 #### HX8K
 
