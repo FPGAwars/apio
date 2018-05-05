@@ -11,9 +11,6 @@ from apio import util
 
 requests.packages.urllib3.disable_warnings()
 
-ERROR_MESSAGE = """Error: Could not connect to GitHub API.
-Check your internet connection and try again"""
-
 
 def api_request(command, organization='FPGAwars'):
     result = None
@@ -25,8 +22,14 @@ def api_request(command, organization='FPGAwars'):
             headers=_get_headers())
         result = r.json()
         r.raise_for_status()
-    except requests.exceptions.ConnectionError:
-        click.secho(ERROR_MESSAGE, fg='red')
+    except requests.exceptions.ConnectionError as e:
+        error_message = str(e)
+        if 'NewConnectionError' in error_message:
+            click.secho('Error: Could not connect to GitHub API.\n'
+                        'Check your internet connection and try again',
+                        fg='red')
+        else:
+            click.secho(error_message, fg='red')
         exit(1)
     except Exception as e:
         click.secho('Error: ' + str(e), fg='red')

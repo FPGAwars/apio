@@ -356,9 +356,14 @@ def get_pypi_latest_version():
         r = requests.get('https://pypi.python.org/pypi/apio/json')
         version = r.json().get('info').get('version')
         r.raise_for_status()
-    except requests.exceptions.ConnectionError:
-        click.secho('Error: Could not connect to Pypi.\n'
-                    'Check your internet connection and try again', fg='red')
+    except requests.exceptions.ConnectionError as e:
+        error_message = str(e)
+        if 'NewConnectionError' in error_message:
+            click.secho('Error: Could not connect to Pypi.\n'
+                        'Check your internet connection and try again',
+                        fg='red')
+        else:
+            click.secho(error_message, fg='red')
     except Exception as e:
         click.secho('Error: ' + str(e), fg='red')
     finally:
