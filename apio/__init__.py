@@ -4,8 +4,8 @@
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
-VERSION = (0, 3, 2)
-__version__ = ".".join([str(s) for s in VERSION])
+VERSION = (0, 3, 3, 'dev0')
+__version__ = '.'.join([str(s) for s in VERSION])
 
 __title__ = 'apio'
 __description__ = ('Experimental micro-ecosystem for open FPGAs')
