@@ -118,5 +118,19 @@
       "vid": "1209",
       "pid": "2100"
     }
+  },
+  "alhambra-ii": {
+    "name": "Alhambra II",
+    "fpga": "iCE40-HX4K-TQ144",
+    "programmer": {
+      "type": "iceprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6010"
+    },
+    "ftdi": {
+      "desc": "Alhambra II.*"
+    }
   }
 }
