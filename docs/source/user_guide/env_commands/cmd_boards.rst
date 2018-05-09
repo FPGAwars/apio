@@ -19,6 +19,7 @@ Show FPGA boards information.
 
 All supported boards:
 
+* `Alhambra II <https://github.com/FPGAwars/Alhambra-II-FPGA>`_
 * `IceZUM Alhambra <https://github.com/FPGAwars/icezum>`_
 * `Kéfir I <http://fpgalibre.sourceforge.net/Kefir/>`_
 * `Nandland Go board <https://www.nandland.com/goboard/introduction.html>`_
@@ -65,6 +66,7 @@ Examples
   --------------------------------------------------------
   Cat-board     iCE40-HX8K-CT256     hx    8k    ct256
   TinyFPGA-B2   iCE40-LP8K-CM81      lp    8k    cm81
+  alhambra-ii   iCE40-HX4K-TQ144     hx    8k    tq144:4k
   blackice      iCE40-HX4K-TQ144     hx    8k    tq144:4k
   go-board      iCE40-HX1K-VQ100     hx    1k    vq100
   iCE40-HX8K    iCE40-HX8K-CT256     hx    8k    ct256
