@@ -57,6 +57,7 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 
 | Board name | GNU/Linux | Windows | Mac OS |
 |:-|:-:|:-:|:-:|
+| [Alhambra II](https://github.com/FPGAwars/Alhambra-II-FPGA) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [IceZUM Alhambra](https://github.com/FPGAwars/icezum) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [Kéfir I iCE40-HX4K](http://fpgalibre.sourceforge.net/Kefir/) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [Nandland Go board](https://www.nandland.com/goboard/introduction.html) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
@@ -97,6 +98,14 @@ tox
 ```bash
 tox -e offline
 tox -e coverage
+```
+
+### Documentation
+
+```bash
+cd docs
+make html
+firefox _build/html/index.html
 ```
 
 ### Debian packaging
