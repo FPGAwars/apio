@@ -5,7 +5,7 @@
 # -- Licence GPLv2
 
 VERSION = (0, 4, '0b2')
-__version__ = ".".join([str(s) for s in VERSION])
+__version__ = '.'.join([str(s) for s in VERSION])
 
 __title__ = 'apio'
 __description__ = ('Experimental micro-ecosystem for open FPGAs')

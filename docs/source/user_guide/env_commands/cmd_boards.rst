@@ -27,6 +27,7 @@ HX1K
 
 HX8K
 
+* `Alhambra II <https://github.com/FPGAwars/Alhambra-II-FPGA>`_
 * `icoBOARD 1.0 <http://icoboard.org/icoboard-1-0.html>`_
 * `CAT board <https://hackaday.io/project/7982-cat-board>`_
 * `BlackIce <https://hackaday.io/project/12930-blackice-low-cost-open-hardware-fpga-dev-board>`_
@@ -83,6 +84,7 @@ Examples
   --------------------------------------------------------
   Cat-board        iCE40-HX8K-CT256     hx    8k    ct256
   TinyFPGA-B2      iCE40-LP8K-CM81      lp    8k    cm81
+  alhambra-ii      iCE40-HX4K-TQ144     hx    8k    tq144:4k
   blackice         iCE40-HX4K-TQ144     hx    8k    tq144:4k
   blackice-ii      iCE40-HX4K-TQ144     hx    8k    tq144:4k
   fpga101          iCE40-UP5K-SG48      up    5k    sg48
