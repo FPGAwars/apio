@@ -23,7 +23,7 @@
     "pip_packages": [ "tinyfpgab" ]
   },
   "tinyprog": {
-    "command": "prog",
+    "command": "tinyprog",
     "args": "-c ${SERIAL_PORT} --program",
     "pip_packages": [ "tinyprog" ]
   }
