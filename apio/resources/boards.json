@@ -119,6 +119,20 @@
       "pid": "2100"
     }
   },
+  "TinyFPGA-BX": {
+    "name": "TinyFPGA BX",
+    "fpga": "iCE40-LP8K-CM81",
+    "programmer": {
+      "type": "tinyprog"
+    },
+    "usb": {
+      "vid": "1d50",
+      "pid": "6130"
+    },
+    "tinyprog": {
+      "desc": "TinyFPGA BX"
+    }
+  },
   "alhambra-ii": {
     "name": "Alhambra II",
     "fpga": "iCE40-HX4K-TQ144",
