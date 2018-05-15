@@ -126,7 +126,7 @@
       "type": "tinyprog"
     },
     "usb": {
-      "vid": "1D50",
+      "vid": "1d50",
       "pid": "6130"
     },
     "tinyprog": {

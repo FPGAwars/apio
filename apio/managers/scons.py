@@ -235,7 +235,7 @@ class SCons(object):
                 # If the --device options is set but it doesn't match
                 # with the detected port, skip the port.
                 continue
-            if hwid in serial_port_data.get('hwid') and \
+            if hwid.lower() in serial_port_data.get('hwid').lower() and \
                re.match(desc_pattern, serial_port_data.get('description')):
                 # If the hwid and the description pattern matches
                 # return the device for the port.
