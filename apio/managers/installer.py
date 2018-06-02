@@ -132,7 +132,7 @@ class Installer(object):
             click.secho('Warning: permission denied in packages directory',
                         fg='yellow')
             click.secho(str(e), fg='red')
-        except Exception as e:
+        except Exception:
             # Try os name
             dlpath = self._install_os_package(platform_download_url)
 
