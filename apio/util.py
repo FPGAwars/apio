@@ -438,5 +438,13 @@ def get_serial_ports():
     return result
 
 
+def get_tinyprog_meta():
+    result = exec_command(['tinyprog', '-m'])
+    if result:
+        return json.loads(result.get('out'))
+    else:
+        return []
+
+
 def get_python_version():
     return '{0}.{1}'.format(sys.version_info[0], sys.version_info[1])

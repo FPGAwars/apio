@@ -222,7 +222,6 @@ class SCons(object):
             raise Exception('Missing board configuration: usb')
 
         usb_data = board_data.get('usb')
-        desc_pattern = '^' + (usb_data.get('desc') or '.*') + '$'
         hwid = '{0}:{1}'.format(
             usb_data.get('vid'),
             usb_data.get('pid')
@@ -233,13 +232,27 @@ class SCons(object):
             port = serial_port_data.get('port')
             if ext_serial_port and ext_serial_port != port:
                 # If the --device options is set but it doesn't match
-                # with the detected port, skip the port.
+                # the detected port, skip the port.
                 continue
-            if hwid in serial_port_data.get('hwid') and \
-               re.match(desc_pattern, serial_port_data.get('description')):
+            if hwid.lower() in serial_port_data.get('hwid').lower():
+                if 'tinyprog' in board_data:
+                    # If the board uses tinyprog use its port detection
+                    # to double check the detected port.
+                    if not self._check_tinyprog(board_data, port):
+                        # If the port is not detected, skip the port.
+                        continue
                 # If the hwid and the description pattern matches
-                # return the device for the port.
+                # with the detected port return the port.
                 return port
+
+    def _check_tinyprog(self, board_data, port):
+        desc_pattern = '^' + board_data.get('tinyprog').get('desc') + '$'
+        for tinyprog_meta in util.get_tinyprog_meta():
+            tinyprog_port = tinyprog_meta.get('port')
+            tinyprog_name = tinyprog_meta.get('boardmeta').get('name')
+            if port == tinyprog_port and re.match(desc_pattern, tinyprog_name):
+                # If the port is detected and it matches the pattern
+                return True
 
     def get_ftdi_id(self, board, board_data, ext_ftdi_id):
         # Search device by FTDI id
@@ -253,8 +266,7 @@ class SCons(object):
         if 'ftdi' not in board_data:
             raise Exception('Missing board configuration: ftdi')
 
-        ftdi_data = board_data.get('ftdi')
-        desc_pattern = '^' + ftdi_data.get('desc') + '$'
+        desc_pattern = '^' + board_data.get('ftdi').get('desc') + '$'
 
         # Match the discovered FTDI chips
         for ftdi_device in System().get_ftdi_devices():

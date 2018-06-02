@@ -81,6 +81,7 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 | Board name | Interface |
 |:-|:-:|
 | [TinyFPGA B2](http://tinyfpga.com/b-series-guide.html) | Serial |
+| [TinyFPGA BX](http://tinyfpga.com/b-series-guide.html) | Serial |
 
 #### UP5K
 
