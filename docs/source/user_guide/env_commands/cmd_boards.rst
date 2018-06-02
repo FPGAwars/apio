@@ -38,6 +38,7 @@ HX8K
 LP8K
 
 * `TinyFPGA B2 <http://tinyfpga.com/b-series-guide.html>`_
+* `TinyFPGA BX <http://tinyfpga.com/b-series-guide.html>`_
 
 UP5K
 
@@ -84,6 +85,7 @@ Examples
   --------------------------------------------------------
   Cat-board        iCE40-HX8K-CT256     hx    8k    ct256
   TinyFPGA-B2      iCE40-LP8K-CM81      lp    8k    cm81
+  TinyFPGA-BX      iCE40-LP8K-CM81      lp    8k    cm81
   alhambra-ii      iCE40-HX4K-TQ144     hx    8k    tq144:4k
   blackice         iCE40-HX4K-TQ144     hx    8k    tq144:4k
   blackice-ii      iCE40-HX4K-TQ144     hx    8k    tq144:4k
