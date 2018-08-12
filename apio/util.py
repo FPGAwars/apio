@@ -440,9 +440,9 @@ def get_serial_ports():
 
 def get_tinyprog_meta():
     result = exec_command(['tinyprog', '-m'])
-    if result:
+    try:
         return json.loads(result.get('out'))
-    else:
+    except Exception:
         return []
 
 
