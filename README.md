@@ -15,7 +15,7 @@
 &nbsp;
 ![][raspbian-logo]
 
-Experimental open source micro-ecosystem for **open FPGAs**. Based on [platformio](https://github.com/platformio/platformio). Apio is a **multiplatform toolbox**, with static pre-built packages, project configuration tools and easy commands to verify, synthesize, simulate and upload your **verilog** designs.
+Experimental open source micro-ecosystem for **open FPGAs**. Inspired by [PlatformIO](https://github.com/platformio/platformio). Apio is a **multiplatform toolbox**, with static pre-built packages, project configuration tools and easy commands to verify, synthesize, simulate and upload your **verilog** designs.
 
 Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 
@@ -248,7 +248,7 @@ Yes.
 
 * **[Icestudio](https://github.com/FPGAwars/icestudio)**: is an experimental visual hardware editor built with web technologies.
 
- <img src="https://github.com/FPGAwars/icestudio/raw/develop/doc/images/main.png" width="600">
+ <img src="https://github.com/FPGAwars/icestudio/raw/develop/docs/resources/images/demo/main.png" width="600">
 
 ## Videos
 
@@ -275,8 +275,6 @@ Yes.
   <img src="https://avatars3.githubusercontent.com/u/18257418?s=100">
 
 * [BQ](https://www.bq.com) sponsored this project from 02/2016 to 11/2016. Thanks
-
-  <img src="https://github.com/FPGAwars/icezum/raw/master/wiki/bq-logo.png" width="80">
 
 ## License
 
