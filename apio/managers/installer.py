@@ -240,23 +240,24 @@ class Installer(object):
         releases = api_request('{}/releases'.format(name), organization)
 
         if req_version:
+            if force:
+                return req_version
             # Find required version via @
             return self._find_required_version(
-                releases, tag_name, req_version, spec, force)
+                releases, tag_name, req_version, spec)
         else:
             # Find latest version release
             return self._find_latest_version(
                 releases, tag_name, req_version, spec)
 
-    def _find_required_version(self, releases, tag_name, req_version, spec,
-                               force):
+    def _find_required_version(self, releases, tag_name, req_version, spec):
         version = self._check_sem_version(req_version, spec)
         for release in releases:
             prerelease = 'prerelease' in release and release.get('prerelease')
             if 'tag_name' in release:
                 tag = tag_name.replace('%V', req_version)
                 if tag == release.get('tag_name'):
-                    if prerelease and not force:
+                    if prerelease:
                         click.secho(
                             'Warning: ' + req_version + ' is' +
                             ' a pre-release.\n' +
