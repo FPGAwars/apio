@@ -202,7 +202,7 @@ def get_project_dir():
     return os.getcwd()
 
 
-def resolve_packages(all_packages, packages=[]):
+def resolve_packages(all_packages, installed_packages, required_packages=[]):
 
     base_dir = {
         'scons': get_package_dir('tool-scons'),
@@ -224,9 +224,9 @@ def resolve_packages(all_packages, packages=[]):
 
     # -- Check packages
     check = True
-    for package in packages:
-        if package in all_packages:
-            check &= _check_package(package, bin_dir.get(package))
+    for required_pkg in required_packages:
+        if required_pkg in all_packages and required_pkg in installed_packages:
+            check &= check_package(required_pkg, bin_dir.get(required_pkg))
 
     # -- Load packages
     if check:
@@ -269,23 +269,22 @@ def resolve_packages(all_packages, packages=[]):
     return check
 
 
-def _check_package(name, path=''):
+def check_package(name, path=''):
     is_dir = isdir(path)
     if not is_dir:
-        click.secho(
-            'Error: {} toolchain is not installed'.format(name), fg='red')
-        if config_data:  # /etc/apio.json file exists
-            if _check_apt_get():
-                click.secho('Please run:\n'
-                            '   apt-get install apio-{}'.format(name),
-                            fg='yellow')
-            else:
-                click.secho('Please run:\n'
-                            '   apio install {}'.format(name), fg='yellow')
-        else:
-            click.secho('Please run:\n'
-                        '   apio install {}'.format(name), fg='yellow')
+        show_package_error(name)
     return is_dir
+
+
+def show_package_error(name):
+    click.secho(
+        'Error: `{}` package is not installed'.format(name), fg='red')
+    if config_data and _check_apt_get():  # /etc/apio.json file exists
+        click.secho('Please run:\n'
+                    '   apt-get install apio-{}'.format(name), fg='yellow')
+    else:
+        click.secho('Please run:\n'
+                    '   apio install {}'.format(name), fg='yellow')
 
 
 def _check_apt_get():

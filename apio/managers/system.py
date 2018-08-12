@@ -8,8 +8,6 @@ import re
 import click
 import platform
 
-from os.path import isdir
-
 from apio import util
 
 
@@ -83,13 +81,11 @@ class System(object):  # pragma: no cover
         on_stdout = None if silent else self._on_stdout
         on_stderr = self._on_stderr
 
-        if isdir(system_bin_dir):
+        if util.check_package('system', system_bin_dir):
             result = util.exec_command(
                 util.safe_join(system_bin_dir, command + self.ext),
                 stdout=util.AsyncPipe(on_stdout),
                 stderr=util.AsyncPipe(on_stderr))
-        else:
-            util._check_package('system')
 
         return result
 

@@ -294,7 +294,10 @@ class SCons(object):
         # -- Resolve packages
         if self.profile.check_exe_default():
             # Run on `default` config mode
-            if not util.resolve_packages(self.resources.packages, packages):
+            if not util.resolve_packages(
+              self.resources.packages,
+              self.profile.packages,
+              packages):
                 # Exit if a package is not installed
                 raise Exception
         else:

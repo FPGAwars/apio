@@ -35,7 +35,7 @@ class Examples(object):
         self.examples_dir = util.get_package_dir('examples')
 
     def list_examples(self):
-        if isdir(self.examples_dir):
+        if util.check_package('examples', self.examples_dir):
             # examples = sorted(os.listdir(self.examples_dir))
             examples = [dirname(y).replace(self.examples_dir + sep, '')
                         for x in os.walk(self.examples_dir)
@@ -56,12 +56,11 @@ class Examples(object):
             click.secho(EXAMPLE_DIR_FILE, fg='green')
             click.secho(EXAMPLE_OF_USE_CAD, fg='green')
         else:
-            util._check_package('examples')
             return 1
         return 0
 
     def copy_example_dir(self, example, project_dir, sayno):
-        if isdir(self.examples_dir):
+        if util.check_package('examples', self.examples_dir):
 
             project_dir = util.check_dir(project_dir)
             example_path = util.safe_join(project_dir, example)
@@ -89,14 +88,11 @@ class Examples(object):
             else:
                 click.secho(EXAMPLE_NOT_FOUND_MSG, fg='yellow')
         else:
-            click.secho('Error: examples are not installed', fg='red')
-            click.secho('Please run:\n'
-                        '   apio install examples', fg='yellow')
             return 1
         return 0
 
     def copy_example_files(self, example, project_dir, sayno):
-        if isdir(self.examples_dir):
+        if util.check_package('examples', self.examples_dir):
 
             project_dir = util.check_dir(project_dir)
             example_path = project_dir
@@ -108,9 +104,6 @@ class Examples(object):
             else:
                 click.secho(EXAMPLE_NOT_FOUND_MSG, fg='yellow')
         else:
-            click.secho('Error: examples are not installed', fg='red')
-            click.secho('Please run:\n'
-                        '   apio install examples', fg='yellow')
             return 1
         return 0
 

@@ -121,7 +121,7 @@ class Profile(object):
                 'settings': self.settings,
                 'packages': self.packages
             }
-            json.dump(data, profile)
+            json.dump(data, profile, indent=4, sort_keys=True)
 
     def list(self):
         for key in self.config:

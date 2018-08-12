@@ -8,7 +8,7 @@ import os
 import click
 import subprocess
 
-from os.path import isfile, isdir
+from os.path import isfile
 
 from apio import util
 from apio.profile import Profile
@@ -244,7 +244,7 @@ class Drivers(object):  # pragma: no cover
         zadig_ini = 'zadig.ini'
 
         try:
-            if isdir(drivers_bin_dir):
+            if util.check_package('drivers', drivers_bin_dir):
                 click.secho('Launch drivers configuration tool')
                 click.secho(FTDI_INSTALL_DRIVER_INSTRUCTIONS, fg='yellow')
                 # Copy zadig.ini
@@ -257,7 +257,6 @@ class Drivers(object):  # pragma: no cover
                 click.secho('FTDI drivers configuration finished',
                             fg='green')
             else:
-                util._check_package('drivers')
                 result = 1
         except Exception as e:
             click.secho('Error: ' + str(e), fg='red')
@@ -283,7 +282,7 @@ class Drivers(object):  # pragma: no cover
         drivers_bin_dir = util.safe_join(drivers_base_dir, 'bin')
 
         try:
-            if isdir(drivers_bin_dir):
+            if util.check_package('drivers', drivers_bin_dir):
                 click.secho('Launch drivers configuration tool')
                 click.secho(SERIAL_INSTALL_DRIVER_INSTRUCTIONS, fg='yellow')
                 result = util.exec_command(
@@ -291,7 +290,6 @@ class Drivers(object):  # pragma: no cover
                 click.secho('Serial drivers configuration finished',
                             fg='green')
             else:
-                util._check_package('drivers')
                 result = 1
         except Exception as e:
             click.secho('Error: ' + str(e), fg='red')
