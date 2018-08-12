@@ -3,8 +3,8 @@
     "drivers": "~1.1.0",
     "examples": "~0.0.7",
     "gtkwave": "~3.3.77",
-    "icestorm": "~1.11.0-beta",
-    "iverilog": "~1.2.0",
+    "icestorm": "~1.10.1",
+    "iverilog": "~1.1.0",
     "scons": "~3.0.1",
     "system": "~1.1.0",
     "verilator": "~1.0.0"

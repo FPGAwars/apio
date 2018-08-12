@@ -83,17 +83,6 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 | [TinyFPGA B2](http://tinyfpga.com/b-series-guide.html) | Serial |
 | [TinyFPGA BX](http://tinyfpga.com/b-series-guide.html) | Serial |
 
-#### UP5K
-
-| Board name | Interface |
-|:-|:-:|
-| [UPDuino v1.0](http://gnarlygrey.atspace.cc/development-platform.html#upduino) | FTDI |
-| [UPDuino v2.0](http://gnarlygrey.atspace.cc/development-platform.html#upduino_v2l) | FTDI |
-| [iCEBreaker](https://github.com/icebreaker-fpga/icebreaker) | FTDI |
-| [iCEBreaker bitsy](https://github.com/icebreaker-fpga/icebreaker) | FTDI |
-| [FPGA 101 Workshop Badge Board](https://github.com/mmicko/workshop_badge) | FTDI |
-| [iCE40 UltraPlus Breakout Board](http://www.latticesemi.com/en/Products/DevelopmentBoardsAndKits/iCE40UltraPlusBreakoutBoard) | FTDI |
-
 NOTE: all supported [Icestorm FPGAs](http://www.clifford.at/icestorm/) can be used with [--fpga or --size, --type and --pack options](http://apiodoc.readthedocs.io/en/develop/source/user_guide/code_commands/cmd_build.html#options).
 
 ## Documentation

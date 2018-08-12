@@ -40,15 +40,6 @@ LP8K
 * `TinyFPGA B2 <http://tinyfpga.com/b-series-guide.html>`_
 * `TinyFPGA BX <http://tinyfpga.com/b-series-guide.html>`_
 
-UP5K
-
-* `UPDuino v1.0 <http://gnarlygrey.atspace.cc/development-platform.html#upduino>`_
-* `UPDuino v2.0 <http://gnarlygrey.atspace.cc/development-platform.html#upduino_v2l>`_
-* `iCEBreaker <https://github.com/icebreaker-fpga/icebreaker>`_
-* `iCEBreaker bitsy <https://github.com/icebreaker-fpga/icebreaker>`_
-* `FPGA 101 Workshop Badge Board <https://github.com/mmicko/workshop_badge>`_
-* `iCE40 UltraPlus Breakout Board <http://www.latticesemi.com/en/Products/DevelopmentBoardsAndKits/iCE40UltraPlusBreakoutBoard>`_
-
 .. note::
 
   All supported FPGAs are shown in `Project IceStorm web page <http://www.clifford.at/icestorm>`_
@@ -89,18 +80,12 @@ Examples
   alhambra-ii      iCE40-HX4K-TQ144     hx    8k    tq144:4k
   blackice         iCE40-HX4K-TQ144     hx    8k    tq144:4k
   blackice-ii      iCE40-HX4K-TQ144     hx    8k    tq144:4k
-  fpga101          iCE40-UP5K-SG48      up    5k    sg48
   go-board         iCE40-HX1K-VQ100     hx    1k    vq100
   iCE40-HX8K       iCE40-HX8K-CT256     hx    8k    ct256
-  iCE40-UP5K       iCE40-UP5K-SG48      up    5k    sg48
-  iCEBreaker       iCE40-UP5K-SG48      up    5k    sg48
-  iCEBreaker-bitsy iCE40-UP5K-SG48      up    5k    sg48
   icestick         iCE40-HX1K-TQ144     hx    1k    tq144
   icezum           iCE40-HX1K-TQ144     hx    1k    tq144
   icoboard         iCE40-HX8K-CT256     hx    8k    ct256
   kefir            iCE40-HX4K-TQ144     hx    8k    tq144:4k
-  upduino          iCE40-UP5K-SG48      up    5k    sg48
-  upduino2         iCE40-UP5K-SG48      up    5k    sg48
 
 2. Show all available FPGAs
 
@@ -138,5 +123,3 @@ Examples
   iCE40-LP8K-CM121      lp    8k    cm121
   iCE40-LP8K-CM225      lp    8k    cm225
   iCE40-LP8K-CM81       lp    8k    cm81
-  iCE40-UP5K-SG48       up    5k    sg48
-  iCE40-UP5K-UWG30      up    5k    uwg30
