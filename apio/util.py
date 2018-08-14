@@ -17,6 +17,7 @@ import click
 import locale
 import platform
 import subprocess
+import semantic_version
 from os.path import expanduser, isdir, isfile, dirname, exists, normpath
 from threading import Thread
 
@@ -202,7 +203,7 @@ def get_project_dir():
     return os.getcwd()
 
 
-def resolve_packages(all_packages, installed_packages, required_packages=[]):
+def resolve_packages(packages, installed_packages, spec_packages):
 
     base_dir = {
         'scons': get_package_dir('tool-scons'),
@@ -224,9 +225,15 @@ def resolve_packages(all_packages, installed_packages, required_packages=[]):
 
     # -- Check packages
     check = True
-    for required_pkg in required_packages:
-        if required_pkg in all_packages and required_pkg in installed_packages:
-            check &= check_package(required_pkg, bin_dir.get(required_pkg))
+    for package in packages:
+        if package in spec_packages and package in installed_packages:
+            spec_version = spec_packages.get(package)
+            installed_version = installed_packages.get(package).get('version')
+            check &= check_package(
+                package,
+                spec_version,
+                installed_version,
+                bin_dir.get(package))
 
     # -- Load packages
     if check:
@@ -269,16 +276,48 @@ def resolve_packages(all_packages, installed_packages, required_packages=[]):
     return check
 
 
-def check_package(name, path=''):
-    is_dir = isdir(path)
-    if not is_dir:
-        show_package_error(name)
-    return is_dir
+def check_package(name, spec_version, installed_version, path):
+    # Check package version
+    if not check_package_version(name, installed_version, spec_version):
+        _show_package_version_error(name, installed_version, spec_version)
+        return False
+
+    # Check package path
+    if not isdir(path):
+        _show_package_path_error(name)
+        return False
+
+    return True
 
 
-def show_package_error(name):
-    click.secho(
-        'Error: `{}` package is not installed'.format(name), fg='red')
+def check_package_version(name, version, spec_version):
+    try:
+        spec = semantic_version.Spec(spec_version)
+    except ValueError:
+        click.secho('Invalid distribution version {0}: {1}'.format(
+                    name, spec_version), fg='red')
+    try:
+        if semantic_version.Version(version) in spec:
+            return True
+    except ValueError:
+        pass
+
+
+def _show_package_version_error(name, version, spec_version):
+    message = ('Error: `{0}` package version {1}\n'
+               'does not match the semantic version {2}').format(
+        name, version, spec_version)
+    click.secho(message, fg='red')
+    _show_package_install_instructions(name)
+
+
+def _show_package_path_error(name):
+    message = 'Error: `{}` package is not installed'.format(name)
+    click.secho(message, fg='red')
+    _show_package_install_instructions(name)
+
+
+def _show_package_install_instructions(name):
     if config_data and _check_apt_get():  # /etc/apio.json file exists
         click.secho('Please run:\n'
                     '   apt-get install apio-{}'.format(name), fg='yellow')
