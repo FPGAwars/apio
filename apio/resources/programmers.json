@@ -5,7 +5,7 @@
   },
   "icoprog": {
     "command": "export WIRINGPI_GPIOMEM=1; icoprog",
-    "args": "-p < "
+    "args": "-p <"
   },
   "litterbox": {
     "command": "sudo litterbox",
@@ -21,7 +21,7 @@
     "command": "tinyfpgab",
     "args": "-c ${SERIAL_PORT} --program",
     "pip_packages": [ "tinyfpgab" ]
-  }, 
+  },
   "iCEburn": {
     "command": "iCEburn",
     "args": "-ew"
