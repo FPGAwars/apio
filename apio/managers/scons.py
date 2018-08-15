@@ -206,8 +206,8 @@ class SCons(object):
                 break
 
         if not found:
-            # Board not connected
-            raise Exception('board ' + board + ' not connected')
+            # Board not found
+            raise Exception('board ' + board + ' not found')
 
     def get_serial_port(self, board, board_data, ext_serial_port):
         # Search Serial port by USB id
