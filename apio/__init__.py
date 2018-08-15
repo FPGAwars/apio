@@ -8,7 +8,7 @@ VERSION = (0, 3, '4b1')
 __version__ = '.'.join([str(s) for s in VERSION])
 
 __title__ = 'apio'
-__description__ = ('Experimental micro-ecosystem for open FPGAs')
+__description__ = ('Open source ecosystem for open FPGA boards')
 __url__ = 'https://github.com/FPGAwars/apio'
 
 __author__ = 'Jesús Arroyo Torrens'
