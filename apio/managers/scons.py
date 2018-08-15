@@ -297,7 +297,8 @@ class SCons(object):
             if not util.resolve_packages(
               packages,
               self.profile.packages,
-              self.resources.distribution.get('packages')):
+              self.resources.distribution.get('packages')
+             ):
                 # Exit if a package is not installed
                 raise Exception
         else:

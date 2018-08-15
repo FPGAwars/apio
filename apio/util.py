@@ -293,8 +293,7 @@ def check_package(name, version, spec_version, path):
 def check_package_version(name, version, spec_version):
     try:
         spec = semantic_version.Spec(spec_version)
-        if semantic_version.Version(version) in spec:
-            return True
+        return semantic_version.Version(version) in spec
     except ValueError:
         pass
 
