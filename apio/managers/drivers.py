@@ -12,6 +12,7 @@ from os.path import isfile
 
 from apio import util
 from apio.profile import Profile
+from apio.resources import Resources
 
 platform = util.get_systype()
 
@@ -77,47 +78,62 @@ class Drivers(object):  # pragma: no cover
         if 'linux' in platform:
             return self._ftdi_enable_linux()
         elif 'darwin' in platform:
-            self.profile = Profile()
+            self._setup_darwin()
             return self._ftdi_enable_darwin()
         elif 'windows' in platform:
+            self._setup_windows()
             return self._ftdi_enable_windows()
 
     def ftdi_disable(self):
         if 'linux' in platform:
             return self._ftdi_disable_linux()
         elif 'darwin' in platform:
-            self.profile = Profile()
+            self._setup_darwin()
             return self._ftdi_disable_darwin()
         elif 'windows' in platform:
+            self._setup_windows()
             return self._ftdi_disable_windows()
 
     def serial_enable(self):
         if 'linux' in platform:
             return self._serial_enable_linux()
         elif 'darwin' in platform:
-            self.profile = Profile()
+            self._setup_darwin()
             return self._serial_enable_darwin()
         elif 'windows' in platform:
+            self._setup_windows()
             return self._serial_enable_windows()
 
     def serial_disable(self):
         if 'linux' in platform:
             return self._serial_disable_linux()
         elif 'darwin' in platform:
-            self.profile = Profile()
+            self._setup_darwin()
             return self._serial_disable_darwin()
         elif 'windows' in platform:
+            self._setup_windows()
             return self._serial_disable_windows()
 
     def pre_upload(self):
         if 'darwin' in platform:
-            self.profile = Profile()
+            self._setup_darwin()
             self._pre_upload_darwin()
 
     def post_upload(self):
         if 'darwin' in platform:
-            self.profile = Profile()
+            self._setup_darwin()
             self._post_upload_darwin()
+
+    def _setup_darwin(self):
+        self.profile = Profile()
+
+    def _setup_windows(self):
+        profile = Profile()
+        resources = Resources()
+
+        self.name = 'drivers'
+        self.version = util.get_package_version(self.name, profile)
+        self.spec_version = util.get_package_spec_version(self.name, resources)
 
     def _ftdi_enable_linux(self):
         click.secho('Configure FTDI drivers for FPGA')
@@ -244,7 +260,12 @@ class Drivers(object):  # pragma: no cover
         zadig_ini = 'zadig.ini'
 
         try:
-            if util.check_package('drivers', drivers_bin_dir):
+            if util.check_package(
+                self.name,
+                self.version,
+                self.spec_version,
+                drivers_bin_dir
+            ):
                 click.secho('Launch drivers configuration tool')
                 click.secho(FTDI_INSTALL_DRIVER_INSTRUCTIONS, fg='yellow')
                 # Copy zadig.ini
@@ -282,7 +303,12 @@ class Drivers(object):  # pragma: no cover
         drivers_bin_dir = util.safe_join(drivers_base_dir, 'bin')
 
         try:
-            if util.check_package('drivers', drivers_bin_dir):
+            if util.check_package(
+                self.name,
+                self.version,
+                self.spec_version,
+                drivers_bin_dir
+            ):
                 click.secho('Launch drivers configuration tool')
                 click.secho(SERIAL_INSTALL_DRIVER_INSTRUCTIONS, fg='yellow')
                 result = util.exec_command(

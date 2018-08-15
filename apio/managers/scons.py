@@ -25,8 +25,8 @@ from apio.resources import Resources
 class SCons(object):
 
     def __init__(self, project_dir=''):
-        self.resources = Resources()
         self.profile = Profile()
+        self.resources = Resources()
 
         if project_dir is not None:
             # Move to project dir

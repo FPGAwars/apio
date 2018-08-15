@@ -273,7 +273,7 @@ class Installer(object):
                 pattern = tag_name.replace('%V', '(?P<v>.*?)') + '$'
                 match = re.search(pattern, release.get('tag_name'))
                 if match:
-                    if not prerelease or True:  # TEMP: Allow prerelease
+                    if not prerelease:
                         version = match.group('v')
                         return self._check_sem_version(version, spec)
 
@@ -298,7 +298,7 @@ class Installer(object):
         # Note: here we check only for the version of locally installed
         # packages. For this reason we don't say what's the installation
         # path.
-        if self.profile.check_package_version(self.package, self.version) \
+        if not self.profile.installed_version(self.package, self.version) \
            or self.force_install:
             fd = FileDownloader(url, self.packages_dir)
             filepath = fd.get_filepath()

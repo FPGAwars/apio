@@ -13,6 +13,8 @@ import shutil
 from os.path import sep, isdir, isfile, dirname, basename
 
 from apio import util
+from apio.profile import Profile
+from apio.resources import Resources
 
 # -- Error messages
 EXAMPLE_NOT_FOUND_MSG = """
@@ -32,10 +34,21 @@ To get an example, use the command:
 class Examples(object):
 
     def __init__(self):
-        self.examples_dir = util.get_package_dir('examples')
+        profile = Profile()
+        resources = Resources()
+
+        self.name = 'examples'
+        self.examples_dir = util.get_package_dir(self.name)
+        self.version = util.get_package_version(self.name, profile)
+        self.spec_version = util.get_package_spec_version(self.name, resources)
 
     def list_examples(self):
-        if util.check_package('examples', self.examples_dir):
+        if util.check_package(
+            self.name,
+            self.version,
+            self.spec_version,
+            self.examples_dir
+        ):
             # examples = sorted(os.listdir(self.examples_dir))
             examples = [dirname(y).replace(self.examples_dir + sep, '')
                         for x in os.walk(self.examples_dir)
@@ -60,8 +73,12 @@ class Examples(object):
         return 0
 
     def copy_example_dir(self, example, project_dir, sayno):
-        if util.check_package('examples', self.examples_dir):
-
+        if util.check_package(
+            self.name,
+            self.version,
+            self.spec_version,
+            self.examples_dir
+        ):
             project_dir = util.check_dir(project_dir)
             example_path = util.safe_join(project_dir, example)
             local_example_path = util.safe_join(self.examples_dir, example)
@@ -92,8 +109,12 @@ class Examples(object):
         return 0
 
     def copy_example_files(self, example, project_dir, sayno):
-        if util.check_package('examples', self.examples_dir):
-
+        if util.check_package(
+            self.name,
+            self.version,
+            self.spec_version,
+            self.examples_dir
+        ):
             project_dir = util.check_dir(project_dir)
             example_path = project_dir
             local_example_path = util.safe_join(self.examples_dir, example)

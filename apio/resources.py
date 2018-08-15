@@ -62,8 +62,7 @@ class Resources(object):
                 'version': None,
                 'description': self.packages.get(package).get('description')
             }
-            if self.profile.check_package(package,
-               self.get_package_release_name(package)):
+            if package in self.profile.packages:
                 data['version'] = self.profile.get_package_version(
                     package, self.get_package_release_name(package))
                 installed_packages += [data]

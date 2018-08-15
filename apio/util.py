@@ -227,12 +227,12 @@ def resolve_packages(packages, installed_packages, spec_packages):
     check = True
     for package in packages:
         if package in spec_packages and package in installed_packages:
+            version = installed_packages.get(package).get('version')
             spec_version = spec_packages.get(package)
-            installed_version = installed_packages.get(package).get('version')
             check &= check_package(
                 package,
+                version,
                 spec_version,
-                installed_version,
                 bin_dir.get(package))
 
     # -- Load packages
@@ -276,10 +276,10 @@ def resolve_packages(packages, installed_packages, spec_packages):
     return check
 
 
-def check_package(name, spec_version, installed_version, path):
+def check_package(name, version, spec_version, path):
     # Check package version
-    if not check_package_version(name, installed_version, spec_version):
-        _show_package_version_error(name, installed_version, spec_version)
+    if not check_package_version(name, version, spec_version):
+        _show_package_version_error(name, version, spec_version)
         return False
 
     # Check package path
@@ -293,10 +293,6 @@ def check_package(name, spec_version, installed_version, path):
 def check_package_version(name, version, spec_version):
     try:
         spec = semantic_version.Spec(spec_version)
-    except ValueError:
-        click.secho('Invalid distribution version {0}: {1}'.format(
-                    name, spec_version), fg='red')
-    try:
         if semantic_version.Version(version) in spec:
             return True
     except ValueError:
@@ -336,6 +332,20 @@ def _check_apt_get():
                     re.findall('ii\s+apio', result.get('out'))
             check = len(match) > 0
     return check
+
+
+def get_package_version(name, profile):
+    version = ''
+    if name in profile.packages:
+        version = profile.packages.get(name).get('version')
+    return version
+
+
+def get_package_spec_version(name, resources):
+    spec_version = ''
+    if name in resources.distribution.get('packages'):
+        spec_version = resources.distribution.get('packages').get(name)
+    return spec_version
 
 
 def change_filemtime(path, time):
