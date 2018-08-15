@@ -37,8 +37,8 @@ HX8K
 
 LP8K
 
-* `TinyFPGA B2 <http://tinyfpga.com/b-series-guide.html>`_
-* `TinyFPGA BX <http://tinyfpga.com/b-series-guide.html>`_
+* `TinyFPGA B2 <https://tinyfpga.com/b-series-guide.html>`_
+* `TinyFPGA BX <https://tinyfpga.com/bx/guide.html>`_
 
 .. note::
 

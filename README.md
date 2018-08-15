@@ -83,8 +83,8 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 
 | Board name | Interface |
 |:-|:-:|
-| [TinyFPGA B2](http://tinyfpga.com/b-series-guide.html) | Serial |
-| [TinyFPGA BX](http://tinyfpga.com/b-series-guide.html) | Serial |
+| [TinyFPGA B2](https://tinyfpga.com/b-series-guide.html) | Serial |
+| [TinyFPGA BX](https://tinyfpga.com/bx/guide.html) | Serial |
 
 NOTE: all supported [Icestorm FPGAs](http://www.clifford.at/icestorm/) can be used with [--fpga or --size, --type and --pack options](http://apiodoc.readthedocs.io/en/develop/source/user_guide/code_commands/cmd_build.html#options).
 
