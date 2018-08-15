@@ -300,7 +300,7 @@ def check_package_version(name, version, spec_version):
 
 
 def _show_package_version_error(name, version, spec_version):
-    message = ('Error: `{0}` package version {1}\n'
+    message = ('Warning: `{0}` package version {1}\n'
                'does not match the semantic version {2}').format(
         name, version, spec_version)
     click.secho(message, fg='red')

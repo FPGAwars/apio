@@ -50,7 +50,7 @@ class Installer(object):
             data = self.resources.packages.get(self.package)
             distribution = self.resources.distribution
 
-            self.specversion = distribution.get('packages').get(self.package)
+            self.spec_version = distribution.get('packages').get(self.package)
             self.package_name = data.get('release').get('package_name')
             self.extension = data.get('release').get('extension')
             platform = platform or self._get_platform()
@@ -62,8 +62,7 @@ class Installer(object):
                     data.get('repository').get('organization'),
                     data.get('release').get('tag_name'),
                     self.version,
-                    self.specversion,
-                    force
+                    self.spec_version
                 )
                 # Valid version
                 if not valid_version:
@@ -227,21 +226,19 @@ class Installer(object):
         return tarball
 
     def _get_valid_version(self, name, organization, tag_name,
-                           req_version='', specversion='', force=False):
+                           req_version='', spec_version=''):
         # Check spec version
         try:
-            spec = semantic_version.Spec(specversion)
+            spec = semantic_version.Spec(spec_version)
         except ValueError:
             click.secho('Invalid distribution version {0}: {1}'.format(
-                        name, specversion), fg='red')
+                        name, spec_version), fg='red')
             exit(1)
 
         # Download latest releases list
         releases = api_request('{}/releases'.format(name), organization)
 
         if req_version:
-            if force:
-                return req_version
             # Find required version via @
             return self._find_required_version(
                 releases, tag_name, req_version, spec)
@@ -257,7 +254,7 @@ class Installer(object):
             if 'tag_name' in release:
                 tag = tag_name.replace('%V', req_version)
                 if tag == release.get('tag_name'):
-                    if prerelease:
+                    if prerelease and not self.force_install:
                         click.secho(
                             'Warning: ' + req_version + ' is' +
                             ' a pre-release.\n' +
@@ -284,13 +281,13 @@ class Installer(object):
             else:
                 click.secho(
                     'Error: Invalid semantic version ({0})'.format(
-                        self.specversion),
+                        self.spec_version),
                     fg='red')
                 exit(1)
         except ValueError:
             click.secho(
                 'Error: Invalid semantic version ({0})'.format(
-                    self.specversion),
+                    self.spec_version),
                 fg='red')
             exit(1)
 
