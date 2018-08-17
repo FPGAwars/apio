@@ -72,10 +72,10 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 | Board name | Interface |
 |:-|:-:|
 | [Alhambra II](https://github.com/FPGAwars/Alhambra-II-FPGA) | FTDI |
-| [icoBOARD 1.0](http://icoboard.org/about-icoboard.html) | GPIO RPi |
-| [CAT Board](https://hackaday.io/project/7982-cat-board) | GPIO RPi |
 | [BlackIce](https://hackaday.io/project/12930-blackice-low-cost-open-hardware-fpga-dev-board) | Serial |
 | [BlackIce II](https://github.com/mystorm-org/BlackIce-II) | Serial |
+| [CAT Board](https://hackaday.io/project/7982-cat-board) | GPIO RPi |
+| [icoBOARD 1.0](http://icoboard.org/about-icoboard.html) | GPIO RPi |
 | [Kéfir I iCE40-HX4K](http://fpgalibre.sourceforge.net/Kefir/) | FTDI |
 | [iCE40-HX8K Breakout Board](http://www.latticesemi.com/Products/DevelopmentBoardsAndKits/iCE40HX8KBreakoutBoard) | FTDI |
 
