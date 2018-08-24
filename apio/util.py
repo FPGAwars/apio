@@ -278,19 +278,21 @@ def resolve_packages(packages, installed_packages, spec_packages):
 
 def check_package(name, version, spec_version, path):
     # Check package version
-    if not check_package_version(name, version, spec_version):
-        _show_package_version_error(name, version, spec_version)
+    if not check_package_version(version, spec_version):
+        show_package_version_warning(name, version, spec_version)
+        show_package_install_instructions(name)
         return False
 
     # Check package path
     if not isdir(path):
-        _show_package_path_error(name)
+        show_package_path_error(name)
+        show_package_install_instructions(name)
         return False
 
     return True
 
 
-def check_package_version(name, version, spec_version):
+def check_package_version(version, spec_version):
     try:
         spec = semantic_version.Spec(spec_version)
         return semantic_version.Version(version) in spec
@@ -298,21 +300,19 @@ def check_package_version(name, version, spec_version):
         pass
 
 
-def _show_package_version_error(name, version, spec_version):
+def show_package_version_warning(name, version, spec_version):
     message = ('Warning: `{0}` package version {1}\n'
                'does not match the semantic version {2}').format(
         name, version, spec_version)
-    click.secho(message, fg='red')
-    _show_package_install_instructions(name)
+    click.secho(message, fg='yellow')
 
 
-def _show_package_path_error(name):
+def show_package_path_error(name):
     message = 'Error: `{}` package is not installed'.format(name)
     click.secho(message, fg='red')
-    _show_package_install_instructions(name)
 
 
-def _show_package_install_instructions(name):
+def show_package_install_instructions(name):
     if config_data and _check_apt_get():  # /etc/apio.json file exists
         click.secho('Please run:\n'
                     '   apt-get install apio-{}'.format(name), fg='yellow')

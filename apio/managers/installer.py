@@ -67,9 +67,7 @@ class Installer(object):
                 # Valid version
                 if not valid_version:
                     # Error
-                    click.secho(
-                        'Error: No version {} found'.format(self.version),
-                        fg='red')
+                    click.secho('Error: no valid version found', fg='red')
                     exit(1)
 
                 self.version = valid_version
@@ -89,7 +87,7 @@ class Installer(object):
 
         if self.packages_dir == '':
             click.secho(
-                'Error: No such package \'{0}\''.format(self.package),
+                'Error: no such package \'{0}\''.format(self.package),
                 fg='red')
             exit(1)
 
@@ -227,13 +225,6 @@ class Installer(object):
 
     def _get_valid_version(self, name, organization, tag_name,
                            req_version='', spec_version=''):
-        # Check spec version
-        try:
-            spec = semantic_version.Spec(spec_version)
-        except ValueError:
-            click.secho('Invalid distribution version {0}: {1}'.format(
-                        name, spec_version), fg='red')
-            exit(1)
 
         # Download latest releases list
         releases = api_request('{}/releases'.format(name), organization)
@@ -241,55 +232,41 @@ class Installer(object):
         if req_version:
             # Find required version via @
             return self._find_required_version(
-                releases, tag_name, req_version, spec)
+                name, releases, tag_name, req_version, spec_version)
         else:
             # Find latest version release
             return self._find_latest_version(
-                releases, tag_name, req_version, spec)
+                name, releases, tag_name, spec_version)
 
-    def _find_required_version(self, releases, tag_name, req_version, spec):
-        version = self._check_sem_version(req_version, spec)
+    def _find_required_version(self, name, releases, tag_name, req_v, spec_v):
+        if not util.check_package_version(req_v, spec_v):
+            util.show_package_version_warning(name, req_v, spec_v)
+            exit(1)
         for release in releases:
-            prerelease = 'prerelease' in release and release.get('prerelease')
             if 'tag_name' in release:
-                tag = tag_name.replace('%V', req_version)
+                tag = tag_name.replace('%V', req_v)
                 if tag == release.get('tag_name'):
+                    prerelease = release.get('prerelease', False)
                     if prerelease and not self.force_install:
                         click.secho(
-                            'Warning: ' + req_version + ' is' +
+                            'Warning: ' + req_v + ' is' +
                             ' a pre-release.\n' +
                             '         Use --force to install',
                             fg='yellow')
-                        exit(2)
-                    return version
+                        exit(1)
+                    return req_v
 
-    def _find_latest_version(self, releases, tag_name, req_version, spec):
+    def _find_latest_version(self, name, releases, tag_name, spec_v):
         for release in releases:
-            prerelease = 'prerelease' in release and release.get('prerelease')
             if 'tag_name' in release:
                 pattern = tag_name.replace('%V', '(?P<v>.*?)') + '$'
                 match = re.search(pattern, release.get('tag_name'))
                 if match:
+                    prerelease = release.get('prerelease', False)
                     if not prerelease:
                         version = match.group('v')
-                        return self._check_sem_version(version, spec)
-
-    def _check_sem_version(self, version, spec):
-        try:
-            if semantic_version.Version(version) in spec:
-                return version
-            else:
-                click.secho(
-                    'Error: Invalid semantic version ({0})'.format(
-                        self.spec_version),
-                    fg='red')
-                exit(1)
-        except ValueError:
-            click.secho(
-                'Error: Invalid semantic version ({0})'.format(
-                    self.spec_version),
-                fg='red')
-            exit(1)
+                        if util.check_package_version(version, spec_v):
+                            return version
 
     def _download(self, url):
         # Note: here we check only for the version of locally installed
