@@ -7,7 +7,6 @@
 import re
 import click
 import shutil
-import semantic_version
 
 from os import makedirs, remove, rename
 from os.path import isfile, isdir, basename
