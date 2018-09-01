@@ -30,6 +30,17 @@ System requirements
   application (Terminal). For Mac OS X and Linux OS - *Terminal* application,
   for Windows OS – ``cmd.exe`` application.
 
+:Access to Serial Ports (USB/UART):
+
+    **Windows Users:** Please check that you have correctly installed USB
+    driver from board manufacturer
+
+    **Linux Users**:
+
+    * Ubuntu/Debian users may need to add own "username" to the "dialout"
+      group if they are not "root", doing this issuing a
+      ``sudo usermod -a -G dialout $USER``.
+
 Install Apio
 ------------
 
