@@ -277,15 +277,15 @@ def resolve_packages(packages, installed_packages, spec_packages):
 
 
 def check_package(name, version, spec_version, path):
-    # Check package version
-    if not check_package_version(version, spec_version):
-        show_package_version_warning(name, version, spec_version)
-        show_package_install_instructions(name)
-        return False
-
     # Check package path
     if not isdir(path):
         show_package_path_error(name)
+        show_package_install_instructions(name)
+        return False
+
+    # Check package version
+    if not check_package_version(version, spec_version):
+        show_package_version_warning(name, version, spec_version)
         show_package_install_instructions(name)
         return False
 
@@ -301,14 +301,14 @@ def check_package_version(version, spec_version):
 
 
 def show_package_version_warning(name, version, spec_version):
-    message = ('Warning: `{0}` package version {1}\n'
+    message = ('Warning: package \'{0}\' version {1}\n'
                'does not match the semantic version {2}').format(
         name, version, spec_version)
     click.secho(message, fg='yellow')
 
 
 def show_package_path_error(name):
-    message = 'Error: `{}` package is not installed'.format(name)
+    message = 'Error: package \'{}\' is not installed'.format(name)
     click.secho(message, fg='red')
 
 

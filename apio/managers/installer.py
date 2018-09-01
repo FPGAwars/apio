@@ -57,12 +57,9 @@ class Installer(object):
             if checkversion:
                 # Check version
                 valid_version = self._get_valid_version(
-                    self.package,
                     data.get('repository').get('name'),
                     data.get('repository').get('organization'),
-                    data.get('release').get('tag_name'),
-                    self.version,
-                    self.spec_version
+                    data.get('release').get('tag_name')
                 )
                 # Valid version
                 if not valid_version:
@@ -87,7 +84,7 @@ class Installer(object):
 
         if self.packages_dir == '':
             click.secho(
-                'Error: no such package \'{0}\''.format(self.package),
+                'Error: no such package \'{}\''.format(self.package),
                 fg='red')
             exit(1)
 
@@ -201,8 +198,7 @@ class Installer(object):
                 """successfully uninstalled!""".format(self.package),
                 fg='green')
         else:
-            click.secho('Package \'{0}\' is not installed'.format(
-                self.package), fg='red')
+            util.show_package_path_error(self.package)
         self.profile.remove_package(self.package)
         self.profile.save()
 
@@ -223,24 +219,23 @@ class Installer(object):
             extension)
         return tarball
 
-    def _get_valid_version(self, name, rel_name, organization, tag_name,
-                           req_version='', spec_version=''):
+    def _get_valid_version(self, rel_name, organization, tag_name):
 
         # Download latest releases list
         releases = api_request('{}/releases'.format(rel_name), organization)
 
-        if req_version:
+        if self.version:
             # Find required version via @
-            if not util.check_package_version(req_version, spec_version):
+            if not util.check_package_version(self.version, self.spec_version):
                 util.show_package_version_warning(
-                    name, req_version, spec_version)
+                    self.package, self.version, self.spec_version)
                 exit(1)
             return self._find_required_version(
-                releases, tag_name, req_version, spec_version)
+                releases, tag_name, self.version, self.spec_version)
         else:
             # Find latest version release
             return self._find_latest_version(
-                releases, tag_name, spec_version)
+                releases, tag_name, self.spec_version)
 
     def _find_required_version(self, releases, tag_name, req_v, spec_v):
         for release in releases:

@@ -29,13 +29,12 @@ def test_complete(clirunner, validate_cliresult, configenv):
         # apio uninstall examples
         result = clirunner.invoke(
             cmd_uninstall, ['examples'], input='y')
-        validate_cliresult(result)
         assert 'Do you want to continue?' in result.output
-        assert 'Package \'examples\' is not installed' in result.output
+        assert 'Error: package \'examples\' is not installed' in result.output
 
         # apio install examples@X
         result = clirunner.invoke(cmd_install, ['examples@X'])
-        assert 'Warning: `examples` package version X' in result.output
+        assert 'Warning: package \'examples\' version X' in result.output
         assert 'does not match the semantic version' in result.output
 
         # apio install examples@0.0.7

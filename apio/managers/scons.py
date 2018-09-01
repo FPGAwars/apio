@@ -163,7 +163,7 @@ class SCons(object):
             except Exception as e:
                 # Exit if a package is not working
                 python_version = util.get_python_version()
-                message = '`{}` not compatible with '.format(pip_pkg)
+                message = '\'{}\' not compatible with '.format(pip_pkg)
                 message += 'Python {}'.format(python_version)
                 message += '\n       {}'.format(e)
                 raise Exception(message)
