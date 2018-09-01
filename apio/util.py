@@ -486,9 +486,10 @@ def get_serial_ports():
 
 
 def get_tinyprog_meta():
-    result = exec_command(['tinyprog', '--pyserial', '--meta'])
+    command = os.path.join(dirname(sys.executable), 'tinyprog')
+    result = exec_command([command, '--pyserial', '--meta'])
     try:
-        return json.loads(result.get('out').decode('utf-8'))
+        return json.loads(unicoder(result.get('out')))
     except Exception as e:
         print(e)
         return []
