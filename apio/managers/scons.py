@@ -207,6 +207,10 @@ class SCons(object):
 
         if not found:
             # Board not connected
+            if 'tinyprog' in board_data:
+                click.secho(
+                    'Activate bootloader by pressing the reset button',
+                    fg='yellow')
             raise Exception('board ' + board + ' not connected')
 
     def get_serial_port(self, board, board_data, ext_serial_port):
