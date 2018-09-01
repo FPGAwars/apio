@@ -97,14 +97,18 @@ def unicoder(p):
     if isinstance(p, unicode):
         return p
     if isinstance(p, str):
-        if UTF:
-            try:
-                return p.decode('utf-8')
-            except Exception:
-                return p.decode(codepage)
-        return p.decode(codepage)
+        return decoder(p)
     else:
-        return unicode(str(p))
+        return unicode(decoder(p))
+
+
+def decoder(p):
+    if UTF:
+        try:
+            return p.decode('utf-8')
+        except Exception:
+            return p.decode(codepage)
+    return p.decode(codepage)
 
 
 def safe_join(*paths):
@@ -490,7 +494,7 @@ def get_tinyprog_meta():
     result = exec_command([command, '--pyserial', '--meta'])
     try:
         out = unicoder(result.get('out', ''))
-        if not out:
+        if out:
             return json.loads(out)
     except Exception as e:
         print(e)
