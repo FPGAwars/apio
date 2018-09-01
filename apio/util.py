@@ -18,8 +18,8 @@ import locale
 import platform
 import subprocess
 import semantic_version
-from os.path import expanduser, isdir, isfile, dirname, exists, normpath
 from threading import Thread
+from os.path import expanduser, isdir, isfile, join, dirname, exists, normpath
 
 from apio import LOAD_CONFIG_DATA
 
@@ -110,12 +110,12 @@ def unicoder(p):
 def safe_join(*paths):
     """ Join paths in a Unicode-safe way """
     try:
-        return os.path.join(*paths)
+        return join(*paths)
     except UnicodeDecodeError:
         npaths = ()
         for path in paths:
             npaths += (unicoder(path),)
-        return os.path.join(*npaths)
+        return join(*npaths)
 
 
 def _get_config_data():
@@ -240,7 +240,7 @@ def resolve_packages(packages, installed_packages, spec_packages):
 
         # Give the priority to the python packages installed with apio
         os.environ['PATH'] = os.pathsep.join([
-            dirname(sys.executable),
+            get_bin_dir(),
             os.environ['PATH']
         ])
 
@@ -486,13 +486,20 @@ def get_serial_ports():
 
 
 def get_tinyprog_meta():
-    command = os.path.join(dirname(sys.executable), 'tinyprog')
+    command = join(get_bin_dir(), 'tinyprog')
     result = exec_command([command, '--pyserial', '--meta'])
     try:
-        return json.loads(unicoder(result.get('out')))
+        out = unicoder(result.get('out', ''))
+        if not out:
+            return json.loads(out)
     except Exception as e:
         print(e)
         return []
+    return []
+
+
+def get_bin_dir():
+    return dirname(sys.modules['__main__'].__file__)
 
 
 def get_python_version():
