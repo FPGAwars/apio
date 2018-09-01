@@ -6,6 +6,7 @@
 
 import os
 import re
+import sys
 import time
 import click
 import datetime
@@ -358,6 +359,10 @@ class SCons(object):
         click.secho(line, fg=fg)
 
     def _on_stderr(self, line):
-        time.sleep(0.01)  # Delay
+        if '%|' in line:
+            # Remove previous line for tqdm progress bar
+            CURSOR_UP = '\033[F'
+            ERASE_LINE = '\033[K'
+            sys.stdout.write(CURSOR_UP + ERASE_LINE)
         fg = 'red' if 'error' in line.lower() else 'yellow'
         click.secho(line, fg=fg)
