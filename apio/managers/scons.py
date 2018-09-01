@@ -151,7 +151,7 @@ class SCons(object):
                     raise Exception
             except pkg_resources.DistributionNotFound:
                 click.secho(
-                    'Error: {} is not installed'.format(pip_pkg),
+                    'Error: \'{}\' is not installed'.format(pip_pkg),
                     fg='red')
                 click.secho('Please run:\n'
                             '   pip install -U apio[{}]'.format(pip_pkg),

@@ -25,7 +25,7 @@ def api_request(command, organization='FPGAwars'):
     except requests.exceptions.ConnectionError as e:
         error_message = str(e)
         if 'NewConnectionError' in error_message:
-            click.secho('Error: Could not connect to GitHub API.\n'
+            click.secho('Error: could not connect to GitHub API.\n'
                         'Check your internet connection and try again',
                         fg='red')
         else:

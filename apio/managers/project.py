@@ -68,7 +68,7 @@ class Project(object):
         boards = Resources().boards
         if board not in boards.keys():
             click.secho(
-                'Error: No such board \'{}\''.format(board),
+                'Error: no such board \'{}\''.format(board),
                 fg='red')
             sys.exit(1)
 
@@ -124,7 +124,7 @@ class Project(object):
         # -- Update board
         self.board = board
         if not board:
-            print('Error: Invalid {} project file'.format(
+            print('Error: invalid {} project file'.format(
                 PROJECT_FILENAME))
             print('No \'board\' field defined in project file')
             sys.exit(1)
@@ -147,7 +147,7 @@ class Project(object):
                 config.read(PROJECT_FILENAME)
                 board = config.get('env', 'board')
             except Exception:
-                print('Error: Invalid {} project file'.format(
+                print('Error: invalid {} project file'.format(
                     PROJECT_FILENAME))
                 sys.exit(1)
 

@@ -23,7 +23,7 @@ def test_init_wrong_board(clirunner, validate_cliresult):
     with clirunner.isolated_filesystem():
         result = clirunner.invoke(cmd_init, ['--board', 'missed_board'])
         assert result.exit_code == 1
-        assert 'Error: No such board' in result.output
+        assert 'Error: no such board' in result.output
 
 
 def test_init_board(clirunner, validate_cliresult):
