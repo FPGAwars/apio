@@ -328,8 +328,8 @@ class SCons(object):
             click.secho('-' * terminal_width, bold=True)
 
         if self.profile.get_verbose_mode() > 0:
-            click.secho('Executing: scons -Q {0} {1}'.format(
-                            command, ' '.join(variables)))
+            click.secho('Executing: {}'.format(
+                ' '.join(util.scons_command + ['-Q', command] + variables)))
 
         result = util.exec_command(
             util.scons_command + ['-Q', command] + variables,
