@@ -71,7 +71,7 @@ Examples
 
   $ apio uninstall examples
   Do you want to continue? [y/N]: y
-  Uninstalling examples package
+  Uninstalling examples package:
   Package 'examples' has been successfully uninstalled!
 
 2. Uninstall the ``drivers`` package for **windows** in a linux platform
@@ -80,5 +80,5 @@ Examples
 
   $ apio uninstall drivers --platform windows
   Do you want to continue? [y/N]: y
-  Uninstalling drivers package
+  Uninstalling drivers package:
   Package 'drivers' has been successfully uninstalled!

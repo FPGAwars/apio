@@ -35,7 +35,7 @@ def test_complete(clirunner, validate_cliresult, configenv):
 
         # apio install examples@X
         result = clirunner.invoke(cmd_install, ['examples@X'])
-        assert 'Warning: `apio-examples` package version X' in result.output
+        assert 'Warning: `examples` package version X' in result.output
         assert 'does not match the semantic version' in result.output
 
         # apio install examples@0.0.7

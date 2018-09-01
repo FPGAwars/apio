@@ -57,6 +57,7 @@ class Installer(object):
             if checkversion:
                 # Check version
                 valid_version = self._get_valid_version(
+                    self.package,
                     data.get('repository').get('name'),
                     data.get('repository').get('organization'),
                     data.get('release').get('tag_name'),
@@ -191,7 +192,7 @@ class Installer(object):
 
     def uninstall(self):
         if isdir(util.safe_join(self.packages_dir, self.package_name)):
-            click.echo('Uninstalling %s package' % click.style(
+            click.echo('Uninstalling %s package:' % click.style(
                 self.package, fg='cyan'))
             shutil.rmtree(
                 util.safe_join(self.packages_dir, self.package_name))
@@ -222,25 +223,26 @@ class Installer(object):
             extension)
         return tarball
 
-    def _get_valid_version(self, name, organization, tag_name,
+    def _get_valid_version(self, name, rel_name, organization, tag_name,
                            req_version='', spec_version=''):
 
         # Download latest releases list
-        releases = api_request('{}/releases'.format(name), organization)
+        releases = api_request('{}/releases'.format(rel_name), organization)
 
         if req_version:
             # Find required version via @
+            if not util.check_package_version(req_version, spec_version):
+                util.show_package_version_warning(
+                    name, req_version, spec_version)
+                exit(1)
             return self._find_required_version(
-                name, releases, tag_name, req_version, spec_version)
+                releases, tag_name, req_version, spec_version)
         else:
             # Find latest version release
             return self._find_latest_version(
-                name, releases, tag_name, spec_version)
+                releases, tag_name, spec_version)
 
-    def _find_required_version(self, name, releases, tag_name, req_v, spec_v):
-        if not util.check_package_version(req_v, spec_v):
-            util.show_package_version_warning(name, req_v, spec_v)
-            exit(1)
+    def _find_required_version(self, releases, tag_name, req_v, spec_v):
         for release in releases:
             if 'tag_name' in release:
                 tag = tag_name.replace('%V', req_v)
@@ -255,7 +257,7 @@ class Installer(object):
                         exit(1)
                     return req_v
 
-    def _find_latest_version(self, name, releases, tag_name, spec_v):
+    def _find_latest_version(self, releases, tag_name, spec_v):
         for release in releases:
             if 'tag_name' in release:
                 pattern = tag_name.replace('%V', '(?P<v>.*?)') + '$'
