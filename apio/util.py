@@ -280,6 +280,11 @@ def resolve_packages(packages, installed_packages, spec_packages):
 
 
 def check_package(name, version, spec_version, path):
+    # Apio package 'gtkwave' only exists for Windows.
+    # Linux and MacOS user must install the native GTKWave.
+    if name == 'gtkwave' and platform.system() != 'Windows':
+        return True
+
     # Check package path
     if not isdir(path):
         show_package_path_error(name)
