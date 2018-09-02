@@ -230,14 +230,13 @@ def resolve_packages(packages, installed_packages, spec_packages):
     # -- Check packages
     check = True
     for package in packages:
-        if package in spec_packages and package in installed_packages:
-            version = installed_packages.get(package).get('version')
-            spec_version = spec_packages.get(package)
-            check &= check_package(
-                package,
-                version,
-                spec_version,
-                bin_dir.get(package))
+        version = installed_packages.get(package, {}).get('version', '')
+        spec_version = spec_packages.get(package, '')
+        check &= check_package(
+            package,
+            version,
+            spec_version,
+            bin_dir.get(package))
 
     # -- Load packages
     if check:
