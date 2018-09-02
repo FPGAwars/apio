@@ -194,8 +194,8 @@ class Drivers(object):  # pragma: no cover
         else:
             click.secho('Enable FTDI drivers for FPGA')
             subprocess.call(['brew', 'update'])
-            self._brew_install('libftdi')
             self._brew_install('libffi')
+            self._brew_install('libftdi')
             self.profile.add_setting('macos_ftdi_drivers', True)
             self.profile.save()
             click.secho('FTDI drivers enabled', fg='green')
@@ -214,22 +214,26 @@ class Drivers(object):  # pragma: no cover
         else:
             click.secho('Enable Serial drivers for FPGA')
             subprocess.call(['brew', 'update'])
-            self._brew_install('libusb')
             self._brew_install('libffi')
-            # self.profile.add_setting('macos_serial_drivers', True)
-            # self.profile.save()
+            self._brew_install('libusb')
+            self._brew_install_serial_drivers()
             click.secho('Serial drivers enabled', fg='green')
 
     def _serial_disable_darwin(self):
         click.secho('Disable Serial drivers\' configuration')
-        # self.profile.add_setting('macos_serial_drivers', False)
-        # self.profile.save()
         click.secho('Serial drivers disabled', fg='green')
 
     def _brew_install(self, package):
         subprocess.call(['brew', 'install', '--force', package])
         subprocess.call(['brew', 'unlink', package])
         subprocess.call(['brew', 'link', '--force', package])
+
+    def _brew_install_serial_drivers(self):
+        subprocess.call(
+            ['brew', 'tap', 'mengbo/ch340g-ch34g-ch34x-mac-os-x-driver',
+             'https://github.com/mengbo/ch340g-ch34g-ch34x-mac-os-x-driver'])
+        subprocess.call(
+            ['brew', 'cask', 'install', 'wch-ch34x-usb-serial-driver'])
 
     def _pre_upload_darwin(self):
         if self.profile.settings.get('macos_ftdi_drivers', False):
