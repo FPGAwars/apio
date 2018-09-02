@@ -242,12 +242,12 @@ class Installer(object):
             if 'tag_name' in release:
                 tag = tag_name.replace('%V', req_v)
                 if tag == release.get('tag_name'):
-                    prerelease = release.get('prerelease', False)
+                    # TODO: allow prerelease for now
+                    prerelease = release.get('prerelease', False) and False
                     if prerelease and not self.force_install:
                         click.secho(
                             'Warning: ' + req_v + ' is' +
-                            ' a pre-release.\n' +
-                            '         Use --force to install',
+                            ' a pre-release. Use --force to install',
                             fg='yellow')
                         exit(1)
                     return req_v
@@ -258,7 +258,8 @@ class Installer(object):
                 pattern = tag_name.replace('%V', '(?P<v>.*?)') + '$'
                 match = re.search(pattern, release.get('tag_name'))
                 if match:
-                    prerelease = release.get('prerelease', False)
+                    # TODO: allow prerelease for now
+                    prerelease = release.get('prerelease', False) and False
                     if not prerelease:
                         version = match.group('v')
                         if util.check_package_version(version, spec_v):
