@@ -123,5 +123,15 @@
     "type": "hx",
     "size": "8k",
     "pack": "ct256"
+  },
+  "iCE40-UP5K-SG48": {
+    "type": "up",
+    "size": "5k",
+    "pack": "sg48"
+  },
+  "iCE40-UP5K-UWG30": {
+    "type": "up",
+    "size": "5k",
+    "pack": "uwg30"
   }
 }
