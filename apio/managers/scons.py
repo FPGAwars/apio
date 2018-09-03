@@ -244,12 +244,12 @@ class SCons(object):
                 # the detected port, skip the port.
                 continue
             if hwid.lower() in serial_port_data.get('hwid').lower():
-                if 'tinyprog' in board_data:
+                if 'tinyprog' in board_data and \
+                   not self._check_tinyprog(board_data, port):
                     # If the board uses tinyprog use its port detection
                     # to double check the detected port.
-                    if not self._check_tinyprog(board_data, port):
-                        # If the port is not detected, skip the port.
-                        continue
+                    # If the port is not detected, skip the port.
+                    continue
                 # If the hwid and the description pattern matches
                 # with the detected port return the port.
                 return port
