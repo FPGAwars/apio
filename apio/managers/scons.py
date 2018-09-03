@@ -216,13 +216,13 @@ class SCons(object):
 
     def get_serial_port(self, board, board_data, ext_serial_port):
         # Search Serial port by USB id
-        device = self._check_serial(board_data, ext_serial_port)
+        device = self._check_serial(board, board_data, ext_serial_port)
         if device is None:
-            # Board not available
-            raise Exception('board ' + board + ' not available')
+            # Board not connected
+            raise Exception('board ' + board + ' not connected')
         return device
 
-    def _check_serial(self, board_data, ext_serial_port):
+    def _check_serial(self, board, board_data, ext_serial_port):
         if 'usb' not in board_data:
             raise Exception('Missing board configuration: usb')
 
@@ -233,7 +233,11 @@ class SCons(object):
         )
 
         # Match the discovered serial ports
-        for serial_port_data in util.get_serial_ports():
+        serial_ports = util.get_serial_ports()
+        if len(serial_ports) == 0:
+            # Board not available
+            raise Exception('board ' + board + ' not available')
+        for serial_port_data in serial_ports:
             port = serial_port_data.get('port')
             if ext_serial_port and ext_serial_port != port:
                 # If the --device options is set but it doesn't match
@@ -261,20 +265,24 @@ class SCons(object):
 
     def get_ftdi_id(self, board, board_data, ext_ftdi_id):
         # Search device by FTDI id
-        ftdi_id = self._check_ftdi(board_data, ext_ftdi_id)
+        ftdi_id = self._check_ftdi(board, board_data, ext_ftdi_id)
         if ftdi_id is None:
-            # Board not available
-            raise Exception('board ' + board + ' not available')
+            # Board not connected
+            raise Exception('board ' + board + ' not connected')
         return ftdi_id
 
-    def _check_ftdi(self, board_data, ext_ftdi_id):
+    def _check_ftdi(self, board, board_data, ext_ftdi_id):
         if 'ftdi' not in board_data:
             raise Exception('Missing board configuration: ftdi')
 
         desc_pattern = '^' + board_data.get('ftdi').get('desc') + '$'
 
         # Match the discovered FTDI chips
-        for ftdi_device in System().get_ftdi_devices():
+        ftdi_devices = System().get_ftdi_devices()
+        if len(ftdi_devices) == 0:
+            # Board not available
+            raise Exception('board ' + board + ' not available')
+        for ftdi_device in ftdi_devices:
             index = ftdi_device.get('index')
             if ext_ftdi_id and ext_ftdi_id != index:
                 # If the --device options is set but it doesn't match
