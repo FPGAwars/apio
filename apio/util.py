@@ -280,6 +280,11 @@ def resolve_packages(packages, installed_packages, spec_packages):
 
 
 def check_package(name, version, spec_version, path):
+    # Apio package 'gtkwave' only exists for Windows.
+    # Linux and MacOS user must install the native GTKWave.
+    if name == 'gtkwave' and platform.system() != 'Windows':
+        return True
+
     # Check package path
     if not isdir(path):
         show_package_path_error(name)
@@ -502,7 +507,15 @@ def get_tinyprog_meta():
 
 
 def get_bin_dir():
-    return dirname(sys.modules['__main__'].__file__)
+    candidate = dirname(sys.modules['__main__'].__file__)
+    # Windows + virtualenv = 💩
+    # In this case the main file is: venv/Scripts/apio.exe/__main__.py!
+    # This is not good because venv/Scripts/apio.exe is not a directory
+    # So here we go with the workaround:
+    if candidate.endswith('.exe'):
+        return dirname(candidate)
+    else:
+        return candidate
 
 
 def get_python_version():
