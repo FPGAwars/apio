@@ -39,6 +39,10 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 
 2. Install the latest apio: ```pip install -U apio```
 
+
+- **Stable version**: 0.3
+- **Next version [beta]**: 0.4 (support for UP5K boards)
+
 ## Apio packages
 
 | Package | Installation   | Description
