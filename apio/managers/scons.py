@@ -372,7 +372,7 @@ class SCons(object):
         click.secho(line, fg=fg)
 
     def _on_stderr(self, line):
-        if '%|' in line:
+        if '%|' in line and '100%|' not in line:
             # Remove previous line for tqdm progress bar
             CURSOR_UP = '\033[F'
             ERASE_LINE = '\033[K'
