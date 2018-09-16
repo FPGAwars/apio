@@ -105,6 +105,11 @@ class SCons(object):
                 ftdi_id = self.get_ftdi_id(board, board_data, ext_ftdi_id)
                 programmer = programmer.replace('${FTDI_ID}', ftdi_id)
 
+            # TinyFPGA BX board is not detected in MacOS HighSierra
+            if 'tinyprog' in board_data and 'darwin' in util.get_systype():
+                # In this case the serial check is ignored
+                return 'tinyprog --libusb --program'
+
             # Replace Serial port
             if '${SERIAL_PORT}' in programmer:
                 self.check_usb(board, board_data)

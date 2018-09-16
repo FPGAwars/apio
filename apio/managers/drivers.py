@@ -216,7 +216,7 @@ class Drivers(object):  # pragma: no cover
             subprocess.call(['brew', 'update'])
             self._brew_install('libffi')
             self._brew_install('libusb')
-            self._brew_install_serial_drivers()
+            # self._brew_install_serial_drivers()
             click.secho('Serial drivers enabled', fg='green')
 
     def _serial_disable_darwin(self):
