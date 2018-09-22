@@ -130,8 +130,8 @@ class Resources(object):
         # Print table
         click.echo('\nSupported boards:\n')
 
-        BOARDLIST_TPL = ('{board:25} {fpga:20} {arch:<8} '
-                         '{type:<5} {size:<5} {pack:<10}')
+        BOARDLIST_TPL = ('{board:25} {fpga:30} {arch:<8} '
+                         '{type:<12} {size:<5} {pack:<10}')
         terminal_width, _ = click.get_terminal_size()
 
         click.echo('-' * terminal_width)
@@ -158,7 +158,7 @@ class Resources(object):
         # Print table
         click.echo('\nSupported FPGAs:\n')
 
-        FPGALIST_TPL = ('{fpga:30} {arch:<8} {type:<5} {size:<5} {pack:<10}')
+        FPGALIST_TPL = ('{fpga:40} {arch:<8} {type:<12} {size:<5} {pack:<10}')
         terminal_width, _ = click.get_terminal_size()
 
         click.echo('-' * terminal_width)
