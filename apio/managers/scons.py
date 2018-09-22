@@ -60,19 +60,22 @@ class SCons(object):
     @util.command
     def build(self, args):
         var, board = process_arguments(args, self.resources)
-        return self.run('build', var, board, packages=['scons', 'icestorm'])
+        return self.run('build', var, board, packages=['scons', 'yosys',
+                                                       'ice40'])
 
     @util.command
     def time(self, args):
         var, board = process_arguments(args, self.resources)
-        return self.run('time', var, board, packages=['scons', 'icestorm'])
+        return self.run('time', var, board, packages=['scons', 'yosys',
+                                                      'ice40'])
 
     @util.command
     def upload(self, args, serial_port, ftdi_id, sram):
         var, board = process_arguments(args, self.resources)
         programmer = self.get_programmer(board, serial_port, ftdi_id, sram)
         var += ['prog={0}'.format(programmer)]
-        return self.run('upload', var, board, packages=['scons', 'icestorm'])
+        return self.run('upload', var, board, packages=['scons', 'yosys',
+                                                        'ice40'])
 
     def get_programmer(self, board, ext_serial, ext_ftdi_id, sram):
         programmer = ''
