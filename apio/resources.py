@@ -47,11 +47,7 @@ class Resources(object):
     def get_package_release_name(self, package):
         return self.packages.get(package).get('release').get('package_name')
 
-    def list_packages(self, installed=True, notinstalled=True):
-        """Return a list with all the installed/notinstalled packages"""
-
-        self.profile = Profile()
-
+    def get_packages(self):
         # Classify packages
         installed_packages = []
         notinstalled_packages = []
@@ -77,6 +73,16 @@ class Resources(object):
                     'description': 'Unknown deprecated package'
                 }
                 installed_packages += [data]
+
+        return installed_packages, notinstalled_packages
+
+    def list_packages(self, installed=True, notinstalled=True):
+        """Return a list with all the installed/notinstalled packages"""
+
+        self.profile = Profile()
+
+        # Classify packages
+        installed_packages, notinstalled_packages = self.get_packages()
 
         # Print tables
         terminal_width, _ = click.get_terminal_size()
