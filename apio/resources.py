@@ -69,6 +69,15 @@ class Resources(object):
             else:
                 notinstalled_packages += [data]
 
+        for package in self.profile.packages:
+            if package not in self.packages:
+                data = {
+                    'name': package,
+                    'version': 'Unknown',
+                    'description': 'Unknown deprecated package'
+                }
+                installed_packages += [data]
+
         # Print tables
         terminal_width, _ = click.get_terminal_size()
 

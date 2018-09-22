@@ -38,11 +38,11 @@ class Installer(object):
 
         self.resources = Resources(platform)
 
+        self.profile = Profile()
+
+        dirname = 'packages'
+
         if self.package in self.resources.packages:
-
-            self.profile = Profile()
-
-            dirname = 'packages'
             self.packages_dir = util.safe_join(util.get_home_dir(), dirname)
 
             # Get data
@@ -81,6 +81,11 @@ class Installer(object):
                         'platform': platform_os
                     }
                 ]
+        else:
+            if self.package in self.profile.packages and checkversion is False:
+                self.packages_dir = util.safe_join(util.get_home_dir(),
+                                                   dirname)
+                self.package_name = 'toolchain-' + package
 
         if self.packages_dir == '':
             click.secho(
