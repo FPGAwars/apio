@@ -40,7 +40,7 @@ class SCons(object):
 
     @util.command
     def verify(self):
-        return self.run('verify', packages=['scons', 'iverilog'])
+        return self.run('verify', packages=['scons', 'iverilog', 'yosys'])
 
     @util.command
     def lint(self, args):
@@ -51,11 +51,12 @@ class SCons(object):
             'warn': args.get('warn'),
             'nostyle': args.get('nostyle')
         })
-        return self.run('lint', var, packages=['scons', 'verilator'])
+        return self.run('lint', var, packages=['scons', 'verilator', 'yosys'])
 
     @util.command
     def sim(self):
-        return self.run('sim', packages=['scons', 'iverilog', 'gtkwave'])
+        return self.run('sim', packages=['scons', 'iverilog', 'yosys',
+                                         'gtkwave'])
 
     @util.command
     def build(self, args):
