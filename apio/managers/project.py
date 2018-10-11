@@ -26,7 +26,7 @@ class Project(object):
     def __init__(self):
         self.board = None
 
-    def create_sconstruct(self, project_dir='', sayyes=False):
+    def create_sconstruct(self, project_dir='', arch=None, sayyes=False):
         """Creates a default SConstruct file"""
 
         project_dir = util.check_dir(project_dir)
@@ -34,7 +34,7 @@ class Project(object):
         sconstruct_name = 'SConstruct'
         sconstruct_path = util.safe_join(project_dir, sconstruct_name)
         local_sconstruct_path = util.safe_join(
-            util.get_folder('resources'), sconstruct_name)
+            util.get_folder('resources'), arch, sconstruct_name)
 
         if isfile(sconstruct_path):
             # -- If sayyes, skip the question

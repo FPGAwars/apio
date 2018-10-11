@@ -8,6 +8,7 @@ import click
 
 from apio.managers.installer import Installer
 from apio.resources import Resources
+from apio.profile import Profile
 
 platforms = ['linux_x86_64',
              'linux_i686',
@@ -34,7 +35,7 @@ def cli(ctx, packages, all, list, platform):
     if packages:
         _uninstall(packages, platform)
     elif all:  # pragma: no cover
-        packages = Resources(platform).packages
+        packages = Profile().packages
         _uninstall(packages, platform)
     elif list:
         Resources(platform).list_packages(installed=True, notinstalled=False)

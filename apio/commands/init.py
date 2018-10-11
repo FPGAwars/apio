@@ -28,7 +28,7 @@ def cli(ctx, board, scons, project_dir, sayyes):
     """Manage apio projects."""
 
     if scons:
-        Project().create_sconstruct(project_dir, sayyes)
+        Project().create_sconstruct(project_dir, 'ice40', sayyes)
     elif board:
         Project().create_ini(board, project_dir, sayyes)
     else:

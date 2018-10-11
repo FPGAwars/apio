@@ -47,11 +47,7 @@ class Resources(object):
     def get_package_release_name(self, package):
         return self.packages.get(package).get('release').get('package_name')
 
-    def list_packages(self, installed=True, notinstalled=True):
-        """Return a list with all the installed/notinstalled packages"""
-
-        self.profile = Profile()
-
+    def get_packages(self):
         # Classify packages
         installed_packages = []
         notinstalled_packages = []
@@ -68,6 +64,25 @@ class Resources(object):
                 installed_packages += [data]
             else:
                 notinstalled_packages += [data]
+
+        for package in self.profile.packages:
+            if package not in self.packages:
+                data = {
+                    'name': package,
+                    'version': 'Unknown',
+                    'description': 'Unknown deprecated package'
+                }
+                installed_packages += [data]
+
+        return installed_packages, notinstalled_packages
+
+    def list_packages(self, installed=True, notinstalled=True):
+        """Return a list with all the installed/notinstalled packages"""
+
+        self.profile = Profile()
+
+        # Classify packages
+        installed_packages, notinstalled_packages = self.get_packages()
 
         # Print tables
         terminal_width, _ = click.get_terminal_size()
@@ -115,13 +130,14 @@ class Resources(object):
         # Print table
         click.echo('\nSupported boards:\n')
 
-        BOARDLIST_TPL = ('{board:25} {fpga:20} {type:<5} {size:<5} {pack:<10}')
+        BOARDLIST_TPL = ('{board:25} {fpga:30} {arch:<8} '
+                         '{type:<12} {size:<5} {pack:<10}')
         terminal_width, _ = click.get_terminal_size()
 
         click.echo('-' * terminal_width)
         click.echo(BOARDLIST_TPL.format(
-            board=click.style('Board', fg='cyan'), fpga='FPGA', type='Type',
-            size='Size', pack='Pack'))
+            board=click.style('Board', fg='cyan'), fpga='FPGA',
+            arch='Arch', type='Type', size='Size', pack='Pack'))
         click.echo('-' * terminal_width)
 
         for board in self.boards:
@@ -129,6 +145,7 @@ class Resources(object):
             click.echo(BOARDLIST_TPL.format(
                 board=click.style(board, fg='cyan'),
                 fpga=fpga,
+                arch=self.fpgas.get(fpga).get('arch'),
                 type=self.fpgas.get(fpga).get('type'),
                 size=self.fpgas.get(fpga).get('size'),
                 pack=self.fpgas.get(fpga).get('pack')))
@@ -141,18 +158,19 @@ class Resources(object):
         # Print table
         click.echo('\nSupported FPGAs:\n')
 
-        FPGALIST_TPL = ('{fpga:30} {type:<5} {size:<5} {pack:<10}')
+        FPGALIST_TPL = ('{fpga:40} {arch:<8} {type:<12} {size:<5} {pack:<10}')
         terminal_width, _ = click.get_terminal_size()
 
         click.echo('-' * terminal_width)
         click.echo(FPGALIST_TPL.format(
-            fpga=click.style('FPGA', fg='cyan'), type='Type',
+            fpga=click.style('FPGA', fg='cyan'), type='Type', arch='Arch',
             size='Size', pack='Pack'))
         click.echo('-' * terminal_width)
 
         for fpga in self.fpgas:
             click.echo(FPGALIST_TPL.format(
                 fpga=click.style(fpga, fg='cyan'),
+                arch=self.fpgas.get(fpga).get('arch'),
                 type=self.fpgas.get(fpga).get('type'),
                 size=self.fpgas.get(fpga).get('size'),
                 pack=self.fpgas.get(fpga).get('pack')))
