@@ -117,8 +117,10 @@ Examples
   iCE40-HX1K-CB132      hx    1k    cb132
   iCE40-HX1K-TQ144      hx    1k    tq144
   iCE40-HX1K-VQ100      hx    1k    vq100
+  iCE40-HX4K-BG121      hx    8k    bg121:4k
   iCE40-HX4K-CB132      hx    8k    cb132:4k
   iCE40-HX4K-TQ144      hx    8k    tq144:4k
+  iCE40-HX8K-BG121      hx    8k    bg121
   iCE40-HX8K-CB132      hx    8k    cb132
   iCE40-HX8K-CM225      hx    8k    cm225
   iCE40-HX8K-CT256      hx    8k    ct256
@@ -139,3 +141,6 @@ Examples
   iCE40-LP8K-CM121      lp    8k    cm121
   iCE40-LP8K-CM225      lp    8k    cm225
   iCE40-LP8K-CM81       lp    8k    cm81
+  iCE40-UP3K-UWG30      up    5k    uwg30
+  iCE40-UP5K-SG48       up    5k    sg48
+  iCE40-UP5K-UWG30      up    5k    uwg30
