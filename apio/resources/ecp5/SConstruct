@@ -154,9 +154,21 @@ if len(src_synth) == 0:
 # print('Testbench: {}'.format(testbench))
 # print('SIM NAME: {}'.format(SIMULNAME))
 
+# -- Get the LPF file
+LPF = ''
+LPF_list = Glob('*.lpf')
+
+try:
+    LPF = LPF_list[0]
+except IndexError:
+    print('\n---> WARNING: no LPF file found (.lpf)\n')
+
+# -- Debug
+# print('LPF Found: {}'.format(LPF))
+
 # -- Define the Sintesizing Builder
 synth = Builder(
-    action='yosys -p \"synth_ecp5 -noccu2 -nomux -nodram -json $TARGET\" {} $SOURCES'.format(
+    action='yosys -p \"synth_ecp5 -nomux -nodram -json $TARGET\" {} $SOURCES'.format(
         '' if VERBOSE_ALL or VERBOSE_YOSYS else '-q'
     ),
     suffix='.json',
@@ -164,8 +176,8 @@ synth = Builder(
     source_scanner=list_scanner)
 
 pnr = Builder(
-    action='nextpnr-ecp5 --{1} --package {2} --json $SOURCE --textcfg $TARGET --basecfg {3} {4} '.format(
-        FPGA_TYPE, FPGA_SIZE, FPGA_PACK, BASECFG_PATH,
+    action='nextpnr-ecp5 --{1} --package {2} --json $SOURCE --textcfg $TARGET --basecfg {3} {4} {5} '.format(
+        FPGA_TYPE, FPGA_SIZE, FPGA_PACK, BASECFG_PATH, '--lpf ' + str(LPF) if LPF else '',
         '' if VERBOSE_ALL or VERBOSE_PNR else '-q'),
     suffix='.config',
     src_suffix='.json')
