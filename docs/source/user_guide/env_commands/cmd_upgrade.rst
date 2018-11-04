@@ -26,4 +26,4 @@ Examples
 
   $ apio upgrade
   You're up-to-date!
-  Apio 0.3.6 is currently the newest version available.
+  Apio 0.4.0 is currently the newest version available.

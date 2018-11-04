@@ -54,6 +54,7 @@ Environment Commands
     env_commands/cmd_examples
     env_commands/cmd_init
     env_commands/cmd_install
+    env_commands/cmd_raw
     env_commands/cmd_system
     env_commands/cmd_uninstall
     env_commands/cmd_upgrade
