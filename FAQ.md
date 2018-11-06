@@ -51,7 +51,7 @@ Apio contains direct commands to verify, simulate, analyze, build, upload *veril
 $ apio
 Usage: apio [OPTIONS] COMMAND [ARGS]...
 
-  Experimental micro-ecosystem for open FPGAs
+  Open source ecosystem for open FPGA boards
 
 Options:
   --version  Show the version and exit.
@@ -117,7 +117,7 @@ PlatformIO may also increase its FPGA support using all the knowledge generated 
 
 Yes. Apio IDE and Icestudio.
 
-* **[Apio-IDE](https://github.com/FPGAwars/apio-ide)** is an experimental IDE that integrates Atom and Apio.
+* **[Apio-IDE](https://github.com/FPGAwars/apio-ide)** is an IDE that integrates Atom and Apio.
 
  <img src="https://github.com/FPGAwars/apio-ide/raw/master/doc/apio-ide-screenshot-1.png" width="600">
 
