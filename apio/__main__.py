@@ -44,28 +44,13 @@ def cli(ctx):
 
     # Update help structure
     if ctx.invoked_subcommand is None:
-        setup_help = []
-        setup_commands = ['drivers', 'init', 'install', 'uninstall']
-
-        util_help = []
-        util_commands = ['boards', 'config', 'examples', 'raw', 'system',
-                         'upgrade']
-
         help = ctx.get_help()
         help = help.split('\n')
 
-        # Find env commands' lines
-        for line in list(help):
-            for command in setup_commands:
-                if (' ' + command) in line:
-                    if line in help:
-                        help.remove(line)
-                        setup_help.append(line)
-            for command in util_commands:
-                if (' ' + command) in line:
-                    if line in help:
-                        help.remove(line)
-                        util_help.append(line)
+        setup_help = find_commands_help(help, ['drivers', 'init',
+                                               'install', 'uninstall'])
+        util_help = find_commands_help(help, ['boards', 'config', 'examples',
+                                              'raw', 'system', 'upgrade'])
 
         help = '\n'.join(help)
         help = help.replace('Commands:\n', 'Project commands:\n')
@@ -75,6 +60,17 @@ def cli(ctx):
         help += '\n'.join(util_help)
 
         click.secho(help)
+
+
+def find_commands_help(help, commands):
+    commands_help = []
+    for line in list(help):
+        for command in commands:
+            if (' ' + command) in line:
+                if line in help:
+                    help.remove(line)
+                    commands_help.append(line)
+    return commands_help
 
 
 if __name__ == '__main__':  # pragma: no cover
