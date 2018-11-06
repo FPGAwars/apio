@@ -142,6 +142,7 @@ class Drivers(object):  # pragma: no cover
                              self.ftdi_rules_local_path,
                              self.ftdi_rules_system_path])
             self._reload_rules()
+            self._add_dialout_group()
             click.secho('FTDI drivers enabled', fg='green')
             click.secho('Unplug and reconnect your board', fg='yellow')
         else:
@@ -166,6 +167,7 @@ class Drivers(object):  # pragma: no cover
                             self.serial_rules_local_path,
                             self.serial_rules_system_path])
             self._reload_rules()
+            self._add_dialout_group()
             click.secho('Serial drivers enabled', fg='green')
             click.secho('Unplug and reconnect your board', fg='yellow')
         else:
@@ -185,6 +187,9 @@ class Drivers(object):  # pragma: no cover
         subprocess.call(['sudo', 'udevadm', 'control', '--reload-rules'])
         subprocess.call(['sudo', 'udevadm', 'trigger'])
         subprocess.call(['sudo', 'service', 'udev', 'restart'])
+
+    def _add_dialout_group(self):
+        subprocess.call(['sudo', 'usermod', '-a', '-G', 'dialout', '$USER'])
 
     def _ftdi_enable_darwin(self):
         # Check homebrew
