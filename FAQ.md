@@ -51,13 +51,11 @@ Apio contains direct commands to verify, simulate, analyze, build, upload *veril
 $ apio
 Usage: apio [OPTIONS] COMMAND [ARGS]...
 
-  Open source ecosystem for open FPGA boards
-
 Options:
   --version  Show the version and exit.
   --help     Show this message and exit.
 
-Code commands:
+Project commands:
   build      Synthesize the bitstream.
   clean      Clean the previous generated files.
   lint       Lint the verilog code.
@@ -66,16 +64,18 @@ Code commands:
   upload     Upload the bitstream to the FPGA.
   verify     Verify the verilog code.
 
-Environment commands:
-  boards     Manage FPGA boards.
-  config     Apio configuration.
+Setup commands:
   drivers    Manage FPGA boards drivers.
-  examples   Manage verilog examples.
   init       Manage apio projects.
   install    Install packages.
+  uninstall  Uninstall packages.
+
+Utility commands:
+  boards     Manage FPGA boards.
+  config     Apio configuration.
+  examples   Manage verilog examples.
   raw        Execute commands using Apio packages.
   system     System tools.
-  uninstall  Uninstall packages.
   upgrade    Check the latest Apio version.
 ```
 
