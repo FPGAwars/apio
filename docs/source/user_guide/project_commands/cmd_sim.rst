@@ -17,7 +17,7 @@ Description
 
 Launch the verilog simulation using `GTKWave <http://gtkwave.sourceforge.net>`_ from a **verilog test bench**.
 
-This command requires the ``iverilog`` package.
+Required packages: ``scons``, ``iverilog``.
 
 .. image:: ../../../resources/images/gtkwave-simulation.png
 
@@ -61,6 +61,6 @@ Examples
   [0] start time.
   [1000] end time.
   WM Destroy
-  ================================== [SUCCESS] Took 1.96 seconds =================================
+  ================================== [SUCCESS] Took 1.96 seconds ==============================
 
 .. Executing: scons -Q sim -f /path/to/SConstruct

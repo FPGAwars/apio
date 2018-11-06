@@ -33,16 +33,28 @@ Find your board in the list
 
   Supported boards:
 
-  -----------------------------------------------------------
-  Board         FPGA                 Type  Size  Pack
-  -----------------------------------------------------------
-  Cat-board     iCE40-HX8K-CT256     hx    8k    ct256
-  go-board      iCE40-HX1K-VQ100     hx    1k    vq100
-  iCE40-HX8K    iCE40-HX8K-CT256     hx    8k    ct256
-  icestick      iCE40-HX1K-TQ144     hx    1k    tq144
-  icezum        iCE40-HX1K-TQ144     hx    1k    tq144
-  icoboard      iCE40-HX8K-CT256     hx    8k    ct256
-  kefir         iCE40-HX4K-TQ144     hx    8k    tq144:4k
+  ----------------------------------------------------------
+  Board            FPGA                 Type  Size  Pack
+  ----------------------------------------------------------
+  Cat-board        iCE40-HX8K-CT256     hx    8k    ct256
+  TinyFPGA-B2      iCE40-LP8K-CM81      lp    8k    cm81
+  TinyFPGA-BX      iCE40-LP8K-CM81      lp    8k    cm81
+  alhambra-ii      iCE40-HX4K-TQ144     hx    8k    tq144:4k
+  blackice         iCE40-HX4K-TQ144     hx    8k    tq144:4k
+  blackice-ii      iCE40-HX4K-TQ144     hx    8k    tq144:4k
+  fpga101          iCE40-UP5K-SG48      up    5k    sg48
+  go-board         iCE40-HX1K-VQ100     hx    1k    vq100
+  iCE40-HX8K       iCE40-HX8K-CT256     hx    8k    ct256
+  iCE40-UP5K       iCE40-UP5K-SG48      up    5k    sg48
+  iCEBreaker       iCE40-UP5K-SG48      up    5k    sg48
+  iCEBreaker-bitsy iCE40-UP5K-SG48      up    5k    sg48
+  iceblink40-hx1k  iCE40-HX1K-VQ100     hx    1k    vq100
+  icestick         iCE40-HX1K-TQ144     hx    1k    tq144
+  icezum           iCE40-HX1K-TQ144     hx    1k    tq144
+  icoboard         iCE40-HX8K-CT256     hx    8k    ct256
+  kefir            iCE40-HX4K-TQ144     hx    8k    tq144:4k
+  upduino          iCE40-UP5K-SG48      up    5k    sg48
+  upduino2         iCE40-UP5K-SG48      up    5k    sg48
 
 Create an apio.ini file with your board
 

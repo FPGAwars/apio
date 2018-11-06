@@ -41,33 +41,36 @@ class ApioCLI(click.MultiCommand):
 @click.pass_context
 @click.version_option()
 def cli(ctx):
-    """
-    Experimental micro-ecosystem for open FPGAs
-    """
 
     # Update help structure
     if ctx.invoked_subcommand is None:
-        env_help = []
-        env_commands = ['boards', 'config', 'drivers', 'examples', 'init',
-                        'install', 'system', 'uninstall', 'upgrade']
-
         help = ctx.get_help()
         help = help.split('\n')
 
-        # Find env commands' lines
-        for line in list(help):
-            for command in env_commands:
-                if (' ' + command) in line:
-                    if line in help:
-                        help.remove(line)
-                        env_help.append(line)
+        setup_help = find_commands_help(help, ['drivers', 'init',
+                                               'install', 'uninstall'])
+        util_help = find_commands_help(help, ['boards', 'config', 'examples',
+                                              'raw', 'system', 'upgrade'])
 
         help = '\n'.join(help)
-        help = help.replace('Commands:\n', 'Code commands:\n')
-        help += "\n\nEnvironment commands:\n"
-        help += '\n'.join(env_help)
+        help = help.replace('Commands:\n', 'Project commands:\n')
+        help += "\n\nSetup commands:\n"
+        help += '\n'.join(setup_help)
+        help += "\n\nUtility commands:\n"
+        help += '\n'.join(util_help)
 
         click.secho(help)
+
+
+def find_commands_help(help, commands):
+    commands_help = []
+    for line in list(help):
+        for command in commands:
+            if (' ' + command) in line:
+                if line in help:
+                    help.remove(line)
+                    commands_help.append(line)
+    return commands_help
 
 
 if __name__ == '__main__':  # pragma: no cover

@@ -49,10 +49,10 @@ In order to support a new board based on FPGA Lattice iCE40 family, follow these
 
   .. code-block:: javascript
 
-    "tinyfpgab": {
-      "command": "tinyfpgab",
-      "args": "-c ${SERIAL_PORT} --program",
-      "pip_packages": [ "tinyfpgab" ]
+    "tinyprog": {
+      "command": "tinyprog",
+      "args": "--pyserial -c ${SERIAL_PORT} --program",
+      "pip_packages": [ "tinyprog" ]
     }
 
   NOTE: if your programmer uses a python package, add this package and its version range to `distribution.json <https://github.com/FPGAwars/apio/blob/develop/apio/resources/distribution.json>`_.
@@ -62,7 +62,8 @@ In order to support a new board based on FPGA Lattice iCE40 family, follow these
     "pip_packages": {
       "blackiceprog": ">=2.0.0,<3.0.0",
       "litterbox": ">=0.2.1,<0.3.0",
-      "tinyfpgab": ">=1.0.3,<1.1.0"
+      "tinyfpgab": ">=1.1.0,<1.2.0",
+      "tinyprog": ">=1.0.21,<1.1.0"
     }
 
 3. **Add your board** to `boards.json <https://github.com/FPGAwars/apio/blob/develop/apio/resources/boards.json>`_ with the following format:
@@ -97,14 +98,17 @@ In order to support a new board based on FPGA Lattice iCE40 family, follow these
 
   .. code-block:: javascript
 
-    "TinyFPGA-B2": {
-      "name": "TinyFPGA B2",
+    "TinyFPGA-BX": {
+      "name": "TinyFPGA BX",
       "fpga": "iCE40-LP8K-CM81",
       "programmer": {
-        "type": "tinyfpgab"
+        "type": "tinyprog"
       },
       "usb": {
-        "vid": "1209",
-        "pid": "2100"
+        "vid": "1d50",
+        "pid": "6130"
+      },
+      "tinyprog": {
+        "desc": "TinyFPGA BX"
       }
     }

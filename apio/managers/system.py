@@ -8,13 +8,20 @@ import re
 import click
 import platform
 
-from os.path import isdir
-
 from apio import util
+from apio.profile import Profile
+from apio.resources import Resources
 
 
 class System(object):  # pragma: no cover
     def __init__(self):
+        profile = Profile()
+        resources = Resources()
+
+        self.name = 'system'
+        self.version = util.get_package_version(self.name, profile)
+        self.spec_version = util.get_package_spec_version(self.name, resources)
+
         self.ext = ''
         if 'Windows' == platform.system():
             self.ext = '.exe'
@@ -83,13 +90,16 @@ class System(object):  # pragma: no cover
         on_stdout = None if silent else self._on_stdout
         on_stderr = self._on_stderr
 
-        if isdir(system_bin_dir):
+        if util.check_package(
+            self.name,
+            self.version,
+            self.spec_version,
+            system_bin_dir
+        ):
             result = util.exec_command(
                 util.safe_join(system_bin_dir, command + self.ext),
                 stdout=util.AsyncPipe(on_stdout),
                 stderr=util.AsyncPipe(on_stderr))
-        else:
-            util._check_package('system')
 
         return result
 

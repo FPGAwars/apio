@@ -17,8 +17,9 @@ import click
 import locale
 import platform
 import subprocess
-from os.path import expanduser, isdir, isfile, dirname, exists, normpath
+import semantic_version
 from threading import Thread
+from os.path import expanduser, isdir, isfile, join, dirname, exists, normpath
 
 from apio import LOAD_CONFIG_DATA
 
@@ -96,25 +97,29 @@ def unicoder(p):
     if isinstance(p, unicode):
         return p
     if isinstance(p, str):
-        if UTF:
-            try:
-                return p.decode('utf-8')
-            except Exception:
-                return p.decode(codepage)
-        return p.decode(codepage)
+        return decoder(p)
     else:
-        return unicode(str(p))
+        return unicode(decoder(p))
+
+
+def decoder(p):
+    if UTF:
+        try:
+            return p.decode('utf-8')
+        except Exception:
+            return p.decode(codepage)
+    return p.decode(codepage)
 
 
 def safe_join(*paths):
     """ Join paths in a Unicode-safe way """
     try:
-        return os.path.join(*paths)
+        return join(*paths)
     except UnicodeDecodeError:
         npaths = ()
         for path in paths:
             npaths += (unicoder(path),)
-        return os.path.join(*npaths)
+        return join(*npaths)
 
 
 def _get_config_data():
@@ -202,85 +207,130 @@ def get_project_dir():
     return os.getcwd()
 
 
-def resolve_packages(all_packages, packages=[]):
-
-    base_dir = {
+def setup_environment():
+    base_dirs = {
         'scons': get_package_dir('tool-scons'),
         'system': get_package_dir('tools-system'),
         'icestorm': get_package_dir('toolchain-icestorm'),
         'iverilog': get_package_dir('toolchain-iverilog'),
+        'verilator': get_package_dir('toolchain-verilator'),
         'gtkwave': get_package_dir('tool-gtkwave')
     }
-
-    bin_dir = {
-        'scons': safe_join(base_dir.get('scons'), 'script'),
-        'system': safe_join(base_dir.get('system'), 'bin'),
-        'icestorm': safe_join(base_dir.get('icestorm'), 'bin'),
-        'iverilog': safe_join(base_dir.get('iverilog'), 'bin'),
-        'gtkwave': safe_join(base_dir.get('gtkwave'), 'bin')
+    bin_dirs = {
+        'scons': safe_join(base_dirs.get('scons'), 'script'),
+        'system': safe_join(base_dirs.get('system'), 'bin'),
+        'icestorm': safe_join(base_dirs.get('icestorm'), 'bin'),
+        'iverilog': safe_join(base_dirs.get('iverilog'), 'bin'),
+        'verilator': safe_join(base_dirs.get('verilator'), 'bin'),
+        'gtkwave': safe_join(base_dirs.get('gtkwave'), 'bin')
     }
+
+    # Give the priority to the python packages installed with apio
+    os.environ['PATH'] = os.pathsep.join([
+        get_bin_dir(),
+        os.environ['PATH']
+    ])
+
+    # Give the priority to the packages installed by apio
+    os.environ['PATH'] = os.pathsep.join([
+        bin_dirs.get('system'),
+        bin_dirs.get('icestorm'),
+        bin_dirs.get('iverilog'),
+        bin_dirs.get('verilator'),
+        os.environ['PATH']
+    ])
+
+    if platform.system() == 'Windows':
+        os.environ['PATH'] = os.pathsep.join([
+            bin_dirs.get('gtkwave'),
+            os.environ['PATH']
+        ])
+
+    # Add environment variables
+    if not config_data:  # /etc/apio.json file does not exist
+        os.environ['IVL'] = safe_join(
+            base_dirs.get('iverilog'), 'lib', 'ivl')
+    os.environ['VLIB'] = safe_join(
+        base_dirs.get('iverilog'), 'vlib')
+    os.environ['ICEBOX'] = safe_join(
+        base_dirs.get('icestorm'), 'share', 'icebox')
+    os.environ['VERLIB'] = safe_join(
+        base_dirs.get('verilator'), 'share')
+
+    return bin_dirs
+
+
+def resolve_packages(packages, installed_packages, spec_packages):
+    bin_dirs = setup_environment()
 
     # -- Check packages
     check = True
     for package in packages:
-        if package in all_packages:
-            check &= _check_package(package, bin_dir.get(package))
+        version = installed_packages.get(package, {}).get('version', '')
+        spec_version = spec_packages.get(package, '')
+        check &= check_package(
+            package,
+            version,
+            spec_version,
+            bin_dirs.get(package))
 
     # -- Load packages
     if check:
-
-        # Give the priority to the python packages installed with apio
-        os.environ['PATH'] = os.pathsep.join([
-            dirname(sys.executable),
-            os.environ['PATH']
-        ])
-
-        # Give the priority to the packages installed by apio
-        os.environ['PATH'] = os.pathsep.join([
-            bin_dir.get('icestorm'),
-            bin_dir.get('iverilog'),
-            os.environ['PATH']
-        ])
-
-        if platform.system() == 'Windows':
-            os.environ['PATH'] = os.pathsep.join([
-                bin_dir.get('gtkwave'),
-                os.environ['PATH']
-            ])
-
-        # Add environment variables
-        if not config_data:  # /etc/apio.json file does not exist
-            os.environ['IVL'] = safe_join(
-                base_dir.get('iverilog'), 'lib', 'ivl')
-        os.environ['VLIB'] = safe_join(
-            base_dir.get('iverilog'), 'vlib')
-        os.environ['ICEBOX'] = safe_join(
-            base_dir.get('icestorm'), 'share', 'icebox')
-
         global scons_command
         scons_command = [normpath(sys.executable),
-                         safe_join(bin_dir['scons'], 'scons')]
+                         safe_join(bin_dirs.get('scons'), 'scons')]
 
     return check
 
 
-def _check_package(name, path=''):
-    is_dir = isdir(path)
-    if not is_dir:
-        click.secho(
-            'Error: {} toolchain is not installed'.format(name), fg='red')
-        if config_data:  # /etc/apio.json file exists
-            if _check_apt_get():
-                click.secho('Please run:\n'
-                            '   apt-get install apio-{}'.format(name),
-                            fg='yellow')
-            else:
-                click.secho('Please run:\n'
-                            '   apio install {}'.format(name), fg='yellow')
-        else:
-            click.secho('Please run:\n'
-                        '   apio install {}'.format(name), fg='yellow')
-    return is_dir
+def check_package(name, version, spec_version, path):
+    # Apio package 'gtkwave' only exists for Windows.
+    # Linux and MacOS user must install the native GTKWave.
+    if name == 'gtkwave' and platform.system() != 'Windows':
+        return True
+
+    # Check package path
+    if not isdir(path):
+        show_package_path_error(name)
+        show_package_install_instructions(name)
+        return False
+
+    # Check package version
+    if not check_package_version(version, spec_version):
+        show_package_version_warning(name, version, spec_version)
+        show_package_install_instructions(name)
+        return False
+
+    return True
+
+
+def check_package_version(version, spec_version):
+    try:
+        spec = semantic_version.Spec(spec_version)
+        return semantic_version.Version(version) in spec
+    except ValueError:
+        pass
+
+
+def show_package_version_warning(name, version, spec_version):
+    message = ('Warning: package \'{0}\' version {1}\n'
+               'does not match the semantic version {2}').format(
+        name, version, spec_version)
+    click.secho(message, fg='yellow')
+
+
+def show_package_path_error(name):
+    message = 'Error: package \'{}\' is not installed'.format(name)
+    click.secho(message, fg='red')
+
+
+def show_package_install_instructions(name):
+    if config_data and _check_apt_get():  # /etc/apio.json file exists
+        click.secho('Please run:\n'
+                    '   apt-get install apio-{}'.format(name), fg='yellow')
+    else:
+        click.secho('Please run:\n'
+                    '   apio install {}'.format(name), fg='yellow')
 
 
 def _check_apt_get():
@@ -293,6 +343,20 @@ def _check_apt_get():
                     re.findall('ii\s+apio', result.get('out'))
             check = len(match) > 0
     return check
+
+
+def get_package_version(name, profile):
+    version = ''
+    if name in profile.packages:
+        version = profile.packages.get(name).get('version')
+    return version
+
+
+def get_package_spec_version(name, resources):
+    spec_version = ''
+    if name in resources.distribution.get('packages'):
+        spec_version = resources.distribution.get('packages').get(name)
+    return spec_version
 
 
 def change_filemtime(path, time):
@@ -344,6 +408,11 @@ def _parse_result(kwargs, result):
             result[k].strip()
 
 
+def call(cmd):
+    setup_environment()
+    return subprocess.call(cmd, shell=True)
+
+
 def get_pypi_latest_version():
     r = None
     version = None
@@ -351,9 +420,14 @@ def get_pypi_latest_version():
         r = requests.get('https://pypi.python.org/pypi/apio/json')
         version = r.json().get('info').get('version')
         r.raise_for_status()
-    except requests.exceptions.ConnectionError:
-        click.secho('Error: Could not connect to Pypi.\n'
-                    'Check your internet connection and try again', fg='red')
+    except requests.exceptions.ConnectionError as e:
+        error_message = str(e)
+        if 'NewConnectionError' in error_message:
+            click.secho('Error: could not connect to Pypi.\n'
+                        'Check your internet connection and try again',
+                        fg='red')
+        else:
+            click.secho(error_message, fg='red')
     except Exception as e:
         click.secho('Error: ' + str(e), fg='red')
     finally:
@@ -426,6 +500,31 @@ def get_serial_ports():
             })
 
     return result
+
+
+def get_tinyprog_meta():
+    command = join(get_bin_dir(), 'tinyprog')
+    result = exec_command([command, '--pyserial', '--meta'])
+    try:
+        out = unicoder(result.get('out', ''))
+        if out:
+            return json.loads(out)
+    except Exception as e:
+        print(e)
+        return []
+    return []
+
+
+def get_bin_dir():
+    candidate = dirname(sys.modules['__main__'].__file__)
+    # Windows + virtualenv = 💩
+    # In this case the main file is: venv/Scripts/apio.exe/__main__.py!
+    # This is not good because venv/Scripts/apio.exe is not a directory
+    # So here we go with the workaround:
+    if candidate.endswith('.exe'):
+        return dirname(candidate)
+    else:
+        return candidate
 
 
 def get_python_version():

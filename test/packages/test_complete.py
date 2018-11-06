@@ -29,13 +29,13 @@ def test_complete(clirunner, validate_cliresult, configenv):
         # apio uninstall examples
         result = clirunner.invoke(
             cmd_uninstall, ['examples'], input='y')
-        validate_cliresult(result)
         assert 'Do you want to continue?' in result.output
-        assert 'Package \'examples\' is not installed' in result.output
+        assert 'Error: package \'examples\' is not installed' in result.output
 
         # apio install examples@X
         result = clirunner.invoke(cmd_install, ['examples@X'])
-        assert 'Error: Invalid semantic version' in result.output
+        assert 'Warning: package \'examples\' version X' in result.output
+        assert 'does not match the semantic version' in result.output
 
         # apio install examples@0.0.7
         result = clirunner.invoke(cmd_install, ['examples@0.0.7'])
@@ -81,7 +81,6 @@ def test_complete(clirunner, validate_cliresult, configenv):
         # apio upload
         result = clirunner.invoke(cmd_upload)
         assert result.exit_code == 1
-        assert 'Board: icezum' in result.output
 
         # apio examples --list
         result = clirunner.invoke(cmd_examples, ['--list'])

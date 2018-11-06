@@ -24,19 +24,13 @@ class Profile(object):
             util.get_home_dir(), 'profile.json')
         self.load()
 
-    def check_package(self, name, release_name):
-        return (name in self.packages.keys()) or \
-               isdir(util.get_package_dir(release_name))
-
-    def check_package_version(self, name, version, release_name=''):
-        ret = False
-        if self.check_package(name, release_name):
-            pkg_version = self.get_package_version(name, release_name)
+    def installed_version(self, name, version):
+        if name in self.packages:
+            pkg_version = self.get_package_version(name)
             pkg_version = self._convert_old_version(pkg_version)
             version = self._convert_old_version(version)
-            ret = (semantic_version.Version(pkg_version) <
-                   semantic_version.Version(version))
-        return ret
+            return (semantic_version.Version(pkg_version) ==
+                    semantic_version.Version(version))
 
     def _convert_old_version(self, version):
         # Convert old versions to new format
@@ -75,7 +69,7 @@ class Profile(object):
 
     def get_package_version(self, name, release_name=''):
         version = '0.0.0'
-        if name in self.packages.keys():
+        if name in self.packages:
             version = self.packages.get(name).get('version')
         elif release_name:
             dir_name = util.get_package_dir(release_name)
@@ -121,7 +115,7 @@ class Profile(object):
                 'settings': self.settings,
                 'packages': self.packages
             }
-            json.dump(data, profile)
+            json.dump(data, profile, indent=4, sort_keys=True)
 
     def list(self):
         for key in self.config:

@@ -27,6 +27,17 @@
       "desc": "Lattice FTUSB Interface Cable"
     }
   },
+  "iceblink40-hx1k" : {
+    "name": "iCEblink40-HX1K",
+    "fpga": "iCE40-HX1K-VQ100",
+    "programmer": {
+      "type": "iCEburn"
+    },
+    "usb": {
+      "vid": "1443",
+      "pid": "0007"
+    }
+  },
   "go-board": {
     "name": "Nandland Go board",
     "fpga": "iCE40-HX1K-VQ100",
@@ -119,6 +130,20 @@
       "pid": "2100"
     }
   },
+  "TinyFPGA-BX": {
+    "name": "TinyFPGA BX",
+    "fpga": "iCE40-LP8K-CM81",
+    "programmer": {
+      "type": "tinyprog"
+    },
+    "usb": {
+      "vid": "1d50",
+      "pid": "6130"
+    },
+    "tinyprog": {
+      "desc": "TinyFPGA BX"
+    }
+  },
   "alhambra-ii": {
     "name": "Alhambra II",
     "fpga": "iCE40-HX4K-TQ144",
@@ -131,6 +156,90 @@
     },
     "ftdi": {
       "desc": "Alhambra II.*"
+    }
+  },
+  "upduino": {
+    "name": "UPDuino v1.0",
+    "fpga": "iCE40-UP5K-SG48",
+    "programmer": {
+      "type": "iceprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6014"
+    },
+    "ftdi": {
+      "desc": "Single RS232-HS"
+    }
+  },
+  "upduino2": {
+    "name": "UPDuino v2.0",
+    "fpga": "iCE40-UP5K-SG48",
+    "programmer": {
+      "type": "iceprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6014"
+    },
+    "ftdi": {
+      "desc": "Single RS232-HS"
+    }
+  },
+  "iCEBreaker": {
+    "name": "iCEBreaker",
+    "fpga": "iCE40-UP5K-SG48",
+    "programmer": {
+      "type": "iceprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6010"
+    },
+    "ftdi": {
+      "desc": "Dual RS232-HS"
+    }
+  },
+  "iCEBreaker-bitsy": {
+    "name": "iCEBreaker bitsy",
+    "fpga": "iCE40-UP5K-SG48",
+    "programmer": {
+      "type": "iceprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6010"
+    },
+    "ftdi": {
+      "desc": "Dual RS232-HS"
+    }
+  },
+  "fpga101": {
+    "name": "FPGA 101 - Workshop Badge",
+    "fpga": "iCE40-UP5K-SG48",
+    "programmer": {
+      "type": "iceprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6014"
+    },
+    "ftdi": {
+      "desc": "Single RS232-HS"
+    }
+  },
+  "iCE40-UP5K": {
+    "name": "iCE40 UltraPlus Breakout Board",
+    "fpga": "iCE40-UP5K-SG48",
+    "programmer": {
+      "type": "iceprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6010"
+    },
+    "ftdi": {
+      "desc": "Lattice iCE40UP5K Breakout"
     }
   }
 }

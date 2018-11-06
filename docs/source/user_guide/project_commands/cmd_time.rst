@@ -17,7 +17,7 @@ Description
 
 Bitstream timing analysis: generates a **rpt** file with a topological timing analysis report, from a **verilog** and a **pcf** files.
 
-This command requires the ``icestorm`` package.
+Required packages: ``scons``, ``icestorm``.
 
 Options
 -------
@@ -71,15 +71,14 @@ Examples
 .. code::
 
   $ apio time
-  Board: icezum
   [] Processing icezum
-  -------------------------------------------------------------------------------------------------
+  ---------------------------------------------------------------------------------------------
   [...]
   // Reading input .asc file..
   // Reading 1k chipdb file..
   // Creating timing netlist..
   // Timing estimate: 0.24 ns (4161.98 MHz)
-  ================================== [SUCCESS] Took 1.10 seconds =================================
+  ================================== [SUCCESS] Took 1.10 seconds ==============================
 
   $ cat hardware.rpt
 

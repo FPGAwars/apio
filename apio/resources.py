@@ -62,8 +62,7 @@ class Resources(object):
                 'version': None,
                 'description': self.packages.get(package).get('description')
             }
-            if self.profile.check_package(package,
-               self.get_package_release_name(package)):
+            if package in self.profile.packages:
                 data['version'] = self.profile.get_package_version(
                     package, self.get_package_release_name(package))
                 installed_packages += [data]
@@ -116,7 +115,7 @@ class Resources(object):
         # Print table
         click.echo('\nSupported boards:\n')
 
-        BOARDLIST_TPL = ('{board:22} {fpga:20} {type:<5} {size:<5} {pack:<10}')
+        BOARDLIST_TPL = ('{board:25} {fpga:20} {type:<5} {size:<5} {pack:<10}')
         terminal_width, _ = click.get_terminal_size()
 
         click.echo('-' * terminal_width)

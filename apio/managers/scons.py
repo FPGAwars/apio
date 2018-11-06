@@ -6,6 +6,7 @@
 
 import os
 import re
+import sys
 import time
 import click
 import datetime
@@ -16,6 +17,7 @@ from os.path import isfile
 
 from apio import util
 from apio.managers.arguments import process_arguments
+from apio.managers.arguments import format_vars
 from apio.managers.system import System
 from apio.profile import Profile
 from apio.resources import Resources
@@ -24,8 +26,8 @@ from apio.resources import Resources
 class SCons(object):
 
     def __init__(self, project_dir=''):
-        self.resources = Resources()
         self.profile = Profile()
+        self.resources = Resources()
 
         if project_dir is not None:
             # Move to project dir
@@ -39,6 +41,17 @@ class SCons(object):
     @util.command
     def verify(self):
         return self.run('verify', packages=['scons', 'iverilog'])
+
+    @util.command
+    def lint(self, args):
+        var = format_vars({
+            'all': args.get('all'),
+            'top': args.get('top'),
+            'nowarn': args.get('nowarn'),
+            'warn': args.get('warn'),
+            'nostyle': args.get('nostyle')
+        })
+        return self.run('lint', var, packages=['scons', 'verilator'])
 
     @util.command
     def sim(self):
@@ -61,7 +74,7 @@ class SCons(object):
         var += ['prog={0}'.format(programmer)]
         return self.run('upload', var, board, packages=['scons', 'icestorm'])
 
-    def get_programmer(self, board, ext_serial_port, ext_ftdi_id, sram):
+    def get_programmer(self, board, ext_serial, ext_ftdi_id, sram):
         programmer = ''
 
         if board:
@@ -88,14 +101,19 @@ class SCons(object):
 
             # Replace FTDI index
             if '${FTDI_ID}' in programmer:
-                self.check_usb(board_data)
-                ftdi_id = self.get_ftdi_id(board_data, ext_ftdi_id)
+                self.check_usb(board, board_data)
+                ftdi_id = self.get_ftdi_id(board, board_data, ext_ftdi_id)
                 programmer = programmer.replace('${FTDI_ID}', ftdi_id)
+
+            # TinyFPGA BX board is not detected in MacOS HighSierra
+            if 'tinyprog' in board_data and 'darwin' in util.get_systype():
+                # In this case the serial check is ignored
+                return 'tinyprog --libusb --program'
 
             # Replace Serial port
             if '${SERIAL_PORT}' in programmer:
-                self.check_usb(board_data)
-                device = self.get_serial_port(board_data, ext_serial_port)
+                self.check_usb(board, board_data)
+                device = self.get_serial_port(board, board_data, ext_serial)
                 programmer = programmer.replace('${SERIAL_PORT}', device)
 
         return programmer
@@ -139,7 +157,7 @@ class SCons(object):
                     raise Exception
             except pkg_resources.DistributionNotFound:
                 click.secho(
-                    'Error: {} is not installed'.format(pip_pkg),
+                    'Error: \'{}\' is not installed'.format(pip_pkg),
                     fg='red')
                 click.secho('Please run:\n'
                             '   pip install -U apio[{}]'.format(pip_pkg),
@@ -151,7 +169,7 @@ class SCons(object):
             except Exception as e:
                 # Exit if a package is not working
                 python_version = util.get_python_version()
-                message = '`{}` not compatible with '.format(pip_pkg)
+                message = '\'{}\' not compatible with '.format(pip_pkg)
                 message += 'Python {}'.format(python_version)
                 message += '\n       {}'.format(e)
                 raise Exception(message)
@@ -178,7 +196,7 @@ class SCons(object):
 
         return programmer
 
-    def check_usb(self, board_data):
+    def check_usb(self, board, board_data):
         if 'usb' not in board_data:
             raise Exception('Missing board configuration: usb')
 
@@ -195,57 +213,81 @@ class SCons(object):
 
         if not found:
             # Board not connected
-            raise Exception('board not connected')
+            if 'tinyprog' in board_data:
+                click.secho(
+                    'Activate bootloader by pressing the reset button',
+                    fg='yellow')
+            raise Exception('board ' + board + ' not connected')
 
-    def get_serial_port(self, board_data, ext_serial_port):
+    def get_serial_port(self, board, board_data, ext_serial_port):
         # Search Serial port by USB id
-        device = self._check_serial(board_data, ext_serial_port)
+        device = self._check_serial(board, board_data, ext_serial_port)
         if device is None:
-            # Board not available
-            raise Exception('board not available')
+            # Board not connected
+            raise Exception('board ' + board + ' not connected')
         return device
 
-    def _check_serial(self, board_data, ext_serial_port):
+    def _check_serial(self, board, board_data, ext_serial_port):
         if 'usb' not in board_data:
             raise Exception('Missing board configuration: usb')
 
         usb_data = board_data.get('usb')
-        desc_pattern = '^' + (usb_data.get('desc') or '.*') + '$'
         hwid = '{0}:{1}'.format(
             usb_data.get('vid'),
             usb_data.get('pid')
         )
 
         # Match the discovered serial ports
-        for serial_port_data in util.get_serial_ports():
+        serial_ports = util.get_serial_ports()
+        if len(serial_ports) == 0:
+            # Board not available
+            raise Exception('board ' + board + ' not available')
+        for serial_port_data in serial_ports:
             port = serial_port_data.get('port')
             if ext_serial_port and ext_serial_port != port:
                 # If the --device options is set but it doesn't match
-                # with the detected port, skip the port.
+                # the detected port, skip the port.
                 continue
-            if hwid in serial_port_data.get('hwid') and \
-               re.match(desc_pattern, serial_port_data.get('description')):
+            if hwid.lower() in serial_port_data.get('hwid').lower():
+                if 'tinyprog' in board_data and \
+                   not self._check_tinyprog(board_data, port):
+                    # If the board uses tinyprog use its port detection
+                    # to double check the detected port.
+                    # If the port is not detected, skip the port.
+                    continue
                 # If the hwid and the description pattern matches
-                # return the device for the port.
+                # with the detected port return the port.
                 return port
 
-    def get_ftdi_id(self, board_data, ext_ftdi_id):
+    def _check_tinyprog(self, board_data, port):
+        desc_pattern = '^' + board_data.get('tinyprog').get('desc') + '$'
+        for tinyprog_meta in util.get_tinyprog_meta():
+            tinyprog_port = tinyprog_meta.get('port')
+            tinyprog_name = tinyprog_meta.get('boardmeta').get('name')
+            if port == tinyprog_port and re.match(desc_pattern, tinyprog_name):
+                # If the port is detected and it matches the pattern
+                return True
+
+    def get_ftdi_id(self, board, board_data, ext_ftdi_id):
         # Search device by FTDI id
-        ftdi_id = self._check_ftdi(board_data, ext_ftdi_id)
+        ftdi_id = self._check_ftdi(board, board_data, ext_ftdi_id)
         if ftdi_id is None:
-            # Board not available
-            raise Exception('board not available')
+            # Board not connected
+            raise Exception('board ' + board + ' not connected')
         return ftdi_id
 
-    def _check_ftdi(self, board_data, ext_ftdi_id):
+    def _check_ftdi(self, board, board_data, ext_ftdi_id):
         if 'ftdi' not in board_data:
             raise Exception('Missing board configuration: ftdi')
 
-        ftdi_data = board_data.get('ftdi')
-        desc_pattern = '^' + ftdi_data.get('desc') + '$'
+        desc_pattern = '^' + board_data.get('ftdi').get('desc') + '$'
 
         # Match the discovered FTDI chips
-        for ftdi_device in System().get_ftdi_devices():
+        ftdi_devices = System().get_ftdi_devices()
+        if len(ftdi_devices) == 0:
+            # Board not available
+            raise Exception('board ' + board + ' not available')
+        for ftdi_device in ftdi_devices:
             index = ftdi_device.get('index')
             if ext_ftdi_id and ext_ftdi_id != index:
                 # If the --device options is set but it doesn't match
@@ -270,7 +312,11 @@ class SCons(object):
         # -- Resolve packages
         if self.profile.check_exe_default():
             # Run on `default` config mode
-            if not util.resolve_packages(self.resources.packages, packages):
+            if not util.resolve_packages(
+              packages,
+              self.profile.packages,
+              self.resources.distribution.get('packages')
+             ):
                 # Exit if a package is not installed
                 raise Exception
         else:
@@ -296,8 +342,8 @@ class SCons(object):
             click.secho('-' * terminal_width, bold=True)
 
         if self.profile.get_verbose_mode() > 0:
-            click.secho('Executing: scons -Q {0} {1}'.format(
-                            command, ' '.join(variables)))
+            click.secho('Executing: {}'.format(
+                ' '.join(util.scons_command + ['-Q', command] + variables)))
 
         result = util.exec_command(
             util.scons_command + ['-Q', command] + variables,
@@ -326,6 +372,10 @@ class SCons(object):
         click.secho(line, fg=fg)
 
     def _on_stderr(self, line):
-        time.sleep(0.01)  # Delay
+        if '%|' in line and '100%|' not in line:
+            # Remove previous line for tqdm progress bar
+            CURSOR_UP = '\033[F'
+            ERASE_LINE = '\033[K'
+            sys.stdout.write(CURSOR_UP + ERASE_LINE)
         fg = 'red' if 'error' in line.lower() else 'yellow'
         click.secho(line, fg=fg)

@@ -32,7 +32,7 @@ setup(
     },
     install_requires=[
         'click>=5,<7',
-        'semantic_version>=2.5.0',
+        'semantic_version>=2.5.0,<3',
         'requests>=2.4.0,<3',
         'pyjwt>=1.5.3,<2',
         'colorama',
@@ -47,5 +47,6 @@ setup(
         'Environment :: Console',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
-        'Programming Language :: Python']
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 3']
 )

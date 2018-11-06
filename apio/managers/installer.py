@@ -7,7 +7,6 @@
 import re
 import click
 import shutil
-import semantic_version
 
 from os import makedirs, remove, rename
 from os.path import isfile, isdir, basename
@@ -50,7 +49,7 @@ class Installer(object):
             data = self.resources.packages.get(self.package)
             distribution = self.resources.distribution
 
-            self.specversion = distribution.get('packages').get(self.package)
+            self.spec_version = distribution.get('packages').get(self.package)
             self.package_name = data.get('release').get('package_name')
             self.extension = data.get('release').get('extension')
             platform = platform or self._get_platform()
@@ -60,17 +59,12 @@ class Installer(object):
                 valid_version = self._get_valid_version(
                     data.get('repository').get('name'),
                     data.get('repository').get('organization'),
-                    data.get('release').get('tag_name'),
-                    self.version,
-                    self.specversion,
-                    force
+                    data.get('release').get('tag_name')
                 )
                 # Valid version
                 if not valid_version:
                     # Error
-                    click.secho(
-                        'Error: No version {} found'.format(self.version),
-                        fg='red')
+                    click.secho('Error: no valid version found', fg='red')
                     exit(1)
 
                 self.version = valid_version
@@ -90,7 +84,7 @@ class Installer(object):
 
         if self.packages_dir == '':
             click.secho(
-                'Error: No such package \'{0}\''.format(self.package),
+                'Error: no such package \'{}\''.format(self.package),
                 fg='red')
             exit(1)
 
@@ -132,7 +126,7 @@ class Installer(object):
             click.secho('Warning: permission denied in packages directory',
                         fg='yellow')
             click.secho(str(e), fg='red')
-        except Exception as e:
+        except Exception:
             # Try os name
             dlpath = self._install_os_package(platform_download_url)
 
@@ -195,7 +189,7 @@ class Installer(object):
 
     def uninstall(self):
         if isdir(util.safe_join(self.packages_dir, self.package_name)):
-            click.echo('Uninstalling %s package' % click.style(
+            click.echo('Uninstalling %s package:' % click.style(
                 self.package, fg='cyan'))
             shutil.rmtree(
                 util.safe_join(self.packages_dir, self.package_name))
@@ -204,8 +198,7 @@ class Installer(object):
                 """successfully uninstalled!""".format(self.package),
                 fg='green')
         else:
-            click.secho('Package \'{0}\' is not installed'.format(
-                self.package), fg='red')
+            util.show_package_path_error(self.package)
         self.profile.remove_package(self.package)
         self.profile.save()
 
@@ -226,78 +219,55 @@ class Installer(object):
             extension)
         return tarball
 
-    def _get_valid_version(self, name, organization, tag_name,
-                           req_version='', specversion='', force=False):
-        # Check spec version
-        try:
-            spec = semantic_version.Spec(specversion)
-        except ValueError:
-            click.secho('Invalid distribution version {0}: {1}'.format(
-                        name, specversion), fg='red')
-            exit(1)
+    def _get_valid_version(self, rel_name, organization, tag_name):
 
         # Download latest releases list
-        releases = api_request('{}/releases'.format(name), organization)
+        releases = api_request('{}/releases'.format(rel_name), organization)
 
-        if req_version:
+        if self.version:
             # Find required version via @
+            if not util.check_package_version(self.version, self.spec_version):
+                util.show_package_version_warning(
+                    self.package, self.version, self.spec_version)
+                exit(1)
             return self._find_required_version(
-                releases, tag_name, req_version, spec, force)
+                releases, tag_name, self.version, self.spec_version)
         else:
             # Find latest version release
             return self._find_latest_version(
-                releases, tag_name, req_version, spec)
+                releases, tag_name, self.spec_version)
 
-    def _find_required_version(self, releases, tag_name, req_version, spec,
-                               force):
-        version = self._check_sem_version(req_version, spec)
+    def _find_required_version(self, releases, tag_name, req_v, spec_v):
         for release in releases:
-            prerelease = 'prerelease' in release and release.get('prerelease')
             if 'tag_name' in release:
-                tag = tag_name.replace('%V', req_version)
+                tag = tag_name.replace('%V', req_v)
                 if tag == release.get('tag_name'):
-                    if prerelease and not force:
+                    prerelease = release.get('prerelease', False)
+                    if prerelease and not self.force_install:
                         click.secho(
-                            'Warning: ' + req_version + ' is' +
-                            ' a pre-release.\n' +
-                            '         Use --force to install',
+                            'Warning: ' + req_v + ' is' +
+                            ' a pre-release. Use --force to install',
                             fg='yellow')
-                        exit(2)
-                    return version
+                        exit(1)
+                    return req_v
 
-    def _find_latest_version(self, releases, tag_name, req_version, spec):
+    def _find_latest_version(self, releases, tag_name, spec_v):
         for release in releases:
-            prerelease = 'prerelease' in release and release.get('prerelease')
             if 'tag_name' in release:
                 pattern = tag_name.replace('%V', '(?P<v>.*?)') + '$'
                 match = re.search(pattern, release.get('tag_name'))
                 if match:
+                    prerelease = release.get('prerelease', False)
                     if not prerelease:
                         version = match.group('v')
-                        return self._check_sem_version(version, spec)
-
-    def _check_sem_version(self, version, spec):
-        try:
-            if semantic_version.Version(version) in spec:
-                return version
-            else:
-                click.secho(
-                    'Error: Invalid semantic version ({0})'.format(
-                        self.specversion),
-                    fg='red')
-                exit(1)
-        except ValueError:
-            click.secho(
-                'Error: Invalid semantic version ({0})'.format(
-                    self.specversion),
-                fg='red')
-            exit(1)
+                        if util.check_package_version(version, spec_v):
+                            return version
 
     def _download(self, url):
         # Note: here we check only for the version of locally installed
         # packages. For this reason we don't say what's the installation
         # path.
-        if self.profile.check_package_version(self.package, self.version) \
+        if not self.profile.installed_version(self.package, self.version) \
            or self.force_install:
             fd = FileDownloader(url, self.packages_dir)
             filepath = fd.get_filepath()

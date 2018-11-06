@@ -30,6 +30,12 @@ System requirements
   application (Terminal). For Mac OS X and Linux OS - *Terminal* application,
   for Windows OS – ``cmd.exe`` application.
 
+:Access to Serial Ports (USB/UART):
+
+    **Windows Users:** Please check that you have correctly installed USB driver from board manufacturer.
+
+    **Linux Users:** Ubuntu/Debian users may need to add own "username" to the "dialout" group if they are not "root", doing this issuing a ``sudo usermod -a -G dialout $USER``.
+
 Install Apio
 ------------
 
@@ -53,7 +59,8 @@ a few options here:
 
 .. note::
 
-    Debian users can also install the application and its packages by executing:
+    Debian users can also install the application and its packages by executing the following commands.
+    (These packages may not be updated).
 
     .. code::
 
@@ -72,7 +79,7 @@ For boards with a FTDI interface.
 
     $ apio drivers --ftdi-enable
 
-To revert the FTDI drivers configuration
+To revert the FTDI drivers configuration.
 
 .. code::
 
@@ -88,7 +95,7 @@ For boards with a Serial interface.
 
     $ apio drivers --serial-enable
 
-To revert the Serial drivers configuration
+To revert the Serial drivers configuration.
 
 .. code::
 

@@ -8,10 +8,11 @@ import os
 import click
 import subprocess
 
-from os.path import isfile, isdir
+from os.path import isfile
 
 from apio import util
 from apio.profile import Profile
+from apio.resources import Resources
 
 platform = util.get_systype()
 
@@ -77,47 +78,62 @@ class Drivers(object):  # pragma: no cover
         if 'linux' in platform:
             return self._ftdi_enable_linux()
         elif 'darwin' in platform:
-            self.profile = Profile()
+            self._setup_darwin()
             return self._ftdi_enable_darwin()
         elif 'windows' in platform:
+            self._setup_windows()
             return self._ftdi_enable_windows()
 
     def ftdi_disable(self):
         if 'linux' in platform:
             return self._ftdi_disable_linux()
         elif 'darwin' in platform:
-            self.profile = Profile()
+            self._setup_darwin()
             return self._ftdi_disable_darwin()
         elif 'windows' in platform:
+            self._setup_windows()
             return self._ftdi_disable_windows()
 
     def serial_enable(self):
         if 'linux' in platform:
             return self._serial_enable_linux()
         elif 'darwin' in platform:
-            self.profile = Profile()
+            self._setup_darwin()
             return self._serial_enable_darwin()
         elif 'windows' in platform:
+            self._setup_windows()
             return self._serial_enable_windows()
 
     def serial_disable(self):
         if 'linux' in platform:
             return self._serial_disable_linux()
         elif 'darwin' in platform:
-            self.profile = Profile()
+            self._setup_darwin()
             return self._serial_disable_darwin()
         elif 'windows' in platform:
+            self._setup_windows()
             return self._serial_disable_windows()
 
     def pre_upload(self):
         if 'darwin' in platform:
-            self.profile = Profile()
+            self._setup_darwin()
             self._pre_upload_darwin()
 
     def post_upload(self):
         if 'darwin' in platform:
-            self.profile = Profile()
+            self._setup_darwin()
             self._post_upload_darwin()
+
+    def _setup_darwin(self):
+        self.profile = Profile()
+
+    def _setup_windows(self):
+        profile = Profile()
+        resources = Resources()
+
+        self.name = 'drivers'
+        self.version = util.get_package_version(self.name, profile)
+        self.spec_version = util.get_package_spec_version(self.name, resources)
 
     def _ftdi_enable_linux(self):
         click.secho('Configure FTDI drivers for FPGA')
@@ -126,6 +142,7 @@ class Drivers(object):  # pragma: no cover
                              self.ftdi_rules_local_path,
                              self.ftdi_rules_system_path])
             self._reload_rules()
+            self._add_dialout_group()
             click.secho('FTDI drivers enabled', fg='green')
             click.secho('Unplug and reconnect your board', fg='yellow')
         else:
@@ -150,6 +167,7 @@ class Drivers(object):  # pragma: no cover
                             self.serial_rules_local_path,
                             self.serial_rules_system_path])
             self._reload_rules()
+            self._add_dialout_group()
             click.secho('Serial drivers enabled', fg='green')
             click.secho('Unplug and reconnect your board', fg='yellow')
         else:
@@ -170,6 +188,9 @@ class Drivers(object):  # pragma: no cover
         subprocess.call(['sudo', 'udevadm', 'trigger'])
         subprocess.call(['sudo', 'service', 'udev', 'restart'])
 
+    def _add_dialout_group(self):
+        subprocess.call(['sudo', 'usermod', '-a', '-G', 'dialout', '$USER'])
+
     def _ftdi_enable_darwin(self):
         # Check homebrew
         brew = subprocess.call('which brew > /dev/null', shell=True)
@@ -178,8 +199,8 @@ class Drivers(object):  # pragma: no cover
         else:
             click.secho('Enable FTDI drivers for FPGA')
             subprocess.call(['brew', 'update'])
-            self._brew_install('libftdi')
             self._brew_install('libffi')
+            self._brew_install('libftdi')
             self.profile.add_setting('macos_ftdi_drivers', True)
             self.profile.save()
             click.secho('FTDI drivers enabled', fg='green')
@@ -198,22 +219,26 @@ class Drivers(object):  # pragma: no cover
         else:
             click.secho('Enable Serial drivers for FPGA')
             subprocess.call(['brew', 'update'])
-            self._brew_install('libusb')
             self._brew_install('libffi')
-            # self.profile.add_setting('macos_serial_drivers', True)
-            # self.profile.save()
+            self._brew_install('libusb')
+            # self._brew_install_serial_drivers()
             click.secho('Serial drivers enabled', fg='green')
 
     def _serial_disable_darwin(self):
         click.secho('Disable Serial drivers\' configuration')
-        # self.profile.add_setting('macos_serial_drivers', False)
-        # self.profile.save()
         click.secho('Serial drivers disabled', fg='green')
 
     def _brew_install(self, package):
         subprocess.call(['brew', 'install', '--force', package])
         subprocess.call(['brew', 'unlink', package])
         subprocess.call(['brew', 'link', '--force', package])
+
+    def _brew_install_serial_drivers(self):
+        subprocess.call(
+            ['brew', 'tap', 'mengbo/ch340g-ch34g-ch34x-mac-os-x-driver',
+             'https://github.com/mengbo/ch340g-ch34g-ch34x-mac-os-x-driver'])
+        subprocess.call(
+            ['brew', 'cask', 'install', 'wch-ch34x-usb-serial-driver'])
 
     def _pre_upload_darwin(self):
         if self.profile.settings.get('macos_ftdi_drivers', False):
@@ -244,7 +269,12 @@ class Drivers(object):  # pragma: no cover
         zadig_ini = 'zadig.ini'
 
         try:
-            if isdir(drivers_bin_dir):
+            if util.check_package(
+                self.name,
+                self.version,
+                self.spec_version,
+                drivers_bin_dir
+            ):
                 click.secho('Launch drivers configuration tool')
                 click.secho(FTDI_INSTALL_DRIVER_INSTRUCTIONS, fg='yellow')
                 # Copy zadig.ini
@@ -257,7 +287,6 @@ class Drivers(object):  # pragma: no cover
                 click.secho('FTDI drivers configuration finished',
                             fg='green')
             else:
-                util._check_package('drivers')
                 result = 1
         except Exception as e:
             click.secho('Error: ' + str(e), fg='red')
@@ -283,7 +312,12 @@ class Drivers(object):  # pragma: no cover
         drivers_bin_dir = util.safe_join(drivers_base_dir, 'bin')
 
         try:
-            if isdir(drivers_bin_dir):
+            if util.check_package(
+                self.name,
+                self.version,
+                self.spec_version,
+                drivers_bin_dir
+            ):
                 click.secho('Launch drivers configuration tool')
                 click.secho(SERIAL_INSTALL_DRIVER_INSTRUCTIONS, fg='yellow')
                 result = util.exec_command(
@@ -291,7 +325,6 @@ class Drivers(object):  # pragma: no cover
                 click.secho('Serial drivers configuration finished',
                             fg='green')
             else:
-                util._check_package('drivers')
                 result = 1
         except Exception as e:
             click.secho('Error: ' + str(e), fg='red')

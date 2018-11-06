@@ -148,13 +148,15 @@ def process_arguments(args, resources):  # noqa
                     p.read()
                     if p.board:
                         var_board = p.board
-                        click.secho(
-                            'Board: {}'.format(
+                        if var_board in resources.boards:
+                            fpga = resources.boards.get(var_board).get('fpga')
+                            fpga_size = resources.fpgas.get(fpga).get('size')
+                            fpga_type = resources.fpgas.get(fpga).get('type')
+                            fpga_pack = resources.fpgas.get(fpga).get('pack')
+                        else:
+                            # Unknown board
+                            raise Exception('unknown board: {0}'.format(
                                 var_board))
-                        fpga = resources.boards.get(var_board).get('fpga')
-                        fpga_size = resources.fpgas.get(fpga).get('size')
-                        fpga_type = resources.fpgas.get(fpga).get('type')
-                        fpga_pack = resources.fpgas.get(fpga).get('pack')
                     else:
                         click.secho(
                             'Error: insufficient arguments: missing board',

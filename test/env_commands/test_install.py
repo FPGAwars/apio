@@ -18,4 +18,4 @@ def test_install_wrong_package(clirunner, configenv):
         configenv()
         result = clirunner.invoke(cmd_install, ['missing_package'])
         assert result.exit_code == 1
-        assert 'Error: No such package' in result.output
+        assert 'Error: no such package' in result.output

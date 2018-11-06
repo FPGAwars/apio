@@ -19,7 +19,7 @@ Upload the bitstream to the FPGA. It builds the project if required.
 
 It also performs an automatic discovery and validation of the FTDI chip depending on the selected board.
 
-This command requires the ``system`` and ``icestorm`` packages.
+Required packages: ``scons``, ``system``, ``icestorm``.
 
 .. note::
 
@@ -83,9 +83,8 @@ Examples
 .. code::
 
   $ apio upload
-  Board: icezum
   [] Processing icezum
-  -------------------------------------------------------------------------------------------------
+  ---------------------------------------------------------------------------------------------
   [...]
   iceprog -d i:0x0403:0x6010:0 hardware.bin
   init..
@@ -100,6 +99,6 @@ Examples
   VERIFY OK
   cdone: high
   Bye.
-  ================================== [SUCCESS] Took 1.96 seconds =================================
+  ================================== [SUCCESS] Took 1.96 seconds ==============================
 
 .. Executing: scons -Q upload fpga_type=hx fpga_pack=tq144 fpga_size=1k device=0 -f /path/to/SConstruct
