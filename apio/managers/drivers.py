@@ -142,7 +142,6 @@ class Drivers(object):  # pragma: no cover
                              self.ftdi_rules_local_path,
                              self.ftdi_rules_system_path])
             self._reload_rules()
-            self._add_dialout_group()
             click.secho('FTDI drivers enabled', fg='green')
             click.secho('Unplug and reconnect your board', fg='yellow')
         else:
@@ -152,7 +151,7 @@ class Drivers(object):  # pragma: no cover
         if isfile(self.old_ftdi_rules_system_path):
             subprocess.call(['sudo', 'rm', self.old_ftdi_rules_system_path])
         if isfile(self.ftdi_rules_system_path):
-            click.secho('Revert FTDI drivers\' configuration')
+            click.secho('Revert FTDI drivers configuration')
             subprocess.call(['sudo', 'rm', self.ftdi_rules_system_path])
             self._reload_rules()
             click.secho('FTDI drivers disabled', fg='green')
@@ -163,19 +162,22 @@ class Drivers(object):  # pragma: no cover
     def _serial_enable_linux(self):
         click.secho('Configure Serial drivers for FPGA')
         if not isfile(self.serial_rules_system_path):
+            group_added = self._add_dialout_group()
             subprocess.call(['sudo', 'cp',
                             self.serial_rules_local_path,
                             self.serial_rules_system_path])
             self._reload_rules()
-            self._add_dialout_group()
             click.secho('Serial drivers enabled', fg='green')
             click.secho('Unplug and reconnect your board', fg='yellow')
+            if group_added:
+                click.secho('Restart your machine to enable the dialout group',
+                            fg='yellow')
         else:
             click.secho('Already enabled', fg='yellow')
 
     def _serial_disable_linux(self):
         if isfile(self.serial_rules_system_path):
-            click.secho('Revert Serial drivers\' configuration')
+            click.secho('Revert Serial drivers configuration')
             subprocess.call(['sudo', 'rm', self.serial_rules_system_path])
             self._reload_rules()
             click.secho('Serial drivers disabled', fg='green')
@@ -189,7 +191,10 @@ class Drivers(object):  # pragma: no cover
         subprocess.call(['sudo', 'service', 'udev', 'restart'])
 
     def _add_dialout_group(self):
-        subprocess.call(['sudo', 'usermod', '-a', '-G', 'dialout', '$USER'])
+        groups = subprocess.check_output('groups')
+        if 'dialout' not in groups:
+            subprocess.call('sudo usermod -a -G dialout $USER', shell=True)
+            return True
 
     def _ftdi_enable_darwin(self):
         # Check homebrew
@@ -206,7 +211,7 @@ class Drivers(object):  # pragma: no cover
             click.secho('FTDI drivers enabled', fg='green')
 
     def _ftdi_disable_darwin(self):
-        click.secho('Disable FTDI drivers\' configuration')
+        click.secho('Disable FTDI drivers configuration')
         self.profile.add_setting('macos_ftdi_drivers', False)
         self.profile.save()
         click.secho('FTDI drivers disabled', fg='green')
@@ -225,7 +230,7 @@ class Drivers(object):  # pragma: no cover
             click.secho('Serial drivers enabled', fg='green')
 
     def _serial_disable_darwin(self):
-        click.secho('Disable Serial drivers\' configuration')
+        click.secho('Disable Serial drivers configuration')
         click.secho('Serial drivers disabled', fg='green')
 
     def _brew_install(self, package):

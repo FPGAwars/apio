@@ -6,7 +6,7 @@ Apio is an open source ecosystem for open FPGA boards. It was inspired by [Platf
 
 Apio (pronounced [ˈa.pjo]) is a multiplatform toolbox, with static pre-built packages, project configuration tools and easy command interface to verify, synthesize, simulate and upload your verilog designs.
 
-Apio is a command line interface (CLI) made for open FPGA developers. It is also a flexible project, ready to be adapted to new experimental toolchains, boards and cores. It contains some extra utilities like cross-platform lsusb and lsftdi, examples, drivers' configuration, etc.
+Apio is a command line interface (CLI) made for open FPGA developers. It is also a flexible project, ready to be adapted to new experimental toolchains, boards and cores. It contains some extra utilities like cross-platform lsusb and lsftdi, examples, drivers configuration, etc.
 
 **Apio evolves with the growing open FPGA movement. It must be flexible, adaptative and hackable**
 
