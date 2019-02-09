@@ -33,6 +33,6 @@
   },
   "ujprog": {
     "command": "ujprog",
-    "args": "-j SRAM"
+    "args": "-q -j SRAM"
   }
 }
