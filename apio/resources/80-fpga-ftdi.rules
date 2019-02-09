@@ -1,2 +1,4 @@
 ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6010", MODE="0660", GROUP="plugdev", TAG+="uaccess"
 ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6014", MODE="0660", GROUP="plugdev", TAG+="uaccess"
+ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6015", MODE="0660", GROUP="plugdev", TAG+="uaccess"
+

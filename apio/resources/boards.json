@@ -274,7 +274,7 @@
     "name": "ULX3S",
     "fpga": "ECP5-LFE5U-45F-CABGA381",
     "programmer": {
-      "type": "iceprog"
+      "type": "ujprog"
     },
     "usb": {
       "vid": "0403",
