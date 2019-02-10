@@ -270,7 +270,29 @@
       "desc": "TinyFPGA EX"
     }
   },
-  "ulx3s": {
+  "ulx3s-12f": {
+    "name": "ULX3S",
+    "fpga": "ECP5-LFE5U-12F-CABGA381",
+    "programmer": {
+      "type": "ujprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6015"
+    }
+  },  
+  "ulx3s-25f": {
+    "name": "ULX3S",
+    "fpga": "ECP5-LFE5U-25F-CABGA381",
+    "programmer": {
+      "type": "ujprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6015"
+    }
+  },  
+  "ulx3s-45f": {
     "name": "ULX3S",
     "fpga": "ECP5-LFE5U-45F-CABGA381",
     "programmer": {
@@ -279,9 +301,17 @@
     "usb": {
       "vid": "0403",
       "pid": "6015"
+    }
+  },  
+  "ulx3s-85f": {
+    "name": "ULX3S",
+    "fpga": "ECP5-LFE5U-85F-CABGA381",
+    "programmer": {
+      "type": "ujprog"
     },
-    "ftdi": {
-      "desc": "ULX3S FPGA 45K v1.7"
+    "usb": {
+      "vid": "0403",
+      "pid": "6015"
     }
   },  
   "versa": {
