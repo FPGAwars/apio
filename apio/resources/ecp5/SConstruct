@@ -73,7 +73,6 @@ if 'build' in COMMAND_LINE_TARGETS or \
 # -- Resources paths
 IVL_PATH = os.environ['IVL'] if 'IVL' in os.environ else ''
 TRELLIS_PATH = os.environ['TRELLIS'] if 'TRELLIS' in os.environ else ''
-BASECFG_PATH = os.path.join(TRELLIS_PATH, 'basecfgs', 'empty_{0}-{1}.config'.format(FPGA_TYPE,FPGA_SIZE.replace('k','f')))
 DATABASE_PATH = os.path.join(TRELLIS_PATH, 'database')
 CHIPDB_PATH = os.path.join(TRELLIS_PATH, 'chipdb-{0}.txt'.format(FPGA_SIZE))
 YOSYS_PATH = os.environ['YOSYS_LIB'] if 'YOSYS_LIB' in os.environ else ''
@@ -167,7 +166,7 @@ except IndexError:
 
 # -- Define the Sintesizing Builder
 synth = Builder(
-    action='yosys -p \"synth_ecp5 -nomux -nodram -json $TARGET\" {} $SOURCES'.format(
+    action='yosys -p \"synth_ecp5 -json $TARGET\" {} $SOURCES'.format(
         '' if VERBOSE_ALL or VERBOSE_YOSYS else '-q'
     ),
     suffix='.json',
@@ -175,8 +174,8 @@ synth = Builder(
     source_scanner=list_scanner)
 
 pnr = Builder(
-    action='nextpnr-ecp5 --{1} --package {2} --json $SOURCE --textcfg $TARGET --basecfg {3} {4} {5} '.format(
-        FPGA_TYPE, FPGA_SIZE, FPGA_PACK, BASECFG_PATH, '--lpf ' + str(LPF) if LPF else '',
+    action='nextpnr-ecp5 --{1} --package {2} --json $SOURCE --textcfg $TARGET {3} {4} '.format(
+        FPGA_TYPE, FPGA_SIZE, FPGA_PACK, '--lpf ' + str(LPF) if LPF else '',
         '' if VERBOSE_ALL or VERBOSE_PNR else '-q'),
     suffix='.config',
     src_suffix='.json')
