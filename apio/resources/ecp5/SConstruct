@@ -174,7 +174,7 @@ synth = Builder(
     source_scanner=list_scanner)
 
 pnr = Builder(
-    action='nextpnr-ecp5 --{1} --package {2} --json $SOURCE --textcfg $TARGET {3} {4} '.format(
+    action='nextpnr-ecp5 --{1} --package {2} --json $SOURCE --textcfg $TARGET {3} {4} --timing-allow-fail'.format(
         FPGA_TYPE, FPGA_SIZE, FPGA_PACK, '--lpf ' + str(LPF) if LPF else '',
         '' if VERBOSE_ALL or VERBOSE_PNR else '-q'),
     suffix='.config',
