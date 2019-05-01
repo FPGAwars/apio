@@ -27,7 +27,7 @@
       "desc": "Lattice FTUSB Interface Cable"
     }
   },
-  "iceblink40-hx1k" : {
+  "iceblink40-hx1k": {
     "name": "iCEblink40-HX1K",
     "fpga": "iCE40-HX1K-VQ100",
     "programmer": {
@@ -240,6 +240,20 @@
     },
     "ftdi": {
       "desc": "Lattice iCE40UP5K Breakout"
+    }
+  },
+  "Alchitry-Cu": {
+    "name": "Alchitry Cu Development Board",
+    "fpga": "iCE40-HX8K-CB132",
+    "programmer": {
+      "type": "iceprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6010"
+    },
+    "ftdi": {
+      "desc": "Alchitry Cu"
     }
   }
 }
