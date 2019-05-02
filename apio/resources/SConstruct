@@ -83,6 +83,7 @@ CHIPDB_PATH = os.path.join(ICEBOX_PATH, 'chipdb-{0}.txt'.format(FPGA_SIZE))
 VERILATOR_PATH = os.environ['VERLIB'] if 'VERLIB' in os.environ else ''
 
 isWindows = 'Windows' == system()
+isMacOS = 'Darwin' == system()
 VVP_PATH = '' if isWindows or not IVL_PATH else '-M "{0}"'.format(IVL_PATH)
 IVER_PATH = '' if isWindows or not IVL_PATH else '-B "{0}"'.format(IVL_PATH)
 
@@ -244,8 +245,10 @@ AlwaysBuild(verify)
 sout = env.IVerilog(TARGET_SIM, src_sim)
 vcd_file = env.VCD(sout)
 
-waves = env.Alias('sim', vcd_file, 'gtkwave {0} {1}.gtkw'.format(
-    vcd_file[0], SIMULNAME))
+if (not isMacOS):
+	waves = env.Alias('sim', vcd_file, 'gtkwave {0} {1}.gtkw'.format(vcd_file[0], SIMULNAME))
+else:
+	waves = env.Alias('sim', vcd_file, 'open -a Scansion {0}'.format(vcd_file[0], SIMULNAME))
 AlwaysBuild(waves)
 
 # -- Verilator builder

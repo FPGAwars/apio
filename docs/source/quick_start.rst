@@ -78,7 +78,7 @@ Check your verilog code using `Icarus Verilog <http://iverilog.icarus.com/>`_
 Simulate
 ~~~~~~~~
 
-Simulate your test bench using `Icarus Verilog <http://iverilog.icarus.com/>`_ and `GTKWave <http://gtkwave.sourceforge.net/>`_
+Simulate your test bench using `Icarus Verilog <http://iverilog.icarus.com/>`_ and `GTKWave <http://gtkwave.sourceforge.net/>`_. Uses `Scansion <http://www.logicpoet.com/scansion/>`_ on MacOS.
 
 .. code::
 
@@ -88,12 +88,12 @@ Simulate your test bench using `Icarus Verilog <http://iverilog.icarus.com/>`_ a
 
 .. note::
 
-  GTKWave must be installed.
+  GTKWave must be installed on Windows and Linux. Scansion must be installed on MacOS.
 
   +---------+-------------------------+
   | Debian  | apt-get install gtkwave |
   +---------+-------------------------+
-  | Mac OSX | brew install gtkwave    |
+  | Mac OSX | Download and install `Scansion <http://www.logicpoet.com/downloads/>`_    |
   +---------+-------------------------+
   | Windows | apio install gtkwave    |
   +---------+-------------------------+

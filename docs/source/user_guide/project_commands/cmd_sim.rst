@@ -15,7 +15,7 @@ Usage
 Description
 -----------
 
-Launch the verilog simulation using `GTKWave <http://gtkwave.sourceforge.net>`_ from a **verilog test bench**.
+Launch the verilog simulation using `GTKWave <http://gtkwave.sourceforge.net>`_ or `Scansion <http://www.logicpoet.com/scansion>`_ (on MacOS) from a **verilog test bench**.
 
 Required packages: ``scons``, ``iverilog``.
 
@@ -23,12 +23,12 @@ Required packages: ``scons``, ``iverilog``.
 
 .. note::
 
-  GTKWave must be installed.
+  GTKWave (Windows & Linux) or Scansion (MacOS) must be installed.
 
   +---------+-------------------------+
   | Debian  | apt-get install gtkwave |
   +---------+-------------------------+
-  | Mac OSX | brew install gtkwave    |
+  | Mac OSX | `Download <http://www.logicpoet.com/downloads/>`_ and install.    |
   +---------+-------------------------+
   | Windows | apio install gtkwave    |
   +---------+-------------------------+
