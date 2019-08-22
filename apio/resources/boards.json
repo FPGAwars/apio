@@ -255,5 +255,19 @@
     "ftdi": {
       "desc": "Alchitry Cu"
     }
+  },
+  "fomu": {
+    "name": "fomu",
+    "fpga": "iCE40-UP5K-UWG30",
+    "programmer": {
+      "type": "dfu-util"
+    },
+    "usb": {
+      "vid": "1209",
+      "pid": "5bf0"
+    },
+    "ftdi": {
+      "desc": "Fomu Hacker running DFU Bootloader v1.8.8"
+    }
   }
 }
