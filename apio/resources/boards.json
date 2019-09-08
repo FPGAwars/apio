@@ -257,7 +257,7 @@
     }
   },
   "fomu": {
-    "name": "fomu",
+    "name": "Fomu",
     "fpga": "iCE40-UP5K-UWG30",
     "programmer": {
       "type": "dfu-util"

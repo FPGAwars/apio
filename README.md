@@ -77,6 +77,7 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 | [icoBOARD 1.0](http://icoboard.org/about-icoboard.html) | GPIO RPi |
 | [Kéfir I iCE40-HX4K](http://fpgalibre.sourceforge.net/Kefir/) | FTDI |
 | [iCE40-HX8K Breakout Board](http://www.latticesemi.com/Products/DevelopmentBoardsAndKits/iCE40HX8KBreakoutBoard) | FTDI |
+| [Alchitry Cu](https://alchitry.com/products/alchitry-cu-fpga-development-board) | FTDI |
 
 #### LP8K
 
@@ -95,6 +96,7 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 | [iCEBreaker bitsy](https://github.com/icebreaker-fpga/icebreaker) | FTDI |
 | [FPGA 101 Workshop Badge Board](https://github.com/mmicko/workshop_badge) | FTDI |
 | [iCE40 UltraPlus Breakout Board](http://www.latticesemi.com/en/Products/DevelopmentBoardsAndKits/iCE40UltraPlusBreakoutBoard) | FTDI |
+| [Fomu](https://github.com/im-tomu/fomu-hardware) | FTDI |
 
 NOTE: all supported [Icestorm FPGAs](http://www.clifford.at/icestorm/) can be used with [--fpga or --size, --type and --pack options](http://apiodoc.readthedocs.io/en/develop/source/user_guide/project_commands/cmd_build.html#options).
 
