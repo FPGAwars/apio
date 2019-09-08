@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.4.1] - 2019-09-09
+### Added
+- Support new boards:
+  - Alchitry-Cu (#179)
+  - Fomu (#182)
+- Add project structure to the docs (#177)
+
+## Fixed
+- Pytest "offline" option
+- Production iCEBreaker USB strings (#181)
+
 ## [0.4.0] - 2018-11-07
 ### Added
 - New command: raw.
