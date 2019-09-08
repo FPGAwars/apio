@@ -3,9 +3,10 @@ import pytest
 from apio.api import api_request
 
 
-@pytest.mark.skipif(pytest.config.getvalue('offline'),
-                    reason="requires internet connection")
-def test_api_request(capsys):
+def test_api_request(capsys, offline):
+    if offline:
+        pytest.skip('requires internet connection')
+
     with pytest.raises(SystemExit):
         api_request('missing_command')
     out, err = capsys.readouterr()
