@@ -170,9 +170,9 @@ Thanks Salvador E. Tropea!
 
 Licensed under [GPL 2.0](http://opensource.org/licenses/GPL-2.0) and [Creative Commons Attribution-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-sa/4.0/).
 
-[apio-logo]: docs/resources/images/apio-logo-mini.png
-[linux-logo]: docs/resources/images/linux.png
-[macosx-logo]: docs/resources/images/macosx.png
-[windows-logo]: docs/resources/images/windows.png
-[ubuntu-logo]: docs/resources/images/ubuntu.png
-[raspbian-logo]: docs/resources/images/raspbian.png
+[apio-logo]: https://github.com/FPGAwars/apio/raw/master/docs/resources/images/apio-logo-mini.png
+[linux-logo]: https://github.com/FPGAwars/apio/raw/master/docs/resources/images/linux.png
+[macosx-logo]: https://github.com/FPGAwars/apio/raw/master/docs/resources/images/macosx.png
+[windows-logo]: https://github.com/FPGAwars/apio/raw/master/docs/resources/images/windows.png
+[ubuntu-logo]: https://github.com/FPGAwars/apio/raw/master/docs/resources/images/ubuntu.png
+[raspbian-logo]: https://github.com/FPGAwars/apio/raw/master/docs/resources/images/raspbian.png
