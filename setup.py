@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import os
@@ -31,7 +32,7 @@ setup(
                  'resources/*']
     },
     install_requires=[
-        'click>=5,<7',
+        'click>=5',
         'semantic_version>=2.5.0,<3',
         'requests>=2.4.0,<3',
         'pyjwt>=1.5.3,<2',

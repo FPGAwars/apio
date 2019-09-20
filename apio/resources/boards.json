@@ -197,7 +197,7 @@
       "pid": "6010"
     },
     "ftdi": {
-      "desc": "Dual RS232-HS"
+      "desc": "(?:Dual RS232-HS)|(?:iCEBreaker.*)"
     }
   },
   "iCEBreaker-bitsy": {
@@ -211,7 +211,7 @@
       "pid": "6010"
     },
     "ftdi": {
-      "desc": "Dual RS232-HS"
+      "desc": "(?:Dual RS232-HS)|(?:iCEBreaker.*)"
     }
   },
   "fpga101": {
