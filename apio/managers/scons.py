@@ -36,7 +36,11 @@ class SCons(object):
 
     @util.command
     def clean(self):
-        var, board, arch = process_arguments(None, self.resources)
+        try:
+            var, board, arch = process_arguments(None, self.resources)
+        except Exception:
+            arch = "ice40"
+            pass
         return self.run('-c', arch=arch, packages=['scons'])
 
     @util.command
