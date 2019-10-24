@@ -192,7 +192,7 @@ class Drivers(object):  # pragma: no cover
 
     def _add_dialout_group(self):
         groups = subprocess.check_output('groups')
-        if 'dialout' not in groups:
+        if 'dialout' not in groups.decode():
             subprocess.call('sudo usermod -a -G dialout $USER', shell=True)
             return True
 
