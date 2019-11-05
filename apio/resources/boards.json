@@ -119,6 +119,17 @@
       "pid": "5740"
     }
   },
+  "blackice-mx": {
+    "name": "BlackIce MX",
+    "fpga": "iCE40-HX4K-TQ144",
+    "programmer": {
+      "type": "blackiceprog"
+    },
+    "usb": {
+      "vid": "0483",
+      "pid": "5740"
+    }
+  },
   "TinyFPGA-B2": {
     "name": "TinyFPGA B2",
     "fpga": "iCE40-LP8K-CM81",
