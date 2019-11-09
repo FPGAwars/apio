@@ -29,7 +29,9 @@ setup(
     package_data={
         'apio': ['commands/*.py',
                  'managers/*.py',
-                 'resources/*']
+                 'resources/*',
+                 'resources/ice40/*',
+                 'resources/ecp5/*']
     },
     install_requires=[
         'click>=5',
