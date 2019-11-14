@@ -280,5 +280,19 @@
     "ftdi": {
       "desc": "Fomu Hacker running DFU Bootloader v1.8.8"
     }
+  },  
+  "arice1": {
+    "name": "ARiCE v1",
+    "fpga": "iCE40-UP5K-SG48",
+    "programmer": {
+      "type": "iceprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6014"
+    },
+    "ftdi": {
+      "desc": "Single RS232-HS"
+    }
   }
 }
