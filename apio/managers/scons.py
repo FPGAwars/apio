@@ -85,7 +85,8 @@ class SCons(object):
     @util.command
     def upload(self, args, serial_port, ftdi_id, sram, flash):
         var, board, arch = process_arguments(args, self.resources)
-        programmer = self.get_programmer(board, serial_port, ftdi_id, sram, flash)
+        programmer = self.get_programmer(board, serial_port, ftdi_id,
+                                         sram, flash)
         var += ['prog={0}'.format(programmer)]
         return self.run('upload', var, board, arch, packages=['scons', 'yosys',
                                                               arch])
@@ -213,7 +214,7 @@ class SCons(object):
         if flash:
             # Only for ujprog programmer
             if programmer.startswith('ujprog'):
-                programmer = programmer.replace('SRAM','FLASH')
+                programmer = programmer.replace('SRAM', 'FLASH')
 
         return programmer
 

@@ -188,7 +188,8 @@ def process_arguments(args, resources):  # noqa
                             fpga_size = resources.fpgas.get(fpga).get('size')
                             fpga_type = resources.fpgas.get(fpga).get('type')
                             fpga_pack = resources.fpgas.get(fpga).get('pack')
-                            fpga_idcode = resources.fpgas.get(fpga).get('idcode')
+                            fpga_idcode = resources.fpgas.get(fpga).get(
+                                'idcode')
                         else:
                             # Unknown board
                             raise Exception('unknown board: {0}'.format(
