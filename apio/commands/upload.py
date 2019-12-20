@@ -25,16 +25,18 @@ if (sys.version_info > (3, 0)):
               help='Set the FTDI id.')
 @click.option('-s', '--sram', is_flag=True,
               help='Perform SRAM programming.')
+@click.option('-f', '--flash', is_flag=True,
+              help='Perform FLASH programming.')
 @click.option('-p', '--project-dir', type=unicode, metavar='path',
               help='Set the target directory for the project.')
 @click.option('-v', '--verbose', is_flag=True,
               help='Show the entire output of the command.')
 @click.option('--verbose-yosys', is_flag=True,
               help='Show the yosys output of the command.')
-@click.option('--verbose-arachne', is_flag=True,
-              help='Show the arachne output of the command.')
-def cli(ctx, board, serial_port, ftdi_id, sram, project_dir,
-        verbose, verbose_yosys, verbose_arachne):
+@click.option('--verbose-pnr', is_flag=True,
+              help='Show the pnr output of the command.')
+def cli(ctx, board, serial_port, ftdi_id, sram, flash, project_dir,
+        verbose, verbose_yosys, verbose_pnr):
     """Upload the bitstream to the FPGA."""
 
     drivers = Drivers()
@@ -45,9 +47,9 @@ def cli(ctx, board, serial_port, ftdi_id, sram, project_dir,
         'verbose': {
             'all': verbose,
             'yosys': verbose_yosys,
-            'arachne': verbose_arachne
+            'pnr': verbose_pnr
         }
-    }, serial_port, ftdi_id, sram)
+    }, serial_port, ftdi_id, sram, flash)
     drivers.post_upload()
     ctx.exit(exit_code)
 

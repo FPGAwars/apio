@@ -36,7 +36,11 @@ class SCons(object):
 
     @util.command
     def clean(self):
-        var, board, arch = process_arguments(None, self.resources)
+        try:
+            var, board, arch = process_arguments(None, self.resources)
+        except Exception:
+            arch = "ice40"
+            pass
         return self.run('-c', arch=arch, packages=['scons'])
 
     @util.command
@@ -79,14 +83,15 @@ class SCons(object):
                                                             arch])
 
     @util.command
-    def upload(self, args, serial_port, ftdi_id, sram):
+    def upload(self, args, serial_port, ftdi_id, sram, flash):
         var, board, arch = process_arguments(args, self.resources)
-        programmer = self.get_programmer(board, serial_port, ftdi_id, sram)
+        programmer = self.get_programmer(board, serial_port, ftdi_id,
+                                         sram, flash)
         var += ['prog={0}'.format(programmer)]
         return self.run('upload', var, board, arch, packages=['scons', 'yosys',
                                                               arch])
 
-    def get_programmer(self, board, ext_serial, ext_ftdi_id, sram):
+    def get_programmer(self, board, ext_serial, ext_ftdi_id, sram, flash):
         programmer = ''
 
         if board:
@@ -99,7 +104,7 @@ class SCons(object):
             self.check_pip_packages(board_data)
 
             # Serialize programmer command
-            programmer = self.serialize_programmer(board_data, sram)
+            programmer = self.serialize_programmer(board_data, sram, flash)
 
             # Replace USB vendor id
             if '${VID}' in programmer:
@@ -186,7 +191,7 @@ class SCons(object):
                 message += '\n       {}'.format(e)
                 raise Exception(message)
 
-    def serialize_programmer(self, board_data, sram):
+    def serialize_programmer(self, board_data, sram, flash):
         prog_info = board_data.get('programmer')
         content = self.resources.programmers.get(prog_info.get('type'))
 
@@ -205,6 +210,11 @@ class SCons(object):
             # Only for iceprog programmer
             if programmer.startswith('iceprog'):
                 programmer += ' -S'
+
+        if flash:
+            # Only for ujprog programmer
+            if programmer.startswith('ujprog'):
+                programmer = programmer.replace('SRAM', 'FLASH')
 
         return programmer
 

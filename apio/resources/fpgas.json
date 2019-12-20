@@ -161,6 +161,27 @@
     "size": "5k",
     "pack": "uwg30"
   },
+  "ECP5-LFE5U-12F-CABGA256": {
+    "arch": "ecp5",
+    "type": "lfe5u",
+    "size": "25k",
+    "pack": "CABGA256",
+    "idcode": "0x21111043"
+  },
+  "ECP5-LFE5U-12F-CABGA381": {
+    "arch": "ecp5",
+    "type": "lfe5u",
+    "size": "25k",
+    "pack": "CABGA381",
+    "idcode": "0x21111043"
+  },
+  "ECP5-LFE5U-12F-CSFBGA285": {
+    "arch": "ecp5",
+    "type": "lfe5u",
+    "size": "25k",
+    "pack": "CSFBGA285",
+    "idcode": "0x21111043"
+  },
   "ECP5-LFE5U-25F-CABGA256": {
     "arch": "ecp5",
     "type": "lfe5u",

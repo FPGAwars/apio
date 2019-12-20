@@ -20,6 +20,7 @@ def process_arguments(args, resources):  # noqa
         var_size = args.get('size')
         var_type = args.get('type')
         var_pack = args.get('pack')
+        var_idcode = args.get('idcode')
         var_verbose = args.get('verbose')
     else:
         var_board = None
@@ -28,6 +29,7 @@ def process_arguments(args, resources):  # noqa
         var_size = None
         var_type = None
         var_pack = None
+        var_idcode = None
         var_verbose = {}
 
     if var_board:
@@ -40,6 +42,7 @@ def process_arguments(args, resources):  # noqa
                 fpga_size = resources.fpgas.get(fpga).get('size')
                 fpga_type = resources.fpgas.get(fpga).get('type')
                 fpga_pack = resources.fpgas.get(fpga).get('pack')
+                fpga_idcode = resources.fpgas.get(fpga).get('idcode')
 
                 redundant_arguments = []
                 contradictory_arguments = []
@@ -80,6 +83,14 @@ def process_arguments(args, resources):  # noqa
                         # Contradictory argument
                         contradictory_arguments += ['pack']
 
+                if var_idcode:
+                    if var_idcode == fpga_idcode:
+                        # Redundant argument
+                        redundant_arguments += ['idcode']
+                    else:
+                        # Contradictory argument
+                        contradictory_arguments += ['idcode']
+
                 if redundant_arguments:
                     # Redundant argument
                     click.secho(
@@ -105,6 +116,7 @@ def process_arguments(args, resources):  # noqa
                 fpga_size = resources.fpgas.get(var_fpga).get('size')
                 fpga_type = resources.fpgas.get(var_fpga).get('type')
                 fpga_pack = resources.fpgas.get(var_fpga).get('pack')
+                fpga_idcode = resources.fpgas.get(var_fpga).get('idcode')
 
                 redundant_arguments = []
                 contradictory_arguments = []
@@ -133,6 +145,14 @@ def process_arguments(args, resources):  # noqa
                         # Contradictory argument
                         contradictory_arguments += ['pack']
 
+                if var_idcode:
+                    if var_idcode == fpga_idcode:
+                        # Redundant argument
+                        redundant_arguments += ['idcode']
+                    else:
+                        # Contradictory argument
+                        contradictory_arguments += ['idcode']
+
                 if redundant_arguments:
                     # Redundant argument
                     click.secho(
@@ -154,6 +174,7 @@ def process_arguments(args, resources):  # noqa
                 fpga_size = var_size
                 fpga_type = var_type
                 fpga_pack = var_pack
+                fpga_idcode = var_idcode
             else:
                 if not var_size and not var_type and not var_pack:
                     # No arguments: use apio.ini board
@@ -167,6 +188,8 @@ def process_arguments(args, resources):  # noqa
                             fpga_size = resources.fpgas.get(fpga).get('size')
                             fpga_type = resources.fpgas.get(fpga).get('type')
                             fpga_pack = resources.fpgas.get(fpga).get('pack')
+                            fpga_idcode = resources.fpgas.get(fpga).get(
+                                'idcode')
                         else:
                             # Unknown board
                             raise Exception('unknown board: {0}'.format(
@@ -205,9 +228,10 @@ def process_arguments(args, resources):  # noqa
         'fpga_size': fpga_size,
         'fpga_type': fpga_type,
         'fpga_pack': fpga_pack,
+        'fpga_idcode': fpga_idcode,
         'verbose_all': var_verbose.get('all'),
         'verbose_yosys': var_verbose.get('yosys'),
-        'verbose_arachne': var_verbose.get('arachne')
+        'verbose_pnr': var_verbose.get('pnr')
     })
 
     return variables, var_board, fpga_arch

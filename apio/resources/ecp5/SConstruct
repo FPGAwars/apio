@@ -2,8 +2,8 @@
 # ----------------------------------------------------------------------
 # -- Generic Scons script for Sintesizing hardware on an FPGA and more.
 # -- This file is part of the Apio project
-# -- (C) 2016-2018 FPGAwars
-# -- Authors Juan Gonzáles, Jesús Arroyo
+# -- (C) 2016-2019 FPGAwars
+# -- Authors Miodrag Milanovic, Juan Gonzáles, Jesús Arroyo
 # -- Licence GPLv2
 # ----------------------------------------------------------------------
 
@@ -20,6 +20,7 @@ PROG = ARGUMENTS.get('prog', '')
 FPGA_SIZE = ARGUMENTS.get('fpga_size', '')
 FPGA_TYPE = ARGUMENTS.get('fpga_type', '')
 FPGA_PACK = ARGUMENTS.get('fpga_pack', '')
+FPGA_IDCODE = ARGUMENTS.get('fpga_idcode', '')
 VERBOSE_ALL = ARGUMENTS.get('verbose_all', False)
 VERBOSE_YOSYS = ARGUMENTS.get('verbose_yosys', False)
 VERBOSE_PNR = ARGUMENTS.get('verbose_pnr', False)
@@ -37,16 +38,12 @@ for warn in VERILATOR_WARN:
     if warn != '':
         VERILATOR_PARAM_STR += ' -Wwarn-' + warn
 
-# -- Size. Possible values: 1k, 8k
-# -- Type. Possible values: hx, lp
-# -- Package. Possible values: swg16tr, cm36, cm49, cm81, cm121, cm225, qn84,
-# --   cb81, cb121, cb132, vq100, tq144, ct256
-
 # -- Add the FPGA flags as variables to be shown with the -h scons option
 vars = Variables()
-vars.Add('fpga_size', 'Set the ICE40 FPGA size (1k/8k)', FPGA_SIZE)
-vars.Add('fpga_type', 'Set the ICE40 FPGA type (hx/lp)', FPGA_TYPE)
-vars.Add('fpga_pack', 'Set the ICE40 FPGA packages', FPGA_PACK)
+vars.Add('fpga_size', 'Set the ECP5 FPGA size', FPGA_SIZE)
+vars.Add('fpga_type', 'Set the ECP5 FPGA type', FPGA_TYPE)
+vars.Add('fpga_pack', 'Set the ECP5 FPGA packages', FPGA_PACK)
+vars.Add('fpga_idcode', 'Set the ECP5 FPGA idcode override', FPGA_IDCODE)
 
 # -- Create environment
 env = DefaultEnvironment(ENV=os.environ,
@@ -76,7 +73,6 @@ if 'build' in COMMAND_LINE_TARGETS or \
 # -- Resources paths
 IVL_PATH = os.environ['IVL'] if 'IVL' in os.environ else ''
 TRELLIS_PATH = os.environ['TRELLIS'] if 'TRELLIS' in os.environ else ''
-BASECFG_PATH = os.path.join(TRELLIS_PATH, 'basecfgs', 'empty_{0}-{1}.config'.format(FPGA_TYPE,FPGA_SIZE.replace('k','f')))
 DATABASE_PATH = os.path.join(TRELLIS_PATH, 'database')
 CHIPDB_PATH = os.path.join(TRELLIS_PATH, 'chipdb-{0}.txt'.format(FPGA_SIZE))
 YOSYS_PATH = os.environ['YOSYS_LIB'] if 'YOSYS_LIB' in os.environ else ''
@@ -84,6 +80,8 @@ YOSYS_PATH = os.environ['YOSYS_LIB'] if 'YOSYS_LIB' in os.environ else ''
 isWindows = 'Windows' == system()
 VVP_PATH = '' if isWindows or not IVL_PATH else '-M "{0}"'.format(IVL_PATH)
 IVER_PATH = '' if isWindows or not IVL_PATH else '-B "{0}"'.format(IVL_PATH)
+
+IDCODE_PARAM = '' if not FPGA_IDCODE else '--idcode {0}'.format(FPGA_IDCODE)
 
 # -- Target name
 TARGET = 'hardware'
@@ -154,9 +152,21 @@ if len(src_synth) == 0:
 # print('Testbench: {}'.format(testbench))
 # print('SIM NAME: {}'.format(SIMULNAME))
 
+# -- Get the LPF file
+LPF = ''
+LPF_list = Glob('*.lpf')
+
+try:
+    LPF = LPF_list[0]
+except IndexError:
+    print('\n---> WARNING: no LPF file found (.lpf)\n')
+
+# -- Debug
+# print('LPF Found: {}'.format(LPF))
+
 # -- Define the Sintesizing Builder
 synth = Builder(
-    action='yosys -p \"synth_ecp5 -noccu2 -nomux -nodram -json $TARGET\" {} $SOURCES'.format(
+    action='yosys -p \"synth_ecp5 -json $TARGET\" {} $SOURCES'.format(
         '' if VERBOSE_ALL or VERBOSE_YOSYS else '-q'
     ),
     suffix='.json',
@@ -164,21 +174,16 @@ synth = Builder(
     source_scanner=list_scanner)
 
 pnr = Builder(
-    action='nextpnr-ecp5 --{1} --package {2} --json $SOURCE --textcfg $TARGET --basecfg {3} {4} '.format(
-        FPGA_TYPE, FPGA_SIZE, FPGA_PACK, BASECFG_PATH,
+    action='nextpnr-ecp5 --{1} --package {2} --json $SOURCE --textcfg $TARGET {3} {4} --timing-allow-fail'.format(
+        FPGA_TYPE, FPGA_SIZE, FPGA_PACK, '--lpf ' + str(LPF) if LPF else '',
         '' if VERBOSE_ALL or VERBOSE_PNR else '-q'),
     suffix='.config',
     src_suffix='.json')
 
 bitstream = Builder(
-    action='ecppack --db {0} $SOURCE hardware.bit'.format(DATABASE_PATH),
+    action='ecppack --db {0} {1} $SOURCE hardware.bit'.format(DATABASE_PATH, IDCODE_PARAM),
     suffix='.bit',
     src_suffix='.config')
-
-bit_to_svf = Builder(
-    action='bit_to_svf.py hardware.bit $TARGET',
-    suffix='.svf',
-    src_suffix='.bit')
 
 time_rpt = Builder(
     action='echo Here comes time analysis $TARGET $SOURCE  > $TARGET',
@@ -187,15 +192,14 @@ time_rpt = Builder(
 
 # -- Build the environment
 env.Append(BUILDERS={
-    'Synth': synth, 'PnR': pnr, 'Bin': bitstream, 'SVF': bit_to_svf, 'Time': time_rpt})
+    'Synth': synth, 'PnR': pnr, 'Bin': bitstream, 'Time': time_rpt})
 
 # -- Generate the bitstream
 json_out = env.Synth(TARGET, [src_synth])
 config_out = env.PnR(TARGET, [json_out])
 bitstream = env.Bin(TARGET, config_out)
-svf = env.SVF(TARGET, bitstream)
 
-build = env.Alias('build', svf)
+build = env.Alias('build', bitstream)
 AlwaysBuild(build)
 
 # -- Upload the bitstream into FPGA
@@ -257,7 +261,7 @@ lout = env.Verilator(TARGET, src_synth)
 lint = env.Alias('lint', lout)
 AlwaysBuild(lint)
 
-Default(svf)
+Default(bitstream)
 
 # -- These is for cleaning the files generated using the alias targets
 if GetOption('clean'):
