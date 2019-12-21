@@ -34,5 +34,9 @@
   "ujprog": {
     "command": "ujprog",
     "args": "-q -j SRAM"
+  },
+  "dfu-util": {
+    "command": "sudo dfu-util",
+    "args": "-D"
   }
 }

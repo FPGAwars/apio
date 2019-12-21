@@ -5,6 +5,16 @@
     "size": "1k",
     "pack": "swg16tr"
   },
+  "iCE40-UP3K-UWG30": {
+    "type": "up",
+    "size": "5k",
+    "pack": "uwg30"
+  },
+  "iCE40-UP5K-UWG30": {
+    "type": "up",
+    "size": "5k",
+    "pack": "uwg30"
+  },
   "iCE40-LP384-CM36": {
     "arch": "ice40",
     "type": "lp",
@@ -89,6 +99,11 @@
     "size": "384",
     "pack": "qn32"
   },
+  "iCE40-UP5K-SG48": {
+    "type": "up",
+    "size": "5k",
+    "pack": "sg48"
+  },
   "iCE40-LP1K-QN84": {
     "arch": "ice40",
     "type": "lp",
@@ -143,12 +158,17 @@
     "size": "8k",
     "pack": "tq144:4k"
   },
+<<<<<<< HEAD
   "iCE40-HX8K-CT256": {
     "arch": "ice40",
+=======
+  "iCE40-HX4K-BG121": {
+>>>>>>> origin/master
     "type": "hx",
     "size": "8k",
-    "pack": "ct256"
+    "pack": "bg121:4k"
   },
+<<<<<<< HEAD
   "iCE40-UP5K-SG48": {
     "arch": "ice40",
     "type": "up",
@@ -380,4 +400,16 @@
     "size": "85k",
     "pack": "CSFBGA285"
   } 
+=======
+  "iCE40-HX8K-BG121": {
+    "type": "hx",
+    "size": "8k",
+    "pack": "bg121"
+  },
+  "iCE40-HX8K-CT256": {
+    "type": "hx",
+    "size": "8k",
+    "pack": "ct256"
+  }
+>>>>>>> origin/master
 }

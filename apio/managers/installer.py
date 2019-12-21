@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2018 FPGAwars
+# -- (C) 2016-2019 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
@@ -247,8 +247,7 @@ class Installer(object):
             if 'tag_name' in release:
                 tag = tag_name.replace('%V', req_v)
                 if tag == release.get('tag_name'):
-                    # TODO: allow prerelease for now
-                    prerelease = release.get('prerelease', False) and False
+                    prerelease = release.get('prerelease', False)
                     if prerelease and not self.force_install:
                         click.secho(
                             'Warning: ' + req_v + ' is' +
@@ -263,8 +262,7 @@ class Installer(object):
                 pattern = tag_name.replace('%V', '(?P<v>.*?)') + '$'
                 match = re.search(pattern, release.get('tag_name'))
                 if match:
-                    # TODO: allow prerelease for now
-                    prerelease = release.get('prerelease', False) and False
+                    prerelease = release.get('prerelease', False)
                     if not prerelease:
                         version = match.group('v')
                         if util.check_package_version(version, spec_v):
