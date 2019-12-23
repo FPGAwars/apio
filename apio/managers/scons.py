@@ -44,8 +44,8 @@ class SCons(object):
         return self.run('-c', arch=arch, packages=['scons'])
 
     @util.command
-    def verify(self):
-        var, board, arch = process_arguments(None, self.resources)
+    def verify(self, args):
+        var, board, arch = process_arguments(args, self.resources)
         return self.run('verify', arch=arch, packages=['scons',
                                                        'iverilog',
                                                        'yosys'])
