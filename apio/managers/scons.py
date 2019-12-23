@@ -35,9 +35,9 @@ class SCons(object):
             os.chdir(project_dir)
 
     @util.command
-    def clean(self):
+    def clean(self, args):
         try:
-            var, board, arch = process_arguments(None, self.resources)
+            var, board, arch = process_arguments(args, self.resources)
         except Exception:
             arch = "ice40"
             pass
@@ -365,7 +365,8 @@ class SCons(object):
 
         if self.profile.get_verbose_mode() > 0:
             click.secho('Executing: {}'.format(
-                ' '.join(util.scons_command + ['-Q', command] + variables)))
+                        ' '.join(util.scons_command + ['-Q', command] +
+                                 variables)))
 
         result = util.exec_command(
             util.scons_command + ['-Q', command] + variables,
