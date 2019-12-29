@@ -213,7 +213,7 @@ AlwaysBuild(t)
 
 # -- Icarus Verilog builders
 iverilog = Builder(
-    action='iverilog {0} -o $TARGET -D VCD_OUTPUT={1} {2}/ecp5/cells_sim.v $SOURCES'.format(
+    action='iverilog {0} -o $TARGET -D VCD_OUTPUT={1} -D NO_INCLUDES {2}/ecp5/cells_sim.v $SOURCES'.format(
         IVER_PATH, TARGET_SIM, YOSYS_PATH),
     suffix='.out',
     src_suffix='.v',
