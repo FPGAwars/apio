@@ -175,6 +175,7 @@ Thanks Salvador E. Tropea!
 * [Miguel Sánchez de León Peque](https://github.com/peque)
 * [devbisme](https://github.com/devbisme)
 * [Miodrag Milanovic](https://github.com/mmicko)
+* [Carlos Venegas](https://github.com/cavearr)
 
 ## Credits
 
