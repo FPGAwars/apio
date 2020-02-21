@@ -15,7 +15,7 @@
 &nbsp;
 ![][raspbian-logo]
 
-Open source **ecosystem for open FPGA boards**. It was inspired by [PlatformIO](https://github.com/platformio/platformio).
+Open source **ecosystem for open FPGA boards**
 
 Apio (pronounced [ˈa.pjo]) is a **multiplatform toolbox**, with static pre-built packages, project configuration tools and easy command interface to verify, synthesize, simulate and upload your **verilog** designs.
 
@@ -45,7 +45,9 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 | [drivers](https://github.com/FPGAwars/tools-drivers) | apio install drivers | Drivers tools (only for Windows)
 | [examples](https://github.com/FPGAwars/apio-examples) | apio install examples | Verilog basic examples, pinouts, etc
 | [gtkwave](https://github.com/FPGAwars/tool-gtkwave) | apio install gtkwave | Simulation viewer. [GTKWave project](http://gtkwave.sourceforge.net) (only for Windows)
-| [icestorm](https://github.com/FPGAwars/toolchain-icestorm) | apio install icestorm | iCE40 FPGA synthesis, place & route and configuration tools. [Icestorm project](http://www.clifford.at/icestorm)
+| [yosys](https://github.com/FPGAwars/toolchain-yosys) | apio install yosys | FPGA synthesis. [Yosys project](http://www.clifford.at/yosys)
+| [ice40](https://github.com/FPGAwars/toolchain-ice40) | apio install ice40 | iCE40 place & route and configuration tools. [Icestorm project](http://www.clifford.at/icestorm)
+| [ecp5](https://github.com/FPGAwars/toolchain-ecp5)   | apio install ecp5  | ECP5 tools including [Project Trellis](https://github.com/SymbiFlow/prjtrellis) and [nextpnr](https://github.com/YosysHQ/nextpnr)
 | [iverilog](https://github.com/FPGAwars/toolchain-iverilog) | apio install iverilog | Verilog simulation and synthesis tool. [Icarus Verilog project](http://iverilog.icarus.com)
 | [scons](https://github.com/FPGAwars/tool-scons) | apio install scons | A software construction tool. [Scons project](http://scons.org)
 | [system](https://github.com/FPGAwars/tools-system) | apio install system | Tools for listing the USB devices and retrieving information from the FTDI chips
@@ -70,9 +72,11 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 
 | Board name | Interface |
 |:-|:-:|
+| [Alchitry-Cu](https://alchitry.com/products/alchitry-cu-fpga-development-board) | | FTDI |
 | [Alhambra II](https://github.com/FPGAwars/Alhambra-II-FPGA) | FTDI |
 | [BlackIce](https://hackaday.io/project/12930-blackice-low-cost-open-hardware-fpga-dev-board) | Serial |
 | [BlackIce II](https://github.com/mystorm-org/BlackIce-II) | Serial |
+| [Blackice-mx](https://www.tindie.com/products/Folknology/blackice-mx/) | Serial |
 | [CAT Board](https://hackaday.io/project/7982-cat-board) | GPIO RPi |
 | [icoBOARD 1.0](http://icoboard.org/about-icoboard.html) | GPIO RPi |
 | [Kéfir I iCE40-HX4K](http://fpgalibre.sourceforge.net/Kefir/) | FTDI |
@@ -90,13 +94,27 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 
 | Board name | Interface |
 |:-|:-:|
-| [UPDuino v1.0](http://gnarlygrey.atspace.cc/development-platform.html#upduino) | FTDI |
-| [UPDuino v2.0](http://gnarlygrey.atspace.cc/development-platform.html#upduino_v2) | FTDI |
+| arice1 | |
+| [Fomu](https://github.com/im-tomu/fomu-hardware) | FTDI |
+| [FPGA 101 Workshop Badge Board](https://github.com/mmicko/workshop_badge) | FTDI |
 | [iCEBreaker](https://github.com/icebreaker-fpga/icebreaker) | FTDI |
 | [iCEBreaker bitsy](https://github.com/icebreaker-fpga/icebreaker) | FTDI |
-| [FPGA 101 Workshop Badge Board](https://github.com/mmicko/workshop_badge) | FTDI |
 | [iCE40 UltraPlus Breakout Board](http://www.latticesemi.com/en/Products/DevelopmentBoardsAndKits/iCE40UltraPlusBreakoutBoard) | FTDI |
-| [Fomu](https://github.com/im-tomu/fomu-hardware) | FTDI |
+| [UPDuino v1.0](http://gnarlygrey.atspace.cc/development-platform.html#upduino) | FTDI |
+| [UPDuino v2.0](http://gnarlygrey.atspace.cc/development-platform.html#upduino_v2) | FTDI |
+
+
+#### ECP5
+| Board name | Interface |
+|:-|:-:|
+| [TinyFPGA-EX-rev1](https://github.com/tinyfpga/TinyFPGA-EX) | Serial |
+| [TinyFPGA-EX-rev2](https://www.crowdsupply.com/tinyfpga/tinyfpga-ex) | Serial |
+| [ULX3S-12F](https://radiona.org/ulx3s/) | Ujprog |
+| [ULX3S-25F](https://radiona.org/ulx3s/) | Ujprog |
+| [ULX3S-45F](https://radiona.org/ulx3s/) | Ujprog |
+| [ULX3S-85F](https://radiona.org/ulx3s/) | Ujprog |
+| [Versa](https://www.mouser.es/new/lattice-semiconductor/lattice-lfe5um-45f-versa-evn/) | |
+
 
 NOTE: all supported [Icestorm FPGAs](http://www.clifford.at/icestorm/) can be used with [--fpga or --size, --type and --pack options](http://apiodoc.readthedocs.io/en/develop/source/user_guide/project_commands/cmd_build.html#options).
 
@@ -157,8 +175,11 @@ Thanks Salvador E. Tropea!
 * [Miguel Sánchez de León Peque](https://github.com/peque)
 * [devbisme](https://github.com/devbisme)
 * [Miodrag Milanovic](https://github.com/mmicko)
+* [Carlos Venegas](https://github.com/cavearr)
 
 ## Credits
+
+* APIO was inspired by [PlatformIO](https://github.com/platformio/platformio).
 
 * [FPGAwars](http://fpgawars.github.io/) community has developed this project in a voluntary and altruistic way since 11/2016.
 

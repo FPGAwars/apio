@@ -31,6 +31,10 @@
     "args": "--pyserial -c ${SERIAL_PORT} --program",
     "pip_packages": [ "tinyprog" ]
   },
+  "ujprog": {
+    "command": "ujprog",
+    "args": "-q -j SRAM"
+  },
   "dfu-util": {
     "command": "sudo dfu-util",
     "args": "-D"

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2019 FPGAwars
+# -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 # -- Derived from:
@@ -207,22 +207,32 @@ def get_project_dir():
     return os.getcwd()
 
 
+def call(cmd):
+    setup_environment()
+    return subprocess.call(cmd, shell=True)
+
+
 def setup_environment():
-    base_dirs = {
+    base_dir = {
         'scons': get_package_dir('tool-scons'),
         'system': get_package_dir('tools-system'),
-        'icestorm': get_package_dir('toolchain-icestorm'),
+        'yosys': get_package_dir('toolchain-yosys'),
+        'ice40': get_package_dir('toolchain-ice40'),
+        'ecp5': get_package_dir('toolchain-ecp5'),
         'iverilog': get_package_dir('toolchain-iverilog'),
         'verilator': get_package_dir('toolchain-verilator'),
         'gtkwave': get_package_dir('tool-gtkwave')
     }
-    bin_dirs = {
-        'scons': safe_join(base_dirs.get('scons'), 'script'),
-        'system': safe_join(base_dirs.get('system'), 'bin'),
-        'icestorm': safe_join(base_dirs.get('icestorm'), 'bin'),
-        'iverilog': safe_join(base_dirs.get('iverilog'), 'bin'),
-        'verilator': safe_join(base_dirs.get('verilator'), 'bin'),
-        'gtkwave': safe_join(base_dirs.get('gtkwave'), 'bin')
+
+    bin_dir = {
+        'scons': safe_join(base_dir.get('scons'), 'script'),
+        'system': safe_join(base_dir.get('system'), 'bin'),
+        'yosys': safe_join(base_dir.get('yosys'), 'bin'),
+        'ice40': safe_join(base_dir.get('ice40'), 'bin'),
+        'ecp5': safe_join(base_dir.get('ecp5'), 'bin'),
+        'iverilog': safe_join(base_dir.get('iverilog'), 'bin'),
+        'verilator': safe_join(base_dir.get('verilator'), 'bin'),
+        'gtkwave': safe_join(base_dir.get('gtkwave'), 'bin')
     }
 
     # Give the priority to the python packages installed with apio
@@ -233,35 +243,57 @@ def setup_environment():
 
     # Give the priority to the packages installed by apio
     os.environ['PATH'] = os.pathsep.join([
-        bin_dirs.get('system'),
-        bin_dirs.get('icestorm'),
-        bin_dirs.get('iverilog'),
-        bin_dirs.get('verilator'),
+        bin_dir.get('yosys'),
+        bin_dir.get('ice40'),
+        bin_dir.get('ecp5'),
+        bin_dir.get('iverilog'),
+        bin_dir.get('verilator'),
         os.environ['PATH']
     ])
 
     if platform.system() == 'Windows':
         os.environ['PATH'] = os.pathsep.join([
-            bin_dirs.get('gtkwave'),
+            bin_dir.get('gtkwave'),
             os.environ['PATH']
         ])
 
     # Add environment variables
     if not config_data:  # /etc/apio.json file does not exist
         os.environ['IVL'] = safe_join(
-            base_dirs.get('iverilog'), 'lib', 'ivl')
-    os.environ['VLIB'] = safe_join(
-        base_dirs.get('iverilog'), 'vlib')
+            base_dir.get('iverilog'), 'lib', 'ivl')
     os.environ['ICEBOX'] = safe_join(
-        base_dirs.get('icestorm'), 'share', 'icebox')
-    os.environ['VERLIB'] = safe_join(
-        base_dirs.get('verilator'), 'share')
+        base_dir.get('ice40'), 'share', 'icebox')
+    os.environ['TRELLIS'] = safe_join(
+        base_dir.get('ecp5'), 'share', 'trellis')
+    os.environ['YOSYS_LIB'] = safe_join(
+        base_dir.get('yosys'), 'share', 'yosys')
 
-    return bin_dirs
+    return bin_dir
 
 
 def resolve_packages(packages, installed_packages, spec_packages):
-    bin_dirs = setup_environment()
+
+    base_dir = {
+        'scons': get_package_dir('tool-scons'),
+        'system': get_package_dir('tools-system'),
+        'yosys': get_package_dir('toolchain-yosys'),
+        'ice40': get_package_dir('toolchain-ice40'),
+        'ecp5': get_package_dir('toolchain-ecp5'),
+        'iverilog': get_package_dir('toolchain-iverilog'),
+        'verilator': get_package_dir('toolchain-verilator'),
+        'gtkwave': get_package_dir('tool-gtkwave')
+    }
+
+    bin_dir = {
+        'scons': safe_join(base_dir.get('scons'), 'script'),
+        'system': safe_join(base_dir.get('system'), 'bin'),
+        'yosys': safe_join(base_dir.get('yosys'), 'bin'),
+        'ice40': safe_join(base_dir.get('ice40'), 'bin'),
+        'ecp5': safe_join(base_dir.get('ecp5'), 'bin'),
+        'iverilog': safe_join(base_dir.get('iverilog'), 'bin'),
+        'verilator': safe_join(base_dir.get('verilator'), 'bin'),
+        'gtkwave': safe_join(base_dir.get('gtkwave'), 'bin')
+    }
 
     # -- Check packages
     check = True
@@ -272,13 +304,47 @@ def resolve_packages(packages, installed_packages, spec_packages):
             package,
             version,
             spec_version,
-            bin_dirs.get(package))
+            bin_dir.get(package))
 
     # -- Load packages
     if check:
+
+        # Give the priority to the python packages installed with apio
+        os.environ['PATH'] = os.pathsep.join([
+            get_bin_dir(),
+            os.environ['PATH']
+        ])
+
+        # Give the priority to the packages installed by apio
+        os.environ['PATH'] = os.pathsep.join([
+            bin_dir.get('yosys'),
+            bin_dir.get('ice40'),
+            bin_dir.get('ecp5'),
+            bin_dir.get('iverilog'),
+            bin_dir.get('verilator'),
+            os.environ['PATH']
+        ])
+
+        if platform.system() == 'Windows':
+            os.environ['PATH'] = os.pathsep.join([
+                bin_dir.get('gtkwave'),
+                os.environ['PATH']
+            ])
+
+        # Add environment variables
+        if not config_data:  # /etc/apio.json file does not exist
+            os.environ['IVL'] = safe_join(
+                base_dir.get('iverilog'), 'lib', 'ivl')
+        os.environ['ICEBOX'] = safe_join(
+            base_dir.get('ice40'), 'share', 'icebox')
+        os.environ['TRELLIS'] = safe_join(
+            base_dir.get('ecp5'), 'share', 'trellis')
+        os.environ['YOSYS_LIB'] = safe_join(
+            base_dir.get('yosys'), 'share', 'yosys')
+
         global scons_command
         scons_command = [normpath(sys.executable),
-                         safe_join(bin_dirs.get('scons'), 'scons')]
+                         safe_join(bin_dir['scons'], 'scons')]
 
     return check
 
@@ -406,11 +472,6 @@ def _parse_result(kwargs, result):
     for k, v in result.items():
         if v and isinstance(v, unicode):
             result[k].strip()
-
-
-def call(cmd):
-    setup_environment()
-    return subprocess.call(cmd, shell=True)
 
 
 def get_pypi_latest_version():

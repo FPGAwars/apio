@@ -27,7 +27,7 @@
       "desc": "Lattice FTUSB Interface Cable"
     }
   },
-  "iceblink40-hx1k": {
+  "iceblink40-hx1k" : {
     "name": "iCEblink40-HX1K",
     "fpga": "iCE40-HX1K-VQ100",
     "programmer": {
@@ -267,6 +267,92 @@
       "desc": "Lattice iCE40UP5K Breakout"
     }
   },
+  "TinyFPGA-EX-rev1": {
+    "name": "TinyFPGA EX rev 1",
+    "fpga": "ECP5-LFE5U-85F-CSFBGA285",
+    "programmer": {
+      "type": "tinyprog"
+    },
+    "usb": {
+      "vid": "1d50",
+      "pid": "6130"
+    },
+    "tinyprog": {
+      "desc": "TinyFPGA EX"
+    }
+  },
+  "TinyFPGA-EX-rev2": {
+    "name": "TinyFPGA EX rev 2",
+    "fpga": "ECP5-LFE5UM5G-85F-CSFBGA285",
+    "programmer": {
+      "type": "tinyprog"
+    },
+    "usb": {
+      "vid": "1d50",
+      "pid": "6130"
+    },
+    "tinyprog": {
+      "desc": "TinyFPGA EX"
+    }
+  },
+  "ulx3s-12f": {
+    "name": "ULX3S",
+    "fpga": "ECP5-LFE5U-12F-CABGA381",
+    "programmer": {
+      "type": "ujprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6015"
+    }
+  },
+  "ulx3s-25f": {
+    "name": "ULX3S",
+    "fpga": "ECP5-LFE5U-25F-CABGA381",
+    "programmer": {
+      "type": "ujprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6015"
+    }
+  },
+  "ulx3s-45f": {
+    "name": "ULX3S",
+    "fpga": "ECP5-LFE5U-45F-CABGA381",
+    "programmer": {
+      "type": "ujprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6015"
+    }
+  },
+  "ulx3s-85f": {
+    "name": "ULX3S",
+    "fpga": "ECP5-LFE5U-85F-CABGA381",
+    "programmer": {
+      "type": "ujprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6015"
+    }
+  },
+  "versa": {
+    "name": "ECP5 Versa",
+    "fpga": "ECP5-LFE5UM-45F-CABGA381",
+    "programmer": {
+      "type": "iceprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6010"
+    },
+    "ftdi": {
+      "desc": "Lattice ECP5 Versa Board"
+    }
+  },
   "Alchitry-Cu": {
     "name": "Alchitry Cu Development Board",
     "fpga": "iCE40-HX8K-CB132",
@@ -294,7 +380,7 @@
     "ftdi": {
       "desc": "Fomu Hacker running DFU Bootloader v1.8.8"
     }
-  },  
+  },
   "arice1": {
     "name": "ARiCE v1",
     "fpga": "iCE40-UP5K-SG48",
