@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import os
@@ -20,36 +19,57 @@ with open(filepath, 'r') as f:
 setup(
     name=__title__,
     version=__version__,
+
     description=__description__,
+    long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
+    license=__license__,
+    url=__url__,
+    project_urls={
+        'FPGAwars': 'https://FPGAwars.github.io/',
+        'Travis CI': 'https://travis-ci.org/FPGAwars/apio',
+        'Apio documentation': 'https://apiodoc.readthedocs.io/',
+        'Apio source': 'https://github.com/FPGAwars/apio',
+    },
+
     author=__author__,
     author_email=__email__,
-    url=__url__,
-    license=__license__,
+
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 3'
+    ],
+    keywords=[
+        'iot', 'embedded', 'fpga', 'cli', 'verilog', 'hardware',
+        'icestorm', 'yosys', 'arachne-pnr', 'iverilog', 'verilator',
+        'lattice', 'ice40', 'ecp5'
+    ],
+
     packages=['apio'],
     package_data={
-        'apio': ['commands/*.py',
-                 'managers/*.py',
-                 'resources/*',
-                 'resources/ice40/*',
-                 'resources/ecp5/*']
+        'apio': [
+            'commands/*.py',
+            'managers/*.py',
+            'resources/*'
+        ]
     },
+    entry_points={
+        'console_scripts': ['apio=apio.__main__:cli']
+    },
+
     install_requires=[
-        'click>=5',
+        'click>=5,<7',
         'semantic_version>=2.5.0,<3',
         'requests>=2.4.0,<3',
         'pyjwt>=1.5.3,<2',
         'colorama',
         'pyserial>=3,<4'
     ],
-    extras_require=extras_require,
-    entry_points={
-        'console_scripts': ['apio=apio.__main__:cli']
-    },
-    classifiers=[
-        'Development Status :: 5 - Production/Stable',
-        'Environment :: Console',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 3']
+    extras_require=extras_require
 )
