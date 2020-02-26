@@ -56,7 +56,9 @@ setup(
         'apio': [
             'commands/*.py',
             'managers/*.py',
-            'resources/*'
+            'resources/*',
+            'resources/ecp5/*',
+            'resources/ice40/*'
         ]
     },
     entry_points={
