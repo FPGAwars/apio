@@ -56,6 +56,8 @@ setup(
         'apio': [
             'commands/*.py',
             'managers/*.py',
+            'resources/ecp5/*',
+            'resources/ice40/*',
             'resources/*'
         ]
     },
