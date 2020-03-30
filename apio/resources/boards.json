@@ -208,7 +208,7 @@
       "pid": "6014"
     },
     "ftdi": {
-      "desc": "UPduino v2.1"
+      "desc": "(?:Single RS232-HS)|(?:UPduino v2.*)"
     }
   },
   "iCEBreaker": {
