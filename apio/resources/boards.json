@@ -339,6 +339,20 @@
       "pid": "6015"
     }
   },
+  "orangecrab-r02-25f": {
+    "name": "OrangeCrab r0.2",
+    "fpga": "ECP5-LFE5U-25F-8MG285C",
+    "programmer": {
+      "type": "dfu-util"
+    },
+    "usb": {
+      "vid": "1209",
+      "pid": "5af0"
+    },
+    "ftdi": {
+      "desc": "OrangeCrab r0.2 DFU bootloader"
+    }
+  },
   "versa": {
     "name": "ECP5 Versa",
     "fpga": "ECP5-LFE5UM-45F-CABGA381",
