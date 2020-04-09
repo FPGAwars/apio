@@ -341,7 +341,7 @@
   },
   "orangecrab-r02-25f": {
     "name": "OrangeCrab r0.2",
-    "fpga": "ECP5-LFE5U-25F-8MG285C",
+    "fpga": "ECP5-LFE5U-25F-CSFBGA285",
     "programmer": {
       "type": "dfu-util"
     },
