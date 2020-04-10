@@ -197,6 +197,20 @@
       "desc": "Single RS232-HS"
     }
   },
+  "upduino21": {
+    "name": "UPduino v2.1",
+    "fpga": "iCE40-UP5K-SG48",
+    "programmer": {
+      "type": "iceprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6014"
+    },
+    "ftdi": {
+      "desc": "(?:Single RS232-HS)|(?:UPduino v2.*)"
+    }
+  },
   "iCEBreaker": {
     "name": "iCEBreaker",
     "fpga": "iCE40-UP5K-SG48",
