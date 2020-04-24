@@ -108,6 +108,7 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 #### ECP5
 | Board name | Interface |
 |:-|:-:|
+| [OrangeCrab r0.2](https://github.com/gregdavill/OrangeCrab) | FTDI |
 | [TinyFPGA-EX-rev1](https://github.com/tinyfpga/TinyFPGA-EX) | Serial |
 | [TinyFPGA-EX-rev2](https://www.crowdsupply.com/tinyfpga/tinyfpga-ex) | Serial |
 | [ULX3S-12F](https://radiona.org/ulx3s/) | Ujprog |
