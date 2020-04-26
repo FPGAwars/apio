@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sys
+import subprocess
 import json
 
 from setuptools import setup
+from setuptools.command.install import install
 
 from apio import (__author__, __description__, __email__, __license__,
                   __title__, __url__, __version__)
@@ -15,6 +18,49 @@ with open(filepath, 'r') as f:
     resource = json.loads(f.read())
     pip_packages = resource.get('pip_packages', {})
     extras_require = {k: [k + v] for k, v in pip_packages.items()}
+
+# Install udev rules for the DFU boards -- Linux-only code!
+def install_udev_rules():
+    if os.geteuid() == 0:
+
+        # Gather VID/PID of DFU boards
+        dfu_boards = []
+        with open('apio/resources/boards.json', 'r') as f:
+            resource = json.loads(f.read())
+            dfu_boards = [
+                board
+                for board in resource.values()
+                if board['programmer']['type'] == 'dfu-util'
+            ]
+
+        # Generate the rules
+        rules = ''
+        for board in dfu_boards:
+            rules += ('SUBSYSTEMS=="usb",' +
+                    f'ATTRS{{idVendor}}=={board["usb"]["vid"]},' +
+                    f'ATTRS{{idProduct}}=={board["usb"]["pid"]},' +
+                    'GROUP="apio"\n')
+
+        with open('/etc/udev/rules.d/50-apio.rules', 'w') as f:
+            f.write(rules)
+
+        subprocess.call(['udevadm', 'control', '--reload-rules'])
+
+        for board in dfu_boards:
+            subprocess.call(['udevadm', 'trigger', '--subsystem-match=usb',
+                    f'--attr-match=idVendor={board["usb"]["vid"]}',
+                    f'--attr-match=idProduct={board["usb"]["pid"]}',
+                    '--action=add'])
+    else:
+        raise OSError("You must haev root privileges to install udev rules. "
+                + "Run 'sudo python3 setup.py install'")
+
+class CustomInstall(install):
+    def run(self):
+        if sys.platform == 'linux':
+            install_udev_rules()
+
+        install.run(self)
 
 setup(
     name=__title__,
@@ -73,5 +119,6 @@ setup(
         'colorama',
         'pyserial>=3,<4'
     ],
-    extras_require=extras_require
+    extras_require=extras_require,
+    cmdclass={'install': CustomInstall}
 )
