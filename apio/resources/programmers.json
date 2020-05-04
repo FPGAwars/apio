@@ -3,6 +3,10 @@
     "command": "iceprog",
     "args": "-d i:0x${VID}:0x${PID}:${FTDI_ID}"
   },
+  "iceprogduino": {
+    "command": "iceprogduino",
+    "args": ""
+  },
   "icoprog": {
     "command": "export WIRINGPI_GPIOMEM=1; icoprog",
     "args": "-p <"
