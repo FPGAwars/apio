@@ -77,7 +77,17 @@
       "pid": "8036"
     }
   },
-
+  "iCE40-HX1K-EVB": {
+    "name": "iCE40-HX1K-EVB Olimex",
+    "fpga": "iCE40-HX1K-VQ100",
+    "programmer": {
+      "type": "iceprogduino"
+    },
+    "usb": {
+      "vid": "2341",
+      "pid": "8036"
+    }
+  },
   "icoboard": {
     "name": "icoBOARD 1.0",
     "fpga": "iCE40-HX8K-CT256",
