@@ -21,6 +21,12 @@
     "args": "${SERIAL_PORT}",
     "pip_packages": [ "blackiceprog" ]
   },
+  "icefunprog": {
+    "command": "icefunprog",
+    "args": "${SERIAL_PORT}",
+    "pip_packages": [ "icefunprog" ]
+  },
+
   "tinyfpgab": {
     "command": "tinyfpgab",
     "args": "-c ${SERIAL_PORT} --program",
