@@ -82,6 +82,7 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 | [Kéfir I iCE40-HX4K](http://fpgalibre.sourceforge.net/Kefir/) | FTDI |
 | [iCE40-HX8K Breakout Board](http://www.latticesemi.com/Products/DevelopmentBoardsAndKits/iCE40HX8KBreakoutBoard) | FTDI |
 | [Alchitry Cu](https://alchitry.com/products/alchitry-cu-fpga-development-board) | FTDI |
+| [iceFUN](https://www.robot-electronics.co.uk/icefun.html) | Serial |
 
 #### LP8K
 
