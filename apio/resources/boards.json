@@ -455,5 +455,19 @@
     "ftdi": {
       "desc": "Single RS232-HS"
     }
+  },
+  "edu-ciaa-fpga": {
+    "name": "EDU-CIAA-FPGA",
+    "fpga": "iCE40-HX4K-TQ144",
+    "programmer": {
+      "type": "iceprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6010"
+    },
+    "ftdi": {
+      "desc": "Dual RS232-HS"
+    }
   }
 }
