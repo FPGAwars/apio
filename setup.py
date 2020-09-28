@@ -72,7 +72,8 @@ setup(
         'requests>=2.4.0,<3',
         'pyjwt>=1.5.3,<2',
         'colorama',
-        'pyserial>=3,<4'
+        'pyserial>=3,<4',
+        'wheel>=0.35.0,<1'
     ],
     extras_require=extras_require
 )
