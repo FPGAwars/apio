@@ -46,7 +46,7 @@
     "args": "-q -j SRAM"
   },
   "dfu-util": {
-    "command": "sudo dfu-util",
+    "command": "dfu-util",
     "args": "-d ${VID}:${PID} -D"
   }
 }
