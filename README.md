@@ -96,7 +96,7 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 | Board name | Interface |
 |:-|:-:|
 | arice1 | |
-| [Fomu](https://github.com/im-tomu/fomu-hardware) | FTDI |
+| [Fomu](https://github.com/im-tomu/fomu-hardware) | DFU |
 | [FPGA 101 Workshop Badge Board](https://github.com/mmicko/workshop_badge) | FTDI |
 | [iCEBreaker](https://github.com/icebreaker-fpga/icebreaker) | FTDI |
 | [iCEBreaker bitsy](https://github.com/icebreaker-fpga/icebreaker) | FTDI |
