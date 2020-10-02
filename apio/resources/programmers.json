@@ -47,6 +47,6 @@
   },
   "dfu-util": {
     "command": "sudo dfu-util",
-    "args": "-D -d ${VID}:${PID}"
+    "args": "-d ${VID}:${PID} -D"
   }
 }
