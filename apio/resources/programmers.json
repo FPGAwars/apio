@@ -45,6 +45,10 @@
     "command": "ujprog",
     "args": "-q -j SRAM"
   },
+  "fujprog": {
+    "command": "fujprog",
+    "args": ""
+  },
   "dfu-util": {
     "command": "dfu-util",
     "args": "-d ${VID}:${PID} -D"
