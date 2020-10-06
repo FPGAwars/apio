@@ -250,6 +250,7 @@ def setup_environment():
         bin_dir.get('ecp5'),
         bin_dir.get('iverilog'),
         bin_dir.get('verilator'),
+        bin_dir.get('fujprog'),
         os.environ['PATH']
     ])
 
