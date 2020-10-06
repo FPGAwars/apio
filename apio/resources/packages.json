@@ -157,6 +157,6 @@
       "package_name": "toolchain-fujprog",
       "extension": "tar.gz"
     },
-    "description": "FPGA JTAG programmer for ULX2/3S boards"
+    "description": "Programmer for ULX2/3S boards"
   }
 }
