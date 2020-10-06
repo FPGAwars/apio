@@ -221,7 +221,8 @@ def setup_environment():
         'ecp5': get_package_dir('toolchain-ecp5'),
         'iverilog': get_package_dir('toolchain-iverilog'),
         'verilator': get_package_dir('toolchain-verilator'),
-        'gtkwave': get_package_dir('tool-gtkwave')
+        'gtkwave': get_package_dir('tool-gtkwave'),
+        'fujprog': get_package_dir('toolchain-fujprog')
     }
 
     bin_dir = {
@@ -232,7 +233,8 @@ def setup_environment():
         'ecp5': safe_join(base_dir.get('ecp5'), 'bin'),
         'iverilog': safe_join(base_dir.get('iverilog'), 'bin'),
         'verilator': safe_join(base_dir.get('verilator'), 'bin'),
-        'gtkwave': safe_join(base_dir.get('gtkwave'), 'bin')
+        'gtkwave': safe_join(base_dir.get('gtkwave'), 'bin'),
+        'fujprog': safe_join(base_dir.get('fujprog'), 'bin')
     }
 
     # Give the priority to the python packages installed with apio
