@@ -47,7 +47,7 @@
   },
   "fujprog": {
     "command": "fujprog",
-    "args": ""
+    "args": "-l 2"
   },
   "dfu-util": {
     "command": "dfu-util",
