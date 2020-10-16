@@ -158,5 +158,23 @@
       "extension": "tar.gz"
     },
     "description": "Programmer for ULX2/3S boards"
+  },
+  "icesprog" : {
+    "repository": {
+      "name": "apio-toolchain-iCESugar",
+      "organization": "aalku"
+    },
+    "release": {
+      "tag_name": "v%V",
+      "compressed_name": "icesprog-%P-%V",
+      "uncompressed_name": "",
+      "package_name": "icesprog",
+      "extension": "zip",
+      "available_platforms": [
+        "windows_amd64"
+      ]
+    },
+    "description": "iCESugar board programmer"
   }
+
 }

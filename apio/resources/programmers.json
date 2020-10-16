@@ -53,8 +53,8 @@
     "command": "dfu-util",
     "args": "-d ${VID}:${PID} -D"
   },
-  "iCESugar-copy": {
-    "command": "iCESugar-copy.py",
+  "icesprog": {
+    "command": "icesprog",
     "args": ""
   }
 }
