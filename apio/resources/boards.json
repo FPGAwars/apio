@@ -474,7 +474,7 @@
     "name": "iCESugar v1.5",
     "fpga": "iCE40-UP5K-SG48",
     "programmer": {
-      "type": "iCESugar-copy"
+      "type": "icesprog"
     },
     "usb": {
       "vid": "1d50",
