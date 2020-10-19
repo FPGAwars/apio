@@ -106,7 +106,7 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 | [UPDuino v2.0](http://gnarlygrey.atspace.cc/development-platform.html#upduino_v2) | FTDI |
 | [UPDuino v2.1](https://github.com/tinyvision-ai-inc/UPduino-v2.1) | FTDI |
 | [UPDuino v3.0](https://github.com/tinyvision-ai-inc/UPduino-v3.0) | FTDI |
-| [iCESugar v1.5](https://github.com/wuxx/icesugar/blob/master/README_en.md) | FTDI |
+| [iCESugar v1.5](https://github.com/wuxx/icesugar/blob/master/README_en.md) (on windows_x64 right now) | FTDI |
 
 
 #### ECP5
