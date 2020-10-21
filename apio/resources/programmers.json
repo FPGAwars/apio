@@ -52,9 +52,5 @@
   "dfu-util": {
     "command": "dfu-util",
     "args": "-d ${VID}:${PID} -D"
-  },
-  "icesprog": {
-    "command": "icesprog",
-    "args": ""
   }
 }
