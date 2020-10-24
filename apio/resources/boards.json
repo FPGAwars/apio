@@ -469,5 +469,16 @@
     "ftdi": {
       "desc": "Dual RS232-HS"
     }
+  },
+  "iCESugar_1_5": {
+    "name": "iCESugar v1.5",
+    "fpga": "iCE40-UP5K-SG48",
+    "programmer": {
+      "type": "icesprog"
+    },
+    "usb": {
+      "vid": "1d50",
+      "pid": "602b"
+    }
   }
 }

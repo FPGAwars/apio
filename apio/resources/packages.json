@@ -158,5 +158,23 @@
       "extension": "tar.gz"
     },
     "description": "Programmer for ULX2/3S boards"
+  },
+  "icesprog" : {
+    "repository": {
+      "name": "toolchain-icesprog",
+      "organization": "FPGAwars"
+    },
+    "release": {
+      "tag_name": "v%V",
+      "compressed_name": "toolchain-icesprog-%P-%V",
+      "uncompressed_name": "",
+      "package_name": "toolchain-icesprog",
+      "extension": "tar.gz",
+      "available_platforms": [
+        "windows_amd64", "windows_x86", "linux_i686", "linux_x86_64"
+      ]
+    },
+    "description": "apio package for iCESugar board programmer"
   }
+
 }
