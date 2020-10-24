@@ -52,6 +52,7 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 | [scons](https://github.com/FPGAwars/tool-scons) | apio install scons | A software construction tool. [Scons project](http://scons.org)
 | [system](https://github.com/FPGAwars/tools-system) | apio install system | Tools for listing the USB devices and retrieving information from the FTDI chips
 | [verilator](https://github.com/FPGAwars/toolchain-verilator) | apio install verilator | Verilog HDL simulator. [Verilator project](https://www.veripool.org/wiki/verilator)
+| [icesprog](https://github.com/aalku/apio-toolchain-iCESugar) | apio install icesprog | iCESugar programmer. (Windows and Linux, x86 and x64)
 
 **Supported platforms**
 
@@ -105,6 +106,7 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 | [UPDuino v2.0](http://gnarlygrey.atspace.cc/development-platform.html#upduino_v2) | FTDI |
 | [UPDuino v2.1](https://github.com/tinyvision-ai-inc/UPduino-v2.1) | FTDI |
 | [UPDuino v3.0](https://github.com/tinyvision-ai-inc/UPduino-v3.0) | FTDI |
+| [iCESugar v1.5](https://github.com/wuxx/icesugar/blob/master/README_en.md) (Windows and Linux, x86 and x64) | FTDI |
 
 
 #### ECP5
