@@ -222,7 +222,8 @@ def setup_environment():
         'iverilog': get_package_dir('toolchain-iverilog'),
         'verilator': get_package_dir('toolchain-verilator'),
         'gtkwave': get_package_dir('tool-gtkwave'),
-        'fujprog': get_package_dir('toolchain-fujprog')
+        'fujprog': get_package_dir('toolchain-fujprog'),
+        'icesprog': get_package_dir('toolchain-icesprog'),
     }
 
     bin_dir = {
@@ -234,7 +235,8 @@ def setup_environment():
         'iverilog': safe_join(base_dir.get('iverilog'), 'bin'),
         'verilator': safe_join(base_dir.get('verilator'), 'bin'),
         'gtkwave': safe_join(base_dir.get('gtkwave'), 'bin'),
-        'fujprog': safe_join(base_dir.get('fujprog'), 'bin')
+        'fujprog': safe_join(base_dir.get('fujprog'), 'bin'),
+        'icesprog': safe_join(base_dir.get('icesprog'), 'bin'),
     }
 
     # Give the priority to the python packages installed with apio
@@ -251,6 +253,7 @@ def setup_environment():
         bin_dir.get('iverilog'),
         bin_dir.get('verilator'),
         bin_dir.get('fujprog'),
+        bin_dir.get('icesprog'),
         os.environ['PATH']
     ])
 
