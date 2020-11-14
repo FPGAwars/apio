@@ -9,3 +9,6 @@ ATTRS{idVendor}=="1209", ATTRS{idProduct}=="5bf0", MODE="0660", GROUP="plugdev",
 ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6015", MODE="666", GROUP="dialout"
 # -- For usb-serial tty device
 SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6015", MODE="664", GROUP="dialout" 
+
+# -- for iCESugar board
+ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="602b", MODE="0660", GROUP="plugdev", TAG+="uaccess"
