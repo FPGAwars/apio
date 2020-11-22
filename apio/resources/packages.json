@@ -171,7 +171,7 @@
       "package_name": "toolchain-icesprog",
       "extension": "tar.gz",
       "available_platforms": [
-        "windows_amd64", "windows_x86", "linux_i686", "linux_x86_64"
+        "windows_amd64", "windows_x86", "linux_i686", "linux_x86_64", "darwin_x86_64"
       ]
     },
     "description": "apio package for iCESugar board programmer"
