@@ -87,7 +87,6 @@ def cli(ctx):
         # -- Setup commands
         setup_help = find_commands_help(help, ['drivers', 'init',
                                                'install', 'uninstall'])
-        print(f"SETUP HELP: {setup_help}")
 
         # -- Utility commands
         util_help = find_commands_help(help, ['boards', 'config', 'examples',
