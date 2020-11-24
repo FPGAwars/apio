@@ -432,7 +432,7 @@
     "name": "Fomu",
     "fpga": "iCE40-UP5K-UWG30",
     "programmer": {
-      "type": "dfu-util"
+      "type": "dfu"
     },
     "usb": {
       "vid": "1209",

@@ -224,6 +224,7 @@ def setup_environment():
         'gtkwave': get_package_dir('tool-gtkwave'),
         'fujprog': get_package_dir('toolchain-fujprog'),
         'icesprog': get_package_dir('toolchain-icesprog'),
+        'dfu' : get_package_dir('toolchain-dfu'),
     }
 
     bin_dir = {
@@ -237,6 +238,7 @@ def setup_environment():
         'gtkwave': safe_join(base_dir.get('gtkwave'), 'bin'),
         'fujprog': safe_join(base_dir.get('fujprog'), 'bin'),
         'icesprog': safe_join(base_dir.get('icesprog'), 'bin'),
+        'dfu': safe_join(base_dir.get('dfu'), 'bin'),
     }
 
     # Give the priority to the python packages installed with apio
@@ -254,6 +256,8 @@ def setup_environment():
         bin_dir.get('verilator'),
         bin_dir.get('fujprog'),
         bin_dir.get('icesprog'),
+        bin_dir.get('dfu'),
+
         os.environ['PATH']
     ])
 
@@ -289,7 +293,8 @@ def resolve_packages(packages, installed_packages, spec_packages):
         'verilator': get_package_dir('toolchain-verilator'),
         'gtkwave': get_package_dir('tool-gtkwave'),
         'fujprog': get_package_dir('toolchain-fujprog'),
-        'icesprog': get_package_dir('toolchain-icesprog')
+        'icesprog': get_package_dir('toolchain-icesprog'),
+        'dfu': get_package_dir('toolchain-dfu')
     }
 
     bin_dir = {
@@ -302,7 +307,8 @@ def resolve_packages(packages, installed_packages, spec_packages):
         'verilator': safe_join(base_dir.get('verilator'), 'bin'),
         'gtkwave': safe_join(base_dir.get('gtkwave'), 'bin'),
         'fujprog': safe_join(base_dir.get('fujprog'), 'bin'),
-        'icesprog': safe_join(base_dir.get('icesprog'), 'bin')
+        'icesprog': safe_join(base_dir.get('icesprog'), 'bin'),
+        'dfu': safe_join(base_dir.get('dfu'), 'bin')
     }
 
     # -- Check packages
@@ -334,6 +340,7 @@ def resolve_packages(packages, installed_packages, spec_packages):
             bin_dir.get('verilator'),
             bin_dir.get('fujprog'),
             bin_dir.get('icesprog'),
+            bin_dir.get('dfu'),
             os.environ['PATH']
         ])
 
