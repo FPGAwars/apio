@@ -109,4 +109,4 @@ def cli(ctx):
 
 
 if __name__ == '__main__':  # pragma: no cover
-    sys_exit(cli())
+    sys_exit()
