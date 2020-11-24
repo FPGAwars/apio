@@ -43,6 +43,7 @@ class Installer(object):
         dirname = 'packages'
 
         if self.package in self.resources.packages:
+
             self.packages_dir = util.safe_join(util.get_home_dir(), dirname)
 
             # Get data

@@ -33,16 +33,32 @@ platforms = ['linux',
               metavar='', help='Set the platform [{}] (Advanced).'.format(
                 ', '.join(platforms)))
 def cli(ctx, packages, all, list, force, platform):
-    """Install packages."""
+    """Install packages.
+       Input parameters:
+         - packages: List with the names of the packages to install
+         - all: Flag: Install all the packages available for that platform
+         - list: Flag. List all the packages (installed or not)
+         - force: Flag. Force installation
+         - platform: Flag. Select platform (advaced. For developers)
+    """
 
+    # -- Install the given packages
     if packages:
         for package in packages:
+            
+            #-- The installion is performed by the Installer object
             Installer(package, platform, force).install()
+
+    # -- Install all the available packages
     elif all:  # pragma: no cover
         packages = Resources(platform).packages
         for package in packages:
             Installer(package, platform, force).install()
+
+    # -- List all the packages (installed or not)
     elif list:
         Resources(platform).list_packages(installed=True, notinstalled=True)
+
+    # -- Invalid option. Just show the help
     else:
         click.secho(ctx.get_help())

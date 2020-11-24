@@ -49,7 +49,7 @@
     "command": "fujprog",
     "args": "-l 2"
   },
-  "dfu-util": {
+  "dfu": {
     "command": "dfu-util",
     "args": "-d ${VID}:${PID} -D"
   },
