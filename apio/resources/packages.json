@@ -188,7 +188,7 @@
       "package_name": "toolchain-dfu",
       "extension": "tar.gz",
       "available_platforms": [
-        "linux_x86_64"
+        "linux_x86_64", "windows_amd64", "darwin_x86_64"
       ]
     },
     "description": "Device Firmware Upgrade Utilities"
