@@ -4,6 +4,10 @@
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
+# --------------------------------------------
+# -- Apio ENTRY POINT!!!
+# --------------------------------------------
+
 import click
 
 from os import listdir
@@ -107,6 +111,6 @@ def cli(ctx):
     # -- Debug: print the command invoked
     # print(f"{ctx.invoked_subcommand}")
 
-
+# -- This is NOT used
 if __name__ == '__main__':  # pragma: no cover
     sys_exit()
