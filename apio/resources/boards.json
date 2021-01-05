@@ -480,5 +480,19 @@
       "vid": "1d50",
       "pid": "602b"
     }
-  }
+  },
+  "OK-iCE40Pro": {
+    "name": "OK-iCE40Pro",
+    "fpga": "iCE40-UP5K-SG48",
+    "programmer": {
+      "type": "iceprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6010"
+    },
+    "ftdi": {
+      "desc": "Dual RS232-HS"
+    }
+  },
 }
