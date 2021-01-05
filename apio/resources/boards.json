@@ -494,5 +494,5 @@
     "ftdi": {
       "desc": "Dual RS232-HS"
     }
-  },
+  }
 }
