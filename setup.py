@@ -22,7 +22,7 @@ setup(
     version=__version__,
 
     description=__description__,
-    long_description=open('README.md').read(),
+    long_description=open('README.md', encoding="utf-8").read(),
     long_description_content_type='text/markdown',
     license=__license__,
     url=__url__,
