@@ -126,6 +126,13 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 | [Versa](https://www.mouser.es/new/lattice-semiconductor/lattice-lfe5um-45f-versa-evn/) | |
 
 
+#### LP1K
+
+| Board name | Interface |
+|:-|:-:|
+| [iCESugar-nano](https://github.com/wuxx/icesugar-nano/blob/main/README.md)  | FTDI |
+
+
 NOTE: all supported [Icestorm FPGAs](http://www.clifford.at/icestorm/) can be used with [--fpga or --size, --type and --pack options](http://apiodoc.readthedocs.io/en/develop/source/user_guide/project_commands/cmd_build.html#options).
 
 ## Documentation
