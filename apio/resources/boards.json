@@ -481,6 +481,17 @@
       "pid": "602b"
     }
   },
+  "iCESugar-nano": {
+    "name": "iCESugar-nano",
+    "fpga": "iCE40-LP1K-CM36",
+    "programmer": {
+      "type": "icesprog"
+    },
+    "usb": {
+      "vid": "1d50",
+      "pid": "602b"
+    }
+  },
   "OK-iCE40Pro": {
     "name": "OK-iCE40Pro",
     "fpga": "iCE40-UP5K-SG48",
