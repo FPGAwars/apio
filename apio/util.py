@@ -225,6 +225,7 @@ def setup_environment():
         'fujprog': get_package_dir('toolchain-fujprog'),
         'icesprog': get_package_dir('toolchain-icesprog'),
         'dfu' : get_package_dir('toolchain-dfu'),
+        'openfpgaloader' : get_package_dir('toolchain-ecp5')      
     }
 
     bin_dir = {
@@ -239,6 +240,7 @@ def setup_environment():
         'fujprog': safe_join(base_dir.get('fujprog'), 'bin'),
         'icesprog': safe_join(base_dir.get('icesprog'), 'bin'),
         'dfu': safe_join(base_dir.get('dfu'), 'bin'),
+        'openfpgaloader': safe_join(base_dir.get('openfpgaloader'), 'bin')        
     }
 
     # Give the priority to the python packages installed with apio
@@ -257,7 +259,7 @@ def setup_environment():
         bin_dir.get('fujprog'),
         bin_dir.get('icesprog'),
         bin_dir.get('dfu'),
-
+        bin_dir.get('openfpgaloader'),
         os.environ['PATH']
     ])
 
@@ -294,7 +296,8 @@ def resolve_packages(packages, installed_packages, spec_packages):
         'gtkwave': get_package_dir('tool-gtkwave'),
         'fujprog': get_package_dir('toolchain-fujprog'),
         'icesprog': get_package_dir('toolchain-icesprog'),
-        'dfu': get_package_dir('toolchain-dfu')
+        'dfu': get_package_dir('toolchain-dfu'),
+        'openfpgaloader': get_package_dir('toolchain-ecp5')
     }
 
     bin_dir = {
@@ -308,7 +311,8 @@ def resolve_packages(packages, installed_packages, spec_packages):
         'gtkwave': safe_join(base_dir.get('gtkwave'), 'bin'),
         'fujprog': safe_join(base_dir.get('fujprog'), 'bin'),
         'icesprog': safe_join(base_dir.get('icesprog'), 'bin'),
-        'dfu': safe_join(base_dir.get('dfu'), 'bin')
+        'dfu': safe_join(base_dir.get('dfu'), 'bin'),
+        'openfpgaloader': safe_join(base_dir.get('openfpgaloader'), 'bin')
     }
 
     # -- Check packages
@@ -341,6 +345,7 @@ def resolve_packages(packages, installed_packages, spec_packages):
             bin_dir.get('fujprog'),
             bin_dir.get('icesprog'),
             bin_dir.get('dfu'),
+            bin_dir.get('openfpgaloader'),
             os.environ['PATH']
         ])
 

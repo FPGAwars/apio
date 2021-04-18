@@ -56,5 +56,17 @@
   "icesprog": {
     "command": "icesprog",
     "args": ""
+  },
+ "openfpgaloader_ft2232": {
+    "command": "openfpgaloader",
+    "args": "-c ft2232"
+  },
+  "openfpgaloader_ft232": {
+    "command": "openfpgaloader",
+    "args": "-c ft232"
+  },
+  "openfpgaloader_usb-blaster": {
+    "command": "openfpgaloader",
+    "args": "-c usb-blaster"
   }
 }
