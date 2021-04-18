@@ -225,7 +225,7 @@ def setup_environment():
         'fujprog': get_package_dir('toolchain-fujprog'),
         'icesprog': get_package_dir('toolchain-icesprog'),
         'dfu' : get_package_dir('toolchain-dfu'),
-        'openfpgaloader' : get_package_dir('toolchain-openfpgaloader')      
+        'openfpgaloader' : get_package_dir('toolchain-ecp5')      
     }
 
     bin_dir = {
