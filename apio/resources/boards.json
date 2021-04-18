@@ -481,29 +481,95 @@
       "pid": "602b"
     }
   },
-  "iCESugar-nano": {
-    "name": "iCESugar-nano",
-    "fpga": "iCE40-LP1K-CM36",
+  "ColorLight-5A-75B-V61": {
+    "name": "ColorLight-5A-75B-V61",
+    "fpga": "ECP5-LFE5U-25F-CABGA256",
     "programmer": {
-      "type": "icesprog"
-    },
-    "usb": {
-      "vid": "1d50",
-      "pid": "602b"
+      "type": "openfpgaloader"
     }
   },
-  "OK-iCE40Pro": {
-    "name": "OK-iCE40Pro",
-    "fpga": "iCE40-UP5K-SG48",
+  "ColorLight-5A-75B-V7": {
+    "name": "ColorLight-5A-75B-V7",
+    "fpga": "ECP5-LFE5U-25F-CABGA256",
     "programmer": {
-      "type": "iceprog"
-    },
-    "usb": {
-      "vid": "0403",
-      "pid": "6010"
-    },
-    "ftdi": {
-      "desc": "Dual RS232-HS"
+      "type": "openfpgaloader"
     }
-  }
-}
+  },
+  "ColorLight-5A-75B-V8": {
+    "name": "ColorLight-5A-75B-V8",
+    "fpga": "ECP5-LFE5U-25F-CABGA256",
+    "programmer": {
+      "type": "openfpgaloader"
+    }
+  },
+  "ColorLight-5A-75E-V6": {
+    "name": "ColorLight-5A-75E-V6",
+    "fpga": "ECP5-LFE5U-25F-CABGA256",
+    "programmer": {
+      "type": "openfpgaloader"
+    }
+  },
+  "ColorLight-5A-75E-V71_(FT2232H)": {
+    "name": "ColorLight-5A-75E-V71",
+    "fpga": "ECP5-LFE5U-25F-CABGA256",
+    "programmer": {
+      "type": "openfpgaloader_ft2232"
+    }
+  },
+  "ColorLight-5A-75E-V71_(FT232H)": {
+    "name": "ColorLight-5A-75E-V71",
+    "fpga": "ECP5-LFE5U-25F-CABGA256",
+    "programmer": {
+      "type": "openfpgaloader_ft232"
+    }
+  },
+  "ColorLight-5A-75E-V71_(USB-Blaster)": {
+    "name": "ColorLight-5A-75E-V71",
+    "fpga": "ECP5-LFE5U-25F-CABGA256",
+    "programmer": {
+      "type": "openfpgaloader_usb-blaster"
+    }
+  },
+  "ColorLight-i5-v7.0_(FT2232H)": {
+    "name": "ColorLight-i5",
+    "fpga": "ECP5-LFE5U-25F-CABGA381",
+    "programmer": {
+      "type": "openfpgaloader_ft2232"
+    }
+  },
+   "ColorLight-i5-v7.0_(FT232H)": {
+    "name": "ColorLight-i5",
+    "fpga": "ECP5-LFE5U-25F-CABGA381",
+    "programmer": {
+      "type": "openfpgaloader_ft232"
+      }
+   },
+   "ColorLight-i5-v7.0_(USB-Blaster)": {
+    "name": "ColorLight-i5",
+    "fpga": "ECP5-LFE5U-25F-CABGA381",
+    "programmer": {
+      "type": "openfpgaloader_usb-blaster"
+      }
+   },
+    "iCESugar-Pro_(FT2232H)": {
+    "name": "ColorLight-i5",
+    "fpga": "ECP5-LFE5U-25F-CABGA381",
+    "programmer": {
+      "type": "openfpgaloader_ft2232"
+    }
+  },
+   "iCESugar-Pro_(FT232H)": {
+    "name": "ColorLight-i5",
+    "fpga": "ECP5-LFE5U-25F-CABGA381",
+    "programmer": {
+      "type": "openfpgaloader_ft232"
+      }
+   },
+   "iCESugar-Pro_(USB-Blaster)": {
+    "name": "ColorLight-i5",
+    "fpga": "ECP5-LFE5U-25F-CABGA381",
+    "programmer": {
+      "type": "openfpgaloader_usb-blaster"
+      }
+   }
+ } 
