@@ -15,3 +15,6 @@ ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="602b", MODE="0660", GROUP="plugdev",
 
 # -- for Fomu board
 SUBSYSTEM=="usb", ATTRS{idVendor}=="1209", ATTRS{idProduct}=="5bf0", MODE="0664", GROUP="plugdev"
+
+# -- for USB-Blaster JTAG Programmer
+ATTRS{idVendor}=="09FB", ATTRS{idProduct}=="6001", MODE="0660", GROUP="plugdev", TAG+="uaccess"
