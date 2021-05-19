@@ -470,6 +470,20 @@
       "desc": "Dual RS232-HS"
     }
   },
+  "OK-iCE40Pro": {
+    "name": "OK-iCE40Pro",
+    "fpga": "iCE40-UP5K-SG48",
+    "programmer": {
+      "type": "iceprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6010"
+    },
+    "ftdi": {
+      "desc": "Dual RS232-HS"
+    }
+  },
   "iCESugar_1_5": {
     "name": "iCESugar v1.5",
     "fpga": "iCE40-UP5K-SG48",
