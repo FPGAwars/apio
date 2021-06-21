@@ -28,4 +28,8 @@ disable = ["duplicate-code",
            "too-few-public-methods",
            "too-many-instance-attributes",
            "too-many-function-args",
-           "broad-except"]
+           "broad-except",
+           "too-many-arguments",
+           "raise-missing-from",
+           "dangerous-default-value",
+           "global-variable-undefined"]

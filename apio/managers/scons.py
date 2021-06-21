@@ -319,8 +319,10 @@ class SCons():
                 # If the hwid and the description pattern matches
                 # with the detected port return the port.
                 return port
+        return None
 
-    def _check_tinyprog(self, board_data, port):
+    @staticmethod
+    def _check_tinyprog(board_data, port):
         """DOC: TODO"""
 
         desc_pattern = "^" + board_data.get("tinyprog").get("desc") + "$"
@@ -330,6 +332,7 @@ class SCons():
             if port == tinyprog_port and re.match(desc_pattern, tinyprog_name):
                 # If the port is detected and it matches the pattern
                 return True
+        return False
 
     def get_ftdi_id(self, board, board_data, ext_ftdi_id):
         """DOC: TODO"""
@@ -365,6 +368,7 @@ class SCons():
                 # If matches the description pattern
                 # return the index for the FTDI device.
                 return index
+        return None
 
     def run(self, command, variables=[], board=None, arch=None, packages=[]):
         """Executes scons for building"""
@@ -455,7 +459,7 @@ class SCons():
         click.secho(line, fg=fgcol)
 
     @staticmethod
-    def _on_stderr(self, line):
+    def _on_stderr(line):
         if "%|" in line and "100%|" not in line:
             # Remove previous line for tqdm progress bar
             cursor_up = "\033[F"

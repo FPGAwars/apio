@@ -395,9 +395,10 @@ def resolve_packages(packages, installed_packages, spec_packages):
             base_dir.get("yosys"), "share", "yosys"
         )
 
+        global scons_command
         scons_command = [
-            normpath(sys.executable),
-            safe_join(bin_dir["scons"], "scons"),
+          normpath(sys.executable),
+          safe_join(bin_dir["scons"], "scons"),
         ]
 
     return check
