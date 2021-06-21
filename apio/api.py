@@ -18,10 +18,6 @@ requests.packages.urllib3.disable_warnings()
 def api_request(command, organization="FPGAwars"):
     """DOC:TODO"""
 
-    print("API REQUEST!!!!!!!!")
-    print(f"Organization: {organization}, {command}")
-    url = f"https://api.github.com/repos/{organization}/{command}"
-    print(url)
     result = None
     req = None
     try:
@@ -31,7 +27,7 @@ def api_request(command, organization="FPGAwars"):
             ),
             headers=_get_headers(),
         )
-        print("HACE ESTO??????")
+
         result = req.json()
         req.raise_for_status()
     except requests.exceptions.ConnectionError as exc:

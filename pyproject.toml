@@ -48,4 +48,5 @@ disable = ["duplicate-code",
            "no-member",
            "consider-using-with",
            "lost-exception",
-           "eval-used"]
+           "eval-used",
+           "redefined-builtin"]

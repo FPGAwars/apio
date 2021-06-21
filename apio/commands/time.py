@@ -55,7 +55,7 @@ def cli(
     board,
     fpga,
     pack,
-    _type,
+    type,
     size,
     project_dir,
     verbose,
@@ -70,7 +70,7 @@ def cli(
             "board": board,
             "fpga": fpga,
             "size": size,
-            "type": _type,
+            "type": type,
             "pack": pack,
             "verbose": {
                 "all": verbose,

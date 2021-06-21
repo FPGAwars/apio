@@ -42,7 +42,7 @@ if sys.version_info > (3, 0):
     metavar="path",
     help="Set the target directory for the project.",
 )
-def cli(ctx, _all, top, nostyle, nowarn, warn, project_dir):
+def cli(ctx, all, top, nostyle, nowarn, warn, project_dir):
     """Lint the verilog code."""
 
     exit_code = SCons(project_dir).lint(

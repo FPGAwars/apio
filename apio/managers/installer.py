@@ -27,8 +27,6 @@ class Installer:
 
     def __init__(self, package, platform="", force=False, checkversion=True):
 
-        print("INSTALLER!!!!!!")
-
         # Parse version
         if "@" in package:
             split = package.split("@")
@@ -47,8 +45,6 @@ class Installer:
 
         dirname = "packages"
 
-        print("LLEGA AQUI!!!!????")
-
         if self.package in self.resources.packages:
 
             self.packages_dir = util.safe_join(util.get_home_dir(), dirname)
@@ -62,19 +58,15 @@ class Installer:
             self.extension = data.get("release").get("extension")
             platform = platform or self._get_platform()
 
-            print("¿Y aquí?????")
-
-
             if checkversion:
 
-                print("CHECK VERSION!!!")
                 # Check version
                 valid_version = self._get_valid_version(
                     data.get("repository").get("name"),
                     data.get("repository").get("organization"),
                     data.get("release").get("tag_name"),
                 )
-                print("CHECKPOINT-------------------1--")
+
                 # Valid version
                 if not valid_version:
                     # Error
@@ -95,15 +87,13 @@ class Installer:
                         "platform": platform_os,
                     },
                 ]
-                print("ENTONCES LLEGA AQUI!!!!????")
+
         else:
             if self.package in self.profile.packages and checkversion is False:
                 self.packages_dir = util.safe_join(
                     util.get_home_dir(), dirname
                 )
                 self.package_name = "toolchain-" + package
-
-        print("FIIIIIIIINNNNNN")
 
         if self.packages_dir == "":
             click.secho(
@@ -258,11 +248,8 @@ class Installer:
 
     def _get_valid_version(self, rel_name, organization, tag_name):
 
-        print("GET VALID VERSION!!!!")
         # Download latest releases list
         releases = api_request("{}/releases".format(rel_name), organization)
-
-        print("GET VALID VERSION 2222222222")
 
         if self.version:
             # Find required version via @
