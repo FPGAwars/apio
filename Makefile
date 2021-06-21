@@ -25,3 +25,6 @@ publish:  ## Publish to PyPi
 install:  ## Install the tool locally
 	flit build
 	flit install
+
+tests: ## Make tests
+	py.test apio test
