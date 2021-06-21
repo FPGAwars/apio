@@ -6,11 +6,11 @@ deps:  ## Install dependencies
 	python -m pip install pyjwt click pyserial requests
 
 cenv:  ## Create the virtual-environment
-	python3 -m venv env
+	python3 -m venv venv
 
 env:
 	@echo "For entering the virtual-environment just type:"
-	@echo ". env/bin/activate"
+	@echo ". venv/bin/activate"
 
 lint:  ## Lint and static-check
 	python -m flake8 apio
