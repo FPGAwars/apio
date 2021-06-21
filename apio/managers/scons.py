@@ -1,3 +1,4 @@
+"""DOC: TODO"""
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
@@ -8,12 +9,12 @@ import os
 import re
 import sys
 import time
-import click
 import datetime
+from os.path import isfile
+
+import click
 import pkg_resources
 import semantic_version
-
-from os.path import isfile
 
 from apio import util
 from apio.managers.arguments import process_arguments
@@ -23,7 +24,9 @@ from apio.profile import Profile
 from apio.resources import Resources
 
 
-class SCons(object):
+class SCons():
+    """DOC: TODO"""
+
     def __init__(self, project_dir=""):
         self.profile = Profile()
         self.resources = Resources()
@@ -35,23 +38,29 @@ class SCons(object):
 
     @util.command
     def clean(self, args):
+        """DOC: TODO"""
+
         try:
-            var, board, arch = process_arguments(args, self.resources)
+            __, __, arch = process_arguments(args, self.resources)
         except Exception:
             arch = "ice40"
-            pass
+
         return self.run("-c", arch=arch, packages=["scons"])
 
     @util.command
     def verify(self, args):
-        var, board, arch = process_arguments(args, self.resources)
+        """DOC: TODO"""
+
+        __, __, arch = process_arguments(args, self.resources)
         return self.run(
             "verify", arch=arch, packages=["scons", "iverilog", "yosys"]
         )
 
     @util.command
     def lint(self, args):
-        var_dummy, board, arch = process_arguments(None, self.resources)
+        """DOC: TODO"""
+
+        __, __, arch = process_arguments(None, self.resources)
         var = format_vars(
             {
                 "all": args.get("all"),
@@ -67,7 +76,9 @@ class SCons(object):
 
     @util.command
     def sim(self):
-        var, board, arch = process_arguments(None, self.resources)
+        """DOC: TODO"""
+
+        __, __, arch = process_arguments(None, self.resources)
         return self.run(
             "sim",
             arch=arch,
@@ -76,6 +87,8 @@ class SCons(object):
 
     @util.command
     def build(self, args):
+        """DOC: TODO"""
+
         var, board, arch = process_arguments(args, self.resources)
         return self.run(
             "build", var, board, arch, packages=["scons", "yosys", arch]
@@ -83,6 +96,8 @@ class SCons(object):
 
     @util.command
     def time(self, args):
+        """DOC: TODO"""
+
         var, board, arch = process_arguments(args, self.resources)
         return self.run(
             "time", var, board, arch, packages=["scons", "yosys", arch]
@@ -90,6 +105,8 @@ class SCons(object):
 
     @util.command
     def upload(self, args, serial_port, ftdi_id, sram, flash):
+        """DOC: TODO"""
+
         var, board, arch = process_arguments(args, self.resources)
         programmer = self.get_programmer(
             board, serial_port, ftdi_id, sram, flash
@@ -100,6 +117,8 @@ class SCons(object):
         )
 
     def get_programmer(self, board, ext_serial, ext_ftdi_id, sram, flash):
+        """DOC: TODO"""
+
         programmer = ""
 
         if board:
@@ -143,7 +162,10 @@ class SCons(object):
 
         return programmer
 
-    def check_platform(self, board_data):
+    @staticmethod
+    def check_platform(board_data):
+        """DOC: TODO"""
+
         if "platform" not in board_data:
             return
 
@@ -153,10 +175,11 @@ class SCons(object):
             # Incorrect platform
             if platform == "linux_armv7l":
                 raise Exception("incorrect platform: RPI2 or RPI3 required")
-            else:
-                raise Exception("incorrect platform {0}".format(platform))
+            raise Exception("incorrect platform {0}".format(platform))
 
     def check_pip_packages(self, board_data):
+        """DOC: TODO"""
+
         prog_info = board_data.get("programmer")
         content = self.resources.programmers.get(prog_info.get("type"))
         all_pip_packages = self.resources.distribution.get("pip_packages")
@@ -194,15 +217,17 @@ class SCons(object):
             try:
                 # Check pip_package itself
                 __import__(pip_pkg)
-            except Exception as e:
+            except Exception as exc:
                 # Exit if a package is not working
                 python_version = util.get_python_version()
                 message = "'{}' not compatible with ".format(pip_pkg)
                 message += "Python {}".format(python_version)
-                message += "\n       {}".format(e)
+                message += "\n       {}".format(exc)
                 raise Exception(message)
 
     def serialize_programmer(self, board_data, sram, flash):
+        """DOC: TODO"""
+
         prog_info = board_data.get("programmer")
         content = self.resources.programmers.get(prog_info.get("type"))
 
@@ -229,7 +254,10 @@ class SCons(object):
 
         return programmer
 
-    def check_usb(self, board, board_data):
+    @staticmethod
+    def check_usb(board, board_data):
+        """DOC: TODO"""
+
         if "usb" not in board_data:
             raise Exception("Missing board configuration: usb")
 
@@ -251,6 +279,8 @@ class SCons(object):
             raise Exception("board " + board + " not connected")
 
     def get_serial_port(self, board, board_data, ext_serial_port):
+        """DOC: TODO"""
+
         # Search Serial port by USB id
         device = self._check_serial(board, board_data, ext_serial_port)
         if device is None:
@@ -259,6 +289,8 @@ class SCons(object):
         return device
 
     def _check_serial(self, board, board_data, ext_serial_port):
+        """DOC: TODO"""
+
         if "usb" not in board_data:
             raise Exception("Missing board configuration: usb")
 
@@ -289,6 +321,8 @@ class SCons(object):
                 return port
 
     def _check_tinyprog(self, board_data, port):
+        """DOC: TODO"""
+
         desc_pattern = "^" + board_data.get("tinyprog").get("desc") + "$"
         for tinyprog_meta in util.get_tinyprog_meta():
             tinyprog_port = tinyprog_meta.get("port")
@@ -298,6 +332,8 @@ class SCons(object):
                 return True
 
     def get_ftdi_id(self, board, board_data, ext_ftdi_id):
+        """DOC: TODO"""
+
         # Search device by FTDI id
         ftdi_id = self._check_ftdi(board, board_data, ext_ftdi_id)
         if ftdi_id is None:
@@ -305,7 +341,10 @@ class SCons(object):
             raise Exception("board " + board + " not connected")
         return ftdi_id
 
-    def _check_ftdi(self, board, board_data, ext_ftdi_id):
+    @staticmethod
+    def _check_ftdi(board, board_data, ext_ftdi_id):
+        """DOC: TODO"""
+
         if "ftdi" not in board_data:
             raise Exception("Missing board configuration: ftdi")
 
@@ -361,7 +400,7 @@ class SCons(object):
         terminal_width, _ = click.get_terminal_size()
         start_time = time.time()
 
-        if command == "build" or command == "upload" or command == "time":
+        if command in ("build", "upload", "time"):
             if board:
                 processing_board = board
             else:
@@ -410,15 +449,17 @@ class SCons(object):
 
         return exit_code
 
-    def _on_stdout(self, line):
-        fg = "green" if "is up to date" in line else None
-        click.secho(line, fg=fg)
+    @staticmethod
+    def _on_stdout(line):
+        fgcol = "green" if "is up to date" in line else None
+        click.secho(line, fg=fgcol)
 
+    @staticmethod
     def _on_stderr(self, line):
         if "%|" in line and "100%|" not in line:
             # Remove previous line for tqdm progress bar
-            CURSOR_UP = "\033[F"
-            ERASE_LINE = "\033[K"
-            sys.stdout.write(CURSOR_UP + ERASE_LINE)
-        fg = "red" if "error" in line.lower() else "yellow"
-        click.secho(line, fg=fg)
+            cursor_up = "\033[F"
+            erase_line = "\033[K"
+            sys.stdout.write(cursor_up + erase_line)
+        fgcol = "red" if "error" in line.lower() else "yellow"
+        click.secho(line, fg=fgcol)
