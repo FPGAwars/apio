@@ -10,14 +10,12 @@
 # --------------------------------------------
 
 
-
 from os import listdir
 from os.path import isfile
 from sys import exit as sys_exit
 import click
 
 from apio import util
-
 
 
 # -- The commands are python modules located in the commands folder

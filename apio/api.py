@@ -1,11 +1,14 @@
+"""DOC: TODO"""
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
+import sys
 import click
 import requests
+
 
 from apio import util
 
@@ -13,19 +16,21 @@ requests.packages.urllib3.disable_warnings()
 
 
 def api_request(command, organization="FPGAwars"):
+    """DOC:TODO"""
+
     result = None
-    r = None
+    req = None
     try:
-        r = requests.get(
+        req = requests.get(
             "https://api.github.com/repos/{0}/{1}".format(
                 organization, command
             ),
             headers=_get_headers(),
         )
-        result = r.json()
-        r.raise_for_status()
-    except requests.exceptions.ConnectionError as e:
-        error_message = str(e)
+        result = req.json()
+        req.raise_for_status()
+    except requests.exceptions.ConnectionError as exc:
+        error_message = str(exc)
         if "NewConnectionError" in error_message:
             click.secho(
                 "Error: could not connect to GitHub API.\n"
@@ -34,16 +39,16 @@ def api_request(command, organization="FPGAwars"):
             )
         else:
             click.secho(error_message, fg="red")
-        exit(1)
-    except Exception as e:
-        click.secho("Error: " + str(e), fg="red")
-        exit(1)
+        sys.exit(1)
+    except Exception as exc:
+        click.secho("Error: " + str(exc), fg="red")
+        sys.exit(1)
     finally:
-        if r:
-            r.close()
+        if req:
+            req.close()
     if result is None:
         click.secho("Error: wrong data from GitHub API", fg="red")
-        exit(1)
+        sys.exit(1)
     return result
 
 
