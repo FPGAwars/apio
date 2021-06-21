@@ -1,3 +1,4 @@
+"""DOC: TODO"""
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
@@ -5,15 +6,18 @@
 # -- Licence GPLv2
 
 import json
+from os.path import isfile, isdir
 import click
 import semantic_version
 
-from os.path import isfile, isdir
+
 
 from apio import util
 
 
-class Profile(object):
+class Profile():
+    """DOC: TODO"""
+
     def __init__(self):
         self.config = {"exe": "default", "verbose": 0}
         self.labels = {"exe": "Executable", "verbose": "Verbose"}
@@ -25,6 +29,8 @@ class Profile(object):
         self.load()
 
     def installed_version(self, name, version):
+        """DOC: TODO"""
+
         if name in self.packages:
             pkg_version = self.get_package_version(name)
             pkg_version = self._convert_old_version(pkg_version)
@@ -32,26 +38,36 @@ class Profile(object):
             return semantic_version.Version(
                 pkg_version
             ) == semantic_version.Version(version)
+        return None
 
-    def _convert_old_version(self, version):
+    @staticmethod
+    def _convert_old_version(version):
         # Convert old versions to new format
         try:
-            v = int(version)
-            version = "1.{}.0".format(v)
+            ver = int(version)
+            version = "1.{}.0".format(ver)
         except ValueError:
             pass
         return version
 
     def check_exe_default(self):
+        """DOC: todo"""
+
         return self.config.get("exe", "") == "default"
 
     def add_package(self, name, version):
+        """DOC: todo"""
+
         self.packages[name] = {"version": version}
 
     def add_setting(self, key, value):
+        """DOC: todo"""
+
         self.settings[key] = value
 
     def add_config(self, key, value):
+        """DOC: todo"""
+
         if self.config.get(key, None) != value:
             self.config[key] = value
             self.save()
@@ -68,13 +84,19 @@ class Profile(object):
             )
 
     def remove_package(self, name):
+        """DOC: todo"""
+
         if name in self.packages.keys():
             del self.packages[name]
 
     def get_verbose_mode(self):
+        """DOC: todo"""
+
         return int(self.config.get("verbose", False))
 
     def get_package_version(self, name, release_name=""):
+        """DOC: todo"""
+
         version = "0.0.0"
         if name in self.packages:
             version = self.packages.get(name).get("version")
@@ -92,6 +114,8 @@ class Profile(object):
         return version
 
     def load(self):
+        """DOC: todo"""
+
         if isfile(self._profile_path):
             with open(self._profile_path, "r") as profile:
                 try:
@@ -115,6 +139,8 @@ class Profile(object):
             self.packages = data  # Backward compatibility
 
     def save(self):
+        """DOC: todo"""
+
         util.mkdir(self._profile_path)
         with open(self._profile_path, "w") as profile:
             data = {
@@ -125,6 +151,8 @@ class Profile(object):
             json.dump(data, profile, indent=4, sort_keys=True)
 
     def list(self):
+        """DOC: todo"""
+
         for key in self.config:
             click.secho(
                 "{0} mode: {1}".format(
