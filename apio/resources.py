@@ -20,7 +20,7 @@ Use `apio init --board <boardname>` to create a new apio """
 )
 
 
-class Resources():
+class Resources:
     """Resource manager"""
 
     def __init__(self, platform=""):
@@ -159,7 +159,8 @@ class Resources():
         click.echo("\nSupported boards:\n")
 
         board_list_tpl = (
-            "{board:25} {fpga:30} {arch:<8} " + "{type:<12} {size:<5} {pack:<10}"
+            "{board:25} {fpga:30} {arch:<8} "
+            + "{type:<12} {size:<5} {pack:<10}"
         )
         terminal_width, _ = click.get_terminal_size()
 
