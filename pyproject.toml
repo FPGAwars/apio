@@ -15,6 +15,9 @@ classifiers=[
         'Programming Language :: Python']
 description-file = "README.md"
 requires-python = ">=3.7"
+requires = [
+    "jwt >=0.6.1"
+]
 
 [tool.flit.scripts]
 apio = "apio.__main__:cli"

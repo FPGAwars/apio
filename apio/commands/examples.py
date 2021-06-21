@@ -47,15 +47,15 @@ if sys.version_info > (3, 0):
     is_flag=True,
     help="Automatically answer NO to all the questions.",
 )
-def cli(ctx, _list, _dir, files, project_dir, sayno):
+def cli(ctx, list, dir, files, project_dir, sayno):
     """Manage verilog examples.\n
     Install with `apio install examples`"""
 
     exit_code = 0
 
-    if _list:
+    if list:
         exit_code = Examples().list_examples()
-    elif _dir:
+    elif dir:
         exit_code = Examples().copy_example_dir(dir, project_dir, sayno)
     elif files:
         exit_code = Examples().copy_example_files(files, project_dir, sayno)

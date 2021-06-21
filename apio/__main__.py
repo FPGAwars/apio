@@ -22,6 +22,7 @@ from apio import util
 # -- Get the absolute path to all the commands
 commands_folder = util.get_folder("commands")
 
+
 # -- Auxiliary function used sfor reformating the Help string output
 def find_commands_help(help_str, commands):
     """Extract the commands from the help string
@@ -81,7 +82,6 @@ class ApioCLI(click.MultiCommand):
 @click.pass_context
 @click.version_option()
 def cli(ctx):
-    """ENTRY POINT. This function is called whenever a command is issued"""
 
     # -- No command typed: show help
     if ctx.invoked_subcommand is None:

@@ -17,10 +17,11 @@ from apio.resources import Resources
 @click.option(
     "-f", "--fpga", is_flag=True, help="List all supported FPGA chips."
 )
-def cli(ctx, _list, fpga):
+# pylint: disable=redefined-builtin,
+def cli(ctx, list, fpga):
     """Manage FPGA boards."""
 
-    if _list:
+    if list:
         Resources().list_boards()
     elif fpga:
         Resources().list_fpgas()

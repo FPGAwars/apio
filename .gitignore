@@ -19,4 +19,6 @@ __pycache__/
 docs/_build/*
 env/
 venv/
+examples/
+
 
