@@ -17,7 +17,7 @@ description-file = "README.md"
 requires-python = ">=3.7"
 
 [tool.flit.scripts]
-icm = "apio.__main__:cli"
+apio = "apio.__main__:cli"
 
 [tool.black]
 line-length = 79

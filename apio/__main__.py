@@ -22,14 +22,13 @@ from apio import util
 # -- Get the absolute path to all the commands
 commands_folder = util.get_folder("commands")
 
-
 # -- Auxiliary function used sfor reformating the Help string output
 def find_commands_help(help_str, commands):
     """Extract the commands from the help string
     Return a list with the command + description
     """
     commands_help = []
-    for line in list(help):
+    for line in list(help_str):
         for command in commands:
             if " " + command in line:
                 if line in help_str:
@@ -106,7 +105,7 @@ def cli(ctx):
         )
 
         # -- Reformat the Help string
-        _help = "\n".join(help)
+        _help = "\n".join(_help)
         _help = _help.replace("Commands:\n", "Project commands:\n")
         _help += "\n\nSetup commands:\n"
         _help += "\n".join(setup_help)
@@ -114,7 +113,7 @@ def cli(ctx):
         _help += "\n".join(util_help)
         _help += "\n"
 
-        click.secho(help)
+        click.secho(_help)
 
     # -- If there is a command, it is executed when this function is finished
     # -- Debug: print the command invoked
