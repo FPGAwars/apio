@@ -26,7 +26,7 @@ class UnsupportedArchiveType(util.ApioException):
     MESSAGE = "Can not unpack file '{0}'"
 
 
-class ArchiveBase():
+class ArchiveBase:
     """DOC: TODO"""
 
     def __init__(self, arhfileobj):
@@ -47,8 +47,6 @@ class ArchiveBase():
 
     def after_extract(self, item, dest_dir):
         """DOC: TODO"""
-
-
 
 
 class TARArchive(ArchiveBase):
@@ -96,7 +94,7 @@ class ZIPArchive(ArchiveBase):
         self.preserve_mtime(item, dest_dir)
 
 
-class FileUnpacker():
+class FileUnpacker:
     """DOC: TODO"""
 
     def __init__(self, archpath, dest_dir="."):

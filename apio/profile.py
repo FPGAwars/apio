@@ -11,11 +11,10 @@ import click
 import semantic_version
 
 
-
 from apio import util
 
 
-class Profile():
+class Profile:
     """DOC: TODO"""
 
     def __init__(self):

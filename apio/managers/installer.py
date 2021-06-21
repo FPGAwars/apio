@@ -13,8 +13,6 @@ from os.path import isfile, isdir, basename
 import click
 
 
-
-
 from apio import util
 from apio.api import api_request
 from apio.resources import Resources
@@ -24,7 +22,7 @@ from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
 
 
-class Installer():
+class Installer:
     """DOC: TODO"""
 
     def __init__(self, package, platform="", force=False, checkversion=True):
@@ -262,9 +260,7 @@ class Installer():
             )
 
         # Find latest version release
-        return self._find_latest_version(
-               releases, tag_name, self.spec_version
-        )
+        return self._find_latest_version(releases, tag_name, self.spec_version)
 
     def _find_required_version(self, releases, tag_name, req_v):
         for release in releases:
@@ -315,7 +311,7 @@ class Installer():
                 if isfile(filepath):
                     remove(filepath)
                 click.secho("Abort download!", fg="red")
-                sys. exit(1)
+                sys.exit(1)
             return filepath
 
         click.secho(

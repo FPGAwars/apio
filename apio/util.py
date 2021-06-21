@@ -28,7 +28,6 @@ import requests
 from apio import LOAD_CONFIG_DATA
 
 
-
 requests.packages.urllib3.disable_warnings()
 
 
@@ -190,9 +189,7 @@ def _check_writable(paths):
                 # Path is writable
                 ret = path
                 break
-            click.secho(
-              "Warning: can't write in path " + path, fg="yellow"
-            )
+            click.secho("Warning: can't write in path " + path, fg="yellow")
     return ret
 
 
@@ -397,8 +394,8 @@ def resolve_packages(packages, installed_packages, spec_packages):
 
         global scons_command
         scons_command = [
-          normpath(sys.executable),
-          safe_join(bin_dir["scons"], "scons"),
+            normpath(sys.executable),
+            safe_join(bin_dir["scons"], "scons"),
         ]
 
     return check

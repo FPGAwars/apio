@@ -24,7 +24,7 @@ from apio.profile import Profile
 from apio.resources import Resources
 
 
-class SCons():
+class SCons:
     """DOC: TODO"""
 
     def __init__(self, project_dir=""):

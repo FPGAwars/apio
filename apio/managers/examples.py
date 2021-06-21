@@ -31,7 +31,7 @@ To get an example, use the command:
    apio examples -d/-f name"""
 
 
-class Examples():
+class Examples:
     """DOC: TODO"""
 
     def __init__(self):

@@ -14,7 +14,7 @@ from apio.profile import Profile
 from apio.resources import Resources
 
 
-class System():  # pragma: no cover
+class System:  # pragma: no cover
     """DOC: TODO"""
 
     def __init__(self):
@@ -26,7 +26,7 @@ class System():  # pragma: no cover
         self.spec_version = util.get_package_spec_version(self.name, resources)
 
         self.ext = ""
-        if platform.system() == "Windows" :
+        if platform.system() == "Windows":
             self.ext = ".exe"
 
     def lsusb(self):

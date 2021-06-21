@@ -10,7 +10,6 @@ import click
 from apio.managers.examples import Examples
 
 
-
 # Python3 compat
 if sys.version_info > (3, 0):
     unicode = str

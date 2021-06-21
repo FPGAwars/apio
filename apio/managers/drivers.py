@@ -57,7 +57,7 @@ SERIAL_UNINSTALL_DRIVER_INSTRUCTIONS = """
 """
 
 
-class Drivers():  # pragma: no cover
+class Drivers:  # pragma: no cover
 
     # FTDI rules files paths
     ftdi_rules_local_path = util.safe_join(
@@ -80,7 +80,6 @@ class Drivers():  # pragma: no cover
         self.name = None
         self.version = None
         self.spec_version = None
-
 
     def ftdi_enable(self):
         if "linux" in platform:

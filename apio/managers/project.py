@@ -6,6 +6,7 @@
 
 import sys
 import json
+from os.path import isfile
 import click
 
 try:
@@ -13,15 +14,13 @@ try:
 except ImportError:
     import configparser as ConfigParser
 
-from os.path import isfile
-
 from apio import util
 from apio.resources import Resources
 
 PROJECT_FILENAME = "apio.ini"
 
 
-class Project(object):
+class Project:
     def __init__(self):
         self.board = None
 
@@ -89,7 +88,8 @@ class Project(object):
         else:
             self._create_ini_file(board, ini_path, PROJECT_FILENAME)
 
-    def _create_ini_file(self, board, ini_path, ini_name):
+    @staticmethod
+    def _create_ini_file(board, ini_path, ini_name):
         click.secho("Creating {} file ...".format(ini_name))
         with open(ini_path, "w") as file:
             config = ConfigParser.ConfigParser()
@@ -101,8 +101,9 @@ class Project(object):
                 fg="green",
             )
 
+    @staticmethod
     def _copy_sconstruct_file(
-        self, sconstruct_name, sconstruct_path, local_sconstruct_path
+        sconstruct_name, sconstruct_path, local_sconstruct_path
     ):
         click.secho("Creating {} file ...".format(sconstruct_name))
         with open(sconstruct_path, "w") as sconstruct:
@@ -133,13 +134,14 @@ class Project(object):
             print("No 'board' field defined in project file")
             sys.exit(1)
 
-    def _read_board(self):
+    @staticmethod
+    def _read_board():
         board = ""
 
         # -- Read config file: old JSON format
-        with open(PROJECT_FILENAME, "r") as f:
+        with open(PROJECT_FILENAME, "r") as file:
             try:
-                data = json.loads(f.read())
+                data = json.loads(file.read())
                 board = data.get("board")
             except Exception:
                 pass

@@ -26,7 +26,7 @@ class FDUnrecognizedStatusCode(util.ApioException):
     MESSAGE = "Got an unrecognized status code '{0}' when downloaded {1}"
 
 
-class FileDownloader():
+class FileDownloader:
 
     CHUNK_SIZE = 1024
 
