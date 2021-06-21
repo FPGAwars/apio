@@ -25,4 +25,7 @@ target-version = ['py38']
 
 [tool.pylint.messages_control]
 disable = ["duplicate-code",
-           "too-few-public-methods"]
+           "too-few-public-methods",
+           "too-many-instance-attributes",
+           "too-many-function-args",
+           "broad-except"]

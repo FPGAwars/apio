@@ -1,3 +1,4 @@
+"""DOC: TODO"""
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
@@ -5,15 +6,17 @@
 # -- Licence GPLv2
 
 import re
-import click
 import platform
+import click
 
 from apio import util
 from apio.profile import Profile
 from apio.resources import Resources
 
 
-class System(object):  # pragma: no cover
+class System():  # pragma: no cover
+    """DOC: TODO"""
+
     def __init__(self):
         profile = Profile()
         resources = Resources()
@@ -23,10 +26,12 @@ class System(object):  # pragma: no cover
         self.spec_version = util.get_package_spec_version(self.name, resources)
 
         self.ext = ""
-        if "Windows" == platform.system():
+        if platform.system() == "Windows" :
             self.ext = ".exe"
 
     def lsusb(self):
+        """DOC: TODO"""
+
         returncode = 1
         result = self._run_command("lsusb")
 
@@ -36,6 +41,8 @@ class System(object):  # pragma: no cover
         return returncode
 
     def lsftdi(self):
+        """DOC: TODO"""
+
         returncode = 1
         result = self._run_command("lsftdi")
 
@@ -44,7 +51,10 @@ class System(object):  # pragma: no cover
 
         return returncode
 
-    def lsserial(self):
+    @staticmethod
+    def lsserial():
+        """DOC: TODO"""
+
         returncode = 0
         serial_ports = util.get_serial_ports()
         click.secho(
@@ -62,6 +72,8 @@ class System(object):  # pragma: no cover
         return returncode
 
     def get_usb_devices(self):
+        """DOC: TODO"""
+
         usb_devices = []
         result = self._run_command("lsusb", silent=True)
 
@@ -73,6 +85,8 @@ class System(object):  # pragma: no cover
         return usb_devices
 
     def get_ftdi_devices(self):
+        """DOC: TODO"""
+
         ftdi_devices = []
         result = self._run_command("lsftdi", silent=True)
 
@@ -102,13 +116,16 @@ class System(object):  # pragma: no cover
 
         return result
 
-    def _on_stdout(self, line):
+    @staticmethod
+    def _on_stdout(line):
         click.secho(line)
 
-    def _on_stderr(self, line):
+    @staticmethod
+    def _on_stderr(line):
         click.secho(line, fg="red")
 
-    def _parse_usb_devices(self, text):
+    @staticmethod
+    def _parse_usb_devices(text):
         pattern = r"(?P<hwid>[a-f0-9]{4}:[a-f0-9]{4}?)\s"
         hwids = re.findall(pattern, text)
 
@@ -120,10 +137,11 @@ class System(object):  # pragma: no cover
 
         return usb_devices
 
-    def _parse_ftdi_devices(self, text):
+    @staticmethod
+    def _parse_ftdi_devices(text):
         pattern = r"Number\sof\sFTDI\sdevices\sfound:\s(?P<n>\d+?)\n"
         match = re.search(pattern, text)
-        n = int(match.group("n")) if match else 0
+        num = int(match.group("n")) if match else 0
 
         pattern = r".*Checking\sdevice:\s(?P<index>.*?)\n.*"
         index = re.findall(pattern, text)
@@ -136,7 +154,7 @@ class System(object):  # pragma: no cover
 
         ftdi_devices = []
 
-        for i in range(n):
+        for i in range(num):
             ftdi_device = {
                 "index": index[i],
                 "manufacturer": manufacturer[i],
