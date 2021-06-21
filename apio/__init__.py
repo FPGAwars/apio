@@ -8,7 +8,7 @@
 # - Information for the Distribution package 
 # --------------------------------------------
 
-VERSION = (0, 7, "dev1")
+VERSION = (0, 6, 1)
 __version__ = '.'.join([str(s) for s in VERSION])
 
 __title__ = 'apio'
