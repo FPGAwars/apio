@@ -32,4 +32,7 @@ disable = ["duplicate-code",
            "too-many-arguments",
            "raise-missing-from",
            "dangerous-default-value",
-           "global-variable-undefined"]
+           "global-variable-undefined",
+           "missing-module-docstring",
+           "missing-class-docstring",
+           "missing-function-docstring"]

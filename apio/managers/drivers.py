@@ -5,10 +5,9 @@
 # -- Licence GPLv2
 
 import os
-import click
 import subprocess
-
 from os.path import isfile
+import click
 
 from apio import util
 from apio.profile import Profile
@@ -58,7 +57,7 @@ SERIAL_UNINSTALL_DRIVER_INSTRUCTIONS = """
 """
 
 
-class Drivers(object):  # pragma: no cover
+class Drivers():  # pragma: no cover
 
     # FTDI rules files paths
     ftdi_rules_local_path = util.safe_join(
@@ -74,47 +73,66 @@ class Drivers(object):  # pragma: no cover
     serial_rules_system_path = "/etc/udev/rules.d/80-fpga-serial.rules"
 
     # Driver to restore: mac os
-    driverC = ""
+    driver_c = ""
+
+    def __init__(self) -> None:
+        self.profile = None
+        self.name = None
+        self.version = None
+        self.spec_version = None
+
 
     def ftdi_enable(self):
         if "linux" in platform:
             return self._ftdi_enable_linux()
-        elif "darwin" in platform:
+
+        if "darwin" in platform:
             self._setup_darwin()
             return self._ftdi_enable_darwin()
-        elif "windows" in platform:
+
+        if "windows" in platform:
             self._setup_windows()
             return self._ftdi_enable_windows()
+        return None
 
     def ftdi_disable(self):
         if "linux" in platform:
             return self._ftdi_disable_linux()
-        elif "darwin" in platform:
+
+        if "darwin" in platform:
             self._setup_darwin()
             return self._ftdi_disable_darwin()
-        elif "windows" in platform:
+
+        if "windows" in platform:
             self._setup_windows()
             return self._ftdi_disable_windows()
+
+        return None
 
     def serial_enable(self):
         if "linux" in platform:
             return self._serial_enable_linux()
-        elif "darwin" in platform:
+
+        if "darwin" in platform:
             self._setup_darwin()
             return self._serial_enable_darwin()
-        elif "windows" in platform:
+        if "windows" in platform:
             self._setup_windows()
             return self._serial_enable_windows()
+        return None
 
     def serial_disable(self):
         if "linux" in platform:
             return self._serial_disable_linux()
-        elif "darwin" in platform:
+
+        if "darwin" in platform:
             self._setup_darwin()
             return self._serial_disable_darwin()
-        elif "windows" in platform:
+
+        if "windows" in platform:
             self._setup_windows()
             return self._serial_disable_windows()
+        return None
 
     def pre_upload(self):
         if "darwin" in platform:
@@ -199,16 +217,19 @@ class Drivers(object):  # pragma: no cover
         else:
             click.secho("Already disabled", fg="yellow")
 
-    def _reload_rules(self):
+    @staticmethod
+    def _reload_rules():
         subprocess.call(["sudo", "udevadm", "control", "--reload-rules"])
         subprocess.call(["sudo", "udevadm", "trigger"])
         subprocess.call(["sudo", "service", "udev", "restart"])
 
-    def _add_dialout_group(self):
+    @staticmethod
+    def _add_dialout_group():
         groups = subprocess.check_output("groups")
         if "dialout" not in groups.decode():
             subprocess.call("sudo usermod -a -G dialout $USER", shell=True)
             return True
+        return None
 
     def _ftdi_enable_darwin(self):
         # Check homebrew
@@ -243,16 +264,19 @@ class Drivers(object):  # pragma: no cover
             # self._brew_install_serial_drivers()
             click.secho("Serial drivers enabled", fg="green")
 
-    def _serial_disable_darwin(self):
+    @staticmethod
+    def _serial_disable_darwin():
         click.secho("Disable Serial drivers configuration")
         click.secho("Serial drivers disabled", fg="green")
 
-    def _brew_install(self, package):
+    @staticmethod
+    def _brew_install(package):
         subprocess.call(["brew", "install", "--force", package])
         subprocess.call(["brew", "unlink", package])
         subprocess.call(["brew", "link", "--force", package])
 
-    def _brew_install_serial_drivers(self):
+    @staticmethod
+    def _brew_install_serial_drivers():
         subprocess.call(
             [
                 "brew",
@@ -268,22 +292,23 @@ class Drivers(object):  # pragma: no cover
     def _pre_upload_darwin(self):
         if self.profile.settings.get("macos_ftdi_drivers", False):
             # Check and unload the drivers
-            driverA = "com.FTDI.driver.FTDIUSBSerialDriver"
-            driverB = "com.apple.driver.AppleUSBFTDI"
-            if self._check_ftdi_driver_darwin(driverA):
-                subprocess.call(["sudo", "kextunload", "-b", driverA])
-                self.driverC = driverA
-            elif self._check_ftdi_driver_darwin(driverB):
-                subprocess.call(["sudo", "kextunload", "-b", driverB])
-                self.driverC = driverB
+            driver_a = "com.FTDI.driver.FTDIUSBSerialDriver"
+            driver_b = "com.apple.driver.AppleUSBFTDI"
+            if self._check_ftdi_driver_darwin(driver_a):
+                subprocess.call(["sudo", "kextunload", "-b", driver_a])
+                self.driver_c = driver_a
+            elif self._check_ftdi_driver_darwin(driver_b):
+                subprocess.call(["sudo", "kextunload", "-b", driver_b])
+                self.driver_c = driver_b
 
     def _post_upload_darwin(self):
         if self.profile.settings.get("macos_ftdi_drivers", False):
             # Restore previous driver configuration
-            if self.driverC:
-                subprocess.call(["sudo", "kextload", "-b", self.driverC])
+            if self.driver_c:
+                subprocess.call(["sudo", "kextload", "-b", self.driver_c])
 
-    def _check_ftdi_driver_darwin(self, driver):
+    @staticmethod
+    def _check_ftdi_driver_darwin(driver):
         return driver in str(subprocess.check_output(["kextstat"]))
 
     def _ftdi_enable_windows(self):
@@ -310,8 +335,8 @@ class Drivers(object):  # pragma: no cover
                 click.secho("FTDI drivers configuration finished", fg="green")
             else:
                 result = 1
-        except Exception as e:
-            click.secho("Error: " + str(e), fg="red")
+        except Exception as exc:
+            click.secho("Error: " + str(exc), fg="red")
             result = 1
         finally:
             # Remove zadig.ini
@@ -322,7 +347,8 @@ class Drivers(object):  # pragma: no cover
             result = result.get("returncode")
         return result
 
-    def _ftdi_disable_windows(self):
+    @staticmethod
+    def _ftdi_disable_windows():
         click.secho("Launch device manager")
         click.secho(FTDI_UNINSTALL_DRIVER_INSTRUCTIONS, fg="yellow")
 
@@ -347,15 +373,16 @@ class Drivers(object):  # pragma: no cover
                 )
             else:
                 result = 1
-        except Exception as e:
-            click.secho("Error: " + str(e), fg="red")
+        except Exception as exc:
+            click.secho("Error: " + str(exc), fg="red")
             result = 1
 
         if not isinstance(result, int):
             result = result.get("returncode")
         return result
 
-    def _serial_disable_windows(self):
+    @staticmethod
+    def _serial_disable_windows():
         click.secho("Launch device manager")
         click.secho(SERIAL_UNINSTALL_DRIVER_INSTRUCTIONS, fg="yellow")
 
