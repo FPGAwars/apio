@@ -1,3 +1,4 @@
+"""Resources module"""
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
@@ -5,8 +6,9 @@
 # -- Licence GPLv2
 
 import json
-import click
 from collections import OrderedDict
+import click
+
 
 from apio import util
 from apio.profile import Profile
@@ -18,7 +20,9 @@ Use `apio init --board <boardname>` to create a new apio """
 )
 
 
-class Resources(object):
+class Resources():
+    """Resource manager"""
+
     def __init__(self, platform=""):
         self.packages = self._load_resource("packages")
         self.boards = self._load_resource("boards")
@@ -39,19 +43,25 @@ class Resources(object):
         self.fpgas = OrderedDict(
             sorted(self.fpgas.items(), key=lambda t: t[0])
         )
+        self.profile = None
 
-    def _load_resource(self, name):
+    @staticmethod
+    def _load_resource(name):
         resource = None
         filepath = util.safe_join(util.get_folder("resources"), name + ".json")
-        with open(filepath, "r") as f:
+        with open(filepath, "r") as file:
             # Load the JSON file
-            resource = json.loads(f.read())
+            resource = json.loads(file.read())
         return resource
 
     def get_package_release_name(self, package):
+        """DOC: TODO"""
+
         return self.packages.get(package).get("release").get("package_name")
 
     def get_packages(self):
+        """DOC: TODO"""
+
         # Classify packages
         installed_packages = []
         notinstalled_packages = []
@@ -97,11 +107,11 @@ class Resources(object):
             # - Print installed packages table
             click.echo("\nInstalled packages:\n")
 
-            PACKAGELIST_TPL = "{name:20} {description:30} {version:<8}"
+            package_list_tpl = "{name:20} {description:30} {version:<8}"
 
             click.echo("-" * terminal_width)
             click.echo(
-                PACKAGELIST_TPL.format(
+                package_list_tpl.format(
                     name=click.style("Name", fg="cyan"),
                     version="Version",
                     description="Description",
@@ -111,7 +121,7 @@ class Resources(object):
 
             for package in installed_packages:
                 click.echo(
-                    PACKAGELIST_TPL.format(
+                    package_list_tpl.format(
                         name=click.style(package.get("name"), fg="cyan"),
                         version=package.get("version"),
                         description=package.get("description"),
@@ -123,11 +133,11 @@ class Resources(object):
             # - Print not installed packages table
             click.echo("\nNot installed packages:\n")
 
-            PACKAGELIST_TPL = "{name:20} {description:30}"
+            package_list_tpl = "{name:20} {description:30}"
 
             click.echo("-" * terminal_width)
             click.echo(
-                PACKAGELIST_TPL.format(
+                package_list_tpl.format(
                     name=click.style("Name", fg="yellow"),
                     description="Description",
                 )
@@ -136,7 +146,7 @@ class Resources(object):
 
             for package in notinstalled_packages:
                 click.echo(
-                    PACKAGELIST_TPL.format(
+                    package_list_tpl.format(
                         name=click.style(package.get("name"), fg="yellow"),
                         description=package.get("description"),
                     )
@@ -148,14 +158,14 @@ class Resources(object):
         # Print table
         click.echo("\nSupported boards:\n")
 
-        BOARDLIST_TPL = (
-            "{board:25} {fpga:30} {arch:<8} " "{type:<12} {size:<5} {pack:<10}"
+        board_list_tpl = (
+            "{board:25} {fpga:30} {arch:<8} " + "{type:<12} {size:<5} {pack:<10}"
         )
         terminal_width, _ = click.get_terminal_size()
 
         click.echo("-" * terminal_width)
         click.echo(
-            BOARDLIST_TPL.format(
+            board_list_tpl.format(
                 board=click.style("Board", fg="cyan"),
                 fpga="FPGA",
                 arch="Arch",
@@ -169,7 +179,7 @@ class Resources(object):
         for board in self.boards:
             fpga = self.boards.get(board).get("fpga")
             click.echo(
-                BOARDLIST_TPL.format(
+                board_list_tpl.format(
                     board=click.style(board, fg="cyan"),
                     fpga=fpga,
                     arch=self.fpgas.get(fpga).get("arch"),
@@ -187,12 +197,12 @@ class Resources(object):
         # Print table
         click.echo("\nSupported FPGAs:\n")
 
-        FPGALIST_TPL = "{fpga:40} {arch:<8} {type:<12} {size:<5} {pack:<10}"
+        fpga_list_tpl = "{fpga:40} {arch:<8} {type:<12} {size:<5} {pack:<10}"
         terminal_width, _ = click.get_terminal_size()
 
         click.echo("-" * terminal_width)
         click.echo(
-            FPGALIST_TPL.format(
+            fpga_list_tpl.format(
                 fpga=click.style("FPGA", fg="cyan"),
                 type="Type",
                 arch="Arch",
@@ -204,7 +214,7 @@ class Resources(object):
 
         for fpga in self.fpgas:
             click.echo(
-                FPGALIST_TPL.format(
+                fpga_list_tpl.format(
                     fpga=click.style(fpga, fg="cyan"),
                     arch=self.fpgas.get(fpga).get("arch"),
                     type=self.fpgas.get(fpga).get("type"),
@@ -213,7 +223,8 @@ class Resources(object):
                 )
             )
 
-    def _check_packages(self, packages, current_platform=""):
+    @staticmethod
+    def _check_packages(packages, current_platform=""):
         filtered_packages = {}
         for pkg in packages.keys():
             check = True
