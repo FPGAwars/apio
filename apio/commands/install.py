@@ -55,7 +55,9 @@ def cli(ctx, packages, all, list, force, platform):
         for package in packages:
 
             # -- The installion is performed by the Installer object
-            Installer(package, platform, force).install()
+            inst = Installer(package, platform, force)
+
+            inst.install()
 
     # -- Install all the available packages
     elif all:  # pragma: no cover

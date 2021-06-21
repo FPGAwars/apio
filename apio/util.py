@@ -427,8 +427,13 @@ def check_package(name, version, spec_version, path):
 def check_package_version(version, spec_version):
     """DOC: TODO"""
 
-    spec = semantic_version.Spec(spec_version)
-    return semantic_version.Version(version) in spec
+    spec = semantic_version.SimpleSpec(spec_version)
+    try:
+        semver = semantic_version.Version(version)
+    except ValueError:
+        return False
+
+    return semver in spec
 
 
 def show_package_version_warning(name, version, spec_version):

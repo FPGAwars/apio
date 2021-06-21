@@ -7,8 +7,8 @@
 
 import json
 from collections import OrderedDict
+import shutil
 import click
-
 
 from apio import util
 from apio.profile import Profile
@@ -100,7 +100,7 @@ class Resources:
         installed_packages, notinstalled_packages = self.get_packages()
 
         # Print tables
-        terminal_width, _ = click.get_terminal_size()
+        terminal_width, _ = shutil.get_terminal_size()
 
         if installed and installed_packages:
 
@@ -162,7 +162,7 @@ class Resources:
             "{board:25} {fpga:30} {arch:<8} "
             + "{type:<12} {size:<5} {pack:<10}"
         )
-        terminal_width, _ = click.get_terminal_size()
+        terminal_width, _ = shutil.get_terminal_size()
 
         click.echo("-" * terminal_width)
         click.echo(
@@ -199,7 +199,7 @@ class Resources:
         click.echo("\nSupported FPGAs:\n")
 
         fpga_list_tpl = "{fpga:40} {arch:<8} {type:<12} {size:<5} {pack:<10}"
-        terminal_width, _ = click.get_terminal_size()
+        terminal_width, _ = shutil.get_terminal_size()
 
         click.echo("-" * terminal_width)
         click.echo(

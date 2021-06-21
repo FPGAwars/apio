@@ -252,14 +252,17 @@ class Installer:
         releases = api_request("{}/releases".format(rel_name), organization)
 
         if self.version:
+
             # Find required version via @
             if not util.check_package_version(self.version, self.spec_version):
+
                 util.show_package_version_warning(
                     self.package, self.version, self.spec_version
                 )
                 sys.exit(1)
+
             return self._find_required_version(
-                releases, tag_name, self.version, self.spec_version
+                releases, tag_name, self.version
             )
 
         # Find latest version release

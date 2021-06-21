@@ -65,7 +65,7 @@ class Examples:
                         with codecs.open(info_path, "r", "utf-8") as info_file:
                             info = info_file.read().replace("\n", "")
                     click.secho(" " + example, fg="blue", bold=True)
-                    click.secho("-" * click.get_terminal_size()[0])
+                    click.secho("-" * shutil.get_terminal_size()[0])
                     click.secho(" " + info)
                     click.secho("")
             click.secho(EXAMPLE_DIR_FILE, fg="green")
