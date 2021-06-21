@@ -9,9 +9,9 @@ import click
 from apio import util
 
 
-@click.command('raw')
+@click.command("raw")
 @click.pass_context
-@click.argument('cmd')
+@click.argument("cmd")
 def cli(ctx, cmd):
     """Execute commands using Apio packages."""
 

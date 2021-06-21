@@ -10,19 +10,19 @@ from apio.util import get_systype
 from apio.managers.system import System
 
 
-@click.command('system')
+@click.command("system")
 @click.pass_context
-@click.option('--lsftdi', is_flag=True,
-              help='List all connected FTDI devices.')
-@click.option('--lsusb', is_flag=True,
-              help='List all connected USB devices.')
-@click.option('--lsserial', is_flag=True,
-              help='List all connected Serial devices.')
-@click.option('-i', '--info', is_flag=True,
-              help='Show system information.')
+@click.option(
+    "--lsftdi", is_flag=True, help="List all connected FTDI devices."
+)
+@click.option("--lsusb", is_flag=True, help="List all connected USB devices.")
+@click.option(
+    "--lsserial", is_flag=True, help="List all connected Serial devices."
+)
+@click.option("-i", "--info", is_flag=True, help="Show system information.")
 def cli(ctx, lsftdi, lsusb, lsserial, info):
     """System tools.\n
-       Install with `apio install system`"""
+    Install with `apio install system`"""
 
     exit_code = 0
 
@@ -33,8 +33,8 @@ def cli(ctx, lsftdi, lsusb, lsserial, info):
     elif lsserial:
         exit_code = System().lsserial()
     elif info:
-        click.secho('Platform: ', nl=False)
-        click.secho(get_systype(), fg='yellow')
+        click.secho("Platform: ", nl=False)
+        click.secho(get_systype(), fg="yellow")
     else:
         click.secho(ctx.get_help())
 

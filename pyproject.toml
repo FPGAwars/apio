@@ -1,0 +1,24 @@
+[build-system]
+requires = ["flit_core >=2,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.metadata]
+module = "apio"
+author = "Jesus Arroyo"
+author-email = "jesus.jkhlg@gmail.com "
+home-page = "https://github.com/FPGAwars/apio"
+classifiers=[
+        'Development Status :: 3 - Alpha',
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
+        'Programming Language :: Python']
+description-file = "README.md"
+requires-python = ">=3.7"
+
+[tool.flit.scripts]
+icm = "apio.__main__:cli"
+
+[tool.black]
+line-length = 79
+target-version = ['py38']

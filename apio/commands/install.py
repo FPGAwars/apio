@@ -9,44 +9,51 @@ import click
 from apio.managers.installer import Installer
 from apio.resources import Resources
 
-platforms = ['linux',
-             'linux_x86_64',
-             'linux_i686',
-             'linux_armv7l',
-             'linux_aarch64',
-             'windows',
-             'windows_x86',
-             'windows_amd64',
-             'darwin']
+platforms = [
+    "linux",
+    "linux_x86_64",
+    "linux_i686",
+    "linux_armv7l",
+    "linux_aarch64",
+    "windows",
+    "windows_x86",
+    "windows_amd64",
+    "darwin",
+]
 
 
-@click.command('install')
+@click.command("install")
 @click.pass_context
-@click.argument('packages', nargs=-1)
-@click.option('-a', '--all', is_flag=True,
-              help='Install all packages.')
-@click.option('-l', '--list', is_flag=True,
-              help='List all available packages.')
-@click.option('-f', '--force', is_flag=True,
-              help='Force the packages installation.')
-@click.option('-p', '--platform', type=click.Choice(platforms),
-              metavar='', help='Set the platform [{}] (Advanced).'.format(
-                ', '.join(platforms)))
+@click.argument("packages", nargs=-1)
+@click.option("-a", "--all", is_flag=True, help="Install all packages.")
+@click.option(
+    "-l", "--list", is_flag=True, help="List all available packages."
+)
+@click.option(
+    "-f", "--force", is_flag=True, help="Force the packages installation."
+)
+@click.option(
+    "-p",
+    "--platform",
+    type=click.Choice(platforms),
+    metavar="",
+    help="Set the platform [{}] (Advanced).".format(", ".join(platforms)),
+)
 def cli(ctx, packages, all, list, force, platform):
     """Install packages.
-       Input parameters:
-         - packages: List with the names of the packages to install
-         - all: Flag: Install all the packages available for that platform
-         - list: Flag. List all the packages (installed or not)
-         - force: Flag. Force installation
-         - platform: Flag. Select platform (advaced. For developers)
+    Input parameters:
+      - packages: List with the names of the packages to install
+      - all: Flag: Install all the packages available for that platform
+      - list: Flag. List all the packages (installed or not)
+      - force: Flag. Force installation
+      - platform: Flag. Select platform (advaced. For developers)
     """
 
     # -- Install the given packages
     if packages:
         for package in packages:
-            
-            #-- The installion is performed by the Installer object
+
+            # -- The installion is performed by the Installer object
             Installer(package, platform, force).install()
 
     # -- Install all the available packages

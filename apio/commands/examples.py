@@ -10,25 +10,46 @@ from apio.managers.examples import Examples
 
 # Python3 compat
 import sys
-if (sys.version_info > (3, 0)):
+
+if sys.version_info > (3, 0):
     unicode = str
 
 
-@click.command('examples')
+@click.command("examples")
 @click.pass_context
-@click.option('-l', '--list', is_flag=True,
-              help='List all available examples.')
-@click.option('-d', '--dir', type=unicode, metavar='name',
-              help='Copy the selected example directory.')
-@click.option('-f', '--files', type=unicode, metavar='name',
-              help='Copy the selected example files.')
-@click.option('-p', '--project-dir', type=unicode, metavar='path',
-              help='Set the target directory for the examples.')
-@click.option('-n', '--sayno', is_flag=True,
-              help='Automatically answer NO to all the questions.')
+@click.option(
+    "-l", "--list", is_flag=True, help="List all available examples."
+)
+@click.option(
+    "-d",
+    "--dir",
+    type=unicode,
+    metavar="name",
+    help="Copy the selected example directory.",
+)
+@click.option(
+    "-f",
+    "--files",
+    type=unicode,
+    metavar="name",
+    help="Copy the selected example files.",
+)
+@click.option(
+    "-p",
+    "--project-dir",
+    type=unicode,
+    metavar="path",
+    help="Set the target directory for the examples.",
+)
+@click.option(
+    "-n",
+    "--sayno",
+    is_flag=True,
+    help="Automatically answer NO to all the questions.",
+)
 def cli(ctx, list, dir, files, project_dir, sayno):
     """Manage verilog examples.\n
-       Install with `apio install examples`"""
+    Install with `apio install examples`"""
 
     exit_code = 0
 
