@@ -8,12 +8,13 @@
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
 # ---- Licence Apache v2
 
-import click
-import requests
 
 from email.utils import parsedate_tz
 from math import ceil
 from time import mktime
+import requests
+import click
+
 
 from apio import util
 
@@ -25,7 +26,7 @@ class FDUnrecognizedStatusCode(util.ApioException):
     MESSAGE = "Got an unrecognized status code '{0}' when downloaded {1}"
 
 
-class FileDownloader(object):
+class FileDownloader():
 
     CHUNK_SIZE = 1024
 
@@ -54,19 +55,19 @@ class FileDownloader(object):
     def get_lmtime(self):
         if "last-modified" in self._request.headers:
             return self._request.headers.get("last-modified")
+        return None
 
     def get_size(self):
         return int(self._request.headers.get("content-length"))
 
     def start(self):
         itercontent = self._request.iter_content(chunk_size=self.CHUNK_SIZE)
-        f = open(self._destination, "wb")
-        chunks = int(ceil(self.get_size() / float(self.CHUNK_SIZE)))
+        with open(self._destination, "wb") as file:
+            chunks = int(ceil(self.get_size() / float(self.CHUNK_SIZE)))
 
-        with click.progressbar(length=chunks, label="Downloading") as pb:
-            for _ in pb:
-                f.write(next(itercontent))
-        f.close()
+            with click.progressbar(length=chunks, label="Downloading") as pbar:
+                for _ in pbar:
+                    file.write(next(itercontent))
         self._request.close()
 
         self._preserve_filemtime(self.get_lmtime())

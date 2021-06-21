@@ -4,13 +4,14 @@
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
+import sys
 import click
 
 from apio.managers.examples import Examples
 
-# Python3 compat
-import sys
 
+
+# Python3 compat
 if sys.version_info > (3, 0):
     unicode = str
 
@@ -47,15 +48,15 @@ if sys.version_info > (3, 0):
     is_flag=True,
     help="Automatically answer NO to all the questions.",
 )
-def cli(ctx, list, dir, files, project_dir, sayno):
+def cli(ctx, _list, _dir, files, project_dir, sayno):
     """Manage verilog examples.\n
     Install with `apio install examples`"""
 
     exit_code = 0
 
-    if list:
+    if _list:
         exit_code = Examples().list_examples()
-    elif dir:
+    elif _dir:
         exit_code = Examples().copy_example_dir(dir, project_dir, sayno)
     elif files:
         exit_code = Examples().copy_example_files(files, project_dir, sayno)

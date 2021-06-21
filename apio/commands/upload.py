@@ -4,14 +4,14 @@
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
+import sys
+
 import click
 
 from apio.managers.scons import SCons
 from apio.managers.drivers import Drivers
 
 # Python3 compat
-import sys
-
 if sys.version_info > (3, 0):
     unicode = str
 

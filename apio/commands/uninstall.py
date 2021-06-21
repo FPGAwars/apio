@@ -34,15 +34,15 @@ platforms = [
     metavar="platform",
     help="Set the platform [{}] (Advanced).".format(", ".join(platforms)),
 )
-def cli(ctx, packages, all, list, platform):
+def cli(ctx, packages, _all, _list, platform):
     """Uninstall packages."""
 
     if packages:
         _uninstall(packages, platform)
-    elif all:  # pragma: no cover
+    elif _all:  # pragma: no cover
         packages = Profile().packages
         _uninstall(packages, platform)
-    elif list:
+    elif _list:
         Resources(platform).list_packages(installed=True, notinstalled=False)
     else:
         click.secho(ctx.get_help())

@@ -27,10 +27,10 @@ from apio.profile import Profile
     help="Configure executables: `default` selects apio packages, "
     + "`native` selects system binaries.",
 )
-def cli(ctx, list, verbose, exe):
+def cli(ctx, _list, verbose, exe):
     """Apio configuration."""
 
-    if list:  # pragma: no cover
+    if _list:  # pragma: no cover
         profile = Profile()
         profile.list()
     elif verbose:  # pragma: no cover

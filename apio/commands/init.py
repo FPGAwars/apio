@@ -4,13 +4,12 @@
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
+import sys
 import click
 
 from apio.managers.project import Project
 
 # Python3 compat
-import sys
-
 if sys.version_info > (3, 0):
     unicode = str
 
