@@ -1,3 +1,4 @@
+"""DOC: TODO"""
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
@@ -6,11 +7,10 @@
 
 import os
 import glob
-import click
 import codecs
 import shutil
-
 from os.path import sep, isdir, isfile, dirname, basename
+import click
 
 from apio import util
 from apio.profile import Profile
@@ -31,7 +31,9 @@ To get an example, use the command:
    apio examples -d/-f name"""
 
 
-class Examples(object):
+class Examples():
+    """DOC: TODO"""
+
     def __init__(self):
         profile = Profile()
         resources = Resources()
@@ -42,6 +44,8 @@ class Examples(object):
         self.spec_version = util.get_package_spec_version(self.name, resources)
 
     def list_examples(self):
+        """DOC: TODO"""
+
         if util.check_package(
             self.name, self.version, self.spec_version, self.examples_dir
         ):
@@ -71,6 +75,8 @@ class Examples(object):
         return 0
 
     def copy_example_dir(self, example, project_dir, sayno):
+        """DOC: TODO"""
+
         if util.check_package(
             self.name, self.version, self.spec_version, self.examples_dir
         ):
@@ -109,6 +115,8 @@ class Examples(object):
         return 0
 
     def copy_example_files(self, example, project_dir, sayno):
+        """DOC: TODO"""
+
         if util.check_package(
             self.name, self.version, self.spec_version, self.examples_dir
         ):
@@ -126,11 +134,12 @@ class Examples(object):
             return 1
         return 0
 
-    def _copy_files(self, example, src_path, dest_path, sayno):
+    @staticmethod
+    def _copy_files(example, src_path, dest_path, sayno):
         click.secho("Copying " + example + " example files ...")
         example_files = glob.glob(util.safe_join(src_path, "*"))
-        for f in example_files:
-            filename = basename(f)
+        for file in example_files:
+            filename = basename(file)
             if filename != "info":
                 filepath = util.safe_join(dest_path, filename)
                 if isfile(filepath):
@@ -144,7 +153,7 @@ class Examples(object):
                         fg="yellow",
                     )
                     if click.confirm("Do you want to replace it?"):
-                        shutil.copy(f, dest_path)
+                        shutil.copy(file, dest_path)
                 elif isdir(filepath):
                     click.secho(
                         "Warning: " + filename + " is already a directory",
@@ -152,7 +161,7 @@ class Examples(object):
                     )
                     return
                 else:
-                    shutil.copy(f, filepath)
+                    shutil.copy(file, filepath)
         click.secho(
             "Example files '{}' have been successfully created!".format(
                 example
@@ -160,7 +169,8 @@ class Examples(object):
             fg="green",
         )
 
-    def _copy_dir(self, example, src_path, dest_path):
+    @staticmethod
+    def _copy_dir(example, src_path, dest_path):
         click.secho("Creating " + example + " directory ...")
         shutil.copytree(src_path, dest_path)
         click.secho(
@@ -168,5 +178,8 @@ class Examples(object):
             fg="green",
         )
 
-    def examples_of_use_cad(self):
+    @staticmethod
+    def examples_of_use_cad():
+        """DOC: TODO"""
+
         return EXAMPLE_OF_USE_CAD
