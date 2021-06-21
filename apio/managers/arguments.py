@@ -4,9 +4,9 @@
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
-import click
-
 from os.path import isfile
+
+import click
 
 from apio.managers.project import Project
 
@@ -190,10 +190,10 @@ def process_arguments(args, resources):  # noqa
             else:
                 if not var_size and not var_type and not var_pack:
                     # No arguments: use apio.ini board
-                    p = Project()
-                    p.read()
-                    if p.board:
-                        var_board = p.board
+                    proj = Project()
+                    proj.read()
+                    if proj.board:
+                        var_board = proj.board
                         if var_board in resources.boards:
                             fpga = resources.boards.get(var_board).get("fpga")
                             fpga_arch = resources.fpgas.get(fpga).get("arch")

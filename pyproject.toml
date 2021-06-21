@@ -35,4 +35,8 @@ disable = ["duplicate-code",
            "global-variable-undefined",
            "missing-module-docstring",
            "missing-class-docstring",
-           "missing-function-docstring"]
+           "missing-function-docstring",
+           "too-many-locals",
+           "too-many-nested-blocks",
+           "too-many-branches",
+           "too-many-statements"]
