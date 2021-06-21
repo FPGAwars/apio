@@ -1,15 +1,19 @@
+"""DOC: TODO"""
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
+import sys
 import re
-import click
 import shutil
-
 from os import makedirs, remove, rename
 from os.path import isfile, isdir, basename
+import click
+
+
+
 
 from apio import util
 from apio.api import api_request
@@ -20,7 +24,9 @@ from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
 
 
-class Installer(object):
+class Installer():
+    """DOC: TODO"""
+
     def __init__(self, package, platform="", force=False, checkversion=True):
 
         # Parse version
@@ -65,7 +71,7 @@ class Installer(object):
                 if not valid_version:
                     # Error
                     click.secho("Error: no valid version found", fg="red")
-                    exit(1)
+                    sys.exit(1)
 
                 self.version = valid_version
 
@@ -92,9 +98,11 @@ class Installer(object):
             click.secho(
                 "Error: no such package '{}'".format(self.package), fg="red"
             )
-            exit(1)
+            sys.exit(1)
 
     def get_download_url(self, data, platform):
+        """DOC: TODO"""
+
         compressed_name = data.get("release").get("compressed_name")
         self.compressed_name = compressed_name.replace(
             "%V", self.version
@@ -116,6 +124,8 @@ class Installer(object):
         return download_url
 
     def install(self):
+        """DOC: TODO"""
+
         click.echo(
             "Installing %s package:" % click.style(self.package, fg="cyan")
         )
@@ -127,11 +137,11 @@ class Installer(object):
             # Try full platform
             platform_download_url = self.download_urls[0].get("url")
             dlpath = self._download(platform_download_url)
-        except IOError as e:
+        except IOError as exc:
             click.secho(
                 "Warning: permission denied in packages directory", fg="yellow"
             )
-            click.secho(str(e), fg="red")
+            click.secho(str(exc), fg="red")
         except Exception:
             # Try os name
             dlpath = self._install_os_package(platform_download_url)
@@ -161,12 +171,13 @@ class Installer(object):
             )
             try:
                 return self._download(os_download_url)
-            except Exception as e:
-                click.secho("Error: {}".format(str(e)), fg="red")
+            except Exception as exc:
+                click.secho("Error: {}".format(str(exc)), fg="red")
         else:
             click.secho(
                 "Error: package not availabe for this platform", fg="red"
             )
+        return None
 
     def _install_package(self, dlpath):
         if dlpath:
@@ -200,6 +211,8 @@ class Installer(object):
                 rename(unpack_dir, package_dir)
 
     def uninstall(self):
+        """DOC: TODO"""
+
         if isdir(util.safe_join(self.packages_dir, self.package_name)):
             click.echo(
                 "Uninstalling %s package:"
@@ -216,16 +229,19 @@ class Installer(object):
         self.profile.remove_package(self.package)
         self.profile.save()
 
-    def _get_platform(self):
+    @staticmethod
+    def _get_platform():
         return util.get_systype()
 
-    def _get_download_url(self, name, organization, tag, tarball):
+    @staticmethod
+    def _get_download_url(name, organization, tag, tarball):
         url = "https://github.com/{0}/{1}/releases/download/{2}/{3}".format(
             organization, name, tag, tarball
         )
         return url
 
-    def _get_tarball_name(self, name, extension):
+    @staticmethod
+    def _get_tarball_name(name, extension):
         tarball = "{0}.{1}".format(name, extension)
         return tarball
 
@@ -240,17 +256,17 @@ class Installer(object):
                 util.show_package_version_warning(
                     self.package, self.version, self.spec_version
                 )
-                exit(1)
+                sys.exit(1)
             return self._find_required_version(
                 releases, tag_name, self.version, self.spec_version
             )
-        else:
-            # Find latest version release
-            return self._find_latest_version(
-                releases, tag_name, self.spec_version
-            )
 
-    def _find_required_version(self, releases, tag_name, req_v, spec_v):
+        # Find latest version release
+        return self._find_latest_version(
+               releases, tag_name, self.spec_version
+        )
+
+    def _find_required_version(self, releases, tag_name, req_v):
         for release in releases:
             if "tag_name" in release:
                 tag = tag_name.replace("%V", req_v)
@@ -264,10 +280,12 @@ class Installer(object):
                             + " a pre-release. Use --force to install",
                             fg="yellow",
                         )
-                        exit(1)
+                        sys.exit(1)
                     return req_v
+        return None
 
-    def _find_latest_version(self, releases, tag_name, spec_v):
+    @staticmethod
+    def _find_latest_version(releases, tag_name, spec_v):
         for release in releases:
             if "tag_name" in release:
                 pattern = tag_name.replace("%V", "(?P<v>.*?)") + "$"
@@ -278,6 +296,7 @@ class Installer(object):
                         version = match.group("v")
                         if util.check_package_version(version, spec_v):
                             return version
+        return None
 
     def _download(self, url):
         # Note: here we check only for the version of locally installed
@@ -287,26 +306,27 @@ class Installer(object):
             not self.profile.installed_version(self.package, self.version)
             or self.force_install
         ):
-            fd = FileDownloader(url, self.packages_dir)
-            filepath = fd.get_filepath()
+            filed = FileDownloader(url, self.packages_dir)
+            filepath = filed.get_filepath()
             click.secho("Download " + basename(filepath))
             try:
-                fd.start()
+                filed.start()
             except KeyboardInterrupt:
                 if isfile(filepath):
                     remove(filepath)
                 click.secho("Abort download!", fg="red")
-                exit(1)
+                sys. exit(1)
             return filepath
-        else:
-            click.secho(
-                "Already installed. Version {0}".format(
-                    self.profile.get_package_version(self.package)
-                ),
-                fg="yellow",
-            )
-            return None
 
-    def _unpack(self, pkgpath, pkgdir):
-        fu = FileUnpacker(pkgpath, pkgdir)
-        return fu.start()
+        click.secho(
+            "Already installed. Version {0}".format(
+                self.profile.get_package_version(self.package)
+            ),
+            fg="yellow",
+        )
+        return None
+
+    @staticmethod
+    def _unpack(pkgpath, pkgdir):
+        fileu = FileUnpacker(pkgpath, pkgdir)
+        return fileu.start()
