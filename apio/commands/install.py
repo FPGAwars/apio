@@ -1,3 +1,4 @@
+"""DOC: TODO"""
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
@@ -39,7 +40,7 @@ platforms = [
     metavar="",
     help="Set the platform [{}] (Advanced).".format(", ".join(platforms)),
 )
-def cli(ctx, packages, all, list, force, platform):
+def cli(ctx, packages, _all, _list, force, platform):
     """Install packages.
     Input parameters:
       - packages: List with the names of the packages to install
@@ -57,13 +58,13 @@ def cli(ctx, packages, all, list, force, platform):
             Installer(package, platform, force).install()
 
     # -- Install all the available packages
-    elif all:  # pragma: no cover
+    elif _all:  # pragma: no cover
         packages = Resources(platform).packages
         for package in packages:
             Installer(package, platform, force).install()
 
     # -- List all the packages (installed or not)
-    elif list:
+    elif _list:
         Resources(platform).list_packages(installed=True, notinstalled=True)
 
     # -- Invalid option. Just show the help

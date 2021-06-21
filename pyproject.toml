@@ -22,3 +22,7 @@ icm = "apio.__main__:cli"
 [tool.black]
 line-length = 79
 target-version = ['py38']
+
+[tool.pylint.messages_control]
+disable = ["duplicate-code",
+           "too-few-public-methods"]

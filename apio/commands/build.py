@@ -1,16 +1,16 @@
+"""DOC: TODO"""
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
+import sys
 import click
 
 from apio.managers.scons import SCons
 
 # Python3 compat
-import sys
-
 if sys.version_info > (3, 0):
     unicode = str
 
@@ -56,7 +56,7 @@ def cli(
     board,
     fpga,
     pack,
-    type,
+    _type,
     size,
     project_dir,
     verbose,
@@ -71,7 +71,7 @@ def cli(
             "board": board,
             "fpga": fpga,
             "size": size,
-            "type": type,
+            "type": _type,
             "pack": pack,
             "verbose": {
                 "all": verbose,
