@@ -143,41 +143,104 @@ def safe_join(*paths):
 
 
 def _get_config_data():
+    """Return the configuration data located in the /etc/apio.json file
+       Only for Debian Distribution. It will return None otherwise """
+
+    # Default value
     _config_data = None
+
+    # If the LOAD_CONFIG_DATA flag is set
+    # Read the /etc/apio.json file and return its contents
+    # as an object
     if LOAD_CONFIG_DATA:
         filepath = safe_join(os.sep, "etc", "apio.json")
         if isfile(filepath):
             with open(filepath, "r") as file:
                 # Load the JSON file
                 _config_data = json.loads(file.read())
+
     return _config_data
 
 
+# Global variable with the configuration data
+# Only for Debian distributions
 config_data = _get_config_data()
 
 
 def _get_projconf_option_dir(name, default=None):
-    _env_name = "APIO_%s" % name.upper()
+    """Return project the project option with the given name
+       These options are place either on environment variables or
+       into the /etc/apio.json file in the case of debian distributions
+
+       All the APIO environment variables have the prefix "APIO_"
+    """
+
+    # -- Get the full name of the environment variable
+    _env_name = f"APIO_{name.upper()}"
+
+    # -- Check if the environment variable
+    # -- is defined
     if _env_name in os.environ:
-        return os.getenv(_env_name)
+
+        # -- Read the value of the environmental variable
+        _env_value = os.getenv(_env_name)
+
+        # -- On window systems the environmental variables can
+        # -- include the quotes (""). But not in Linux
+        # -- If there are quotes, remove them
+        if _env_value.startswith('"') and _env_value.endswith('"'):
+            _env_value = _env_value[1:-1]
+
+        # -- Debug: Print the environment variable (without quotes)
+        print(f"{_env_name}: {_env_value}")
+
+        return _env_value
+
+    # -- Check if the config option is defined in the
+    # -- configuration file (Only Debian systems)
     if config_data and _env_name in config_data.keys():
+
+        # -- Return the value of the option
         return config_data.get(_env_name)
+
     return default
 
 
 def get_home_dir():
-    """DOC: TODO"""
+    """Get the APIO Home dir. This is the apio folder where the profle is located
+    and the packages installes. The APIO Home dir can be set in the APIO_HOME_DIR
+    environment varible or in the /etc/apio.json file (in Debian). If not set, the  
+    user_HOME/.apio folder is used by default:
+    Ej. Linux:  /home/obijuan/.apio
+    If the folders does not exist, they are created
+    It returns a list with all the folders
+    """
 
+    # -- Get the APIO HOME DIR
     home_dir = _get_projconf_option_dir("home_dir", "~/.apio")
+
+    # -- Expand the ~ symbol with the full home user folder
     home_dir = re.sub(r"\~", expanduser("~").replace("\\", "/"), home_dir)
 
+    # -- Parse the path and convert it into its folder names
     paths = home_dir.split(os.pathsep)
+
+    # -- Check if the folders already exist
     path = _check_writable(paths)
+
+    # -- No folders yet
     if not path:
+
+        # -- Create the folders
         path = _create_path(paths)
+
+        # -- Still no luck (maybe no permission to write)
         if not path:
             click.secho("Error: no usable home directory " + path, fg="red")
             sys.exit(1)
+
+    # Return the home_dir as a list of all its folders   
+    print(path);      
     return path
 
 
