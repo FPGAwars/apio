@@ -32,7 +32,11 @@ Apio is used by [Icestudio](https://github.com/FPGAwars/icestudio).
 * [Contributors](#contributors)
 * [License](#license)
 
-## Installation
+# Documentation
+
+Find all the information on this [WIKI PAGE](https://github.com/FPGAwars/apio/wiki)
+
+# Installation
 
 1. Install [Python](https://www.python.org/downloads) and [pip](https://pip.pypa.io)
 
