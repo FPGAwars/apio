@@ -208,7 +208,7 @@ Thanks Salvador E. Tropea!
 
 Licensed under [GPL 2.0](http://opensource.org/licenses/GPL-2.0) and [Creative Commons Attribution-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-sa/4.0/).
 
-[apio-logo]: https://github.com/FPGAwars/apio/raw/master/docs/resources/images/apio-logo-mini.png
+[apio-logo]: https://github.com/FPGAwars/apio/raw/master/wiki/Logos/Apio-github.png
 [linux-logo]: https://github.com/FPGAwars/apio/raw/master/docs/resources/images/linux.png
 [macosx-logo]: https://github.com/FPGAwars/apio/raw/master/docs/resources/images/macosx.png
 [windows-logo]: https://github.com/FPGAwars/apio/raw/master/docs/resources/images/windows.png
