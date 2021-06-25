@@ -16,7 +16,7 @@ classifiers=[
 description-file = "README.md"
 requires-python = ">=3.7"
 requires = [
-    "jwt >=0.6.1"
+    "pyjwt >=1.5.3,<2"
 ]
 
 [tool.flit.scripts]

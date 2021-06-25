@@ -1,4 +1,4 @@
-.PHONY: deps cenv env lint tox publish
+.PHONY: deps cenv env lint tox publish publish_test
 
 deps:  ## Install dependencies
 	python -m pip install --upgrade pip
@@ -18,6 +18,9 @@ lint:  ## Lint and static-check
 
 tox:   ## Run tox
 	python -m tox
+
+publish_test:  ## Publish to testPypi
+	flit publish --repository pypitest
 
 publish:  ## Publish to PyPi
 	python -m flit publish
