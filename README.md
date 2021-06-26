@@ -1,9 +1,8 @@
-![][apio-logo]
+[![][apio-logo]][wiki]
 
-[![Build Status](https://travis-ci.org/FPGAwars/apio.svg?branch=master)](https://travis-ci.org/FPGAwars/apio)
-[![Latest Version](https://img.shields.io/pypi/v/apio.svg)](https://pypi.python.org/pypi/apio/)
-[![License](http://img.shields.io/:license-gpl-blue.svg)](http://opensource.org/licenses/GPL-2.0)
-[![Documentation Status](https://readthedocs.org/projects/apiodoc/badge/?version=stable)](http://apiodoc.readthedocs.io/en/stable/)
+[![PyPI Version][pypi-image]][pypi-url]
+[![Build Status][build-image]][build-url]
+[![License][license-image]][license-url]
 
 ![][linux-logo]
 &nbsp;
@@ -216,8 +215,16 @@ Licensed under [GPL 2.0](http://opensource.org/licenses/GPL-2.0) and [Creative C
 [![](https://github.com/FPGAwars/icestudio-wiki/raw/main/Logos/fgpawars-banner.svg)](https://fpgawars.github.io/)
 
 
-<!-- Badges -->
+<!-- Badges and URLs -->
 
+[pypi-image]: https://img.shields.io/pypi/v/apio
+[pypi-url]: https://pypi.org/project/apio/
+
+[build-image]: https://github.com/FPGAwars/apio/actions/workflows/build.yml/badge.svg
+[build-url]: https://github.com/FPGAwars/apio/actions/workflows/build.yml
+
+[license-image]: http://img.shields.io/:license-gpl-blue.svg
+[license-url]: (http://opensource.org/licenses/GPL-2.0)
 
 [apio-logo]: https://github.com/FPGAwars/apio/raw/master/wiki/Logos/Apio-github.png
 [linux-logo]: https://github.com/FPGAwars/apio/raw/master/docs/resources/images/linux.png
@@ -225,3 +232,5 @@ Licensed under [GPL 2.0](http://opensource.org/licenses/GPL-2.0) and [Creative C
 [windows-logo]: https://github.com/FPGAwars/apio/raw/master/docs/resources/images/windows.png
 [ubuntu-logo]: https://github.com/FPGAwars/apio/raw/master/docs/resources/images/ubuntu.png
 [raspbian-logo]: https://github.com/FPGAwars/apio/raw/master/docs/resources/images/raspbian.png
+
+[wiki]: https://github.com/FPGAwars/apio/wiki
