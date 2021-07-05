@@ -7,9 +7,8 @@
 
 import re
 import platform
+from pathlib import Path
 import click
-
-# from pathlib import Path
 
 from apio import util
 from apio.profile import Profile
@@ -115,9 +114,21 @@ class System:  # pragma: no cover
 
         print(f"Run Command: {command}")
 
+        # From apio >= 0.7.0, the system tools are locate in the
+        # oss-cad-suite package instead of the system package
+        # So first let's try to execute them from there
+
+        # -- Get the package base dir
         system_base_dir = util.get_package_dir("tools-oss-cad-suite")
         print(f"System_base_dir: {system_base_dir}")
-        system_bin_dir = util.safe_join(system_base_dir, "bin")
+
+        # -- Get the folder were the binary file is locateds
+        system_bin_dir = Path(system_base_dir) / "bin"
+        print(f"System bin dir: {system_bin_dir}")
+
+        # -- Get the executable filename
+        executable_file = system_bin_dir / (command + self.ext)
+        print(f"Executable file: {executable_file}")
 
         on_stdout = None if silent else self._on_stdout
         on_stderr = self._on_stderr
@@ -126,7 +137,7 @@ class System:  # pragma: no cover
             self.name, self.version, self.spec_version, system_bin_dir
         ):
             result = util.exec_command(
-                util.safe_join(system_bin_dir, command + self.ext),
+                executable_file,
                 stdout=util.AsyncPipe(on_stdout),
                 stderr=util.AsyncPipe(on_stderr),
             )

@@ -17,7 +17,7 @@ import locale
 import platform
 import subprocess
 from threading import Thread
-from os.path import expanduser, isdir, isfile, join, dirname, exists, normpath
+from os.path import isdir, isfile, join, dirname, exists, normpath
 from pathlib import Path
 
 import jwt
@@ -246,19 +246,39 @@ def get_home_dir():
 
 
 def get_package_dir(pkg_name):
-    """DOC: TODO"""
+    """Return the APIO package dir of a given package
+    Packages are installed in the following folder:
+    * Default: $HOME/.apio/packages
+    * $APIO_PKG_DIR/packages: if the APIO_PKG_DIR env variable is set
+    """
 
-    home_dir = _get_projconf_option_dir("pkg_dir", "")
-    if not home_dir:
-        home_dir = _get_projconf_option_dir("home_dir", "~/.apio")
-    home_dir = re.sub(r"\~", expanduser("~").replace("\\", "/"), home_dir)
+    # -- Get the APIO_PKG_DIR env variable
+    # -- It returns None if it was not defined
+    apio_pkg_dir_env = _get_projconf_option_dir("pkg_dir")
 
-    paths = home_dir.split(os.pathsep)
-    for path in paths:
-        package_dir = safe_join(path, "packages", pkg_name)
-        if isdir(package_dir):
-            return package_dir
+    # -- Get the pkg base dir. It is what the APIO_PKG_DIR env variable
+    # -- says, or the default folder if None
+    if apio_pkg_dir_env:
+        pkg_home_dir = Path(apio_pkg_dir_env)
 
+    # -- Default value
+    else:
+        pkg_home_dir = Path.home() / ".apio"
+
+    print(f"pkg_dir: {pkg_home_dir}")
+
+    # -- Create the package folder
+    package_dir = pkg_home_dir / "packages" / pkg_name
+
+    # -- Return the folder if it exists
+    if package_dir.exists():
+        return str(package_dir)
+
+    # -- Show an error message (for debugging)
+    # click.secho(f"Folder does not exists: {package_dir}", fg="red")
+    # sys.exit(1)
+
+    # -- Return a null string if the folder does not exist
     return ""
 
 
