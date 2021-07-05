@@ -144,7 +144,7 @@ def safe_join(*paths):
 
 def _get_config_data():
     """Return the configuration data located in the /etc/apio.json file
-       Only for Debian Distribution. It will return None otherwise """
+    Only for Debian Distribution. It will return None otherwise"""
 
     # Default value
     _config_data = None
@@ -169,10 +169,10 @@ config_data = _get_config_data()
 
 def _get_projconf_option_dir(name, default=None):
     """Return project the project option with the given name
-       These options are place either on environment variables or
-       into the /etc/apio.json file in the case of debian distributions
+    These options are place either on environment variables or
+    into the /etc/apio.json file in the case of debian distributions
 
-       All the APIO environment variables have the prefix "APIO_"
+    All the APIO environment variables have the prefix "APIO_"
     """
 
     # -- Get the full name of the environment variable
@@ -207,10 +207,10 @@ def _get_projconf_option_dir(name, default=None):
 
 
 def get_home_dir():
-    """Get the APIO Home dir. This is the apio folder where the profle is located
-    and the packages installes. The APIO Home dir can be set in the APIO_HOME_DIR
-    environment varible or in the /etc/apio.json file (in Debian). If not set, the  
-    user_HOME/.apio folder is used by default:
+    """Get the APIO Home dir. This is the apio folder where the profle is
+    located and the packages installes. The APIO Home dir can be set in the
+    APIO_HOME_DIR environment varible or in the /etc/apio.json file (in
+    Debian). If not set, the user_HOME/.apio folder is used by default:
     Ej. Linux:  /home/obijuan/.apio
     If the folders does not exist, they are created
     It returns a list with all the folders
@@ -239,8 +239,8 @@ def get_home_dir():
             click.secho("Error: no usable home directory " + path, fg="red")
             sys.exit(1)
 
-    # Return the home_dir as a list of all its folders   
-    print(path);      
+    # Return the home_dir as a list of all its folders
+    print(path)
     return path
 
 

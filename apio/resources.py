@@ -47,7 +47,7 @@ class Resources:
 
         # -- Read the boards information
         self.boards = self._load_resource("boards")
-        
+
         self.fpgas = self._load_resource("fpgas")
         self.programmers = self._load_resource("programmers")
         self.distribution = self._load_resource("distribution")
@@ -67,16 +67,15 @@ class Resources:
         )
         self.profile = None
 
-
     @staticmethod
     def _load_resource(name):
         """Load the resources from a given json file
-           * Name: Name of the file without extension:
-            * boards: Load the boards
-            * distribution
-            * fpgas
-            * packages
-            * programmers
+        * Name: Name of the file without extension:
+         * boards: Load the boards
+         * distribution
+         * fpgas
+         * packages
+         * programmers
         """
 
         # -- Default return value: no resource
@@ -91,7 +90,6 @@ class Resources:
 
         # -- Return the object for the resource
         return resource
-
 
     def get_package_release_name(self, package):
         """DOC: TODO"""

@@ -24,12 +24,12 @@ from apio.managers.unpacker import FileUnpacker
 
 class Installer:
     """Installer. Class with methods for installing and managing
-       packages"""
+    packages"""
 
     def __init__(self, package, platform="", force=False, checkversion=True):
         """Class initialization. Parameters:
-          * package:  Package name to manage/install. It can have a prefix with
-                      the version. Ex. "system@1.1.2"
+        * package:  Package name to manage/install. It can have a prefix with
+                    the version. Ex. "system@1.1.2"
         """
 
         # Parse version. The following attributes are used:
@@ -73,7 +73,7 @@ class Installer:
 
             # Get the information about the valid versions
             distribution = self.resources.distribution
-           
+
             # Get the spectec package version
             self.spec_version = distribution.get("packages").get(self.package)
 
@@ -86,8 +86,8 @@ class Installer:
             # Get the current platform
             platform = platform or self._get_platform()
 
-            # Check if the version is ok (It is only done if the checkversion flag
-            # has been activated)
+            # Check if the version is ok (It is only done if the
+            # checkversion flag has been activated)
             if checkversion:
 
                 # Check version. The filename is read from the
@@ -104,7 +104,7 @@ class Installer:
                     click.secho("Error: no valid version found", fg="red")
                     sys.exit(1)
 
-                # Store the valid version    
+                # Store the valid version
                 self.version = valid_version
 
                 # Get the plaform_os name
@@ -122,7 +122,7 @@ class Installer:
                         "platform": platform_os,
                     },
                 ]
-        # -- The package is kwnown but the version is not correct 
+        # -- The package is kwnown but the version is not correct
         else:
 
             if self.package in self.profile.packages and checkversion is False:
@@ -138,7 +138,6 @@ class Installer:
                 "Error: no such package '{}'".format(self.package), fg="red"
             )
             sys.exit(1)
-
 
     def get_download_url(self, data, platform):
         """DOC: TODO"""
@@ -285,10 +284,9 @@ class Installer:
         tarball = "{0}.{1}".format(name, extension)
         return tarball
 
-
     def _get_valid_version(self, rel_name, organization, tag_name):
         """Get the latest valid version. It can be the latest vesion available
-           in github or a specific version"""
+        in github or a specific version"""
 
         # Get the data from the Github api
         # Ex of the object obtained in this URL:
@@ -309,7 +307,7 @@ class Installer:
                 releases, tag_name, self.version
             )
 
-        # Find latest version release 
+        # Find latest version release
         return self._find_latest_version(releases, tag_name, self.spec_version)
 
     def _find_required_version(self, releases, tag_name, req_v):

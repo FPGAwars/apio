@@ -25,7 +25,7 @@ def api_request(command, organization="FPGAwars"):
     cmd_url = f"https://api.github.com/repos/{organization}/{command}"
 
     # -- Get the headers (Autorization token)
-    headers = _get_headers();
+    headers = _get_headers()
 
     # -- Do the request!
     try:
@@ -55,7 +55,7 @@ def api_request(command, organization="FPGAwars"):
     finally:
         if req:
             req.close()
-    
+
     # -- Return the response object from github
     if result is None:
         click.secho("Error: wrong data from GitHub API", fg="red")
