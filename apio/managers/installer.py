@@ -23,11 +23,18 @@ from apio.managers.unpacker import FileUnpacker
 
 
 class Installer:
-    """DOC: TODO"""
+    """Installer. Class with methods for installing and managing
+       packages"""
 
     def __init__(self, package, platform="", force=False, checkversion=True):
+        """Class initialization. Parameters:
+          * package:  Package name to manage/install. It can have a prefix with
+                      the version. Ex. "system@1.1.2"
+        """
 
-        # Parse version
+        # Parse version. The following attributes are used:
+        #  * Installer.package: Package name (without version)
+        #  * Installer.version: Package version (or None)
         if "@" in package:
             split = package.split("@")
             self.package = split[0]
@@ -36,17 +43,28 @@ class Installer:
             self.package = package
             self.version = None
 
+        # -- Attribute Installer.force_install
+        # -- Force installation or not
         self.force_install = force
+
+        # -- Installer.package_dir: path were the packages are stored
+        # -- Ex. /home/obijuan/.apio/packages
         self.packages_dir = ""
 
+        # -- Get all the resources for the given platform
+        # -- Some resources depend on the platform (like the packages)
+        # -- but some others don't (like the boards)
         self.resources = Resources(platform)
 
         self.profile = Profile()
 
+        # -- Folder name were the packages are stored
         dirname = "packages"
 
+        # -- If the package is known...
         if self.package in self.resources.packages:
 
+            # -- Store the package dir
             self.packages_dir = util.safe_join(util.get_home_dir(), dirname)
 
             # Get data
@@ -87,7 +105,7 @@ class Installer:
                         "platform": platform_os,
                     },
                 ]
-
+        # -- The package is unkown (not defined in the resources/packages.json file)
         else:
             if self.package in self.profile.packages and checkversion is False:
                 self.packages_dir = util.safe_join(

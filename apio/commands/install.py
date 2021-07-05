@@ -50,11 +50,13 @@ def cli(ctx, packages, all, list, force, platform):
       - platform: Flag. Select platform (advaced. For developers)
     """
 
+    print("DEBUG: apio install")
+
     # -- Install the given packages
     if packages:
         for package in packages:
 
-            # -- The installion is performed by the Installer object
+            # -- The instalation is performed by the Installer object
             inst = Installer(package, platform, force)
 
             inst.install()

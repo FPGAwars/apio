@@ -5,6 +5,22 @@
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
+# ---------- RESOURCES
+
+# ---------------------------------------
+# ---- File: resources/packages.json
+# --------------------------------------
+# -- This file contains all the information regarding the available apio
+# -- packages: Repository, version, name...
+# -- This information is access through the Resources.packages method
+
+# -----------------------------------------
+# ---- File: resources/boads.json
+# -----------------------------------------
+# -- Information about all the supported board
+# -- names, fpga family, programmer, ftdi description, vendor id, product id
+
+
 import json
 from collections import OrderedDict
 import shutil
@@ -13,6 +29,7 @@ import click
 from apio import util
 from apio.profile import Profile
 
+# -- Info message
 BOARDS_MSG = (
     """
 Use `apio init --board <boardname>` to create a new apio """
@@ -21,11 +38,16 @@ Use `apio init --board <boardname>` to create a new apio """
 
 
 class Resources:
-    """Resource manager"""
+    """Resource manager. Class for accesing to all the resources"""
 
     def __init__(self, platform=""):
+
+        # -- Read the packages information
         self.packages = self._load_resource("packages")
+
+        # -- Read the boards information
         self.boards = self._load_resource("boards")
+        
         self.fpgas = self._load_resource("fpgas")
         self.programmers = self._load_resource("programmers")
         self.distribution = self._load_resource("distribution")
@@ -45,14 +67,31 @@ class Resources:
         )
         self.profile = None
 
+
     @staticmethod
     def _load_resource(name):
+        """Load the resources from a given json file
+           * Name: Name of the file without extension:
+            * boards: Load the boards
+            * distribution
+            * fpgas
+            * packages
+            * programmers
+        """
+
+        # -- Default return value: no resource
         resource = None
+
+        # -- Build the filepath: Ex. resources/fpgas.json
         filepath = util.safe_join(util.get_folder("resources"), name + ".json")
+
+        # -- Open the json file and convert it to an object
         with open(filepath, "r") as file:
-            # Load the JSON file
             resource = json.loads(file.read())
+
+        # -- Return the object for the resource
         return resource
+
 
     def get_package_release_name(self, package):
         """DOC: TODO"""
