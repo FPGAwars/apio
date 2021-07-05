@@ -15,16 +15,31 @@ from apio import util
 
 
 class Profile:
-    """DOC: TODO"""
+    """Class for managing the apio profile file"""
 
     def __init__(self):
+
+        # ---- Set the default parameters
+        # -- Apio default config mode
         self.config = {"exe": "default", "verbose": 0}
+
         self.labels = {"exe": "Executable", "verbose": "Verbose"}
+
+        # Apio settings
         self.settings = {}
+
+        # -- Installed package versions
         self.packages = {}
+
+        # -- Get the profile path
         self._profile_path = util.safe_join(
             util.get_home_dir(), "profile.json"
         )
+
+        print(f"Profile path: {self._profile_path}")
+        print(f"Home_dir: {util.get_home_dir()}")
+
+        # -- Read the profile from file
         self.load()
 
     def installed_version(self, name, version):
@@ -113,27 +128,43 @@ class Profile:
         return version
 
     def load(self):
-        """DOC: todo"""
+        """Load the profile from the file"""
 
+        # -- Check if the file exist
         if isfile(self._profile_path):
+
+            # -- Open the profile file
             with open(self._profile_path, "r") as profile:
-                try:
-                    self._load_profile(profile)
-                except Exception:
-                    pass
+
+                # -- Read the profile file
+                self._load_profile(profile)
 
     def _load_profile(self, profile):
+        """Read the profile file
+        profile: file descriptor
+        """
+
+        # -- Process the json file
         data = json.load(profile)
+
+        # -- Add the configuration object
         if "config" in data.keys():
             self.config = data.get("config")
+
             if "exe" not in self.config.keys():
                 self.config["exe"] = "default"
+
             if "verbose" not in self.config.keys():
                 self.config["verbose"] = 0
+
+        # -- Add the settings object
         if "settings" in data.keys():
             self.settings = data.get("settings")
+
+        # -- Add the packages version object
         if "packages" in data.keys():
             self.packages = data.get("packages")
+
         else:
             self.packages = data  # Backward compatibility
 

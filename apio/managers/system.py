@@ -1,4 +1,4 @@
-"""DOC: TODO"""
+"""Implementation of the Apio system commands"""
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
@@ -9,28 +9,40 @@ import re
 import platform
 import click
 
+# from pathlib import Path
+
 from apio import util
 from apio.profile import Profile
 from apio.resources import Resources
 
 
 class System:  # pragma: no cover
-    """DOC: TODO"""
+    """System class. Managing and execution of the system commands"""
 
     def __init__(self):
+
+        # -- Read the profile from the file
         profile = Profile()
+
+        # -- Read the resources from the corresponding files
         resources = Resources()
 
+        # -- This command is called system
         self.name = "system"
+
+        # -- Get the installed package versions
         self.version = util.get_package_version(self.name, profile)
+
+        # -- Get the spected versions
         self.spec_version = util.get_package_spec_version(self.name, resources)
 
+        # -- Windows: Executables should end with .exe
         self.ext = ""
         if platform.system() == "Windows":
             self.ext = ".exe"
 
     def lsusb(self):
-        """DOC: TODO"""
+        """Run the lsusb system command"""
 
         returncode = 1
         result = self._run_command("lsusb")
@@ -99,7 +111,12 @@ class System:  # pragma: no cover
 
     def _run_command(self, command, silent=False):
         result = {}
-        system_base_dir = util.get_package_dir("tools-system")
+        # system_base_dir = util.get_package_dir("tools-system")
+
+        print(f"Run Command: {command}")
+
+        system_base_dir = util.get_package_dir("tools-oss-cad-suite")
+        print(f"System_base_dir: {system_base_dir}")
         system_bin_dir = util.safe_join(system_base_dir, "bin")
 
         on_stdout = None if silent else self._on_stdout

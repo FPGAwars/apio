@@ -18,6 +18,7 @@ import platform
 import subprocess
 from threading import Thread
 from os.path import expanduser, isdir, isfile, join, dirname, exists, normpath
+from pathlib import Path
 
 import jwt
 import click
@@ -168,11 +169,15 @@ config_data = _get_config_data()
 
 
 def _get_projconf_option_dir(name, default=None):
-    """Return project the project option with the given name
+    """Return the project option with the given name
     These options are place either on environment variables or
     into the /etc/apio.json file in the case of debian distributions
 
     All the APIO environment variables have the prefix "APIO_"
+
+    Project options:
+
+    * home_dir : APIO home directory
     """
 
     # -- Get the full name of the environment variable
@@ -192,7 +197,7 @@ def _get_projconf_option_dir(name, default=None):
             _env_value = _env_value[1:-1]
 
         # -- Debug: Print the environment variable (without quotes)
-        print(f"{_env_name}: {_env_value}")
+        print(f"DEBUG: {_env_name}: {_env_value}")
 
         return _env_value
 
@@ -203,12 +208,13 @@ def _get_projconf_option_dir(name, default=None):
         # -- Return the value of the option
         return config_data.get(_env_name)
 
+    # -- Return the default home_dir
     return default
 
 
 def get_home_dir():
     """Get the APIO Home dir. This is the apio folder where the profle is
-    located and the packages installes. The APIO Home dir can be set in the
+    located and the packages installed. The APIO Home dir can be set in the
     APIO_HOME_DIR environment varible or in the /etc/apio.json file (in
     Debian). If not set, the user_HOME/.apio folder is used by default:
     Ej. Linux:  /home/obijuan/.apio
@@ -216,58 +222,27 @@ def get_home_dir():
     It returns a list with all the folders
     """
 
-    # -- Get the APIO HOME DIR
-    home_dir = _get_projconf_option_dir("home_dir", "~/.apio")
+    # -- Get the APIO_HOME_DIR env variable
+    # -- It returns None if it was not defined
+    apio_home_dir_env = _get_projconf_option_dir("home_dir")
 
-    # -- Expand the ~ symbol with the full home user folder
-    home_dir = re.sub(r"\~", expanduser("~").replace("\\", "/"), home_dir)
+    # -- Get the home dir. It is what the APIO_HOME_DIR env variable
+    # -- says, or the default folder if None
+    if apio_home_dir_env:
+        home_dir = Path(apio_home_dir_env)
+    else:
+        home_dir = Path.home() / ".apio"
 
-    # -- Parse the path and convert it into its folder names
-    paths = home_dir.split(os.pathsep)
+    # -- Create the folders if they do not exist
+    try:
+        home_dir.mkdir(parents=True, exist_ok=True)
+    except PermissionError:
+        click.secho(f"Error: no usable home directory {home_dir}", fg="red")
+        sys.exit(1)
 
-    # -- Check if the folders already exist
-    path = _check_writable(paths)
-
-    # -- No folders yet
-    if not path:
-
-        # -- Create the folders
-        path = _create_path(paths)
-
-        # -- Still no luck (maybe no permission to write)
-        if not path:
-            click.secho("Error: no usable home directory " + path, fg="red")
-            sys.exit(1)
-
-    # Return the home_dir as a list of all its folders
-    print(path)
-    return path
-
-
-def _check_writable(paths):
-    ret = ""
-    for path in paths:
-        if isdir(path):
-            if os.access(path, os.W_OK):
-                # Path is writable
-                ret = path
-                break
-            click.secho("Warning: can't write in path " + path, fg="yellow")
-    return ret
-
-
-def _create_path(paths):
-    ret = ""
-    for path in paths:
-        if not isdir(path):
-            try:
-                os.makedirs(path)
-                ret = path
-                break
-            except OSError as ioex:
-                if ioex.errno == 13:
-                    click.secho("Warning: can't create " + path, fg="yellow")
-    return ret
+    # Return the home_dir as a string
+    # In the future it should return the path object
+    return str(home_dir)
 
 
 def get_package_dir(pkg_name):

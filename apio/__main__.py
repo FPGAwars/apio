@@ -63,11 +63,11 @@ class ApioCLI(click.MultiCommand):
     # -- This cli function is called whenever the name command
     # -- is issued
     # pylint: disable=arguments-differ
-    def get_command(self, ctx, name):
+    def get_command(self, ctx, cmd_name):
         nnss = {}
 
         # -- Get the full filename of the python file for the command name
-        filename = util.safe_join(commands_folder, name + ".py")
+        filename = util.safe_join(commands_folder, cmd_name + ".py")
 
         # -- Return the cli function of the command
         if isfile(filename):
