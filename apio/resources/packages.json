@@ -176,6 +176,7 @@
     },
     "description": "iCESugar board programmer"
   },
+
   "dfu" : {
     "repository": {
       "name": "toolchain-dfu",
@@ -192,6 +193,24 @@
       ]
     },
     "description": "Device Firmware Upgrade Utilities"
+  },
+
+  "oss-cad-suite" : {
+    "repository": {
+      "name": "tools-oss-cad-suite",
+      "organization": "FPGAwars"
+    },
+    "release" : {
+      "tag_name": "v%V",
+      "compressed_name": "tools-oss-cad-suite-%P-%V",
+      "uncompressed_name": "",
+      "package_name": "tools-oss-cad-suite",
+      "extension": "tar.gz",
+      "available_platforms": [
+        "linux_x86_64"
+      ]
+    },
+    "description": "YosysHQ/oss-cad-suite"
   }
 
 }

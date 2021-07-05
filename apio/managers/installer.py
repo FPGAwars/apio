@@ -62,39 +62,56 @@ class Installer:
         dirname = "packages"
 
         # -- If the package is known...
+        # --(It is defined in the resources/packages.json file)
         if self.package in self.resources.packages:
 
             # -- Store the package dir
             self.packages_dir = util.safe_join(util.get_home_dir(), dirname)
 
-            # Get data
+            # Get the data of the given package
             data = self.resources.packages.get(self.package)
-            distribution = self.resources.distribution
 
+            # Get the information about the valid versions
+            distribution = self.resources.distribution
+           
+            # Get the spectec package version
             self.spec_version = distribution.get("packages").get(self.package)
+
+            # Get the package name (from resources/package.json file)
             self.package_name = data.get("release").get("package_name")
+
+            # Get the extension given to the toolchain. Tipically tar.gz
             self.extension = data.get("release").get("extension")
+
+            # Get the current platform
             platform = platform or self._get_platform()
 
+            # Check if the version is ok (It is only done if the checkversion flag
+            # has been activated)
             if checkversion:
 
-                # Check version
+                # Check version. The filename is read from the
+                # repostiroy
                 valid_version = self._get_valid_version(
                     data.get("repository").get("name"),
                     data.get("repository").get("organization"),
                     data.get("release").get("tag_name"),
                 )
 
-                # Valid version
+                # No valid version found
                 if not valid_version:
                     # Error
                     click.secho("Error: no valid version found", fg="red")
                     sys.exit(1)
 
+                # Store the valid version    
                 self.version = valid_version
 
+                # Get the plaform_os name
                 # e.g., [linux_x86_64, linux]
                 platform_os = platform.split("_")[0]
+
+                # Build the URLs for downloading the package
                 self.download_urls = [
                     {
                         "url": self.get_download_url(data, platform),
@@ -105,19 +122,23 @@ class Installer:
                         "platform": platform_os,
                     },
                 ]
-        # -- The package is unkown (not defined in the resources/packages.json file)
+        # -- The package is kwnown but the version is not correct 
         else:
+
             if self.package in self.profile.packages and checkversion is False:
                 self.packages_dir = util.safe_join(
                     util.get_home_dir(), dirname
                 )
                 self.package_name = "toolchain-" + package
 
+        # -- If the Installer.package_dir is empty, is because the package
+        # -- was not known. Abort!
         if self.packages_dir == "":
             click.secho(
                 "Error: no such package '{}'".format(self.package), fg="red"
             )
             sys.exit(1)
+
 
     def get_download_url(self, data, platform):
         """DOC: TODO"""
@@ -264,10 +285,15 @@ class Installer:
         tarball = "{0}.{1}".format(name, extension)
         return tarball
 
-    def _get_valid_version(self, rel_name, organization, tag_name):
 
-        # Download latest releases list
-        releases = api_request("{}/releases".format(rel_name), organization)
+    def _get_valid_version(self, rel_name, organization, tag_name):
+        """Get the latest valid version. It can be the latest vesion available
+           in github or a specific version"""
+
+        # Get the data from the Github api
+        # Ex of the object obtained in this URL:
+        # https://api.github.com/repos/FPGAwars/tools-oss-cad-suite/releases
+        releases = api_request(f"{rel_name}/releases", organization)
 
         if self.version:
 
@@ -283,7 +309,7 @@ class Installer:
                 releases, tag_name, self.version
             )
 
-        # Find latest version release
+        # Find latest version release 
         return self._find_latest_version(releases, tag_name, self.spec_version)
 
     def _find_required_version(self, releases, tag_name, req_v):

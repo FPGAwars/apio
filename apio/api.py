@@ -16,20 +16,24 @@ requests.packages.urllib3.disable_warnings()
 
 
 def api_request(command, organization="FPGAwars"):
-    """DOC:TODO"""
+    """Perform a request of data to Github, through its API"""
 
     result = None
     req = None
-    try:
-        req = requests.get(
-            "https://api.github.com/repos/{0}/{1}".format(
-                organization, command
-            ),
-            headers=_get_headers(),
-        )
 
+    # -- Create the URL for accesing the github API
+    cmd_url = f"https://api.github.com/repos/{organization}/{command}"
+
+    # -- Get the headers (Autorization token)
+    headers = _get_headers();
+
+    # -- Do the request!
+    try:
+        req = requests.get(cmd_url, headers)
         result = req.json()
         req.raise_for_status()
+
+    # -- There is a connection problem
     except requests.exceptions.ConnectionError as exc:
         error_message = str(exc)
         if "NewConnectionError" in error_message:
@@ -41,15 +45,22 @@ def api_request(command, organization="FPGAwars"):
         else:
             click.secho(error_message, fg="red")
         sys.exit(1)
+
+    # -- There is another error
     except Exception as exc:
         click.secho("Error: " + str(exc), fg="red")
         sys.exit(1)
+
+    # -- In any case, close the request
     finally:
         if req:
             req.close()
+    
+    # -- Return the response object from github
     if result is None:
         click.secho("Error: wrong data from GitHub API", fg="red")
         sys.exit(1)
+
     return result
 
 
