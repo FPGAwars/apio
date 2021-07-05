@@ -718,6 +718,6 @@ def get_bin_dir():
 
 
 def get_python_version():
-    """DOC: TODO"""
+    """Return a string with the python version"""
 
-    return "{0}.{1}".format(sys.version_info[0], sys.version_info[1])
+    return f"{sys.version_info[0]}.{sys.version_info[1]}"
