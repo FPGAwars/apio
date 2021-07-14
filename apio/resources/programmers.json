@@ -58,15 +58,15 @@
     "args": ""
   },
  "openfpgaloader_ft2232": {
-    "command": "openfpgaloader",
+    "command": "openFPGALoader",
     "args": "-c ft2232"
   },
   "openfpgaloader_ft232": {
-    "command": "openfpgaloader",
+    "command": "openFPGALoader",
     "args": "-c ft232"
   },
   "openfpgaloader_usb-blaster": {
-    "command": "openfpgaloader",
+    "command": "openFPGALoader",
     "args": "-c usb-blaster"
   }
 }
