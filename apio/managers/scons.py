@@ -11,6 +11,7 @@ import sys
 import time
 import datetime
 from os.path import isfile
+from pathlib import Path
 
 import click
 import pkg_resources
@@ -108,10 +109,13 @@ class SCons:
         """DOC: TODO"""
 
         var, board, arch = process_arguments(args, self.resources)
+        
         programmer = self.get_programmer(
             board, serial_port, ftdi_id, sram, flash
         )
-        var += ["prog={0}".format(programmer)]
+        
+        var += [f"prog={programmer}"]
+
         return self.run(
             "upload", var, board, arch, packages=["scons", "yosys", arch]
         )
@@ -122,6 +126,7 @@ class SCons:
         programmer = ""
 
         if board:
+
             board_data = self.resources.boards.get(board)
 
             # Check platform
@@ -178,13 +183,27 @@ class SCons:
             raise Exception("incorrect platform {0}".format(platform))
 
     def check_pip_packages(self, board_data):
-        """DOC: TODO"""
+        """Check if the corresponding pip package with the programmer
+           has already been installed. In the case of an apio package
+           it is just ignored
+        """
 
+        # -- Get the programmer object for the given board
         prog_info = board_data.get("programmer")
-        content = self.resources.programmers.get(prog_info.get("type"))
+
+        # -- Get the programmer information (from the type)
+        # -- Command, arguments, pip package, etc...
+        prog_data = self.resources.programmers.get(prog_info.get("type"))
+
+        # -- Get all the pip packages from the distribution
         all_pip_packages = self.resources.distribution.get("pip_packages")
 
-        pip_packages = content.get("pip_packages") or []
+        # -- Get the name of the pip package of the current programmer,
+        # -- if any (The programmer maybe in a pip package or an apio package)
+        pip_packages = prog_data.get("pip_packages") or []
+
+        # -- Check if pip package was installed
+        # -- In case of an apio package it is just ignored
         for pip_pkg in pip_packages:
             try:
                 # Check pip_package version
@@ -373,15 +392,22 @@ class SCons:
     def run(self, command, variables=[], board=None, arch=None, packages=[]):
         """Executes scons for building"""
 
-        # -- Check for the SConstruct file
-        if not isfile(util.safe_join(util.get_project_dir(), "SConstruct")):
-            variables += ["-f"]
-            variables += [
-                util.safe_join(
-                    util.get_folder("resources"), arch, "SConstruct"
-                )
-            ]
+        # -- Check if in the current project a custom SConstruct file
+        # is being used. We fist build the full name (with the full path)
+        scon_file = Path(util.get_project_dir()) / "SConstruct"
+
+        # -- If the SConstruct file does NOT exist, we use the one provided by
+        # -- apio, which is located in the resources/arch/ folder
+        if not isfile(scon_file):
+
+            # -- This is the default SConstruct file  
+            default_scons_file = Path(util.get_folder("resources")) / arch / "SConstruct"
+
+            # -- It is passed to scons using the flag -f default_scons_file
+            variables += ["-f",  f"{default_scons_file}"]
+
         else:
+            # -- We are using our custom SConstruct file
             click.secho("Info: use custom SConstruct file")
 
         # -- Resolve packages

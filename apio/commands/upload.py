@@ -70,6 +70,7 @@ def cli(
     drivers = Drivers()
     drivers.pre_upload()
     # Run scons
+
     exit_code = SCons(project_dir).upload(
         {
             "board": board,

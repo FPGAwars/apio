@@ -20,5 +20,7 @@ docs/_build/*
 env/
 venv/
 examples/
+ice-build/
+test-colorlight-v61.ice
 
 

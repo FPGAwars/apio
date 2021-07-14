@@ -265,8 +265,6 @@ def get_package_dir(pkg_name):
     else:
         pkg_home_dir = Path.home() / ".apio"
 
-    print(f"pkg_dir: {pkg_home_dir}")
-
     # -- Create the package folder
     package_dir = pkg_home_dir / "packages" / pkg_name
 
