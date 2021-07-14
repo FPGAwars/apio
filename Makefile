@@ -5,8 +5,9 @@ deps:  ## Install dependencies
 	python -m pip install black flake8 flit pylint tox tox-gh-actions semantic_version polib
 	python -m pip install pyjwt click pyserial requests
 
-cenv:  ## Create the virtual-environment
+cenv:  ## Create the virtual-environment and update dependencies
 	python3 -m venv venv
+	python3 -m venv venv --upgrade
 
 env:
 	@echo "For entering the virtual-environment just type:"
