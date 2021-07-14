@@ -57,6 +57,10 @@
     "command": "icesprog",
     "args": ""
   },
+  "openfpgaloader": {
+    "command": "openFPGALoader",
+    "args": ""
+  },
  "openfpgaloader_ft2232": {
     "command": "openFPGALoader",
     "args": "-c ft2232"
