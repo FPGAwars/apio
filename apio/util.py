@@ -288,6 +288,7 @@ def get_package_dir(pkg_name):
     Packages are installed in the following folder:
     * Default: $HOME/.apio/packages
     * $APIO_PKG_DIR/packages: if the APIO_PKG_DIR env variable is set
+    * Return a String
     """
 
     # -- Get the APIO_PKG_DIR env variable
@@ -343,26 +344,23 @@ def call(cmd):
 
 
 def setup_environment():
-    """DOC: TODO"""
+    """Set the environment variables and the system PATH"""
 
     # --- Get the table with the paths of all the apio packages
     base_dir = get_base_dir()
 
-    bin_dir = {
-        OSS_CAD_SUITE: str(Path(base_dir.get(OSS_CAD_SUITE)) / BIN),
-        "scons": safe_join(base_dir.get("scons"), "script"),
-        "system": safe_join(base_dir.get("system"), "bin"),
-        "yosys": safe_join(base_dir.get("yosys"), "bin"),
-        "ice40": safe_join(base_dir.get("ice40"), "bin"),
-        "ecp5": safe_join(base_dir.get("ecp5"), "bin"),
-        "iverilog": safe_join(base_dir.get("iverilog"), "bin"),
-        "verilator": safe_join(base_dir.get("verilator"), "bin"),
-        "gtkwave": safe_join(base_dir.get("gtkwave"), "bin"),
-        "fujprog": safe_join(base_dir.get("fujprog"), "bin"),
-        "icesprog": safe_join(base_dir.get("icesprog"), "bin"),
-        "dfu": safe_join(base_dir.get("dfu"), "bin"),
-        "openfpgaloader": safe_join(base_dir.get("openfpgaloader"), "bin"),
-    }
+    # --- Get the table with tha paths of all the executables
+    # --- of the apio packages
+    bin_dir = get_bin_dir_table(base_dir)
+
+    # --- Set the system env. variables
+    set_env_variables(base_dir, bin_dir)
+
+    return bin_dir
+
+
+def set_env_variables(base_dir, bin_dir):
+    """Set the environment variables"""
 
     # Give the priority to the python packages installed with apio
     os.environ["PATH"] = os.pathsep.join([get_bin_dir(), os.environ["PATH"]])
@@ -370,17 +368,16 @@ def setup_environment():
     # Give the priority to the packages installed by apio
     os.environ["PATH"] = os.pathsep.join(
         [
-            bin_dir.get("oss-cad-suite"),
-            bin_dir.get("yosys"),
-            bin_dir.get("ice40"),
-            bin_dir.get("ecp5"),
-            bin_dir.get("iverilog"),
-            bin_dir.get("verilator"),
-            bin_dir.get("fujprog"),
-            bin_dir.get("icesprog"),
-            bin_dir.get("dfu"),
-            bin_dir.get("openfpgaloader"),
-            bin_dir.get("system"),
+            bin_dir.get(OSS_CAD_SUITE),
+            bin_dir.get(YOSYS),
+            bin_dir.get(ICE40),
+            bin_dir.get(ECP5),
+            bin_dir.get(IVERILOG),
+            bin_dir.get(VERILATOR),
+            bin_dir.get(FUJPROG),
+            bin_dir.get(ICESPROG),
+            bin_dir.get(DFU),
+            bin_dir.get(SYSTEM),
             os.environ["PATH"],
         ]
     )
@@ -388,53 +385,31 @@ def setup_environment():
     # -- Add the gtkwave to the path, only in windows
     if platform.system() == "Windows":
         os.environ["PATH"] = os.pathsep.join(
-            [bin_dir.get("gtkwave"), os.environ["PATH"]]
+            [bin_dir.get(GTKWAVE), os.environ["PATH"]]
         )
 
     # Add environment variables
     if not config_data:  # /etc/apio.json file does not exist
-        os.environ["IVL"] = safe_join(base_dir.get("iverilog"), "lib", "ivl")
-    os.environ["ICEBOX"] = safe_join(base_dir.get("ice40"), "share", "icebox")
-    os.environ["TRELLIS"] = safe_join(base_dir.get("ecp5"), "share", "trellis")
-    os.environ["YOSYS_LIB"] = safe_join(
-        base_dir.get("yosys"), "share", "yosys"
-    )
+        os.environ["IVL"] = safe_join(base_dir.get(IVERILOG), "lib", "ivl")
 
-    return bin_dir
+    os.environ["ICEBOX"] = str(Path(base_dir.get(ICE40)) / "share" / "icebox")
+
+    os.environ["TRELLIS"] = str(Path(base_dir.get(ECP5)) / "share" / "trellis")
+
+    os.environ["YOSYS_LIB"] = str(
+        Path(base_dir.get(YOSYS)) / "share" / "yosys"
+    )
 
 
 def resolve_packages(packages, installed_packages, spec_packages):
     """DOC: TODO"""
 
-    base_dir = {
-        "scons": get_package_dir("tool-scons"),
-        "system": get_package_dir("tools-system"),
-        "yosys": get_package_dir("toolchain-yosys"),
-        "ice40": get_package_dir("toolchain-ice40"),
-        "ecp5": get_package_dir("toolchain-ecp5"),
-        "iverilog": get_package_dir("toolchain-iverilog"),
-        "verilator": get_package_dir("toolchain-verilator"),
-        "gtkwave": get_package_dir("tool-gtkwave"),
-        "fujprog": get_package_dir("toolchain-fujprog"),
-        "icesprog": get_package_dir("toolchain-icesprog"),
-        "dfu": get_package_dir("toolchain-dfu"),
-        "openfpgaloader": get_package_dir("toolchain-ecp5"),
-    }
+    # --- Get the table with the paths of all the apio packages
+    base_dir = get_base_dir()
 
-    bin_dir = {
-        "scons": safe_join(base_dir.get("scons"), "script"),
-        "system": safe_join(base_dir.get("system"), "bin"),
-        "yosys": safe_join(base_dir.get("yosys"), "bin"),
-        "ice40": safe_join(base_dir.get("ice40"), "bin"),
-        "ecp5": safe_join(base_dir.get("ecp5"), "bin"),
-        "iverilog": safe_join(base_dir.get("iverilog"), "bin"),
-        "verilator": safe_join(base_dir.get("verilator"), "bin"),
-        "gtkwave": safe_join(base_dir.get("gtkwave"), "bin"),
-        "fujprog": safe_join(base_dir.get("fujprog"), "bin"),
-        "icesprog": safe_join(base_dir.get("icesprog"), "bin"),
-        "dfu": safe_join(base_dir.get("dfu"), "bin"),
-        "openfpgaloader": safe_join(base_dir.get("openfpgaloader"), "bin"),
-    }
+    # --- Get the table with tha paths of all the executables
+    # --- of the apio packages
+    bin_dir = get_bin_dir_table(base_dir)
 
     # -- Check packages
     check = True
@@ -448,51 +423,13 @@ def resolve_packages(packages, installed_packages, spec_packages):
     # -- Load packages
     if check:
 
-        # Give the priority to the python packages installed with apio
-        os.environ["PATH"] = os.pathsep.join(
-            [get_bin_dir(), os.environ["PATH"]]
-        )
-
-        # Give the priority to the packages installed by apio
-        os.environ["PATH"] = os.pathsep.join(
-            [
-                bin_dir.get("yosys"),
-                bin_dir.get("ice40"),
-                bin_dir.get("ecp5"),
-                bin_dir.get("iverilog"),
-                bin_dir.get("verilator"),
-                bin_dir.get("fujprog"),
-                bin_dir.get("icesprog"),
-                bin_dir.get("dfu"),
-                bin_dir.get("openfpgaloader"),
-                os.environ["PATH"],
-            ]
-        )
-
-        if platform.system() == "Windows":
-            os.environ["PATH"] = os.pathsep.join(
-                [bin_dir.get("gtkwave"), os.environ["PATH"]]
-            )
-
-        # Add environment variables
-        if not config_data:  # /etc/apio.json file does not exist
-            os.environ["IVL"] = safe_join(
-                base_dir.get("iverilog"), "lib", "ivl"
-            )
-        os.environ["ICEBOX"] = safe_join(
-            base_dir.get("ice40"), "share", "icebox"
-        )
-        os.environ["TRELLIS"] = safe_join(
-            base_dir.get("ecp5"), "share", "trellis"
-        )
-        os.environ["YOSYS_LIB"] = safe_join(
-            base_dir.get("yosys"), "share", "yosys"
-        )
+        # --- Set the system env. variables
+        set_env_variables(base_dir, bin_dir)
 
         global scons_command
         scons_command = [
             normpath(sys.executable),
-            safe_join(bin_dir["scons"], "scons"),
+            safe_join(bin_dir[SCONS], "scons"),
         ]
 
     return check
@@ -503,7 +440,7 @@ def get_base_dir():
     installed on the system"""
 
     # -- Create the table:
-    # --  Package Name  :  Folder
+    # --  Package Name  :  Folder (string)
     base_dir = {
         OSS_CAD_SUITE: get_package_dir(OSS_CAD_SUITE_FOLDER),
         SCONS: get_package_dir(SCONS_FOLDER),
@@ -521,6 +458,31 @@ def get_base_dir():
     }
 
     return base_dir
+
+
+def get_bin_dir_table(base_dir):
+    """Return a table with the package name and the folder were
+    the executable files are stored
+    * Input: Table with the package base_dir
+    """
+
+    bin_dir = {
+        OSS_CAD_SUITE: str(Path(base_dir.get(OSS_CAD_SUITE)) / BIN),
+        SCONS: str(Path(base_dir.get(SCONS)) / "script"),
+        YOSYS: str(Path(base_dir.get(YOSYS)) / BIN),
+        ICE40: str(Path(base_dir.get(ICE40)) / BIN),
+        ECP5: str(Path(base_dir.get(ECP5)) / BIN),
+        IVERILOG: str(Path(base_dir.get(IVERILOG)) / BIN),
+        VERILATOR: str(Path(base_dir.get(VERILATOR)) / BIN),
+        GTKWAVE: str(Path(base_dir.get(GTKWAVE)) / BIN),
+        FUJPROG: str(Path(base_dir.get(FUJPROG)) / BIN),
+        ICESPROG: str(Path(base_dir.get(ICESPROG)) / BIN),
+        DFU: str(Path(base_dir.get(DFU)) / BIN),
+        # -- Obsolete package
+        SYSTEM: str(Path(base_dir.get(SYSTEM)) / BIN),
+    }
+
+    return bin_dir
 
 
 def check_package(name, version, spec_version, path):
