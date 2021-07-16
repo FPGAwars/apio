@@ -8,6 +8,7 @@
 import re
 import platform
 from pathlib import Path
+from os.path import isfile
 import click
 
 from apio import util
@@ -28,6 +29,12 @@ class System:  # pragma: no cover
 
         # -- This command is called system
         self.name = "system"
+
+        # -- Package name: apio package were all the system commands 
+        # -- are located
+        # -- From apio > 0.7 the system tools are located inside the 
+        # -- oss-cad-suite
+        self.package_name = "oss-cad-suite"
 
         # -- Get the installed package versions
         self.version = util.get_package_version(self.name, profile)
@@ -110,7 +117,6 @@ class System:  # pragma: no cover
 
     def _run_command(self, command, silent=False):
         result = {}
-        # system_base_dir = util.get_package_dir("tools-system")
 
         print(f"Run Command: {command}")
 
@@ -130,19 +136,60 @@ class System:  # pragma: no cover
         executable_file = system_bin_dir / (command + self.ext)
         print(f"Executable file: {executable_file}")
 
+        # -- Set the stdout and stderr for executing the command
         on_stdout = None if silent else self._on_stdout
         on_stderr = self._on_stderr
 
-        if util.check_package(
-            self.name, self.version, self.spec_version, system_bin_dir
-        ):
+        # -- Check if the executable exists
+        if isfile(executable_file):
+
+            # -- Execute the command!
             result = util.exec_command(
                 executable_file,
                 stdout=util.AsyncPipe(on_stdout),
                 stderr=util.AsyncPipe(on_stderr),
             )
 
-        return result
+            # -- Return the result of the execution
+            return result
+
+        # -- The command does not exist in the tools-oss-cad-suite package
+        # -- Try with the tool-system package (old-package,
+        # -- (for compatibility reasons)
+
+        # -- Get the package base dir
+        system_base_dir = util.get_package_dir("tools-system")
+        print(f"System_base_dir: {system_base_dir}")
+
+        # -- Get the folder were the binary file is locateds
+        system_bin_dir = Path(system_base_dir) / "bin"
+        print(f"System bin dir: {system_bin_dir}")
+
+        # -- Get the executable filename
+        executable_file = system_bin_dir / (command + self.ext)
+        print(f"Executable file: {executable_file}")
+
+        # -- Check if the executable exists
+        if isfile(executable_file):
+
+            # -- Execute the command!
+            result = util.exec_command(
+                executable_file,
+                stdout=util.AsyncPipe(on_stdout),
+                stderr=util.AsyncPipe(on_stderr),
+            )
+
+            # -- Return the result of the execution
+            return result
+
+        # -- The command was not in the oss-cad-suit package
+        # -- The command was not in the old system package
+        # -- Show the error message and a hint on how to install the package
+        print("ERROR!!!!!!")
+        util.show_package_path_error(self.package_name)
+        util.show_package_install_instructions(self.package_name)
+
+        return None
 
     @staticmethod
     def _on_stdout(line):

@@ -458,7 +458,10 @@ def resolve_packages(packages, installed_packages, spec_packages):
 
 
 def check_package(name, version, spec_version, path):
-    """DOC: TODO"""
+    """Check if the given package is installed
+       * name: Package name
+       * path: path where the binary files of the package are stored
+    """
 
     # Apio package 'gtkwave' only exists for Windows.
     # Linux and MacOS user must install the native GTKWave.
@@ -505,7 +508,7 @@ def show_package_version_warning(name, version, spec_version):
 def show_package_path_error(name):
     """DOC: TODO"""
 
-    message = "Error: package '{}' is not installed".format(name)
+    message = f"Error: package '{name}' is not installed"
     click.secho(message, fg="red")
 
 
@@ -514,12 +517,12 @@ def show_package_install_instructions(name):
 
     if config_data and _check_apt_get():  # /etc/apio.json file exists
         click.secho(
-            "Please run:\n" "   apt-get install apio-{}".format(name),
+            f"Please run:\n   apt-get install apio-{name}",
             fg="yellow",
         )
     else:
         click.secho(
-            "Please run:\n" "   apio install {}".format(name), fg="yellow"
+            f"Please run:\n   apio install {name}", fg="yellow"
         )
 
 
