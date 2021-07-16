@@ -32,38 +32,40 @@ from apio import LOAD_CONFIG_DATA
 # -- Constants
 # ----------------------------------------
 
-# -- Packages names and folders
+# -- Packages names
 # -- If you need to create new packages, you should
-# -- define first its constants here
+# -- define first the constants here
 # --
 OSS_CAD_SUITE = "oss-cad-suite"
-OSS_CAD_SUITE_FOLDER = f"tools-{OSS_CAD_SUITE}"
-
 SYSTEM = "system"
-SYSTEM_FOLDER = f"tools-{SYSTEM}"
-
 SCONS = "scons"
-SCONS_FOLDER = f"tool-{SCONS}"
-
 GTKWAVE = "gtkwave"
-GTKWAVE_FOLDER = f"tool-{GTKWAVE}"
-
 IVERILOG = "iverilog"
-IVERILOG_FOLDER = f"toolchain-{IVERILOG}"
-
 VERILATOR = "verilator"
-VERILATOR_FOLDER = f"toolchain-{VERILATOR}"
-
 YOSYS = "yosys"
+ICE40 = "ice40"
+ECP5 = "ecp5"
+FUJPROG = "fujprog"
+ICESPROG = "icesprog"
+DFU = "dfu"
+
+# -- Name of the subfolder to store de executable files
+BIN = "bin"
+
+# -- Folder names. They are built from the
+# -- packages names
+OSS_CAD_SUITE_FOLDER = f"tools-{OSS_CAD_SUITE}"
+SYSTEM_FOLDER = f"tools-{SYSTEM}"
+SCONS_FOLDER = f"tool-{SCONS}"
+GTKWAVE_FOLDER = f"tool-{GTKWAVE}"
+IVERILOG_FOLDER = f"toolchain-{IVERILOG}"
+VERILATOR_FOLDER = f"toolchain-{VERILATOR}"
 YOSYS_FOLDER = f"toolchain-{YOSYS}"
-
-# "ice40": get_package_dir("toolchain-ice40"),
-# "ecp5": get_package_dir("toolchain-ecp5"),
-# "fujprog": get_package_dir("toolchain-fujprog"),
-# "icesprog": get_package_dir("toolchain-icesprog"),
-# "dfu": get_package_dir("toolchain-dfu"),
-# "openfpgaloader": get_package_dir("toolchain-ecp5"),
-
+ICE40_FOLDER = f"toolchain-{ICE40}"
+ECP5_FOLDER = f"toolchain-{ECP5}"
+FUJPROG_FOLDER = f"toolchain-{FUJPROG}"
+ICESPROG_FOLDER = f"toolchain-{ICESPROG}"
+DFU_FOLDER = f"toolchain-{DFU}"
 
 requests.packages.urllib3.disable_warnings()
 
@@ -347,6 +349,7 @@ def setup_environment():
     base_dir = get_base_dir()
 
     bin_dir = {
+        OSS_CAD_SUITE: str(Path(base_dir.get(OSS_CAD_SUITE)) / BIN),
         "scons": safe_join(base_dir.get("scons"), "script"),
         "system": safe_join(base_dir.get("system"), "bin"),
         "yosys": safe_join(base_dir.get("yosys"), "bin"),
@@ -358,8 +361,7 @@ def setup_environment():
         "fujprog": safe_join(base_dir.get("fujprog"), "bin"),
         "icesprog": safe_join(base_dir.get("icesprog"), "bin"),
         "dfu": safe_join(base_dir.get("dfu"), "bin"),
-        "openfpgaloader": safe_join(base_dir.get("openfpgaloader"), "bin"),
-        "oss-cad-suite": str(Path(base_dir.get("oss-cad-suite")) / "bin"),
+        "openfpgaloader": safe_join(base_dir.get("openfpgaloader"), "bin")
     }
 
     # Give the priority to the python packages installed with apio
