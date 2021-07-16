@@ -506,17 +506,17 @@ def get_base_dir():
     # --  Package Name  :  Folder
     base_dir = {
         OSS_CAD_SUITE: get_package_dir(OSS_CAD_SUITE_FOLDER),
-        "scons": get_package_dir("tool-scons"),
-        "yosys": get_package_dir("toolchain-yosys"),
-        "ice40": get_package_dir("toolchain-ice40"),
-        "ecp5": get_package_dir("toolchain-ecp5"),
-        "iverilog": get_package_dir("toolchain-iverilog"),
-        "verilator": get_package_dir("toolchain-verilator"),
-        "gtkwave": get_package_dir("tool-gtkwave"),
-        "fujprog": get_package_dir("toolchain-fujprog"),
-        "icesprog": get_package_dir("toolchain-icesprog"),
-        "dfu": get_package_dir("toolchain-dfu"),
-        "openfpgaloader": get_package_dir("toolchain-ecp5"),
+        SCONS: get_package_dir(SCONS_FOLDER),
+        YOSYS: get_package_dir(YOSYS_FOLDER),
+        ICE40: get_package_dir(ICE40_FOLDER),
+        ECP5: get_package_dir(ECP5_FOLDER),
+        IVERILOG: get_package_dir(IVERILOG_FOLDER),
+        VERILATOR: get_package_dir(VERILATOR_FOLDER),
+        GTKWAVE: get_package_dir(GTKWAVE_FOLDER),
+        FUJPROG: get_package_dir(FUJPROG_FOLDER),
+        ICESPROG: get_package_dir(ICESPROG_FOLDER),
+        DFU: get_package_dir(DFU_FOLDER),
+
         # -- Obsolete packages
         SYSTEM: get_package_dir(SYSTEM_FOLDER),
     }
