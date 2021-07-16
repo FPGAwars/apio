@@ -7,6 +7,7 @@
 import os
 import subprocess
 from os.path import isfile
+from pathlib import Path
 import click
 
 from apio import util
@@ -59,17 +60,21 @@ SERIAL_UNINSTALL_DRIVER_INSTRUCTIONS = """
 
 class Drivers:  # pragma: no cover
 
-    # FTDI rules files paths
-    ftdi_rules_local_path = util.safe_join(
-        util.get_folder("resources"), "80-fpga-ftdi.rules"
-    )
+    # -- The driver installation on linux consist of copying the rule files
+    # -- to the /etc/udev/rules.d folder
+
+    # -- FTDI source rules file paths
+    resources = Path(util.get_folder("resources"))
+    ftdi_rules_local_path = resources / "80-fpga-ftdi.rules"
+
+    # -- Target rule file
     ftdi_rules_system_path = "/etc/udev/rules.d/80-fpga-ftdi.rules"
+
+    # -- It was the target in older versions of apio
     old_ftdi_rules_system_path = "/etc/udev/rules.d/80-icestick.rules"
 
     # Serial rules files paths
-    serial_rules_local_path = util.safe_join(
-        util.get_folder("resources"), "80-fpga-serial.rules"
-    )
+    serial_rules_local_path = resources / "80-fpga-serial.rules"
     serial_rules_system_path = "/etc/udev/rules.d/80-fpga-serial.rules"
 
     # Driver to restore: mac os
@@ -82,26 +87,36 @@ class Drivers:  # pragma: no cover
         self.spec_version = None
 
     def ftdi_enable(self):
+        """Enable the FTDI driver. It depends on the platform"""
+
+        # -- Driver enabling on Linux
         if "linux" in platform:
             return self._ftdi_enable_linux()
 
+        # -- Driver enabling on MAC
         if "darwin" in platform:
             self._setup_darwin()
             return self._ftdi_enable_darwin()
 
+        # -- Driver enabling on Windows
         if "windows" in platform:
             self._setup_windows()
             return self._ftdi_enable_windows()
         return None
 
     def ftdi_disable(self):
+        """Disable the FTDI driver. It depends on the platform"""
+
+        # -- Linux platforms
         if "linux" in platform:
             return self._ftdi_disable_linux()
 
+        # -- MAC
         if "darwin" in platform:
             self._setup_darwin()
             return self._ftdi_disable_darwin()
 
+        # -- Windows
         if "windows" in platform:
             self._setup_windows()
             return self._ftdi_disable_windows()
@@ -109,18 +124,23 @@ class Drivers:  # pragma: no cover
         return None
 
     def serial_enable(self):
+        """Enable the Serial driver. It depends on the platform"""
+
         if "linux" in platform:
             return self._serial_enable_linux()
 
         if "darwin" in platform:
             self._setup_darwin()
             return self._serial_enable_darwin()
+
         if "windows" in platform:
             self._setup_windows()
             return self._serial_enable_windows()
         return None
 
     def serial_disable(self):
+        """Disable the Serial driver. It depends on the platform"""
+
         if "linux" in platform:
             return self._serial_disable_linux()
 
@@ -134,68 +154,119 @@ class Drivers:  # pragma: no cover
         return None
 
     def pre_upload(self):
+        """Operations to do before uploading a design
+        Only for mac platforms"""
+
         if "darwin" in platform:
             self._setup_darwin()
             self._pre_upload_darwin()
 
     def post_upload(self):
+        """Operations to do after uploading a design
+        Only for mac platforms"""
+
         if "darwin" in platform:
             self._setup_darwin()
             self._post_upload_darwin()
 
     def _setup_darwin(self):
+        """Setup operation on Mac"""
+
+        # -- Just read the profile file
         self.profile = Profile()
 
     def _setup_windows(self):
+        """Setup operations on Windows"""
+
+        # -- Read the Profile and Resources files
         profile = Profile()
         resources = Resources()
 
+        # -- On windows the zadig driver installer should be
+        # -- execute. Get the package version
         self.name = "drivers"
         self.version = util.get_package_version(self.name, profile)
         self.spec_version = util.get_package_spec_version(self.name, resources)
 
     def _ftdi_enable_linux(self):
+        """Drivers enable on Linux. It copies the .rules file into
+        the corresponding folder"""
+
         click.secho("Configure FTDI drivers for FPGA")
+
+        # -- Check if the target rules file already exists
         if not isfile(self.ftdi_rules_system_path):
+
+            # -- The file does not exist. Copy!
+            # -- Execute the cmd: sudo cp src_file target_file
             subprocess.call(
                 [
                     "sudo",
                     "cp",
-                    self.ftdi_rules_local_path,
+                    str(self.ftdi_rules_local_path),
                     self.ftdi_rules_system_path,
                 ]
             )
+
+            # -- Execute the commands for reloading the udev system
             self._reload_rules()
+
             click.secho("FTDI drivers enabled", fg="green")
             click.secho("Unplug and reconnect your board", fg="yellow")
         else:
             click.secho("Already enabled", fg="yellow")
 
     def _ftdi_disable_linux(self):
+        """Disable the FTDI drivers on linux"""
+
+        # -- For disabling the FTDI driver the .rules files should be
+        # -- removed from the /etc/udev/rules.d/ folder
+
+        # -- Remove the old .rules files, if it exists
         if isfile(self.old_ftdi_rules_system_path):
             subprocess.call(["sudo", "rm", self.old_ftdi_rules_system_path])
+
+        # -- Remove the .rules file, if it exists
         if isfile(self.ftdi_rules_system_path):
             click.secho("Revert FTDI drivers configuration")
+
+            # -- Execute the sudo rm rules_file command
             subprocess.call(["sudo", "rm", self.ftdi_rules_system_path])
+
+            # -- # -- Execute the commands for reloading the udev system
             self._reload_rules()
+
             click.secho("FTDI drivers disabled", fg="green")
             click.secho("Unplug and reconnect your board", fg="yellow")
         else:
             click.secho("Already disabled", fg="yellow")
 
     def _serial_enable_linux(self):
+        """Serial drivers enable on Linux"""
+
         click.secho("Configure Serial drivers for FPGA")
+
+        # -- Check if the target rules file already exists
         if not isfile(self.serial_rules_system_path):
+
+            # -- Add the user to the dialout group for
+            # -- having access to the serial port
             group_added = self._add_dialout_group()
+
+            # -- The file does not exist. Copy!
+            # -- Execute the cmd: sudo cp src_file target_file
             subprocess.call(
                 [
                     "sudo",
                     "cp",
-                    self.serial_rules_local_path,
+                    str(self.serial_rules_local_path),
                     self.serial_rules_system_path,
                 ]
             )
+
+            # -- Execute the commands for reloading the udev system
             self._reload_rules()
+
             click.secho("Serial drivers enabled", fg="green")
             click.secho("Unplug and reconnect your board", fg="yellow")
             if group_added:
@@ -207,9 +278,17 @@ class Drivers:  # pragma: no cover
             click.secho("Already enabled", fg="yellow")
 
     def _serial_disable_linux(self):
+        """Disable the serial driver on Linux"""
+
+        # -- For disabling the serial driver the corresponding .rules file
+        # -- should be removed, it it exists
         if isfile(self.serial_rules_system_path):
             click.secho("Revert Serial drivers configuration")
+
+            # -- Execute the sudo rm rule_file cmd
             subprocess.call(["sudo", "rm", self.serial_rules_system_path])
+
+            # -- Execute the commands for reloading the udev system
             self._reload_rules()
             click.secho("Serial drivers disabled", fg="green")
             click.secho("Unplug and reconnect your board", fg="yellow")
@@ -218,14 +297,27 @@ class Drivers:  # pragma: no cover
 
     @staticmethod
     def _reload_rules():
+        """Execute the commands for reloading the udev system"""
+
+        # -- These are Linux commands that should be executed on
+        # -- the shell
         subprocess.call(["sudo", "udevadm", "control", "--reload-rules"])
         subprocess.call(["sudo", "udevadm", "trigger"])
         subprocess.call(["sudo", "service", "udev", "restart"])
 
     @staticmethod
     def _add_dialout_group():
+        """Add the current user to the dialout group on Linux systems"""
+
+        # -- This operation is needed for granting access to the serial port
+
+        # -- Get the current groups of the user
         groups = subprocess.check_output("groups")
+
+        # -- If it does not belong to the dialout group, add it!!
         if "dialout" not in groups.decode():
+
+            # -- Command for adding the user to the dialout group
             subprocess.call("sudo usermod -a -G dialout $USER", shell=True)
             return True
         return None

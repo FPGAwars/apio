@@ -109,11 +109,11 @@ class SCons:
         """DOC: TODO"""
 
         var, board, arch = process_arguments(args, self.resources)
-        
+
         programmer = self.get_programmer(
             board, serial_port, ftdi_id, sram, flash
         )
-        
+
         var += [f"prog={programmer}"]
 
         return self.run(
@@ -184,8 +184,8 @@ class SCons:
 
     def check_pip_packages(self, board_data):
         """Check if the corresponding pip package with the programmer
-           has already been installed. In the case of an apio package
-           it is just ignored
+        has already been installed. In the case of an apio package
+        it is just ignored
         """
 
         # -- Get the programmer object for the given board
@@ -400,11 +400,12 @@ class SCons:
         # -- apio, which is located in the resources/arch/ folder
         if not isfile(scon_file):
 
-            # -- This is the default SConstruct file  
-            default_scons_file = Path(util.get_folder("resources")) / arch / "SConstruct"
+            # -- This is the default SConstruct file
+            resources = Path(util.get_folder("resources"))
+            default_scons_file = resources / arch / "SConstruct"
 
             # -- It is passed to scons using the flag -f default_scons_file
-            variables += ["-f",  f"{default_scons_file}"]
+            variables += ["-f", f"{default_scons_file}"]
 
         else:
             # -- We are using our custom SConstruct file
