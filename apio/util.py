@@ -459,8 +459,8 @@ def resolve_packages(packages, installed_packages, spec_packages):
 
 def check_package(name, version, spec_version, path):
     """Check if the given package is installed
-       * name: Package name
-       * path: path where the binary files of the package are stored
+    * name: Package name
+    * path: path where the binary files of the package are stored
     """
 
     # Apio package 'gtkwave' only exists for Windows.
@@ -521,9 +521,7 @@ def show_package_install_instructions(name):
             fg="yellow",
         )
     else:
-        click.secho(
-            f"Please run:\n   apio install {name}", fg="yellow"
-        )
+        click.secho(f"Please run:\n   apio install {name}", fg="yellow")
 
 
 def _check_apt_get():

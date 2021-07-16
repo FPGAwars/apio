@@ -30,9 +30,9 @@ class System:  # pragma: no cover
         # -- This command is called system
         self.name = "system"
 
-        # -- Package name: apio package were all the system commands 
+        # -- Package name: apio package were all the system commands
         # -- are located
-        # -- From apio > 0.7 the system tools are located inside the 
+        # -- From apio > 0.7 the system tools are located inside the
         # -- oss-cad-suite
         self.package_name = "oss-cad-suite"
 
