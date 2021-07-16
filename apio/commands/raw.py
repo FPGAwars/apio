@@ -13,7 +13,7 @@ from apio import util
 @click.pass_context
 @click.argument("cmd")
 def cli(ctx, cmd):
-    """Execute commands using Apio packages."""
+    """Execute commands directly from the Apio packages"""
 
     exit_code = util.call(cmd)
     ctx.exit(exit_code)

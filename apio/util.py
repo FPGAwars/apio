@@ -28,6 +28,42 @@ import requests
 
 from apio import LOAD_CONFIG_DATA
 
+# ----------------------------------------
+# -- Constants
+# ----------------------------------------
+
+# -- Packages names and folders
+# -- If you need to create new packages, you should
+# -- define first its constants here
+# --
+OSS_CAD_SUITE = "oss-cad-suite"
+OSS_CAD_SUITE_FOLDER = f"tools-{OSS_CAD_SUITE}"
+
+SYSTEM = "system"
+SYSTEM_FOLDER = f"tools-{SYSTEM}"
+
+SCONS = "scons"
+SCONS_FOLDER = f"tool-{SCONS}"
+
+GTKWAVE = "gtkwave"
+GTKWAVE_FOLDER = f"tool-{GTKWAVE}"
+
+IVERILOG = "iverilog"
+IVERILOG_FOLDER = f"toolchain-{IVERILOG}"
+
+VERILATOR = "verilator"
+VERILATOR_FOLDER = f"toolchain-{VERILATOR}"
+
+YOSYS = "yosys"
+YOSYS_FOLDER = f"toolchain-{YOSYS}"
+
+# "ice40": get_package_dir("toolchain-ice40"),
+# "ecp5": get_package_dir("toolchain-ecp5"),
+# "fujprog": get_package_dir("toolchain-fujprog"),
+# "icesprog": get_package_dir("toolchain-icesprog"),
+# "dfu": get_package_dir("toolchain-dfu"),
+# "openfpgaloader": get_package_dir("toolchain-ecp5"),
+
 
 requests.packages.urllib3.disable_warnings()
 
@@ -287,29 +323,28 @@ def get_project_dir():
 
 
 def call(cmd):
-    """DOC: TODO"""
+    """Execute the given command from the installed apio packages"""
 
+    # -- Set the PATH environment variable for finding the
+    # -- executables on the apio package folders first
     setup_environment()
-    return subprocess.call(cmd, shell=True)
+
+    # -- Execute the command from the shell
+    result = subprocess.call(cmd, shell=True)
+
+    # -- Command not found
+    if result == 127:
+        message = f"ERROR. Comand not found!: {cmd}"
+        click.secho(message, fg="red")
+
+    return result
 
 
 def setup_environment():
     """DOC: TODO"""
 
-    base_dir = {
-        "scons": get_package_dir("tool-scons"),
-        "system": get_package_dir("tools-system"),
-        "yosys": get_package_dir("toolchain-yosys"),
-        "ice40": get_package_dir("toolchain-ice40"),
-        "ecp5": get_package_dir("toolchain-ecp5"),
-        "iverilog": get_package_dir("toolchain-iverilog"),
-        "verilator": get_package_dir("toolchain-verilator"),
-        "gtkwave": get_package_dir("tool-gtkwave"),
-        "fujprog": get_package_dir("toolchain-fujprog"),
-        "icesprog": get_package_dir("toolchain-icesprog"),
-        "dfu": get_package_dir("toolchain-dfu"),
-        "openfpgaloader": get_package_dir("toolchain-ecp5"),
-    }
+    # --- Get the table with the paths of all the apio packages
+    base_dir = get_base_dir()
 
     bin_dir = {
         "scons": safe_join(base_dir.get("scons"), "script"),
@@ -324,6 +359,7 @@ def setup_environment():
         "icesprog": safe_join(base_dir.get("icesprog"), "bin"),
         "dfu": safe_join(base_dir.get("dfu"), "bin"),
         "openfpgaloader": safe_join(base_dir.get("openfpgaloader"), "bin"),
+        "oss-cad-suite": str(Path(base_dir.get("oss-cad-suite")) / "bin"),
     }
 
     # Give the priority to the python packages installed with apio
@@ -332,6 +368,7 @@ def setup_environment():
     # Give the priority to the packages installed by apio
     os.environ["PATH"] = os.pathsep.join(
         [
+            bin_dir.get("oss-cad-suite"),
             bin_dir.get("yosys"),
             bin_dir.get("ice40"),
             bin_dir.get("ecp5"),
@@ -341,10 +378,12 @@ def setup_environment():
             bin_dir.get("icesprog"),
             bin_dir.get("dfu"),
             bin_dir.get("openfpgaloader"),
+            bin_dir.get("system"),
             os.environ["PATH"],
         ]
     )
 
+    # -- Add the gtkwave to the path, only in windows
     if platform.system() == "Windows":
         os.environ["PATH"] = os.pathsep.join(
             [bin_dir.get("gtkwave"), os.environ["PATH"]]
@@ -455,6 +494,32 @@ def resolve_packages(packages, installed_packages, spec_packages):
         ]
 
     return check
+
+
+def get_base_dir():
+    """Return the table with the local paths of the apio packages
+    installed on the system"""
+
+    # -- Create the table:
+    # --  Package Name  :  Folder
+    base_dir = {
+        OSS_CAD_SUITE: get_package_dir(OSS_CAD_SUITE_FOLDER),
+        "scons": get_package_dir("tool-scons"),
+        "yosys": get_package_dir("toolchain-yosys"),
+        "ice40": get_package_dir("toolchain-ice40"),
+        "ecp5": get_package_dir("toolchain-ecp5"),
+        "iverilog": get_package_dir("toolchain-iverilog"),
+        "verilator": get_package_dir("toolchain-verilator"),
+        "gtkwave": get_package_dir("tool-gtkwave"),
+        "fujprog": get_package_dir("toolchain-fujprog"),
+        "icesprog": get_package_dir("toolchain-icesprog"),
+        "dfu": get_package_dir("toolchain-dfu"),
+        "openfpgaloader": get_package_dir("toolchain-ecp5"),
+        # -- Obsolete packages
+        SYSTEM: get_package_dir(SYSTEM_FOLDER),
+    }
+
+    return base_dir
 
 
 def check_package(name, version, spec_version, path):
