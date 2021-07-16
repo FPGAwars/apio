@@ -499,28 +499,28 @@
     "name": "ColorLight-5A-75B-V61",
     "fpga": "ECP5-LFE5U-25F-CABGA256",
     "programmer": {
-      "type": "openfpgaloader"
+      "type": "openfpgaloader_ft2232"
     }
   },
   "ColorLight-5A-75B-V7": {
     "name": "ColorLight-5A-75B-V7",
     "fpga": "ECP5-LFE5U-25F-CABGA256",
     "programmer": {
-      "type": "openfpgaloader"
+      "type": "openfpgaloader_ft2232"
     }
   },
   "ColorLight-5A-75B-V8": {
     "name": "ColorLight-5A-75B-V8",
     "fpga": "ECP5-LFE5U-25F-CABGA256",
     "programmer": {
-      "type": "openfpgaloader"
+      "type": "openfpgaloader_ft2232"
     }
   },
   "ColorLight-5A-75E-V6": {
     "name": "ColorLight-5A-75E-V6",
     "fpga": "ECP5-LFE5U-25F-CABGA256",
     "programmer": {
-      "type": "openfpgaloader"
+      "type": "openfpgaloader_ft2232"
     }
   },
   "ColorLight-5A-75E-V71_(FT2232H)": {
