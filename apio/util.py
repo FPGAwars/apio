@@ -361,7 +361,7 @@ def setup_environment():
         "fujprog": safe_join(base_dir.get("fujprog"), "bin"),
         "icesprog": safe_join(base_dir.get("icesprog"), "bin"),
         "dfu": safe_join(base_dir.get("dfu"), "bin"),
-        "openfpgaloader": safe_join(base_dir.get("openfpgaloader"), "bin")
+        "openfpgaloader": safe_join(base_dir.get("openfpgaloader"), "bin"),
     }
 
     # Give the priority to the python packages installed with apio
@@ -516,7 +516,6 @@ def get_base_dir():
         FUJPROG: get_package_dir(FUJPROG_FOLDER),
         ICESPROG: get_package_dir(ICESPROG_FOLDER),
         DFU: get_package_dir(DFU_FOLDER),
-
         # -- Obsolete packages
         SYSTEM: get_package_dir(SYSTEM_FOLDER),
     }
