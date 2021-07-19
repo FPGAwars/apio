@@ -594,6 +594,9 @@ def exec_command(*args, **kwargs):  # pragma: no cover
 
     result = {"out": None, "err": None, "returncode": None}
 
+    shell_flag = platform.system() == "Windows"
+    print(f"Shell flag: {shell_flag}")
+
     default = dict(
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
