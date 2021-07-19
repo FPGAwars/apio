@@ -600,7 +600,7 @@ def exec_command(*args, **kwargs):  # pragma: no cover
     default = dict(
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        shell=platform.system() == "Windows",
+        shell=False # platform.system() == "Windows",
     )
     default.update(kwargs)
     kwargs = default
