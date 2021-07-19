@@ -21,6 +21,10 @@ from apio.profile import Profile
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
 
+# -- Packages marked as obsoletes
+# -- The value is the replacement package
+OBSOLETE_PKG = {"system": "oss-cad-suite"}
+
 
 class Installer:
     """Installer. Class with methods for installing and managing
@@ -163,29 +167,46 @@ class Installer:
         return download_url
 
     def install(self):
-        """DOC: TODO"""
+        """Install the current package in the set in the Installer Object"""
 
-        click.echo(
-            "Installing %s package:" % click.style(self.package, fg="cyan")
-        )
+        # -- Warning if the package has been marked as obsolete
+        if self.package in OBSOLETE_PKG:
+            click.secho(
+                f"Warning: Package {self.package} is obsolete. "
+                f"Will be removed in the future. "
+                f"Use {OBSOLETE_PKG[self.package]} instead\n",
+                fg='yellow'
+            )
+
+        click.secho(f"Installing {self.package} package:", fg='cyan')
+
+        # -- Create the apio package folder, if it does not exit
         if not isdir(self.packages_dir):
             makedirs(self.packages_dir)
         assert isdir(self.packages_dir)
+
+        # -- The first step is downloading the package
+        # -- This variable stores the path to tha packages
         dlpath = None
+
         try:
             # Try full platform
             platform_download_url = self.download_urls[0].get("url")
             dlpath = self._download(platform_download_url)
+
+        # -- There is no write access to the package folder
         except IOError as exc:
             click.secho(
                 "Warning: permission denied in packages directory", fg="yellow"
             )
             click.secho(str(exc), fg="red")
+
+        # --
         except Exception:
             # Try os name
             dlpath = self._install_os_package(platform_download_url)
 
-        # Install downloaded package
+        # -- Second step: Install downloaded package
         self._install_package(dlpath)
 
         # Rename unpacked dir to package dir

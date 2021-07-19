@@ -50,8 +50,6 @@ def cli(ctx, packages, all, list, force, platform):
       - platform: Flag. Select platform (advaced. For developers)
     """
 
-    print("DEBUG: apio install")
-
     # -- Install the given packages
     if packages:
         for package in packages:
