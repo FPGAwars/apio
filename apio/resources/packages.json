@@ -13,6 +13,7 @@
     },
     "description": "Verilog examples"
   },
+
   "scons" : {
     "repository": {
       "name": "tool-scons",
@@ -27,6 +28,22 @@
     },
     "description": "Scons tool"
   },
+
+  "oss-cad-suite" : {
+    "repository": {
+      "name": "tools-oss-cad-suite",
+      "organization": "FPGAwars"
+    },
+    "release" : {
+      "tag_name": "v%V",
+      "compressed_name": "tools-oss-cad-suite-%P-%V",
+      "uncompressed_name": "",
+      "package_name": "tools-oss-cad-suite",
+      "extension": "tar.gz"
+    },
+    "description": "YosysHQ/oss-cad-suite"
+  },
+
   "yosys" : {
     "repository": {
       "name": "toolchain-yosys",
@@ -41,6 +58,7 @@
     },
     "description": "Yosys toolchain"
   },
+
   "ice40" : {
     "repository": {
       "name": "toolchain-ice40",
@@ -55,6 +73,7 @@
     },
     "description": "Lattice ICE40 toolchain"
   },
+
   "ecp5" : {
     "repository": {
       "name": "toolchain-ecp5",
@@ -69,6 +88,7 @@
     },
     "description": "Lattice ECP5 toolchain"
   },
+
   "iverilog" : {
     "repository": {
       "name": "toolchain-iverilog",
@@ -83,6 +103,7 @@
     },
     "description": "Icarus Verilog toolchain"
   },
+
   "system" : {
     "repository": {
       "name": "tools-system",
@@ -97,6 +118,7 @@
     },
     "description": "System tools"
   },
+
   "gtkwave" : {
     "repository": {
       "name": "tool-gtkwave",
@@ -114,6 +136,7 @@
     },
     "description": "GTKWave tool"
   },
+
   "drivers" : {
     "repository": {
       "name": "tools-drivers",
@@ -131,6 +154,7 @@
     },
     "description": "Drivers tools"
   },
+
   "verilator" : {
     "repository": {
       "name": "toolchain-verilator",
@@ -145,6 +169,7 @@
     },
     "description": "Verilator toolchain"
   },
+
   "fujprog" : {
     "repository": {
       "name": "toolchain-fujprog",
@@ -159,6 +184,7 @@
     },
     "description": "Programmer for ULX2/3S boards"
   },
+
   "icesprog" : {
     "repository": {
       "name": "toolchain-icesprog",
@@ -193,24 +219,6 @@
       ]
     },
     "description": "Device Firmware Upgrade Utilities"
-  },
-
-  "oss-cad-suite" : {
-    "repository": {
-      "name": "tools-oss-cad-suite",
-      "organization": "FPGAwars"
-    },
-    "release" : {
-      "tag_name": "v%V",
-      "compressed_name": "tools-oss-cad-suite-%P-%V",
-      "uncompressed_name": "",
-      "package_name": "tools-oss-cad-suite",
-      "extension": "tar.gz",
-      "available_platforms": [
-        "linux_x86_64"
-      ]
-    },
-    "description": "YosysHQ/oss-cad-suite"
   }
 
 }
