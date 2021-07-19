@@ -175,10 +175,10 @@ class Installer:
                 f"Warning: Package {self.package} is obsolete. "
                 f"Will be removed in the future. "
                 f"Use {OBSOLETE_PKG[self.package]} instead\n",
-                fg='yellow'
+                fg="yellow",
             )
 
-        click.secho(f"Installing {self.package} package:", fg='cyan')
+        click.secho(f"Installing {self.package} package:", fg="cyan")
 
         # -- Create the apio package folder, if it does not exit
         if not isdir(self.packages_dir):
