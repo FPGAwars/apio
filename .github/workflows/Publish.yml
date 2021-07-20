@@ -4,7 +4,7 @@ name: Publish Pypi
 on: 
   workflow_dispatch:
     branches:
-      - main
+      - master
     
 jobs:
     # -- Publish a new Apio release
@@ -15,7 +15,7 @@ jobs:
             - name: Checkout sources
               uses: actions/checkout@v2
               with:
-                ref: main
+                ref: master
 
             # -- Install and and configure python
             - name: Set up Python
