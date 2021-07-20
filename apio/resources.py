@@ -20,7 +20,6 @@
 # -- Information about all the supported board
 # -- names, fpga family, programmer, ftdi description, vendor id, product id
 
-
 import json
 from collections import OrderedDict
 import shutil
@@ -35,6 +34,10 @@ BOARDS_MSG = (
 Use `apio init --board <boardname>` to create a new apio """
     """project for that board"""
 )
+
+# -- Packages marked as obsoletes
+# -- The value is the replacement package
+OBSOLETE_PKGS = {"system": "oss-cad-suite"}
 
 
 class Resources:
@@ -59,6 +62,10 @@ class Resources:
         self.packages = OrderedDict(
             sorted(self.packages.items(), key=lambda t: t[0])
         )
+
+        # -- Obsolete packages
+        self.obsolete_pkgs = OBSOLETE_PKGS
+
         self.boards = OrderedDict(
             sorted(self.boards.items(), key=lambda t: t[0])
         )

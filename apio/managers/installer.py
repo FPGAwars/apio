@@ -170,7 +170,7 @@ class Installer:
         """Install the current package in the set in the Installer Object"""
 
         # -- Warning if the package has been marked as obsolete
-        if self.package in OBSOLETE_PKG:
+        if self.package in self.resources.obsolete_pkgs:
             click.secho(
                 f"Warning: Package {self.package} is obsolete. "
                 f"Will be removed in the future. "
