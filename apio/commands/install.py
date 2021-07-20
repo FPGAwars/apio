@@ -61,9 +61,19 @@ def cli(ctx, packages, all, list, force, platform):
 
     # -- Install all the available packages
     elif all:  # pragma: no cover
-        packages = Resources(platform).packages
+
+        # -- Get all the resources
+        resources = Resources(platform)
+
+        # -- Get all the packages
+        packages = resources.packages
+
+        # -- Install all the packages... excepto the obolete one
         for package in packages:
-            Installer(package, platform, force).install()
+
+            # -- do NOT install the obsolete packages
+            if package not in resources.obsolete_pkgs:
+                Installer(package, platform, force).install()
 
     # -- List all the packages (installed or not)
     elif list:
