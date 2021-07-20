@@ -4,9 +4,11 @@ name: publish
 on: [workflow_dispatch]
 
 jobs:
-    publish: Publish a new Apio release
+    # -- Publish a new Apio release
+    publish: 
         runs-on: ubuntu-latest
-        steps: # -- Checkout the main branch
+        steps: 
+            # -- Checkout the main branch
             - name: Checkout sources
               uses: actions/checkout@v2
               with:
