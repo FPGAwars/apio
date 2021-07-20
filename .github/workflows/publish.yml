@@ -3,8 +3,9 @@ name: publish
 # Manual activation
 on: 
   workflow_dispatch:
+    branches:
+      - main
     
-
 jobs:
     # -- Publish a new Apio release
     publish: 
