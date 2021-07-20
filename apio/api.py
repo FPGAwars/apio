@@ -9,9 +9,6 @@ import sys
 import click
 import requests
 
-
-from apio import util
-
 requests.packages.urllib3.disable_warnings()
 
 
@@ -24,12 +21,9 @@ def api_request(command, organization="FPGAwars"):
     # -- Create the URL for accesing the github API
     cmd_url = f"https://api.github.com/repos/{organization}/{command}"
 
-    # -- Get the headers (Autorization token)
-    headers = _get_headers()
-
     # -- Do the request!
     try:
-        req = requests.get(cmd_url, headers)
+        req = requests.get(cmd_url)
         result = req.json()
         req.raise_for_status()
 
@@ -62,12 +56,3 @@ def api_request(command, organization="FPGAwars"):
         sys.exit(1)
 
     return result
-
-
-def _get_headers():
-    enc = (
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwdWJsaWNfdG9rZW4iOiJ0"
-        + "b2tlbiBhNTk2OTUwNjFhYzRkMjBkZjEwNTFlZDljOWZjNGI4M2Q0NzAyYzA3I"
-        + "n0.POR6Iae_pSt0m6h-AaRi1X6QaRcnnfl9aZbTSV0BUJw"
-    )
-    return {"Authorization": util.decode(enc).get("public_token")}

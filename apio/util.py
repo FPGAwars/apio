@@ -20,7 +20,6 @@ from threading import Thread
 from os.path import isdir, isfile, join, dirname, exists, normpath
 from pathlib import Path
 
-import jwt
 import click
 import semantic_version
 from serial.tools.list_ports import comports
@@ -711,12 +710,6 @@ def command(function):
             return exit_code
 
     return decorate
-
-
-def decode(text):
-    """DOC: TODO"""
-
-    return jwt.decode(text, "secret", algorithm="HS256")
 
 
 def get_serial_ports():
