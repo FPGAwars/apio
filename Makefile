@@ -4,6 +4,7 @@ deps:  ## Install dependencies
 	python -m pip install --upgrade pip
 	python -m pip install black flake8 flit pylint tox tox-gh-actions semantic_version polib
 	python -m pip install click pyserial requests
+	python -m pip install pytest
 
 cenv:  ## Create the virtual-environment and update dependencies
 	python3 -m venv venv
@@ -31,4 +32,4 @@ install:  ## Install the tool locally
 	flit install
 
 tests: ## Make tests
-	py.test apio test
+	pytest apio test

@@ -11,7 +11,7 @@ def test_system_lsftdi(clirunner, configenv):
         configenv()
         result = clirunner.invoke(cmd_system, ['--lsftdi'])
         assert result.exit_code == 1
-        assert 'apio install system' in result.output
+        assert 'apio install oss-cad-suite' in result.output
 
 
 def test_system_lsusb(clirunner, configenv):
@@ -19,7 +19,7 @@ def test_system_lsusb(clirunner, configenv):
         configenv()
         result = clirunner.invoke(cmd_system, ['--lsusb'])
         assert result.exit_code == 1
-        assert 'apio install system' in result.output
+        assert 'apio install oss-cad-suite' in result.output
 
 
 def test_system_lsserial(clirunner, configenv):
