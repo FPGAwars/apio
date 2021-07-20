@@ -226,7 +226,9 @@ Licensed under [GPL 2.0](http://opensource.org/licenses/GPL-2.0) and [Creative C
 [license-image]: http://img.shields.io/:license-gpl-blue.svg
 [license-url]: (http://opensource.org/licenses/GPL-2.0)
 
-[apio-logo]: https://github.com/FPGAwars/apio/raw/master/wiki/Logos/Apio-github.png
+https://github.com/FPGAwars/Apio-wiki/raw/main/wiki/Logos/Apio-github.png
+
+[apio-logo]: https://github.com/FPGAwars/Apio-wiki/raw/main/wiki/Logos/Apio-github.png
 [linux-logo]: https://github.com/FPGAwars/apio/raw/master/docs/resources/images/linux.png
 [macosx-logo]: https://github.com/FPGAwars/apio/raw/master/docs/resources/images/macosx.png
 [windows-logo]: https://github.com/FPGAwars/apio/raw/master/docs/resources/images/windows.png
