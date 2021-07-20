@@ -1,24 +1,29 @@
 name: publish
 
-on:
-    release:
-        types: [created]
+# Manual activation
+on: [workflow_dispatch]
 
 jobs:
-    publish:
+    publish: Publish a new Apio release
         runs-on: ubuntu-latest
-        steps:
+        steps: # -- Checkout the main branch
             - name: Checkout sources
               uses: actions/checkout@v2
+              with:
+                ref: main
 
+            # -- Install and and configure python
             - name: Set up Python
               uses: actions/setup-python@v2
               with:
                   python-version: "3.8"
 
+            # -- Install all the dependencies needed
             - name: Install dependencies
               run: |
                   make deps
+
+            # -- Publish to Pypi!!
             - name: Publish to PyPi
               env:
                   FLIT_USERNAME: ${{ secrets.PYPI_USERNAME }}
