@@ -127,6 +127,21 @@ Find all the information on this [WIKI PAGE](https://github.com/FPGAwars/apio/wi
 | [ULX3S-45F](https://radiona.org/ulx3s/) | Ujprog |
 | [ULX3S-85F](https://radiona.org/ulx3s/) | Ujprog |
 | [Versa](https://www.mouser.es/new/lattice-semiconductor/lattice-lfe5um-45f-versa-evn/) | |
+| [ColorLight-5A-75B-V61]| FT2232H |
+| [ColorLight-5A-75B-V7]| FT2232H |
+| [ColorLight-5A-75B-V8]| FT2232H |
+| [ColorLight-5A-75E-V6]| FT2232H |
+| [ColorLight-5A-75E-V71]| FT2232H |
+| [ColorLight-5A-75E-V71]| FT232H |
+| [ColorLight-5A-75E-V71]| USB-Blaster |
+| [ColorLight-i5-v7.0]| FT2232H |
+| [ColorLight-i5-v7.0]| FT232H |
+| [ColorLight-i5-v7.0]| USB-Blaster |
+| [iCESugar-Pro]| FT2232H |
+| [iCESugar-Pro]| FT232H |
+| [iCESugar-Pro]| USB-Blaster |
+
+
 
 
 #### LP1K
