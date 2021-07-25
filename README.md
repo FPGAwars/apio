@@ -131,15 +131,9 @@ Find all the information on this [WIKI PAGE](https://github.com/FPGAwars/apio/wi
 | [ColorLight-5A-75B-V7](https://github.com/q3k/chubby75/blob/master/5a-75b/hardware_V7.0.md)| FT2232H |
 | [ColorLight-5A-75B-V8](https://github.com/q3k/chubby75/blob/master/5a-75b/hardware_V8.0.md)| FT2232H |
 | [ColorLight-5A-75E-V6](https://github.com/q3k/chubby75/blob/master/5a-75e/hardware_V6.0.md)| FT2232H |
-| [ColorLight-5A-75E-V71](https://github.com/q3k/chubby75/blob/master/5a-75e/hardware_V7.1.md)| FT2232H |
-| [ColorLight-5A-75E-V71](https://github.com/q3k/chubby75/blob/master/5a-75e/hardware_V7.1.md)| FT232H |
-| [ColorLight-5A-75E-V71](https://github.com/q3k/chubby75/blob/master/5a-75e/hardware_V7.1.md)| USB-Blaster |
-| [ColorLight-i5-v7.0](https://github.com/wuxx/Colorlight-FPGA-Projects)| FT2232H, FT232H, USB-Blaster |
-| [iCESugar-Pro](https://github.com/wuxx/icesugar-pro)| FT2232H |
-| [iCESugar-Pro](https://github.com/wuxx/icesugar-pro)| FT232H |
-| [iCESugar-Pro](https://github.com/wuxx/icesugar-pro)| USB-Blaster |
-
-
+| [ColorLight-5A-75E-V71](https://github.com/q3k/chubby75/blob/master/5a-75e/hardware_V7.1.md)| FT2232H, FT232H or USB-Blaster |
+| [ColorLight-i5-v7.0](https://github.com/wuxx/Colorlight-FPGA-Projects)| FT2232H, FT232H or USB-Blaster |
+| [iCESugar-Pro](https://github.com/wuxx/icesugar-pro)| FT2232H, FT232H or USB-Blaster |
 
 
 #### LP1K
