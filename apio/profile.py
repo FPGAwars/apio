@@ -6,6 +6,7 @@
 # -- Licence GPLv2
 
 import json
+from pathlib import Path
 from os.path import isfile, isdir
 import click
 import semantic_version
@@ -32,12 +33,10 @@ class Profile:
         self.packages = {}
 
         # -- Get the profile path
-        self._profile_path = util.safe_join(
-            util.get_home_dir(), "profile.json"
-        )
+        self._profile_path =  str(Path(util.get_home_dir()) / "profile.json")
 
-        print(f"Profile path: {self._profile_path}")
-        print(f"Home_dir: {util.get_home_dir()}")
+        print(f"(DEBUG) Profile path: {self._profile_path}")
+        print(f"(DEBUG) Home_dir: {util.get_home_dir()}")
 
         # -- Read the profile from file
         self.load()

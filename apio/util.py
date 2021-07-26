@@ -234,7 +234,7 @@ def _get_projconf_option_dir(name, default=None):
             _env_value = _env_value[1:-1]
 
         # -- Debug: Print the environment variable (without quotes)
-        print(f"DEBUG: {_env_name}: {_env_value}")
+        # print(f"DEBUG: {_env_name}: {_env_value}")
 
         return _env_value
 
@@ -285,10 +285,13 @@ def get_home_dir():
 def get_package_dir(pkg_name):
     """Return the APIO package dir of a given package
     Packages are installed in the following folder:
-    * Default: $HOME/.apio/packages
+    * Default: $APIO_HOME_DIR/packages
     * $APIO_PKG_DIR/packages: if the APIO_PKG_DIR env variable is set
     * Return a String
     """
+
+    # -- Get the apio home dir:
+    apio_home_dir = get_home_dir()
 
     # -- Get the APIO_PKG_DIR env variable
     # -- It returns None if it was not defined
@@ -301,7 +304,7 @@ def get_package_dir(pkg_name):
 
     # -- Default value
     else:
-        pkg_home_dir = Path.home() / ".apio"
+        pkg_home_dir = Path(apio_home_dir)
 
     # -- Create the package folder
     package_dir = pkg_home_dir / "packages" / pkg_name
@@ -401,20 +404,25 @@ def set_env_variables(base_dir, bin_dir):
 
 
 def resolve_packages(packages, installed_packages, spec_packages):
-    """DOC: TODO"""
+    """Check the given packages.
+    * Check that they are installed
+    * Check that the versions are ok"""
 
     # --- Get the table with the paths of all the apio packages
     base_dir = get_base_dir()
 
-    # --- Get the table with tha paths of all the executables
+    # --- Get the table with the paths of all the executables
     # --- of the apio packages
     bin_dir = get_bin_dir_table(base_dir)
 
     # -- Check packages
     check = True
     for package in packages:
+        
         version = installed_packages.get(package, {}).get("version", "")
+
         spec_version = spec_packages.get(package, "")
+
         check &= check_package(
             package, version, spec_version, bin_dir.get(package)
         )

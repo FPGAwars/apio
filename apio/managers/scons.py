@@ -411,9 +411,12 @@ class SCons:
             # -- We are using our custom SConstruct file
             click.secho("Info: use custom SConstruct file")
 
-        # -- Resolve packages
+        # -- Check the configuration mode
         if self.profile.check_exe_default():
+
             # Run on `default` config mode
+
+            # -- Check if the necessary packages are installed
             if not util.resolve_packages(
                 packages,
                 self.profile.packages,
