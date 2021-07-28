@@ -21,10 +21,6 @@ from apio.profile import Profile
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
 
-# -- Packages marked as obsoletes
-# -- The value is the replacement package
-OBSOLETE_PKG = {"system": "oss-cad-suite"}
-
 
 class Installer:
     """Installer. Class with methods for installing and managing
@@ -169,12 +165,15 @@ class Installer:
     def install(self):
         """Install the current package in the set in the Installer Object"""
 
+        print(f"  PACKAGE: {self.package}")
+        print(f"  OBSOLETE: {self.resources.obsolete_pkgs}")
+
         # -- Warning if the package has been marked as obsolete
         if self.package in self.resources.obsolete_pkgs:
             click.secho(
                 f"Warning: Package {self.package} is obsolete. "
                 f"Will be removed in the future. "
-                f"Use {OBSOLETE_PKG[self.package]} instead\n",
+                f"Use {self.resources.obsolete_pkgs[self.package]} instead\n",
                 fg="yellow",
             )
 
