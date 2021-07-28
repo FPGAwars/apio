@@ -67,7 +67,9 @@ class SCons:
 
         __, __, arch = process_arguments(args, self.resources)
         return self.run(
-            "verify", arch=arch, packages=["scons", "iverilog", "oss-cad-suite"]
+            "verify",
+            arch=arch,
+            packages=["scons", "iverilog", "oss-cad-suite"],
         )
 
     @util.command
@@ -85,7 +87,10 @@ class SCons:
             }
         )
         return self.run(
-            "lint", var, arch=arch, packages=["scons", "verilator", "oss-cad-suite"]
+            "lint",
+            var,
+            arch=arch,
+            packages=["scons", "verilator", "oss-cad-suite"],
         )
 
     @util.command
@@ -138,7 +143,11 @@ class SCons:
         var += [f"prog={programmer}"]
 
         return self.run(
-            "upload", var, board, arch, packages=["scons", "oss-cad-suite", arch]
+            "upload",
+            var,
+            board,
+            arch,
+            packages=["scons", "oss-cad-suite", arch],
         )
 
     def get_programmer(self, board, ext_serial, ext_ftdi_id, sram, flash):
