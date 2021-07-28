@@ -33,7 +33,7 @@ class Profile:
         self.packages = {}
 
         # -- Get the profile path
-        self._profile_path =  str(Path(util.get_home_dir()) / "profile.json")
+        self._profile_path = str(Path(util.get_home_dir()) / "profile.json")
 
         print(f"(DEBUG) Profile path: {self._profile_path}")
         print(f"(DEBUG) Home_dir: {util.get_home_dir()}")

@@ -17,7 +17,7 @@ def test_build_board(clirunner, configenv):
         result = clirunner.invoke(cmd_build, ['--board', 'icezum'])
         assert result.exit_code != 0
         if result.exit_code == 1:
-            assert 'install yosys' in result.output
+            assert 'install oss-cad-suite' in result.output
 
 
 def test_build_complete(clirunner, configenv):

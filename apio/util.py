@@ -418,7 +418,7 @@ def resolve_packages(packages, installed_packages, spec_packages):
     # -- Check packages
     check = True
     for package in packages:
-        
+
         version = installed_packages.get(package, {}).get("version", "")
 
         spec_version = spec_packages.get(package, "")
@@ -684,23 +684,34 @@ def mkdir(path):
 
 
 def check_dir(_dir):
-    """DOC: TODO"""
+    """Check if the given path is a folder. If no path is given
+    the current path is used"""
 
+    # -- If no path is given, get the current working directory
     if _dir is None:
         _dir = os.getcwd()
 
+    # -- Check if the path is a file or a folder
     if isfile(_dir):
+
+        # -- It is a file! Error! Exit!
         click.secho(
-            "Error: project directory is already a file: {0}".format(_dir),
-            fg="red",
+            f"Error: project directory is already a file: {_dir}", fg="red"
         )
+
         sys.exit(1)
 
+    # -- If the folder does not exist....
     if not exists(_dir):
-        try:
-            os.makedirs(_dir)
-        except OSError:
-            pass
+
+        # -- Warning
+        click.secho(f"Warning: The path does not exist: {_dir}", fg="yellow")
+
+        # -- Create the folder
+        click.secho(f"Creating folder: {_dir}")
+        os.makedirs(_dir)
+
+    # -- Return the path
     return _dir
 
 

@@ -65,8 +65,15 @@ def cli(
 ):
     """Synthesize the bitstream."""
 
-    # Run scons
-    exit_code = SCons(project_dir).build(
+    # The bitstream is generated from the source files (verilog)
+    # by means of the scons tool
+    # https://www.scons.org/documentation.html
+
+    # -- Crete the scons object
+    scons = SCons(project_dir)
+
+    # -- Build the project with the given parameters
+    exit_code = scons.build(
         {
             "board": board,
             "fpga": fpga,
@@ -80,6 +87,8 @@ def cli(
             },
         }
     )
+
+    # -- Done!
     ctx.exit(exit_code)
 
 

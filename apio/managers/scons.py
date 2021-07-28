@@ -26,15 +26,28 @@ from apio.resources import Resources
 
 
 class SCons:
-    """DOC: TODO"""
+    """Class for managing the scons tools"""
 
     def __init__(self, project_dir=""):
+        """Initialization:
+        * project_dir: path where the sources are located
+          If not given, the curent working dir is used
+        """
+
+        # -- Read the apio profile file
         self.profile = Profile()
+
+        # -- Read the apio resources
         self.resources = Resources()
 
+        # -- Project path is given
         if project_dir is not None:
-            # Move to project dir
+
+            # Check if it is a correct folder
+            # (or create a new one)
             project_dir = util.check_dir(project_dir)
+
+            # Change to that folder
             os.chdir(project_dir)
 
     @util.command
@@ -54,7 +67,7 @@ class SCons:
 
         __, __, arch = process_arguments(args, self.resources)
         return self.run(
-            "verify", arch=arch, packages=["scons", "iverilog", "yosys"]
+            "verify", arch=arch, packages=["scons", "iverilog", "oss-cad-suite"]
         )
 
     @util.command
@@ -72,7 +85,7 @@ class SCons:
             }
         )
         return self.run(
-            "lint", var, arch=arch, packages=["scons", "verilator", "yosys"]
+            "lint", var, arch=arch, packages=["scons", "verilator", "oss-cad-suite"]
         )
 
     @util.command
@@ -83,16 +96,24 @@ class SCons:
         return self.run(
             "sim",
             arch=arch,
-            packages=["scons", "iverilog", "yosys", "gtkwave"],
+            packages=["scons", "iverilog", "oss-cad-suite", "gtkwave"],
         )
 
     @util.command
     def build(self, args):
-        """DOC: TODO"""
+        """Build the circuit"""
 
+        # -- Split the arguments
         var, board, arch = process_arguments(args, self.resources)
+
+        # -- Execute scons!!!
+        # -- The packages to check are passed
         return self.run(
-            "build", var, board, arch, packages=["scons", "yosys", arch]
+            "build",
+            var,
+            board,
+            arch,
+            packages=["scons", "oss-cad-suite", arch],
         )
 
     @util.command
@@ -101,7 +122,7 @@ class SCons:
 
         var, board, arch = process_arguments(args, self.resources)
         return self.run(
-            "time", var, board, arch, packages=["scons", "yosys", arch]
+            "time", var, board, arch, packages=["scons", "oss-cad-suite", arch]
         )
 
     @util.command
@@ -117,7 +138,7 @@ class SCons:
         var += [f"prog={programmer}"]
 
         return self.run(
-            "upload", var, board, arch, packages=["scons", "yosys", arch]
+            "upload", var, board, arch, packages=["scons", "oss-cad-suite", arch]
         )
 
     def get_programmer(self, board, ext_serial, ext_ftdi_id, sram, flash):
