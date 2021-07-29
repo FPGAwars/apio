@@ -165,9 +165,6 @@ class Installer:
     def install(self):
         """Install the current package in the set in the Installer Object"""
 
-        print(f"  PACKAGE: {self.package}")
-        print(f"  OBSOLETE: {self.resources.obsolete_pkgs}")
-
         # -- Warning if the package has been marked as obsolete
         if self.package in self.resources.obsolete_pkgs:
             click.secho(

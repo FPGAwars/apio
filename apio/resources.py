@@ -37,7 +37,11 @@ Use `apio init --board <boardname>` to create a new apio """
 
 # -- Packages marked as obsoletes
 # -- The value is the replacement package
-OBSOLETE_PKGS = {"system": "oss-cad-suite", "yosys": "oss-cad-suite"}
+OBSOLETE_PKGS = {
+    "system": "oss-cad-suite",
+    "yosys": "oss-cad-suite",
+    "ice40": "oss-cad-suite",
+}
 
 
 class Resources:
