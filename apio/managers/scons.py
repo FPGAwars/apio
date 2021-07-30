@@ -118,7 +118,7 @@ class SCons:
             var,
             board,
             arch,
-            packages=["scons", "oss-cad-suite", arch],
+            packages=["scons", "oss-cad-suite"],
         )
 
     @util.command
@@ -452,6 +452,7 @@ class SCons:
                 self.profile.packages,
                 self.resources.distribution.get("packages"),
             ):
+                print("NOT INSTALLED!!!!")
                 # Exit if a package is not installed
                 raise Exception
         else:
@@ -461,6 +462,8 @@ class SCons:
         return self._execute_scons(command, variables, board)
 
     def _execute_scons(self, command, variables, board):
+        """Execute the scons builder"""
+
         terminal_width, _ = click.get_terminal_size()
         start_time = time.time()
 
