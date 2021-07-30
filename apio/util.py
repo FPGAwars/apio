@@ -351,7 +351,7 @@ def setup_environment():
     # --- Get the table with the paths of all the apio packages
     base_dir = get_base_dir()
 
-    # --- Get the table with tha paths of all the executables
+    # --- Get the table with the paths of all the executables
     # --- of the apio packages
     bin_dir = get_bin_dir_table(base_dir)
 
@@ -364,33 +364,48 @@ def setup_environment():
 def set_env_variables(base_dir, bin_dir):
     """Set the environment variables"""
 
-    # Give the priority to the python packages installed with apio
-    os.environ["PATH"] = os.pathsep.join([get_bin_dir(), os.environ["PATH"]])
+    # -- Get the current system PATH
+    path = os.environ["PATH"]
 
-    # Give the priority to the packages installed by apio
-    os.environ["PATH"] = os.pathsep.join(
-        [
-            bin_dir.get(OSS_CAD_SUITE),
-            bin_dir.get(YOSYS),
-            bin_dir.get(ICE40),
-            bin_dir.get(ECP5),
-            bin_dir.get(IVERILOG),
-            bin_dir.get(VERILATOR),
-            bin_dir.get(FUJPROG),
-            bin_dir.get(ICESPROG),
-            bin_dir.get(DFU),
-            bin_dir.get(SYSTEM),
-            os.environ["PATH"],
-        ]
-    )
+    # -- Add the packages to the path. The first packages added
+    # -- have the lowest priority. The latest the highest
 
-    # -- Add the gtkwave to the path, only in windows
+    # -- Add the gtkwave to the path if installed,
+    # -- but only for windows platforms
     if platform.system() == "Windows":
-        os.environ["PATH"] = os.pathsep.join(
-            [bin_dir.get(GTKWAVE), os.environ["PATH"]]
-        )
 
-    # Add environment variables
+        # -- Gtkwave package is installed
+        if bin_dir[GTKWAVE] != "":
+            path = os.pathsep.join([bin_dir.get(GTKWAVE), path])
+
+    # -- Add the binary folders of the installed packages
+    # -- to the path, except for the OSS_CAD_SUITE package
+    for pack in base_dir:
+        if base_dir[pack] != "" and pack != OSS_CAD_SUITE:
+            path = os.pathsep.join([bin_dir[pack], path])
+
+    # -- Add the OSS_CAD_SUITE package to the path
+    # -- if installed (Maximum priority)
+    if base_dir[OSS_CAD_SUITE] != "":
+
+        # -- Get the lib folder (where the shared libraries are located)
+        oss_cad_suite_lib = str(Path(base_dir[OSS_CAD_SUITE]) / "lib")
+
+        # -- Add the lib folder
+        path = os.pathsep.join([oss_cad_suite_lib, path])
+        path = os.pathsep.join([bin_dir[OSS_CAD_SUITE], path])
+
+    # Add the virtual python environment to the path
+    os.environ["PATH"] = path
+
+    # print(f" get_bin_dir(): {get_bin_dir()}")
+
+    # -- DEBUG
+    print()
+    print(f"PATH: {os.environ['PATH']}")
+    print()
+
+    # Add other environment variables
     if not config_data:  # /etc/apio.json file does not exist
         os.environ["IVL"] = safe_join(base_dir.get(IVERILOG), "lib", "ivl")
 
@@ -444,7 +459,9 @@ def resolve_packages(packages, installed_packages, spec_packages):
 
 def get_base_dir():
     """Return the table with the local paths of the apio packages
-    installed on the system"""
+    installed on the system. If the packages is not installed,
+    the path is ''
+    """
 
     # -- Create the table:
     # --  Package Name  :  Folder (string)

@@ -452,7 +452,6 @@ class SCons:
                 self.profile.packages,
                 self.resources.distribution.get("packages"),
             ):
-                print("NOT INSTALLED!!!!")
                 # Exit if a package is not installed
                 raise Exception
         else:
@@ -488,6 +487,7 @@ class SCons:
                 )
             )
 
+        # -- Execute the scons builder
         result = util.exec_command(
             util.scons_command + ["-Q", command] + variables,
             stdout=util.AsyncPipe(self._on_stdout),
