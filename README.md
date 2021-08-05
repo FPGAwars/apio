@@ -134,7 +134,7 @@ Find all the information on this [WIKI PAGE](https://github.com/FPGAwars/apio/wi
 | [ColorLight-5A-75E-V71](https://github.com/q3k/chubby75/blob/master/5a-75e/hardware_V7.1.md)| FT2232H, FT232H or USB-Blaster |
 | [ColorLight-i5-v7.0](https://github.com/wuxx/Colorlight-FPGA-Projects)| FT2232H, FT232H or USB-Blaster |
 | [iCESugar-Pro](https://github.com/wuxx/icesugar-pro)| FT2232H, FT232H or USB-Blaster |
-
+| [FleaFPGA-Ohm](https://github.com/Basman74/FleaFPGA-Ohm)| FT2232H, FT232H or USB-Blaster |
 
 #### LP1K
 

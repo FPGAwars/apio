@@ -556,7 +556,7 @@
     "fpga": "ECP5-LFE5U-25F-CABGA381",
     "programmer": {
       "type": "openfpgaloader_ft232"
-      }
+    }
    },
    "ColorLight-i5-v7.0_(USB-Blaster)": {
     "name": "ColorLight-i5",
@@ -577,7 +577,7 @@
     "fpga": "ECP5-LFE5U-25F-CABGA381",
     "programmer": {
       "type": "openfpgaloader_ft232"
-      }
+    }
    },
    "iCESugar-Pro_(USB-Blaster)": {
     "name": "ColorLight-i5",
@@ -585,5 +585,26 @@
     "programmer": {
       "type": "openfpgaloader_usb-blaster"
       }
+   },
+   "FleaFPGA-Ohm_(FT2232H)": {
+   "name": "FleaFPGA-Ohm_(FT2232H)",
+   "fpga": "ECP5-LFE5U-25F-CABGA381",
+   "programmer": {
+      "type": "openfpgaloader_ft2232"
+    }
+   },
+   "FleaFPGA-Ohm_(FT232H)": {
+   "name": "FleaFPGA-Ohm_(FT232H)",
+   "fpga": "ECP5-LFE5U-25F-CABGA381",
+   "programmer": {
+      "type": "openfpgaloader_ft232"
+    }
+   },
+   "FleaFPGA-Ohm_(USB-Blaster)": {
+   "name": "FleaFPGA-Ohm_(USB-Blaster)",
+   "fpga": "ECP5-LFE5U-25F-CABGA381",
+   "programmer": {
+       "type": "openfpgaloader_usb-blaster"
+    }
    }
  } 
