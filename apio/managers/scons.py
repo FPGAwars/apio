@@ -132,10 +132,12 @@ class SCons:
 
     @util.command
     def upload(self, args, serial_port, ftdi_id, sram, flash):
-        """DOC: TODO"""
+        """Upload the circuit to the board"""
 
+        # -- Split the arguments
         var, board, arch = process_arguments(args, self.resources)
 
+        # -- Get the programmer for that board
         programmer = self.get_programmer(
             board, serial_port, ftdi_id, sram, flash
         )
@@ -147,7 +149,7 @@ class SCons:
             var,
             board,
             arch,
-            packages=["scons", "oss-cad-suite", arch],
+            packages=["scons", "oss-cad-suite"],
         )
 
     def get_programmer(self, board, ext_serial, ext_ftdi_id, sram, flash):
