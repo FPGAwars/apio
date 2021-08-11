@@ -409,12 +409,16 @@ def set_env_variables(base_dir, bin_dir):
     if not config_data:  # /etc/apio.json file does not exist
         os.environ["IVL"] = safe_join(base_dir.get(IVERILOG), "lib", "ivl")
 
-    os.environ["ICEBOX"] = str(Path(base_dir.get(ICE40)) / "share" / "icebox")
+    os.environ["ICEBOX"] = str(
+        Path(base_dir[OSS_CAD_SUITE]) / "share" / "icebox"
+    )
 
-    os.environ["TRELLIS"] = str(Path(base_dir.get(ECP5)) / "share" / "trellis")
+    os.environ["TRELLIS"] = str(
+        Path(base_dir[OSS_CAD_SUITE]) / "share" / "trellis"
+    )
 
     os.environ["YOSYS_LIB"] = str(
-        Path(base_dir.get(YOSYS)) / "share" / "yosys"
+        Path(base_dir[OSS_CAD_SUITE]) / "share" / "yosys"
     )
 
 
