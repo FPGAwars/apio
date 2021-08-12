@@ -56,9 +56,12 @@ class SCons:
 
         try:
             __, __, arch = process_arguments(args, self.resources)
+
+        # -- No architecture given: Uses ice40 as default
         except Exception:
             arch = "ice40"
 
+        # --Clean the project: run scons -c (with aditional arguments)
         return self.run("-c", arch=arch, packages=["scons"])
 
     @util.command
@@ -491,7 +494,7 @@ class SCons:
 
         # -- Execute the scons builder
         result = util.exec_command(
-            util.scons_command + ["-Q", command] + variables,
+            ["scons"] + ["-Q", command] + variables,
             stdout=util.AsyncPipe(self._on_stdout),
             stderr=util.AsyncPipe(self._on_stderr),
         )

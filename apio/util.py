@@ -17,7 +17,7 @@ import locale
 import platform
 import subprocess
 from threading import Thread
-from os.path import isdir, isfile, join, dirname, exists, normpath
+from os.path import isdir, isfile, join, dirname, exists
 from pathlib import Path
 
 import click
@@ -451,12 +451,6 @@ def resolve_packages(packages, installed_packages, spec_packages):
 
         # --- Set the system env. variables
         set_env_variables(base_dir, bin_dir)
-
-        global scons_command
-        scons_command = [
-            normpath(sys.executable),
-            safe_join(bin_dir[SCONS], "scons"),
-        ]
 
     return check
 
