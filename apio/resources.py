@@ -41,6 +41,7 @@ OBSOLETE_PKGS = {
     "system": "oss-cad-suite",
     "yosys": "oss-cad-suite",
     "ice40": "oss-cad-suite",
+    "scons": "",
 }
 
 

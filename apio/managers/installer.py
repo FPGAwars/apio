@@ -1,7 +1,7 @@
 """DOC: TODO"""
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2019 FPGAwars
+# -- (C) 2016-2021 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
@@ -167,10 +167,18 @@ class Installer:
 
         # -- Warning if the package has been marked as obsolete
         if self.package in self.resources.obsolete_pkgs:
+
+            # -- Get the string with the new package to use instead
+            # -- of the obsolete one (if available)
+            if self.resources.obsolete_pkgs[self.package]!="":
+                new_package_msg = f"Use {self.resources.obsolete_pkgs[self.package]} instead\n"
+            else:
+                new_package_msg = ""
+
             click.secho(
                 f"Warning: Package {self.package} is obsolete. "
                 f"Will be removed in the future. "
-                f"Use {self.resources.obsolete_pkgs[self.package]} instead\n",
+                f"{new_package_msg}",
                 fg="yellow",
             )
 
