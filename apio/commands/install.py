@@ -77,7 +77,11 @@ def cli(ctx, packages, all, list, force, platform):
 
     # -- List all the packages (installed or not)
     elif list:
-        Resources(platform).list_packages(installed=True, notinstalled=True)
+        # -- Get all the resources
+        resources = Resources(platform)
+
+        # -- List the packages
+        resources.list_packages()
 
     # -- Invalid option. Just show the help
     else:

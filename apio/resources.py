@@ -36,7 +36,7 @@ Use `apio init --board <boardname>` to create a new apio """
 )
 
 # -- Packages marked as obsoletes
-# -- The value is the replacement package
+# -- The value is the replacement package (if any)
 OBSOLETE_PKGS = {
     "system": "oss-cad-suite",
     "yosys": "oss-cad-suite",
@@ -200,6 +200,28 @@ class Resources:
                         description=package.get("description"),
                     )
                 )
+
+        # -- Print the obsolete packages
+        click.echo("\nObsolete packages:\n")
+        package_list_tpl = "{name:20} {description:30}"
+        click.echo("-" * terminal_width)
+        click.echo(
+            package_list_tpl.format(
+                name=click.style("Old package", fg="yellow"),
+                description="New package",
+            )
+        )
+        click.echo("-" * terminal_width)
+
+        for package, new_package in OBSOLETE_PKGS.items():
+            click.echo(
+                package_list_tpl.format(
+                    name=click.style(package, fg="yellow"),
+                    description=new_package,
+                )
+            )
+
+        click.echo("\n")
 
     def list_boards(self):
         """Return a list with all the supported boards"""

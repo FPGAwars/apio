@@ -170,8 +170,9 @@ class Installer:
 
             # -- Get the string with the new package to use instead
             # -- of the obsolete one (if available)
-            if self.resources.obsolete_pkgs[self.package]!="":
-                new_package_msg = f"Use {self.resources.obsolete_pkgs[self.package]} instead\n"
+            if self.resources.obsolete_pkgs[self.package] != "":
+                new_package = self.resources.obsolete_pkgs[self.package]
+                new_package_msg = f"Use {new_package} instead\n"
             else:
                 new_package_msg = ""
 
