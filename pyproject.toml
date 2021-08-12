@@ -21,7 +21,8 @@ requires = [
     'requests>=2.4.0,<3',
     'colorama',
     'pyserial>=3,<4',
-    'wheel>=0.35.0,<1'
+    'wheel>=0.35.0,<1',
+    'scons==4.2.0'
 ]
 
 [tool.flit.metadata.requires-extra]
