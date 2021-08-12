@@ -62,7 +62,7 @@ class SCons:
             arch = "ice40"
 
         # --Clean the project: run scons -c (with aditional arguments)
-        return self.run("-c", arch=arch, packages=["scons"])
+        return self.run("-c", arch=arch)
 
     @util.command
     def verify(self, args):
@@ -72,7 +72,7 @@ class SCons:
         return self.run(
             "verify",
             arch=arch,
-            packages=["scons", "iverilog", "oss-cad-suite"],
+            packages=["iverilog", "oss-cad-suite"],
         )
 
     @util.command
@@ -93,7 +93,7 @@ class SCons:
             "lint",
             var,
             arch=arch,
-            packages=["scons", "verilator", "oss-cad-suite"],
+            packages=["verilator", "oss-cad-suite"],
         )
 
     @util.command
@@ -104,7 +104,7 @@ class SCons:
         return self.run(
             "sim",
             arch=arch,
-            packages=["scons", "iverilog", "oss-cad-suite", "gtkwave"],
+            packages=["iverilog", "oss-cad-suite", "gtkwave"],
         )
 
     @util.command
@@ -121,7 +121,7 @@ class SCons:
             var,
             board,
             arch,
-            packages=["scons", "oss-cad-suite"],
+            packages=["oss-cad-suite"],
         )
 
     @util.command
@@ -130,7 +130,7 @@ class SCons:
 
         var, board, arch = process_arguments(args, self.resources)
         return self.run(
-            "time", var, board, arch, packages=["scons", "oss-cad-suite", arch]
+            "time", var, board, arch, packages=["oss-cad-suite", arch]
         )
 
     @util.command
@@ -152,7 +152,7 @@ class SCons:
             var,
             board,
             arch,
-            packages=["scons", "oss-cad-suite"],
+            packages=["oss-cad-suite"],
         )
 
     def get_programmer(self, board, ext_serial, ext_ftdi_id, sram, flash):
