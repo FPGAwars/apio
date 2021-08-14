@@ -72,7 +72,7 @@ class SCons:
         return self.run(
             "verify",
             arch=arch,
-            packages=["iverilog", "oss-cad-suite"],
+            packages=["oss-cad-suite"],
         )
 
     @util.command

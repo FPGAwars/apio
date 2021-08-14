@@ -406,8 +406,10 @@ def set_env_variables(base_dir, bin_dir):
     print()
 
     # Add other environment variables
-    if not config_data:  # /etc/apio.json file does not exist
-        os.environ["IVL"] = safe_join(base_dir.get(IVERILOG), "lib", "ivl")
+   
+    os.environ["IVL"] = str(
+        Path(base_dir[OSS_CAD_SUITE]) / "lib" / "ivl"
+    )
 
     os.environ["ICEBOX"] = str(
         Path(base_dir[OSS_CAD_SUITE]) / "share" / "icebox"
