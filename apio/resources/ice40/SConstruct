@@ -247,7 +247,7 @@ AlwaysBuild(waves)
 
 # -- Verilator builder
 verilator = Builder(
-    action='verilator --lint-only -v {0}/ice40/cells_sim.v {1} {2} {3} {4} $SOURCES'.format(
+    action='verilator --lint-only -Wno-TIMESCALEMOD -v {0}/ice40/cells_sim.v {1} {2} {3} {4} $SOURCES'.format(
         YOSYS_PATH,
         '-Wall' if VERILATOR_ALL else '',
         '-Wno-style' if VERILATOR_NO_STYLE else '',

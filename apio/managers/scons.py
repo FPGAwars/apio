@@ -93,7 +93,7 @@ class SCons:
             "lint",
             var,
             arch=arch,
-            packages=["verilator", "oss-cad-suite"],
+            packages=["oss-cad-suite"],
         )
 
     @util.command
