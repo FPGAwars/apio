@@ -276,14 +276,14 @@
     "name": "iCEBreaker bitsy",
     "fpga": "iCE40-UP5K-SG48",
     "programmer": {
-      "type": "iceprog"
+      "type": "dfu"
     },
     "usb": {
-      "vid": "0403",
-      "pid": "6010"
+      "vid": "1d50",
+      "pid": "6146"
     },
     "ftdi": {
-      "desc": "(?:Dual RS232-HS)|(?:iCEBreaker.*)"
+      "desc": "iCEBreaker bitsy.*"
     }
   },
   "fpga101": {
