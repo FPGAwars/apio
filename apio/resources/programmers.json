@@ -51,7 +51,7 @@
   },
   "dfu": {
     "command": "dfu-util",
-    "args": "-d ${VID}:${PID} -D"
+    "args": "-d ${VID}:${PID} -a 0 -D"
   },
   "icesprog": {
     "command": "icesprog",

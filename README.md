@@ -106,7 +106,7 @@ Find all the information on this [WIKI PAGE](https://github.com/FPGAwars/apio/wi
 | [Fomu](https://github.com/im-tomu/fomu-hardware) | DFU |
 | [FPGA 101 Workshop Badge Board](https://github.com/mmicko/workshop_badge) | FTDI |
 | [iCEBreaker](https://github.com/icebreaker-fpga/icebreaker) | FTDI |
-| [iCEBreaker bitsy](https://github.com/icebreaker-fpga/icebreaker) | FTDI |
+| [iCEBreaker bitsy](https://github.com/icebreaker-fpga/icebreaker#icebreaker-bitsy) | DFU |
 | [iCE40 UltraPlus Breakout Board](http://www.latticesemi.com/en/Products/DevelopmentBoardsAndKits/iCE40UltraPlusBreakoutBoard) | FTDI |
 | [UPDuino v1.0](http://gnarlygrey.atspace.cc/development-platform.html#upduino) | FTDI |
 | [UPDuino v2.0](http://gnarlygrey.atspace.cc/development-platform.html#upduino_v2) | FTDI |
