@@ -485,16 +485,17 @@ class SCons:
             )
             click.secho("-" * terminal_width, bold=True)
 
+        scons_command = ["scons"] + ["-Q", command] + variables
         if self.profile.get_verbose_mode() > 0:
             click.secho(
                 "Executing: {}".format(
-                    " ".join(util.scons_command + ["-Q", command] + variables)
+                    " ".join(util.exec_command(scons_command))
                 )
             )
 
         # -- Execute the scons builder
         result = util.exec_command(
-            ["scons"] + ["-Q", command] + variables,
+            scons_command,
             stdout=util.AsyncPipe(self._on_stdout),
             stderr=util.AsyncPipe(self._on_stderr),
         )
