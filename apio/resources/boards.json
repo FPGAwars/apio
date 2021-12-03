@@ -620,5 +620,12 @@
    "programmer": {
        "type": "openfpgaloader_usb-blaster"
     }
+   },
+   "ECP5-Evaluation-Board": {
+   "name": "ECP5-Evaluation-Board",
+   "fpga": "ECP5-LFE5UM5G-85F-CABGA381",
+   "programmer": {
+       "type": "openfpgaloader_ft2232"
+    }
    }
  } 
