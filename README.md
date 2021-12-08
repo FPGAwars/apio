@@ -135,6 +135,7 @@ Find all the information on this [WIKI PAGE](https://github.com/FPGAwars/apio/wi
 | [ColorLight-i5-v7.0](https://github.com/wuxx/Colorlight-FPGA-Projects)| FT2232H, FT232H or USB-Blaster |
 | [iCESugar-Pro](https://github.com/wuxx/icesugar-pro)| FT2232H, FT232H or USB-Blaster |
 | [FleaFPGA-Ohm](https://github.com/Basman74/FleaFPGA-Ohm)| FT2232H, FT232H or USB-Blaster |
+| [ECP5-Evaluation-Board](https://www.latticesemi.com/products/developmentboardsandkits/ecp5evaluationboard)| FT2232H |
 
 #### LP1K
 
