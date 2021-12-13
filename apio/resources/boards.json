@@ -272,7 +272,7 @@
       "desc": "(?:Dual RS232-HS)|(?:iCEBreaker.*)"
     }
   },
-  "iCEBreaker-bitsy": {
+  "iCEBreaker-bitsy0": {
     "name": "iCEBreaker bitsy",
     "fpga": "iCE40-UP5K-SG48",
     "programmer": {
@@ -283,7 +283,21 @@
       "pid": "6146"
     },
     "ftdi": {
-      "desc": "iCEBreaker bitsy.*"
+      "desc": "iCEBreaker bitsy v0.*"
+    }
+  },
+  "iCEBreaker-bitsy1": {
+    "name": "iCEBreaker bitsy",
+    "fpga": "iCE40-UP5K-SG48",
+    "programmer": {
+      "type": "dfu"
+    },
+    "usb": {
+      "vid": "1d50",
+      "pid": "6146"
+    },
+    "ftdi": {
+      "desc": "iCEBreaker bitsy1.*"
     }
   },
   "fpga101": {
