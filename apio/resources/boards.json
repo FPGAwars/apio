@@ -484,6 +484,17 @@
       "desc": "Dual RS232-HS"
     }
   },
+  "iCESugar-nano": {
+    "name": "iCESugar-nano",
+    "fpga": "iCE40-LP1K-CM36",
+    "programmer": {
+      "type": "icesprog"
+    },
+    "usb": {
+      "vid": "1d50",
+      "pid": "602b"
+    }
+  },
   "OK-iCE40Pro": {
     "name": "OK-iCE40Pro",
     "fpga": "iCE40-UP5K-SG48",
@@ -619,6 +630,20 @@
    "fpga": "ECP5-LFE5U-25F-CABGA381",
    "programmer": {
        "type": "openfpgaloader_usb-blaster"
+    }
+   },
+   "ECP5-Mini-12": {
+   "name": "ECP5-Mini-12",
+   "fpga": "ECP5-LFE5U-12F-CABGA256",
+   "programmer": {
+       "type": "openfpgaloader_ft2232"
+    }
+   },
+   "ECP5-Mini-25": {
+   "name": "ECP5-Mini-12",
+   "fpga": "ECP5-LFE5U-25F-CABGA256",
+   "programmer": {
+       "type": "openfpgaloader_ft2232"
     }
    },
    "ECP5-Evaluation-Board": {
