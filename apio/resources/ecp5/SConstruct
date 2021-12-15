@@ -83,7 +83,7 @@ IVER_PATH = '' if isWindows or not IVL_PATH else '-B "{0}"'.format(IVL_PATH)
 
 IDCODE_PARAM = '' if not FPGA_IDCODE else '--idcode {0}'.format(FPGA_IDCODE)
 
-FPGA_TYPE_PARAM = '' if (FPGA_TYPE=="12k") else '--{0}'.format(FPGA_TYPE)
+FPGA_TYPE_PARAM = '25k' if (FPGA_TYPE=="12k") else '{0}'.format(FPGA_TYPE)
 
 # -- Target name
 TARGET = 'hardware'
@@ -176,7 +176,7 @@ synth = Builder(
     source_scanner=list_scanner)
 
 pnr = Builder(
-    action='nextpnr-ecp5 {0} --package {2} --json $SOURCE --textcfg $TARGET {3} {4} --timing-allow-fail --force'.format(
+    action='nextpnr-ecp5 --{0} --package {2} --json $SOURCE --textcfg $TARGET {3} {4} --timing-allow-fail --force'.format(
         FPGA_TYPE_PARAM, FPGA_SIZE, FPGA_PACK, '--lpf ' + str(LPF) if LPF else '',
         '' if VERBOSE_ALL or VERBOSE_PNR else '-q'),
     suffix='.config',
