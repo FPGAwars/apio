@@ -25,6 +25,9 @@ requires = [
     'scons==4.2.0'
 ]
 
+[tool.flit.sdist]
+exclude = ["test-examples/"]
+
 [tool.flit.metadata.requires-extra]
 blackiceprog = ['blackiceprog>=2.0.0,<3.0.0']
 litterbox = ['litterbox>=0.2.1,<0.3.0']
