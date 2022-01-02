@@ -287,13 +287,21 @@ class SCons:
 
         programmer = content.get("command")
 
-        # Add args
-        if content.get("args"):
-            programmer += " {}".format(content.get("args"))
+        #dfu-util needs extra args first
+        if programmer.startswith("dfu-util"):
+            if prog_info.get("extra_args"):
+                programmer += " {}".format(prog_info.get("extra_args"))
+                
+            if content.get("args"):
+                programmer += " {}".format(content.get("args"))
+        else:
+            # Add args
+            if content.get("args"):
+                programmer += " {}".format(content.get("args"))
 
-        # Add extra args
-        if prog_info.get("extra_args"):
-            programmer += " {}".format(prog_info.get("extra_args"))
+            # Add extra args
+            if prog_info.get("extra_args"):
+                programmer += " {}".format(prog_info.get("extra_args"))
 
         # Enable SRAM programming
         if sram:
