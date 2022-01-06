@@ -119,7 +119,8 @@ Find all the information on this [WIKI PAGE](https://github.com/FPGAwars/apio/wi
 #### ECP5
 | Board name | Interface |
 |:-|:-:|
-| [OrangeCrab r0.2](https://github.com/gregdavill/OrangeCrab) | FTDI |
+| [OrangeCrab r0.2](https://github.com/orangecrab-fpga/orangecrab-hardware) | DFU |
+| [ButterStick r1.0](https://github.com/butterstick-fpga/butterstick-hardware) | DFU |
 | [TinyFPGA-EX-rev1](https://github.com/tinyfpga/TinyFPGA-EX) | Serial |
 | [TinyFPGA-EX-rev2](https://www.crowdsupply.com/tinyfpga/tinyfpga-ex) | Serial |
 | [ULX3S-12F](https://radiona.org/ulx3s/) | Ujprog |
