@@ -41,12 +41,7 @@ def cli(ctx, board, project_dir, verbose):
     scons = SCons(project_dir)
 
     # -- Verify the project with the given parameters
-    exit_code = scons.verify(
-        {
-          "board": board,
-          "verbose": {"all": verbose}
-        }
-    )
+    exit_code = scons.verify({"board": board, "verbose": {"all": verbose}})
 
     # -- Done!
     ctx.exit(exit_code)
