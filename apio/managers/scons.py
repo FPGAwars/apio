@@ -66,9 +66,13 @@ class SCons:
 
     @util.command
     def verify(self, args):
-        """DOC: TODO"""
+        """Executes scons for verifying"""
 
+        # -- Split the arguments
         __, __, arch = process_arguments(args, self.resources)
+
+        # -- Execute scons!!!
+        # -- The packages to check are passed
         return self.run(
             "verify",
             arch=arch,
@@ -287,11 +291,11 @@ class SCons:
 
         programmer = content.get("command")
 
-        #dfu-util needs extra args first
+        # dfu-util needs extra args first
         if programmer.startswith("dfu-util"):
             if prog_info.get("extra_args"):
                 programmer += " {}".format(prog_info.get("extra_args"))
-                
+
             if content.get("args"):
                 programmer += " {}".format(content.get("args"))
         else:
@@ -433,7 +437,7 @@ class SCons:
         return None
 
     def run(self, command, variables=[], board=None, arch=None, packages=[]):
-        """Executes scons for building"""
+        """Executes scons"""
 
         # -- Check if in the current project a custom SConstruct file
         # is being used. We fist build the full name (with the full path)
