@@ -79,7 +79,6 @@ Find all the information on this [WIKI PAGE](https://github.com/FPGAwars/apio/wi
 
 | Board name | Interface |
 |:-|:-:|
-| [Alchitry-Cu](https://alchitry.com/products/alchitry-cu-fpga-development-board) | | FTDI |
 | [Alhambra II](https://github.com/FPGAwars/Alhambra-II-FPGA) | FTDI |
 | [BlackIce](https://hackaday.io/project/12930-blackice-low-cost-open-hardware-fpga-dev-board) | Serial |
 | [BlackIce II](https://github.com/mystorm-org/BlackIce-II) | Serial |
@@ -88,7 +87,7 @@ Find all the information on this [WIKI PAGE](https://github.com/FPGAwars/apio/wi
 | [icoBOARD 1.0](http://icoboard.org/about-icoboard.html) | GPIO RPi |
 | [Kéfir I iCE40-HX4K](http://fpgalibre.sourceforge.net/Kefir/) | FTDI |
 | [iCE40-HX8K Breakout Board](http://www.latticesemi.com/Products/DevelopmentBoardsAndKits/iCE40HX8KBreakoutBoard) | FTDI |
-| [Alchitry Cu](https://alchitry.com/products/alchitry-cu-fpga-development-board) | FTDI |
+| [Alchitry Cu](https://alchitry.com/boards/cu) | FTDI |
 | [iceFUN](https://www.robot-electronics.co.uk/icefun.html) | Serial |
 
 #### LP8K
