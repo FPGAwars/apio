@@ -16,11 +16,11 @@ classifiers=[
 description-file = "README.md"
 requires-python = ">=3.7"
 requires = [
-    'click',
-    'semantic_version>=2.5.0,<3',
-    'requests>=2.4.0,<3',
-    'colorama',
-    'pyserial>=3,<4',
+    'click==7.1.2',
+    'semantic_version==2.9.0',
+    'requests==2.27.1',
+    'colorama==0.4.4',
+    'pyserial==3.5',
     'wheel>=0.35.0,<1',
     'scons==4.2.0'
 ]
@@ -29,11 +29,11 @@ requires = [
 exclude = ["test-examples/"]
 
 [tool.flit.metadata.requires-extra]
-blackiceprog = ['blackiceprog>=2.0.0,<3.0.0']
-litterbox = ['litterbox>=0.2.1,<0.3.0']
-tinyfpgab = ['tinyfpgab>=1.1.0,<1.2.0']
-tinyprog = ['tinyprog>=1.0.21,<1.1.0']
-icefunprog = ['icefunprog>=2.0.3,<3.0.0']
+blackiceprog = ['blackiceprog==2.0.0']
+litterbox = ['litterbox==0.2.2']
+tinyfpgab = ['tinyfpgab==1.1.0']
+tinyprog = ['tinyprog==1.0.21']
+icefunprog = ['icefunprog==2.0.3']
 
 
 [tool.flit.scripts]
