@@ -10,10 +10,12 @@ import re
 import sys
 import time
 import datetime
+import shutil
 from os.path import isfile
 from pathlib import Path
 
 import click
+
 import pkg_resources
 import semantic_version
 
@@ -480,7 +482,7 @@ class SCons:
     def _execute_scons(self, command, variables, board):
         """Execute the scons builder"""
 
-        terminal_width, _ = click.get_terminal_size()
+        terminal_width, _ = shutil.get_terminal_size()
         start_time = time.time()
 
         if command in ("build", "upload", "time"):
