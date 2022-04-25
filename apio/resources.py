@@ -47,7 +47,7 @@ OBSOLETE_PKGS = {
     "dfu": "oss-cad-suite",
     "fujprog": "oss-cad-suite",
     "icesprog": "oss-cad-suite",
-    "ecp5": "oss-cad-suite"
+    "ecp5": "oss-cad-suite",
 }
 
 

@@ -44,18 +44,14 @@ def test_complete(clirunner, validate_cliresult, configenv, offline):
         result = clirunner.invoke(cmd_install, ['examples@0.0.7'])
         validate_cliresult(result)
         assert 'Installing examples package' in result.output
-        if click.__version__ != '7.0':
-            assert 'Downloading' in result.output
-            assert 'Unpacking' in result.output
+        assert 'Download' in result.output
         assert 'has been successfully installed!' in result.output
 
         # apio install examples
         result = clirunner.invoke(cmd_install, ['examples'])
         validate_cliresult(result)
         assert 'Installing examples package' in result.output
-        if click.__version__ != '7.0':
-            assert 'Downloading' in result.output
-            assert 'Unpacking' in result.output
+        assert 'Download' in result.output
         assert 'has been successfully installed!' in result.output
 
         # apio install examples
@@ -69,9 +65,7 @@ def test_complete(clirunner, validate_cliresult, configenv, offline):
             'examples', '--platform', 'windows', '--force'])
         validate_cliresult(result)
         assert 'Installing examples package' in result.output
-        if click.__version__ != '7.0':
-            assert 'Downloading' in result.output
-            assert 'Unpacking' in result.output
+        assert 'Download' in result.output
         assert 'has been successfully installed!' in result.output
 
         # apio install --list

@@ -110,7 +110,7 @@ class SCons:
         return self.run(
             "sim",
             arch=arch,
-            packages=["iverilog", "oss-cad-suite", "gtkwave"],
+            packages=["oss-cad-suite", "gtkwave"],
         )
 
     @util.command
