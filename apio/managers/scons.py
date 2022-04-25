@@ -136,7 +136,7 @@ class SCons:
 
         var, board, arch = process_arguments(args, self.resources)
         return self.run(
-            "time", var, board, arch, packages=["oss-cad-suite", arch]
+            "time", var, board, arch, packages=["oss-cad-suite"]
         )
 
     @util.command
