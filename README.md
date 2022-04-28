@@ -89,6 +89,7 @@ Find all the information on this [WIKI PAGE](https://github.com/FPGAwars/apio/wi
 | [iCE40-HX8K Breakout Board](http://www.latticesemi.com/Products/DevelopmentBoardsAndKits/iCE40HX8KBreakoutBoard) | FTDI |
 | [Alchitry Cu](https://alchitry.com/boards/cu) | FTDI |
 | [iceFUN](https://www.robot-electronics.co.uk/icefun.html) | Serial |
+| [iceWerx](https://www.robot-electronics.co.uk/icewerx.html) | Serial |
 
 #### LP8K
 
