@@ -187,8 +187,9 @@ bitstream = Builder(
     suffix='.bit',
     src_suffix='.config')
 
+#-- No time analysis report implemented for the ECP5 family
 time_rpt = Builder(
-    action='echo Here comes time analysis $TARGET $SOURCE  > $TARGET',
+    action='echo No time analysis report implemented for the ECP5 family $TARGET $SOURCE  > $TARGET',
     suffix='.rpt',
     src_suffix='.config')
 
