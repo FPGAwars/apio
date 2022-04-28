@@ -25,12 +25,15 @@ requires = [
     'scons==4.2.0'
 ]
 
+[tool.flit.sdist]
+exclude = ["test-examples/"]
+
 [tool.flit.metadata.requires-extra]
-blackiceprog = ['blackiceprog>=2.0.0,<3.0.0']
-litterbox = ['litterbox>=0.2.1,<0.3.0']
-tinyfpgab = ['tinyfpgab>=1.1.0,<1.2.0']
-tinyprog = ['tinyprog>=1.0.21,<1.1.0']
-icefunprog = ['icefunprog>=2.0.3,<3.0.0']
+blackiceprog = ['blackiceprog==2.0.0']
+litterbox = ['litterbox==0.2.2']
+tinyfpgab = ['tinyfpgab==1.1.0']
+tinyprog = ['tinyprog==1.0.21']
+icefunprog = ['icefunprog==2.0.3']
 
 
 [tool.flit.scripts]

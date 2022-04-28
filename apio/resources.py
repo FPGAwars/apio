@@ -42,6 +42,12 @@ OBSOLETE_PKGS = {
     "yosys": "oss-cad-suite",
     "ice40": "oss-cad-suite",
     "scons": "",
+    "iverilog": "oss-cad-suite",
+    "verilator": "oss-cad-suite",
+    "dfu": "oss-cad-suite",
+    "fujprog": "oss-cad-suite",
+    "icesprog": "oss-cad-suite",
+    "ecp5": "oss-cad-suite",
 }
 
 

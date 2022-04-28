@@ -9,7 +9,7 @@
 # - Information for the Distribution package
 # --------------------------------------------
 
-VERSION = (0, 8, '0.post1')
+VERSION = (0, 8, 1)
 __version__ = ".".join([str(s) for s in VERSION])
 
 __title__ = "apio"

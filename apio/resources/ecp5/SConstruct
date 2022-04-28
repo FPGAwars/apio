@@ -187,8 +187,9 @@ bitstream = Builder(
     suffix='.bit',
     src_suffix='.config')
 
+#-- No time analysis report implemented for the ECP5 family
 time_rpt = Builder(
-    action='echo Here comes time analysis $TARGET $SOURCE  > $TARGET',
+    action='echo No time analysis report implemented for the ECP5 family $TARGET $SOURCE  > $TARGET',
     suffix='.rpt',
     src_suffix='.config')
 
@@ -215,7 +216,7 @@ AlwaysBuild(t)
 
 # -- Icarus Verilog builders
 iverilog = Builder(
-    action='iverilog {0} -o $TARGET -D VCD_OUTPUT={1} -D NO_INCLUDES {2}/ecp5/cells_sim.v $SOURCES'.format(
+    action='iverilog {0} -o $TARGET -D VCD_OUTPUT={1} -D NO_INCLUDES "{2}/ecp5/cells_sim.v" $SOURCES'.format(
         IVER_PATH, TARGET_SIM, YOSYS_PATH),
     suffix='.out',
     src_suffix='.v',

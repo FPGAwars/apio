@@ -152,6 +152,7 @@
       "pid": "5740"
     }
   },
+
   "icefun": {
     "name": "iceFUN",
     "fpga": "iCE40-HX8K-CB132",
@@ -163,6 +164,19 @@
       "pid": "ffee"
     }
   },
+
+  "iceWerx": {
+    "name": "iceWerx",
+    "fpga": "iCE40-HX8K-CB132",
+    "programmer": {
+      "type": "icefunprog"
+    },
+    "usb": {
+      "vid": "04d8",
+      "pid": "ffee"
+    }
+  },
+
   "TinyFPGA-B2": {
     "name": "TinyFPGA B2",
     "fpga": "iCE40-LP8K-CM81",
@@ -256,6 +270,20 @@
     },
     "ftdi": {
       "desc": "UPduino v3.0"
+    }
+  },
+    "upduino31": {
+    "name": "UPduino v3.1",
+    "fpga": "iCE40-UP5K-SG48",
+    "programmer": {
+      "type": "iceprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6014"
+    },
+    "ftdi": {
+      "desc": "UPduino v3.1"
     }
   },
   "iCEBreaker": {
@@ -404,7 +432,7 @@
     "name": "OrangeCrab r0.2",
     "fpga": "ECP5-LFE5U-25F-CSFBGA285",
     "programmer": {
-      "type": "dfu-util"
+      "type": "dfu"
     },
     "usb": {
       "vid": "1209",
@@ -412,6 +440,21 @@
     },
     "ftdi": {
       "desc": "OrangeCrab r0.2 DFU bootloader"
+    }
+  },
+  "butterStick-r1.0-2G-85F": {
+    "name": "butterstick r1.0",
+    "fpga": "ECP5-LFE5UM5G-85F-CABGA381",
+    "programmer": {
+      "type": "dfu",
+      "extra_args": "--reset"
+    },
+    "usb": {
+      "vid": "1209",
+      "pid": "5af1"
+    },
+    "ftdi": {
+      "desc": "butterstick (dfu v1.1)"
     }
   },
   "versa": {

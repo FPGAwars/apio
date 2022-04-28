@@ -36,7 +36,12 @@ if sys.version_info > (3, 0):
 )
 def cli(ctx, board, project_dir, verbose):
     """Verify the verilog code."""
-    exit_code = SCons(project_dir).verify(
-        {"board": board, "verbose": {"all": verbose}}
-    )
+
+    # -- Crete the scons object
+    scons = SCons(project_dir)
+
+    # -- Verify the project with the given parameters
+    exit_code = scons.verify({"board": board, "verbose": {"all": verbose}})
+
+    # -- Done!
     ctx.exit(exit_code)

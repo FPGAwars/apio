@@ -10,10 +10,12 @@ import re
 import sys
 import time
 import datetime
+import shutil
 from os.path import isfile
 from pathlib import Path
 
 import click
+
 import pkg_resources
 import semantic_version
 
@@ -66,9 +68,13 @@ class SCons:
 
     @util.command
     def verify(self, args):
-        """DOC: TODO"""
+        """Executes scons for verifying"""
 
+        # -- Split the arguments
         __, __, arch = process_arguments(args, self.resources)
+
+        # -- Execute scons!!!
+        # -- The packages to check are passed
         return self.run(
             "verify",
             arch=arch,
@@ -104,7 +110,7 @@ class SCons:
         return self.run(
             "sim",
             arch=arch,
-            packages=["iverilog", "oss-cad-suite", "gtkwave"],
+            packages=["oss-cad-suite", "gtkwave"],
         )
 
     @util.command
@@ -129,9 +135,7 @@ class SCons:
         """DOC: TODO"""
 
         var, board, arch = process_arguments(args, self.resources)
-        return self.run(
-            "time", var, board, arch, packages=["oss-cad-suite", arch]
-        )
+        return self.run("time", var, board, arch, packages=["oss-cad-suite"])
 
     @util.command
     def upload(self, args, serial_port, ftdi_id, sram, flash):
@@ -287,13 +291,21 @@ class SCons:
 
         programmer = content.get("command")
 
-        # Add args
-        if content.get("args"):
-            programmer += " {}".format(content.get("args"))
+        # dfu-util needs extra args first
+        if programmer.startswith("dfu-util"):
+            if prog_info.get("extra_args"):
+                programmer += " {}".format(prog_info.get("extra_args"))
 
-        # Add extra args
-        if prog_info.get("extra_args"):
-            programmer += " {}".format(prog_info.get("extra_args"))
+            if content.get("args"):
+                programmer += " {}".format(content.get("args"))
+        else:
+            # Add args
+            if content.get("args"):
+                programmer += " {}".format(content.get("args"))
+
+            # Add extra args
+            if prog_info.get("extra_args"):
+                programmer += " {}".format(prog_info.get("extra_args"))
 
         # Enable SRAM programming
         if sram:
@@ -425,7 +437,7 @@ class SCons:
         return None
 
     def run(self, command, variables=[], board=None, arch=None, packages=[]):
-        """Executes scons for building"""
+        """Executes scons"""
 
         # -- Check if in the current project a custom SConstruct file
         # is being used. We fist build the full name (with the full path)
@@ -468,7 +480,7 @@ class SCons:
     def _execute_scons(self, command, variables, board):
         """Execute the scons builder"""
 
-        terminal_width, _ = click.get_terminal_size()
+        terminal_width, _ = shutil.get_terminal_size()
         start_time = time.time()
 
         if command in ("build", "upload", "time"):
