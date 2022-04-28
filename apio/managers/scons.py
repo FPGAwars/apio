@@ -135,9 +135,7 @@ class SCons:
         """DOC: TODO"""
 
         var, board, arch = process_arguments(args, self.resources)
-        return self.run(
-            "time", var, board, arch, packages=["oss-cad-suite"]
-        )
+        return self.run("time", var, board, arch, packages=["oss-cad-suite"])
 
     @util.command
     def upload(self, args, serial_port, ftdi_id, sram, flash):
