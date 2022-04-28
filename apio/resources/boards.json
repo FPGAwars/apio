@@ -152,6 +152,7 @@
       "pid": "5740"
     }
   },
+
   "icefun": {
     "name": "iceFUN",
     "fpga": "iCE40-HX8K-CB132",
@@ -163,6 +164,19 @@
       "pid": "ffee"
     }
   },
+
+  "iceWerx": {
+    "name": "iceWerx",
+    "fpga": "iCE40-HX8K-CB132",
+    "programmer": {
+      "type": "icefunprog"
+    },
+    "usb": {
+      "vid": "04d8",
+      "pid": "ffee"
+    }
+  },
+
   "TinyFPGA-B2": {
     "name": "TinyFPGA B2",
     "fpga": "iCE40-LP8K-CM81",
