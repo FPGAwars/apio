@@ -191,7 +191,7 @@ class Installer:
         assert isdir(self.packages_dir)
 
         # -- The first step is downloading the package
-        # -- This variable stores the path to tha packages
+        # -- This variable stores the path to the packages
         dlpath = None
 
         try:

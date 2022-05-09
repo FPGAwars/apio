@@ -186,24 +186,6 @@
       ]
     },
     "description": "iCESugar board programmer"
-  },
-
-  "dfu" : {
-    "repository": {
-      "name": "toolchain-dfu",
-      "organization": "FPGAwars"
-    },
-    "release": {
-      "tag_name": "v%V",
-      "compressed_name": "toolchain-dfu-%P-%V",
-      "uncompressed_name": "",
-      "package_name": "toolchain-dfu",
-      "extension": "tar.gz",
-      "available_platforms": [
-        "linux_x86_64", "windows_amd64", "darwin_x86_64"
-      ]
-    },
-    "description": "Device Firmware Upgrade Utilities"
   }
 
 }

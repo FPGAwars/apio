@@ -68,7 +68,7 @@ def cli(ctx, packages, all, list, force, platform):
         # -- Get all the packages
         packages = resources.packages
 
-        # -- Install all the packages... excepto the obolete one
+        # -- Install all the packages... except the obolete one
         for package in packages:
 
             # -- do NOT install the obsolete packages
