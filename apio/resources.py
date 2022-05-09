@@ -39,7 +39,6 @@ Use `apio init --board <boardname>` to create a new apio """
 # -- The value is the replacement package (if any)
 OBSOLETE_PKGS = {
     "system": "oss-cad-suite",
-    "yosys": "oss-cad-suite",
     "ice40": "oss-cad-suite",
     "iverilog": "oss-cad-suite",
     "verilator": "oss-cad-suite",
