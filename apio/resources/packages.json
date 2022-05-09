@@ -29,21 +29,6 @@
     "description": "YosysHQ/oss-cad-suite"
   },
 
-  "yosys" : {
-    "repository": {
-      "name": "toolchain-yosys",
-      "organization": "FPGAwars"
-    },
-    "release": {
-      "tag_name": "v%V",
-      "compressed_name": "toolchain-yosys-%P-%V",
-      "uncompressed_name": "",
-      "package_name": "toolchain-yosys",
-      "extension":  "tar.gz"
-    },
-    "description": "Yosys toolchain"
-  },
-
   "ice40" : {
     "repository": {
       "name": "toolchain-ice40",
