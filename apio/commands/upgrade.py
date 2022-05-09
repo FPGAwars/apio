@@ -24,8 +24,8 @@ def cli(ctx):
 
     if latest_version == current_version:
         click.secho(
-            "You're up-to-date!\nApio {} is currently the "
-            "newest version available.".format(latest_version),
+            f"You're up-to-date!\nApio {latest_version} is currently the "
+            "newest version available.",
             fg="green",
         )
     else:

@@ -32,7 +32,7 @@ platforms = [
     "--platform",
     type=click.Choice(platforms),
     metavar="platform",
-    help="Set the platform [{}] (Advanced).".format(", ".join(platforms)),
+    help=f"Set the platform [{', '.join(platforms)}] (Advanced).",
 )
 def cli(ctx, packages, all, list, platform):
     """Uninstall packages."""

@@ -38,7 +38,7 @@ platforms = [
     "--platform",
     type=click.Choice(platforms),
     metavar="",
-    help="Set the platform [{}] (Advanced).".format(", ".join(platforms)),
+    help=f"Set the platform [{', '.join(platforms)}] (Advanced).",
 )
 def cli(ctx, packages, all, list, force, platform):
     """Install packages.
