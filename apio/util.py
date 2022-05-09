@@ -36,7 +36,6 @@ from apio import LOAD_CONFIG_DATA
 # -- define first the constants here
 # --
 OSS_CAD_SUITE = "oss-cad-suite"
-SYSTEM = "system"
 SCONS = "scons"
 GTKWAVE = "gtkwave"
 IVERILOG = "iverilog"
@@ -54,7 +53,6 @@ BIN = "bin"
 # -- Folder names. They are built from the
 # -- packages names
 OSS_CAD_SUITE_FOLDER = f"tools-{OSS_CAD_SUITE}"
-SYSTEM_FOLDER = f"tools-{SYSTEM}"
 SCONS_FOLDER = f"tool-{SCONS}"
 GTKWAVE_FOLDER = f"tool-{GTKWAVE}"
 IVERILOG_FOLDER = f"toolchain-{IVERILOG}"
@@ -475,8 +473,6 @@ def get_base_dir():
         FUJPROG: get_package_dir(FUJPROG_FOLDER),
         ICESPROG: get_package_dir(ICESPROG_FOLDER),
         DFU: get_package_dir(DFU_FOLDER),
-        # -- Obsolete packages
-        SYSTEM: get_package_dir(SYSTEM_FOLDER),
     }
 
     return base_dir
@@ -500,8 +496,6 @@ def get_bin_dir_table(base_dir):
         FUJPROG: str(Path(base_dir.get(FUJPROG)) / BIN),
         ICESPROG: str(Path(base_dir.get(ICESPROG)) / BIN),
         DFU: str(Path(base_dir.get(DFU)) / BIN),
-        # -- Obsolete package
-        SYSTEM: str(Path(base_dir.get(SYSTEM)) / BIN),
     }
 
     return bin_dir

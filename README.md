@@ -53,7 +53,6 @@ Find all the information on this [WIKI PAGE](https://github.com/FPGAwars/apio/wi
 | [ecp5](https://github.com/FPGAwars/toolchain-ecp5)   | apio install ecp5  | ECP5 tools including [Project Trellis](https://github.com/SymbiFlow/prjtrellis) and [nextpnr](https://github.com/YosysHQ/nextpnr)
 | [iverilog](https://github.com/FPGAwars/toolchain-iverilog) | apio install iverilog | Verilog simulation and synthesis tool. [Icarus Verilog project](http://iverilog.icarus.com)
 | [scons](https://github.com/FPGAwars/tool-scons) | apio install scons | A software construction tool. [Scons project](http://scons.org)
-| [system](https://github.com/FPGAwars/tools-system) | apio install system | Tools for listing the USB devices and retrieving information from the FTDI chips
 | [verilator](https://github.com/FPGAwars/toolchain-verilator) | apio install verilator | Verilog HDL simulator. [Verilator project](https://www.veripool.org/wiki/verilator)
 | [icesprog](https://github.com/FPGAwars/toolchain-icesprog) | apio install icesprog |  Programmer for the [iCESugar](https://github.com/wuxx/icesugar)
 | [dfu-utils](https://github.com/FPGAwars/toolchain-dfu) | apio install dfu |  Device Firmware Upgrade Utilities
