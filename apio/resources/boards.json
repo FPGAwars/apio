@@ -13,6 +13,7 @@
       "desc": "IceZUM Alhambra.*"
     }
   },
+  
   "icestick": {
     "name": "iCEstick Evaluation Kit",
     "fpga": "iCE40-HX1K-TQ144",

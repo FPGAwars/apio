@@ -45,7 +45,7 @@ ICE40 = "ice40"
 ECP5 = "ecp5"
 FUJPROG = "fujprog"
 ICESPROG = "icesprog"
-DFU = "dfu"
+
 
 # -- Name of the subfolder to store de executable files
 BIN = "bin"
@@ -62,7 +62,6 @@ ICE40_FOLDER = f"toolchain-{ICE40}"
 ECP5_FOLDER = f"toolchain-{ECP5}"
 FUJPROG_FOLDER = f"toolchain-{FUJPROG}"
 ICESPROG_FOLDER = f"toolchain-{ICESPROG}"
-DFU_FOLDER = f"toolchain-{DFU}"
 
 requests.packages.urllib3.disable_warnings()
 
@@ -472,7 +471,6 @@ def get_base_dir():
         GTKWAVE: get_package_dir(GTKWAVE_FOLDER),
         FUJPROG: get_package_dir(FUJPROG_FOLDER),
         ICESPROG: get_package_dir(ICESPROG_FOLDER),
-        DFU: get_package_dir(DFU_FOLDER),
     }
 
     return base_dir
@@ -495,7 +493,6 @@ def get_bin_dir_table(base_dir):
         GTKWAVE: str(Path(base_dir.get(GTKWAVE)) / BIN),
         FUJPROG: str(Path(base_dir.get(FUJPROG)) / BIN),
         ICESPROG: str(Path(base_dir.get(ICESPROG)) / BIN),
-        DFU: str(Path(base_dir.get(DFU)) / BIN),
     }
 
     return bin_dir

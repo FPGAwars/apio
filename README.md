@@ -55,7 +55,6 @@ Find all the information on this [WIKI PAGE](https://github.com/FPGAwars/apio/wi
 | [scons](https://github.com/FPGAwars/tool-scons) | apio install scons | A software construction tool. [Scons project](http://scons.org)
 | [verilator](https://github.com/FPGAwars/toolchain-verilator) | apio install verilator | Verilog HDL simulator. [Verilator project](https://www.veripool.org/wiki/verilator)
 | [icesprog](https://github.com/FPGAwars/toolchain-icesprog) | apio install icesprog |  Programmer for the [iCESugar](https://github.com/wuxx/icesugar)
-| [dfu-utils](https://github.com/FPGAwars/toolchain-dfu) | apio install dfu |  Device Firmware Upgrade Utilities
 | [fujprog](https://github.com/FPGAwars/toolchain-fujprog) | apio install fujprog |  Programmer for ULX2/3S boards
 
 
