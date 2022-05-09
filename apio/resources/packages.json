@@ -13,6 +13,7 @@
     },
     "description": "Verilog examples"
   },
+  
   "oss-cad-suite": {
     "repository": {
       "name": "tools-oss-cad-suite",
@@ -27,20 +28,7 @@
     },
     "description": "YosysHQ/oss-cad-suite"
   },
-  "system": {
-    "repository": {
-      "name": "tools-system",
-      "organization": "FPGAwars"
-    },
-    "release": {
-      "tag_name": "v%V",
-      "compressed_name": "tools-system-%P-%V",
-      "uncompressed_name": "",
-      "package_name": "tools-system",
-      "extension": "tar.gz"
-    },
-    "description": "System tools"
-  },
+
   "gtkwave": {
     "repository": {
       "name": "tool-gtkwave",
@@ -60,6 +48,7 @@
     },
     "description": "GTKWave tool"
   },
+
   "drivers": {
     "repository": {
       "name": "tools-drivers",
