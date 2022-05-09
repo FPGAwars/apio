@@ -163,9 +163,7 @@ class Examples:
                 else:
                     shutil.copy(file, filepath)
         click.secho(
-            "Example files '{}' have been successfully created!".format(
-                example
-            ),
+            "Example files '{example}' have been successfully created!",
             fg="green",
         )
 

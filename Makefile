@@ -16,8 +16,10 @@ env:
 	@echo ". venv/bin/activate"
 
 lint:  ## Lint and static-check
+	python -m black apio
 	python -m flake8 apio
 	python -m pylint apio
+	
 
 tox:   ## Run tox
 	python -m tox

@@ -69,7 +69,7 @@ class Project:
         # Check board
         boards = Resources().boards
         if board not in boards.keys():
-            click.secho("Error: no such board '{}'".format(board), fg="red")
+            click.secho(f"Error: no such board '{board}'", fg="red")
             sys.exit(1)
 
         if isfile(ini_path):
@@ -78,7 +78,7 @@ class Project:
                 self._create_ini_file(board, ini_path, PROJECT_FILENAME)
             else:
                 click.secho(
-                    "Warning: {} file already exists".format(PROJECT_FILENAME),
+                    f"Warning: {PROJECT_FILENAME} file already exists",
                     fg="yellow",
                 )
                 if click.confirm("Do you want to replace it?"):
@@ -90,14 +90,14 @@ class Project:
 
     @staticmethod
     def _create_ini_file(board, ini_path, ini_name):
-        click.secho("Creating {} file ...".format(ini_name))
-        with open(ini_path, "w") as file:
+        click.secho(f"Creating {ini_name} file ...")
+        with open(ini_path, "w", encoding="utf8") as file:
             config = ConfigParser.ConfigParser()
             config.add_section("env")
             config.set("env", "board", board)
             config.write(file)
             click.secho(
-                "File '{}' has been successfully created!".format(ini_name),
+                f"File '{ini_name}' has been successfully created!",
                 fg="green",
             )
 
@@ -105,14 +105,14 @@ class Project:
     def _copy_sconstruct_file(
         sconstruct_name, sconstruct_path, local_sconstruct_path
     ):
-        click.secho("Creating {} file ...".format(sconstruct_name))
-        with open(sconstruct_path, "w") as sconstruct:
-            with open(local_sconstruct_path, "r") as local_sconstruct:
+        click.secho(f"Creating {sconstruct_name} file ...")
+        with open(sconstruct_path, "w", encoding="utf8") as sconstruct:
+            with open(
+                local_sconstruct_path, "r", encoding="utf8"
+            ) as local_sconstruct:
                 sconstruct.write(local_sconstruct.read())
                 click.secho(
-                    "File '{}' has been successfully created!".format(
-                        sconstruct_name
-                    ),
+                    "File '{sconstruct_name}' has been successfully created!",
                     fg="green",
                 )
 
@@ -121,7 +121,7 @@ class Project:
 
         # -- If no project finel found, just return
         if not isfile(PROJECT_FILENAME):
-            print("Info: No {} file".format(PROJECT_FILENAME))
+            print("Info: No {PROJECT_FILENAME} file")
             return
 
         # -- Read stored board
@@ -130,7 +130,7 @@ class Project:
         # -- Update board
         self.board = board
         if not board:
-            print("Error: invalid {} project file".format(PROJECT_FILENAME))
+            print("Error: invalid {PROJECT_FILENAME} project file")
             print("No 'board' field defined in project file")
             sys.exit(1)
 
@@ -139,7 +139,7 @@ class Project:
         board = ""
 
         # -- Read config file: old JSON format
-        with open(PROJECT_FILENAME, "r") as file:
+        with open(PROJECT_FILENAME, "r", encoding="utf8") as file:
             try:
                 data = json.loads(file.read())
                 board = data.get("board")
@@ -153,9 +153,7 @@ class Project:
                 config.read(PROJECT_FILENAME)
                 board = config.get("env", "board")
             except Exception:
-                print(
-                    "Error: invalid {} project file".format(PROJECT_FILENAME)
-                )
+                print("Error: invalid {PROJECT_FILENAME} project file")
                 sys.exit(1)
 
         return board
