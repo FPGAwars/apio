@@ -29,36 +29,6 @@
     "description": "YosysHQ/oss-cad-suite"
   },
 
-  "ice40" : {
-    "repository": {
-      "name": "toolchain-ice40",
-      "organization": "FPGAwars"
-    },
-    "release": {
-      "tag_name": "v%V",
-      "compressed_name": "toolchain-ice40-%P-%V",
-      "uncompressed_name": "",
-      "package_name": "toolchain-ice40",
-      "extension":  "tar.gz"
-    },
-    "description": "Lattice ICE40 toolchain"
-  },
-
-  "iverilog" : {
-    "repository": {
-      "name": "toolchain-iverilog",
-      "organization": "FPGAwars"
-    },
-    "release": {
-      "tag_name": "v%V",
-      "compressed_name": "toolchain-iverilog-%P-%V",
-      "uncompressed_name": "",
-      "package_name": "toolchain-iverilog",
-      "extension": "tar.gz"
-    },
-    "description": "Icarus Verilog toolchain"
-  },
-
   "system" : {
     "repository": {
       "name": "tools-system",
