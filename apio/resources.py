@@ -43,7 +43,6 @@ OBSOLETE_PKGS = {
     "ice40": "oss-cad-suite",
     "iverilog": "oss-cad-suite",
     "verilator": "oss-cad-suite",
-    "fujprog": "oss-cad-suite",
     "ecp5": "oss-cad-suite",
 }
 

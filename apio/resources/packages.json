@@ -153,21 +153,6 @@
       "extension": "tar.gz"
     },
     "description": "Verilator toolchain"
-  },
-
-  "fujprog" : {
-    "repository": {
-      "name": "toolchain-fujprog",
-      "organization": "FPGAwars"
-    },
-    "release": {
-      "tag_name": "v%V",
-      "compressed_name": "toolchain-fujprog-%P-%V",
-      "uncompressed_name": "",
-      "package_name": "toolchain-fujprog",
-      "extension": "tar.gz"
-    },
-    "description": "Programmer for ULX2/3S boards"
   }
 
 }
