@@ -43,7 +43,7 @@ class Project:
                 )
             else:
                 click.secho(
-                    "Warning: {} file already exists".format(sconstruct_name),
+                    f"Warning: {sconstruct_name} file already exists",
                     fg="yellow",
                 )
 
@@ -121,7 +121,7 @@ class Project:
 
         # -- If no project finel found, just return
         if not isfile(PROJECT_FILENAME):
-            print("Info: No {PROJECT_FILENAME} file")
+            print(f"Info: No {PROJECT_FILENAME} file")
             return
 
         # -- Read stored board
