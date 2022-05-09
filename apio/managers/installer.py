@@ -307,7 +307,7 @@ class Installer:
 
     @staticmethod
     def _get_tarball_name(name, extension):
-        tarball = "{0}.{1}".format(name, extension)
+        tarball = f"{name}.{extension}"
         return tarball
 
     def _get_valid_version(self, rel_name, organization, tag_name):
@@ -388,10 +388,9 @@ class Installer:
                 sys.exit(1)
             return filepath
 
+        version = self.profile.get_package_version(self.package)
         click.secho(
-            "Already installed. Version {0}".format(
-                self.profile.get_package_version(self.package)
-            ),
+            f"Already installed. Version {version}",
             fg="yellow",
         )
         return None
