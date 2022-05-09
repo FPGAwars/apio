@@ -38,8 +38,7 @@ Use `apio init --board <boardname>` to create a new apio """
 # -- Packages marked as obsoletes
 # -- The value is the replacement package (if any)
 OBSOLETE_PKGS = {
-    "system": "oss-cad-suite",
-    "verilator": "oss-cad-suite"
+    "system": "oss-cad-suite"
 }
 
 

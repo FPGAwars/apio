@@ -1,5 +1,5 @@
 {
-  "examples" : {
+  "examples": {
     "repository": {
       "name": "apio-examples",
       "organization": "FPGAwars"
@@ -13,13 +13,12 @@
     },
     "description": "Verilog examples"
   },
-
-  "oss-cad-suite" : {
+  "oss-cad-suite": {
     "repository": {
       "name": "tools-oss-cad-suite",
       "organization": "FPGAwars"
     },
-    "release" : {
+    "release": {
       "tag_name": "v%V",
       "compressed_name": "tools-oss-cad-suite-%P-%V",
       "uncompressed_name": "",
@@ -28,8 +27,7 @@
     },
     "description": "YosysHQ/oss-cad-suite"
   },
-
-  "system" : {
+  "system": {
     "repository": {
       "name": "tools-system",
       "organization": "FPGAwars"
@@ -43,8 +41,7 @@
     },
     "description": "System tools"
   },
-
-  "gtkwave" : {
+  "gtkwave": {
     "repository": {
       "name": "tool-gtkwave",
       "organization": "FPGAwars"
@@ -56,13 +53,14 @@
       "package_name": "tool-gtkwave",
       "extension": "tar.gz",
       "available_platforms": [
-        "windows", "windows_x86", "windows_amd64"
+        "windows",
+        "windows_x86",
+        "windows_amd64"
       ]
     },
     "description": "GTKWave tool"
   },
-
-  "drivers" : {
+  "drivers": {
     "repository": {
       "name": "tools-drivers",
       "organization": "FPGAwars"
@@ -74,25 +72,11 @@
       "package_name": "tools-drivers",
       "extension": "tar.gz",
       "available_platforms": [
-        "windows", "windows_x86", "windows_amd64"
+        "windows",
+        "windows_x86",
+        "windows_amd64"
       ]
     },
     "description": "Drivers tools"
-  },
-
-  "verilator" : {
-    "repository": {
-      "name": "toolchain-verilator",
-      "organization": "FPGAwars"
-    },
-    "release": {
-      "tag_name": "v%V",
-      "compressed_name": "toolchain-verilator-%P-%V",
-      "uncompressed_name": "",
-      "package_name": "toolchain-verilator",
-      "extension": "tar.gz"
-    },
-    "description": "Verilator toolchain"
   }
-
 }
