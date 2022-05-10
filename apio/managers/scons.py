@@ -328,7 +328,7 @@ class SCons:
             raise Exception("Missing board configuration: usb")
 
         usb_data = board_data.get("usb")
-        hwid = "{0}:{1}".format(usb_data.get("vid"), usb_data.get("pid"))
+        hwid = f"{usb_data.get('vid')}:{usb_data.get('pid')}"
         found = False
         for usb_device in System().get_usb_devices():
             if usb_device.get("hwid") == hwid:
@@ -361,7 +361,7 @@ class SCons:
             raise Exception("Missing board configuration: usb")
 
         usb_data = board_data.get("usb")
-        hwid = "{0}:{1}".format(usb_data.get("vid"), usb_data.get("pid"))
+        hwid = f"{usb_data.get('vid')}:{usb_data.get('pid')}"
 
         # Match the discovered serial ports
         serial_ports = util.get_serial_ports()
@@ -488,22 +488,16 @@ class SCons:
                 processing_board = board
             else:
                 processing_board = "custom board"
-            click.echo(
-                "[%s] Processing %s"
-                % (
-                    datetime.datetime.now().strftime("%c"),
-                    click.style(processing_board, fg="cyan", bold=True),
-                )
-            )
+
+            date_time_str = datetime.datetime.now().strftime("%c")
+            board_color = click.style(processing_board, fg="cyan", bold=True)
+            click.echo(f"[{date_time_str}] Processing {board_color}")
             click.secho("-" * terminal_width, bold=True)
 
         scons_command = ["scons"] + ["-Q", command] + variables
+        cmd = " ".join(util.exec_command(scons_command))
         if self.profile.get_verbose_mode() > 0:
-            click.secho(
-                "Executing: {}".format(
-                    " ".join(util.exec_command(scons_command))
-                )
-            )
+            click.secho(f"Executing: {cmd}")
 
         # -- Execute the scons builder
         result = util.exec_command(
@@ -515,20 +509,16 @@ class SCons:
         # -- Print result
         exit_code = result.get("returncode")
         is_error = exit_code != 0
-        summary_text = " Took %.2f seconds " % (time.time() - start_time)
+        duration = time.time() - start_time
+        summary_text = f" Took {duration:.2f} seconds "
         half_line = "=" * int(((terminal_width - len(summary_text) - 10) / 2))
+        status = (
+            click.style(" ERROR ", fg="red", bold=True)
+            if is_error
+            else click.style("SUCCESS", fg="green", bold=True)
+        )
         click.echo(
-            "%s [%s]%s%s"
-            % (
-                half_line,
-                (
-                    click.style(" ERROR ", fg="red", bold=True)
-                    if is_error
-                    else click.style("SUCCESS", fg="green", bold=True)
-                ),
-                summary_text,
-                half_line,
-            ),
+            f"{half_line} [{status}]{summary_text}{half_line}",
             err=is_error,
         )
 
