@@ -285,8 +285,8 @@ class Installer:
             )
             shutil.rmtree(util.safe_join(self.packages_dir, self.package_name))
             click.secho(
-                """Package \'{}\' has been """
-                """successfully uninstalled!""".format(self.package),
+                f"""Package \'{self.package}\' has been """
+                """successfully uninstalled!""",
                 fg="green",
             )
         else:
@@ -300,8 +300,9 @@ class Installer:
 
     @staticmethod
     def _get_download_url(name, organization, tag, tarball):
-        url = "https://github.com/{0}/{1}/releases/download/{2}/{3}".format(
-            organization, name, tag, tarball
+        url = (
+            f"https://github.com/{organization}/{name}/releases/"
+            + f"download/{tag}/{tarball}"
         )
         return url
 
