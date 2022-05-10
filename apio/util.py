@@ -190,7 +190,7 @@ def _get_config_data():
     if LOAD_CONFIG_DATA:
         filepath = safe_join(os.sep, "etc", "apio.json")
         if isfile(filepath):
-            with open(filepath, "r") as file:
+            with open(filepath, "r", encoding="utf8") as file:
                 # Load the JSON file
                 _config_data = json.loads(file.read())
 
@@ -540,9 +540,9 @@ def show_package_version_warning(name, version, spec_version):
     """DOC: TODO"""
 
     message = (
-        "Warning: package '{0}' version {1}\n"
-        "does not match the semantic version {2}"
-    ).format(name, version, spec_version)
+        f"Warning: package '{name}' version {version}\n"
+        f"does not match the semantic version {spec_version}"
+    )
     click.secho(message, fg="yellow")
 
 

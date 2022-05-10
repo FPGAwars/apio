@@ -92,7 +92,7 @@ class Resources:
         filepath = util.safe_join(util.get_folder("resources"), name + ".json")
 
         # -- Open the json file and convert it to an object
-        with open(filepath, "r") as file:
+        with open(filepath, "r", encoding="utf8") as file:
             resource = json.loads(file.read())
 
         # -- Return the object for the resource
