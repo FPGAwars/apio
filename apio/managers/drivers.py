@@ -416,8 +416,10 @@ class Drivers:  # pragma: no cover
                 click.secho("Launch drivers configuration tool")
                 click.secho(FTDI_INSTALL_DRIVER_INSTRUCTIONS, fg="yellow")
                 # Copy zadig.ini
-                with open(zadig_ini, "w") as ini_file:
-                    with open(zadig_ini_path, "r") as local_ini_file:
+                with open(zadig_ini, "w", encoding="utf8") as ini_file:
+                    with open(
+                        zadig_ini_path, "r", encoding="utf8"
+                    ) as local_ini_file:
                         ini_file.write(local_ini_file.read())
 
                 result = util.exec_command(
