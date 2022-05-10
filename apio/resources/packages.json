@@ -10,7 +10,7 @@
       "uncompressed_name": "apio-examples-%V",
       "package_name": "examples",
       "extension": "zip",
-      "url_version": "https://github.com/FPGAwars/apio-examples/raw/master/version.txt"
+      "url_version": "https://github.com/FPGAwars/apio-examples/raw/master/VERSION"
     },
     "description": "Verilog examples"
   },
@@ -26,7 +26,7 @@
       "uncompressed_name": "",
       "package_name": "tools-oss-cad-suite",
       "extension": "tar.gz",
-      "url_version": "https://github.com/FPGAwars/xxx"
+      "url_version": "https://github.com/FPGAwars/tools-oss-cad-suite/raw/main/VERSION"
     },
     "description": "YosysHQ/oss-cad-suite"
   },
