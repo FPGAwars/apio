@@ -134,9 +134,7 @@ class Installer:
         # -- If the Installer.package_dir is empty, is because the package
         # -- was not known. Abort!
         if self.packages_dir == "":
-            click.secho(
-                "Error: no such package '{}'".format(self.package), fg="red"
-            )
+            click.secho(f"Error: no such package '{self.package}'", fg="red")
             sys.exit(1)
 
     def get_download_url(self, data, platform):
@@ -223,24 +221,22 @@ class Installer:
     def _install_os_package(self, platform_download_url):
         os_download_url = self.download_urls[1].get("url")
         if platform_download_url != os_download_url:
+
+            name = self.download_urls[0].get("platform")
             click.secho(
-                "Warning: full platform does not match: {}\
-                ".format(
-                    self.download_urls[0].get("platform")
-                ),
+                f"Warning: full platform does not match: {name}",
                 fg="yellow",
             )
+
+            os_name = self.download_urls[1].get("platform")
             click.secho(
-                "         Trying OS name: {}\
-                ".format(
-                    self.download_urls[1].get("platform")
-                ),
+                f"         Trying OS name: {os_name}",
                 fg="yellow",
             )
             try:
                 return self._download(os_download_url)
             except Exception as exc:
-                click.secho("Error: {}".format(str(exc)), fg="red")
+                click.secho(f"Error: {str(exc)}", fg="red")
         else:
             click.secho(
                 "Error: package not availabe for this platform", fg="red"
@@ -264,8 +260,8 @@ class Installer:
             self.profile.add_package(self.package, self.version)
             self.profile.save()
             click.secho(
-                """Package \'{}\' has been """
-                """successfully installed!""".format(self.package),
+                f"""Package \'{self.package}\' has been """
+                """successfully installed!""",
                 fg="green",
             )
 
@@ -282,10 +278,9 @@ class Installer:
         """DOC: TODO"""
 
         if isdir(util.safe_join(self.packages_dir, self.package_name)):
-            click.echo(
-                "Uninstalling %s package:"
-                % click.style(self.package, fg="cyan")
-            )
+
+            package_color = click.style(self.package, fg="cyan")
+            click.echo(f"Uninstalling {package_color} package:")
             shutil.rmtree(util.safe_join(self.packages_dir, self.package_name))
             click.secho(
                 f"""Package \'{self.package}\' has been """

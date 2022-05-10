@@ -48,7 +48,7 @@
         "windows_amd64"
       ]
     },
-    "description": "GTKWave tool"
+    "description": "GTKWave tool for Windows"
   },
 
   "drivers": {
@@ -68,6 +68,6 @@
         "windows_amd64"
       ]
     },
-    "description": "Drivers tools"
+    "description": "Drivers tools for Windows"
   }
 }
