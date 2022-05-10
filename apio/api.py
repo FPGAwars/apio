@@ -26,6 +26,7 @@ def api_request(command, organization="FPGAwars"):
         req = requests.get(cmd_url)
         result = req.json()
         req.raise_for_status()
+        print("GITHUB API REQUEST!!!!")
 
     # -- There is a connection problem
     except requests.exceptions.ConnectionError as exc:

@@ -37,8 +37,8 @@ def test_complete(clirunner, validate_cliresult, configenv, offline):
 
         # apio install examples@X
         result = clirunner.invoke(cmd_install, ['examples@X'])
-        assert 'Warning: package \'examples\' version X' in result.output
-        assert 'does not match the semantic version' in result.output
+        assert 'Error: package not availabe' in result.output
+        assert 'for this platform' in result.output
 
         # apio install examples@0.0.7
         result = clirunner.invoke(cmd_install, ['examples@0.0.7'])
