@@ -205,9 +205,7 @@ def process_arguments(args, resources):  # noqa
                             )
                         else:
                             # Unknown board
-                            raise Exception(
-                                "unknown board: {0}".format(var_board)
-                            )
+                            raise Exception(f"unknown board: {var_board}")
                     else:
                         click.secho(
                             "Error: insufficient arguments: missing board",
@@ -234,9 +232,7 @@ def process_arguments(args, resources):  # noqa
                     if not var_pack:
                         missing += ["pack"]
                     raise Exception(
-                        "insufficient arguments: missing {}".format(
-                            ", ".join(missing)
-                        )
+                        f"insufficient arguments: missing {', '.join(missing)}"
                     )
 
     # -- Build Scons variables list
@@ -261,5 +257,5 @@ def format_vars(args):
     variables = []
     for key, value in args.items():
         if value:
-            variables += ["{0}={1}".format(key, value)]
+            variables += [f"{key}={value}"]
     return variables
