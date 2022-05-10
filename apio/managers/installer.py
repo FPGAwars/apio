@@ -201,7 +201,6 @@ class Installer:
             platform_download_url = self.download_urls[0].get("url")
             print(f"platform_download_url: {platform_download_url}")
             dlpath = self._download(platform_download_url)
-            print("FIIIIIIIIIIIIIIIIIIIIIIIIN")
 
         # -- There is no write access to the package folder
         except IOError as exc:
@@ -213,7 +212,6 @@ class Installer:
         # --
         except Exception:
             # Try os name
-            print("LLEGA AQUÍ?????")
             dlpath = self._install_os_package(platform_download_url)
 
         # -- Second step: Install downloaded package
