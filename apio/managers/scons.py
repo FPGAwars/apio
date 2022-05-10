@@ -219,7 +219,7 @@ class SCons:
             # Incorrect platform
             if platform == "linux_armv7l":
                 raise Exception("incorrect platform: RPI2 or RPI3 required")
-            raise Exception("incorrect platform {0}".format(platform))
+            raise Exception(f"incorrect platform {platform}")
 
     def check_pip_packages(self, board_data):
         """Check if the corresponding pip package with the programmer
@@ -251,24 +251,20 @@ class SCons:
                 version = semantic_version.Version(pkg_version)
                 if not spec.match(version):
                     click.secho(
-                        "Error: '{}' ".format(pip_pkg)
-                        + "version ({}) ".format(version)
-                        + "does not match {}".format(spec),
+                        f"Error: '{pip_pkg}' "
+                        + f"version ({version}) "
+                        + f"does not match {spec}",
                         fg="red",
                     )
                     click.secho(
-                        "Please run:\n"
-                        "   pip install -U apio[{}]".format(pip_pkg),
+                        "Please run:\n" f"   pip install -U apio[{pip_pkg}]",
                         fg="yellow",
                     )
                     raise Exception
             except pkg_resources.DistributionNotFound:
+                click.secho(f"Error: '{pip_pkg}' is not installed", fg="red")
                 click.secho(
-                    "Error: '{}' is not installed".format(pip_pkg), fg="red"
-                )
-                click.secho(
-                    "Please run:\n"
-                    "   pip install -U apio[{}]".format(pip_pkg),
+                    "Please run:\n" f"   pip install -U apio[{pip_pkg}]",
                     fg="yellow",
                 )
                 raise Exception
@@ -278,9 +274,9 @@ class SCons:
             except Exception as exc:
                 # Exit if a package is not working
                 python_version = util.get_python_version()
-                message = "'{}' not compatible with ".format(pip_pkg)
-                message += "Python {}".format(python_version)
-                message += "\n       {}".format(exc)
+                message = f"'{pip_pkg}' not compatible with "
+                message += f"Python {python_version}"
+                message += f"\n       {exc}"
                 raise Exception(message)
 
     def serialize_programmer(self, board_data, sram, flash):
@@ -294,18 +290,18 @@ class SCons:
         # dfu-util needs extra args first
         if programmer.startswith("dfu-util"):
             if prog_info.get("extra_args"):
-                programmer += " {}".format(prog_info.get("extra_args"))
+                programmer += f" {prog_info.get('extra_args')}"
 
             if content.get("args"):
-                programmer += " {}".format(content.get("args"))
+                programmer += f" {content.get('args')}"
         else:
             # Add args
             if content.get("args"):
-                programmer += " {}".format(content.get("args"))
+                programmer += f" {content.get('args')}"
 
             # Add extra args
             if prog_info.get("extra_args"):
-                programmer += " {}".format(prog_info.get("extra_args"))
+                programmer += f" {prog_info.get('extra_args')}"
 
         # Enable SRAM programming
         if sram:
