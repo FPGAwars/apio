@@ -53,9 +53,9 @@ disable = ["missing-module-docstring",
            "too-few-public-methods",
            "too-many-instance-attributes",
            "too-many-function-args",
-           "broad-except",
-           "too-many-arguments",
-           "raise-missing-from"]
+           "broad-except"]
+
+
 
 
 

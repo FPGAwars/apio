@@ -147,6 +147,8 @@ class SCons:
             packages=["oss-cad-suite"],
         )
 
+    # R0913: Too many arguments (6/5)
+    # pylint: disable=R0913
     @util.command
     def upload(self, args, serial_port, ftdi_id, sram, flash):
         """Upload the circuit to the board"""
@@ -169,6 +171,8 @@ class SCons:
             arch=arch,
         )
 
+    # R0913: Too many arguments (6/5)
+    # pylint: disable=R0913
     def get_programmer(self, board, ext_serial, ext_ftdi_id, sram, flash):
         """DOC: TODO"""
 
@@ -271,13 +275,13 @@ class SCons:
                         fg="yellow",
                     )
                     raise Exception
-            except pkg_resources.DistributionNotFound:
+            except pkg_resources.DistributionNotFound as exc:
                 click.secho(f"Error: '{pip_pkg}' is not installed", fg="red")
                 click.secho(
                     "Please run:\n" f"   pip install -U apio[{pip_pkg}]",
                     fg="yellow",
                 )
-                raise Exception
+                raise Exception from exc
             try:
                 # Check pip_package itself
                 __import__(pip_pkg)
@@ -287,7 +291,7 @@ class SCons:
                 message = f"'{pip_pkg}' not compatible with "
                 message += f"Python {python_version}"
                 message += f"\n       {exc}"
-                raise Exception(message)
+                raise Exception(message) from exc
 
     def serialize_programmer(self, board_data, sram, flash):
         """DOC: TODO"""
@@ -442,6 +446,8 @@ class SCons:
                 return index
         return None
 
+    # R0913: Too many arguments (6/5)
+    # pylint: disable=R0913
     def run(self, command, variables, packages, board=None, arch=None):
         """Executes scons"""
 

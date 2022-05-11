@@ -9,6 +9,8 @@ import click
 from apio.managers.examples import Examples
 
 
+# R0913: Too many arguments (6/5)
+# pylint: disable=R0913
 # pylint: disable=W0622
 @click.command("examples")
 @click.pass_context

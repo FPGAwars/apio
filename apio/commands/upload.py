@@ -10,6 +10,8 @@ from apio.managers.scons import SCons
 from apio.managers.drivers import Drivers
 
 
+# R0913: Too many arguments (6/5)
+# pylint: disable=R0913
 @click.command("upload")
 @click.pass_context
 @click.option(
