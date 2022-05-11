@@ -9,6 +9,7 @@ import click
 from apio.profile import Profile
 
 
+# pylint: disable=W0622
 @click.command("config")
 @click.pass_context
 @click.option(
