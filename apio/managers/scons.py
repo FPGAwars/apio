@@ -64,7 +64,7 @@ class SCons:
             arch = "ice40"
 
         # --Clean the project: run scons -c (with aditional arguments)
-        return self.run("-c", arch=arch)
+        return self.run("-c", arch=arch, variables=[], packages=[])
 
     @util.command
     def verify(self, args):
@@ -77,6 +77,7 @@ class SCons:
         # -- The packages to check are passed
         return self.run(
             "verify",
+            variables=[],
             arch=arch,
             packages=["oss-cad-suite"],
         )
@@ -97,7 +98,7 @@ class SCons:
         )
         return self.run(
             "lint",
-            var,
+            variables=var,
             arch=arch,
             packages=["oss-cad-suite"],
         )
@@ -109,6 +110,7 @@ class SCons:
         __, __, arch = process_arguments(None, self.resources)
         return self.run(
             "sim",
+            variables=[],
             arch=arch,
             packages=["oss-cad-suite", "gtkwave"],
         )
@@ -124,18 +126,26 @@ class SCons:
         # -- The packages to check are passed
         return self.run(
             "build",
-            var,
-            board,
-            arch,
+            variables=var,
+            board=board,
+            arch=arch,
             packages=["oss-cad-suite"],
         )
+
+    # run(self, command, variables, packages, board=None, arch=None):
 
     @util.command
     def time(self, args):
         """DOC: TODO"""
 
         var, board, arch = process_arguments(args, self.resources)
-        return self.run("time", var, board, arch, packages=["oss-cad-suite"])
+        return self.run(
+            "time",
+            variables=var,
+            board=board,
+            arch=arch,
+            packages=["oss-cad-suite"],
+        )
 
     @util.command
     def upload(self, args, serial_port, ftdi_id, sram, flash):
@@ -153,10 +163,10 @@ class SCons:
 
         return self.run(
             "upload",
-            var,
-            board,
-            arch,
+            variables=var,
             packages=["oss-cad-suite"],
+            board=board,
+            arch=arch,
         )
 
     def get_programmer(self, board, ext_serial, ext_ftdi_id, sram, flash):
@@ -432,7 +442,7 @@ class SCons:
                 return index
         return None
 
-    def run(self, command, variables=[], board=None, arch=None, packages=[]):
+    def run(self, command, variables, packages, board=None, arch=None):
         """Executes scons"""
 
         # -- Check if in the current project a custom SConstruct file
@@ -473,6 +483,8 @@ class SCons:
         # -- Execute scons
         return self._execute_scons(command, variables, board)
 
+    # R0914: Too many local variables (19/15)
+    # pylint: disable=R0914
     def _execute_scons(self, command, variables, board):
         """Execute the scons builder"""
 

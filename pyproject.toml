@@ -44,20 +44,21 @@ line-length = 79
 target-version = ['py38']
 
 [tool.pylint.messages_control]
-disable = ["consider-using-with",
+disable = ["missing-module-docstring",
+           "missing-class-docstring",
+           "missing-function-docstring",
+
+           "consider-using-with",
            "duplicate-code",
            "too-few-public-methods",
            "too-many-instance-attributes",
            "too-many-function-args",
            "broad-except",
            "too-many-arguments",
-           "raise-missing-from",
-           "dangerous-default-value",
-           "missing-module-docstring",
-           "missing-class-docstring",
-           "missing-function-docstring",
-           "too-many-locals",
-           "too-many-nested-blocks"]
+           "raise-missing-from"]
+
+
+
 
 
 
