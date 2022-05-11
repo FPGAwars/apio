@@ -10,7 +10,10 @@ import click
 
 from apio.managers.project import Project
 
-
+# Too many branches (57/12)
+# pylint: disable=R0912
+# Too many statements (147/50)
+# pylint: disable=R0915
 def process_arguments(args, resources):  # noqa
     # -- Check arguments
     if args is not None:

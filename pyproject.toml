@@ -57,9 +57,9 @@ disable = ["consider-using-with",
            "missing-class-docstring",
            "missing-function-docstring",
            "too-many-locals",
-           "too-many-nested-blocks",
-           "too-many-branches",
-           "too-many-statements"]
+           "too-many-nested-blocks"]
+
+
 
 
 
