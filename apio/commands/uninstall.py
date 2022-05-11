@@ -20,6 +20,7 @@ platforms = [
 ]
 
 
+# pylint: disable=W0622
 @click.command("uninstall")
 @click.pass_context
 @click.argument("packages", nargs=-1)

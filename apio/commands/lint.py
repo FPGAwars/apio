@@ -14,6 +14,7 @@ if sys.version_info > (3, 0):
     unicode = str
 
 
+# pylint: disable=W0622
 @click.command("lint")
 @click.pass_context
 @click.option(
