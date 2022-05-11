@@ -62,6 +62,7 @@
       "uncompressed_name": "",
       "package_name": "tools-drivers",
       "extension": "tar.gz",
+      "url_version": "https://github.com/FPGAwars/tools-drivers/raw/master/VERSION",
       "available_platforms": [
         "windows",
         "windows_x86",

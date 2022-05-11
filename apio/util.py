@@ -147,8 +147,6 @@ def get_systype():
     # -- Return the full platform
     return platform_str
 
-    # return "%s_%s" % (type_, arch) if arch else type_
-
 
 try:
     codepage = locale.getdefaultlocale()[1]
