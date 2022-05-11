@@ -4,38 +4,32 @@
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
-import sys
-
 import click
 
 from apio.managers.scons import SCons
 from apio.managers.drivers import Drivers
 
-# Python3 compat
-if sys.version_info > (3, 0):
-    unicode = str
-
 
 @click.command("upload")
 @click.pass_context
 @click.option(
-    "-b", "--board", type=unicode, metavar="board", help="Set the board."
+    "-b", "--board", type=str, metavar="board", help="Set the board."
 )
 @click.option(
     "--serial-port",
-    type=unicode,
+    type=str,
     metavar="serial-port",
     help="Set the serial port.",
 )
 @click.option(
-    "--ftdi-id", type=unicode, metavar="ftdi-id", help="Set the FTDI id."
+    "--ftdi-id", type=str, metavar="ftdi-id", help="Set the FTDI id."
 )
 @click.option("-s", "--sram", is_flag=True, help="Perform SRAM programming.")
 @click.option("-f", "--flash", is_flag=True, help="Perform FLASH programming.")
 @click.option(
     "-p",
     "--project-dir",
-    type=unicode,
+    type=str,
     metavar="path",
     help="Set the target directory for the project.",
 )

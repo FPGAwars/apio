@@ -4,14 +4,9 @@
 # -- Authors Jesús Arroyo, Miodrag Milanovic
 # -- Licence GPLv2
 
-import sys
 import click
 
 from apio.managers.scons import SCons
-
-# Python3 compat
-if sys.version_info > (3, 0):
-    unicode = str
 
 
 # pylint: disable=W0622
@@ -23,23 +18,21 @@ if sys.version_info > (3, 0):
     is_flag=True,
     help="Enable all warnings, including code style warnings.",
 )
-@click.option(
-    "-t", "--top", type=unicode, metavar="top", help="Set top module."
-)
+@click.option("-t", "--top", type=str, metavar="top", help="Set top module.")
 @click.option("--nostyle", is_flag=True, help="Disable all style warnings.")
 @click.option(
     "--nowarn",
-    type=unicode,
+    type=str,
     metavar="nowarn",
     help="Disable specific warning(s).",
 )
 @click.option(
-    "--warn", type=unicode, metavar="warn", help="Enable specific warning(s)."
+    "--warn", type=str, metavar="warn", help="Enable specific warning(s)."
 )
 @click.option(
     "-p",
     "--project-dir",
-    type=unicode,
+    type=str,
     metavar="path",
     help="Set the target directory for the project.",
 )

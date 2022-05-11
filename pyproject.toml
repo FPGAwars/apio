@@ -44,7 +44,8 @@ line-length = 79
 target-version = ['py38']
 
 [tool.pylint.messages_control]
-disable = ["duplicate-code",
+disable = ["consider-using-with",
+           "duplicate-code",
            "too-few-public-methods",
            "too-many-instance-attributes",
            "too-many-function-args",
@@ -58,10 +59,9 @@ disable = ["duplicate-code",
            "too-many-locals",
            "too-many-nested-blocks",
            "too-many-branches",
-           "too-many-statements",
-           "invalid-name",
-           "no-value-for-parameter",
-           "no-member",
-           "consider-using-with",
-           "lost-exception"]
+           "too-many-statements"]
+
+
+
+
 

@@ -18,6 +18,7 @@ import click
 
 from apio import util
 
+# pylint: disable=E1101
 requests.packages.urllib3.disable_warnings()
 
 

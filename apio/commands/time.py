@@ -4,36 +4,31 @@
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
-import sys
 import click
 
 from apio.managers.scons import SCons
-
-# Python3 compat
-if sys.version_info > (3, 0):
-    unicode = str
 
 
 # pylint: disable=W0622
 @click.command("time")
 @click.pass_context
 @click.option(
-    "-b", "--board", type=unicode, metavar="board", help="Set the board."
+    "-b", "--board", type=str, metavar="board", help="Set the board."
 )
-@click.option("--fpga", type=unicode, metavar="fpga", help="Set the FPGA.")
+@click.option("--fpga", type=str, metavar="fpga", help="Set the FPGA.")
 @click.option(
-    "--size", type=unicode, metavar="size", help="Set the FPGA type (1k/8k)."
-)
-@click.option(
-    "--type", type=unicode, metavar="type", help="Set the FPGA type (hx/lp)."
+    "--size", type=str, metavar="size", help="Set the FPGA type (1k/8k)."
 )
 @click.option(
-    "--pack", type=unicode, metavar="package", help="Set the FPGA package."
+    "--type", type=str, metavar="type", help="Set the FPGA type (hx/lp)."
+)
+@click.option(
+    "--pack", type=str, metavar="package", help="Set the FPGA package."
 )
 @click.option(
     "-p",
     "--project-dir",
-    type=unicode,
+    type=str,
     metavar="path",
     help="Set the target directory for the project.",
 )

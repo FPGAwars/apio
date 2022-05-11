@@ -4,14 +4,9 @@
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
-import sys
 import click
 
 from apio.managers.project import Project
-
-# Python3 compat
-if sys.version_info > (3, 0):
-    unicode = str
 
 
 @click.command("init")
@@ -22,14 +17,14 @@ if sys.version_info > (3, 0):
 @click.option(
     "-b",
     "--board",
-    type=unicode,
+    type=str,
     metavar="board",
     help="Create init file with the selected board.",
 )
 @click.option(
     "-p",
     "--project-dir",
-    type=unicode,
+    type=str,
     metavar="path",
     help="Set the target directory for the project.",
 )

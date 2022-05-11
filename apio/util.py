@@ -64,12 +64,8 @@ ECP5_FOLDER = f"toolchain-{ECP5}"
 FUJPROG_FOLDER = f"toolchain-{FUJPROG}"
 ICESPROG_FOLDER = f"toolchain-{ICESPROG}"
 
+# pylint: disable=E1101
 requests.packages.urllib3.disable_warnings()
-
-
-# Python3 compat
-if sys.version_info > (3, 0):
-    unicode = str
 
 
 class ApioException(Exception):
@@ -162,13 +158,13 @@ except Exception:
 
 def unicoder(mystring):
     """Make sure a Unicode string is returned"""
-    if isinstance(mystring, unicode):
+    if isinstance(mystring, str):
         return mystring
 
     if isinstance(mystring, str):
         return decoder(mystring)
 
-    return unicode(decoder(mystring))
+    return str(decoder(mystring))
 
 
 def decoder(mystring):
@@ -182,6 +178,7 @@ def decoder(mystring):
     return mystring.decode(codepage)
 
 
+# pylint: disable=E1120
 def safe_join(*paths):
     """Join paths in a Unicode-safe way"""
     try:
@@ -657,7 +654,7 @@ def _parse_result(kwargs, result):
             result[std[3:]] = "\n".join(kwargs[std].get_buffer())
 
     for k, value in result.items():
-        if value and isinstance(value, unicode):
+        if value and isinstance(value, str):
             result[k].strip()
 
 
@@ -758,6 +755,7 @@ def check_dir(_dir):
     return _dir
 
 
+# pylint: disable=W0150
 def command(function):
     """Command decorator"""
 
@@ -768,6 +766,7 @@ def command(function):
         except Exception as exc:
             if str(exc):
                 click.secho("Error: " + str(exc), fg="red")
+
         finally:
             return exit_code
 

@@ -333,16 +333,20 @@ class Installer:
         if url_version:
 
             # -- Get the version.txt with the latest version number
-            r = requests.get(url_version)
+            req = requests.get(url_version)
 
             # -- Check the server response
-            if r.status_code == requests.codes.ok:
+            if (
+                # pylint: disable=no-member
+                req.status_code
+                == requests.codes.ok
+            ):
 
                 # -- Request OK
                 print("File version.txt downloaded!")
 
                 # -- Read the version without the ending \n
-                version = r.text.rstrip("\n")
+                version = req.text.rstrip("\n")
 
                 # -- Debug
                 print(f"Version: {version}")
@@ -353,7 +357,7 @@ class Installer:
             # -- There was a problem with the request
             click.secho("Error downloading the version.txt file", fg="red")
             click.secho(f"URL: {url_version}", fg="red")
-            click.secho(f"Error code: {r.status_code}", fg="red")
+            click.secho(f"Error code: {req.status_code}", fg="red")
             sys.exit(1)
 
         # -- Error: No URL defined for the version.txt file

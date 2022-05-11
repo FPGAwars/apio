@@ -4,14 +4,8 @@
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
-import sys
 import click
-
 from apio.managers.scons import SCons
-
-# Python3 compat
-if sys.version_info > (3, 0):
-    unicode = str
 
 
 @click.command("sim")
@@ -19,7 +13,7 @@ if sys.version_info > (3, 0):
 @click.option(
     "-p",
     "--project-dir",
-    type=unicode,
+    type=str,
     metavar="path",
     help="Set the target directory for the project.",
 )
