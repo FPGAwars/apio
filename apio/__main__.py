@@ -62,7 +62,6 @@ class ApioCLI(click.MultiCommand):
     # -- Return the code function (cli) of the command name
     # -- This cli function is called whenever the name command
     # -- is issued
-    # pylint: disable=arguments-differ
     def get_command(self, ctx, cmd_name):
         nnss = {}
 
