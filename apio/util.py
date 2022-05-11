@@ -9,6 +9,7 @@
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
 # ---- Licence Apache v2
 
+import string
 import sys
 import os
 import re
@@ -159,26 +160,26 @@ except Exception:
     UTF = False
 
 
-def unicoder(string):
+def unicoder(mystring):
     """Make sure a Unicode string is returned"""
-    if isinstance(string, unicode):
-        return string
+    if isinstance(mystring, unicode):
+        return mystring
 
-    if isinstance(string, str):
-        return decoder(string)
+    if isinstance(mystring, str):
+        return decoder(mystring)
 
-    return unicode(decoder(string))
+    return unicode(decoder(mystring))
 
 
-def decoder(string):
+def decoder(mystring):
     """DOC: TODO"""
 
     if UTF:
         try:
-            return string.decode("utf-8")
+            return mystring.decode("utf-8")
         except Exception:
-            return string.decode(codepage)
-    return string.decode(codepage)
+            return mystring.decode(codepage)
+    return mystring.decode(codepage)
 
 
 def safe_join(*paths):
@@ -687,6 +688,34 @@ def get_pypi_latest_version():
     return version
 
 
+def get_full_path(folder: string):
+    """Get the full path to the given folder
+    Inputs:
+      * folder: String with the folder name
+
+    Returns:
+      * The full path as a PosixPath() object
+
+    Example: folder="commands"
+    Output: PosixPath('/home/obijuan/.../apio/commands')
+    """
+
+    # -- Get the full path of this file (util.py)
+    # -- Ex: /home/obijuan/.../site-packages/apio/util.py
+    current_python_file = Path(__file__)
+
+    # -- The parent folder is the apio root folder
+    # -- Ex: /home/obijuan/.../site-packages/apio
+    apio_path = current_python_file.parent
+
+    # -- Add the given folder to the path
+    new_path = apio_path / folder
+
+    # -- Return the path
+    return new_path
+
+
+# -- TODO: This function is obsolete (replaced by get_full_path)
 def get_folder(folder):
     """DOC: TODO"""
 

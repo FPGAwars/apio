@@ -11,12 +11,13 @@
 
 
 from os import listdir
-from os.path import isfile
+import string
 from sys import exit as sys_exit
+
+# from pathlib import Path
 import click
 
 from apio import util
-
 
 # -- The commands are python modules located in the commands folder
 # -- Get the absolute path to all the commands
@@ -62,20 +63,35 @@ class ApioCLI(click.MultiCommand):
     # -- Return the code function (cli) of the command name
     # -- This cli function is called whenever the name command
     # -- is issued
-    def get_command(self, ctx, cmd_name):
+    # -- INPUT:
+    # --   * cmd_name: Apio command name
+    def get_command(self, ctx, cmd_name: string):
+
         nnss = {}
 
-        # -- Get the full filename of the python file for the command name
-        filename = util.safe_join(commands_folder, cmd_name + ".py")
+        print("DEBUG!")
 
-        # -- Return the cli function of the command
-        if isfile(filename):
-            with open(filename, encoding="utf8") as file:
+        # -- Get the commands folder
+        commands_folder2 = util.get_full_path("commands")
+
+        # -- Get the python filename asociated with the give command
+        # -- Ex. "system" --> "/home/obijuan/.../apio/commands/system.py"
+        filename = commands_folder2 / f"{cmd_name}.py"
+
+        # -- Check if the file exists
+        if filename.exists():
+
+            # -- Open the python file
+            with filename.open(encoding="utf8") as file:
+
+                # -- Compile it!
                 code = compile(file.read(), filename, "exec")
 
+                # -- Get the function!
                 # pylint: disable=W0123
                 eval(code, nnss, nnss)
 
+        # -- Return the function needed for executing the command
         return nnss.get("cli")
 
 
