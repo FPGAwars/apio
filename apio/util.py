@@ -124,13 +124,30 @@ class AsyncPipe(Thread):  # pragma: no cover
 
 
 def get_systype():
-    """DOC: TODO"""
+    """Return a String with the current platform:
+    ex. linux_x86_64
+    ex. windows_amd64"""
 
+    # -- Get the platform: linux, windows, darwin
     type_ = platform.system().lower()
+    platform_str = f"{type_}"
+
+    # -- Get the architecture
     arch = platform.machine().lower()
+
+    # -- Special case for windows
+    # -- windows_amd64, windows_x86
     if type_ == "windows":
         arch = "amd64" if platform.architecture()[0] == "64bit" else "x86"
-    return "%s_%s" % (type_, arch) if arch else type_
+
+    # -- Add the architecture, if it exists
+    if arch:
+        platform_str += f"_{arch}"
+
+    # -- Return the full platform
+    return platform_str
+
+    # return "%s_%s" % (type_, arch) if arch else type_
 
 
 try:

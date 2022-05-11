@@ -71,7 +71,7 @@ class ApioCLI(click.MultiCommand):
 
         # -- Return the cli function of the command
         if isfile(filename):
-            with open(filename) as file:
+            with open(filename, encoding="utf8") as file:
                 code = compile(file.read(), filename, "exec")
                 eval(code, nnss, nnss)
 
