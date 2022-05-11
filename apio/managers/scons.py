@@ -444,7 +444,7 @@ class SCons:
         if not isfile(scon_file):
 
             # -- This is the default SConstruct file
-            resources = Path(util.get_folder("resources"))
+            resources = util.get_full_path("resources")
             default_scons_file = resources / arch / "SConstruct"
 
             # -- It is passed to scons using the flag -f default_scons_file

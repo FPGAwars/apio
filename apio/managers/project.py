@@ -7,6 +7,7 @@
 import sys
 import json
 from os.path import isfile
+from pathlib import Path
 import click
 
 try:
@@ -27,19 +28,21 @@ class Project:
     def create_sconstruct(self, project_dir="", arch=None, sayyes=False):
         """Creates a default SConstruct file"""
 
-        project_dir = util.check_dir(project_dir)
+        project_dir = Path(util.check_dir(project_dir))
 
         sconstruct_name = "SConstruct"
-        sconstruct_path = util.safe_join(project_dir, sconstruct_name)
-        local_sconstruct_path = util.safe_join(
-            util.get_folder("resources"), arch, sconstruct_name
+        sconstruct_path = project_dir / sconstruct_name
+        local_sconstruct_path = (
+            util.get_full_path("resources") / arch / sconstruct_name
         )
 
-        if isfile(sconstruct_path):
+        if sconstruct_path.exists():
             # -- If sayyes, skip the question
             if sayyes:
                 self._copy_sconstruct_file(
-                    sconstruct_name, sconstruct_path, local_sconstruct_path
+                    sconstruct_name,
+                    sconstruct_path,
+                    local_sconstruct_path,
                 )
             else:
                 click.secho(
@@ -49,7 +52,9 @@ class Project:
 
                 if click.confirm("Do you want to replace it?"):
                     self._copy_sconstruct_file(
-                        sconstruct_name, sconstruct_path, local_sconstruct_path
+                        sconstruct_name,
+                        sconstruct_path,
+                        local_sconstruct_path,
                     )
                 else:
                     click.secho("Abort!", fg="red")
@@ -106,13 +111,20 @@ class Project:
         sconstruct_name, sconstruct_path, local_sconstruct_path
     ):
         click.secho(f"Creating {sconstruct_name} file ...")
-        with open(sconstruct_path, "w", encoding="utf8") as sconstruct:
-            with open(
-                local_sconstruct_path, "r", encoding="utf8"
+
+        # -- Define the target sconstruct file to create
+        with sconstruct_path.open(mode="w", encoding="utf8") as sconstruct:
+
+            # -- Open the original sconstruct file
+            with local_sconstruct_path.open(
+                encoding="utf8"
             ) as local_sconstruct:
+
+                # -- Copy the src to the target file
                 sconstruct.write(local_sconstruct.read())
+
                 click.secho(
-                    "File '{sconstruct_name}' has been successfully created!",
+                    f"File '{sconstruct_name}' has been successfully created!",
                     fg="green",
                 )
 
