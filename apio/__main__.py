@@ -73,6 +73,8 @@ class ApioCLI(click.MultiCommand):
         if isfile(filename):
             with open(filename, encoding="utf8") as file:
                 code = compile(file.read(), filename, "exec")
+
+                # pylint: disable=W0123
                 eval(code, nnss, nnss)
 
         return nnss.get("cli")

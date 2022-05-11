@@ -63,5 +63,5 @@ disable = ["duplicate-code",
            "no-value-for-parameter",
            "no-member",
            "consider-using-with",
-           "lost-exception",
-           "eval-used"]
+           "lost-exception"]
+
