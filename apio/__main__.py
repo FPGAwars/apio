@@ -21,18 +21,31 @@ from apio import util
 commands_folder = util.get_folder("commands")
 
 
-# -- Auxiliary function used sfor reformating the Help string output
-def find_commands_help(help_str, commands):
-    """Extract the commands from the help string
-    Return a list with the command + description
+def find_commands_help(help_list, commands):
     """
+    Return a list with the given commands and their descriptions.
+    This information is read from the given help list of string
+    - INPUTS:
+      * help: A list of help lines (strings)
+      * commands: A list of commands (strings) to obtain their descriptions
+    """
+
+    # -- List to return
     commands_help = []
-    for line in list(help_str):
+
+    # -- Analyze all the lines in the help string
+    for line in help_list:
+
+        # -- Check all the commands passed
         for command in commands:
-            if " " + command in line:
-                if line in help_str:
-                    help_str.remove(line)
-                    commands_help.append(line)
+
+            # -- If the command is in the current line of the help string
+            if f" {command}" in line:
+
+                # -- Add the  and its description to the list of commands
+                commands_help.append(line)
+
+    # -- Return the list of comands with their descriptions
     return commands_help
 
 
@@ -90,6 +103,10 @@ class ApioCLI(click.MultiCommand):
         return nnss.get("cli")
 
 
+# ------------------------------------------------------------------
+# -- This function is executed when apio is executed without
+# -- any parameter. The help is shown
+# ------------------------------------------------------------------
 @click.command(cls=ApioCLI, invoke_without_command=True)
 @click.pass_context
 @click.version_option()
@@ -103,7 +120,8 @@ def cli(ctx):
         _help = ctx.get_help()
 
         # -- Let's change the format so that the commands are divided
-        # -- into three categories: Project, Setup and Utilitys
+        # -- into three categories: Project, Setup and Utilities
+        # -- Convert the help string into a list of lines
         _help = _help.split("\n")
 
         # -- Setup commands
