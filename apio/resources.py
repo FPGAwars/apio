@@ -89,10 +89,10 @@ class Resources:
         resource = None
 
         # -- Build the filepath: Ex. resources/fpgas.json
-        filepath = util.safe_join(util.get_folder("resources"), name + ".json")
+        filepath = util.get_full_path("resources") / f"{name}.json"
 
         # -- Open the json file and convert it to an object
-        with open(filepath, "r", encoding="utf8") as file:
+        with filepath.open(encoding="utf8") as file:
             resource = json.loads(file.read())
 
         # -- Return the object for the resource

@@ -715,13 +715,6 @@ def get_full_path(folder: string):
     return new_path
 
 
-# -- TODO: This function is obsolete (replaced by get_full_path)
-def get_folder(folder):
-    """DOC: TODO"""
-
-    return safe_join(dirname(__file__), folder)
-
-
 def mkdir(path):
     """DOC: TODO"""
 
