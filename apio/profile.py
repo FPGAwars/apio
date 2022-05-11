@@ -58,7 +58,7 @@ class Profile:
         # Convert old versions to new format
         try:
             ver = int(version)
-            version = "1.{}.0".format(ver)
+            version = f"1.{ver}.0"
         except ValueError:
             pass
         return version
@@ -85,14 +85,12 @@ class Profile:
             self.config[key] = value
             self.save()
             click.secho(
-                "{0} mode updated: {1}".format(
-                    self.labels.get(key, ""), value
-                ),
+                f"{self.labels.get(key, '')} mode updated: {value}",
                 fg="green",
             )
         else:
             click.secho(
-                "{0} mode already {1}".format(self.labels.get(key, ""), value),
+                f"{self.labels.get(key, '')} mode already {value}",
                 fg="yellow",
             )
 
@@ -118,7 +116,7 @@ class Profile:
             if isdir(dir_name):
                 filepath = util.safe_join(dir_name, "package.json")
                 try:
-                    with open(filepath, "r") as json_file:
+                    with open(filepath, "r", encoding="utf8") as json_file:
                         tmp_data = json.load(json_file)
                         if "version" in tmp_data.keys():
                             version = tmp_data.get("version")
@@ -133,7 +131,7 @@ class Profile:
         if isfile(self._profile_path):
 
             # -- Open the profile file
-            with open(self._profile_path, "r") as profile:
+            with open(self._profile_path, "r", encoding="utf8") as profile:
 
                 # -- Read the profile file
                 self._load_profile(profile)
@@ -171,7 +169,7 @@ class Profile:
         """DOC: todo"""
 
         util.mkdir(self._profile_path)
-        with open(self._profile_path, "w") as profile:
+        with open(self._profile_path, "w", encoding="utf8") as profile:
             data = {
                 "config": self.config,
                 "settings": self.settings,
@@ -184,8 +182,6 @@ class Profile:
 
         for key in self.config:
             click.secho(
-                "{0} mode: {1}".format(
-                    self.labels.get(key, ""), self.config.get(key, "")
-                ),
+                f"{self.labels.get(key, '')} mode: {self.config.get(key, '')}",
                 fg="yellow",
             )
