@@ -9,16 +9,14 @@
 # -- Apio ENTRY POINT!!!
 # --------------------------------------------
 
-
-from os import listdir
 import string
 import click
 
 from apio import util
 
-# -- The commands are python modules located in the commands folder
-# -- Get the absolute path to all the commands
-commands_folder = util.get_folder("commands")
+
+# -- Get the commands folder
+commands_folder = util.get_full_path("commands")
 
 
 def find_commands_help(help_list, commands):
@@ -26,7 +24,7 @@ def find_commands_help(help_list, commands):
     Return a list with the given commands and their descriptions.
     This information is read from the given help list of string
     - INPUTS:
-      * help: A list of help lines (strings)
+      * help_list: A list of help lines (strings)
       * commands: A list of commands (strings) to obtain their descriptions
     """
 
@@ -49,23 +47,26 @@ def find_commands_help(help_list, commands):
     return commands_help
 
 
+# -----------------------------------------------------------------------------
 # -- Main Click Class
 # -- It is extended for including methods for getting and listing the commands
+# -----------------------------------------------------------------------------
 class ApioCLI(click.MultiCommand):
     """DOC:TODO"""
 
     # -- Return  a list of all the available commands
     def list_commands(self, ctx):
-        cmd_list = []
 
-        # -- The supported command are python files located
-        # -- in the commands folder
-        # -- Except __init__.py
-        for filename in listdir(commands_folder):
-            if filename.startswith("__init__"):
-                continue
-            if filename.endswith(".py"):
-                cmd_list.append(filename[:-3])
+        # -- All the python files inside the apio/commands folder are commands,
+        # -- except __init__.py
+        # -- Create the list
+        cmd_list = [
+            element.stem  # -- Name without path and extension
+            for element in commands_folder.iterdir()
+            if element.is_file()
+            and element.suffix == ".py"
+            and element.stem != "__init__"
+        ]
 
         cmd_list.sort()
         return cmd_list
@@ -79,12 +80,9 @@ class ApioCLI(click.MultiCommand):
 
         nnss = {}
 
-        # -- Get the commands folder
-        commands_folder2 = util.get_full_path("commands")
-
         # -- Get the python filename asociated with the give command
         # -- Ex. "system" --> "/home/obijuan/.../apio/commands/system.py"
-        filename = commands_folder2 / f"{cmd_name}.py"
+        filename = commands_folder / f"{cmd_name}.py"
 
         # -- Check if the file exists
         if filename.exists():
