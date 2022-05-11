@@ -12,9 +12,6 @@
 
 from os import listdir
 import string
-from sys import exit as sys_exit
-
-# from pathlib import Path
 import click
 
 from apio import util
@@ -68,8 +65,6 @@ class ApioCLI(click.MultiCommand):
     def get_command(self, ctx, cmd_name: string):
 
         nnss = {}
-
-        print("DEBUG!")
 
         # -- Get the commands folder
         commands_folder2 = util.get_full_path("commands")
@@ -135,8 +130,3 @@ def cli(ctx):
     # -- If there is a command, it is executed when this function is finished
     # -- Debug: print the command invoked
     # print(f"{ctx.invoked_subcommand}")
-
-
-# -- This is NOT used
-if __name__ == "__main__":  # pragma: no cover
-    sys_exit()
