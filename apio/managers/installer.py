@@ -24,6 +24,8 @@ from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
 
 
+# R0902: Too many instance attributes (12/7) (too-many-instance-attributes)
+# pylint: disable=R0902
 class Installer:
     """Installer. Class with methods for installing and managing
     packages"""

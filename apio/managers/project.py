@@ -3,6 +3,7 @@
 # -- (C) 2016-2019 FPGAwars
 # -- Author Juan González, Jesús Arroyo
 # -- Licence GPLv2
+"""TODO"""
 
 import sys
 from os.path import isfile
