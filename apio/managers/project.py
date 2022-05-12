@@ -8,12 +8,13 @@
 import sys
 from os.path import isfile
 from pathlib import Path
+
+# -- Config Parser: Use INI config files with easy
+# https://docs.python.org/3/library/configparser.html
+import configparser
+
 import click
 
-try:
-    import ConfigParser
-except ImportError:
-    import configparser as ConfigParser
 
 from apio import util
 from apio.resources import Resources
@@ -99,7 +100,7 @@ class Project:
     def _create_ini_file(board, ini_path, ini_name):
         click.secho(f"Creating {ini_name} file ...")
         with open(ini_path, "w", encoding="utf8") as file:
-            config = ConfigParser.ConfigParser()
+            config = configparser.ConfigParser()
             config.add_section("env")
             config.set("env", "board", board)
             config.write(file)
@@ -155,7 +156,7 @@ class Project:
           * A string with the name of the board
         """
 
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(PROJECT_FILENAME)
         board = config.get("env", "board")
 
