@@ -158,26 +158,6 @@ except Exception:
     UTF = False
 
 
-def unicoder(mystring):
-    """Make sure a Unicode string is returned"""
-    if isinstance(mystring, str):
-        return mystring
-
-    return str(mystring)
-
-
-# pylint: disable=E1120
-def safe_join(*paths):
-    """Join paths in a Unicode-safe way"""
-    try:
-        return join(*paths)
-    except UnicodeDecodeError:
-        npaths = ()
-        for path in paths:
-            npaths += (unicoder(path),)
-        return join(*npaths)
-
-
 def _get_config_data():
     """Return the configuration data located in the /etc/apio.json file
     Only for Debian Distribution. It will return None otherwise"""
@@ -794,7 +774,7 @@ def get_tinyprog_meta():
     _command = join(get_bin_dir(), "tinyprog")
     result = exec_command([_command, "--pyserial", "--meta"])
     try:
-        out = unicoder(result.get("out", ""))
+        out = result.get("out", "")
         if out:
             return json.loads(out)
     except Exception as exc:
