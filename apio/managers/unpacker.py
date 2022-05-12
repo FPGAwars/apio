@@ -11,6 +11,7 @@
 
 from os import chmod
 from os.path import splitext
+from pathlib import Path
 from tarfile import open as tarfile_open
 from time import mktime
 from zipfile import ZipFile
@@ -75,16 +76,22 @@ class ZIPArchive(ArchiveBase):
     def preserve_permissions(item, dest_dir):
         """DOC: TODO"""
 
+        # -- Build the filename
+        file = str(Path(dest_dir) / item.filename)
+
         attrs = item.external_attr >> 16
         if attrs:
-            chmod(util.safe_join(dest_dir, item.filename), attrs)
+            chmod(file, attrs)
 
     @staticmethod
     def preserve_mtime(item, dest_dir):
         """DOC: TODO"""
 
+        # -- Build the filename
+        file = str(Path(dest_dir) / item.filename)
+
         util.change_filemtime(
-            util.safe_join(dest_dir, item.filename),
+            file,
             mktime(tuple(list(item.date_time) + [0] * 3)),
         )
 
