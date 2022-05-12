@@ -72,7 +72,8 @@ class Project:
 
         project_dir = util.check_dir(project_dir)
 
-        ini_path = util.safe_join(project_dir, PROJECT_FILENAME)
+        # -- Build the filename
+        ini_path = str(Path(project_dir) / PROJECT_FILENAME)
 
         # Check board
         boards = Resources().boards

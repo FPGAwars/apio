@@ -8,6 +8,7 @@
 import sys
 import re
 import shutil
+from pathlib import Path
 from os import makedirs, remove, rename
 from os.path import isfile, isdir, basename
 import click
@@ -70,7 +71,7 @@ class Installer:
         if self.package in self.resources.packages:
 
             # -- Store the package dir
-            self.packages_dir = util.safe_join(util.get_home_dir(), dirname)
+            self.packages_dir = str(Path(util.get_home_dir()) / dirname)
 
             # Get the data of the given package
             data = self.resources.packages.get(self.package)
@@ -128,9 +129,8 @@ class Installer:
         else:
 
             if self.package in self.profile.packages and checkversion is False:
-                self.packages_dir = util.safe_join(
-                    util.get_home_dir(), dirname
-                )
+                self.packages_dir = str(Path(util.get_home_dir()) / dirname)
+
                 self.package_name = "toolchain-" + package
 
         # -- If the Installer.package_dir is empty, is because the package
@@ -249,7 +249,7 @@ class Installer:
 
     def _install_package(self, dlpath):
         if dlpath:
-            package_dir = util.safe_join(self.packages_dir, self.package_name)
+            package_dir = str(Path(self.packages_dir) / self.package_name)
             if isdir(package_dir):
                 shutil.rmtree(package_dir)
             if self.uncompressed_name:
@@ -257,7 +257,7 @@ class Installer:
             else:
                 self._unpack(
                     dlpath,
-                    util.safe_join(self.packages_dir, self.package_name),
+                    package_dir,
                 )
 
             remove(dlpath)
@@ -270,22 +270,26 @@ class Installer:
             )
 
     def _rename_unpacked_dir(self):
+
         if self.uncompressed_name:
-            unpack_dir = util.safe_join(
-                self.packages_dir, self.uncompressed_name
-            )
-            package_dir = util.safe_join(self.packages_dir, self.package_name)
+
+            # -- Build the names
+            unpack_dir = str(Path(self.packages_dir) / self.uncompressed_name)
+            package_dir = str(Path(self.packages_dir) / self.package_name)
+
             if isdir(unpack_dir):
                 rename(unpack_dir, package_dir)
 
     def uninstall(self):
         """DOC: TODO"""
 
-        if isdir(util.safe_join(self.packages_dir, self.package_name)):
+        # -- Build the filename
+        file = str(Path(self.packages_dir) / self.package_name)
+        if isdir(file):
 
             package_color = click.style(self.package, fg="cyan")
             click.echo(f"Uninstalling {package_color} package:")
-            shutil.rmtree(util.safe_join(self.packages_dir, self.package_name))
+            shutil.rmtree(file)
             click.secho(
                 f"""Package \'{self.package}\' has been """
                 """successfully uninstalled!""",
