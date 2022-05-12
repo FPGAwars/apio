@@ -9,6 +9,8 @@
 import os
 import subprocess
 from os.path import isfile
+from pathlib import Path
+
 import click
 
 from apio import util
@@ -408,9 +410,9 @@ class Drivers:  # pragma: no cover
     # pylint: disable=W0703
     def _ftdi_enable_windows(self):
         drivers_base_dir = util.get_package_dir("tools-drivers")
-        drivers_bin_dir = util.safe_join(drivers_base_dir, "bin")
-        drivers_share_dir = util.safe_join(drivers_base_dir, "share")
-        zadig_ini_path = util.safe_join(drivers_share_dir, "zadig.ini")
+        drivers_bin_dir = str(Path(drivers_base_dir) / "bin")
+        drivers_share_dir = str(Path(drivers_base_dir) / "share")
+        zadig_ini_path = str(Path(drivers_share_dir) / "zadig.ini")
         zadig_ini = "zadig.ini"
 
         try:
@@ -427,7 +429,7 @@ class Drivers:  # pragma: no cover
                         ini_file.write(local_ini_file.read())
 
                 result = util.exec_command(
-                    util.safe_join(drivers_bin_dir, "zadig.exe")
+                    str(Path(drivers_bin_dir) / "zadig.exe")
                 )
                 click.secho("FTDI drivers configuration finished", fg="green")
             else:
@@ -456,7 +458,7 @@ class Drivers:  # pragma: no cover
     # pylint: disable=W0703
     def _serial_enable_windows(self):
         drivers_base_dir = util.get_package_dir("tools-drivers")
-        drivers_bin_dir = util.safe_join(drivers_base_dir, "bin")
+        drivers_bin_dir = str(Path(drivers_base_dir) / "bin")
 
         try:
             if util.check_package(
@@ -465,7 +467,7 @@ class Drivers:  # pragma: no cover
                 click.secho("Launch drivers configuration tool")
                 click.secho(SERIAL_INSTALL_DRIVER_INSTRUCTIONS, fg="yellow")
                 result = util.exec_command(
-                    util.safe_join(drivers_bin_dir, "serial_install.exe")
+                    str(Path(drivers_bin_dir) / "serial_install.exe")
                 )
                 click.secho(
                     "Serial drivers configuration finished", fg="green"

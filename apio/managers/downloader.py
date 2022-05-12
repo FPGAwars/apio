@@ -13,6 +13,8 @@
 from email.utils import parsedate_tz
 from math import ceil
 from time import mktime
+from pathlib import Path
+
 import requests
 import click
 
@@ -40,7 +42,7 @@ class FileDownloader:
 
         self._destination = self._fname
         if dest_dir:
-            self.set_destination(util.safe_join(dest_dir, self._fname))
+            self.set_destination(str(Path(dest_dir) / self._fname))
 
         self._progressbar = None
         self._request = None

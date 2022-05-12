@@ -116,7 +116,7 @@ class Profile:
         elif release_name:
             dir_name = util.get_package_dir(release_name)
             if isdir(dir_name):
-                filepath = util.safe_join(dir_name, "package.json")
+                filepath = str(Path(dir_name) / "package.json")
                 try:
                     with open(filepath, "r", encoding="utf8") as json_file:
                         tmp_data = json.load(json_file)
