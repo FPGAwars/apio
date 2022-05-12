@@ -9,6 +9,7 @@ import os
 import glob
 import codecs
 import shutil
+from pathlib import Path
 from os.path import sep, isdir, isfile, dirname, basename
 import click
 
@@ -53,13 +54,13 @@ class Examples:
             examples = [
                 dirname(y).replace(self.examples_dir + sep, "")
                 for x in os.walk(self.examples_dir)
-                for y in glob.glob(util.safe_join(x[0], "info"))
+                for y in glob.glob(str(Path(x[0]) / "info"))
             ]
             click.secho("")
             for example in examples:
-                example_dir = util.safe_join(self.examples_dir, example)
+                example_dir = str(Path(self.examples_dir) / example)
                 if isdir(example_dir):
-                    info_path = util.safe_join(example_dir, "info")
+                    info_path = str(Path(example_dir) / "info")
                     info = ""
                     if isfile(info_path):
                         with codecs.open(info_path, "r", "utf-8") as info_file:
@@ -81,8 +82,8 @@ class Examples:
             self.name, self.version, self.spec_version, self.examples_dir
         ):
             project_dir = util.check_dir(project_dir)
-            example_path = util.safe_join(project_dir, example)
-            local_example_path = util.safe_join(self.examples_dir, example)
+            example_path = str(Path(project_dir) / example)
+            local_example_path = str(Path(self.examples_dir) / example)
 
             if isdir(local_example_path):
                 if isdir(example_path):
@@ -122,7 +123,7 @@ class Examples:
         ):
             project_dir = util.check_dir(project_dir)
             example_path = project_dir
-            local_example_path = util.safe_join(self.examples_dir, example)
+            local_example_path = str(Path(self.examples_dir) / example)
 
             if isdir(local_example_path):
                 self._copy_files(
@@ -137,11 +138,11 @@ class Examples:
     @staticmethod
     def _copy_files(example, src_path, dest_path, sayno):
         click.secho("Copying " + example + " example files ...")
-        example_files = glob.glob(util.safe_join(src_path, "*"))
+        example_files = glob.glob(str(Path(src_path) / "*"))
         for file in example_files:
             filename = basename(file)
             if filename != "info":
-                filepath = util.safe_join(dest_path, filename)
+                filepath = str(Path(dest_path) / filename)
                 if isfile(filepath):
 
                     # -- If sayno, do not copy the file. Move to the next
