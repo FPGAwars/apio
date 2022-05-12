@@ -169,7 +169,7 @@ def _get_config_data():
     # Read the /etc/apio.json file and return its contents
     # as an object
     if LOAD_CONFIG_DATA:
-        filepath = safe_join(os.sep, "etc", "apio.json")
+        filepath = str(Path(os.sep) / "etc" / "apio.json")
         if isfile(filepath):
             with open(filepath, "r", encoding="utf8") as file:
                 # Load the JSON file
