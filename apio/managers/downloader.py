@@ -24,11 +24,13 @@ requests.packages.urllib3.disable_warnings()
 
 
 class FDUnrecognizedStatusCode(util.ApioException):
+    """TODO"""
 
     MESSAGE = "Got an unrecognized status code '{0}' when downloaded {1}"
 
 
 class FileDownloader:
+    """TODO"""
 
     CHUNK_SIZE = 1024
 
@@ -49,20 +51,29 @@ class FileDownloader:
             raise FDUnrecognizedStatusCode(self._request.status_code, url)
 
     def set_destination(self, destination):
+        """TODO"""
+
         self._destination = destination
 
     def get_filepath(self):
+        """TODO"""
         return self._destination
 
     def get_lmtime(self):
+        """TODO"""
+
         if "last-modified" in self._request.headers:
             return self._request.headers.get("last-modified")
         return None
 
     def get_size(self):
+        """TODO"""
+
         return int(self._request.headers.get("content-length"))
 
     def start(self):
+        """TODO"""
+
         itercontent = self._request.iter_content(chunk_size=self.CHUNK_SIZE)
         with open(self._destination, "wb") as file:
             chunks = int(ceil(self.get_size() / float(self.CHUNK_SIZE)))

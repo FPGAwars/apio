@@ -634,6 +634,9 @@ def exec_command(*args, **kwargs):  # pragma: no cover
     default.update(kwargs)
     kwargs = default
 
+    # R1732: Consider using 'with' for resource-allocating operations
+    # (consider-using-with)
+    # pylint: disable=R1732
     try:
         proc = subprocess.Popen(*args, **kwargs)
         result["out"], result["err"] = proc.communicate()

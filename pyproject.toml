@@ -44,11 +44,12 @@ line-length = 79
 target-version = ['py38']
 
 [tool.pylint.messages_control]
-disable = [
-           "missing-class-docstring",
-           "missing-function-docstring",
-           "consider-using-with",
-           "duplicate-code"]
+disable = [           
+           "duplicate-code"
+          ]
+
+          
+
 
            
 

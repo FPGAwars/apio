@@ -22,6 +22,8 @@ PROJECT_FILENAME = "apio.ini"
 
 
 class Project:
+    """TODO"""
+
     def __init__(self):
         self.board = None
 

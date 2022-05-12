@@ -20,6 +20,8 @@ from apio.managers.project import Project
 # Too many statements (147/50)
 # pylint: disable=R0915
 def process_arguments(args, resources):  # noqa
+    """TODO"""
+
     # -- Check arguments
     if args is not None:
         var_board = args.get("board")

@@ -109,6 +109,7 @@ class ApioCLI(click.MultiCommand):
 @click.pass_context
 @click.version_option()
 def cli(ctx):
+    """TODO"""
 
     # -- No command typed: show help
     if ctx.invoked_subcommand is None:

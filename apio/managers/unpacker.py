@@ -53,6 +53,9 @@ class TARArchive(ArchiveBase):
     """DOC: TODO"""
 
     def __init__(self, archpath):
+        # R1732: Consider using 'with' for resource-allocating operations
+        # (consider-using-with)
+        # pylint: disable=R1732
         ArchiveBase.__init__(self, tarfile_open(archpath))
 
     def get_items(self):
@@ -63,6 +66,9 @@ class ZIPArchive(ArchiveBase):
     """DOC: TODO"""
 
     def __init__(self, archpath):
+        # R1732: Consider using 'with' for resource-allocating operations
+        # (consider-using-with)
+        # pylint: disable=R1732
         ArchiveBase.__init__(self, ZipFile(archpath))
 
     @staticmethod

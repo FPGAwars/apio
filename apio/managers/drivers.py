@@ -60,6 +60,7 @@ SERIAL_UNINSTALL_DRIVER_INSTRUCTIONS = """
 
 
 class Drivers:  # pragma: no cover
+    """TODO"""
 
     # -- The driver installation on linux consist of copying the rule files
     # -- to the /etc/udev/rules.d folder
