@@ -37,16 +37,7 @@ from apio import LOAD_CONFIG_DATA
 # -- define first the constants here
 # --
 OSS_CAD_SUITE = "oss-cad-suite"
-SCONS = "scons"
 GTKWAVE = "gtkwave"
-IVERILOG = "iverilog"
-VERILATOR = "verilator"
-YOSYS = "yosys"
-ICE40 = "ice40"
-ECP5 = "ecp5"
-FUJPROG = "fujprog"
-ICESPROG = "icesprog"
-
 
 # -- Name of the subfolder to store de executable files
 BIN = "bin"
@@ -54,15 +45,8 @@ BIN = "bin"
 # -- Folder names. They are built from the
 # -- packages names
 OSS_CAD_SUITE_FOLDER = f"tools-{OSS_CAD_SUITE}"
-SCONS_FOLDER = f"tool-{SCONS}"
 GTKWAVE_FOLDER = f"tool-{GTKWAVE}"
-IVERILOG_FOLDER = f"toolchain-{IVERILOG}"
-VERILATOR_FOLDER = f"toolchain-{VERILATOR}"
-YOSYS_FOLDER = f"toolchain-{YOSYS}"
-ICE40_FOLDER = f"toolchain-{ICE40}"
-ECP5_FOLDER = f"toolchain-{ECP5}"
-FUJPROG_FOLDER = f"toolchain-{FUJPROG}"
-ICESPROG_FOLDER = f"toolchain-{ICESPROG}"
+
 
 # pylint: disable=E1101
 requests.packages.urllib3.disable_warnings()
@@ -443,15 +427,7 @@ def get_base_dir():
     # --  Package Name  :  Folder (string)
     base_dir = {
         OSS_CAD_SUITE: get_package_dir(OSS_CAD_SUITE_FOLDER),
-        SCONS: get_package_dir(SCONS_FOLDER),
-        YOSYS: get_package_dir(YOSYS_FOLDER),
-        ICE40: get_package_dir(ICE40_FOLDER),
-        ECP5: get_package_dir(ECP5_FOLDER),
-        IVERILOG: get_package_dir(IVERILOG_FOLDER),
-        VERILATOR: get_package_dir(VERILATOR_FOLDER),
         GTKWAVE: get_package_dir(GTKWAVE_FOLDER),
-        FUJPROG: get_package_dir(FUJPROG_FOLDER),
-        ICESPROG: get_package_dir(ICESPROG_FOLDER),
     }
 
     return base_dir
@@ -465,15 +441,7 @@ def get_bin_dir_table(base_dir):
 
     bin_dir = {
         OSS_CAD_SUITE: str(Path(base_dir.get(OSS_CAD_SUITE)) / BIN),
-        SCONS: str(Path(base_dir.get(SCONS)) / "script"),
-        YOSYS: str(Path(base_dir.get(YOSYS)) / BIN),
-        ICE40: str(Path(base_dir.get(ICE40)) / BIN),
-        ECP5: str(Path(base_dir.get(ECP5)) / BIN),
-        IVERILOG: str(Path(base_dir.get(IVERILOG)) / BIN),
-        VERILATOR: str(Path(base_dir.get(VERILATOR)) / BIN),
         GTKWAVE: str(Path(base_dir.get(GTKWAVE)) / BIN),
-        FUJPROG: str(Path(base_dir.get(FUJPROG)) / BIN),
-        ICESPROG: str(Path(base_dir.get(ICESPROG)) / BIN),
     }
 
     return bin_dir
