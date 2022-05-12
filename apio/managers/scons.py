@@ -52,6 +52,8 @@ class SCons:
             # Change to that folder
             os.chdir(project_dir)
 
+    # W0703: Catching too general exception Exception (broad-except)
+    # pylint: disable=W0703
     @util.command
     def clean(self, args):
         """DOC: TODO"""

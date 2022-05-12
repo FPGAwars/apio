@@ -120,6 +120,8 @@ class AsyncPipe(Thread):  # pragma: no cover
         self.join()
 
 
+# W0703: Catching too general exception Exception (broad-except)
+# pylint: disable=W0703
 def get_systype():
     """Return a String with the current platform:
     ex. linux_x86_64
@@ -167,6 +169,8 @@ def unicoder(mystring):
     return str(decoder(mystring))
 
 
+# W0703: Catching too general exception Exception (broad-except)
+# pylint: disable=W0703
 def decoder(mystring):
     """DOC: TODO"""
 
@@ -615,6 +619,8 @@ def change_filemtime(path, time):
     os.utime(path, (time, time))
 
 
+# W0703: Catching too general exception Exception (broad-except)
+# pylint: disable=W0703
 def exec_command(*args, **kwargs):  # pragma: no cover
     """DOC: TODO"""
 
@@ -658,6 +664,8 @@ def _parse_result(kwargs, result):
             result[k].strip()
 
 
+# W0703: Catching too general exception Exception (broad-except)
+# pylint: disable=W0703
 def get_pypi_latest_version():
     """DOC: TODO"""
 
@@ -755,6 +763,8 @@ def check_dir(_dir):
     return _dir
 
 
+# W0703: Catching too general exception Exception (broad-except)
+# pylint: disable=W0703
 # pylint: disable=W0150
 def command(function):
     """Command decorator"""
@@ -789,6 +799,8 @@ def get_serial_ports():
     return result
 
 
+# W0703: Catching too general exception Exception (broad-except)
+# pylint: disable=W0703
 def get_tinyprog_meta():
     """DOC: TODO"""
 

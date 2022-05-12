@@ -105,6 +105,8 @@ class Profile:
 
         return int(self.config.get("verbose", False))
 
+    # W0703: Catching too general exception Exception (broad-except)
+    # pylint: disable=W0703
     def get_package_version(self, name, release_name=""):
         """DOC: todo"""
 

@@ -401,6 +401,8 @@ class Drivers:  # pragma: no cover
     def _check_ftdi_driver_darwin(driver):
         return driver in str(subprocess.check_output(["kextstat"]))
 
+    # W0703: Catching too general exception Exception (broad-except)
+    # pylint: disable=W0703
     def _ftdi_enable_windows(self):
         drivers_base_dir = util.get_package_dir("tools-drivers")
         drivers_bin_dir = util.safe_join(drivers_base_dir, "bin")
@@ -447,6 +449,8 @@ class Drivers:  # pragma: no cover
         result = util.exec_command("mmc devmgmt.msc")
         return result.get("returncode")
 
+    # W0703: Catching too general exception Exception (broad-except)
+    # pylint: disable=W0703
     def _serial_enable_windows(self):
         drivers_base_dir = util.get_package_dir("tools-drivers")
         drivers_bin_dir = util.safe_join(drivers_base_dir, "bin")

@@ -5,7 +5,6 @@
 # -- Licence GPLv2
 
 import sys
-import json
 from os.path import isfile
 from pathlib import Path
 import click
@@ -147,25 +146,14 @@ class Project:
             sys.exit(1)
 
     @staticmethod
-    def _read_board():
-        board = ""
+    def _read_board() -> str:
+        """Read the configured board from the project file
+        RETURN:
+          * A string with the name of the board
+        """
 
-        # -- Read config file: old JSON format
-        with open(PROJECT_FILENAME, "r", encoding="utf8") as file:
-            try:
-                data = json.loads(file.read())
-                board = data.get("board")
-            except Exception:
-                pass
-
-        # -- Read config file: new CFG format
-        if board == "":
-            try:
-                config = ConfigParser.ConfigParser()
-                config.read(PROJECT_FILENAME)
-                board = config.get("env", "board")
-            except Exception:
-                print("Error: invalid {PROJECT_FILENAME} project file")
-                sys.exit(1)
+        config = ConfigParser.ConfigParser()
+        config.read(PROJECT_FILENAME)
+        board = config.get("env", "board")
 
         return board

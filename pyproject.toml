@@ -52,8 +52,8 @@ disable = ["missing-module-docstring",
            "duplicate-code",
            "too-few-public-methods",
            "too-many-instance-attributes",
-           "too-many-function-args",
-           "broad-except"]
+           "too-many-function-args"]
+
 
 
 
