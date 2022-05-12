@@ -163,23 +163,7 @@ def unicoder(mystring):
     if isinstance(mystring, str):
         return mystring
 
-    if isinstance(mystring, str):
-        return decoder(mystring)
-
-    return str(decoder(mystring))
-
-
-# W0703: Catching too general exception Exception (broad-except)
-# pylint: disable=W0703
-def decoder(mystring):
-    """DOC: TODO"""
-
-    if UTF:
-        try:
-            return mystring.decode("utf-8")
-        except Exception:
-            return mystring.decode(codepage)
-    return mystring.decode(codepage)
+    return str(mystring)
 
 
 # pylint: disable=E1120
