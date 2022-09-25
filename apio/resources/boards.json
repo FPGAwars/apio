@@ -354,7 +354,7 @@
       "pid": "6010"
     },
     "ftdi": {
-      "desc": "(USB <-> Serial Converter | Lattice iCE40UP5K Breakout)"
+      "desc": "(?:USB <-> Serial Converter)|(?:Lattice iCE40UP5K Breakout)"
     }
   },
   "TinyFPGA-EX-rev1": {
