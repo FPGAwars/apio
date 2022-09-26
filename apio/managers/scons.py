@@ -438,7 +438,8 @@ class SCons:
             raise Exception("board " + board + " not available")
         for ftdi_device in ftdi_devices:
             index = ftdi_device.get("index")
-            if ext_ftdi_id and ext_ftdi_id != index:
+            # ftdi device indices can start at zero 
+            if ext_ftdi_id is not None and ext_ftdi_id != index:
                 # If the --device options is set but it doesn't match
                 # with the detected index, skip the port.
                 continue
