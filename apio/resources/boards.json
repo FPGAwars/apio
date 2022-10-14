@@ -551,7 +551,7 @@
   },
   "ColorLight-5A-75B-V61": {
     "name": "ColorLight-5A-75B-V61",
-    "fpga": "ECP5-LFE5U-25F-CABGA256",
+    "fpga": "ECP5-LFE5U-25F-CABGA381",
     "programmer": {
       "type": "openfpgaloader_ft2232"
     }
