@@ -703,5 +703,12 @@
     "programmer": {
       "type": "openfpgaloader_ft2232"
     }
+   },
+  "ColorLight-i9-v7.2_(USB-Blaster)": {
+    "name": "ColorLight-i9",
+    "fpga": "ECP5-LFE5U-45F-CABGA381",
+    "programmer": {
+      "type": "openfpgaloader_usb-blaster"
+    }
   }
  } 
