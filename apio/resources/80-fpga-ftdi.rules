@@ -18,3 +18,6 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="1209", ATTRS{idProduct}=="5bf0", MODE="0664"
 
 # -- for USB-Blaster JTAG Programmer
 ATTRS{idVendor}=="09FB", ATTRS{idProduct}=="6001", MODE="0660", GROUP="plugdev", TAG+="uaccess"
+
+# -- for pico-ice board
+ATTRS{idVendor}=="1209", ATTRS{idProduct}=="b1c0", MODE="0660", GROUP="plugdev", TAG+="uaccess"

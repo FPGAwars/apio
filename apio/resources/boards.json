@@ -553,6 +553,21 @@
       "desc": "Dual RS232-HS"
     }
   },
+  "pico-ice": {
+    "name": "pico-ice",
+    "fpga": "iCE40-UP5K-SG48",
+    "programmer": {
+      "type": "dfu",
+      "extra_args": "--reset"
+    },
+    "usb": {
+      "vid": "1209",
+      "pid": "b1c0"
+    },
+    "ftdi": {
+      "desc": "DFU flash"
+    }
+  },
   "iCESugar_1_5": {
     "name": "iCESugar v1.5",
     "fpga": "iCE40-UP5K-SG48",
