@@ -651,21 +651,21 @@
    },
     "iCESugar-Pro_(FT2232H)": {
     "name": "ColorLight-i5",
-    "fpga": "ECP5-LFE5U-25F-CABGA381",
+    "fpga": "ECP5-LFE5U-25F-CABGA256",
     "programmer": {
       "type": "openfpgaloader_ft2232"
     }
   },
    "iCESugar-Pro_(FT232H)": {
     "name": "ColorLight-i5",
-    "fpga": "ECP5-LFE5U-25F-CABGA381",
+    "fpga": "ECP5-LFE5U-25F-CABGA256",
     "programmer": {
       "type": "openfpgaloader_ft232"
     }
    },
    "iCESugar-Pro_(USB-Blaster)": {
     "name": "ColorLight-i5",
-    "fpga": "ECP5-LFE5U-25F-CABGA381",
+    "fpga": "ECP5-LFE5U-25F-CABGA256",
     "programmer": {
       "type": "openfpgaloader_usb-blaster"
       }
