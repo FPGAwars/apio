@@ -1,6 +1,6 @@
 .PHONY: deps cenv env lint tox publish publish_test
 
-deps:  ## Install dependencies
+deps:  ## Install dependencies for apio development
 	python -m pip install --upgrade pip
 	python -m pip install black flake8 flit pylint tox tox-gh-actions semantic_version polib
 	python -m pip install click pyserial requests
@@ -8,7 +8,7 @@ deps:  ## Install dependencies
 	python -m pip install scons==4.2.0
 
 cenv:  ## Create the virtual-environment and update dependencies
-	python3 -m venv venv
+    python3 -m venv venv
 	python3 -m venv venv --upgrade
 
 env:
