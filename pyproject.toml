@@ -45,7 +45,10 @@ target-version = ['py38']
 
 [tool.pylint.messages_control]
 disable = [           
-           "duplicate-code"
+           "duplicate-code",
+           "W0719",
+           "R1735",
+           "W3101",
           ]
 
           
