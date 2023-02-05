@@ -48,7 +48,6 @@ disable = [
            "duplicate-code",
            "W0719",
            "R1735",
-           "W3101",
           ]
 
           

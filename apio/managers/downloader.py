@@ -48,7 +48,7 @@ class FileDownloader:
         self._request = None
 
         # make connection
-        self._request = requests.get(url, stream=True)
+        self._request = requests.get(url, stream=True, timeout=5)
         if self._request.status_code != 200:
             raise FDUnrecognizedStatusCode(self._request.status_code, url)
 

@@ -601,7 +601,7 @@ def get_pypi_latest_version():
     req = None
     version = None
     try:
-        req = requests.get("https://pypi.python.org/pypi/apio/json")
+        req = requests.get("https://pypi.python.org/pypi/apio/json", timeout=5)
         version = req.json().get("info").get("version")
         req.raise_for_status()
     except requests.exceptions.ConnectionError as exc:

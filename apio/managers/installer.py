@@ -332,7 +332,7 @@ class Installer:
         # -- all the APIO packages
         if url_version:
             # -- Get the version.txt with the latest version number
-            req = requests.get(url_version)
+            req = requests.get(url_version, timeout=5)
 
             # -- Check the server response
             if (
