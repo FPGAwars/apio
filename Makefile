@@ -6,7 +6,7 @@ deps:  ## Install dependencies for apio development
 	
 
 cenv:  ## Create the virtual-environment and update dependencies
-    python3 -m venv venv
+	python3 -m venv venv
 	python3 -m venv venv --upgrade
 
 env:
