@@ -44,7 +44,6 @@ class Resources:
     """Resource manager. Class for accesing to all the resources"""
 
     def __init__(self, platform=""):
-
         # -- Read the packages information
         self.packages = self._load_resource("packages")
 
@@ -147,7 +146,6 @@ class Resources:
         terminal_width, _ = shutil.get_terminal_size()
 
         if installed and installed_packages:
-
             # - Print installed packages table
             click.echo("\nInstalled packages:\n")
 
@@ -173,7 +171,6 @@ class Resources:
                 )
 
         if notinstalled and notinstalled_packages:
-
             # - Print not installed packages table
             click.echo("\nNot installed packages:\n")
 

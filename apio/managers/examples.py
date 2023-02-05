@@ -87,7 +87,6 @@ class Examples:
 
             if isdir(local_example_path):
                 if isdir(example_path):
-
                     # -- If sayno, do not copy anything
                     if not sayno:
                         click.secho(
@@ -144,7 +143,6 @@ class Examples:
             if filename != "info":
                 filepath = str(Path(dest_path) / filename)
                 if isfile(filepath):
-
                     # -- If sayno, do not copy the file. Move to the next
                     if sayno:
                         continue

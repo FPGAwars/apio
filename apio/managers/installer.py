@@ -69,7 +69,6 @@ class Installer:
         # -- If the package is known...
         # --(It is defined in the resources/packages.json file)
         if self.package in self.resources.packages:
-
             # -- Store the package dir
             self.packages_dir = str(Path(util.get_home_dir()) / dirname)
 
@@ -94,7 +93,6 @@ class Installer:
             # Check if the version is ok (It is only done if the
             # checkversion flag has been activated)
             if checkversion:
-
                 # Check version. The filename is read from the
                 # repostiroy
                 # -- Get the url of the version.txt file
@@ -127,7 +125,6 @@ class Installer:
                 ]
         # -- The package is kwnown but the version is not correct
         else:
-
             if self.package in self.profile.packages and checkversion is False:
                 self.packages_dir = str(Path(util.get_home_dir()) / dirname)
 
@@ -169,7 +166,6 @@ class Installer:
 
         # -- Warning if the package has been marked as obsolete
         if self.package in self.resources.obsolete_pkgs:
-
             # -- Get the string with the new package to use instead
             # -- of the obsolete one (if available)
             if self.resources.obsolete_pkgs[self.package] != "":
@@ -225,7 +221,6 @@ class Installer:
     def _install_os_package(self, platform_download_url):
         os_download_url = self.download_urls[1].get("url")
         if platform_download_url != os_download_url:
-
             name = self.download_urls[0].get("platform")
             click.secho(
                 f"Warning: full platform does not match: {name}",
@@ -270,9 +265,7 @@ class Installer:
             )
 
     def _rename_unpacked_dir(self):
-
         if self.uncompressed_name:
-
             # -- Build the names
             unpack_dir = str(Path(self.packages_dir) / self.uncompressed_name)
             package_dir = str(Path(self.packages_dir) / self.package_name)
@@ -286,7 +279,6 @@ class Installer:
         # -- Build the filename
         file = str(Path(self.packages_dir) / self.package_name)
         if isdir(file):
-
             package_color = click.style(self.package, fg="cyan")
             click.echo(f"Uninstalling {package_color} package:")
             shutil.rmtree(file)
@@ -339,7 +331,6 @@ class Installer:
         # -- It is found in the file version.txt located in the root folder of
         # -- all the APIO packages
         if url_version:
-
             # -- Get the version.txt with the latest version number
             req = requests.get(url_version)
 
@@ -349,7 +340,6 @@ class Installer:
                 req.status_code
                 == requests.codes.ok
             ):
-
                 # -- Request OK
                 print("File version.txt downloaded!")
 
@@ -389,7 +379,6 @@ class Installer:
 
     @staticmethod
     def _find_latest_version(releases, tag_name, spec_v):
-
         print("->Find latest version")
 
         for release in releases:

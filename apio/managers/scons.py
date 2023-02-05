@@ -44,7 +44,6 @@ class SCons:
 
         # -- Project path is given
         if project_dir is not None:
-
             # Check if it is a correct folder
             # (or create a new one)
             project_dir = util.check_dir(project_dir)
@@ -181,7 +180,6 @@ class SCons:
         programmer = ""
 
         if board:
-
             board_data = self.resources.boards.get(board)
 
             # Check platform
@@ -461,7 +459,6 @@ class SCons:
         # -- If the SConstruct file does NOT exist, we use the one provided by
         # -- apio, which is located in the resources/arch/ folder
         if not isfile(scon_file):
-
             # -- This is the default SConstruct file
             resources = util.get_full_path("resources")
             default_scons_file = resources / arch / "SConstruct"
@@ -475,7 +472,6 @@ class SCons:
 
         # -- Check the configuration mode
         if self.profile.check_exe_default():
-
             # Run on `default` config mode
 
             # -- Check if the necessary packages are installed

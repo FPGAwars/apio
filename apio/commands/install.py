@@ -56,7 +56,6 @@ def cli(ctx, packages, all, list, force, platform):
     # -- Install the given packages
     if packages:
         for package in packages:
-
             # -- The instalation is performed by the Installer object
             inst = Installer(package, platform, force)
 
@@ -64,7 +63,6 @@ def cli(ctx, packages, all, list, force, platform):
 
     # -- Install all the available packages
     elif all:  # pragma: no cover
-
         # -- Get all the resources
         resources = Resources(platform)
 
@@ -73,7 +71,6 @@ def cli(ctx, packages, all, list, force, platform):
 
         # -- Install all the packages... except the obolete one
         for package in packages:
-
             # -- do NOT install the obsolete packages
             if package not in resources.obsolete_pkgs:
                 Installer(package, platform, force).install()

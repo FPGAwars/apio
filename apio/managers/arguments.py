@@ -11,6 +11,7 @@ import click
 
 from apio.managers.project import Project
 
+
 # Too many local variables (23/15)
 # pylint: disable=R0914
 # Too many nested blocks (6/5)

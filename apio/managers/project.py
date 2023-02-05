@@ -118,12 +118,10 @@ class Project:
 
         # -- Define the target sconstruct file to create
         with sconstruct_path.open(mode="w", encoding="utf8") as sconstruct:
-
             # -- Open the original sconstruct file
             with local_sconstruct_path.open(
                 encoding="utf8"
             ) as local_sconstruct:
-
                 # -- Copy the src to the target file
                 sconstruct.write(local_sconstruct.read())
 

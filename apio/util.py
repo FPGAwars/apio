@@ -185,7 +185,6 @@ def _get_projconf_option_dir(name, default=None):
     # -- Check if the environment variable
     # -- is defined
     if _env_name in os.environ:
-
         # -- Read the value of the environmental variable
         _env_value = os.getenv(_env_name)
 
@@ -203,7 +202,6 @@ def _get_projconf_option_dir(name, default=None):
     # -- Check if the config option is defined in the
     # -- configuration file (Only Debian systems)
     if config_data and _env_name in config_data.keys():
-
         # -- Return the value of the option
         return config_data.get(_env_name)
 
@@ -335,7 +333,6 @@ def set_env_variables(base_dir, bin_dir):
     # -- Add the gtkwave to the path if installed,
     # -- but only for windows platforms
     if platform.system() == "Windows":
-
         # -- Gtkwave package is installed
         if bin_dir[GTKWAVE] != "":
             path = os.pathsep.join([bin_dir.get(GTKWAVE), path])
@@ -349,7 +346,6 @@ def set_env_variables(base_dir, bin_dir):
     # -- Add the OSS_CAD_SUITE package to the path
     # -- if installed (Maximum priority)
     if base_dir[OSS_CAD_SUITE] != "":
-
         # -- Get the lib folder (where the shared libraries are located)
         oss_cad_suite_lib = str(Path(base_dir[OSS_CAD_SUITE]) / "lib")
 
@@ -399,7 +395,6 @@ def resolve_packages(packages, installed_packages, spec_packages):
     # -- Check packages
     check = True
     for package in packages:
-
         version = installed_packages.get(package, {}).get("version", "")
 
         spec_version = spec_packages.get(package, "")
@@ -410,7 +405,6 @@ def resolve_packages(packages, installed_packages, spec_packages):
 
     # -- Load packages
     if check:
-
         # --- Set the system env. variables
         set_env_variables(base_dir, bin_dir)
 
@@ -676,7 +670,6 @@ def check_dir(_dir):
 
     # -- Check if the path is a file or a folder
     if isfile(_dir):
-
         # -- It is a file! Error! Exit!
         click.secho(
             f"Error: project directory is already a file: {_dir}", fg="red"
@@ -686,7 +679,6 @@ def check_dir(_dir):
 
     # -- If the folder does not exist....
     if not exists(_dir):
-
         # -- Warning
         click.secho(f"Warning: The path does not exist: {_dir}", fg="yellow")
 

@@ -19,7 +19,6 @@ class Profile:
     """Class for managing the apio profile file"""
 
     def __init__(self):
-
         # ---- Set the default parameters
         # -- Apio default config mode
         self.config = {"exe": "default", "verbose": 0}
@@ -131,10 +130,8 @@ class Profile:
 
         # -- Check if the file exist
         if isfile(self._profile_path):
-
             # -- Open the profile file
             with open(self._profile_path, "r", encoding="utf8") as profile:
-
                 # -- Read the profile file
                 self._load_profile(profile)
 

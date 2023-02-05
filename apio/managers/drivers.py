@@ -200,7 +200,6 @@ class Drivers:  # pragma: no cover
 
         # -- Check if the target rules file already exists
         if not isfile(self.ftdi_rules_system_path):
-
             # -- The file does not exist. Copy!
             # -- Execute the cmd: sudo cp src_file target_file
             subprocess.call(
@@ -252,7 +251,6 @@ class Drivers:  # pragma: no cover
 
         # -- Check if the target rules file already exists
         if not isfile(self.serial_rules_system_path):
-
             # -- Add the user to the dialout group for
             # -- having access to the serial port
             group_added = self._add_dialout_group()
@@ -320,7 +318,6 @@ class Drivers:  # pragma: no cover
 
         # -- If it does not belong to the dialout group, add it!!
         if "dialout" not in groups.decode():
-
             # -- Command for adding the user to the dialout group
             subprocess.call("sudo usermod -a -G dialout $USER", shell=True)
             return True

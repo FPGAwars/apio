@@ -20,7 +20,6 @@ class System:  # pragma: no cover
     """System class. Managing and execution of the system commands"""
 
     def __init__(self):
-
         # -- Read the profile from the file
         profile = Profile()
 
@@ -140,7 +139,6 @@ class System:  # pragma: no cover
 
         # -- Check if the executable exists
         if isfile(executable_file):
-
             # -- Execute the command!
             result = util.exec_command(
                 executable_file,
@@ -169,7 +167,6 @@ class System:  # pragma: no cover
 
         # -- Check if the executable exists
         if isfile(executable_file):
-
             # -- Execute the command!
             result = util.exec_command(
                 executable_file,
