@@ -64,7 +64,7 @@
       "pid": "6010"
     },
     "ftdi": {
-      "desc": "Lattice FTUSB Interface Cable"
+      "desc": "(?:Dual RS232-HS)|(?:Lattice FTUSB Interface Cable)"
     }
   },
   "iCE40-HX8K-EVB": {
@@ -469,7 +469,7 @@
       "pid": "6010"
     },
     "ftdi": {
-      "desc": "Lattice ECP5 Versa Board"
+      "desc": "(?:USB <-> Serial Converter)|(?:Lattice ECP5 Versa Board)"
     }
   },
   "Alchitry-Cu": {
