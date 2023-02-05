@@ -2,10 +2,8 @@
 
 deps:  ## Install dependencies for apio development
 	python -m pip install --upgrade pip
-	python -m pip install black flake8 flit pylint tox tox-gh-actions semantic_version polib
-	python -m pip install click pyserial requests
-	python -m pip install pytest
-	python -m pip install scons==4.2.0
+	pip install flit black flake8 pylint tox pytest
+	
 
 cenv:  ## Create the virtual-environment and update dependencies
     python3 -m venv venv
