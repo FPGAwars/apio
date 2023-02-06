@@ -6,7 +6,7 @@ on: [workflow_dispatch]
 jobs:
     # -- Publish a new Apio release
     publish: 
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-22.04
         steps: 
             # -- Checkout the main branch
             - name: Checkout sources
