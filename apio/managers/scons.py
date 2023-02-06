@@ -232,8 +232,8 @@ class SCons:
         if platform != current_platform:
             # Incorrect platform
             if platform == "linux_armv7l":
-                raise Exception("incorrect platform: RPI2 or RPI3 required")
-            raise Exception(f"incorrect platform {platform}")
+                raise ValueError("incorrect platform: RPI2 or RPI3 required")
+            raise ValueError(f"incorrect platform {platform}")
 
     def check_pip_packages(self, board_data):
         """Check if the corresponding pip package with the programmer
@@ -274,14 +274,14 @@ class SCons:
                         "Please run:\n" f"   pip install -U apio[{pip_pkg}]",
                         fg="yellow",
                     )
-                    raise Exception
+                    raise ValueError("Incorrect version number")
             except pkg_resources.DistributionNotFound as exc:
                 click.secho(f"Error: '{pip_pkg}' is not installed", fg="red")
                 click.secho(
                     "Please run:\n" f"   pip install -U apio[{pip_pkg}]",
                     fg="yellow",
                 )
-                raise Exception from exc
+                raise ValueError("Package not installed") from exc
             try:
                 # Check pip_package itself
                 __import__(pip_pkg)
@@ -291,7 +291,7 @@ class SCons:
                 message = f"'{pip_pkg}' not compatible with "
                 message += f"Python {python_version}"
                 message += f"\n       {exc}"
-                raise Exception(message) from exc
+                raise ValueError(message) from exc
 
     def serialize_programmer(self, board_data, sram, flash):
         """DOC: TODO"""
@@ -335,7 +335,7 @@ class SCons:
         """DOC: TODO"""
 
         if "usb" not in board_data:
-            raise Exception("Missing board configuration: usb")
+            raise AttributeError("Missing board configuration: usb")
 
         usb_data = board_data.get("usb")
         hwid = f"{usb_data.get('vid')}:{usb_data.get('pid')}"
@@ -352,7 +352,7 @@ class SCons:
                     "Activate bootloader by pressing the reset button",
                     fg="yellow",
                 )
-            raise Exception("board " + board + " not connected")
+            raise ConnectionError("board " + board + " not connected")
 
     def get_serial_port(self, board, board_data, ext_serial_port):
         """DOC: TODO"""
@@ -361,14 +361,14 @@ class SCons:
         device = self._check_serial(board, board_data, ext_serial_port)
         if device is None:
             # Board not connected
-            raise Exception("board " + board + " not connected")
+            raise ConnectionError("board " + board + " not connected")
         return device
 
     def _check_serial(self, board, board_data, ext_serial_port):
         """DOC: TODO"""
 
         if "usb" not in board_data:
-            raise Exception("Missing board configuration: usb")
+            raise AttributeError("Missing board configuration: usb")
 
         usb_data = board_data.get("usb")
         hwid = f"{usb_data.get('vid')}:{usb_data.get('pid')}"
@@ -377,7 +377,7 @@ class SCons:
         serial_ports = util.get_serial_ports()
         if len(serial_ports) == 0:
             # Board not available
-            raise Exception("board " + board + " not available")
+            raise AttributeError("board " + board + " not available")
         for serial_port_data in serial_ports:
             port = serial_port_data.get("port")
             if ext_serial_port and ext_serial_port != port:
@@ -417,7 +417,7 @@ class SCons:
         ftdi_id = self._check_ftdi(board, board_data, ext_ftdi_id)
         if ftdi_id is None:
             # Board not connected
-            raise Exception("board " + board + " not connected")
+            raise AttributeError("board " + board + " not connected")
         return ftdi_id
 
     @staticmethod
@@ -425,7 +425,7 @@ class SCons:
         """DOC: TODO"""
 
         if "ftdi" not in board_data:
-            raise Exception("Missing board configuration: ftdi")
+            raise AttributeError("Missing board configuration: ftdi")
 
         desc_pattern = "^" + board_data.get("ftdi").get("desc") + "$"
 
@@ -433,7 +433,7 @@ class SCons:
         ftdi_devices = System().get_ftdi_devices()
         if len(ftdi_devices) == 0:
             # Board not available
-            raise Exception("board " + board + " not available")
+            raise AttributeError("board " + board + " not available")
         for ftdi_device in ftdi_devices:
             index = ftdi_device.get("index")
             # ftdi device indices can start at zero
@@ -481,7 +481,7 @@ class SCons:
                 self.resources.distribution.get("packages"),
             ):
                 # Exit if a package is not installed
-                raise Exception
+                raise AttributeError("Package not installed")
         else:
             click.secho("Info: native config mode")
 

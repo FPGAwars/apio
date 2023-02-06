@@ -95,7 +95,7 @@ class System:  # pragma: no cover
         if result and result.get("returncode") == 0:
             usb_devices = self._parse_usb_devices(result.get("out"))
         else:
-            raise Exception
+            raise RuntimeError("Error executing lsusb")
 
         return usb_devices
 
@@ -108,7 +108,7 @@ class System:  # pragma: no cover
         if result and result.get("returncode") == 0:
             ftdi_devices = self._parse_ftdi_devices(result.get("out"))
         else:
-            raise Exception
+            raise RuntimeError("Error executing lsftdi")
 
         return ftdi_devices
 

@@ -68,7 +68,7 @@ def process_arguments(args, resources):  # noqa
                             contradictory_arguments += ["fpga"]
                     else:
                         # Unknown FPGA
-                        raise Exception(f"unknown FPGA: {var_fpga}")
+                        raise ValueError(f"unknown FPGA: {var_fpga}")
 
                 if var_size:
                     if var_size == fpga_size:
@@ -113,13 +113,13 @@ def process_arguments(args, resources):  # noqa
                 if contradictory_arguments:
                     # Contradictory argument
                     error_str = ", ".join(contradictory_arguments)
-                    raise Exception(f"contradictory arguments: {error_str}")
+                    raise ValueError(f"contradictory arguments: {error_str}")
             else:
                 # Unknown FPGA
                 pass
         else:
             # Unknown board
-            raise Exception(f"unknown board: {var_board}")
+            raise ValueError(f"unknown board: {var_board}")
     else:
         if var_fpga:
             if isfile("apio.ini"):
@@ -177,10 +177,10 @@ def process_arguments(args, resources):  # noqa
                 if contradictory_arguments:
                     # Contradictory argument
                     error_str = ", ".join(contradictory_arguments)
-                    raise Exception(f"contradictory arguments: {error_str}")
+                    raise ValueError(f"contradictory arguments: {error_str}")
             else:
                 # Unknown FPGA
-                raise Exception(f"unknown FPGA: {var_fpga}")
+                raise ValueError(f"unknown FPGA: {var_fpga}")
         else:
             if var_size and var_type and var_pack and var_arch:
                 if isfile("apio.ini"):
@@ -208,7 +208,7 @@ def process_arguments(args, resources):  # noqa
                             )
                         else:
                             # Unknown board
-                            raise Exception(f"unknown board: {var_board}")
+                            raise ValueError(f"unknown board: {var_board}")
                     else:
                         click.secho(
                             "Error: insufficient arguments: missing board",
@@ -222,7 +222,7 @@ def process_arguments(args, resources):  # noqa
                             + "       `apio init --board <boardname>`",
                             fg="yellow",
                         )
-                        raise Exception
+                        raise ValueError("Missing board")
                 else:
                     if isfile("apio.ini"):
                         click.secho("Info: ignore apio.ini board", fg="yellow")
@@ -234,7 +234,7 @@ def process_arguments(args, resources):  # noqa
                         missing += ["type"]
                     if not var_pack:
                         missing += ["pack"]
-                    raise Exception(
+                    raise ValueError(
                         f"insufficient arguments: missing {', '.join(missing)}"
                     )
 
