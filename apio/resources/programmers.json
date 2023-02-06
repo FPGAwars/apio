@@ -64,14 +64,14 @@
   },
  "openfpgaloader_ft2232": {
     "command": "openFPGALoader",
-    "args": "-c ft2232"
+    "args": "-c ft2232 -v --file-type bin"
   },
   "openfpgaloader_ft232": {
     "command": "openFPGALoader",
-    "args": "-c ft232"
+    "args": "-c ft232 -v --file-type bin"
   },
   "openfpgaloader_usb-blaster": {
     "command": "openFPGALoader",
-    "args": "-c usb-blaster"
+    "args": "-c usb-blaster -v --file-type bin"
   }
 }
