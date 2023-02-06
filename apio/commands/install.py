@@ -10,6 +10,8 @@ import click
 from apio.managers.installer import Installer
 from apio.resources import Resources
 
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
 platforms = [
     "linux",
     "linux_x86_64",

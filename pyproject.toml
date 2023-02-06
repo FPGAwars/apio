@@ -44,8 +44,7 @@ line-length = 79
 target-version = ['py38']
 
 [tool.pylint.messages_control]
-disable = [           
-           "duplicate-code",
+disable = [   
           ]
 
           

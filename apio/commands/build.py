@@ -13,6 +13,7 @@ from apio.managers.scons import SCons
 # R0913: Too many arguments (6/5)
 # pylint: disable=R0913
 # pylint: disable=W0622
+# pylint: disable=R0801
 @click.command("build")
 @click.pass_context
 @click.option(
