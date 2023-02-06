@@ -552,11 +552,11 @@ def exec_command(*args, **kwargs):  # pragma: no cover
 
     result = {"out": None, "err": None, "returncode": None}
 
-    default = dict(
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=False,
-    )
+    default = {
+        "stdout": subprocess.PIPE,
+        "stderr": subprocess.PIPE,
+        "shell": False,
+    }
     default.update(kwargs)
     kwargs = default
 

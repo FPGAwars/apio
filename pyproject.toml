@@ -47,7 +47,6 @@ target-version = ['py38']
 disable = [           
            "duplicate-code",
            "W0719",
-           "R1735",
           ]
 
           
