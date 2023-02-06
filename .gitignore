@@ -23,6 +23,7 @@ env/
 venv/
 examples/
 ice-build/
+work/
 test-colorlight-v61.ice
 test2
 test-examples/
