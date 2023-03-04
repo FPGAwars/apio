@@ -33,5 +33,4 @@ hardware.out
 *.vcd
 hardware.bit
 hardware.config
-
-
+.DS_Store
