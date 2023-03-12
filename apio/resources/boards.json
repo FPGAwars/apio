@@ -357,7 +357,7 @@
       "desc": "(?:USB <-> Serial Converter)|(?:Lattice iCE40UP5K Breakout)"
     }
   },
-  "iCE40-UL1K": {
+  "iCE40-UL1K-Breakout": {
     "name": "iCE40-UL1K UltraLite Breakout Board",
     "fpga": "iCE40-UL1K-CM36A",
     "programmer": {

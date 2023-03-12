@@ -17,6 +17,12 @@
     "size": "1k",
     "pack": "cm36"
   },
+  "iCE40-UL1K-CM36A": {
+    "arch": "ice40",
+    "type": "ul",
+    "size": "1k",
+    "pack": "cm36a"
+  },
   "iCE40-LP384-CM49": {
     "arch": "ice40",
     "type": "lp",
