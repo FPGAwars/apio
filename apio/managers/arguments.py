@@ -33,6 +33,7 @@ def process_arguments(args, resources):  # noqa
         var_pack = args.get("pack")
         var_idcode = args.get("idcode")
         var_verbose = args.get("verbose")
+        var_topmodule = args.get("top-module")
     else:
         var_board = None
         var_arch = None
@@ -42,6 +43,7 @@ def process_arguments(args, resources):  # noqa
         var_pack = None
         var_idcode = None
         var_verbose = {}
+        var_topmodule= None
 
     if var_board:
         if isfile("apio.ini"):
@@ -249,6 +251,7 @@ def process_arguments(args, resources):  # noqa
             "verbose_all": var_verbose.get("all"),
             "verbose_yosys": var_verbose.get("yosys"),
             "verbose_pnr": var_verbose.get("pnr"),
+            "top_module": var_topmodule,
         }
     )
 
