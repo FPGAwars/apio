@@ -205,6 +205,11 @@ bitstream = env.Bin(TARGET, asc)
 build = env.Alias('build', bitstream)
 AlwaysBuild(build)
 
+if(VERBOSE_ALL or VERBOSE_YOSYS):
+    AlwaysBuild(blif)
+if(VERBOSE_ALL or VERBOSE_PNR):
+    AlwaysBuild(asc)
+
 # -- Upload the bitstream into FPGA
 upload = env.Alias('upload', bitstream, '{0} $SOURCE'.format(PROG))
 AlwaysBuild(upload)
