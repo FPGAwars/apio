@@ -59,6 +59,11 @@ Show the yosys output of the command.
 
 Show the arachne output of the command.
 
+.. option::
+    --top-module
+
+Set the top level module name used for build. Otherwise Yosys will auto select. 
+
 .. note::
 
   All available boards, FPGAs, sizes, types and packs are showed in :ref:`cmd_boards`
