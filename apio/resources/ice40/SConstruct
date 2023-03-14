@@ -20,6 +20,7 @@ PROG = ARGUMENTS.get('prog', '')
 FPGA_SIZE = ARGUMENTS.get('fpga_size', '')
 FPGA_TYPE = ARGUMENTS.get('fpga_type', '')
 FPGA_PACK = ARGUMENTS.get('fpga_pack', '')
+YOSYS_TOP = ARGUMENTS.get('top_module', '')
 VERBOSE_ALL = ARGUMENTS.get('verbose_all', False)
 VERBOSE_YOSYS = ARGUMENTS.get('verbose_yosys', False)
 VERBOSE_PNR = ARGUMENTS.get('verbose_pnr', False)
@@ -166,7 +167,8 @@ except IndexError:
 
 # -- Define the Sintesizing Builder
 synth = Builder(
-    action='yosys -p \"synth_ice40 -json $TARGET\" {} $SOURCES'.format(
+    action='yosys -p \"synth_ice40 {0} -json $TARGET\" {1} $SOURCES'.format(
+        ('-top '+YOSYS_TOP) if YOSYS_TOP else '',
         '' if VERBOSE_ALL or VERBOSE_YOSYS else '-q'
     ),
     suffix='.json',
