@@ -53,7 +53,7 @@ Apio has a **command line interface** (CLI). It is the **building block** for ot
 
 ![](https://github.com/FPGAwars/Apio-wiki/raw/main/wiki/Introduction/vscode-example.png)
 
-# Documentation
+## Documentation
 
 Find all the information on this [WIKI PAGE](https://github.com/FPGAwars/apio/wiki)
 
