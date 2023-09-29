@@ -171,8 +171,6 @@ NOTE: all supported [Icestorm FPGAs](http://www.clifford.at/icestorm/) can be us
 
 * [FPGAwars](http://fpgawars.github.io/) community has developed this project in a voluntary and altruistic way since 11/2016.
 
-  <img src="https://avatars3.githubusercontent.com/u/18257418?s=100">
-
 * [BQ](https://www.bq.com) sponsored this project from 02/2016 to 11/2016. Thanks.
 
 ## License
@@ -193,8 +191,6 @@ Licensed under [GPL 2.0](http://opensource.org/licenses/GPL-2.0) and [Creative C
 
 [license-image]: http://img.shields.io/:license-gpl-blue.svg
 [license-url]: (http://opensource.org/licenses/GPL-2.0)
-
-https://github.com/FPGAwars/Apio-wiki/raw/main/wiki/Logos/Apio-github.png
 
 [apio-logo]: https://github.com/FPGAwars/Apio-wiki/raw/main/wiki/Logos/Apio-github.png
 [linux-logo]: https://github.com/FPGAwars/apio/raw/master/docs/resources/images/linux.png
