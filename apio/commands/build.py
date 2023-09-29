@@ -50,7 +50,11 @@ from apio.managers.scons import SCons
 @click.option(
     "--verbose-pnr", is_flag=True, help="Show the pnr output of the command."
 )
-@click.option("--top-module", type=str, metavar="top_module", help="Set the top level module (w/o .v ending) for build.",
+@click.option(
+    "--top-module",
+    type=str,
+    metavar="top_module",
+    help="Set the top level module (w/o .v ending) for build.",
 )
 def cli(
     ctx,
