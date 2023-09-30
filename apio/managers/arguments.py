@@ -43,7 +43,7 @@ def process_arguments(args, resources):  # noqa
         var_pack = None
         var_idcode = None
         var_verbose = {}
-        var_topmodule= None
+        var_topmodule = None
 
     if var_board:
         if isfile("apio.ini"):
