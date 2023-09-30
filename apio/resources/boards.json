@@ -457,7 +457,21 @@
       "desc": "OrangeCrab r0.2 DFU bootloader"
     }
   },
-  "butterStick-r1.0-2G-85F": {
+  "orangecrab-r02-85f": {
+    "name": "OrangeCrab r0.2",
+    "fpga": "ECP5-LFE5U-85F-CSFBGA285",
+    "programmer": {
+      "type": "dfu"
+    },
+    "usb": {
+      "vid": "1209",
+      "pid": "5af0"
+    },
+    "ftdi": {
+      "desc": "OrangeCrab r0.2 DFU bootloader"
+    }
+  },
+  "Butterstick-r10-2g-85k": {
     "name": "butterstick r1.0",
     "fpga": "ECP5-LFE5UM5G-85F-CABGA381",
     "programmer": {
@@ -470,6 +484,20 @@
     },
     "ftdi": {
       "desc": "butterstick (dfu v1.1)"
+    }
+  },
+  "Butterstick-r10-2g-85k_(FT2232H)": {
+    "name": "butterstick r1.0",
+    "fpga": "ECP5-LFE5UM5G-85F-CABGA381",
+    "programmer": {
+      "type": "openfpgaloader_ft2232"
+    }
+  },
+  "Butterstick-r10-2g-85k_(FT232H)": {
+    "name": "butterstick r1.0",
+    "fpga": "ECP5-LFE5UM5G-85F-CABGA381",
+    "programmer": {
+      "type": "openfpgaloader_ft232"
     }
   },
   "versa": {
