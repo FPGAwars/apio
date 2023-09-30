@@ -183,7 +183,7 @@ pnr = Builder(
     src_suffix='.json')
 
 bitstream = Builder(
-    action='ecppack --db {0} {1} $SOURCE hardware.bit'.format(DATABASE_PATH, IDCODE_PARAM),
+    action='ecppack --compress --db {0} {1} $SOURCE hardware.bit'.format(DATABASE_PATH, IDCODE_PARAM),
     suffix='.bit',
     src_suffix='.config')
 
