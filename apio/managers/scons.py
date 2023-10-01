@@ -508,9 +508,6 @@ class SCons:
             click.secho("-" * terminal_width, bold=True)
 
         scons_command = ["scons"] + ["-Q", command] + variables
-        cmd = " ".join(util.exec_command(scons_command))
-        if self.profile.get_verbose_mode() > 0:
-            click.secho(f"Executing: {cmd}")
 
         # -- Execute the scons builder
         result = util.exec_command(
