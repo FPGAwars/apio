@@ -14,7 +14,7 @@ classifiers=[
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
         'Programming Language :: Python']
 description-file = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.9"
 requires = [
     'click==8.1.3',
     'semantic_version==2.9.0',
@@ -41,7 +41,7 @@ apio = "apio.__main__:cli"
 
 [tool.black]
 line-length = 79
-target-version = ['py38']
+target-version = ['py39']
 
 [tool.pylint.messages_control]
 disable = [   

@@ -700,12 +700,11 @@ def command(function):
         exit_code = 1
         try:
             exit_code = function(*args, **kwargs)
+
         except Exception as exc:
             if str(exc):
                 click.secho("Error: " + str(exc), fg="red")
-
-        finally:
-            return exit_code
+        return exit_code
 
     return decorate
 
