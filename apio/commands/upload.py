@@ -50,6 +50,12 @@ from apio.managers.drivers import Drivers
 @click.option(
     "--verbose-pnr", is_flag=True, help="Show the pnr output of the command."
 )
+@click.option(
+    "--top-module",
+    type=str,
+    metavar="top_module",
+    help="Set the top level module (w/o .v ending) for build.",
+)
 def cli(
     ctx,
     board,
@@ -61,6 +67,7 @@ def cli(
     verbose,
     verbose_yosys,
     verbose_pnr,
+    top_module,
 ):
     """Upload the bitstream to the FPGA."""
 
@@ -76,6 +83,7 @@ def cli(
                 "yosys": verbose_yosys,
                 "pnr": verbose_pnr,
             },
+            "top-module": top_module,
         },
         serial_port,
         ftdi_id,
