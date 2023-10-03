@@ -704,6 +704,7 @@ def command(function):
         except Exception as exc:
             if str(exc):
                 click.secho("Error: " + str(exc), fg="red")
+
         return exit_code
 
     return decorate
