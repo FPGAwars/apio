@@ -2,7 +2,7 @@
 
 deps:  ## Install dependencies for apio development
 	python -m pip install --upgrade pip
-	pip install flit black flake8 pylint tox pytest
+	pip install flit black flake8 pylint tox pytest semantic-version pyserial
 	
 
 cenv:  ## Create the virtual-environment and update dependencies
