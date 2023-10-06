@@ -177,7 +177,7 @@ synth = Builder(
 
 pnr = Builder(
     action='nextpnr-ecp5 --{0} --package {2} --json $SOURCE --textcfg $TARGET {3} {4} --timing-allow-fail --force'.format(
-        FPGA_TYPE_PARAM, FPGA_SIZE, FPGA_PACK, '--lpf ' + str(LPF) if LPF else '',
+        FPGA_TYPE_PARAM, FPGA_SIZE, FPGA_PACK, '--lpf-allow-unconstrained --lpf ' + str(LPF) if LPF else '',
         '' if VERBOSE_ALL or VERBOSE_PNR else '-q'),
     suffix='.config',
     src_suffix='.json')
