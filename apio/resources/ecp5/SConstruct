@@ -169,7 +169,7 @@ except IndexError:
 
 # -- Define the Sintesizing Builder
 synth = Builder(
-    action='yosys -p \"synth_ecp5 -json $TARGET\" {} $SOURCES'.format(
+    action='yosys -p \"synth_ecp5 {0} -json $TARGET\" {1} $SOURCES'.format(
         ('-top '+YOSYS_TOP) if YOSYS_TOP else '',
         '' if VERBOSE_ALL or VERBOSE_YOSYS else '-q'
     ),
