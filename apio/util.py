@@ -359,9 +359,9 @@ def set_env_variables(base_dir, bin_dir):
     # print(f" get_bin_dir(): {get_bin_dir()}")
 
     # -- DEBUG
-    print()
-    print(f"PATH: {os.environ['PATH']}")
-    print()
+    # print()
+    # print(f"PATH: {os.environ['PATH']}")
+    # print()
 
     # Add other environment variables
 
