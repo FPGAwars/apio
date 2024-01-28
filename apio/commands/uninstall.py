@@ -18,6 +18,7 @@ platforms = [
     "linux_aarch64",
     "windows",
     "darwin",
+    "darwin_arm64",
 ]
 
 

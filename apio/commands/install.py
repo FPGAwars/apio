@@ -22,6 +22,7 @@ platforms = [
     "windows_x86",
     "windows_amd64",
     "darwin",
+    "darwin_arm64",
 ]
 
 

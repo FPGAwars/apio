@@ -212,6 +212,12 @@ class SCons:
                 # In this case the serial check is ignored
                 return "tinyprog --libusb --program"
 
+            # TinyFPGA BX board is not detected in MacOS HighSierra
+            if "tinyprog" in board_data and "darwin_arm64" in util.get_systype():
+                # In this case the serial check is ignored
+                return "tinyprog --libusb --program"
+
+
             # Replace Serial port
             if "${SERIAL_PORT}" in programmer:
                 self.check_usb(board, board_data)
