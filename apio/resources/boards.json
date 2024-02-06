@@ -774,5 +774,19 @@
     "programmer": {
       "type": "openfpgaloader_usb-blaster"
     }
+  },
+  "ThetaMachines-ETH4K": {
+    "name": "Theta Machines ETH4K",
+    "fpga": "iCE40-HX4K-TQ144",
+    "programmer": {
+      "type": "iceprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6010"
+    },
+    "ftdi": {
+      "desc": "ETH4K"
+    }
   }
  } 
