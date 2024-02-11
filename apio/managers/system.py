@@ -115,7 +115,7 @@ class System:  # pragma: no cover
     def _run_command(self, command, silent=False):
         result = {}
 
-        #print(f"(DEBUG) Run Command: {command}")
+        # print(f"(DEBUG) Run Command: {command}")
 
         # From apio >= 0.7.0, the system tools are locate in the
         # oss-cad-suite package instead of the system package
@@ -123,15 +123,15 @@ class System:  # pragma: no cover
 
         # -- Get the package base dir
         system_base_dir = util.get_package_dir("tools-oss-cad-suite")
-        #print(f"(DEBUG) System_base_dir: {system_base_dir}")
+        # print(f"(DEBUG) System_base_dir: {system_base_dir}")
 
         # -- Get the folder were the binary file is locateds
         system_bin_dir = Path(system_base_dir) / "bin"
-        #print(f"(DEBUG) System bin dir: {system_bin_dir}")
+        # print(f"(DEBUG) System bin dir: {system_bin_dir}")
 
         # -- Get the executable filename
         executable_file = system_bin_dir / (command + self.ext)
-        #print(f"(DEBUG) Executable file: {executable_file}")
+        # print(f"(DEBUG) Executable file: {executable_file}")
 
         # -- Set the stdout and stderr for executing the command
         on_stdout = None if silent else self._on_stdout
