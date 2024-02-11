@@ -1,4 +1,5 @@
 """Implementation of the Apio system commands"""
+
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
