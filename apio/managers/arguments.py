@@ -34,6 +34,8 @@ def process_arguments(args, resources):  # noqa
         var_idcode = args.get("idcode")
         var_verbose = args.get("verbose")
         var_topmodule = args.get("top-module")
+
+    # -- No user arguments given
     else:
         var_board = None
         var_arch = None
@@ -44,6 +46,8 @@ def process_arguments(args, resources):  # noqa
         var_idcode = None
         var_verbose = {}
         var_topmodule = None
+
+    print(f"DEBUG!!!! TOP-MODULE: {var_topmodule}")
 
     if var_board:
         if isfile("apio.ini"):

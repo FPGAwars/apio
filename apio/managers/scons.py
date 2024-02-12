@@ -15,9 +15,8 @@ import shutil
 from os.path import isfile
 from pathlib import Path
 
+import importlib.metadata
 import click
-
-import pkg_resources
 import semantic_version
 
 from apio import util
@@ -270,7 +269,7 @@ class SCons:
             try:
                 # Check pip_package version
                 spec = semantic_version.Spec(all_pip_packages.get(pip_pkg, ""))
-                pkg_version = pkg_resources.get_distribution(pip_pkg).version
+                pkg_version = importlib.metadata.version(pip_pkg)
                 version = semantic_version.Version(pkg_version)
                 if not spec.match(version):
                     click.secho(
@@ -284,7 +283,7 @@ class SCons:
                         fg="yellow",
                     )
                     raise ValueError("Incorrect version number")
-            except pkg_resources.DistributionNotFound as exc:
+            except importlib.metadata.PackageNotFoundError as exc:
                 click.secho(f"Error: '{pip_pkg}' is not installed", fg="red")
                 click.secho(
                     "Please run:\n" f"   pip install -U apio[{pip_pkg}]",
