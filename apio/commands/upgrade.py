@@ -5,9 +5,8 @@
 # -- Licence GPLv2
 """TODO"""
 
+import importlib.metadata
 import click
-
-from pkg_resources import get_distribution
 
 from apio.util import get_pypi_latest_version
 
@@ -17,7 +16,7 @@ from apio.util import get_pypi_latest_version
 def cli(ctx):
     """Check the latest Apio version."""
 
-    current_version = get_distribution("apio").version
+    current_version = importlib.metadata.version("apio")
     latest_version = get_pypi_latest_version()
 
     if latest_version is None:
