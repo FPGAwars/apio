@@ -19,8 +19,11 @@ def cli(ctx):
     current_version = importlib.metadata.version("apio")
     latest_version = get_pypi_latest_version()
 
+    # -- There was an error getting the version from pypi
     if latest_version is None:
         ctx.exit(1)
+
+    print(f"DEBUG: {latest_version=}")
 
     if latest_version == current_version:
         click.secho(

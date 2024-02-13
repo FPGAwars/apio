@@ -594,33 +594,60 @@ def _parse_result(kwargs, result):
             result[k].strip()
 
 
-# W0703: Catching too general exception Exception (broad-except)
-# pylint: disable=W0703
-def get_pypi_latest_version():
-    """DOC: TODO"""
+def get_pypi_latest_version() -> str:
+    """Get the latest stable version of apio from Pypi
+    Internet connection is required
+    Returns: A string with the version (Ex: "0.9.0")
+      In case of error, it returns None
+    """
 
-    req = None
-    version = None
+    # -- Error message common to all exceptions
+    error_msg = "Error: could not connect to Pypi\n"
+
+    # -- Read the latest apio version from pypi
+    # -- More information: https://warehouse.pypa.io/api-reference/json.html
     try:
         req = requests.get("https://pypi.python.org/pypi/apio/json", timeout=5)
-        version = req.json().get("info").get("version")
         req.raise_for_status()
-    except requests.exceptions.ConnectionError as exc:
-        error_message = str(exc)
-        if "NewConnectionError" in error_message:
-            click.secho(
-                "Error: could not connect to Pypi.\n"
-                "Check your internet connection and try again",
-                fg="red",
-            )
-        else:
-            click.secho(error_message, fg="red")
-    except Exception as exc:
-        click.secho("Error: " + str(exc), fg="red")
-    finally:
-        if req:
-            req.close()
+
+    # -- Connection error
+    except requests.exceptions.ConnectionError as e:
+        click.secho(
+            f"\n{error_msg}" "Check your internet connection and try again\n",
+            fg="red",
+        )
+        print_exception_developers(e)
+        return None
+
+    # -- HTTP Error
+    except requests.exceptions.HTTPError as e:
+        click.secho(f"\nHTTP ERROR\n{error_msg}", fg="red")
+        print_exception_developers(e)
+        return None
+
+    # -- Timeout!
+    except requests.exceptions.Timeout as e:
+        click.secho(f"\nTIMEOUT!\n{error_msg}", fg="red")
+        print_exception_developers(e)
+        return None
+
+    # -- Another error
+    except requests.exceptions.RequestException as e:
+        click.secho(f"\nFATAL ERROR!\n{error_msg}", fg="red")
+        print_exception_developers(e)
+        return None
+
+    # -- Get the version field from the json response
+    version = req.json()["info"]["version"]
+
     return version
+
+
+def print_exception_developers(e):
+    """Print a message for developers, caused by the exception e"""
+
+    click.secho("Info for developers:")
+    click.secho(f"{e}\n", fg="yellow")
 
 
 def get_full_path(folder: string):
