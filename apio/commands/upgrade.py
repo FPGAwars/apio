@@ -8,6 +8,7 @@
 import importlib.metadata
 import click
 
+from packaging import version
 from apio.util import get_pypi_latest_version
 
 
@@ -16,24 +17,38 @@ from apio.util import get_pypi_latest_version
 def cli(ctx):
     """Check the latest Apio version."""
 
+    # -- Get the current apio version from the python package installed
+    # -- on the system
     current_version = importlib.metadata.version("apio")
+
+    # -- Get the latest stable version published at Pypi
     latest_version = get_pypi_latest_version()
 
     # -- There was an error getting the version from pypi
     if latest_version is None:
         ctx.exit(1)
 
-    print(f"DEBUG: {latest_version=}")
+    # -- Print information about apio (Debug)
+    print(f"Local Apio version: {current_version}")
+    print(f"Lastest Apio stable version (Pypi): {latest_version}")
 
-    if latest_version == current_version:
-        click.secho(
-            f"You're up-to-date!\nApio {latest_version} is currently the "
-            "newest version available.",
-            fg="green",
-        )
-    else:
+    # -- Compare versions and inform the user
+    # -- No real action are taken!
+    if version.parse(current_version) < version.parse(latest_version):
         click.secho(
             "You're not updated\nPlease execute "
             "`pip install -U apio` to upgrade.",
             fg="yellow",
+        )
+    elif version.parse(current_version) > version.parse(latest_version):
+        click.secho(
+            "You are using a development version! (Not stable)\n"
+            "Use it at your own risk",
+            fg="yellow",
+        )
+    else:
+        click.secho(
+            f"You're up-to-date!\nApio {latest_version} is currently the "
+            "latest stable version available.",
+            fg="green",
         )
