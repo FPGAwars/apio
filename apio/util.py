@@ -546,14 +546,15 @@ def change_filemtime(path, time):
     os.utime(path, (time, time))
 
 
-# W0703: Catching too general exception Exception (broad-except)
-# pylint: disable=W0703
-def exec_command(*args, **kwargs):  # pragma: no cover
-    """DOC: TODO"""
-
-    # -- *args: List witht the command and its arguments to execute
-    # -- **kargs: Key arguments when calling subprocess.Popen()
-    # --   for executing the command
+def exec_command(*args, **kwargs) -> dict:  # pragma: no cover
+    """Execute the given command:
+    *args: List List witht the command and its arguments to execute
+    **kwargs: Key arguments when calling subprocess.Popen()
+      * stdout
+      * stdin
+      * shell
+    Example:  exec_command(['scons', '-Q', '-c', '-f', 'SConstruct'])
+    """
 
     # -- Default value to return after the command execution
     # -- out: string with the command output
@@ -595,22 +596,20 @@ def exec_command(*args, **kwargs):  # pragma: no cover
     # -- Close the stdout and stderr pipes
     finally:
         for std in ("stdout", "stderr"):
-            if isinstance(kwargs[std], AsyncPipe):
-                kwargs[std].close()
+            if isinstance(flags[std], AsyncPipe):
+                flags[std].close()
 
-    _parse_result(kwargs, result)
+    # -- Process the command output
+    if flags["stdout"] is not None:
+        result["out"] = "\n".join(flags["stdout"].get_buffer())
+        result["out"].strip()
+
+    # -- Process the command error output
+    if flags["stderr"] is not None:
+        result["err"] = "\n".join(flags["stderr"].get_buffer())
+        result["err"].strip()
 
     return result
-
-
-def _parse_result(kwargs, result):
-    for std in ("stdout", "stderr"):
-        if isinstance(kwargs[std], AsyncPipe):
-            result[std[3:]] = "\n".join(kwargs[std].get_buffer())
-
-    for k, value in result.items():
-        if value and isinstance(value, str):
-            result[k].strip()
 
 
 def get_pypi_latest_version() -> str:
