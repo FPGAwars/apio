@@ -551,29 +551,48 @@ def change_filemtime(path, time):
 def exec_command(*args, **kwargs):  # pragma: no cover
     """DOC: TODO"""
 
+    # -- *args: List witht the command and its arguments to execute
+    # -- **kargs: Key arguments when calling subprocess.Popen()
+    # --   for executing the command
+
+    # -- Default value to return after the command execution
+    # -- out: string with the command output
+    # -- err: string with the command error output
     result = {"out": None, "err": None, "returncode": None}
 
-    default = {
+    # -- Set the default arguments to pass to subprocess.Popen()
+    # -- for executing the command
+    flags = {
+        # -- Catpure the command output
         "stdout": subprocess.PIPE,
         "stderr": subprocess.PIPE,
+        # -- Execute it directly, without using the shell
         "shell": False,
     }
-    default.update(kwargs)
-    kwargs = default
 
-    # R1732: Consider using 'with' for resource-allocating operations
-    # (consider-using-with)
-    # pylint: disable=R1732
+    # -- Include the flags given by the user
+    # -- It overrides the default flags
+    flags.update(kwargs)
+
+    # -- Execute the command!
     try:
-        proc = subprocess.Popen(*args, **kwargs)
-        result["out"], result["err"] = proc.communicate()
-        result["returncode"] = proc.returncode
+        with subprocess.Popen(*args, **flags) as proc:
+
+            # -- Collect the results
+            result["out"], result["err"] = proc.communicate()
+            result["returncode"] = proc.returncode
+
+    # -- User has pressed the Ctrl-C for aborting the command
     except KeyboardInterrupt:
         click.secho("Aborted by user", fg="red")
         sys.exit(1)
+
+    # -- Process the rest of exceptions
     except Exception as exc:
         click.secho(str(exc), fg="red")
         sys.exit(1)
+
+    # -- Close the stdout and stderr pipes
     finally:
         for std in ("stdout", "stderr"):
             if isinstance(kwargs[std], AsyncPipe):
