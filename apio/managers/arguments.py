@@ -11,6 +11,10 @@ import click
 
 from apio.managers.project import Project
 
+# ----- Constant for accesing dicctionaries
+# -- Key for the board name
+BOARD = "board"
+
 
 # Too many local variables (23/15)
 # pylint: disable=R0914
@@ -23,35 +27,70 @@ from apio.managers.project import Project
 def process_arguments(args, resources):  # noqa
     """TODO"""
 
-    # -- Check arguments
-    if args is not None:
-        var_board = args.get("board")
-        var_arch = args.get("arch")
-        var_fpga = args.get("fpga")
-        var_size = args.get("size")
-        var_type = args.get("type")
-        var_pack = args.get("pack")
-        var_idcode = args.get("idcode")
-        var_verbose = args.get("verbose")
-        var_topmodule = args.get("top-module")
+    # -- Default configuration
+    config = {
+        BOARD: None,
+        "arch": None,
+        "fpga": None,
+        "size": None,
+        "type": None,
+        "pack": None,
+        "idcode": None,
+        "verbose": None,
+        "top-module": None,
+    }
 
-    # -- No user arguments given
+    # -- Add arguments to default config
+    config.update(args)
+
+    # -- Read the apio project file (apio.ini)
+    proj = Project()
+    proj.read()
+
+    # -- proj.board:
+    # --   * None: No apio.ini file
+    # --   * "name": Board name (str)
+
+    print(f"Debug. Project board: {proj.board}")
+    print(f"Debug. Argument board: {config[BOARD]}")
+
+    # -- Board name given in the command line
+    if config[BOARD]:
+
+        # -- If there is a project file (apio.ini) the board
+        # -- give by command line overrides it
+        # -- (command line has the highest priority)
+        if proj.board:
+            click.secho("Info: ignore apio.ini board", fg="yellow")
+
+    # -- Board name given in the project file
     else:
-        var_board = None
-        var_arch = None
-        var_fpga = None
-        var_size = None
-        var_type = None
-        var_pack = None
-        var_idcode = None
-        var_verbose = {}
-        var_topmodule = None
+        # -- ...read it from the apio.ini file
+        config[BOARD] = proj.board
+
+    # -- Debug
+    print(f"(Debug) ---> Board: {config[BOARD]}")
+
+    # -- If board name is given, Check if it is a valid board
+    if config[BOARD] and config[BOARD] not in resources.boards:
+        raise ValueError(f"unknown board: {config[BOARD]}")
+
+    print(f"Debug. FPGA: {config['fpga']}")
+
+    # -- Debug: Store arguments in local variables
+    var_board = config[BOARD]
+    var_fpga = config["fpga"]
+    var_size = config["size"]
+    var_arch = config["arch"]
+    var_type = config["type"]
+    var_pack = config["pack"]
+    var_idcode = config["idcode"]
+    var_verbose = config["verbose"]
+    var_topmodule = config["top-module"]
 
     print(f"DEBUG!!!! TOP-MODULE: {var_topmodule}")
 
-    if var_board:
-        if isfile("apio.ini"):
-            click.secho("Info: ignore apio.ini board", fg="yellow")
+    if config[BOARD]:
         if var_board in resources.boards:
             fpga = resources.boards.get(var_board).get("fpga")
             if fpga in resources.fpgas:
@@ -127,6 +166,7 @@ def process_arguments(args, resources):  # noqa
             # Unknown board
             raise ValueError(f"unknown board: {var_board}")
     else:
+        print("Debug: NO BOARD!!")
         if var_fpga:
             if isfile("apio.ini"):
                 click.secho("Info: ignore apio.ini board", fg="yellow")
@@ -197,6 +237,7 @@ def process_arguments(args, resources):  # noqa
                 fpga_pack = var_pack
                 fpga_idcode = var_idcode
             else:
+                print("LLEGA AQUI!!!!")
                 if not var_size and not var_type and not var_pack:
                     # No arguments: use apio.ini board
                     proj = Project()

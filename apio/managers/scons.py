@@ -498,7 +498,7 @@ class SCons:
 
     # R0914: Too many local variables (19/15)
     # pylint: disable=R0914
-    def _execute_scons(self, command, variables, board):
+    def _execute_scons(self, command: str, variables, board):
         """Execute the scons builder"""
 
         terminal_width, _ = shutil.get_terminal_size()
