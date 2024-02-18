@@ -17,8 +17,8 @@ FPGA = "fpga"  # -- Key for the fpga
 ARCH = "arch"  # -- Key for the FPGA Architecture
 TYPE = "type"  # -- Key for the FPGA Type
 SIZE = "size"  # -- Key for the FPGA size
-PACK = "PACK"  # -- Key for the FPGA pack
-IDCODE = "IDCODE"  # -- Key for the FPGA IDCODE
+PACK = "pack"  # -- Key for the FPGA pack
+IDCODE = "idcode"  # -- Key for the FPGA IDCODE
 
 
 # Too many local variables (23/15)
@@ -180,6 +180,51 @@ def process_arguments(args, resources):  # noqa
         # -- Debug
         print(f"(Debug) ---> FPGA SIZE: {config[SIZE]}")
 
+        # -- Read the FPGA pack
+        fpga_pack = resources.fpgas.get(fpga).get(PACK)
+
+        print(f"Debug. Argument Pack: {config[PACK]}")
+        print(f"Debug. Project Pack: {fpga_pack}")
+
+        # -- No FPGA pack given by arguments.
+        # -- We use the one in the current board
+        if config[PACK] is None:
+            config[PACK] = fpga_pack
+        else:
+            # -- Two FPGA pack given. The board FPGA pack and the one
+            # -- given by arguments
+            # -- It is a contradiction if their names are different
+            if fpga_pack != config[PACK]:
+                raise ValueError(
+                    f"contradictory arguments: {fpga_pack, config[PACK]}"
+                )
+
+        # -- Debug
+        print(f"(Debug) ---> FPGA PACK: {config[PACK]}")
+
+        # -- Read the FPGA idcode
+        fpga_idcode = resources.fpgas.get(fpga).get(IDCODE)
+        fpga_idcode = resources.fpgas.get(fpga).get("idcode")
+
+        print(f"Debug. Argument Idcode: {config[IDCODE]}")
+        print(f"Debug. Project Idcode: {fpga_idcode}")
+
+        # -- No FPGA idcode given by arguments.
+        # -- We use the one in the current board
+        if config[IDCODE] is None:
+            config[IDCODE] = fpga_idcode
+        else:
+            # -- Two FPGA idcode given. The board FPGA idcode and the one
+            # -- given by arguments
+            # -- It is a contradiction if their names are different
+            if fpga_idcode != config[IDCODE]:
+                raise ValueError(
+                    f"contradictory arguments: {fpga_idcode, config[IDCODE]}"
+                )
+
+        # -- Debug
+        print(f"(Debug) ---> FPGA IDCODE: {config[IDCODE]}")
+
     # -- Debug: Store arguments in local variables
     var_board = config[BOARD]
     var_fpga = config[FPGA]
@@ -194,27 +239,9 @@ def process_arguments(args, resources):  # noqa
     print(f"DEBUG!!!! TOP-MODULE: {var_topmodule}")
 
     if config[BOARD]:
-        fpga_pack = resources.fpgas.get(fpga).get("pack")
-        fpga_idcode = resources.fpgas.get(fpga).get("idcode")
 
         redundant_arguments = []
         contradictory_arguments = []
-
-        if var_pack:
-            if var_pack == fpga_pack:
-                # Redundant argument
-                redundant_arguments += ["pack"]
-            else:
-                # Contradictory argument
-                contradictory_arguments += ["pack"]
-
-        if var_idcode:
-            if var_idcode == fpga_idcode:
-                # Redundant argument
-                redundant_arguments += ["idcode"]
-            else:
-                # Contradictory argument
-                contradictory_arguments += ["idcode"]
 
         if redundant_arguments:
             # Redundant argument
