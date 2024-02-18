@@ -15,6 +15,10 @@ from apio.managers.project import Project
 BOARD = "board"  # -- Key for the board name
 FPGA = "fpga"  # -- Key for the fpga
 ARCH = "arch"  # -- Key for the FPGA Architecture
+TYPE = "type"  # -- Key for the FPGA Type
+SIZE = "size"  # -- Key for the FPGA size
+PACK = "PACK"  # -- Key for the FPGA pack
+IDCODE = "IDCODE"  # -- Key for the FPGA IDCODE
 
 
 # Too many local variables (23/15)
@@ -33,10 +37,10 @@ def process_arguments(args, resources):  # noqa
         BOARD: None,
         FPGA: None,
         ARCH: None,
-        "size": None,
-        "type": None,
-        "pack": None,
-        "idcode": None,
+        TYPE: None,
+        SIZE: None,
+        PACK: None,
+        IDCODE: None,
         "verbose": None,
         "top-module": None,
     }
@@ -54,6 +58,14 @@ def process_arguments(args, resources):  # noqa
 
     print(f"Debug. Project board: {proj.board}")
     print(f"Debug. Argument board: {config[BOARD]}")
+
+    # -- Debug
+    fpga = ""
+    fpga_arch = ""
+    fpga_type = ""
+    fpga_size = ""
+    fpga_pack = ""
+    fpga_idcode = ""
 
     # -- Board name given in the command line
     if config[BOARD]:
@@ -122,96 +134,100 @@ def process_arguments(args, resources):  # noqa
                 )
 
         # -- Debug
-        print(f"(Debug) ---> FPGA ARCH: {config[FPGA]}")
+        print(f"(Debug) ---> FPGA ARCH: {config[ARCH]}")
+
+        # -- Read the FPGA type
+        fpga_type = resources.fpgas.get(fpga).get(TYPE)
+
+        print(f"Debug. Argument Type: {config[TYPE]}")
+        print(f"Debug. Project Type: {fpga_type}")
+
+        # -- No FPGA type given by arguments.
+        # -- We use the one in the current board
+        if config[TYPE] is None:
+            config[TYPE] = fpga_type
+        else:
+            # -- Two FPGA Types given. The board FPGA Type and the one
+            # -- given by arguments
+            # -- It is a contradiction if their names are different
+            if fpga_type != config[TYPE]:
+                raise ValueError(
+                    f"contradictory arguments: {fpga_type, config[TYPE]}"
+                )
+
+        # -- Debug
+        print(f"(Debug) ---> FPGA TYPE: {config[TYPE]}")
+
+        # -- Read the FPGA size
+        fpga_size = resources.fpgas.get(fpga).get(SIZE)
+
+        print(f"Debug. Argument Size: {config[SIZE]}")
+        print(f"Debug. Project Size: {fpga_size}")
+
+        # -- No FPGA size given by arguments.
+        # -- We use the one in the current board
+        if config[SIZE] is None:
+            config[SIZE] = fpga_size
+        else:
+            # -- Two FPGA size given. The board FPGA Size and the one
+            # -- given by arguments
+            # -- It is a contradiction if their names are different
+            if fpga_size != config[SIZE]:
+                raise ValueError(
+                    f"contradictory arguments: {fpga_size, config[SIZE]}"
+                )
+
+        # -- Debug
+        print(f"(Debug) ---> FPGA SIZE: {config[SIZE]}")
 
     # -- Debug: Store arguments in local variables
     var_board = config[BOARD]
     var_fpga = config[FPGA]
     var_arch = config[ARCH]
-    var_size = config["size"]
-    var_type = config["type"]
-    var_pack = config["pack"]
-    var_idcode = config["idcode"]
+    var_type = config[TYPE]
+    var_size = config[SIZE]
+    var_pack = config[PACK]
+    var_idcode = config[IDCODE]
     var_verbose = config["verbose"]
     var_topmodule = config["top-module"]
 
     print(f"DEBUG!!!! TOP-MODULE: {var_topmodule}")
 
     if config[BOARD]:
-        if var_board in resources.boards:
-            fpga = resources.boards.get(var_board).get("fpga")
-            if fpga in resources.fpgas:
-                fpga_arch = resources.fpgas.get(fpga).get("arch")
-                fpga_size = resources.fpgas.get(fpga).get("size")
-                fpga_type = resources.fpgas.get(fpga).get("type")
-                fpga_pack = resources.fpgas.get(fpga).get("pack")
-                fpga_idcode = resources.fpgas.get(fpga).get("idcode")
+        fpga_pack = resources.fpgas.get(fpga).get("pack")
+        fpga_idcode = resources.fpgas.get(fpga).get("idcode")
 
-                redundant_arguments = []
-                contradictory_arguments = []
+        redundant_arguments = []
+        contradictory_arguments = []
 
-                if var_fpga:
-                    if var_fpga in resources.fpgas:
-                        if var_fpga == fpga:
-                            # Redundant argument
-                            redundant_arguments += ["fpga"]
-                        else:
-                            # Contradictory argument
-                            contradictory_arguments += ["fpga"]
-                    else:
-                        # Unknown FPGA
-                        raise ValueError(f"unknown FPGA: {var_fpga}")
-
-                if var_size:
-                    if var_size == fpga_size:
-                        # Redundant argument
-                        redundant_arguments += ["size"]
-                    else:
-                        # Contradictory argument
-                        contradictory_arguments += ["size"]
-
-                if var_type:
-                    if var_type == fpga_type:
-                        # Redundant argument
-                        redundant_arguments += ["type"]
-                    else:
-                        # Contradictory argument
-                        contradictory_arguments += ["type"]
-
-                if var_pack:
-                    if var_pack == fpga_pack:
-                        # Redundant argument
-                        redundant_arguments += ["pack"]
-                    else:
-                        # Contradictory argument
-                        contradictory_arguments += ["pack"]
-
-                if var_idcode:
-                    if var_idcode == fpga_idcode:
-                        # Redundant argument
-                        redundant_arguments += ["idcode"]
-                    else:
-                        # Contradictory argument
-                        contradictory_arguments += ["idcode"]
-
-                if redundant_arguments:
-                    # Redundant argument
-                    warning_str = ", ".join(redundant_arguments)
-                    click.secho(
-                        f"Warning: redundant arguments: {warning_str}",
-                        fg="yellow",
-                    )
-
-                if contradictory_arguments:
-                    # Contradictory argument
-                    error_str = ", ".join(contradictory_arguments)
-                    raise ValueError(f"contradictory arguments: {error_str}")
+        if var_pack:
+            if var_pack == fpga_pack:
+                # Redundant argument
+                redundant_arguments += ["pack"]
             else:
-                # Unknown FPGA
-                pass
-        else:
-            # Unknown board
-            raise ValueError(f"unknown board: {var_board}")
+                # Contradictory argument
+                contradictory_arguments += ["pack"]
+
+        if var_idcode:
+            if var_idcode == fpga_idcode:
+                # Redundant argument
+                redundant_arguments += ["idcode"]
+            else:
+                # Contradictory argument
+                contradictory_arguments += ["idcode"]
+
+        if redundant_arguments:
+            # Redundant argument
+            warning_str = ", ".join(redundant_arguments)
+            click.secho(
+                f"Warning: redundant arguments: {warning_str}",
+                fg="yellow",
+            )
+
+        if contradictory_arguments:
+            # Contradictory argument
+            error_str = ", ".join(contradictory_arguments)
+            raise ValueError(f"contradictory arguments: {error_str}")
     else:
         print("Debug: NO BOARD!!")
         if var_fpga:
