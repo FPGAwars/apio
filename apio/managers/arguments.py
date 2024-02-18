@@ -112,16 +112,14 @@ def process_arguments(args, resources):  # noqa
             raise ValueError(f"unknown FPGA: {config[FPGA]}")
 
         # -- Debug
+        fpga_arch = update_config_fpga_item(config, ARCH, resources)
+        fpga_type = update_config_fpga_item(config, TYPE, resources)
+        fpga_size = update_config_fpga_item(config, SIZE, resources)
+        fpga_pack = update_config_fpga_item(config, PACK, resources)
+        fpga_idcode = update_config_fpga_item(config, IDCODE, resources)
+
+        # -- Debug
         print(f"(Debug) ---> FPGA: {config[FPGA]}")
-
-        # -- Debug
-        fpga_arch = update_config_item(config, ARCH, resources)
-        fpga_type = update_config_item(config, TYPE, resources)
-        fpga_size = update_config_item(config, SIZE, resources)
-        fpga_pack = update_config_item(config, PACK, resources)
-        fpga_idcode = update_config_item(config, IDCODE, resources)
-
-        # -- Debug
         print(f"(Debug) ---> FPGA ARCH: {config[ARCH]}")
         print(f"(Debug) ---> FPGA TYPE: {config[TYPE]}")
         print(f"(Debug) ---> FPGA SIZE: {config[SIZE]}")
@@ -296,29 +294,32 @@ def process_arguments(args, resources):  # noqa
     return variables, var_board, fpga_arch
 
 
-def update_config_item(config, item, resources):
+def update_config_fpga_item(config, item, resources):
     """TODO"""
 
     # -- Read the FPGA pack
     fpga_item = resources.fpgas.get(config[FPGA]).get(item)
+    update_config_item(config, item, fpga_item)
 
-    print(f"Debug. Argument Pack: {config[item]}")
-    print(f"Debug. Project Pack: {fpga_item}")
+    return fpga_item
+
+
+def update_config_item(config, item, value):
+    """TODO"""
+
+    print(f"(Debug) Project {item}: {value}")
+    print(f"        Argument {item}: {config[item]}")
 
     # -- No FPGA pack given by arguments.
     # -- We use the one in the current board
     if config[item] is None:
-        config[item] = fpga_item
+        config[item] = value
     else:
         # -- Two FPGA pack given. The board FPGA pack and the one
         # -- given by arguments
         # -- It is a contradiction if their names are different
-        if fpga_item != config[item]:
-            raise ValueError(
-                f"contradictory arguments: {fpga_item, config[item]}"
-            )
-
-    return fpga_item
+        if value != config[item]:
+            raise ValueError(f"contradictory arguments: {value, config[item]}")
 
 
 def format_vars(args):
