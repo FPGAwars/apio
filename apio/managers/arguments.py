@@ -12,8 +12,9 @@ import click
 from apio.managers.project import Project
 
 # ----- Constant for accesing dicctionaries
-# -- Key for the board name
-BOARD = "board"
+BOARD = "board"  # -- Key for the board name
+FPGA = "fpga"  # -- Key for the fpga
+ARCH = "arch"  # -- Key for the FPGA Architecture
 
 
 # Too many local variables (23/15)
@@ -30,8 +31,8 @@ def process_arguments(args, resources):  # noqa
     # -- Default configuration
     config = {
         BOARD: None,
-        "arch": None,
-        "fpga": None,
+        FPGA: None,
+        ARCH: None,
         "size": None,
         "type": None,
         "pack": None,
@@ -75,13 +76,59 @@ def process_arguments(args, resources):  # noqa
     if config[BOARD] and config[BOARD] not in resources.boards:
         raise ValueError(f"unknown board: {config[BOARD]}")
 
-    print(f"Debug. FPGA: {config['fpga']}")
+    # -- IF board given, read its configuration
+    if config[BOARD] and config[BOARD] in resources.boards:
+        fpga = resources.boards.get(config[BOARD]).get(FPGA)
+        print(f"Debug. Argument FPGA: {config[FPGA]}")
+        print(f"Debug. Project FPGA: {fpga}")
+
+        # -- No FPGA given by arguments.
+        # -- We use the one in the current board
+        if config[FPGA] is None:
+            config[FPGA] = fpga
+        else:
+            # -- Two FPGAs given. The board FPGA and the one
+            # -- given by arguments
+            # -- It is a contradiction if their names are different
+            if fpga != config[FPGA]:
+                raise ValueError(
+                    f"contradictory arguments: {fpga, config[FPGA]}"
+                )
+
+        # -- Check if the FPGA is correct
+        if fpga not in resources.fpgas:
+            raise ValueError(f"unknown FPGA: {config[FPGA]}")
+
+        # -- Debug
+        print(f"(Debug) ---> FPGA: {config[FPGA]}")
+
+        # -- Read the FPGA configuration (architecture)
+        fpga_arch = resources.fpgas.get(fpga).get(ARCH)
+
+        print(f"Debug. Argument Arch: {config[ARCH]}")
+        print(f"Debug. Project Arch: {fpga_arch}")
+
+        # -- No FPGA Arch given by arguments.
+        # -- We use the one in the current board
+        if config[ARCH] is None:
+            config[ARCH] = fpga_arch
+        else:
+            # -- Two FPGA Architectures given. The board FPGA Arch and the one
+            # -- given by arguments
+            # -- It is a contradiction if their names are different
+            if fpga_arch != config[ARCH]:
+                raise ValueError(
+                    f"contradictory arguments: {fpga_arch, config[FPGA]}"
+                )
+
+        # -- Debug
+        print(f"(Debug) ---> FPGA ARCH: {config[FPGA]}")
 
     # -- Debug: Store arguments in local variables
     var_board = config[BOARD]
-    var_fpga = config["fpga"]
+    var_fpga = config[FPGA]
+    var_arch = config[ARCH]
     var_size = config["size"]
-    var_arch = config["arch"]
     var_type = config["type"]
     var_pack = config["pack"]
     var_idcode = config["idcode"]
