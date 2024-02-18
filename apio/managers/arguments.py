@@ -114,115 +114,18 @@ def process_arguments(args, resources):  # noqa
         # -- Debug
         print(f"(Debug) ---> FPGA: {config[FPGA]}")
 
-        # -- Read the FPGA configuration (architecture)
-        fpga_arch = resources.fpgas.get(fpga).get(ARCH)
-
-        print(f"Debug. Argument Arch: {config[ARCH]}")
-        print(f"Debug. Project Arch: {fpga_arch}")
-
-        # -- No FPGA Arch given by arguments.
-        # -- We use the one in the current board
-        if config[ARCH] is None:
-            config[ARCH] = fpga_arch
-        else:
-            # -- Two FPGA Architectures given. The board FPGA Arch and the one
-            # -- given by arguments
-            # -- It is a contradiction if their names are different
-            if fpga_arch != config[ARCH]:
-                raise ValueError(
-                    f"contradictory arguments: {fpga_arch, config[FPGA]}"
-                )
+        # -- Debug
+        fpga_arch = update_config_item(config, ARCH, resources)
+        fpga_type = update_config_item(config, TYPE, resources)
+        fpga_size = update_config_item(config, SIZE, resources)
+        fpga_pack = update_config_item(config, PACK, resources)
+        fpga_idcode = update_config_item(config, IDCODE, resources)
 
         # -- Debug
         print(f"(Debug) ---> FPGA ARCH: {config[ARCH]}")
-
-        # -- Read the FPGA type
-        fpga_type = resources.fpgas.get(fpga).get(TYPE)
-
-        print(f"Debug. Argument Type: {config[TYPE]}")
-        print(f"Debug. Project Type: {fpga_type}")
-
-        # -- No FPGA type given by arguments.
-        # -- We use the one in the current board
-        if config[TYPE] is None:
-            config[TYPE] = fpga_type
-        else:
-            # -- Two FPGA Types given. The board FPGA Type and the one
-            # -- given by arguments
-            # -- It is a contradiction if their names are different
-            if fpga_type != config[TYPE]:
-                raise ValueError(
-                    f"contradictory arguments: {fpga_type, config[TYPE]}"
-                )
-
-        # -- Debug
         print(f"(Debug) ---> FPGA TYPE: {config[TYPE]}")
-
-        # -- Read the FPGA size
-        fpga_size = resources.fpgas.get(fpga).get(SIZE)
-
-        print(f"Debug. Argument Size: {config[SIZE]}")
-        print(f"Debug. Project Size: {fpga_size}")
-
-        # -- No FPGA size given by arguments.
-        # -- We use the one in the current board
-        if config[SIZE] is None:
-            config[SIZE] = fpga_size
-        else:
-            # -- Two FPGA size given. The board FPGA Size and the one
-            # -- given by arguments
-            # -- It is a contradiction if their names are different
-            if fpga_size != config[SIZE]:
-                raise ValueError(
-                    f"contradictory arguments: {fpga_size, config[SIZE]}"
-                )
-
-        # -- Debug
         print(f"(Debug) ---> FPGA SIZE: {config[SIZE]}")
-
-        # -- Read the FPGA pack
-        fpga_pack = resources.fpgas.get(fpga).get(PACK)
-
-        print(f"Debug. Argument Pack: {config[PACK]}")
-        print(f"Debug. Project Pack: {fpga_pack}")
-
-        # -- No FPGA pack given by arguments.
-        # -- We use the one in the current board
-        if config[PACK] is None:
-            config[PACK] = fpga_pack
-        else:
-            # -- Two FPGA pack given. The board FPGA pack and the one
-            # -- given by arguments
-            # -- It is a contradiction if their names are different
-            if fpga_pack != config[PACK]:
-                raise ValueError(
-                    f"contradictory arguments: {fpga_pack, config[PACK]}"
-                )
-
-        # -- Debug
         print(f"(Debug) ---> FPGA PACK: {config[PACK]}")
-
-        # -- Read the FPGA idcode
-        fpga_idcode = resources.fpgas.get(fpga).get(IDCODE)
-        fpga_idcode = resources.fpgas.get(fpga).get("idcode")
-
-        print(f"Debug. Argument Idcode: {config[IDCODE]}")
-        print(f"Debug. Project Idcode: {fpga_idcode}")
-
-        # -- No FPGA idcode given by arguments.
-        # -- We use the one in the current board
-        if config[IDCODE] is None:
-            config[IDCODE] = fpga_idcode
-        else:
-            # -- Two FPGA idcode given. The board FPGA idcode and the one
-            # -- given by arguments
-            # -- It is a contradiction if their names are different
-            if fpga_idcode != config[IDCODE]:
-                raise ValueError(
-                    f"contradictory arguments: {fpga_idcode, config[IDCODE]}"
-                )
-
-        # -- Debug
         print(f"(Debug) ---> FPGA IDCODE: {config[IDCODE]}")
 
     # -- Debug: Store arguments in local variables
@@ -391,6 +294,31 @@ def process_arguments(args, resources):  # noqa
     )
 
     return variables, var_board, fpga_arch
+
+
+def update_config_item(config, item, resources):
+    """TODO"""
+
+    # -- Read the FPGA pack
+    fpga_item = resources.fpgas.get(config[FPGA]).get(item)
+
+    print(f"Debug. Argument Pack: {config[item]}")
+    print(f"Debug. Project Pack: {fpga_item}")
+
+    # -- No FPGA pack given by arguments.
+    # -- We use the one in the current board
+    if config[item] is None:
+        config[item] = fpga_item
+    else:
+        # -- Two FPGA pack given. The board FPGA pack and the one
+        # -- given by arguments
+        # -- It is a contradiction if their names are different
+        if fpga_item != config[item]:
+            raise ValueError(
+                f"contradictory arguments: {fpga_item, config[item]}"
+            )
+
+    return fpga_item
 
 
 def format_vars(args):
