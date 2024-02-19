@@ -6,8 +6,22 @@
 """TODO"""
 
 from functools import wraps
+
 import click
 from apio.managers.project import Project
+
+# -- Class for accesing api resources (boards, fpgas...)
+from apio.resources import Resources
+
+
+# ----- Constant for accesing dicctionaries
+BOARD = "board"  # -- Key for the board name
+FPGA = "fpga"  # -- Key for the fpga
+ARCH = "arch"  # -- Key for the FPGA Architecture
+TYPE = "type"  # -- Key for the FPGA Type
+SIZE = "size"  # -- Key for the FPGA size
+PACK = "pack"  # -- Key for the FPGA pack
+IDCODE = "idcode"  # -- Key for the FPGA IDCODE
 
 
 def debug_params(fun):
@@ -34,6 +48,7 @@ def debug_params(fun):
             # -- Print the plain argument if it is not a dicctionary
             else:
                 print(f"        * {arg}")
+        print()
 
         # -- Call the function
         result = fun(*args)
@@ -52,26 +67,44 @@ def debug_params(fun):
         # -- But just in case it is not a tuple (because of an error...)
         else:
             print(f"      * No tuple: {result}")
+        print()
+
         return result
 
     return outer
 
 
-# ----- Constant for accesing dicctionaries
-BOARD = "board"  # -- Key for the board name
-FPGA = "fpga"  # -- Key for the fpga
-ARCH = "arch"  # -- Key for the FPGA Architecture
-TYPE = "type"  # -- Key for the FPGA Type
-SIZE = "size"  # -- Key for the FPGA size
-PACK = "pack"  # -- Key for the FPGA pack
-IDCODE = "idcode"  # -- Key for the FPGA IDCODE
-
-
 @debug_params
-def process_arguments(args: dict, resources) -> tuple:  # noqa
-    """TODO"""
+def process_arguments(
+    config_ini: dict, resources: type[Resources]
+) -> tuple:  # noqa
+    """Get the final CONFIGURATION, depending on the board and
+    arguments passed in the command line.
+    The config_ini parameter has higher priority. If not specified,
+    they are read from the Project file (apio.ini)
+    * INPUTS:
+       * config_ini: Dictionary with the initial configuration:
+         {
+           'board': str,  //-- Board name
+           'fpga': str,   //-- FPGA name
+           'size': str,   //-- FPGA size
+           'type': str,   //-- FPGA type
+           'pack': str,   //-- FPGA packaging
+           'verbose': dict  //-- Verbose level
+           'top-module`: str  //-- Top module name
+         }
+       * Resources: Object for accessing the apio resources
+    * OUTPUT:
+      * Return a tuple (flags, board, arch)
+        - flags: A list of strings with the flags valures:
+          ['fpga_arch=ice40', 'fpga_size=8k', 'fpga_type=hx',
+          fpga_pack='tq144:4k']...
+        - board: Board name ('alhambra-ii', 'icezum'...)
+        - arch: FPGA architecture ('ice40', 'ecp5'...)
+    """
 
-    # -- Default configuration
+    # -- Current configuration
+    # -- Initially it is the default project configuration
     config = {
         BOARD: None,
         FPGA: None,
@@ -84,8 +117,8 @@ def process_arguments(args: dict, resources) -> tuple:  # noqa
         "top-module": None,
     }
 
-    # -- Add arguments to default config
-    config.update(args)
+    # -- Merge the initial configuration to the current configuration
+    config.update(config_ini)
 
     # -- Read the apio project file (apio.ini)
     proj = Project()
@@ -95,7 +128,8 @@ def process_arguments(args: dict, resources) -> tuple:  # noqa
     # --   * None: No apio.ini file
     # --   * "name": Board name (str)
 
-    debug_config_item(BOARD, proj.board, config)
+    # -- DEBUG: Print both: project board and configuration board
+    debug_config_item(config, BOARD, proj.board)
 
     # -- Board name given in the command line
     if config[BOARD]:
@@ -104,23 +138,34 @@ def process_arguments(args: dict, resources) -> tuple:  # noqa
         # -- give by command line overrides it
         # -- (command line has the highest priority)
         if proj.board:
-            click.secho("Info: ignore apio.ini board", fg="yellow")
+
+            # -- As the command line has more priority, and the board
+            # -- given in args is different than the one in the project,
+            # -- inform the user
+            if config[BOARD] != proj.board:
+                click.secho("Info: ignore apio.ini board", fg="yellow")
 
     # -- Board name given in the project file
     else:
         # -- ...read it from the apio.ini file
         config[BOARD] = proj.board
 
-    # -- If board name is given, Check if it is a valid board
-    if config[BOARD] and config[BOARD] not in resources.boards:
-        raise ValueError(f"unknown board: {config[BOARD]}")
+    # -- The board is given (either by argumetns or by project)
+    if config[BOARD]:
 
-    # -- IF board given, read its configuration
-    if config[BOARD] and config[BOARD] in resources.boards:
+        # -- First, check if the board is valid
+        # -- If not, exit
+        if config[BOARD] not in resources.boards:
+            raise ValueError(f"unknown board: {config[BOARD]}")
+
+        # -- Read the FPGA name for the current board
         fpga = resources.boards.get(config[BOARD]).get(FPGA)
+
+        # -- Add it to the current configuration
         update_config_item(config, FPGA, fpga)
 
-        # -- Check if the FPGA is correct
+        # -- Check if the FPGA is valid
+        # -- If not, exit
         if fpga not in resources.fpgas:
             raise ValueError(f"unknown FPGA: {config[FPGA]}")
 
@@ -196,39 +241,60 @@ def process_arguments(args: dict, resources) -> tuple:  # noqa
 
 
 def update_config_fpga_item(config, item, resources):
-    """TODO"""
+    """Update an item for the current FPGA configuration, if there is no
+    contradiction.
+    It raises an exception in case of contradiction: the current FPGA item
+    in the configuration has already a value, but another has been specified
+    * INPUTS:
+      * Config: Current configuration
+      * item: FPGA item to update: ARCH, TYPE, SIZE, PACK, IDCODE
+      * value: New valur for the FPGA item, if there is no contradiction
+    """
 
-    # -- Read the FPGA pack
+    # -- Read the FPGA item from the apio resources
     fpga_item = resources.fpgas.get(config[FPGA]).get(item)
+
+    # -- Update the current configuration with that item
+    # -- and check that there are no contradictions
     update_config_item(config, item, fpga_item)
 
-    return fpga_item
 
+def update_config_item(config: dict, item: str, value: str) -> None:
+    """Update the value of the configuration item, if there is no contradiction
+    It raises an exception in case of contradiction: the current item in the
+    configuration has one value (ex. size='1k') but another has been specified
+    * INPUTS:
+      * Config: Current configuration
+      * item: Item to update (key): BOARD, ARCH,TYPE, SIZE...
+      * value: New value for the item, if there are no contradictions
+    """
 
-def update_config_item(config, item, value):
-    """TODO"""
+    # -- Debug messages
+    debug_config_item(config, item, value)
 
-    debug_config_item(item, value, config)
-
-    # -- No FPGA pack given by arguments.
-    # -- We use the one in the current board
+    # -- This item has not been set in the current configuration: ok, set it!
     if config[item] is None:
         config[item] = value
+
+    # -- That item already has a value... and another difffernt is being
+    # -- given.. This is a contradiction!!!
     else:
-        # -- Two FPGA pack given. The board FPGA pack and the one
-        # -- given by arguments
         # -- It is a contradiction if their names are different
+        # -- When the name is the same, it is redundant...
+        # -- but it is not a problem
         if value != config[item]:
             raise ValueError(f"contradictory arguments: {value, config[item]}")
 
 
-def debug_config_item(item: str, proj_item: str, config: dict):
+def debug_config_item(config: dict, item: str, value: str) -> None:
     """Print a Debug message related to the project configuration
-    * item: item name to check
-    * proj_item: project item value
-    * config: Current configuration
+    INPUTS:
+      * config: Current configuration
+      * item: item name to print. It is a key of the configuration:
+        BOARD, ARCH, TYPE, SIZE, PACK, IDCODE....
+      * Value: Value of that item specified in the project
     """
-    print(f"(Debug): {item}, Project: {proj_item}, Argument: {config[item]}")
+    print(f"(Debug): {item}, Project: {value}, Argument: {config[item]}")
 
 
 def format_vars(args):
