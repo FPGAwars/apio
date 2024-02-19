@@ -135,7 +135,7 @@ def process_arguments(
     if config[BOARD]:
 
         # -- If there is a project file (apio.ini) the board
-        # -- give by command line overrides it
+        # -- given by command line overrides it
         # -- (command line has the highest priority)
         if proj.board:
 
@@ -164,10 +164,15 @@ def process_arguments(
         # -- Add it to the current configuration
         update_config_item(config, FPGA, fpga)
 
-        # -- Check if the FPGA is valid
-        # -- If not, exit
-        if fpga not in resources.fpgas:
-            raise ValueError(f"unknown FPGA: {config[FPGA]}")
+    # -- Check that the FPGA was given
+    if not config[FPGA]:
+        perror_insuficient_arguments()
+        raise ValueError("Missing FPGA")
+
+    # -- Check if the FPGA is valid
+    # -- If not, exit
+    if config[FPGA] not in resources.fpgas:
+        raise ValueError(f"unknown FPGA: {config[FPGA]}")
 
     # -- Update the FPGA items according to the current board and fpga
     # -- Raise an exception in case of a contradiction
@@ -184,8 +189,11 @@ def process_arguments(
     # -- Check that this configuration is ok
     # -- At least it should have fpga, type, size and pack
     # -- Exit if it is not correct
-    for item in [FPGA, ARCH, TYPE, SIZE, PACK]:
+    for item in [TYPE, SIZE, PACK]:
+
+        # -- Config item not defined!! it is mandatory!
         if not config[item]:
+            perror_insuficient_arguments()
             raise ValueError(f"Missing FPGA {item.upper()}")
 
     # -- TODO: REFACTORING!
@@ -193,18 +201,6 @@ def process_arguments(
     var_verbose = config["verbose"]
     var_topmodule = config["top-module"]
 
-    # click.secho(
-    #       "Error: insufficient arguments: missing board",
-    #       fg="red",
-    #   )
-    #   click.secho(
-    #       "You have two options:\n"
-    #       + "  1) Execute your command with\n"
-    #       + "       `--board <boardname>`\n"
-    #       + "  2) Create an ini file using\n"
-    #       + "       `apio init --board <boardname>`",
-    #       fg="yellow",
-    #   )
     #   raise ValueError("Missing board")
 
     # -- Build Scons variables list
@@ -300,6 +296,23 @@ def print_configuration(config: dict) -> None:
     print(f"  pack: {config[PACK]}")
     print(f"  idcode: {config[IDCODE]}")
     print()
+
+
+def perror_insuficient_arguments():
+    """Print an error: not enough arguments given"""
+
+    click.secho(
+        "Error: insufficient arguments: missing board",
+        fg="red",
+    )
+    click.secho(
+        "You have two options:\n"
+        "  1) Execute your command with\n"
+        "       `--board <boardname>`\n"
+        "  2) Create an ini file using\n"
+        "       `apio init --board <boardname>`",
+        fg="yellow",
+    )
 
 
 def format_vars(args):
