@@ -27,6 +27,7 @@ ALL = "all"  # -- Key for Verbose all
 YOSYS = "yosys"  # -- Key for Verbose-yosys
 PNR = "pnr"  # -- Key for Verbose-pnr
 TOP_MODULE = "top-module"  # -- Key for top-module
+TESTBENCH = "testbench"  # -- Key for testbench file name
 
 
 def debug_params(fun):
@@ -120,6 +121,7 @@ def process_arguments(
         IDCODE: None,
         VERBOSE: {ALL: False, "yosys": False, "pnr": False},
         TOP_MODULE: None,
+        TESTBENCH: None
     }
 
     # -- Merge the initial configuration to the current configuration
@@ -218,6 +220,7 @@ def process_arguments(
             "verbose_yosys": config[VERBOSE][YOSYS],
             "verbose_pnr": config[VERBOSE][PNR],
             "top_module": config[TOP_MODULE],
+            "testbench" : config[TESTBENCH],
         }
     )
 
@@ -299,6 +302,7 @@ def print_configuration(config: dict) -> None:
     print(f"  pack: {config[PACK]}")
     print(f"  idcode: {config[IDCODE]}")
     print(f"  top-module: {config[TOP_MODULE]}")
+    print(f"  testbench: {config[TESTBENCH]}")
     print("  verbose:")
     print(f"    all: {config[VERBOSE][ALL]}")
     print(f"    yosys: {config[VERBOSE][YOSYS]}")
