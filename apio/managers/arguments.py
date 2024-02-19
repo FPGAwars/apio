@@ -22,6 +22,11 @@ TYPE = "type"  # -- Key for the FPGA Type
 SIZE = "size"  # -- Key for the FPGA size
 PACK = "pack"  # -- Key for the FPGA pack
 IDCODE = "idcode"  # -- Key for the FPGA IDCODE
+VERBOSE = "verbose"  # -- Key for the Verbose flag
+ALL = "all"  # -- Key for Verbose all
+YOSYS = "yosys"  # -- Key for Verbose-yosys
+PNR = "pnr"  # -- Key for Verbose-pnr
+TOP_MODULE = "top-module"  # -- Key for top-module
 
 
 def debug_params(fun):
@@ -113,8 +118,8 @@ def process_arguments(
         SIZE: None,
         PACK: None,
         IDCODE: None,
-        "verbose": None,
-        "top-module": None,
+        VERBOSE: {ALL: False, "yosys": False, "pnr": False},
+        TOP_MODULE: None,
     }
 
     # -- Merge the initial configuration to the current configuration
@@ -196,29 +201,22 @@ def process_arguments(
             perror_insuficient_arguments()
             raise ValueError(f"Missing FPGA {item.upper()}")
 
-    # -- TODO: REFACTORING!
-    # -- Debug: Store arguments in local variables
-    var_verbose = config["verbose"]
-    var_topmodule = config["top-module"]
-
-    #   raise ValueError("Missing board")
-
-    # -- Build Scons variables list
-    variables = format_vars(
+    # -- Build Scons flag list
+    flags = serialize_scons_flags(
         {
             "fpga_arch": config[ARCH],
             "fpga_size": config[SIZE],
             "fpga_type": config[TYPE],
             "fpga_pack": config[PACK],
             "fpga_idcode": config[IDCODE],
-            "verbose_all": var_verbose.get("all"),
-            "verbose_yosys": var_verbose.get("yosys"),
-            "verbose_pnr": var_verbose.get("pnr"),
-            "top_module": var_topmodule,
+            "verbose_all": config[VERBOSE][ALL],
+            "verbose_yosys": config[VERBOSE][YOSYS],
+            "verbose_pnr": config[VERBOSE][PNR],
+            "top_module": config[TOP_MODULE],
         }
     )
 
-    return variables, config[BOARD], config[ARCH]
+    return flags, config[BOARD], config[ARCH]
 
 
 def update_config_fpga_item(config, item, resources):
@@ -295,6 +293,11 @@ def print_configuration(config: dict) -> None:
     print(f"  size: {config[SIZE]}")
     print(f"  pack: {config[PACK]}")
     print(f"  idcode: {config[IDCODE]}")
+    print(f"  top-module: {config[TOP_MODULE]}")
+    print("  verbose:")
+    print(f"    all: {config[VERBOSE][ALL]}")
+    print(f"    yosys: {config[VERBOSE][YOSYS]}")
+    print(f"    pnr: {config[VERBOSE][PNR]}")
     print()
 
 
@@ -315,10 +318,20 @@ def perror_insuficient_arguments():
     )
 
 
-def format_vars(args):
-    """Format the given vars in the form: 'flag=value'"""
-    variables = []
-    for key, value in args.items():
+def serialize_scons_flags(flags: dict) -> list:
+    """Format the scons flags as a list of string of
+    the form: 'flag=value'
+    """
+
+    # -- Create and empty list
+    flag_list = []
+
+    # -- Read all the flags
+    for key, value in flags.items():
+
+        # -- Append to the list only the flags with value
         if value:
-            variables += [f"{key}={value}"]
-    return variables
+            flag_list.append(f"{key}={value}")
+
+    # -- Return the list
+    return flag_list

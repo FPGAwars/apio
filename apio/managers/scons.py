@@ -21,7 +21,7 @@ import semantic_version
 
 from apio import util
 from apio.managers.arguments import process_arguments
-from apio.managers.arguments import format_vars
+from apio.managers.arguments import serialize_scons_flags
 from apio.managers.system import System
 from apio.profile import Profile
 from apio.resources import Resources
@@ -87,8 +87,9 @@ class SCons:
     def lint(self, args):
         """DOC: TODO"""
 
-        __, __, arch = process_arguments(None, self.resources)
-        var = format_vars(
+        config = {}
+        __, __, arch = process_arguments(config, self.resources)
+        var = serialize_scons_flags(
             {
                 "all": args.get("all"),
                 "top": args.get("top"),
