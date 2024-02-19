@@ -5,9 +5,57 @@
 # -- Licence GPLv2
 """TODO"""
 
+from functools import wraps
 import click
-
 from apio.managers.project import Project
+
+
+def debug_params(fun):
+    """DEBUG. Use it as a decorator. It prints the received arguments
+    and the return value
+    INPUTS:
+      * fun: Function to DEBUG
+    """
+
+    @wraps(fun)
+    def outer(*args):
+
+        # -- Print the arguments
+        print(f"--> DEBUG!. Function {fun.__name__}(). BEGIN")
+        print("    * Arguments:")
+        for arg in args:
+
+            # -- Print all the key,values if it is a dictionary
+            if isinstance(arg, dict):
+                print("        * Dict:")
+                for key, value in arg.items():
+                    print(f"          * {key}: {value}")
+
+            # -- Print the plain argument if it is not a dicctionary
+            else:
+                print(f"        * {arg}")
+
+        # -- Call the function
+        result = fun(*args)
+
+        # -- Print its output
+        print(f"--> DEBUG!. Function {fun.__name__}(). END")
+        print("     Returns: ")
+
+        # -- The return object always is a tuple
+        if isinstance(result, tuple):
+
+            # -- Print all the values in the tuple
+            for value in result:
+                print(f"      * {value}")
+
+        # -- But just in case it is not a tuple (because of an error...)
+        else:
+            print(f"      * No tuple: {result}")
+        return result
+
+    return outer
+
 
 # ----- Constant for accesing dicctionaries
 BOARD = "board"  # -- Key for the board name
@@ -19,7 +67,8 @@ PACK = "pack"  # -- Key for the FPGA pack
 IDCODE = "idcode"  # -- Key for the FPGA IDCODE
 
 
-def process_arguments(args, resources):  # noqa
+@debug_params
+def process_arguments(args: dict, resources) -> tuple:  # noqa
     """TODO"""
 
     # -- Default configuration
