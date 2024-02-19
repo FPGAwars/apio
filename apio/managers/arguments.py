@@ -150,7 +150,7 @@ def process_arguments(
         # -- ...read it from the apio.ini file
         config[BOARD] = proj.board
 
-    # -- The board is given (either by argumetns or by project)
+    # -- The board is given (either by arguments or by project file)
     if config[BOARD]:
 
         # -- First, check if the board is valid
@@ -169,44 +169,29 @@ def process_arguments(
         if fpga not in resources.fpgas:
             raise ValueError(f"unknown FPGA: {config[FPGA]}")
 
-        # -- Debug
-        update_config_fpga_item(config, ARCH, resources)
-        update_config_fpga_item(config, TYPE, resources)
-        update_config_fpga_item(config, SIZE, resources)
-        update_config_fpga_item(config, PACK, resources)
-        update_config_fpga_item(config, IDCODE, resources)
+    # -- Update the FPGA items according to the current board and fpga
+    # -- Raise an exception in case of a contradiction
+    # -- For example: board = icezum, and size='8k' given by arguments
+    # -- (The board determine the fpga and the size, but the user has
+    # --  specificied a different size. It is a contradiction!)
+    for item in [ARCH, TYPE, SIZE, PACK, IDCODE]:
+        update_config_fpga_item(config, item, resources)
 
-    # -- Debug
-    print(f"(Debug) ---> Board: {config[BOARD]}")
-    print(f"(Debug) ---> FPGA: {config[FPGA]}")
-    print(f"(Debug) ---> FPGA ARCH: {config[ARCH]}")
-    print(f"(Debug) ---> FPGA TYPE: {config[TYPE]}")
-    print(f"(Debug) ---> FPGA SIZE: {config[SIZE]}")
-    print(f"(Debug) ---> FPGA PACK: {config[PACK]}")
-    print(f"(Debug) ---> FPGA IDCODE: {config[IDCODE]}")
+    # -- Debug: Print current configuration
+    print_configuration(config)
 
-    # -- Check the current config
-    # -- At least it should have arch, type, size and pack
-    if not config[FPGA]:
-        raise ValueError("Missing FPGA")
+    # -- We already have a final configuration
+    # -- Check that this configuration is ok
+    # -- At least it should have fpga, type, size and pack
+    # -- Exit if it is not correct
+    for item in [FPGA, ARCH, TYPE, SIZE, PACK]:
+        if not config[item]:
+            raise ValueError(f"Missing FPGA {item.upper()}")
 
-    # if not config[ARCH]:
-    #    raise ValueError("Missing FPGA architecture")
-
-    if not config[TYPE]:
-        raise ValueError("Missing FPGA type")
-
-    if not config[SIZE]:
-        raise ValueError("Missing FPGA size")
-
-    if not config[PACK]:
-        raise ValueError("Missing FPGA packaging")
-
+    # -- TODO: REFACTORING!
     # -- Debug: Store arguments in local variables
     var_verbose = config["verbose"]
     var_topmodule = config["top-module"]
-
-    print(f"DEBUG!!!! TOP-MODULE: {var_topmodule}")
 
     # click.secho(
     #       "Error: insufficient arguments: missing board",
@@ -295,6 +280,26 @@ def debug_config_item(config: dict, item: str, value: str) -> None:
       * Value: Value of that item specified in the project
     """
     print(f"(Debug): {item}, Project: {value}, Argument: {config[item]}")
+
+
+def print_configuration(config: dict) -> None:
+    """DEBUG function: Print the current configuration on the
+    console
+      * INPUTS:
+        * configuration: Current project configuration
+    """
+    print()
+    print("(Debug): Current configuration:")
+    print("  ITEM:  VALUE")
+    print("  ----   -----")
+    print(f"  board: {config[BOARD]}")
+    print(f"  fpga: {config[FPGA]}")
+    print(f"  arch: {config[ARCH]}")
+    print(f"  type: {config[TYPE]}")
+    print(f"  size: {config[SIZE]}")
+    print(f"  pack: {config[PACK]}")
+    print(f"  idcode: {config[IDCODE]}")
+    print()
 
 
 def format_vars(args):
