@@ -187,9 +187,6 @@ def process_arguments(
     for item in [ARCH, TYPE, SIZE, PACK, IDCODE]:
         update_config_fpga_item(config, item, resources)
 
-    # -- Debug: Print current configuration
-    print_configuration(config)
-
     # -- We already have a final configuration
     # -- Check that this configuration is ok
     # -- At least it should have fpga, type, size and pack
@@ -200,6 +197,14 @@ def process_arguments(
         if not config[item]:
             perror_insuficient_arguments()
             raise ValueError(f"Missing FPGA {item.upper()}")
+
+    # -- Process the top-module
+    # -- If it has not set by arguments, give it the default value: main
+    if config[TOP_MODULE] is None:
+        config[TOP_MODULE] = "main"
+
+    # -- Debug: Print current configuration
+    print_configuration(config)
 
     # -- Build Scons flag list
     flags = serialize_scons_flags(
