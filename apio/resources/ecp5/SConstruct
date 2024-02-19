@@ -25,6 +25,7 @@ FPGA_IDCODE = ARGUMENTS.get('fpga_idcode', '')
 VERBOSE_ALL = ARGUMENTS.get('verbose_all', False)
 VERBOSE_YOSYS = ARGUMENTS.get('verbose_yosys', False)
 VERBOSE_PNR = ARGUMENTS.get('verbose_pnr', False)
+TESTBENCH = ARGUMENTS.get('testbench', '')
 VERILATOR_ALL = ARGUMENTS.get('all', False)
 VERILATOR_NO_STYLE = ARGUMENTS.get('nostyle', False)
 VERILATOR_NO_WARN = ARGUMENTS.get('nowarn', '').split(',')
@@ -104,23 +105,31 @@ list_scanner = env.Scanner(function=list_files_scan)
 # -- Get a list of all the verilog files in the src folfer, in ASCII, with
 # -- the full path. All these files are used for the simulation
 v_nodes = Glob('*.v')
-src_sim = [str(f) for f in v_nodes]
+v_files = [str(f) for f in v_nodes]
 
-# --------- Get the Testbench file (there should be only 1)
-# -- Create a list with all the files finished in _tb.v. It should contain
-# -- the test bench
-list_tb = [f for f in src_sim if f[-5:].upper() == '_TB.V']
+# Create lists of module and testbench files. Test benches are assumed
+# to end with '_tb.v', case insensitive.
+src_sim = [f for f in v_files if f[-5:].upper() != '_TB.V']
+list_tb = [f for f in v_files if f[-5:].upper() == '_TB.V']
 
-if len(list_tb) > 1:
-    print('Warning: more than one testbenches used')
+# Handle the testbench selection, if any. 
+testbench = None
 
-# -- Error checking
-try:
+if TESTBENCH:
+  # Here when --testbench was specified.
+  testbench = TESTBENCH
+else:
+  # Here when --testbench was not specified so we use the default behavior
+  # for backward compatibility. Currently we pick arbitrarily the first
+  # testbench in the Glob order.
+  if len(list_tb) > 1:
+    print('Warning: more than one testbench found.')
+  if len(list_tb) > 0:
     testbench = list_tb[0]
 
-# -- there is no testbench
-except IndexError:
-    testbench = None
+# Add the testbench to the list of compiled files.
+if testbench:
+  src_sim.append(testbench)
 
 SIMULNAME = ''
 TARGET_SIM = ''

@@ -106,13 +106,15 @@ class SCons:
         )
 
     @util.command
-    def sim(self):
+    def sim(self, args):
         """DOC: TODO"""
 
-        __, __, arch = process_arguments(None, self.resources)
+        # -- Split the arguments
+        var, _, arch = process_arguments(args, self.resources)
+        
         return self.run(
             "sim",
-            variables=[],
+            variables=var,
             arch=arch,
             packages=["oss-cad-suite", "gtkwave"],
         )

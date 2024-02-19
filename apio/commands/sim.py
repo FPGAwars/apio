@@ -18,8 +18,15 @@ from apio.managers.scons import SCons
     metavar="path",
     help="Set the target directory for the project.",
 )
-def cli(ctx, project_dir):
+@click.option(
+    "-t",
+    "--testbench",
+    type=str,
+    metavar="testbench",
+    help="Specify the testbench file to simulate.",
+)
+def cli(ctx, project_dir, testbench):
     """Launch the verilog simulation."""
 
-    exit_code = SCons(project_dir).sim()
+    exit_code = SCons(project_dir).sim({"testbench": testbench})
     ctx.exit(exit_code)
