@@ -105,11 +105,13 @@ class Project:
         # -- Create the apio.ini from scratch
         self._create_ini_file(board, top_module, ini_path, PROJECT_FILENAME)
 
-    def update_ini(self, top_module):
+    def update_ini(self, top_module, project_dir):
         """Update the current init file with the given top-module"""
 
+        project_dir = util.check_dir(project_dir)
+
         # -- Build the filename
-        ini_path = PROJECT_FILENAME
+        ini_path = str(Path(project_dir) / PROJECT_FILENAME)
 
         # -- Check if the apio.ini file exists
         if not isfile(ini_path):
@@ -122,14 +124,14 @@ class Project:
 
         # -- Read the current apio.ini file
         config = configparser.ConfigParser()
-        config.read(PROJECT_FILENAME)
+        config.read(ini_path)
 
         # -- Set the new top-mddule
         self.top_module = top_module
         config.set("env", "top-module", top_module)
 
         # -- Write the apio ini file
-        with open(PROJECT_FILENAME, "w", encoding="utf-8") as inifile:
+        with open(ini_path, "w", encoding="utf-8") as inifile:
             config.write(inifile)
 
         click.secho(
