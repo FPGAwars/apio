@@ -1,3 +1,7 @@
+"""
+  Test for the "apio build" command
+"""
+
 #-- This is for testing "apio build"
 from apio.commands.build import cli as cmd_build
 
@@ -12,8 +16,9 @@ def test_build(clirunner, configenv):
     """
 
     with clirunner.isolated_filesystem():
+
+        #-- Config the environment (conftest.configenv())
         configenv()
-        print("\n (TESTING apio build) ", end='')  
 
         #-- Execute "apio build"
         result = clirunner.invoke(cmd_build)
@@ -23,8 +28,8 @@ def test_build(clirunner, configenv):
 
         #-- Messages thtat should appear
         assert 'Info: No apio.ini file' in result.output
-        #assert 'Error: insufficient arguments: missing board' in result.output
-        #assert 'Error: Missing board' in result.output
+        assert 'Error: insufficient arguments: missing board' in result.output
+        assert 'Error: Missing FPGA' in result.output
 
 
 def test_build_board(clirunner, configenv):
@@ -33,8 +38,9 @@ def test_build_board(clirunner, configenv):
     """
 
     with clirunner.isolated_filesystem():
+
+        #-- Config the environment (conftest.configenv())
         configenv()
-        print("\n (TESTING apio build --board icezum) ", end='')
 
         #-- Execute "apio build --board icezum"
         result = clirunner.invoke(cmd_build, ['--board', 'icezum'])
@@ -42,11 +48,10 @@ def test_build_board(clirunner, configenv):
         #-- It is an error. Exit code should not be 0
         assert result.exit_code != 0
 
-        #-- Error code 1 means the install oss-cad-suite package 
+        #-- Error code 1 means the install oss-cad-suite package
         #-- is not installed
         if result.exit_code == 1:
-            #assert 'install oss-cad-suite' in result.output
-            pass
+            assert 'install oss-cad-suite' in result.output
 
 
 def test_build_complete(clirunner, configenv):
