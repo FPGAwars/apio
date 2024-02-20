@@ -105,6 +105,38 @@ class Project:
         # -- Create the apio.ini from scratch
         self._create_ini_file(board, top_module, ini_path, PROJECT_FILENAME)
 
+    def update_ini(self, top_module):
+        """Update the current init file with the given top-module"""
+
+        # -- Build the filename
+        ini_path = PROJECT_FILENAME
+
+        # -- Check if the apio.ini file exists
+        if not isfile(ini_path):
+            click.secho(
+                "No apio.ini file. You should first create it:\n"
+                "  apio init --board <boardname>\n",
+                fg="red",
+            )
+            return
+
+        # -- Read the current apio.ini file
+        config = configparser.ConfigParser()
+        config.read(PROJECT_FILENAME)
+
+        # -- Set the new top-mddule
+        self.top_module = top_module
+        config.set("env", "top-module", top_module)
+
+        # -- Write the apio ini file
+        with open(PROJECT_FILENAME, "w", encoding="utf-8") as inifile:
+            config.write(inifile)
+
+        click.secho(
+            f"File '{PROJECT_FILENAME}' has been successfully updated!",
+            fg="green",
+        )
+
     @staticmethod
     def _create_ini_file(board, top_module, ini_path, ini_name):
         click.secho(f"Creating {ini_name} file ...")
@@ -113,7 +145,7 @@ class Project:
             config.add_section("env")
             config.set("env", "board", board)
 
-            # -- Work in progress
+            # -- Set the top module
             config.set("env", "top-module", top_module)
 
             # -- Write the apio ini file
@@ -167,11 +199,10 @@ class Project:
         # -- Update top-module
         self.top_module = top_module
 
+        # -- Warn the user the top module has not been set in the apio.ini
+        # -- file
         if not top_module:
-            print("-------> NO TOP MODLE!!!")
-
-        # -- TODO: Check if top_module has a value or not....
-        # -- (backward compatibility)
+            click.secho("Warning! No TOP-MODULE in apio.ini", fg="yellow")
 
     @staticmethod
     def _read_board() -> str:
@@ -195,7 +226,6 @@ class Project:
 
         config = configparser.ConfigParser()
         config.read(PROJECT_FILENAME)
-        print("VAAAAAMOS A LEER TOP-MODULE!!!")
 
         try:
             top_module = config.get("env", "top-module")

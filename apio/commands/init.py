@@ -52,5 +52,8 @@ def cli(ctx, board, top_module, scons, project_dir, sayyes):
         Project().create_sconstruct(project_dir, "ice40", sayyes)
     elif board:
         Project().create_ini(board, top_module, project_dir, sayyes)
+    elif top_module:
+        print("INIT TOP-MODULE!!")
+        Project().update_ini(top_module)
     else:
         click.secho(ctx.get_help())

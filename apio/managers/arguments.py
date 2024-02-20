@@ -80,6 +80,8 @@ def debug_params(fun):
     return outer
 
 
+# R0912: Too many branches (14/12)
+# pylint: disable=R0912
 @debug_params
 def process_arguments(
     config_ini: dict, resources: type[Resources]
@@ -134,6 +136,11 @@ def process_arguments(
     # -- proj.board:
     # --   * None: No apio.ini file
     # --   * "name": Board name (str)
+
+    # -- proj.top_module:
+    # --  * None: Not specified in apio.ini file
+    # --  * "name": name of the top-module to use
+    # -- (if not overriden by arguments)
 
     # -- DEBUG: Print both: project board and configuration board
     debug_config_item(config, BOARD, proj.board)
@@ -201,9 +208,33 @@ def process_arguments(
             raise ValueError(f"Missing FPGA {item.upper()}")
 
     # -- Process the top-module
-    # -- If it has not set by arguments, give it the default value: main
-    if config[TOP_MODULE] is None:
-        config[TOP_MODULE] = "main"
+    # -- Priority 1: Given by arguments in the command line
+    # -- If it has not been set by arguments...
+    if not config[TOP_MODULE]:
+
+        # -- Priority 2: Use the top module in the apio.ini file
+        # -- if it exists...
+        if proj.top_module:
+            config[TOP_MODULE] = proj.top_module
+
+        # -- NO top-module specified!! Warn the user
+        else:
+            click.secho(
+                "No top module given\n",
+                fg="red",
+            )
+            click.secho(
+                "Option 1: Pass it as a parameter\n"
+                "   `--top-module <top module name>`\n\n"
+                "Option 2: Insert in the ini file\n"
+                "   `apio init --top-module <top-module>`\n",
+                fg="yellow",
+            )
+
+            # -- "main" is used as a default top-level
+            config[TOP_MODULE] = "main"
+
+            click.secho("Using the default top-module: `main`", fg="blue")
 
     # -- Debug: Print current configuration
     print_configuration(config)
