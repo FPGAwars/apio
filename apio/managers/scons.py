@@ -111,7 +111,7 @@ class SCons:
 
         # -- Split the arguments
         var, _, arch = process_arguments(args, self.resources)
-        
+
         return self.run(
             "sim",
             variables=var,

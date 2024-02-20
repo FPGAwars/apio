@@ -28,6 +28,9 @@ class Project:
     def __init__(self):
         self.board = None
 
+        # -- Top module by default: main
+        self.top_module = "main"
+
     def create_sconstruct(self, project_dir="", arch=None, sayyes=False):
         """Creates a default SConstruct file"""
 
@@ -67,7 +70,7 @@ class Project:
                 sconstruct_name, sconstruct_path, local_sconstruct_path
             )
 
-    def create_ini(self, board, project_dir="", sayyes=False):
+    def create_ini(self, board, top_module, project_dir="", sayyes=False):
         """Creates a new apio project file"""
 
         project_dir = util.check_dir(project_dir)
@@ -81,29 +84,39 @@ class Project:
             click.secho(f"Error: no such board '{board}'", fg="red")
             sys.exit(1)
 
+        # -- The apio.ini file already exists...
         if isfile(ini_path):
-            # -- If sayyes, skip the question
-            if sayyes:
-                self._create_ini_file(board, ini_path, PROJECT_FILENAME)
-            else:
+
+            # -- Warn the user, unless the flag sayyes is active
+            if not sayyes:
                 click.secho(
                     f"Warning: {PROJECT_FILENAME} file already exists",
                     fg="yellow",
                 )
-                if click.confirm("Do you want to replace it?"):
-                    self._create_ini_file(board, ini_path, PROJECT_FILENAME)
-                else:
+
+                # -- Ask for confirmation
+                replace = click.confirm("Do you want to replace it?")
+
+                # -- User say: NO! --> Abort
+                if not replace:
                     click.secho("Abort!", fg="red")
-        else:
-            self._create_ini_file(board, ini_path, PROJECT_FILENAME)
+                    return
+
+        # -- Create the apio.ini from scratch
+        self._create_ini_file(board, top_module, ini_path, PROJECT_FILENAME)
 
     @staticmethod
-    def _create_ini_file(board, ini_path, ini_name):
+    def _create_ini_file(board, top_module, ini_path, ini_name):
         click.secho(f"Creating {ini_name} file ...")
         with open(ini_path, "w", encoding="utf8") as file:
             config = configparser.ConfigParser()
             config.add_section("env")
             config.set("env", "board", board)
+
+            # -- Work in progress
+            config.set("env", "top-module", top_module)
+
+            # -- Write the apio ini file
             config.write(file)
             click.secho(
                 f"File '{ini_name}' has been successfully created!",
@@ -141,12 +154,24 @@ class Project:
         # -- Read stored board
         board = self._read_board()
 
+        # -- Read stored top-module
+        top_module = self._read_top_module()
+
         # -- Update board
         self.board = board
         if not board:
             print("Error: invalid {PROJECT_FILENAME} project file")
             print("No 'board' field defined in project file")
             sys.exit(1)
+
+        # -- Update top-module
+        self.top_module = top_module
+
+        if not top_module:
+            print("-------> NO TOP MODLE!!!")
+
+        # -- TODO: Check if top_module has a value or not....
+        # -- (backward compatibility)
 
     @staticmethod
     def _read_board() -> str:
@@ -160,3 +185,21 @@ class Project:
         board = config.get("env", "board")
 
         return board
+
+    @staticmethod
+    def _read_top_module() -> str:
+        """Read the configured top-module from the project file
+        RETURN:
+          * A string with the name of the top-module
+        """
+
+        config = configparser.ConfigParser()
+        config.read(PROJECT_FILENAME)
+        print("VAAAAAMOS A LEER TOP-MODULE!!!")
+
+        try:
+            top_module = config.get("env", "top-module")
+        except configparser.NoOptionError:
+            top_module = None
+
+        return top_module

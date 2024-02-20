@@ -121,7 +121,7 @@ def process_arguments(
         IDCODE: None,
         VERBOSE: {ALL: False, "yosys": False, "pnr": False},
         TOP_MODULE: None,
-        TESTBENCH: None
+        TESTBENCH: None,
     }
 
     # -- Merge the initial configuration to the current configuration
@@ -220,7 +220,7 @@ def process_arguments(
             "verbose_yosys": config[VERBOSE][YOSYS],
             "verbose_pnr": config[VERBOSE][PNR],
             "top_module": config[TOP_MODULE],
-            "testbench" : config[TESTBENCH],
+            "testbench": config[TESTBENCH],
         }
     )
 
