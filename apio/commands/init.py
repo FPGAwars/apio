@@ -26,7 +26,6 @@ from apio.managers.project import Project
     "--top-module",
     type=str,
     metavar="top_module",
-    default="main",
     help="Set the top_module in the init file",
 )
 @click.option(
@@ -51,6 +50,9 @@ def cli(ctx, board, top_module, scons, project_dir, sayyes):
     if scons:
         Project().create_sconstruct(project_dir, "ice40", sayyes)
     elif board:
+        # -- Set the default top_module when creating the ini file
+        if not top_module:
+            top_module = "main"
         Project().create_ini(board, top_module, project_dir, sayyes)
     elif top_module:
         print("INIT TOP-MODULE!!")
