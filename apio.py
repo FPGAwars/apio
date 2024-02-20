@@ -8,10 +8,10 @@
 
 import sys
 
+from click.testing import CliRunner
+
 # -- Import the apio entry point
 from apio.__main__ import cli as apio
-
-from click.testing import CliRunner
 
 # -- Read the arguments
 cmds = sys.argv[1:]
