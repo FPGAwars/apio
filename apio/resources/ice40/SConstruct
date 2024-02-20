@@ -281,6 +281,16 @@ AlwaysBuild(lint)
 
 Default(bitstream)
 
-# -- These is for cleaning the files generated using the alias targets
+# -- These is for cleaning the artifact files.
 if GetOption('clean'):
+    # Create a list of additional files that we want to clean up, regardless
+    # of the current dependencies. For example, artifacts of testbench
+    # simulations. 
+    cleanup_nodes = []
+    for glob_pattern in ['*.out', '*.vcd']:
+        cleanup_nodes.extend(Glob(glob_pattern))
+    cleanup_files = [str(f) for f in cleanup_nodes]
+    cleanup_files.sort()  # User report looks nicer with sorting (?)
+
+    env.Clean(t, cleanup_files)
     env.Default([t, vout, sout, vcd_file])
