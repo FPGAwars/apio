@@ -1,4 +1,4 @@
-"""DOC:TODO"""
+"""APIO ENTRY POINT"""
 
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
@@ -103,7 +103,7 @@ class ApioCLI(click.MultiCommand):
 @click.pass_context
 @click.version_option()
 def cli(ctx):
-    """TODO"""
+    """Work with FPGAs with ease"""
 
     # -- No command typed: show help
     if ctx.invoked_subcommand is None:

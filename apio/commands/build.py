@@ -76,7 +76,7 @@ def cli(
     # by means of the scons tool
     # https://www.scons.org/documentation.html
 
-    # -- Crete the scons object
+    # -- Create the scons object
     scons = SCons(project_dir)
 
     # -- Build the project with the given parameters
