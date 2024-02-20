@@ -18,6 +18,11 @@ lint:  ## Lint and static-check
 	python -m flake8 apio
 	python -m pylint apio
 	
+lint-test: ### Lint test scripts
+	python -m pylint test/conftest.py
+
+test-one:  ## Execute a test script
+	pytest -v -s test/test_apio.py::test_apio
 
 tox:   ## Run tox
 	python -m tox
@@ -32,5 +37,5 @@ install:  ## Install the tool locally
 	flit build
 	flit install
 
-tests: ## Make tests
+tests: ## Execute ALL the tests
 	pytest apio test
