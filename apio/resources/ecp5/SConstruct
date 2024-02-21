@@ -220,7 +220,7 @@ vcd = Builder(
 env.Append(BUILDERS={'IVerilog': iverilog, 'VCD': vcd})
 
 # --- Verify
-vout = env.IVerilog(TARGET, src_synth)
+vout = env.IVerilog(TARGET, src_synth + list_tb)
 
 verify = env.Alias('verify', vout)
 AlwaysBuild(verify)
@@ -249,7 +249,7 @@ verilator = Builder(
 env.Append(BUILDERS={'Verilator': verilator})
 
 # --- Lint
-lout = env.Verilator(TARGET, src_synth)
+lout = env.Verilator(TARGET, src_synth + list_tb)
 
 lint = env.Alias('lint', lout)
 AlwaysBuild(lint)
