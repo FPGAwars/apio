@@ -8,16 +8,11 @@
 
 import sys
 
-from click.testing import CliRunner
-
 # -- Import the apio entry point
 from apio.__main__ import cli as apio
 
-# -- Read the arguments
-cmds = sys.argv[1:]
+#-- Run apio!
+apio(None)
 
-#-- Execute "apio cmds"
-result = CliRunner().invoke(apio, cmds)
-
-#-- Print the command output on the console
-print(result.output)
+#-- Exit!
+sys.exit()

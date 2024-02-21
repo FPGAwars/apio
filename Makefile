@@ -24,7 +24,7 @@ lint-test: ### Lint test scripts
 	python -m pylint test/code_commands/test_build.py
 
 test-one:  ## Execute a test script
-	pytest -v -s test/code_commands/test_build.py::test_build_board
+	pytest -v -s test/code_commands/test_build.py::test_build_complete1
 
 tox:   ## Run tox
 	python -m tox
