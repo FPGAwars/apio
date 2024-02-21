@@ -105,58 +105,35 @@ list_scanner = env.Scanner(function=list_files_scan)
 v_nodes = Glob('*.v')
 v_files = [str(f) for f in v_nodes]
 
-# Create lists of module and testbench files. Test benches are assumed
-# to end with '_tb.v', case insensitive.
-src_sim = [f for f in v_files if f[-5:].upper() != '_TB.V']
+# Construct disjoint lists of .v module and testbench files.
+src_synth = [f for f in v_files if f[-5:].upper() != '_TB.V']
 list_tb = [f for f in v_files if f[-5:].upper() == '_TB.V']
 
-# Handle the testbench selection, if any. 
-testbench = None
-
-if TESTBENCH:
-  # Here when --testbench was specified.
-  testbench = TESTBENCH
-else:
-  # Here when --testbench was not specified so we use the default behavior
-  # for backward compatibility. Currently we pick arbitrarily the first
-  # testbench in the Glob order.
-  if len(list_tb) > 1:
-    print('Warning: more than one testbench found.')
-  if len(list_tb) > 0:
-    testbench = list_tb[0]
-
-# Add the testbench to the list of compiled files.
-if testbench:
-  src_sim.append(testbench)
-
-SIMULNAME = ''
-TARGET_SIM = ''
-
-# clean
-if len(COMMAND_LINE_TARGETS) == 0:
-    if testbench is not None:
-        # -- Simulation name
-        SIMULNAME, ext = os.path.splitext(testbench)
-# sim
-elif 'sim' in COMMAND_LINE_TARGETS:
-    if testbench is None:
-        print('Error: no testbench found for simulation')
-        Exit(1)
-
-    # -- Simulation name
-    SIMULNAME, ext = os.path.splitext(testbench)
-
-# -- Target sim name
-if SIMULNAME:
-    TARGET_SIM = SIMULNAME  # .replace('\\', '\\\\')
-
-# -------- Get the synthesis files.  They are ALL the files except the
-# -------- testbench
-src_synth = [f for f in src_sim if f not in list_tb]
-
 if len(src_synth) == 0:
-    print('Error: no verilog files found (.v)')
+    print('Error: no verilog module files found (.v)')
     Exit(1)
+
+# If running the sim command, determine the testbench to simulate.
+SIMULNAME = ''
+if 'sim' in COMMAND_LINE_TARGETS: 
+    if TESTBENCH:
+        testbench = TESTBENCH   # Explicit from the --testbench flag.
+    else:
+        if len(list_tb) == 0:
+            print('Error: no testbench found for simulation.')
+            Exit(1)
+        if len(list_tb) > 1:
+            # TODO: consider to allow specifying the default testbench in apio.ini.
+            print('Error: found {} testbranches, please use the --testbench flag.'.format(len(list_tb)))
+            for tb in list_tb:
+                print('- {}'.format(tb))
+            Exit(1)
+        testbench = list_tb[0]  # Pick the only available testbench.
+    # List of simulation files. Includes the testbench and all the .v files.
+    src_sim = []
+    src_sim.extend(src_synth)  # All the .v files.
+    src_sim.append(testbench)
+    SIMULNAME, _ = os.path.splitext(testbench)
 
 # -- For debugging
 # print('Testbench: {}'.format(testbench))
@@ -233,7 +210,7 @@ AlwaysBuild(t)
 # -- Icarus Verilog builders
 iverilog = Builder(
     action='iverilog {0} -o $TARGET -D VCD_OUTPUT={1} -D NO_ICE40_DEFAULT_ASSIGNMENTS "{2}/ice40/cells_sim.v" $SOURCES'.format(
-        IVER_PATH, TARGET_SIM, YOSYS_PATH),
+        IVER_PATH, SIMULNAME, YOSYS_PATH),
     suffix='.out',
     src_suffix='.v',
     source_scanner=list_scanner)
@@ -254,12 +231,14 @@ verify = env.Alias('verify', vout)
 AlwaysBuild(verify)
 
 # --- Simulation
-sout = env.IVerilog(TARGET_SIM, src_sim)
-vcd_file = env.VCD(sout)
-
-waves = env.Alias('sim', vcd_file, 'gtkwave {0} {1}.gtkw'.format(
-    vcd_file[0], SIMULNAME))
-AlwaysBuild(waves)
+# Since the simulation targets are dynamic due to the testbench selection, we 
+# create them only when running simulation.
+if 'sim' in COMMAND_LINE_TARGETS: 
+    sout = env.IVerilog(SIMULNAME, src_sim)
+    vcd_file = env.VCD(sout)
+    waves = env.Alias('sim', vcd_file, 'gtkwave {0} {1}.gtkw'.format(
+        vcd_file[0], SIMULNAME))
+    AlwaysBuild(waves)
 
 # -- Verilator builder
 verilator = Builder(
@@ -283,14 +262,12 @@ Default(bitstream)
 
 # -- These is for cleaning the artifact files.
 if GetOption('clean'):
-    # Create a list of additional files that we want to clean up, regardless
-    # of the current dependencies. For example, artifacts of testbench
-    # simulations. 
-    cleanup_nodes = []
+    # Identify additional files that may not be associated with targets and
+    # associate them with a target such that they will be cleaned up as well.
+    # This cleans for example artifacts of past simulation since the testbench
+    # target are dynamic and changes with the selected testbench.
     for glob_pattern in ['*.out', '*.vcd']:
-        cleanup_nodes.extend(Glob(glob_pattern))
-    cleanup_files = [str(f) for f in cleanup_nodes]
-    cleanup_files.sort()  # User report looks nicer with sorting (?)
+        for node in Glob(glob_pattern):
+            env.Clean(t, str(node))
 
-    env.Clean(t, cleanup_files)
-    env.Default([t, vout, sout, vcd_file])
+    env.Default([t, build, vout])
