@@ -222,21 +222,24 @@ def test_build_complete2(clirunner, configenv):
         # apio build --fpga iCE40-FAKE
         result = clirunner.invoke(cmd_build, ["--fpga", "iCE40-FAKE"])
         assert result.exit_code != 0
-        # assert 'Error: unknown FPGA: iCE40-FAKE' in result.output
+        assert "Error: unknown FPGA: iCE40-FAKE" in result.output
 
         # apio build --fpga iCE40-FAKE --size 8k
         result = clirunner.invoke(
             cmd_build, ["--fpga", "iCE40-FAKE", "--size", "8k"]
         )
         assert result.exit_code != 0
-        # assert 'Error: unknown FPGA: iCE40-FAKE' in result.output
+        assert "Error: unknown FPGA: iCE40-FAKE" in result.output
 
         # apio build --board icezum --fpga iCE40-FAKE
         result = clirunner.invoke(
             cmd_build, ["--board", "icezum", "--fpga", "iCE40-FAKE"]
         )
         assert result.exit_code != 0
-        # assert 'Error: unknown FPGA: iCE40-FAKE' in result.output
+        assert (
+            "Error: contradictory arguments: ('iCE40-HX1K-TQ144', 'iCE40-FAKE')"
+            in result.output
+        )
 
 
 def test_build_init(clirunner, configenv):
