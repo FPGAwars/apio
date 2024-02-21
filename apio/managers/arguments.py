@@ -3,7 +3,7 @@
 # -- (C) 2016-2019 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
-"""TODO"""
+"""Utilities for procesing the arguments passed to apio commands"""
 
 from functools import wraps
 
@@ -249,8 +249,12 @@ def process_arguments(
             "fpga_idcode": config[IDCODE],
             "verbose_all": config[VERBOSE][ALL],
             # These two flags appear only in some of the commands.
-            "verbose_yosys": config[VERBOSE][YOSYS] if YOSYS in config[VERBOSE] else False,
-            "verbose_pnr": config[VERBOSE][PNR] if PNR in config[VERBOSE] else False,
+            "verbose_yosys": (
+                config[VERBOSE][YOSYS] if YOSYS in config[VERBOSE] else False
+            ),
+            "verbose_pnr": (
+                config[VERBOSE][PNR] if PNR in config[VERBOSE] else False
+            ),
             "top_module": config[TOP_MODULE],
             "testbench": config[TESTBENCH],
         }
