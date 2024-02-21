@@ -12,7 +12,12 @@ import sys
 from apio.__main__ import cli as apio
 
 #-- Run apio!
-apio(None)
+try:
+    apio(None)
+
+#-- Apio commands finish with this excepcion
+except SystemExit:
+    print("Apio command executed!")
 
 #-- Exit!
 sys.exit()

@@ -12,7 +12,6 @@
 .tox/
 .cache/
 .pytest_cache/
-.vscode/
 .venv/
 build/
 dist/

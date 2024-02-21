@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Apio build",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": ["build"],
+            "console": "internalConsole",
+            "justMyCode": true,
+            //-- Change to the folder with the example to test
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/ledon"
+        }
+    ]
+}
