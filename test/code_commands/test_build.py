@@ -243,7 +243,11 @@ def test_build_complete2(clirunner, configenv):
 
 
 def test_build_init(clirunner, configenv):
+    """Test: apio build with apio init"""
+
     with clirunner.isolated_filesystem():
+
+        # -- Config the environment (conftest.configenv())
         configenv()
 
         # apio init --board icezum
@@ -264,17 +268,19 @@ def test_build_init(clirunner, configenv):
         # apio build --fpga iCE40-HX1K-VQ100
         result = clirunner.invoke(cmd_build, ["--fpga", "iCE40-HX1K-VQ100"])
         assert result.exit_code != 0
-        # assert 'Info: ignore apio.ini board' in result.output
+        assert (
+            "Error: contradictory arguments: ('iCE40-HX1K-TQ144', 'iCE40-HX1K-VQ100')"
+            in result.output
+        )
 
         # apio build --type lp --size 8k --pack cm225:4k
         result = clirunner.invoke(
             cmd_build, ["--type", "lp", "--size", "8k", "--pack", "cm225:4k"]
         )
         assert result.exit_code != 0
-        # assert 'Info: ignore apio.ini board' in result.output
+        assert "Error: contradictory arguments: ('hx', 'lp')" in result.output
 
         # apio build --type lp --size 8k
         result = clirunner.invoke(cmd_build, ["--type", "lp", "--size", "8k"])
         assert result.exit_code != 0
-        # assert 'Info: ignore apio.ini board' in result.output
-        # assert 'Error: insufficient arguments: missing pack' in result.output
+        assert "Error: contradictory arguments: ('hx', 'lp')" in result.output
