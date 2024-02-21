@@ -248,8 +248,9 @@ def process_arguments(
             "fpga_pack": config[PACK],
             "fpga_idcode": config[IDCODE],
             "verbose_all": config[VERBOSE][ALL],
-            "verbose_yosys": config[VERBOSE][YOSYS],
-            "verbose_pnr": config[VERBOSE][PNR],
+            # These two flags appear only in some of the commands.
+            "verbose_yosys": config[VERBOSE][YOSYS] if YOSYS in config[VERBOSE] else False,
+            "verbose_pnr": config[VERBOSE][PNR] if PNR in config[VERBOSE] else False,
             "top_module": config[TOP_MODULE],
             "testbench": config[TESTBENCH],
         }
@@ -336,8 +337,11 @@ def print_configuration(config: dict) -> None:
     print(f"  testbench: {config[TESTBENCH]}")
     print("  verbose:")
     print(f"    all: {config[VERBOSE][ALL]}")
-    print(f"    yosys: {config[VERBOSE][YOSYS]}")
-    print(f"    pnr: {config[VERBOSE][PNR]}")
+    # These two flags appear only in some of the commands.
+    if YOSYS in config[VERBOSE]:
+        print(f"    yosys: {config[VERBOSE][YOSYS]}")
+    if PNR in config[VERBOSE]:
+        print(f"    pnr: {config[VERBOSE][PNR]}")
     print()
 
 
