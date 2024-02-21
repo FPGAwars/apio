@@ -57,12 +57,8 @@ class SCons:
     def clean(self, args):
         """DOC: TODO"""
 
-        try:
-            __, __, arch = process_arguments(args, self.resources)
-
-        # -- No architecture given: Uses ice40 as default
-        except Exception:
-            arch = "ice40"
+        # -- Split the arguments
+        __, __, arch = process_arguments(args, self.resources)
 
         # --Clean the project: run scons -c (with aditional arguments)
         return self.run("-c", arch=arch, variables=[], packages=[])
