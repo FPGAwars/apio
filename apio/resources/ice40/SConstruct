@@ -204,8 +204,8 @@ AlwaysBuild(upload)
 
 # -- Target time: calculate the time
 rpt = env.Time(asc)
+AlwaysBuild(rpt) 
 t = env.Alias('time', rpt)
-AlwaysBuild(t)
 
 # -- Icarus Verilog builders
 iverilog = Builder(
