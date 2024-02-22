@@ -231,7 +231,9 @@ AlwaysBuild(verify)
 if 'sim' in COMMAND_LINE_TARGETS: 
     sout = env.IVerilog(SIMULNAME, src_sim)
     vcd_file = env.VCD(sout)
-    waves = env.Alias('sim', vcd_file, 'gtkwave --rcvar "splash_disable on" {0} {1}.gtkw'.format(
+    # 'do_initial_zoom_fit' does max zoom only if .gtkw file not found.
+    waves = env.Alias('sim', vcd_file, 'gtkwave {0} {1} {2}.gtkw'.format(
+        '--rcvar "splash_disable on" --rcvar "do_initial_zoom_fit 1"',
         vcd_file[0], SIMULNAME))
     AlwaysBuild(waves)
 
