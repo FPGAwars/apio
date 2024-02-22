@@ -204,8 +204,8 @@ AlwaysBuild(upload)
 
 # -- Target time: calculate the time
 rpt = env.Time(asc)
+AlwaysBuild(rpt) 
 t = env.Alias('time', rpt)
-AlwaysBuild(t)
 
 # -- Icarus Verilog builders
 iverilog = Builder(
@@ -236,7 +236,7 @@ AlwaysBuild(verify)
 if 'sim' in COMMAND_LINE_TARGETS: 
     sout = env.IVerilog(SIMULNAME, src_sim)
     vcd_file = env.VCD(sout)
-    waves = env.Alias('sim', vcd_file, 'gtkwave {0} {1}.gtkw'.format(
+    waves = env.Alias('sim', vcd_file, 'gtkwave --rcvar "splash_disable on" {0} {1}.gtkw'.format(
         vcd_file[0], SIMULNAME))
     AlwaysBuild(waves)
 
