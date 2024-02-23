@@ -45,13 +45,9 @@ def test_build_board(clirunner, configenv):
         # -- Execute "apio build --board icezum"
         result = clirunner.invoke(cmd_build, ["--board", "icezum"])
 
-        # -- It is an error. Exit code should not be 0
+        # -- Check the result
         assert result.exit_code != 0
-
-        # -- Error code 1 means the install oss-cad-suite package
-        # -- is not installed
-        if result.exit_code == 1:
-            assert "install oss-cad-suite" in result.output
+        assert "install oss-cad-suite" in result.output
 
 
 def test_build_complete1(clirunner, configenv):
