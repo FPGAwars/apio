@@ -91,6 +91,7 @@ Project Commands
     project_commands/cmd_clean
     project_commands/cmd_lint
     project_commands/cmd_sim
+    project_commands/cmd_test
     project_commands/cmd_time
     project_commands/cmd_upload
     project_commands/cmd_verify
