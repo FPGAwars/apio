@@ -103,7 +103,7 @@ class SCons:
 
     @util.command
     def sim(self, args):
-        """DOC: TODO"""
+        """Simulates a testbench and shows the result in a gtkwave window."""
 
         # -- Split the arguments
         var, _, arch = process_arguments(args, self.resources)
@@ -113,6 +113,20 @@ class SCons:
             variables=var,
             arch=arch,
             packages=["oss-cad-suite", "gtkwave"],
+        )
+    
+    @util.command
+    def test(self, args):
+        """Tests all or a single testbench by simulating."""
+
+        # -- Split the arguments
+        var, _, arch = process_arguments(args, self.resources)
+
+        return self.run(
+            "test",
+            variables=var,
+            arch=arch,
+            packages=["oss-cad-suite"],
         )
 
     @util.command

@@ -113,32 +113,6 @@ if len(src_synth) == 0:
     print('Error: no verilog module files found (.v)')
     Exit(1)
 
-# If running the sim command, determine the testbench to simulate.
-SIMULNAME = ''
-if 'sim' in COMMAND_LINE_TARGETS: 
-    if TESTBENCH:
-        testbench = TESTBENCH   # Explicit from the --testbench flag.
-    else:
-        if len(list_tb) == 0:
-            print('Error: no testbench found for simulation.')
-            Exit(1)
-        if len(list_tb) > 1:
-            # TODO: consider to allow specifying the default testbench in apio.ini.
-            print('Error: found {} testbranches, please use the --testbench flag.'.format(len(list_tb)))
-            for tb in list_tb:
-                print('- {}'.format(tb))
-            Exit(1)
-        testbench = list_tb[0]  # Pick the only available testbench.
-    # List of simulation files. Includes the testbench and all the .v files.
-    src_sim = []
-    src_sim.extend(src_synth)  # All the .v files.
-    src_sim.append(testbench)
-    SIMULNAME, _ = os.path.splitext(testbench)
-
-# -- For debugging
-# print('Testbench: {}'.format(testbench))
-# print('SIM NAME: {}'.format(SIMULNAME))
-
 # -- Get the PCF file
 PCF = ''
 PCF_list = Glob('*.pcf')
@@ -208,9 +182,32 @@ AlwaysBuild(rpt)
 t = env.Alias('time', rpt)
 
 # -- Icarus Verilog builders
+
+def iverilog_generator(source, target, env, for_signature):
+    """Constructs dynamically a commands for iverlog targets builders. """
+    target_name, _  = os.path.splitext(str(target[0]))  # E.g. "my_module" or"my_module_tb"
+    is_testbench = target_name.upper().endswith("_TB")
+    # If running a testbench with the sim command, we pass to the benchmark a macro that
+    # will allow it to supress assertions so we can examine the waves. For example, with 
+    # an assertion macro like this one that fails when running apio test.
+    #
+    # `define EXPECT(signal, value) \
+    #     if (signal !== value) begin \
+    #         $display("ASSERTION FAILED in %m: signal != value"); \
+    #         `ifndef INTERACTIVE_SIM \
+    #             $fatal; \
+    #         `endif \
+    #     end
+    is_interactive = is_testbench and 'sim' in COMMAND_LINE_TARGETS
+    vcd_output_flag = f'-D VCD_OUTPUT={target_name}' if is_testbench else ""
+    interactive_flag = f'-D INTERACTIVE_SIM' if is_interactive else ""
+    result = 'iverilog {0} -o $TARGET {1} {2} -D NO_ICE40_DEFAULT_ASSIGNMENTS "{3}/ice40/cells_sim.v" $SOURCES'.format(
+        IVER_PATH, vcd_output_flag, interactive_flag, YOSYS_PATH)
+    return result
+
 iverilog = Builder(
-    action='iverilog {0} -o $TARGET -D VCD_OUTPUT={1} -D NO_ICE40_DEFAULT_ASSIGNMENTS "{2}/ice40/cells_sim.v" $SOURCES'.format(
-        IVER_PATH, SIMULNAME, YOSYS_PATH),
+    # Action string is computed automatically by the generator.
+    generator = iverilog_generator,
     suffix='.out',
     src_suffix='.v',
     source_scanner=list_scanner)
@@ -234,13 +231,72 @@ AlwaysBuild(verify)
 # Since the simulation targets are dynamic due to the testbench selection, we 
 # create them only when running simulation.
 if 'sim' in COMMAND_LINE_TARGETS: 
-    sout = env.IVerilog(SIMULNAME, src_sim)
+    assert 'test' not in COMMAND_LINE_TARGETS, COMMAND_LINE_TARGETS
+    if TESTBENCH:
+        # Explicit testbench file name is given via --testbench.
+        sim_testbench = TESTBENCH
+    else:
+        # No --testbench flag specified. If there is exactly one testbench then pick
+        # it, otherwise fail. 
+        if len(list_tb) == 0:
+            print('Error: no testbench found for simulation.')
+            Exit(1)
+        if len(list_tb) > 1:
+            # TODO: consider to allow specifying the default testbench in apio.ini.
+            print('Error: found {} testbranches, please use the --testbench flag.'.format(len(list_tb)))
+            for tb in list_tb:
+                print('- {}'.format(tb))
+            Exit(1)
+        sim_testbench = list_tb[0]  # Pick the only available testbench.
+    # Here sim_testbench contains the testbench, e.g. my_module_tb.v.
+    # Construct list of files to build.
+    src_sim = []
+    src_sim.extend(src_synth)  # All the .v files.
+    src_sim.append(sim_testbench)
+    # Create targets sim target and its dependent.
+    sim_name, _ = os.path.splitext(sim_testbench)  #e.g. my_module_tb
+    sout = env.IVerilog(sim_name, src_sim)
     vcd_file = env.VCD(sout)
     # 'do_initial_zoom_fit' does max zoom only if .gtkw file not found.
     waves = env.Alias('sim', vcd_file, 'gtkwave {0} {1} {2}.gtkw'.format(
         '--rcvar "splash_disable on" --rcvar "do_initial_zoom_fit 1"',
-        vcd_file[0], SIMULNAME))
+        vcd_file[0], sim_name))
     AlwaysBuild(waves)
+
+
+# --- Testing
+# Since the simulation targets are dynamic due to the testbench selection, we 
+# create them only when running simulation.
+if 'test' in COMMAND_LINE_TARGETS: 
+    assert 'sim' not in COMMAND_LINE_TARGETS, COMMAND_LINE_TARGETS
+    if TESTBENCH:
+        # Explicit testbench file name is given via --testbench. We test just that one.
+        test_tbs= [ TESTBENCH ]
+    else:
+        # No --testbench flag specified. We will test all them.
+        if len(list_tb) == 0:
+            print('Error: no testbenchs found for simulation.')
+            Exit(1)
+        test_tbs= list_tb  # All testbenches.
+    tests = [] # Targets of all tests
+    for test_tb in test_tbs:
+        # Create a list of source files. All the modules + the current testbench.
+        src_test = []
+        src_test.extend(src_synth)  # All the .v files.
+        src_test.append(test_tb)
+        # Create the targets for the 'out' and 'vcd' files of the testbench.
+        # NOTE: Remove the two AlwaysBuild() calls below for an incremental test. Fast, correct,
+        # but may confuse the user seeing nothing happens. 
+        test_name, _ = os.path.splitext(test_tb)  #e.g. my_module_tb
+        test_out_target = env.IVerilog(test_name, src_test)
+        AlwaysBuild(test_out_target)
+        test_vcd_target = env.VCD(test_out_target)
+        AlwaysBuild(test_vcd_target)
+        test_target = env.Alias(test_name, [test_out_target, test_vcd_target])
+        tests.append(test_target)
+    # Create a target for the test command that depends on all the test targets.
+    tests_target = env.Alias('test', tests)
+    AlwaysBuild(tests_target)
 
 # -- Verilator builder
 verilator = Builder(
