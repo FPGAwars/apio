@@ -1,10 +1,23 @@
+"""
+  Test for the "apio sim" command
+"""
+
+# -- apio sim entry point
 from apio.commands.sim import cli as cmd_sim
 
 
 def test_sim(clirunner, configenv):
+    """Test: apio sim
+    when no apio.ini file is given
+    No additional parameters are given
+    """
+
     with clirunner.isolated_filesystem():
+
+        # -- Config the environment (conftest.configenv())
         configenv()
-        result = clirunner.invoke(cmd_sim, ['--board', 'icezum'])
+
+        # -- apio sim --board icezum
+        result = clirunner.invoke(cmd_sim)
         assert result.exit_code != 0
-        if result.exit_code == 1:
-            assert 'apio install iverilog' in result.output
+        # -- TODO

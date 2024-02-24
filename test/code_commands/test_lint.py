@@ -1,6 +1,7 @@
 """
   Test for the "apio lint" command
 """
+# -- apio lint entry point
 from apio.commands.lint import cli as cmd_lint
 
 

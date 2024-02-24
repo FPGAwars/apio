@@ -6,6 +6,8 @@ import pathlib
 
 import pytest
 
+#-- Entry point for the apio install, apio uninstall
+#-- apio init, apio upload, apio examples
 from apio.commands.install import cli as cmd_install
 from apio.commands.uninstall import cli as cmd_uninstall
 from apio.commands.init import cli as cmd_init

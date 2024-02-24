@@ -2,7 +2,7 @@
   Test for the "apio build" command
 """
 
-# -- This is for testing "apio build"
+# -- apio build entry point
 from apio.commands.build import cli as cmd_build
 
 # -- This is for testing "apio init"
