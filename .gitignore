@@ -24,7 +24,6 @@ examples/
 ice-build/
 work/
 test-colorlight-v61.ice
-test2
 test-examples/
 hardware.json
 hardware.out
