@@ -89,6 +89,7 @@ Project Commands
 
     project_commands/cmd_build
     project_commands/cmd_clean
+    project_commands/cmd_graph
     project_commands/cmd_lint
     project_commands/cmd_sim
     project_commands/cmd_test
