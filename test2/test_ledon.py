@@ -15,6 +15,9 @@ from apio.commands.build import cli as cmd_build
 # -- apio clean entry point
 from apio.commands.clean import cli as cmd_clean
 
+# -- apio verify entry point
+from apio.commands.verify import cli as cmd_verify
+
 
 # -------------------------------------------
 # -- Change to the folder where the ledon example is located
@@ -64,3 +67,19 @@ def test_ledon_build():
     assert "yosys" in result.output
     assert "nextpnr" in result.output
     assert "icepack" in result.output
+
+def test_ledon_verify():
+    """Test the apio verify command"""
+
+    # ----------------------------
+    # -- Execute "apio verify"
+    # ----------------------------
+    result = CliRunner().invoke(cmd_verify)
+
+    #-- Debug! Mostrar la salida
+    #print(result.output)
+
+    #-- It should return an exit code of 0: success
+    assert result.exit_code == 0
+    assert "[SUCCESS]" in result.output
+    assert "iverilog" in result.output
