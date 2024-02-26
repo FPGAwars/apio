@@ -810,6 +810,9 @@ def get_python_version():
 
 
 def context_settings():
-    """Return a common Click command settings that adds the alias -h to --help"""
-    # Per https://click.palletsprojects.com/en/8.1.x/documentation/#help-parameter-customization
-    return dict(help_option_names=["-h", "--help"])
+    """Return a common Click command settings that adds
+    the alias -h to --help
+    """
+    # Per https://click.palletsprojects.com/en/8.1.x/documentation/
+    #     #help-parameter-customization
+    return {"help_option_names": ["-h", "--help"]}
