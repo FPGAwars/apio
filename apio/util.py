@@ -807,3 +807,8 @@ def get_python_version():
     """Return a string with the python version"""
 
     return f"{sys.version_info[0]}.{sys.version_info[1]}"
+
+def context_settings():
+    """Return a common Click command settings that adds the alias -h to --help"""
+    # Per https://click.palletsprojects.com/en/8.1.x/documentation/#help-parameter-customization
+    return dict(help_option_names=['-h', '--help'])

@@ -10,6 +10,7 @@ import click
 from apio.managers.installer import Installer
 from apio.resources import Resources
 from apio.profile import Profile
+from apio import util
 
 platforms = [
     "linux_x86_64",
@@ -23,7 +24,7 @@ platforms = [
 
 
 # pylint: disable=W0622
-@click.command("uninstall")
+@click.command("uninstall", context_settings=util.context_settings())
 @click.pass_context
 @click.argument("packages", nargs=-1)
 @click.option("-a", "--all", is_flag=True, help="Uninstall all packages.")

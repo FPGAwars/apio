@@ -8,11 +8,12 @@
 import click
 
 from apio.managers.project import Project
+from apio import util
 
 
 # R0913: Too many arguments (6/5)
 # pylint: disable=R0913
-@click.command("init")
+@click.command("init", context_settings=util.context_settings())
 @click.pass_context
 @click.option(
     "-b",

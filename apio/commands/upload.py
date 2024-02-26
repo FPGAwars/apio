@@ -9,11 +9,12 @@ import click
 
 from apio.managers.scons import SCons
 from apio.managers.drivers import Drivers
+from apio import util
 
 
 # R0913: Too many arguments (6/5)
 # pylint: disable=R0913
-@click.command("upload")
+@click.command("upload", context_settings=util.context_settings())
 @click.pass_context
 @click.option(
     "-b", "--board", type=str, metavar="board", help="Set the board."

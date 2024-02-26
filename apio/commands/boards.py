@@ -8,9 +8,10 @@
 import click
 
 from apio.resources import Resources
+from apio import util
 
 
-@click.command("boards")
+@click.command("boards", context_settings=util.context_settings())
 @click.pass_context
 @click.option(
     "-l", "--list", is_flag=True, help="List all supported FPGA boards."

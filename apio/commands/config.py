@@ -8,10 +8,11 @@
 import click
 
 from apio.profile import Profile
+from apio import util
 
 
 # pylint: disable=W0622
-@click.command("config")
+@click.command("config", context_settings=util.context_settings())
 @click.pass_context
 @click.option(
     "-l", "--list", is_flag=True, help="List all configuration parameters."

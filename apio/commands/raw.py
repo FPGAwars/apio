@@ -10,7 +10,7 @@ import click
 from apio import util
 
 
-@click.command("raw")
+@click.command("raw", context_settings=util.context_settings())
 @click.pass_context
 @click.argument("cmd")
 def cli(ctx, cmd):

@@ -8,9 +8,10 @@
 import click
 
 from apio.managers.drivers import Drivers
+from apio import util
 
 
-@click.command("drivers")
+@click.command("drivers", context_settings=util.context_settings())
 @click.pass_context
 @click.option("--ftdi-enable", is_flag=True, help="Enable FTDI drivers.")
 @click.option("--ftdi-disable", is_flag=True, help="Disable FTDI drivers.")
