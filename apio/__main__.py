@@ -99,7 +99,11 @@ class ApioCLI(click.MultiCommand):
 # -- This function is executed when apio is executed without
 # -- any parameter. The help is shown
 # ------------------------------------------------------------------
-@click.command(cls=ApioCLI, invoke_without_command=True, context_settings=util.context_settings())
+@click.command(
+    cls=ApioCLI,
+    invoke_without_command=True,
+    context_settings=util.context_settings(),
+)
 @click.pass_context
 @click.version_option()
 def cli(ctx):

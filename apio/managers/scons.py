@@ -114,7 +114,7 @@ class SCons:
             arch=arch,
             packages=["oss-cad-suite", "gtkwave"],
         )
-    
+
     @util.command
     def test(self, args):
         """Tests all or a single testbench by simulating."""
