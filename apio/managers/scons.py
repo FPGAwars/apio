@@ -78,6 +78,22 @@ class SCons:
             arch=arch,
             packages=["oss-cad-suite"],
         )
+    
+    @util.command
+    def graph(self, args):
+        """Executes scons for visual graph generation"""
+
+        # -- Split the arguments
+        var, _, arch = process_arguments(args, self.resources)
+
+        # -- Execute scons!!!
+        # -- The packages to check are passed
+        return self.run(
+            "graph",
+            variables=var,
+            arch=arch,
+            packages=["oss-cad-suite"],
+        )
 
     @util.command
     def lint(self, args):

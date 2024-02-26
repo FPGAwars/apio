@@ -216,6 +216,26 @@ iverilog = Builder(
     suffix='.out',
     src_suffix='.v',
     source_scanner=list_scanner)
+env.Append(BUILDERS={'IVerilog': iverilog})
+
+dot_builder = Builder(
+    action='yosys -p \"show -format dot -colors 1 -prefix hardware {0}\" {1} $SOURCES'.format(
+        # YOSYS_TOP if YOSYS_TOP else 'top',
+        YOSYS_TOP if YOSYS_TOP else 'unknown_top',
+        '' if VERBOSE_ALL else '-q'
+    ),
+    suffix='.dot',
+    src_suffix='.v',
+    source_scanner=list_scanner)
+env.Append(BUILDERS={'DOT': dot_builder})
+
+svg_builder = Builder(
+    # Expecting graphviz dot to be installed and in the path.
+    action='dot -Tsvg $SOURCES -o $TARGET',
+    suffix='.svg',
+    src_suffix='.dot',
+    source_scanner=list_scanner)
+env.Append(BUILDERS={'SVG': svg_builder})
 
 # NOTE: output file name is defined in the iverilog call using VCD_OUTPUT macro
 vcd = Builder(
@@ -223,13 +243,20 @@ vcd = Builder(
         VVP_PATH),
     suffix='.vcd',
     src_suffix='.out')
-
-env.Append(BUILDERS={'IVerilog': iverilog, 'VCD': vcd})
+env.Append(BUILDERS={'VCD': vcd})
 
 # --- Verify
 vout = env.IVerilog(TARGET, src_synth + list_tb)
 AlwaysBuild(vout)
 verify = env.Alias('verify', vout)
+
+# --- Graph
+# TODO: Launch some portable SVG (or differentn format) viewer.
+dot_target = env.DOT(TARGET, src_synth)
+AlwaysBuild(dot_target)
+svg_target = env.SVG(TARGET, dot_target)
+AlwaysBuild(svg_target)
+graph_target = env.Alias('graph', svg_target)
 
 # --- Simulation
 # Since the simulation targets are dynamic due to the testbench selection, we 
@@ -332,4 +359,4 @@ if GetOption('clean'):
         for node in Glob(glob_pattern):
             env.Clean(t, str(node))
 
-    env.Default([t, build, vout])
+    env.Default([t, build, vout, graph_target])
