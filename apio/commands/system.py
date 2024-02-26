@@ -7,11 +7,12 @@
 
 import click
 
+from apio import util
 from apio.util import get_systype
 from apio.managers.system import System
 
 
-@click.command("system")
+@click.command("system", context_settings=util.context_settings())
 @click.pass_context
 @click.option(
     "--lsftdi", is_flag=True, help="List all connected FTDI devices."

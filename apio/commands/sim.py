@@ -7,9 +7,10 @@
 
 import click
 from apio.managers.scons import SCons
+from apio import util
 
 
-@click.command("sim")
+@click.command("sim", context_settings=util.context_settings())
 @click.pass_context
 @click.option(
     "-p",

@@ -9,13 +9,14 @@
 import click
 
 from apio.managers.scons import SCons
+from apio import util
 
 
 # R0913: Too many arguments (6/5)
 # pylint: disable=R0913
 # pylint: disable=W0622
 # pylint: disable=R0801
-@click.command("build")
+@click.command("build", context_settings=util.context_settings())
 @click.pass_context
 @click.option(
     "-b", "--board", type=str, metavar="board", help="Set the board."

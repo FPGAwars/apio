@@ -10,9 +10,10 @@ import click
 
 from packaging import version
 from apio.util import get_pypi_latest_version
+from apio import util
 
 
-@click.command("upgrade")
+@click.command("upgrade", context_settings=util.context_settings())
 @click.pass_context
 def cli(ctx):
     """Check the latest Apio version."""
