@@ -78,7 +78,7 @@ class SCons:
             arch=arch,
             packages=["oss-cad-suite"],
         )
-    
+
     @util.command
     def graph(self, args):
         """Executes scons for visual graph generation"""

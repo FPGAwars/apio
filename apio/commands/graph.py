@@ -42,7 +42,7 @@ def cli(ctx, project_dir, verbose, top_module):
     exit_code = scons.graph(
         {
             "verbose": {"all": verbose, "yosys": False, "pnr": False},
-            "top-module": top_module
+            "top-module": top_module,
         }
     )
 
