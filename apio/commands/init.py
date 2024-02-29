@@ -36,7 +36,7 @@ from apio import util
     "-p",
     "--project-dir",
     type=str,
-    metavar="path",
+    metavar="project_dir",
     help="Set the target directory for the project.",
 )
 @click.option(
