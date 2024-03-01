@@ -214,9 +214,9 @@ iverilog = Builder(
 env.Append(BUILDERS={'IVerilog': iverilog})
 
 dot_builder = Builder(
-    action='yosys {0} -p \"read_verilog $SOURCES; show -format dot -colors 1 -prefix hardware {1}\"'.format(
-        '' if VERBOSE_ALL else '-q',
-        YOSYS_TOP if YOSYS_TOP else 'unknown_top'
+    action='yosys -p \"show -format dot -colors 1 -prefix hardware {0}\" {1} $SOURCES'.format(
+        YOSYS_TOP if YOSYS_TOP else 'unknown_top',
+        '' if VERBOSE_ALL else '-q'
     ),
     suffix='.dot',
     src_suffix='.v',
