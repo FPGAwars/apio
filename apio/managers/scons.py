@@ -26,6 +26,13 @@ from apio.managers.system import System
 from apio.profile import Profile
 from apio.resources import Resources
 
+# -- Constant for the dictionary PROG, which contains
+# -- the programming configuration
+SERIAL_PORT = "serial_port"
+FTDI_ID = "ftdi_id"
+SRAM = "sram"
+FLASH = "flash"
+
 
 class SCons:
     """Class for managing the scons tools"""
@@ -185,10 +192,11 @@ class SCons:
             * board
             * verbose
             * top-module
-          * serial_port: Serial port name
-          * ftdi_id: ftdi identificator
-          * sram: Perform SRAM programming
-          * flash: Perform Flash programming
+          * prog: Programming configuration parameters
+            * serial_port: Serial port name
+            * ftdi_id: ftdi identificator
+            * sram: Perform SRAM programming
+            * flash: Perform Flash programming
         OUTPUT: Exit code after executing scons
         """
 
@@ -200,13 +208,7 @@ class SCons:
 
         # -- Get the command line to execute for programming
         # -- the FPGA (programmer executable + arguments)
-        programmer = self.get_programmer(
-            board,
-            prog["serial_port"],
-            prog["ftdi_id"],
-            prog["sram"],
-            prog["flash"],
-        )
+        programmer = self.get_programmer(board, prog)
 
         # -- Add as a flag to pass it to scons
         flags += [f"prog={programmer}"]
@@ -220,17 +222,33 @@ class SCons:
             arch=arch,
         )
 
-    # R0913: Too many arguments (6/5)
-    # pylint: disable=R0913
-    def get_programmer(self, board, ext_serial, ext_ftdi_id, sram, flash):
-        """DOC: TODO"""
+    def get_programmer(self, board: str, prog: dict) -> str:
+        """Get the command line (string) to execute for programming
+        the FPGA (programmer executable + arguments)
 
+        * INPUT
+          * board: (string): Board name
+          * prog: Programming configuration params
+            * serial_port: Serial port name
+            * ftdi_id: ftdi identificator
+            * sram: Perform SRAM programming
+            * flash: Perform Flash programming
+
+        * OUTPUT: A string with the command to execute
+        """
+
+        # -- Return string to create
         programmer = ""
 
-        # -- DEBUG
-        print("-----> DEBUG: get_programmer()")
-
+        # -- Mandatory: There should be a board defined
         if board:
+
+            # -- Get the board information
+            # -- Board name
+            # -- FPGA
+            # -- Programmer type
+            # -- Programmer name
+            # -- USB id  (vid, pid)
             board_data = self.resources.boards.get(board)
 
             # Check platform
@@ -243,7 +261,9 @@ class SCons:
             print("-------> DEBUG: Traza 1")
 
             # Serialize programmer command
-            programmer = self.serialize_programmer(board_data, sram, flash)
+            programmer = self.serialize_programmer(
+                board_data, prog[SRAM], prog[FLASH]
+            )
 
             print(f"-------> DEBUG: {programmer=}")
 
@@ -260,7 +280,7 @@ class SCons:
             # Replace FTDI index
             if "${FTDI_ID}" in programmer:
                 self.check_usb(board, board_data)
-                ftdi_id = self.get_ftdi_id(board, board_data, ext_ftdi_id)
+                ftdi_id = self.get_ftdi_id(board, board_data, prog[FTDI_ID])
                 programmer = programmer.replace("${FTDI_ID}", ftdi_id)
 
             # TinyFPGA BX board is not detected in MacOS HighSierra
@@ -284,7 +304,9 @@ class SCons:
                 self.check_usb(board, board_data)
 
                 print("-------> DEBUG: Traza 3")
-                device = self.get_serial_port(board, board_data, ext_serial)
+                device = self.get_serial_port(
+                    board, board_data, prog[SERIAL_PORT]
+                )
                 programmer = programmer.replace("${SERIAL_PORT}", device)
 
         return programmer
