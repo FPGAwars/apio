@@ -14,6 +14,8 @@ from apio import util
 
 # R0913: Too many arguments (6/5)
 # pylint: disable=R0913
+# R0914: Too many local variables (16/15) (too-many-locals)
+# pylint: disable=R0914
 @click.command("upload", context_settings=util.context_settings())
 @click.pass_context
 @click.option(
@@ -59,11 +61,11 @@ from apio import util
 )
 def cli(
     ctx,
-    board,
-    serial_port,
-    ftdi_id,
-    sram,
-    flash,
+    board: str,  # -- Board name
+    serial_port: str,  # -- Serial port name
+    ftdi_id: str,  # -- ftdi id
+    sram: bool,  # -- Perform SRAM programming
+    flash: bool,  # -- Perform Flash programming
     project_dir,
     verbose,
     verbose_yosys,
@@ -75,25 +77,41 @@ def cli(
     # -- Create a drivers object
     drivers = Drivers()
 
+    # -- Only for MAC
+    # -- Operation to do before uploading a design in MAC
     drivers.pre_upload()
-    # Run scons
 
-    exit_code = SCons(project_dir).upload(
-        {
-            "board": board,
-            "verbose": {
-                "all": verbose,
-                "yosys": verbose_yosys,
-                "pnr": verbose_pnr,
-            },
-            "top-module": top_module,
+    # -- Create the SCons object
+    scons = SCons(project_dir)
+
+    # -- Construct the configuration params to pass to SCons
+    # -- from the arguments
+    config = {
+        "board": board,
+        "verbose": {
+            "all": verbose,
+            "yosys": verbose_yosys,
+            "pnr": verbose_pnr,
         },
-        serial_port,
-        ftdi_id,
-        sram,
-        flash,
-    )
+        "top-module": top_module,
+    }
+
+    # -- Construct the programming configuration
+    prog = {
+        "serial_port": serial_port,
+        "ftdi_id": ftdi_id,
+        "sram": sram,
+        "flash": flash,
+    }
+
+    # Run scons: upload command
+    exit_code = scons.upload(config, prog)
+
+    # -- Only for MAC
+    # -- Operation to do after uploading a design in MAC
     drivers.post_upload()
+
+    # -- Done!
     ctx.exit(exit_code)
 
 

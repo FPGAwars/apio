@@ -177,28 +177,44 @@ class SCons:
             packages=["oss-cad-suite"],
         )
 
-    # R0913: Too many arguments (6/5)
-    # pylint: disable=R0913
     @util.command
-    def upload(self, args, serial_port, ftdi_id, sram, flash):
-        """Upload the circuit to the board"""
+    def upload(self, config: dict, prog: dict):
+        """Upload the circuit to the board
+        INPUTS:
+          * config: Dictionary with the initial configuration
+            * board
+            * verbose
+            * top-module
+          * serial_port: Serial port name
+          * ftdi_id: ftdi identificator
+          * sram: Perform SRAM programming
+          * flash: Perform Flash programming
+        OUTPUT: Exit code after executing scons
+        """
 
-        # -- Split the arguments
-        var, board, arch = process_arguments(args, self.resources)
+        # -- Get important information from the configuration
+        # -- It will raise an exception if it cannot be solved
+        flags, board, arch = process_arguments(config, self.resources)
 
-        # -- DEBUG:
-        print("---> DEBUG: APIO UPLOAD----------------------------")
+        # -- Information about the FPGA is ok!
 
-        # -- Get the programmer for that board
+        # -- Get the command line to execute for programming
+        # -- the FPGA (programmer executable + arguments)
         programmer = self.get_programmer(
-            board, serial_port, ftdi_id, sram, flash
+            board,
+            prog["serial_port"],
+            prog["ftdi_id"],
+            prog["sram"],
+            prog["flash"],
         )
 
-        var += [f"prog={programmer}"]
+        # -- Add as a flag to pass it to scons
+        flags += [f"prog={programmer}"]
 
+        # -- Execute Scons for uploading!
         return self.run(
             "upload",
-            variables=var,
+            variables=flags,
             packages=["oss-cad-suite"],
             board=board,
             arch=arch,
