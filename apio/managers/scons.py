@@ -374,7 +374,7 @@ class SCons:
         prog_data = self.resources.programmers[prog_type]
 
         # -- Get all the pip packages from the distribution
-        all_pip_packages = self.resources.distribution.get("pip_packages")
+        all_pip_packages = self.resources.distribution["pip_packages"]
 
         # -- Get the name of the pip package of the current programmer,
         # -- if any (The programmer maybe in a pip package or an apio package)
