@@ -15,7 +15,6 @@ import sys
 import os
 import re
 import json
-import locale
 import platform
 import subprocess
 from threading import Thread
@@ -130,17 +129,6 @@ def get_systype():
 
     # -- Return the full platform
     return platform_str
-
-
-try:
-    codepage = locale.getdefaultlocale()[1]
-    if "darwin" in get_systype():
-        UTF = True
-    else:
-        UTF = codepage.lower().find("utf") >= 0
-except Exception:
-    # Incorrect locale implementation, assume the worst
-    UTF = False
 
 
 def _get_config_data():
