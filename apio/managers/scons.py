@@ -249,9 +249,11 @@ class SCons:
             # -- Programmer type
             # -- Programmer name
             # -- USB id  (vid, pid)
-            board_data = self.resources.boards.get(board)
+            # board_data = self.resources.boards.get(board)
+            board_data = self.resources.boards[board]
 
-            # Check platform
+            # -- Check platform. If the platform is not compatible
+            # -- with the board an exception is raised
             self.check_platform(board_data)
 
             # Check pip packages
@@ -312,18 +314,35 @@ class SCons:
         return programmer
 
     @staticmethod
-    def check_platform(board_data):
-        """DOC: TODO"""
+    def check_platform(board_data: dict) -> None:
+        """Check if the current board is compatible with the
+        current platform. There are some boards, like icoboard,
+        that only runs in the platform linux/arm7
+        * INPUT:
+          * board_data: Dictionary with board information
 
+        Only in case the platform is not compatible with the board,
+        and exception is raised
+        """
+
+        # -- Normal case: the board does not have a special platform
+        # -- (it can be used in many platforms)
         if "platform" not in board_data:
             return
 
+        # -- Get the platform were the board should be used
         platform = board_data.get("platform")
+
+        # -- Get the current platform
         current_platform = util.get_systype()
+
+        # -- Check if they are not compatible!
         if platform != current_platform:
+
             # Incorrect platform
             if platform == "linux_armv7l":
                 raise ValueError("incorrect platform: RPI2 or RPI3 required")
+
             raise ValueError(f"incorrect platform {platform}")
 
     def check_pip_packages(self, board_data):
