@@ -353,10 +353,18 @@ class SCons:
         """Check if the corresponding pip package with the programmer
         has already been installed. In the case of an apio package
         it is just ignored
+
+        * INPUT:
+          * board_data: Dictionary with board information
+            * Board name
+            * FPGA
+            * Programmer type
+            * Programmer name
+            * USB id  (vid, pid)
         """
 
         # -- Get the programmer object for the given board
-        prog_info = board_data.get("programmer")
+        prog_info = board_data["programmer"]
 
         # -- Get the programmer information (from the type)
         # -- Command, arguments, pip package, etc...
