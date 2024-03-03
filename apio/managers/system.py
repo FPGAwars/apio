@@ -90,8 +90,14 @@ class System:  # pragma: no cover
     def get_usb_devices(self):
         """DOC: TODO"""
 
+        # -- DEBUG
+        print("---------> DEBUG: get_usb_devices() <-------------")
+
         usb_devices = []
         result = self._run_command("lsusb", silent=True)
+
+        # -- DEBUG
+        print(f"-----------> DEBUG: {result=}")
 
         if result and result.get("returncode") == 0:
             usb_devices = self._parse_usb_devices(result.get("out"))

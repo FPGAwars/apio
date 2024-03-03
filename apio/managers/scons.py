@@ -186,6 +186,9 @@ class SCons:
         # -- Split the arguments
         var, board, arch = process_arguments(args, self.resources)
 
+        # -- DEBUG:
+        print("---> DEBUG: APIO UPLOAD----------------------------")
+
         # -- Get the programmer for that board
         programmer = self.get_programmer(
             board, serial_port, ftdi_id, sram, flash
@@ -208,6 +211,9 @@ class SCons:
 
         programmer = ""
 
+        # -- DEBUG
+        print("-----> DEBUG: get_programmer()")
+
         if board:
             board_data = self.resources.boards.get(board)
 
@@ -217,8 +223,13 @@ class SCons:
             # Check pip packages
             self.check_pip_packages(board_data)
 
+            # -- DEBUG
+            print("-------> DEBUG: Traza 1")
+
             # Serialize programmer command
             programmer = self.serialize_programmer(board_data, sram, flash)
+
+            print(f"-------> DEBUG: {programmer=}")
 
             # Replace USB vendor id
             if "${VID}" in programmer:
@@ -249,9 +260,14 @@ class SCons:
                 # In this case the serial check is ignored
                 return "tinyprog --libusb --program"
 
+            # -- DEBUG
+            print("-------> DEBUG: Traza 2")
+
             # Replace Serial port
             if "${SERIAL_PORT}" in programmer:
                 self.check_usb(board, board_data)
+
+                print("-------> DEBUG: Traza 3")
                 device = self.get_serial_port(board, board_data, ext_serial)
                 programmer = programmer.replace("${SERIAL_PORT}", device)
 
@@ -370,6 +386,8 @@ class SCons:
     @staticmethod
     def check_usb(board, board_data):
         """DOC: TODO"""
+
+        print("-------> DEBUG: check_usb() <-------------")
 
         if "usb" not in board_data:
             raise AttributeError("Missing board configuration: usb")

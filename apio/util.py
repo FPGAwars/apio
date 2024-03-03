@@ -548,13 +548,26 @@ def change_filemtime(path, time):
 
 def exec_command(*args, **kwargs) -> dict:  # pragma: no cover
     """Execute the given command:
-    *args: List List witht the command and its arguments to execute
-    **kwargs: Key arguments when calling subprocess.Popen()
-      * stdout
-      * stdin
-      * shell
+
+    INPUTS:
+     *args: List with the command and its arguments to execute
+     **kwargs: Key arguments when calling subprocess.Popen()
+       * stdout
+       * stdin
+       * shell
+
+    OUTPUT: A dictionary with the following properties:
+      * out: String with the output
+      * err: String with the error output
+      * returncode: Number with the code returned by the command
+        * 0: Sucess
+        * Another number different from 0: Error!
+
     Example:  exec_command(['scons', '-Q', '-c', '-f', 'SConstruct'])
     """
+
+    # -- DEBUG:
+    print(f"--------> DEBUG: Command: {args=},{kwargs=}")
 
     # -- Default value to return after the command execution
     # -- out: string with the command output
@@ -575,6 +588,9 @@ def exec_command(*args, **kwargs) -> dict:  # pragma: no cover
     # -- It overrides the default flags
     flags.update(kwargs)
 
+    # -- DEBUG
+    print("--------> DEBUG: Llega aquí 1!!!!")
+
     # -- Execute the command!
     try:
         with subprocess.Popen(*args, **flags) as proc:
@@ -593,25 +609,47 @@ def exec_command(*args, **kwargs) -> dict:  # pragma: no cover
         click.secho(f"Command not found:\n{args}", fg="red")
         sys.exit(1)
 
+    except Exception as exc:
+        print("Llega aqui2??")
+        click.secho(str(exc), fg="red")
+        sys.exit(1)
+
     # -- Close the stdout and stderr pipes
     finally:
         for std in ("stdout", "stderr"):
             if isinstance(flags[std], AsyncPipe):
                 flags[std].close()
 
+    # -- DEBUG
+    print("--------> DEBUG: Llega aquí 2!!!!")
+
     # -- Process the output from the stdout and stderr
     # -- if they exist
-    for std in ("stdout", "stderr"):
+    for inout in ("out", "err"):
+
+        # -- Construct the Name "stdout" or "stderr"
+        std = f"std{inout}"
+
+        # -- DEBUG
+        print(f"--------> DEBUG: Llega aquí 3!!!! {std=}")
 
         # -- Do it only if they have been assigned
         if isinstance(flags[std], AsyncPipe):
 
+            # -- DEBUG
+            print(f"--------> DEBUG: Llega aquí 4!!!! {std=}")
+
             # -- Get the text
             buffer = flags[std].get_buffer()
 
-            # -- Create the full text message
-            result[std] = "\n".join(buffer)
-            result[std].strip()
+            # -- Create the full text message (for stdout or stderr)
+            # -- result["out"] contains stdout
+            # -- result["err"] contains stderr
+            result[inout] = "\n".join(buffer)
+            result[inout].strip()
+
+    # -- DEBUG
+    print(f"--------> DEBUG: {result=}")
 
     return result
 
