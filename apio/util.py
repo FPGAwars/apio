@@ -26,8 +26,6 @@ import semantic_version
 from serial.tools.list_ports import comports
 import requests
 
-from apio import LOAD_CONFIG_DATA
-
 # ----------------------------------------
 # -- Constants
 # ----------------------------------------
@@ -127,31 +125,6 @@ def get_systype():
     return platform_str
 
 
-def _get_config_data():
-    """Return the configuration data located in the /etc/apio.json file
-    Only for Debian Distribution. It will return None otherwise"""
-
-    # Default value
-    _config_data = None
-
-    # If the LOAD_CONFIG_DATA flag is set
-    # Read the /etc/apio.json file and return its contents
-    # as an object
-    if LOAD_CONFIG_DATA:
-        filepath = str(Path(os.sep) / "etc" / "apio.json")
-        if isfile(filepath):
-            with open(filepath, "r", encoding="utf8") as file:
-                # Load the JSON file
-                _config_data = json.loads(file.read())
-
-    return _config_data
-
-
-# Global variable with the configuration data
-# Only for Debian distributions
-config_data = _get_config_data()
-
-
 def _get_projconf_option_dir(name, default=None):
     """Return the project option with the given name
     These options are place either on environment variables or
@@ -183,12 +156,6 @@ def _get_projconf_option_dir(name, default=None):
         # print(f"DEBUG: {_env_name}: {_env_value}")
 
         return _env_value
-
-    # -- Check if the config option is defined in the
-    # -- configuration file (Only Debian systems)
-    if config_data and _env_name in config_data.keys():
-        # -- Return the value of the option
-        return config_data.get(_env_name)
 
     # -- Return the default home_dir
     return default
@@ -484,13 +451,7 @@ def show_package_path_error(name):
 def show_package_install_instructions(name):
     """DOC: TODO"""
 
-    if config_data and _check_apt_get():  # /etc/apio.json file exists
-        click.secho(
-            f"Please run:\n   apt-get install apio-{name}",
-            fg="yellow",
-        )
-    else:
-        click.secho(f"Please run:\n   apio install {name}", fg="yellow")
+    click.secho(f"Please run:\n   apio install {name}", fg="yellow")
 
 
 def _check_apt_get():

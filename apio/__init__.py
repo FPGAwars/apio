@@ -10,7 +10,10 @@
 # - Information for the Distribution package
 # --------------------------------------------
 
+# -- Developer: Change this number when releasing a new version
 VERSION = (0, 9, 1)
+
+# -- Get the version as a string. Ex: "0.9.1"
 __version__ = ".".join([str(s) for s in VERSION])
 
 __title__ = "apio"
@@ -21,7 +24,3 @@ __author__ = "Jesús Arroyo Torrens"
 __email__ = "jesus.arroyo.torrens@gmail.com"
 
 __license__ = "GPLv2"
-
-# Enable this flag to load data from /etc/apio.json file
-# Used in apio-debian distribution
-LOAD_CONFIG_DATA = False
