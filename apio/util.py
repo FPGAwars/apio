@@ -48,10 +48,6 @@ OSS_CAD_SUITE_FOLDER = f"tools-{OSS_CAD_SUITE}"
 GTKWAVE_FOLDER = f"tool-{GTKWAVE}"
 
 
-# pylint: disable=E1101
-requests.packages.urllib3.disable_warnings()
-
-
 class ApioException(Exception):
     """DOC: TODO"""
 
@@ -821,6 +817,8 @@ def get_tinyprog_meta():
     return []
 
 
+# pylint: disable=E1101
+# -- E1101: Instance of 'module' has no '__file__' member (no-member)
 def get_bin_dir():
     """DOC: TODO"""
 
