@@ -16,11 +16,65 @@ import click
 from apio import util
 
 
-# -- Get the full path to the commands folder
-# -- Ex. /home/obijuan/Develop/(...)/apio/commands
-# -- Every apio command (Ex. apio build, apio upload...) is a separate .py file
-# -- located in the commands folder
-commands_folder = util.get_full_path("commands")
+# -----------------------------------------------------------------------------
+# -- Main Click Class
+# -- It is extended for including methods for getting and listing the commands
+# -----------------------------------------------------------------------------
+class ApioCLI(click.MultiCommand):
+    """DOC:TODO"""
+
+    def __init__(self, *args, **kwargs):
+
+        # -- Get the full path to the commands folder
+        # -- Ex. /home/obijuan/Develop/(...)/apio/commands
+        # -- Every apio command (Ex. apio build, apio upload...) is a
+        # -- separate .py file located in the commands folder
+        self.commands_folder = util.get_full_path("commands")
+
+        self._cls = [None]
+        super().__init__(*args, **kwargs)
+
+    # -- Return  a list of all the available commands
+    def list_commands(self, ctx):
+        # -- All the python files inside the apio/commands folder are commands,
+        # -- except __init__.py
+        # -- Create the list
+        cmd_list = [
+            element.stem  # -- Name without path and extension
+            for element in self.commands_folder.iterdir()
+            if element.is_file()
+            and element.suffix == ".py"
+            and element.stem != "__init__"
+        ]
+
+        cmd_list.sort()
+        return cmd_list
+
+    # -- Return the code function (cli) of the command name
+    # -- This cli function is called whenever the name command
+    # -- is issued
+    # -- INPUT:
+    # --   * cmd_name: Apio command name
+    def get_command(self, ctx, cmd_name: string):
+        nnss = {}
+
+        # -- Get the python filename asociated with the give command
+        # -- Ex. "system" --> "/home/obijuan/.../apio/commands/system.py"
+        filename = self.commands_folder / f"{cmd_name}.py"
+
+        # -- Check if the file exists
+        if filename.exists():
+            # -- Open the python file
+            with filename.open(encoding="utf8") as file:
+                # -- Compile it!
+                code = compile(file.read(), filename, "exec")
+
+                # -- Get the function!
+                # pylint: disable=W0123
+                eval(code, nnss, nnss)
+
+        # -- Return the function needed for executing the command
+        return nnss.get("cli")
 
 
 def find_commands_help(help_list, commands):
@@ -46,56 +100,6 @@ def find_commands_help(help_list, commands):
 
     # -- Return the list of comands with their descriptions
     return commands_help
-
-
-# -----------------------------------------------------------------------------
-# -- Main Click Class
-# -- It is extended for including methods for getting and listing the commands
-# -----------------------------------------------------------------------------
-class ApioCLI(click.MultiCommand):
-    """DOC:TODO"""
-
-    # -- Return  a list of all the available commands
-    def list_commands(self, ctx):
-        # -- All the python files inside the apio/commands folder are commands,
-        # -- except __init__.py
-        # -- Create the list
-        cmd_list = [
-            element.stem  # -- Name without path and extension
-            for element in commands_folder.iterdir()
-            if element.is_file()
-            and element.suffix == ".py"
-            and element.stem != "__init__"
-        ]
-
-        cmd_list.sort()
-        return cmd_list
-
-    # -- Return the code function (cli) of the command name
-    # -- This cli function is called whenever the name command
-    # -- is issued
-    # -- INPUT:
-    # --   * cmd_name: Apio command name
-    def get_command(self, ctx, cmd_name: string):
-        nnss = {}
-
-        # -- Get the python filename asociated with the give command
-        # -- Ex. "system" --> "/home/obijuan/.../apio/commands/system.py"
-        filename = commands_folder / f"{cmd_name}.py"
-
-        # -- Check if the file exists
-        if filename.exists():
-            # -- Open the python file
-            with filename.open(encoding="utf8") as file:
-                # -- Compile it!
-                code = compile(file.read(), filename, "exec")
-
-                # -- Get the function!
-                # pylint: disable=W0123
-                eval(code, nnss, nnss)
-
-        # -- Return the function needed for executing the command
-        return nnss.get("cli")
 
 
 # ------------------------------------------------------------------
