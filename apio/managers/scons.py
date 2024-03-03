@@ -383,23 +383,17 @@ class SCons:
         # -- Check if pip package was installed
         # -- In case of an apio package it is just ignored
         for pip_pkg in pip_packages:
+
+            # -- Get legacy string (Ex. ">=1.0.21,<1.1.0")
+            legacy_str = all_pip_packages[pip_pkg]
+
+            # -- Convert it into a legacy object
+            spec = semantic_version.Spec(legacy_str)
+
+            # -- Get package version
             try:
-                # Check pip_package version
-                spec = semantic_version.Spec(all_pip_packages.get(pip_pkg, ""))
                 pkg_version = importlib.metadata.version(pip_pkg)
-                version = semantic_version.Version(pkg_version)
-                if not spec.match(version):
-                    click.secho(
-                        f"Error: '{pip_pkg}' "
-                        + f"version ({version}) "
-                        + f"does not match {spec}",
-                        fg="red",
-                    )
-                    click.secho(
-                        "Please run:\n" f"   pip install -U apio[{pip_pkg}]",
-                        fg="yellow",
-                    )
-                    raise ValueError("Incorrect version number")
+
             except importlib.metadata.PackageNotFoundError as exc:
                 click.secho(f"Error: '{pip_pkg}' is not installed", fg="red")
                 click.secho(
@@ -407,15 +401,40 @@ class SCons:
                     fg="yellow",
                 )
                 raise ValueError("Package not installed") from exc
+
+            # -- Check pip_package version
+            version = semantic_version.Version(pkg_version)
+
+            # -- Version does not match!
+            if not spec.match(version):
+                click.secho(
+                    f"Error: '{pip_pkg}' "
+                    + f"version ({version}) "
+                    + f"does not match {spec}",
+                    fg="red",
+                )
+                click.secho(
+                    "Please run:\n" f"   pip install -U apio[{pip_pkg}]",
+                    fg="yellow",
+                )
+                raise ValueError("Incorrect version number")
+
+            # -- Check pip_package itself
             try:
-                # Check pip_package itself
                 __import__(pip_pkg)
-            except Exception as exc:
-                # Exit if a package is not working
+
+            # -- Exit if a package is not working
+            except ModuleNotFoundError as exc:
+
+                # -- Get a string with the python version
                 python_version = util.get_python_version()
+
+                # -- Construct the error message
                 message = f"'{pip_pkg}' not compatible with "
                 message += f"Python {python_version}"
                 message += f"\n       {exc}"
+
+                # -- Raise an exception
                 raise ValueError(message) from exc
 
     def serialize_programmer(self, board_data, sram, flash):
