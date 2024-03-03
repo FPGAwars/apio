@@ -255,13 +255,12 @@ class SCons:
             # -- with the board an exception is raised
             self.check_platform(board_data)
 
-            # Check pip packages
+            # -- Check pip packages. If the corresponding pip_packages
+            # -- is not installed, an exception is raised
             self.check_pip_packages(board_data)
 
-            # -- DEBUG
-            print("-------> DEBUG: Traza 1")
-
             # Serialize programmer command
+            # ---- DEBUG! CONTINUE REFACTORING HERE!!
             programmer = self.serialize_programmer(
                 board_data, prog[SRAM], prog[FLASH]
             )
