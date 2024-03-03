@@ -366,9 +366,12 @@ class SCons:
         # -- Get the programmer object for the given board
         prog_info = board_data["programmer"]
 
-        # -- Get the programmer information (from the type)
+        # -- Get the programmer type
+        prog_type = prog_info["type"]
+
+        # -- Get the programmer information
         # -- Command, arguments, pip package, etc...
-        prog_data = self.resources.programmers.get(prog_info.get("type"))
+        prog_data = self.resources.programmers[prog_type]
 
         # -- Get all the pip packages from the distribution
         all_pip_packages = self.resources.distribution.get("pip_packages")
