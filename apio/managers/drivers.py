@@ -17,7 +17,6 @@ from apio import util
 from apio.profile import Profile
 from apio.resources import Resources
 
-platform = util.get_systype()
 
 FTDI_INSTALL_DRIVER_INSTRUCTIONS = """
    FTDI driver installation:
@@ -90,20 +89,23 @@ class Drivers:  # pragma: no cover
         self.version = None
         self.spec_version = None
 
+        # -- Get the platform (a string)
+        self.platform = util.get_systype()
+
     def ftdi_enable(self):
         """Enable the FTDI driver. It depends on the platform"""
 
         # -- Driver enabling on Linux
-        if "linux" in platform:
+        if "linux" in self.platform:
             return self._ftdi_enable_linux()
 
         # -- Driver enabling on MAC
-        if "darwin" in platform:
+        if "darwin" in self.platform:
             self._setup_darwin()
             return self._ftdi_enable_darwin()
 
         # -- Driver enabling on Windows
-        if "windows" in platform:
+        if "windows" in self.platform:
             self._setup_windows()
             return self._ftdi_enable_windows()
         return None
@@ -112,16 +114,16 @@ class Drivers:  # pragma: no cover
         """Disable the FTDI driver. It depends on the platform"""
 
         # -- Linux platforms
-        if "linux" in platform:
+        if "linux" in self.platform:
             return self._ftdi_disable_linux()
 
         # -- MAC
-        if "darwin" in platform:
+        if "darwin" in self.platform:
             self._setup_darwin()
             return self._ftdi_disable_darwin()
 
         # -- Windows
-        if "windows" in platform:
+        if "windows" in self.platform:
             self._setup_windows()
             return self._ftdi_disable_windows()
 
@@ -130,14 +132,14 @@ class Drivers:  # pragma: no cover
     def serial_enable(self):
         """Enable the Serial driver. It depends on the platform"""
 
-        if "linux" in platform:
+        if "linux" in self.platform:
             return self._serial_enable_linux()
 
-        if "darwin" in platform:
+        if "darwin" in self.platform:
             self._setup_darwin()
             return self._serial_enable_darwin()
 
-        if "windows" in platform:
+        if "windows" in self.platform:
             self._setup_windows()
             return self._serial_enable_windows()
         return None
@@ -145,14 +147,14 @@ class Drivers:  # pragma: no cover
     def serial_disable(self):
         """Disable the Serial driver. It depends on the platform"""
 
-        if "linux" in platform:
+        if "linux" in self.platform:
             return self._serial_disable_linux()
 
-        if "darwin" in platform:
+        if "darwin" in self.platform:
             self._setup_darwin()
             return self._serial_disable_darwin()
 
-        if "windows" in platform:
+        if "windows" in self.platform:
             self._setup_windows()
             return self._serial_disable_windows()
         return None
@@ -161,7 +163,7 @@ class Drivers:  # pragma: no cover
         """Operations to do before uploading a design
         Only for mac platforms"""
 
-        if "darwin" in platform:
+        if "darwin" in self.platform:
             self._setup_darwin()
             self._pre_upload_darwin()
 
@@ -169,7 +171,7 @@ class Drivers:  # pragma: no cover
         """Operations to do after uploading a design
         Only for mac platforms"""
 
-        if "darwin" in platform:
+        if "darwin" in self.platform:
             self._setup_darwin()
             self._post_upload_darwin()
 

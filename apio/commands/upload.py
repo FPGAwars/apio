@@ -3,7 +3,7 @@
 # -- (C) 2016-2019 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
-"""TODO"""
+"""Implement the apio upload command"""
 
 import click
 
@@ -72,7 +72,9 @@ def cli(
 ):
     """Upload the bitstream to the FPGA."""
 
+    # -- Create a drivers object
     drivers = Drivers()
+
     drivers.pre_upload()
     # Run scons
 
