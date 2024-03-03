@@ -249,7 +249,6 @@ class SCons:
             # -- Programmer type
             # -- Programmer name
             # -- USB id  (vid, pid)
-            # board_data = self.resources.boards.get(board)
             board_data = self.resources.boards[board]
 
             # -- Check platform. If the platform is not compatible
@@ -320,6 +319,11 @@ class SCons:
         that only runs in the platform linux/arm7
         * INPUT:
           * board_data: Dictionary with board information
+            * Board name
+            * FPGA
+            * Programmer type
+            * Programmer name
+            * USB id  (vid, pid)
 
         Only in case the platform is not compatible with the board,
         and exception is raised
@@ -331,7 +335,7 @@ class SCons:
             return
 
         # -- Get the platform were the board should be used
-        platform = board_data.get("platform")
+        platform = board_data["platform"]
 
         # -- Get the current platform
         current_platform = util.get_systype()

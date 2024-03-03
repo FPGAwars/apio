@@ -794,7 +794,7 @@ def get_bin_dir():
     return candidate
 
 
-def get_python_version():
+def get_python_version() -> str:
     """Return a string with the python version"""
 
     return f"{sys.version_info[0]}.{sys.version_info[1]}"
