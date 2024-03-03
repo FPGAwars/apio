@@ -98,9 +98,7 @@ class AsyncPipe(Thread):  # pragma: no cover
         self.join()
 
 
-# W0703: Catching too general exception Exception (broad-except)
-# pylint: disable=W0703
-def get_systype():
+def get_systype() -> str:
     """Return a String with the current platform:
     ex. linux_x86_64
     ex. windows_amd64"""
@@ -554,6 +552,8 @@ def exec_command(*args, **kwargs) -> dict:  # pragma: no cover
         click.secho(f"Command not found:\n{args}", fg="red")
         sys.exit(1)
 
+    # W0703: Catching too general exception Exception (broad-except)
+    # pylint: disable=W0703
     except Exception as exc:
         print("Llega aqui2??")
         click.secho(str(exc), fg="red")
