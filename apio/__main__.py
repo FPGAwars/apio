@@ -16,7 +16,10 @@ import click
 from apio import util
 
 
-# -- Get the commands folder
+# -- Get the full path to the commands folder
+# -- Ex. /home/obijuan/Develop/(...)/apio/commands
+# -- Every apio command (Ex. apio build, apio upload...) is a separate .py file
+# -- located in the commands folder
 commands_folder = util.get_full_path("commands")
 
 

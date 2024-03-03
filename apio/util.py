@@ -98,6 +98,33 @@ class AsyncPipe(Thread):  # pragma: no cover
         self.join()
 
 
+def get_full_path(folder: string) -> Path:
+    """Get the full path to the given folder
+    Inputs:
+      * folder: String with the folder name
+
+    Returns:
+      * The full path as a PosixPath() object
+
+    Example: folder="commands"
+    Output: PosixPath('/home/obijuan/.../apio/commands')
+    """
+
+    # -- Get the full path of this file (util.py)
+    # -- Ex: /home/obijuan/.../site-packages/apio/util.py
+    current_python_file = Path(__file__)
+
+    # -- The parent folder is the apio root folder
+    # -- Ex: /home/obijuan/.../site-packages/apio
+    apio_path = current_python_file.parent
+
+    # -- Add the given folder to the path
+    new_path = apio_path / folder
+
+    # -- Return the path
+    return new_path
+
+
 def get_systype() -> str:
     """Return a String with the current platform:
     ex. linux_x86_64
@@ -653,33 +680,6 @@ def print_exception_developers(e):
 
     click.secho("Info for developers:")
     click.secho(f"{e}\n", fg="yellow")
-
-
-def get_full_path(folder: string):
-    """Get the full path to the given folder
-    Inputs:
-      * folder: String with the folder name
-
-    Returns:
-      * The full path as a PosixPath() object
-
-    Example: folder="commands"
-    Output: PosixPath('/home/obijuan/.../apio/commands')
-    """
-
-    # -- Get the full path of this file (util.py)
-    # -- Ex: /home/obijuan/.../site-packages/apio/util.py
-    current_python_file = Path(__file__)
-
-    # -- The parent folder is the apio root folder
-    # -- Ex: /home/obijuan/.../site-packages/apio
-    apio_path = current_python_file.parent
-
-    # -- Add the given folder to the path
-    new_path = apio_path / folder
-
-    # -- Return the path
-    return new_path
 
 
 def mkdir(path):
