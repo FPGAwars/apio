@@ -588,9 +588,9 @@ def exec_command(*args, **kwargs) -> dict:  # pragma: no cover
         click.secho("Aborted by user", fg="red")
         sys.exit(1)
 
-    # -- Process the rest of exceptions
-    except Exception as exc:
-        click.secho(str(exc), fg="red")
+    # -- The command does not exist!
+    except FileNotFoundError:
+        click.secho(f"Command not found:\n{args}", fg="red")
         sys.exit(1)
 
     # -- Close the stdout and stderr pipes
@@ -599,15 +599,19 @@ def exec_command(*args, **kwargs) -> dict:  # pragma: no cover
             if isinstance(flags[std], AsyncPipe):
                 flags[std].close()
 
-    # -- Process the command output
-    if flags["stdout"] is not None:
-        result["out"] = "\n".join(flags["stdout"].get_buffer())
-        result["out"].strip()
+    # -- Process the output from the stdout and stderr
+    # -- if they exist
+    for std in ("stdout", "stderr"):
 
-    # -- Process the command error output
-    if flags["stderr"] is not None:
-        result["err"] = "\n".join(flags["stderr"].get_buffer())
-        result["err"].strip()
+        # -- Do it only if they have been assigned
+        if isinstance(flags[std], AsyncPipe):
+
+            # -- Get the text
+            buffer = flags[std].get_buffer()
+
+            # -- Create the full text message
+            result[std] = "\n".join(buffer)
+            result[std].strip()
 
     return result
 
@@ -777,7 +781,9 @@ def get_serial_ports():
 def get_tinyprog_meta():
     """DOC: TODO"""
 
+    # -- FIX IT!
     _command = join(get_bin_dir(), "tinyprog")
+    _command = "tinyprog"
     result = exec_command([_command, "--pyserial", "--meta"])
     try:
         out = result.get("out", "")
