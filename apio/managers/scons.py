@@ -273,9 +273,16 @@ class SCons:
                 board_data, prog[SRAM], prog[FLASH]
             )
 
-            # Replace USB vendor id
+            # -- Assign the parameters in the Template string
+
+            # -- Replace USB vendor id
+            # -- Ex. "${VID}" --> "0403"
             if "${VID}" in programmer:
-                vid = board_data.get("usb").get("vid")
+
+                # -- Get the vendor id
+                vid = board_data["usb"]["vid"]
+
+                # -- Place the value in the command string
                 programmer = programmer.replace("${VID}", vid)
 
             # Replace USB product id
