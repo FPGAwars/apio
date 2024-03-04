@@ -489,13 +489,18 @@ class SCons:
         if prog_info.get("extra_args"):
             programmer += f" {prog_info['extra_args']}"
 
-        # Enable SRAM programming
+        # -- Special cases for different programmers
+
+        # -- Enable SRAM programming
         if sram:
+
             # Only for iceprog programmer
             if programmer.startswith("iceprog"):
                 programmer += " -S"
 
+        # -- Enable FLASH programming
         if flash:
+
             # Only for ujprog programmer
             if programmer.startswith("ujprog"):
                 programmer = programmer.replace("SRAM", "FLASH")
