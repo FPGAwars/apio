@@ -121,28 +121,45 @@ class System:  # pragma: no cover
 
         return ftdi_devices
 
-    def _run_command(self, command, silent=False):
+    def _run_command(self, command: str, silent=False) -> dict:
+        """Execute the given system command
+        * INPUT:
+          * command: Command to execute  (Ex. "lsusb")
+          * silent: What to do with the command output
+            * False --> Do not print on the console
+            * True  --> Print on the console
+        * OUTPUT: A dictionary with the following properties:
+          * returncode:
+            * 0: OK! Success in executing the command
+            * x: An error has ocurred
+          * out: (string). Command output
+          * err: (string). Command error output
+
+        In case of not executing the command it returns none!
+        """
+
+        # -- Fixme (TODO)
         result = {}
 
-        # print(f"(DEBUG) Run Command: {command}")
+        # The system tools are locate in the
+        # oss-cad-suite package
 
-        # From apio >= 0.7.0, the system tools are locate in the
-        # oss-cad-suite package instead of the system package
-        # So first let's try to execute them from there
-
-        # -- Get the package base dir
+        # -- Get the package base dir (as a string)
+        # -- Ex. "/home/obijuan/.apio/packages/tools-oss-cad-suite"
         system_base_dir = util.get_package_dir("tools-oss-cad-suite")
-        # print(f"(DEBUG) System_base_dir: {system_base_dir}")
 
-        # -- Get the folder were the binary file is locateds
+        # -- Get the folder were the binary file is located (PosixPath)
         system_bin_dir = Path(system_base_dir) / "bin"
-        # print(f"(DEBUG) System bin dir: {system_bin_dir}")
 
         # -- Get the executable filename
+        # -- Ex. Posix('/home/obijuan/.apio/packages/tools-oss-cad-suite/
+        # --            bin/lsusb')
         executable_file = system_bin_dir / (command + self.ext)
-        # print(f"(DEBUG) Executable file: {executable_file}")
 
-        # -- Set the stdout and stderr for executing the command
+        # -- TODO: Check if the file exist!
+
+        # -- Set the stdout and stderr callbacks, when executing the command
+        # -- Silent mode (True): No callback
         on_stdout = None if silent else self._on_stdout
         on_stderr = self._on_stderr
 
