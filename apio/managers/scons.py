@@ -523,7 +523,9 @@ class SCons:
 
     @staticmethod
     def check_usb(board: str, board_data: dict) -> None:
-        """TODO... what this function does?
+        """Check if the given board is connected or not to the computer
+           If it is not connected, an exception is raised
+
         * INPUT:
           * board: Board name (string)
           * board_data: Dictionary with board information
@@ -547,19 +549,36 @@ class SCons:
         # -- Create a string with vid, pid in the format "vid:pid"
         hwid = f"{usb_data['vid']}:{usb_data['pid']}"
 
+        # -- Get the list of the connected USB devices
+        # -- (execute the command "lsusb" from the apio System module)
+        system = System()
+        connected_devices = system.get_usb_devices()
+
+        # -- Check if the given device (vid:pid) is connected!
+        # -- Not connected by default
         found = False
-        for usb_device in System().get_usb_devices():
-            if usb_device.get("hwid") == hwid:
+
+        for usb_device in connected_devices:
+
+            # -- Device found! Board connected!
+            if usb_device["hwid"] == hwid:
                 found = True
                 break
 
+        # -- The board is NOT connected
         if not found:
-            # Board not connected
+
+            # -- Special case! TinyFPGA board
+            # -- Maybe the board is NOT detected because
+            # -- the user has not press the reset button and the bootloader
+            # -- is not active
             if "tinyprog" in board_data:
                 click.secho(
                     "Activate bootloader by pressing the reset button",
                     fg="yellow",
                 )
+
+            # -- Raise an exception
             raise ConnectionError("board " + board + " not connected")
 
     def get_serial_port(self, board, board_data, ext_serial_port):
