@@ -278,17 +278,23 @@ class SCons:
         )
 
         # -- Assign the parameters in the Template string
+
         # -- Replace USB vendor id
         # -- Ex. "${VID}" --> "0403"
         if "${VID}" in programmer:
+
             # -- Get the vendor id
             vid = board_data["usb"]["vid"]
             # -- Place the value in the command string
             programmer = programmer.replace("${VID}", vid)
 
-        # Replace USB product id
+        # -- Replace USB product id
+        # -- Ex. "${PID}" --> "6010"
         if "${PID}" in programmer:
-            pid = board_data.get("usb").get("pid")
+
+            # -- Get the product id
+            pid = board_data["usb"]["pid"]
+            # -- Place the value in the command string
             programmer = programmer.replace("${PID}", pid)
 
         # Replace FTDI index
