@@ -297,7 +297,8 @@ class SCons:
             # -- Place the value in the command string
             programmer = programmer.replace("${PID}", pid)
 
-        # Replace FTDI index
+        # -- Replace FTDI index
+        # -- Ex. "${FTDI_ID}" --> "0"
         if "${FTDI_ID}" in programmer:
             self.check_usb(board, board_data)
             ftdi_id = self.get_ftdi_id(board, board_data, prog[FTDI_ID])
@@ -521,16 +522,31 @@ class SCons:
         return programmer
 
     @staticmethod
-    def check_usb(board, board_data):
-        """DOC: TODO"""
+    def check_usb(board: str, board_data: dict) -> None:
+        """TODO... what this function does?
+        * INPUT:
+          * board: Board name (string)
+          * board_data: Dictionary with board information
+            * Board name
+            * FPGA
+            * Programmer type
+            * Programmer name
+            * USB id  (vid, pid)
+        """
 
-        print("-------> DEBUG: check_usb() <-------------")
-
+        # -- The board is connected by USB
+        # -- If it does not have the "usb" property, it means
+        # -- the board configuration is wrong...Raise an exception
         if "usb" not in board_data:
             raise AttributeError("Missing board configuration: usb")
 
-        usb_data = board_data.get("usb")
-        hwid = f"{usb_data.get('vid')}:{usb_data.get('pid')}"
+        # -- Get the vid and pid from the configuration
+        # -- Ex. {'vid': '0403', 'pid':'6010'}
+        usb_data = board_data["usb"]
+
+        # -- Create a string with vid, pid in the format "vid:pid"
+        hwid = f"{usb_data['vid']}:{usb_data['pid']}"
+
         found = False
         for usb_device in System().get_usb_devices():
             if usb_device.get("hwid") == hwid:
