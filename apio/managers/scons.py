@@ -456,14 +456,23 @@ class SCons:
            * "${PID}" (optional): USB Product id
            * "${FTDI_ID}" (optional): FTDI id
            * "${SERIAL_PORT}" (optional): Serial port name
+
+          Example of output strings:
+          "'tinyprog --pyserial -c ${SERIAL_PORT} --program'"
+          "'iceprog -d i:0x${VID}:0x${PID}:${FTDI_ID}'"
         """
 
         # -- Get the programmer type
         # -- Ex. type: "tinyprog"
+        # -- Ex. type: "icesprog"
         prog_info = board_data["programmer"]
         prog_type = prog_info["type"]
 
-        content = self.resources.programmers.get(prog_type)
+        # -- Get all the information for that type of programmer
+        # -- * command
+        # -- * arguments
+        # -- * pip package
+        content = self.resources.programmers[prog_type]
 
         programmer = content.get("command")
 

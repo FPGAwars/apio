@@ -21,7 +21,12 @@
             "console": "internalConsole",
             "justMyCode": true,
             //-- Change to the folder with the example to test
+            
+            //-- Testing the TinyFPGA board
             "cwd": "${workspaceFolder}/test-examples/TinyFPGA-BX/01-LED-ON"
+
+            //-- Testing the Alhanbra-II board
+            //"cwd": "${workspaceFolder}/test-examples/Alhambra-II/ledon"
         }
     ]
 }
