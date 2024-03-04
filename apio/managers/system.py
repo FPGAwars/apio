@@ -97,11 +97,16 @@ class System:  # pragma: no cover
         # -- Run the "lsusb" command!
         result = self._run_command("lsusb", silent=True)
 
-        # -- DEBUG
-        print(f"-----------> DEBUG: {result=}")
+        # -- Sucess in executing the command
+        if result and result["returncode"] == 0:
 
-        if result and result.get("returncode") == 0:
-            usb_devices = self._parse_usb_devices(result.get("out"))
+            # -- Get the list of the usb devices. It is read
+            # -- from the command stdout
+            # -- Ex: [{'hwid':'1d6b:0003'}, {'hwid':'04f2:b68b'}...]
+            usb_devices = self._parse_usb_devices(result["out"])
+
+        # -- It was not possible to run the "lsusb" command
+        # -- for reading the usb devices
         else:
             raise RuntimeError("Error executing lsusb")
 
@@ -136,9 +141,6 @@ class System:  # pragma: no cover
 
         In case of not executing the command it returns none!
         """
-
-        # -- Fixme (TODO)
-        result = {}
 
         # The system tools are locate in the
         # oss-cad-suite package
@@ -189,23 +191,48 @@ class System:  # pragma: no cover
 
     @staticmethod
     def _on_stdout(line):
+        """Callback function. It is executed when the command prints
+        information on the standard output
+        """
         click.secho(line)
 
     @staticmethod
     def _on_stderr(line):
+        """Callback function. It is executed when the command prints
+        information on the standard error
+        """
         click.secho(line, fg="red")
 
     @staticmethod
-    def _parse_usb_devices(text):
+    def _parse_usb_devices(text: str) -> list:
+        """Get a list of usb devices from the input string
+        * INPUT: string that contains usb devices
+            (Ex. "... 1d6b:0003 ... 8087:0aaa ...")
+        * OUTPUT: A list of objects with the usb devices
+          Ex. [{'hwid':'1d6b:0003'}, {'hwid':'8087:0aaa'}, ...]
+        """
+
+        # -- Build the regular expression for representing
+        # -- patterns like '1d6b:0003'
         pattern = r"(?P<hwid>[a-f0-9]{4}:[a-f0-9]{4}?)\s"
+
+        # -- Get the list of strings with that patter
+        # -- Ex. ['1d6b:0003','8087:0aaa'...]
         hwids = re.findall(pattern, text)
 
+        # -- Output empty list
         usb_devices = []
 
+        # -- Build the list
         for hwid in hwids:
+
+            # -- Create the Object with the hardware id
             usb_device = {"hwid": hwid}
+
+            # -- Add the object to the output list
             usb_devices.append(usb_device)
 
+        # -- Return the final list
         return usb_devices
 
     @staticmethod
