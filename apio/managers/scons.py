@@ -208,6 +208,8 @@ class SCons:
 
         # -- Get the command line to execute for programming
         # -- the FPGA (programmer executable + arguments)
+        # -- Ex: 'tinyprog --pyserial -c /dev/ttyACM0 --program'
+        # -- Ex: 'iceprog -d i:0x0403:0x6010:0'
         programmer = self.get_programmer(board, prog)
 
         # -- Add as a flag to pass it to scons
@@ -234,7 +236,7 @@ class SCons:
             * sram: Perform SRAM programming
             * flash: Perform Flash programming
 
-        * OUTPUT: A string with the command to execute
+        * OUTPUT: A string with the command+args to execute
         """
 
         # -- Return string to create
@@ -259,13 +261,17 @@ class SCons:
             # -- is not installed, an exception is raised
             self.check_pip_packages(board_data)
 
-            # Serialize programmer command
-            # ---- DEBUG! CONTINUE REFACTORING HERE!!
+            # -- Serialize programmer command
+            # -- Get a string with the command line to execute
+            # -- BUT! it is a TEMPLATE string, with some parameters
+            # -- that needs to be set!
+            # --   * "${VID}" (optional): USB vendor id
+            # --   * "${PID}" (optional): USB Product id
+            # --   * "${FTDI_ID}" (optional): FTDI id
+            # --   * "${SERIAL_PORT}" (optional): Serial port name
             programmer = self.serialize_programmer(
                 board_data, prog[SRAM], prog[FLASH]
             )
-
-            print(f"-------> DEBUG: {programmer=}")
 
             # Replace USB vendor id
             if "${VID}" in programmer:
