@@ -464,7 +464,7 @@ class SCons:
 
         # -- Get the programmer type
         # -- Ex. type: "tinyprog"
-        # -- Ex. type: "icesprog"
+        # -- Ex. type: "iceprog"
         prog_info = board_data["programmer"]
         prog_type = prog_info["type"]
 
@@ -474,7 +474,11 @@ class SCons:
         # -- * pip package
         content = self.resources.programmers[prog_type]
 
-        programmer = content.get("command")
+        # -- Get the command (without arguments) to execute
+        # -- for programming the current board
+        # -- Ex. "tinyprog"
+        # -- Ex. "iceprog"
+        programmer = content["command"]
 
         # dfu-util needs extra args first
         if programmer.startswith("dfu-util"):
