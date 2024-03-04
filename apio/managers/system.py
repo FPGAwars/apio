@@ -88,7 +88,13 @@ class System:  # pragma: no cover
 
     def get_usb_devices(self) -> list:
         """Return a list of the connected USB devices
-        This list is obtained by running the "lsusb" command
+         This list is obtained by running the "lsusb" command
+
+         * OUTPUT:  A list of objects with the usb devices
+        Ex. [{'hwid':'1d6b:0003'}, {'hwid':'8087:0aaa'}, ...]
+
+        It raises an exception in case of not being able to
+        execute the "lsusb" command
         """
 
         # -- Initial empty usb devices list
@@ -105,12 +111,12 @@ class System:  # pragma: no cover
             # -- Ex: [{'hwid':'1d6b:0003'}, {'hwid':'04f2:b68b'}...]
             usb_devices = self._parse_usb_devices(result["out"])
 
+            # -- Return the devices
+            return usb_devices
+
         # -- It was not possible to run the "lsusb" command
         # -- for reading the usb devices
-        else:
-            raise RuntimeError("Error executing lsusb")
-
-        return usb_devices
+        raise RuntimeError("Error executing lsusb")
 
     def get_ftdi_devices(self):
         """DOC: TODO"""
