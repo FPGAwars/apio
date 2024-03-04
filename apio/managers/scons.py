@@ -300,7 +300,12 @@ class SCons:
         # -- Replace FTDI index
         # -- Ex. "${FTDI_ID}" --> "0"
         if "${FTDI_ID}" in programmer:
+
+            # -- Check that the board is connected
+            # -- If not, an exception is raised
             self.check_usb(board, board_data)
+
+            # -- TODO: FIXME!
             ftdi_id = self.get_ftdi_id(board, board_data, prog[FTDI_ID])
             programmer = programmer.replace("${FTDI_ID}", ftdi_id)
 
