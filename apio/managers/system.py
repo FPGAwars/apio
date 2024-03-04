@@ -156,7 +156,22 @@ class System:  # pragma: no cover
         # --            bin/lsusb')
         executable_file = system_bin_dir / (command + self.ext)
 
-        # -- TODO: Check if the file exist!
+        # -- Check if the file exist!
+        if not executable_file.exists():
+
+            # -- The command was not in the oss-cad-suit package
+            # -- Print an error message
+            click.secho("Error!\n", fg="red")
+            click.secho(f"Command not fount: {executable_file}", fg="red")
+
+            # -- Show the error message and a hint
+            # -- on how to install the package
+            util.show_package_path_error(self.package_name)
+            util.show_package_install_instructions(self.package_name)
+
+            return None
+
+        # -- The command exist! Let's execute it!
 
         # -- Set the stdout and stderr callbacks, when executing the command
         # -- Silent mode (True): No callback
