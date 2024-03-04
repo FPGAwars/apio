@@ -87,13 +87,15 @@ class System:  # pragma: no cover
 
         return returncode
 
-    def get_usb_devices(self):
-        """DOC: TODO"""
+    def get_usb_devices(self) -> list:
+        """Return a list of the connected USB devices
+        This list is obtained by running the "lsusb" command
+        """
 
-        # -- DEBUG
-        print("---------> DEBUG: get_usb_devices() <-------------")
-
+        # -- Initial empty usb devices list
         usb_devices = []
+
+        # -- Run the "lsusb" command!
         result = self._run_command("lsusb", silent=True)
 
         # -- DEBUG
