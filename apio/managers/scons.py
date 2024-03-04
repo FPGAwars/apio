@@ -481,13 +481,13 @@ class SCons:
         programmer = content["command"]
 
         # -- Let's add the arguments for executing the programmer
-        if content["args"]:
+        if content.get("args"):
             programmer += f" {content['args']}"
 
         # -- Some tools need extra arguments
         # -- (like dfu-util for example)
         if prog_info.get("extra_args"):
-            programmer += f" {prog_info.get('extra_args')}"
+            programmer += f" {prog_info['extra_args']}"
 
         # Enable SRAM programming
         if sram:
