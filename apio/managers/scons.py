@@ -243,85 +243,79 @@ class SCons:
         programmer = ""
 
         # -- Mandatory: There should be a board defined
-        if board:
+        # -- If not: return!
+        # -- It should not be the case bacause it has been
+        # -- checked previously... but just in case....
+        if not board:
+            return programmer
 
-            # -- Get the board information
-            # -- Board name
-            # -- FPGA
-            # -- Programmer type
-            # -- Programmer name
-            # -- USB id  (vid, pid)
-            board_data = self.resources.boards[board]
+        # -- Get the board information
+        # -- Board name
+        # -- FPGA
+        # -- Programmer type
+        # -- Programmer name
+        # -- USB id  (vid, pid)
+        board_data = self.resources.boards[board]
 
-            # -- Check platform. If the platform is not compatible
-            # -- with the board an exception is raised
-            self.check_platform(board_data)
+        # -- Check platform. If the platform is not compatible
+        # -- with the board an exception is raised
+        self.check_platform(board_data)
 
-            # -- Check pip packages. If the corresponding pip_packages
-            # -- is not installed, an exception is raised
-            self.check_pip_packages(board_data)
+        # -- Check pip packages. If the corresponding pip_packages
+        # -- is not installed, an exception is raised
+        self.check_pip_packages(board_data)
 
-            # -- Serialize programmer command
-            # -- Get a string with the command line to execute
-            # -- BUT! it is a TEMPLATE string, with some parameters
-            # -- that needs to be set!
-            # --   * "${VID}" (optional): USB vendor id
-            # --   * "${PID}" (optional): USB Product id
-            # --   * "${FTDI_ID}" (optional): FTDI id
-            # --   * "${SERIAL_PORT}" (optional): Serial port name
-            programmer = self.serialize_programmer(
-                board_data, prog[SRAM], prog[FLASH]
-            )
+        # -- Serialize programmer command
+        # -- Get a string with the command line to execute
+        # -- BUT! it is a TEMPLATE string, with some parameters
+        # -- that needs to be set!
+        # --   * "${VID}" (optional): USB vendor id
+        # --   * "${PID}" (optional): USB Product id
+        # --   * "${FTDI_ID}" (optional): FTDI id
+        # --   * "${SERIAL_PORT}" (optional): Serial port name
+        programmer = self.serialize_programmer(
+            board_data, prog[SRAM], prog[FLASH]
+        )
 
-            # -- Assign the parameters in the Template string
+        # -- Assign the parameters in the Template string
+        # -- Replace USB vendor id
+        # -- Ex. "${VID}" --> "0403"
+        if "${VID}" in programmer:
+            # -- Get the vendor id
+            vid = board_data["usb"]["vid"]
+            # -- Place the value in the command string
+            programmer = programmer.replace("${VID}", vid)
 
-            # -- Replace USB vendor id
-            # -- Ex. "${VID}" --> "0403"
-            if "${VID}" in programmer:
+        # Replace USB product id
+        if "${PID}" in programmer:
+            pid = board_data.get("usb").get("pid")
+            programmer = programmer.replace("${PID}", pid)
 
-                # -- Get the vendor id
-                vid = board_data["usb"]["vid"]
+        # Replace FTDI index
+        if "${FTDI_ID}" in programmer:
+            self.check_usb(board, board_data)
+            ftdi_id = self.get_ftdi_id(board, board_data, prog[FTDI_ID])
+            programmer = programmer.replace("${FTDI_ID}", ftdi_id)
 
-                # -- Place the value in the command string
-                programmer = programmer.replace("${VID}", vid)
+        # TinyFPGA BX board is not detected in MacOS HighSierra
+        if "tinyprog" in board_data and "darwin" in util.get_systype():
+            # In this case the serial check is ignored
+            return "tinyprog --libusb --program"
 
-            # Replace USB product id
-            if "${PID}" in programmer:
-                pid = board_data.get("usb").get("pid")
-                programmer = programmer.replace("${PID}", pid)
+        # TinyFPGA BX board is not detected in MacOS HighSierra
+        if "tinyprog" in board_data and "darwin_arm64" in util.get_systype():
+            # In this case the serial check is ignored
+            return "tinyprog --libusb --program"
 
-            # Replace FTDI index
-            if "${FTDI_ID}" in programmer:
-                self.check_usb(board, board_data)
-                ftdi_id = self.get_ftdi_id(board, board_data, prog[FTDI_ID])
-                programmer = programmer.replace("${FTDI_ID}", ftdi_id)
+        # -- DEBUG
+        print("-------> DEBUG: Traza 2")
 
-            # TinyFPGA BX board is not detected in MacOS HighSierra
-            if "tinyprog" in board_data and "darwin" in util.get_systype():
-                # In this case the serial check is ignored
-                return "tinyprog --libusb --program"
-
-            # TinyFPGA BX board is not detected in MacOS HighSierra
-            if (
-                "tinyprog" in board_data
-                and "darwin_arm64" in util.get_systype()
-            ):
-                # In this case the serial check is ignored
-                return "tinyprog --libusb --program"
-
-            # -- DEBUG
-            print("-------> DEBUG: Traza 2")
-
-            # Replace Serial port
-            if "${SERIAL_PORT}" in programmer:
-                self.check_usb(board, board_data)
-
-                print("-------> DEBUG: Traza 3")
-                device = self.get_serial_port(
-                    board, board_data, prog[SERIAL_PORT]
-                )
-                programmer = programmer.replace("${SERIAL_PORT}", device)
-
+        # Replace Serial port
+        if "${SERIAL_PORT}" in programmer:
+            self.check_usb(board, board_data)
+            print("-------> DEBUG: Traza 3")
+            device = self.get_serial_port(board, board_data, prog[SERIAL_PORT])
+            programmer = programmer.replace("${SERIAL_PORT}", device)
         return programmer
 
     @staticmethod
