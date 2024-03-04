@@ -436,11 +436,34 @@ class SCons:
                 # -- Raise an exception
                 raise ValueError(message) from exc
 
-    def serialize_programmer(self, board_data, sram, flash):
-        """DOC: TODO"""
+    def serialize_programmer(
+        self, board_data: dict, sram: bool, flash: bool
+    ) -> str:
+        """
+        * INPUT:
+          * board_data: Dictionary with board information
+            * Board name
+            * FPGA
+            * Programmer type
+            * Programmer name
+            * USB id  (vid, pid)
+          * sram: Perform sram programming
+          * flash: Perform flash programming
+        * OUTPUT: It returns a template string with the command line
+           to execute for uploading the circuit. It has the following
+           parameters (in the string):
+           * "${VID}" (optional): USB vendor id
+           * "${PID}" (optional): USB Product id
+           * "${FTDI_ID}" (optional): FTDI id
+           * "${SERIAL_PORT}" (optional): Serial port name
+        """
 
-        prog_info = board_data.get("programmer")
-        content = self.resources.programmers.get(prog_info.get("type"))
+        # -- Get the programmer type
+        # -- Ex. type: "tinyprog"
+        prog_info = board_data["programmer"]
+        prog_type = prog_info["type"]
+
+        content = self.resources.programmers.get(prog_type)
 
         programmer = content.get("command")
 
