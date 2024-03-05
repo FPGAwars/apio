@@ -780,6 +780,13 @@ def get_serial_ports() -> list:
 def get_tinyprog_meta() -> list:
     """DOC: TODO"""
 
+    # -- New algorithm...
+    # -- 1) Get the bin dir
+    # -- 2) Construct the full path
+    # -- 3) Chack if the file exist
+    # --  4)   if ok... execute it!
+    # --  5)   if not... try directly with tinyprog
+
     # -- FIX IT!
     _command1 = join(get_bin_dir(), "tinyprog")
     print(f"===========> DEBUG: {_command1}")
@@ -818,18 +825,26 @@ def get_tinyprog_meta() -> list:
 
 # pylint: disable=E1101
 # -- E1101: Instance of 'module' has no '__file__' member (no-member)
-def get_bin_dir():
-    """DOC: TODO"""
+def get_bin_dir() -> Path:
+    """Get the Apio executable Path"""
 
-    candidate = dirname(sys.modules["__main__"].__file__)
-    # Windows + virtualenv = 💩
+    # -- Get the apio main module
+    main_mod = sys.modules["__main__"]
+
+    # -- Get the full path of the apio executable file
+    exec_filename = Path(main_mod.__file__)
+
+    # -- Get its parent directory
+    bin_dir = str(exec_filename.parent)
+
+    # -- Special case for Windows + virtualenv
     # In this case the main file is: venv/Scripts/apio.exe/__main__.py!
     # This is not good because venv/Scripts/apio.exe is not a directory
     # So here we go with the workaround:
-    if candidate.endswith(".exe"):
-        return dirname(candidate)
+    if bin_dir.endswith(".exe"):
+        return bin_dir.parent
 
-    return candidate
+    return bin_dir
 
 
 def get_python_version() -> str:
