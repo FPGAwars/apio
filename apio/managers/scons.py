@@ -608,7 +608,9 @@ class SCons:
             raise ConnectionError("board " + board + " not connected")
         return device
 
-    def _check_serial(self, board, board_data, ext_serial_port):
+    def _check_serial(
+        self, board: str, board_data: dict, ext_serial_port: str
+    ) -> str:
         """TODO: Check if the given board is connected or not to the computer
            If it is not connected, an exception is raised
 
@@ -620,7 +622,7 @@ class SCons:
             * Programmer type
             * Programmer name
             * USB id  (vid, pid)
-          * ext_serial_port: TODO
+          * ext_serial_port: serial port name given by the user (optional)
         """
 
         # -- The board is connected by USB
@@ -642,17 +644,24 @@ class SCons:
         #          'hwid': 'USB VID:PID=1D50:6130 LOCATION=1-5:1.0'}]
         serial_ports = util.get_serial_ports()
 
-        # Match the discovered serial ports
+        # -- If no serial ports detected: raise an Error!
+        if not serial_ports:
 
-        if len(serial_ports) == 0:
             # Board not available
             raise AttributeError("board " + board + " not available")
+
+        # --->TODO: Match the discovered serial ports
         for serial_port_data in serial_ports:
-            port = serial_port_data.get("port")
+
+            # -- Get the port name of the detected board
+            port = serial_port_data["port"]
+
+            # If the --device options is set but it doesn't match
+            # the detected port, skip the port.
             if ext_serial_port and ext_serial_port != port:
-                # If the --device options is set but it doesn't match
-                # the detected port, skip the port.
                 continue
+
+            # -- TODO
             if hwid.lower() in serial_port_data.get("hwid").lower():
                 if "tinyprog" in board_data and not self._check_tinyprog(
                     board_data, port
@@ -667,10 +676,25 @@ class SCons:
         return None
 
     @staticmethod
-    def _check_tinyprog(board_data, port):
+    def _check_tinyprog(board_data: dict, port: str) -> bool:
         """DOC: TODO"""
 
-        desc_pattern = "^" + board_data.get("tinyprog").get("desc") + "$"
+        # -- Check that the given board has the property "tinyprog"
+        # -- If not, it is an error. Raise an exception
+        if "tinyprog" not in board_data:
+            raise AttributeError("Missing board configuration: tinyprog")
+
+        # -- Get the board description from the the apio database
+        board_desc = board_data["tinyprog"]["desc"]
+
+        # -- Build a regular expresion for finding this board
+        # -- description in the connected board
+        # -- Ex: '^TinyFPGA BX$'
+        # -- Notes on regular expresions:
+        # --   ^  --> Means the begining of the string
+        # --   $  --> End of string
+        desc_pattern = f"^{board_desc}$"
+
         for tinyprog_meta in util.get_tinyprog_meta():
             tinyprog_port = tinyprog_meta.get("port")
             tinyprog_name = tinyprog_meta.get("boardmeta").get("name")
@@ -710,7 +734,7 @@ class SCons:
         return ftdi_id
 
     @staticmethod
-    def _check_ftdi(board, board_data, ext_ftdi_id) -> str:
+    def _check_ftdi(board: str, board_data: dict, ext_ftdi_id: str) -> str:
         """Check if the given ftdi board is connected or not to the computer
            and return its FTDI index
 
