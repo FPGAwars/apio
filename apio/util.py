@@ -777,13 +777,35 @@ def get_serial_ports() -> list:
 
 # W0703: Catching too general exception Exception (broad-except)
 # pylint: disable=W0703
-def get_tinyprog_meta():
+def get_tinyprog_meta() -> list:
     """DOC: TODO"""
 
     # -- FIX IT!
-    _command = join(get_bin_dir(), "tinyprog")
+    _command1 = join(get_bin_dir(), "tinyprog")
+    print(f"===========> DEBUG: {_command1}")
     _command = "tinyprog"
     result = exec_command([_command, "--pyserial", "--meta"])
+
+    # '[{"boardmeta": {
+    #        "name": "TinyFPGA BX",
+    #        "fpga": "ice40lp8k-cm81",
+    #        "hver": "1.0.0",
+    #        "uuid": "7d41d659-876b-454a-9a91-51e5f157e80c"
+    #       },
+    #     "bootmeta": {
+    #       "bootloader": "TinyFPGA USB Bootloader",
+    #       "bver": "1.0.1",
+    #       "update": "https://tinyfpga.com/update/tinyfpga-bx",
+    #       "addrmap": {
+    #           "bootloader": "0x000a0-0x28000",
+    #           "userimage": "0x28000-0x50000",
+    #           "userdata": "0x50000-0x100000"
+    #        }\n
+    #      },
+    #      "port": "/dev/ttyACM0"\n
+    #     }
+    #    ]'
+
     try:
         out = result.get("out", "")
         if out:
