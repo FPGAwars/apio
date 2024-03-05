@@ -327,14 +327,15 @@ class SCons:
 
         # Replace Serial port
         # -- The board uses a Serial port for uploading the circuit
-        # -- TODO: Refactor and test this part
         if "${SERIAL_PORT}" in programmer:
 
             # -- Check that the board is connected
             self.check_usb(board, board_data)
 
-            # -- TODO: FIXME
+            # -- Get the serial port
             device = self.get_serial_port(board, board_data, prog[SERIAL_PORT])
+
+            # -- Place the value in the command string
             programmer = programmer.replace("${SERIAL_PORT}", device)
 
         # -- Return the Command to execute for uploading the circuit
