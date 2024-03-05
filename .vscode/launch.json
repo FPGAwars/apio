@@ -13,7 +13,7 @@
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/ledon"
         },
         {
-            "name": "Apio upload",
+            "name": "Upload (Alhambra II)",
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
@@ -21,12 +21,33 @@
             "console": "internalConsole",
             "justMyCode": true,
             //-- Change to the folder with the example to test
-            
+            //-- Testing the Alhanbra-II board
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/ledon"
+        },
+        {
+            "name": "Upload (TinyFPGA)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": ["upload"],
+            "console": "internalConsole",
+            "justMyCode": true,
+            //-- Change to the folder with the example to test
             //-- Testing the TinyFPGA board
             "cwd": "${workspaceFolder}/test-examples/TinyFPGA-BX/01-LED-ON"
+        },
+        {
+            "name": "Upload (Blackice)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": ["upload"],
+            "console": "internalConsole",
+            "justMyCode": true,
+            //-- Change to the folder with the example to test
+            //-- Testing the Blackice
+            "cwd": "${workspaceFolder}/test-examples/BlackIce/01-LEDs-buttons"
 
-            //-- Testing the Alhanbra-II board
-            //"cwd": "${workspaceFolder}/test-examples/Alhambra-II/ledon"
-        }
+        },
     ]
 }

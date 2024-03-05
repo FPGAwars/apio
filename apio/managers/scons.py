@@ -265,6 +265,21 @@ class SCons:
         # -- is not installed, an exception is raised
         self.check_pip_packages(board_data)
 
+        # -- Special case for the TinyFPGA on MACOS platforms
+        # -- TinyFPGA BX board is not detected in MacOS HighSierra
+        if "tinyprog" in board_data:
+
+            # -- Get the platform
+            platform = util.get_systype()
+
+            # -- darwin / darwin_arm64 platforms
+            if "darwin" in platform or "darwin_arm64" in platform:
+
+                # In this case the serial check is ignored
+                # This is the command line to execute for uploading the
+                # circuit
+                return "tinyprog --libusb --program"
+
         # -- Serialize programmer command
         # -- Get a string with the command line to execute
         # -- BUT! it is a TEMPLATE string, with some parameters
@@ -305,29 +320,22 @@ class SCons:
             # -- If not, an exception is raised
             self.check_usb(board, board_data)
 
-            # -- TODO: FIXME!
+            # -- Get the FTDI index of the connected board
             ftdi_id = self.get_ftdi_id(board, board_data, prog[FTDI_ID])
+
+            # -- Place the value in the command string
             programmer = programmer.replace("${FTDI_ID}", ftdi_id)
 
-        # TinyFPGA BX board is not detected in MacOS HighSierra
-        if "tinyprog" in board_data and "darwin" in util.get_systype():
-            # In this case the serial check is ignored
-            return "tinyprog --libusb --program"
-
-        # TinyFPGA BX board is not detected in MacOS HighSierra
-        if "tinyprog" in board_data and "darwin_arm64" in util.get_systype():
-            # In this case the serial check is ignored
-            return "tinyprog --libusb --program"
-
-        # -- DEBUG
-        print("-------> DEBUG: Traza 2")
-
         # Replace Serial port
+        # -- TODO: Refactor and test this part
         if "${SERIAL_PORT}" in programmer:
             self.check_usb(board, board_data)
             print("-------> DEBUG: Traza 3")
             device = self.get_serial_port(board, board_data, prog[SERIAL_PORT])
             programmer = programmer.replace("${SERIAL_PORT}", device)
+
+        # -- Return the Command to execute for uploading the circuit 
+        # -- to the given board
         return programmer
 
     @staticmethod
