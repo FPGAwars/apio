@@ -118,18 +118,40 @@ class System:  # pragma: no cover
         # -- for reading the usb devices
         raise RuntimeError("Error executing lsusb")
 
-    def get_ftdi_devices(self):
-        """DOC: TODO"""
+    def get_ftdi_devices(self) -> list:
+        """Return a list of the connected FTDI devices
+         This list is obtained by running the "lsftdi" command
 
+         * OUTPUT:  A list of objects with the FTDI devices
+        Ex. [{'index': '0', 'manufacturer': 'AlhambraBits', 
+              'description': 'Alhambra II v1.0A - B07-095'}]
+
+        It raises an exception in case of not being able to
+        execute the "lsftdi" command
+        """
+
+        # -- Initial empty ftdi devices list
         ftdi_devices = []
+
+        # -- Run the "lsftdi" command!
         result = self._run_command("lsftdi", silent=True)
 
-        if result and result.get("returncode") == 0:
-            ftdi_devices = self._parse_ftdi_devices(result.get("out"))
-        else:
-            raise RuntimeError("Error executing lsftdi")
+        # -- Sucess in executing the command
+        if result and result["returncode"] == 0:
 
-        return ftdi_devices
+            # -- Get the list of the ftdi devices. It is read
+            # -- from the command stdout
+            # -- Ex: [{'index': '0', 'manufacturer': 'AlhambraBits', 
+            # --      'description': 'Alhambra II v1.0A - B07-095'}]
+            ftdi_devices = self._parse_ftdi_devices(result["out"])
+
+            # -- Return the devices
+            return ftdi_devices
+
+        # -- It was not possible to run the "lsftdi" command
+        # -- for reading the ftdi devices
+        raise RuntimeError("Error executing lsftdi")
+
 
     def _run_command(self, command: str, silent=False) -> dict:
         """Execute the given system command
