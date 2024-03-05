@@ -18,7 +18,7 @@ import json
 import platform
 import subprocess
 from threading import Thread
-from os.path import isdir, isfile, join, dirname, exists
+from os.path import isdir, isfile, dirname, exists
 from pathlib import Path
 
 import click
@@ -778,49 +778,66 @@ def get_serial_ports() -> list:
 # W0703: Catching too general exception Exception (broad-except)
 # pylint: disable=W0703
 def get_tinyprog_meta() -> list:
-    """DOC: TODO"""
+    """Special function for the TinyFPGA board
+     Get information directly from the board, just by
+     executing the command: "tinyprog --pyserial --meta"
 
-    # -- New algorithm...
-    # -- 1) Get the bin dir
-    # -- 2) Construct the full path
-    # -- 3) Chack if the file exist
-    # --  4)   if ok... execute it!
-    # --  5)   if not... try directly with tinyprog
+     OUTPUT: It returns a list with the meta-data of all
+       the TinyFPGA boards connected
+       Ex:
+    '[ {"boardmeta": {
+          "name": "TinyFPGA BX",
+          "fpga": "ice40lp8k-cm81",
+          "hver": "1.0.0",
+          "uuid": "7d41d659-876b-454a-9a91-51e5f157e80c"
+         },
+       "bootmeta": {
+         "bootloader": "TinyFPGA USB Bootloader",
+         "bver": "1.0.1",
+         "update": "https://tinyfpga.com/update/tinyfpga-bx",
+         "addrmap": {
+             "bootloader": "0x000a0-0x28000",
+             "userimage": "0x28000-0x50000",
+             "userdata": "0x50000-0x100000"
+          }\n
+        },
+        "port": "/dev/ttyACM0"\n
+       }
+     ]'
+    """
 
-    # -- FIX IT!
-    _command1 = join(get_bin_dir(), "tinyprog")
-    print(f"===========> DEBUG: {_command1}")
-    _command = "tinyprog"
-    result = exec_command([_command, "--pyserial", "--meta"])
+    # -- Get the Apio executable folder
+    apio_bin_dir = get_bin_dir()
 
-    # '[{"boardmeta": {
-    #        "name": "TinyFPGA BX",
-    #        "fpga": "ice40lp8k-cm81",
-    #        "hver": "1.0.0",
-    #        "uuid": "7d41d659-876b-454a-9a91-51e5f157e80c"
-    #       },
-    #     "bootmeta": {
-    #       "bootloader": "TinyFPGA USB Bootloader",
-    #       "bver": "1.0.1",
-    #       "update": "https://tinyfpga.com/update/tinyfpga-bx",
-    #       "addrmap": {
-    #           "bootloader": "0x000a0-0x28000",
-    #           "userimage": "0x28000-0x50000",
-    #           "userdata": "0x50000-0x100000"
-    #        }\n
-    #      },
-    #      "port": "/dev/ttyACM0"\n
-    #     }
-    #    ]'
+    # -- Construct the command to execute
+    _command = apio_bin_dir / "tinyprog"
+
+    # -- Check if the executable exist
+    # -- In it does not exist, try with just the
+    # -- name: "tinyprog"
+    if not _command.exists():
+        _command = "tinyprog"
+
+    print(f"===========> DEBUG: {_command}")
+
+    # -- Execute the command!
+    # -- It will return the meta information as a json string
+    result = exec_command([_command, "--pyserial", "--meta2"])
+
+    # -- Get the output
+    out = result["out"]
 
     try:
-        out = result.get("out", "")
-        if out:
-            return json.loads(out)
-    except Exception as exc:
-        print(exc)
+        # -- Convert the json string to an object (list)
+        meta = json.loads(out)
+
+    except json.decoder.JSONDecodeError as exc:
+        click.secho(f"Invalid data provided by {_command}", fg="red")
+        click.secho(f"{exc}", fg="red")
         return []
-    return []
+
+    # -- Return the meta-data
+    return meta
 
 
 # pylint: disable=E1101
@@ -835,13 +852,13 @@ def get_bin_dir() -> Path:
     exec_filename = Path(main_mod.__file__)
 
     # -- Get its parent directory
-    bin_dir = str(exec_filename.parent)
+    bin_dir = exec_filename.parent
 
     # -- Special case for Windows + virtualenv
     # In this case the main file is: venv/Scripts/apio.exe/__main__.py!
     # This is not good because venv/Scripts/apio.exe is not a directory
     # So here we go with the workaround:
-    if bin_dir.endswith(".exe"):
+    if str(bin_dir).endswith(".exe"):
         return bin_dir.parent
 
     return bin_dir
