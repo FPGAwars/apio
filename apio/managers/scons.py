@@ -327,10 +327,14 @@ class SCons:
             programmer = programmer.replace("${FTDI_ID}", ftdi_id)
 
         # Replace Serial port
+        # -- The board uses a Serial port for uploading the circuit
         # -- TODO: Refactor and test this part
         if "${SERIAL_PORT}" in programmer:
+
+            # -- Check that the board is connected
             self.check_usb(board, board_data)
-            print("-------> DEBUG: Traza 3")
+
+            # -- TODO: FIXME
             device = self.get_serial_port(board, board_data, prog[SERIAL_PORT])
             programmer = programmer.replace("${SERIAL_PORT}", device)
 
