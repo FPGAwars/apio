@@ -822,7 +822,7 @@ def get_tinyprog_meta() -> list:
 
     # -- Execute the command!
     # -- It will return the meta information as a json string
-    result = exec_command([_command, "--pyserial", "--meta2"])
+    result = exec_command([_command, "--pyserial", "--meta"])
 
     # -- Get the output
     out = result["out"]
