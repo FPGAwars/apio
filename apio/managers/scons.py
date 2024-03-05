@@ -897,48 +897,90 @@ class SCons:
 
     # R0914: Too many local variables (19/15)
     # pylint: disable=R0914
-    def _execute_scons(self, command: str, variables, board):
-        """Execute the scons builder"""
+    def _execute_scons(self, command: str, variables: list, board: str) -> int:
+        """Execute the scons builder
+        * INPUTS:
+          * command: (string): Apio command. Ex. 'upload', 'build'...
+          * variables: Parameters passed to scons
+            Ex. ['fpga_arch=ice40', 'fpga_size=8k', 'fpga_type=lp',
+                 'fpga_pack=cm81', 'top_module=main',
+                 'prog=tinyprog --pyserial -c /dev/ttyACM0 --program',
+                 '-f', '/home/obijuan/Develop/FPGAwars/apio/apio/
+                        resources/ice40/SConstruct']
+          * board: (string) Board name
 
+        * OUTPUT: Exit code
+           * 0: SUCESS!!
+           * x: Error
+        """
+
+        # -- Get the terminal width (typically 80)
         terminal_width, _ = shutil.get_terminal_size()
+
+        # -- Read the time (for measuring how long does it take
+        # -- to execute the apio command)
         start_time = time.time()
 
+        # -- Only for these three commands
         if command in ("build", "upload", "time"):
+
+            # -- Get the type of board
             if board:
                 processing_board = board
             else:
                 processing_board = "custom board"
 
+            # -- Get the date as a string
             date_time_str = datetime.datetime.now().strftime("%c")
-            board_color = click.style(processing_board, fg="cyan", bold=True)
-            click.echo(f"[{date_time_str}] Processing {board_color}")
-            click.secho("-" * terminal_width, bold=True)
 
+            # -- Board name string in color
+            board_color = click.style(processing_board, fg="cyan", bold=True)
+
+            # -- Print information on the console
+            click.echo(f"[{date_time_str}] Processing {board_color}")
+
+            # -- Print a horizontal line
+            click.secho("─" * terminal_width, bold=True)
+
+        # -- Command to execute: scons -Q apio_cmd flags
         scons_command = ["scons"] + ["-Q", command] + variables
 
-        # -- Execute the scons builder
+        # -- Execute the scons builder!
         result = util.exec_command(
             scons_command,
             stdout=util.AsyncPipe(self._on_stdout),
             stderr=util.AsyncPipe(self._on_stderr),
         )
 
-        # -- Print result
-        exit_code = result.get("returncode")
+        # -- Get the exit code
+        exit_code = result["returncode"]
+
+        # -- Is there an error? True/False
         is_error = exit_code != 0
+
+        # -- Calculate the time it took to execute the command
         duration = time.time() - start_time
+
+        # -- Summary
         summary_text = f" Took {duration:.2f} seconds "
-        half_line = "=" * int(((terminal_width - len(summary_text) - 10) / 2))
+
+        # -- Half line
+        half_line = "═" * int(((terminal_width - len(summary_text) - 10) / 2))
+
+        # -- Status message
         status = (
             click.style(" ERROR ", fg="red", bold=True)
             if is_error
             else click.style("SUCCESS", fg="green", bold=True)
         )
+
+        # -- Print all the information!
         click.echo(
             f"{half_line} [{status}]{summary_text}{half_line}",
             err=is_error,
         )
 
+        # -- Return the exit code
         return exit_code
 
     @staticmethod
