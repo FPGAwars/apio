@@ -677,7 +677,20 @@ class SCons:
 
     @staticmethod
     def _check_tinyprog(board_data: dict, port: str) -> bool:
-        """DOC: TODO"""
+        """Check if the correct TinyFPGA board is connected
+        * INPUT:
+          * board_data: Dictionary with board information
+             * Board name
+             * FPGA
+             * Programmer type
+             * Programmer name
+             * USB id  (vid, pid)
+          * port: Serial port name
+
+        * OUTPUT:
+          * True: TinyFPGA detected
+          * False: TinyFPGA not detected
+        """
 
         # -- Check that the given board has the property "tinyprog"
         # -- If not, it is an error. Raise an exception
@@ -695,12 +708,26 @@ class SCons:
         # --   $  --> End of string
         desc_pattern = f"^{board_desc}$"
 
-        for tinyprog_meta in util.get_tinyprog_meta():
-            tinyprog_port = tinyprog_meta.get("port")
-            tinyprog_name = tinyprog_meta.get("boardmeta").get("name")
+        # -- Get a list with the meta data of all the TinyFPGA boards
+        # -- connected
+        list_meta = util.get_tinyprog_meta()
+
+        # -- Check if there is a match: target TinyFPGA is ok
+        for tinyprog_meta in list_meta:
+
+            # -- Get the serial port name
+            tinyprog_port = tinyprog_meta["port"]
+
+            # -- Get the name of the connected board
+            tinyprog_name = tinyprog_meta["boardmeta"]["name"]
+
+            # -- # If the port is detected and it matches the pattern
             if port == tinyprog_port and re.match(desc_pattern, tinyprog_name):
-                # If the port is detected and it matches the pattern
+
+                # -- TinyFPGA board detected!
                 return True
+
+        # -- TinyFPGA board not detected!
         return False
 
     def get_ftdi_id(self, board, board_data, ext_ftdi_id) -> str:
