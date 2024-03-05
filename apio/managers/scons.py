@@ -598,14 +598,31 @@ class SCons:
             # -- Raise an exception
             raise ConnectionError("board " + board + " not connected")
 
-    def get_serial_port(self, board, board_data, ext_serial_port):
-        """DOC: TODO"""
+    def get_serial_port(self, board: str, board_data: dict, ext_serial_port: str) -> str:
+        """Get the serial port of the connected board
+          * INPUT:
+            * board: Board name (string)
+            * board_data: Dictionary with board information
+              * Board name
+              * FPGA
+              * Programmer type
+              * Programmer name
+              * USB id  (vid, pid)
+            * ext_serial_port: serial port name given by the user (optional)
 
-        # Search Serial port by USB id
+          * OUTPUT: (string) The serial port name
+
+          It raises an exception if the board is not connected
+        """
+
+        # -- Search Serial port by USB id
         device = self._check_serial(board, board_data, ext_serial_port)
-        if device is None:
-            # Board not connected
+
+        # -- Board not connected
+        if not device:
             raise ConnectionError("board " + board + " not connected")
+        
+        # -- Board connected. Return the serial port detected
         return device
 
     def _check_serial(
