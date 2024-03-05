@@ -530,9 +530,6 @@ def exec_command(*args, **kwargs) -> dict:  # pragma: no cover
     Example:  exec_command(['scons', '-Q', '-c', '-f', 'SConstruct'])
     """
 
-    # -- DEBUG:
-    print(f"--------> DEBUG: Command: {args=},{kwargs=}")
-
     # -- Default value to return after the command execution
     # -- out: string with the command output
     # -- err: string with the command error output
@@ -551,9 +548,6 @@ def exec_command(*args, **kwargs) -> dict:  # pragma: no cover
     # -- Include the flags given by the user
     # -- It overrides the default flags
     flags.update(kwargs)
-
-    # -- DEBUG
-    print("--------> DEBUG: Llega aquí 1!!!!")
 
     # -- Execute the command!
     try:
@@ -586,9 +580,6 @@ def exec_command(*args, **kwargs) -> dict:  # pragma: no cover
             if isinstance(flags[std], AsyncPipe):
                 flags[std].close()
 
-    # -- DEBUG
-    print("--------> DEBUG: Llega aquí 2!!!!")
-
     # -- Process the output from the stdout and stderr
     # -- if they exist
     for inout in ("out", "err"):
@@ -596,14 +587,8 @@ def exec_command(*args, **kwargs) -> dict:  # pragma: no cover
         # -- Construct the Name "stdout" or "stderr"
         std = f"std{inout}"
 
-        # -- DEBUG
-        print(f"--------> DEBUG: Llega aquí 3!!!! {std=}")
-
         # -- Do it only if they have been assigned
         if isinstance(flags[std], AsyncPipe):
-
-            # -- DEBUG
-            print(f"--------> DEBUG: Llega aquí 4!!!! {std=}")
 
             # -- Get the text
             buffer = flags[std].get_buffer()
@@ -613,9 +598,6 @@ def exec_command(*args, **kwargs) -> dict:  # pragma: no cover
             # -- result["err"] contains stderr
             result[inout] = "\n".join(buffer)
             result[inout].strip()
-
-    # -- DEBUG
-    print(f"--------> DEBUG: {result=}")
 
     return result
 
@@ -817,8 +799,6 @@ def get_tinyprog_meta() -> list:
     # -- name: "tinyprog"
     if not _command.exists():
         _command = "tinyprog"
-
-    print(f"===========> DEBUG: {_command}")
 
     # -- Execute the command!
     # -- It will return the meta information as a json string

@@ -82,7 +82,7 @@ def debug_params(fun):
 
 # R0912: Too many branches (14/12)
 # pylint: disable=R0912
-@debug_params
+#@debug_params
 def process_arguments(
     config_ini: dict, resources: type[Resources]
 ) -> tuple:  # noqa
@@ -143,7 +143,7 @@ def process_arguments(
     # -- (if not overriden by arguments)
 
     # -- DEBUG: Print both: project board and configuration board
-    debug_config_item(config, BOARD, proj.board)
+    #debug_config_item(config, BOARD, proj.board)
 
     # -- Board name given in the command line
     if config[BOARD]:
@@ -237,7 +237,7 @@ def process_arguments(
             click.secho("Using the default top-module: `main`", fg="blue")
 
     # -- Debug: Print current configuration
-    print_configuration(config)
+    #print_configuration(config)
 
     # -- Build Scons flag list
     flags = serialize_scons_flags(
@@ -293,7 +293,7 @@ def update_config_item(config: dict, item: str, value: str) -> None:
     """
 
     # -- Debug messages
-    debug_config_item(config, item, value)
+    #debug_config_item(config, item, value)
 
     # -- This item has not been set in the current configuration: ok, set it!
     if config[item] is None:
