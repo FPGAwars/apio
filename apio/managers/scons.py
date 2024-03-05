@@ -611,8 +611,8 @@ class SCons:
     def _check_serial(
         self, board: str, board_data: dict, ext_serial_port: str
     ) -> str:
-        """TODO: Check if the given board is connected or not to the computer
-           If it is not connected, an exception is raised
+        """Check the that the serial port for the given board exists
+         (board connedted)
 
         * INPUT:
           * board: Board name (string)
@@ -623,6 +623,8 @@ class SCons:
             * Programmer name
             * USB id  (vid, pid)
           * ext_serial_port: serial port name given by the user (optional)
+
+        * OUTPUT: (string) The serial port name
         """
 
         # -- The board is connected by USB
@@ -650,7 +652,7 @@ class SCons:
             # Board not available
             raise AttributeError("board " + board + " not available")
 
-        # --->TODO: Match the discovered serial ports
+        # -- Match the discovered serial ports
         for serial_port_data in serial_ports:
 
             # -- Get the port name of the detected board
@@ -661,18 +663,21 @@ class SCons:
             if ext_serial_port and ext_serial_port != port:
                 continue
 
-            # -- TODO
-            if hwid.lower() in serial_port_data.get("hwid").lower():
-                if "tinyprog" in board_data and not self._check_tinyprog(
-                    board_data, port
-                ):
-                    # If the board uses tinyprog use its port detection
-                    # to double check the detected port.
-                    # If the port is not detected, skip the port.
+            # -- Check if the TinyFPGA board is connected
+            connected = self._check_tinyprog(board_data, port)
+
+            # -- If the usb id matches...
+            if hwid.lower() in serial_port_data["hwid"].lower():
+
+                # -- Special case: TinyFPGA. Ignore usb id if
+                # -- board not detected
+                if "tinyprog" in board_data and not connected:
                     continue
-                # If the hwid and the description pattern matches
-                # with the detected port return the port.
+
+                # -- Return the serial port
                 return port
+
+        # -- No serial port found...
         return None
 
     @staticmethod
@@ -693,9 +698,9 @@ class SCons:
         """
 
         # -- Check that the given board has the property "tinyprog"
-        # -- If not, it is an error. Raise an exception
+        # -- If not, return False
         if "tinyprog" not in board_data:
-            raise AttributeError("Missing board configuration: tinyprog")
+            return False
 
         # -- Get the board description from the the apio database
         board_desc = board_data["tinyprog"]["desc"]
