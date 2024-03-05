@@ -12,7 +12,6 @@ import sys
 import time
 import datetime
 import shutil
-from os.path import isfile
 from pathlib import Path
 
 import importlib.metadata
@@ -338,7 +337,7 @@ class SCons:
             device = self.get_serial_port(board, board_data, prog[SERIAL_PORT])
             programmer = programmer.replace("${SERIAL_PORT}", device)
 
-        # -- Return the Command to execute for uploading the circuit 
+        # -- Return the Command to execute for uploading the circuit
         # -- to the given board
         return programmer
 
@@ -761,11 +760,11 @@ class SCons:
 
         # -- Check if in the current project a custom SConstruct file
         # is being used. We fist build the full name (with the full path)
-        scon_file = Path(util.get_project_dir()) / "SConstruct"
+        scon_file = Path.cwd() / "SConstruct"
 
         # -- If the SConstruct file does NOT exist, we use the one provided by
         # -- apio, which is located in the resources/arch/ folder
-        if not isfile(scon_file):
+        if not scon_file.exists():
             # -- This is the default SConstruct file
             resources = util.get_full_path("resources")
             default_scons_file = resources / arch / "SConstruct"

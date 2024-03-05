@@ -258,12 +258,6 @@ def get_package_dir(pkg_name):
     return ""
 
 
-def get_project_dir():
-    """DOC: TODO"""
-
-    return os.getcwd()
-
-
 def call(cmd):
     """Execute the given command from the installed apio packages"""
 
