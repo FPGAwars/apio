@@ -653,15 +653,31 @@ class SCons:
         return ftdi_id
 
     @staticmethod
-    def _check_ftdi(board, board_data, ext_ftdi_id):
-        """DOC: TODO"""
+    def _check_ftdi(board, board_data, ext_ftdi_id) -> str:
+        """Check if the given ftdi board is connected or not to the computer
+           and return its FTDI index
+
+        * INPUT:
+          * board: Board name (string)
+          * board_data: Dictionary with board information
+            * Board name
+            * FPGA
+            * Programmer type
+            * Programmer name
+            * USB id  (vid, pid)
+          * ext_ftdi_id: FTDI index given by the user (optional)
+
+        * OUTPUT: It return the FTDI index (as a string)
+                  Ex: '0'
+              * Or None if no board is found
+        """
 
         # -- Check that the given board has the property "ftdi"
         # -- If not, it is an error. Raise an exception
         if "ftdi" not in board_data:
             raise AttributeError("Missing board configuration: ftdi")
 
-        # -- Get the board description given in the apio database
+        # -- Get the board description from the the apio database
         board_desc = board_data["ftdi"]["desc"]
 
         # -- Build a regular expresion for finding this board
@@ -674,28 +690,36 @@ class SCons:
         # --   $  --> End of string
         desc_pattern = f"^{board_desc}.*$"
 
-        # Match the discovered FTDI chips
-
         # -- Get the list of the connected FTDI devices
         # -- (execute the command "lsftdi" from the apio System module)
         system = System()
         connected_devices = system.get_ftdi_devices()
 
-        if len(connected_devices) == 0:
-            # Board not available
+        # -- No FTDI devices detected --> Error!
+        if not connected_devices:
+
+            # -- Board not available
             raise AttributeError("board " + board + " not available")
 
+        # -- Check if the given board is connected
+        # -- and if so, return its FTDI index
         for ftdi_device in connected_devices:
-            index = ftdi_device.get("index")
-            # ftdi device indices can start at zero
+
+            # -- Get the FTDI index
+            # -- Ex: '0'
+            index = ftdi_device["index"]
+
+            # If the --device options is set but it doesn't match
+            # with the detected index, skip the port.
             if ext_ftdi_id is not None and ext_ftdi_id != index:
-                # If the --device options is set but it doesn't match
-                # with the detected index, skip the port.
                 continue
-            if re.match(desc_pattern, ftdi_device.get("description")):
-                # If matches the description pattern
-                # return the index for the FTDI device.
+
+            # If matches the description pattern
+            # return the index for the FTDI device.
+            if re.match(desc_pattern, ftdi_device["description"]):
                 return index
+
+        # -- No FTDI board found
         return None
 
     # R0913: Too many arguments (6/5)
