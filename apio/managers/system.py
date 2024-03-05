@@ -123,7 +123,7 @@ class System:  # pragma: no cover
          This list is obtained by running the "lsftdi" command
 
          * OUTPUT:  A list of objects with the FTDI devices
-        Ex. [{'index': '0', 'manufacturer': 'AlhambraBits', 
+        Ex. [{'index': '0', 'manufacturer': 'AlhambraBits',
               'description': 'Alhambra II v1.0A - B07-095'}]
 
         It raises an exception in case of not being able to
@@ -141,7 +141,7 @@ class System:  # pragma: no cover
 
             # -- Get the list of the ftdi devices. It is read
             # -- from the command stdout
-            # -- Ex: [{'index': '0', 'manufacturer': 'AlhambraBits', 
+            # -- Ex: [{'index': '0', 'manufacturer': 'AlhambraBits',
             # --      'description': 'Alhambra II v1.0A - B07-095'}]
             ftdi_devices = self._parse_ftdi_devices(result["out"])
 
@@ -151,7 +151,6 @@ class System:  # pragma: no cover
         # -- It was not possible to run the "lsftdi" command
         # -- for reading the ftdi devices
         raise RuntimeError("Error executing lsftdi")
-
 
     def _run_command(self, command: str, silent=False) -> dict:
         """Execute the given system command

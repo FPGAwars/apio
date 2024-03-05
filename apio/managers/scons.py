@@ -675,12 +675,17 @@ class SCons:
         desc_pattern = f"^{board_desc}.*$"
 
         # Match the discovered FTDI chips
-        ftdi_devices = System().get_ftdi_devices()
 
-        if len(ftdi_devices) == 0:
+        # -- Get the list of the connected FTDI devices
+        # -- (execute the command "lsftdi" from the apio System module)
+        system = System()
+        connected_devices = system.get_ftdi_devices()
+
+        if len(connected_devices) == 0:
             # Board not available
             raise AttributeError("board " + board + " not available")
-        for ftdi_device in ftdi_devices:
+
+        for ftdi_device in connected_devices:
             index = ftdi_device.get("index")
             # ftdi device indices can start at zero
             if ext_ftdi_id is not None and ext_ftdi_id != index:
