@@ -642,14 +642,34 @@ class SCons:
                 return True
         return False
 
-    def get_ftdi_id(self, board, board_data, ext_ftdi_id):
-        """DOC: TODO"""
+    def get_ftdi_id(self, board, board_data, ext_ftdi_id) -> str:
+        """Get the FTDI index of the detected board
 
-        # Search device by FTDI id
+        * INPUT:
+          * board: Board name (string)
+          * board_data: Dictionary with board information
+            * Board name
+            * FPGA
+            * Programmer type
+            * Programmer name
+            * USB id  (vid, pid)
+          * ext_ftdi_id: FTDI index given by the user (optional)
+
+        * OUTPUT: It return the FTDI index (as a string)
+                  Ex: '0'
+
+          It raises an exception if no FTDI device is connected
+        """
+
+        # -- Search device by FTDI id
         ftdi_id = self._check_ftdi(board, board_data, ext_ftdi_id)
+
+        # -- No FTDI board connected
         if ftdi_id is None:
-            # Board not connected
             raise AttributeError("board " + board + " not connected")
+
+        # -- Return the FTDI index
+        # -- Ex: '0'
         return ftdi_id
 
     @staticmethod
