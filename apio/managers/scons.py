@@ -656,13 +656,27 @@ class SCons:
     def _check_ftdi(board, board_data, ext_ftdi_id):
         """DOC: TODO"""
 
+        # -- Check that the given board has the property "ftdi"
+        # -- If not, it is an error. Raise an exception
         if "ftdi" not in board_data:
             raise AttributeError("Missing board configuration: ftdi")
 
-        desc_pattern = "^" + board_data.get("ftdi").get("desc") + "$"
+        # -- Get the board description given in the apio database
+        board_desc = board_data["ftdi"]["desc"]
+
+        # -- Build a regular expresion for finding this board
+        # -- description in the connected board
+        # -- Ex: '^Alhambra II.*$'
+        # -- Notes on regular expresions:
+        # --   ^  --> Means the begining of the string
+        # --   .  --> Any character
+        # --   .* --> zero or many characters
+        # --   $  --> End of string
+        desc_pattern = f"^{board_desc}.*$"
 
         # Match the discovered FTDI chips
         ftdi_devices = System().get_ftdi_devices()
+
         if len(ftdi_devices) == 0:
             # Board not available
             raise AttributeError("board " + board + " not available")
