@@ -609,16 +609,41 @@ class SCons:
         return device
 
     def _check_serial(self, board, board_data, ext_serial_port):
-        """DOC: TODO"""
+        """TODO: Check if the given board is connected or not to the computer
+           If it is not connected, an exception is raised
 
+        * INPUT:
+          * board: Board name (string)
+          * board_data: Dictionary with board information
+            * Board name
+            * FPGA
+            * Programmer type
+            * Programmer name
+            * USB id  (vid, pid)
+          * ext_serial_port: TODO
+        """
+
+        # -- The board is connected by USB
+        # -- If it does not have the "usb" property, it means
+        # -- the board configuration is wrong...Raise an exception
         if "usb" not in board_data:
             raise AttributeError("Missing board configuration: usb")
 
-        usb_data = board_data.get("usb")
-        hwid = f"{usb_data.get('vid')}:{usb_data.get('pid')}"
+        # -- Get the vid and pid from the configuration
+        # -- Ex. {'vid': '0403', 'pid':'6010'}
+        usb_data = board_data["usb"]
+
+        # -- Create a string with vid, pid in the format "vid:pid"
+        hwid = f"{usb_data['vid']}:{usb_data['pid']}"
+
+        # -- Get the list of the connected serial ports
+        # -- Ex: [{'port': '/dev/ttyACM0',
+        #          'description': 'ttyACM0',
+        #          'hwid': 'USB VID:PID=1D50:6130 LOCATION=1-5:1.0'}]
+        serial_ports = util.get_serial_ports()
 
         # Match the discovered serial ports
-        serial_ports = util.get_serial_ports()
+
         if len(serial_ports) == 0:
             # Board not available
             raise AttributeError("board " + board + " not available")

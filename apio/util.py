@@ -737,19 +737,41 @@ def command(function):
     return decorate
 
 
-def get_serial_ports():
-    """DOC: TODO"""
+def get_serial_ports() -> list:
+    """Get a list of the serial port devices connected
+    * OUTPUT: A list with the devides
+         Ex: [{'port': '/dev/ttyACM0',
+               'description': 'ttyACM0',
+               'hwid': 'USB VID:PID=1D50:6130 LOCATION=1-5:1.0'}]
+    """
 
+    # -- Initial empty device list
     result = []
 
-    for port, description, hwid in comports():
+    # -- Use the serial.tools.list_ports module for reading the
+    # -- serial ports
+    # -- More info:
+    # --   https://pyserial.readthedocs.io/en/latest/tools.html
+    list_port_info = comports()
+
+    # -- Only the USB serial ports are included
+    # -- in the final list
+    for port, description, hwid in list_port_info:
+
+        # -- Not a serial port: ignore. Proceed to the
+        # -- next device
         if not port:
             continue
+
+        # -- If it has the "VID:PID" string, it is an USB serial port
         if "VID:PID" in hwid:
+
+            # -- Add to the final list
             result.append(
                 {"port": port, "description": description, "hwid": hwid}
             )
 
+    # -- Return the list of serial ports
     return result
 
 
