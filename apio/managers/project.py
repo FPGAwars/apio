@@ -73,10 +73,10 @@ class Project:
     def create_ini(self, board, top_module, project_dir="", sayyes=False):
         """Creates a new apio project file"""
 
-        project_dir = Path(util.check_dir(project_dir))
+        project_dir = util.check_dir(project_dir)
 
         # -- Build the filename
-        ini_path = str(project_dir / PROJECT_FILENAME)
+        ini_path = project_dir / PROJECT_FILENAME
 
         # Check board
         boards = Resources().boards
@@ -85,7 +85,7 @@ class Project:
             sys.exit(1)
 
         # -- The apio.ini file already exists...
-        if isfile(ini_path):
+        if ini_path.is_file():
 
             # -- Warn the user, unless the flag sayyes is active
             if not sayyes:
