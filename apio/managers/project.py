@@ -108,13 +108,13 @@ class Project:
     def update_ini(self, top_module, project_dir):
         """Update the current init file with the given top-module"""
 
-        project_dir = Path(util.check_dir(project_dir))
+        project_dir = util.check_dir(project_dir)
 
         # -- Build the filename
-        ini_path = str(project_dir / PROJECT_FILENAME)
+        ini_path = project_dir / PROJECT_FILENAME
 
         # -- Check if the apio.ini file exists
-        if not isfile(ini_path):
+        if not ini_path.is_file():
             click.secho(
                 "No apio.ini file. You should first create it:\n"
                 "  apio init --board <boardname>\n",
