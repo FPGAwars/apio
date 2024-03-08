@@ -1004,10 +1004,24 @@ class SCons:
         if not line:
             return
 
-        # -- TODO: document it!!
-        if "%|" in line and "100%|" not in line:
+        # ------- tinyprog output processing BEGIN
+        # -- Check if the line correspond to an output of
+        # -- the tinyprog programmer (TinyFPGA board)
+        # -- Match outputs like these " 97%|█████████▋| "
+        # -- Regular expression remainder:
+        # -- \s --> Match one blank space
+        # -- \d{2} one or two decimal digits
+        pattern_tinyprog = r"\s\d{2}%|█*\s+|\s"
+
+        # -- Calculate if there is a match
+        match_tinyprog = re.search(pattern_tinyprog, line)
+
+        # -- Math all the progress bar lines except the
+        # -- initial one (when it is 0%)
+        if match_tinyprog and " 0%|" not in line:
             # -- Delete the previous line
-            print(CURSOR_UP + ERASE_LINE + "*", end="")
+            print(CURSOR_UP + ERASE_LINE, end="")
+        # ------- tinyprog output processing END
 
         # ------- iceprog output processing BEGIN
         # -- Match outputs like these "addr 0x001400  3%"
