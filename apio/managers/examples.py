@@ -82,11 +82,11 @@ class Examples:
         if util.check_package(
             self.name, self.version, self.spec_version, self.examples_dir
         ):
-            project_dir = Path(util.check_dir(project_dir))
+            project_dir = util.check_dir(project_dir)
             example_path = str(project_dir / example)
-            local_example_path = str(Path(self.examples_dir) / example)
+            local_example_path = Path(self.examples_dir) / example
 
-            if isdir(local_example_path):
+            if local_example_path.is_dir():
                 if isdir(example_path):
                     # -- If sayno, do not copy anything
                     if not sayno:
@@ -100,7 +100,7 @@ class Examples:
                         if click.confirm("Do you want to replace it?"):
                             shutil.rmtree(example_path)
                             self._copy_dir(
-                                example, local_example_path, example_path
+                                example, str(local_example_path), example_path
                             )
                 elif isfile(example_path):
                     click.secho(
@@ -121,7 +121,7 @@ class Examples:
         if util.check_package(
             self.name, self.version, self.spec_version, self.examples_dir
         ):
-            example_path = Path(util.check_dir(project_dir))
+            example_path = util.check_dir(project_dir)
             local_example_path = str(Path(self.examples_dir) / example)
 
             if isdir(local_example_path):
