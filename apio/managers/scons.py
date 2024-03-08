@@ -1,5 +1,8 @@
 """DOC: TODO"""
 
+# C0302: Too many lines in module (1032/1000) (too-many-lines)
+# pylint: disable=C0302
+
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
@@ -8,7 +11,6 @@
 
 import os
 import re
-import sys
 import time
 import datetime
 import shutil
@@ -31,6 +33,10 @@ SERIAL_PORT = "serial_port"
 FTDI_ID = "ftdi_id"
 SRAM = "sram"
 FLASH = "flash"
+
+# -- ANSI Constants
+CURSOR_UP = "\033[F"
+ERASE_LINE = "\033[K"
 
 
 class SCons:
@@ -989,11 +995,41 @@ class SCons:
         click.secho(line, fg=fgcol)
 
     @staticmethod
-    def _on_stderr(line):
+    def _on_stderr(line: str):
+        """Callback function. It is called when the running command
+        has printed something on the console
+        """
+
+        # -- Ignore blank lines ('')
+        if not line:
+            return
+
+        # -- TODO: document it!!
         if "%|" in line and "100%|" not in line:
-            # Remove previous line for tqdm progress bar
-            cursor_up = "\033[F"
-            erase_line = "\033[K"
-            sys.stdout.write(cursor_up + erase_line)
+            # -- Delete the previous line
+            print(CURSOR_UP + ERASE_LINE + "*", end="")
+
+        # ------- iceprog output processing BEGIN
+        # -- Match outputs like these "addr 0x001400  3%"
+        # -- Regular expression remainder:
+        # -- ^ --> Match the begining of the line
+        # -- \s --> Match one blank space
+        # -- [0-9A-F]+ one or more hexadecimal digit
+        # -- \d{1,2} one or two decimal digits
+        pattern = r"^addr\s0x[0-9A-F]+\s+\d{1,2}%"
+
+        # -- Calculate if there is a match!
+        match = re.search(pattern, line)
+
+        # -- It is a match! (iceprog is running!)
+        # -- (or if it is the end of the writing!)
+        # -- (or if it is the end of verifying!)
+        if match or "done." in line or "VERIFY OK" in line:
+            # -- Delete the previous line
+            print(CURSOR_UP + ERASE_LINE, end="")
+        # ------- Iceprog output processing END
+
+        # -- Print the line (In YELLOW)
+        # -- In case of error print it in RED
         fgcol = "red" if "error" in line.lower() else "yellow"
         click.secho(line, fg=fgcol)

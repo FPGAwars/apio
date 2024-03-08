@@ -567,13 +567,6 @@ def exec_command(*args, **kwargs) -> dict:  # pragma: no cover
         click.secho(f"Command not found:\n{args}", fg="red")
         sys.exit(1)
 
-    # W0703: Catching too general exception Exception (broad-except)
-    # pylint: disable=W0703
-    except Exception as exc:
-        print("Llega aqui2??")
-        click.secho(str(exc), fg="red")
-        sys.exit(1)
-
     # -- Close the stdout and stderr pipes
     finally:
         for std in ("stdout", "stderr"):
