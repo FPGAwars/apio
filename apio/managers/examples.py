@@ -82,8 +82,8 @@ class Examples:
         if util.check_package(
             self.name, self.version, self.spec_version, self.examples_dir
         ):
-            project_dir = util.check_dir(project_dir)
-            example_path = str(Path(project_dir) / example)
+            project_dir = Path(util.check_dir(project_dir))
+            example_path = str(project_dir / example)
             local_example_path = str(Path(self.examples_dir) / example)
 
             if isdir(local_example_path):
@@ -121,13 +121,12 @@ class Examples:
         if util.check_package(
             self.name, self.version, self.spec_version, self.examples_dir
         ):
-            project_dir = util.check_dir(project_dir)
-            example_path = project_dir
+            example_path = Path(util.check_dir(project_dir))
             local_example_path = str(Path(self.examples_dir) / example)
 
             if isdir(local_example_path):
                 self._copy_files(
-                    example, local_example_path, example_path, sayno
+                    example, local_example_path, str(example_path), sayno
                 )
             else:
                 click.secho(EXAMPLE_NOT_FOUND_MSG, fg="yellow")

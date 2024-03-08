@@ -58,10 +58,10 @@ class SCons:
         if project_dir is not None:
             # Check if it is a correct folder
             # (or create a new one)
-            project_dir = util.check_dir(project_dir)
+            project_dir = Path(util.check_dir(project_dir))
 
             # Change to that folder
-            os.chdir(project_dir)
+            os.chdir(str(project_dir))
 
     # W0703: Catching too general exception Exception (broad-except)
     # pylint: disable=W0703

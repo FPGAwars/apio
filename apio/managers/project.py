@@ -73,10 +73,10 @@ class Project:
     def create_ini(self, board, top_module, project_dir="", sayyes=False):
         """Creates a new apio project file"""
 
-        project_dir = util.check_dir(project_dir)
+        project_dir = Path(util.check_dir(project_dir))
 
         # -- Build the filename
-        ini_path = str(Path(project_dir) / PROJECT_FILENAME)
+        ini_path = str(project_dir / PROJECT_FILENAME)
 
         # Check board
         boards = Resources().boards
@@ -108,10 +108,10 @@ class Project:
     def update_ini(self, top_module, project_dir):
         """Update the current init file with the given top-module"""
 
-        project_dir = util.check_dir(project_dir)
+        project_dir = Path(util.check_dir(project_dir))
 
         # -- Build the filename
-        ini_path = str(Path(project_dir) / PROJECT_FILENAME)
+        ini_path = str(project_dir / PROJECT_FILENAME)
 
         # -- Check if the apio.ini file exists
         if not isfile(ini_path):

@@ -18,7 +18,7 @@ import json
 import platform
 import subprocess
 from threading import Thread
-from os.path import isdir, isfile, dirname, exists
+from os.path import isdir, dirname, exists
 from pathlib import Path
 
 import click
@@ -662,16 +662,17 @@ def mkdir(path):
             pass
 
 
-def check_dir(_dir):
-    """Check if the given path is a folder. If no path is given
-    the current path is used"""
+def check_dir(_dir: Path) -> str:
+    """Check if the given path is a folder"""
 
     # -- If no path is given, get the current working directory
-    if _dir is None:
-        _dir = os.getcwd()
+    if _dir:
+        _dir = Path(_dir)
+    else:
+        _dir = Path.cwd()
 
     # -- Check if the path is a file or a folder
-    if isfile(_dir):
+    if _dir.is_file():
         # -- It is a file! Error! Exit!
         click.secho(
             f"Error: project directory is already a file: {_dir}", fg="red"
