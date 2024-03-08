@@ -6,7 +6,18 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
-            "args": ["build"],
+            "args": ["build", "-p", "ledon2"],
+            "console": "internalConsole",
+            "justMyCode": true,
+            //-- Change to the folder with the example to test
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/ledon"
+        },
+        {
+            "name": "Apio clean",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": ["clean", "-p", "ledon2"],
             "console": "internalConsole",
             "justMyCode": true,
             //-- Change to the folder with the example to test
@@ -47,7 +58,28 @@
             //-- Change to the folder with the example to test
             //-- Testing the Blackice
             "cwd": "${workspaceFolder}/test-examples/BlackIce/01-LEDs-buttons"
-
+        },
+        {
+            "name": "Apio init",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": ["init", "-s"],
+            "console": "internalConsole",
+            "justMyCode": true,
+            //-- Change to the folder with the example to test
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/ledon"
+        },
+        {
+            "name": "Apio examples",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": ["examples", "--files", "leds", "--project-dir=tmp"],
+            "console": "internalConsole",
+            "justMyCode": true,
+            //-- Change to the folder with the example to test
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/ledon"
         },
     ]
 }
