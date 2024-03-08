@@ -662,8 +662,10 @@ def mkdir(path):
             pass
 
 
-def check_dir(_dir: Path) -> str:
-    """Check if the given path is a folder"""
+def check_dir(_dir: Path) -> Path:
+    """Check if the given path is a folder
+    TODO: documentation
+    """
 
     # -- If no path is given, get the current working directory
     if _dir:
@@ -681,13 +683,14 @@ def check_dir(_dir: Path) -> str:
         sys.exit(1)
 
     # -- If the folder does not exist....
-    if not exists(_dir):
+    if not _dir.exists():
         # -- Warning
         click.secho(f"Warning: The path does not exist: {_dir}", fg="yellow")
 
         # -- Create the folder
         click.secho(f"Creating folder: {_dir}")
-        os.makedirs(_dir)
+        _dir.mkdir()
+        # os.makedirs(str(_dir))
 
     # -- Return the path
     return _dir
