@@ -1,10 +1,12 @@
-"""DOC: TODO"""
+"""Main implementation of APIO BUILD command"""
 
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
+
+from pathlib import Path
 
 import click
 
@@ -34,8 +36,8 @@ from apio import util
 @click.option(
     "-p",
     "--project-dir",
-    type=str,
-    metavar="path",
+    type=Path,
+    metavar="project_dir",
     help="Set the target directory for the project.",
 )
 @click.option(

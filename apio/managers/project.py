@@ -8,7 +8,7 @@
 import sys
 from os.path import isfile
 
-# from pathlib import Path
+from pathlib import Path
 
 # -- Config Parser: Use INI config files with easy
 # https://docs.python.org/3/library/configparser.html
@@ -32,7 +32,7 @@ class Project:
         # -- Top module by default: main
         self.top_module = "main"
 
-    def create_sconstruct(self, project_dir="", arch=None, sayyes=False):
+    def create_sconstruct(self, project_dir: Path, arch=None, sayyes=False):
         """Creates a default SConstruct file"""
 
         project_dir = util.check_dir(project_dir)

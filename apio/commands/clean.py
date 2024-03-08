@@ -1,9 +1,12 @@
+"""Main implementation of APIO CLEAN command"""
+
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
-"""TODO"""
+
+from pathlib import Path
 
 import click
 
@@ -16,8 +19,8 @@ from apio import util
 @click.option(
     "-p",
     "--project-dir",
-    type=str,
-    metavar="path",
+    type=Path,
+    metavar="project_dir",
     help="Set the target directory for the project.",
 )
 @click.option(
@@ -31,7 +34,12 @@ from apio import util
 )
 def cli(ctx, board, project_dir, verbose):
     """Clean the previous generated files."""
-    exit_code = SCons(project_dir).clean(
-        {"board": board, "verbose": {"all": verbose}}
-    )
+
+    # -- Create the scons object
+    scons = SCons(project_dir)
+
+    # -- Build the project with the given parameters
+    exit_code = scons.clean({"board": board, "verbose": {"all": verbose}})
+
+    # -- Done!
     ctx.exit(exit_code)

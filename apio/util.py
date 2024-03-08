@@ -668,9 +668,7 @@ def check_dir(_dir: Path) -> Path:
     """
 
     # -- If no path is given, get the current working directory
-    if _dir:
-        _dir = Path(_dir)
-    else:
+    if not _dir:
         _dir = Path.cwd()
 
     # -- Check if the path is a file or a folder

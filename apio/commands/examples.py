@@ -5,6 +5,8 @@
 # -- Licence GPLv2
 """TODO"""
 
+from pathlib import Path
+
 import click
 
 from apio.managers.examples import Examples
@@ -36,9 +38,9 @@ from apio import util
 @click.option(
     "-p",
     "--project-dir",
-    type=str,
-    metavar="path",
-    help="Set the target directory for the examples.",
+    type=Path,
+    metavar="project_dir",
+    help="Set the target directory for the project.",
 )
 @click.option(
     "-n",

@@ -42,7 +42,7 @@ ERASE_LINE = "\033[K"
 class SCons:
     """Class for managing the scons tools"""
 
-    def __init__(self, project_dir=""):
+    def __init__(self, project_dir: Path):
         """Initialization:
         * project_dir: path where the sources are located
           If not given, the curent working dir is used
@@ -55,7 +55,7 @@ class SCons:
         self.resources = Resources()
 
         # -- Project path is given
-        if project_dir is not None:
+        if not project_dir:
             # Check if it is a correct folder
             # (or create a new one)
             project_dir = util.check_dir(project_dir)

@@ -3,7 +3,9 @@
 # -- (C) 2016-2019 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
-"""TODO"""
+"""Main implementation of APIO INIT command"""
+
+from pathlib import Path
 
 import click
 
@@ -35,7 +37,7 @@ from apio import util
 @click.option(
     "-p",
     "--project-dir",
-    type=str,
+    type=Path,
     metavar="project_dir",
     help="Set the target directory for the project.",
 )
@@ -48,8 +50,13 @@ from apio import util
 def cli(ctx, board, top_module, scons, project_dir, sayyes):
     """Manage apio projects."""
 
+    # -- Create a project
+    project = Project()
+
+    # -- scons option: Create default SConstruct file
     if scons:
-        Project().create_sconstruct(project_dir, "ice40", sayyes)
+        project.create_sconstruct(project_dir, "ice40", sayyes)
+
     elif board:
         # -- Set the default top_module when creating the ini file
         if not top_module:
