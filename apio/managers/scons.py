@@ -221,13 +221,15 @@ class SCons:
         flags += [f"prog={programmer}"]
 
         # -- Execute Scons for uploading!
-        return self.run(
+        exit_code = self.run(
             "upload",
             variables=flags,
             packages=["oss-cad-suite"],
             board=board,
             arch=arch,
         )
+
+        return exit_code
 
     def get_programmer(self, board: str, prog: dict) -> str:
         """Get the command line (string) to execute for programming
