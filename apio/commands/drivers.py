@@ -26,9 +26,6 @@ def cli(
 ):
     """Manage FPGA boards drivers."""
 
-    # -- Default exit code
-    exit_code = 0
-
     # -- Access to the Drivers
     drivers = Drivers()
 
@@ -44,9 +41,14 @@ def cli(
     elif serial_enable:
         exit_code = drivers.serial_enable()
 
-    elif serial_disable:  # pragma: no cover
-        exit_code = Drivers().serial_disable()
+    # -- Serial disable option
+    elif serial_disable:
+        exit_code = drivers.serial_disable()
+
+    # -- No options. Show the help
     else:
+        exit_code = 0
         click.secho(ctx.get_help())
 
+    # -- Return exit code
     ctx.exit(exit_code)
