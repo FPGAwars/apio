@@ -6,6 +6,7 @@
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
+import sys
 import json
 from collections import OrderedDict
 import shutil
@@ -93,20 +94,40 @@ class Resources:
               * fpgas
               * programmers
         * OUTPUT: The dicctionary with the data
+          In case of error it raises an exception and finish
         """
 
         # -- Build the filepath: Ex. resources/fpgas.json
         filepath = util.get_full_path(RESOURCES_DIR) / name
 
-        # -- Open the json file and convert it to an object
+        # -- Read the json file
         with filepath.open(encoding="utf8") as file:
 
             # -- Read the json file
             data_json = file.read()
 
-            # -- Parse the json format!
-            # -- TODO! exceptions!
+        # -- Parse the json format!
+        try:
             resource = json.loads(data_json)
+
+        # -- Invalid json format! This is an apio system error
+        # -- It should never ocurr unless some develeper has
+        # -- made a mistake when changing the json file
+        except json.decoder.JSONDecodeError as exc:
+
+            # -- Display Main error
+            click.secho("Apio System Error! Invalid JSON file", fg="red")
+
+            # -- Display the affected file (in a different color)
+            apio_file_msg = click.style("Apio file: ", fg="yellow")
+            filename = click.style(f"{filepath}", fg="blue")
+            click.secho(f"{apio_file_msg} {filename}")
+
+            # -- Display the specific error message
+            click.secho(f"{exc}\n", fg="red")
+
+            # -- Abort!
+            sys.exit(1)
 
         # -- Return the object for the resource
         return resource
