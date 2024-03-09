@@ -270,42 +270,48 @@ class Resources:
         click.echo("\n")
 
     def list_boards(self):
-        """Return a list with all the supported boards"""
+        """Print all the supported boards and the information of
+        their FPGAs
+        """
 
-        # Print table
-        click.echo("\nSupported boards:\n")
-
-        board_list_tpl = (
-            "{board:25} {fpga:30} {arch:<8} "
-            + "{type:<12} {size:<5} {pack:<10}"
+        # -- Table title
+        title = (
+            click.style("Board", fg="cyan") + " (FPGA, Arch, Type, Size, Pack)"
         )
+
+        # -- Get the terminal size (in characteres)
         terminal_width, _ = shutil.get_terminal_size()
 
-        click.echo("-" * terminal_width)
-        click.echo(
-            board_list_tpl.format(
-                board=click.style("Board", fg="cyan"),
-                fpga="FPGA",
-                arch="Arch",
-                type="Type",
-                size="Size",
-                pack="Pack",
-            )
-        )
-        click.echo("-" * terminal_width)
+        # -- Print the table header
+        line = "─" * terminal_width
+        click.echo(line)
+        click.echo(title)
+        click.echo(line)
 
+        # -- Print all the boards!
         for board in self.boards:
-            fpga = self.boards.get(board).get("fpga")
-            click.echo(
-                board_list_tpl.format(
-                    board=click.style(board, fg="cyan"),
-                    fpga=fpga,
-                    arch=self.fpgas.get(fpga).get("arch"),
-                    type=self.fpgas.get(fpga).get("type"),
-                    size=self.fpgas.get(fpga).get("size"),
-                    pack=self.fpgas.get(fpga).get("pack"),
-                )
+
+            # -- Get board FPGA long name
+            fpga = self.boards[board]["fpga"]
+
+            # -- Get information about the FPGA
+            arch = self.fpgas[fpga]["arch"]
+            _type = self.fpgas[fpga]["type"]
+            size = self.fpgas[fpga]["size"]
+            pack = self.fpgas[fpga]["pack"]
+
+            # -- Print the item with information
+            # -- Print the Board in a differnt color
+            board_str = click.style(board, fg="cyan")
+            item = (
+                f"• {board_str} (FPGA:{fpga}, {arch}, {_type}, "
+                f"{size}, {pack})"
             )
+            click.echo(item)
+
+        # -- Print the Footer
+        click.echo(line)
+        click.echo(f"Total: {len(self.boards)} boards")
 
         click.secho(BOARDS_MSG, fg="green")
 
