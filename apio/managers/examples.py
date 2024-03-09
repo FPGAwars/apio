@@ -1,4 +1,4 @@
-"""DOC: TODO"""
+"""Manage apio examples"""
 
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
@@ -34,16 +34,28 @@ To get an example, use the command:
 
 
 class Examples:
-    """DOC: TODO"""
+    """Manage the apio examples"""
 
     def __init__(self):
+
+        # -- Access to the profile information
         profile = Profile()
+
+        # -- Access to the resources
         resources = Resources()
 
+        # -- Apio examples package name
         self.name = "examples"
+
+        # -- Folder where the example packages was installed
         self.examples_dir = util.get_package_dir(self.name)
+
+        # -- Get the example package version
         self.version = util.get_package_version(self.name, profile)
+
+        # -- Get the version restrictions
         self.spec_version = util.get_package_spec_version(self.name, resources)
+
 
     def list_examples(self):
         """DOC: TODO"""

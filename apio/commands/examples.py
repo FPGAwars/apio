@@ -3,7 +3,7 @@
 # -- (C) 2016-2019 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
-"""TODO"""
+"""Main implementation of APIO EXAMPLES command"""
 
 from pathlib import Path
 
@@ -19,7 +19,7 @@ from apio import util
 @click.command("examples", context_settings=util.context_settings())
 @click.pass_context
 @click.option(
-    "-l", "--list", is_flag=True, help="List all available examples."
+    "-l", "--list", "_list", is_flag=True, help="List all available examples."
 )
 @click.option(
     "-d",
@@ -48,14 +48,17 @@ from apio import util
     is_flag=True,
     help="Automatically answer NO to all the questions.",
 )
-def cli(ctx, list, dir, files, project_dir, sayno):
+def cli(ctx, _list, dir, files, project_dir, sayno):
     """Manage verilog examples.\n
     Install with `apio install examples`"""
 
-    exit_code = 0
+    # -- Access to the Drivers
+    examples = Examples()
 
-    if list:
-        exit_code = Examples().list_examples()
+    # -- Option: List all the available examples
+    if _list:
+        exit_code = examples.list_examples()
+
     elif dir:
         exit_code = Examples().copy_example_dir(dir, project_dir, sayno)
     elif files:
@@ -63,5 +66,6 @@ def cli(ctx, list, dir, files, project_dir, sayno):
     else:
         click.secho(ctx.get_help())
         click.secho(Examples().examples_of_use_cad())
+        exit_code = 0
 
     ctx.exit(exit_code)

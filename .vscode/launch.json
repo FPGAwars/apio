@@ -75,7 +75,7 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
-            "args": ["examples", "--files", "leds", "--project-dir=tmp"],
+            "args": ["examples", "-l"],
             "console": "internalConsole",
             "justMyCode": true,
             //-- Change to the folder with the example to test
