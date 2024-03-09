@@ -20,11 +20,11 @@ from apio import util
     "-p",
     "--project-dir",
     type=Path,
-    metavar="project_dir",
+    metavar="str",
     help="Set the target directory for the project.",
 )
 @click.option(
-    "-b", "--board", type=str, metavar="board", help="Set the board."
+    "-b", "--board", type=str, metavar="str", help="Set the board."
 )
 @click.option(
     "-v",
