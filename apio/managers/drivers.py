@@ -3,7 +3,7 @@
 # -- (C) 2016-2019 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
-"""TODO"""
+"""Manage board drivers"""
 
 
 import os
@@ -60,8 +60,8 @@ SERIAL_UNINSTALL_DRIVER_INSTRUCTIONS = """
 """
 
 
-class Drivers:  # pragma: no cover
-    """TODO"""
+class Drivers:
+    """Class for managing the board drivers"""
 
     # -- The driver installation on linux consist of copying the rule files
     # -- to the /etc/udev/rules.d folder
@@ -71,10 +71,7 @@ class Drivers:  # pragma: no cover
     ftdi_rules_local_path = resources / "80-fpga-ftdi.rules"
 
     # -- Target rule file
-    ftdi_rules_system_path = "/etc/udev/rules.d/80-fpga-ftdi.rules"
-
-    # -- It was the target in older versions of apio
-    old_ftdi_rules_system_path = "/etc/udev/rules.d/80-icestick.rules"
+    ftdi_rules_system_path = Path("/etc/udev/rules.d/80-fpga-ftdi.rules")
 
     # Serial rules files paths
     serial_rules_local_path = resources / "80-fpga-serial.rules"
@@ -201,7 +198,8 @@ class Drivers:  # pragma: no cover
         click.secho("Configure FTDI drivers for FPGA")
 
         # -- Check if the target rules file already exists
-        if not isfile(self.ftdi_rules_system_path):
+        if not self.ftdi_rules_system_path.exists():
+
             # -- The file does not exist. Copy!
             # -- Execute the cmd: sudo cp src_file target_file
             subprocess.call(
@@ -209,7 +207,7 @@ class Drivers:  # pragma: no cover
                     "sudo",
                     "cp",
                     str(self.ftdi_rules_local_path),
-                    self.ftdi_rules_system_path,
+                    str(self.ftdi_rules_system_path),
                 ]
             )
 
@@ -227,16 +225,12 @@ class Drivers:  # pragma: no cover
         # -- For disabling the FTDI driver the .rules files should be
         # -- removed from the /etc/udev/rules.d/ folder
 
-        # -- Remove the old .rules files, if it exists
-        if isfile(self.old_ftdi_rules_system_path):
-            subprocess.call(["sudo", "rm", self.old_ftdi_rules_system_path])
-
         # -- Remove the .rules file, if it exists
-        if isfile(self.ftdi_rules_system_path):
+        if self.ftdi_rules_system_path.exists():
             click.secho("Revert FTDI drivers configuration")
 
             # -- Execute the sudo rm rules_file command
-            subprocess.call(["sudo", "rm", self.ftdi_rules_system_path])
+            subprocess.call(["sudo", "rm", str(self.ftdi_rules_system_path)])
 
             # -- # -- Execute the commands for reloading the udev system
             self._reload_rules()
