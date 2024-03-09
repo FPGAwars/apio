@@ -22,10 +22,6 @@ Use `apio init --board <boardname>` to create a new apio """
     """project for that board"""
 )
 
-# -- Packages marked as obsoletes
-# -- The value is the replacement package (if any)
-OBSOLETE_PKGS = {}
-
 # ---------- RESOURCES
 RESOURCES_DIR = "resources"
 # ---------------------------------------
@@ -91,9 +87,6 @@ class Resources:
         self.packages = OrderedDict(
             sorted(self.packages.items(), key=lambda t: t[0])
         )
-
-        # -- Obsolete packages
-        self.obsolete_pkgs = OBSOLETE_PKGS
 
         self.boards = OrderedDict(
             sorted(self.boards.items(), key=lambda t: t[0])

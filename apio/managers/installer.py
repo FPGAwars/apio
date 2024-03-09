@@ -165,23 +165,6 @@ class Installer:
     def install(self):
         """Install the current package in the set in the Installer Object"""
 
-        # -- Warning if the package has been marked as obsolete
-        if self.package in self.resources.obsolete_pkgs:
-            # -- Get the string with the new package to use instead
-            # -- of the obsolete one (if available)
-            if self.resources.obsolete_pkgs[self.package] != "":
-                new_package = self.resources.obsolete_pkgs[self.package]
-                new_package_msg = f"Use {new_package} instead\n"
-            else:
-                new_package_msg = ""
-
-            click.secho(
-                f"Warning: Package {self.package} is obsolete. "
-                f"Will be removed in the future. "
-                f"{new_package_msg}",
-                fg="yellow",
-            )
-
         click.secho(f"Installing {self.package} package:", fg="cyan")
 
         # -- Create the apio package folder, if it does not exit
