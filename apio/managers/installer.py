@@ -71,7 +71,7 @@ class Installer:
         # --(It is defined in the resources/packages.json file)
         if self.package in self.resources.packages:
             # -- Store the package dir
-            self.packages_dir = str(Path(util.get_home_dir()) / dirname)
+            self.packages_dir = str(util.get_home_dir() / dirname)
 
             # Get the data of the given package
             data = self.resources.packages.get(self.package)
@@ -127,7 +127,7 @@ class Installer:
         # -- The package is kwnown but the version is not correct
         else:
             if self.package in self.profile.packages and checkversion is False:
-                self.packages_dir = str(Path(util.get_home_dir()) / dirname)
+                self.packages_dir = str(util.get_home_dir() / dirname)
 
                 self.package_name = "toolchain-" + package
 

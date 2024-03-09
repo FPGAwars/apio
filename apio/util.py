@@ -186,7 +186,7 @@ def _get_projconf_option_dir(name, default=None):
     return default
 
 
-def get_home_dir():
+def get_home_dir() -> Path:
     """Get the APIO Home dir. This is the apio folder where the profle is
     located and the packages installed. The APIO Home dir can be set in the
     APIO_HOME_DIR environment varible or in the /etc/apio.json file (in
@@ -214,9 +214,8 @@ def get_home_dir():
         click.secho(f"Error: no usable home directory {home_dir}", fg="red")
         sys.exit(1)
 
-    # Return the home_dir as a string
-    # In the future it should return the path object
-    return str(home_dir)
+    # Return the home_dir as a Path
+    return home_dir
 
 
 def get_package_dir(pkg_name):

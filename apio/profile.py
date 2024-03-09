@@ -35,7 +35,7 @@ class Profile:
 
         # -- Get the profile path
         # -- Ex. '/home/obijuan/.apio'
-        self._profile_path = Path(util.get_home_dir()) / "profile.json"
+        self._profile_path = util.get_home_dir() / "profile.json"
 
         # print(f"(DEBUG) Profile path: {self._profile_path}")
         # print(f"(DEBUG) Home_dir: {util.get_home_dir()}")
