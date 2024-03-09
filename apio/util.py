@@ -18,7 +18,7 @@ import json
 import platform
 import subprocess
 from threading import Thread
-from os.path import isdir, dirname, exists
+from os.path import isdir
 from pathlib import Path
 
 import click
@@ -654,12 +654,16 @@ def print_exception_developers(e):
 def mkdir(path):
     """DOC: TODO"""
 
-    path = dirname(path)
-    if not exists(path):
-        try:
-            os.makedirs(path)
-        except OSError:
-            pass
+    # path = dirname(path)
+    path = path.parent
+
+    if not path.exists():
+        path.mkdir()
+    # if not exists(path):
+    #     try:
+    #         os.makedirs(path)
+    #     except OSError:
+    #         pass
 
 
 def check_dir(_dir: Path) -> Path:

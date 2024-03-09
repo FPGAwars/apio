@@ -20,24 +20,20 @@ from apio import util
 # pylint: disable=R0801
 @click.command("build", context_settings=util.context_settings())
 @click.pass_context
+@click.option("-b", "--board", type=str, metavar="str", help="Set the board.")
+@click.option("--fpga", type=str, metavar="str", help="Set the FPGA.")
 @click.option(
-    "-b", "--board", type=str, metavar="board", help="Set the board."
-)
-@click.option("--fpga", type=str, metavar="fpga", help="Set the FPGA.")
-@click.option(
-    "--size", type=str, metavar="size", help="Set the FPGA type (1k/8k)."
+    "--size", type=str, metavar="str", help="Set the FPGA type (1k/8k)."
 )
 @click.option(
-    "--type", type=str, metavar="type", help="Set the FPGA type (hx/lp)."
+    "--type", type=str, metavar="str", help="Set the FPGA type (hx/lp)."
 )
-@click.option(
-    "--pack", type=str, metavar="package", help="Set the FPGA package."
-)
+@click.option("--pack", type=str, metavar="str", help="Set the FPGA package.")
 @click.option(
     "-p",
     "--project-dir",
     type=Path,
-    metavar="project_dir",
+    metavar="str",
     help="Set the target directory for the project.",
 )
 @click.option(
@@ -57,7 +53,7 @@ from apio import util
 @click.option(
     "--top-module",
     type=str,
-    metavar="top_module",
+    metavar="str",
     help="Set the top level module (w/o .v ending) for build.",
 )
 def cli(

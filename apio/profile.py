@@ -8,7 +8,7 @@
 
 import json
 from pathlib import Path
-from os.path import isfile, isdir
+from os.path import isdir
 import click
 import semantic_version
 
@@ -20,6 +20,7 @@ class Profile:
     """Class for managing the apio profile file"""
 
     def __init__(self):
+
         # ---- Set the default parameters
         # -- Apio default config mode
         self.config = {"exe": "default", "verbose": 0}
@@ -33,7 +34,8 @@ class Profile:
         self.packages = {}
 
         # -- Get the profile path
-        self._profile_path = str(Path(util.get_home_dir()) / "profile.json")
+        # -- Ex. '/home/obijuan/.apio'
+        self._profile_path = Path(util.get_home_dir()) / "profile.json"
 
         # print(f"(DEBUG) Profile path: {self._profile_path}")
         # print(f"(DEBUG) Home_dir: {util.get_home_dir()}")
@@ -130,15 +132,17 @@ class Profile:
         """Load the profile from the file"""
 
         # -- Check if the file exist
-        if isfile(self._profile_path):
+        if self._profile_path.exists():
+
             # -- Open the profile file
             with open(self._profile_path, "r", encoding="utf8") as profile:
+
                 # -- Read the profile file
                 self._load_profile(profile)
 
-    def _load_profile(self, profile):
+    def _load_profile(self, profile: Path):
         """Read the profile file
-        profile: file descriptor
+        profile: Profile path (Ex. /home/obijuan/.apio/profile.json)
         """
 
         # -- Process the json file
@@ -146,7 +150,7 @@ class Profile:
 
         # -- Add the configuration object
         if "config" in data.keys():
-            self.config = data.get("config")
+            self.config = data["config"]
 
             if "exe" not in self.config.keys():
                 self.config["exe"] = "default"
@@ -156,11 +160,11 @@ class Profile:
 
         # -- Add the settings object
         if "settings" in data.keys():
-            self.settings = data.get("settings")
+            self.settings = data["settings"]
 
         # -- Add the packages version object
         if "packages" in data.keys():
-            self.packages = data.get("packages")
+            self.packages = data["packages"]
 
         else:
             self.packages = data  # Backward compatibility
@@ -169,6 +173,7 @@ class Profile:
         """DOC: todo"""
 
         util.mkdir(self._profile_path)
+
         with open(self._profile_path, "w", encoding="utf8") as profile:
             data = {
                 "config": self.config,
