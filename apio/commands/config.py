@@ -47,7 +47,10 @@ def cli(ctx, _list, verbose, exe):
     elif verbose:
         profile.add_config("verbose", verbose)
 
+    # -- Configure executable mode
     elif exe:
         profile.add_config("exe", exe)
+
+    # -- No paratemers: Show the help
     else:
         click.secho(ctx.get_help())
