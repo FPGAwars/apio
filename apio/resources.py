@@ -6,21 +6,6 @@
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
-# ---------- RESOURCES
-
-# ---------------------------------------
-# ---- File: resources/packages.json
-# --------------------------------------
-# -- This file contains all the information regarding the available apio
-# -- packages: Repository, version, name...
-# -- This information is access through the Resources.packages method
-
-# -----------------------------------------
-# ---- File: resources/boads.json
-# -----------------------------------------
-# -- Information about all the supported board
-# -- names, fpga family, programmer, ftdi description, vendor id, product id
-
 import json
 from collections import OrderedDict
 import shutil
@@ -40,25 +25,47 @@ Use `apio init --board <boardname>` to create a new apio """
 # -- The value is the replacement package (if any)
 OBSOLETE_PKGS = {}
 
+# ---------- RESOURCES
+RESOURCES_DIR = "resources"
+# ---------------------------------------
+# ---- File: resources/packages.json
+# --------------------------------------
+# -- This file contains all the information regarding the available apio
+# -- packages: Repository, version, name...
+# -- This information is access through the Resources.packages method
+PACKAGES_JSON = "packages.json"
+
+# -----------------------------------------
+# ---- File: resources/boads.json
+# -----------------------------------------
+# -- Information about all the supported board
+# -- names, fpga family, programmer, ftdi description, vendor id, product id
+
 
 class Resources:
     """Resource manager. Class for accesing to all the resources"""
 
-    def __init__(self, platform=""):
-        # -- Read the packages information
-        self.packages = self._load_resource("packages")
+    def __init__(self, platform: str = ""):
+
+        # -- Read the apio packages information
+        self.packages = self._load_resource(PACKAGES_JSON)
 
         # -- Read the boards information
-        self.boards = self._load_resource("boards")
+        self.boards = self._load_resource("boards.json")
 
-        self.fpgas = self._load_resource("fpgas")
-        self.programmers = self._load_resource("programmers")
-        self.distribution = self._load_resource("distribution")
+        # -- Read the FPGAs information
+        self.fpgas = self._load_resource("fpgas.json")
+
+        # -- Read the programmers information
+        self.programmers = self._load_resource("programmers.json")
+
+        # -- Read the distribution information
+        self.distribution = self._load_resource("distribution.json")
 
         # Check available packages
         self.packages = self._check_packages(self.packages, platform)
 
-        # Sort resources
+        # ----  Sort resources
         self.packages = OrderedDict(
             sorted(self.packages.items(), key=lambda t: t[0])
         )
@@ -75,25 +82,31 @@ class Resources:
         self.profile = None
 
     @staticmethod
-    def _load_resource(name):
+    def _load_resource(name: str) -> dict:
         """Load the resources from a given json file
-        * Name: Name of the file without extension:
-         * boards: Load the boards
-         * distribution
-         * fpgas
-         * packages
-         * programmers
+        * INPUTS:
+          * Name: Name of the json file
+            Use the following constants:
+              * PACKAGES_JSON
+              * boards: Load the boards
+              * distribution
+              * fpgas
+              * programmers
+        * OUTPUT: The dicctionary with the data
         """
 
-        # -- Default return value: no resource
-        resource = None
-
         # -- Build the filepath: Ex. resources/fpgas.json
-        filepath = util.get_full_path("resources") / f"{name}.json"
+        filepath = util.get_full_path(RESOURCES_DIR) / name
 
         # -- Open the json file and convert it to an object
         with filepath.open(encoding="utf8") as file:
-            resource = json.loads(file.read())
+
+            # -- Read the json file
+            data_json = file.read()
+
+            # -- Parse the json format!
+            # -- TODO! exceptions!
+            resource = json.loads(data_json)
 
         # -- Return the object for the resource
         return resource
