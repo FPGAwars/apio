@@ -75,7 +75,7 @@ class Drivers:
 
     # Serial rules files paths
     serial_rules_local_path = resources / "80-fpga-serial.rules"
-    serial_rules_system_path = "/etc/udev/rules.d/80-fpga-serial.rules"
+    serial_rules_system_path = Path("/etc/udev/rules.d/80-fpga-serial.rules")
 
     # Driver to restore: mac os
     driver_c = ""
@@ -246,7 +246,7 @@ class Drivers:
         click.secho("Configure Serial drivers for FPGA")
 
         # -- Check if the target rules file already exists
-        if not isfile(self.serial_rules_system_path):
+        if not self.serial_rules_system_path.exists():
             # -- Add the user to the dialout group for
             # -- having access to the serial port
             group_added = self._add_dialout_group()
@@ -258,7 +258,7 @@ class Drivers:
                     "sudo",
                     "cp",
                     str(self.serial_rules_local_path),
-                    self.serial_rules_system_path,
+                    str(self.serial_rules_system_path),
                 ]
             )
 
@@ -280,11 +280,11 @@ class Drivers:
 
         # -- For disabling the serial driver the corresponding .rules file
         # -- should be removed, it it exists
-        if isfile(self.serial_rules_system_path):
+        if self.serial_rules_system_path.exists():
             click.secho("Revert Serial drivers configuration")
 
             # -- Execute the sudo rm rule_file cmd
-            subprocess.call(["sudo", "rm", self.serial_rules_system_path])
+            subprocess.call(["sudo", "rm", str(self.serial_rules_system_path)])
 
             # -- Execute the commands for reloading the udev system
             self._reload_rules()

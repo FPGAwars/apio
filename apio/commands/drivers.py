@@ -36,10 +36,14 @@ def cli(
     if ftdi_enable:
         exit_code = drivers.ftdi_enable()
 
+    # -- FTDI disable option
     elif ftdi_disable:
-        exit_code = Drivers().ftdi_disable()
-    elif serial_enable:  # pragma: no cover
-        exit_code = Drivers().serial_enable()
+        exit_code = drivers.ftdi_disable()
+
+    # -- Serial enable option
+    elif serial_enable:
+        exit_code = drivers.serial_enable()
+
     elif serial_disable:  # pragma: no cover
         exit_code = Drivers().serial_disable()
     else:
