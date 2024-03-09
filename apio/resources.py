@@ -39,8 +39,29 @@ PACKAGES_JSON = "packages.json"
 # -----------------------------------------
 # ---- File: resources/boads.json
 # -----------------------------------------
-# -- Information about all the supported board
+# -- Information about all the supported boards
 # -- names, fpga family, programmer, ftdi description, vendor id, product id
+BOARDS_JSON = "boards.json"
+
+# -----------------------------------------
+# ---- File: resources/fpgas.json
+# -----------------------------------------
+# -- Information about all the supported fpgas
+# -- arch, type, size, packaging
+FPGAS_JSON = "fpgas.json"
+
+# -----------------------------------------
+# ---- File: resources/programmers.json
+# -----------------------------------------
+# -- Information about all the supported programmers
+# -- name, command to execute, arguments...
+PROGRAMMERS_JSON = "programmers.json"
+
+# -----------------------------------------
+# ---- File: resources/distribution.json
+# -----------------------------------------
+# -- Information about all the supported apio and pip packages
+DISTRIBUTION_JSON = "distribution.json"
 
 
 class Resources:
@@ -52,16 +73,16 @@ class Resources:
         self.packages = self._load_resource(PACKAGES_JSON)
 
         # -- Read the boards information
-        self.boards = self._load_resource("boards.json")
+        self.boards = self._load_resource(BOARDS_JSON)
 
         # -- Read the FPGAs information
-        self.fpgas = self._load_resource("fpgas.json")
+        self.fpgas = self._load_resource(FPGAS_JSON)
 
         # -- Read the programmers information
-        self.programmers = self._load_resource("programmers.json")
+        self.programmers = self._load_resource(PROGRAMMERS_JSON)
 
         # -- Read the distribution information
-        self.distribution = self._load_resource("distribution.json")
+        self.distribution = self._load_resource(DISTRIBUTION_JSON)
 
         # Check available packages
         self.packages = self._check_packages(self.packages, platform)
@@ -89,10 +110,10 @@ class Resources:
           * Name: Name of the json file
             Use the following constants:
               * PACKAGES_JSON
-              * boards: Load the boards
-              * distribution
-              * fpgas
-              * programmers
+              * BOARD_JSON
+              * FPGAS_JSON
+              * PROGRAMMERS_JSON
+              * DISTRIBUTION_JSON
         * OUTPUT: The dicctionary with the data
           In case of error it raises an exception and finish
         """
