@@ -365,26 +365,26 @@ class Resources:
             # -- Get the information about the package
             release = packages[pkg]["release"]
 
+            # -- This packages is available only for certain platforms
+            if "available_platforms" in release:
+
+                # -- Get the available platforms
+                platforms = release["available_platforms"]
+
+                # -- Check all the available platforms
+                for platform in platforms:
+
+                    # -- Match!
+                    if given_platform in platform:
+
+                        # -- Add it to the output dictionary
+                        filtered_packages[pkg] = packages[pkg]
+
             # -- Package for all the platforms
-            if "available_platforms" not in release:
+            else:
 
                 # -- Add it to the output dictionary
                 filtered_packages[pkg] = packages[pkg]
 
-                # -- Next package
-                continue
-
-            # -- This packages is available only for certain platforms
-            # -- Get the available platforms
-            platforms = release["available_platforms"]
-
-            # -- Check all the available platforms
-            for platform in platforms:
-
-                # -- Match!
-                if given_platform in platform:
-
-                    # -- Add it to the output dictionary
-                    filtered_packages[pkg] = packages[pkg]
-
+        # -- Return the filtered packages
         return filtered_packages
