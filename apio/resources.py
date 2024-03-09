@@ -19,7 +19,7 @@ from apio.profile import Profile
 BOARDS_MSG = (
     """
 Use `apio init --board <boardname>` to create a new apio """
-    """project for that board"""
+    """project for that board\n"""
 )
 
 # ---------- RESOURCES
@@ -324,6 +324,7 @@ class Resources:
         click.echo(line)
         click.echo(f"Total: {len(self.boards)} boards")
 
+        # -- Help message
         click.secho(BOARDS_MSG, fg="green")
 
     def list_fpgas(self):
