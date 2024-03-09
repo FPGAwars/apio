@@ -6,9 +6,7 @@
 """Manage board drivers"""
 
 
-import os
 import subprocess
-from os.path import isfile
 from pathlib import Path
 
 import click
@@ -406,7 +404,7 @@ class Drivers:
         drivers_bin_dir = str(Path(drivers_base_dir) / "bin")
         drivers_share_dir = str(Path(drivers_base_dir) / "share")
         zadig_ini_path = str(Path(drivers_share_dir) / "zadig.ini")
-        zadig_ini = "zadig.ini"
+        zadig_ini = Path("zadig.ini")
 
         try:
             if util.check_package(
@@ -432,8 +430,8 @@ class Drivers:
             result = 1
         finally:
             # Remove zadig.ini
-            if isfile(zadig_ini):
-                os.remove(zadig_ini)
+            if zadig_ini.exists():
+                zadig_ini.unlink()
 
         if not isinstance(result, int):
             result = result.get("returncode")
