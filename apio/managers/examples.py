@@ -56,7 +56,6 @@ class Examples:
         # -- Get the version restrictions
         self.spec_version = util.get_package_spec_version(self.name, resources)
 
-
     def list_examples(self):
         """DOC: TODO"""
 
