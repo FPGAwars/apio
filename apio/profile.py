@@ -82,19 +82,28 @@ class Profile:
 
         self.settings[key] = value
 
-    def add_config(self, key, value):
-        """DOC: todo"""
+    def add_config(self, key: str, value: str):
+        """Add/modify a configuration value"""
 
-        if self.config.get(key, None) != value:
+        # -- Update the config value if it is different
+        if self.config[key] != value:
+
+            # -- Update config value
             self.config[key] = value
+
+            # -- Update it in the profile file
             self.save()
+
+            # -- Inform the user
             click.secho(
-                f"{self.labels.get(key, '')} mode updated: {value}",
+                f"{self.labels[key]} mode updated: {value}",
                 fg="green",
             )
+
+        # -- The same value is given
         else:
             click.secho(
-                f"{self.labels.get(key, '')} mode already {value}",
+                f"{self.labels[key]} mode already {value}",
                 fg="yellow",
             )
 

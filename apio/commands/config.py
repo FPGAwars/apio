@@ -43,6 +43,7 @@ def cli(ctx, _list, verbose, exe):
     if _list:
         profile.list()
 
+    # -- Configure verbose mode
     elif verbose:
         profile.add_config("verbose", verbose)
 

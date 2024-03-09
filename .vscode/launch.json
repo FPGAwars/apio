@@ -92,5 +92,16 @@
             //-- Change to the folder with the example to test
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/ledon"
         },
+        {
+            "name": "Apio config",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": ["config", "-v", "1"],
+            "console": "internalConsole",
+            "justMyCode": true,
+            //-- Change to the folder with the example to test
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/ledon"
+        },
     ]
 }
