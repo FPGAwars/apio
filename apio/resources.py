@@ -83,7 +83,7 @@ class Resources:
         # Check available packages
         self.packages = self._check_packages(self.packages, platform)
 
-        # ----  Sort resources
+        # ---------  Sort resources
         self.packages = OrderedDict(
             sorted(self.packages.items(), key=lambda t: t[0])
         )
@@ -94,6 +94,8 @@ class Resources:
         self.fpgas = OrderedDict(
             sorted(self.fpgas.items(), key=lambda t: t[0])
         )
+
+        # -- Default profile file
         self.profile = None
 
     @staticmethod
@@ -338,17 +340,51 @@ class Resources:
             )
 
     @staticmethod
-    def _check_packages(packages, current_platform=""):
+    def _check_packages(packages, given_platform) -> dict:
+        """Filter the apio packages available for the given platform.
+        Some platforms has special packages (Ex. package Drivers is
+        only for windows)
+        * INPUT:
+          * packages: All the apio packages
+          * given_platform: Platform used for filtering the packages.
+              If not given,the current system platform is used
+        * OUTPUT: It returns only the packages available for the
+            given platform
+        """
+
+        # -- Final dict with the output packages
         filtered_packages = {}
+
+        # -- If not given platform, use the current
+        if not given_platform:
+            given_platform = util.get_systype()
+
+        # -- Check all the packages
         for pkg in packages.keys():
-            check = True
-            release = packages.get(pkg).get("release")
-            if "available_platforms" in release:
-                platforms = release.get("available_platforms")
-                check = False
-                current_platform = current_platform or util.get_systype()
-                for platform in platforms:
-                    check |= current_platform in platform
-            if check:
-                filtered_packages[pkg] = packages.get(pkg)
+
+            # -- Get the information about the package
+            release = packages[pkg]["release"]
+
+            # -- Package for all the platforms
+            if "available_platforms" not in release:
+
+                # -- Add it to the output dictionary
+                filtered_packages[pkg] = packages[pkg]
+
+                # -- Next package
+                continue
+
+            # -- This packages is available only for certain platforms
+            # -- Get the available platforms
+            platforms = release["available_platforms"]
+
+            # -- Check all the available platforms
+            for platform in platforms:
+
+                # -- Match!
+                if given_platform in platform:
+
+                    # -- Add it to the output dictionary
+                    filtered_packages[pkg] = packages[pkg]
+
         return filtered_packages
