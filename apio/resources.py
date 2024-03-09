@@ -328,36 +328,46 @@ class Resources:
         click.secho(BOARDS_MSG, fg="green")
 
     def list_fpgas(self):
-        """Return a list with all the supported FPGAs"""
+        """Print all the supported FPGAs"""
 
-        # Print table
-        click.echo("\nSupported FPGAs:\n")
-
-        fpga_list_tpl = "{fpga:40} {arch:<8} {type:<12} {size:<5} {pack:<10}"
+        # -- Table title
+        fpga_header = click.style("FPGA", fg="cyan")
+        title = (
+            f"{fpga_header:40} {'Arch':<8} {'Type':<12}"
+            f" {'Size':<5} {'Pack':<10}"
+        )
+        # -- Get the terminal size (in characteres)
         terminal_width, _ = shutil.get_terminal_size()
 
-        click.echo("-" * terminal_width)
-        click.echo(
-            fpga_list_tpl.format(
-                fpga=click.style("FPGA", fg="cyan"),
-                type="Type",
-                arch="Arch",
-                size="Size",
-                pack="Pack",
-            )
-        )
-        click.echo("-" * terminal_width)
+        # -- String with a horizontal line with the same width
+        # -- as the terminal
+        line = "─" * terminal_width
 
+        # -- Print the table header
+        click.echo(line)
+        click.echo(title)
+        click.echo(line)
+
+        # -- Print all the fpgas!
         for fpga in self.fpgas:
-            click.echo(
-                fpga_list_tpl.format(
-                    fpga=click.style(fpga, fg="cyan"),
-                    arch=self.fpgas.get(fpga).get("arch"),
-                    type=self.fpgas.get(fpga).get("type"),
-                    size=self.fpgas.get(fpga).get("size"),
-                    pack=self.fpgas.get(fpga).get("pack"),
-                )
+
+            # -- Get information about the FPGA
+            arch = self.fpgas[fpga]["arch"]
+            _type = self.fpgas[fpga]["type"]
+            size = self.fpgas[fpga]["size"]
+            pack = self.fpgas[fpga]["pack"]
+
+            # -- Print the item with information
+            # -- Print the FPGA in a differnt color
+            fpga_str = click.style(fpga, fg="cyan")
+            item = (
+                f"• {fpga_str:40} {arch:<8} {_type:<12} {size:<5} {pack:<10}"
             )
+            click.echo(item)
+
+        # -- Print the Footer
+        click.echo(line)
+        click.echo(f"Total: {len(self.fpgas)} fpgas\n")
 
     def _filter_packages(self, given_platform):
         """Filter the apio packages available for the given platform.
