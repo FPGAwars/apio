@@ -81,5 +81,16 @@
             //-- Change to the folder with the example to test
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/ledon"
         },
+        {
+            "name": "Apio boards",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": ["boards", "-l"],
+            "console": "internalConsole",
+            "justMyCode": true,
+            //-- Change to the folder with the example to test
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/ledon"
+        },
     ]
 }

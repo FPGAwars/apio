@@ -3,7 +3,7 @@
 # -- (C) 2016-2019 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
-"""TODO"""
+"""Main implementation of APIO BOARDS command"""
 
 import click
 
@@ -14,18 +14,29 @@ from apio import util
 @click.command("boards", context_settings=util.context_settings())
 @click.pass_context
 @click.option(
-    "-l", "--list", is_flag=True, help="List all supported FPGA boards."
+    "-l",
+    "--list",
+    "list_boards",
+    is_flag=True,
+    help="List all supported FPGA boards.",
 )
 @click.option(
     "-f", "--fpga", is_flag=True, help="List all supported FPGA chips."
 )
-# pylint: disable=redefined-builtin,
-def cli(ctx, list, fpga):
+def cli(ctx, list_boards: bool, fpga: bool):
     """Manage FPGA boards."""
 
-    if list:
-        Resources().list_boards()
+    # -- Access to the apio resources
+    resources = Resources()
+
+    # -- Option 1: List boards
+    if list_boards:
+        resources.list_boards()
+
+    # -- Option 2: List fpgas
     elif fpga:
-        Resources().list_fpgas()
+        resources.list_fpgas()
+
+    # -- No options: show help
     else:
         click.secho(ctx.get_help())
