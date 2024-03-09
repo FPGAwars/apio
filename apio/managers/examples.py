@@ -6,12 +6,10 @@
 # -- Author Jesús Arroyo, Juan González
 # -- Licence GPLv2
 
-import os
 import glob
-import codecs
 import shutil
 from pathlib import Path
-from os.path import sep, isdir, isfile, dirname, basename
+from os.path import isdir, isfile, basename
 import click
 
 from apio import util
@@ -48,7 +46,7 @@ class Examples:
         self.name = "examples"
 
         # -- Folder where the example packages was installed
-        self.examples_dir = util.get_package_dir(self.name)
+        self.examples_dir = Path(util.get_package_dir(self.name))
 
         # -- Get the example package version
         self.version = util.get_package_version(self.name, profile)
@@ -57,35 +55,77 @@ class Examples:
         self.spec_version = util.get_package_spec_version(self.name, resources)
 
     def list_examples(self):
-        """DOC: TODO"""
+        """Print all the examples available"""
 
-        if util.check_package(
+        # -- Check if the example package is installed
+        installed = util.check_package(
             self.name, self.version, self.spec_version, self.examples_dir
-        ):
-            # examples = sorted(os.listdir(self.examples_dir))
-            examples = [
-                dirname(y).replace(self.examples_dir + sep, "")
-                for x in os.walk(self.examples_dir)
-                for y in glob.glob(str(Path(x[0]) / "info"))
-            ]
-            click.secho("")
-            for example in examples:
-                example_dir = str(Path(self.examples_dir) / example)
-                if isdir(example_dir):
-                    info_path = str(Path(example_dir) / "info")
-                    info = ""
-                    if isfile(info_path):
-                        with codecs.open(info_path, "r", "utf-8") as info_file:
-                            info = info_file.read().replace("\n", "")
-                    click.secho(" " + example, fg="blue", bold=True)
-                    click.secho("-" * shutil.get_terminal_size()[0])
-                    click.secho(" " + info)
-                    click.secho("")
-            click.secho(EXAMPLE_DIR_FILE, fg="green")
-            click.secho(EXAMPLE_OF_USE_CAD, fg="green")
-        else:
+        )
+
+        # -- No package installed: return
+        if not installed:
             return 1
+
+        # -- Collect all the board (every folder in the examples packages
+        # -- correspond to a board)
+        boards = []
+
+        for board in sorted(self.examples_dir.iterdir()):
+            if board.is_dir():
+                boards.append(board)
+
+        # -- Collect the examples for each board
+        # -- Valid examples are folders...
+        examples = []
+        examples_names = []
+        for board in boards:
+            for example in board.iterdir():
+                if example.is_dir():
+                    example_str = f"{board.name}/{example.name}"
+                    examples_names.append(example_str)
+                    examples.append(example)
+
+        # -- For each example, collect the information in the info file
+        # -- It contains the example description
+        for example, name in zip(examples, examples_names):
+            info = example / "info"
+            if info.exists():
+                with open(info, "r", encoding="utf-8") as info_file:
+                    info_data = info_file.read().replace("\n", "")
+                    click.secho(f"{name}", fg="blue", bold=True)
+                    click.secho(f"{info_data}")
+                    click.secho("-" * shutil.get_terminal_size()[0])
+                    # print(f"{name}")
+                    # print(f"{info_data}")
+                    # print("-"*50)
+
+        click.secho(f"Total: {len(examples)}")
+        click.secho(EXAMPLE_DIR_FILE, fg="green")
+        click.secho(EXAMPLE_OF_USE_CAD, fg="green")
         return 0
+
+        # examples = sorted(os.listdir(self.examples_dir))
+        # examples = [
+        #     dirname(y).replace(str(self.examples_dir) + sep, "")
+        #     for x in os.walk(str(self.examples_dir))
+        #     for y in glob.glob(str(Path(x[0]) / "info"))
+        # ]
+
+        # click.secho("")
+        # for example in examples:
+        #     example_dir = str(Path(self.examples_dir) / example)
+        #     if isdir(example_dir):
+        #         info_path = str(Path(example_dir) / "info")
+        #         info = ""
+        #         if isfile(info_path):
+        #             with codecs.open(info_path, "r", "utf-8") as info_file:
+        #                 info = info_file.read().replace("\n", "")
+        #         click.secho(" " + example, fg="blue", bold=True)
+        #         click.secho("-" * shutil.get_terminal_size()[0])
+        #         click.secho(" " + info)
+        #         click.secho("")
+        # click.secho(EXAMPLE_DIR_FILE, fg="green")
+        # click.secho(EXAMPLE_OF_USE_CAD, fg="green")
 
     def copy_example_dir(self, example, project_dir, sayno):
         """DOC: TODO"""
