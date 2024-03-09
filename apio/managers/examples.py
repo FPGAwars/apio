@@ -89,25 +89,48 @@ class Examples:
         # -- Valid examples are folders...
         examples = []
         examples_names = []
+
+        # -- Every board...
         for board in boards:
+
+            # -- Has one or more examples...
             for example in board.iterdir():
+
+                # -- The examples are folders...
                 if example.is_dir():
+
+                    # -- Store the example name
                     example_str = f"{board.name}/{example.name}"
                     examples_names.append(example_str)
+
+                    # -- Store the example path
                     examples.append(example)
 
         # -- For each example, collect the information in the info file
         # -- It contains the example description
         for example, name in zip(examples, examples_names):
+
+            # -- info file
             info = example / "info"
+
+            # -- Not all the folder has info...
             if info.exists():
+
+                # -- Open info file
                 with open(info, "r", encoding="utf-8") as info_file:
+
+                    # -- Read info file and remove the new line characters
                     info_data = info_file.read().replace("\n", "")
+
+                    # -- Print the example name and description!
                     click.secho(f"{name}", fg="blue", bold=True)
                     click.secho(f"{info_data}")
                     click.secho(line)
 
+        # -- Print the total examples
         click.secho(f"Total: {len(examples)}")
+
+        # -- Print more info about the examples
         click.secho(EXAMPLE_DIR_FILE, fg="green")
         click.secho(EXAMPLE_OF_USE_CAD, fg="green")
         click.secho()
