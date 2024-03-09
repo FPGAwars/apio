@@ -23,9 +23,7 @@ from apio import util
     metavar="str",
     help="Set the target directory for the project.",
 )
-@click.option(
-    "-b", "--board", type=str, metavar="str", help="Set the board."
-)
+@click.option("-b", "--board", type=str, metavar="str", help="Set the board.")
 @click.option(
     "-v",
     "--verbose",
