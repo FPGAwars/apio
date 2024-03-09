@@ -11,11 +11,14 @@ from apio.profile import Profile
 from apio import util
 
 
-# pylint: disable=W0622
 @click.command("config", context_settings=util.context_settings())
 @click.pass_context
 @click.option(
-    "-l", "--list", is_flag=True, help="List all configuration parameters."
+    "-l",
+    "--list",
+    "_list",
+    is_flag=True,
+    help="List all configuration parameters.",
 )
 @click.option(
     "-v",
@@ -30,16 +33,16 @@ from apio import util
     help="Configure executables: `default` selects apio packages, "
     + "`native` selects system binaries.",
 )
-def cli(ctx, list, verbose, exe):
+def cli(ctx, _list, verbose, exe):
     """Apio configuration."""
 
-    if list:  # pragma: no cover
+    if _list:
         profile = Profile()
         profile.list()
-    elif verbose:  # pragma: no cover
+    elif verbose:
         profile = Profile()
         profile.add_config("verbose", verbose)
-    elif exe:  # pragma: no cover
+    elif exe:
         profile = Profile()
         profile.add_config("exe", exe)
     else:
