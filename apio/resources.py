@@ -282,8 +282,11 @@ class Resources:
         # -- Get the terminal size (in characteres)
         terminal_width, _ = shutil.get_terminal_size()
 
-        # -- Print the table header
+        # -- String with a horizontal line with the same width
+        # -- as the terminal
         line = "─" * terminal_width
+
+        # -- Print the table header
         click.echo(line)
         click.echo(title)
         click.echo(line)
@@ -303,11 +306,19 @@ class Resources:
             # -- Print the item with information
             # -- Print the Board in a differnt color
             board_str = click.style(board, fg="cyan")
-            item = (
-                f"• {board_str} (FPGA:{fpga}, {arch}, {_type}, "
-                f"{size}, {pack})"
-            )
-            click.echo(item)
+            item_board = f"• {board_str}"
+            item_fpga = f"  (FPGA:{fpga}, {arch}, {_type}, {size}, {pack})"
+
+            # -- Item in one line
+            item = item_board + item_fpga
+
+            # -- If there is enough space, print in one line
+            if len(item) <= terminal_width:
+                click.echo(item)
+
+            # -- Not enough space: Print it in two separate lines
+            else:
+                click.echo(f"{item_board}\n    {item_fpga}")
 
         # -- Print the Footer
         click.echo(line)
