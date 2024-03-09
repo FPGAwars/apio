@@ -80,8 +80,9 @@ class Resources:
         # -- Read the distribution information
         self.distribution = self._load_resource(DISTRIBUTION_JSON)
 
-        # Check available packages
-        self.packages = self._check_packages(self.packages, platform)
+        # -- Filter packages: Store only the packages for
+        # -- the given platform
+        self._filter_packages(platform)
 
         # ---------  Sort resources
         self.packages = OrderedDict(
@@ -339,8 +340,7 @@ class Resources:
                 )
             )
 
-    @staticmethod
-    def _check_packages(packages, given_platform) -> dict:
+    def _filter_packages(self, given_platform):
         """Filter the apio packages available for the given platform.
         Some platforms has special packages (Ex. package Drivers is
         only for windows)
@@ -348,8 +348,9 @@ class Resources:
           * packages: All the apio packages
           * given_platform: Platform used for filtering the packages.
               If not given,the current system platform is used
-        * OUTPUT: It returns only the packages available for the
-            given platform
+
+        self.packages is updated. It now contains only the packages
+          for the given platform
         """
 
         # -- Final dict with the output packages
@@ -360,10 +361,10 @@ class Resources:
             given_platform = util.get_systype()
 
         # -- Check all the packages
-        for pkg in packages.keys():
+        for pkg in self.packages.keys():
 
             # -- Get the information about the package
-            release = packages[pkg]["release"]
+            release = self.packages[pkg]["release"]
 
             # -- This packages is available only for certain platforms
             if "available_platforms" in release:
@@ -378,13 +379,13 @@ class Resources:
                     if given_platform in platform:
 
                         # -- Add it to the output dictionary
-                        filtered_packages[pkg] = packages[pkg]
+                        filtered_packages[pkg] = self.packages[pkg]
 
             # -- Package for all the platforms
             else:
 
                 # -- Add it to the output dictionary
-                filtered_packages[pkg] = packages[pkg]
+                filtered_packages[pkg] = self.packages[pkg]
 
-        # -- Return the filtered packages
-        return filtered_packages
+        # -- Update the current packages!
+        self.packages = filtered_packages
