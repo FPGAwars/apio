@@ -3,7 +3,7 @@
 # -- (C) 2016-2019 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
-"""TODO"""
+"""Main implementation of APIO config command"""
 
 import click
 
@@ -36,14 +36,17 @@ from apio import util
 def cli(ctx, _list, verbose, exe):
     """Apio configuration."""
 
+    # -- Access to the profile file
+    profile = Profile()
+
+    # -- List configuration parameters
     if _list:
-        profile = Profile()
         profile.list()
+
     elif verbose:
-        profile = Profile()
         profile.add_config("verbose", verbose)
+
     elif exe:
-        profile = Profile()
         profile.add_config("exe", exe)
     else:
         click.secho(ctx.get_help())

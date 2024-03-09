@@ -185,10 +185,14 @@ class Profile:
             json.dump(data, profile, indent=4, sort_keys=True)
 
     def list(self):
-        """DOC: todo"""
+        """Print configuration parameters on the console"""
 
+        # -- Go through all the config parameters
         for key in self.config:
+
+            # -- Print the parameter
             click.secho(
-                f"{self.labels.get(key, '')} mode: {self.config.get(key, '')}",
+                f"{self.labels[key]} mode: {self.config[key]}",
                 fg="yellow",
             )
+        print()
