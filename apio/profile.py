@@ -17,7 +17,9 @@ from apio import util
 
 
 class Profile:
-    """Class for managing the apio profile file"""
+    """Class for managing the apio profile file
+    ex. /home/obijuan/.apio/profile.json
+    """
 
     def __init__(self):
 
