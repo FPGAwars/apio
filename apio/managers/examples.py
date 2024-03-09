@@ -66,6 +66,17 @@ class Examples:
         if not installed:
             return 1
 
+        # -- Calculate the terminal width
+        terminal_width, _ = shutil.get_terminal_size()
+
+        # -- String with a horizontal line with the same width
+        # -- as the terminal
+        line = "─" * terminal_width
+
+        # -- Prin the header
+        click.echo()
+        click.echo(line)
+
         # -- Collect all the board (every folder in the examples packages
         # -- correspond to a board)
         boards = []
@@ -94,38 +105,13 @@ class Examples:
                     info_data = info_file.read().replace("\n", "")
                     click.secho(f"{name}", fg="blue", bold=True)
                     click.secho(f"{info_data}")
-                    click.secho("-" * shutil.get_terminal_size()[0])
-                    # print(f"{name}")
-                    # print(f"{info_data}")
-                    # print("-"*50)
+                    click.secho(line)
 
         click.secho(f"Total: {len(examples)}")
         click.secho(EXAMPLE_DIR_FILE, fg="green")
         click.secho(EXAMPLE_OF_USE_CAD, fg="green")
+        click.secho()
         return 0
-
-        # examples = sorted(os.listdir(self.examples_dir))
-        # examples = [
-        #     dirname(y).replace(str(self.examples_dir) + sep, "")
-        #     for x in os.walk(str(self.examples_dir))
-        #     for y in glob.glob(str(Path(x[0]) / "info"))
-        # ]
-
-        # click.secho("")
-        # for example in examples:
-        #     example_dir = str(Path(self.examples_dir) / example)
-        #     if isdir(example_dir):
-        #         info_path = str(Path(example_dir) / "info")
-        #         info = ""
-        #         if isfile(info_path):
-        #             with codecs.open(info_path, "r", "utf-8") as info_file:
-        #                 info = info_file.read().replace("\n", "")
-        #         click.secho(" " + example, fg="blue", bold=True)
-        #         click.secho("-" * shutil.get_terminal_size()[0])
-        #         click.secho(" " + info)
-        #         click.secho("")
-        # click.secho(EXAMPLE_DIR_FILE, fg="green")
-        # click.secho(EXAMPLE_OF_USE_CAD, fg="green")
 
     def copy_example_dir(self, example, project_dir, sayno):
         """DOC: TODO"""
