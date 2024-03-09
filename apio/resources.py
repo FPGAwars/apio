@@ -170,10 +170,11 @@ class Resources:
         # -- Return the object for the resource
         return resource
 
-    def get_package_release_name(self, package):
-        """DOC: TODO"""
+    def get_package_release_name(self, package: str) -> str:
+        """return the package name"""
 
-        return self.packages.get(package).get("release").get("package_name")
+        # -- TODO: Check for apio system errors!
+        return self.packages[package]["release"]["package_name"]
 
     def get_packages(self):
         """DOC: TODO"""
