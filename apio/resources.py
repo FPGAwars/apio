@@ -101,10 +101,31 @@ class Resources:
         filepath = util.get_full_path(RESOURCES_DIR) / name
 
         # -- Read the json file
-        with filepath.open(encoding="utf8") as file:
+        try:
+            with filepath.open(encoding="utf8") as file:
 
-            # -- Read the json file
-            data_json = file.read()
+                # -- Read the json file
+                data_json = file.read()
+
+        # -- json file NOT FOUND! This is an apio system error
+        # -- It should never ocurr unless there is a bug in the
+        # -- apio system files, or a bug when calling this function
+        # -- passing a wrong file
+        except FileNotFoundError as exc:
+
+            # -- Display Main error
+            click.secho("Apio System Error! JSON file not found", fg="red")
+
+            # -- Display the affected file (in a different color)
+            apio_file_msg = click.style("Apio file: ", fg="yellow")
+            filename = click.style(f"{filepath}", fg="blue")
+            click.secho(f"{apio_file_msg} {filename}")
+
+            # -- Display the specific error message
+            click.secho(f"{exc}\n", fg="red")
+
+            # -- Abort!
+            sys.exit(2)
 
         # -- Parse the json format!
         try:
