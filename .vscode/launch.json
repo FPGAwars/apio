@@ -75,11 +75,11 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
-            "args": ["examples", "-l"],
+            "args": ["examples", "-d", "Alhambra-II/ledon"],
             "console": "internalConsole",
             "justMyCode": true,
             //-- Change to the folder with the example to test
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/ledon"
+            "cwd": "${workspaceFolder}/test-examples/test"
         },
         {
             "name": "Apio boards",

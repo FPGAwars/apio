@@ -136,43 +136,70 @@ class Examples:
         click.secho()
         return 0
 
-    def copy_example_dir(self, example, project_dir, sayno):
-        """DOC: TODO"""
+    def copy_example_dir(self, example: str, project_dir: Path, sayno: bool):
+        """Copy the example creating the folder
+        Ex. The example Alhambra-II/ledon --> the folder Alhambra-II/ledon
+        is created
+          * INPUTS:
+            * example: Example name (Ex. 'Alhambra-II/ledon')
+            * project_dir: (optional)
+            * sayno: Automatically answer no
+        """
 
-        if util.check_package(
+        # -- Check if the example package is installed
+        installed = util.check_package(
             self.name, self.version, self.spec_version, self.examples_dir
-        ):
-            project_dir = util.check_dir(project_dir)
-            example_path = str(project_dir / example)
-            local_example_path = Path(self.examples_dir) / example
+        )
 
-            if local_example_path.is_dir():
-                if isdir(example_path):
-                    # -- If sayno, do not copy anything
-                    if not sayno:
-                        click.secho(
-                            "Warning: "
-                            + example
-                            + " directory already exists",
-                            fg="yellow",
-                        )
-
-                        if click.confirm("Do you want to replace it?"):
-                            shutil.rmtree(example_path)
-                            self._copy_dir(
-                                example, str(local_example_path), example_path
-                            )
-                elif isfile(example_path):
-                    click.secho(
-                        "Warning: " + example + " is already a file",
-                        fg="yellow",
-                    )
-                else:
-                    self._copy_dir(example, local_example_path, example_path)
-            else:
-                click.secho(EXAMPLE_NOT_FOUND_MSG, fg="yellow")
-        else:
+        # -- No package installed: return
+        if not installed:
             return 1
+
+        # -- Get the working dir (current or given)
+        project_dir = util.check_dir(project_dir)
+
+        # -- Build the destination example path
+        dst_example_path = project_dir / example
+
+        # -- Build the source example path (where the example was installed)
+        src_example_path = self.examples_dir / example
+
+        # -- If the source example path is not a folder... it is an error
+        if not src_example_path.is_dir():
+            click.secho(EXAMPLE_NOT_FOUND_MSG, fg="yellow")
+            return 1
+
+        # -- The destination path is a folder...It means that the
+        # -- example already exist! Ask the user that to do...
+        # -- Replace it or not...
+        if dst_example_path.is_dir():
+
+            # -- If sayno, do not copy anything
+            if not sayno:
+
+                # -- Warn the user
+                click.secho(
+                    "Warning: " + example + " directory already exists",
+                    fg="yellow",
+                )
+
+                # -- Ask the user what to do...
+                if click.confirm("Do you want to replace it?"):
+
+                    # -- Remove the old example
+                    shutil.rmtree(dst_example_path)
+
+                    # -- Copy the example!
+                    self._copy_dir(example, src_example_path, dst_example_path)
+
+        elif isfile(dst_example_path):
+            click.secho(
+                "Warning: " + example + " is already a file",
+                fg="yellow",
+            )
+        else:
+            self._copy_dir(example, src_example_path, dst_example_path)
+
         return 0
 
     def copy_example_files(self, example, project_dir, sayno):
@@ -227,9 +254,21 @@ class Examples:
         )
 
     @staticmethod
-    def _copy_dir(example, src_path, dest_path):
+    def _copy_dir(example: str, src_path: Path, dest_path: Path):
+        """Copy example of the src_path on the dest_path
+        * INPUT
+          * example: Name of the example (Ex. 'Alhambra-II/ledon')
+          * src_path: Source folder to copy
+          * dest_path: Destination folder
+        """
+
+        # -- Infor for the user
         click.secho("Creating " + example + " directory ...")
+
+        # -- Copy the src folder on to the destination path
         shutil.copytree(src_path, dest_path)
+
+        # -- Info for the user
         click.secho(
             "Example '" + example + "' has been successfully created!",
             fg="green",

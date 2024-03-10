@@ -666,8 +666,13 @@ def mkdir(path):
 
 
 def check_dir(_dir: Path) -> Path:
-    """Check if the given path is a folder
-    TODO: documentation
+    """Check if the given path is a folder. It it does not exists
+    the folder is created. If no path is given the current working
+    directory is used
+      * INPUTS:
+        * _dir: The Path to check
+      * OUTPUT:
+        * The new path (if not given)
     """
 
     # -- If no path is given, get the current working directory
@@ -691,7 +696,6 @@ def check_dir(_dir: Path) -> Path:
         # -- Create the folder
         click.secho(f"Creating folder: {_dir}")
         _dir.mkdir()
-        # os.makedirs(str(_dir))
 
     # -- Return the path
     return _dir

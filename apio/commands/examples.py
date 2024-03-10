@@ -48,7 +48,9 @@ from apio import util
     is_flag=True,
     help="Automatically answer NO to all the questions.",
 )
-def cli(ctx, _list, dir, files, project_dir, sayno):
+def cli(
+    ctx, _list: bool, dir: str, files: str, project_dir: Path, sayno: bool
+):
     """Manage verilog examples.\n
     Install with `apio install examples`"""
 
@@ -59,8 +61,10 @@ def cli(ctx, _list, dir, files, project_dir, sayno):
     if _list:
         exit_code = examples.list_examples()
 
+    # -- Option: Copy the directory
     elif dir:
-        exit_code = Examples().copy_example_dir(dir, project_dir, sayno)
+        exit_code = examples.copy_example_dir(dir, project_dir, sayno)
+
     elif files:
         exit_code = Examples().copy_example_files(files, project_dir, sayno)
     else:
