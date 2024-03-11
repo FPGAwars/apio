@@ -140,24 +140,60 @@ class Installer:
             click.secho(f"Error: no such package '{self.package}'", fg="red")
             sys.exit(1)
 
-    def get_download_url(self, data, platform):
-        """DOC: TODO"""
+    def get_download_url(self, package: dict, platform: str) -> str:
+        """Get the download URL for the given package
+        * INPUTS:
+          - package: Object with the package information:
+            * Respository
+              - name
+              - organization
+            * Release
+              - tag_name
+              - compressed_name
+              - uncompressed_name
+              - package_name
+              - extension
+              - url_version
+            * Description
+          - plaform: Destination platform (Ex. linux_x86_64)
+        * OUTPUT: The download URL
+          (Ex: 'https://github.com/FPGAwars/apio-examples/releases/
+                download/0.0.35/apio-examples-0.0.35.zip')
+        """
 
-        compressed_name = data.get("release").get("compressed_name")
-        self.compressed_name = compressed_name.replace(
-            "%V", self.version
-        ).replace("%P", platform)
-        uncompressed_name = data.get("release").get("uncompressed_name")
-        self.uncompressed_name = uncompressed_name.replace(
-            "%V", self.version
-        ).replace("%P", platform)
+        # -- Get the compressed name
+        # -- It is in fact a template, with paramters:
+        # --  %V : Version
+        # --  %P : Platfom
+        # -- Ex: 'apio-examples-%V'
+        compressed_name = package["release"]["compressed_name"]
+
+        # -- Replace the '%V' parameter with the package version
+        compressed_name_version = compressed_name.replace("%V", self.version)
+
+        # -- Replace the '%P' parameter with the platform
+        self.compressed_name = compressed_name_version.replace("%P", platform)
+
+        # -- Get the uncompressed name. It is also a template with the
+        # -- same parameters: %V and %P
+        uncompressed_name = package["release"]["uncompressed_name"]
+
+        # -- Replace the '%V' parameter
+        uncompress_name_version = uncompressed_name.replace("%V", self.version)
+
+        # -- Replace the '%P' parameter
+        self.uncompressed_name = uncompress_name_version.replace(
+            "%P", platform
+        )
+
+        # --
 
         tarball = self._get_tarball_name(self.compressed_name, self.extension)
 
         download_url = self._get_download_url(
-            data.get("repository").get("name"),
-            data.get("repository").get("organization"),
-            data.get("release").get("tag_name").replace("%V", self.version),
+            package.get("repository").get("name"),
+            package.get("repository").get("organization"),
+            package.get("release").get("tag_name").replace("%V", self.version),
             tarball,
         )
 
@@ -292,7 +328,7 @@ class Installer:
         tarball = f"{name}.{extension}"
         return tarball
 
-    def _get_valid_version(self, url_version=""):
+    def _get_valid_version(self, url_version: str) -> str:
         """Get the latest valid version from the given remote
         version.txt file. The file is downloaded and the version is
         read and returned
@@ -304,6 +340,8 @@ class Installer:
 
             The url_version for every package is located in the file:
             resources/packages.json
+
+        - OUTPUT: A string with the package version (Ex. '0.0.35')
         """
 
         if self.version:
