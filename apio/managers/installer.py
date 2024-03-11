@@ -418,6 +418,7 @@ class Installer:
         # Note: here we check only for the version of locally installed
         # packages. For this reason we don't say what's the installation
         # path.
+
         if (
             not self.profile.installed_version(self.package, self.version)
             or self.force_install

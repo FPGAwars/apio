@@ -218,7 +218,7 @@ def get_home_dir() -> Path:
     return home_dir
 
 
-def get_package_dir(pkg_name):
+def get_package_dir(pkg_name: str) -> str:
     """Return the APIO package dir of a given package
     Packages are installed in the following folder:
     * Default: $APIO_HOME_DIR/packages
