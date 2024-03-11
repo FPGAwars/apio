@@ -414,7 +414,7 @@ class Installer:
                             return version
         return None
 
-    def _download(self, url):
+    def _download(self, url: str):
         # Note: here we check only for the version of locally installed
         # packages. For this reason we don't say what's the installation
         # path.

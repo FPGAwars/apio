@@ -45,13 +45,18 @@ class Profile:
         # -- Read the profile from file
         self.load()
 
-    def installed_version(self, name, version):
+    def installed_version(self, name: str, version: str):
         """DOC: TODO"""
 
+        # -- If the package is installed...
         if name in self.packages:
+
+            # -- Get the current version
             pkg_version = self.get_package_version(name)
-            pkg_version = self._convert_old_version(pkg_version)
-            version = self._convert_old_version(version)
+
+            # pkg_version = self._convert_old_version(pkg_version)
+            # version = self._convert_old_version(version)
+
             return semantic_version.Version(
                 pkg_version
             ) == semantic_version.Version(version)
@@ -120,13 +125,21 @@ class Profile:
 
     # W0703: Catching too general exception Exception (broad-except)
     # pylint: disable=W0703
-    def get_package_version(self, name, release_name=""):
-        """DOC: todo"""
+    def get_package_version(self, name: str, release_name: str = None) -> str:
+        """Return the version of the given package"""
+
+        # -- If the package is installed
+        if name in self.packages:
+
+            # -- Get the version
+            version = self.packages[name]["version"]
+
+            # -- REturn the version
+            return version
 
         version = "0.0.0"
-        if name in self.packages:
-            version = self.packages.get(name).get("version")
-        elif release_name:
+
+        if release_name:
             dir_name = util.get_package_dir(release_name)
             if isdir(dir_name):
                 filepath = str(Path(dir_name) / "package.json")
