@@ -54,15 +54,16 @@ platforms = [
 def cli(ctx, packages: tuple, all: bool, list: bool, force: bool, platform):
     """Install apio packages."""
 
-    # -- Install the given packages
+    # -- Install the given apio packages
     if packages:
 
-        # -- Install the package
+        # -- Install packages, one by one...
         for package in packages:
 
             # -- The instalation is performed by the Installer object
             inst = Installer(package, platform, force)
 
+            # -- Install the package!
             inst.install()
 
     # -- Install all the available packages

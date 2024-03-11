@@ -11,7 +11,7 @@ import re
 import shutil
 
 # from pathlib import Path
-from os import makedirs, remove, rename
+from os import remove, rename
 from os.path import isfile, isdir, basename
 import click
 import requests
@@ -205,14 +205,12 @@ class Installer:
     # W0703: Catching too general exception Exception (broad-except)
     # pylint: disable=W0703
     def install(self):
-        """Install the current package in the set in the Installer Object"""
+        """Install the current package set in the Installer Object"""
 
         click.secho(f"Installing {self.package} package:", fg="cyan")
 
         # -- Create the apio package folder, if it does not exit
-        if not isdir(str(self.packages_dir)):
-            makedirs(str(self.packages_dir))
-        assert isdir(str(self.packages_dir))
+        self.packages_dir.mkdir(exist_ok=True)
 
         # -- The first step is downloading the package
         # -- This variable stores the path to the packages
@@ -220,8 +218,12 @@ class Installer:
 
         try:
             # Try full platform
-            platform_download_url = self.download_urls[0].get("url")
-            print(f"platform_download_url: {platform_download_url}")
+            # --  Ex. 'https://github.com/FPGAwars/apio-examples/releases/
+            # --       download/0.0.35/apio-examples-0.0.35.zip'
+            platform_download_url = self.download_urls[0]["url"]
+
+            # -- Debug
+            print(f"{platform_download_url=}")
             dlpath = self._download(platform_download_url)
 
         # -- There is no write access to the package folder
