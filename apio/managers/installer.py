@@ -30,13 +30,13 @@ from apio.managers.unpacker import FileUnpacker
 # pylint: disable=R0902
 class Installer:
     """Installer. Class with methods for installing and managing
-    packages"""
+    apio packages"""
 
     def __init__(
         self, package: str, platform: str = "", force=False, checkversion=True
     ):
         """Class initialization. Parameters:
-        * package:  Package name to manage/install. It can have a prefix with
+        * package:  Package name to manage/install. It can have a sufix with
                     the version. Ex. "system@1.1.2"
         """
 
@@ -186,15 +186,18 @@ class Installer:
             "%P", platform
         )
 
-        # --
+        # -- Build the package tarball filename
+        # --- Ex. 'apio-examples-0.0.35.zip'
+        tarball = f"{self.compressed_name}.{self.extension}"
 
-        tarball = self._get_tarball_name(self.compressed_name, self.extension)
+        # -- Build the Download URL!
+        name = package["repository"]["name"]
+        organization = package["repository"]["organization"]
+        tag = package["release"]["tag_name"].replace("%V", self.version)
 
-        download_url = self._get_download_url(
-            package.get("repository").get("name"),
-            package.get("repository").get("organization"),
-            package.get("release").get("tag_name").replace("%V", self.version),
-            tarball,
+        download_url = (
+            f"https://github.com/{organization}/{name}/releases/"
+            f"download/{tag}/{tarball}"
         )
 
         return download_url
@@ -314,14 +317,6 @@ class Installer:
             util.show_package_path_error(self.package)
         self.profile.remove_package(self.package)
         self.profile.save()
-
-    @staticmethod
-    def _get_download_url(name, organization, tag, tarball):
-        url = (
-            f"https://github.com/{organization}/{name}/releases/"
-            + f"download/{tag}/{tarball}"
-        )
-        return url
 
     @staticmethod
     def _get_tarball_name(name, extension):
