@@ -85,10 +85,10 @@ class Installer:
             self.spec_version = distribution["packages"][self.package]
 
             # Get the package name (from resources/package.json file)
-            self.package_name = data.get("release").get("package_name")
+            self.package_name = data["release"]["package_name"]
 
             # Get the extension given to the toolchain. Tipically tar.gz
-            self.extension = data.get("release").get("extension")
+            self.extension = data["release"]["extension"]
 
             # Get the current platform
             platform = platform or self._get_platform()
@@ -99,7 +99,7 @@ class Installer:
                 # Check version. The filename is read from the
                 # repostiroy
                 # -- Get the url of the version.txt file
-                url_version = data.get("release").get("url_version")
+                url_version = data["release"]["url_version"]
 
                 # -- Get the latest version
                 # -- It will exit in case of error
