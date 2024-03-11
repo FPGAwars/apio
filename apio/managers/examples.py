@@ -23,7 +23,7 @@ Use `apio examples -l` for listing all the available examples"""
 EXAMPLE_OF_USE_CAD = """
 Example of use:
    apio examples -f leds
-Copy the leds example files to the current directory"""
+Copy the leds example files to the current directory\n"""
 
 EXAMPLE_DIR_FILE = """
 To get an example, use the command:
@@ -328,6 +328,6 @@ class Examples:
 
     @staticmethod
     def examples_of_use_cad():
-        """DOC: TODO"""
+        """Return the example of use help string"""
 
         return EXAMPLE_OF_USE_CAD

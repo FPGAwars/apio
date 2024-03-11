@@ -69,9 +69,10 @@ def cli(
     elif files:
         exit_code = examples.copy_example_files(files, project_dir, sayno)
 
+    # -- no options: Show help!
     else:
         click.secho(ctx.get_help())
-        click.secho(Examples().examples_of_use_cad())
+        click.secho(examples.examples_of_use_cad())
         exit_code = 0
 
     ctx.exit(exit_code)
