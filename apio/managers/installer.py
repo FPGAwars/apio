@@ -77,7 +77,7 @@ class Installer:
             self.packages_dir = util.get_home_dir() / dirname
 
             # Get the data of the given package
-            data = self.resources.packages.get(self.package)
+            data = self.resources.packages[self.package]
 
             # Get the information about the valid versions
             distribution = self.resources.distribution
@@ -91,8 +91,8 @@ class Installer:
             # Get the extension given to the toolchain. Tipically tar.gz
             self.extension = data["release"]["extension"]
 
-            # Get the current platform
-            platform = platform or self._get_platform()
+            # Get the current platform (if not forced by the user)
+            platform = platform or util.get_systype()
 
             # Check if the version is ok (It is only done if the
             # checkversion flag has been activated)
@@ -278,10 +278,6 @@ class Installer:
             util.show_package_path_error(self.package)
         self.profile.remove_package(self.package)
         self.profile.save()
-
-    @staticmethod
-    def _get_platform():
-        return util.get_systype()
 
     @staticmethod
     def _get_download_url(name, organization, tag, tarball):
