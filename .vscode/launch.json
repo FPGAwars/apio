@@ -103,5 +103,16 @@
             //-- Change to the folder with the example to test
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/ledon"
         },
+        {
+            "name": "Apio install",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": ["install", "examples"],
+            "console": "internalConsole",
+            "justMyCode": true,
+            //-- Change to the folder with the example to test
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/ledon"
+        },
     ]
 }

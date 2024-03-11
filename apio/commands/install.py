@@ -46,21 +46,20 @@ platforms = [
     "--platform",
     type=click.Choice(platforms),
     metavar="",
-    help=f"Set the platform [{', '.join(platforms)}] (Advanced).",
+    help=(
+        f"Set the platform [{', '.join(platforms)}] "
+        "(Advanced, for developers)."
+    ),
 )
-def cli(ctx, packages, all, list, force, platform):
-    """Install packages.
-    Input parameters:
-      - packages: List with the names of the packages to install
-      - all: Flag: Install all the packages available for that platform
-      - list: Flag. List all the packages (installed or not)
-      - force: Flag. Force installation
-      - platform: Flag. Select platform (advaced. For developers)
-    """
+def cli(ctx, packages: tuple, all: bool, list: bool, force: bool, platform):
+    """Install apio packages."""
 
     # -- Install the given packages
     if packages:
+
+        # -- Install the package
         for package in packages:
+
             # -- The instalation is performed by the Installer object
             inst = Installer(package, platform, force)
 

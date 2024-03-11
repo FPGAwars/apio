@@ -18,7 +18,6 @@ import requests
 
 from apio import util
 
-# from apio.api import api_request
 from apio.resources import Resources
 from apio.profile import Profile
 
@@ -32,7 +31,9 @@ class Installer:
     """Installer. Class with methods for installing and managing
     packages"""
 
-    def __init__(self, package, platform="", force=False, checkversion=True):
+    def __init__(
+        self, package: str, platform: str = "", force=False, checkversion=True
+    ):
         """Class initialization. Parameters:
         * package:  Package name to manage/install. It can have a prefix with
                     the version. Ex. "system@1.1.2"
@@ -62,6 +63,7 @@ class Installer:
         # -- but some others don't (like the boards)
         self.resources = Resources(platform)
 
+        # -- Read the profile file
         self.profile = Profile()
 
         # -- Folder name were the packages are stored
@@ -80,7 +82,7 @@ class Installer:
             distribution = self.resources.distribution
 
             # Get the spectec package version
-            self.spec_version = distribution.get("packages").get(self.package)
+            self.spec_version = distribution["packages"][self.package]
 
             # Get the package name (from resources/package.json file)
             self.package_name = data.get("release").get("package_name")
