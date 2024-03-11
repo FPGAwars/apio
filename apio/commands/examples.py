@@ -65,8 +65,10 @@ def cli(
     elif dir:
         exit_code = examples.copy_example_dir(dir, project_dir, sayno)
 
+    # -- Option: Copy only the example files (not the initial folders)
     elif files:
-        exit_code = Examples().copy_example_files(files, project_dir, sayno)
+        exit_code = examples.copy_example_files(files, project_dir, sayno)
+
     else:
         click.secho(ctx.get_help())
         click.secho(Examples().examples_of_use_cad())

@@ -6,10 +6,9 @@
 # -- Author Jesús Arroyo, Juan González
 # -- Licence GPLv2
 
-import glob
 import shutil
 from pathlib import Path
-from os.path import isdir, isfile, basename
+from os.path import isfile
 import click
 
 from apio import util
@@ -202,56 +201,109 @@ class Examples:
 
         return 0
 
-    def copy_example_files(self, example, project_dir, sayno):
-        """DOC: TODO"""
+    def copy_example_files(self, example: str, project_dir: Path, sayno: bool):
+        """Copy the example files (not the initial folders)
+        * INPUTS:
+            * example: Example name (Ex. 'Alhambra-II/ledon')
+            * project_dir: (optional)
+            * sayno: Automatically answer no
+        """
 
-        if util.check_package(
+        # -- Check if the example package is installed
+        installed = util.check_package(
             self.name, self.version, self.spec_version, self.examples_dir
-        ):
-            example_path = util.check_dir(project_dir)
-            local_example_path = str(Path(self.examples_dir) / example)
+        )
 
-            if isdir(local_example_path):
-                self._copy_files(
-                    example, local_example_path, str(example_path), sayno
-                )
-            else:
-                click.secho(EXAMPLE_NOT_FOUND_MSG, fg="yellow")
-        else:
+        # -- No package installed: return
+        if not installed:
             return 1
-        return 0
+
+        # -- Get the working dir (current or given)
+        dst_example_path = util.check_dir(project_dir)
+
+        # -- Build the source example path (where the example was installed)
+        src_example_path = self.examples_dir / example
+
+        # -- If the source example path is not a folder... it is an error
+        if not src_example_path.is_dir():
+            click.secho(EXAMPLE_NOT_FOUND_MSG, fg="yellow")
+            return 1
+
+        # -- Copy the example files!!
+        # -- TODO: fix an error...
+        exit_code = self._copy_files(
+            example, src_example_path, dst_example_path, sayno
+        )
+
+        return exit_code
 
     @staticmethod
-    def _copy_files(example, src_path, dest_path, sayno):
+    def _copy_files(
+        example: str, src_path: Path, dest_path: Path, sayno: bool
+    ):
+        """Copy the example files to the destination folder
+        * INPUTS:
+          * example: Name of the example (Ex. 'Alhambra-II/ledon')
+          * src_path: Source folder to copy
+          * dest_path: Destination folder
+        """
+
+        # -- Inform the user
         click.secho("Copying " + example + " example files ...")
-        example_files = glob.glob(str(Path(src_path) / "*"))
-        for file in example_files:
-            filename = basename(file)
+
+        # -- Go though all the files in the example folder...
+        for file in src_path.iterdir():
+
+            # -- Get the filename
+            filename = file.name
+
+            # -- "info" file is not copied
             if filename != "info":
-                filepath = str(Path(dest_path) / filename)
-                if isfile(filepath):
+
+                # -- Build the destination filepath
+                dst_filename = dest_path / filename
+
+                # -- Check if the destination final exists
+                # -- It is is the case, ask the user what to do...
+                if dst_filename.is_file():
+
                     # -- If sayno, do not copy the file. Move to the next
                     if sayno:
                         continue
 
+                    # -- Warn the user
                     click.secho(
-                        "Warning: " + filename + " file already exists",
+                        f"Warning: {filename} file already exists",
                         fg="yellow",
                     )
+
+                    # -- Ask the user
                     if click.confirm("Do you want to replace it?"):
+
+                        # -- copy the file
                         shutil.copy(file, dest_path)
-                elif isdir(filepath):
+
+                # -- The destination path is a folder!
+                elif dst_filename.is_dir():
+
+                    # -- Warn the user. Nothing is copied...
                     click.secho(
-                        "Warning: " + filename + " is already a directory",
+                        f"Warning: {filename} is already a directory",
                         fg="yellow",
                     )
-                    return
+                    return 1
+
+                # -- Copy the file!
                 else:
-                    shutil.copy(file, filepath)
+                    shutil.copy(file, dest_path)
+
+        # -- Inform the user!
         click.secho(
-            "Example files '{example}' have been successfully created!",
+            f"Example files '{example}' have been successfully created!",
             fg="green",
         )
+
+        return 0
 
     @staticmethod
     def _copy_dir(example: str, src_path: Path, dest_path: Path):

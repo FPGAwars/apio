@@ -139,7 +139,7 @@ def test_complete2(clirunner, validate_cliresult, configenv, offline):
 
         # -- Execute "apio examples --files missing_example"
         result = clirunner.invoke(cmd_examples, ['--files', 'missing_example'])
-        validate_cliresult(result)
+        assert result.exit_code == 1
         assert 'Warning: this example does not exist' in result.output
 
         # -- Execute "apio examples --files leds"
