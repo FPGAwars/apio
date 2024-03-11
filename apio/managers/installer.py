@@ -9,7 +9,8 @@
 import sys
 import re
 import shutil
-from pathlib import Path
+
+# from pathlib import Path
 from os import makedirs, remove, rename
 from os.path import isfile, isdir, basename
 import click
@@ -73,7 +74,7 @@ class Installer:
         # --(It is defined in the resources/packages.json file)
         if self.package in self.resources.packages:
             # -- Store the package dir
-            self.packages_dir = str(util.get_home_dir() / dirname)
+            self.packages_dir = util.get_home_dir() / dirname
 
             # Get the data of the given package
             data = self.resources.packages.get(self.package)
@@ -129,13 +130,13 @@ class Installer:
         # -- The package is kwnown but the version is not correct
         else:
             if self.package in self.profile.packages and checkversion is False:
-                self.packages_dir = str(util.get_home_dir() / dirname)
+                self.packages_dir = util.get_home_dir() / dirname
 
                 self.package_name = "toolchain-" + package
 
-        # -- If the Installer.package_dir is empty, is because the package
-        # -- was not known. Abort!
-        if self.packages_dir == "":
+        # -- If the Installer.package_dir property was not assigned,
+        # -- is because the package was not known. Abort!
+        if not self.packages_dir:
             click.secho(f"Error: no such package '{self.package}'", fg="red")
             sys.exit(1)
 
@@ -170,9 +171,9 @@ class Installer:
         click.secho(f"Installing {self.package} package:", fg="cyan")
 
         # -- Create the apio package folder, if it does not exit
-        if not isdir(self.packages_dir):
-            makedirs(self.packages_dir)
-        assert isdir(self.packages_dir)
+        if not isdir(str(self.packages_dir)):
+            makedirs(str(self.packages_dir))
+        assert isdir(str(self.packages_dir))
 
         # -- The first step is downloading the package
         # -- This variable stores the path to the packages
@@ -230,11 +231,11 @@ class Installer:
 
     def _install_package(self, dlpath):
         if dlpath:
-            package_dir = str(Path(self.packages_dir) / self.package_name)
+            package_dir = str(self.packages_dir / self.package_name)
             if isdir(package_dir):
                 shutil.rmtree(package_dir)
             if self.uncompressed_name:
-                self._unpack(dlpath, self.packages_dir)
+                self._unpack(dlpath, str(self.packages_dir))
             else:
                 self._unpack(
                     dlpath,
@@ -253,8 +254,8 @@ class Installer:
     def _rename_unpacked_dir(self):
         if self.uncompressed_name:
             # -- Build the names
-            unpack_dir = str(Path(self.packages_dir) / self.uncompressed_name)
-            package_dir = str(Path(self.packages_dir) / self.package_name)
+            unpack_dir = str(self.packages_dir / self.uncompressed_name)
+            package_dir = str(self.packages_dir / self.package_name)
 
             if isdir(unpack_dir):
                 rename(unpack_dir, package_dir)
@@ -263,7 +264,7 @@ class Installer:
         """DOC: TODO"""
 
         # -- Build the filename
-        file = str(Path(self.packages_dir) / self.package_name)
+        file = str(self.packages_dir / self.package_name)
         if isdir(file):
             package_color = click.style(self.package, fg="cyan")
             click.echo(f"Uninstalling {package_color} package:")
@@ -390,7 +391,7 @@ class Installer:
             not self.profile.installed_version(self.package, self.version)
             or self.force_install
         ):
-            filed = FileDownloader(url, self.packages_dir)
+            filed = FileDownloader(url, str(self.packages_dir))
             filepath = filed.get_filepath()
             click.secho("Download " + basename(filepath))
             try:
