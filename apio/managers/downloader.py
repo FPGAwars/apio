@@ -14,8 +14,6 @@ from email.utils import parsedate_tz
 from math import ceil
 from time import mktime
 
-# from pathlib import Path
-
 import requests
 import click
 
@@ -29,34 +27,51 @@ class FDUnrecognizedStatusCode(util.ApioException):
 
 
 class FileDownloader:
-    """TODO"""
+    """Class for downloading files"""
 
     CHUNK_SIZE = 1024
 
-    def __init__(self, url, dest_dir=None):
-        self._url = url
-        self._fname = url.split("/")[-1]
+    def __init__(self, url: str, dest_dir=None):
+        """Initialize a FileDownloader object
+        * INPUTs:
+          * url: File to download (full url)
+                 (Ex. 'https://github.com/FPGAwars/apio-examples/
+                       releases/download/0.0.35/apio-examples-0.0.35.zip')
+          * dest_dir: Destination folder (where to download the file)
+        """
 
-        self._destination = self._fname
+        # -- Store the url
+        self._url = url
+
+        # -- Get the file from the url
+        # -- Ex: 'apio-examples-0.0.35.zip'
+        self.fname = url.split("/")[-1]
+
+        # -- Build the destination path
+        self.destination = self.fname
         if dest_dir:
-            self.set_destination(str(dest_dir / self._fname))
+
+            # -- Add the path
+            self.destination = dest_dir / self.fname
 
         self._progressbar = None
         self._request = None
 
-        # make connection
+        # -- Request the file
         self._request = requests.get(url, stream=True, timeout=5)
+
+        # -- Raise an exception in case of download error...
         if self._request.status_code != 200:
             raise FDUnrecognizedStatusCode(self._request.status_code, url)
 
     def set_destination(self, destination):
         """TODO"""
 
-        self._destination = destination
+        self.destination = destination
 
     def get_filepath(self):
         """TODO"""
-        return self._destination
+        return self.destination
 
     def get_lmtime(self):
         """TODO"""
@@ -65,21 +80,31 @@ class FileDownloader:
             return self._request.headers.get("last-modified")
         return None
 
-    def get_size(self):
-        """TODO"""
+    def get_size(self) -> int:
+        """Return the size (in bytes) of the latest bytes block received"""
 
-        return int(self._request.headers.get("content-length"))
+        return int(self._request.headers["content-length"])
 
     def start(self):
-        """TODO"""
+        """Start the downloading of the file"""
 
+        # -- Download iterator
         itercontent = self._request.iter_content(chunk_size=self.CHUNK_SIZE)
-        with open(self._destination, "wb") as file:
+
+        # -- Open destination file, for writing bytes
+        with open(self.destination, "wb") as file:
+
+            # -- Get the file length in Kbytes
             chunks = int(ceil(self.get_size() / float(self.CHUNK_SIZE)))
 
+            # -- Download the file. Show a progress bar
             with click.progressbar(length=chunks, label="Downloading") as pbar:
                 for _ in pbar:
+
+                    # -- Receive next block of bytes
                     file.write(next(itercontent))
+
+        # -- Download done!
         self._request.close()
 
         self._preserve_filemtime(self.get_lmtime())
@@ -88,7 +113,7 @@ class FileDownloader:
         if lmdate is not None:
             timedata = parsedate_tz(lmdate)
             lmtime = mktime(timedata[:9])
-            util.change_filemtime(self._destination, lmtime)
+            util.change_filemtime(self.destination, lmtime)
 
     def __del__(self):
         if self._request:

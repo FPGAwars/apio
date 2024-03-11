@@ -12,7 +12,8 @@ import shutil
 
 # from pathlib import Path
 from os import remove, rename
-from os.path import isfile, isdir, basename
+from os.path import isfile, isdir
+from pathlib import Path
 import click
 import requests
 
@@ -222,8 +223,7 @@ class Installer:
             # --       download/0.0.35/apio-examples-0.0.35.zip'
             platform_download_url = self.download_urls[0]["url"]
 
-            # -- Debug
-            print(f"{platform_download_url=}")
+            # -- Download the file
             dlpath = self._download(platform_download_url)
 
         # -- There is no write access to the package folder
@@ -270,18 +270,32 @@ class Installer:
             )
         return None
 
-    def _install_package(self, dlpath):
+    def _install_package(self, dlpath: Path):
+        """Install the given tarball"""
+
+        # -- Make sure there is a non-null filepath
         if dlpath:
-            package_dir = str(self.packages_dir / self.package_name)
-            if isdir(package_dir):
+
+            # -- Build the destination path
+            # -- Ex. '/home/obijuan/.apio/packages/examples'
+            package_dir = self.packages_dir / self.package_name
+
+            # -- Destination path is a folder (Already exist!)
+            if package_dir.is_dir():
+
+                # -- Remove it!
                 shutil.rmtree(package_dir)
+
+            # -- If there is a folder name for uncompressing the tarball
+            # -- Ex. 'apio-examples-0.0.35'
             if self.uncompressed_name:
-                self._unpack(dlpath, str(self.packages_dir))
+
+                # -- Uncompress it!!
+                self._unpack(dlpath, self.packages_dir)
+
+            # -- Use the calculated destination file
             else:
-                self._unpack(
-                    dlpath,
-                    package_dir,
-                )
+                self._unpack(dlpath, package_dir)
 
             remove(dlpath)
             self.profile.add_package(self.package, self.version)
@@ -414,10 +428,14 @@ class Installer:
                             return version
         return None
 
-    def _download(self, url: str):
-        # Note: here we check only for the version of locally installed
-        # packages. For this reason we don't say what's the installation
-        # path.
+    def _download(self, url: str) -> str:
+        """Download the given file (url). Return the path of
+        the destination file
+        * INPUTS:
+          * url: File to download
+        * OUTPUTS:
+          * The path of the destination file
+        """
 
         # -- Check the installed version of the package
         installed = self.profile.installed_version(self.package, self.version)
@@ -431,10 +449,17 @@ class Installer:
             )
             return None
 
-        # -- Download the package!
+        # ----- Download the package!
+        # -- Object for downloading the file
         filed = FileDownloader(url, self.packages_dir)
-        filepath = filed.get_filepath()
-        click.secho("Download " + basename(filepath))
+
+        # -- Get the destination path
+        filepath = filed.destination
+
+        # -- Inform the user
+        click.secho("Download " + filed.fname)
+
+        # -- Download start!
         try:
             filed.start()
         except KeyboardInterrupt:
@@ -445,6 +470,17 @@ class Installer:
         return filepath
 
     @staticmethod
-    def _unpack(pkgpath, pkgdir):
+    def _unpack(pkgpath: Path, pkgdir: Path):
+        """Unpack the given file, in the pkgdir
+        * INPUTS:
+          - pkgpath: File to unpack
+          - pkgdir: Destination path
+        """
+
+        # -- Build the unpacker object
         fileu = FileUnpacker(pkgpath, pkgdir)
-        return fileu.start()
+
+        # -- Unpack it!
+        success = fileu.start()
+
+        return success
