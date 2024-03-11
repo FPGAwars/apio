@@ -419,28 +419,30 @@ class Installer:
         # packages. For this reason we don't say what's the installation
         # path.
 
-        if (
-            not self.profile.installed_version(self.package, self.version)
-            or self.force_install
-        ):
-            filed = FileDownloader(url, str(self.packages_dir))
-            filepath = filed.get_filepath()
-            click.secho("Download " + basename(filepath))
-            try:
-                filed.start()
-            except KeyboardInterrupt:
-                if isfile(filepath):
-                    remove(filepath)
-                click.secho("Abort download!", fg="red")
-                sys.exit(1)
-            return filepath
+        # -- Check the installed version of the package
+        installed = self.profile.installed_version(self.package, self.version)
 
-        version = self.profile.get_package_version(self.package)
-        click.secho(
-            f"Already installed. Version {version}",
-            fg="yellow",
-        )
-        return None
+        # -- Package already installed, and no force_install flag
+        # -- Nothing to download
+        if installed and not self.force_install:
+            click.secho(
+                f"Already installed. Version {self.version}",
+                fg="yellow",
+            )
+            return None
+
+        # -- Download the package!
+        filed = FileDownloader(url, self.packages_dir)
+        filepath = filed.get_filepath()
+        click.secho("Download " + basename(filepath))
+        try:
+            filed.start()
+        except KeyboardInterrupt:
+            if isfile(filepath):
+                remove(filepath)
+            click.secho("Abort download!", fg="red")
+            sys.exit(1)
+        return filepath
 
     @staticmethod
     def _unpack(pkgpath, pkgdir):

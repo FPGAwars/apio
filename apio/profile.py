@@ -46,10 +46,15 @@ class Profile:
         self.load()
 
     def installed_version(self, name: str, version: str):
-        """Check the installed version
+        """Check the if the given package version is installed
         * INPUT:
           - name: Package name
           - version: Version to install
+        * OUTPUT:
+          - True: Version installed, with the given version
+          - False:
+            - Package not installed
+            - Package installed but different version
         """
 
         # -- If the package is installed...
@@ -57,9 +62,6 @@ class Profile:
 
             # -- Get the current version
             pkg_version = self.get_package_version(name)
-
-            # pkg_version = self._convert_old_version(pkg_version)
-            # version = self._convert_old_version(version)
 
             # -- Compare versions: current vs version to install
             current_ver = semantic_version.Version(pkg_version)
@@ -72,18 +74,8 @@ class Profile:
             # -- False: Package installed (but different version)
             return same_versions
 
-        # -- Packge not installed
+        # -- Package not installed
         return False
-
-    @staticmethod
-    def _convert_old_version(version):
-        # Convert old versions to new format
-        try:
-            ver = int(version)
-            version = f"1.{ver}.0"
-        except ValueError:
-            pass
-        return version
 
     def check_exe_default(self):
         """DOC: todo"""
