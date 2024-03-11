@@ -8,7 +8,6 @@
 
 import shutil
 from pathlib import Path
-from os.path import isfile
 import click
 
 from apio import util
@@ -191,7 +190,7 @@ class Examples:
                     # -- Copy the example!
                     self._copy_dir(example, src_example_path, dst_example_path)
 
-        elif isfile(dst_example_path):
+        elif dst_example_path.is_dir():
             click.secho(
                 "Warning: " + example + " is already a file",
                 fg="yellow",
