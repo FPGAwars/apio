@@ -80,7 +80,12 @@ class FileDownloader:
             chunks = int(ceil(self.get_size() / float(self.CHUNK_SIZE)))
 
             # -- Download the file. Show a progress bar
-            with click.progressbar(length=chunks, label="Downloading") as pbar:
+            with click.progressbar(
+                length=chunks,
+                label=click.style("Downloading", fg="yellow"),
+                fill_char=click.style("█", fg="blue"),
+                empty_char=click.style("░", fg="blue"),
+            ) as pbar:
                 for _ in pbar:
 
                     # -- Receive next block of bytes
