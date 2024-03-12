@@ -45,6 +45,20 @@ BIN = "bin"
 OSS_CAD_SUITE_FOLDER = f"tools-{OSS_CAD_SUITE}"
 GTKWAVE_FOLDER = f"tool-{GTKWAVE}"
 
+# -- AVAILABLE PLATFORMS
+PLATFORMS = [
+    "linux",
+    "linux_x86_64",
+    "linux_i686",
+    "linux_armv7l",
+    "linux_aarch64",
+    "windows",
+    "windows_x86",
+    "windows_amd64",
+    "darwin",
+    "darwin_arm64",
+]
+
 
 class ApioException(Exception):
     """DOC: TODO"""

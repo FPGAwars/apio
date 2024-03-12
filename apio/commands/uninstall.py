@@ -12,16 +12,6 @@ from apio.resources import Resources
 from apio.profile import Profile
 from apio import util
 
-platforms = [
-    "linux_x86_64",
-    "linux_i686",
-    "linux_armv7l",
-    "linux_aarch64",
-    "windows",
-    "darwin",
-    "darwin_arm64",
-]
-
 
 # pylint: disable=W0622
 @click.command("uninstall", context_settings=util.context_settings())
@@ -34,9 +24,9 @@ platforms = [
 @click.option(
     "-p",
     "--platform",
-    type=click.Choice(platforms),
+    type=click.Choice(util.PLATFORMS),
     metavar="platform",
-    help=f"Set the platform [{', '.join(platforms)}] (Advanced).",
+    help=f"Set the platform [{', '.join(util.PLATFORMS)}] (Advanced).",
 )
 def cli(ctx, packages, all, list, platform):
     """Uninstall packages."""

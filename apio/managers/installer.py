@@ -10,19 +10,15 @@ import sys
 import re
 import shutil
 
-# from pathlib import Path
 from os import remove, rename
 from os.path import isdir
 from pathlib import Path
 import click
 import requests
 
-
 from apio import util
-
 from apio.resources import Resources
 from apio.profile import Profile
-
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
 
