@@ -52,7 +52,6 @@ class Installer:
         self.extension = None
         self.download_urls = None
         self.compressed_name = None
-        self.uncompressed_name = None
 
         # Parse version. The following attributes are used:
         #  * Installer.package: Package name (without version)
@@ -164,7 +163,6 @@ class Installer:
             * Release
               - tag_name
               - compressed_name
-              - uncompressed_name
               - package_name
               - extension
               - url_version
@@ -187,18 +185,6 @@ class Installer:
 
         # -- Replace the '%P' parameter with the platform
         self.compressed_name = compressed_name_version.replace("%P", platform)
-
-        # -- Get the uncompressed name. It is also a template with the
-        # -- same parameters: %V and %P
-        uncompressed_name = package["release"]["uncompressed_name"]
-
-        # -- Replace the '%V' parameter
-        uncompress_name_version = uncompressed_name.replace("%V", self.version)
-
-        # -- Replace the '%P' parameter
-        self.uncompressed_name = uncompress_name_version.replace(
-            "%P", platform
-        )
 
         # -- Build the package tarball filename
         # --- Ex. 'apio-examples-0.0.35.zip'
@@ -301,16 +287,8 @@ class Installer:
                 # -- Remove it!
                 shutil.rmtree(package_dir)
 
-            # -- If there is a folder name for uncompressing the tarball
-            # -- Ex. 'apio-examples-0.0.35'
-            if self.uncompressed_name:
-
-                # -- Uncompress it!!
-                self._unpack(dlpath, self.packages_dir)
-
-            # -- Use the calculated destination file
-            else:
-                self._unpack(dlpath, package_dir)
+            # -- Uncompress it!!
+            self._unpack(dlpath, package_dir)
 
             # -- Remove the downloaded compress file
             # -- Ex. remove '/home/obijuan/.apio/packages/
@@ -336,12 +314,12 @@ class Installer:
         ---> '/home/obijuan/.apio/packages/examples'
         """
 
-        if self.uncompressed_name:
+        if self.compressed_name:
 
             # -- Build the names
             # -- src folder (the one downloaded and installed)
             # -- Ex. '/home/obijuan/.apio/packages/apio-examples-0.0.35'
-            unpack_dir = self.packages_dir / self.uncompressed_name
+            unpack_dir = self.packages_dir / self.compressed_name
 
             # -- New folder
             # -. Ex, '/home/obijuan/.apio/packages/examples'
