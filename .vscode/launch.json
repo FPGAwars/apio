@@ -112,7 +112,7 @@
             "console": "internalConsole",
             "justMyCode": true,
             //-- Change to the folder with the example to test
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/ledon"
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/temp-ledon"
         },
     ]
 }

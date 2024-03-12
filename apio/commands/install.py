@@ -28,9 +28,6 @@ def install_packages(packages: list, platform: str, force: bool):
         inst.install()
 
 
-# R0913: Too many arguments (6/5)
-# pylint: disable=R0913
-# pylint: disable=W0622
 @click.command("install", context_settings=util.context_settings())
 @click.pass_context
 @click.argument("packages", nargs=-1)
@@ -51,15 +48,22 @@ def install_packages(packages: list, platform: str, force: bool):
         "(Advanced, for developers)."
     ),
 )
-def cli(ctx, packages: tuple, all: bool, list: bool, force: bool, platform):
+def cli(ctx, **kwargs):
     """Install apio packages."""
+
+    # -- Extract the arguments
+    packages = kwargs["packages"]  # -- tuple
+    platform = kwargs["platform"]  # -- str
+    _all = kwargs["all"]  # -- bool
+    _list = kwargs["list"]  # -- bool
+    force = kwargs["force"]  # -- bool
 
     # -- Install the given apio packages
     if packages:
         install_packages(packages, platform, force)
 
     # -- Install all the available packages
-    elif all:
+    elif _all:
 
         # -- Get all the resources
         resources = Resources(platform)
@@ -68,7 +72,7 @@ def cli(ctx, packages: tuple, all: bool, list: bool, force: bool, platform):
         install_packages(resources.packages, platform, force)
 
     # -- List all the packages (installed or not)
-    elif list:
+    elif _list:
         # -- Get all the resources
         resources = Resources(platform)
 
