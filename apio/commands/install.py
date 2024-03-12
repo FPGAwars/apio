@@ -10,6 +10,16 @@ from apio.managers.installer import Installer
 from apio.resources import Resources
 from apio import util
 
+# ------------------
+# -- CONSTANTS
+# ------------------
+CMD = "install"  # -- Comand name
+PACKAGES = "packages"  # -- Argument
+ALL = "all"  # -- Option
+LIST = "list"  # -- Option
+FORCE = "force"  # -- Option
+PLATFORM = "platform"  # -- Option
+
 
 def install_packages(packages: list, platform: str, force: bool):
     """Install the apio packages passed as a list
@@ -28,19 +38,19 @@ def install_packages(packages: list, platform: str, force: bool):
         inst.install()
 
 
-@click.command("install", context_settings=util.context_settings())
+@click.command(CMD, context_settings=util.context_settings())
 @click.pass_context
-@click.argument("packages", nargs=-1)
-@click.option("-a", "--all", is_flag=True, help="Install all packages.")
+@click.argument(PACKAGES, nargs=-1)
+@click.option("-a", f"--{ALL}", is_flag=True, help="Install all packages.")
 @click.option(
-    "-l", "--list", is_flag=True, help="List all available packages."
+    "-l", f"--{LIST}", is_flag=True, help="List all available packages."
 )
 @click.option(
-    "-f", "--force", is_flag=True, help="Force the packages installation."
+    "-f", f"--{FORCE}", is_flag=True, help="Force the packages installation."
 )
 @click.option(
     "-p",
-    "--platform",
+    f"--{PLATFORM}",
     type=click.Choice(util.PLATFORMS),
     metavar="",
     help=(
@@ -52,17 +62,17 @@ def cli(ctx, **kwargs):
     """Install apio packages."""
 
     # -- Extract the arguments
-    packages = kwargs["packages"]  # -- tuple
-    platform = kwargs["platform"]  # -- str
-    _all = kwargs["all"]  # -- bool
-    _list = kwargs["list"]  # -- bool
-    force = kwargs["force"]  # -- bool
+    packages = kwargs[PACKAGES]  # -- tuple
+    platform = kwargs[PLATFORM]  # -- str
+    _all = kwargs[ALL]  # -- bool
+    _list = kwargs[LIST]  # -- bool
+    force = kwargs[FORCE]  # -- bool
 
     # -- Install the given apio packages
     if packages:
         install_packages(packages, platform, force)
 
-    # -- Install all the available packages
+    # -- Install all the available packages (if any)
     elif _all:
 
         # -- Get all the resources
