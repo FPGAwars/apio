@@ -1,10 +1,9 @@
-"""DOC: TODO"""
-
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
 # -- (C) 2016-2021 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
+"""Implementation for the apio INSTALL command"""
 
 import sys
 import re
@@ -36,6 +35,24 @@ class Installer:
         * package:  Package name to manage/install. It can have a sufix with
                     the version. Ex. "system@1.1.2"
         """
+
+        # -- Refactoring: Join together all the attributes
+        # -- This class has too many attributes (it is too complex)
+        # -- It should be refactor
+        # -- Al the attributes are shown together so that it is
+        # -- easier to refactor them in the future
+        self.package = None
+        self.version = None
+        self.force_install = None
+        self.packages_dir = None
+        self.resources = None
+        self.profile = None
+        self.spec_version = None
+        self.package_name = None
+        self.extension = None
+        self.download_urls = None
+        self.compressed_name = None
+        self.uncompressed_name = None
 
         # Parse version. The following attributes are used:
         #  * Installer.package: Package name (without version)
