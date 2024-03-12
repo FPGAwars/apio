@@ -24,7 +24,6 @@ examples/
 ice-build/
 work/
 test-colorlight-v61.ice
-test-examples/
 hardware.json
 hardware.out
 *.out
@@ -32,3 +31,5 @@ hardware.out
 hardware.bit
 hardware.config
 .DS_Store
+abc.history
+temp-*
