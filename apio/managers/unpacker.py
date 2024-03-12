@@ -146,7 +146,12 @@ class FileUnpacker:
         items = self._unpacker.get_items()
 
         # -- Progress bar...
-        with click.progressbar(items, label="Unpacking") as pbar:
+        with click.progressbar(items, 
+                               length=len(items),
+                               label=click.style("Unpacking..", fg="yellow"),
+                               fill_char=click.style("█", fg="blue"),
+                               empty_char=click.style("░", fg="blue"),
+                               ) as pbar:
 
             # -- Go though all the files in the archive...
             for item in pbar:
