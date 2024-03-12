@@ -14,11 +14,9 @@ import requests
 import click
 from apio import util
 
-
-class FDUnrecognizedStatusCode(util.ApioException):
-    """TODO"""
-
-    MESSAGE = "Got an unrecognized status code '{0}' when downloaded {1}"
+# -- Timeout for geting a reponse from the server when downloading
+# -- a file (in seconds)
+TIMEOUT = 5
 
 
 class FileDownloader:
@@ -53,11 +51,16 @@ class FileDownloader:
         self._request = None
 
         # -- Request the file
-        self._request = requests.get(url, stream=True, timeout=5)
+        self._request = requests.get(url, stream=True, timeout=TIMEOUT)
 
         # -- Raise an exception in case of download error...
         if self._request.status_code != 200:
-            raise FDUnrecognizedStatusCode(self._request.status_code, url)
+            click.secho(
+                f"Got an unrecognized status code: {self._request.status_code}"
+                f"\nWhen downloading {url}",
+                fg="red",
+            )
+            raise util.ApioException()
 
     def get_size(self) -> int:
         """Return the size (in bytes) of the latest bytes block received"""
