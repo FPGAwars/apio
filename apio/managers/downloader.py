@@ -8,12 +8,10 @@
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
 # ---- Licence Apache v2
 """TODO"""
-[]
-from math import ceil
 
+from math import ceil
 import requests
 import click
-
 from apio import util
 
 
@@ -61,15 +59,6 @@ class FileDownloader:
         if self._request.status_code != 200:
             raise FDUnrecognizedStatusCode(self._request.status_code, url)
 
-    def set_destination(self, destination):
-        """TODO"""
-
-        self.destination = destination
-
-    def get_filepath(self):
-        """TODO"""
-        return self.destination
-
     def get_size(self) -> int:
         """Return the size (in bytes) of the latest bytes block received"""
 
@@ -98,5 +87,7 @@ class FileDownloader:
         self._request.close()
 
     def __del__(self):
+        """Close any pending request"""
+
         if self._request:
             self._request.close()
