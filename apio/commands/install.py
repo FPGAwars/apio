@@ -30,12 +30,12 @@ platforms = [
 
 def install_packages(packages: list, platform: str, force: bool):
     """Install the apio packages passed as a list
-    * INPUTS:
-      - packages: List of packages (Ex. ['examples', 'oss-cad-suite'])
-      - platform: Specific platform (Advanced, just for developers)
-      - force: Force package installation
+      * INPUTS:
+        - packages: List of packages (Ex. ['examples', 'oss-cad-suite'])
+        - platform: Specific platform (Advanced, just for developers)
+        - force: Force package installation
     """
-    # -- Install packages, one by one...
+     # -- Install packages, one by one...
     for package in packages:
 
         # -- The instalation is performed by the Installer object
@@ -76,7 +76,7 @@ def cli(ctx, packages: tuple, all: bool, list: bool, force: bool, platform):
         install_packages(packages, platform, force)
 
     # -- Install all the available packages
-    elif all:
+    elif all: 
 
         # -- Get all the resources
         resources = Resources(platform)
