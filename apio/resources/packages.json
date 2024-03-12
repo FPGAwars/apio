@@ -7,6 +7,7 @@
     "release": {
       "tag_name": "%V",
       "compressed_name": "apio-examples-%V",
+      "uncompressed_name": "apio-examples-%V",
       "package_name": "examples",
       "extension": "zip",
       "url_version": "https://github.com/FPGAwars/apio-examples/raw/master/VERSION"
@@ -22,6 +23,7 @@
     "release": {
       "tag_name": "v%V",
       "compressed_name": "tools-oss-cad-suite-%P-%V",
+      "uncompressed_name": "",
       "package_name": "tools-oss-cad-suite",
       "extension": "tar.gz",
       "url_version": "https://github.com/FPGAwars/tools-oss-cad-suite/raw/main/VERSION_DEV"
@@ -37,6 +39,7 @@
     "release": {
       "tag_name": "v%V",
       "compressed_name": "tool-gtkwave-%P-%V",
+      "uncompressed_name": "",
       "package_name": "tool-gtkwave",
       "extension": "tar.gz",
       "url_version": "https://github.com/FPGAwars/tool-gtkwave/raw/master/VERSION",
@@ -57,6 +60,7 @@
     "release": {
       "tag_name": "v%V",
       "compressed_name": "tools-drivers-%P-%V",
+      "uncompressed_name": "",
       "package_name": "tools-drivers",
       "extension": "tar.gz",
       "url_version": "https://github.com/FPGAwars/tools-drivers/raw/master/VERSION",
@@ -69,4 +73,3 @@
     "description": "Drivers tools for Windows"
   }
 }
-

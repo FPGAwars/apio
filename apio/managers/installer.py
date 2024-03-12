@@ -163,6 +163,7 @@ class Installer:
             * Release
               - tag_name
               - compressed_name
+              - uncompressed_name
               - package_name
               - extension
               - url_version
@@ -185,6 +186,18 @@ class Installer:
 
         # -- Replace the '%P' parameter with the platform
         self.compressed_name = compressed_name_version.replace("%P", platform)
+
+        # -- Get the uncompressed name. It is also a template with the
+        # -- same parameters: %V and %P
+        uncompressed_name = package["release"]["uncompressed_name"]
+
+        # -- Replace the '%V' parameter
+        uncompress_name_version = uncompressed_name.replace("%V", self.version)
+
+        # -- Replace the '%P' parameter
+        self.uncompressed_name = uncompress_name_version.replace(
+            "%P", platform
+        )
 
         # -- Build the package tarball filename
         # --- Ex. 'apio-examples-0.0.35.zip'
@@ -287,8 +300,17 @@ class Installer:
                 # -- Remove it!
                 shutil.rmtree(package_dir)
 
-            # -- Uncompress it!!
-            self._unpack(dlpath, package_dir)
+            # -- If there is a folder name for uncompressing the tarball
+            # -- Ex. 'apio-examples-0.0.35'
+            if self.uncompressed_name:
+
+                # -- Uncompress it!!
+                # -- Ex. folder: /home/obijuan/.apio/packages
+                self._unpack(dlpath, self.packages_dir)
+
+            # -- Use the calculated destination file
+            else:
+                self._unpack(dlpath, package_dir)
 
             # -- Remove the downloaded compress file
             # -- Ex. remove '/home/obijuan/.apio/packages/
