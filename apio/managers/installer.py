@@ -9,7 +9,7 @@ import sys
 import re
 import shutil
 
-from os import remove, rename
+from os import rename
 from os.path import isdir
 from pathlib import Path
 import click
@@ -312,9 +312,18 @@ class Installer:
             else:
                 self._unpack(dlpath, package_dir)
 
-            remove(dlpath)
+            # -- Remove the downloaded compress file
+            # -- Ex. remove '/home/obijuan/.apio/packages/
+            #                apio-examples-0.0.35.zip'
+            dlpath.unlink()
+
+            # -- Add package to profile
             self.profile.add_package(self.package, self.version)
+
+            # -- Save the profile
             self.profile.save()
+
+            # -- Inform the user!
             click.secho(
                 f"""Package \'{self.package}\' has been """
                 """successfully installed!""",
@@ -495,7 +504,7 @@ class Installer:
 
             # -- Remove the file
             if filepath.is_file():
-                remove(filepath)
+                filepath.unlink()
 
             # -- Inform the user
             click.secho("Abort download!", fg="red")
