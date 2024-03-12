@@ -28,6 +28,23 @@ platforms = [
 ]
 
 
+def install_packages(packages: list, platform: str, force: bool):
+    """Install the apio packages passed as a list
+    * INPUTS:
+      - packages: List of packages (Ex. ['examples', 'oss-cad-suite'])
+      - platform: Specific platform (Advanced, just for developers)
+      - force: Force package installation
+    """
+    # -- Install packages, one by one...
+    for package in packages:
+
+        # -- The instalation is performed by the Installer object
+        inst = Installer(package, platform, force)
+
+        # -- Install the package!
+        inst.install()
+
+
 # R0913: Too many arguments (6/5)
 # pylint: disable=R0913
 # pylint: disable=W0622
@@ -56,27 +73,16 @@ def cli(ctx, packages: tuple, all: bool, list: bool, force: bool, platform):
 
     # -- Install the given apio packages
     if packages:
-
-        # -- Install packages, one by one...
-        for package in packages:
-
-            # -- The instalation is performed by the Installer object
-            inst = Installer(package, platform, force)
-
-            # -- Install the package!
-            inst.install()
+        install_packages(packages, platform, force)
 
     # -- Install all the available packages
-    elif all:  # pragma: no cover
+    elif all:
+
         # -- Get all the resources
         resources = Resources(platform)
 
-        # -- Get all the packages
-        packages = resources.packages
-
-        # -- Install all the packages...
-        for package in packages:
-            Installer(package, platform, force).install()
+        # -- Install all the available packages for this platform!
+        install_packages(resources.packages, platform, force)
 
     # -- List all the packages (installed or not)
     elif list:

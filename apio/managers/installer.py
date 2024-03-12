@@ -223,7 +223,7 @@ class Installer:
             # --       download/0.0.35/apio-examples-0.0.35.zip'
             platform_download_url = self.download_urls[0]["url"]
 
-            # -- Download the file
+            # -- First step: Download the file
             dlpath = self._download(platform_download_url)
 
         # -- There is no write access to the package folder
@@ -233,7 +233,8 @@ class Installer:
             )
             click.secho(str(exc), fg="red")
 
-        # --
+        # -- In case of any other error, try to install with the other
+        # -- url...
         except Exception:
             # Try os name
             dlpath = self._install_os_package(platform_download_url)
@@ -241,11 +242,12 @@ class Installer:
         # -- Second step: Install downloaded package
         self._install_package(dlpath)
 
-        # Rename unpacked dir to package dir
+        # -- Rename unpacked dir to package dir
         self._rename_unpacked_dir()
 
     # W0703: Catching too general exception Exception (broad-except)
     # pylint: disable=W0703
+    # -- PENDING: Document and refactor!
     def _install_os_package(self, platform_download_url):
         os_download_url = self.download_urls[1].get("url")
         if platform_download_url != os_download_url:
@@ -307,12 +309,24 @@ class Installer:
             )
 
     def _rename_unpacked_dir(self):
-        if self.uncompressed_name:
-            # -- Build the names
-            unpack_dir = str(self.packages_dir / self.uncompressed_name)
-            package_dir = str(self.packages_dir / self.package_name)
+        """Change the name of the downloaded file to the final one
+        Ex. '/home/obijuan/.apio/packages/apio-examples-0.0.35'
+        ---> '/home/obijuan/.apio/packages/examples'
+        """
 
-            if isdir(unpack_dir):
+        if self.uncompressed_name:
+
+            # -- Build the names
+            # -- src folder (the one downloaded and installed)
+            # -- Ex. '/home/obijuan/.apio/packages/apio-examples-0.0.35'
+            unpack_dir = self.packages_dir / self.uncompressed_name
+
+            # -- New folder
+            # -. Ex, '/home/obijuan/.apio/packages/examples'
+            package_dir = self.packages_dir / self.package_name
+
+            # -- Rename it!
+            if unpack_dir.is_dir():
                 rename(unpack_dir, package_dir)
 
     def uninstall(self):
