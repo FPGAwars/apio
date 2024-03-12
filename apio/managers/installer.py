@@ -12,7 +12,7 @@ import shutil
 
 # from pathlib import Path
 from os import remove, rename
-from os.path import isfile, isdir
+from os.path import isdir
 from pathlib import Path
 import click
 import requests
@@ -457,16 +457,24 @@ class Installer:
         filepath = filed.destination
 
         # -- Inform the user
-        click.secho("Download " + filed.fname)
+        click.secho(f"Download {filed.fname}")
 
         # -- Download start!
         try:
             filed.start()
+
+        # -- If the user press Ctrl-C (Abort)
         except KeyboardInterrupt:
-            if isfile(filepath):
+
+            # -- Remove the file
+            if filepath.is_file():
                 remove(filepath)
+
+            # -- Inform the user
             click.secho("Abort download!", fg="red")
             sys.exit(1)
+
+        # -- Return the destination path
         return filepath
 
     @staticmethod

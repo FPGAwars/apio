@@ -9,7 +9,7 @@
 # ---- Licence Apache v2
 """TODO"""
 
-
+import os
 from email.utils import parsedate_tz
 from math import ceil
 from time import mktime
@@ -73,11 +73,20 @@ class FileDownloader:
         """TODO"""
         return self.destination
 
-    def get_lmtime(self):
-        """TODO"""
+    def get_lmtime(self) -> str:
+        """Get the last modified header
+        Ex. 'Fri, 13 Oct 2023 08:30:02 GMT'
+        """
 
+        # -- Make sure this header is present...
         if "last-modified" in self._request.headers:
-            return self._request.headers.get("last-modified")
+
+            # -- Read the last-modified header
+            # -- ex. 'Fri, 13 Oct 2023 08:30:02 GMT'
+            lmtime = self._request.headers["last-modified"]
+            return lmtime
+
+        # -- No header found
         return None
 
     def get_size(self) -> int:
@@ -107,13 +116,21 @@ class FileDownloader:
         # -- Download done!
         self._request.close()
 
-        self._preserve_filemtime(self.get_lmtime())
+        # -- Get the last-modified header
+        lmtime = self.get_lmtime()
 
-    def _preserve_filemtime(self, lmdate):
-        if lmdate is not None:
+        # -- Set the access and modified time of the downloaded file
+        self._preserve_filemtime(lmtime)
+
+    def _preserve_filemtime(self, lmdate: str):
+        """Set the access and modified time of the downloaded file"""
+
+        if lmdate:
             timedata = parsedate_tz(lmdate)
             lmtime = mktime(timedata[:9])
-            util.change_filemtime(self.destination, lmtime)
+
+            # -- Set the access and modified times of the downloaded file
+            os.utime(self.destination, (lmtime, lmtime))
 
     def __del__(self):
         if self._request:
