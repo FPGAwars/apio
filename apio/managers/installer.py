@@ -9,7 +9,6 @@ import sys
 import re
 import shutil
 
-from os import rename
 from os.path import isdir
 from pathlib import Path
 import click
@@ -300,15 +299,22 @@ class Installer:
                 # -- Remove it!
                 shutil.rmtree(package_dir)
 
-            # -- If there is a folder name for uncompressing the tarball
-            # -- Ex. 'apio-examples-0.0.35'
+            # -- The packages that have the property uncompressed_name
+            # -- have a folder (with that name) inside the compresssed file
+            # -- Ex. The package examples has the folder apio-examples-0.0.35
+            # -- Because of this, it should be unpacked directly in the
+            # -- packages folder (Ex. /home/obijuan/.paio/packages) and then
+            # -- rename the folder to the package name
+            # -- (Ex. apio-examples-0.0.35 -> examples)
             if self.uncompressed_name:
 
                 # -- Uncompress it!!
                 # -- Ex. folder: /home/obijuan/.apio/packages
                 self._unpack(dlpath, self.packages_dir)
 
-            # -- Use the calculated destination file
+            # -- In this other case the package is directly
+            # -- unpack in the package_dir folder
+            # -- Ex. packages/tools-oss-cad-suite
             else:
                 self._unpack(dlpath, package_dir)
 
@@ -334,14 +340,15 @@ class Installer:
         """Change the name of the downloaded file to the final one
         Ex. '/home/obijuan/.apio/packages/apio-examples-0.0.35'
         ---> '/home/obijuan/.apio/packages/examples'
+        Only for packages that has the property uncompressed_name
         """
 
-        if self.compressed_name:
+        if self.uncompressed_name:
 
             # -- Build the names
             # -- src folder (the one downloaded and installed)
             # -- Ex. '/home/obijuan/.apio/packages/apio-examples-0.0.35'
-            unpack_dir = self.packages_dir / self.compressed_name
+            unpack_dir = self.packages_dir / self.uncompressed_name
 
             # -- New folder
             # -. Ex, '/home/obijuan/.apio/packages/examples'
@@ -349,7 +356,7 @@ class Installer:
 
             # -- Rename it!
             if unpack_dir.is_dir():
-                rename(unpack_dir, package_dir)
+                unpack_dir.rename(package_dir)
 
     def uninstall(self):
         """DOC: TODO"""
