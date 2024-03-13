@@ -114,5 +114,16 @@
             //-- Change to the folder with the example to test
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/temp-ledon"
         },
+        {
+            "name": "Apio uninstall",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": ["uninstall", "examples"],
+            "console": "internalConsole",
+            "justMyCode": true,
+            //-- Change to the folder with the example to test
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/temp-ledon"
+        },
     ]
 }

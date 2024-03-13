@@ -474,7 +474,7 @@ def show_package_version_warning(name, version, spec_version):
 
 
 def show_package_path_error(name):
-    """DOC: TODO"""
+    """Display an error: package Not installed"""
 
     message = f"Error: package '{name}' is not installed"
     click.secho(message, fg="red")

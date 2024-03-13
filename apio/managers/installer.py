@@ -8,7 +8,6 @@
 import sys
 import shutil
 
-from os.path import isdir
 from pathlib import Path
 import click
 import requests
@@ -245,6 +244,7 @@ class Installer:
 
         # -- In case of any other error, try to install with the other
         # -- url...
+        # --- ummm very likely this second installation can be removed...
         except Exception:
             # Try os name
             dlpath = self._install_os_package(platform_download_url)
@@ -358,21 +358,32 @@ class Installer:
                 unpack_dir.rename(package_dir)
 
     def uninstall(self):
-        """DOC: TODO"""
+        """Uninstall the apio package"""
 
-        # -- Build the filename
-        file = str(self.packages_dir / self.package_name)
-        if isdir(file):
+        # -- Build the package filename
+        file = self.packages_dir / self.package_name
+
+        # -- Check that it is a folder...
+        if file.is_dir():
+
+            # -- Inform the user
             package_color = click.style(self.package, fg="cyan")
             click.echo(f"Uninstalling {package_color} package:")
+
+            # -- Remove the folder with all its content!!
             shutil.rmtree(file)
+
+            # -- Inform the user
             click.secho(
                 f"""Package \'{self.package}\' has been """
                 """successfully uninstalled!""",
                 fg="green",
             )
         else:
+            # -- Package not installed!
             util.show_package_path_error(self.package)
+
+        # -- Remove the package from the profile file
         self.profile.remove_package(self.package)
         self.profile.save()
 
