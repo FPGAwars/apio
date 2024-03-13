@@ -54,18 +54,17 @@ def test_complete(clirunner, validate_cliresult, configenv, offline):
         # -- Config the environment (conftest.configenv())
         configenv()
 
-        # -- Execute "apio examples"
+        # -- Execute "apio uninstall examples"
         result = clirunner.invoke(
             cmd_uninstall, ['examples'], input='y')
         assert 'Do you want to continue?' in result.output
         assert 'Error: package \'examples\' is not installed' in result.output
 
-        # -- Execute "apio examples@X"
+        # -- Execute "apio install examples@X"
         result = clirunner.invoke(cmd_install, ['examples@X'])
-        assert 'Error: package not availabe' in result.output
-        assert 'for this platform' in result.output
+        assert 'Error: Package not found' in result.output
 
-        # -- Execute "apio examples@0.0.34"
+        # -- Execute "apio install examples@0.0.34"
         result = clirunner.invoke(cmd_install, ['examples@0.0.34'])
         validate_cliresult(result)
         assert 'Installing examples package' in result.output

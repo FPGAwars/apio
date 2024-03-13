@@ -245,9 +245,11 @@ class Installer:
         # -- In case of any other error, try to install with the other
         # -- url...
         # --- ummm very likely this second installation can be removed...
-        except Exception:
-            # Try os name
-            dlpath = self._install_os_package(platform_download_url)
+        # except Exception:
+        # Try os name
+        # dlpath = self._install_os_package(platform_download_url)
+        except util.ApioException:
+            click.secho("Error: Package not found\n", fg="red")
 
         # -- Second step: Install downloaded package
         self._install_package(dlpath)
