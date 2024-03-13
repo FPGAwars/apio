@@ -6,7 +6,6 @@
 """Implementation for the apio INSTALL command"""
 
 import sys
-import re
 import shutil
 
 from os.path import isdir
@@ -441,35 +440,6 @@ class Installer:
         )
         click.secho("Check the resources/packages.json file", fg="red")
         sys.exit(1)
-
-    # -- This function can be removed
-    @staticmethod
-    def _find_required_version(releases, tag_name, req_v):
-        for release in releases:
-            if "tag_name" in release:
-                tag = tag_name.replace("%V", req_v)
-                if tag == release.get("tag_name"):
-                    return req_v
-        return None
-
-    @staticmethod
-    def _find_latest_version(releases, tag_name, spec_v):
-        print("->Find latest version")
-
-        for release in releases:
-            if "tag_name" in release:
-                pattern = tag_name.replace("%V", "(?P<v>.*?)") + "$"
-                print(f"Pattern: {pattern}")
-                print(f"Release tag_name: {release.get('tag_name')}")
-                match = re.search(pattern, release.get("tag_name"))
-                if match:
-                    prerelease = release.get("prerelease", False)
-                    if not prerelease:
-                        version = match.group("v")
-                        print(f"Match: Version: {version}")
-                        if util.check_package_version(version, spec_v):
-                            return version
-        return None
 
     def _download(self, url: str) -> str:
         """Download the given file (url). Return the path of
