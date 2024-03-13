@@ -257,33 +257,6 @@ class Installer:
         # -- Rename unpacked dir to package dir
         self._rename_unpacked_dir()
 
-    # W0703: Catching too general exception Exception (broad-except)
-    # pylint: disable=W0703
-    # -- PENDING: Document and refactor!
-    def _install_os_package(self, platform_download_url):
-        os_download_url = self.download_urls[1].get("url")
-        if platform_download_url != os_download_url:
-            name = self.download_urls[0].get("platform")
-            click.secho(
-                f"Warning: full platform does not match: {name}",
-                fg="yellow",
-            )
-
-            os_name = self.download_urls[1].get("platform")
-            click.secho(
-                f"         Trying OS name: {os_name}",
-                fg="yellow",
-            )
-            try:
-                return self._download(os_download_url)
-            except Exception as exc:
-                click.secho(f"Error: {str(exc)}", fg="red")
-        else:
-            click.secho(
-                "Error: package not availabe for this platform", fg="red"
-            )
-        return None
-
     def _install_package(self, dlpath: Path):
         """Install the given tarball"""
 
