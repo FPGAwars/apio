@@ -20,7 +20,6 @@ import subprocess
 from threading import Thread
 from os.path import isdir
 from pathlib import Path
-
 import click
 import semantic_version
 from serial.tools.list_ports import comports

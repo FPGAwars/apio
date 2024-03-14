@@ -6,7 +6,7 @@
 """Main implementation of APIO INSTALL command"""
 
 import click
-from apio.managers.installer import Installer
+from apio.managers.installer import Installer, list_packages
 from apio.resources import Resources
 from apio import util
 
@@ -38,6 +38,10 @@ def install_packages(packages: list, platform: str, force: bool):
         inst.install()
 
 
+# R0801: Similar lines in 2 files
+# pylint: disable = R0801
+# ==apio.commands.install:[83:93]
+# ==apio.commands.uninstall:[71:81]
 @click.command(CMD, context_settings=util.context_settings())
 @click.pass_context
 @click.argument(PACKAGES, nargs=-1)
@@ -52,7 +56,6 @@ def install_packages(packages: list, platform: str, force: bool):
     "-p",
     f"--{PLATFORM}",
     type=click.Choice(util.PLATFORMS),
-    metavar="",
     help=(
         f"Set the platform [{', '.join(util.PLATFORMS)}] "
         "(Advanced, for developers)."
@@ -83,11 +86,7 @@ def cli(ctx, **kwargs):
 
     # -- List all the packages (installed or not)
     elif _list:
-        # -- Get all the resources
-        resources = Resources(platform)
-
-        # -- List the packages
-        resources.list_packages()
+        list_packages(platform)
 
     # -- Invalid option. Just show the help
     else:

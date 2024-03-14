@@ -491,3 +491,13 @@ class Installer:
         success = fileu.start()
 
         return success
+
+
+def list_packages(platform: str):
+    """List all the available packages"""
+
+    # -- Get all the resources
+    resources = Resources(platform)
+
+    # -- List the packages
+    resources.list_packages()
