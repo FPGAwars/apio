@@ -108,7 +108,7 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
-            "args": ["install", "examples"],
+            "args": ["install", "-l"],
             "console": "internalConsole",
             "justMyCode": true,
             //-- Change to the folder with the example to test

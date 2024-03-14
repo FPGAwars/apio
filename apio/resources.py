@@ -216,56 +216,52 @@ class Resources:
         # Classify packages
         installed_packages, notinstalled_packages = self.get_packages()
 
-        # Print tables
+        # -- Calculate the terminal width
         terminal_width, _ = shutil.get_terminal_size()
 
+        # -- String with a horizontal line with the same width
+        # -- as the terminal
+        line = "─" * terminal_width
+        dline = "═" * terminal_width
+
         if installed and installed_packages:
-            # - Print installed packages table
-            click.echo("\nInstalled packages:\n")
 
-            package_list_tpl = "{name:20} {description:30} {version:<8}"
-
-            click.echo("-" * terminal_width)
-            click.echo(
-                package_list_tpl.format(
-                    name=click.style("Name", fg="cyan"),
-                    version="Version",
-                    description="Description",
-                )
-            )
-            click.echo("-" * terminal_width)
+            # ------- Print installed packages table
+            # -- Print the header
+            click.echo()
+            click.echo(dline)
+            click.echo("Installed packages:")
+            click.echo(dline)
 
             for package in installed_packages:
-                click.echo(
-                    package_list_tpl.format(
-                        name=click.style(package.get("name"), fg="cyan"),
-                        version=package.get("version"),
-                        description=package.get("description"),
-                    )
-                )
+
+                name = click.style(f"{package['name']}", fg="cyan", bold=True)
+                version = package["version"]
+                description = package["description"]
+
+                click.secho(f"{name} {version}")
+                click.secho(f"  {description}")
+                click.echo(line)
+
+            click.echo()
 
         if notinstalled and notinstalled_packages:
-            # - Print not installed packages table
-            click.echo("\nNot installed packages:\n")
 
-            package_list_tpl = "{name:20} {description:30}"
-
-            click.echo("-" * terminal_width)
-            click.echo(
-                package_list_tpl.format(
-                    name=click.style("Name", fg="yellow"),
-                    description="Description",
-                )
-            )
-            click.echo("-" * terminal_width)
+            # ------ Print not installed packages table
+            # -- Print the header
+            click.echo()
+            click.echo(dline)
+            click.echo("Not installed packages:")
+            click.echo(dline)
+            click.echo("Name   Description")
+            click.echo(line)
 
             for package in notinstalled_packages:
-                click.echo(
-                    package_list_tpl.format(
-                        name=click.style(package.get("name"), fg="yellow"),
-                        description=package.get("description"),
-                    )
-                )
+
+                name = click.style(f"{package['name']}", fg="yellow")
+                description = package["description"]
+                click.echo(f"{name}  {description}")
+                click.echo(line)
 
         click.echo("\n")
 

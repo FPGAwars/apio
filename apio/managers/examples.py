@@ -71,7 +71,7 @@ class Examples:
         # -- as the terminal
         line = "─" * terminal_width
 
-        # -- Prin the header
+        # -- Print the header
         click.echo()
         click.echo(line)
 
