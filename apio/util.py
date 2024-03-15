@@ -628,21 +628,6 @@ def print_exception_developers(e):
     click.secho(f"{e}\n", fg="yellow")
 
 
-def mkdir(path):
-    """DOC: TODO"""
-
-    # path = dirname(path)
-    path = path.parent
-
-    if not path.exists():
-        path.mkdir()
-    # if not exists(path):
-    #     try:
-    #         os.makedirs(path)
-    #     except OSError:
-    #         pass
-
-
 def check_dir(_dir: Path) -> Path:
     """Check if the given path is a folder. It it does not exists
     the folder is created. If no path is given the current working

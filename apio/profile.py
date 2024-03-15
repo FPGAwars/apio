@@ -199,9 +199,12 @@ class Profile:
             self.packages = data  # Backward compatibility
 
     def save(self):
-        """DOC: todo"""
+        """Save the profile file"""
 
-        util.mkdir(self._profile_path)
+        # -- Create the profile folder, if it does not exist yet
+        path = self._profile_path.parent
+        if not path.exists():
+            path.mkdir()
 
         with open(self._profile_path, "w", encoding="utf8") as profile:
             data = {
