@@ -86,11 +86,11 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
-            "args": ["boards", "-f"],
+            "args": ["boards", "-l"],
             "console": "internalConsole",
             "justMyCode": true,
             //-- Change to the folder with the example to test
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/ledon"
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/temp-ledon"
         },
         {
             "name": "Apio config",
