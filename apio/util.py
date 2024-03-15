@@ -487,12 +487,6 @@ def get_package_spec_version(name, resources):
     return spec_version
 
 
-def change_filemtime(path, time):
-    """DOC: TODO"""
-
-    os.utime(path, (time, time))
-
-
 def exec_command(*args, **kwargs) -> dict:  # pragma: no cover
     """Execute the given command:
 
