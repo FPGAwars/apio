@@ -814,7 +814,7 @@ def get_bin_dir() -> Path:
     # In this case the main file is: venv/Scripts/apio.exe/__main__.py!
     # This is not good because venv/Scripts/apio.exe is not a directory
     # So here we go with the workaround:
-    if str(bin_dir).endswith(".exe"):
+    if bin_dir.suffix == ".exe":
         return bin_dir.parent
 
     return bin_dir
