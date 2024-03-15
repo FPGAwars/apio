@@ -226,7 +226,12 @@ def get_package_dir(pkg_name: str) -> Path:
     Packages are installed in the following folder:
       * Default: $APIO_HOME_DIR/packages
       * $APIO_PKG_DIR/packages: if the APIO_PKG_DIR env variable is set
-      * Return a String
+      * INPUT:
+        - pkg_name: Package name (Ex. 'examples')
+      * OUTPUT:
+        - The package folder (PosixPath)
+           (Ex. '/home/obijuan/.apio/packages/examples'))
+        - or None if the packageis not installed
     """
 
     # -- Get the apio home dir:
