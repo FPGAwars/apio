@@ -1,5 +1,3 @@
-"""DOC: TODO"""
-
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
 # -- (C) 2016-2018 FPGAwars
@@ -9,8 +7,8 @@
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
 # ---- Licence Apache v2
+"""Utility functions"""
 
-import string
 import sys
 import os
 import json
@@ -101,7 +99,7 @@ class AsyncPipe(Thread):
         self.join()
 
 
-def get_full_path(folder: string) -> Path:
+def get_full_path(folder: str) -> Path:
     """Get the full path to the given folder
     Inputs:
       * folder: String with the folder name
@@ -153,7 +151,7 @@ def get_systype() -> str:
     return platform_str
 
 
-def _get_projconf_option_dir(name, default=None):
+def _get_projconf_option_dir(name: str, default=None):
     """Return the project option with the given name
     These options are place either on environment variables or
     into the /etc/apio.json file in the case of debian distributions
@@ -179,9 +177,6 @@ def _get_projconf_option_dir(name, default=None):
         # -- If there are quotes, remove them
         if _env_value.startswith('"') and _env_value.endswith('"'):
             _env_value = _env_value[1:-1]
-
-        # -- Debug: Print the environment variable (without quotes)
-        # print(f"DEBUG: {_env_name}: {_env_value}")
 
         return _env_value
 
@@ -336,9 +331,7 @@ def set_env_variables(base_dir: dict, bin_dir: dict):
 
     os.environ["IVL"] = str(base_dir[OSS_CAD_SUITE] / "lib" / "ivl")
 
-    os.environ["ICEBOX"] = str(
-        Path(base_dir[OSS_CAD_SUITE]) / "share" / "icebox"
-    )
+    os.environ["ICEBOX"] = str(base_dir[OSS_CAD_SUITE] / "share" / "icebox")
 
     os.environ["TRELLIS"] = str(base_dir[OSS_CAD_SUITE] / "share" / "trellis")
 
