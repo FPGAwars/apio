@@ -414,8 +414,8 @@ def get_bin_dir_table(base_dir):
     """
 
     bin_dir = {
-        OSS_CAD_SUITE: str(Path(base_dir.get(OSS_CAD_SUITE)) / BIN),
-        GTKWAVE: str(Path(base_dir.get(GTKWAVE)) / BIN),
+        OSS_CAD_SUITE: str(Path(base_dir[OSS_CAD_SUITE]) / BIN),
+        GTKWAVE: str(Path(base_dir[GTKWAVE]) / BIN),
     }
 
     return bin_dir
@@ -500,7 +500,7 @@ def get_package_spec_version(name, resources):
     return spec_version
 
 
-def exec_command(*args, **kwargs) -> dict:  # pragma: no cover
+def exec_command(*args, **kwargs) -> dict:
     """Execute the given command:
 
     INPUTS:
@@ -735,8 +735,6 @@ def get_serial_ports() -> list:
     return result
 
 
-# W0703: Catching too general exception Exception (broad-except)
-# pylint: disable=W0703
 def get_tinyprog_meta() -> list:
     """Special function for the TinyFPGA board
      Get information directly from the board, just by
