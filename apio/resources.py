@@ -229,39 +229,40 @@ class Resources:
             # ------- Print installed packages table
             # -- Print the header
             click.echo()
-            click.echo(dline)
-            click.echo("Installed packages:")
-            click.echo(dline)
+            click.secho(dline, fg="green")
+            click.secho("Installed packages:", fg="green")
+            
 
             for package in installed_packages:
-
+                click.secho(line)
                 name = click.style(f"{package['name']}", fg="cyan", bold=True)
                 version = package["version"]
                 description = package["description"]
 
-                click.secho(f"{name} {version}")
+                click.secho(f"• {name} {version}")
                 click.secho(f"  {description}")
-                click.echo(line)
 
-            click.echo()
+            click.secho(dline, fg="green")
+            click.echo(f"Total: {len(installed_packages)}")
 
         if notinstalled and notinstalled_packages:
 
             # ------ Print not installed packages table
             # -- Print the header
             click.echo()
-            click.echo(dline)
-            click.echo("Not installed packages:")
-            click.echo(dline)
-            click.echo("Name   Description")
-            click.echo(line)
+            click.secho(dline, fg="yellow")
+            click.secho("Available packages (Not installed):", fg="yellow")
 
             for package in notinstalled_packages:
 
-                name = click.style(f"{package['name']}", fg="yellow")
+                click.echo(line)
+                name = click.style(f"• {package['name']}", fg="red")
                 description = package["description"]
                 click.echo(f"{name}  {description}")
-                click.echo(line)
+
+            click.secho(dline, fg="yellow")
+            click.echo(f"Total: {len(notinstalled_packages)}")
+                
 
         click.echo("\n")
 
