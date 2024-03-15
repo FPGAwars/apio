@@ -323,7 +323,7 @@ def set_env_variables(base_dir: dict, bin_dir: dict):
     # -- if installed (Maximum priority)
     if base_dir[OSS_CAD_SUITE]:
         # -- Get the lib folder (where the shared libraries are located)
-        oss_cad_suite_lib = str(Path(base_dir[OSS_CAD_SUITE]) / "lib")
+        oss_cad_suite_lib = str(base_dir[OSS_CAD_SUITE] / "lib")
 
         # -- Add the lib folder
         path = os.pathsep.join([oss_cad_suite_lib, path])
@@ -334,19 +334,15 @@ def set_env_variables(base_dir: dict, bin_dir: dict):
 
     # Add other environment variables
 
-    os.environ["IVL"] = str(Path(base_dir[OSS_CAD_SUITE]) / "lib" / "ivl")
+    os.environ["IVL"] = str(base_dir[OSS_CAD_SUITE] / "lib" / "ivl")
 
     os.environ["ICEBOX"] = str(
         Path(base_dir[OSS_CAD_SUITE]) / "share" / "icebox"
     )
 
-    os.environ["TRELLIS"] = str(
-        Path(base_dir[OSS_CAD_SUITE]) / "share" / "trellis"
-    )
+    os.environ["TRELLIS"] = str(base_dir[OSS_CAD_SUITE] / "share" / "trellis")
 
-    os.environ["YOSYS_LIB"] = str(
-        Path(base_dir[OSS_CAD_SUITE]) / "share" / "yosys"
-    )
+    os.environ["YOSYS_LIB"] = str(base_dir[OSS_CAD_SUITE] / "share" / "yosys")
 
 
 def resolve_packages(
