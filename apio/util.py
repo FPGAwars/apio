@@ -491,12 +491,25 @@ def get_package_version(name, profile):
     return version
 
 
-def get_package_spec_version(name, resources):
-    """DOC: TODO"""
+def get_package_spec_version(name: str, resources: dict) -> str:
+    """Get the version restrictions for a given package
+    * INPUTs:
+      * name: Package name
+      * resources: Apio resources object
+    * OUTPUT: version restrictions for that package
+      Ex. ''
+    """
 
+    # -- No restrictions by default
     spec_version = ""
-    if name in resources.distribution.get("packages"):
-        spec_version = resources.distribution.get("packages").get(name)
+
+    # -- Check that the package is valid
+    if name in resources.distribution["packages"]:
+
+        # -- Get the package restrictions
+        spec_version = resources.distribution["packages"][name]
+
+    # -- Return the restriction
     return spec_version
 
 
@@ -697,7 +710,7 @@ def command(function):
     return decorate
 
 
-def get_serial_ports() -> list:
+def get_serial_ports() -> list[dict]:
     """Get a list of the serial port devices connected
     * OUTPUT: A list with the devides
          Ex: [{'port': '/dev/ttyACM0',
