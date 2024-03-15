@@ -407,10 +407,11 @@ def get_base_dir():
     return base_dir
 
 
-def get_bin_dir_table(base_dir):
+def get_bin_dir_table(base_dir: dict):
     """Return a table with the package name and the folder were
     the executable files are stored
-    * Input: Table with the package base_dir
+    * INPUT
+      -base_dir: Table with the package base_dir
     """
 
     bin_dir = {
