@@ -10,7 +10,7 @@
             "console": "internalConsole",
             "justMyCode": true,
             //-- Change to the folder with the example to test
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/ledon"
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/temp-ledon"
         },
         {
             "name": "Apio clean",
@@ -79,7 +79,7 @@
             "console": "internalConsole",
             "justMyCode": true,
             //-- Change to the folder with the example to test
-            "cwd": "${workspaceFolder}/test-examples/test"
+            "cwd": "${workspaceFolder}/test-examples/temp-test"
         },
         {
             "name": "Apio boards",

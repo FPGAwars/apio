@@ -17,7 +17,6 @@ import json
 import platform
 import subprocess
 from threading import Thread
-from os.path import isdir
 from pathlib import Path
 import click
 import semantic_version
@@ -347,10 +346,22 @@ def set_env_variables(base_dir, bin_dir):
     )
 
 
-def resolve_packages(packages, installed_packages, spec_packages):
-    """Check the given packages.
-    * Check that they are installed
-    * Check that the versions are ok"""
+def resolve_packages(
+    packages: list[str], installed_packages: list, spec_packages: dict
+) -> bool:
+    """Check the given packages
+    * make sure they all are installed
+    * make sure they versions are ok and have no conflicts...
+    * INPUTS
+      * package: List of package names to check
+      * installed_packages: Dictionry with all the apio packages installed
+      * spec_packages: Dictionary with the spec version:
+        (Ex. {'drivers': '>=1.1.0,<1.2.0'....})
+
+    * OUTPUT:
+      * True: All the packages are ok!
+      * False: There is an error...
+    """
 
     # --- Get the table with the paths of all the apio packages
     base_dir = get_base_dir()
@@ -366,9 +377,11 @@ def resolve_packages(packages, installed_packages, spec_packages):
 
         spec_version = spec_packages.get(package, "")
 
-        check &= check_package(
-            package, version, spec_version, bin_dir.get(package)
-        )
+        # -- Get the package binary dir as a PosixPath object
+        _bin = Path(bin_dir[package])
+
+        # -- Check this package
+        check &= check_package(package, version, spec_version, _bin)
 
     # -- Load packages
     if check:
@@ -408,7 +421,7 @@ def get_bin_dir_table(base_dir):
     return bin_dir
 
 
-def check_package(name, version, spec_version, path):
+def check_package(name: str, version: str, spec_version: str, path):
     """Check if the given package is installed
     * name: Package name
     * path: path where the binary files of the package are stored
@@ -420,7 +433,8 @@ def check_package(name, version, spec_version, path):
         return True
 
     # Check package path
-    if not isdir(path):
+    # if not isdir(path):
+    if not path.is_dir():
         show_package_path_error(name)
         show_package_install_instructions(name)
         return False
