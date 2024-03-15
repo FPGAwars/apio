@@ -447,20 +447,33 @@ def check_package(name: str, version: str, spec_version: str, path: Path):
     return True
 
 
-def check_package_version(version, spec_version):
-    """DOC: TODO"""
+def check_package_version(version: str, spec_version: str) -> bool:
+    """Check if a given version satisfy the semantic version constraints
+    * INPUTS:
+      - version: Package version (Ex. '0.0.9')
+      - spec_version: semantic version constraint (Ex. '>=0.0.1')
+    * OUTPUT:
+      - True: Version ok!
+      - False: Version not ok! or incorrect version number
+    """
 
+    # -- Build a semantic version object
     spec = semantic_version.SimpleSpec(spec_version)
+
+    # -- Check it!
     try:
         semver = semantic_version.Version(version)
+
+    # -- Incorrect version number
     except ValueError:
         return False
 
+    # -- Check the version (True if the semantic version is satisfied)
     return semver in spec
 
 
-def show_package_version_warning(name, version, spec_version):
-    """DOC: TODO"""
+def show_package_version_warning(name: str, version: str, spec_version: str):
+    """Print warning message: semantic version does not match!"""
 
     message = (
         f"Warning: package '{name}' version {version}\n"
@@ -469,25 +482,42 @@ def show_package_version_warning(name, version, spec_version):
     click.secho(message, fg="yellow")
 
 
-def show_package_path_error(name):
-    """Display an error: package Not installed"""
+def show_package_path_error(name: str):
+    """Display an error: package Not installed
+    * INPUTs:
+      - name: Package name
+    """
 
     message = f"Error: package '{name}' is not installed"
     click.secho(message, fg="red")
 
 
-def show_package_install_instructions(name):
-    """DOC: TODO"""
+def show_package_install_instructions(name: str):
+    """Print the package install instructions
+    * INPUTs:
+      - name: Package name
+    """
 
     click.secho(f"Please run:\n   apio install {name}", fg="yellow")
 
 
-def get_package_version(name, profile):
-    """DOC: TODO"""
+def get_package_version(name: str, profile: dict) -> str:
+    """Get the version of a given package
+    * INPUTs:
+      - name: Package name
+      - profile: Dictrionary with the profile information
+    * OUTPUT:
+      - The version (Ex. '0.0.9')
+    """
 
+    # -- Default version
     version = ""
+
+    # -- Check if the package is intalled
     if name in profile.packages:
-        version = profile.packages.get(name).get("version")
+        version = profile.packages[name]["version"]
+
+    # -- Return the version
     return version
 
 
@@ -497,7 +527,7 @@ def get_package_spec_version(name: str, resources: dict) -> str:
       * name: Package name
       * resources: Apio resources object
     * OUTPUT: version restrictions for that package
-      Ex. ''
+      Ex. '>=1.1.0,<1.2.0'
     """
 
     # -- No restrictions by default
