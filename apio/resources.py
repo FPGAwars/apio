@@ -231,7 +231,6 @@ class Resources:
             click.echo()
             click.secho(dline, fg="green")
             click.secho("Installed packages:", fg="green")
-            
 
             for package in installed_packages:
                 click.secho(line)
@@ -262,7 +261,6 @@ class Resources:
 
             click.secho(dline, fg="yellow")
             click.echo(f"Total: {len(notinstalled_packages)}")
-                
 
         click.echo("\n")
 
