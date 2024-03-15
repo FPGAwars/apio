@@ -421,7 +421,7 @@ def get_bin_dir_table(base_dir):
     return bin_dir
 
 
-def check_package(name: str, version: str, spec_version: str, path):
+def check_package(name: str, version: str, spec_version: str, path: Path):
     """Check if the given package is installed
     * name: Package name
     * path: path where the binary files of the package are stored
@@ -433,7 +433,6 @@ def check_package(name: str, version: str, spec_version: str, path):
         return True
 
     # Check package path
-    # if not isdir(path):
     if not path.is_dir():
         show_package_path_error(name)
         show_package_install_instructions(name)
