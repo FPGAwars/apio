@@ -60,18 +60,10 @@ PLATFORMS = [
 
 
 class ApioException(Exception):
-    """DOC: TODO"""
-
-    MESSAGE = None
-
-    def __str__(self):  # pragma: no cover
-        if self.MESSAGE:
-            return self.MESSAGE.format(*self.args)
-
-        return Exception.__str__(self)
+    """Apio error"""
 
 
-class AsyncPipe(Thread):  # pragma: no cover
+class AsyncPipe(Thread):
     """DOC: TODO"""
 
     def __init__(self, outcallback=None):
