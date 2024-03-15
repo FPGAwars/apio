@@ -13,7 +13,6 @@
 import string
 import sys
 import os
-import re
 import json
 import platform
 import subprocess
@@ -331,13 +330,6 @@ def set_env_variables(base_dir, bin_dir):
     # Add the virtual python environment to the path
     os.environ["PATH"] = path
 
-    # print(f" get_bin_dir(): {get_bin_dir()}")
-
-    # -- DEBUG
-    # print()
-    # print(f"PATH: {os.environ['PATH']}")
-    # print()
-
     # Add other environment variables
 
     os.environ["IVL"] = str(Path(base_dir[OSS_CAD_SUITE]) / "lib" / "ivl")
@@ -475,19 +467,6 @@ def show_package_install_instructions(name):
     """DOC: TODO"""
 
     click.secho(f"Please run:\n   apio install {name}", fg="yellow")
-
-
-def _check_apt_get():
-    """Check if apio can be installed through apt-get"""
-    check = False
-    if "TESTING" not in os.environ:
-        result = exec_command(["dpkg", "-l", "apio"])
-        if result and result.get("returncode") == 0:
-            match = re.findall(r"rc\s+apio", result.get("out")) + re.findall(
-                r"ii\s+apio", result.get("out")
-            )
-            check = len(match) > 0
-    return check
 
 
 def get_package_version(name, profile):

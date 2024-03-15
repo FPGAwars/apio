@@ -13,7 +13,6 @@
 from os import chmod
 from pathlib import Path
 from tarfile import open as tarfile_open
-from time import mktime
 from zipfile import ZipFile
 import click
 from apio import util
@@ -75,18 +74,6 @@ class ZIPArchive(ArchiveBase):
         if attrs:
             chmod(file, attrs)
 
-    @staticmethod
-    def preserve_mtime(item, dest_dir):
-        """DOC: TODO"""
-
-        # -- Build the filename
-        file = str(Path(dest_dir) / item.filename)
-
-        util.change_filemtime(
-            file,
-            mktime(tuple(list(item.date_time) + [0] * 3)),
-        )
-
     def get_items(self):
         """DOC: TODO"""
 
@@ -96,7 +83,6 @@ class ZIPArchive(ArchiveBase):
         """DOC: TODO"""
 
         self.preserve_permissions(item, dest_dir)
-        self.preserve_mtime(item, dest_dir)
 
 
 # R0903: Too few public methods (1/2) (too-few-public-methods)
