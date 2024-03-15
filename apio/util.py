@@ -421,10 +421,19 @@ def get_bin_dir_table(base_dir):
     return bin_dir
 
 
-def check_package(name: str, version: str, spec_version: str, path: Path):
-    """Check if the given package is installed
-    * name: Package name
-    * path: path where the binary files of the package are stored
+def check_package(
+    name: str, version: str, spec_version: str, path: Path
+) -> bool:
+    """Check if the given package is ok
+       (and can be installed without problemas)
+    * INPUTS:
+      - name: Package name
+      - version: Package version
+      - spec_version: semantic version constraint
+      - path: path where the binary files of the package are stored
+
+    * OUTPUT:
+      - True: Package
     """
 
     # Apio package 'gtkwave' only exists for Windows.
