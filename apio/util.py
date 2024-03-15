@@ -221,15 +221,16 @@ def get_home_dir() -> Path:
     return home_dir
 
 
-def get_package_dir(pkg_name: str) -> str:
+def get_package_dir(pkg_name: str) -> Path:
     """Return the APIO package dir of a given package
     Packages are installed in the following folder:
-    * Default: $APIO_HOME_DIR/packages
-    * $APIO_PKG_DIR/packages: if the APIO_PKG_DIR env variable is set
-    * Return a String
+      * Default: $APIO_HOME_DIR/packages
+      * $APIO_PKG_DIR/packages: if the APIO_PKG_DIR env variable is set
+      * Return a String
     """
 
     # -- Get the apio home dir:
+    # -- Ex. '/home/obijuan/.apio'
     apio_home_dir = get_home_dir()
 
     # -- Get the APIO_PKG_DIR env variable
@@ -243,21 +244,18 @@ def get_package_dir(pkg_name: str) -> str:
 
     # -- Default value
     else:
-        pkg_home_dir = Path(apio_home_dir)
+        pkg_home_dir = apio_home_dir
 
     # -- Create the package folder
+    # -- Ex '/home/obijuan/.apio/packages/tools-oss-cad-suite'
     package_dir = pkg_home_dir / "packages" / pkg_name
 
     # -- Return the folder if it exists
     if package_dir.exists():
-        return str(package_dir)
+        return package_dir
 
-    # -- Show an error message (for debugging)
-    # click.secho(f"Folder does not exists: {package_dir}", fg="red")
-    # sys.exit(1)
-
-    # -- Return a null string if the folder does not exist
-    return ""
+    # -- No path...
+    return None
 
 
 def call(cmd):
@@ -294,7 +292,7 @@ def setup_environment():
     return bin_dir
 
 
-def set_env_variables(base_dir, bin_dir):
+def set_env_variables(base_dir: dict, bin_dir: dict):
     """Set the environment variables"""
 
     # -- Get the current system PATH
@@ -307,24 +305,24 @@ def set_env_variables(base_dir, bin_dir):
     # -- but only for windows platforms
     if platform.system() == "Windows":
         # -- Gtkwave package is installed
-        if bin_dir[GTKWAVE] != "":
-            path = os.pathsep.join([bin_dir.get(GTKWAVE), path])
+        if bin_dir[GTKWAVE]:
+            path = os.pathsep.join([str(bin_dir[GTKWAVE]), path])
 
     # -- Add the binary folders of the installed packages
     # -- to the path, except for the OSS_CAD_SUITE package
     for pack in base_dir:
-        if base_dir[pack] != "" and pack != OSS_CAD_SUITE:
-            path = os.pathsep.join([bin_dir[pack], path])
+        if base_dir[pack] and pack != OSS_CAD_SUITE:
+            path = os.pathsep.join([str(bin_dir[pack]), path])
 
     # -- Add the OSS_CAD_SUITE package to the path
     # -- if installed (Maximum priority)
-    if base_dir[OSS_CAD_SUITE] != "":
+    if base_dir[OSS_CAD_SUITE]:
         # -- Get the lib folder (where the shared libraries are located)
         oss_cad_suite_lib = str(Path(base_dir[OSS_CAD_SUITE]) / "lib")
 
         # -- Add the lib folder
         path = os.pathsep.join([oss_cad_suite_lib, path])
-        path = os.pathsep.join([bin_dir[OSS_CAD_SUITE], path])
+        path = os.pathsep.join([str(bin_dir[OSS_CAD_SUITE]), path])
 
     # Add the virtual python environment to the path
     os.environ["PATH"] = path
@@ -378,7 +376,7 @@ def resolve_packages(
         spec_version = spec_packages.get(package, "")
 
         # -- Get the package binary dir as a PosixPath object
-        _bin = Path(bin_dir[package])
+        _bin = bin_dir[package]
 
         # -- Check this package
         check &= check_package(package, version, spec_version, _bin)
@@ -414,10 +412,17 @@ def get_bin_dir_table(base_dir: dict):
       -base_dir: Table with the package base_dir
     """
 
-    bin_dir = {
-        OSS_CAD_SUITE: str(Path(base_dir[OSS_CAD_SUITE]) / BIN),
-        GTKWAVE: str(Path(base_dir[GTKWAVE]) / BIN),
-    }
+    if base_dir[GTKWAVE]:
+        gtkwave_path = base_dir[GTKWAVE] / BIN
+    else:
+        gtkwave_path = None
+
+    if base_dir[OSS_CAD_SUITE]:
+        oss_cad_suite_path = base_dir[OSS_CAD_SUITE] / BIN
+    else:
+        oss_cad_suite_path = None
+
+    bin_dir = {OSS_CAD_SUITE: oss_cad_suite_path, GTKWAVE: gtkwave_path}
 
     return bin_dir
 
@@ -426,7 +431,7 @@ def check_package(
     name: str, version: str, spec_version: str, path: Path
 ) -> bool:
     """Check if the given package is ok
-       (and can be installed without problemas)
+       (and can be installed without problems)
     * INPUTS:
       - name: Package name
       - version: Package version
@@ -443,7 +448,7 @@ def check_package(
         return True
 
     # Check package path
-    if not path.is_dir():
+    if path and not path.is_dir():
         show_package_path_error(name)
         show_package_install_instructions(name)
         return False

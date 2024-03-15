@@ -44,7 +44,7 @@ class Examples:
         self.name = "examples"
 
         # -- Folder where the example packages was installed
-        self.examples_dir = Path(util.get_package_dir(self.name))
+        self.examples_dir = util.get_package_dir(self.name)
 
         # -- Get the example package version
         self.version = util.get_package_version(self.name, profile)

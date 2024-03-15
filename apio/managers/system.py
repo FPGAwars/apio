@@ -8,7 +8,6 @@
 
 import re
 import platform
-from pathlib import Path
 import click
 
 from apio import util
@@ -172,12 +171,20 @@ class System:  # pragma: no cover
         # The system tools are locate in the
         # oss-cad-suite package
 
-        # -- Get the package base dir (as a string)
+        # -- Get the package base dir
         # -- Ex. "/home/obijuan/.apio/packages/tools-oss-cad-suite"
         system_base_dir = util.get_package_dir("tools-oss-cad-suite")
 
+        # -- Package not found
+        if not system_base_dir:
+            # -- Show the error message and a hint
+            # -- on how to install the package
+            util.show_package_path_error(self.package_name)
+            util.show_package_install_instructions(self.package_name)
+            raise util.ApioException()
+
         # -- Get the folder were the binary file is located (PosixPath)
-        system_bin_dir = Path(system_base_dir) / "bin"
+        system_bin_dir = system_base_dir / "bin"
 
         # -- Get the executable filename
         # -- Ex. Posix('/home/obijuan/.apio/packages/tools-oss-cad-suite/
