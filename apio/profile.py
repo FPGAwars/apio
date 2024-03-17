@@ -8,7 +8,6 @@
 
 import json
 from pathlib import Path
-from os.path import isdir
 import click
 import semantic_version
 
@@ -128,9 +127,7 @@ class Profile:
 
         return int(self.config.get("verbose", False))
 
-    # W0703: Catching too general exception Exception (broad-except)
-    # pylint: disable=W0703
-    def get_package_version(self, name: str, release_name: str = None) -> str:
+    def get_package_version(self, name: str) -> str:
         """Return the version of the given package"""
 
         # -- If the package is installed
@@ -139,22 +136,9 @@ class Profile:
             # -- Get the version
             version = self.packages[name]["version"]
 
-            # -- REturn the version
-            return version
+        else:
+            version = "0.0.0"
 
-        version = "0.0.0"
-
-        if release_name:
-            dir_name = util.get_package_dir(release_name)
-            if isdir(dir_name):
-                filepath = str(Path(dir_name) / "package.json")
-                try:
-                    with open(filepath, "r", encoding="utf8") as json_file:
-                        tmp_data = json.load(json_file)
-                        if "version" in tmp_data.keys():
-                            version = tmp_data.get("version")
-                except Exception:
-                    pass
         return version
 
     def load(self):
