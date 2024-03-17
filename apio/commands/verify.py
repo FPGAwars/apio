@@ -1,17 +1,27 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2019 FPGAwars
-# -- Author Jesús Arroyo
+# -- (C) 2016-2024 FPGAwars
+# -- Authors
+# --  * Jesús Arroyo (2016-2019)
+# --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""TODO"""
+"""Main implementation of APIO VERIFY command"""
+
 
 import click
-
 from apio.managers.scons import SCons
 from apio import util
 
+# ------------------
+# -- CONSTANTS
+# ------------------
+CMD = "verify"  # -- Comand name
+BOARD = "board"  # -- Option
+VERBOSE = "verbose"  # -- Option
+PROJECT_DIR = "project_dir"  # -- Option
 
-@click.command("verify", context_settings=util.context_settings())
+
+@click.command(CMD, context_settings=util.context_settings())
 @click.pass_context
 @click.option(
     "-p",
@@ -21,16 +31,21 @@ from apio import util
     help="Set the target directory for the project.",
 )
 @click.option(
-    "-b", "--board", type=str, metavar="board", help="Set the board."
+    "-b", f"--{BOARD}", type=str, metavar="board", help="Set the board."
 )
 @click.option(
     "-v",
-    "--verbose",
+    f"--{VERBOSE}",
     is_flag=True,
     help="Show the entire output of the command.",
 )
-def cli(ctx, board, project_dir, verbose):
+def cli(ctx, **kwargs):
     """Verify the verilog code."""
+
+    # -- Extract the arguments
+    project_dir = kwargs[PROJECT_DIR]
+    board = kwargs[BOARD]
+    verbose = kwargs[VERBOSE]
 
     # -- Crete the scons object
     scons = SCons(project_dir)
