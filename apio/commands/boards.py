@@ -8,7 +8,6 @@
 """Main implementation of APIO BOARDS command"""
 
 import click
-
 from apio.resources import Resources
 from apio import util
 
@@ -32,7 +31,6 @@ FPGA = "fpga"  # -- Option
     "-f", f"--{FPGA}", is_flag=True, help="List all supported FPGA chips."
 )
 def cli(ctx, **kwargs):
-    # def cli(ctx, list_boards: bool, fpga: bool):
     """Manage FPGA boards."""
 
     # -- Extract the arguments
