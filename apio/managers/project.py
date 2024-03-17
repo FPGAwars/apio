@@ -1,30 +1,29 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2019 FPGAwars
-# -- Author Juan González, Jesús Arroyo
+# -- (C) 2016-2024 FPGAwars
+# -- Authors
+# --  * Jesús Arroyo (2016-2019)
+# --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""TODO"""
+"""Utilities for accesing the apio.ini projects"""
 
 import sys
 from os.path import isfile
-
 from pathlib import Path
 
 # -- Config Parser: Use INI config files with easy
 # https://docs.python.org/3/library/configparser.html
 import configparser
-
 import click
-
-
 from apio import util
 from apio.resources import Resources
 
+# -- Apio projecto filename
 PROJECT_FILENAME = "apio.ini"
 
 
 class Project:
-    """TODO"""
+    """Class for managing apio projects"""
 
     def __init__(self):
         self.board = None
