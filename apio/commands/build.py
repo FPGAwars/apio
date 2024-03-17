@@ -13,6 +13,8 @@ import click
 from apio.managers.scons import SCons
 from apio import util
 
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
 # ------------------
 # -- CONSTANTS
 # ------------------

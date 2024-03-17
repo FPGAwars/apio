@@ -1,33 +1,48 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2019 FPGAwars
-# -- Author Jesús Arroyo
+# -- (C) 2016-2024 FPGAwars
+# -- Authors
+# --  * Jesús Arroyo (2016-2019)
+# --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""TODO"""
+"""Main implementation of APIO time command"""
 
 import click
-
 from apio.managers.scons import SCons
 from apio import util
 
+# ------------------
+# -- CONSTANTS
+# ------------------
+CMD = "time"  # -- Comand name
+BOARD = "board"  # -- Option
+FPGA = "fpga"  # -- Option
+SIZE = "size"  # -- Option
+PACK = "pack"  # -- Option
+TYPE = "type"  # -- Option
+PROJECT_DIR = "project_dir"  # -- Option
+VERBOSE = "verbose"  # -- Option
+VERBOSE_YOSYS = "verbose_yosys"  # -- Option
+VERBOSE_PNR = "verbose_pnr"  # -- Option
+TOP_MODULE = "top_module"  # -- Option
 
-# R0913: Too many arguments (6/5)
-# pylint: disable=R0913
-# pylint: disable=W0622
-@click.command("time", context_settings=util.context_settings())
+
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
+@click.command(CMD, context_settings=util.context_settings())
 @click.pass_context
 @click.option(
-    "-b", "--board", type=str, metavar="board", help="Set the board."
+    "-b", f"--{BOARD}", type=str, metavar="str", help="Set the board."
 )
-@click.option("--fpga", type=str, metavar="fpga", help="Set the FPGA.")
+@click.option(f"--{FPGA}", type=str, metavar="str", help="Set the FPGA.")
 @click.option(
-    "--size", type=str, metavar="size", help="Set the FPGA type (1k/8k)."
-)
-@click.option(
-    "--type", type=str, metavar="type", help="Set the FPGA type (hx/lp)."
+    f"--{SIZE}", type=str, metavar="str", help="Set the FPGA type (1k/8k)."
 )
 @click.option(
-    "--pack", type=str, metavar="package", help="Set the FPGA package."
+    f"--{TYPE}", type=str, metavar="str", help="Set the FPGA type (hx/lp)."
+)
+@click.option(
+    f"--{PACK}", type=str, metavar="str", help="Set the FPGA package."
 )
 @click.option(
     "-p",
@@ -38,7 +53,7 @@ from apio import util
 )
 @click.option(
     "-v",
-    "--verbose",
+    f"--{VERBOSE}",
     is_flag=True,
     help="Show the entire output of the command.",
 )
@@ -50,27 +65,30 @@ from apio import util
 @click.option(
     "--verbose-pnr", is_flag=True, help="Show the pnr output of the command."
 )
-def cli(
-    ctx,
-    board,
-    fpga,
-    pack,
-    type,
-    size,
-    project_dir,
-    verbose,
-    verbose_yosys,
-    verbose_pnr,
-):
+def cli(ctx, **kwargs):
     """Bitstream timing analysis."""
 
+    # -- Extract the arguments
+    project_dir = kwargs[PROJECT_DIR]
+    board = kwargs[BOARD]
+    fpga = kwargs[FPGA]
+    pack = kwargs[PACK]
+    _type = kwargs[TYPE]
+    size = kwargs[SIZE]
+    verbose = kwargs[VERBOSE]
+    verbose_yosys = kwargs[VERBOSE_YOSYS]
+    verbose_pnr = kwargs[VERBOSE_PNR]
+
+    # -- Create the scons object
+    scons = SCons(project_dir)
+
     # Run scons
-    exit_code = SCons(project_dir).time(
+    exit_code = scons.time(
         {
             "board": board,
             "fpga": fpga,
             "size": size,
-            "type": type,
+            "type": _type,
             "pack": pack,
             "verbose": {
                 "all": verbose,
@@ -79,4 +97,6 @@ def cli(
             },
         }
     )
+
+    # -- Done!
     ctx.exit(exit_code)
