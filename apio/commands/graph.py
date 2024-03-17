@@ -1,17 +1,26 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2019 FPGAwars
-# -- Author Jesús Arroyo
+# -- (C) 2016-2024 FPGAwars
+# -- Authors
+# --  * Jesús Arroyo (2016-2019)
+# --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""TODO"""
+"""Main implementation of APIO GRAPH command"""
 
 import click
-
 from apio.managers.scons import SCons
 from apio import util
 
+# ------------------
+# -- CONSTANTS
+# ------------------
+CMD = "graph"  # -- Comand name
+PROJECT_DIR = "project_dir"  # -- Option
+TOP_MODULE = "top_module"  # -- Option
+VERBOSE = "verbose"  # -- Option
 
-@click.command("graph", context_settings=util.context_settings())
+
+@click.command(CMD, context_settings=util.context_settings())
 @click.pass_context
 @click.option(
     "-p",
@@ -22,7 +31,7 @@ from apio import util
 )
 @click.option(
     "-v",
-    "--verbose",
+    f"--{VERBOSE}",
     is_flag=True,
     help="Show the entire output of the command.",
 )
@@ -32,8 +41,13 @@ from apio import util
     metavar="top_module",
     help="Set the top level module (w/o .v ending) to graph.",
 )
-def cli(ctx, project_dir, verbose, top_module):
+def cli(ctx, **kwargs):
     """Generate a a visual graph of the verilog code."""
+
+    # -- Extract the arguments
+    project_dir = kwargs[PROJECT_DIR]
+    verbose = kwargs[VERBOSE]
+    top_module = kwargs[TOP_MODULE]
 
     # -- Crete the scons object
     scons = SCons(project_dir)
