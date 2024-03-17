@@ -19,6 +19,7 @@ from apio import util
 # ------------------
 CMD = "upgrade"  # -- Comand name
 
+
 @click.command(CMD, context_settings=util.context_settings())
 @click.pass_context
 def cli(ctx):
