@@ -224,11 +224,13 @@ class Resources:
             # -- Check if this package is installed
             if package in self.profile.packages:
 
-                # package_name = self.get_package_release_name(package)
+                # -- Get the installed version
+                version = self.profile.packages[package]["version"]
 
-                data["version"] = self.profile.get_package_version(
-                    package, self.get_package_release_name(package)
-                )
+                # -- Store the version
+                data["version"] = version
+
+                # -- Store the package
                 installed_packages += [data]
 
             # -- The package is not installed
