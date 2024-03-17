@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2019 FPGAwars
-# -- Author Jesús Arroyo
+# -- (C) 2016-2024 FPGAwars
+# -- Authors
+# --  * Jesús Arroyo (2016-2019)
+# --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
 """Main implementation of APIO INSTALL command"""
 
@@ -38,10 +40,6 @@ def install_packages(packages: list, platform: str, force: bool):
         inst.install()
 
 
-# R0801: Similar lines in 2 files
-# pylint: disable = R0801
-# ==apio.commands.install:[83:93]
-# ==apio.commands.uninstall:[71:81]
 @click.command(CMD, context_settings=util.context_settings())
 @click.pass_context
 @click.argument(PACKAGES, nargs=-1)
