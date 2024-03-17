@@ -23,8 +23,6 @@ SAYYES = "sayyes"  # -- Option
 TOP_MODULE = "top_module"  # -- Option
 
 
-# R0913: Too many arguments (6/5)
-# pylint: disable=R0913
 @click.command(CMD, context_settings=util.context_settings())
 @click.pass_context
 @click.option(
