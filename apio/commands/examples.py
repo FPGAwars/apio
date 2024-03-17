@@ -1,36 +1,46 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2019 FPGAwars
-# -- Author Jesús Arroyo
+# -- (C) 2016-2024 FPGAwars
+# -- Authors
+# --  * Jesús Arroyo (2016-2019)
+# --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
 """Main implementation of APIO EXAMPLES command"""
 
 from pathlib import Path
-
 import click
-
 from apio.managers.examples import Examples
 from apio import util
+
+# ------------------
+# -- CONSTANTS
+# ------------------
+CMD = "examples"  # -- Comand name
+LIST = "list"  # -- Option
+DIR = "dir"  # -- Option
+FILES = "files"  # -- Option
+PROJECT_DIR = "project_dir"  # -- Option
+SAYNO = "sayno"  # -- Option
 
 
 # R0913: Too many arguments (6/5)
 # pylint: disable=R0913
 # pylint: disable=W0622
-@click.command("examples", context_settings=util.context_settings())
+@click.command(CMD, context_settings=util.context_settings())
 @click.pass_context
 @click.option(
-    "-l", "--list", "_list", is_flag=True, help="List all available examples."
+    "-l", f"--{LIST}", is_flag=True, help="List all available examples."
 )
 @click.option(
     "-d",
-    "--dir",
+    f"--{DIR}",
     type=str,
     metavar="name",
     help="Copy the selected example directory.",
 )
 @click.option(
     "-f",
-    "--files",
+    f"--{FILES}",
     type=str,
     metavar="name",
     help="Copy the selected example files.",
@@ -44,15 +54,20 @@ from apio import util
 )
 @click.option(
     "-n",
-    "--sayno",
+    f"--{SAYNO}",
     is_flag=True,
     help="Automatically answer NO to all the questions.",
 )
-def cli(
-    ctx, _list: bool, dir: str, files: str, project_dir: Path, sayno: bool
-):
+def cli(ctx, **kwargs):
     """Manage verilog examples.\n
     Install with `apio install examples`"""
+
+    # -- Extract the arguments
+    _list = kwargs[LIST]
+    dir = kwargs[DIR]
+    files = kwargs[FILES]
+    project_dir = kwargs[PROJECT_DIR]
+    sayno = kwargs[SAYNO]
 
     # -- Access to the Drivers
     examples = Examples()
