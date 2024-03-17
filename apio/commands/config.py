@@ -1,40 +1,53 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2019 FPGAwars
-# -- Author Jesús Arroyo
+# -- (C) 2016-2024 FPGAwars
+# -- Authors
+# --  * Jesús Arroyo (2016-2019)
+# --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
 """Main implementation of APIO config command"""
 
 import click
-
 from apio.profile import Profile
 from apio import util
 
+# ------------------
+# -- CONSTANTS
+# ------------------
+CMD = "config"  # -- Comand name
+LIST = "list"  # -- Option
+VERBOSE = "verbose"  # -- Option
+EXE = "exe"  # -- Option
 
-@click.command("config", context_settings=util.context_settings())
+
+@click.command(CMD, context_settings=util.context_settings())
 @click.pass_context
 @click.option(
     "-l",
-    "--list",
-    "_list",
+    f"--{LIST}",
     is_flag=True,
     help="List all configuration parameters.",
 )
 @click.option(
     "-v",
-    "--verbose",
+    f"--{VERBOSE}",
     type=click.Choice(["0", "1"]),
     help="Verbose mode: `0` General, `1` Information.",
 )
 @click.option(
     "-e",
-    "--exe",
+    f"--{EXE}",
     type=click.Choice(["default", "native"]),
     help="Configure executables: `default` selects apio packages, "
     + "`native` selects system binaries.",
 )
-def cli(ctx, _list, verbose, exe):
+def cli(ctx, **kwargs):
     """Apio configuration."""
+
+    # -- Extract the arguments
+    _list = kwargs[LIST]
+    verbose = kwargs[VERBOSE]
+    exe = kwargs[EXE]
 
     # -- Access to the profile file
     profile = Profile()
