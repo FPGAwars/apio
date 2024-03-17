@@ -121,10 +121,10 @@ class Profile:
         if name in self.packages.keys():
             del self.packages[name]
 
-    def get_verbose_mode(self):
-        """DOC: todo"""
+    def get_verbose_mode(self) -> int:
+        """Get the verbose mode"""
 
-        return int(self.config.get("verbose", False))
+        return int(self.config["verbose"], False)
 
     def get_package_version(self, name: str) -> str:
         """Return the version of the given package"""
