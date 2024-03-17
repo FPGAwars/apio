@@ -1011,14 +1011,14 @@ class SCons:
         # -- Regular expression remainder:
         # -- \s --> Match one blank space
         # -- \d{2} one or two decimal digits
-        pattern_tinyprog = r"\s\d{2}%|█*\s+|\s"
+        pattern_tinyprog = r"\s\d{2}%\|█*\s+\|\s"
 
         # -- Calculate if there is a match
         match_tinyprog = re.search(pattern_tinyprog, line)
 
         # -- Math all the progress bar lines except the
         # -- initial one (when it is 0%)
-        if match_tinyprog and " 0%|" not in line:
+        if match_tinyprog: # and " 0%|" not in line:
             # -- Delete the previous line
             print(CURSOR_UP + ERASE_LINE, end="")
         # ------- tinyprog output processing END
