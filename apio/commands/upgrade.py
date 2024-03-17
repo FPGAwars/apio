@@ -1,19 +1,25 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2019 FPGAwars
-# -- Author Jesús Arroyo
+# -- (C) 2016-2024 FPGAwars
+# -- Authors
+# --  * Jesús Arroyo (2016-2019)
+# --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""TODO"""
+"""Main implementation of APIO UPGRADE command"""
 
 import importlib.metadata
 import click
-
 from packaging import version
 from apio.util import get_pypi_latest_version
 from apio import util
 
 
-@click.command("upgrade", context_settings=util.context_settings())
+# ------------------
+# -- CONSTANTS
+# ------------------
+CMD = "upgrade"  # -- Comand name
+
+@click.command(CMD, context_settings=util.context_settings())
 @click.pass_context
 def cli(ctx):
     """Check the latest Apio version."""
