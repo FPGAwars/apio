@@ -1,15 +1,15 @@
-"""Main implementation of APIO BUILD command"""
-
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2019 FPGAwars
-# -- Author Jesús Arroyo
+# -- (C) 2016-2024 FPGAwars
+# -- Authors
+# --  * Jesús Arroyo (2016-2019)
+# --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
+"""Main implementation of APIO BUILD command"""
+
 
 from pathlib import Path
-
 import click
-
 from apio.managers.scons import SCons
 from apio import util
 
@@ -29,10 +29,8 @@ VERBOSE_PNR = "verbose_pnr"  # -- Option
 TOP_MODULE = "top_module"  # -- Option
 
 
-# R0913: Too many arguments (6/5)
-# pylint: disable=R0913
-# pylint: disable=W0622
 # pylint: disable=R0801
+# R0801: Similar lines in 2 files
 @click.command(CMD, context_settings=util.context_settings())
 @click.pass_context
 @click.option(
@@ -40,12 +38,14 @@ TOP_MODULE = "top_module"  # -- Option
 )
 @click.option(f"--{FPGA}", type=str, metavar="str", help="Set the FPGA.")
 @click.option(
-    "--size", type=str, metavar="str", help="Set the FPGA type (1k/8k)."
+    f"--{SIZE}", type=str, metavar="str", help="Set the FPGA type (1k/8k)."
 )
 @click.option(
-    "--type", type=str, metavar="str", help="Set the FPGA type (hx/lp)."
+    f"--{TYPE}", type=str, metavar="str", help="Set the FPGA type (hx/lp)."
 )
-@click.option("--pack", type=str, metavar="str", help="Set the FPGA package.")
+@click.option(
+    f"--{PACK}", type=str, metavar="str", help="Set the FPGA package."
+)
 @click.option(
     "-p",
     "--project-dir",
@@ -55,7 +55,7 @@ TOP_MODULE = "top_module"  # -- Option
 )
 @click.option(
     "-v",
-    "--verbose",
+    f"--{VERBOSE}",
     is_flag=True,
     help="Show the entire output of the command.",
 )
