@@ -1,17 +1,14 @@
-"""DOC: TODO"""
-
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
+"""Manage the apio profile file"""
 
 import json
 from pathlib import Path
 import click
 import semantic_version
-
-
 from apio import util
 
 
@@ -76,10 +73,12 @@ class Profile:
         # -- Package not installed
         return False
 
-    def check_exe_default(self):
-        """DOC: todo"""
+    def check_exe_default(self) -> bool:
+        """Check if the exe mode is 'default'"""
 
-        return self.config.get("exe", "") == "default"
+        is_exe_default = self.config["exe"] == "default"
+
+        return is_exe_default
 
     def add_package(self, name, version):
         """DOC: todo"""
