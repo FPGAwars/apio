@@ -77,12 +77,12 @@ def cli(ctx, **kwargs):
     """Synthesize the bitstream."""
 
     # -- Extract the arguments
+    project_dir = kwargs[PROJECT_DIR]
     board = kwargs[BOARD]
     fpga = kwargs[FPGA]
     pack = kwargs[PACK]
     _type = kwargs[TYPE]
     size = kwargs[SIZE]
-    project_dir = kwargs[PROJECT_DIR]
     verbose = kwargs[VERBOSE]
     verbose_yosys = kwargs[VERBOSE_YOSYS]
     verbose_pnr = kwargs[VERBOSE_PNR]
