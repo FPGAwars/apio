@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2019 FPGAwars
-# -- Author Jesús Arroyo
+# -- (C) 2016-2024 FPGAwars
+# -- Authors
+# --  * Jesús Arroyo (2016-2019)
+# --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
 """Main implementation of APIO UNINSTALL command"""
 
