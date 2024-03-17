@@ -1,27 +1,37 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2019 FPGAwars
-# -- Author Jesús Arroyo
+# -- (C) 2016-2024 FPGAwars
+# -- Authors
+# --  * Jesús Arroyo (2016-2019)
+# --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
 """Main implementation of APIO INIT command"""
 
 from pathlib import Path
-
 import click
-
 from apio.managers.project import Project
 from apio import util
+
+# ------------------
+# -- CONSTANTS
+# ------------------
+CMD = "init"  # -- Comand name
+BOARD = "board"  # -- Option
+SCONS = "scons"  # -- Option
+PROJECT_DIR = "project_dir"  # -- Option
+SAYYES = "sayyes"  # -- Option
+TOP_MODULE = "top_module"  # -- Option
 
 
 # R0913: Too many arguments (6/5)
 # pylint: disable=R0913
-@click.command("init", context_settings=util.context_settings())
+@click.command(CMD, context_settings=util.context_settings())
 @click.pass_context
 @click.option(
     "-b",
-    "--board",
+    f"--{BOARD}",
     type=str,
-    metavar="board",
+    metavar="str",
     help="Create init file with the selected board.",
 )
 @click.option(
@@ -32,7 +42,7 @@ from apio import util
     help="Set the top_module in the init file",
 )
 @click.option(
-    "-s", "--scons", is_flag=True, help="Create default SConstruct file."
+    "-s", f"--{SCONS}", is_flag=True, help="Create default SConstruct file."
 )
 @click.option(
     "-p",
@@ -43,12 +53,20 @@ from apio import util
 )
 @click.option(
     "-y",
-    "--sayyes",
+    f"--{SAYYES}",
     is_flag=True,
     help="Automatically answer YES to all the questions.",
 )
-def cli(ctx, board, top_module, scons, project_dir, sayyes):
+def cli(ctx, **kwargs):
+    # def cli(ctx, board, top_module, scons, project_dir, sayyes):
     """Manage apio projects."""
+
+    # -- Extract the arguments
+    project_dir = kwargs[PROJECT_DIR]
+    scons = kwargs[SCONS]
+    board = kwargs[BOARD]
+    sayyes = kwargs[SAYYES]
+    top_module = kwargs[TOP_MODULE]
 
     # -- Create a project
     project = Project()
@@ -57,13 +75,21 @@ def cli(ctx, board, top_module, scons, project_dir, sayyes):
     if scons:
         project.create_sconstruct(project_dir, "ice40", sayyes)
 
+    # -- Create the apio.ini file
     elif board:
         # -- Set the default top_module when creating the ini file
         if not top_module:
             top_module = "main"
-        Project().create_ini(board, top_module, project_dir, sayyes)
+
+        # -- Create the apio.ini file
+        project.create_ini(board, top_module, project_dir, sayyes)
+
+    # -- Add the top_module to the apio.ini file
     elif top_module:
-        print("INIT TOP-MODULE!!")
-        Project().update_ini(top_module, project_dir)
+
+        # -- Update the apio.ini file
+        project.update_ini(top_module, project_dir)
+
+    # -- No options: show help
     else:
         click.secho(ctx.get_help())
