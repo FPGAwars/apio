@@ -11,7 +11,6 @@ import json
 from collections import OrderedDict
 import shutil
 import click
-
 from apio import util
 from apio.profile import Profile
 
@@ -173,31 +172,75 @@ class Resources:
     def get_package_release_name(self, package: str) -> str:
         """return the package name"""
 
-        # -- TODO: Check for apio system errors!
-        return self.packages[package]["release"]["package_name"]
+        try:
+            package_name = self.packages[package]["release"]["package_name"]
 
-    def get_packages(self):
-        """DOC: TODO"""
+        # -- This error should never ocurr
+        except KeyError as excp:
+            click.secho(f"Apio System Error! Invalid key: {excp}", fg="red")
+            click.secho(
+                "Module: resources.py. Function: get_package_release_name()",
+                fg="red",
+            )
 
-        # Classify packages
+            # -- Abort!
+            sys.exit(1)
+
+        except TypeError as excp:
+
+            click.secho(f"Apio System Error! {excp}", fg="red")
+            click.secho(
+                "Module: resources.py. Function: get_package_release_name()",
+                fg="red",
+            )
+
+            # -- Abort!
+            sys.exit(1)
+
+        # -- Return the name
+        return package_name
+
+    def get_packages(self) -> tuple[list, list]:
+        """Get all the packages, classified in installed and
+        not installed
+        * OUTPUT:
+          - A tuple of two lists: Installed and not installed packages
+        """
+
+        # -- Classify the packages in two lists
         installed_packages = []
         notinstalled_packages = []
 
+        # -- Go though all the apio packages
         for package in self.packages:
+
+            # -- Collect information about the package
             data = {
                 "name": package,
                 "version": None,
-                "description": self.packages.get(package).get("description"),
+                "description": self.packages[package]["description"],
             }
+
+            # -- Check if this package is installed
             if package in self.profile.packages:
+
+                # package_name = self.get_package_release_name(package)
+
                 data["version"] = self.profile.get_package_version(
                     package, self.get_package_release_name(package)
                 )
                 installed_packages += [data]
+
+            # -- The package is not installed
             else:
                 notinstalled_packages += [data]
 
+        # -- Check the installed packages and update
+        # -- its information
         for package in self.profile.packages:
+
+            # -- The package is not known!
+            # -- Strange case
             if package not in self.packages:
                 data = {
                     "name": package,
@@ -206,6 +249,7 @@ class Resources:
                 }
                 installed_packages += [data]
 
+        # -- Return the packages, classified
         return installed_packages, notinstalled_packages
 
     def list_packages(self, installed=True, notinstalled=True):
