@@ -80,13 +80,13 @@ class Profile:
 
         return is_exe_default
 
-    def add_package(self, name, version):
-        """DOC: todo"""
+    def add_package(self, name: str, version: str):
+        """Add a package to the profile class"""
 
         self.packages[name] = {"version": version}
 
-    def add_setting(self, key, value):
-        """DOC: todo"""
+    def add_setting(self, key: str, value: str):
+        """Add one key,value pair in the settings"""
 
         self.settings[key] = value
 
@@ -115,8 +115,8 @@ class Profile:
                 fg="yellow",
             )
 
-    def remove_package(self, name):
-        """DOC: todo"""
+    def remove_package(self, name: str):
+        """Remove a package from the profile file"""
 
         if name in self.packages.keys():
             del self.packages[name]
