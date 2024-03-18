@@ -1010,8 +1010,8 @@ class SCons:
         # -- Match outputs like these " 97%|█████████▋| "
         # -- Regular expression remainder:
         # -- \s --> Match one blank space
-        # -- \d{2} one or two decimal digits
-        pattern_tinyprog = r"\s\d{2}%\|█*\s+\|\s"
+        # -- \d{1,3} one, two or three decimal digits
+        pattern_tinyprog = r"\s\d{1,3}%\|█*"
 
         # -- Calculate if there is a match
         match_tinyprog = re.search(pattern_tinyprog, line)
