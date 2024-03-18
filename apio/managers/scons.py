@@ -1018,7 +1018,7 @@ class SCons:
 
         # -- Math all the progress bar lines except the
         # -- initial one (when it is 0%)
-        if match_tinyprog: # and " 0%|" not in line:
+        if match_tinyprog and " 0%|" not in line:
             # -- Delete the previous line
             print(CURSOR_UP + ERASE_LINE, end="")
         # ------- tinyprog output processing END
