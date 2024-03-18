@@ -16,10 +16,10 @@ from apio.commands.examples import cli as cmd_examples
 
 
 def validate_files_leds(folder):
-    """Check that the leds.v file is inside the given folder"""
+    """Check that the ledon.v file is inside the given folder"""
 
     # -- File to check
-    leds = folder / pathlib.Path('leds.v')
+    leds = folder / pathlib.Path('ledon.v')
 
     # -- The file should exists and have a size greather than 0
     assert leds.exists() and leds.stat().st_size > 0 #getsize(leds) > 0
@@ -31,7 +31,7 @@ def validate_dir_leds(folder=""):
     """
 
     #-- Get the leds path
-    leds_dir = folder / pathlib.Path("leds")
+    leds_dir = folder / pathlib.Path("Alhambra-II/ledon")
 
     # -- Calculate the numer of files in the leds folder
     nfiles = len(list(leds_dir.glob('*')))
@@ -141,26 +141,26 @@ def test_complete2(clirunner, validate_cliresult, configenv, offline):
         assert result.exit_code == 1
         assert 'Warning: this example does not exist' in result.output
 
-        # -- Execute "apio examples --files leds"
-        result = clirunner.invoke(cmd_examples, ['--files', 'leds'])
+        # -- Execute "apio examples --files Alhambra-II/ledon"
+        result = clirunner.invoke(cmd_examples, ['--files', 'Alhambra-II/ledon'])
         validate_cliresult(result)
-        assert 'Copying leds example files ...' in result.output
+        assert 'Copying Alhambra-II/ledon example files ...' in result.output
         assert 'have been successfully created!' in result.output
         validate_files_leds(pathlib.Path())
 
-        # -- Execute "apio examples --dir leds"
-        result = clirunner.invoke(cmd_examples, ['--dir', 'leds'])
+        # -- Execute "apio examples --dir Alhambra-II/ledon"
+        result = clirunner.invoke(cmd_examples, ['--dir', 'Alhambra-II/ledon'])
         validate_cliresult(result)
-        assert 'Creating leds directory ...' in result.output
+        assert 'Creating Alhambra-II/ledon directory ...' in result.output
         assert 'has been successfully created!' in result.output
         validate_dir_leds()
 
-        # -- Execute "apio examples --dir leds"
-        result = clirunner.invoke(cmd_examples, ['--dir', 'leds'], input='y')
+        # -- Execute "apio examples --dir Alhambra-II/ledon"
+        result = clirunner.invoke(cmd_examples, ['--dir', 'Alhambra-II/ledon'], input='y')
         validate_cliresult(result)
-        assert 'Warning: leds directory already exists' in result.output
+        assert 'Warning: Alhambra-II/ledon directory already exists' in result.output
         assert 'Do you want to replace it?' in result.output
-        assert 'Creating leds directory ...' in result.output
+        assert 'Creating Alhambra-II/ledon directory ...' in result.output
         assert 'has been successfully created!' in result.output
         validate_dir_leds()
 
@@ -192,21 +192,21 @@ def test_complete3(clirunner, validate_cliresult, configenv, offline):
         p = pathlib.Path("tmp/")
         p.mkdir(parents=True, exist_ok=True)
 
-        # -- Execute "apio examples --files leds --project-dir=tmp"
+        # -- Execute "apio examples --files Alhambra-II/ledon --project-dir=tmp"
         result = clirunner.invoke(
-            cmd_examples, ['--files', 'leds', '--project-dir=tmp'])
+            cmd_examples, ['--files', 'Alhambra-II/ledon', '--project-dir=tmp'])
         validate_cliresult(result)
-        assert 'Copying leds example files ...' in result.output
+        assert 'Copying Alhambra-II/ledon example files ...' in result.output
         assert 'have been successfully created!' in result.output
 
         # -- Check the files in the tmp folder
         validate_files_leds(p)
 
-        # -- Execute "apio examples --dir leds --project-dir=tmp"
+        # -- Execute "apio examples --dir Alhambra-II/ledon --project-dir=tmp"
         result = clirunner.invoke(
-            cmd_examples, ['--dir', 'leds', '--project-dir=tmp'])
+            cmd_examples, ['--dir', 'Alhambra-II/ledon', '--project-dir=tmp'])
         validate_cliresult(result)
-        assert 'Creating leds directory ...' in result.output
+        assert 'Creating Alhambra-II/ledon directory ...' in result.output
         assert 'has been successfully created!' in result.output
         validate_dir_leds('tmp')
 
