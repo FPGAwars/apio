@@ -330,7 +330,7 @@ if 'test' in COMMAND_LINE_TARGETS:
 
 # -- Verilator builder
 verilator = Builder(
-    action='verilator --lint-only -Wno-TIMESCALEMOD {0} {1} {2} {3} $SOURCES'.format(
+    action='verilator --lint-only --timing -Wno-TIMESCALEMOD {0} {1} {2} {3} $SOURCES'.format(
         '-Wall' if VERILATOR_ALL else '',
         '-Wno-style' if VERILATOR_NO_STYLE else '',
         VERILATOR_PARAM_STR if VERILATOR_PARAM_STR else '',
