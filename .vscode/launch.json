@@ -48,6 +48,18 @@
             "cwd": "${workspaceFolder}/test-examples/TinyFPGA-BX/01-LED-ON"
         },
         {
+            "name": "Upload (Fomu)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": ["upload"],
+            "console": "internalConsole",
+            "justMyCode": true,
+            //-- Change to the folder with the example to test
+            //-- Testing the TinyFPGA board
+            "cwd": "${workspaceFolder}/test-examples/fomu/temp-Blinky"
+        },
+        {
             "name": "Upload (Blackice)",
             "type": "debugpy",
             "request": "launch",

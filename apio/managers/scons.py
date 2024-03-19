@@ -991,8 +991,20 @@ class SCons:
 
     @staticmethod
     def _on_stdout(line):
+
+        # ---- Fomu output processing BEGIN
+        #pattern_fomu = r"^Download\s*\[=*\]\s\d{1,3}%"
+        pattern_fomu = r"^Download\s*\[=*"
+        match = re.search(pattern_fomu, line)
+        if match:
+             # -- Delete the previous line
+            print(CURSOR_UP + ERASE_LINE, end="")
+        # ---- Fomu output processing END
+            
         fgcol = "green" if "is up to date" in line else None
+        fgcol = "green" if match else fgcol
         click.secho(line, fg=fgcol)
+
 
     @staticmethod
     def _on_stderr(line: str):
@@ -1042,6 +1054,9 @@ class SCons:
             # -- Delete the previous line
             print(CURSOR_UP + ERASE_LINE, end="")
         # ------- Iceprog output processing END
+            
+
+        
 
         # -- Print the line (In YELLOW)
         # -- In case of error print it in RED
