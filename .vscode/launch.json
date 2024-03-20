@@ -137,5 +137,16 @@
             //-- Change to the folder with the example to test
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/temp-ledon"
         },
+        {
+            "name": "Apio system",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": ["system", "--info"],
+            "console": "internalConsole",
+            "justMyCode": true,
+            //-- Change to the folder with the example to test
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/temp-ledon"
+        },
     ]
 }
