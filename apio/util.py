@@ -139,9 +139,9 @@ def get_systype() -> str:
     arch = platform.machine().lower()
 
     # -- Special case for windows
-    # -- windows_amd64, windows_x86
     if type_ == "windows":
-        arch = "amd64" if platform.architecture()[0] == "64bit" else "x86"
+        # -- Assume all the windows to be 64-bits
+        arch = "amd64"
 
     # -- Add the architecture, if it exists
     if arch:
@@ -339,7 +339,7 @@ def set_env_variables(base_dir: dict, bin_dir: dict):
 
 
 def resolve_packages(
-    packages: list[str], installed_packages: list, spec_packages: dict
+    packages: list, installed_packages: list, spec_packages: dict
 ) -> bool:
     """Check the given packages
     * make sure they all are installed
@@ -749,7 +749,7 @@ def command(function):
     return decorate
 
 
-def get_serial_ports() -> list[dict]:
+def get_serial_ports() -> list:
     """Get a list of the serial port devices connected
     * OUTPUT: A list with the devides
          Ex: [{'port': '/dev/ttyACM0',
