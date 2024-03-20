@@ -449,7 +449,7 @@ class Drivers:
     # pylint: disable=W0703
     def _serial_enable_windows(self):
         drivers_base_dir = util.get_package_dir("tools-drivers")
-        drivers_bin_dir = str(Path(drivers_base_dir) / "bin")
+        drivers_bin_dir = drivers_base_dir / "bin"
 
         try:
             if util.check_package(
