@@ -401,9 +401,9 @@ class Drivers:
     # pylint: disable=W0703
     def _ftdi_enable_windows(self):
         drivers_base_dir = util.get_package_dir("tools-drivers")
-        drivers_bin_dir = str(Path(drivers_base_dir) / "bin")
-        drivers_share_dir = str(Path(drivers_base_dir) / "share")
-        zadig_ini_path = str(Path(drivers_share_dir) / "zadig.ini")
+        drivers_bin_dir = drivers_base_dir / "bin"
+        drivers_share_dir = drivers_base_dir / "share"
+        zadig_ini_path = drivers_share_dir / "zadig.ini"
         zadig_ini = Path("zadig.ini")
 
         try:
