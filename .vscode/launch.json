@@ -148,5 +148,14 @@
             //-- Change to the folder with the example to test
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/temp-ledon"
         },
+        {
+            "name": "Apio drivers",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": ["drivers", "--ftdi-enable"],
+            "console": "internalConsole",
+            "justMyCode": true,
+        },
     ]
 }
