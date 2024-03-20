@@ -120,7 +120,7 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
-            "args": ["install", "-l"],
+            "args": ["install", "drivers", "-p",  "windows_amd64"],
             "console": "internalConsole",
             "justMyCode": true,
             //-- Change to the folder with the example to test
