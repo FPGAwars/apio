@@ -998,7 +998,7 @@ class SCons:
         match = re.search(pattern_fomu, line)
         if match:
             # -- Delete the previous line
-            print(CURSOR_UP + ERASE_LINE, end="")
+            print(CURSOR_UP + ERASE_LINE, end="", flush=True)
         # ---- Fomu output processing END
 
         fgcol = "green" if "is up to date" in line else None
@@ -1031,7 +1031,7 @@ class SCons:
         # -- initial one (when it is 0%)
         if match_tinyprog and " 0%|" not in line:
             # -- Delete the previous line
-            print(CURSOR_UP + ERASE_LINE, end="")
+            print(CURSOR_UP + ERASE_LINE, end="", flush=True)
         # ------- tinyprog output processing END
 
         # ------- iceprog output processing BEGIN
@@ -1051,7 +1051,7 @@ class SCons:
         # -- (or if it is the end of verifying!)
         if match or "done." in line or "VERIFY OK" in line:
             # -- Delete the previous line
-            print(CURSOR_UP + ERASE_LINE, end="")
+            print(CURSOR_UP + ERASE_LINE, end="", flush=True)
         # ------- Iceprog output processing END
 
         # -- Print the line (In YELLOW)
