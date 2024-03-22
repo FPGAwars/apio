@@ -30,7 +30,7 @@ tox:   ## Run tox
 	python -m tox
 
 publish_test:  ## Publish to testPypi
-	flit publish --repository pypitest
+	flit publish --repository testpypi
 
 publish:  ## Publish to PyPi
 	python -m flit publish
