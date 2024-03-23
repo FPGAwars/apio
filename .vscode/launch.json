@@ -24,6 +24,15 @@
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/ledon"
         },
         {
+            "name": "Apio verify",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": ["verify","--board", "alhambra-ii", "-p","/home/obijuan/Test/ice-build/01-LEDs-buttons"],
+            "console": "internalConsole",
+            "justMyCode": true,
+        },
+        {
             "name": "Upload (Alhambra II)",
             "type": "debugpy",
             "request": "launch",

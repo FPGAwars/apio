@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 """Main implementation of APIO SIM command"""
 
+from pathlib import Path
 import click
 from apio.managers.scons import SCons
 from apio import util
@@ -17,7 +18,7 @@ from apio import util
 @click.option(
     "-p",
     "--project-dir",
-    type=str,
+    type=Path,
     metavar="path",
     help="Set the target directory for the project.",
 )

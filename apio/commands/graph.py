@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 """Main implementation of APIO GRAPH command"""
 
+from pathlib import Path
 import click
 from apio.managers.scons import SCons
 from apio import util
@@ -25,7 +26,7 @@ VERBOSE = "verbose"  # -- Option
 @click.option(
     "-p",
     "--project-dir",
-    type=str,
+    type=Path,
     metavar="path",
     help="Set the target directory for the project.",
 )

@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 """Implement the apio upload command"""
 
+from pathlib import Path
 import click
 from apio.managers.scons import SCons
 from apio.managers.drivers import Drivers
@@ -55,7 +56,7 @@ TOP_MODULE = "top_module"  # -- Option
 @click.option(
     "-p",
     "--project-dir",
-    type=str,
+    type=Path,
     metavar="path",
     help="Set the target directory for the project.",
 )

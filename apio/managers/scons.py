@@ -55,7 +55,7 @@ class SCons:
         self.resources = Resources()
 
         # -- Project path is given
-        if not project_dir:
+        if project_dir:
             # Check if it is a correct folder
             # (or create a new one)
             project_dir = util.check_dir(project_dir)
