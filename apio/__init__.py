@@ -11,9 +11,9 @@
 # --------------------------------------------
 
 # -- Developer: Change this number when releasing a new version
-VERSION = (0, 9, 1)
+VERSION = (0, 10, 1)
 
-# -- Get the version as a string. Ex: "0.9.1"
+# -- Get the version as a string. Ex: "0.10.1"
 __version__ = ".".join([str(s) for s in VERSION])
 
 __title__ = "apio"
