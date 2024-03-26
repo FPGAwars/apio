@@ -406,6 +406,9 @@ class Drivers:
         zadig_ini_path = drivers_share_dir / "zadig.ini"
         zadig_ini = Path("zadig.ini")
 
+        # -- TODO: Refactor: too many opertions inside the try
+        # -- Divide it into smaller operations and document it
+
         try:
             if util.check_package(
                 self.name, self.version, self.spec_version, drivers_bin_dir
@@ -425,8 +428,19 @@ class Drivers:
                 click.secho("FTDI drivers configuration finished", fg="green")
             else:
                 result = 1
+
+        # -- TODO: Check what type of exception is raised in windows
+        # -- and change "Exception" by the specific exception type
         except Exception as exc:
             click.secho("Error: " + str(exc), fg="red")
+            click.secho(
+                "Trying to execute zadig.exe in command line, "
+                "but an error ocurred"
+            )
+            click.secho(
+                "Please, execute the command again in the command line with"
+                " administrator privilegdes"
+            )
             result = 1
         finally:
             # Remove zadig.ini
