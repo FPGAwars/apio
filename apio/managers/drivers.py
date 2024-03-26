@@ -6,15 +6,14 @@
 """Manage board drivers"""
 
 
+import sys
+import shutil
 import subprocess
 from pathlib import Path
-
 import click
-
 from apio import util
 from apio.profile import Profile
 from apio.resources import Resources
-
 
 FTDI_INSTALL_DRIVER_INSTRUCTIONS = """
    FTDI driver installation:
@@ -400,56 +399,69 @@ class Drivers:
     # W0703: Catching too general exception Exception (broad-except)
     # pylint: disable=W0703
     def _ftdi_enable_windows(self):
-        drivers_base_dir = util.get_package_dir("tools-drivers")
-        drivers_bin_dir = drivers_base_dir / "bin"
-        drivers_share_dir = drivers_base_dir / "share"
-        zadig_ini_path = drivers_share_dir / "zadig.ini"
-        zadig_ini = Path("zadig.ini")
 
-        # -- TODO: Refactor: too many opertions inside the try
-        # -- Divide it into smaller operations and document it
+        # -- Get the drivers apio package base folder
+        drivers_base_dir = util.get_package_dir("tools-drivers")
+
+        # -- No folder --> package not installer (or not correctly installed)
+        if not drivers_base_dir:
+            util.show_package_path_error(self.name)
+            util.show_package_install_instructions(self.name)
+            sys.exit(1)
+
+        # -- Build the drivers base bin dir
+        drivers_bin_dir = drivers_base_dir / "bin"
+
+        # -- Check if the driver packages is installed
+        package_ok = util.check_package(
+            self.name, self.version, self.spec_version, drivers_bin_dir
+        )
+
+        # -- Not installed. Exit
+        if not package_ok:
+            sys.exit(1)
+
+        # -- Path to the zadig.ini file
+        # -- It is the zadig config file
+        zadig_ini_src = drivers_base_dir / "share" / "zadig.ini"
+        zadig_ini_dst = Path("zadig.ini")
+
+        # -- copy the zadig.ini file to the current working folder
+        # -- so that zadig open it when executed
+        shutil.copyfile(zadig_ini_src, zadig_ini_dst)
+
+        # -- Show messages for the user
+        click.secho("Launch drivers configuration tool")
+        click.secho(FTDI_INSTALL_DRIVER_INSTRUCTIONS, fg="yellow")
+
+        # -- Zadig exe file with full path:
+        zadig_exe = drivers_base_dir / "bin" / "zadig.exe"
 
         try:
-            if util.check_package(
-                self.name, self.version, self.spec_version, drivers_bin_dir
-            ):
-                click.secho("Launch drivers configuration tool")
-                click.secho(FTDI_INSTALL_DRIVER_INSTRUCTIONS, fg="yellow")
-                # Copy zadig.ini
-                with open(zadig_ini, "w", encoding="utf8") as ini_file:
-                    with open(
-                        zadig_ini_path, "r", encoding="utf8"
-                    ) as local_ini_file:
-                        ini_file.write(local_ini_file.read())
+            # -- Execute zadig!
+            result = util.exec_command(str(zadig_exe))
+            click.secho("FTDI drivers configuration finished", fg="green")
 
-                result = util.exec_command(
-                    str(Path(drivers_bin_dir) / "zadig.exe")
-                )
-                click.secho("FTDI drivers configuration finished", fg="green")
-            else:
-                result = 1
-
-        # -- TODO: Check what type of exception is raised in windows
-        # -- and change "Exception" by the specific exception type
-        except Exception as exc:
+        # -- It was not possible to execute Zadig...
+        except OSError as exc:
             click.secho("Error: " + str(exc), fg="red")
             click.secho(
                 "Trying to execute zadig.exe in command line, "
-                "but an error ocurred"
+                "but an error ocurred",
+                fg="red",
             )
             click.secho(
                 "Please, execute the command again in the command line with"
-                " administrator privilegdes"
+                " administrator privilegdes",
+                fg="red",
             )
-            result = 1
-        finally:
-            # Remove zadig.ini
-            if zadig_ini.exists():
-                zadig_ini.unlink()
+            sys.exit(1)
 
-        if not isinstance(result, int):
-            result = result.get("returncode")
-        return result
+        # -- Remove zadig.ini from the current folder. It is no longer needed
+        if zadig_ini_dst.exists():
+            zadig_ini_dst.unlink()
+
+        return result.get("returncode")
 
     @staticmethod
     def _ftdi_disable_windows():
