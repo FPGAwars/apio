@@ -96,10 +96,10 @@ Licensed under [GPL 2.0](http://opensource.org/licenses/GPL-2.0) and [Creative C
 [license-url]: (http://opensource.org/licenses/GPL-2.0)
 
 [apio-logo]: https://github.com/FPGAwars/Apio-wiki/raw/main/wiki/Logos/Apio-github.png
-[linux-logo]: https://github.com/FPGAwars/apio/raw/master/docs/resources/images/linux.png
-[macosx-logo]: https://github.com/FPGAwars/apio/raw/master/docs/resources/images/macosx.png
-[windows-logo]: https://github.com/FPGAwars/apio/raw/master/docs/resources/images/windows.png
-[ubuntu-logo]: https://github.com/FPGAwars/apio/raw/master/docs/resources/images/ubuntu.png
-[raspbian-logo]: https://github.com/FPGAwars/apio/raw/master/docs/resources/images/raspbian.png
+[linux-logo]: https://github.com/FPGAwars/Apio-wiki/blob/main/wiki/Logos/linux.png
+[macosx-logo]: https://github.com/FPGAwars/Apio-wiki/blob/main/wiki/Logos/macosx.png
+[windows-logo]: https://github.com/FPGAwars/Apio-wiki/blob/main/wiki/Logos/windows.png
+[ubuntu-logo]: https://github.com/FPGAwars/Apio-wiki/blob/main/wiki/Logos/ubuntu.png
+[raspbian-logo]: https://github.com/FPGAwars/Apio-wiki/blob/main/wiki/Logos/raspbian.png
 
 [wiki]: https://github.com/FPGAwars/apio/wiki
