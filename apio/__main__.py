@@ -137,16 +137,43 @@ def cli(ctx):
             _help, ["boards", "config", "examples", "raw", "system", "upgrade"]
         )
 
-        # -- Reformat the Help string
-        _help = "\n".join(_help)
-        _help = _help.replace("Commands:\n", "Project commands:\n")
-        _help += "\n\nSetup commands:\n"
-        _help += "\n".join(setup_help)
-        _help += "\n\nUtility commands:\n"
-        _help += "\n".join(util_help)
-        _help += "\n"
+        # -- Project commands:
+        cmd_help = find_commands_help(
+            _help,
+            [
+                "build",
+                "clean",
+                "sim",
+                "test",
+                "verify",
+                "lint",
+                "time",
+                "upload",
+                "graph",
+            ],
+        )
 
-        click.secho(_help)
+        # -- Get the Help header
+        index = _help.index("Commands:")
+        header_help = _help[:index]
+
+        # -- Print header
+        click.secho("\n".join(header_help))
+
+        # -- Print project commands:
+        click.secho("Project commands:")
+        click.secho("\n".join(cmd_help))
+        click.secho()
+
+        # -- Print Setup commands:
+        click.secho("Setup commands:")
+        click.secho("\n".join(setup_help))
+        click.secho()
+
+        # -- Print utility commands:
+        click.secho("Utility commands:")
+        click.secho("\n".join(util_help))
+        click.secho()
 
     # -- If there is a command, it is executed when this function is finished
     # -- Debug: print the command invoked
