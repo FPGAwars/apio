@@ -51,7 +51,6 @@ class SCons:
 
         # -- Read the project file (apio.ini)
         self.proj = Project()
-        # print(f"Reading proj file....")
         self.proj.read()
         
         # -- Read the apio profile file
