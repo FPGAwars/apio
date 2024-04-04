@@ -125,8 +125,8 @@ except IndexError:
 # -- Debug
 # print('PCF Found: {}'.format(PCF))
 
-# -- Define the Sintesizing Builder
-synth = Builder(
+# -- Synthesizing Builder
+synth_builder = Builder(
     action='yosys -p \"synth_ice40 {0} -json $TARGET\" {1} $SOURCES'.format(
         ('-top '+YOSYS_TOP) if YOSYS_TOP else '',
         '' if VERBOSE_ALL or VERBOSE_YOSYS else '-q'
@@ -134,52 +134,54 @@ synth = Builder(
     suffix='.json',
     src_suffix='.v',
     source_scanner=list_scanner)
+env.Append(BUILDERS={'Synth': synth_builder})
 
-pnr = Builder(
+# -- Place and route Builder.
+pnr_builder = Builder(
     action='nextpnr-ice40 --{0}{1} --package {2} --json $SOURCE --asc $TARGET --pcf {3} {4}'.format(
         FPGA_TYPE, FPGA_SIZE, FPGA_PACK, PCF,
         '' if VERBOSE_ALL or VERBOSE_PNR else '-q'),
     suffix='.asc',
     src_suffix='.json')
+env.Append(BUILDERS={'PnR': pnr_builder})
 
-bitstream = Builder(
+# -- Bitstream Builder.
+bitstream_builder = Builder(
     action='icepack $SOURCE $TARGET',
     suffix='.bin',
     src_suffix='.asc')
+env.Append(BUILDERS={'Bin': bitstream_builder})
 
-# -- Icetime builder
+# -- Time report builder
 # https://github.com/cliffordwolf/icestorm/issues/57
-time_rpt = Builder(
+time_rpt_builder = Builder(
     action='icetime -d {0}{1} -P {2} -C "{3}" -mtr $TARGET $SOURCE'.format(
         FPGA_TYPE, FPGA_SIZE, FPGA_PACK, CHIPDB_PATH),
     suffix='.rpt',
     src_suffix='.asc')
-
-# -- Build the environment
-env.Append(BUILDERS={
-    'Synth': synth, 'PnR': pnr, 'Bin': bitstream, 'Time': time_rpt})
+env.Append(BUILDERS={'Time': time_rpt_builder})
 
 # -- Generate the bitstream
-blif = env.Synth(TARGET, [src_synth])
-asc = env.PnR(TARGET, [blif, PCF])
-bitstream = env.Bin(TARGET, asc)
+blif_target = env.Synth(TARGET, [src_synth])
+asc_target = env.PnR(TARGET, [blif_target, PCF])
+bitstream_target = env.Bin(TARGET, asc_target)
 
-build = env.Alias('build', bitstream)
-AlwaysBuild(build)
+build_target = env.Alias('build', bitstream_target)
+AlwaysBuild(build_target)
 
 if(VERBOSE_ALL or VERBOSE_YOSYS):
-    AlwaysBuild(blif)
+    AlwaysBuild(blif_target)
 if(VERBOSE_ALL or VERBOSE_PNR):
-    AlwaysBuild(asc)
+    AlwaysBuild(asc_target)
 
 # -- Upload the bitstream into FPGA
-upload = env.Alias('upload', bitstream, '{0} $SOURCE'.format(PROG))
-AlwaysBuild(upload)
+upload_target = env.Alias('upload', bitstream_target, '{0} $SOURCE'.format(PROG))
+AlwaysBuild(upload_target)
 
 # -- Target time: calculate the time
-rpt = env.Time(asc)
-AlwaysBuild(rpt) 
-t = env.Alias('time', rpt)
+rpt_target = env.Time(asc_target)
+AlwaysBuild(rpt_target) 
+time_target = env.Alias('time', rpt_target)
 
 # -- Icarus Verilog builders
 
@@ -210,13 +212,13 @@ def iverilog_generator(source, target, env, for_signature):
         IVER_PATH, vcd_output_flag, interactive_sim_flag, YOSYS_PATH)
     return result
 
-iverilog = Builder(
+iverilog_builder = Builder(
     # Action string is computed automatically by the generator.
     generator = iverilog_generator,
     suffix='.out',
     src_suffix='.v',
     source_scanner=list_scanner)
-env.Append(BUILDERS={'IVerilog': iverilog})
+env.Append(BUILDERS={'IVerilog': iverilog_builder})
 
 dot_builder = Builder(
     action='yosys -f verilog -p \"show -format dot -colors 1 -prefix hardware {0}\" {1} $SOURCES'.format(
@@ -237,17 +239,17 @@ svg_builder = Builder(
 env.Append(BUILDERS={'SVG': svg_builder})
 
 # NOTE: output file name is defined in the iverilog call using VCD_OUTPUT macro
-vcd = Builder(
+vcd_builder = Builder(
     action='vvp {0} $SOURCE'.format(
         VVP_PATH),
     suffix='.vcd',
     src_suffix='.out')
-env.Append(BUILDERS={'VCD': vcd})
+env.Append(BUILDERS={'VCD': vcd_builder})
 
 # --- Verify
-vout = env.IVerilog(TARGET, src_synth + list_tb)
-AlwaysBuild(vout)
-verify = env.Alias('verify', vout)
+vout_target = env.IVerilog(TARGET, src_synth + list_tb)
+AlwaysBuild(vout_target)
+verify_target = env.Alias('verify', vout_target)
 
 # --- Graph
 # TODO: Launch some portable SVG (or differentn format) viewer.
@@ -285,13 +287,13 @@ if 'sim' in COMMAND_LINE_TARGETS:
     src_sim.append(sim_testbench)
     # Create targets sim target and its dependent.
     sim_name, _ = os.path.splitext(sim_testbench)  #e.g. my_module_tb
-    sout = env.IVerilog(sim_name, src_sim)
-    vcd_file = env.VCD(sout)
+    sout_target = env.IVerilog(sim_name, src_sim)
+    vcd_file_target = env.VCD(sout_target)
     # 'do_initial_zoom_fit' does max zoom only if .gtkw file not found.
-    waves = env.Alias('sim', vcd_file, 'gtkwave {0} {1} {2}.gtkw'.format(
+    waves_target = env.Alias('sim', vcd_file_target, 'gtkwave {0} {1} {2}.gtkw'.format(
         '--rcvar "splash_disable on" --rcvar "do_initial_zoom_fit 1"',
-        vcd_file[0], sim_name))
-    AlwaysBuild(waves)
+        vcd_file_target[0], sim_name))
+    AlwaysBuild(waves_target)
 
 
 # --- Testing
@@ -329,7 +331,7 @@ if 'test' in COMMAND_LINE_TARGETS:
     AlwaysBuild(tests_target)
 
 # -- Verilator builder
-verilator = Builder(
+verilator_builder = Builder(
     action='verilator --lint-only --timing -Wno-TIMESCALEMOD {0} {1} {2} {3} $SOURCES'.format(
         '-Wall' if VERILATOR_ALL else '',
         '-Wno-style' if VERILATOR_NO_STYLE else '',
@@ -337,16 +339,15 @@ verilator = Builder(
         '--top-module ' + VERILATOR_TOP if VERILATOR_TOP else ''),
     src_suffix='.v',
     source_scanner=list_scanner)
-
-env.Append(BUILDERS={'Verilator': verilator})
+env.Append(BUILDERS={'Verilator': verilator_builder})
 
 # --- Lint
-lout = env.Verilator(TARGET, src_synth + list_tb)
+lint_out_target = env.Verilator(TARGET, src_synth + list_tb)
 
-lint = env.Alias('lint', lout)
-AlwaysBuild(lint)
+lint_target = env.Alias('lint', lint_out_target)
+AlwaysBuild(lint_target)
 
-Default(bitstream)
+Default(bitstream_target)
 
 # -- These is for cleaning the artifact files.
 if GetOption('clean'):
@@ -356,6 +357,7 @@ if GetOption('clean'):
     # target are dynamic and changes with the selected testbench.
     for glob_pattern in ['*.out', '*.vcd']:
         for node in Glob(glob_pattern):
-            env.Clean(t, str(node))
+            env.Clean(time_target, str(node))
 
-    env.Default([t, build, vout, graph_target])
+    env.Default([time_target, build_target, vout_target, graph_target])
+
