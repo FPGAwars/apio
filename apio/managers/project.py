@@ -256,12 +256,11 @@ class Project:
           * A string with "default" (default) or "native"
         """
         # print(f"*** project.py:  reading exe mode")
-        parsed_attributes.add("exe_mode")
-        exe_mode =  config_parser.get("env", "exe_mode", fallback="default")
-        # print(f"*** {exe_mode =}")
+        parsed_attributes.add("exe-mode")
+        exe_mode =  config_parser.get("env", "exe-mode", fallback="default")
         if exe_mode not in {"default", "native"}:
             print(f"Error: invalid {PROJECT_FILENAME} project file")
-            print("Optional attribute 'exe_mode' should have the value 'default' or 'native'.")
+            print("Optional attribute 'exe-mode' should have the value 'default' or 'native'.")
             sys.exit(1)
         return exe_mode
 
