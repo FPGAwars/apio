@@ -21,9 +21,9 @@ class Profile:
 
         # ---- Set the default parameters
         # -- Apio default config mode
-        self.config = {"exe": "default", "verbose": 0}
+        self.config = {"verbose": 0}
 
-        self.labels = {"exe": "Executable", "verbose": "Verbose"}
+        self.labels = {"verbose": "Verbose"}
 
         # Apio settings
         self.settings = {}
@@ -72,13 +72,6 @@ class Profile:
 
         # -- Package not installed
         return False
-
-    def check_exe_default(self) -> bool:
-        """Check if the exe mode is 'default'"""
-
-        is_exe_default = self.config["exe"] == "default"
-
-        return is_exe_default
 
     def add_package(self, name: str, version: str):
         """Add a package to the profile class"""
@@ -164,8 +157,6 @@ class Profile:
         if "config" in data.keys():
             self.config = data["config"]
 
-            if "exe" not in self.config.keys():
-                self.config["exe"] = "default"
 
             if "verbose" not in self.config.keys():
                 self.config["verbose"] = 0
@@ -204,8 +195,9 @@ class Profile:
         for key in self.config:
 
             # -- Print the parameter
-            click.secho(
-                f"{self.labels[key]} mode: {self.config[key]}",
-                fg="yellow",
-            )
+            if key in self.labels:
+                click.secho(
+                    f"{self.labels[key]} mode: {self.config[key]}",
+                    fg="yellow",
+                )
         print()

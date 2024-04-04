@@ -34,20 +34,12 @@ EXE = "exe"  # -- Option
     type=click.Choice(["0", "1"]),
     help="Verbose mode: `0` General, `1` Information.",
 )
-@click.option(
-    "-e",
-    f"--{EXE}",
-    type=click.Choice(["default", "native"]),
-    help="Configure executables: `default` selects apio packages, "
-    + "`native` selects system binaries.",
-)
 def cli(ctx, **kwargs):
     """Apio configuration."""
 
     # -- Extract the arguments
     _list = kwargs[LIST]
     verbose = kwargs[VERBOSE]
-    exe = kwargs[EXE]
 
     # -- Access to the profile file
     profile = Profile()
@@ -60,9 +52,6 @@ def cli(ctx, **kwargs):
     elif verbose:
         profile.add_config("verbose", verbose)
 
-    # -- Configure executable mode
-    elif exe:
-        profile.add_config("exe", exe)
 
     # -- No paratemers: Show the help
     else:
