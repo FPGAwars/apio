@@ -7,13 +7,18 @@
 # -- Licence GPLv2
 """Utilities for accesing the apio.ini projects"""
 
+# TODO(zapta): Deprecate the mutations of existing api.ini file.
+
+# TODO(zapta): Deprecate the copying of the sconstruct file. This is a developer only
+#  feature and developers can copy it manually as needed.
+
 import sys
 from os.path import isfile
 from pathlib import Path
 
 # -- Config Parser: Use INI config files with easy
 # https://docs.python.org/3/library/configparser.html
-import configparser
+from configparser import ConfigParser
 import click
 from apio import util
 from apio.resources import Resources
@@ -26,10 +31,10 @@ class Project:
     """Class for managing apio projects"""
 
     def __init__(self):
+        # TODO(zapta): Make these __private and provide getter methods.
         self.board = None
-
-        # -- Top module by default: main
-        self.top_module = "main"
+        self.top_module = None 
+        self.exe_mode = None
 
     def create_sconstruct(self, project_dir: Path, arch=None, sayyes=False):
         """Creates a default SConstruct file"""
@@ -105,6 +110,7 @@ class Project:
         # -- Create the apio.ini from scratch
         self._create_ini_file(board, top_module, ini_path, PROJECT_FILENAME)
 
+    # TODO: Deprecate prgramatic mutations of apio.ini
     def update_ini(self, top_module, project_dir):
         """Update the current init file with the given top-module"""
 
@@ -123,7 +129,7 @@ class Project:
             return
 
         # -- Read the current apio.ini file
-        config = configparser.ConfigParser()
+        config = ConfigParser()
         config.read(ini_path)
 
         # -- Set the new top-mddule
@@ -143,11 +149,11 @@ class Project:
     def _create_ini_file(board, top_module, ini_path, ini_name):
         click.secho(f"Creating {ini_name} file ...")
         with open(ini_path, "w", encoding="utf8") as file:
-            config = configparser.ConfigParser()
+            config = ConfigParser()
             config.add_section("env")
-            config.set("env", "board", board)
 
-            # -- Set the top module
+            # Set the required attributes.
+            config.set("env", "board", board)
             config.set("env", "top-module", top_module)
 
             # -- Write the apio ini file
@@ -185,53 +191,77 @@ class Project:
             print(f"Info: No {PROJECT_FILENAME} file")
             return
 
-        # -- Read stored board
-        board = self._read_board()
+        # Load the project file.
+        config_parser = ConfigParser()
+        config_parser.read(PROJECT_FILENAME)
 
-        # -- Read stored top-module
-        top_module = self._read_top_module()
+        for section in config_parser.sections():
+            if section != "env":
+                print(f"Project file {PROJECT_FILENAME} has an invalid section named [{section}].")
+                sys.exit(1)
 
-        # -- Update board
-        self.board = board
-        if not board:
-            print("Error: invalid {PROJECT_FILENAME} project file")
-            print("No 'board' field defined in project file")
+        if "env" not in config_parser.sections():
+            print(f"Project file {PROJECT_FILENAME} does not have an [env] section.")
             sys.exit(1)
 
-        # -- Update top-module
-        self.top_module = top_module
+        # Parse attributes in the env section.
+        parsed_attributes = set()
+        self.board = self._parse_board(config_parser, parsed_attributes)
+        self.top_module = self._parse_top_module(config_parser, parsed_attributes)
+        self.exe_mode = self._parse_exe_mode(config_parser, parsed_attributes)
 
-        # -- Warn the user the top module has not been set in the apio.ini
-        # -- file
-        if not top_module:
-            click.secho("Warning! No TOP-MODULE in apio.ini", fg="yellow")
+        # Verify that the project file (api.ini) doesn't contain additional (illegal) keys that
+        # where not parsed.
+        for attribute in config_parser.options("env"):
+            if attribute not in parsed_attributes:
+                print(f"Project file {PROJECT_FILENAME} contains an unknown attribute '{attribute}'.")
+                sys.exit(1)
 
     @staticmethod
-    def _read_board() -> str:
-        """Read the configured board from the project file
+    def _parse_board(config_parser: ConfigParser, parsed_attributes: set[str]) -> str:
+        """Parse the configured board from the project file parser and add the keys used
+          to parsed_attributes.
         RETURN:
           * A string with the name of the board
         """
-
-        config = configparser.ConfigParser()
-        config.read(PROJECT_FILENAME)
-        board = config.get("env", "board")
-
+        parsed_attributes.add("board")
+        board = config_parser.get("env", "board")
+        if not board:
+            print(f"Error: invalid {PROJECT_FILENAME} project file")
+            print("No 'board' field defined in [env] section")
+            sys.exit(1)
         return board
 
     @staticmethod
-    def _read_top_module() -> str:
-        """Read the configured top-module from the project file
+    def _parse_top_module(config_parser: ConfigParser, parsed_attributes: set[str]) -> str:
+        """Read the configured top-module from the project file parser and add the keys used
+          to parsed_attributes.
         RETURN:
           * A string with the name of the top-module
         """
-
-        config = configparser.ConfigParser()
-        config.read(PROJECT_FILENAME)
-
-        try:
-            top_module = config.get("env", "top-module")
-        except configparser.NoOptionError:
-            top_module = None
-
+        parsed_attributes.add("top-module")
+        top_module =  config_parser.get("env", "top-module")
+        if not top_module:
+            click.secho(f"Warning! invalid {PROJECT_FILENAME} project file", fg="yellow")
+            click.secho(f"No 'top-module' in [env] section. Assuming 'main'.")
+            return 'main'
         return top_module
+        
+    
+    @staticmethod
+    def _parse_exe_mode(config_parser: ConfigParser, parsed_attributes: set[str]) -> str:
+        """Read the configured exe mode from the project file parser and add the keys used
+          to parsed_attributes.
+        RETURN:
+          * A string with "default" (default) or "native"
+        """
+        # print(f"*** project.py:  reading exe mode")
+        parsed_attributes.add("exe-mode")
+        exe_mode =  config_parser.get("env", "exe-mode", fallback="default")
+        if exe_mode not in {"default", "native"}:
+            print(f"Error: invalid {PROJECT_FILENAME} project file")
+            print("Optional attribute 'exe-mode' should have the value 'default' or 'native'.")
+            sys.exit(1)
+        return exe_mode
+
+        

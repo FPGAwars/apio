@@ -26,6 +26,7 @@ from apio.managers.arguments import serialize_scons_flags
 from apio.managers.system import System
 from apio.profile import Profile
 from apio.resources import Resources
+from apio.managers.project import Project
 
 # -- Constant for the dictionary PROG, which contains
 # -- the programming configuration
@@ -48,6 +49,10 @@ class SCons:
           If not given, the curent working dir is used
         """
 
+        # -- Read the project file (apio.ini)
+        self.proj = Project()
+        self.proj.read()
+        
         # -- Read the apio profile file
         self.profile = Profile()
 
@@ -884,9 +889,8 @@ class SCons:
             click.secho("Info: use custom SConstruct file")
 
         # -- Check the configuration mode
-        if self.profile.check_exe_default():
+        if self.proj.exe_mode == "default":
             # Run on `default` config mode
-
             # -- Check if the necessary packages are installed
             if not util.resolve_packages(
                 packages,
@@ -896,7 +900,7 @@ class SCons:
                 # Exit if a package is not installed
                 raise AttributeError("Package not installed")
         else:
-            click.secho("Info: native config mode")
+            click.secho("Info: native exe mode")
 
         # -- Execute scons
         return self._execute_scons(command, variables, board)
