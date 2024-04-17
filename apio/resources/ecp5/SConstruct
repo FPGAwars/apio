@@ -203,7 +203,7 @@ def iverilog_generator(source, target, env, for_signature):
     #     end
     is_interactive_sim = is_testbench and 'sim' in COMMAND_LINE_TARGETS
     interactive_sim_flag = f'-D INTERACTIVE_SIM' if is_interactive_sim else ""
-    result = 'iverilog {0} -o $TARGET {1} {2} -D NO_INCLUDES "{3}/ecp5/cells_sim.v" $SOURCES'.format(
+    result = 'iverilog {0} -o $TARGET {1} {2} -D NO_INCLUDES "{3}/ecp5/cells_bb.v" "{3}/ecp5/cells_sim.v" $SOURCES'.format(
         IVER_PATH, vcd_output_flag, interactive_sim_flag, YOSYS_PATH)
     return result
 
