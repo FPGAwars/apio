@@ -111,7 +111,7 @@ class Project:
         # -- Create the apio.ini from scratch
         self._create_ini_file(board, top_module, ini_path, PROJECT_FILENAME)
 
-    # TODO: Deprecate prgramatic mutations of apio.ini
+    # TODO- Deprecate prgramatic mutations of apio.ini
     def update_ini(self, top_module, project_dir):
         """Update the current init file with the given top-module"""
 
@@ -208,17 +208,18 @@ class Project:
 
         if "env" not in config_parser.sections():
             message = (
-                        f"Project file {PROJECT_FILENAME}"
-                        f"does not have an [env] section."
-                    )
+                f"Project file {PROJECT_FILENAME}"
+                f"does not have an [env] section."
+            )
             print(message)
             sys.exit(1)
 
         # Parse attributes in the env section.
         parsed_attributes = set()
         self.board = self._parse_board(config_parser, parsed_attributes)
-        self.top_module = self._parse_top_module(config_parser,
-                                                 parsed_attributes)
+        self.top_module = self._parse_top_module(
+            config_parser, parsed_attributes
+        )
         self.exe_mode = self._parse_exe_mode(config_parser, parsed_attributes)
 
         # Verify that the project file (api.ini) doesn't contain additional
@@ -228,13 +229,14 @@ class Project:
                 message = (
                     f"Project file {PROJECT_FILENAME} contains"
                     f" an unknown attribute '{attribute}'."
-                    )
+                )
                 print(message)
                 sys.exit(1)
 
     @staticmethod
-    def _parse_board(config_parser: ConfigParser,
-                     parsed_attributes: set[str]) -> str:
+    def _parse_board(
+        config_parser: ConfigParser, parsed_attributes: set[str]
+    ) -> str:
         """Parse the configured board from the project
             file parser and add the keys used
           to parsed_attributes.
@@ -250,8 +252,9 @@ class Project:
         return board
 
     @staticmethod
-    def _parse_top_module(config_parser: ConfigParser,
-                          parsed_attributes: set[str]) -> str:
+    def _parse_top_module(
+        config_parser: ConfigParser, parsed_attributes: set[str]
+    ) -> str:
         """Read the configured top-module from the project file
         parser and add the keys used
           to parsed_attributes.
@@ -261,15 +264,18 @@ class Project:
         parsed_attributes.add("top-module")
         top_module = config_parser.get("env", "top-module")
         if not top_module:
-            click.secho(f"Warning! invalid {PROJECT_FILENAME} "
-                        f"project file", fg="yellow")
+            click.secho(
+                f"Warning! invalid {PROJECT_FILENAME} " f"project file",
+                fg="yellow",
+            )
             click.secho("No 'top-module' in [env] section. Assuming 'main'.")
-            return 'main'
+            return "main"
         return top_module
 
     @staticmethod
-    def _parse_exe_mode(config_parser: ConfigParser,
-                        parsed_attributes: set[str]) -> str:
+    def _parse_exe_mode(
+        config_parser: ConfigParser, parsed_attributes: set[str]
+    ) -> str:
         """Read the configured exe mode from the
             project file parser and add the keys used
           to parsed_attributes.
@@ -280,9 +286,10 @@ class Project:
         parsed_attributes.add("exe-mode")
         exe_mode = config_parser.get("env", "exe-mode", fallback="default")
         if exe_mode not in {"default", "native"}:
-            print(f"Error: invalid {PROJECT_FILENAME}"
-                  "project file")
-            print("Optional attribute 'exe-mode' should have"
-                  " the value 'default' or 'native'.")
+            print(f"Error: invalid {PROJECT_FILENAME}" "project file")
+            print(
+                "Optional attribute 'exe-mode' should have"
+                " the value 'default' or 'native'."
+            )
             sys.exit(1)
         return exe_mode
