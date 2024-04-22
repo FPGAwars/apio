@@ -157,7 +157,6 @@ class Profile:
         if "config" in data.keys():
             self.config = data["config"]
 
-
             if "verbose" not in self.config.keys():
                 self.config["verbose"] = 0
 

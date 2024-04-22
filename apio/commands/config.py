@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-9 -*-
 # -- This file is part of the Apio project
 # -- (C) 2016-2024 FPGAwars
 # -- Authors
@@ -51,7 +51,6 @@ def cli(ctx, **kwargs):
     # -- Configure verbose mode
     elif verbose:
         profile.add_config("verbose", verbose)
-
 
     # -- No paratemers: Show the help
     else:

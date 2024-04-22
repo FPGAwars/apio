@@ -9,8 +9,9 @@
 
 # TODO(zapta): Deprecate the mutations of existing api.ini file.
 
-# TODO(zapta): Deprecate the copying of the sconstruct file. This is a developer only
-#  feature and developers can copy it manually as needed.
+# TODO(zapta): Deprecate the copying of the sconstruct file.
+# This is a developer only feature and developers can copy
+# it manually as needed.
 
 import sys
 from os.path import isfile
@@ -33,7 +34,7 @@ class Project:
     def __init__(self):
         # TODO(zapta): Make these __private and provide getter methods.
         self.board = None
-        self.top_module = None 
+        self.top_module = None
         self.exe_mode = None
 
     def create_sconstruct(self, project_dir: Path, arch=None, sayyes=False):
@@ -197,29 +198,45 @@ class Project:
 
         for section in config_parser.sections():
             if section != "env":
-                print(f"Project file {PROJECT_FILENAME} has an invalid section named [{section}].")
+                message = (
+                    f"Project file {PROJECT_FILENAME} "
+                    f"has an invalid section named "
+                    f"[{section}]."
+                )
+                print(message)
                 sys.exit(1)
 
         if "env" not in config_parser.sections():
-            print(f"Project file {PROJECT_FILENAME} does not have an [env] section.")
+            message = (
+                        f"Project file {PROJECT_FILENAME}"
+                        f"does not have an [env] section."
+                    )
+            print(message)
             sys.exit(1)
 
         # Parse attributes in the env section.
         parsed_attributes = set()
         self.board = self._parse_board(config_parser, parsed_attributes)
-        self.top_module = self._parse_top_module(config_parser, parsed_attributes)
+        self.top_module = self._parse_top_module(config_parser,
+                                                 parsed_attributes)
         self.exe_mode = self._parse_exe_mode(config_parser, parsed_attributes)
 
-        # Verify that the project file (api.ini) doesn't contain additional (illegal) keys that
-        # where not parsed.
+        # Verify that the project file (api.ini) doesn't contain additional
+        # (illegal) keys that where not parsed
         for attribute in config_parser.options("env"):
             if attribute not in parsed_attributes:
-                print(f"Project file {PROJECT_FILENAME} contains an unknown attribute '{attribute}'.")
+                message = (
+                    f"Project file {PROJECT_FILENAME} contains"
+                    f" an unknown attribute '{attribute}'."
+                    )
+                print(message)
                 sys.exit(1)
 
     @staticmethod
-    def _parse_board(config_parser: ConfigParser, parsed_attributes: set[str]) -> str:
-        """Parse the configured board from the project file parser and add the keys used
+    def _parse_board(config_parser: ConfigParser,
+                     parsed_attributes: set[str]) -> str:
+        """Parse the configured board from the project
+            file parser and add the keys used
           to parsed_attributes.
         RETURN:
           * A string with the name of the board
@@ -233,35 +250,39 @@ class Project:
         return board
 
     @staticmethod
-    def _parse_top_module(config_parser: ConfigParser, parsed_attributes: set[str]) -> str:
-        """Read the configured top-module from the project file parser and add the keys used
+    def _parse_top_module(config_parser: ConfigParser,
+                          parsed_attributes: set[str]) -> str:
+        """Read the configured top-module from the project file
+        parser and add the keys used
           to parsed_attributes.
         RETURN:
           * A string with the name of the top-module
         """
         parsed_attributes.add("top-module")
-        top_module =  config_parser.get("env", "top-module")
+        top_module = config_parser.get("env", "top-module")
         if not top_module:
-            click.secho(f"Warning! invalid {PROJECT_FILENAME} project file", fg="yellow")
-            click.secho(f"No 'top-module' in [env] section. Assuming 'main'.")
+            click.secho(f"Warning! invalid {PROJECT_FILENAME} "
+                        f"project file", fg="yellow")
+            click.secho("No 'top-module' in [env] section. Assuming 'main'.")
             return 'main'
         return top_module
-        
-    
+
     @staticmethod
-    def _parse_exe_mode(config_parser: ConfigParser, parsed_attributes: set[str]) -> str:
-        """Read the configured exe mode from the project file parser and add the keys used
+    def _parse_exe_mode(config_parser: ConfigParser,
+                        parsed_attributes: set[str]) -> str:
+        """Read the configured exe mode from the
+            project file parser and add the keys used
           to parsed_attributes.
         RETURN:
           * A string with "default" (default) or "native"
         """
         # print(f"*** project.py:  reading exe mode")
         parsed_attributes.add("exe-mode")
-        exe_mode =  config_parser.get("env", "exe-mode", fallback="default")
+        exe_mode = config_parser.get("env", "exe-mode", fallback="default")
         if exe_mode not in {"default", "native"}:
-            print(f"Error: invalid {PROJECT_FILENAME} project file")
-            print("Optional attribute 'exe-mode' should have the value 'default' or 'native'.")
+            print(f"Error: invalid {PROJECT_FILENAME}"
+                  "project file")
+            print("Optional attribute 'exe-mode' should have"
+                  " the value 'default' or 'native'.")
             sys.exit(1)
         return exe_mode
-
-        

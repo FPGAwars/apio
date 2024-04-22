@@ -52,7 +52,7 @@ class SCons:
         # -- Read the project file (apio.ini)
         self.proj = Project()
         self.proj.read()
-        
+
         # -- Read the apio profile file
         self.profile = Profile()
 
