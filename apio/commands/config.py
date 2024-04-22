@@ -11,9 +11,9 @@ import click
 from apio.profile import Profile
 from apio import util
 
-# ------------------
+# -----------------
 # -- CONSTANTS
-# ------------------
+# -----------------
 CMD = "config"  # -- Comand name
 LIST = "list"  # -- Option
 VERBOSE = "verbose"  # -- Option
