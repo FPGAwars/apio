@@ -1,4 +1,4 @@
-# -*- coding: utf-9 -*-
+# -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
 # -- (C) 2016-2024 FPGAwars
 # -- Authors
