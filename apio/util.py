@@ -885,3 +885,21 @@ def context_settings():
     # Per https://click.palletsprojects.com/en/8.1.x/documentation/
     #     #help-parameter-customization
     return {"help_option_names": ["-h", "--help"]}
+
+
+def safe_click(text, *args, **kwargs):
+    """Prints text to the console handling potential Unicode errors,
+    forwarding any additional arguments to click.echo. This permits
+    avoid the need of setting encode environment variables for utf-8"""
+
+    error_flag = kwargs.pop("err", False)
+
+    try:
+        click.echo(text, err=error_flag, *args, **kwargs)
+    except UnicodeEncodeError:
+        cleaned_text = text.encode("ascii", errors="replace").decode("ascii")
+        # if encoding fails, after retry without errors , bad characters are
+        # replaced by '?' character, and is better replace for = because is the
+        # most common character error
+        cleaned_text = "".join([ch if ord(ch) < 128 else "=" for ch in text])
+        click.echo(cleaned_text, err=error_flag, *args, **kwargs)
