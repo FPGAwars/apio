@@ -946,7 +946,7 @@ class SCons:
             click.echo(f"[{date_time_str}] Processing {board_color}")
 
             # -- Print a horizontal line
-            click.secho("─" * terminal_width, bold=True)
+            click.secho("-" * terminal_width, bold=True)
 
         # -- Command to execute: scons -Q apio_cmd flags
         scons_command = ["scons"] + ["-Q", command] + variables
@@ -971,7 +971,7 @@ class SCons:
         summary_text = f" Took {duration:.2f} seconds "
 
         # -- Half line
-        half_line = "═" * int(((terminal_width - len(summary_text) - 10) / 2))
+        half_line = "=" * int(((terminal_width - len(summary_text) - 10) / 2))
 
         # -- Status message
         status = (
@@ -981,7 +981,7 @@ class SCons:
         )
 
         # -- Print all the information!
-        click.echo(
+        util.safe_click(
             f"{half_line} [{status}]{summary_text}{half_line}",
             err=is_error,
         )
