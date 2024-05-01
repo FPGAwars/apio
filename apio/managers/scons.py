@@ -986,7 +986,8 @@ class SCons:
 
         # -- Print all the information!
         util.safe_click(
-            f"{half_line} [{status}]{summary_text}{half_line}", err=is_error
+            f"{half_line} [{status}]{summary_text}{half_line}",
+            err=is_error,
         )
 
         # -- Return the exit code
