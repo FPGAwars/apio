@@ -888,8 +888,12 @@ class SCons:
             # -- We are using our custom SConstruct file
             click.secho("Info: use custom SConstruct file")
 
-        # -- Check the configuration mode
-        if self.proj.exe_mode == "default":
+        # -- Verify necessary packages if needed.
+        # TODO(zapta): Can we drop the 'native' mode for simplicity?
+        if self.proj.native_exe_mode:
+             # Assuming blindly that the binaries we need are on the path.
+             click.secho("Warning: native exe mode (binaries should be on path)")
+        else:
             # Run on `default` config mode
             # -- Check if the necessary packages are installed
             if not util.resolve_packages(
@@ -899,8 +903,7 @@ class SCons:
             ):
                 # Exit if a package is not installed
                 raise AttributeError("Package not installed")
-        else:
-            click.secho("Info: native exe mode")
+        
 
         # -- Execute scons
         return self._execute_scons(command, variables, board)

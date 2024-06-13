@@ -33,9 +33,9 @@ class Project:
 
     def __init__(self):
         # TODO(zapta): Make these __private and provide getter methods.
-        self.board = None
-        self.top_module = None
-        self.exe_mode = None
+        self.board: str = None
+        self.top_module: str = None
+        self.native_exe_mode: bool = None
 
     def create_sconstruct(self, project_dir: Path, arch=None, sayyes=False):
         """Creates a default SConstruct file"""
@@ -220,7 +220,8 @@ class Project:
         self.top_module = self._parse_top_module(
             config_parser, parsed_attributes
         )
-        self.exe_mode = self._parse_exe_mode(config_parser, parsed_attributes)
+        exe_mode = self._parse_exe_mode(config_parser, parsed_attributes) 
+        self.native_exe_mode = {"default": False, "native": True}[exe_mode]
 
         # Verify that the project file (api.ini) doesn't contain additional
         # (illegal) keys that where not parsed
