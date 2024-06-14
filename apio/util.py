@@ -147,6 +147,11 @@ def get_systype() -> str:
     if arch:
         platform_str += f"_{arch}"
 
+    # -- Special case for Darwin: darwin_x86_64 is replace for darwin
+    # (for backward compatibility)
+    if "darwin_x86_64" in platform_str:
+        platform_str = "darwin"
+
     # -- Return the full platform
     return platform_str
 
