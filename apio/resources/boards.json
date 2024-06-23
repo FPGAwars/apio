@@ -621,6 +621,24 @@
       "pid": "602b"
     }
   },
+  "ODT_IcyBlue_Feather": {
+    "name": "ODT_IcyBlue_Feather",
+    "fpga": "iCE40-U4K-SG48",
+    "programmer": {
+      "type": "icesprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6014"
+    }
+  },
+  "ODT_RPGA_Feather": {
+    "name": "ODT_RPGA_Feather",
+    "fpga": "iCE40-U4K-SG48",
+    "programmer": {
+      "type": "mcu"
+    }
+  },
   "ColorLight-5A-75B-V61": {
     "name": "ColorLight-5A-75B-V61",
     "fpga": "ECP5-LFE5U-25F-CABGA381",
