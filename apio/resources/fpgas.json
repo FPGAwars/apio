@@ -179,6 +179,18 @@
     "size": "5k",
     "pack": "uwg30"
   },
+  "iCE40-U4K-UWG30": {
+    "arch": "ice40",
+    "type": "u",
+    "size": "4k",
+    "pack": "uwg30"
+  },
+  "iCE40-U4K-SG48": {
+    "arch": "ice40",
+    "type": "u",
+    "size": "4k",
+    "pack": "sg48"
+  },
   "ECP5-LFE5U-12F-CABGA256": {
     "arch": "ecp5",
     "type": "12k",
