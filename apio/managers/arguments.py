@@ -242,6 +242,7 @@ def process_arguments(
     # -- Build Scons flag list
     flags = serialize_scons_flags(
         {
+            "fpga_model": config[FPGA],
             "fpga_arch": config[ARCH],
             "fpga_size": config[SIZE],
             "fpga_type": config[TYPE],

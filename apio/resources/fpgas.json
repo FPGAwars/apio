@@ -397,5 +397,11 @@
     "type": "um5g-85k",
     "size": "85k",
     "pack": "CSFBGA285"
-  } 
+  },
+  "GW2AR-LV18QN88C8/I7": {
+    "arch": "gowin",
+    "type": "gw2a-18c",
+    "size": "20k",
+    "pack": "QN88"
+  }
 }
