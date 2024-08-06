@@ -789,11 +789,15 @@
       "desc": "ETH4K"
     }
   },
-  "Sipeed-Tang-Primer-25k": {
-    "name":"Sipeed Tang Primer 25k",
-    "fpga": "GW5A-LV25MG121",
+  "Sipeed-Tang-Nano-20k": {
+    "name":"Sipeed Tang Nano 20k",
+    "fpga": "GW2AR-LV18QN88C8/I7",
     "programmer": {
-      "type": "openfpgaloader_tangprimer25k"
+      "type": "openfpgaloader_tangnano20k"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6010"
     }
   }
  } 

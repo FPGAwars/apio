@@ -398,10 +398,10 @@
     "size": "85k",
     "pack": "CSFBGA285"
   },
-  "GW5A-LV25MG121": {
+  "GW2AR-LV18QN88C8/I7": {
     "arch": "gowin",
-    "type": "gw5a",
-    "size": "25k",
-    "pack": "MG121N"
+    "type": "gw2ar",
+    "size": "20k",
+    "pack": "QN88"
   }
 }

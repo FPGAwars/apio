@@ -74,8 +74,8 @@
     "command": "openFPGALoader",
     "args": "-c usb-blaster -v --file-type bin"
   },
-  "openfpgaloader_tangprimer25k": {
+  "openfpgaloader_tangnano20k": {
     "command": "openFPGALoader",
-    "args": "-b tangprimer25k -c usb-blaster -v --file-type bin"
+    "args": "-b tangnano20k"
   }
 }
