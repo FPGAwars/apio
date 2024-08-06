@@ -76,6 +76,6 @@
   },
   "openfpgaloader_tangnano20k": {
     "command": "openFPGALoader",
-    "args": "-b tangnano20k"
+    "args": "-b tangnano20k -f"
   }
 }
