@@ -41,9 +41,9 @@ for warn in VERILATOR_WARN:
 
 # Update FPGA_TYPE to a less readable version supported
 # by apicula.
+FPGA_FAMILY = ""
 if FPGA_TYPE == "gw2ar" and FPGA_SIZE == "20k":
     FPGA_TYPE = "GW2AR-LV18QN88C8/I7"
-    FPGA_TYPE_PACK = "GW2AR-18"
     FPGA_FAMILY = "GW2A-18C"
 
 # -- Size. Possible values: 20k
@@ -133,7 +133,7 @@ except IndexError:
 
 # -- Synthesizing Builder
 synth_builder = Builder(
-    action='yosys -p \"synth_gowin {0} -json $TARGET\" {1} $SOURCES'.format(
+    action='yosys -D LEDS_NR=6 -p \"synth_gowin {0} -json $TARGET\" {1} $SOURCES'.format(
         ('-top '+YOSYS_TOP) if YOSYS_TOP else '',
         '' if VERBOSE_ALL or VERBOSE_YOSYS else '-q'
     ),
@@ -147,15 +147,15 @@ pnr_builder = Builder(
     action='nextpnr-himbaechel --device {0} --json $SOURCE --write $TARGET --vopt family={5} --vopt cst={3} {4}'.format(
         FPGA_TYPE, FPGA_SIZE, FPGA_PACK, PCF,
         '' if VERBOSE_ALL or VERBOSE_PNR else '-q', FPGA_FAMILY),
-    suffix='.pack',
+    suffix='.pnr.json',
     src_suffix='.json')
 env.Append(BUILDERS={'PnR': pnr_builder})
 
 # -- Bitstream Builder.
 bitstream_builder = Builder(
-    action='gowin_pack -d {0} -o $TARGET $SOURCE'.format(FPGA_TYPE_PACK),
-    suffix='.bin',
-    src_suffix='.pack')
+    action='gowin_pack -d {0} -o $TARGET $SOURCE'.format(FPGA_FAMILY),
+    suffix='.fs',
+    src_suffix='.pnr.json')
 env.Append(BUILDERS={'Bin': bitstream_builder})
 
 # -- Time report builder
@@ -163,7 +163,7 @@ env.Append(BUILDERS={'Bin': bitstream_builder})
 time_rpt_builder = Builder(
     action='echo No timme analysis report implemented for Gowin devices $TARGET $SOURCE > $TARGET',
     suffix='.rpt',
-    src_suffix='.pack')
+    src_suffix='.pnr.json')
 env.Append(BUILDERS={'Time': time_rpt_builder})
 
 # -- Generate the bitstream
