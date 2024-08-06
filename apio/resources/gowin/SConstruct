@@ -117,17 +117,17 @@ if len(src_synth) == 0:
     print('Error: no verilog module files found (.v)')
     Exit(1)
 
-# -- Get the PCF file
-PCF = ''
-PCF_list = Glob('*.pcf')
+# -- Get the CST file
+CST = ''
+CST_list = Glob('*.cst')
 
 try:
-    PCF = PCF_list[0]
+    CST = CST_list[0]
 except IndexError:
-    print('\n---> WARNING: no PCF file found (.pcf)\n')
+    print('\n---> WARNING: no CST file found (.cst)\n')
 
 # -- Debug
-# print('PCF Found: {}'.format(PCF))
+# print('CST Found: {}'.format(CST))
 
 # -- Synthesizing Builder
 synth_builder = Builder(
@@ -143,7 +143,7 @@ env.Append(BUILDERS={'Synth': synth_builder})
 # -- Place and route Builder.
 pnr_builder = Builder(
     action='nextpnr-himbaechel --device {0} --json $SOURCE --write $TARGET --vopt family={5} --vopt cst={3} {4}'.format(
-        FPGA_MODEL, FPGA_SIZE, FPGA_PACK, PCF,
+        FPGA_MODEL, FPGA_SIZE, FPGA_PACK, CST,
         '' if VERBOSE_ALL or VERBOSE_PNR else '-q', FPGA_TYPE),
     suffix='.pnr.json',
     src_suffix='.json')
@@ -166,7 +166,7 @@ env.Append(BUILDERS={'Time': time_rpt_builder})
 
 # -- Generate the bitstream
 blif_target = env.Synth(TARGET, [src_synth])
-asc_target = env.PnR(TARGET, [blif_target, PCF])
+asc_target = env.PnR(TARGET, [blif_target, CST])
 bitstream_target = env.Bin(TARGET, asc_target)
 
 build_target = env.Alias('build', bitstream_target)
