@@ -788,5 +788,12 @@
     "ftdi": {
       "desc": "ETH4K"
     }
+  },
+  "Sipeed-Tang-Primer-25k": {
+    "name":"Sipeed Tang Primer 25k",
+    "fpga": "GW5A-LV25MG121",
+    "programmer": {
+      "type": "openfpgaloader_tangprimer25k"
+    }
   }
  } 
