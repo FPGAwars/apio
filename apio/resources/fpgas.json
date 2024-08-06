@@ -400,7 +400,7 @@
   },
   "GW2AR-LV18QN88C8/I7": {
     "arch": "gowin",
-    "type": "gw2ar",
+    "type": "gw2a-18c",
     "size": "20k",
     "pack": "QN88"
   }

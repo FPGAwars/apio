@@ -17,6 +17,7 @@ from SCons.Script import (Builder, DefaultEnvironment, Default, AlwaysBuild,
 
 # -- Load arguments
 PROG = ARGUMENTS.get('prog', '')
+FPGA_MODEL = ARGUMENTS.get('fpga_model', '')
 FPGA_SIZE = ARGUMENTS.get('fpga_size', '')
 FPGA_TYPE = ARGUMENTS.get('fpga_type', '')
 FPGA_PACK = ARGUMENTS.get('fpga_pack', '')
@@ -39,22 +40,19 @@ for warn in VERILATOR_WARN:
     if warn != '':
         VERILATOR_PARAM_STR += ' -Wwarn-' + warn
 
-# Update FPGA_TYPE to a less readable version supported
-# by apicula.
-FPGA_FAMILY = ""
-if FPGA_TYPE == "gw2ar" and FPGA_SIZE == "20k":
-    FPGA_TYPE = "GW2AR-LV18QN88C8/I7"
-    FPGA_FAMILY = "GW2A-18C"
+
 
 # -- Size. Possible values: 20k
 # -- Type. Possible values: gw2ar
 # -- Package. Unused.
+
 
 # -- Add the FPGA flags as variables to be shown with the -h scons option
 vars = Variables()
 vars.Add('fpga_size', 'Set the Gowin FPGA size (25k)', FPGA_SIZE)
 vars.Add('fpga_type', 'Set the Gowin FPGA type (gw5a)', FPGA_TYPE)
 vars.Add('fpga_pack', 'Set the Gowin FPGA packages', FPGA_PACK)
+vars.Add('fpga_model', 'Set a specific Gowin FPGA model', FPGA_MODEL)
 
 # -- Create environment
 env = DefaultEnvironment(ENV=os.environ,
@@ -145,15 +143,15 @@ env.Append(BUILDERS={'Synth': synth_builder})
 # -- Place and route Builder.
 pnr_builder = Builder(
     action='nextpnr-himbaechel --device {0} --json $SOURCE --write $TARGET --vopt family={5} --vopt cst={3} {4}'.format(
-        FPGA_TYPE, FPGA_SIZE, FPGA_PACK, PCF,
-        '' if VERBOSE_ALL or VERBOSE_PNR else '-q', FPGA_FAMILY),
+        FPGA_MODEL, FPGA_SIZE, FPGA_PACK, PCF,
+        '' if VERBOSE_ALL or VERBOSE_PNR else '-q', FPGA_TYPE),
     suffix='.pnr.json',
     src_suffix='.json')
 env.Append(BUILDERS={'PnR': pnr_builder})
 
 # -- Bitstream Builder.
 bitstream_builder = Builder(
-    action='gowin_pack -d {0} -o $TARGET $SOURCE'.format(FPGA_FAMILY),
+    action='gowin_pack -d {0} -o $TARGET $SOURCE'.format(FPGA_TYPE.upper()),
     suffix='.fs',
     src_suffix='.pnr.json')
 env.Append(BUILDERS={'Bin': bitstream_builder})
