@@ -7,22 +7,26 @@
 # -- Licence GPLv2
 """Main implementation of APIO UNINSTALL command"""
 
+from pathlib import Path
 import click
 from apio.managers.installer import Installer, list_packages
 from apio.profile import Profile
 from apio import util
+from apio.resources import Resources
+
 
 # ------------------
 # -- CONSTANTS
 # ------------------
 CMD = "uninstall"  # -- Comand name
+PROJECT_DIR = "project_dir"  # -- Option
 PACKAGES = "packages"  # -- Argument
 ALL = "all"  # -- Option
 LIST = "list"  # -- Option
 PLATFORM = "platform"  # -- Option
 
 
-def _uninstall(packages: list, platform: str):
+def _uninstall(packages: list, platform: str, resources: Resources):
     """Uninstall the given list of packages"""
 
     # -- Ask the user for confirmation
@@ -32,10 +36,11 @@ def _uninstall(packages: list, platform: str):
         for package in packages:
 
             # -- The uninstalation is performed by the Installer object
-            inst = Installer(package, platform, checkversion=False)
+            modifiers = Installer.Modifiers(force=False, checkversion=False)
+            installer = Installer(package, platform, resources, modifiers)
 
             # -- Uninstall the package!
-            inst.uninstall()
+            installer.uninstall()
 
     # -- User quit!
     else:
@@ -45,6 +50,13 @@ def _uninstall(packages: list, platform: str):
 @click.command(CMD, context_settings=util.context_settings())
 @click.pass_context
 @click.argument(PACKAGES, nargs=-1)
+@click.option(
+    "-p",
+    "--project-dir",
+    type=Path,
+    metavar="str",
+    help="Set the target directory for the project.",
+)
 @click.option("-a", f"--{ALL}", is_flag=True, help="Uninstall all packages.")
 @click.option(
     "-l", f"--{LIST}", is_flag=True, help="List all installed packages."
@@ -66,10 +78,14 @@ def cli(ctx, **kwargs):
     platform = kwargs[PLATFORM]  # -- str
     _all = kwargs[ALL]  # -- bool
     _list = kwargs[LIST]  # -- bool
+    project_dir = kwargs[PROJECT_DIR]  # -- str
+
+    # -- Load the resources.
+    resources = Resources(platform=platform, project_dir=project_dir)
 
     # -- Uninstall the given apio packages
     if packages:
-        _uninstall(packages, platform)
+        _uninstall(packages, platform, resources)
 
     # -- Uninstall all the packages
     elif _all:
@@ -78,7 +94,7 @@ def cli(ctx, **kwargs):
         packages = Profile().packages
 
         # -- Uninstall them!
-        _uninstall(packages, platform)
+        _uninstall(packages, platform, resources)
 
     # -- List all the packages (installed or not)
     elif _list:

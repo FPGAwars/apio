@@ -10,9 +10,12 @@ import sys
 import json
 from collections import OrderedDict
 import shutil
+from pathlib import Path
+from typing import Optional
 import click
 from apio import util
 from apio.profile import Profile
+
 
 # -- Info message
 BOARDS_MSG = (
@@ -62,19 +65,26 @@ DISTRIBUTION_JSON = "distribution.json"
 class Resources:
     """Resource manager. Class for accesing to all the resources"""
 
-    def __init__(self, platform: str = ""):
+    def __init__(
+        self, *, platform: str = "", project_dir: Optional[Path] = None
+    ):
+        project_dir = util.get_project_dir(project_dir)
+
+        self._project_dir = project_dir
 
         # -- Read the apio packages information
         self.packages = self._load_resource(PACKAGES_JSON)
 
         # -- Read the boards information
-        self.boards = self._load_resource(BOARDS_JSON)
+        self.boards = self._load_resource(BOARDS_JSON, allow_custom=True)
 
         # -- Read the FPGAs information
-        self.fpgas = self._load_resource(FPGAS_JSON)
+        self.fpgas = self._load_resource(FPGAS_JSON, allow_custom=True)
 
         # -- Read the programmers information
-        self.programmers = self._load_resource(PROGRAMMERS_JSON)
+        self.programmers = self._load_resource(
+            PROGRAMMERS_JSON, allow_custom=True
+        )
 
         # -- Read the distribution information
         self.distribution = self._load_resource(DISTRIBUTION_JSON)
@@ -98,8 +108,7 @@ class Resources:
         # -- Default profile file
         self.profile = None
 
-    @staticmethod
-    def _load_resource(name: str) -> dict:
+    def _load_resource(self, name: str, allow_custom: bool = False) -> dict:
         """Load the resources from a given json file
         * INPUTS:
           * Name: Name of the json file
@@ -109,12 +118,31 @@ class Resources:
               * FPGAS_JSON
               * PROGRAMMERS_JSON
               * DISTRIBUTION_JSON
-        * OUTPUT: The dicctionary with the data
+            * Allow_custom: if true, look first in the project dir for
+              a project specific resource file of same name.
+        * OUTPUT: A dictionary with the json file data
           In case of error it raises an exception and finish
         """
+        # -- Try loading a custom resource file from the project directory.
+        filepath = self._project_dir / name
 
-        # -- Build the filepath: Ex. resources/fpgas.json
-        filepath = util.get_full_path(RESOURCES_DIR) / name
+        if filepath.exists():
+            if allow_custom:
+                click.secho(
+                    f"Loading custom {name} from project dir", fg="yellow"
+                )
+                return self._load_resource_file(filepath)
+
+        # -- Load the stock resource file from the APIO package.
+        filepath = util.get_apio_full_path(RESOURCES_DIR) / name
+        return self._load_resource_file(filepath)
+
+    @staticmethod
+    def _load_resource_file(filepath: Path) -> dict:
+        """Load the resources from a given json file path
+        * OUTPUT: A dictionary with the json file data
+          In case of error it raises an exception and finish
+        """
 
         # -- Read the json file
         try:

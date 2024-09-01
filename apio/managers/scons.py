@@ -50,20 +50,22 @@ class SCons:
         """
 
         # -- Read the project file (apio.ini)
-        self.proj = Project()
-        self.proj.read()
+        self.project = Project(project_dir)
+        self.project.read()
 
         # -- Read the apio profile file
         self.profile = Profile()
 
         # -- Read the apio resources
-        self.resources = Resources()
+        self.resources = Resources(project_dir=project_dir)
 
         # -- Project path is given
         if project_dir:
             # Check if it is a correct folder
             # (or create a new one)
-            project_dir = util.check_dir(project_dir)
+            project_dir = util.get_project_dir(
+                project_dir, create_if_missing=False
+            )
 
             # Change to that folder
             os.chdir(project_dir)
@@ -73,7 +75,7 @@ class SCons:
         """Execute apio clean"""
 
         # -- Split the arguments
-        __, __, arch = process_arguments(args, self.resources)
+        __, __, arch = process_arguments(args, self.resources, self.project)
 
         # --Clean the project: run scons -c (with aditional arguments)
         return self.run("-c", arch=arch, variables=[], packages=[])
@@ -83,7 +85,7 @@ class SCons:
         """Executes scons for verifying"""
 
         # -- Split the arguments
-        __, __, arch = process_arguments(args, self.resources)
+        __, __, arch = process_arguments(args, self.resources, self.project)
 
         # -- Execute scons!!!
         # -- The packages to check are passed
@@ -99,7 +101,7 @@ class SCons:
         """Executes scons for visual graph generation"""
 
         # -- Split the arguments
-        var, _, arch = process_arguments(args, self.resources)
+        var, _, arch = process_arguments(args, self.resources, self.project)
 
         # -- Execute scons!!!
         # -- The packages to check are passed
@@ -115,7 +117,7 @@ class SCons:
         """DOC: TODO"""
 
         config = {}
-        __, __, arch = process_arguments(config, self.resources)
+        __, __, arch = process_arguments(config, self.resources, self.project)
         var = serialize_scons_flags(
             {
                 "all": args.get("all"),
@@ -137,7 +139,7 @@ class SCons:
         """Simulates a testbench and shows the result in a gtkwave window."""
 
         # -- Split the arguments
-        var, _, arch = process_arguments(args, self.resources)
+        var, _, arch = process_arguments(args, self.resources, self.project)
 
         return self.run(
             "sim",
@@ -151,7 +153,7 @@ class SCons:
         """Tests all or a single testbench by simulating."""
 
         # -- Split the arguments
-        var, _, arch = process_arguments(args, self.resources)
+        var, _, arch = process_arguments(args, self.resources, self.project)
 
         return self.run(
             "test",
@@ -165,7 +167,9 @@ class SCons:
         """Build the circuit"""
 
         # -- Split the arguments
-        var, board, arch = process_arguments(args, self.resources)
+        var, board, arch = process_arguments(
+            args, self.resources, self.project
+        )
 
         # -- Execute scons!!!
         # -- The packages to check are passed
@@ -183,7 +187,9 @@ class SCons:
     def time(self, args):
         """DOC: TODO"""
 
-        var, board, arch = process_arguments(args, self.resources)
+        var, board, arch = process_arguments(
+            args, self.resources, self.project
+        )
         return self.run(
             "time",
             variables=var,
@@ -210,7 +216,9 @@ class SCons:
 
         # -- Get important information from the configuration
         # -- It will raise an exception if it cannot be solved
-        flags, board, arch = process_arguments(config, self.resources)
+        flags, board, arch = process_arguments(
+            config, self.resources, self.project
+        )
 
         # -- Information about the FPGA is ok!
 
@@ -549,8 +557,7 @@ class SCons:
 
         return programmer
 
-    @staticmethod
-    def check_usb(board: str, board_data: dict) -> None:
+    def check_usb(self, board: str, board_data: dict) -> None:
         """Check if the given board is connected or not to the computer
            If it is not connected, an exception is raised
 
@@ -579,7 +586,7 @@ class SCons:
 
         # -- Get the list of the connected USB devices
         # -- (execute the command "lsusb" from the apio System module)
-        system = System()
+        system = System(self.resources)
         connected_devices = system.get_usb_devices()
 
         # -- Check if the given device (vid:pid) is connected!
@@ -795,8 +802,9 @@ class SCons:
         # -- Ex: '0'
         return ftdi_id
 
-    @staticmethod
-    def _check_ftdi(board: str, board_data: dict, ext_ftdi_id: str) -> str:
+    def _check_ftdi(
+        self, board: str, board_data: dict, ext_ftdi_id: str
+    ) -> str:
         """Check if the given ftdi board is connected or not to the computer
            and return its FTDI index
 
@@ -835,7 +843,7 @@ class SCons:
 
         # -- Get the list of the connected FTDI devices
         # -- (execute the command "lsftdi" from the apio System module)
-        system = System()
+        system = System(self.resources)
         connected_devices = system.get_ftdi_devices()
 
         # -- No FTDI devices detected --> Error!
@@ -878,7 +886,7 @@ class SCons:
         # -- apio, which is located in the resources/arch/ folder
         if not scon_file.exists():
             # -- This is the default SConstruct file
-            resources = util.get_full_path("resources")
+            resources = util.get_apio_full_path("resources")
             default_scons_file = resources / arch / "SConstruct"
 
             # -- It is passed to scons using the flag -f default_scons_file
@@ -890,9 +898,11 @@ class SCons:
 
         # -- Verify necessary packages if needed.
         # TODO(zapta): Can we drop the 'native' mode for simplicity?
-        if self.proj.native_exe_mode:
-             # Assuming blindly that the binaries we need are on the path.
-             click.secho("Warning: native exe mode (binaries should be on path)")
+        if self.project.native_exe_mode:
+            # Assuming blindly that the binaries we need are on the path.
+            click.secho(
+                "Warning: native exe mode (binaries should be on path)"
+            )
         else:
             # Run on `default` config mode
             # -- Check if the necessary packages are installed
@@ -903,7 +913,6 @@ class SCons:
             ):
                 # Exit if a package is not installed
                 raise AttributeError("Package not installed")
-        
 
         # -- Execute scons
         return self._execute_scons(command, variables, board)

@@ -64,7 +64,7 @@ class Drivers:
     # -- to the /etc/udev/rules.d folder
 
     # -- FTDI source rules file paths
-    resources = util.get_full_path("resources")
+    resources = util.get_apio_full_path("resources")
     ftdi_rules_local_path = resources / "80-fpga-ftdi.rules"
 
     # -- Target rule file
