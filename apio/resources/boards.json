@@ -270,7 +270,7 @@
       "pid": "6014"
     },
     "ftdi": {
-      "desc": "UPduino v3.0"
+      "desc": "UPduino v3\\.0"
     }
   },
     "upduino31": {
@@ -284,7 +284,7 @@
       "pid": "6014"
     },
     "ftdi": {
-      "desc": "UPduino v3.1"
+      "desc": "UPduino v3\\.1"
     }
   },
   "iCEBreaker": {
