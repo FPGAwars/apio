@@ -9,6 +9,7 @@ import sys
 import shutil
 
 from pathlib import Path
+from dataclasses import dataclass
 import click
 import requests
 
@@ -27,8 +28,19 @@ class Installer:
     """Installer. Class with methods for installing and managing
     apio packages"""
 
+    @dataclass(frozen=True)
+    class Modifiers:
+        """A workaround for the linter limitation of 4 arguments per method."""
+
+        force: bool
+        checkversion: bool
+
     def __init__(
-        self, package: str, platform: str = "", force=False, checkversion=True
+        self,
+        package: str,
+        platform: str = "",
+        resources=None,
+        modifiers=Modifiers(force=False, checkversion=True),
     ):
         """Class initialization. Parameters:
         * package:  Package name to manage/install. It can have a sufix with
@@ -44,7 +56,7 @@ class Installer:
         self.version = None
         self.force_install = None
         self.packages_dir = None
-        self.resources = None
+        self.resources = resources
         self.profile = None
         self.spec_version = None
         self.package_name = None
@@ -65,16 +77,11 @@ class Installer:
 
         # -- Attribute Installer.force_install
         # -- Force installation or not
-        self.force_install = force
+        self.force_install = modifiers.force
 
         # -- Installer.package_dir: path were the packages are stored
         # -- Ex. /home/obijuan/.apio/packages
         self.packages_dir = ""
-
-        # -- Get all the resources for the given platform
-        # -- Some resources depend on the platform (like the packages)
-        # -- but some others don't (like the boards)
-        self.resources = Resources(platform)
 
         # -- Read the profile file
         self.profile = Profile()
@@ -108,7 +115,7 @@ class Installer:
 
             # Check if the version is ok (It is only done if the
             # checkversion flag has been activated)
-            if checkversion:
+            if modifiers.checkversion:
                 # Check version. The filename is read from the
                 # repostiroy
                 # -- Get the url of the version.txt file
@@ -141,7 +148,10 @@ class Installer:
                 ]
         # -- The package is kwnown but the version is not correct
         else:
-            if self.package in self.profile.packages and checkversion is False:
+            if (
+                self.package in self.profile.packages
+                and modifiers.checkversion is False
+            ):
                 self.packages_dir = util.get_home_dir() / dirname
 
                 self.package_name = "toolchain-" + package
@@ -499,7 +509,7 @@ def list_packages(platform: str):
     """List all the available packages"""
 
     # -- Get all the resources
-    resources = Resources(platform)
+    resources = Resources(platform=platform)
 
     # -- List the packages
     resources.list_packages()

@@ -67,26 +67,26 @@ def cli(ctx, **kwargs):
     top_module = kwargs[TOP_MODULE]
 
     # -- Create a project
-    project = Project()
+    project = Project(project_dir)
 
     # -- scons option: Create default SConstruct file
     if scons:
-        project.create_sconstruct(project_dir, "ice40", sayyes)
+        project.create_sconstruct("ice40", sayyes)
 
-    # -- Create the apio.ini file
+    # -- Create the project file apio.ini
     elif board:
         # -- Set the default top_module when creating the ini file
         if not top_module:
             top_module = "main"
 
         # -- Create the apio.ini file
-        project.create_ini(board, top_module, project_dir, sayyes)
+        project.create_ini(board, top_module, sayyes)
 
     # -- Add the top_module to the apio.ini file
     elif top_module:
 
         # -- Update the apio.ini file
-        project.update_ini(top_module, project_dir)
+        project.update_ini(top_module)
 
     # -- No options: show help
     else:

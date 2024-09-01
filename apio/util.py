@@ -99,8 +99,8 @@ class AsyncPipe(Thread):
         self.join()
 
 
-def get_full_path(folder: str) -> Path:
-    """Get the full path to the given folder
+def get_apio_full_path(folder: str) -> Path:
+    """Get the full path to the given folder in the apio package.
     Inputs:
       * folder: String with the folder name
 
@@ -693,39 +693,40 @@ def print_exception_developers(e):
     click.secho(f"{e}\n", fg="yellow")
 
 
-def check_dir(_dir: Path) -> Path:
+def get_project_dir(_dir: Path, create_if_missing: bool = False) -> Path:
     """Check if the given path is a folder. It it does not exists
-    the folder is created. If no path is given the current working
-    directory is used
+    and create_if_missing is true, folder is created, otherwise a fatal error.
+    If no path is given the current working directory is used.
       * INPUTS:
-        * _dir: The Path to check
+        * _dir: The Path to check.
       * OUTPUT:
-        * The new path (if not given)
+        * The effective path (same if given)
     """
-
     # -- If no path is given, get the current working directory
     if not _dir:
         _dir = Path.cwd()
 
-    # -- Check if the path is a file or a folder
+    # -- Make sure the folder doesn't exist as a file.
     if _dir.is_file():
-        # -- It is a file! Error! Exit!
         click.secho(
             f"Error: project directory is already a file: {_dir}", fg="red"
         )
-
         sys.exit(1)
 
     # -- If the folder does not exist....
     if not _dir.exists():
-        # -- Warning
-        click.secho(f"Warning: The path does not exist: {_dir}", fg="yellow")
-
-        # -- Create the folder
-        click.secho(f"Creating folder: {_dir}")
-        _dir.mkdir()
+        if create_if_missing:
+            click.secho(
+                f"Warning: The path does not exist: {_dir}", fg="yellow"
+            )
+            click.secho(f"Creating folder: {_dir}")
+            _dir.mkdir()
+        else:
+            click.secho(f"Error: the path does not exist: {_dir}", fg="red")
+            sys.exit(1)
 
     # -- Return the path
+    # print(f"*** get_project_dir() {_temp} -> {_dir}")
     return _dir
 
 

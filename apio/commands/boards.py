@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 """Main implementation of APIO BOARDS command"""
 
+from pathlib import Path
 import click
 from apio.resources import Resources
 from apio import util
@@ -15,12 +16,20 @@ from apio import util
 # -- CONSTANTS
 # ------------------
 CMD = "boards"  # -- Comand name
+PROJECT_DIR = "project_dir"  # -- Option
 LIST = "list"  # -- Option
 FPGA = "fpga"  # -- Option
 
 
 @click.command(CMD, context_settings=util.context_settings())
 @click.pass_context
+@click.option(
+    "-p",
+    "--project-dir",
+    type=Path,
+    metavar="str",
+    help="Set the target directory for the project.",
+)
 @click.option(
     "-l",
     f"--{LIST}",
@@ -34,11 +43,12 @@ def cli(ctx, **kwargs):
     """Manage FPGA boards."""
 
     # -- Extract the arguments
+    project_dir = kwargs[PROJECT_DIR]  # -- str
     _list = kwargs[LIST]  # -- bool
     fpga = kwargs[FPGA]  # -- bool
 
     # -- Access to the apio resources
-    resources = Resources()
+    resources = Resources(project_dir=project_dir)
 
     # -- Option 1: List boards
     if _list:

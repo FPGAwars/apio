@@ -84,7 +84,7 @@ def debug_params(fun):
 # pylint: disable=R0912
 # @debug_params
 def process_arguments(
-    config_ini: dict, resources: type[Resources]
+    config_ini: dict, resources: type[Resources], project: type[Project]
 ) -> tuple:  # noqa
     """Get the final CONFIGURATION, depending on the board and
     arguments passed in the command line.
@@ -102,6 +102,7 @@ def process_arguments(
            'top-module`: str  //-- Top module name
          }
        * Resources: Object for accessing the apio resources
+       * Project: the contentn of apio.ini, possibly empty if does not exist.
     * OUTPUT:
       * Return a tuple (flags, board, arch)
         - flags: A list of strings with the flags valures:
@@ -129,10 +130,6 @@ def process_arguments(
     # -- Merge the initial configuration to the current configuration
     config.update(config_ini)
 
-    # -- Read the apio project file (apio.ini)
-    proj = Project()
-    proj.read()
-
     # -- proj.board:
     # --   * None: No apio.ini file
     # --   * "name": Board name (str)
@@ -151,18 +148,18 @@ def process_arguments(
         # -- If there is a project file (apio.ini) the board
         # -- given by command line overrides it
         # -- (command line has the highest priority)
-        if proj.board:
+        if project.board:
 
             # -- As the command line has more priority, and the board
             # -- given in args is different than the one in the project,
             # -- inform the user
-            if config[BOARD] != proj.board:
+            if config[BOARD] != project.board:
                 click.secho("Info: ignore apio.ini board", fg="yellow")
 
     # -- Board name given in the project file
     else:
         # -- ...read it from the apio.ini file
-        config[BOARD] = proj.board
+        config[BOARD] = project.board
 
     # -- The board is given (either by arguments or by project file)
     if config[BOARD]:
@@ -214,8 +211,8 @@ def process_arguments(
 
         # -- Priority 2: Use the top module in the apio.ini file
         # -- if it exists...
-        if proj.top_module:
-            config[TOP_MODULE] = proj.top_module
+        if project.top_module:
+            config[TOP_MODULE] = project.top_module
 
         # -- NO top-module specified!! Warn the user
         else:
@@ -358,11 +355,14 @@ def perror_insuficient_arguments():
         fg="red",
     )
     click.secho(
-        "You have two options:\n"
-        "  1) Execute your command with\n"
-        "       `--board <boardname>`\n"
-        "  2) Create an ini file using\n"
-        "       `apio init --board <boardname>`",
+        "You have a few options:\n"
+        "  1) Change to a project directory with an apio.ini file\n"
+        "  2) Specify the directory of a project with an apio.ini file\n"
+        "       `--project-dir <projectdir>\n"
+        "  3) Create a project file apio.ini manually or using\n"
+        "       `apio init --board <boardname>`\n"
+        "  4) Execute your command with the flag\n"
+        "       `--board <boardname>`",
         fg="yellow",
     )
 

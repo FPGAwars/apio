@@ -12,18 +12,14 @@ import click
 
 from apio import util
 from apio.profile import Profile
-from apio.resources import Resources
 
 
 class System:  # pragma: no cover
     """System class. Managing and execution of the system commands"""
 
-    def __init__(self):
+    def __init__(self, resources: dict):
         # -- Read the profile from the file
         profile = Profile()
-
-        # -- Read the resources from the corresponding files
-        resources = Resources()
 
         # -- This command is called system
         self.name = "system"

@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 """Main implementation of APIO INSTALL command"""
 
+from pathlib import Path
 import click
 from apio.managers.installer import Installer, list_packages
 from apio.resources import Resources
@@ -16,6 +17,7 @@ from apio import util
 # -- CONSTANTS
 # ------------------
 CMD = "install"  # -- Comand name
+PROJECT_DIR = "project_dir"  # -- Option
 PACKAGES = "packages"  # -- Argument
 ALL = "all"  # -- Option
 LIST = "list"  # -- Option
@@ -23,7 +25,9 @@ FORCE = "force"  # -- Option
 PLATFORM = "platform"  # -- Option
 
 
-def install_packages(packages: list, platform: str, force: bool):
+def install_packages(
+    packages: list, platform: str, resources: Resources, force: bool
+):
     """Install the apio packages passed as a list
     * INPUTS:
       - packages: List of packages (Ex. ['examples', 'oss-cad-suite'])
@@ -34,15 +38,23 @@ def install_packages(packages: list, platform: str, force: bool):
     for package in packages:
 
         # -- The instalation is performed by the Installer object
-        inst = Installer(package, platform, force)
+        modifiers = Installer.Modifiers(force=force, checkversion=True)
+        installer = Installer(package, platform, resources, modifiers)
 
         # -- Install the package!
-        inst.install()
+        installer.install()
 
 
 @click.command(CMD, context_settings=util.context_settings())
 @click.pass_context
 @click.argument(PACKAGES, nargs=-1)
+@click.option(
+    "-p",
+    "--project-dir",
+    type=Path,
+    metavar="str",
+    help="Set the target directory for the project.",
+)
 @click.option("-a", f"--{ALL}", is_flag=True, help="Install all packages.")
 @click.option(
     "-l", f"--{LIST}", is_flag=True, help="List all available packages."
@@ -64,23 +76,23 @@ def cli(ctx, **kwargs):
 
     # -- Extract the arguments
     packages = kwargs[PACKAGES]  # -- tuple
+    project_dir = kwargs[PROJECT_DIR]  # -- str
     platform = kwargs[PLATFORM]  # -- str
     _all = kwargs[ALL]  # -- bool
     _list = kwargs[LIST]  # -- bool
     force = kwargs[FORCE]  # -- bool
 
+    # -- Load the resources.
+    resources = Resources(platform=platform, project_dir=project_dir)
+
     # -- Install the given apio packages
     if packages:
-        install_packages(packages, platform, force)
+        install_packages(packages, platform, resources, force)
 
     # -- Install all the available packages (if any)
     elif _all:
-
-        # -- Get all the resources
-        resources = Resources(platform)
-
         # -- Install all the available packages for this platform!
-        install_packages(resources.packages, platform, force)
+        install_packages(resources.packages, platform, resources, force)
 
     # -- List all the packages (installed or not)
     elif _list:

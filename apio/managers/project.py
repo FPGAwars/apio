@@ -31,21 +31,20 @@ PROJECT_FILENAME = "apio.ini"
 class Project:
     """Class for managing apio projects"""
 
-    def __init__(self):
+    def __init__(self, project_dir: Path):
         # TODO(zapta): Make these __private and provide getter methods.
+        self.project_dir = util.get_project_dir(project_dir)
         self.board: str = None
         self.top_module: str = None
         self.native_exe_mode: bool = None
 
-    def create_sconstruct(self, project_dir: Path, arch=None, sayyes=False):
+    def create_sconstruct(self, arch=None, sayyes=False):
         """Creates a default SConstruct file"""
 
-        project_dir = util.check_dir(project_dir)
-
         sconstruct_name = "SConstruct"
-        sconstruct_path = project_dir / sconstruct_name
+        sconstruct_path = self.project_dir / sconstruct_name
         local_sconstruct_path = (
-            util.get_full_path("resources") / arch / sconstruct_name
+            util.get_apio_full_path("resources") / arch / sconstruct_name
         )
 
         if sconstruct_path.exists():
@@ -76,13 +75,11 @@ class Project:
                 sconstruct_name, sconstruct_path, local_sconstruct_path
             )
 
-    def create_ini(self, board, top_module, project_dir="", sayyes=False):
+    def create_ini(self, board, top_module, sayyes=False):
         """Creates a new apio project file"""
 
-        project_dir = util.check_dir(project_dir)
-
         # -- Build the filename
-        ini_path = project_dir / PROJECT_FILENAME
+        ini_path = self.project_dir / PROJECT_FILENAME
 
         # Check board
         boards = Resources().boards
@@ -112,13 +109,11 @@ class Project:
         self._create_ini_file(board, top_module, ini_path, PROJECT_FILENAME)
 
     # TODO- Deprecate prgramatic mutations of apio.ini
-    def update_ini(self, top_module, project_dir):
+    def update_ini(self, top_module):
         """Update the current init file with the given top-module"""
 
-        project_dir = util.check_dir(project_dir)
-
         # -- Build the filename
-        ini_path = project_dir / PROJECT_FILENAME
+        ini_path = self.project_dir / PROJECT_FILENAME
 
         # -- Check if the apio.ini file exists
         if not ini_path.is_file():
@@ -187,19 +182,21 @@ class Project:
     def read(self):
         """Read the project config file"""
 
-        # -- If no project finel found, just return
-        if not isfile(PROJECT_FILENAME):
+        project_file = self.project_dir / PROJECT_FILENAME
+
+        # -- If no project file found, just return
+        if not isfile(project_file):
             print(f"Info: No {PROJECT_FILENAME} file")
             return
 
         # Load the project file.
         config_parser = ConfigParser()
-        config_parser.read(PROJECT_FILENAME)
+        config_parser.read(project_file)
 
         for section in config_parser.sections():
             if section != "env":
                 message = (
-                    f"Project file {PROJECT_FILENAME} "
+                    f"Project file {project_file} "
                     f"has an invalid section named "
                     f"[{section}]."
                 )
@@ -208,7 +205,7 @@ class Project:
 
         if "env" not in config_parser.sections():
             message = (
-                f"Project file {PROJECT_FILENAME}"
+                f"Project file {project_file}"
                 f"does not have an [env] section."
             )
             print(message)
@@ -220,7 +217,7 @@ class Project:
         self.top_module = self._parse_top_module(
             config_parser, parsed_attributes
         )
-        exe_mode = self._parse_exe_mode(config_parser, parsed_attributes) 
+        exe_mode = self._parse_exe_mode(config_parser, parsed_attributes)
         self.native_exe_mode = {"default": False, "native": True}[exe_mode]
 
         # Verify that the project file (api.ini) doesn't contain additional
@@ -228,7 +225,7 @@ class Project:
         for attribute in config_parser.options("env"):
             if attribute not in parsed_attributes:
                 message = (
-                    f"Project file {PROJECT_FILENAME} contains"
+                    f"Project file {project_file} contains"
                     f" an unknown attribute '{attribute}'."
                 )
                 print(message)

@@ -21,7 +21,7 @@ Use `apio examples -l` for listing all the available examples"""
 
 EXAMPLE_OF_USE_CAD = """
 Example of use:
-   apio examples -f leds
+   apio examples -f icezum/leds
 Copy the leds example files to the current directory\n"""
 
 EXAMPLE_DIR_FILE = """
@@ -154,7 +154,7 @@ class Examples:
             return 1
 
         # -- Get the working dir (current or given)
-        project_dir = util.check_dir(project_dir)
+        project_dir = util.get_project_dir(project_dir, create_if_missing=True)
 
         # -- Build the destination example path
         dst_example_path = project_dir / example
@@ -218,7 +218,9 @@ class Examples:
             return 1
 
         # -- Get the working dir (current or given)
-        dst_example_path = util.check_dir(project_dir)
+        dst_example_path = util.get_project_dir(
+            project_dir, create_if_missing=True
+        )
 
         # -- Build the source example path (where the example was installed)
         src_example_path = self.examples_dir / example
