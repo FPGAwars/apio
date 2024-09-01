@@ -8,87 +8,37 @@
 """Main implementation of APIO BUILD command"""
 
 
-from pathlib import Path
 import click
 from apio.managers.scons import SCons
 from apio import util
-
-# R0801: Similar lines in 2 files
-# pylint: disable=R0801
-# ------------------
-# -- CONSTANTS
-# ------------------
-CMD = "build"  # -- Comand name
-BOARD = "board"  # -- Option
-FPGA = "fpga"  # -- Option
-PACK = "pack"  # -- Option
-TYPE = "type"  # -- Option
-SIZE = "size"  # -- Option
-PROJECT_DIR = "project_dir"  # -- Option
-VERBOSE = "verbose"  # -- Option
-VERBOSE_YOSYS = "verbose_yosys"  # -- Option
-VERBOSE_PNR = "verbose_pnr"  # -- Option
-TOP_MODULE = "top_module"  # -- Option
+from apio.commands import options
 
 
-# pylint: disable=R0801
-# R0801: Similar lines in 2 files
-@click.command(CMD, context_settings=util.context_settings())
+@click.command("build", context_settings=util.context_settings())
 @click.pass_context
-@click.option(
-    "-b", f"--{BOARD}", type=str, metavar="str", help="Set the board."
-)
-@click.option(f"--{FPGA}", type=str, metavar="str", help="Set the FPGA.")
-@click.option(
-    f"--{SIZE}", type=str, metavar="str", help="Set the FPGA type (1k/8k)."
-)
-@click.option(
-    f"--{TYPE}", type=str, metavar="str", help="Set the FPGA type (hx/lp)."
-)
-@click.option(
-    f"--{PACK}", type=str, metavar="str", help="Set the FPGA package."
-)
-@click.option(
-    "-p",
-    "--project-dir",
-    type=Path,
-    metavar="str",
-    help="Set the target directory for the project.",
-)
-@click.option(
-    "-v",
-    f"--{VERBOSE}",
-    is_flag=True,
-    help="Show the entire output of the command.",
-)
-@click.option(
-    "--verbose-yosys",
-    is_flag=True,
-    help="Show the yosys output of the command.",
-)
-@click.option(
-    "--verbose-pnr", is_flag=True, help="Show the pnr output of the command."
-)
-@click.option(
-    "--top-module",
-    type=str,
-    metavar="str",
-    help="Set the top level module (w/o .v ending) for build.",
-)
+@options.board
+@options.fpga
+@options.size
+@options.type_
+@options.pack
+@options.project_dir
+@options.verbose
+@options.verbose_yosys
+@options.verbose_pnr
+@options.top_module
 def cli(ctx, **kwargs):
     """Synthesize the bitstream."""
-
     # -- Extract the arguments
-    project_dir = kwargs[PROJECT_DIR]
-    board = kwargs[BOARD]
-    fpga = kwargs[FPGA]
-    pack = kwargs[PACK]
-    _type = kwargs[TYPE]
-    size = kwargs[SIZE]
-    verbose = kwargs[VERBOSE]
-    verbose_yosys = kwargs[VERBOSE_YOSYS]
-    verbose_pnr = kwargs[VERBOSE_PNR]
-    top_module = kwargs[TOP_MODULE]
+    project_dir = kwargs[options.PROJECT_DIR]
+    board = kwargs[options.BOARD]
+    fpga = kwargs[options.FPGA]
+    pack = kwargs[options.PACK]
+    _type = kwargs[options.TYPE]
+    size = kwargs[options.SIZE]
+    verbose = kwargs[options.VERBOSE]
+    verbose_yosys = kwargs[options.VERBOSE_YOSYS]
+    verbose_pnr = kwargs[options.VERBOSE_PNR]
+    top_module = kwargs[options.TOP_MODULE]
 
     # The bitstream is generated from the source files (verilog)
     # by means of the scons tool
@@ -97,6 +47,8 @@ def cli(ctx, **kwargs):
     # -- Create the scons object
     scons = SCons(project_dir)
 
+    # R0801: Similar lines in 2 files
+    # pylint: disable=R0801
     # -- Build the project with the given parameters
     exit_code = scons.build(
         {
