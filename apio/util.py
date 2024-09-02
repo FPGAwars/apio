@@ -67,7 +67,7 @@ class AsyncPipe(Thread):
         self.outcallback = outcallback
 
         self._fd_read, self._fd_write = os.pipe()
-        self._pipe_reader = os.fdopen(self._fd_read)
+        self._pipe_reader = os.fdopen(self._fd_read, encoding="UTF-8")
         self._buffer = []
 
         self.start()
