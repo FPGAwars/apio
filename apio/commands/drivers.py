@@ -11,30 +11,56 @@ import click
 from apio.managers.drivers import Drivers
 from apio import util
 
-# ------------------
-# -- CONSTANTS
-# ------------------
-CMD = "drivers"  # -- Comand name
-FTDI_ENABLE = "ftdi_enable"  # -- Option
-FTDI_DISABLE = "ftdi_disable"  # -- Option
-SERIAL_ENABLE = "serial_enable"  # -- Option
-SERIAL_DISABLE = "serial_disable"  # -- Option
+# ---------------------------
+# -- COMMAND SPECIFIC OPTIONS
+# ---------------------------
+frdi_enable_option = click.option(
+    "ftdi_enable",  # Var name.
+    "--ftdi-enable",
+    is_flag=True,
+    help="Enable FTDI drivers.",
+)
+
+ftdi_disable_option = click.option(
+    "ftdi_disable",  # Var name.
+    "--ftdi-disable",
+    is_flag=True,
+    help="Disable FTDI drivers.",
+)
+
+serial_enable_option = click.option(
+    "serial_enable",  # Var name.
+    "--serial-enable",
+    is_flag=True,
+    help="Enable Serial drivers.",
+)
+
+serial_disable_option = click.option(
+    "serial_disable",  # Var name.
+    "--serial-disable",
+    is_flag=True,
+    help="Disable Serial drivers.",
+)
 
 
-@click.command(CMD, context_settings=util.context_settings())
+# ---------------------------
+# -- COMMAND
+# ---------------------------
+@click.command("drivers", context_settings=util.context_settings())
 @click.pass_context
-@click.option("--ftdi-enable", is_flag=True, help="Enable FTDI drivers.")
-@click.option("--ftdi-disable", is_flag=True, help="Disable FTDI drivers.")
-@click.option("--serial-enable", is_flag=True, help="Enable Serial drivers.")
-@click.option("--serial-disable", is_flag=True, help="Disable Serial drivers.")
-def cli(ctx, **kwargs):
+@frdi_enable_option
+@ftdi_disable_option
+@serial_enable_option
+@serial_disable_option
+def cli(
+    ctx,
+    # Options:
+    ftdi_enable: bool,
+    ftdi_disable: bool,
+    serial_enable: bool,
+    serial_disable: bool,
+):
     """Manage FPGA boards drivers."""
-
-    # -- Extract the arguments
-    ftdi_enable = kwargs[FTDI_ENABLE]
-    ftdi_disable = kwargs[FTDI_DISABLE]
-    serial_enable = kwargs[SERIAL_ENABLE]
-    serial_disable = kwargs[SERIAL_DISABLE]
 
     # -- Access to the Drivers
     drivers = Drivers()

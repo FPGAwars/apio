@@ -11,41 +11,25 @@ from pathlib import Path
 import click
 from apio.managers.scons import SCons
 from apio import util
-
-# ------------------
-# -- CONSTANTS
-# ------------------
-CMD = "verify"  # -- Comand name
-BOARD = "board"  # -- Option
-VERBOSE = "verbose"  # -- Option
-PROJECT_DIR = "project_dir"  # -- Option
+from apio.commands import options
 
 
-@click.command(CMD, context_settings=util.context_settings())
+# ---------------------------
+# -- COMMAND
+# ---------------------------
+@click.command("verify", context_settings=util.context_settings())
 @click.pass_context
-@click.option(
-    "-p",
-    "--project-dir",
-    type=Path,
-    metavar="path",
-    help="Set the target directory for the project.",
-)
-@click.option(
-    "-b", f"--{BOARD}", type=str, metavar="board", help="Set the board."
-)
-@click.option(
-    "-v",
-    f"--{VERBOSE}",
-    is_flag=True,
-    help="Show the entire output of the command.",
-)
-def cli(ctx, **kwargs):
-    """Verify the verilog code."""
-
-    # -- Extract the arguments
-    project_dir = kwargs[PROJECT_DIR]
-    board = kwargs[BOARD]
-    verbose = kwargs[VERBOSE]
+@options.project_dir_option
+@options.board_option_gen()
+@options.verbose_option
+def cli(
+    ctx,
+    # Options
+    project_dir: Path,
+    board: str,
+    verbose: bool,
+):
+    """Verify project's verilog code."""
 
     # -- Crete the scons object
     scons = SCons(project_dir)

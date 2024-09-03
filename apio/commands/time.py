@@ -11,74 +11,41 @@ from pathlib import Path
 import click
 from apio.managers.scons import SCons
 from apio import util
-
-# ------------------
-# -- CONSTANTS
-# ------------------
-CMD = "time"  # -- Comand name
-BOARD = "board"  # -- Option
-FPGA = "fpga"  # -- Option
-SIZE = "size"  # -- Option
-PACK = "pack"  # -- Option
-TYPE = "type"  # -- Option
-PROJECT_DIR = "project_dir"  # -- Option
-VERBOSE = "verbose"  # -- Option
-VERBOSE_YOSYS = "verbose_yosys"  # -- Option
-VERBOSE_PNR = "verbose_pnr"  # -- Option
-TOP_MODULE = "top_module"  # -- Option
+from apio.commands import options
 
 
+# ---------------------------
+# -- COMMAND
+# ---------------------------
 # R0801: Similar lines in 2 files
 # pylint: disable=R0801
-@click.command(CMD, context_settings=util.context_settings())
+# R0913: Too many arguments (10/5)
+# pylint: disable=R0913
+@click.command("time", context_settings=util.context_settings())
 @click.pass_context
-@click.option(
-    "-b", f"--{BOARD}", type=str, metavar="str", help="Set the board."
-)
-@click.option(f"--{FPGA}", type=str, metavar="str", help="Set the FPGA.")
-@click.option(
-    f"--{SIZE}", type=str, metavar="str", help="Set the FPGA type (1k/8k)."
-)
-@click.option(
-    f"--{TYPE}", type=str, metavar="str", help="Set the FPGA type (hx/lp)."
-)
-@click.option(
-    f"--{PACK}", type=str, metavar="str", help="Set the FPGA package."
-)
-@click.option(
-    "-p",
-    "--project-dir",
-    type=Path,
-    metavar="path",
-    help="Set the target directory for the project.",
-)
-@click.option(
-    "-v",
-    f"--{VERBOSE}",
-    is_flag=True,
-    help="Show the entire output of the command.",
-)
-@click.option(
-    "--verbose-yosys",
-    is_flag=True,
-    help="Show the yosys output of the command.",
-)
-@click.option(
-    "--verbose-pnr", is_flag=True, help="Show the pnr output of the command."
-)
-def cli(ctx, **kwargs):
-    """Bitstream timing analysis."""
-
-    # -- Extract the arguments
-    project_dir = kwargs[PROJECT_DIR]
-    board = kwargs[BOARD]
-    fpga = kwargs[FPGA]
-    pack = kwargs[PACK]
-    _type = kwargs[TYPE]
-    size = kwargs[SIZE]
-    verbose = kwargs[VERBOSE]
-    verbose_yosys = kwargs[VERBOSE_YOSYS]
-    verbose_pnr = kwargs[VERBOSE_PNR]
+@options.board_option_gen()
+@options.fpga_option
+@options.size_option
+@options.type_option
+@options.pack_option
+@options.project_dir_option
+@options.verbose_option
+@options.verbose_yosys_option
+@options.verbose_pnr_option
+def cli(
+    ctx,
+    # Options
+    board: str,
+    fpga: str,
+    size: str,
+    type_: str,
+    pack: str,
+    project_dir: Path,
+    verbose: bool,
+    verbose_yosys: bool,
+    verbose_pnr: bool,
+):
+    """Analyze and design and report timing."""
 
     # -- Create the scons object
     scons = SCons(project_dir)
@@ -89,7 +56,7 @@ def cli(ctx, **kwargs):
             "board": board,
             "fpga": fpga,
             "size": size,
-            "type": _type,
+            "type": type_,
             "pack": pack,
             "verbose": {
                 "all": verbose,

@@ -11,38 +11,24 @@ from pathlib import Path
 import click
 from apio.managers.scons import SCons
 from apio import util
-
-# ------------------
-# -- CONSTANTS
-# ------------------
-CMD = "test"  # -- Comand name
-PROJECT_DIR = "project_dir"  # -- Option
-TESTBENCH = "testbench"  # -- Option
+from apio.commands import options
 
 
-@click.command(CMD, context_settings=util.context_settings())
+# ---------------------------
+# -- COMMAND
+# ---------------------------
+@click.command("test", context_settings=util.context_settings())
 @click.pass_context
-@click.option(
-    "-p",
-    "--project-dir",
-    type=Path,
-    metavar="path",
-    help="Set the target directory for the project.",
-)
-@click.option(
-    "-t",
-    f"--{TESTBENCH}",
-    type=str,
-    metavar="testbench",
-    help="Test only this testbench file.",
-)
-def cli(ctx, **kwargs):
+@options.project_dir_option
+@options.testbench
+def cli(
+    ctx,
+    # Options
+    project_dir: Path,
+    testbench: str,
+):
     # def cli(ctx, project_dir, testbench):
-    """Launch the verilog testbench testing."""
-
-    # -- Extract the arguments
-    project_dir = kwargs[PROJECT_DIR]
-    testbench = kwargs[TESTBENCH]
+    """Test all or a single verilog testbench module."""
 
     # -- Create the scons object
     scons = SCons(project_dir)

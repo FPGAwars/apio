@@ -7,38 +7,45 @@
 # -- Licence GPLv2
 """Main implementation of APIO BUILD command"""
 
-
+from pathlib import Path
 import click
 from apio.managers.scons import SCons
 from apio import util
 from apio.commands import options
 
 
+# ---------------------------
+# -- COMMAND
+# ---------------------------
+# R0913: Too many arguments (11/5)
+# pylint: disable=R0913
 @click.command("build", context_settings=util.context_settings())
 @click.pass_context
-@options.board
-@options.fpga
-@options.size
-@options.type_
-@options.pack
-@options.project_dir
-@options.verbose
-@options.verbose_yosys
-@options.verbose_pnr
-@options.top_module
-def cli(ctx, **kwargs):
+@options.board_option_gen()
+@options.fpga_option
+@options.size_option
+@options.type_option
+@options.pack_option
+@options.project_dir_option
+@options.verbose_option
+@options.verbose_yosys_option
+@options.verbose_pnr_option
+@options.top_module_option_gen()
+def cli(
+    ctx,
+    # Options
+    board: str,
+    fpga: str,
+    size: str,
+    type_: str,
+    pack: str,
+    project_dir: Path,
+    verbose: bool,
+    verbose_yosys: bool,
+    verbose_pnr: bool,
+    top_module: str,
+):
     """Synthesize the bitstream."""
-    # -- Extract the arguments
-    project_dir = kwargs[options.PROJECT_DIR]
-    board = kwargs[options.BOARD]
-    fpga = kwargs[options.FPGA]
-    pack = kwargs[options.PACK]
-    _type = kwargs[options.TYPE]
-    size = kwargs[options.SIZE]
-    verbose = kwargs[options.VERBOSE]
-    verbose_yosys = kwargs[options.VERBOSE_YOSYS]
-    verbose_pnr = kwargs[options.VERBOSE_PNR]
-    top_module = kwargs[options.TOP_MODULE]
 
     # The bitstream is generated from the source files (verilog)
     # by means of the scons tool
@@ -55,7 +62,7 @@ def cli(ctx, **kwargs):
             "board": board,
             "fpga": fpga,
             "size": size,
-            "type": _type,
+            "type": type_,
             "pack": pack,
             "verbose": {
                 "all": verbose,

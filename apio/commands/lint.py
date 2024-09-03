@@ -11,58 +11,63 @@ from pathlib import Path
 import click
 from apio.managers.scons import SCons
 from apio import util
-
-# ------------------
-# -- CONSTANTS
-# ------------------
-CMD = "lint"  # -- Comand name
-ALL = "all"  # -- Option
-TOP_MODULE = "top_module"  # -- Option
-NOSTYLE = "nostyle"  # -- Option
-NOWARN = "nowarn"  # -- Option
-WARN = "warn"  # -- Option
-PROJECT_DIR = "project_dir"  # -- Option
+from apio.commands import options
 
 
-@click.command(CMD, context_settings=util.context_settings())
-@click.pass_context
-@click.option(
-    "-a",
-    f"--{ALL}",
+# ---------------------------
+# -- COMMAND SPECIFIC OPTIONS
+# ---------------------------
+nostyle_option = click.option(
+    "nostyle",  # Var name
+    "--nostyle",
     is_flag=True,
-    help="Enable all warnings, including code style warnings.",
+    help="Disable all style warnings.",
 )
-@click.option(
-    "-t", "--top-module", type=str, metavar="str", help="Set top module."
-)
-@click.option(f"--{NOSTYLE}", is_flag=True, help="Disable all style warnings.")
-@click.option(
-    f"--{NOWARN}",
+
+
+nowarn_option = click.option(
+    "nowarn",  # Var name
+    "--nowarn",
     type=str,
     metavar="nowarn",
     help="Disable specific warning(s).",
 )
-@click.option(
-    f"--{WARN}", type=str, metavar="warn", help="Enable specific warning(s)."
-)
-@click.option(
-    "-p",
-    "--project-dir",
-    type=Path,
-    metavar="path",
-    help="Set the target directory for the project.",
-)
-def cli(ctx, **kwargs):
-    # def cli(ctx, all, top, nostyle, nowarn, warn, project_dir):
-    """Lint the verilog code."""
 
-    # -- Extract the arguments
-    project_dir = kwargs[PROJECT_DIR]
-    _all = kwargs[ALL]
-    top_module = kwargs[TOP_MODULE]
-    nostyle = kwargs[NOSTYLE]
-    nowarn = kwargs[NOWARN]
-    warn = kwargs[WARN]
+warn_option = click.option(
+    "warn",  # Var name
+    "--warn",
+    type=str,
+    metavar="warn",
+    help="Enable specific warning(s).",
+)
+
+
+# ---------------------------
+# -- COMMAND
+# ---------------------------
+# R0913: Too many arguments (7/5)
+# pylint: disable=R0913
+@click.command("lint", context_settings=util.context_settings())
+@click.pass_context
+@options.all_option_gen(
+    help="Enable all warnings, including code style warnings."
+)
+@options.top_module_option_gen()
+@nostyle_option
+@nowarn_option
+@warn_option
+@options.project_dir_option
+def cli(
+    ctx,
+    # Options
+    all_: bool,
+    top_module: str,
+    nostyle: bool,
+    nowarn: str,
+    warn: str,
+    project_dir: Path,
+):
+    """Lint the verilog code."""
 
     # -- Create the scons object
     scons = SCons(project_dir)
@@ -70,7 +75,7 @@ def cli(ctx, **kwargs):
     # -- Lint the project with the given parameters
     exit_code = scons.lint(
         {
-            "all": _all,
+            "all": all_,
             "top": top_module,
             "nostyle": nostyle,
             "nowarn": nowarn,

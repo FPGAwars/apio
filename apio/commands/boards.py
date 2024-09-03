@@ -11,51 +11,46 @@ from pathlib import Path
 import click
 from apio.resources import Resources
 from apio import util
+from apio.commands import options
 
-# ------------------
-# -- CONSTANTS
-# ------------------
-CMD = "boards"  # -- Comand name
-PROJECT_DIR = "project_dir"  # -- Option
-LIST = "list"  # -- Option
-FPGA = "fpga"  # -- Option
-
-
-@click.command(CMD, context_settings=util.context_settings())
-@click.pass_context
-@click.option(
-    "-p",
-    "--project-dir",
-    type=Path,
-    metavar="str",
-    help="Set the target directory for the project.",
-)
-@click.option(
-    "-l",
-    f"--{LIST}",
+# ---------------------------
+# -- COMMAND SPECIFIC OPTIONS
+# ---------------------------
+list_fpgas_option = click.option(
+    "fpgas",  # Var name
+    "-f",
+    "--fpga",
     is_flag=True,
-    help="List all supported FPGA boards.",
+    help="List all supported FPGA chips.",
 )
-@click.option(
-    "-f", f"--{FPGA}", is_flag=True, help="List all supported FPGA chips."
-)
-def cli(ctx, **kwargs):
-    """Manage FPGA boards."""
 
-    # -- Extract the arguments
-    project_dir = kwargs[PROJECT_DIR]  # -- str
-    _list = kwargs[LIST]  # -- bool
-    fpga = kwargs[FPGA]  # -- bool
+
+# ---------------------------
+# -- COMMAND
+# ---------------------------
+@click.command("boards", context_settings=util.context_settings())
+@click.pass_context
+@options.project_dir_option
+@options.list_option_gen(help="List all supported FPGA boards.")
+@list_fpgas_option
+def cli(
+    ctx,
+    # Options
+    project_dir: Path,
+    list_: bool,
+    fpgas: bool,
+):
+    """Manage FPGA boards."""
 
     # -- Access to the apio resources
     resources = Resources(project_dir=project_dir)
 
     # -- Option 1: List boards
-    if _list:
+    if list_:
         resources.list_boards()
 
     # -- Option 2: List fpgas
-    elif fpga:
+    elif fpgas:
         resources.list_fpgas()
 
     # -- No options: show help
