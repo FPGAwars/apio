@@ -89,7 +89,6 @@ def select_commands_help(command_lines, command_names):
     """
 
     result = []
-    
     for command_line in command_lines:
         # Extract command name. This is the first word.
         # E.g.: "  build      Synthesize the bitstream."
@@ -101,19 +100,24 @@ def select_commands_help(command_lines, command_names):
     return result
 
 
-# ------------------------------------------------------------------
-# -- This function is executed when apio is executed without
-# -- any parameter. The help is shown
-# ------------------------------------------------------------------
+# ---------------------------
+# -- Top click command node.
+# ---------------------------
 @click.command(
     cls=ApioCLI,
+    help=(
+        "Work with FPGAs with ease. "
+        "For more information see https://github.com/FPGAwars/apio/wiki/Apio"
+    ),
     invoke_without_command=True,
     context_settings=util.context_settings(),
 )
 @click.pass_context
 @click.version_option()
 def cli(ctx):
-    """Work with FPGAs with ease"""
+    """This function is executed when apio is invoked without
+    any parameter. It prints the high level usage text of Apio.
+    """
 
     # -- No command typed: show help
     if ctx.invoked_subcommand is None:
