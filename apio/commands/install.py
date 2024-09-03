@@ -12,17 +12,7 @@ import click
 from apio.managers.installer import Installer, list_packages
 from apio.resources import Resources
 from apio import util
-
-# ------------------
-# -- CONSTANTS
-# ------------------
-CMD = "install"  # -- Comand name
-PROJECT_DIR = "project_dir"  # -- Option
-PACKAGES = "packages"  # -- Argument
-ALL = "all"  # -- Option
-LIST = "list"  # -- Option
-FORCE = "force"  # -- Option
-PLATFORM = "platform"  # -- Option
+from apio.commands import options
 
 
 def install_packages(
@@ -45,42 +35,31 @@ def install_packages(
         installer.install()
 
 
-@click.command(CMD, context_settings=util.context_settings())
+# ---------------------------
+# -- COMMAND
+# ---------------------------
+# R0913: Too many arguments (7/5)
+# pylint: disable=R0913
+@click.command("install", context_settings=util.context_settings())
 @click.pass_context
-@click.argument(PACKAGES, nargs=-1)
-@click.option(
-    "-p",
-    "--project-dir",
-    type=Path,
-    metavar="str",
-    help="Set the target directory for the project.",
-)
-@click.option("-a", f"--{ALL}", is_flag=True, help="Install all packages.")
-@click.option(
-    "-l", f"--{LIST}", is_flag=True, help="List all available packages."
-)
-@click.option(
-    "-f", f"--{FORCE}", is_flag=True, help="Force the packages installation."
-)
-@click.option(
-    "-p",
-    f"--{PLATFORM}",
-    type=click.Choice(util.PLATFORMS),
-    help=(
-        f"Set the platform [{', '.join(util.PLATFORMS)}] "
-        "(Advanced, for developers)."
-    ),
-)
-def cli(ctx, **kwargs):
+@click.argument("packages", nargs=-1)
+@options.project_dir_option
+@options.all_option_gen(help="Install all packages.")
+@options.list_option_gen(help="List all available packages.")
+@options.force_option_gen(help="Force the packages installation.")
+@options.platform_option
+def cli(
+    ctx,
+    # Arguments
+    packages,
+    # Options
+    project_dir: Path,
+    all_: bool,
+    list_: bool,
+    force: bool,
+    platform: str,
+):
     """Install apio packages."""
-
-    # -- Extract the arguments
-    packages = kwargs[PACKAGES]  # -- tuple
-    project_dir = kwargs[PROJECT_DIR]  # -- str
-    platform = kwargs[PLATFORM]  # -- str
-    _all = kwargs[ALL]  # -- bool
-    _list = kwargs[LIST]  # -- bool
-    force = kwargs[FORCE]  # -- bool
 
     # -- Load the resources.
     resources = Resources(platform=platform, project_dir=project_dir)
@@ -90,12 +69,12 @@ def cli(ctx, **kwargs):
         install_packages(packages, platform, resources, force)
 
     # -- Install all the available packages (if any)
-    elif _all:
+    elif all_:
         # -- Install all the available packages for this platform!
         install_packages(resources.packages, platform, resources, force)
 
     # -- List all the packages (installed or not)
-    elif _list:
+    elif list_:
         list_packages(platform)
 
     # -- Invalid option. Just show the help

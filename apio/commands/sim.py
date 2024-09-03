@@ -11,26 +11,23 @@ from pathlib import Path
 import click
 from apio.managers.scons import SCons
 from apio import util
+from apio.commands import options
 
 
+# ---------------------------
+# -- COMMAND
+# ---------------------------
 @click.command("sim", context_settings=util.context_settings())
 @click.pass_context
-@click.option(
-    "-p",
-    "--project-dir",
-    type=Path,
-    metavar="path",
-    help="Set the target directory for the project.",
-)
-@click.option(
-    "-t",
-    "--testbench",
-    type=str,
-    metavar="testbench",
-    help="Specify the testbench file to simulate.",
-)
-def cli(ctx, project_dir, testbench):
-    """Launch the verilog simulation."""
+@options.project_dir_option
+@options.testbench
+def cli(
+    ctx,
+    # Options
+    project_dir: Path,
+    testbench: str,
+):
+    """Simulate a single module."""
 
     # -- Create the scons object
     scons = SCons(project_dir)

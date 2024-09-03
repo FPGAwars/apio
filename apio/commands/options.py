@@ -9,94 +9,217 @@
 
 from pathlib import Path
 import click
+from apio import util
 
-# APIO command options in alphabetial order.
+
 # The design is based on the idea here https://stackoverflow.com/a/77732441.
-#
-# Each option is defined by two values:
-# 1. (UPPER CASE) The python key for the option value.
-# 2. (lower_case) The click decoration that defines the option.
+# It contains shared command line options in two forms, dynamic option
+# which can be customized for specific use cases and fixed static options
+# with fixed attributes. Options that are too specific to a single command
+# not not listed here and defined instead in the command itself.
+# Both type of options are listed in an alphabetical order.
 
-# -- Board
-BOARD = "board"
-board = click.option(
-    "-b",
-    "--board",
-    BOARD,
+
+# ----------------------------------
+# -- Customizeable option generators
+# ----------------------------------
+
+
+# W0622: Redefining built-in 'help'
+# pylint: disable=W0622
+def all_option_gen(*, help: str):
+    """Generate an --all option with given help text."""
+    return click.option(
+        "all_",  # Var name. Deconflicting from Python'g builtin 'all'.
+        "-a",
+        "--all",
+        is_flag=True,
+        help=help,
+    )
+
+
+# W0622: Redefining built-in 'help'
+# pylint: disable=W0622
+def force_option_gen(*, help: str):
+    """Generate a --force option with given help text."""
+    return click.option(
+        "force",  # Var name
+        "-f",
+        "--force",
+        is_flag=True,
+        help=help,
+    )
+
+
+# W0622: Redefining built-in 'help'
+# pylint: disable=W0622
+def list_option_gen(*, help: str):
+    """Generate a --list option with given help text."""
+    return click.option(
+        "list_",  # Var name. Deconflicting from python builtin 'list'.
+        "-l",
+        "--list",
+        is_flag=True,
+        help=help,
+    )
+
+
+# W0622: Redefining built-in 'help'
+# pylint: disable=W0622
+def board_option_gen(*, help: str = "Set the board."):
+    """Generate a --board option with given help text."""
+    return click.option(
+        "board",  # Var name.
+        "-b",
+        "--board",
+        type=str,
+        metavar="str",
+        help=help,
+    )
+
+
+# W0622: Redefining built-in 'help'
+# pylint: disable=W0622
+def top_module_option_gen(
+    *,
+    help: str = "Set the top level verilog module name (e.g. my_main).",
+):
+    """Generate a --top-module option with given help text."""
+    return click.option(
+        "top_module",  # Var name.
+        "-t",
+        "--top-module",
+        type=str,
+        metavar="name",
+        help=help,
+    )
+
+
+# ---------------------------
+# -- Static options
+# ---------------------------
+
+
+fpga_option = click.option(
+    "fpga",  # Var name.
+    "--fpga",
     type=str,
     metavar="str",
-    help="Set the board.",
+    help="Set the FPGA.",
 )
 
-# -- FPGA model.
-FPGA = "fpga"
-fpga = click.option(
-    "--fpga", FPGA, type=str, metavar="str", help="Set the FPGA."
+ftdi_id = click.option(
+    "ftdi_id",  # Var name.
+    "--ftdi-id",
+    type=str,
+    metavar="ftdi-id",
+    help="Set the FTDI id.",
 )
 
-# -- FPGA package.
-PACK = "pack"
-pack = click.option(
-    "--pack", PACK, type=str, metavar="str", help="Set the FPGA package."
+pack_option = click.option(
+    "pack",  # Var name
+    "--pack",
+    type=str,
+    metavar="str",
+    help="Set the FPGA package.",
 )
 
-# -- Project dir
-PROJECT_DIR = "project_dir"
-project_dir = click.option(
+
+platform_option = click.option(
+    "platform",  # Var name.
+    "-p",
+    "--platform",
+    type=click.Choice(util.PLATFORMS),
+    help=(
+        f"Set the platform [{', '.join(util.PLATFORMS)}] "
+        "(Advanced, for developers)."
+    ),
+)
+
+
+project_dir_option = click.option(
+    "project_dir",  # Var name.
     "-p",
     "--project-dir",
-    PROJECT_DIR,
     type=Path,
-    metavar="str",
+    metavar="path",
     help="Set the target directory for the project.",
 )
 
-# -- FPGA size.
-SIZE = "size"
-size = click.option(
-    "--size", SIZE, type=str, metavar="str", help="Set the FPGA type (1k/8k)."
+
+sayno = click.option(
+    "sayno",  # Var name.
+    "-n",
+    "--sayno",
+    is_flag=True,
+    help="Automatically answer NO to all the questions.",
 )
 
-# -- Top Verilog module.
-TOP_MODULE = "top_module"
-top_module = click.option(
-    "--top-module",
-    TOP_MODULE,
+sayyes = click.option(
+    "sayyes",  # Var name.
+    "-y",
+    "--sayyes",
+    is_flag=True,
+    help="Automatically answer YES to all the questions.",
+)
+
+serial_port_option = click.option(
+    "serial_port",  # Var name.
+    "--serial-port",
+    type=str,
+    metavar="serial-port",
+    help="Set the serial port.",
+)
+
+
+size_option = click.option(
+    "size",  # Var name
+    "--size",
     type=str,
     metavar="str",
-    help="Set the top level module (w/o .v ending) for build.",
+    help="Set the FPGA type (1k/8k).",
 )
 
-# -- FPGA type.
-TYPE = "type"
-type_ = click.option(
-    "--type", TYPE, type=str, metavar="str", help="Set the FPGA type (hx/lp)."
+
+testbench = click.option(
+    "testbench",  # Var name.
+    "-t",
+    "--testbench",
+    type=str,
+    metavar="file_name",
+    help="Set the name of the testbench file to use. E.g. my_module_tb.h",
 )
 
-# -- Verbose.
-VERBOSE = "verbose"
-verbose = click.option(
+
+type_option = click.option(
+    "type_",  # Var name. Deconflicting from Python's builtin 'type'.
+    "--type",
+    type=str,
+    metavar="str",
+    help="Set the FPGA type (hx/lp).",
+)
+
+
+verbose_option = click.option(
+    "verbose",  # Var name.
     "-v",
     "--verbose",
-    VERBOSE,
     is_flag=True,
     help="Show the entire output of the command.",
 )
 
-# -- Verbose place and route.
-VERBOSE_PNR = "verbose_pnr"
-verbose_pnr = click.option(
+
+verbose_pnr_option = click.option(
+    "verbose_pnr",  # Var name.
     "--verbose-pnr",
-    VERBOSE_PNR,
     is_flag=True,
     help="Show the pnr output of the command.",
 )
 
-# -- Verbose Yosys.
-VERBOSE_YOSYS = "verbose_yosys"
-verbose_yosys = click.option(
+
+verbose_yosys_option = click.option(
+    "verbose_yosys",  # Var name.
     "--verbose-yosys",
-    VERBOSE_YOSYS,
     is_flag=True,
     help="Show the yosys output of the command.",
 )

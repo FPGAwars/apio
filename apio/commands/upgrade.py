@@ -14,13 +14,10 @@ from apio.util import get_pypi_latest_version
 from apio import util
 
 
-# ------------------
-# -- CONSTANTS
-# ------------------
-CMD = "upgrade"  # -- Comand name
-
-
-@click.command(CMD, context_settings=util.context_settings())
+# ---------------------------
+# -- COMMAND
+# ---------------------------
+@click.command("upgrade", context_settings=util.context_settings())
 @click.pass_context
 def cli(ctx):
     """Check the latest Apio version."""

@@ -10,42 +10,47 @@
 import click
 from apio.profile import Profile
 from apio import util
-
-# -----------------
-# -- CONSTANTS
-# -----------------
-CMD = "config"  # -- Comand name
-LIST = "list"  # -- Option
-VERBOSE = "verbose"  # -- Option
-EXE = "exe"  # -- Option
+from apio.commands import options
 
 
-@click.command(CMD, context_settings=util.context_settings())
-@click.pass_context
-@click.option(
-    "-l",
-    f"--{LIST}",
-    is_flag=True,
-    help="List all configuration parameters.",
-)
-@click.option(
+# ---------------------------
+# -- COMMAND SPECIFIC OPTIONS
+# ---------------------------
+
+
+# W0511: TODO
+# pylint: disable=W0511
+# TODO: Consolidate this numeric option with the shared boolean
+# 'verbose' option in options.py.
+verbose_option = click.option(
+    "verbose",  # Var name
     "-v",
-    f"--{VERBOSE}",
+    "--verbose",
     type=click.Choice(["0", "1"]),
     help="Verbose mode: `0` General, `1` Information.",
 )
-def cli(ctx, **kwargs):
-    """Apio configuration."""
 
-    # -- Extract the arguments
-    _list = kwargs[LIST]
-    verbose = kwargs[VERBOSE]
+
+# ---------------------------
+# -- COMMAND
+# ---------------------------
+@click.command("config", context_settings=util.context_settings())
+@click.pass_context
+@options.list_option_gen(help="List all configuration parameters.")
+@verbose_option
+def cli(
+    ctx,
+    # Options
+    list_: bool,
+    verbose: str,
+):
+    """Apio configuration."""
 
     # -- Access to the profile file
     profile = Profile()
 
     # -- List configuration parameters
-    if _list:
+    if list_:
         profile.list()
 
     # -- Configure verbose mode

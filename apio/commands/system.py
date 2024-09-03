@@ -13,48 +13,63 @@ from apio import util
 from apio.util import get_systype
 from apio.managers.system import System
 from apio.resources import Resources
+from apio.commands import options
+
+# ---------------------------
+# -- COMMAND SPECIFIC OPTIONS
+# ---------------------------
+lsftdi_option = click.option(
+    "lsftdi",  # Var name.
+    "--lsftdi",
+    is_flag=True,
+    help="List all connected FTDI devices.",
+)
+
+lsusb_option = click.option(
+    "lsusb",  # Var name.
+    "--lsusb",
+    is_flag=True,
+    help="List all connected USB devices.",
+)
+
+lsserial_option = click.option(
+    "lsserial",  # App name.
+    "--lsserial",
+    is_flag=True,
+    help="List all connected Serial devices.",
+)
+
+info_option = click.option(
+    "info",  # Var name.
+    "-i",
+    "--info",
+    is_flag=True,
+    help="Show system information.",
+)
 
 
-# ------------------
-# -- CONSTANTS
-# ------------------
-CMD = "system"  # -- Comand name
-PROJECT_DIR = "project_dir"  # -- Option
-LSFTDI = "lsftdi"  # -- Option
-LSUSB = "lsusb"  # -- Option
-LSSERIAL = "lsserial"  # -- Option
-INFO = "info"  # -- Option
-
-
-@click.command(CMD, context_settings=util.context_settings())
+# ---------------------------
+# -- COMMAND
+# ---------------------------
+# R0913: Too many arguments (6/5)
+# pylint: disable=R0913
+@click.command("system", context_settings=util.context_settings())
 @click.pass_context
-@click.option(
-    "-p",
-    "--project-dir",
-    type=Path,
-    metavar="str",
-    help="Set the target directory for the project.",
-)
-@click.option(
-    f"--{LSFTDI}", is_flag=True, help="List all connected FTDI devices."
-)
-@click.option(
-    f"--{LSUSB}", is_flag=True, help="List all connected USB devices."
-)
-@click.option(
-    f"--{LSSERIAL}", is_flag=True, help="List all connected Serial devices."
-)
-@click.option("-i", f"--{INFO}", is_flag=True, help="Show system information.")
-def cli(ctx, **kwargs):
-    # def cli(ctx, lsftdi, lsusb, lsserial, info):
+@options.project_dir_option
+@lsftdi_option
+@lsusb_option
+@lsserial_option
+@info_option
+def cli(
+    ctx,
+    # Options
+    project_dir: Path,
+    lsftdi: bool,
+    lsusb: bool,
+    lsserial: bool,
+    info: bool,
+):
     """System tools."""
-
-    # -- Extract the arguments
-    project_dir = kwargs[PROJECT_DIR]
-    lsftdi = kwargs[LSFTDI]
-    lsusb = kwargs[LSUSB]
-    lsserial = kwargs[LSSERIAL]
-    info = kwargs[INFO]
 
     # Load the various resource files.
     resources = Resources(project_dir=project_dir)

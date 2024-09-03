@@ -11,10 +11,17 @@ import click
 from apio import util
 
 
+# ---------------------------
+# -- COMMAND
+# ---------------------------
 @click.command("raw", context_settings=util.context_settings())
 @click.pass_context
 @click.argument("cmd")
-def cli(ctx, cmd):
+def cli(
+    ctx,
+    # Arguments
+    cmd: str,
+):
     """Execute commands directly from the Apio packages"""
 
     exit_code = util.call(cmd)
