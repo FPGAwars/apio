@@ -65,12 +65,10 @@ if 'build' in COMMAND_LINE_TARGETS or \
     # print('FPGA_PACK: {}'.format(FPGA_PACK))
 
     if 'upload' in COMMAND_LINE_TARGETS:
-
         if PROG == '':
             print('Error: no programmer command found')
             Exit(1)
-
-        # print('PROG: {}'.format(PROG))
+        assert "${SOURCE}" in PROG, f"{PROG = }"
 
 # -- Resources paths
 IVL_PATH = os.environ['IVL'] if 'IVL' in os.environ else ''
@@ -170,7 +168,6 @@ build_target = env.Alias('build', bitstream_target)
 AlwaysBuild(build_target)
 
 # -- Upload the bitstream into FPGA
-assert "${SOURCE}" in PROG
 programmer = PROG.replace("${SOURCE}", "$SOURCE")
 upload_target = env.Alias('upload', bitstream_target)
 AlwaysBuild(upload_target)
