@@ -12,11 +12,12 @@ make tox
 
 ## Running an individual APIO test
 
-Run from the repo root. Replace with the path to the desire test.
+Run from the repo root. Replace with the path to the desire test. Running ``pytest`` alone runs all the tests.
 
 ```shell
-test/code_commands/test_build.py
+pytest test/code_commands/test_build.py
 ```
+
 
 ## Running APIO in a debugger
 

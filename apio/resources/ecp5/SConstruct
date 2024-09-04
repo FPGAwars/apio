@@ -170,7 +170,9 @@ build_target = env.Alias('build', bitstream_target)
 AlwaysBuild(build_target)
 
 # -- Upload the bitstream into FPGA
-upload_target = env.Alias('upload', bitstream_target, '{0} $SOURCE'.format(PROG))
+assert "${SOURCE}" in PROG
+programmer = PROG.replace("${SOURCE}", "$SOURCE")
+upload_target = env.Alias('upload', bitstream_target)
 AlwaysBuild(upload_target)
 
 # -- Target time: calculate the time
