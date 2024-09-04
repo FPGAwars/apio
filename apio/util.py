@@ -86,7 +86,8 @@ class AsyncPipe(Thread):
         """DOC: TODO"""
 
         for line in iter(self._pipe_reader.readline, ""):
-            line = line.strip()
+            # We do preserve trailing whitespace and indentation.
+            line = line.rstrip()
             self._buffer.append(line)
             if self.outcallback:
                 self.outcallback(line)

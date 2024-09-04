@@ -11,8 +11,8 @@
 # --------------------------------------------
 
 import string
-import click
 import re
+import click
 
 from apio import util
 
@@ -128,7 +128,8 @@ def cli(ctx):
         # -- We later split the command lines into command groups.
         index = help_lines.index("Commands:")
         header_lines = help_lines[:index]
-        command_lines = help_lines[index + 1 :]
+        index += 1  # Skip the Commands: line.
+        command_lines = help_lines[index:]
 
         # -- Select project commands:
         project_help = select_commands_help(
