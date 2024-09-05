@@ -29,7 +29,7 @@ def cli(
     verbose: bool,
     top_module: str,
 ):
-    """Generate a a visual graph of the verilog code."""
+    """Generate a visual graph of the verilog code."""
 
     # -- Crete the scons object
     scons = SCons(project_dir)

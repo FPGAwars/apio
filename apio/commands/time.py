@@ -45,7 +45,7 @@ def cli(
     verbose_yosys: bool,
     verbose_pnr: bool,
 ):
-    """Analyze and design and report timing."""
+    """Analyze the design and report timing."""
 
     # -- Create the scons object
     scons = SCons(project_dir)

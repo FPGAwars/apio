@@ -28,7 +28,30 @@ list_fpgas_option = click.option(
 # ---------------------------
 # -- COMMAND
 # ---------------------------
-@click.command("boards", context_settings=util.context_settings())
+HELP = """
+The apio boards commands provides information about the FPAG boards that are
+supported by apio. To view the list of all supported boards use the command
+
+  apio boards --list
+
+To list the supported FPGAs, replace the --list option with the
+--fpga option.
+
+Hint: apio comes with example projects for some boards. See the apio examples
+command for more information.
+
+Advanced: Boards with wide availability can be added by contacting the
+apio team. You can also add a custon one-of board definition to your apio
+project by placing a custom boards.json file in your apio project.
+"""
+
+
+@click.command(
+    "boards",
+    short_help="List supported boards and FPGAs.",
+    help=HELP,
+    context_settings=util.context_settings(),
+)
 @click.pass_context
 @options.project_dir_option
 @options.list_option_gen(help="List all supported FPGA boards.")
@@ -40,7 +63,9 @@ def cli(
     list_: bool,
     fpgas: bool,
 ):
-    """Manage FPGA boards."""
+    """Implements the 'boards' command which lists supported boards
+    and FPGAs.
+    """
 
     # -- Access to the apio resources
     resources = Resources(project_dir=project_dir)

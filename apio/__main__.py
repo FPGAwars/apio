@@ -103,12 +103,28 @@ def select_commands_help(command_lines, command_names):
 # ---------------------------
 # -- Top click command node.
 # ---------------------------
+
+HELP = """
+Work with FPGAs with ease.
+
+Apio is a user friendly command-line
+suite that supports all the aspect of FPGA firmware developement
+from linting, building and simulating to unit testing, to progreamming
+the FPGA board.
+
+Apio commands are typically invoked in the root directory of the FPGA
+project where the project configuration file apio.ini and the project
+source files are stored. For help on specific commands use the -h
+flag (e.g. apio build -h).
+
+For more information on the apio project see
+https://github.com/FPGAwars/apio/wiki/Apio
+"""
+
+
 @click.command(
     cls=ApioCLI,
-    help=(
-        "Work with FPGAs with ease. "
-        "For more information see https://github.com/FPGAwars/apio/wiki/Apio"
-    ),
+    help=HELP,
     invoke_without_command=True,
     context_settings=util.context_settings(),
 )

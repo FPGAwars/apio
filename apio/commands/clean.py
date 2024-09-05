@@ -17,7 +17,23 @@ from apio.commands import options
 # ---------------------------
 # -- COMMAND
 # ---------------------------
-@click.command("clean", context_settings=util.context_settings())
+HELP = """
+The apio clean command deletes the files that were generated
+in the FPGA project directory by previous apio commands.  For example:
+
+  apio clean
+
+Hint: if you are using a git repository, add a .gitignore file with
+the temporary apio file names.
+"""
+
+
+@click.command(
+    "clean",
+    short_help="Clean the apio generated files.",
+    help=HELP,
+    context_settings=util.context_settings(),
+)
 @click.pass_context
 @options.project_dir_option
 @options.board_option_gen()
@@ -29,7 +45,9 @@ def cli(
     board: str,
     verbose: bool,
 ):
-    """Clean the previous generated files."""
+    """Implements the apio clean command. It deletes temporary files generated
+    by apio commands.
+    """
 
     # -- Create the scons object
     scons = SCons(project_dir)
