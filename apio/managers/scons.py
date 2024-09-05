@@ -912,7 +912,8 @@ class SCons:
         if self.project.native_exe_mode:
             # Assuming blindly that the binaries we need are on the path.
             click.secho(
-                "Warning: native exe mode (binaries should be on path)"
+                "Warning: native exe mode (binaries should be on path)",
+                fg="yellow",
             )
         else:
             # Run on `default` config mode

@@ -96,6 +96,9 @@ def select_commands_help(command_lines, command_names):
         if command_name in command_names:
             result.append(command_line)
 
+    # Make sure we found all and no duplicates.
+    assert len(result) == len(command_names)
+
     # -- Return the list of comands with their descriptions
     return result
 
@@ -170,7 +173,7 @@ def cli(ctx):
         # -- Select utility commands
         util_help = select_commands_help(
             command_lines,
-            ["boards", "config", "examples", "raw", "system", "upgrade"],
+            ["boards", "examples", "raw", "system", "upgrade"],
         )
 
         # -- Sanity check, in case we mispelled or ommited a command name.

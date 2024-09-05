@@ -7,24 +7,18 @@
 
 import json
 from pathlib import Path
-import click
 import semantic_version
 from apio import util
 
 
 class Profile:
     """Class for managing the apio profile file
-    ex. /home/obijuan/.apio/profile.json
+    ex. ~/.apio/profile.json
     """
 
     def __init__(self):
 
         # ---- Set the default parameters
-        # -- Apio default config mode
-        self.config = {"verbose": 0}
-
-        self.labels = {"verbose": "Verbose"}
-
         # Apio settings
         self.settings = {}
 
@@ -34,9 +28,6 @@ class Profile:
         # -- Get the profile path
         # -- Ex. '/home/obijuan/.apio'
         self._profile_path = util.get_home_dir() / "profile.json"
-
-        # print(f"(DEBUG) Profile path: {self._profile_path}")
-        # print(f"(DEBUG) Home_dir: {util.get_home_dir()}")
 
         # -- Read the profile from file
         self.load()
@@ -83,41 +74,11 @@ class Profile:
 
         self.settings[key] = value
 
-    def add_config(self, key: str, value: str):
-        """Add/modify a configuration value"""
-
-        # -- Update the config value if it is different
-        if self.config[key] != value:
-
-            # -- Update config value
-            self.config[key] = value
-
-            # -- Update it in the profile file
-            self.save()
-
-            # -- Inform the user
-            click.secho(
-                f"{self.labels[key]} mode updated: {value}",
-                fg="green",
-            )
-
-        # -- The same value is given
-        else:
-            click.secho(
-                f"{self.labels[key]} mode already {value}",
-                fg="yellow",
-            )
-
     def remove_package(self, name: str):
         """Remove a package from the profile file"""
 
         if name in self.packages.keys():
             del self.packages[name]
-
-    def get_verbose_mode(self) -> int:
-        """Get the verbose mode"""
-
-        return int(self.config["verbose"], False)
 
     def get_package_version(self, name: str) -> str:
         """Return the version of the given package"""
@@ -153,13 +114,6 @@ class Profile:
         # -- Process the json file
         data = json.load(profile)
 
-        # -- Add the configuration object
-        if "config" in data.keys():
-            self.config = data["config"]
-
-            if "verbose" not in self.config.keys():
-                self.config["verbose"] = 0
-
         # -- Add the settings object
         if "settings" in data.keys():
             self.settings = data["settings"]
@@ -181,22 +135,7 @@ class Profile:
 
         with open(self._profile_path, "w", encoding="utf8") as profile:
             data = {
-                "config": self.config,
                 "settings": self.settings,
                 "packages": self.packages,
             }
             json.dump(data, profile, indent=4, sort_keys=True)
-
-    def list(self):
-        """Print configuration parameters on the console"""
-
-        # -- Go through all the config parameters
-        for key in self.config:
-
-            # -- Print the parameter
-            if key in self.labels:
-                click.secho(
-                    f"{self.labels[key]} mode: {self.config[key]}",
-                    fg="yellow",
-                )
-        print()
