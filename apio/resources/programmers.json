@@ -74,6 +74,22 @@
     "command": "openFPGALoader",
     "args": "-c usb-blaster -v --file-type bin"
   },
+  "openfpgaloader_tangnano": {
+    "command": "openFPGALoader",
+    "args": "-b tangnano"
+  },
+  "openfpgaloader_tangnano1k": {
+    "command": "openFPGALoader",
+    "args": "-b tangnano1k -f"
+  },
+  "openfpgaloader_tangnano4k": {
+    "command": "openFPGALoader",
+    "args": "-b tangnano4k -f"
+  },
+  "openfpgaloader_tangnano9k": {
+    "command": "openFPGALoader",
+    "args": "-b tangnano9k -f"
+  },
   "openfpgaloader_tangnano20k": {
     "command": "openFPGALoader",
     "args": "-b tangnano20k -f"
