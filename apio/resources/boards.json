@@ -807,6 +807,50 @@
       "desc": "ETH4K"
     }
   },
+  "Sipeed-Tang-Nano": {
+    "name":"Sipeed Tang Nano",
+    "fpga": "GW1N-LV1QN48C6/I5",
+    "programmer": {
+      "type": "openfpgaloader_tangnano"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6010"
+    }
+  },
+  "Sipeed-Tang-Nano-1k": {
+    "name":"Sipeed Tang Nano 1k",
+    "fpga": "GW1NZ-LV1QN48C6/I5",
+    "programmer": {
+      "type": "openfpgaloader_tangnano1k"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6010"
+    }
+  },
+  "Sipeed-Tang-Nano-4k": {
+    "name":"Sipeed Tang Nano 4k",
+    "fpga": "GW1NSR-LV4CQN48PC7/I6",
+    "programmer": {
+      "type": "openfpgaloader_tangnano4k"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6010"
+    }
+  },
+  "Sipeed-Tang-Nano-9k": {
+    "name":"Sipeed Tang Nano 9k",
+    "fpga": "GW1NR-LV9QN88PC6/I5",
+    "programmer": {
+      "type": "openfpgaloader_tangnano9k"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6010"
+    }
+  },
   "Sipeed-Tang-Nano-20k": {
     "name":"Sipeed Tang Nano 20k",
     "fpga": "GW2AR-LV18QN88C8/I7",

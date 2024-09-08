@@ -410,6 +410,24 @@
     "size": "85k",
     "pack": "CSFBGA285"
   },
+  "GW1NZ-LV1QN48C6/I5": {
+    "arch": "gowin",
+    "type": "gw1nz-1",
+    "size": "1k",
+    "pack": "QN48"
+  },
+  "GW1NSR-LV4CQN48PC7/I6": {
+    "arch": "gowin",
+    "type": "gw1ns-4",
+    "size": "4k",
+    "pack": "QN48P"
+  },
+  "GW1NR-LV9QN88PC6/I5": {
+    "arch": "gowin",
+    "type": "gw1n-9c",
+    "size": "9k",
+    "pack": "QN88P"
+  },
   "GW2AR-LV18QN88C8/I7": {
     "arch": "gowin",
     "type": "gw2a-18c",
