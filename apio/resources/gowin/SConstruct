@@ -42,15 +42,15 @@ for warn in VERILATOR_WARN:
 
 
 
-# -- Size. Possible values: 20k
-# -- Type. Possible values: gw2ar
+# -- Size. Possible values: 1k, 4k, 9k, 20k
+# -- Type. Possible values: gw1nz-1, gw1ns-4, gw1n-9c, gw2a-18c
 # -- Package. Unused.
 
 
 # -- Add the FPGA flags as variables to be shown with the -h scons option
 vars = Variables()
-vars.Add('fpga_size', 'Set the Gowin FPGA size (25k)', FPGA_SIZE)
-vars.Add('fpga_type', 'Set the Gowin FPGA type (gw5a)', FPGA_TYPE)
+vars.Add('fpga_size', 'Set the Gowin FPGA size (20k)', FPGA_SIZE)
+vars.Add('fpga_type', 'Set the Gowin FPGA type (gw2a-18c)', FPGA_TYPE)
 vars.Add('fpga_pack', 'Set the Gowin FPGA packages', FPGA_PACK)
 vars.Add('fpga_model', 'Set a specific Gowin FPGA model', FPGA_MODEL)
 
