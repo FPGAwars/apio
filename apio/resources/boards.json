@@ -1,4 +1,12 @@
 {
+  "pi-sicle": {
+    "name": "pi-sicle",
+    "fpga": "iCE40-HX4K-TQ144",
+    "programmer": {
+      "type": "pi-sicle_loader"}
+  },
+
+{
   "icezum": {
     "name": "IceZUM Alhambra",
     "fpga": "iCE40-HX1K-TQ144",
@@ -13,7 +21,7 @@
       "desc": "IceZUM Alhambra.*"
     }
   },
-  
+
   "icestick": {
     "name": "iCEstick Evaluation Kit",
     "fpga": "iCE40-HX1K-TQ144",

@@ -3,7 +3,10 @@
     "command": "iceprog",
     "args": "-d i:0x${VID}:0x${PID}:${FTDI_ID}"
   },
-  
+ "pi-sicle_loader": {
+    "command": "pi-sicle-loader",
+    "args": "--flash"
+  },
   "iceprogduino": {
     "command": "iceprogduino",
     "args": ""
