@@ -146,8 +146,8 @@
   "iCE40-HX4K-TQ144": {
     "arch": "ice40",
     "type": "hx",
-    "size": "8k",
-    "pack": "tq144:4k"
+    "size": "4k",
+    "pack": "tq144"
   },
   "iCE40-HX4K-BG121": {
     "arch": "ice40",
@@ -178,18 +178,6 @@
     "type": "up",
     "size": "5k",
     "pack": "uwg30"
-  },
-  "iCE40-U4K-UWG30": {
-    "arch": "ice40",
-    "type": "u",
-    "size": "4k",
-    "pack": "uwg30"
-  },
-  "iCE40-U4K-SG48": {
-    "arch": "ice40",
-    "type": "u",
-    "size": "4k",
-    "pack": "sg48"
   },
   "ECP5-LFE5U-12F-CABGA256": {
     "arch": "ecp5",
@@ -409,29 +397,5 @@
     "type": "um5g-85k",
     "size": "85k",
     "pack": "CSFBGA285"
-  },
-  "GW1NZ-LV1QN48C6/I5": {
-    "arch": "gowin",
-    "type": "gw1nz-1",
-    "size": "1k",
-    "pack": "QN48"
-  },
-  "GW1NSR-LV4CQN48PC7/I6": {
-    "arch": "gowin",
-    "type": "gw1ns-4",
-    "size": "4k",
-    "pack": "QN48P"
-  },
-  "GW1NR-LV9QN88PC6/I5": {
-    "arch": "gowin",
-    "type": "gw1n-9c",
-    "size": "9k",
-    "pack": "QN88P"
-  },
-  "GW2AR-LV18QN88C8/I7": {
-    "arch": "gowin",
-    "type": "gw2a-18c",
-    "size": "20k",
-    "pack": "QN88"
-  }
+  } 
 }
