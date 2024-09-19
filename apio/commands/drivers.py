@@ -8,6 +8,7 @@
 """Main implementation of APIO DRIVERS command"""
 
 import click
+from click.core import Context
 from apio.managers.drivers import Drivers
 from apio import util
 
@@ -46,24 +47,49 @@ serial_disable_option = click.option(
 # ---------------------------
 # -- COMMAND
 # ---------------------------
-@click.command("drivers", context_settings=util.context_settings())
+
+HELP = """
+The drivers command allows to install or uninstall operating system
+drivers that are used to program the FPGA boards. This command is global
+and affects all the projects on the local host.
+
+\b
+Examples:
+  apio drivers --ftdi_enable     # Install FTDI driver
+  apio drivers --ftdi_disable    # Uninstall FTDI driver
+  apio drivers --serial_enable   # Install serial driver
+  apio drivers --serial_disable  # Uninstall serial driver
+
+  Do not specify more than flag per command invocation.
+"""
+
+
+@click.command(
+    "drivers",
+    short_help="Manage the operating system drivers.",
+    help=HELP,
+    context_settings=util.context_settings(),
+)
 @click.pass_context
 @frdi_enable_option
 @ftdi_disable_option
 @serial_enable_option
 @serial_disable_option
 def cli(
-    ctx,
+    ctx: Context,
     # Options:
     ftdi_enable: bool,
     ftdi_disable: bool,
     serial_enable: bool,
     serial_disable: bool,
 ):
-    """Manage FPGA boards drivers."""
+    """Implements the drivers command."""
 
     # -- Access to the Drivers
     drivers = Drivers()
+
+    # pylint: disable=fixme
+    # TODO: Exit with an error if more than one flag is is specified.
 
     # -- FTDI enable option
     if ftdi_enable:

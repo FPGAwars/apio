@@ -9,6 +9,7 @@
 
 from pathlib import Path
 import click
+from click.core import Context
 from apio.managers.scons import SCons
 from apio import util
 from apio.commands import options
@@ -45,20 +46,41 @@ warn_option = click.option(
 # ---------------------------
 # -- COMMAND
 # ---------------------------
+HELP = """
+The lint command scans the project's
+verilog code and flags errors, inconsistencies, and style violations,
+and is a useful tool for improving the code quality. The command uses
+the verilator tool which is installed as park of the apio installation.
+The commands is typically used in the root directory
+of the project that that contains the apio.ini file.
+
+\b
+Examples:
+  apio lint
+
+[Note] The flags marked with (deprecated) are not recomanded for use.
+"""
+
+
 # R0913: Too many arguments (7/5)
 # pylint: disable=R0913
-@click.command("lint", context_settings=util.context_settings())
+@click.command(
+    "lint",
+    short_help="Lint the verilog code.",
+    help=HELP,
+    context_settings=util.context_settings(),
+)
 @click.pass_context
 @options.all_option_gen(
     help="Enable all warnings, including code style warnings."
 )
-@options.top_module_option_gen()
 @nostyle_option
 @nowarn_option
 @warn_option
 @options.project_dir_option
+@options.top_module_option_gen()
 def cli(
-    ctx,
+    ctx: Context,
     # Options
     all_: bool,
     top_module: str,

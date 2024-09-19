@@ -9,6 +9,7 @@
 
 from pathlib import Path
 import click
+from click.core import Context
 from apio.managers.examples import Examples
 from apio import util
 from apio.commands import options
@@ -38,9 +39,27 @@ files_option = click.option(
 # ---------------------------
 # -- COMMAND
 # ---------------------------
+HELP = """
+The examples command allows to list the project examples provided by api
+and to copy them to a local directory. Each examples is identified by
+board/name where board is the board id and name is the example name.
+
+\b
+Examples:
+  apio example --list             # List all examples
+  apio examples -d icezum         # Fetch all board examples
+  apio examples -d icezum/leds    # Fetch a single board example
+"""
+
+
 # R0913: Too many arguments (6/5)
 # pylint: disable=R0913
-@click.command("examples", context_settings=util.context_settings())
+@click.command(
+    "examples",
+    short_help="List and fetch apio examples.",
+    help=HELP,
+    context_settings=util.context_settings(),
+)
 @click.pass_context
 @options.list_option_gen(help="List all available examples.")
 @dir_option
@@ -48,7 +67,7 @@ files_option = click.option(
 @options.project_dir_option
 @options.sayno
 def cli(
-    ctx,
+    ctx: Context,
     # Options
     list_: bool,
     dir_: str,

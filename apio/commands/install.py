@@ -8,7 +8,9 @@
 """Main implementation of APIO INSTALL command"""
 
 from pathlib import Path
+from typing import Tuple
 import click
+from click.core import Context
 from apio.managers.installer import Installer, list_packages
 from apio.resources import Resources
 from apio import util
@@ -38,28 +40,49 @@ def install_packages(
 # ---------------------------
 # -- COMMAND
 # ---------------------------
+HELP = """
+The install command lists and installs the apio packages.
+
+\b
+Examples:
+  apio install --list    # List packages
+  apio install --all     # Install all packages
+  apio install --all -f  # Force the re/installation of all packages
+  apio install examples  # Install the examples package
+
+For packages uninstallation see the apio uninstall command.
+"""
+
+
 # R0913: Too many arguments (7/5)
 # pylint: disable=R0913
-@click.command("install", context_settings=util.context_settings())
+@click.command(
+    "install",
+    short_help="Install apio packages.",
+    help=HELP,
+    context_settings=util.context_settings(),
+)
 @click.pass_context
-@click.argument("packages", nargs=-1)
-@options.project_dir_option
-@options.all_option_gen(help="Install all packages.")
+@click.argument("packages", nargs=-1, required=False)
 @options.list_option_gen(help="List all available packages.")
+@options.all_option_gen(help="Install all packages.")
 @options.force_option_gen(help="Force the packages installation.")
+@options.project_dir_option
 @options.platform_option
 def cli(
-    ctx,
+    ctx: Context,
     # Arguments
-    packages,
+    packages: Tuple[str],
     # Options
-    project_dir: Path,
-    all_: bool,
     list_: bool,
+    all_: bool,
     force: bool,
     platform: str,
+    project_dir: Path,
 ):
-    """Install apio packages."""
+    """Implements the install command which allows to
+    manage the installation of apio packages.
+    """
 
     # -- Load the resources.
     resources = Resources(platform=platform, project_dir=project_dir)

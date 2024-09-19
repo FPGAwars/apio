@@ -231,7 +231,7 @@ class Examples:
             return 1
 
         # -- Copy the example files!!
-        # -- TODO: fix an error...
+        # -- TODO: fix an error.
         exit_code = self._copy_files(
             example, src_example_path, dst_example_path, sayno
         )

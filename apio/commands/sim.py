@@ -18,19 +18,22 @@ from apio.commands import options
 # ---------------------------
 
 HELP = """
-The apio sim command simulates a given testbench file and shows
-the simulation results a GTKWave graphical window. A typical invocation
-is done in the PFGA project directory where the apio.ini file and the verilog
-source files resides. The command accepts the testbench file name as
-an argument. For example:
+The sim command simulates a testbench file and shows
+the simulation results a GTKWave graphical window.
+The commands is typically used in the root directory
+of the project that that contains the apio.ini file and it
+accepts the testbench file name as an argument. For example:
 
+\b
+Example:
   apio sim my_module_tb.v
 
-The apio sim command defines the verilog macro INTERACTIVE_SIM. The
-presernce of this macro allows testbenches to continue and display the
-simulation signals instead of aborting the simulation.
+The sim command defines the macros VCD_OUTPUT and INTERACTIVE_SIM
+that can be used by the testbench. For a sample testbench that
+uses those macro see the example at
+https://github.com/FPGAwars/apio-examples/tree/master/upduino31/testbench
 
-Hint: when you configure the signals in GTKWave, you can save the
+[Hint] when you configure the signals in GTKWave, you can save the
 configuration for future invocations.
 """
 
@@ -42,7 +45,7 @@ configuration for future invocations.
     context_settings=util.context_settings(),
 )
 @click.pass_context
-@click.argument("testbench", nargs=1)
+@click.argument("testbench", nargs=1, required=True)
 @options.project_dir_option
 def cli(
     ctx,

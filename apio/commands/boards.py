@@ -9,6 +9,7 @@
 
 from pathlib import Path
 import click
+from click.core import Context
 from apio.resources import Resources
 from apio import util
 from apio.commands import options
@@ -21,7 +22,7 @@ list_fpgas_option = click.option(
     "-f",
     "--fpga",
     is_flag=True,
-    help="List all supported FPGA chips.",
+    help="List supported FPGA chips.",
 )
 
 
@@ -29,20 +30,19 @@ list_fpgas_option = click.option(
 # -- COMMAND
 # ---------------------------
 HELP = """
-The apio boards commands provides information about the FPAG boards that are
-supported by apio. To view the list of all supported boards use the command
+The boards commands lists the FPGA boards and chips that are
+supported by apio.
+The commands is typically used in the root directory
+of the project that that contains the apio.ini file.
 
-  apio boards --list
+\b
+Examples:
+  apio boards --list  # List boards
+  apio boards --fpga  # List FPGAs
 
-To list the supported FPGAs, replace the --list option with the
---fpga option.
-
-Hint: apio comes with example projects for some boards. See the apio examples
-command for more information.
-
-Advanced: Boards with wide availability can be added by contacting the
-apio team. You can also add a custon one-of board definition to your apio
-project by placing a custom boards.json file in your apio project.
+[Advanced] Boards with wide availability can be added by contacting the
+apio team. A custom one-of board can be added to your project by
+placing a boards.json file next to apio.ini.
 """
 
 
@@ -54,10 +54,10 @@ project by placing a custom boards.json file in your apio project.
 )
 @click.pass_context
 @options.project_dir_option
-@options.list_option_gen(help="List all supported FPGA boards.")
+@options.list_option_gen(help="List supported FPGA boards.")
 @list_fpgas_option
 def cli(
-    ctx,
+    ctx: Context,
     # Options
     project_dir: Path,
     list_: bool,
@@ -66,6 +66,12 @@ def cli(
     """Implements the 'boards' command which lists supported boards
     and FPGAs.
     """
+
+    # pylint: disable=fixme
+    # TODO: Exit with error status if both --list and --fpga are specified.
+
+    # pylint: disable=fixme
+    # TODO: rename options --list, --fpga to --boards, --fpgas.
 
     # -- Access to the apio resources
     resources = Resources(project_dir=project_dir)

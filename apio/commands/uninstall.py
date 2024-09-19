@@ -8,7 +8,9 @@
 """Main implementation of APIO UNINSTALL command"""
 
 from pathlib import Path
+from typing import Tuple
 import click
+from click.core import Context
 from apio.managers.installer import Installer, list_packages
 from apio.profile import Profile
 from apio import util
@@ -40,26 +42,44 @@ def _uninstall(packages: list, platform: str, resources: Resources):
 # ---------------------------
 # -- COMMAND
 # ---------------------------
+HELP = """
+The uninstall command lists and installs apio packages.
+
+\b
+Examples:
+  apio uninstall --list    # List packages
+  apio uninstall --all     # Uninstall all packages
+  apio uninstall examples  # Uninstall the examples package
+
+For packages installation see the apio install command.
+"""
+
+
 # R0913: Too many arguments (6/5)
 # pylint: disable=R0913
-@click.command("uninstall", context_settings=util.context_settings())
+@click.command(
+    "uninstall",
+    short_help="Uninstall apio packages.",
+    help=HELP,
+    context_settings=util.context_settings(),
+)
 @click.pass_context
-@click.argument("packages", nargs=-1)
-@options.project_dir_option
-@options.all_option_gen(help="Uninstall all packages.")
+@click.argument("packages", nargs=-1, required=False)
 @options.list_option_gen(help="List all installed packages.")
+@options.all_option_gen(help="Uninstall all packages.")
+@options.project_dir_option
 @options.platform_option
 def cli(
-    ctx,
+    ctx: Context,
     # Arguments
-    packages,
+    packages: Tuple[str],
     # Options
-    project_dir: Path,
-    all_: bool,
     list_: bool,
+    all_: bool,
+    project_dir: Path,
     platform: str,
 ):
-    """Uninstall packages."""
+    """Implements the uninstall command."""
 
     # -- Load the resources.
     resources = Resources(platform=platform, project_dir=project_dir)

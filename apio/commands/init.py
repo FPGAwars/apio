@@ -9,6 +9,7 @@
 
 from pathlib import Path
 import click
+from click.core import Context
 from apio.managers.project import Project
 from apio import util
 from apio.commands import options
@@ -22,33 +23,55 @@ scons_option = click.option(
     "-s",
     "--scons",
     is_flag=True,
-    help="Create default SConstruct file.",
+    help="(Advanced, for developers) Create default SConstruct file.",
 )
 
 
 # ---------------------------
 # -- COMMAND
 # ---------------------------
+HELP = """
+[Note] This command is DEPRECATED. To create a new project use the
+examples command and fetch an example of your FPGA board.
+To modify the configuration of an existing project, edit its
+apio.ini file manually.
+
+[Developers] To develope an SConstruct file either symlink the
+pip apio package to the apio directory of your dev directory
+(recommanded), or copy SConstruct to the project dir and it will
+be fetched from there (make sure copy the correct SConstruct file for
+your FPGA board)
+
+The command is preserved for now to backward compatibility and
+may be eliminated in a future release.
+"""
+
+
 # R0913: Too many arguments (6/5)
 # pylint: disable=R0913
-@click.command("init", context_settings=util.context_settings())
+@click.command(
+    "init",
+    short_help="(deprecated) Manage apio projects.",
+    help=HELP,
+    context_settings=util.context_settings(),
+)
 @click.pass_context
 @options.board_option_gen(help="Create init file with the selected board.")
 @options.top_module_option_gen(help="Set the top_module in the init file")
-@scons_option
 @options.project_dir_option
 @options.sayyes
+@scons_option
 def cli(
-    ctx,
+    ctx: Context,
     # Options
     board: str,
     top_module: str,
-    scons: bool,
     project_dir: Path,
     sayyes: bool,
+    scons: bool,
 ):
     # def cli(ctx, board, top_module, scons, project_dir, sayyes):
-    """Manage apio projects."""
+    """[deprecated] Manage apio projects."""
 
     # -- Create a project
     project = Project(project_dir)
