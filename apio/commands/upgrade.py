@@ -9,6 +9,7 @@
 
 import importlib.metadata
 import click
+from click.core import Context
 from packaging import version
 from apio.util import get_pypi_latest_version
 from apio import util
@@ -17,9 +18,24 @@ from apio import util
 # ---------------------------
 # -- COMMAND
 # ---------------------------
-@click.command("upgrade", context_settings=util.context_settings())
+HELP = """
+The upgrade command checks the version of the latest apio release
+and provide upgrade directions if needed.
+
+\b
+Examples:
+  apio upgrade
+"""
+
+
+@click.command(
+    "upgrade",
+    short_help="Check the latest Apio version.",
+    help=HELP,
+    context_settings=util.context_settings(),
+)
 @click.pass_context
-def cli(ctx):
+def cli(ctx: Context):
     """Check the latest Apio version."""
 
     # -- Get the current apio version from the python package installed

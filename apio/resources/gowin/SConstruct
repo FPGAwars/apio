@@ -198,6 +198,7 @@ def iverilog_generator(source, target, env, for_signature):
         f'-D VCD_OUTPUT=dummy_vcd_output'  if is_verify 
         else  f'-D VCD_OUTPUT={target_name}' if is_testbench 
         else  "")
+    verbose_flag = '-v' if VERBOSE_ALL else ''
     # If running a testbench with the sim command, we define the macro INTERACTIVE_SIM that
     # allows the testbench to supress assertions so we can examine the waves in gtkwave. 
     # For example, with an assertion macro like this one that fails when running apio test.
@@ -210,8 +211,8 @@ def iverilog_generator(source, target, env, for_signature):
     #     end
     is_interactive_sim = is_testbench and 'sim' in COMMAND_LINE_TARGETS
     interactive_sim_flag = f'-D INTERACTIVE_SIM' if is_interactive_sim else ""
-    result = 'iverilog {0} -o $TARGET {1} {2} -D NO_ICE40_DEFAULT_ASSIGNMENTS "{3}/ice40/cells_sim.v" $SOURCES'.format(
-        IVER_PATH, vcd_output_flag, interactive_sim_flag, YOSYS_PATH)
+    result = 'iverilog {0} {1} -o $TARGET {2} {3} -D NO_ICE40_DEFAULT_ASSIGNMENTS "{4}/ice40/cells_sim.v" $SOURCES'.format(
+        IVER_PATH, verbose_flag, vcd_output_flag, interactive_sim_flag, YOSYS_PATH)
     return result
 
 iverilog_builder = Builder(

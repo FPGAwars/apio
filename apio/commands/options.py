@@ -66,7 +66,7 @@ def list_option_gen(*, help: str):
 
 # W0622: Redefining built-in 'help'
 # pylint: disable=W0622
-def board_option_gen(*, help: str = "Set the board."):
+def board_option_gen(*, help: str = "(deprecated) Set the board."):
     """Generate a --board option with given help text."""
     return click.option(
         "board",  # Var name.
@@ -82,7 +82,7 @@ def board_option_gen(*, help: str = "Set the board."):
 # pylint: disable=W0622
 def top_module_option_gen(
     *,
-    help: str = "Set the top level verilog module name (e.g. my_main).",
+    help: str = "(deprecated) Set the top level module name.",
 ):
     """Generate a --top-module option with given help text."""
     return click.option(
@@ -105,7 +105,7 @@ fpga_option = click.option(
     "--fpga",
     type=str,
     metavar="str",
-    help="Set the FPGA.",
+    help="(deprecated) Set the FPGA.",
 )
 
 ftdi_id = click.option(
@@ -121,7 +121,7 @@ pack_option = click.option(
     "--pack",
     type=str,
     metavar="str",
-    help="Set the FPGA package.",
+    help="(deprecated) Set the FPGA package.",
 )
 
 
@@ -130,10 +130,7 @@ platform_option = click.option(
     "-p",
     "--platform",
     type=click.Choice(util.PLATFORMS),
-    help=(
-        f"Set the platform [{', '.join(util.PLATFORMS)}] "
-        "(Advanced, for developers)."
-    ),
+    help=("(Advanced, for developers) Set the platform."),
 )
 
 
@@ -143,7 +140,7 @@ project_dir_option = click.option(
     "--project-dir",
     type=Path,
     metavar="path",
-    help="Set the target directory for the project.",
+    help="Set the root directory for the project.",
 )
 
 
@@ -177,17 +174,7 @@ size_option = click.option(
     "--size",
     type=str,
     metavar="str",
-    help="Set the FPGA type (1k/8k).",
-)
-
-
-testbench = click.option(
-    "testbench",  # Var name.
-    "-t",
-    "--testbench",
-    type=str,
-    metavar="file_name",
-    help="Set the name of the testbench file to use. E.g. my_module_tb.h",
+    help="(deprecated) Set the FPGA type (1k/8k).",
 )
 
 
@@ -196,7 +183,7 @@ type_option = click.option(
     "--type",
     type=str,
     metavar="str",
-    help="Set the FPGA type (hx/lp).",
+    help="(deprecated) Set the FPGA type (hx/lp).",
 )
 
 
@@ -213,7 +200,7 @@ verbose_pnr_option = click.option(
     "verbose_pnr",  # Var name.
     "--verbose-pnr",
     is_flag=True,
-    help="Show the pnr output of the command.",
+    help="Show the pnr output.",
 )
 
 
@@ -221,5 +208,5 @@ verbose_yosys_option = click.option(
     "verbose_yosys",  # Var name.
     "--verbose-yosys",
     is_flag=True,
-    help="Show the yosys output of the command.",
+    help="Show the yosys output.",
 )

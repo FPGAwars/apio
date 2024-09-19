@@ -9,6 +9,7 @@
 
 from pathlib import Path
 import click
+from click.core import Context
 from apio import util
 from apio.util import get_systype
 from apio.managers.system import System
@@ -44,16 +45,37 @@ info_option = click.option(
     "-i",
     "--info",
     is_flag=True,
-    help="Show system information.",
+    help="Show platform id.",
 )
 
 
 # ---------------------------
 # -- COMMAND
 # ---------------------------
+HELP = """
+The system command provides system info that help diagnosing apio
+installation and connectivity issue.
+
+\b
+Examples:
+  apio system --lsftdi    # List FTDI devices
+  apio system --lsusb     # List USB devices
+  apio system --lsserial  # List serial devices
+  apio system --info      # Show platform id
+
+The flags --lstdi, --lsusb, --lsserial, and --info are exclusive and
+cannot be mixed in the same command.
+"""
+
+
 # R0913: Too many arguments (6/5)
 # pylint: disable=R0913
-@click.command("system", context_settings=util.context_settings())
+@click.command(
+    "system",
+    short_help="Provides system info.",
+    help=HELP,
+    context_settings=util.context_settings(),
+)
 @click.pass_context
 @options.project_dir_option
 @lsftdi_option
@@ -61,7 +83,7 @@ info_option = click.option(
 @lsserial_option
 @info_option
 def cli(
-    ctx,
+    ctx: Context,
     # Options
     project_dir: Path,
     lsftdi: bool,
@@ -69,7 +91,8 @@ def cli(
     lsserial: bool,
     info: bool,
 ):
-    """System tools."""
+    """Implements the system command. This command executes assorted
+    system tools"""
 
     # Load the various resource files.
     resources = Resources(project_dir=project_dir)
@@ -77,28 +100,39 @@ def cli(
     # -- Create the system object
     system = System(resources)
 
+    # -- Verify exlusive flags.
+    flags_count = int(lsftdi) + int(lsusb) + int(lsserial) + int(info)
+    if flags_count > 1:
+        click.secho(
+            (
+                "Error: --lsftdi, --lsusb, --lsserial, and --info"
+                " are mutually exclusive."
+            ),
+            fg="red",
+        )
+        ctx.exit(1)
+
     # -- List all connected ftdi devices
     if lsftdi:
         exit_code = system.lsftdi()
+        ctx.exit(exit_code)
 
     # -- List all connected USB devices
-    elif lsusb:
+    if lsusb:
         exit_code = system.lsusb()
+        ctx.exit(exit_code)
 
     # -- List all connected serial devices
-    elif lsserial:
+    if lsserial:
         exit_code = system.lsserial()
+        ctx.exit(exit_code)
 
     # -- Show system information
-    elif info:
+    if info:
         click.secho("Platform: ", nl=False)
         click.secho(get_systype(), fg="yellow")
-        exit_code = 0
+        ctx.exit(0)
 
     # -- Invalid option. Just show the help
-    else:
-        click.secho(ctx.get_help())
-        exit_code = 0
-
-    # -- Done!
-    ctx.exit(exit_code)
+    click.secho(ctx.get_help())
+    ctx.exit(0)

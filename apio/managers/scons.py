@@ -85,13 +85,13 @@ class SCons:
         """Executes scons for verifying"""
 
         # -- Split the arguments
-        __, __, arch = process_arguments(args, self.resources, self.project)
+        var, __, arch = process_arguments(args, self.resources, self.project)
 
         # -- Execute scons!!!
         # -- The packages to check are passed
         return self.run(
             "verify",
-            variables=[],
+            variables=var,
             arch=arch,
             packages=["oss-cad-suite"],
         )
@@ -912,7 +912,8 @@ class SCons:
         if self.project.native_exe_mode:
             # Assuming blindly that the binaries we need are on the path.
             click.secho(
-                "Warning: native exe mode (binaries should be on path)"
+                "Warning: native exe mode (binaries should be on path)",
+                fg="yellow",
             )
         else:
             # Run on `default` config mode

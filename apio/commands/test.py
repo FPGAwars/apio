@@ -9,6 +9,7 @@
 
 from pathlib import Path
 import click
+from click.core import Context
 from apio.managers.scons import SCons
 from apio import util
 from apio.commands import options
@@ -17,21 +18,48 @@ from apio.commands import options
 # ---------------------------
 # -- COMMAND
 # ---------------------------
-@click.command("test", context_settings=util.context_settings())
+HELP = """
+The sim command simulates one or all the testbenches in the project
+and is useful for automatic unit testing of the code. Testbenches
+are expected to exist with the $fatal directive if any error is
+detected. The commands is typically used in the root directory
+of the project that that contains the apio.ini.
+
+\b
+Examples
+  apio test my_module_tb.v  # Run a single testbench
+  apio test                 # Run all *_tb.v testbenches.
+
+For a sample testbench that is compatible with apio see the
+example at
+https://github.com/FPGAwars/apio-examples/tree/master/upduino31/testbench
+
+[Hint] To simulate the testbench with a graphical visualizaiton of the
+signals see the apio sim command.
+"""
+
+
+@click.command(
+    "test",
+    short_help="Test all or a single verilog testbench module.",
+    help=HELP,
+    context_settings=util.context_settings(),
+)
 @click.pass_context
+@click.argument("testbench_file", nargs=1, required=False)
 @options.project_dir_option
-@options.testbench
+# @options.testbench
 def cli(
-    ctx,
+    ctx: Context,
+    # Arguments
+    testbench_file: str,
     # Options
     project_dir: Path,
-    testbench: str,
 ):
-    # def cli(ctx, project_dir, testbench):
-    """Test all or a single verilog testbench module."""
+    """Implements the test command."""
 
     # -- Create the scons object
     scons = SCons(project_dir)
 
-    exit_code = scons.test({"testbench": testbench})
+    exit_code = scons.test({"testbench": testbench_file})
     ctx.exit(exit_code)

@@ -8,21 +8,46 @@
 """Main implementation of APIO RAW command"""
 
 import click
+from click.core import Context
 from apio import util
 
 
 # ---------------------------
 # -- COMMAND
 # ---------------------------
-@click.command("raw", context_settings=util.context_settings())
+HELP = """
+The raw command allows to bypass  apio and run underlying
+tools directly. This is an advanced command that requires familiarity
+with the underlying tools.
+
+\b
+Examples:
+  apio raw "yosys --version"                          # yosys version
+  apio raw "nextpnr-ice40 --version"                  # nextpnr version
+  apio raw "yosys -p 'read_verilog leds.v; show' -q"  # Graph a module
+  apio raw "verilator --lint-only  leds.v"            # lint a module
+
+[Note] If you find a raw command that would benefit other apio users
+consider suggesting it as an apio feature request.
+"""
+
+
+@click.command(
+    "raw",
+    short_help="Execute commands directly from the Apio packages.",
+    help=HELP,
+    context_settings=util.context_settings(),
+)
 @click.pass_context
 @click.argument("cmd")
 def cli(
-    ctx,
+    ctx: Context,
     # Arguments
     cmd: str,
 ):
-    """Execute commands directly from the Apio packages"""
+    """Implements the apio raw command which executes user
+    specified commands from apio installed tools.
+    """
 
     exit_code = util.call(cmd)
     ctx.exit(exit_code)
