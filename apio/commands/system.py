@@ -62,6 +62,9 @@ Examples:
   apio system --lsusb     # List USB devices
   apio system --lsserial  # List serial devices
   apio system --info      # Show platform id
+
+The flags --lstdi, --lsusb, --lsserial, and --info are exclusive and
+cannot be mixed in the same command.
 """
 
 
@@ -97,28 +100,39 @@ def cli(
     # -- Create the system object
     system = System(resources)
 
+    # -- Verify exlusive flags.
+    flags_count = int(lsftdi) + int(lsusb) + int(lsserial) + int(info)
+    if flags_count > 1:
+        click.secho(
+            (
+                "Error: --lsftdi, --lsusb, --lsserial, and --info"
+                " are mutually exclusive."
+            ),
+            fg="red",
+        )
+        ctx.exit(1)
+
     # -- List all connected ftdi devices
     if lsftdi:
         exit_code = system.lsftdi()
+        ctx.exit(exit_code)
 
     # -- List all connected USB devices
-    elif lsusb:
+    if lsusb:
         exit_code = system.lsusb()
+        ctx.exit(exit_code)
 
     # -- List all connected serial devices
-    elif lsserial:
+    if lsserial:
         exit_code = system.lsserial()
+        ctx.exit(exit_code)
 
     # -- Show system information
-    elif info:
+    if info:
         click.secho("Platform: ", nl=False)
         click.secho(get_systype(), fg="yellow")
-        exit_code = 0
+        ctx.exit(0)
 
     # -- Invalid option. Just show the help
-    else:
-        click.secho(ctx.get_help())
-        exit_code = 0
-
-    # -- Done!
-    ctx.exit(exit_code)
+    click.secho(ctx.get_help())
+    ctx.exit(0)
