@@ -104,7 +104,10 @@ def cli(
     flags_count = int(lsftdi) + int(lsusb) + int(lsserial) + int(info)
     if flags_count > 1:
         click.secho(
-            "Error: --lsftdi, --lsusb, --lsserial, and --info are mutually exclusive.",
+            (
+                "Error: --lsftdi, --lsusb, --lsserial, and --info"
+                " are mutually exclusive."
+            ),
             fg="red",
         )
         ctx.exit(1)

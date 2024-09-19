@@ -85,13 +85,13 @@ class SCons:
         """Executes scons for verifying"""
 
         # -- Split the arguments
-        __, __, arch = process_arguments(args, self.resources, self.project)
+        var, __, arch = process_arguments(args, self.resources, self.project)
 
         # -- Execute scons!!!
         # -- The packages to check are passed
         return self.run(
             "verify",
-            variables=[],
+            variables=var,
             arch=arch,
             packages=["oss-cad-suite"],
         )
