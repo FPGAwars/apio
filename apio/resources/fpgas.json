@@ -410,6 +410,12 @@
     "size": "85k",
     "pack": "CSFBGA285"
   },
+  "GW1N-LV1QN48C6/I5": {
+    "arch": "gowin",
+    "type": "gw1n-1",
+    "size": "1k",
+    "pack": "QN48"
+  },
   "GW1NZ-LV1QN48C6/I5": {
     "arch": "gowin",
     "type": "gw1nz-1",
