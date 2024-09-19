@@ -9,6 +9,7 @@
 
 from pathlib import Path
 import click
+from click.core import Context
 from apio.managers.scons import SCons
 from apio.managers.drivers import Drivers
 from apio import util
@@ -35,37 +36,63 @@ flash_option = click.option(
 )
 
 
+# ---------------------------
+# -- COMMAND
+# ---------------------------
+
+HELP = """
+The uploade command builds the bitstream file (similar to the
+build command) and uploaded it to the FPGA board.
+The commands is typically used in the root directory
+of the project that that contains the apio.ini file.
+
+\b
+Examples:
+  apio upload
+
+[Note] The flags marked with (deprecated) are not recomanded.
+Instead, use an apio.ini project config file and if neaded, add
+to the project custom boards.json and fpga.json files.
+"""
+
+
 # R0913: Too many arguments (6/5)
 # pylint: disable=R0913
 # R0914: Too many local variables (16/15) (too-many-locals)
 # pylint: disable=R0914
-@click.command("upload", context_settings=util.context_settings())
+@click.command(
+    "upload",
+    short_help="Upload the bitstream to the FPGA.",
+    help=HELP,
+    context_settings=util.context_settings(),
+)
 @click.pass_context
-@options.board_option_gen()
+@options.project_dir_option
 @options.serial_port_option
 @options.ftdi_id
 @sram_option
 @flash_option
-@options.project_dir_option
 @options.verbose_option
 @options.verbose_yosys_option
 @options.verbose_pnr_option
 @options.top_module_option_gen()
+@options.board_option_gen()
 def cli(
-    ctx,
+    ctx: Context,
     # Options
-    board: str,
+    project_dir: Path,
     serial_port: str,
     ftdi_id: str,
     sram: bool,
     flash: bool,
-    project_dir: Path,
     verbose: bool,
     verbose_yosys: bool,
     verbose_pnr: bool,
+    # Deprecated options
     top_module: str,
+    board: str,
 ):
-    """Upload the bitstream to the FPGA."""
+    """Implements the upload command."""
 
     # -- Create a drivers object
     drivers = Drivers()

@@ -9,6 +9,7 @@
 
 from pathlib import Path
 import click
+from click.core import Context
 from apio.managers.scons import SCons
 from apio import util
 from apio.commands import options
@@ -17,19 +18,41 @@ from apio.commands import options
 # ---------------------------
 # -- COMMAND
 # ---------------------------
-@click.command("verify", context_settings=util.context_settings())
+
+HELP = """
+The verify command performs a shallow verification of the verilog code
+it finds without requiring a top module or a constraint file.
+Is useful mainly in early stages of the project, before the
+strictier build and lint commands can be used.
+The verify commands is typically used in the root directory
+of the project that that contains the apio.ini file.
+
+\b
+Examples:
+  apio verify
+
+"""
+
+
+@click.command(
+    "verify",
+    short_help="Verify project's verilog code.",
+    help=HELP,
+    context_settings=util.context_settings(),
+)
 @click.pass_context
 @options.project_dir_option
-@options.board_option_gen()
 @options.verbose_option
+@options.board_option_gen()
 def cli(
-    ctx,
+    ctx: Context,
     # Options
     project_dir: Path,
-    board: str,
     verbose: bool,
+    # Deprecated options
+    board: str,
 ):
-    """Verify project's verilog code."""
+    """Implements the verify command."""
 
     # -- Crete the scons object
     scons = SCons(project_dir)

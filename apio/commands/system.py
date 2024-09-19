@@ -9,6 +9,7 @@
 
 from pathlib import Path
 import click
+from click.core import Context
 from apio import util
 from apio.util import get_systype
 from apio.managers.system import System
@@ -44,16 +45,34 @@ info_option = click.option(
     "-i",
     "--info",
     is_flag=True,
-    help="Show system information.",
+    help="Show platform id.",
 )
 
 
 # ---------------------------
 # -- COMMAND
 # ---------------------------
+HELP = """
+The system command provides system info that help diagnosing apio
+installation and connectivity issue.
+
+\b
+Examples:
+  apio system --lsftdi    # List FTDI devices
+  apio system --lsusb     # List USB devices
+  apio system --lsserial  # List serial devices
+  apio system --info      # Show platform id
+"""
+
+
 # R0913: Too many arguments (6/5)
 # pylint: disable=R0913
-@click.command("system", context_settings=util.context_settings())
+@click.command(
+    "system",
+    short_help="Provides system info.",
+    help=HELP,
+    context_settings=util.context_settings(),
+)
 @click.pass_context
 @options.project_dir_option
 @lsftdi_option
@@ -61,7 +80,7 @@ info_option = click.option(
 @lsserial_option
 @info_option
 def cli(
-    ctx,
+    ctx: Context,
     # Options
     project_dir: Path,
     lsftdi: bool,
@@ -69,7 +88,8 @@ def cli(
     lsserial: bool,
     info: bool,
 ):
-    """System tools."""
+    """Implements the system command. This command executes assorted
+    system tools"""
 
     # Load the various resource files.
     resources = Resources(project_dir=project_dir)

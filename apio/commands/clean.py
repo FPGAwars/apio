@@ -9,6 +9,7 @@
 
 from pathlib import Path
 import click
+from click.core import Context
 from apio.managers.scons import SCons
 from apio import util
 from apio.commands import options
@@ -18,12 +19,20 @@ from apio.commands import options
 # -- COMMAND
 # ---------------------------
 HELP = """
-The apio clean command deletes the files that were generated
-in the FPGA project directory by previous apio commands.  For example:
+The clean command deletes the temporary files that were generated
+in the project directory by previous apio commands.
+The commands is typically used in the root directory
+of the project that that contains the apio.ini file.
 
+\b
+Example:
   apio clean
 
-Hint: if you are using a git repository, add a .gitignore file with
+[Note] The flags marked with (deprecated) are not recomanded.
+Instead, use an apio.ini project config file and if neaded, add
+to the project custom boards.json and fpga.json files.
+
+[Hint] If you are using a git repository, add a .gitignore file with
 the temporary apio file names.
 """
 
@@ -36,14 +45,15 @@ the temporary apio file names.
 )
 @click.pass_context
 @options.project_dir_option
-@options.board_option_gen()
 @options.verbose_option
+@options.board_option_gen()
 def cli(
-    ctx,
+    ctx: Context,
     # Options
     project_dir: Path,
-    board: str,
     verbose: bool,
+    # Deprecated options.
+    board: str,
 ):
     """Implements the apio clean command. It deletes temporary files generated
     by apio commands.

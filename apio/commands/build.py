@@ -9,6 +9,7 @@
 
 from pathlib import Path
 import click
+from click.core import Context
 from apio.managers.scons import SCons
 from apio import util
 from apio.commands import options
@@ -17,35 +18,61 @@ from apio.commands import options
 # ---------------------------
 # -- COMMAND
 # ---------------------------
+
+HELP = """
+The build command reads the project source files
+and generates a bitstream file that you can uploaded to your FPGA.
+The commands is typically used in the root directory
+of the project that that contains the apio.ini file.
+
+\b
+Examples:
+  apio build
+  apio build -v
+
+[Note] The flags marked with (deprecated) are not recomanded.
+Instead, use an apio.ini project config file and if neaded, add
+to the project custom boards.json and fpga.json files.
+"""
+
+
 # R0913: Too many arguments (11/5)
 # pylint: disable=R0913
-@click.command("build", context_settings=util.context_settings())
+@click.command(
+    "build",
+    short_help="Synthesize the bitstream.",
+    help=HELP,
+    context_settings=util.context_settings(),
+)
 @click.pass_context
-@options.board_option_gen()
-@options.fpga_option
-@options.size_option
-@options.type_option
-@options.pack_option
 @options.project_dir_option
 @options.verbose_option
 @options.verbose_yosys_option
 @options.verbose_pnr_option
 @options.top_module_option_gen()
+@options.board_option_gen()
+@options.fpga_option
+@options.size_option
+@options.type_option
+@options.pack_option
 def cli(
-    ctx,
+    ctx: Context,
     # Options
+    project_dir: Path,
+    verbose: bool,
+    verbose_yosys: bool,
+    verbose_pnr: bool,
+    # Deprecated options
+    top_module: str,
     board: str,
     fpga: str,
     size: str,
     type_: str,
     pack: str,
-    project_dir: Path,
-    verbose: bool,
-    verbose_yosys: bool,
-    verbose_pnr: bool,
-    top_module: str,
 ):
-    """Synthesize the bitstream."""
+    """Implements the apio build command. It invokes the toolchain
+    to syntesize the source files into a bitstream file.
+    """
 
     # The bitstream is generated from the source files (verilog)
     # by means of the scons tool
