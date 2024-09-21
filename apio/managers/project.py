@@ -136,7 +136,7 @@ class Project:
                 )
 
                 # -- Ask for confirmation
-                replace = click.confirm("Ok to delete it?")
+                replace = click.confirm("Do you want to replace it?")
 
                 # -- User say: NO! --> Abort
                 if not replace:
@@ -234,7 +234,7 @@ class Project:
         config.write()
 
         click.secho(
-            f"File '{ini_path}' has been modified successfully.\n"
+            f"File '{ini_path}' was modified successfully.\n"
             f"Run the apio clean command for project consistency.",
             fg="green",
         )
