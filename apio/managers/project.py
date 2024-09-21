@@ -153,7 +153,7 @@ class Project:
         config.write()
         click.secho(
             f"The file '{ini_path}' was created successfully.\n"
-            "Run apio clean for project consistency.",
+            "Run the apio clean command for project consistency.",
             fg="green",
         )
         return True
@@ -235,7 +235,7 @@ class Project:
 
         click.secho(
             f"File '{ini_path}' has been modified successfully.\n"
-            f"Run apio clean for project consistency.",
+            f"Run the apio clean command for project consistency.",
             fg="green",
         )
         return True

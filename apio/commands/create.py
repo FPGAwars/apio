@@ -10,7 +10,7 @@
 from pathlib import Path
 import click
 from click.core import Context
-from apio.managers.project import Project, DEFAULT_TOP_MODULE
+from apio.managers.project import Project, DEFAULT_TOP_MODULE, PROJECT_FILENAME
 from apio import util
 from apio.commands import options
 
@@ -33,6 +33,11 @@ The flag --board is required. The flag --top-module is optional and has
 the default '{DEFAULT_TOP_MODULE}'. If the file apio.ini already exists
 the command asks for permision to delete it. If --sayyes is specified,
 the file is deleted automatically.
+
+[Note] this command creates just the '{PROJECT_FILENAME}' file
+rather than a full buildable project.
+Some users use instead the examples command to copy a working
+project for their board, and then modify it with with their design.
 
 [Hint] Use the command 'apio examples -l' to see a list of
 the supported boards.
