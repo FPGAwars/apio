@@ -25,7 +25,7 @@ maximal clock rate that the FPGA can handle with this design. For more
 detailed timing information, inspect the file 'hardware.rpt' that the
 command generates.
 The commands is typically used in the root directory
-of the project that that contains the apio.ini file.
+of the project that contains the apio.ini file.
 
 \b
 Examples:

@@ -52,7 +52,7 @@ verilog code and flags errors, inconsistencies, and style violations,
 and is a useful tool for improving the code quality. The command uses
 the verilator tool which is installed as park of the apio installation.
 The commands is typically used in the root directory
-of the project that that contains the apio.ini file.
+of the project that contains the apio.ini file.
 
 \b
 Examples:

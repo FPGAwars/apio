@@ -23,7 +23,7 @@ HELP = """
 The build command reads the project source files
 and generates a bitstream file that you can uploaded to your FPGA.
 The commands is typically used in the root directory
-of the project that that contains the apio.ini file.
+of the project that contains the apio.ini file.
 
 \b
 Examples:

@@ -23,7 +23,7 @@ The sim command simulates one or all the testbenches in the project
 and is useful for automatic unit testing of the code. Testbenches
 are expected to exist with the $fatal directive if any error is
 detected. The commands is typically used in the root directory
-of the project that that contains the apio.ini.
+of the project that contains the apio.ini.
 
 \b
 Examples

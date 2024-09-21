@@ -22,7 +22,7 @@ HELP = """
 The clean command deletes the temporary files that were generated
 in the project directory by previous apio commands.
 The commands is typically used in the root directory
-of the project that that contains the apio.ini file.
+of the project that contains the apio.ini file.
 
 \b
 Example:
