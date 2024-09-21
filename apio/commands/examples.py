@@ -96,7 +96,6 @@ def cli(
     # -- no options: Show help!
     else:
         click.secho(ctx.get_help())
-        click.secho(examples.examples_of_use_cad())
         exit_code = 0
 
     ctx.exit(exit_code)

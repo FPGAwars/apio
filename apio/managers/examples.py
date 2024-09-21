@@ -326,9 +326,3 @@ class Examples:
             "Example '" + example + "' has been successfully created!",
             fg="green",
         )
-
-    @staticmethod
-    def examples_of_use_cad():
-        """Return the example of use help string"""
-
-        return EXAMPLE_OF_USE_CAD

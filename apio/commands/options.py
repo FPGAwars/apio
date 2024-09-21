@@ -66,13 +66,16 @@ def list_option_gen(*, help: str):
 
 # W0622: Redefining built-in 'help'
 # pylint: disable=W0622
-def board_option_gen(*, help: str = "(deprecated) Set the board."):
+def board_option_gen(
+    *, help: str = "(deprecated) Set the board.", required=False
+):
     """Generate a --board option with given help text."""
     return click.option(
         "board",  # Var name.
         "-b",
         "--board",
         type=str,
+        required=required,
         metavar="str",
         help=help,
     )
