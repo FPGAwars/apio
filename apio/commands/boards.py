@@ -33,7 +33,7 @@ HELP = """
 The boards commands lists the FPGA boards and chips that are
 supported by apio.
 The commands is typically used in the root directory
-of the project that that contains the apio.ini file.
+of the project that contains the apio.ini file.
 
 \b
 Examples:

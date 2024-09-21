@@ -25,7 +25,7 @@ it finds without requiring a top module or a constraint file.
 Is useful mainly in early stages of the project, before the
 strictier build and lint commands can be used.
 The verify commands is typically used in the root directory
-of the project that that contains the apio.ini file.
+of the project that contains the apio.ini file.
 
 \b
 Examples:

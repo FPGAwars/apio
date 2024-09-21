@@ -85,13 +85,15 @@ class SCons:
         """Executes scons for verifying"""
 
         # -- Split the arguments
-        var, __, arch = process_arguments(args, self.resources, self.project)
+        variables, __, arch = process_arguments(
+            args, self.resources, self.project
+        )
 
         # -- Execute scons!!!
         # -- The packages to check are passed
         return self.run(
             "verify",
-            variables=var,
+            variables=variables,
             arch=arch,
             packages=["oss-cad-suite"],
         )
@@ -101,13 +103,15 @@ class SCons:
         """Executes scons for visual graph generation"""
 
         # -- Split the arguments
-        var, _, arch = process_arguments(args, self.resources, self.project)
+        variables, _, arch = process_arguments(
+            args, self.resources, self.project
+        )
 
         # -- Execute scons!!!
         # -- The packages to check are passed
         return self.run(
             "graph",
-            variables=var,
+            variables=variables,
             arch=arch,
             packages=["oss-cad-suite"],
         )
@@ -118,7 +122,7 @@ class SCons:
 
         config = {}
         __, __, arch = process_arguments(config, self.resources, self.project)
-        var = serialize_scons_flags(
+        variables = serialize_scons_flags(
             {
                 "all": args.get("all"),
                 "top": args.get("top"),
@@ -129,7 +133,7 @@ class SCons:
         )
         return self.run(
             "lint",
-            variables=var,
+            variables=variables,
             arch=arch,
             packages=["oss-cad-suite"],
         )
@@ -139,11 +143,13 @@ class SCons:
         """Simulates a testbench and shows the result in a gtkwave window."""
 
         # -- Split the arguments
-        var, _, arch = process_arguments(args, self.resources, self.project)
+        variables, _, arch = process_arguments(
+            args, self.resources, self.project
+        )
 
         return self.run(
             "sim",
-            variables=var,
+            variables=variables,
             arch=arch,
             packages=["oss-cad-suite", "gtkwave"],
         )
@@ -153,11 +159,13 @@ class SCons:
         """Tests all or a single testbench by simulating."""
 
         # -- Split the arguments
-        var, _, arch = process_arguments(args, self.resources, self.project)
+        variables, _, arch = process_arguments(
+            args, self.resources, self.project
+        )
 
         return self.run(
             "test",
-            variables=var,
+            variables=variables,
             arch=arch,
             packages=["oss-cad-suite"],
         )
@@ -167,7 +175,7 @@ class SCons:
         """Build the circuit"""
 
         # -- Split the arguments
-        var, board, arch = process_arguments(
+        variables, board, arch = process_arguments(
             args, self.resources, self.project
         )
 
@@ -175,7 +183,7 @@ class SCons:
         # -- The packages to check are passed
         return self.run(
             "build",
-            variables=var,
+            variables=variables,
             board=board,
             arch=arch,
             packages=["oss-cad-suite"],
@@ -187,12 +195,12 @@ class SCons:
     def time(self, args):
         """DOC: TODO"""
 
-        var, board, arch = process_arguments(
+        variables, board, arch = process_arguments(
             args, self.resources, self.project
         )
         return self.run(
             "time",
-            variables=var,
+            variables=variables,
             board=board,
             arch=arch,
             packages=["oss-cad-suite"],

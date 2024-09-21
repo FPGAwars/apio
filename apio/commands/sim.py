@@ -21,7 +21,7 @@ HELP = """
 The sim command simulates a testbench file and shows
 the simulation results a GTKWave graphical window.
 The commands is typically used in the root directory
-of the project that that contains the apio.ini file and it
+of the project that contains the apio.ini file and it
 accepts the testbench file name as an argument. For example:
 
 \b

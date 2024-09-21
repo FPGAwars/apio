@@ -22,7 +22,7 @@ HELP = """
 The graph command generates a graphical representation of the
 verilog code in the project.
 The commands is typically used in the root directory
-of the project that that contains the apio.ini file.
+of the project that contains the apio.ini file.
 
 \b
 Examples:

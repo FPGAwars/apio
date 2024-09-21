@@ -44,7 +44,7 @@ HELP = """
 The uploade command builds the bitstream file (similar to the
 build command) and uploaded it to the FPGA board.
 The commands is typically used in the root directory
-of the project that that contains the apio.ini file.
+of the project that contains the apio.ini file.
 
 \b
 Examples:
