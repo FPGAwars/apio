@@ -5,7 +5,7 @@
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""Implement the apio upload command"""
+"""Implementation of 'apio upload' command"""
 
 from pathlib import Path
 import click
@@ -25,6 +25,7 @@ sram_option = click.option(
     "--sram",
     is_flag=True,
     help="Perform SRAM programming.",
+    cls=util.ApioOption,
 )
 
 flash_option = click.option(
@@ -33,6 +34,7 @@ flash_option = click.option(
     "--flash",
     is_flag=True,
     help="Perform FLASH programming.",
+    cls=util.ApioOption,
 )
 
 
@@ -49,10 +51,6 @@ of the project that contains the apio.ini file.
 \b
 Examples:
   apio upload
-
-[Note] The flags marked with (deprecated) are not recomanded.
-Instead, use an apio.ini project config file and if neaded, add
-to the project custom boards.json and fpga.json files.
 """
 
 
@@ -64,7 +62,7 @@ to the project custom boards.json and fpga.json files.
     "upload",
     short_help="Upload the bitstream to the FPGA.",
     help=HELP,
-    context_settings=util.context_settings(),
+    cls=util.ApioCommand,
 )
 @click.pass_context
 @options.project_dir_option
@@ -75,8 +73,8 @@ to the project custom boards.json and fpga.json files.
 @options.verbose_option
 @options.verbose_yosys_option
 @options.verbose_pnr_option
-@options.top_module_option_gen()
-@options.board_option_gen()
+@options.top_module_option_gen(deprecated=True)
+@options.board_option_gen(deprecated=True)
 def cli(
     ctx: Context,
     # Options

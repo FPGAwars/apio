@@ -5,7 +5,7 @@
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""Main implementation of APIO UPGRADE command"""
+"""Implementation of 'apio upgrade' command"""
 
 import importlib.metadata
 import click
@@ -32,7 +32,7 @@ Examples:
     "upgrade",
     short_help="Check the latest Apio version.",
     help=HELP,
-    context_settings=util.context_settings(),
+    cls=util.ApioCommand,
 )
 @click.pass_context
 def cli(ctx: Context):

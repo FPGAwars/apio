@@ -154,7 +154,10 @@ def process_arguments(
             # -- given in args is different than the one in the project,
             # -- inform the user
             if config[BOARD] != project.board:
-                click.secho("Info: ignore apio.ini board", fg="yellow")
+                click.secho(
+                    "Info: ignoring board specification from apio.ini.",
+                    fg="yellow",
+                )
 
     # -- Board name given in the project file
     else:

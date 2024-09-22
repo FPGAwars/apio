@@ -5,7 +5,7 @@
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""Main implementation of APIO LINT command"""
+"""Implementation of 'apio lint' command"""
 
 from pathlib import Path
 import click
@@ -23,6 +23,7 @@ nostyle_option = click.option(
     "--nostyle",
     is_flag=True,
     help="Disable all style warnings.",
+    cls=util.ApioOption,
 )
 
 
@@ -32,6 +33,7 @@ nowarn_option = click.option(
     type=str,
     metavar="nowarn",
     help="Disable specific warning(s).",
+    cls=util.ApioOption,
 )
 
 warn_option = click.option(
@@ -40,6 +42,7 @@ warn_option = click.option(
     type=str,
     metavar="warn",
     help="Enable specific warning(s).",
+    cls=util.ApioOption,
 )
 
 
@@ -57,8 +60,6 @@ of the project that contains the apio.ini file.
 \b
 Examples:
   apio lint
-
-[Note] The flags marked with (deprecated) are not recomanded for use.
 """
 
 
@@ -68,7 +69,7 @@ Examples:
     "lint",
     short_help="Lint the verilog code.",
     help=HELP,
-    context_settings=util.context_settings(),
+    cls=util.ApioCommand,
 )
 @click.pass_context
 @options.all_option_gen(
@@ -78,7 +79,7 @@ Examples:
 @nowarn_option
 @warn_option
 @options.project_dir_option
-@options.top_module_option_gen()
+@options.top_module_option_gen(deprecated=True)
 def cli(
     ctx: Context,
     # Options

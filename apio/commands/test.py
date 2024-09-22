@@ -5,7 +5,7 @@
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""Main implementation of APIO TEST command"""
+"""Implementation of 'apio test' command"""
 
 from pathlib import Path
 import click
@@ -27,8 +27,8 @@ of the project that contains the apio.ini.
 
 \b
 Examples
-  apio test my_module_tb.v  # Run a single testbench
   apio test                 # Run all *_tb.v testbenches.
+  apio test my_module_tb.v  # Run a single testbench
 
 For a sample testbench that is compatible with apio see the
 example at
@@ -43,7 +43,7 @@ signals see the apio sim command.
     "test",
     short_help="Test all or a single verilog testbench module.",
     help=HELP,
-    context_settings=util.context_settings(),
+    cls=util.ApioCommand,
 )
 @click.pass_context
 @click.argument("testbench_file", nargs=1, required=False)

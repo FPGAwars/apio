@@ -5,7 +5,7 @@
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""Main implementation of APIO CLEAN command"""
+"""Implementation of 'apio clean' command"""
 
 from pathlib import Path
 import click
@@ -28,10 +28,6 @@ of the project that contains the apio.ini file.
 Example:
   apio clean
 
-[Note] The flags marked with (deprecated) are not recomanded.
-Instead, use an apio.ini project config file and if neaded, add
-to the project custom boards.json and fpga.json files.
-
 [Hint] If you are using a git repository, add a .gitignore file with
 the temporary apio file names.
 """
@@ -41,12 +37,12 @@ the temporary apio file names.
     "clean",
     short_help="Clean the apio generated files.",
     help=HELP,
-    context_settings=util.context_settings(),
+    cls=util.ApioCommand,
 )
 @click.pass_context
 @options.project_dir_option
 @options.verbose_option
-@options.board_option_gen()
+@options.board_option_gen(deprecated=True)
 def cli(
     ctx: Context,
     # Options

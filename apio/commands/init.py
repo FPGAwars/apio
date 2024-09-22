@@ -5,7 +5,7 @@
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""Main implementation of APIO INIT command"""
+"""Implementation of 'apio init' command"""
 
 # pylint: disable=fixme
 # TODO: After migrating IceStudio to the create/modify commands, delete
@@ -28,6 +28,7 @@ scons_option = click.option(
     "--scons",
     is_flag=True,
     help="(Advanced, for developers) Create default SConstruct file.",
+    cls=util.ApioOption,
 )
 
 
@@ -44,9 +45,9 @@ future. Use instead the commands 'apio create' and 'apio modify'.
 # pylint: disable=R0913
 @click.command(
     "init",
-    short_help="(deprecated) Manage apio projects.",
+    short_help="[DEPRECATED] Manage apio projects.",
     help=HELP,
-    context_settings=util.context_settings(),
+    cls=util.ApioCommand,
 )
 @click.pass_context
 @options.board_option_gen(help="Create init file with the selected board.")

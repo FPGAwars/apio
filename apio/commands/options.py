@@ -5,7 +5,7 @@
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""Common APIO command options"""
+"""Common apio command options"""
 
 from pathlib import Path
 import click
@@ -35,6 +35,7 @@ def all_option_gen(*, help: str):
         "--all",
         is_flag=True,
         help=help,
+        cls=util.ApioOption,
     )
 
 
@@ -48,6 +49,7 @@ def force_option_gen(*, help: str):
         "--force",
         is_flag=True,
         help=help,
+        cls=util.ApioOption,
     )
 
 
@@ -61,13 +63,14 @@ def list_option_gen(*, help: str):
         "--list",
         is_flag=True,
         help=help,
+        cls=util.ApioOption,
     )
 
 
 # W0622: Redefining built-in 'help'
 # pylint: disable=W0622
 def board_option_gen(
-    *, help: str = "(deprecated) Set the board.", required=False
+    *, deprecated: bool = False, required=False, help: str = "Set the board."
 ):
     """Generate a --board option with given help text."""
     return click.option(
@@ -77,7 +80,9 @@ def board_option_gen(
         type=str,
         required=required,
         metavar="str",
+        deprecated=deprecated,
         help=help,
+        cls=util.ApioOption,
     )
 
 
@@ -85,7 +90,8 @@ def board_option_gen(
 # pylint: disable=W0622
 def top_module_option_gen(
     *,
-    help: str = "(deprecated) Set the top level module name.",
+    deprecated: bool = False,
+    help: str = "Set the top level module name.",
 ):
     """Generate a --top-module option with given help text."""
     return click.option(
@@ -94,7 +100,9 @@ def top_module_option_gen(
         "--top-module",
         type=str,
         metavar="name",
+        deprecated=deprecated,
         help=help,
+        cls=util.ApioOption,
     )
 
 
@@ -108,7 +116,9 @@ fpga_option = click.option(
     "--fpga",
     type=str,
     metavar="str",
-    help="(deprecated) Set the FPGA.",
+    deprecated=True,
+    help="Set the FPGA.",
+    cls=util.ApioOption,
 )
 
 ftdi_id = click.option(
@@ -124,7 +134,9 @@ pack_option = click.option(
     "--pack",
     type=str,
     metavar="str",
-    help="(deprecated) Set the FPGA package.",
+    deprecated=True,
+    help="Set the FPGA package.",
+    cls=util.ApioOption,
 )
 
 
@@ -134,6 +146,7 @@ platform_option = click.option(
     "--platform",
     type=click.Choice(util.PLATFORMS),
     help=("(Advanced, for developers) Set the platform."),
+    cls=util.ApioOption,
 )
 
 
@@ -144,6 +157,7 @@ project_dir_option = click.option(
     type=Path,
     metavar="path",
     help="Set the root directory for the project.",
+    cls=util.ApioOption,
 )
 
 
@@ -153,6 +167,7 @@ sayno = click.option(
     "--sayno",
     is_flag=True,
     help="Automatically answer NO to all the questions.",
+    cls=util.ApioOption,
 )
 
 sayyes = click.option(
@@ -161,6 +176,7 @@ sayyes = click.option(
     "--sayyes",
     is_flag=True,
     help="Automatically answer YES to all the questions.",
+    cls=util.ApioOption,
 )
 
 serial_port_option = click.option(
@@ -169,6 +185,7 @@ serial_port_option = click.option(
     type=str,
     metavar="serial-port",
     help="Set the serial port.",
+    cls=util.ApioOption,
 )
 
 
@@ -177,7 +194,9 @@ size_option = click.option(
     "--size",
     type=str,
     metavar="str",
-    help="(deprecated) Set the FPGA type (1k/8k).",
+    deprecated=True,
+    help="Set the FPGA type (1k/8k).",
+    cls=util.ApioOption,
 )
 
 
@@ -186,7 +205,9 @@ type_option = click.option(
     "--type",
     type=str,
     metavar="str",
-    help="(deprecated) Set the FPGA type (hx/lp).",
+    deprecated=True,
+    help="Set the FPGA type (hx/lp).",
+    cls=util.ApioOption,
 )
 
 
@@ -196,6 +217,7 @@ verbose_option = click.option(
     "--verbose",
     is_flag=True,
     help="Show the entire output of the command.",
+    cls=util.ApioOption,
 )
 
 
@@ -204,6 +226,7 @@ verbose_pnr_option = click.option(
     "--verbose-pnr",
     is_flag=True,
     help="Show the pnr output.",
+    cls=util.ApioOption,
 )
 
 
@@ -212,4 +235,5 @@ verbose_yosys_option = click.option(
     "--verbose-yosys",
     is_flag=True,
     help="Show the yosys output.",
+    cls=util.ApioOption,
 )

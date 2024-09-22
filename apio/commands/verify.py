@@ -5,7 +5,7 @@
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""Main implementation of APIO VERIFY command"""
+"""Implementation of 'apio verify' command"""
 
 from pathlib import Path
 import click
@@ -38,12 +38,12 @@ Examples:
     "verify",
     short_help="Verify project's verilog code.",
     help=HELP,
-    context_settings=util.context_settings(),
+    cls=util.ApioCommand,
 )
 @click.pass_context
 @options.project_dir_option
 @options.verbose_option
-@options.board_option_gen()
+@options.board_option_gen(deprecated=True)
 def cli(
     ctx: Context,
     # Options
