@@ -30,20 +30,19 @@ python apio_run.py build --project_dir ~/projects/fpga/repo/hdl
 
 ## Using the dev repository for apio commands.
 
-While developement it's handy to run apio commands that will use the dev repo being worked on rather than the released apio version installed by pip. One way to achive that is to symlink the dev repo instead of the pip installed apio package as outlined below. 
-Adjust the example as needed to match your system.
+You can tell pip to youse your apio dev repository for apio commands instead of the standard
+apio release. This allows quick edit/test cycles where you the modify code in your apio dev 
+repository and  immediately test it by running ``apio`` commands in the console..
 
+Note: Replace the path with the actual path of your apio dev repo (that is, 
+the path of the directory that contains the file ``pyproject.toml``.)
 ```
+pip uninstall apio
+pip install -e ~/projects/apio_dev/repo
+```
+
+To return back to the release package run
+```
+pip uninstall apio
 pip install apio
-pip show apio
-# Replace the path below with the 'Location' path provided by 'pip show apio'.
-cd /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages
-mv apio apio.original
-# Replace the path below with to the 'apio' directory in your apio dev directory.
-ln -s ~/projects/apio_dev/repo/apio apio
 ```
-
-With this symbolic link, the python, resources, and SConstruct files will be loaded
-from the dev repo you are developing on. Note that binaries such as yosys are not 
-part of the dev repository and will be loaded from ~/.apio. 
-
