@@ -43,3 +43,10 @@ To return back to the release package run this (in any directory):
 pip uninstall apio
 pip install apio
 ```
+The command ``apio system -i`` (not released yet as of Sep 2024) shows the source directory of the apio package used. For example:
+
+```
+$ apio system -i
+Platform: darwin_arm64
+Source:   /Users/user/projects/apio_dev/repo/apio
+```
