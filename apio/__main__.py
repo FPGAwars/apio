@@ -167,7 +167,8 @@ def cli(ctx):
         )
         # -- Select setup commands
         setup_help = select_commands_help(
-            command_lines, ["drivers", "init", "install", "uninstall"]
+            command_lines,
+            ["create", "modify", "drivers", "init", "install", "uninstall"],
         )
 
         # -- Select utility commands

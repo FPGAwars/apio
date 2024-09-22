@@ -8,6 +8,7 @@
 """Main implementation of APIO SYSTEM command"""
 
 from pathlib import Path
+import inspect
 import click
 from click.core import Context
 from apio import util
@@ -45,7 +46,7 @@ info_option = click.option(
     "-i",
     "--info",
     is_flag=True,
-    help="Show platform id.",
+    help="Show platform id and other info.",
 )
 
 
@@ -129,8 +130,15 @@ def cli(
 
     # -- Show system information
     if info:
+        # -- Print platform id.
         click.secho("Platform: ", nl=False)
         click.secho(get_systype(), fg="yellow")
+
+        # -- Print apio package source directory.
+        this_file_path = inspect.getfile(lambda: None)
+        apio_source_path = Path(this_file_path).parent.parent
+        click.secho("Source:   ", nl=False)
+        click.secho(apio_source_path, fg="yellow")
         ctx.exit(0)
 
     # -- Invalid option. Just show the help

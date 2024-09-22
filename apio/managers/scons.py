@@ -916,7 +916,9 @@ class SCons:
             click.secho("Info: use custom SConstruct file")
 
         # -- Verify necessary packages if needed.
-        # TODO(zapta): Can we drop the 'native' mode for simplicity?
+        # pylint: disable=fixme
+        # TODO: Drop the 'native' mode for simplicity? It is broken anyway.
+        # E.g. when referencing yosys libraries in Sconstruct.
         if self.project.native_exe_mode:
             # Assuming blindly that the binaries we need are on the path.
             click.secho(

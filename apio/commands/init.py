@@ -7,10 +7,14 @@
 # -- Licence GPLv2
 """Main implementation of APIO INIT command"""
 
+# pylint: disable=fixme
+# TODO: After migrating IceStudio to the create/modify commands, delete
+# this command and the *_deprecated methods it call.
+
 from pathlib import Path
 import click
 from click.core import Context
-from apio.managers.project import Project
+from apio.managers.project import Project, DEFAULT_TOP_MODULE
 from apio import util
 from apio.commands import options
 
@@ -31,19 +35,8 @@ scons_option = click.option(
 # -- COMMAND
 # ---------------------------
 HELP = """
-[Note] This command is DEPRECATED. To create a new project use the
-examples command and fetch an example of your FPGA board.
-To modify the configuration of an existing project, edit its
-apio.ini file manually.
-
-[Developers] To develope an SConstruct file either symlink the
-pip apio package to the apio directory of your dev directory
-(recommanded), or copy SConstruct to the project dir and it will
-be fetched from there (make sure copy the correct SConstruct file for
-your FPGA board)
-
-The command is preserved for now to backward compatibility and
-may be eliminated in a future release.
+The init command is DEPRECATED and will be deleted in the
+future. Use instead the commands 'apio create' and 'apio modify'.
 """
 
 
@@ -78,22 +71,22 @@ def cli(
 
     # -- scons option: Create default SConstruct file
     if scons:
-        project.create_sconstruct("ice40", sayyes)
+        project.create_sconstruct_deprecated("ice40", sayyes)
 
     # -- Create the project file apio.ini
     elif board:
         # -- Set the default top_module when creating the ini file
         if not top_module:
-            top_module = "main"
+            top_module = DEFAULT_TOP_MODULE
 
         # -- Create the apio.ini file
-        project.create_ini(board, top_module, sayyes)
+        project.create_ini_deprecated(board, top_module, sayyes)
 
     # -- Add the top_module to the apio.ini file
     elif top_module:
 
         # -- Update the apio.ini file
-        project.update_ini(top_module)
+        project.update_ini_deprecated(top_module)
 
     # -- No options: show help
     else:

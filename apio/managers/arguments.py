@@ -8,7 +8,7 @@
 from functools import wraps
 
 import click
-from apio.managers.project import Project
+from apio.managers.project import Project, DEFAULT_TOP_MODULE
 
 # -- Class for accesing api resources (boards, fpgas...)
 from apio.resources import Resources
@@ -228,8 +228,8 @@ def process_arguments(
                 fg="yellow",
             )
 
-            # -- "main" is used as a default top-level
-            config[TOP_MODULE] = "main"
+            # -- Use the default top-level
+            config[TOP_MODULE] = DEFAULT_TOP_MODULE
 
             click.secho("Using the default top-module: `main`", fg="blue")
 

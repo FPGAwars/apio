@@ -1,4 +1,4 @@
-# APIO Developers Hints
+# Apio Developers Hints
 
 This file is not intended for APIO users.
 
@@ -19,7 +19,7 @@ pytest test/code_commands/test_build.py
 ```
 
 
-## Running APIO in a debugger
+## Running apio in a debugger
 
 Set the debugger to run the ``apio_run.py`` main with the regular ``apio`` arguments. Set the project directory ot the project file or use the ``--project_dir`` apio argument to point to the project directory.
 
@@ -28,18 +28,25 @@ Example of an equivalent manual command:
 python apio_run.py build --project_dir ~/projects/fpga/repo/hdl
 ```
 
-## Running APIO commands using a dev repo
+## Using the dev repository for apio commands.
 
-One way is to link the pip package to the dev repository. Something along these lines. Adjust patches to match your system. The ``pip show`` command shows the directory where the stock pip package is installed.
+You can tell pip to youse your apio dev repository for apio commands instead of the standard apio release. This allows quick edit/test cycles where you the modify code in your apio dev repository and  immediately test it by running ``apio`` commands in the console..
 
-NOTE: This make the command ``apio init --scons`` opsolete since the scons files can be edited in the dev repository.
-
+To use the local repo run this in the repo's root directory:
 ```
+pip uninstall apio
+pip install -e .
+```
+
+To return back to the release package run this (in any directory):
+```
+pip uninstall apio
 pip install apio
-pip show apio
-cd /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages
-mv apio apio.original
-ln -s ~/projects/apio_dev/repo/apio
 ```
+The command ``apio system -i`` (not released yet as of Sep 2024) shows the source directory of the apio package used. For example:
 
-
+```
+$ apio system -i
+Platform: darwin_arm64
+Source:   /Users/user/projects/apio_dev/repo/apio
+```
