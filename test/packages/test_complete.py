@@ -7,10 +7,10 @@ import pathlib
 import pytest
 
 #-- Entry point for the apio install, apio uninstall
-#-- apio init, apio upload, apio examples
+#-- apio create, apio upload, apio examples
 from apio.commands.install import cli as cmd_install
 from apio.commands.uninstall import cli as cmd_uninstall
-from apio.commands.init import cli as cmd_init
+from apio.commands.create import cli as cmd_create
 from apio.commands.upload import cli as cmd_upload
 from apio.commands.examples import cli as cmd_examples
 
@@ -112,11 +112,11 @@ def test_complete2(clirunner, validate_cliresult, configenv, offline):
         # -- Config the environment (conftest.configenv())
         configenv()
 
-        # -- Execute "apio init --board alhambra-ii"
-        result = clirunner.invoke(cmd_init, ['--board', 'alhambra-ii'])
+        # -- Execute "apio create --board alhambra-ii"
+        result = clirunner.invoke(cmd_create, ['--board', 'alhambra-ii'])
         validate_cliresult(result)
         assert 'Creating apio.ini file ...' in result.output
-        assert 'has been successfully created!' in result.output
+        assert 'was created successfully' in result.output
 
         # -- Execute "apio upload"
         result = clirunner.invoke(cmd_upload)

@@ -89,17 +89,6 @@
             "cwd": "${workspaceFolder}/test-examples/BlackIce/01-LEDs-buttons"
         },
         {
-            "name": "Apio init",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${file}",
-            "args": ["init", "-s"],
-            "console": "internalConsole",
-            "justMyCode": true,
-            //-- Change to the folder with the example to test
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/ledon"
-        },
-        {
             "name": "Apio examples",
             "type": "debugpy",
             "request": "launch",

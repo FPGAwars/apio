@@ -20,7 +20,7 @@ from apio.profile import Profile
 # -- Info message
 BOARDS_MSG = (
     """
-Use `apio init --board <boardname>` to create a new apio """
+Use `apio create --board <boardname>` to create a new apio """
     """project for that board\n"""
 )
 

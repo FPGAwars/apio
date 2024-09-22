@@ -5,8 +5,8 @@
 # -- apio clean entry point
 from apio.commands.clean import cli as cmd_clean
 
-# -- apio init entry point
-from apio.commands.init import cli as cmd_init
+# -- apio create entry point
+from apio.commands.create import cli as cmd_create
 
 
 def test_clean(clirunner, configenv):
@@ -33,7 +33,7 @@ def test_clean(clirunner, configenv):
         assert result.exit_code != 0
 
 
-def test_clean_init(clirunner, configenv):
+def test_clean_create(clirunner, configenv):
     """Test: apio clean
     when there is an apio.ini file
     """
@@ -43,11 +43,11 @@ def test_clean_init(clirunner, configenv):
         # -- Config the environment (conftest.configenv())
         configenv()
 
-        # apio init --board icezum
-        result = clirunner.invoke(cmd_init, ["--board", "alhambra-ii"])
+        # apio create --board icezum
+        result = clirunner.invoke(cmd_create, ["--board", "alhambra-ii"])
         assert result.exit_code == 0
         assert "Creating apio.ini file ..." in result.output
-        assert "has been successfully created!" in result.output
+        assert "was created successfully" in result.output
 
         # --- Execute "apio clean"
         result = clirunner.invoke(cmd_clean)

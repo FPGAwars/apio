@@ -39,78 +39,6 @@ class Project:
         self.top_module: str = None
         self.native_exe_mode: bool = None
 
-    def create_sconstruct_deprecated(self, arch=None, sayyes=False):
-        """Creates a default SConstruct file"""
-
-        sconstruct_name = "SConstruct"
-        sconstruct_path = self.project_dir / sconstruct_name
-        local_sconstruct_path = (
-            util.get_path_in_apio_package("resources") / arch / sconstruct_name
-        )
-
-        if sconstruct_path.exists():
-            # -- If sayyes, skip the question
-            if sayyes:
-                self._copy_sconstruct_file_deprecated(
-                    sconstruct_name,
-                    sconstruct_path,
-                    local_sconstruct_path,
-                )
-            else:
-                click.secho(
-                    f"Warning: {sconstruct_name} file already exists",
-                    fg="yellow",
-                )
-
-                if click.confirm("Do you want to replace it?"):
-                    self._copy_sconstruct_file_deprecated(
-                        sconstruct_name,
-                        sconstruct_path,
-                        local_sconstruct_path,
-                    )
-                else:
-                    click.secho("Abort!", fg="red")
-
-        else:
-            self._copy_sconstruct_file_deprecated(
-                sconstruct_name, sconstruct_path, local_sconstruct_path
-            )
-
-    def create_ini_deprecated(self, board, top_module, sayyes=False):
-        """Creates a new apio project file"""
-
-        # -- Build the filename
-        ini_path = self.project_dir / PROJECT_FILENAME
-
-        # Check board
-        boards = Resources().boards
-        if board not in boards.keys():
-            click.secho(f"Error: no such board '{board}'", fg="red")
-            sys.exit(1)
-
-        # -- The apio.ini file already exists...
-        if ini_path.is_file():
-
-            # -- Warn the user, unless the flag sayyes is active
-            if not sayyes:
-                click.secho(
-                    f"Warning: {PROJECT_FILENAME} file already exists",
-                    fg="yellow",
-                )
-
-                # -- Ask for confirmation
-                replace = click.confirm("Do you want to replace it?")
-
-                # -- User say: NO! --> Abort
-                if not replace:
-                    click.secho("Abort!", fg="red")
-                    return
-
-        # -- Create the apio.ini from scratch
-        self._create_ini_file_deprecated(
-            board, top_module, ini_path, PROJECT_FILENAME
-        )
-
     @staticmethod
     def create_ini(project_dir, board, top_module, sayyes=False) -> bool:
         """Creates a new apio project file. Returns True if ok."""
@@ -156,38 +84,6 @@ class Project:
             fg="green",
         )
         return True
-
-    def update_ini_deprecated(self, top_module):
-        """Update the current init file with the given top-module"""
-
-        # -- Build the filename
-        ini_path = self.project_dir / PROJECT_FILENAME
-
-        # -- Check if the apio.ini file exists
-        if not ini_path.is_file():
-            click.secho(
-                "No apio.ini file. You should first create it:\n"
-                "  apio init --board <boardname>\n",
-                fg="red",
-            )
-            return
-
-        # -- Read the current apio.ini file
-        config = ConfigParser()
-        config.read(ini_path)
-
-        # -- Set the new top-mddule
-        self.top_module = top_module
-        config.set("env", "top-module", top_module)
-
-        # -- Write the apio ini file
-        with open(ini_path, "w", encoding="utf-8") as inifile:
-            config.write(inifile)
-
-        click.secho(
-            f"File '{PROJECT_FILENAME}' has been successfully updated!",
-            fg="green",
-        )
 
     @staticmethod
     def modify_ini_file(
@@ -238,44 +134,6 @@ class Project:
             fg="green",
         )
         return True
-
-    @staticmethod
-    def _create_ini_file_deprecated(board, top_module, ini_path, ini_name):
-        click.secho(f"Creating {ini_name} file ...")
-        with open(ini_path, "w", encoding="utf8") as file:
-            config = ConfigParser()
-            config.add_section("env")
-
-            # Set the required attributes.
-            config.set("env", "board", board)
-            config.set("env", "top-module", top_module)
-
-            # -- Write the apio ini file
-            config.write(file)
-            click.secho(
-                f"File '{ini_name}' has been successfully created!",
-                fg="green",
-            )
-
-    @staticmethod
-    def _copy_sconstruct_file_deprecated(
-        sconstruct_name, sconstruct_path, local_sconstruct_path
-    ):
-        click.secho(f"Creating {sconstruct_name} file ...")
-
-        # -- Define the target sconstruct file to create
-        with sconstruct_path.open(mode="w", encoding="utf8") as sconstruct:
-            # -- Open the original sconstruct file
-            with local_sconstruct_path.open(
-                encoding="utf8"
-            ) as local_sconstruct:
-                # -- Copy the src to the target file
-                sconstruct.write(local_sconstruct.read())
-
-                click.secho(
-                    f"File '{sconstruct_name}' has been successfully created!",
-                    fg="green",
-                )
 
     def read(self):
         """Read the project config file"""

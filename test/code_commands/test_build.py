@@ -5,8 +5,8 @@
 # -- apio build entry point
 from apio.commands.build import cli as cmd_build
 
-# -- This is for testing "apio init"
-from apio.commands.init import cli as cmd_init
+# -- This is for testing "apio create"
+from apio.commands.create import cli as cmd_create
 
 
 def test_build(clirunner, configenv):
@@ -238,19 +238,19 @@ def test_build_complete2(clirunner, configenv):
         )
 
 
-def test_build_init(clirunner, configenv):
-    """Test: apio build with apio init"""
+def test_build_create(clirunner, configenv):
+    """Test: apio build with apio create"""
 
     with clirunner.isolated_filesystem():
 
         # -- Config the environment (conftest.configenv())
         configenv()
 
-        # apio init --board icezum
-        result = clirunner.invoke(cmd_init, ["--board", "icezum"])
+        # apio create --board icezum
+        result = clirunner.invoke(cmd_create, ["--board", "icezum"])
         assert result.exit_code == 0
         assert "Creating apio.ini file ..." in result.output
-        assert "has been successfully created!" in result.output
+        assert "was created successfully" in result.output
 
         # apio build
         result = clirunner.invoke(cmd_build)

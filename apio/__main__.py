@@ -88,7 +88,7 @@ def reformat_apio_help(original_help: str) -> str:
     # -- Select setup commands by the order they are listed here.
     setup_help = select_commands_help(
         command_lines,
-        ["create", "modify", "drivers", "install", "uninstall", "init"],
+        ["create", "modify", "drivers", "install", "uninstall"],
     )
 
     # -- Select utility commands  by the order they are listed here.

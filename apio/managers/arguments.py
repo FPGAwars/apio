@@ -227,7 +227,7 @@ def process_arguments(
                 "Option 1: Pass it as a parameter\n"
                 "   `--top-module <top module name>`\n\n"
                 "Option 2: Insert in the ini file\n"
-                "   `apio init --top-module <top-module>`\n",
+                "   `apio modify --top-module <top-module>`\n",
                 fg="yellow",
             )
 
@@ -363,7 +363,7 @@ def perror_insuficient_arguments():
         "  2) Specify the directory of a project with an apio.ini file\n"
         "       `--project-dir <projectdir>\n"
         "  3) Create a project file apio.ini manually or using\n"
-        "       `apio init --board <boardname>`\n"
+        "       `apio create --board <boardname>`\n"
         "  4) Execute your command with the flag\n"
         "       `--board <boardname>`",
         fg="yellow",
