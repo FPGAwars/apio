@@ -12,9 +12,115 @@
 
 import string
 import re
+from typing import List
+from click.core import Context
 import click
-
 from apio import util
+
+
+def select_commands_help(
+    command_lines: List[str], command_names: List[str]
+) -> List[str]:
+    """
+    Given a list of click generated help lines for all the commands,
+    return a subset that includes only the commands in command_names.
+    The result order is by command_names.
+    - INPUTS:
+      * command_lines: Click generated help lines for all the commands.
+      * commands: A list of commands names to select.
+    """
+
+    result = []
+    # We perform a search that preserves the order in command_names.
+    for command_name in command_names:
+        matching_line = None
+        for command_line in command_lines:
+            # Extract command name. This is the first word.
+            # E.g.: "  build      Synthesize the bitstream."
+            name = re.findall(r"^\s*(\S+)\s+.*$", command_line)[0]
+            if name == command_name:
+                matching_line = command_line
+                break
+        if matching_line is None:
+            # A missing name is a programming error so ok to crash.
+            raise ValueError(f"Missing help for command '{command_name}'")
+        result.append(matching_line)
+
+    # Sanity check.
+    assert len(result) == len(command_names)
+
+    # -- Return the list of comands with their descriptions
+    return result
+
+
+def reformat_apio_help(original_help: str) -> str:
+    """Reformat the apio top level help text such that the commands are grouped
+    by category.
+    """
+
+    # -- No command typed: show help
+    # if ctx.invoked_subcommand is None:
+    # -- The auto generated click help lines (apio --help)
+    help_lines = original_help.split("\n")
+
+    # -- Split the help lines into header and command groups.
+    # -- We later split the command lines into command groups.
+    index = help_lines.index("Commands:")
+    header_lines = help_lines[:index]
+    index += 1  # Skip the Commands: line.
+    command_lines = help_lines[index:]
+
+    # -- Select project commands by the order they are listed here.
+    project_help = select_commands_help(
+        command_lines,
+        [
+            "build",
+            "clean",
+            "verify",
+            "sim",
+            "test",
+            "lint",
+            "upload",
+            "time",
+            "graph",
+        ],
+    )
+    # -- Select setup commands by the order they are listed here.
+    setup_help = select_commands_help(
+        command_lines,
+        ["create", "modify", "drivers", "install", "uninstall", "init"],
+    )
+
+    # -- Select utility commands  by the order they are listed here.
+    utility_help = select_commands_help(
+        command_lines,
+        ["boards", "examples", "raw", "system", "upgrade"],
+    )
+
+    # -- Sanity check, in case we mispelled or ommited a command name.
+    num_selected = len(project_help) + len(setup_help) + len(utility_help)
+    assert len(command_lines) == num_selected
+
+    # -- Header
+    result = []
+    result.extend(header_lines)
+
+    # -- Project commands:
+    result.append("Project commands:")
+    result.extend(project_help)
+    result.append("")
+
+    # -- Setup commands:
+    result.append("Setup commands:")
+    result.extend(setup_help)
+    result.append("")
+
+    # -- Print utility commands:
+    result.append("Utility commands:")
+    result.extend(utility_help)
+    result.append("")
+
+    return "\n".join(result)
 
 
 # -----------------------------------------------------------------------------
@@ -36,6 +142,7 @@ class ApioCLI(click.MultiCommand):
         super().__init__(*args, **kwargs)
 
     # -- Return  a list of all the available commands
+    # @override
     def list_commands(self, ctx):
         # -- All the python files inside the apio/commands folder are commands,
         # -- except __init__.py
@@ -43,9 +150,11 @@ class ApioCLI(click.MultiCommand):
         cmd_list = [
             element.stem  # -- Name without path and extension
             for element in self.commands_folder.iterdir()
-            if element.is_file()
-            and element.suffix == ".py"
-            and element.stem != "__init__"
+            if (
+                element.is_file()
+                and element.suffix == ".py"
+                and element.stem != "__init__"
+            )
         ]
 
         cmd_list.sort()
@@ -56,6 +165,7 @@ class ApioCLI(click.MultiCommand):
     # -- is issued
     # -- INPUT:
     # --   * cmd_name: Apio command name
+    # @override
     def get_command(self, ctx, cmd_name: string):
         nnss = {}
 
@@ -77,30 +187,13 @@ class ApioCLI(click.MultiCommand):
         # -- Return the function needed for executing the command
         return nnss.get("cli")
 
+    # @override
+    def get_help(self, ctx: Context) -> str:
+        """Formats the help into a string and returns it.
 
-def select_commands_help(command_lines, command_names):
-    """
-    Given a list of click generated help lines for all the commands,
-    return a subset that includes only the commands in command_names.
-    The result order is by command_lines which happens to be alphabetical.
-    - INPUTS:
-      * command_lines: Click generated help lines for all the commands.
-      * commands: A list of commands names to select.
-    """
-
-    result = []
-    for command_line in command_lines:
-        # Extract command name. This is the first word.
-        # E.g.: "  build      Synthesize the bitstream."
-        command_name = re.findall(r"^\s*(\S+)\s+.*$", command_line)[0]
-        if command_name in command_names:
-            result.append(command_line)
-
-    # Make sure we found all and no duplicates.
-    assert len(result) == len(command_names)
-
-    # -- Return the list of comands with their descriptions
-    return result
+        Calls :meth:`format_help` internally.
+        """
+        return reformat_apio_help(super().get_help(ctx))
 
 
 def context_settings():
@@ -143,71 +236,14 @@ https://github.com/FPGAwars/apio/wiki/Apio
 )
 @click.pass_context
 @click.version_option()
-def cli(ctx):
+def cli(ctx: Context):
     """This function is executed when apio is invoked without
     any parameter. It prints the high level usage text of Apio.
     """
 
-    # -- No command typed: show help
+    # -- If no command was typed show top help. Equivalent to 'apio -h'.
     if ctx.invoked_subcommand is None:
-        # -- The auto generated click help lines (apio --help)
-        help_lines = ctx.get_help().split("\n")
-
-        # -- Split the help lines into header and command groups.
-        # -- We later split the command lines into command groups.
-        index = help_lines.index("Commands:")
-        header_lines = help_lines[:index]
-        index += 1  # Skip the Commands: line.
-        command_lines = help_lines[index:]
-
-        # -- Select project commands:
-        project_help = select_commands_help(
-            command_lines,
-            [
-                "build",
-                "clean",
-                "sim",
-                "test",
-                "verify",
-                "lint",
-                "time",
-                "upload",
-                "graph",
-            ],
-        )
-        # -- Select setup commands
-        setup_help = select_commands_help(
-            command_lines,
-            ["create", "modify", "drivers", "init", "install", "uninstall"],
-        )
-
-        # -- Select utility commands
-        util_help = select_commands_help(
-            command_lines,
-            ["boards", "examples", "raw", "system", "upgrade"],
-        )
-
-        # -- Sanity check, in case we mispelled or ommited a command name.
-        num_selected = len(project_help) + len(setup_help) + len(util_help)
-        assert len(command_lines) == num_selected
-
-        # -- Print header
-        click.secho("\n".join(header_lines))
-
-        # -- Print project commands:
-        click.secho("Project commands:")
-        click.secho("\n".join(project_help))
-        click.secho()
-
-        # -- Print Setup commands:
-        click.secho("Setup commands:")
-        click.secho("\n".join(setup_help))
-        click.secho()
-
-        # -- Print utility commands:
-        click.secho("Utility commands:")
-        click.secho("\n".join(util_help))
-        click.secho()
+        click.secho(ctx.get_help())
 
     # -- If there is a command, it is executed when this function is finished
     # -- Debug: print the command invoked
