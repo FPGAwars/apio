@@ -1,4 +1,4 @@
-# APIO Developers Hints
+# Apio Developers Hints
 
 This file is not intended for APIO users.
 
@@ -19,7 +19,7 @@ pytest test/code_commands/test_build.py
 ```
 
 
-## Running APIO in a debugger
+## Running apio in a debugger
 
 Set the debugger to run the ``apio_run.py`` main with the regular ``apio`` arguments. Set the project directory ot the project file or use the ``--project_dir`` apio argument to point to the project directory.
 
@@ -28,18 +28,22 @@ Example of an equivalent manual command:
 python apio_run.py build --project_dir ~/projects/fpga/repo/hdl
 ```
 
-## Running APIO commands using a dev repo
+## Using the dev repository for apio commands.
 
-One way is to link the pip package to the dev repository. Something along these lines. Adjust patches to match your system. The ``pip show`` command shows the directory where the stock pip package is installed.
-
-NOTE: This make the command ``apio init --scons`` opsolete since the scons files can be edited in the dev repository.
+While developement it's handy to run apio commands that will use the dev repo being worked on rather than the released apio version installed by pip. One way to achive that is to symlink the dev repo instead of the pip installed apio package as outlined below. 
+Adjust the example as needed to match your system.
 
 ```
 pip install apio
 pip show apio
+# Replace the path below with the 'Location' path provided by 'pip show apio'.
 cd /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages
 mv apio apio.original
-ln -s ~/projects/apio_dev/repo/apio
+# Replace the path below with to the 'apio' directory in your apio dev directory.
+ln -s ~/projects/apio_dev/repo/apio apio
 ```
 
+With this symbolic link, the python, resources, and SConstruct files will be loaded
+from the dev repo you are developing on. Note that binaries such as yosys are not 
+part of the dev repository and will be loaded from ~/.apio. 
 
