@@ -30,9 +30,7 @@ python apio_run.py build --project_dir ~/projects/fpga/repo/hdl
 
 ## Using the dev repository for apio commands.
 
-You can tell pip to youse your apio dev repository for apio commands instead of the standard
-apio release. This allows quick edit/test cycles where you the modify code in your apio dev 
-repository and  immediately test it by running ``apio`` commands in the console..
+You can tell pip to youse your apio dev repository for apio commands instead of the standard apio release. This allows quick edit/test cycles where you the modify code in your apio dev repository and  immediately test it by running ``apio`` commands in the console..
 
 To use the local repo run this in the repo's root directory:
 ```
