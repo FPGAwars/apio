@@ -46,7 +46,7 @@ class Project:
         sconstruct_name = "SConstruct"
         sconstruct_path = self.project_dir / sconstruct_name
         local_sconstruct_path = (
-            util.get_apio_full_path("resources") / arch / sconstruct_name
+            util.get_path_in_apio_package("resources") / arch / sconstruct_name
         )
 
         if sconstruct_path.exists():
@@ -285,7 +285,7 @@ class Project:
 
         # -- If no project file found, just return
         if not isfile(project_file):
-            print(f"Info: No {PROJECT_FILENAME} file")
+            print(f"Info: Project has no {PROJECT_FILENAME} file")
             return
 
         # pylint: disable=fixme

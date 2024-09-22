@@ -103,13 +103,14 @@ class AsyncPipe(Thread):
         self.join()
 
 
-def get_apio_full_path(folder: str) -> Path:
+def get_path_in_apio_package(subpath: str) -> Path:
     """Get the full path to the given folder in the apio package.
     Inputs:
-      * folder: String with the folder name
+      * subdir: String with a relative path within the apio package.
+          Use "" for root directory.
 
     Returns:
-      * The full path as a PosixPath() object
+      * The absolute path as a PosixPath() object
 
     Example: folder="commands"
     Output: PosixPath('/home/obijuan/.../apio/commands')
@@ -121,13 +122,14 @@ def get_apio_full_path(folder: str) -> Path:
 
     # -- The parent folder is the apio root folder
     # -- Ex: /home/obijuan/.../site-packages/apio
-    apio_path = current_python_file.parent
+    path = current_python_file.parent
 
-    # -- Add the given folder to the path
-    new_path = apio_path / folder
+    # -- Add the given folder to the path. If subpath = "" this
+    # -- does nothing, but fails if subpath is None.
+    path = path / subpath
 
     # -- Return the path
-    return new_path
+    return path
 
 
 def get_systype() -> str:
@@ -284,19 +286,19 @@ def setup_environment():
     """Set the environment variables and the system PATH"""
 
     # --- Get the table with the paths of all the apio packages
-    base_dir = get_base_dir()
+    base_dirs = get_base_dirs()
 
     # --- Get the table with the paths of all the executables
     # --- of the apio packages
-    bin_dir = get_bin_dir_table(base_dir)
+    bin_dirs = get_bin_dirs(base_dirs)
 
     # --- Set the system env. variables
-    set_env_variables(base_dir, bin_dir)
+    set_env_variables(base_dirs, bin_dirs)
 
-    return bin_dir
+    return bin_dirs
 
 
-def set_env_variables(base_dir: dict, bin_dir: dict):
+def set_env_variables(base_dirs: dict, bin_dirs: dict):
     """Set the environment variables"""
 
     # -- Get the current system PATH
@@ -309,37 +311,37 @@ def set_env_variables(base_dir: dict, bin_dir: dict):
     # -- but only for windows platforms
     if platform.system() == "Windows":
         # -- Gtkwave package is installed
-        if bin_dir[GTKWAVE]:
-            path = os.pathsep.join([str(bin_dir[GTKWAVE]), path])
+        if bin_dirs[GTKWAVE]:
+            path = os.pathsep.join([str(bin_dirs[GTKWAVE]), path])
 
     # -- Add the binary folders of the installed packages
     # -- to the path, except for the OSS_CAD_SUITE package
-    for pack in base_dir:
-        if base_dir[pack] and pack != OSS_CAD_SUITE:
-            path = os.pathsep.join([str(bin_dir[pack]), path])
+    for pack in base_dirs:
+        if base_dirs[pack] and pack != OSS_CAD_SUITE:
+            path = os.pathsep.join([str(bin_dirs[pack]), path])
 
     # -- Add the OSS_CAD_SUITE package to the path
     # -- if installed (Maximum priority)
-    if base_dir[OSS_CAD_SUITE]:
+    if base_dirs[OSS_CAD_SUITE]:
         # -- Get the lib folder (where the shared libraries are located)
-        oss_cad_suite_lib = str(base_dir[OSS_CAD_SUITE] / "lib")
+        oss_cad_suite_lib = str(base_dirs[OSS_CAD_SUITE] / "lib")
 
         # -- Add the lib folder
         path = os.pathsep.join([oss_cad_suite_lib, path])
-        path = os.pathsep.join([str(bin_dir[OSS_CAD_SUITE]), path])
+        path = os.pathsep.join([str(bin_dirs[OSS_CAD_SUITE]), path])
 
     # Add the virtual python environment to the path
     os.environ["PATH"] = path
 
     # Add other environment variables
 
-    os.environ["IVL"] = str(base_dir[OSS_CAD_SUITE] / "lib" / "ivl")
+    os.environ["IVL"] = str(base_dirs[OSS_CAD_SUITE] / "lib" / "ivl")
 
-    os.environ["ICEBOX"] = str(base_dir[OSS_CAD_SUITE] / "share" / "icebox")
+    os.environ["ICEBOX"] = str(base_dirs[OSS_CAD_SUITE] / "share" / "icebox")
 
-    os.environ["TRELLIS"] = str(base_dir[OSS_CAD_SUITE] / "share" / "trellis")
+    os.environ["TRELLIS"] = str(base_dirs[OSS_CAD_SUITE] / "share" / "trellis")
 
-    os.environ["YOSYS_LIB"] = str(base_dir[OSS_CAD_SUITE] / "share" / "yosys")
+    os.environ["YOSYS_LIB"] = str(base_dirs[OSS_CAD_SUITE] / "share" / "yosys")
 
 
 def resolve_packages(
@@ -360,11 +362,11 @@ def resolve_packages(
     """
 
     # --- Get the table with the paths of all the apio packages
-    base_dir = get_base_dir()
+    base_dirs = get_base_dirs()
 
     # --- Get the table with the paths of all the executables
     # --- of the apio packages
-    bin_dir = get_bin_dir_table(base_dir)
+    bin_dirs = get_bin_dirs(base_dirs)
 
     # -- Check packages
     check = True
@@ -374,7 +376,7 @@ def resolve_packages(
         spec_version = spec_packages.get(package, "")
 
         # -- Get the package binary dir as a PosixPath object
-        _bin = bin_dir[package]
+        _bin = bin_dirs[package]
 
         # -- Check this package
         check &= check_package(package, version, spec_version, _bin)
@@ -382,41 +384,41 @@ def resolve_packages(
     # -- Load packages
     if check:
         # --- Set the system env. variables
-        set_env_variables(base_dir, bin_dir)
+        set_env_variables(base_dirs, bin_dirs)
 
     return check
 
 
-def get_base_dir():
-    """Return the table with the local paths of the apio packages
+def get_base_dirs():
+    """Return a dictionary with the local paths of the apio packages
     installed on the system. If the packages is not installed,
     the path is ''
     """
 
-    # -- Create the table:
+    # -- Create the dictionary:
     # --  Package Name  :  Folder (string)
-    base_dir = {
+    base_dirs = {
         OSS_CAD_SUITE: get_package_dir(OSS_CAD_SUITE_FOLDER),
         GTKWAVE: get_package_dir(GTKWAVE_FOLDER),
     }
 
-    return base_dir
+    return base_dirs
 
 
-def get_bin_dir_table(base_dir: dict):
+def get_bin_dirs(base_dirs: dict):
     """Return a table with the package name and the folder were
     the executable files are stored
     * INPUT
-      -base_dir: Table with the package base_dir
+      -base_dirs: A Dict with the package base_dir
     """
 
-    if base_dir[GTKWAVE]:
-        gtkwave_path = base_dir[GTKWAVE] / BIN
+    if base_dirs[GTKWAVE]:
+        gtkwave_path = base_dirs[GTKWAVE] / BIN
     else:
         gtkwave_path = None
 
-    if base_dir[OSS_CAD_SUITE]:
-        oss_cad_suite_path = base_dir[OSS_CAD_SUITE] / BIN
+    if base_dirs[OSS_CAD_SUITE]:
+        oss_cad_suite_path = base_dirs[OSS_CAD_SUITE] / BIN
     else:
         oss_cad_suite_path = None
 
@@ -706,9 +708,11 @@ def get_project_dir(_dir: Path, create_if_missing: bool = False) -> Path:
       * OUTPUT:
         * The effective path (same if given)
     """
-    # -- If no path is given, get the current working directory
+    # -- If no path is given, get the current working directory.
+    # -- We Path(".") instead of Path.cwd() to stay with a relative
+    # -- (and simple to the user) path.
     if not _dir:
-        _dir = Path.cwd()
+        _dir = Path(".")
 
     # -- Make sure the folder doesn't exist as a file.
     if _dir.is_file():

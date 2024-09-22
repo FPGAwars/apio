@@ -8,7 +8,6 @@
 """Implementation of 'apio system' command"""
 
 from pathlib import Path
-import inspect
 import click
 from click.core import Context
 from apio import util
@@ -138,11 +137,9 @@ def cli(
         click.secho("Platform: ", nl=False)
         click.secho(get_systype(), fg="yellow")
 
-        # -- Print apio package source directory.
-        this_file_path = inspect.getfile(lambda: None)
-        apio_source_path = Path(this_file_path).parent.parent
-        click.secho("Source:   ", nl=False)
-        click.secho(apio_source_path, fg="yellow")
+        # -- Print apio package directory.
+        click.secho("Package:  ", nl=False)
+        click.secho(util.get_path_in_apio_package(""), fg="yellow")
         ctx.exit(0)
 
     # -- Invalid option. Just show the help

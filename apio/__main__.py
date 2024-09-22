@@ -30,7 +30,7 @@ class ApioCLI(click.MultiCommand):
         # -- Ex. /home/obijuan/Develop/(...)/apio/commands
         # -- Every apio command (Ex. apio build, apio upload...) is a
         # -- separate .py file located in the commands folder
-        self.commands_folder = util.get_apio_full_path("commands")
+        self.commands_folder = util.get_path_in_apio_package("commands")
 
         self._cls = [None]
         super().__init__(*args, **kwargs)

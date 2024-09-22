@@ -25,7 +25,7 @@ def test_clean(clirunner, configenv):
 
         # -- It is an error. Exit code should not be 0
         assert result.exit_code != 0
-        assert "Info: No apio.ini file" in result.output
+        assert "Info: Project has no apio.ini file" in result.output
         assert "Error: insufficient arguments: missing board" in result.output
 
         # -- Execute "apio clean --board alhambra-ii"
