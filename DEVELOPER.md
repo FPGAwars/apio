@@ -34,14 +34,13 @@ You can tell pip to youse your apio dev repository for apio commands instead of 
 apio release. This allows quick edit/test cycles where you the modify code in your apio dev 
 repository and  immediately test it by running ``apio`` commands in the console..
 
-Note: Replace the path with the actual path of your apio dev repo (that is, 
-the path of the directory that contains the file ``pyproject.toml``.)
+To use the local repo run this in the repo's root directory:
 ```
 pip uninstall apio
-pip install -e ~/projects/apio_dev/repo
+pip install -e .
 ```
 
-To return back to the release package run
+To return back to the release package run this (in any directory):
 ```
 pip uninstall apio
 pip install apio
