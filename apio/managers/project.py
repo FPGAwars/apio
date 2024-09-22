@@ -10,7 +10,6 @@
 import sys
 from os.path import isfile
 from pathlib import Path
-
 from configparser import ConfigParser
 from typing import Optional
 from configobj import ConfigObj
@@ -46,7 +45,7 @@ class Project:
         sconstruct_name = "SConstruct"
         sconstruct_path = self.project_dir / sconstruct_name
         local_sconstruct_path = (
-            util.get_apio_full_path("resources") / arch / sconstruct_name
+            util.get_path_in_apio_package("resources") / arch / sconstruct_name
         )
 
         if sconstruct_path.exists():
@@ -285,7 +284,9 @@ class Project:
 
         # -- If no project file found, just return
         if not isfile(project_file):
-            print(f"Info: No {PROJECT_FILENAME} file")
+            click.secho(
+                f"Info: Project has no {PROJECT_FILENAME} file", fg="yellow"
+            )
             return
 
         # pylint: disable=fixme
@@ -297,20 +298,20 @@ class Project:
 
         for section in config_parser.sections():
             if section != "env":
-                message = (
-                    f"Project file {project_file} "
-                    f"has an invalid section named "
-                    f"[{section}]."
+                click.secho(
+                    f"Project file {project_file} has an invalid "
+                    "section named "
+                    f"[{section}].",
+                    fg="red",
                 )
-                print(message)
                 sys.exit(1)
 
         if "env" not in config_parser.sections():
-            message = (
-                f"Project file {project_file}"
-                f"does not have an [env] section."
+            click.secho(
+                f"Project file {project_file} does not have an "
+                "[env] section.",
+                fg="red",
             )
-            print(message)
             sys.exit(1)
 
         # Parse attributes in the env section.
@@ -326,11 +327,11 @@ class Project:
         # (illegal) keys that where not parsed
         for attribute in config_parser.options("env"):
             if attribute not in parsed_attributes:
-                message = (
+                click.secho(
                     f"Project file {project_file} contains"
-                    f" an unknown attribute '{attribute}'."
+                    f" an unknown attribute '{attribute}'.",
+                    fg="red",
                 )
-                print(message)
                 sys.exit(1)
 
     @staticmethod
@@ -344,10 +345,13 @@ class Project:
           * A string with the name of the board
         """
         parsed_attributes.add("board")
-        board = config_parser.get("env", "board")
+        board = config_parser.get("env", "board", fallback=None)
         if not board:
-            print(f"Error: invalid {PROJECT_FILENAME} project file")
-            print("No 'board' field defined in [env] section")
+            click.secho(
+                "Error: Missing required 'board' specification "
+                f"in {PROJECT_FILENAME}",
+                fg="red",
+            )
             sys.exit(1)
         return board
 
@@ -362,10 +366,11 @@ class Project:
           * A string with the name of the top-module
         """
         parsed_attributes.add("top-module")
-        top_module = config_parser.get("env", "top-module")
+        top_module = config_parser.get("env", "top-module", fallback=None)
         if not top_module:
             click.secho(
-                f"Warning! invalid {PROJECT_FILENAME} " f"project file",
+                f"Warning: Missing 'top-module' specification in "
+                f"{PROJECT_FILENAME}, assuming 'main'",
                 fg="yellow",
             )
             click.secho("No 'top-module' in [env] section. Assuming 'main'.")
@@ -382,14 +387,14 @@ class Project:
         RETURN:
           * A string with "default" (default) or "native"
         """
-        # print(f"*** project.py:  reading exe mode")
         parsed_attributes.add("exe-mode")
         exe_mode = config_parser.get("env", "exe-mode", fallback="default")
         if exe_mode not in {"default", "native"}:
-            print(f"Error: invalid {PROJECT_FILENAME}" "project file")
-            print(
+            click.secho(
+                f"Error: invalid {PROJECT_FILENAME} project file\n"
                 "Optional attribute 'exe-mode' should have"
-                " the value 'default' or 'native'."
+                " the value 'default' or 'native'.",
+                fg="red",
             )
             sys.exit(1)
         return exe_mode

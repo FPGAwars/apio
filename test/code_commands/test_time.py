@@ -22,7 +22,7 @@ def test_time(clirunner, configenv):
 
         # -- Check the result
         assert result.exit_code != 0
-        assert 'Info: No apio.ini file' in result.output
+        assert 'Info: Project has no apio.ini file' in result.output
         assert 'Error: insufficient arguments: missing board' in result.output
 
 

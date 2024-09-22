@@ -27,7 +27,7 @@ def test_build(clirunner, configenv):
         assert result.exit_code != 0
 
         # -- Messages thtat should appear
-        assert "Info: No apio.ini file" in result.output
+        assert "Info: Project has no apio.ini file" in result.output
         assert "Error: insufficient arguments: missing board" in result.output
         assert "Error: Missing FPGA" in result.output
 

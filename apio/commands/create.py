@@ -73,12 +73,6 @@ def cli(
     if not top_module:
         top_module = DEFAULT_TOP_MODULE
 
-    # pylint: disable=fixme
-    # TODO: Make the default Path(".") in get_project_dir and delete this.
-    # It preserves the user provided relative path and is more friendly.
-    if not project_dir:
-        project_dir = Path(".")
-
     project_dir = util.get_project_dir(project_dir)
 
     # Create the apio.ini file

@@ -905,7 +905,7 @@ class SCons:
         # -- apio, which is located in the resources/arch/ folder
         if not scon_file.exists():
             # -- This is the default SConstruct file
-            resources = util.get_apio_full_path("resources")
+            resources = util.get_path_in_apio_package("resources")
             default_scons_file = resources / arch / "SConstruct"
 
             # -- It is passed to scons using the flag -f default_scons_file

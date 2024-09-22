@@ -129,13 +129,12 @@ class Resources:
         if filepath.exists():
             if allow_custom:
                 click.secho(
-                    f"Info: Loading custom {name} from the project dir.",
-                    fg="yellow",
+                    f"Info: Loading a custom '{name}' from the project dir."
                 )
                 return self._load_resource_file(filepath)
 
         # -- Load the stock resource file from the APIO package.
-        filepath = util.get_apio_full_path(RESOURCES_DIR) / name
+        filepath = util.get_path_in_apio_package(RESOURCES_DIR) / name
         return self._load_resource_file(filepath)
 
     @staticmethod
