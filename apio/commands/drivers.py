@@ -5,7 +5,7 @@
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""Main implementation of APIO DRIVERS command"""
+"""Implementation of 'apio drivers' command"""
 
 import click
 from click.core import Context
@@ -20,6 +20,7 @@ frdi_enable_option = click.option(
     "--ftdi-enable",
     is_flag=True,
     help="Enable FTDI drivers.",
+    cls=util.ApioOption,
 )
 
 ftdi_disable_option = click.option(
@@ -27,6 +28,7 @@ ftdi_disable_option = click.option(
     "--ftdi-disable",
     is_flag=True,
     help="Disable FTDI drivers.",
+    cls=util.ApioOption,
 )
 
 serial_enable_option = click.option(
@@ -34,6 +36,7 @@ serial_enable_option = click.option(
     "--serial-enable",
     is_flag=True,
     help="Enable Serial drivers.",
+    cls=util.ApioOption,
 )
 
 serial_disable_option = click.option(
@@ -41,6 +44,7 @@ serial_disable_option = click.option(
     "--serial-disable",
     is_flag=True,
     help="Disable Serial drivers.",
+    cls=util.ApioOption,
 )
 
 
@@ -68,7 +72,7 @@ Examples:
     "drivers",
     short_help="Manage the operating system drivers.",
     help=HELP,
-    context_settings=util.context_settings(),
+    cls=util.ApioCommand,
 )
 @click.pass_context
 @frdi_enable_option

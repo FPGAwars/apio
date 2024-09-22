@@ -129,7 +129,8 @@ class Resources:
         if filepath.exists():
             if allow_custom:
                 click.secho(
-                    f"Loading custom {name} from project dir", fg="yellow"
+                    f"Info: Loading custom {name} from the project dir.",
+                    fg="yellow",
                 )
                 return self._load_resource_file(filepath)
 

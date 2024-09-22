@@ -259,7 +259,7 @@ def test_build_init(clirunner, configenv):
         # apio build --board icezum
         result = clirunner.invoke(cmd_build, ["--board", "icestick"])
         assert result.exit_code != 0
-        assert "Info: ignore apio.ini board" in result.output
+        assert "Info: ignoring board specification from apio.ini." in result.output
 
         # apio build --fpga iCE40-HX1K-VQ100
         result = clirunner.invoke(cmd_build, ["--fpga", "iCE40-HX1K-VQ100"])

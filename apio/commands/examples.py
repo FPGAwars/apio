@@ -5,7 +5,7 @@
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""Main implementation of APIO EXAMPLES command"""
+"""Implementation of 'apio examples' command"""
 
 from pathlib import Path
 import click
@@ -24,6 +24,7 @@ dir_option = click.option(
     type=str,
     metavar="name",
     help="Copy the selected example directory.",
+    cls=util.ApioOption,
 )
 
 files_option = click.option(
@@ -33,6 +34,7 @@ files_option = click.option(
     type=str,
     metavar="name",
     help="Copy the selected example files.",
+    cls=util.ApioOption,
 )
 
 
@@ -58,7 +60,7 @@ Examples:
     "examples",
     short_help="List and fetch apio examples.",
     help=HELP,
-    context_settings=util.context_settings(),
+    cls=util.ApioCommand,
 )
 @click.pass_context
 @options.list_option_gen(help="List all available examples.")

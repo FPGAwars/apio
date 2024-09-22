@@ -5,7 +5,7 @@
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""Main implementation of APIO SIM command"""
+"""Implementation of 'apio sim' command"""
 
 from pathlib import Path
 import click
@@ -42,7 +42,7 @@ configuration for future invocations.
     "sim",
     short_help="Simulate a testbench with graphic results.",
     help=HELP,
-    context_settings=util.context_settings(),
+    cls=util.ApioCommand,
 )
 @click.pass_context
 @click.argument("testbench", nargs=1, required=True)

@@ -5,7 +5,7 @@
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""Main implementation of APIO RAW command"""
+"""Implementation of 'apio raw' command"""
 
 import click
 from click.core import Context
@@ -36,7 +36,7 @@ consider suggesting it as an apio feature request.
     "raw",
     short_help="Execute commands directly from the Apio packages.",
     help=HELP,
-    context_settings=util.context_settings(),
+    cls=util.ApioCommand,
 )
 @click.pass_context
 @click.argument("cmd")

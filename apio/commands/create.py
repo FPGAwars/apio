@@ -5,7 +5,7 @@
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""Main implementation of APIO CREATE command"""
+"""Implementation of 'apio create' command"""
 
 from pathlib import Path
 import click
@@ -50,7 +50,7 @@ the supported boards.
     "create",
     short_help="Create an apio.ini project file.",
     help=HELP,
-    context_settings=util.context_settings(),
+    cls=util.ApioCommand,
 )
 @click.pass_context
 @options.board_option_gen(help="Set the board.", required=True)

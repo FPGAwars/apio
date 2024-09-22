@@ -5,7 +5,7 @@
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""Main implementation of APIO SYSTEM command"""
+"""Implementation of 'apio system' command"""
 
 from pathlib import Path
 import inspect
@@ -25,6 +25,7 @@ lsftdi_option = click.option(
     "--lsftdi",
     is_flag=True,
     help="List all connected FTDI devices.",
+    cls=util.ApioOption,
 )
 
 lsusb_option = click.option(
@@ -32,6 +33,7 @@ lsusb_option = click.option(
     "--lsusb",
     is_flag=True,
     help="List all connected USB devices.",
+    cls=util.ApioOption,
 )
 
 lsserial_option = click.option(
@@ -39,6 +41,7 @@ lsserial_option = click.option(
     "--lsserial",
     is_flag=True,
     help="List all connected Serial devices.",
+    cls=util.ApioOption,
 )
 
 info_option = click.option(
@@ -47,6 +50,7 @@ info_option = click.option(
     "--info",
     is_flag=True,
     help="Show platform id and other info.",
+    cls=util.ApioOption,
 )
 
 
@@ -75,7 +79,7 @@ cannot be mixed in the same command.
     "system",
     short_help="Provides system info.",
     help=HELP,
-    context_settings=util.context_settings(),
+    cls=util.ApioCommand,
 )
 @click.pass_context
 @options.project_dir_option

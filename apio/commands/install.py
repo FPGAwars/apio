@@ -5,7 +5,7 @@
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""Main implementation of APIO INSTALL command"""
+"""Implementation of 'apio install' command"""
 
 from pathlib import Path
 from typing import Tuple
@@ -60,7 +60,7 @@ For packages uninstallation see the apio uninstall command.
     "install",
     short_help="Install apio packages.",
     help=HELP,
-    context_settings=util.context_settings(),
+    cls=util.ApioCommand,
 )
 @click.pass_context
 @click.argument("packages", nargs=-1, required=False)

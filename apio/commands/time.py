@@ -5,7 +5,7 @@
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""Main implementation of APIO time command"""
+"""Implementation of 'apio' time' command"""
 
 from pathlib import Path
 import click
@@ -30,10 +30,6 @@ of the project that contains the apio.ini file.
 \b
 Examples:
   apio time
-
-[Note] The flags marked with (deprecated) are not recomanded.
-Instead, use an apio.ini project config file and if neaded, add
-to the project custom boards.json and fpga.json files.
 """
 
 
@@ -45,15 +41,15 @@ to the project custom boards.json and fpga.json files.
     "time",
     short_help="Report design timing.",
     help=HELP,
-    context_settings=util.context_settings(),
+    cls=util.ApioCommand,
 )
 @click.pass_context
 @options.project_dir_option
 @options.verbose_option
 @options.verbose_yosys_option
 @options.verbose_pnr_option
-@options.top_module_option_gen()
-@options.board_option_gen()
+@options.top_module_option_gen(deprecated=True)
+@options.board_option_gen(deprecated=True)
 @options.fpga_option
 @options.size_option
 @options.type_option

@@ -103,6 +103,16 @@ def select_commands_help(command_lines, command_names):
     return result
 
 
+def context_settings():
+    """Return a common Click command settings that adds
+    the alias -h to --help. This applies also to all the sub
+    commands such as apio build.
+    """
+    # Per https://click.palletsprojects.com/en/8.1.x/documentation/
+    #     #help-parameter-customization
+    return {"help_option_names": ["-h", "--help"]}
+
+
 # ---------------------------
 # -- Top click command node.
 # ---------------------------
@@ -118,7 +128,7 @@ the FPGA board.
 Apio commands are typically invoked in the root directory of the FPGA
 project where the project configuration file apio.ini and the project
 source files are stored. For help on specific commands use the -h
-flag (e.g. apio build -h).
+flag (e.g. 'apio build -h').
 
 For more information on the apio project see
 https://github.com/FPGAwars/apio/wiki/Apio
@@ -129,7 +139,7 @@ https://github.com/FPGAwars/apio/wiki/Apio
     cls=ApioCLI,
     help=HELP,
     invoke_without_command=True,
-    context_settings=util.context_settings(),
+    context_settings=context_settings(),
 )
 @click.pass_context
 @click.version_option()

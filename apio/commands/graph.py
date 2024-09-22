@@ -5,7 +5,7 @@
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""Main implementation of APIO GRAPH command"""
+"""Implementation of 'apio graph' command"""
 
 from pathlib import Path
 import click
@@ -42,7 +42,7 @@ to the desired format using the dot command.
     "graph",
     short_help="Generate a visual graph of the code.",
     help=HELP,
-    context_settings=util.context_settings(),
+    cls=util.ApioCommand,
 )
 @click.pass_context
 @options.project_dir_option

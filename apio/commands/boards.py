@@ -5,7 +5,7 @@
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""Main implementation of APIO BOARDS command"""
+"""Implementation of 'apio boards' command"""
 
 from pathlib import Path
 import click
@@ -23,6 +23,7 @@ list_fpgas_option = click.option(
     "--fpga",
     is_flag=True,
     help="List supported FPGA chips.",
+    cls=util.ApioOption,
 )
 
 
@@ -50,7 +51,7 @@ placing a boards.json file next to apio.ini.
     "boards",
     short_help="List supported boards and FPGAs.",
     help=HELP,
-    context_settings=util.context_settings(),
+    cls=util.ApioCommand,
 )
 @click.pass_context
 @options.project_dir_option
