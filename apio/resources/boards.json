@@ -868,5 +868,12 @@
       "vid": "0403",
       "pid": "6010"
     }
+  },
+  "Cynthion-r1.4": {
+    "name":"Cynthion r1.4",
+    "fpga": "ECP5-LFE5U-12F-CABGA256",
+    "programmer": {
+      "type": "apollo"
+    }
   }
- } 
+}

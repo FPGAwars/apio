@@ -96,5 +96,10 @@
   "openfpgaloader_tangnano20k": {
     "command": "openFPGALoader",
     "args": "-b tangnano20k -f"
+  },
+  "apollo": {
+    "command": "apollo",
+    "args": "configure",
+    "pip_packages": [ "apollo_fpga" ]
   }
 }

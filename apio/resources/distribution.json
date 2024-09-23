@@ -11,6 +11,7 @@
     "tinyfpgab": ">=1.1.0,<1.2.0",
     "tinyprog": ">=1.0.21,<1.1.0",
     "icefunprog": ">=2.0.3,<3.0.0",
-    "apycula": ">=0.12"
+    "apycula": ">=0.12",
+    "apollo_fpga": ">=1.1.0"
   }
 }
