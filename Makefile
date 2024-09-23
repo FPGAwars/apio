@@ -13,18 +13,14 @@ env:
 	@echo "For entering the virtual-environment just type:"
 	@echo ". venv/bin/activate"
 
-lint:  ## Lint and static-check
+lint:  ## Lint the apio app code
 	python -m black apio
 	python -m flake8 apio
 	python -m pylint apio
 	
-lint-test: ### Lint test scripts
-	python -m pylint test/conftest.py
-	python -m pylint test/test_apio.py
-	python -m pylint test/commands/test_build.py
-
-test-one:  ## Execute a test script
-	pytest -v -s test/commands/test_build.py::test_build_complete1
+lint-test: ### Lint the tests
+	python -m pylint test/*.py
+	python -m pylint test/commands/*.py
 
 tox:   ## Run tox
 	python -m tox
