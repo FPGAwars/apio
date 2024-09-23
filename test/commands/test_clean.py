@@ -24,13 +24,13 @@ def test_clean(clirunner, configenv):
         result = clirunner.invoke(cmd_clean)
 
         # -- It is an error. Exit code should not be 0
-        assert result.exit_code != 0
+        assert result.exit_code != 0, result.output
         assert "Info: Project has no apio.ini file" in result.output
         assert "Error: insufficient arguments: missing board" in result.output
 
         # -- Execute "apio clean --board alhambra-ii"
         result = clirunner.invoke(cmd_clean, ["--board", "alhambra-ii"])
-        assert result.exit_code != 0
+        assert result.exit_code != 0, result.output
 
 
 def test_clean_create(clirunner, configenv):
@@ -45,10 +45,10 @@ def test_clean_create(clirunner, configenv):
 
         # apio create --board icezum
         result = clirunner.invoke(cmd_create, ["--board", "alhambra-ii"])
-        assert result.exit_code == 0
+        assert result.exit_code == 0, result.output
         assert "Creating apio.ini file ..." in result.output
         assert "was created successfully" in result.output
 
         # --- Execute "apio clean"
         result = clirunner.invoke(cmd_clean)
-        assert result.exit_code != 0
+        assert result.exit_code != 0, result.output

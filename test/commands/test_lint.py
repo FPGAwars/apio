@@ -19,4 +19,4 @@ def test_lint(clirunner, configenv):
 
         # -- Execute "apio lint"
         result = clirunner.invoke(cmd_lint, ["--board", "alhambra-ii"])
-        assert result.exit_code != 0
+        assert result.exit_code != 0, result.output

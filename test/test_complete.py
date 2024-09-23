@@ -120,7 +120,7 @@ def test_complete2(clirunner, validate_cliresult, configenv, offline):
 
         # -- Execute "apio upload"
         result = clirunner.invoke(cmd_upload)
-        assert result.exit_code == 1
+        assert result.exit_code == 1, result.output
         assert "package 'oss-cad-suite' is not installed" in result.output
 
         # -- Execute "apio install examples"
@@ -138,7 +138,7 @@ def test_complete2(clirunner, validate_cliresult, configenv, offline):
 
         # -- Execute "apio examples --files missing_example"
         result = clirunner.invoke(cmd_examples, ["--files", "missing_example"])
-        assert result.exit_code == 1
+        assert result.exit_code == 1, result.output
         assert "Warning: this example does not exist" in result.output
 
         # -- Execute "apio examples --files Alhambra-II/ledon"

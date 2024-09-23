@@ -24,5 +24,5 @@ def test_install(clirunner, configenv, validate_cliresult):
 
         # -- Execute "apio install missing_package"
         result = clirunner.invoke(cmd_install, ["missing_package"])
-        assert result.exit_code == 1
+        assert result.exit_code == 1, result.output
         assert "Error: no such package" in result.output

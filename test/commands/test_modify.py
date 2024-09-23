@@ -61,7 +61,7 @@ def test_modify(clirunner, configenv, validate_cliresult):
 
         # -- Execute "apio modify --board missed_board"
         result = clirunner.invoke(cmd_modify, ["--board", "missed_board"])
-        assert result.exit_code == 1
+        assert result.exit_code == 1, result.output
         assert "Error: no such board" in result.output
         check_ini_file(
             apio_ini,

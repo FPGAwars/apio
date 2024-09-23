@@ -65,7 +65,7 @@ def validate_cliresult():
         """Check if the result is ok"""
 
         # -- It should return an exit code of 0: success
-        assert result.exit_code == 0
+        assert result.exit_code == 0, result.output
 
         # -- There should be no exceptions raised
         assert not result.exception

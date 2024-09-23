@@ -21,5 +21,5 @@ def test_graph(clirunner, configenv):
         result = clirunner.invoke(cmd_graph)
 
         # -- Check the result
-        assert result.exit_code != 0
+        assert result.exit_code != 0, result.output
         # -- TODO (FIXME!)

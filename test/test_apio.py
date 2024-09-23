@@ -57,7 +57,7 @@ def test_apio_wrong_command(clirunner: CliRunner, configenv):
         result = clirunner.invoke(cmd_apio, ["wrong_command"])
 
         # -- Check the error code
-        assert result.exit_code == 2
+        assert result.exit_code == 2, result.output
 
         # -- Check the error message
         assert "Error: No such command" in result.output

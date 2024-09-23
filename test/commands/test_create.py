@@ -37,13 +37,13 @@ def test_create(clirunner, configenv, validate_cliresult):
 
         # -- Execute "apio create"
         result = clirunner.invoke(cmd_create)
-        assert result.exit_code != 0
+        assert result.exit_code != 0, result.output
         assert "Error: Missing option" in result.output
         assert not exists(apio_ini)
 
         # -- Execute "apio create --board missed_board"
         result = clirunner.invoke(cmd_create, ["--board", "missed_board"])
-        assert result.exit_code == 1
+        assert result.exit_code == 1, result.output
         assert "Error: no such board" in result.output
         assert not exists(apio_ini)
 
@@ -104,7 +104,7 @@ def test_create(clirunner, configenv, validate_cliresult):
             ["--board", "alhambra-ii", "--top-module", "my_module"],
             input="n",
         )
-        assert result.exit_code != 0
+        assert result.exit_code != 0, result.output
         assert "Warning" in result.output
         assert "file already exists" in result.output
         assert "Do you want to replace it?" in result.output

@@ -21,5 +21,5 @@ def test_verify(clirunner, configenv):
         result = clirunner.invoke(cmd_verify, ["--board", "icezum"])
 
         # -- Check the result
-        assert result.exit_code != 0
+        assert result.exit_code != 0, result.output
         assert "apio install oss-cad-suite" in result.output
