@@ -17,16 +17,17 @@ from apio.resources import Resources
 # -- Error messages
 EXAMPLE_NOT_FOUND_MSG = """
 Warning: this example does not exist
-Use `apio examples -l` for listing all the available examples"""
+Use `apio examples -l` to list all the available examples"""
 
-EXAMPLE_OF_USE_CAD = """
+USAGE_EXAMPLE = """
+To fetch example files:
+   apio examples -f example-name
+
 Example of use:
-   apio examples -f icezum/leds
-Copy the leds example files to the current directory\n"""
+   apio examples -f icesum/leds
 
-EXAMPLE_DIR_FILE = """
-To get an example, use the command:
-   apio examples -d/-f name"""
+Type 'apio examples -h' for more details.
+"""
 
 
 class Examples:
@@ -129,9 +130,7 @@ class Examples:
         click.secho(f"Total: {len(examples)}")
 
         # -- Print more info about the examples
-        click.secho(EXAMPLE_DIR_FILE, fg="green")
-        click.secho(EXAMPLE_OF_USE_CAD, fg="green")
-        click.secho()
+        click.secho(USAGE_EXAMPLE, fg="green")
         return 0
 
     def copy_example_dir(self, example: str, project_dir: Path, sayno: bool):

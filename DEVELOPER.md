@@ -48,5 +48,5 @@ The command ``apio system -i`` (not released yet as of Sep 2024) shows the sourc
 ```
 $ apio system -i
 Platform: darwin_arm64
-Source:   /Users/user/projects/apio_dev/repo/apio
+Package:  /Users/user/projects/apio_dev/repo/apio
 ```
