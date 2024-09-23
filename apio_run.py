@@ -17,7 +17,7 @@ try:
 
 #-- Apio commands finish with this excepcion
 except SystemExit:
-    print("Apio command executed!")
+    pass
 
 #-- Exit!
 sys.exit()

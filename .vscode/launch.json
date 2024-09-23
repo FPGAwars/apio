@@ -5,163 +5,255 @@
             "name": "Apio",
             "type": "debugpy",
             "request": "launch",
-            "program": "${file}",
-            "console": "internalConsole",
-            "justMyCode": true
-        },
-        {
-            "name": "Apio build",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${file}",
-            "args": ["build","--top-module","caca"],
-            "console": "internalConsole",
+            "program": "${workspaceFolder}/apio_run.py",
+            "console": "integratedTerminal",
             "justMyCode": true,
-            //-- Change to the folder with the example to test
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/temp-ledon"
-        },
-        {
-            "name": "Apio clean",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${file}",
-            "args": ["clean", "-p", "ledon2"],
-            "console": "internalConsole",
-            "justMyCode": true,
-            //-- Change to the folder with the example to test
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/ledon"
-        },
-        {
-            "name": "Apio verify",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${file}",
-            "args": ["verify","--board", "alhambra-ii", "-p","/home/obijuan/Test/ice-build/01-LEDs-buttons"],
-            "console": "internalConsole",
-            "justMyCode": true,
-        },
-        {
-            "name": "Upload (Alhambra II)",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${file}",
-            "args": ["upload"],
-            "console": "internalConsole",
-            "justMyCode": true,
-            //-- Change to the folder with the example to test
-            //-- Testing the Alhanbra-II board
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/temp-ledon"
-        },
-        {
-            "name": "Upload (TinyFPGA)",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${file}",
-            "args": ["upload"],
-            "console": "internalConsole",
-            "justMyCode": true,
-            //-- Change to the folder with the example to test
-            //-- Testing the TinyFPGA board
-            "cwd": "${workspaceFolder}/test-examples/TinyFPGA-BX/01-LED-ON"
-        },
-        {
-            "name": "Upload (Fomu)",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${file}",
-            "args": ["upload"],
-            "console": "internalConsole",
-            "justMyCode": true,
-            //-- Change to the folder with the example to test
-            //-- Testing the TinyFPGA board
-            "cwd": "${workspaceFolder}/test-examples/fomu/temp-Blinky"
-        },
-        {
-            "name": "Upload (Blackice)",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${file}",
-            "args": ["upload"],
-            "console": "internalConsole",
-            "justMyCode": true,
-            //-- Change to the folder with the example to test
-            //-- Testing the Blackice
-            "cwd": "${workspaceFolder}/test-examples/BlackIce/01-LEDs-buttons"
-        },
-        {
-            "name": "Apio examples",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${file}",
-            "args": ["examples"],
-            "console": "internalConsole",
-            "justMyCode": true,
-            //-- Change to the folder with the example to test
-            "cwd": "${workspaceFolder}/test-examples/temp-test"
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
         {
             "name": "Apio boards",
             "type": "debugpy",
             "request": "launch",
-            "program": "${file}",
-            "args": ["boards", "-l"],
-            "console": "internalConsole",
+            "program": "${workspaceFolder}/apio_run.py",
+            "args": [
+                "boards",
+                "-l"
+            ],
+            "console": "integratedTerminal",
             "justMyCode": true,
-            //-- Change to the folder with the example to test
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/temp-ledon"
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
         {
-            "name": "Apio config",
+            "name": "Apio build",
             "type": "debugpy",
             "request": "launch",
-            "program": "${file}",
-            "args": ["config", "-v", "1"],
-            "console": "internalConsole",
+            "program": "${workspaceFolder}/apio_run.py",
+            "args": [
+                "build"
+            ],
+            "console": "integratedTerminal",
             "justMyCode": true,
-            //-- Change to the folder with the example to test
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/ledon"
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
         {
-            "name": "Apio install",
+            "name": "Apio clean",
             "type": "debugpy",
             "request": "launch",
-            "program": "${file}",
-            "args": ["install", "drivers", "-p",  "windows_amd64"],
-            "console": "internalConsole",
+            "program": "${workspaceFolder}/apio_run.py",
+            "args": [
+                "clean"
+            ],
+            "console": "integratedTerminal",
             "justMyCode": true,
-            //-- Change to the folder with the example to test
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/temp-ledon"
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
         {
-            "name": "Apio uninstall",
+            "name": "Apio create",
             "type": "debugpy",
             "request": "launch",
-            "program": "${file}",
-            "args": ["uninstall", "examples"],
-            "console": "internalConsole",
+            "program": "${workspaceFolder}/apio_run.py",
+            "args": [
+                "create",
+                "--board",
+                "--alhambra-ii",
+                "--top-module",
+                "main",
+                "--sayyes"
+            ],
+            "console": "integratedTerminal",
             "justMyCode": true,
-            //-- Change to the folder with the example to test
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/temp-ledon"
-        },
-        {
-            "name": "Apio system",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${file}",
-            "args": ["system", "--info"],
-            "console": "internalConsole",
-            "justMyCode": true,
-            //-- Change to the folder with the example to test
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/temp-ledon"
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
         {
             "name": "Apio drivers",
             "type": "debugpy",
             "request": "launch",
-            "program": "${file}",
-            "args": ["drivers", "--ftdi-enable"],
-            "console": "internalConsole",
+            "program": "${workspaceFolder}/apio_run.py",
+            "args": [
+                "drivers",
+                "--ftdi-enable"
+            ],
+            "console": "integratedTerminal",
             "justMyCode": true,
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+        },
+        {
+            "name": "Apio examples",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/apio_run.py",
+            "args": [
+                "examples"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+        },
+        {
+            "name": "Apio graph",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/apio_run.py",
+            "args": [
+                "graph"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+        },
+        {
+            "name": "Apio install",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/apio_run.py",
+            "args": [
+                "install",
+                "drivers",
+                "-p",
+                "windows_amd64"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+        },
+        {
+            "name": "Apio lint",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/apio_run.py",
+            "args": [
+                "lint"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+        },
+        {
+            "name": "Apio modify",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/apio_run.py",
+            "args": [
+                "modify",
+                "--board",
+                "alhambra-ii",
+                "--top-module",
+                "main"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+        },
+        {
+            "name": "Apio raw",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/apio_run.py",
+            "args": [
+                "raw",
+                "yosys --version"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+        },
+        {
+            "name": "Apio system",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/apio_run.py",
+            "args": [
+                "system",
+                "--info"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+        },
+        {
+            "name": "Apio time",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/apio_run.py",
+            "args": [
+                "time",
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+        },
+        {
+            "name": "Apio uninstall",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/apio_run.py",
+            "args": [
+                "uninstall",
+                "examples"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+        },
+        {
+            "name": "Apio upload [alhambra-ii]",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/apio_run.py",
+            "args": [
+                "upload"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+        },
+        {
+            "name": "Apio upload [TinyFPGA-BX]",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/apio_run.py",
+            "args": [
+                "upload"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}/test-examples/TinyFPGA-BX/02-jumping-LED"
+        },
+        {
+            "name": "Apio upload [fomu]",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/apio_run.py",
+            "args": [
+                "upload"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}/test-examples/fomu/02-jumping-LED"
+        },
+        {
+            "name": "Apio upload [blackice]",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/apio_run.py",
+            "args": [
+                "upload"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}/test-examples/BlackIce/02-jumping-LED"
+        },
+        {
+            "name": "Apio verify",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/apio_run.py",
+            "args": [
+                "verify"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
     ]
 }

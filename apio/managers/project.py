@@ -231,7 +231,6 @@ class Project:
                 f"{PROJECT_FILENAME}, assuming 'main'",
                 fg="yellow",
             )
-            click.secho("No 'top-module' in [env] section. Assuming 'main'.")
             return DEFAULT_TOP_MODULE
         return top_module
 
