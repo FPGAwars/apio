@@ -21,10 +21,10 @@ lint:  ## Lint and static-check
 lint-test: ### Lint test scripts
 	python -m pylint test/conftest.py
 	python -m pylint test/test_apio.py
-	python -m pylint test/code_commands/test_build.py
+	python -m pylint test/commands/test_build.py
 
 test-one:  ## Execute a test script
-	pytest -v -s test/code_commands/test_build.py::test_build_complete1
+	pytest -v -s test/commands/test_build.py::test_build_complete1
 
 tox:   ## Run tox
 	python -m tox
