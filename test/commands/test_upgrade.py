@@ -14,7 +14,7 @@ def test_upgrade(clirunner, configenv, validate_cliresult, offline):
     # -- If the option 'offline' is passed, the test is skip
     # -- (apio upgrade uses internet)
     if offline:
-        pytest.skip('requires internet connection')
+        pytest.skip("requires internet connection")
 
     with clirunner.isolated_filesystem():
 

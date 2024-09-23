@@ -4,14 +4,17 @@
 
 from pathlib import Path
 from os.path import isfile, exists
-from configobj import ConfigObj
 from typing import Dict
+from configobj import ConfigObj
 
 # -- apio modify entry point
 from apio.commands.modify import cli as cmd_modify
 
 
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
 def check_ini_file(apio_ini: Path, expected_vars: Dict[str, str]) -> None:
+    """Assert that apio.ini contains exactly the given vars."""
     # Read the ini file.
     assert isfile(apio_ini)
     conf = ConfigObj(str(apio_ini))
@@ -34,8 +37,7 @@ def test_modify(clirunner, configenv, validate_cliresult):
 
         # -- Execute "apio modify --top-module my_module"
         result = clirunner.invoke(cmd_modify, ["--top-module", "my_module"])
-        print(f"{result.output = }")
-        assert result.exit_code != 0
+        assert result.exit_code != 0, result.output
         assert "Error: 'apio.ini' not found" in result.output
         assert not exists(apio_ini)
 

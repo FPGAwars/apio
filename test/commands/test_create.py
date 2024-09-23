@@ -4,14 +4,17 @@
 
 from pathlib import Path
 from os.path import isfile, exists
-from configobj import ConfigObj
 from typing import Dict
+from configobj import ConfigObj
 
 # -- apio create entry point
 from apio.commands.create import cli as cmd_create
 
 
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
 def check_ini_file(apio_ini: Path, expected_vars: Dict[str, str]) -> None:
+    """Assert that apio.ini contains exactly the given vars."""
     # Read the ini file.
     assert isfile(apio_ini)
     conf = ConfigObj(str(apio_ini))
@@ -51,7 +54,8 @@ def test_create(clirunner, configenv, validate_cliresult):
         assert "was created successfully." in result.output
         check_ini_file(apio_ini, {"board": "icezum", "top-module": "main"})
 
-        # -- Execute "apio create --board alhambra-ii --top-module my_module" with 'y' input
+        # -- Execute "apio create --board alhambra-ii
+        # --                      --top-module my_module" with 'y' input"
         result = clirunner.invoke(
             cmd_create,
             ["--board", "alhambra-ii", "--top-module", "my_module"],
@@ -66,7 +70,8 @@ def test_create(clirunner, configenv, validate_cliresult):
             apio_ini, {"board": "alhambra-ii", "top-module": "my_module"}
         )
 
-        # -- Add to the ini file an additional var. It should disappear after the next wrire.
+        # -- Add to the ini file an additional var. It should disappear after
+        # -- the next wrire.
         conf = ConfigObj(str(apio_ini))
         conf["env"]["exe-mode"] = "native"
         conf.write()
@@ -79,7 +84,9 @@ def test_create(clirunner, configenv, validate_cliresult):
             },
         )
 
-        # -- Execute "apio create --board icezum --top-module my_module --sayyse" with 'y' input
+        # -- Execute "apio create --board icezum
+        # --                      --top-module my_module
+        # --                      --sayyse" with 'y' input
         result = clirunner.invoke(
             cmd_create,
             ["--board", "icezum", "--top-module", "my_module", "--sayyes"],
@@ -90,7 +97,8 @@ def test_create(clirunner, configenv, validate_cliresult):
             apio_ini, {"board": "icezum", "top-module": "my_module"}
         )
 
-        # -- Execute "apio create --board alhambra-ii --top-module my_module" with 'n' input
+        # -- Execute "apio create --board alhambra-ii
+        # --                      --top-module my_module" with 'n' input
         result = clirunner.invoke(
             cmd_create,
             ["--board", "alhambra-ii", "--top-module", "my_module"],

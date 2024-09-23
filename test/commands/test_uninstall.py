@@ -19,12 +19,13 @@ def test_uninstall(clirunner, configenv, validate_cliresult):
         validate_cliresult(result)
 
         # -- Execute "apio uninstall --list"
-        result = clirunner.invoke(cmd_uninstall, ['--list'])
+        result = clirunner.invoke(cmd_uninstall, ["--list"])
         validate_cliresult(result)
 
         # -- Execute "apio uninstall missing_packge"
         result = clirunner.invoke(
-            cmd_uninstall, ['missing_package'], input='y')
+            cmd_uninstall, ["missing_package"], input="y"
+        )
         assert result.exit_code == 1
-        assert 'Do you want to continue?' in result.output
-        assert 'Error: no such package' in result.output
+        assert "Do you want to continue?" in result.output
+        assert "Error: no such package" in result.output

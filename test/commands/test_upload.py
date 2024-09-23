@@ -22,8 +22,8 @@ def test_upload(clirunner, configenv):
 
         # -- Check the result
         assert result.exit_code == 1
-        assert 'Info: Project has no apio.ini file' in result.output
-        assert 'Error: insufficient arguments: missing board' in result.output
+        assert "Info: Project has no apio.ini file" in result.output
+        assert "Error: insufficient arguments: missing board" in result.output
 
 
 def test_upload_board(clirunner, configenv):
@@ -37,11 +37,13 @@ def test_upload_board(clirunner, configenv):
         configenv()
 
         # -- Execute "apio upload --board icezum"
-        result = clirunner.invoke(cmd_upload, ['--board', 'icezum'])
+        result = clirunner.invoke(cmd_upload, ["--board", "icezum"])
 
         # -- Check the result
         assert result.exit_code == 1
-        assert "Error: package 'oss-cad-suite' is not installed" in result.output
+        assert (
+            "Error: package 'oss-cad-suite' is not installed" in result.output
+        )
 
 
 def test_upload_complete(clirunner, configenv):
@@ -55,38 +57,44 @@ def test_upload_complete(clirunner, configenv):
         configenv()
 
         # -- Execute "apio upload --serial-port COM0"
-        result = clirunner.invoke(cmd_upload, ['--serial-port', 'COM0'])
+        result = clirunner.invoke(cmd_upload, ["--serial-port", "COM0"])
         assert result.exit_code == 1
-        assert 'Info: Project has no apio.ini file' in result.output
-        assert 'Error: insufficient arguments: missing board' in result.output
+        assert "Info: Project has no apio.ini file" in result.output
+        assert "Error: insufficient arguments: missing board" in result.output
 
         # -- Execute "apio upload --ftdi-id 0"
-        result = clirunner.invoke(cmd_upload, ['--ftdi-id', '0'])
+        result = clirunner.invoke(cmd_upload, ["--ftdi-id", "0"])
         assert result.exit_code == 1
-        assert 'Info: Project has no apio.ini file' in result.output
-        assert 'Error: insufficient arguments: missing board' in result.output
-
+        assert "Info: Project has no apio.ini file" in result.output
+        assert "Error: insufficient arguments: missing board" in result.output
 
         # -- Execute "apio upload --sram"
-        result = clirunner.invoke(cmd_upload, ['--sram'])
+        result = clirunner.invoke(cmd_upload, ["--sram"])
         assert result.exit_code == 1
-        assert 'Info: Project has no apio.ini file' in result.output
-        assert 'Error: insufficient arguments: missing board' in result.output
+        assert "Info: Project has no apio.ini file" in result.output
+        assert "Error: insufficient arguments: missing board" in result.output
 
         # -- Execute "apio upload --board icezum --serial-port COM0"
-        result = clirunner.invoke(cmd_upload, [
-            '--board', 'icezum', '--serial-port', 'COM0'])
+        result = clirunner.invoke(
+            cmd_upload, ["--board", "icezum", "--serial-port", "COM0"]
+        )
         assert result.exit_code == 1
-        assert "Error: package 'oss-cad-suite' is not installed" in result.output
+        assert (
+            "Error: package 'oss-cad-suite' is not installed" in result.output
+        )
 
         # -- Execute "apio upload --board icezum --ftdi-id 0"
-        result = clirunner.invoke(cmd_upload, [
-            '--board', 'icezum', '--ftdi-id', '0'])
+        result = clirunner.invoke(
+            cmd_upload, ["--board", "icezum", "--ftdi-id", "0"]
+        )
         assert result.exit_code == 1
-        assert "Error: package 'oss-cad-suite' is not installed" in result.output
+        assert (
+            "Error: package 'oss-cad-suite' is not installed" in result.output
+        )
 
         # -- Execute "apio upload --board icezum --sram"
-        result = clirunner.invoke(cmd_upload, [
-            '--board', 'icezum', '--sram'])
+        result = clirunner.invoke(cmd_upload, ["--board", "icezum", "--sram"])
         assert result.exit_code == 1
-        assert "Error: package 'oss-cad-suite' is not installed" in result.output
+        assert (
+            "Error: package 'oss-cad-suite' is not installed" in result.output
+        )

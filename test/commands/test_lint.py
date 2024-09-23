@@ -1,6 +1,7 @@
 """
   Test for the "apio lint" command
 """
+
 # -- apio lint entry point
 from apio.commands.lint import cli as cmd_lint
 
@@ -17,5 +18,5 @@ def test_lint(clirunner, configenv):
         configenv()
 
         # -- Execute "apio lint"
-        result = clirunner.invoke(cmd_lint, ['--board', 'alhambra-ii'])
+        result = clirunner.invoke(cmd_lint, ["--board", "alhambra-ii"])
         assert result.exit_code != 0

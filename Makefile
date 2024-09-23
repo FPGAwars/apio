@@ -13,15 +13,14 @@ env:
 	@echo "For entering the virtual-environment just type:"
 	@echo ". venv/bin/activate"
 
-lint:  ## Lint the apio app code
-	python -m black apio
-	python -m flake8 apio
-	python -m pylint apio
-	
-lint-test: ### Lint the tests
-	python -m pylint test/*.py
-	python -m pylint test/commands/*.py
+# Keep this list the same as in tox.ini.
+lint_dirs = apio test test-boards
 
+lint:  ## Lint the apio app code
+	python -m black  $(lint_dirs)
+	python -m flake8 $(lint_dirs)
+	python -m pylint $(lint_dirs)
+	
 tox:   ## Run tox
 	python -m tox
 

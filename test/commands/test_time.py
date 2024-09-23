@@ -22,8 +22,8 @@ def test_time(clirunner, configenv):
 
         # -- Check the result
         assert result.exit_code != 0
-        assert 'Info: Project has no apio.ini file' in result.output
-        assert 'Error: insufficient arguments: missing board' in result.output
+        assert "Info: Project has no apio.ini file" in result.output
+        assert "Error: insufficient arguments: missing board" in result.output
 
 
 def test_time_board(clirunner, configenv):
@@ -37,8 +37,8 @@ def test_time_board(clirunner, configenv):
         configenv()
 
         # -- Execute "apio time"
-        result = clirunner.invoke(cmd_time, ['--board', 'icezum'])
+        result = clirunner.invoke(cmd_time, ["--board", "icezum"])
 
         # -- Check the result
         assert result.exit_code != 0
-        assert 'apio install oss-cad-suite' in result.output
+        assert "apio install oss-cad-suite" in result.output

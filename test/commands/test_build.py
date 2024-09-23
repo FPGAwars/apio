@@ -233,8 +233,8 @@ def test_build_complete2(clirunner, configenv):
         )
         assert result.exit_code != 0
         assert (
-            "Error: contradictory arguments: ('iCE40-HX1K-TQ144', 'iCE40-FAKE')"
-            in result.output
+            "Error: contradictory arguments: "
+            "('iCE40-HX1K-TQ144', 'iCE40-FAKE')" in result.output
         )
 
 
@@ -259,14 +259,17 @@ def test_build_create(clirunner, configenv):
         # apio build --board icezum
         result = clirunner.invoke(cmd_build, ["--board", "icestick"])
         assert result.exit_code != 0
-        assert "Info: ignoring board specification from apio.ini." in result.output
+        assert (
+            "Info: ignoring board specification from apio.ini."
+            in result.output
+        )
 
         # apio build --fpga iCE40-HX1K-VQ100
         result = clirunner.invoke(cmd_build, ["--fpga", "iCE40-HX1K-VQ100"])
         assert result.exit_code != 0
         assert (
-            "Error: contradictory arguments: ('iCE40-HX1K-TQ144', 'iCE40-HX1K-VQ100')"
-            in result.output
+            "Error: contradictory arguments: "
+            "('iCE40-HX1K-TQ144', 'iCE40-HX1K-VQ100')" in result.output
         )
 
         # apio build --type lp --size 8k --pack cm225:4k
