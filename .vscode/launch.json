@@ -7,7 +7,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/apio_run.py",
             "console": "integratedTerminal",
-            "justMyCode": true,
+            "justMyCode": false,
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
         {
@@ -20,7 +20,7 @@
                 "-l"
             ],
             "console": "integratedTerminal",
-            "justMyCode": true,
+            "justMyCode": false,
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
         {
@@ -32,7 +32,7 @@
                 "build"
             ],
             "console": "integratedTerminal",
-            "justMyCode": true,
+            "justMyCode": false,
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
         {
@@ -44,7 +44,7 @@
                 "clean"
             ],
             "console": "integratedTerminal",
-            "justMyCode": true,
+            "justMyCode": false,
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
         {
@@ -61,7 +61,7 @@
                 "--sayyes"
             ],
             "console": "integratedTerminal",
-            "justMyCode": true,
+            "justMyCode": false,
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
         {
@@ -74,7 +74,7 @@
                 "--ftdi-enable"
             ],
             "console": "integratedTerminal",
-            "justMyCode": true,
+            "justMyCode": false,
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
         {
@@ -86,7 +86,7 @@
                 "examples"
             ],
             "console": "integratedTerminal",
-            "justMyCode": true,
+            "justMyCode": false,
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
         {
@@ -98,7 +98,7 @@
                 "graph"
             ],
             "console": "integratedTerminal",
-            "justMyCode": true,
+            "justMyCode": false,
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
         {
@@ -113,7 +113,7 @@
                 "windows_amd64"
             ],
             "console": "integratedTerminal",
-            "justMyCode": true,
+            "justMyCode": false,
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
         {
@@ -125,7 +125,7 @@
                 "lint"
             ],
             "console": "integratedTerminal",
-            "justMyCode": true,
+            "justMyCode": false,
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
         {
@@ -141,7 +141,7 @@
                 "main"
             ],
             "console": "integratedTerminal",
-            "justMyCode": true,
+            "justMyCode": false,
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
         {
@@ -154,7 +154,7 @@
                 "yosys --version"
             ],
             "console": "integratedTerminal",
-            "justMyCode": true,
+            "justMyCode": false,
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
         {
@@ -167,7 +167,7 @@
                 "--info"
             ],
             "console": "integratedTerminal",
-            "justMyCode": true,
+            "justMyCode": false,
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
         {
@@ -179,7 +179,7 @@
                 "time",
             ],
             "console": "integratedTerminal",
-            "justMyCode": true,
+            "justMyCode": false,
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
         {
@@ -192,7 +192,7 @@
                 "examples"
             ],
             "console": "integratedTerminal",
-            "justMyCode": true,
+            "justMyCode": false,
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
         {
@@ -204,7 +204,7 @@
                 "upload"
             ],
             "console": "integratedTerminal",
-            "justMyCode": true,
+            "justMyCode": false,
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
         {
@@ -216,7 +216,7 @@
                 "upload"
             ],
             "console": "integratedTerminal",
-            "justMyCode": true,
+            "justMyCode": false,
             "cwd": "${workspaceFolder}/test-examples/TinyFPGA-BX/02-jumping-LED"
         },
         {
@@ -228,7 +228,7 @@
                 "upload"
             ],
             "console": "integratedTerminal",
-            "justMyCode": true,
+            "justMyCode": false,
             "cwd": "${workspaceFolder}/test-examples/fomu/02-jumping-LED"
         },
         {
@@ -240,7 +240,7 @@
                 "upload"
             ],
             "console": "integratedTerminal",
-            "justMyCode": true,
+            "justMyCode": false,
             "cwd": "${workspaceFolder}/test-examples/BlackIce/02-jumping-LED"
         },
         {
@@ -252,7 +252,7 @@
                 "verify"
             ],
             "console": "integratedTerminal",
-            "justMyCode": true,
+            "justMyCode": false,
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
     ]
