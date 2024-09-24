@@ -19,5 +19,5 @@ def test_sim(clirunner, configenv):
 
         # -- apio sim --board icezum
         result = clirunner.invoke(cmd_sim)
-        assert result.exit_code != 0
+        assert result.exit_code != 0, result.output
         # -- TODO

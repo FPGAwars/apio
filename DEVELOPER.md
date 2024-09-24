@@ -28,6 +28,14 @@ Example of an equivalent manual command:
 python apio_run.py build --project_dir ~/projects/fpga/repo/hdl
 ```
 
+## Running apio in the Visual Studio Code debugger.
+
+The ``apio`` repository contains at its root the file ``.vscode/launch.json`` with debug
+target for most of the ``apio`` commands. Make sure to open the roo folder of the repository for VSC to recognize the targets file. To select the debug target, click on the debug icon on the left sidebar and this will display above a pull down menu with the available debug target and a start icon.
+
+The debug target can be viewed here https://github.com/FPGAwars/apio/blob/develop/.vscode/launch.json
+
+
 ## Using the dev repository for apio commands.
 
 You can tell pip to youse your apio dev repository for apio commands instead of the standard apio release. This allows quick edit/test cycles where you the modify code in your apio dev repository and  immediately test it by running ``apio`` commands in the console..

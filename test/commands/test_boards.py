@@ -19,9 +19,9 @@ def test_boards(clirunner, configenv, validate_cliresult):
         validate_cliresult(result)
 
         # -- Execute "apio boards --list"
-        result = clirunner.invoke(cmd_boards, ['--list'])
+        result = clirunner.invoke(cmd_boards, ["--list"])
         validate_cliresult(result)
 
         # -- Execute "apio boards --fpga"
-        result = clirunner.invoke(cmd_boards, ['--fpga'])
+        result = clirunner.invoke(cmd_boards, ["--fpga"])
         validate_cliresult(result)

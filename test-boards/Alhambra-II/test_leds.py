@@ -26,15 +26,14 @@ from apio.commands.upload import cli as cmd_upload
 # -- Change to the folder where the ledon example is located
 # -----------------------------
 
-#-- Get the current working directory
+# -- Get the current working directory
 cwd = Path.cwd()
 
-#-- Create the new path
-ledon_dir = cwd / 'test-examples' / 'Alhambra-II' / 'ledon'
+# -- Create the new path
+ledon_dir = cwd / "test-examples" / "Alhambra-II" / "01-LEDs-buttons"
 
-#-- Change to the new folder!
+# -- Change to the new folder!
 os.chdir(ledon_dir)
-
 
 
 def test_ledon_clean():
@@ -45,11 +44,8 @@ def test_ledon_clean():
     # ----------------------------
     result = CliRunner().invoke(cmd_clean)
 
-    #-- Debug! Mostrar la salida
-    #print(result.output)
-
-    #-- It should return an exit code of 0: success
-    assert result.exit_code == 0
+    # -- It should return an exit code of 0: success
+    assert result.exit_code == 0, result.output
     assert "[SUCCESS]" in result.output
 
 
@@ -61,11 +57,8 @@ def test_ledon_build():
     # ----------------------------
     result = CliRunner().invoke(cmd_build)
 
-    #-- Debug! Mostrar la salida
-    #print(result.output)
-
-    #-- It should return an exit code of 0: success
-    assert result.exit_code == 0
+    # -- It should return an exit code of 0: success
+    assert result.exit_code == 0, result.output
     assert "[SUCCESS]" in result.output
     assert "yosys" in result.output
     assert "nextpnr" in result.output
@@ -80,26 +73,21 @@ def test_ledon_verify():
     # ----------------------------
     result = CliRunner().invoke(cmd_verify)
 
-    #-- Debug! Mostrar la salida
-    #print(result.output)
-
-    #-- It should return an exit code of 0: success
-    assert result.exit_code == 0
+    # -- It should return an exit code of 0: success
+    assert result.exit_code == 0, result.output
     assert "[SUCCESS]" in result.output
     assert "iverilog" in result.output
 
+
 def test_ledon_upload():
-    """Test the apio verify upload"""
+    """Test the apio upload. This requires a connected Alhambra-II board."""
 
     # ----------------------------
     # -- Execute "apio upload"
     # ----------------------------
     result = CliRunner().invoke(cmd_upload)
 
-    #-- Debug! Mostrar la salida
-    print(result.output)
-
-    #-- It should return an exit code of 0: success
-    assert result.exit_code == 0
+    # -- It should return an exit code of 0: success
+    assert result.exit_code == 0, result.output
     assert "[SUCCESS]" in result.output
     assert "iceprog" in result.output

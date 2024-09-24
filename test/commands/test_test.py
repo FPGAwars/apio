@@ -19,5 +19,5 @@ def test_test(clirunner, configenv):
 
         # -- Execute "apio test"
         result = clirunner.invoke(cmd_test)
-        assert result.exit_code != 0
+        assert result.exit_code != 0, result.output
         # -- TODO
