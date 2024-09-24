@@ -22,10 +22,11 @@ with the underlying tools.
 
 \b
 Examples:
-  apio raw "yosys --version"                          # yosys version
-  apio raw "nextpnr-ice40 --version"                  # nextpnr version
+  apio raw "yosys --version"                          # Yosys version
+  apio raw "nextpnr-ice40 --version"                  # Nextpnr version
   apio raw "yosys -p 'read_verilog leds.v; show' -q"  # Graph a module
-  apio raw "verilator --lint-only  leds.v"            # lint a module
+  apio raw "verilator --lint-only  leds.v"            # Lint a module
+  apio raw "icepll -i 12 -o 30"                       # ICE PLL parameters
 
 [Note] If you find a raw command that would benefit other apio users
 consider suggesting it as an apio feature request.
