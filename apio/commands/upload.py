@@ -12,7 +12,7 @@ import click
 from click.core import Context
 from apio.managers.scons import SCons
 from apio.managers.drivers import Drivers
-from apio import util
+from apio import cmd_util
 from apio.commands import options
 
 
@@ -25,7 +25,7 @@ sram_option = click.option(
     "--sram",
     is_flag=True,
     help="Perform SRAM programming.",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 flash_option = click.option(
@@ -34,7 +34,7 @@ flash_option = click.option(
     "--flash",
     is_flag=True,
     help="Perform FLASH programming.",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 
@@ -62,7 +62,7 @@ Examples:
     "upload",
     short_help="Upload the bitstream to the FPGA.",
     help=HELP,
-    cls=util.ApioCommand,
+    cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 @options.project_dir_option

@@ -8,10 +8,11 @@
 """Implementation of 'apio boards' command"""
 
 from pathlib import Path
+from varname import nameof
 import click
 from click.core import Context
 from apio.resources import Resources
-from apio import util
+from apio import cmd_util
 from apio.commands import options
 
 # ---------------------------
@@ -23,7 +24,7 @@ list_fpgas_option = click.option(
     "--fpga",
     is_flag=True,
     help="List supported FPGA chips.",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 
@@ -51,7 +52,7 @@ placing a boards.json file next to apio.ini.
     "boards",
     short_help="List supported boards and FPGAs.",
     help=HELP,
-    cls=util.ApioCommand,
+    cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 @options.project_dir_option
@@ -68,11 +69,8 @@ def cli(
     and FPGAs.
     """
 
-    # pylint: disable=fixme
-    # TODO: Exit with error status if both --list and --fpga are specified.
-
-    # pylint: disable=fixme
-    # TODO: rename options --list, --fpga to --boards, --fpgas.
+    # Make sure these params are exclusive.
+    cmd_util.check_exclusive_params(ctx, nameof(list_, fpgas))
 
     # -- Access to the apio resources
     resources = Resources(project_dir=project_dir)
@@ -80,11 +78,12 @@ def cli(
     # -- Option 1: List boards
     if list_:
         resources.list_boards()
+        ctx.exit(0)
 
     # -- Option 2: List fpgas
-    elif fpgas:
+    if fpgas:
         resources.list_fpgas()
+        ctx.exit(0)
 
     # -- No options: show help
-    else:
-        click.secho(ctx.get_help())
+    click.secho(ctx.get_help())

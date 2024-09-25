@@ -7,10 +7,11 @@
 # -- Licence GPLv2
 """Implementation of 'apio drivers' command"""
 
+from varname import nameof
 import click
 from click.core import Context
 from apio.managers.drivers import Drivers
-from apio import util
+from apio import cmd_util
 
 # ---------------------------
 # -- COMMAND SPECIFIC OPTIONS
@@ -20,7 +21,7 @@ frdi_enable_option = click.option(
     "--ftdi-enable",
     is_flag=True,
     help="Enable FTDI drivers.",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 ftdi_disable_option = click.option(
@@ -28,7 +29,7 @@ ftdi_disable_option = click.option(
     "--ftdi-disable",
     is_flag=True,
     help="Disable FTDI drivers.",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 serial_enable_option = click.option(
@@ -36,7 +37,7 @@ serial_enable_option = click.option(
     "--serial-enable",
     is_flag=True,
     help="Enable Serial drivers.",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 serial_disable_option = click.option(
@@ -44,7 +45,7 @@ serial_disable_option = click.option(
     "--serial-disable",
     is_flag=True,
     help="Disable Serial drivers.",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 
@@ -72,7 +73,7 @@ Examples:
     "drivers",
     short_help="Manage the operating system drivers.",
     help=HELP,
-    cls=util.ApioCommand,
+    cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 @frdi_enable_option
@@ -89,32 +90,33 @@ def cli(
 ):
     """Implements the drivers command."""
 
+    # Make sure these params are exclusive.
+    cmd_util.check_exclusive_params(
+        ctx, nameof(ftdi_enable, ftdi_disable, serial_enable, serial_disable)
+    )
+
     # -- Access to the Drivers
     drivers = Drivers()
-
-    # pylint: disable=fixme
-    # TODO: Exit with an error if more than one flag is is specified.
 
     # -- FTDI enable option
     if ftdi_enable:
         exit_code = drivers.ftdi_enable()
+        ctx.exit(exit_code)
 
     # -- FTDI disable option
-    elif ftdi_disable:
+    if ftdi_disable:
         exit_code = drivers.ftdi_disable()
+        ctx.exit(exit_code)
 
     # -- Serial enable option
-    elif serial_enable:
+    if serial_enable:
         exit_code = drivers.serial_enable()
+        ctx.exit(exit_code)
 
     # -- Serial disable option
-    elif serial_disable:
+    if serial_disable:
         exit_code = drivers.serial_disable()
+        ctx.exit(exit_code)
 
     # -- No options. Show the help
-    else:
-        exit_code = 0
-        click.secho(ctx.get_help())
-
-    # -- Return exit code
-    ctx.exit(exit_code)
+    click.secho(ctx.get_help())

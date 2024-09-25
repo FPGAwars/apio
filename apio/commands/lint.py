@@ -11,7 +11,7 @@ from pathlib import Path
 import click
 from click.core import Context
 from apio.managers.scons import SCons
-from apio import util
+from apio import cmd_util
 from apio.commands import options
 
 
@@ -23,7 +23,7 @@ nostyle_option = click.option(
     "--nostyle",
     is_flag=True,
     help="Disable all style warnings.",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 
@@ -33,7 +33,7 @@ nowarn_option = click.option(
     type=str,
     metavar="nowarn",
     help="Disable specific warning(s).",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 warn_option = click.option(
@@ -42,7 +42,7 @@ warn_option = click.option(
     type=str,
     metavar="warn",
     help="Enable specific warning(s).",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 
@@ -69,7 +69,7 @@ Examples:
     "lint",
     short_help="Lint the verilog code.",
     help=HELP,
-    cls=util.ApioCommand,
+    cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 @options.all_option_gen(

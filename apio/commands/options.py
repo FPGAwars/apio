@@ -10,6 +10,7 @@
 from pathlib import Path
 import click
 from apio import util
+from apio import cmd_util
 
 
 # The design is based on the idea here https://stackoverflow.com/a/77732441.
@@ -35,7 +36,7 @@ def all_option_gen(*, help: str):
         "--all",
         is_flag=True,
         help=help,
-        cls=util.ApioOption,
+        cls=cmd_util.ApioOption,
     )
 
 
@@ -49,7 +50,7 @@ def force_option_gen(*, help: str):
         "--force",
         is_flag=True,
         help=help,
-        cls=util.ApioOption,
+        cls=cmd_util.ApioOption,
     )
 
 
@@ -63,7 +64,7 @@ def list_option_gen(*, help: str):
         "--list",
         is_flag=True,
         help=help,
-        cls=util.ApioOption,
+        cls=cmd_util.ApioOption,
     )
 
 
@@ -82,7 +83,7 @@ def board_option_gen(
         metavar="str",
         deprecated=deprecated,
         help=help,
-        cls=util.ApioOption,
+        cls=cmd_util.ApioOption,
     )
 
 
@@ -102,7 +103,7 @@ def top_module_option_gen(
         metavar="name",
         deprecated=deprecated,
         help=help,
-        cls=util.ApioOption,
+        cls=cmd_util.ApioOption,
     )
 
 
@@ -118,7 +119,7 @@ fpga_option = click.option(
     metavar="str",
     deprecated=True,
     help="Set the FPGA.",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 ftdi_id = click.option(
@@ -136,7 +137,7 @@ pack_option = click.option(
     metavar="str",
     deprecated=True,
     help="Set the FPGA package.",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 
@@ -146,7 +147,7 @@ platform_option = click.option(
     "--platform",
     type=click.Choice(util.PLATFORMS),
     help=("(Advanced, for developers) Set the platform."),
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 
@@ -157,7 +158,7 @@ project_dir_option = click.option(
     type=Path,
     metavar="path",
     help="Set the root directory for the project.",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 
@@ -167,7 +168,7 @@ sayno = click.option(
     "--sayno",
     is_flag=True,
     help="Automatically answer NO to all the questions.",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 sayyes = click.option(
@@ -176,7 +177,7 @@ sayyes = click.option(
     "--sayyes",
     is_flag=True,
     help="Automatically answer YES to all the questions.",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 serial_port_option = click.option(
@@ -185,7 +186,7 @@ serial_port_option = click.option(
     type=str,
     metavar="serial-port",
     help="Set the serial port.",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 
@@ -196,7 +197,7 @@ size_option = click.option(
     metavar="str",
     deprecated=True,
     help="Set the FPGA type (1k/8k).",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 
@@ -207,7 +208,7 @@ type_option = click.option(
     metavar="str",
     deprecated=True,
     help="Set the FPGA type (hx/lp).",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 
@@ -217,7 +218,7 @@ verbose_option = click.option(
     "--verbose",
     is_flag=True,
     help="Show the entire output of the command.",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 
@@ -226,7 +227,7 @@ verbose_pnr_option = click.option(
     "--verbose-pnr",
     is_flag=True,
     help="Show the pnr output.",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 
@@ -235,5 +236,5 @@ verbose_yosys_option = click.option(
     "--verbose-yosys",
     is_flag=True,
     help="Show the yosys output.",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )

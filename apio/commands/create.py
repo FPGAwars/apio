@@ -12,6 +12,7 @@ import click
 from click.core import Context
 from apio.managers.project import Project, DEFAULT_TOP_MODULE, PROJECT_FILENAME
 from apio import util
+from apio import cmd_util
 from apio.commands import options
 
 
@@ -50,7 +51,7 @@ the supported boards.
     "create",
     short_help="Create an apio.ini project file.",
     help=HELP,
-    cls=util.ApioCommand,
+    cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 @options.board_option_gen(help="Set the board.", required=True)

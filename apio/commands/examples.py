@@ -8,10 +8,11 @@
 """Implementation of 'apio examples' command"""
 
 from pathlib import Path
+from varname import nameof
 import click
 from click.core import Context
 from apio.managers.examples import Examples
-from apio import util
+from apio import cmd_util
 from apio.commands import options
 
 # ---------------------------
@@ -24,7 +25,7 @@ dir_option = click.option(
     type=str,
     metavar="name",
     help="Copy the selected example directory.",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 files_option = click.option(
@@ -34,7 +35,7 @@ files_option = click.option(
     type=str,
     metavar="name",
     help="Copy the selected example files.",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 
@@ -61,7 +62,7 @@ Examples:
     "examples",
     short_help="List and fetch apio examples.",
     help=HELP,
-    cls=util.ApioCommand,
+    cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 @options.list_option_gen(help="List all available examples.")
@@ -81,24 +82,26 @@ def cli(
     """Manage verilog examples.\n
     Install with `apio install examples`"""
 
+    # Make sure these params are exclusive.
+    cmd_util.check_exclusive_params(ctx, nameof(list_, dir_, files))
+
     # -- Access to the Drivers
     examples = Examples()
 
     # -- Option: List all the available examples
     if list_:
         exit_code = examples.list_examples()
+        ctx.exit(exit_code)
 
     # -- Option: Copy the directory
-    elif dir_:
+    if dir_:
         exit_code = examples.copy_example_dir(dir_, project_dir, sayno)
+        ctx.exit(exit_code)
 
     # -- Option: Copy only the example files (not the initial folders)
-    elif files:
+    if files:
         exit_code = examples.copy_example_files(files, project_dir, sayno)
+        ctx.exit(exit_code)
 
     # -- no options: Show help!
-    else:
-        click.secho(ctx.get_help())
-        exit_code = 0
-
-    ctx.exit(exit_code)
+    click.secho(ctx.get_help())

@@ -9,11 +9,12 @@
 
 from pathlib import Path
 from typing import Tuple
+from varname import nameof
 import click
 from click.core import Context
 from apio.managers.installer import Installer, list_packages
 from apio.profile import Profile
-from apio import util
+from apio import cmd_util
 from apio.resources import Resources
 from apio.commands import options
 
@@ -55,13 +56,15 @@ For packages installation see the apio install command.
 """
 
 
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
 # R0913: Too many arguments (6/5)
 # pylint: disable=R0913
 @click.command(
     "uninstall",
     short_help="Uninstall apio packages.",
     help=HELP,
-    cls=util.ApioCommand,
+    cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 @click.argument("packages", nargs=-1, required=False)
@@ -81,26 +84,29 @@ def cli(
 ):
     """Implements the uninstall command."""
 
+    # Make sure these params are exclusive.
+    cmd_util.check_exclusive_params(ctx, nameof(packages, list_, all_))
+
     # -- Load the resources.
     resources = Resources(platform=platform, project_dir=project_dir)
 
     # -- Uninstall the given apio packages
     if packages:
         _uninstall(packages, platform, resources)
+        ctx.exit(0)
 
     # -- Uninstall all the packages
-    elif all_:
-
+    if all_:
         # -- Get all the installed apio packages
         packages = Profile().packages
-
         # -- Uninstall them!
         _uninstall(packages, platform, resources)
+        ctx.exit(0)
 
     # -- List all the packages (installed or not)
-    elif list_:
+    if list_:
         list_packages(platform)
+        ctx.exit(0)
 
     # -- Invalid option. Just show the help
-    else:
-        click.secho(ctx.get_help())
+    click.secho(ctx.get_help())

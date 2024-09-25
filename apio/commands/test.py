@@ -11,7 +11,7 @@ from pathlib import Path
 import click
 from click.core import Context
 from apio.managers.scons import SCons
-from apio import util
+from apio import cmd_util
 from apio.commands import options
 
 
@@ -43,7 +43,7 @@ signals see the apio sim command.
     "test",
     short_help="Test all or a single verilog testbench module.",
     help=HELP,
-    cls=util.ApioCommand,
+    cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 @click.argument("testbench_file", nargs=1, required=False)

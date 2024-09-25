@@ -23,6 +23,7 @@ requires = [
     'pyserial==3.5',
     'wheel>=0.35.0,<1',
     'configobj==5.0.8',
+    'varname==0.13.3',
     'scons==4.2.0'
 ]
 

@@ -10,6 +10,7 @@
 import click
 from click.core import Context
 from apio import util
+from apio import cmd_util
 
 
 # ---------------------------
@@ -22,10 +23,11 @@ with the underlying tools.
 
 \b
 Examples:
-  apio raw "yosys --version"                          # yosys version
-  apio raw "nextpnr-ice40 --version"                  # nextpnr version
+  apio raw "yosys --version"                          # Yosys version
+  apio raw "nextpnr-ice40 --version"                  # Nextpnr version
   apio raw "yosys -p 'read_verilog leds.v; show' -q"  # Graph a module
-  apio raw "verilator --lint-only  leds.v"            # lint a module
+  apio raw "verilator --lint-only  leds.v"            # Lint a module
+  apio raw "icepll -i 12 -o 30"                       # ICE PLL parameters
 
 [Note] If you find a raw command that would benefit other apio users
 consider suggesting it as an apio feature request.
@@ -36,7 +38,7 @@ consider suggesting it as an apio feature request.
     "raw",
     short_help="Execute commands directly from the Apio packages.",
     help=HELP,
-    cls=util.ApioCommand,
+    cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 @click.argument("cmd")
