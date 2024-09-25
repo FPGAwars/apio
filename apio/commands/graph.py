@@ -11,7 +11,7 @@ from pathlib import Path
 import click
 from click.core import Context
 from apio.managers.scons import SCons
-from apio import util
+from apio import cmd_util
 from apio.commands import options
 
 
@@ -42,7 +42,7 @@ to the desired format using the dot command.
     "graph",
     short_help="Generate a visual graph of the code.",
     help=HELP,
-    cls=util.ApioCommand,
+    cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 @options.project_dir_option

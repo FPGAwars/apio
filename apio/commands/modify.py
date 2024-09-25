@@ -8,10 +8,12 @@
 """Implementation of 'apio modify' command"""
 
 from pathlib import Path
+from varname import nameof
 import click
 from click.core import Context
 from apio.managers.project import Project
 from apio import util
+from apio import cmd_util
 from apio.commands import options
 
 
@@ -42,7 +44,7 @@ the supported boards.
     "modify",
     short_help="Modify the apio.ini project file.",
     help=HELP,
-    cls=util.ApioCommand,
+    cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 @options.board_option_gen(help="Set the board.")
@@ -57,14 +59,8 @@ def cli(
 ):
     """Modify the project file."""
 
-    if not (board or top_module):
-        click.secho(
-            "Error: at least one of --board or --top-module must be "
-            "specified.\n"
-            "Type 'apio modify -h' for help.",
-            fg="red",
-        )
-        ctx.exit(0)
+    # At least one of these options are required.
+    cmd_util.check_required_params(ctx, nameof(board, top_module))
 
     project_dir = util.get_project_dir(project_dir)
 

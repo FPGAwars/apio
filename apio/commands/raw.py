@@ -10,6 +10,7 @@
 import click
 from click.core import Context
 from apio import util
+from apio import cmd_util
 
 
 # ---------------------------
@@ -37,7 +38,7 @@ consider suggesting it as an apio feature request.
     "raw",
     short_help="Execute commands directly from the Apio packages.",
     help=HELP,
-    cls=util.ApioCommand,
+    cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 @click.argument("cmd")

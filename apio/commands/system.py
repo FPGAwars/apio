@@ -8,9 +8,11 @@
 """Implementation of 'apio system' command"""
 
 from pathlib import Path
+from varname import nameof
 import click
 from click.core import Context
 from apio import util
+from apio import cmd_util
 from apio.util import get_systype
 from apio.managers.system import System
 from apio.resources import Resources
@@ -24,7 +26,7 @@ lsftdi_option = click.option(
     "--lsftdi",
     is_flag=True,
     help="List all connected FTDI devices.",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 lsusb_option = click.option(
@@ -32,7 +34,7 @@ lsusb_option = click.option(
     "--lsusb",
     is_flag=True,
     help="List all connected USB devices.",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 lsserial_option = click.option(
@@ -40,7 +42,7 @@ lsserial_option = click.option(
     "--lsserial",
     is_flag=True,
     help="List all connected Serial devices.",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 info_option = click.option(
@@ -49,7 +51,7 @@ info_option = click.option(
     "--info",
     is_flag=True,
     help="Show platform id and other info.",
-    cls=util.ApioOption,
+    cls=cmd_util.ApioOption,
 )
 
 
@@ -78,7 +80,7 @@ cannot be mixed in the same command.
     "system",
     short_help="Provides system info.",
     help=HELP,
-    cls=util.ApioCommand,
+    cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 @options.project_dir_option
@@ -98,23 +100,14 @@ def cli(
     """Implements the system command. This command executes assorted
     system tools"""
 
+    # Make sure these params are exclusive.
+    cmd_util.check_exclusive_params(ctx, nameof(lsftdi, lsusb, lsserial, info))
+
     # Load the various resource files.
     resources = Resources(project_dir=project_dir)
 
     # -- Create the system object
     system = System(resources)
-
-    # -- Verify exlusive flags.
-    flags_count = int(lsftdi) + int(lsusb) + int(lsserial) + int(info)
-    if flags_count > 1:
-        click.secho(
-            (
-                "Error: --lsftdi, --lsusb, --lsserial, and --info"
-                " are mutually exclusive."
-            ),
-            fg="red",
-        )
-        ctx.exit(1)
 
     # -- List all connected ftdi devices
     if lsftdi:
@@ -144,4 +137,3 @@ def cli(
 
     # -- Invalid option. Just show the help
     click.secho(ctx.get_help())
-    ctx.exit(0)

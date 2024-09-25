@@ -7,7 +7,7 @@
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
 # ---- Licence Apache v2
-"""Utility functions"""
+"""Misc utility functions and classes."""
 
 import sys
 import os
@@ -16,7 +16,6 @@ import platform
 import subprocess
 from threading import Thread
 from pathlib import Path
-from typing import Mapping, List, Tuple, Any
 import click
 import semantic_version
 from serial.tools.list_ports import comports
@@ -40,8 +39,6 @@ BIN = "bin"
 # -- packages names
 OSS_CAD_SUITE_FOLDER = f"tools-{OSS_CAD_SUITE}"
 GTKWAVE_FOLDER = f"tool-{GTKWAVE}"
-
-DEPRECATED_MARKER = "[DEPRECATED]"
 
 # -- AVAILABLE PLATFORMS
 PLATFORMS = [
@@ -903,61 +900,3 @@ def safe_click(text, *args, **kwargs):
         # most common character error
         cleaned_text = "".join([ch if ord(ch) < 128 else "=" for ch in text])
         click.echo(cleaned_text, err=error_flag, *args, **kwargs)
-
-
-class ApioOption(click.Option):
-    """Custom class for apio click options. Currently it adds handling
-    of deprecated options.
-    """
-
-    def __init__(self, *args, **kwargs):
-        # Cache a list of option's aliases. E.g. ["-t", "--top-model"].
-        self.aliases = [k for k in args[0] if k.startswith("-")]
-        # Consume the "deprecated" arg is specified. This args is
-        # added by this class and is not passed to super.
-        self.deprecated = kwargs.pop("deprecated", False)
-        # Tweak the help text to have a [DEPRECATED] prefix.
-        if self.deprecated:
-            kwargs["help"] = (
-                DEPRECATED_MARKER + " " + kwargs.get("help", "").strip()
-            )
-        super().__init__(*args, **kwargs)
-
-    # @override
-    def handle_parse_result(
-        self, ctx: click.Context, opts: Mapping[str, Any], args: List[str]
-    ) -> Tuple[Any, List[str]]:
-        """Overides the parent method to print a deprecated option message."""
-        if self.deprecated and self.name in opts:
-            click.secho(f"Info: {self.aliases} is deprecated.", fg="yellow")
-        return super().handle_parse_result(ctx, opts, args)
-
-
-DEPRECATION_NOTE = f"""
-[Note] Flags marked with {DEPRECATED_MARKER} are not recomanded for use.
-For project configuration, use an apio.ini project file and if neaded,
-project specific 'boards.json' and 'fpga.json' definition files.
-"""
-
-
-class ApioCommand(click.Command):
-    """Override click.Command with Apio specific behavior."""
-
-    def _num_deprecated_options(self, ctx: click.Context) -> None:
-        """Return sthe number of deprecated options of this command."""
-        deprecated_options = 0
-        for param in self.get_params(ctx):
-            if isinstance(param, ApioOption) and param.deprecated:
-                deprecated_options += 1
-        return deprecated_options
-
-    # @override
-    def format_help_text(
-        self, ctx: click.Context, formatter: click.HelpFormatter
-    ) -> None:
-        super().format_help_text(ctx, formatter)
-        deprecated = self._num_deprecated_options(ctx)
-        if deprecated > 0:
-            formatter.write_paragraph()
-            with formatter.indentation():
-                formatter.write_text(DEPRECATION_NOTE)
