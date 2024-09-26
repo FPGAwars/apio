@@ -20,7 +20,7 @@ PROG = ARGUMENTS.get('prog', '')
 FPGA_SIZE = ARGUMENTS.get('fpga_size', '')
 FPGA_TYPE = ARGUMENTS.get('fpga_type', '')
 FPGA_PACK = ARGUMENTS.get('fpga_pack', '')
-YOSYS_TOP = ARGUMENTS.get('top_module', '')
+TOP_MODULE = ARGUMENTS.get('top_module', '')
 FPGA_IDCODE = ARGUMENTS.get('fpga_idcode', '')
 VERBOSE_ALL = ARGUMENTS.get('verbose_all', False)
 VERBOSE_YOSYS = ARGUMENTS.get('verbose_yosys', False)
@@ -111,13 +111,13 @@ v_files = [str(f) for f in v_nodes]
 src_synth = [f for f in v_files if f[-5:].upper() != '_TB.V']
 list_tb = [f for f in v_files if f[-5:].upper() == '_TB.V']
 
-# -- Get the LPF file
-LPF = scons_util.get_constraint_file(".lpf", Glob)
+# -- Get the LPF file name.
+LPF = scons_util.get_constraint_file(env, ".lpf", TOP_MODULE)
 
 # -- Synthesizing Builder
 synth_builder = Builder(
     action='yosys -p \"synth_ecp5 {0} -json $TARGET\" {1} $SOURCES'.format(
-        ('-top '+YOSYS_TOP) if YOSYS_TOP else '',
+        ('-top '+TOP_MODULE) if TOP_MODULE else '',
         '' if VERBOSE_ALL or VERBOSE_YOSYS else '-q'
     ),
     suffix='.json',
@@ -127,8 +127,8 @@ env.Append(BUILDERS={'Synth': synth_builder})
 
 # -- Place and route Builder.
 pnr_builder = Builder(
-    action='nextpnr-ecp5 --{0} --package {2} --json $SOURCE --textcfg $TARGET {3} {4} --timing-allow-fail --force'.format(
-        FPGA_TYPE_PARAM, FPGA_SIZE, FPGA_PACK, '--lpf ' + str(LPF) if LPF else '',
+    action='nextpnr-ecp5 --{0} --package {2} --json $SOURCE --textcfg $TARGET --lpf {3} {4} --timing-allow-fail --force'.format(
+        FPGA_TYPE_PARAM, FPGA_SIZE, FPGA_PACK, LPF,
         '' if VERBOSE_ALL or VERBOSE_PNR else '-q'),
     suffix='.config',
     src_suffix='.json')
@@ -206,7 +206,7 @@ env.Append(BUILDERS={'IVerilog': iverilog_builder})
 
 dot_builder = Builder(
     action='yosys -f verilog -p \"show -format dot -colors 1 -prefix hardware {0}\" {1} $SOURCES'.format(
-        YOSYS_TOP if YOSYS_TOP else 'unknown_top',
+        TOP_MODULE if TOP_MODULE else 'unknown_top',
         '' if VERBOSE_ALL else '-q'
     ),
     suffix='.dot',

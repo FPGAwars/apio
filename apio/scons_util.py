@@ -7,37 +7,44 @@
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
 # ---- Licence Apache v2
-"""Shared utilities for the various SConstruct.py.  The functions
-in this file are intended to be called only from the SConstruct files
-and should not be architecture specific.
+"""Shared utilities for the various SConstruct.py.  Functions here should
+be called only from the SConstruct.py files.
 """
 
-from typing import Callable, List
+from SCons.Script.SConscript import SConsEnvironment
 
 
 def get_constraint_file(
-    file_ext: str, glob_func: Callable[[str], List[str]]
+    env: SConsEnvironment, file_ext: str, top_module: str
 ) -> str:
     """Returns the name of the constrain file to use.
 
-    file_ext is a string with the constrained file extension. E.g. ".pcf"
-    for ice40.
+    env is the sconstrution environment.
 
-    glob_func is a reference to the scon Glob function.
+    file_ext is a string with the constrained file extension.
+    E.g. ".pcf" for ice40.
 
-    Returns the file name or "" if not found.
+    top_module is the top module name. It's is used to construct the
+    default file name.
+
+    Returns the file name if found or a default name otherwise otherwise.
     """
     # Files in alphabetical order.
-    file_names = glob_func(f"*{file_ext}")
-    n = len(file_names)
+    files = env.Glob(f"*{file_ext}")
+    n = len(files)
     # Case 1: No matching files.
     if n == 0:
-        print(f"Warning: No {file_ext} constraints file.")
-        return ""
-    # Case 2: Exactly one matching file.
+        result = f"{top_module.lower()}{file_ext}"
+        print(f"Warning: No {file_ext} constraints file, assuming '{result}'.")
+        return result
+    # Case 2: Exactly one file found.
     if n == 1:
-        print(f"Info: Found constraint file {file_names[0]}.")
-        return file_names[0]
-    # Case 3: Multiple matching files.
-    print(f"Warning: Found multiple {file_ext} files, using {file_names[0]}.")
-    return file_names[0]
+        result = str(files[0])
+        # print(f"Info: Found constraint file '{result}'.")
+        return result
+    # Case 3: Multiple matching files. Pick the first file (alphabetically).
+    # We could improve the heuristic here, e.g. to prefer a file with
+    # the top_module name, if exists.
+    result = str(files[0])
+    print(f"Warning: Found multiple {file_ext} files, using '{result}'.")
+    return result

@@ -20,7 +20,7 @@ PROG = ARGUMENTS.get('prog', '')
 FPGA_SIZE = ARGUMENTS.get('fpga_size', '')
 FPGA_TYPE = ARGUMENTS.get('fpga_type', '')
 FPGA_PACK = ARGUMENTS.get('fpga_pack', '')
-YOSYS_TOP = ARGUMENTS.get('top_module', '')
+TOP_MODULE = ARGUMENTS.get('top_module', '')
 VERBOSE_ALL = ARGUMENTS.get('verbose_all', False)
 VERBOSE_YOSYS = ARGUMENTS.get('verbose_yosys', False)
 VERBOSE_PNR = ARGUMENTS.get('verbose_pnr', False)
@@ -109,13 +109,13 @@ v_files = [str(f) for f in v_nodes]
 src_synth = [f for f in v_files if f[-5:].upper() != '_TB.V']
 list_tb = [f for f in v_files if f[-5:].upper() == '_TB.V']
 
-# -- Get the PCF file. 
-PCF = scons_util.get_constraint_file(".pcf", Glob)
+# -- Get the PCF file name.
+PCF = scons_util.get_constraint_file(env, ".pcf", TOP_MODULE)
 
 # -- Synthesizing Builder
 synth_builder = Builder(
     action='yosys -p \"synth_ice40 {0} -json $TARGET\" {1} $SOURCES'.format(
-        ('-top '+YOSYS_TOP) if YOSYS_TOP else '',
+        ('-top '+TOP_MODULE) if TOP_MODULE else '',
         '' if VERBOSE_ALL or VERBOSE_YOSYS else '-q'
     ),
     suffix='.json',
@@ -211,7 +211,7 @@ env.Append(BUILDERS={'IVerilog': iverilog_builder})
 
 dot_builder = Builder(
     action='yosys -f verilog -p \"show -format dot -colors 1 -prefix hardware {0}\" {1} $SOURCES'.format(
-        YOSYS_TOP if YOSYS_TOP else 'unknown_top',
+        TOP_MODULE if TOP_MODULE else 'unknown_top',
         '' if VERBOSE_ALL else '-q'
     ),
     suffix='.dot',
