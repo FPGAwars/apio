@@ -10,7 +10,7 @@
 import os
 import re
 from platform import system
-
+from apio import scons_util
 from SCons.Script import (Builder, Action, DefaultEnvironment, Default, AlwaysBuild,
                           GetOption, Exit, COMMAND_LINE_TARGETS, ARGUMENTS,
                           Variables, Help, Glob)
@@ -112,17 +112,8 @@ v_files = [str(f) for f in v_nodes]
 src_synth = [f for f in v_files if f[-5:].upper() != '_TB.V']
 list_tb = [f for f in v_files if f[-5:].upper() == '_TB.V']
 
-# -- Get the CST file
-CST = ''
-CST_list = Glob('*.cst')
-
-try:
-    CST = CST_list[0]
-except IndexError:
-    print('\n---> WARNING: no CST file found (.cst)\n')
-
-# -- Debug
-# print('CST Found: {}'.format(CST))
+# -- Get the CST file. 
+CST = scons_util.get_constraint_file(".cst", Glob)
 
 # -- Synthesizing Builder
 synth_builder = Builder(
