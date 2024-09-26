@@ -12,6 +12,7 @@
 
 import string
 import re
+from typing import override
 from typing import List
 from click.core import Context
 import click
@@ -142,7 +143,7 @@ class ApioCLI(click.MultiCommand):
         super().__init__(*args, **kwargs)
 
     # -- Return  a list of all the available commands
-    # @override
+    @override
     def list_commands(self, ctx):
         # -- All the python files inside the apio/commands folder are commands,
         # -- except __init__.py
@@ -165,7 +166,7 @@ class ApioCLI(click.MultiCommand):
     # -- is issued
     # -- INPUT:
     # --   * cmd_name: Apio command name
-    # @override
+    @override
     def get_command(self, ctx, cmd_name: string):
         nnss = {}
 
@@ -187,7 +188,7 @@ class ApioCLI(click.MultiCommand):
         # -- Return the function needed for executing the command
         return nnss.get("cli")
 
-    # @override
+    @override
     def get_help(self, ctx: Context) -> str:
         """Formats the help into a string and returns it.
 

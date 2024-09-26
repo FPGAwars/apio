@@ -10,7 +10,7 @@
 """Utility functionality for apio click commands. """
 
 
-from typing import Mapping, List, Tuple, Any, Dict, Union
+from typing import Mapping, List, Tuple, Any, Dict, Union, override
 import click
 
 
@@ -174,7 +174,7 @@ class ApioOption(click.Option):
             )
         super().__init__(*args, **kwargs)
 
-    # @override
+    @override
     def handle_parse_result(
         self, ctx: click.Context, opts: Mapping[str, Any], args: List[str]
     ) -> Tuple[Any, List[str]]:
@@ -205,7 +205,7 @@ class ApioCommand(click.Command):
                 deprecated_options += 1
         return deprecated_options
 
-    # @override
+    @override
     def format_help_text(
         self, ctx: click.Context, formatter: click.HelpFormatter
     ) -> None:
