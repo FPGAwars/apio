@@ -897,23 +897,12 @@ class SCons:
     def run(self, command, variables, packages, board=None, arch=None):
         """Executes scons"""
 
-        # -- Check if in the current project a custom SConstruct file
-        # is being used. We fist build the full name (with the full path)
-        scon_file = Path.cwd() / "SConstruct"
+        # -- Construct the path to the SConstruct file.
+        resources = util.get_path_in_apio_package("resources")
+        scons_file_path = resources / arch / "SConstruct"
 
-        # -- If the SConstruct file does NOT exist, we use the one provided by
-        # -- apio, which is located in the resources/arch/ folder
-        if not scon_file.exists():
-            # -- This is the default SConstruct file
-            resources = util.get_path_in_apio_package("resources")
-            default_scons_file = resources / arch / "SConstruct"
-
-            # -- It is passed to scons using the flag -f default_scons_file
-            variables += ["-f", f"{default_scons_file}"]
-
-        else:
-            # -- We are using our custom SConstruct file
-            click.secho("Info: use custom SConstruct file")
+        # -- It is passed to scons using the flag -f default_scons_file
+        variables += ["-f", f"{scons_file_path}"]
 
         # -- Verify necessary packages if needed.
         # pylint: disable=fixme
