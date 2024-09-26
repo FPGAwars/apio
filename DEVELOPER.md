@@ -7,7 +7,7 @@ Before submitting a new commit, make sure to run successfuly the following comma
 in the root directory of the repository.:
 
 ```shell
-make presubmit
+make check
 ```
 
 ## Running an individual APIO test

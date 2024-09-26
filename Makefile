@@ -21,8 +21,8 @@ lint:	## Run lint only
 test:	## Run tests only
 	python -m tox --skip-env lint
 
-presubmit: # Presubmit checks. Run full tox.
-	python -m tox
+check:	# Presubmit checks. Run full tox.
+	python -m tox --skip-missing-interpreters false
 
 publish_test:  ## Publish to testPypi
 	flit publish --repository testpypi
