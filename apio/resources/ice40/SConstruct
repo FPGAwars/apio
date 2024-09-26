@@ -109,10 +109,6 @@ v_files = [str(f) for f in v_nodes]
 src_synth = [f for f in v_files if f[-5:].upper() != '_TB.V']
 list_tb = [f for f in v_files if f[-5:].upper() == '_TB.V']
 
-if len(src_synth) == 0:
-    print('Error: no verilog module files found (.v)')
-    Exit(1)
-
 # -- Get the PCF file
 PCF = ''
 PCF_list = Glob('*.pcf')
