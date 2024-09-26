@@ -653,7 +653,9 @@ def get_pypi_latest_version() -> str:
     # -- Read the latest apio version from pypi
     # -- More information: https://warehouse.pypa.io/api-reference/json.html
     try:
-        req = requests.get("https://pypi.python.org/pypi/apio/json", timeout=5)
+        req = requests.get(
+            "https://pypi.python.org/pypi/apio/json", timeout=10
+        )
         req.raise_for_status()
 
     # -- Connection error

@@ -53,23 +53,27 @@ def cli(ctx: Context):
     print(f"Local Apio version: {current_version}")
     print(f"Lastest Apio stable version (Pypi): {latest_version}")
 
-    # -- Compare versions and inform the user
-    # -- No real action are taken!
+    # -- Case 1: Using an old version.
     if version.parse(current_version) < version.parse(latest_version):
         click.secho(
             "You're not updated\nPlease execute "
             "`pip install -U apio` to upgrade.",
             fg="yellow",
         )
-    elif version.parse(current_version) > version.parse(latest_version):
+        return
+
+    # -- Case 2: Using a dev version.
+    if version.parse(current_version) > version.parse(latest_version):
         click.secho(
             "You are using a development version! (Not stable)\n"
             "Use it at your own risk",
             fg="yellow",
         )
-    else:
-        click.secho(
-            f"You're up-to-date!\nApio {latest_version} is currently the "
-            "latest stable version available.",
-            fg="green",
-        )
+        return
+
+    # -- Case 3: Using the latest version.
+    click.secho(
+        f"You're up-to-date!\nApio {latest_version} is currently the "
+        "latest stable version available.",
+        fg="green",
+    )
