@@ -74,8 +74,8 @@ cannot be mixed in the same command.
 """
 
 
-# R0913: Too many arguments (6/5)
-# pylint: disable=R0913
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-positional-arguments
 @click.command(
     "system",
     short_help="Provides system info.",

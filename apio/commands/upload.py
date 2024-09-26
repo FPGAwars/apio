@@ -54,10 +54,9 @@ Examples:
 """
 
 
-# R0913: Too many arguments (6/5)
-# pylint: disable=R0913
-# R0914: Too many local variables (16/15) (too-many-locals)
-# pylint: disable=R0914
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-positional-arguments
+# pylint: disable=too-many-locals
 @click.command(
     "upload",
     short_help="Upload the bitstream to the FPGA.",

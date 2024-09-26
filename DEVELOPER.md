@@ -3,11 +3,11 @@
 This file is not intended for APIO users.
 
 ## Pre commit tests
-Before submitting a new commit, make sure the following commands runs successfuly (in the repository root):
+Before submitting a new commit, make sure to run successfuly the following command
+in the root directory of the repository.:
 
 ```shell
-make lint
-make tox
+make presubmit
 ```
 
 ## Running an individual APIO test

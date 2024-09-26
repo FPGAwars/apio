@@ -1,5 +1,7 @@
-.PHONY: deps cenv env lint tox publish publish_test
+.PHONY: deps cenv env lint test presubmit publish_test publish install
 
+# TODO: Force specific packages versions to have consistency across deevelopment
+# environments. Also make sure to sync with the versions in tox.ini
 deps:  ## Install dependencies for apio development
 	python -m pip install --upgrade pip
 	pip install flit black flake8 pylint tox pytest semantic-version pyserial importlib-metadata
@@ -13,15 +15,13 @@ env:
 	@echo "For entering the virtual-environment just type:"
 	@echo ". venv/bin/activate"
 
-# Keep this list the same as in tox.ini.
-lint_dirs = apio test test-boards
-
-lint:  ## Lint the apio app code
-	python -m black  $(lint_dirs)
-	python -m flake8 $(lint_dirs)
-	python -m pylint $(lint_dirs)
+lint:	## Run lint only
+	python -m tox -e lint
 	
-tox:   ## Run tox
+test:	## Run tests only
+	python -m tox --skip-env lint
+
+presubmit: # Presubmit checks. Run full tox.
 	python -m tox
 
 publish_test:  ## Publish to testPypi
@@ -34,5 +34,3 @@ install:  ## Install the tool locally
 	flit build
 	flit install
 
-tests: ## Execute ALL the tests
-	pytest apio test

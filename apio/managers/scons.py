@@ -892,8 +892,8 @@ class SCons:
         # -- No FTDI board found
         return None
 
-    # R0913: Too many arguments (6/5)
-    # pylint: disable=R0913
+    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-positional-arguments
     def run(self, command, variables, packages, board=None, arch=None):
         """Executes scons"""
 

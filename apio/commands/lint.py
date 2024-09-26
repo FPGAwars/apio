@@ -63,8 +63,8 @@ Examples:
 """
 
 
-# R0913: Too many arguments (7/5)
-# pylint: disable=R0913
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-positional-arguments
 @click.command(
     "lint",
     short_help="Lint the verilog code.",
