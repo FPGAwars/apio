@@ -26,6 +26,7 @@ work/
 test-colorlight-v61.ice
 hardware.json
 hardware.out
+hardware.vlt
 *.out
 *.vcd
 hardware.bit
