@@ -143,7 +143,7 @@ env.Append(BUILDERS={'Bin': bitstream_builder})
 
 #-- No time analysis report implemented for the ECP5 family
 time_rpt_builder = Builder(
-    action='echo No time analysis report implemented for the ECP5 family $TARGET $SOURCE  > $TARGET',
+    action='echo "Time analysis report is not impelemnted for the ECP5 family." > $TARGET',
     suffix='.rpt',
     src_suffix='.config')
 env.Append(BUILDERS={'Time': time_rpt_builder})

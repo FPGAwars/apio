@@ -145,7 +145,7 @@ env.Append(BUILDERS={'Bin': bitstream_builder})
 # -- Time report builder
 # https://github.com/cliffordwolf/icestorm/issues/57
 time_rpt_builder = Builder(
-    action='echo No timme analysis report implemented for Gowin devices $TARGET $SOURCE > $TARGET',
+    action='echo "Time analysis report is not impelemnted for the Gowin family." > $TARGET',
     suffix='.rpt',
     src_suffix='.pnr.json')
 env.Append(BUILDERS={'Time': time_rpt_builder})
