@@ -976,7 +976,11 @@ class SCons:
             click.secho("-" * terminal_width, bold=True)
 
         # -- Command to execute: scons -Q apio_cmd flags
-        scons_command = ["scons"] + ["-Q", command] + variables
+        # -- Without force_colors=True, click.secho() colors from the scons
+        # -- child process will be stripped out becaused they are piped out.
+        scons_command = (
+            ["scons"] + ["-Q", command] + variables + ["force_colors=True"]
+        )
 
         # -- Execute the scons builder!
         result = util.exec_command(

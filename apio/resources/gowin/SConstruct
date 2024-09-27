@@ -14,6 +14,8 @@ from apio import scons_util
 from SCons.Script import (Builder, Action, DefaultEnvironment, Default, AlwaysBuild,
                           GetOption, Exit, COMMAND_LINE_TARGETS, ARGUMENTS,
                           Variables, Help, Glob)
+from SCons.Script.SConscript import SConsEnvironment
+from apio.scons_util import get_constraint_file, error, fatal_error, update_env_force_colors
 
 # -- Load arguments
 PROG = ARGUMENTS.get('prog', '')
@@ -55,9 +57,16 @@ vars.Add('fpga_pack', 'Set the Gowin FPGA packages', FPGA_PACK)
 vars.Add('fpga_model', 'Set a specific Gowin FPGA model', FPGA_MODEL)
 
 # -- Create environment
-env = DefaultEnvironment(ENV=os.environ,
-                         tools=[],
-                         variables=vars)
+env:SConsEnvironment = DefaultEnvironment(
+        ENV=os.environ,
+        tools=[],
+        variables=vars)
+
+update_env_force_colors(env, ARGUMENTS)
+
+# For debugging.
+# from apio.scons_util import dump_env_vars
+# dump_env_vars(env)
 
 # -- Show all the flags defined, when scons is invoked with -h
 Help(vars.GenerateHelpText(env))
@@ -73,8 +82,7 @@ if 'build' in COMMAND_LINE_TARGETS or \
 
     if 'upload' in COMMAND_LINE_TARGETS:
         if PROG == '':
-            print('Error: no programmer command found')
-            Exit(1)
+            fatal_error(env, 'No programmer command found.')
         assert "${SOURCE}" in PROG, f"{PROG = }"
    
 # -- Resources paths
@@ -262,11 +270,10 @@ if 'sim' in COMMAND_LINE_TARGETS:
         # No --testbench flag specified. If there is exactly one testbench then pick
         # it, otherwise fail. 
         if len(list_tb) == 0:
-            print('Error: no testbench found for simulation.')
-            Exit(1)
+            fatal_error(env, 'No testbench found for simulation.')
         if len(list_tb) > 1:
             # TODO: consider to allow specifying the default testbench in apio.ini.
-            print('Error: found {} testbranches, please use the --testbench flag.'.format(len(list_tb)))
+            error('Found {} testbranches, please use the --testbench flag.'.format(len(list_tb)))
             for tb in list_tb:
                 print('- {}'.format(tb))
             Exit(1)
@@ -298,8 +305,7 @@ if 'test' in COMMAND_LINE_TARGETS:
     else:
         # No --testbench flag specified. We will test all them.
         if len(list_tb) == 0:
-            print('Error: no testbenchs found for simulation.')
-            Exit(1)
+            fatal_error(env, 'No testbenchs found for simulation.')
         test_tbs= list_tb  # All testbenches.
     tests = [] # Targets of all tests
     for test_tb in test_tbs:
