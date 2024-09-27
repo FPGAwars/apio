@@ -28,19 +28,63 @@ def create_construction_env(args: Dict[str, str]) -> SConsEnvironment:
     # Create the default env.
     env: SConsEnvironment = DefaultEnvironment(ENV=os.environ, tools=[])
 
-    # Add the FORCE_COLORS arg to the env to make the printing function
-    # info(), fatal_error(), etc, functional.
-    flag_str = args.get("force_colors", "False")
-    flag = {"True": True, "False": False, False: False}[flag_str]
-    if flag is None:
-        env.Replace(FORCE_COLORS=False)
-        fatal_error(env, "Invalid force_colors value: '{flag_str}'")
-    assert isinstance(flag, bool)
-    env.Replace(FORCE_COLORS=flag)
+    # Add the args dictionary as a new ARGUMENTS var.
+    assert env.get("ARGUMENTS") is None
+    env.Replace(ARGUMENTS=args)
+
+    # Evaluate the optional force_color arg and set its value
+    # an env var on its own.
+    assert env.get("FORCE_COLORS") is None
+    env.Replace(FORCE_COLORS=False)  # Tentative.
+    flag = arg_bool(env, "force_colors", False)
+    env.Replace(FORCE_COLORS=flag)  # Tentative.
     if not flag:
         warning(env, "Not forcing scons text colors.")
 
+    # For debugging.
+    # dump_env_vars(env)
+
     return env
+
+
+def __dump_parsed_arg(env, name, value, from_default: bool) -> None:
+    """Used to dump parsed scons arg. For debugging only."""
+    # Uncomment below for debugging.
+    # type_name = type(value).__name__
+    # default = "(default)" if from_default else ""
+    # click.echo(f"Arg  {name:15} ->  {str(value):15} {type_name:6} {default}")
+
+
+def get_args(env: SConsEnvironment) -> Dict[str, str]:
+    """Returns the SConstrcuct invocation args."""
+    return env["ARGUMENTS"]
+
+
+def arg_bool(env: SConsEnvironment, name: str, default: bool) -> bool:
+    """Parse and return a boolean arg."""
+    args = get_args(env)
+    raw_value = args.get(name, None)
+    if raw_value is None:
+        value = default
+    else:
+        value = {"True": True, "False": False, True: True, False: False}[
+            raw_value
+        ]
+        if value is None:
+            fatal_error(
+                env, f"Invalid boolean argument '{name} = '{raw_value}'."
+            )
+    __dump_parsed_arg(env, name, value, from_default=raw_value is None)
+    return value
+
+
+def arg_str(env: SConsEnvironment, name: str, default: str) -> str:
+    """Parse and return a string arg."""
+    args = get_args(env)
+    raw_value = args.get(name, None)
+    value = default if raw_value is None else raw_value
+    __dump_parsed_arg(env, name, value, from_default=raw_value is None)
+    return value
 
 
 def force_colors(env: SConsEnvironment) -> bool:
@@ -118,5 +162,7 @@ def dump_env_vars(env: SConsEnvironment) -> None:
     dictionary = env.Dictionary()
     keys = list(dictionary.keys())
     keys.sort()
+    print("----- Env vars begin -----")
     for key in keys:
         print(f"{key} = {env[key]}")
+    print("----- Env vars end -------")

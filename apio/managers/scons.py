@@ -982,6 +982,9 @@ class SCons:
             ["scons"] + ["-Q", command] + variables + ["force_colors=True"]
         )
 
+        # -- For debugging.
+        print(f"scons_command = {' '.join(scons_command)}")
+
         # -- Execute the scons builder!
         result = util.exec_command(
             scons_command,

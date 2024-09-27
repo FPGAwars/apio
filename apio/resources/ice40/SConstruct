@@ -13,27 +13,28 @@ from platform import system
 from SCons.Script import (Builder, Action, DefaultEnvironment, Default, AlwaysBuild,
                           GetOption, Exit, COMMAND_LINE_TARGETS, ARGUMENTS,
                           Variables, Help, Glob)
-from SCons.Script.SConscript import SConsEnvironment
-from apio.scons_util import get_constraint_file, error, fatal_error, create_construction_env
+from apio.scons_util import (get_constraint_file, error, fatal_error, 
+                             create_construction_env, arg_bool, arg_str)
 
 # -- Create the environment
 env = create_construction_env(ARGUMENTS)
 
 # -- Load arguments
-PROG = ARGUMENTS.get('prog', '')
-FPGA_SIZE = ARGUMENTS.get('fpga_size', '')
-FPGA_TYPE = ARGUMENTS.get('fpga_type', '')
-FPGA_PACK = ARGUMENTS.get('fpga_pack', '')
-TOP_MODULE = ARGUMENTS.get('top_module', '')
-VERBOSE_ALL = ARGUMENTS.get('verbose_all', False)
-VERBOSE_YOSYS = ARGUMENTS.get('verbose_yosys', False)
-VERBOSE_PNR = ARGUMENTS.get('verbose_pnr', False)
-TESTBENCH = ARGUMENTS.get('testbench', '')
-VERILATOR_ALL = ARGUMENTS.get('all', False)
-VERILATOR_NO_STYLE = ARGUMENTS.get('nostyle', False)
-VERILATOR_NO_WARN = ARGUMENTS.get('nowarn', '').split(',')
-VERILATOR_WARN = ARGUMENTS.get('warn', '').split(',')
-VERILATOR_TOP = ARGUMENTS.get('top', '')
+PROG = arg_str(env, 'prog', '')
+FPGA_SIZE = arg_str(env, 'fpga_size', '')
+FPGA_TYPE = arg_str(env, 'fpga_type', '')
+FPGA_PACK = arg_str(env, 'fpga_pack', '')
+TOP_MODULE = arg_str(env, 'top_module', '')
+VERBOSE_ALL = arg_bool(env, 'verbose_all', False)
+VERBOSE_YOSYS = arg_bool(env, 'verbose_yosys', False)
+VERBOSE_PNR = arg_bool(env, 'verbose_pnr', False)
+TESTBENCH = arg_str(env, 'testbench', '')
+VERILATOR_ALL = arg_bool(env, 'all', False)
+VERILATOR_NO_STYLE = arg_bool(env, 'nostyle', False)
+VERILATOR_NO_WARN = arg_str(env, 'nowarn', '').split(',')
+VERILATOR_WARN = arg_str(env, 'warn', '').split(',')
+VERILATOR_TOP = arg_str(env, 'top', '')
+
 VERILATOR_PARAM_STR = ''
 for warn in VERILATOR_NO_WARN:
     if warn != '':
