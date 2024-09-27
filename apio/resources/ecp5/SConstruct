@@ -15,7 +15,11 @@ from SCons.Script import (Builder, Action, DefaultEnvironment, Default, AlwaysBu
                           GetOption, Exit, COMMAND_LINE_TARGETS, ARGUMENTS,
                           Variables, Help, Glob)
 from SCons.Script.SConscript import SConsEnvironment
-from apio.scons_util import get_constraint_file, error, fatal_error, update_env_force_colors
+from apio.scons_util import get_constraint_file, error, fatal_error, create_construction_env
+
+# -- Create the environment
+env = create_construction_env(ARGUMENTS)
+
 
 # -- Load arguments
 PROG = ARGUMENTS.get('prog', '')
@@ -42,27 +46,6 @@ for warn in VERILATOR_WARN:
     if warn != '':
         VERILATOR_PARAM_STR += ' -Wwarn-' + warn
 
-# -- Add the FPGA flags as variables to be shown with the -h scons option
-vars = Variables()
-vars.Add('fpga_size', 'Set the ECP5 FPGA size', FPGA_SIZE)
-vars.Add('fpga_type', 'Set the ECP5 FPGA type', FPGA_TYPE)
-vars.Add('fpga_pack', 'Set the ECP5 FPGA packages', FPGA_PACK)
-vars.Add('fpga_idcode', 'Set the ECP5 FPGA idcode override', FPGA_IDCODE)
-
-# -- Create environment
-env:SConsEnvironment = DefaultEnvironment(
-        ENV=os.environ,
-        tools=[],
-        variables=vars)
-
-update_env_force_colors(env, ARGUMENTS)
-
-# For debugging.
-# from apio.scons_util import dump_env_vars
-# dump_env_vars(env)
-
-# -- Show all the flags defined, when scons is invoked with -h
-Help(vars.GenerateHelpText(env))
 
 # -- Just for debugging
 if 'build' in COMMAND_LINE_TARGETS or \
@@ -120,7 +103,7 @@ src_synth = [f for f in v_files if f[-5:].upper() != '_TB.V']
 list_tb = [f for f in v_files if f[-5:].upper() == '_TB.V']
 
 # -- Get the LPF file name.
-LPF = scons_util.get_constraint_file(env, ".lpf", TOP_MODULE)
+LPF = get_constraint_file(env, ".lpf", TOP_MODULE)
 
 # -- Synthesizing Builder
 synth_builder = Builder(

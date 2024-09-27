@@ -14,7 +14,10 @@ from SCons.Script import (Builder, Action, DefaultEnvironment, Default, AlwaysBu
                           GetOption, Exit, COMMAND_LINE_TARGETS, ARGUMENTS,
                           Variables, Help, Glob)
 from SCons.Script.SConscript import SConsEnvironment
-from apio.scons_util import get_constraint_file, error, fatal_error, update_env_force_colors
+from apio.scons_util import get_constraint_file, error, fatal_error, create_construction_env
+
+# -- Create the environment
+env = create_construction_env(ARGUMENTS)
 
 # -- Load arguments
 PROG = ARGUMENTS.get('prog', '')
@@ -40,31 +43,6 @@ for warn in VERILATOR_WARN:
     if warn != '':
         VERILATOR_PARAM_STR += ' -Wwarn-' + warn
 
-# -- Size. Possible values: 1k, 8k
-# -- Type. Possible values: hx, lp
-# -- Package. Possible values: swg16tr, cm36, cm49, cm81, cm121, cm225, qn84,
-# --   cb81, cb121, cb132, vq100, tq144, ct256
-
-# -- Add the FPGA flags as variables to be shown with the -h scons option
-vars = Variables()
-vars.Add('fpga_size', 'Set the ICE40 FPGA size (1k/8k)', FPGA_SIZE)
-vars.Add('fpga_type', 'Set the ICE40 FPGA type (hx/lp)', FPGA_TYPE)
-vars.Add('fpga_pack', 'Set the ICE40 FPGA packages', FPGA_PACK)
-
-# -- Create environment
-env:SConsEnvironment = DefaultEnvironment(
-        ENV=os.environ,
-        tools=[],
-        variables=vars)
-
-update_env_force_colors(env, ARGUMENTS)
-
-# For debugging.
-# from apio.scons_util import dump_env_vars
-# dump_env_vars(env)
-
-# -- Show all the flags defined, when scons is invoked with -h
-Help(vars.GenerateHelpText(env))
 
 # -- Just for debugging
 if 'build' in COMMAND_LINE_TARGETS or \

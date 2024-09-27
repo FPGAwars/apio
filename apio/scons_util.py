@@ -16,24 +16,31 @@ be called only from the SConstruct.py files.
 # SConstruct script.
 # pylint: disable=unused-argument
 
+import os
 from typing import Dict
+from SCons.Script import DefaultEnvironment
 from SCons.Script.SConscript import SConsEnvironment
 import click
 
 
-def update_env_force_colors(
-    env: SConsEnvironment, args: Dict[str, str]
-) -> None:
-    """Sets the env FORCE_COLORS variable from the SConstruct arguments.
-    The apio app passes to the scons subprocess the variable force_colors=True
-    to preserved the text colors in the piped stdout.
-    """
-    raw_flag = args.get("force_colors", False)
-    flag = {"True": True, "False": False, False: False}[raw_flag]
+def create_construction_env(args: Dict[str, str]) -> SConsEnvironment:
+    """Creates a scons env. Should be called very early in SConstruct.py"""
+    # Create the default env.
+    env: SConsEnvironment = DefaultEnvironment(ENV=os.environ, tools=[])
+
+    # Add the FORCE_COLORS arg to the env to make the printing function
+    # info(), fatal_error(), etc, functional.
+    flag_str = args.get("force_colors", "False")
+    flag = {"True": True, "False": False, False: False}[flag_str]
+    if flag is None:
+        env.Replace(FORCE_COLORS=False)
+        fatal_error(env, "Invalid force_colors value: '{flag_str}'")
     assert isinstance(flag, bool)
     env.Replace(FORCE_COLORS=flag)
     if not flag:
         warning(env, "Not forcing scons text colors.")
+
+    return env
 
 
 def force_colors(env: SConsEnvironment) -> bool:
