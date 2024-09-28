@@ -17,14 +17,13 @@ from SCons.Script import (Builder, Action, DefaultEnvironment, Default, AlwaysBu
 from SCons.Script.SConscript import SConsEnvironment
 from apio.scons_util import (get_constraint_file, error, fatal_error, 
                              create_construction_env, arg_bool, arg_str,
-                             get_verilator_param_str)
+                             get_verilator_param_str, get_programmer_cmd)
 
 # -- Create the environment
 env = create_construction_env(ARGUMENTS)
 
 
 # -- Get arguments.
-PROG = arg_str(env, 'prog', '')
 FPGA_SIZE = arg_str(env, 'fpga_size', '')
 FPGA_TYPE = arg_str(env, 'fpga_type', '')
 FPGA_PACK = arg_str(env, 'fpga_pack', '')
@@ -40,20 +39,6 @@ VERILATOR_TOP = arg_str(env, 'top', '')
 
 # Derived from args "nowarn" and "warn".
 VERILATOR_PARAM_STR = get_verilator_param_str(env)
-
-# -- Just for debugging
-if 'build' in COMMAND_LINE_TARGETS or \
-   'upload' in COMMAND_LINE_TARGETS or \
-   'time' in COMMAND_LINE_TARGETS:
-
-    # print('FPGA_SIZE: {}'.format(FPGA_SIZE))
-    # print('FPGA_TYPE: {}'.format(FPGA_TYPE))
-    # print('FPGA_PACK: {}'.format(FPGA_PACK))
-
-    if 'upload' in COMMAND_LINE_TARGETS:
-        if PROG == '':
-            fatal_error(env, 'No programmer command found.')
-        assert "${SOURCE}" in PROG, f"{PROG = }"
 
 
 # -- Resources paths
@@ -142,8 +127,8 @@ build_target = env.Alias('build', bitstream_target)
 AlwaysBuild(build_target)
 
 # -- Upload the bitstream into FPGA
-programmer = PROG.replace("${SOURCE}", "$SOURCE")
-upload_target = env.Alias('upload', bitstream_target, programmer)
+programmer_cmd = get_programmer_cmd(env)
+upload_target = env.Alias('upload', bitstream_target, programmer_cmd)
 AlwaysBuild(upload_target)
 
 # -- Target time: calculate the time

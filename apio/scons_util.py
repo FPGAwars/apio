@@ -168,7 +168,7 @@ def dump_env_vars(env: SConsEnvironment) -> None:
     print("----- Env vars end -------")
 
 
-def get_verilator_param_str(env) -> str:
+def get_verilator_param_str(env: SConsEnvironment) -> str:
     """Construct from the nowwarn and warn arguments an option list
     for verilator. These values are specified by the user to the
     apio lint param.
@@ -189,3 +189,26 @@ def get_verilator_param_str(env) -> str:
             result += " -Wwarn-" + warn
 
     return result
+
+
+def get_programmer_cmd(env: SConsEnvironment) -> str:
+    """Return the programmer command as derived from the scons "prog" arg."""
+
+    # Get the programer command template arg.
+    prog_arg = arg_str(env, "prog", "")
+
+    # If empty then return as is.
+    if not prog_arg:
+        return prog_arg
+
+    # The programmer template is expected to contain the placeholder
+    # "${SOURCE}" that we need to convert to "$SOURCE" as expected by scons.
+    if "${SOURCE}" not in prog_arg:
+        fatal_error(
+            env,
+            "[Internal] 'prog' argument does not contain "
+            f"the '${{SOURCE}}' marker. [{prog_arg}]",
+        )
+
+    prog_cmd = prog_arg.replace("${SOURCE}", "$SOURCE")
+    return prog_cmd
