@@ -72,6 +72,9 @@ Examples:
     cls=cmd_util.ApioCommand,
 )
 @click.pass_context
+@options.top_module_option_gen(
+    help="Restrict linting to this module and its depedencies."
+)
 @options.all_option_gen(
     help="Enable all warnings, including code style warnings."
 )
@@ -79,12 +82,11 @@ Examples:
 @nowarn_option
 @warn_option
 @options.project_dir_option
-@options.top_module_option_gen(deprecated=True)
 def cli(
     ctx: Context,
     # Options
-    all_: bool,
     top_module: str,
+    all_: bool,
     nostyle: bool,
     nowarn: str,
     warn: str,
@@ -99,7 +101,7 @@ def cli(
     exit_code = scons.lint(
         {
             "all": all_,
-            "top": top_module,
+            "top_module": top_module,
             "nostyle": nostyle,
             "nowarn": nowarn,
             "warn": warn,

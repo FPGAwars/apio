@@ -125,7 +125,7 @@ class SCons:
         variables = serialize_scons_flags(
             {
                 "all": args.get("all"),
-                "top": args.get("top"),
+                "top_module": args.get("top_module"),
                 "nowarn": args.get("nowarn"),
                 "warn": args.get("warn"),
                 "nostyle": args.get("nostyle"),
