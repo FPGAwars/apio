@@ -1,3 +1,5 @@
+"""Scons script of ECP5 FPGAs."""
+
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # -- Generic Scons script for Sintesizing hardware on an FPGA and more.
@@ -7,7 +9,34 @@
 # -- Licence GPLv2
 # ----------------------------------------------------------------------
 
-# pylint: disable=fixme
+# W0511: TODO: (fixme)
+# pylint: disable=W0511
+
+# C0103: Module name doesn't conform to snake_case naming style (invalid-name)
+# pylint: disable=C0103
+
+# C0209: Formatting could be an f-string (consider-using-f-string)
+# pylint: disable=C0209
+
+# Similar lines in 2 files
+# pylint: disable=R0801
+
+# W0613: Unused argument 'xx' (unused-argument)
+# pylint: disable=W0613
+
+# TODO: Can we fix this?
+# E0611: No name in module (no-name-in-module)
+# pylint: disable=E0611
+
+# TODO: Can we fix this?
+# E1101: Instance of 'Base' has no 'X' member (no-member)
+# pylint: disable=E1101
+
+# TODO: Remove this disable after moving the functions with 'env' argument
+# to scons_util.py.
+# W0621: Redefining name 'env' from outer scope (redefined-outer-name)
+# pylint: disable=W0621
+
 
 import os
 import re
@@ -78,8 +107,9 @@ TARGET = "hardware"
 list_files_re = re.compile(r"[\n|\s][^\/]?\"(.*\.list?)\"", re.M)
 
 
-def list_files_scan(node, env, path):
-    contents = node.get_text_contents()
+def list_files_scan(file_node, env, path):
+    """Scan a file for includes."""
+    contents = file_node.get_text_contents()
     includes = list_files_re.findall(contents)
     return env.File(includes)
 
@@ -340,7 +370,8 @@ if "test" in COMMAND_LINE_TARGETS:
 
 # -- Verilator config file builder
 def verilator_config_func(target, source, env):
-    with open(target[0].get_path(), "w") as target_file:
+    """Creates a verilator .vlt config files."""
+    with open(target[0].get_path(), "w", encoding="utf-8") as target_file:
         # NOTE: This config was copied from ICE40. Adjust as needed.
         target_file.write(
             "`verilator_config\n"
