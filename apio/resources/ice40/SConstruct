@@ -7,21 +7,20 @@
 # -- Licence GPLv2
 # ----------------------------------------------------------------------
 
+# pylint: disable=fixme
+
 import os
 import re
 from platform import system
 from SCons.Script import (
     Builder,
     Action,
-    DefaultEnvironment,
     Default,
     AlwaysBuild,
     GetOption,
     Exit,
     COMMAND_LINE_TARGETS,
     ARGUMENTS,
-    Variables,
-    Help,
     Glob,
 )
 from apio.scons_util import (
@@ -106,7 +105,10 @@ env.Append(BUILDERS={"Synth": synth_builder})
 
 # -- Place and route Builder.
 pnr_builder = Builder(
-    action="nextpnr-ice40 --{0}{1} --package {2} --json $SOURCE --asc $TARGET --pcf {3} {4}".format(
+    action=(
+        "nextpnr-ice40 --{0}{1} --package {2} --json $SOURCE --asc $TARGET "
+        "--pcf {3} {4}"
+    ).format(
         FPGA_TYPE,
         FPGA_SIZE,
         FPGA_PACK,
@@ -163,32 +165,28 @@ time_target = env.Alias("time", rpt_target)
 
 def iverilog_generator(source, target, env, for_signature):
     """Constructs dynamically a commands for iverlog targets builders."""
-    target_name, _ = os.path.splitext(
-        str(target[0])
-    )  # E.g. "my_module" or"my_module_tb"
-    # Testbenches use the value macro VCD_OUTPUT to know the name of the waves output file.
-    # We also pass a dummy when the verify command to avoid a warning about the undefined macro.
+    # E.g. "my_module" or "my_module_tb"
+    target_name, _ = os.path.splitext(str(target[0]))
+    # Testbenches use the macro VCD_OUTPUT to know the name of the waves
+    # output file.We also pass a dummy when the verify command to avoid a
+    # warning about the undefined macro.
     is_testbench = target_name.upper().endswith("_TB")
     is_verify = "verify" in COMMAND_LINE_TARGETS
     vcd_output_flag = (
-        f"-D VCD_OUTPUT=dummy_vcd_output"
+        "-D VCD_OUTPUT=dummy_vcd_output"
         if is_verify
         else f"-D VCD_OUTPUT={target_name}" if is_testbench else ""
     )
     verbose_flag = "-v" if VERBOSE_ALL else ""
-    # If running a testbench with the sim command, we define the macro INTERACTIVE_SIM that
-    # allows the testbench to supress assertions so we can examine the waves in gtkwave.
-    # For example, with an assertion macro like this one that fails when running apio test.
-    # `define EXPECT(signal, value) \
-    #     if (signal !== value) begin \
-    #         $display("ASSERTION FAILED in %m: signal != value"); \
-    #         `ifndef INTERACTIVE_SIM \
-    #             $fatal; \
-    #         `endif \
-    #     end
+    # The INTERACTIVE_SIM macro allow testbenchs to distinguish between an
+    # automatic simulation (apio test) and interactive simulation (apio sim),
+    # For example, for continuing despire errors in interactive mode.
     is_interactive_sim = is_testbench and "sim" in COMMAND_LINE_TARGETS
-    interactive_sim_flag = f"-D INTERACTIVE_SIM" if is_interactive_sim else ""
-    result = 'iverilog {0} {1} -o $TARGET {2} {3} -D NO_ICE40_DEFAULT_ASSIGNMENTS "{4}" $SOURCES'.format(
+    interactive_sim_flag = "-D INTERACTIVE_SIM" if is_interactive_sim else ""
+    result = (
+        "iverilog {0} {1} -o $TARGET {2} {3} -D NO_ICE40_DEFAULT_ASSIGNMENTS "
+        '"{4}" $SOURCES'
+    ).format(
         IVER_PATH,
         verbose_flag,
         vcd_output_flag,
@@ -208,7 +206,10 @@ iverilog_builder = Builder(
 env.Append(BUILDERS={"IVerilog": iverilog_builder})
 
 dot_builder = Builder(
-    action='yosys -f verilog -p "show -format dot -colors 1 -prefix hardware {0}" {1} $SOURCES'.format(
+    action=(
+        'yosys -f verilog -p "show -format dot -colors 1 '
+        '-prefix hardware {0}" {1} $SOURCES'
+    ).format(
         TOP_MODULE if TOP_MODULE else "unknown_top",
         "" if VERBOSE_ALL else "-q",
     ),
@@ -255,17 +256,18 @@ if "sim" in COMMAND_LINE_TARGETS:
         # Explicit testbench file name is given via --testbench.
         sim_testbench = TESTBENCH
     else:
-        # No --testbench flag specified. If there is exactly one testbench then pick
-        # it, otherwise fail.
+        # No --testbench flag specified. If there is exactly one testbench then
+        # pick it, otherwise fail.
         if len(list_tb) == 0:
             fatal_error(env, "No testbench found for simulation.")
         if len(list_tb) > 1:
-            # TODO: consider to allow specifying the default testbench in apio.ini.
+            # TODO: consider to allow specifying the default testbench in
+            # apio.ini.
             error(
                 env,
-                "Found {} testbranches, please use the --testbench flag.".format(
-                    len(list_tb)
-                ),
+                (
+                    "Found {} testbranches, please use the --testbench flag."
+                ).format(len(list_tb)),
             )
             for tb in list_tb:
                 print("- {}".format(tb))
@@ -299,7 +301,8 @@ if "sim" in COMMAND_LINE_TARGETS:
 if "test" in COMMAND_LINE_TARGETS:
     assert "sim" not in COMMAND_LINE_TARGETS, COMMAND_LINE_TARGETS
     if TESTBENCH:
-        # Explicit testbench file name is given via --testbench. We test just that one.
+        # Explicit testbench file name is given via --testbench. We test just
+        # that one.
         test_tbs = [TESTBENCH]
     else:
         # No --testbench flag specified. We will test all them.
@@ -308,12 +311,14 @@ if "test" in COMMAND_LINE_TARGETS:
         test_tbs = list_tb  # All testbenches.
     tests = []  # Targets of all tests
     for test_tb in test_tbs:
-        # Create a list of source files. All the modules + the current testbench.
+        # Create a list of source files. All the modules + the current
+        # testbench.
         src_test = []
         src_test.extend(src_synth)  # All the .v files.
         src_test.append(test_tb)
         # Create the targets for the 'out' and 'vcd' files of the testbench.
-        # NOTE: Remove the two AlwaysBuild() calls below for an incremental test. Fast, correct,
+        # NOTE: Remove the two AlwaysBuild() calls below for an incremental
+        # test. Fast, correct,
         # but may confuse the user seeing nothing happens.
         test_name, _ = os.path.splitext(test_tb)  # e.g. my_module_tb
         test_out_target = env.IVerilog(test_name, src_test)
@@ -322,7 +327,8 @@ if "test" in COMMAND_LINE_TARGETS:
         AlwaysBuild(test_vcd_target)
         test_target = env.Alias(test_name, [test_out_target, test_vcd_target])
         tests.append(test_target)
-    # Create a target for the test command that depends on all the test targets.
+    # Create a target for the test command that depends on all the test
+    # targets.
     tests_target = env.Alias("test", tests)
     AlwaysBuild(tests_target)
 
@@ -347,7 +353,11 @@ env.Append(BUILDERS={"VerilatorConfig": verilator_config_builder})
 
 # -- Verilator builder
 verilator_builder = Builder(
-    action='verilator --lint-only --bbox-unsup --timing -Wno-TIMESCALEMOD -Wno-MULTITOP -DNO_ICE40_DEFAULT_ASSIGNMENTS {0} {1} {2} {3} $SOURCES "{4}"'.format(
+    action=(
+        "verilator --lint-only --bbox-unsup --timing -Wno-TIMESCALEMOD "
+        "-Wno-MULTITOP -DNO_ICE40_DEFAULT_ASSIGNMENTS {0} {1} {2} {3} "
+        '$SOURCES "{4}"'
+    ).format(
         "-Wall" if VERILATOR_ALL else "",
         "-Wno-style" if VERILATOR_NO_STYLE else "",
         VERILATOR_PARAM_STR,
