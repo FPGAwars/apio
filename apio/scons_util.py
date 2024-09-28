@@ -17,9 +17,12 @@ be called only from the SConstruct.py files.
 # pylint: disable=unused-argument
 
 import os
-from typing import Dict
+import re
+from typing import Dict, List
+import SCons
 from SCons.Script import DefaultEnvironment
 from SCons.Script.SConscript import SConsEnvironment
+import SCons.Node.FS
 import click
 
 
@@ -212,3 +215,29 @@ def get_programmer_cmd(env: SConsEnvironment) -> str:
 
     prog_cmd = prog_arg.replace("${SOURCE}", "$SOURCE")
     return prog_cmd
+
+
+def make_icestudio_list_scanner(env: SConsEnvironment) -> SCons.Scanner:
+    """Creates a scons file scanner for IceStudio embedded *.list file
+    references
+    """
+    # A Regex to match reference to .list files in icestudio auto generated
+    # .v files.
+    # Example:
+    #    Line:   ' parameter v771499 = "v771499.list"'
+    #    Match:  'v771499.list'
+    icestudio_re = re.compile(r"[\n|\s][^\/]?\"(.*\.list?)\"", re.M)
+
+    def icestudio_scanner(
+        file_node: SCons.Node.FS.File, env: SConsEnvironment, ignored_path
+    ) -> List[str]:
+        """Scan a source file for references to IceStudio *.list proprietry
+        files."""
+        text = file_node.get_text_contents()
+        # E.g. ['v771499.list', 'v9298ae.list', 'vba98fe.list']
+        includes = icestudio_re.findall(text)
+        # For debugging.
+        # print(f"Icestudio refs: {file_node.name} -> {includes}")
+        return env.File(includes)
+
+    return env.Scanner(function=icestudio_scanner)

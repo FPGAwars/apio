@@ -39,7 +39,6 @@
 
 
 import os
-import re
 from platform import system
 from SCons.Script import (
     Builder,
@@ -61,6 +60,7 @@ from apio.scons_util import (
     arg_str,
     get_verilator_param_str,
     get_programmer_cmd,
+    make_icestudio_list_scanner,
 )
 
 # -- Create the environment
@@ -103,18 +103,10 @@ FPGA_TYPE_PARAM = "25k" if (FPGA_TYPE == "12k") else "{0}".format(FPGA_TYPE)
 # -- Target name
 TARGET = "hardware"
 
-# -- Scan required .list files
-list_files_re = re.compile(r"[\n|\s][^\/]?\"(.*\.list?)\"", re.M)
+# -- Create a .v file scanner for icestudio embedded references to *.list
+# -- files.
+icestudio_list_scanner = make_icestudio_list_scanner(env)
 
-
-def list_files_scan(file_node, env, path):
-    """Scan a file for includes."""
-    contents = file_node.get_text_contents()
-    includes = list_files_re.findall(contents)
-    return env.File(includes)
-
-
-list_scanner = env.Scanner(function=list_files_scan)
 
 # -- Get a list of all the verilog files in the src folfer, in ASCII, with
 # -- the full path. All these files are used for the simulation
@@ -136,7 +128,7 @@ synth_builder = Builder(
     ),
     suffix=".json",
     src_suffix=".v",
-    source_scanner=list_scanner,
+    source_scanner=icestudio_list_scanner,
 )
 env.Append(BUILDERS={"Synth": synth_builder})
 
@@ -236,7 +228,7 @@ iverilog_builder = Builder(
     generator=iverilog_generator,
     suffix=".out",
     src_suffix=".v",
-    source_scanner=list_scanner,
+    source_scanner=icestudio_list_scanner,
 )
 env.Append(BUILDERS={"IVerilog": iverilog_builder})
 
@@ -251,7 +243,7 @@ dot_builder = Builder(
     ),
     suffix=".dot",
     src_suffix=".v",
-    source_scanner=list_scanner,
+    source_scanner=icestudio_list_scanner,
 )
 env.Append(BUILDERS={"DOT": dot_builder})
 
@@ -260,7 +252,7 @@ svg_builder = Builder(
     action="dot -Tsvg $SOURCES -o $TARGET",
     suffix=".svg",
     src_suffix=".dot",
-    source_scanner=list_scanner,
+    source_scanner=icestudio_list_scanner,
 )
 env.Append(BUILDERS={"SVG": svg_builder})
 
@@ -384,7 +376,7 @@ def verilator_config_func(target, source, env):
 verilator_config_builder = Builder(
     action=Action(verilator_config_func, "Creating verilator config file."),
     suffix=".vlt",
-    source_scanner=list_scanner,
+    source_scanner=icestudio_list_scanner,
 )
 env.Append(BUILDERS={"VerilatorConfig": verilator_config_builder})
 
@@ -401,7 +393,7 @@ verilator_builder = Builder(
         YOSYS_CELLS_PATH,
     ),
     src_suffix=".v",
-    source_scanner=list_scanner,
+    source_scanner=icestudio_list_scanner,
 )
 env.Append(BUILDERS={"Verilator": verilator_builder})
 
