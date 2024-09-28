@@ -111,14 +111,12 @@ env.Append(BUILDERS={"Synth": synth_builder})
 pnr_builder = Builder(
     action=(
         "nextpnr-himbaechel --device {0} --json $SOURCE --write $TARGET "
-        "--vopt family={5} --vopt cst={3} {4}"
+        "--vopt family={1} --vopt cst={2} {3}"
     ).format(
         FPGA_MODEL,
-        FPGA_SIZE,
-        FPGA_PACK,
+        FPGA_TYPE,
         CST,
         "" if VERBOSE_ALL or VERBOSE_PNR else "-q",
-        FPGA_TYPE,
     ),
     suffix=".pnr.json",
     src_suffix=".json",

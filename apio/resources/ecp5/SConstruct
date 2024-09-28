@@ -113,11 +113,10 @@ env.Append(BUILDERS={"Synth": synth_builder})
 # -- Place and route Builder.
 pnr_builder = Builder(
     action=(
-        "nextpnr-ecp5 --{0} --package {2} --json $SOURCE --textcfg $TARGET "
-        "--lpf {3} {4} --timing-allow-fail --force"
+        "nextpnr-ecp5 --{0} --package {1} --json $SOURCE --textcfg $TARGET "
+        "--lpf {2} {3} --timing-allow-fail --force"
     ).format(
         FPGA_TYPE_PARAM,
-        FPGA_SIZE,
         FPGA_PACK,
         LPF,
         "" if VERBOSE_ALL or VERBOSE_PNR else "-q",
