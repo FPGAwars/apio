@@ -17,19 +17,24 @@ env:
 	@echo ". venv/bin/activate"
 
 
-# Lints the apio code base and tests.
+# Lint only, no tests. 
 lint:
 	python -m tox -e lint
 
 
-# Developers this target to test before submitting a commit.
-# It performs lint and test and requires a single python interpreter.
-check:	
+# Tests only, no lint, single python version.
+test:	
 	python -m tox --skip-missing-interpreters false -e py312
 
 
-# Similar to 'check' but test with  multiple Python versions
-# that need to be pre installed..
+# Tests and lint, single python version.
+# Run this before submitting code.
+ check:	
+	python -m tox --skip-missing-interpreters false -e lint,py312
+
+
+# Tests and lint, multiple python versions.
+# Should be be run automatically on github.
 check_all:
 	python -m tox --skip-missing-interpreters false
 
