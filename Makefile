@@ -30,7 +30,7 @@ check:
 
 # Similar to 'check' but test with  multiple Python versions
 # that need to be pre installed..
-full_check:
+check_all:
 	python -m tox --skip-missing-interpreters false
 
 
