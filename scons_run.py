@@ -1,8 +1,8 @@
 #!venv/bin/python
-"""Run apio for debugging"""
+"""Run scons for debugging"""
 
 # ---------------------------------------------------
-# -- Run apio for debugging by apio developers.
+# -- Run scons for debugging by apio developers.
 # -- It is not part of apio and is not installed.
 # ---------------------------------------------------
 
@@ -11,12 +11,10 @@
 # targets at .vscode/launch.json.
 
 import sys
-
-# -- Import the apio entry point
-from apio.__main__ import cli as apio
+import SCons.Script
 
 try:
-    apio(None)
+    SCons.Script.main()
 
 except SystemExit as e:
-    print(f"Apio exit code: {e.code}")
+    print(f"Scons exit code: {e.code}")
