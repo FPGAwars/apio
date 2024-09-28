@@ -166,3 +166,26 @@ def dump_env_vars(env: SConsEnvironment) -> None:
     for key in keys:
         print(f"{key} = {env[key]}")
     print("----- Env vars end -------")
+
+
+def get_verilator_param_str(env) -> str:
+    """Construct from the nowwarn and warn arguments an option list
+    for verilator. These values are specified by the user to the
+    apio lint param.
+
+    To test:  apio lint --warn aaa,bbb  --nowarn ccc,ddd
+    """
+
+    no_warn_list = arg_str(env, "nowarn", "").split(",")
+    warn_list = arg_str(env, "warn", "").split(",")
+    # No warn.
+    result = ""
+    for warn in no_warn_list:
+        if warn != "":
+            result += " -Wno-" + warn
+    # Warn.
+    for warn in warn_list:
+        if warn != "":
+            result += " -Wwarn-" + warn
+
+    return result

@@ -983,7 +983,7 @@ class SCons:
         )
 
         # -- For debugging.
-        print(f"scons_command = {' '.join(scons_command)}")
+        # print(f"scons_command = {' '.join(scons_command)}")
 
         # -- Execute the scons builder!
         result = util.exec_command(
