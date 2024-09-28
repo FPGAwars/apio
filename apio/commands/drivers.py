@@ -60,10 +60,10 @@ and affects all the projects on the local host.
 
 \b
 Examples:
-  apio drivers --ftdi_enable     # Install FTDI driver
-  apio drivers --ftdi_disable    # Uninstall FTDI driver
-  apio drivers --serial_enable   # Install serial driver
-  apio drivers --serial_disable  # Uninstall serial driver
+  apio drivers --ftdi-enable     # Install FTDI driver
+  apio drivers --ftdi-disable    # Uninstall FTDI driver
+  apio drivers --serial-enable   # Install serial driver
+  apio drivers --serial-disable  # Uninstall serial driver
 
   Do not specify more than flag per command invocation.
 """

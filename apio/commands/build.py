@@ -32,8 +32,8 @@ Examples:
 """
 
 
-# R0913: Too many arguments (11/5)
-# pylint: disable=R0913
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-positional-arguments
 @click.command(
     "build",
     short_help="Synthesize the bitstream.",

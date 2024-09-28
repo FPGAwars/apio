@@ -56,8 +56,8 @@ Examples:
 """
 
 
-# R0913: Too many arguments (6/5)
-# pylint: disable=R0913
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-positional-arguments
 @click.command(
     "examples",
     short_help="List and fetch apio examples.",

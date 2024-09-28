@@ -33,10 +33,9 @@ Examples:
 """
 
 
-# R0801: Similar lines in 2 files
-# pylint: disable=R0801
-# R0913: Too many arguments (10/5)
-# pylint: disable=R0913
+# pylint: disable=duplicate-code
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-positional-arguments
 @click.command(
     "time",
     short_help="Report design timing.",

@@ -1,38 +1,55 @@
-.PHONY: deps cenv env lint tox publish publish_test
+.PHONY: deps cenv env lint test presubmit publish_test publish install
 
-deps:  ## Install dependencies for apio development
+# Install dependencies for apio development
+deps:
 	python -m pip install --upgrade pip
 	pip install flit black flake8 pylint tox pytest semantic-version pyserial importlib-metadata
 	
 
-cenv:  ## Create the virtual-environment and update dependencies
+# Create the virtual-environment and update dependencies
+cenv:  
 	python3 -m venv venv
 	python3 -m venv venv --upgrade
+
 
 env:
 	@echo "For entering the virtual-environment just type:"
 	@echo ". venv/bin/activate"
 
-# Keep this list the same as in tox.ini.
-lint_dirs = apio test test-boards
 
-lint:  ## Lint the apio app code
-	python -m black  $(lint_dirs)
-	python -m flake8 $(lint_dirs)
-	python -m pylint $(lint_dirs)
-	
-tox:   ## Run tox
-	python -m tox
+# Lint only, no tests. 
+lint:
+	python -m tox -e lint
 
-publish_test:  ## Publish to testPypi
+
+# Tests only, no lint, single python version.
+test:	
+	python -m tox --skip-missing-interpreters false -e py312
+
+
+# Tests and lint, single python version.
+# Run this before submitting code.
+ check:	
+	python -m tox --skip-missing-interpreters false -e lint,py312
+
+
+# Tests and lint, multiple python versions.
+# Should be be run automatically on github.
+check_all:
+	python -m tox --skip-missing-interpreters false
+
+
+# Publish to testPypi
+publish_test:
 	flit publish --repository testpypi
 
-publish:  ## Publish to PyPi
+
+# Publish to PyPi
+publish:
 	python -m flit publish
 
-install:  ## Install the tool locally
+## Install the tool locally
+install:
 	flit build
 	flit install
 
-tests: ## Execute ALL the tests
-	pytest apio test

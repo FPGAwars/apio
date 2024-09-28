@@ -55,10 +55,9 @@ For packages uninstallation see the apio uninstall command.
 """
 
 
-# R0801: Similar lines in 2 files
-# pylint: disable=R0801
-# R0913: Too many arguments (7/5)
-# pylint: disable=R0913
+# pylint: disable=duplicate-code
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-positional-arguments
 @click.command(
     "install",
     short_help="Install apio packages.",

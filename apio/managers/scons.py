@@ -125,7 +125,7 @@ class SCons:
         variables = serialize_scons_flags(
             {
                 "all": args.get("all"),
-                "top": args.get("top"),
+                "top_module": args.get("top_module"),
                 "nowarn": args.get("nowarn"),
                 "warn": args.get("warn"),
                 "nostyle": args.get("nostyle"),
@@ -892,28 +892,17 @@ class SCons:
         # -- No FTDI board found
         return None
 
-    # R0913: Too many arguments (6/5)
-    # pylint: disable=R0913
+    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-positional-arguments
     def run(self, command, variables, packages, board=None, arch=None):
         """Executes scons"""
 
-        # -- Check if in the current project a custom SConstruct file
-        # is being used. We fist build the full name (with the full path)
-        scon_file = Path.cwd() / "SConstruct"
+        # -- Construct the path to the SConstruct file.
+        resources = util.get_path_in_apio_package("resources")
+        scons_file_path = resources / arch / "SConstruct"
 
-        # -- If the SConstruct file does NOT exist, we use the one provided by
-        # -- apio, which is located in the resources/arch/ folder
-        if not scon_file.exists():
-            # -- This is the default SConstruct file
-            resources = util.get_path_in_apio_package("resources")
-            default_scons_file = resources / arch / "SConstruct"
-
-            # -- It is passed to scons using the flag -f default_scons_file
-            variables += ["-f", f"{default_scons_file}"]
-
-        else:
-            # -- We are using our custom SConstruct file
-            click.secho("Info: use custom SConstruct file")
+        # -- It is passed to scons using the flag -f default_scons_file
+        variables += ["-f", f"{scons_file_path}"]
 
         # -- Verify necessary packages if needed.
         # pylint: disable=fixme
@@ -987,7 +976,14 @@ class SCons:
             click.secho("-" * terminal_width, bold=True)
 
         # -- Command to execute: scons -Q apio_cmd flags
-        scons_command = ["scons"] + ["-Q", command] + variables
+        # -- Without force_colors=True, click.secho() colors from the scons
+        # -- child process will be stripped out becaused they are piped out.
+        scons_command = (
+            ["scons"] + ["-Q", command] + variables + ["force_colors=True"]
+        )
+
+        # -- For debugging.
+        # print(f"scons_command = {' '.join(scons_command)}")
 
         # -- Execute the scons builder!
         result = util.exec_command(
