@@ -17,9 +17,12 @@ be called only from the SConstruct.py files.
 # pylint: disable=unused-argument
 
 import os
-from typing import Dict
+import re
+from typing import Dict, List
+import SCons
 from SCons.Script import DefaultEnvironment
 from SCons.Script.SConscript import SConsEnvironment
+import SCons.Node.FS
 import click
 
 
@@ -212,3 +215,52 @@ def get_programmer_cmd(env: SConsEnvironment) -> str:
 
     prog_cmd = prog_arg.replace("${SOURCE}", "$SOURCE")
     return prog_cmd
+
+
+def make_verilog_src_scanner(env: SConsEnvironment) -> SCons.Scanner:
+    """Creates and returns a scons Scanner object for scanning verilog
+    files for dependencies.
+    """
+    # A Regex to icestudio propriaetry references for *.list files.
+    # Example:
+    #   Text:      ' parameter v771499 = "v771499.list"'
+    #   Captures:  'v771499.list'
+    icestudio_list_re = re.compile(r"[\n|\s][^\/]?\"(.*\.list?)\"", re.M)
+
+    # A regex to match a verilog include.
+    # Example
+    #   Text:     `include "apio_testing.vh"
+    #   Capture:  'apio_testing.vh'
+    verilog_include_re = re.compile(
+        r'`\s*include\s+["]([a-zA-Z_./]+)["]', re.M
+    )
+
+    def verilog_src_scanner_func(
+        file_node: SCons.Node.FS.File, env: SConsEnvironment, ignored_path
+    ) -> List[str]:
+        """Given a Verilog file, scan it and return a list of references
+        to other files it depends on. It's not require to report dependency
+        on another .v file in the project since scons loads anyway
+        all the .v files in the project.
+
+        Returns a list of files.
+        """
+        # Sanity check. Should be called only to scan verilog files.
+        assert file_node.name.lower().endswith(
+            ".v"
+        ), f"Not a .v file: {file_node.name}"
+        includes_set = set()
+        file_text = file_node.get_text_contents()
+        # Get IceStudio includes.
+        includes = icestudio_list_re.findall(file_text)
+        includes_set.update(includes)
+        # Get Standard verilog includes.
+        includes = verilog_include_re.findall(file_text)
+        includes_set.update(includes)
+        # Get a deterministic list.
+        includes_list = sorted(list(includes_set))
+        # For debugging
+        # info(env, f"*** {file_node.name} includes {includes_list}")
+        return env.File(includes_list)
+
+    return env.Scanner(function=verilog_src_scanner_func)
