@@ -217,27 +217,49 @@ def get_programmer_cmd(env: SConsEnvironment) -> str:
     return prog_cmd
 
 
-def make_icestudio_list_scanner(env: SConsEnvironment) -> SCons.Scanner:
-    """Creates a scons file scanner for IceStudio embedded *.list file
-    references
+def make_verilog_src_scanner(env: SConsEnvironment) -> SCons.Scanner:
+    """Creates and returns a scons Scanner object for scanning verilog
+    files for dependencies.
     """
-    # A Regex to match reference to .list files in icestudio auto generated
-    # .v files.
+    # A Regex to icestudio propriaetry references for *.list files.
     # Example:
-    #    Line:   ' parameter v771499 = "v771499.list"'
-    #    Match:  'v771499.list'
-    icestudio_re = re.compile(r"[\n|\s][^\/]?\"(.*\.list?)\"", re.M)
+    #   Text:      ' parameter v771499 = "v771499.list"'
+    #   Captures:  'v771499.list'
+    icestudio_list_re = re.compile(r"[\n|\s][^\/]?\"(.*\.list?)\"", re.M)
 
-    def icestudio_scanner(
+    # A regex to match a verilog include.
+    # Example
+    #   Text:     `include "apio_testing.vh"
+    #   Capture:  'apio_testing.vh'
+    verilog_include_re = re.compile(
+        r'`\s*include\s+["]([a-zA-Z_./]+)["]', re.M
+    )
+
+    def verilog_src_scanner_func(
         file_node: SCons.Node.FS.File, env: SConsEnvironment, ignored_path
     ) -> List[str]:
-        """Scan a source file for references to IceStudio *.list proprietry
-        files."""
-        text = file_node.get_text_contents()
-        # E.g. ['v771499.list', 'v9298ae.list', 'vba98fe.list']
-        includes = icestudio_re.findall(text)
-        # For debugging.
-        # print(f"Icestudio refs: {file_node.name} -> {includes}")
-        return env.File(includes)
+        """Given a Verilog file, scan it and return a list of references
+        to other files it depends on. It's not require to report dependency
+        on another .v file in the project since scons loads anyway
+        all the .v files in the project.
 
-    return env.Scanner(function=icestudio_scanner)
+        Returns a list of files.
+        """
+        # Sanity check. Should be called only to scan verilog files.
+        assert file_node.name.lower().endswith(".v"), file_node.name
+        includes_set = set()
+        file_text = file_node.get_text_contents()
+        # Get IceStudio includes.
+        includes = icestudio_list_re.findall(file_text)
+        includes_set.update(includes)
+        # Get Standard verilog includes.
+        includes = verilog_include_re.findall(file_text)
+        includes_set.update(includes)
+        # Get a deterministic list.
+        includes_list = sorted(list(includes_set))
+        # For sanity check. Remove if too noisy.
+        if includes_list:
+            info(env, f"{file_node.name} includes {', '.join(includes_list)}.")
+        return env.File(includes_list)
+
+    return env.Scanner(function=verilog_src_scanner_func)

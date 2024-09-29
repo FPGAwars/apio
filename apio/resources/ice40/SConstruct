@@ -60,7 +60,7 @@ from apio.scons_util import (
     arg_str,
     get_verilator_param_str,
     get_programmer_cmd,
-    make_icestudio_list_scanner,
+    make_verilog_src_scanner,
 )
 
 # -- Create the environment
@@ -96,10 +96,8 @@ IVER_PATH = "" if isWindows or not IVL_PATH else '-B "{0}"'.format(IVL_PATH)
 # -- Target name
 TARGET = "hardware"
 
-
-# -- Create a .v file scanner for icestudio embedded references to *.list
-# -- files.
-icestudio_list_scanner = make_icestudio_list_scanner(env)
+# -- Create scannenr to identify dependencies in verilog files.
+verilog_src_scanner = make_verilog_src_scanner(env)
 
 # -- Get a list of all the verilog files in the src folfer, in ASCII, with
 # -- the full path. All these files are used for the simulation
@@ -121,7 +119,7 @@ synth_builder = Builder(
     ),
     suffix=".json",
     src_suffix=".v",
-    source_scanner=icestudio_list_scanner,
+    source_scanner=verilog_src_scanner,
 )
 env.Append(BUILDERS={"Synth": synth_builder})
 
@@ -223,7 +221,7 @@ iverilog_builder = Builder(
     generator=iverilog_generator,
     suffix=".out",
     src_suffix=".v",
-    source_scanner=icestudio_list_scanner,
+    source_scanner=verilog_src_scanner,
 )
 env.Append(BUILDERS={"IVerilog": iverilog_builder})
 
@@ -237,7 +235,7 @@ dot_builder = Builder(
     ),
     suffix=".dot",
     src_suffix=".v",
-    source_scanner=icestudio_list_scanner,
+    source_scanner=verilog_src_scanner,
 )
 env.Append(BUILDERS={"DOT": dot_builder})
 
@@ -246,7 +244,6 @@ svg_builder = Builder(
     action="dot -Tsvg $SOURCES -o $TARGET",
     suffix=".svg",
     src_suffix=".dot",
-    source_scanner=icestudio_list_scanner,
 )
 env.Append(BUILDERS={"SVG": svg_builder})
 
@@ -370,7 +367,6 @@ def verilator_config_func(target, source, env):
 verilator_config_builder = Builder(
     action=Action(verilator_config_func, "Creating verilator config file."),
     suffix=".vlt",
-    source_scanner=icestudio_list_scanner,
 )
 env.Append(BUILDERS={"VerilatorConfig": verilator_config_builder})
 
@@ -388,7 +384,7 @@ verilator_builder = Builder(
         YOSYS_CELLS_PATH,
     ),
     src_suffix=".v",
-    source_scanner=icestudio_list_scanner,
+    source_scanner=verilog_src_scanner,
 )
 env.Append(BUILDERS={"Verilator": verilator_builder})
 
