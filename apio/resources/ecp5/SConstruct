@@ -94,9 +94,6 @@ isWindows = "Windows" == system()
 VVP_PATH = "" if isWindows or not IVL_PATH else '-M "{0}"'.format(IVL_PATH)
 IVER_PATH = "" if isWindows or not IVL_PATH else '-B "{0}"'.format(IVL_PATH)
 
-IDCODE_PARAM = "" if not FPGA_IDCODE else "--idcode {0}".format(FPGA_IDCODE)
-
-FPGA_TYPE_PARAM = "25k" if (FPGA_TYPE == "12k") else "{0}".format(FPGA_TYPE)
 
 # -- Create scannenr to identify dependencies in verilog files.
 verilog_src_scanner = make_verilog_src_scanner(env)
@@ -137,7 +134,7 @@ pnr_builder = Builder(
         "nextpnr-ecp5 --{0} --package {1} --json $SOURCE --textcfg $TARGET "
         "--lpf {2} {3} --timing-allow-fail --force"
     ).format(
-        FPGA_TYPE_PARAM,
+        "25k" if (FPGA_TYPE == "12k") else FPGA_TYPE,
         FPGA_PACK,
         LPF,
         "" if VERBOSE_ALL or VERBOSE_PNR else "-q",
@@ -153,7 +150,8 @@ env.Append(BUILDERS={"PnR": pnr_builder})
 # -- hardware.config -> hardware.bit.
 bitstream_builder = Builder(
     action="ecppack --compress --db {0} {1} $SOURCE hardware.bit".format(
-        DATABASE_PATH, IDCODE_PARAM
+        DATABASE_PATH,
+        "" if not FPGA_IDCODE else f"--idcode {FPGA_IDCODE}",
     ),
     suffix=".bit",
     src_suffix=".config",
