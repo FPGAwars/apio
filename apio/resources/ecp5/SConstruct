@@ -42,7 +42,6 @@ import os
 from platform import system
 from SCons.Script import (
     Builder,
-    Action,
     AlwaysBuild,
     GetOption,
     Exit,
@@ -51,6 +50,7 @@ from SCons.Script import (
     Glob,
 )
 from apio.scons_util import (
+    TARGET,
     get_constraint_file,
     error,
     fatal_error,
@@ -60,6 +60,7 @@ from apio.scons_util import (
     get_verilator_param_str,
     get_programmer_cmd,
     make_verilog_src_scanner,
+    make_verilator_config_builder,
 )
 
 # -- Create the environment
@@ -87,7 +88,7 @@ TRELLIS_PATH = os.environ["TRELLIS"] if "TRELLIS" in os.environ else ""
 DATABASE_PATH = os.path.join(TRELLIS_PATH, "database")
 CHIPDB_PATH = os.path.join(TRELLIS_PATH, "chipdb-{0}.txt".format(FPGA_SIZE))
 YOSYS_PATH = os.environ["YOSYS_LIB"] if "YOSYS_LIB" in os.environ else ""
-YOSYS_CELLS_PATH = f"{YOSYS_PATH}/ecp5/cells_sim.v"
+YOSYS_CELLS_DIR = f"{YOSYS_PATH}/ecp5"
 
 isWindows = "Windows" == system()
 VVP_PATH = "" if isWindows or not IVL_PATH else '-M "{0}"'.format(IVL_PATH)
@@ -96,9 +97,6 @@ IVER_PATH = "" if isWindows or not IVL_PATH else '-B "{0}"'.format(IVL_PATH)
 IDCODE_PARAM = "" if not FPGA_IDCODE else "--idcode {0}".format(FPGA_IDCODE)
 
 FPGA_TYPE_PARAM = "25k" if (FPGA_TYPE == "12k") else "{0}".format(FPGA_TYPE)
-
-# -- Target name
-TARGET = "hardware"
 
 # -- Create scannenr to identify dependencies in verilog files.
 verilog_src_scanner = make_verilog_src_scanner(env)
@@ -209,7 +207,7 @@ AlwaysBuild(time_rpt_target)
 time_target = env.Alias("time", time_rpt_target)
 
 
-# -- Apio sim/test
+# -- Apio sim/test/verify
 # -- Builder helper (iverolog command generator).
 # -- (modules).v -> hardware.out.
 def iverilog_generator(source, target, env, for_signature):
@@ -222,30 +220,27 @@ def iverilog_generator(source, target, env, for_signature):
     is_testbench = target_name.upper().endswith("_TB")
     is_verify = "verify" in COMMAND_LINE_TARGETS
     vcd_output_flag = (
-        "-D VCD_OUTPUT=dummy_vcd_output"
+        "-DVCD_OUTPUT=dummy_vcd_output"
         if is_verify
-        else f"-D VCD_OUTPUT={target_name}" if is_testbench else ""
+        else f"-DVCD_OUTPUT={target_name}" if is_testbench else ""
     )
     verbose_flag = "-v" if VERBOSE_ALL else ""
     # The INTERACTIVE_SIM macro allow testbenchs to distinguish between an
     # automatic simulation (apio test) and interactive simulation (apio sim),
     # For example, for continuing despire errors in interactive mode.
     is_interactive_sim = is_testbench and "sim" in COMMAND_LINE_TARGETS
-    interactive_sim_flag = "-D INTERACTIVE_SIM" if is_interactive_sim else ""
-    result = (
-        "iverilog {0} {1} -o $TARGET {2} {3} -D NO_INCLUDES "
-        '"{3}/ecp5/cells_bb.v" "{4}" $SOURCES'
-    ).format(
+    interactive_sim_flag = "-DINTERACTIVE_SIM" if is_interactive_sim else ""
+    result = ('iverilog {0} {1} -o $TARGET {2} {3} -I"{4}" $SOURCES').format(
         IVER_PATH,
         verbose_flag,
         vcd_output_flag,
         interactive_sim_flag,
-        YOSYS_CELLS_PATH,
+        YOSYS_CELLS_DIR,
     )
     return result
 
 
-# -- Apio sim/test.
+# -- Apio sim/test/verify.
 # -- Builder (iverilog, verilog compiler).
 # -- (modules).v -> hardware.out.
 iverilog_builder = Builder(
@@ -409,21 +404,17 @@ if "test" in COMMAND_LINE_TARGETS:
 # -- Apio lint.
 # -- Builder (plain text generator)
 # -- (none) -> hardware.vlt builder.
-def verilator_config_func(target, source, env):
-    """Creates a verilator .vlt config files."""
-    with open(target[0].get_path(), "w", encoding="utf-8") as target_file:
-        # NOTE: This config was copied from ICE40. Adjust as needed.
-        target_file.write(
-            "`verilator_config\n"
-            f'lint_off -rule COMBDLY      -file "{YOSYS_CELLS_PATH}"\n'
-            f'lint_off -rule WIDTHEXPAND  -file "{YOSYS_CELLS_PATH}"\n'
-        )
-    return 0
-
-
-verilator_config_builder = Builder(
-    action=Action(verilator_config_func, "Creating verilator config file."),
-    suffix=".vlt",
+verilator_config_builder = make_verilator_config_builder(
+    env,
+    (
+        "`verilator_config\n"
+        f'lint_off -rule COMBDLY      -file "{YOSYS_CELLS_DIR}/*"\n'
+        f'lint_off -rule WIDTHEXPAND  -file "{YOSYS_CELLS_DIR}/*"\n'
+        f'lint_off -rule PINMISSING   -file "{YOSYS_CELLS_DIR}/*"\n'
+        f'lint_off -rule ASSIGNIN     -file "{YOSYS_CELLS_DIR}/*"\n'
+        f'lint_off -rule WIDTHTRUNC   -file "{YOSYS_CELLS_DIR}/*"\n'
+        f'lint_off -rule INITIALDLY   -file "{YOSYS_CELLS_DIR}/*"\n'
+    ),
 )
 env.Append(BUILDERS={"VerilatorConfig": verilator_config_builder})
 
@@ -434,14 +425,14 @@ env.Append(BUILDERS={"VerilatorConfig": verilator_config_builder})
 verilator_builder = Builder(
     action=(
         "verilator --lint-only --bbox-unsup --timing -Wno-TIMESCALEMOD "
-        '-Wno-MULTITOP {0} {1} {2} {3} {4} $SOURCES "{5}"'
+        '-Wno-MULTITOP {0} {1} {2} {3} -I"{4}" {5} $SOURCES'
     ).format(
         "-Wall" if VERILATOR_ALL else "",
         "-Wno-style" if VERILATOR_NO_STYLE else "",
         VERILATOR_PARAM_STR,
         "--top-module " + TOP_MODULE if TOP_MODULE else "",
+        YOSYS_CELLS_DIR,
         TARGET + ".vlt",
-        YOSYS_CELLS_PATH,
     ),
     src_suffix=".v",
     source_scanner=verilog_src_scanner,

@@ -25,6 +25,9 @@ from SCons.Script.SConscript import SConsEnvironment
 import SCons.Node.FS
 import click
 
+# -- Target name
+TARGET = "hardware"
+
 
 def create_construction_env(args: Dict[str, str]) -> SConsEnvironment:
     """Creates a scons env. Should be called very early in SConstruct.py"""
@@ -264,3 +267,21 @@ def make_verilog_src_scanner(env: SConsEnvironment) -> SCons.Scanner:
         return env.File(includes_list)
 
     return env.Scanner(function=verilog_src_scanner_func)
+
+
+def make_verilator_config_builder(env: SConsEnvironment, config_text: str):
+    """Create a scons Builder that writes a verilator config file
+    (hardware.vlt) with the given text."""
+
+    def verilator_config_func(target, source, env):
+        """Creates a verilator .vlt config files."""
+        with open(target[0].get_path(), "w", encoding="utf-8") as target_file:
+            target_file.write(config_text)
+        return 0
+
+    return env.Builder(
+        action=env.Action(
+            verilator_config_func, "Creating verilator config file."
+        ),
+        suffix=".vlt",
+    )
