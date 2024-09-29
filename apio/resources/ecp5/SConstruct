@@ -168,20 +168,25 @@ time_rpt_builder = Builder(
 env.Append(BUILDERS={"Time": time_rpt_builder})
 
 # -- Generate the bitstream
-json_out_target = env.Synth(TARGET, [src_synth])
-config_out_target = env.PnR(TARGET, [json_out_target, LPF])
-bitstream_target = env.Bin(TARGET, config_out_target)
+synth_target = env.Synth(TARGET, [src_synth])
+pnr_target = env.PnR(TARGET, [synth_target, LPF])
+bin_target = env.Bin(TARGET, pnr_target)
+build_target = env.Alias("build", bin_target)
 
-build_target = env.Alias("build", bitstream_target)
-AlwaysBuild(build_target)
+if VERBOSE_YOSYS:
+    AlwaysBuild(synth_target)
+if VERBOSE_PNR:
+    AlwaysBuild(pnr_target)
+if VERBOSE_ALL:
+    AlwaysBuild(synth_target, pnr_target, build_target)
 
 # -- Upload the bitstream into FPGA
 programmer_cmd = get_programmer_cmd(env)
-upload_target = env.Alias("upload", bitstream_target, programmer_cmd)
+upload_target = env.Alias("upload", bin_target, programmer_cmd)
 AlwaysBuild(upload_target)
 
 # -- Target time: calculate the time
-time_rpt_target = env.Time(config_out_target)
+time_rpt_target = env.Time(pnr_target)
 AlwaysBuild(time_rpt_target)
 time_target = env.Alias("time", time_rpt_target)
 
@@ -401,7 +406,7 @@ lint_out_target = env.Verilator(
 lint_target = env.Alias("lint", lint_out_target)
 AlwaysBuild(lint_target)
 
-Default(bitstream_target)
+Default(bin_target)
 
 # -- These is for cleaning the artifact files.
 if GetOption("clean"):
@@ -417,8 +422,8 @@ if GetOption("clean"):
         [
             time_target,
             build_target,
-            json_out_target,
-            config_out_target,
+            synth_target,
+            pnr_target,
             graph_target,
             lint_target,
         ]
