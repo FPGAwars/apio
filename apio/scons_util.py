@@ -246,7 +246,9 @@ def make_verilog_src_scanner(env: SConsEnvironment) -> SCons.Scanner:
         Returns a list of files.
         """
         # Sanity check. Should be called only to scan verilog files.
-        assert file_node.name.lower().endswith(".v"), file_node.name
+        assert file_node.name.lower().endswith(
+            ".v"
+        ), f"Not a .v file: {file_node.name}"
         includes_set = set()
         file_text = file_node.get_text_contents()
         # Get IceStudio includes.
@@ -257,9 +259,8 @@ def make_verilog_src_scanner(env: SConsEnvironment) -> SCons.Scanner:
         includes_set.update(includes)
         # Get a deterministic list.
         includes_list = sorted(list(includes_set))
-        # For sanity check. Remove if too noisy.
-        if includes_list:
-            info(env, f"{file_node.name} includes {', '.join(includes_list)}.")
+        # For debugging
+        # info(env, f"*** {file_node.name} includes {includes_list}")
         return env.File(includes_list)
 
     return env.Scanner(function=verilog_src_scanner_func)

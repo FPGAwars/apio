@@ -43,7 +43,6 @@ from platform import system
 from SCons.Script import (
     Builder,
     Action,
-    Default,
     AlwaysBuild,
     GetOption,
     Exit,
@@ -375,12 +374,13 @@ verilator_builder = Builder(
     action=(
         "verilator --lint-only --bbox-unsup --timing -Wno-TIMESCALEMOD "
         "-Wno-MULTITOP -DNO_ICE40_DEFAULT_ASSIGNMENTS {0} {1} {2} {3} "
-        '$SOURCES "{4}"'
+        '{4} $SOURCES "{5}"'
     ).format(
         "-Wall" if VERILATOR_ALL else "",
         "-Wno-style" if VERILATOR_NO_STYLE else "",
         VERILATOR_PARAM_STR,
         "--top-module " + TOP_MODULE if TOP_MODULE else "",
+        TARGET + ".vlt",
         YOSYS_CELLS_PATH,
     ),
     src_suffix=".v",
@@ -390,13 +390,11 @@ env.Append(BUILDERS={"Verilator": verilator_builder})
 
 # --- Lint
 lint_config_target = env.VerilatorConfig(TARGET, [])
-lint_out_target = env.Verilator(
-    TARGET, [TARGET + ".vlt"] + src_synth + list_tb
-)
+lint_out_target = env.Verilator(TARGET, src_synth + list_tb)
+env.Depends(lint_out_target, lint_config_target)
 lint_target = env.Alias("lint", lint_out_target)
 AlwaysBuild(lint_target)
 
-Default(bin_target)
 
 # -- These is for cleaning the artifact files.
 if GetOption("clean"):
