@@ -44,7 +44,6 @@ from SCons.Script import (
     Builder,
     AlwaysBuild,
     GetOption,
-    Exit,
     COMMAND_LINE_TARGETS,
     ARGUMENTS,
     Glob,
@@ -52,8 +51,6 @@ from SCons.Script import (
 from apio.scons_util import (
     TARGET,
     get_constraint_file,
-    error,
-    fatal_error,
     create_construction_env,
     arg_bool,
     arg_str,
@@ -61,6 +58,10 @@ from apio.scons_util import (
     get_programmer_cmd,
     make_verilog_src_scanner,
     make_verilator_config_builder,
+    get_source_files,
+    get_sim_config,
+    get_tests_configs,
+    make_waves_target,
 )
 
 # -- Create the environment
@@ -95,14 +96,10 @@ IVER_PATH = "" if isWindows or not IVL_PATH else '-B "{0}"'.format(IVL_PATH)
 # -- Create scannenr to identify dependencies in verilog files.
 verilog_src_scanner = make_verilog_src_scanner(env)
 
-# -- Get a list of all the verilog files in the src folfer, in ASCII, with
-# -- the full path. All these files are used for the simulation
-v_nodes = Glob("*.v")
-v_files = [str(f) for f in v_nodes]
+# -- Get a list of the synthesizable files (e.g. "main.v") and a list of
+# -- the testbench files (e.g. "main_tb.v")
+src_synth, list_tb = get_source_files(env)
 
-# Construct disjoint lists of .v module and testbench files.
-src_synth = [f for f in v_files if f[-5:].upper() != "_TB.V"]
-list_tb = [f for f in v_files if f[-5:].upper() == "_TB.V"]
 
 # -- Get the PCF file name.
 PCF = get_constraint_file(env, ".pcf", TOP_MODULE)
@@ -308,89 +305,33 @@ graph_target = env.Alias("graph", svg_target)
 # -- Apio sim.
 # -- Targets.
 # -- (modules).v -> (testbench).out -> (testbench).vcd -> gtkwave
-#
-# NOTE: Since the simulation targets are dynamic due to the testbench
-# selection, we create them only when running simulations.
 if "sim" in COMMAND_LINE_TARGETS:
-    assert "test" not in COMMAND_LINE_TARGETS, COMMAND_LINE_TARGETS
-    if TESTBENCH:
-        # Explicit testbench file name is given via --testbench.
-        sim_testbench = TESTBENCH
-    else:
-        # No --testbench flag is specified. If there is exactly one testbench
-        # then pick it, otherwise fail.
-        if len(list_tb) == 0:
-            fatal_error(env, "No testbench found for simulation.")
-        if len(list_tb) > 1:
-            error(
-                env,
-                (
-                    "Found {} testbranches, please use the --testbench flag."
-                ).format(len(list_tb)),
-            )
-            for tb in list_tb:
-                print("- {}".format(tb))
-            Exit(1)
-        sim_testbench = list_tb[0]  # Pick the only available testbench.
-    # Here sim_testbench contains the testbench, e.g. my_module_tb.v.
-    # Construct list of files to build.
-    src_sim = []
-    src_sim.extend(src_synth)  # All the .v files.
-    src_sim.append(sim_testbench)
-    # Create targets sim target and its dependent.
-    sim_name, _ = os.path.splitext(sim_testbench)  # e.g. my_module_tb
-    sout_target = env.IVerilog(sim_name, src_sim)
+    config = get_sim_config(env, TESTBENCH, src_synth)
+    sout_target = env.IVerilog(config.top_module, config.srcs)
     vcd_file_target = env.VCD(sout_target)
-    # 'do_initial_zoom_fit' does max zoom only if .gtkw file not found.
-    waves_target = env.Alias(
-        "sim",
-        vcd_file_target,
-        "gtkwave {0} {1} {2}.gtkw".format(
-            '--rcvar "splash_disable on" --rcvar "do_initial_zoom_fit 1"',
-            vcd_file_target[0],
-            sim_name,
-        ),
-    )
+    waves_target = make_waves_target(env, vcd_file_target, config.top_module)
     AlwaysBuild(waves_target)
 
 
 # -- Apio test.
 # -- Targets.
 # -- (modules).v -> (testbenchs).out -> (testbenchs).vcd
-#
-# NOTE: Since the simulation targets are dynamic due to the testbench
-# selection, we create them only when running simulations.
 if "test" in COMMAND_LINE_TARGETS:
-    assert "sim" not in COMMAND_LINE_TARGETS, COMMAND_LINE_TARGETS
-    if TESTBENCH:
-        # Explicit testbench file name is given via --testbench. We test just
-        # that one.
-        test_tbs = [TESTBENCH]
-    else:
-        # No --testbench flag specified. We will test all them.
-        if len(list_tb) == 0:
-            fatal_error(env, "No testbench files found (*_tb.v).")
-        test_tbs = list_tb  # All testbenches.
-    tests = []  # Targets of all tests
-    for test_tb in test_tbs:
-        # Create a list of source files. All the modules + the current
-        # testbench.
-        src_test = []
-        src_test.extend(src_synth)  # All the .v files.
-        src_test.append(test_tb)
-        # Create the targets for the 'out' and 'vcd' files of the testbench.
-        # NOTE: Remove the two AlwaysBuild() calls below for an incremental
-        # test. Fast, correct, but may confuse the user seeing nothing happens.
-        test_name, _ = os.path.splitext(test_tb)  # e.g. my_module_tb
-        test_out_target = env.IVerilog(test_name, src_test)
+    configs = get_tests_configs(env, TESTBENCH, src_synth, list_tb)
+    tests_targets = []
+    for config in configs:
+        test_out_target = env.IVerilog(config.top_module, config.srcs)
         AlwaysBuild(test_out_target)
         test_vcd_target = env.VCD(test_out_target)
         AlwaysBuild(test_vcd_target)
-        test_target = env.Alias(test_name, [test_out_target, test_vcd_target])
-        tests.append(test_target)
+        test_target = env.Alias(
+            config.top_module, [test_out_target, test_vcd_target]
+        )
+        tests_targets.append(test_target)
+
     # Create a target for the test command that depends on all the test
     # targets.
-    tests_target = env.Alias("test", tests)
+    tests_target = env.Alias("test", tests_targets)
     AlwaysBuild(tests_target)
 
 

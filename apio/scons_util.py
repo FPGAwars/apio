@@ -11,14 +11,16 @@
 be called only from the SConstruct.py files.
 """
 
-# NOTE: We pass the scons construction environment 'env' to the functions
-# below, even when not used, to discourage calling these from outside of a
-# SConstruct script.
-# pylint: disable=unused-argument
+# C0209: Formatting could be an f-string (consider-using-f-string)
+# pylint: disable=C0209
+
+# W0613: Unused argument
+# pylint: disable=W0613
 
 import os
 import re
-from typing import Dict, List
+from typing import Dict, List, Tuple
+from dataclasses import dataclass
 import SCons
 from SCons.Script import DefaultEnvironment
 from SCons.Script.SConscript import SConsEnvironment
@@ -285,3 +287,105 @@ def make_verilator_config_builder(env: SConsEnvironment, config_text: str):
         ),
         suffix=".vlt",
     )
+
+
+def get_source_files(env: SConsEnvironment) -> Tuple[List[str], List[str]]:
+    """Get the list of *.v files, splitted into synth and testbench lists.
+    If a .v file has the suffix _tb.v it's is classified st a testbench,
+    otherwise as a synthesis file.
+    """
+    # -- Get a list of all *.v files in the project dir.
+    v_file_nodes: List[SCons.Node.FS.File] = env.Glob("*.v")
+
+    # Split file names to synth files and testbench file lists
+    synth_srcs = []
+    test_srcs = []
+    for vf in v_file_nodes:
+        # E.g. "main" or "main_rb"
+        # base_name =  str(Path(vf.name).stem)
+        base_name, _ = os.path.splitext(vf.name)
+        is_testbench = base_name.lower().endswith("_tb")
+        if is_testbench:
+            test_srcs.append(vf.name)
+        else:
+            synth_srcs.append(vf.name)
+    return (synth_srcs, test_srcs)
+
+
+@dataclass(frozen=True)
+class SimulationConfig:
+    """Simulation parameters. Used for 'sim' and 'test' runs."""
+
+    top_module: str  # Top module name for the simulation.
+    srcs: List[str]  # Litst of source files to use.
+
+
+def get_sim_config(
+    env: SConsEnvironment, testbench: str, synth_srcs: List[str]
+) -> SimulationConfig:
+    """Returns a SimulationConfig for a sim command. 'testbench' is
+    a required testbench file name. 'synth_srcs' is the list of all
+    module sources as returned by get_source_files()."""
+    # Apio sim requires a testbench arg so ifi this missing here, it's a
+    # programming error.
+    if not testbench:
+        fatal_error(env, "[Internal] Sim testbench name got lost.")
+
+    # Construct a SimulationParams with all the synth files + the
+    # testbench file.
+    top_module, _ = os.path.splitext(testbench)
+    srcs = synth_srcs + [testbench]
+    return SimulationConfig(top_module, srcs)
+
+
+def get_tests_configs(
+    env: SConsEnvironment,
+    testbench: str,
+    synth_srcs: List[str],
+    test_srcs: list[str],
+) -> List[SimulationConfig]:
+    """Return a list of SimulationConfigs for each of the testbenches that
+    need to be run for a 'apio test' command. If testbench is empty,
+    all the testbenches in test_srcs will be tested. Otherwise, only the
+    testbench in testbench will be tested. synth_srcs and test_srcs are
+    source and test file lists as returned by get_source_files()."""
+    # List of testbenches to be tested.
+    if testbench:
+        testbenches = testbench
+    else:
+        testbenches = test_srcs
+
+    # If there are not testbenches, we consider the test as failed.
+    if len(testbenches) == 0:
+        fatal_error(env, "No testbench files found (*_tb.v).")
+
+    # Construct a config for each testbench.
+    configs = []
+    for tb in testbenches:
+        top_module, _ = os.path.splitext(tb)
+        srcs = synth_srcs + [tb]
+        configs.append(SimulationConfig(top_module, srcs))
+
+    return configs
+
+
+def make_waves_target(
+    env: SConsEnvironment,
+    vcd_file_target: SCons.Node.NodeList,
+    top_module: str,
+) -> List[SCons.Node.Alias.Alias]:
+    """Construct a target to launch the QTWave signal viwer. vcd_file_target is
+    the simulator target that generated the vcd file with the signals. Top
+    module is to derive the name of the .gtkw which can be used to save the
+    viewer configuration for future simulations. Returns the new targets.
+    """
+    result = env.Alias(
+        "sim",
+        vcd_file_target,
+        "gtkwave {0} {1} {2}.gtkw".format(
+            '--rcvar "splash_disable on" --rcvar "do_initial_zoom_fit 1"',
+            vcd_file_target[0],
+            top_module,
+        ),
+    )
+    return result
