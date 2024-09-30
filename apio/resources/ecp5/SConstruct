@@ -102,7 +102,7 @@ verilog_src_scanner = make_verilog_src_scanner(env)
 
 # -- Get a list of the synthesizable files (e.g. "main.v") and a list of
 # -- the testbench files (e.g. "main_tb.v")
-src_synth, list_tb = get_source_files(env)
+synth_srcs, test_srcs = get_source_files(env)
 
 # -- Get the LPF file name.
 LPF = get_constraint_file(env, ".lpf", TOP_MODULE)
@@ -173,7 +173,7 @@ env.Append(BUILDERS={"Time": time_rpt_builder})
 # -- Apio build/upload.
 # -- Targets.
 # -- (module).v -> hardware.json -> hardware.config -> hardware.report.
-synth_target = env.Synth(TARGET, [src_synth])
+synth_target = env.Synth(TARGET, [synth_srcs])
 pnr_target = env.PnR(TARGET, [synth_target, LPF])
 bin_target = env.Bin(TARGET, pnr_target)
 build_target = env.Alias("build", bin_target)
@@ -290,7 +290,7 @@ env.Append(BUILDERS={"VCD": vcd_builder})
 # -- Apio verify.
 # -- Targets
 # -- (modules).v -> (modules).out
-vout_target = env.IVerilog(TARGET, src_synth + list_tb)
+vout_target = env.IVerilog(TARGET, synth_srcs + test_srcs)
 AlwaysBuild(vout_target)
 verify_target = env.Alias("verify", vout_target)
 
@@ -300,7 +300,7 @@ verify_target = env.Alias("verify", vout_target)
 # -- (modules).v -> hardware.dot -> hardware.svg.
 #
 # TODO: Launch a portable SVG (or differentn format) viewer.
-dot_target = env.DOT(TARGET, src_synth)
+dot_target = env.DOT(TARGET, synth_srcs)
 AlwaysBuild(dot_target)
 svg_target = env.SVG(TARGET, dot_target)
 AlwaysBuild(svg_target)
@@ -311,7 +311,7 @@ graph_target = env.Alias("graph", svg_target)
 # -- Targets.
 # -- (modules).v -> (testbench).out -> (testbench).vcd -> gtkwave
 if "sim" in COMMAND_LINE_TARGETS:
-    config = get_sim_config(env, TESTBENCH, src_synth)
+    config = get_sim_config(env, TESTBENCH, synth_srcs)
     sout_target = env.IVerilog(config.top_module, config.srcs)
     vcd_file_target = env.VCD(sout_target)
     waves_target = make_waves_target(env, vcd_file_target, config.top_module)
@@ -322,7 +322,7 @@ if "sim" in COMMAND_LINE_TARGETS:
 # -- Targets.
 # -- (modules).v -> (testbenchs).out -> (testbenchs).vcd
 if "test" in COMMAND_LINE_TARGETS:
-    configs = get_tests_configs(env, TESTBENCH, src_synth, list_tb)
+    configs = get_tests_configs(env, TESTBENCH, synth_srcs, test_srcs)
     tests_targets = []
     for config in configs:
         test_out_target = env.IVerilog(config.top_module, config.srcs)
@@ -383,7 +383,7 @@ env.Append(BUILDERS={"Verilator": verilator_builder})
 # -- Targets.
 # -- (modules).v -> lint report to stdout.
 lint_config_target = env.VerilatorConfig(TARGET, [])
-lint_out_target = env.Verilator(TARGET, src_synth + list_tb)
+lint_out_target = env.Verilator(TARGET, synth_srcs + test_srcs)
 env.Depends(lint_out_target, lint_config_target)
 lint_target = env.Alias("lint", lint_out_target)
 AlwaysBuild(lint_target)
