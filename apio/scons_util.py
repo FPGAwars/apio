@@ -19,6 +19,7 @@ be called only from the SConstruct.py files.
 
 import os
 import re
+from platform import system
 from typing import Dict, List, Tuple
 from dataclasses import dataclass
 import SCons
@@ -29,6 +30,30 @@ import click
 
 # -- Target name
 TARGET = "hardware"
+
+
+def basename(env: SConsEnvironment, file_name: str) -> str:
+    """Given a file name, returns it with the extension removed."""
+    result, _ = os.path.splitext(file_name)
+    return result
+
+
+def is_verilog_src(env: SConsEnvironment, file_name: str) -> str:
+    """Given a file name, determine by its extension if it's a verilog source
+    file (testbenches included)."""
+    _, ext = os.path.splitext(file_name)
+    return ext == "v"
+
+
+def is_testbench(env: SConsEnvironment, file_name: str) -> bool:
+    """Given a file name, return true if it's a testbench file."""
+    name = basename(env, file_name)
+    return name.lower().endswith("_tb")
+
+
+def is_windows(env: SConsEnvironment) -> bool:
+    """Returns True if running on Windows."""
+    return "Windows" == system()
 
 
 def create_construction_env(args: Dict[str, str]) -> SConsEnvironment:
@@ -295,29 +320,25 @@ def get_source_files(env: SConsEnvironment) -> Tuple[List[str], List[str]]:
     otherwise as a synthesis file.
     """
     # -- Get a list of all *.v files in the project dir.
-    v_file_nodes: List[SCons.Node.FS.File] = env.Glob("*.v")
+    files: List[SCons.Node.FS.File] = env.Glob("*.v")
 
     # Split file names to synth files and testbench file lists
     synth_srcs = []
     test_srcs = []
-    for vf in v_file_nodes:
-        # E.g. "main" or "main_rb"
-        # base_name =  str(Path(vf.name).stem)
-        base_name, _ = os.path.splitext(vf.name)
-        is_testbench = base_name.lower().endswith("_tb")
-        if is_testbench:
-            test_srcs.append(vf.name)
+    for file in files:
+        if is_testbench(env, file.name):
+            test_srcs.append(file.name)
         else:
-            synth_srcs.append(vf.name)
+            synth_srcs.append(file.name)
     return (synth_srcs, test_srcs)
 
 
 @dataclass(frozen=True)
 class SimulationConfig:
-    """Simulation parameters. Used for 'sim' and 'test' runs."""
+    """Simulation parameters, for sim and test commands."""
 
-    top_module: str  # Top module name for the simulation.
-    srcs: List[str]  # Litst of source files to use.
+    top_module: str  # Top module name of the simulation.
+    srcs: List[str]  # List of source files to compile.
 
 
 def get_sim_config(
@@ -333,7 +354,7 @@ def get_sim_config(
 
     # Construct a SimulationParams with all the synth files + the
     # testbench file.
-    top_module, _ = os.path.splitext(testbench)
+    top_module = basename(env, testbench)
     srcs = synth_srcs + [testbench]
     return SimulationConfig(top_module, srcs)
 
@@ -362,7 +383,7 @@ def get_tests_configs(
     # Construct a config for each testbench.
     configs = []
     for tb in testbenches:
-        top_module, _ = os.path.splitext(tb)
+        top_module = basename(env, tb)
         srcs = synth_srcs + [tb]
         configs.append(SimulationConfig(top_module, srcs))
 
@@ -389,3 +410,63 @@ def make_waves_target(
         ),
     )
     return result
+
+
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-positional-arguments
+def make_iverilog_action(
+    env: SConsEnvironment,
+    ivl_path: str,
+    verbose: bool,
+    vcd_output_name: str,
+    is_interactive: bool,
+    extra_params: List[str] = None,
+    lib_dirs: List[str] = None,
+    lib_files: List[str] = None,
+) -> str:
+    """Construct an iverilog scons action string.
+    * env: Rhe scons environment.
+    * lvl: Optional path to the lvl library.
+    * verbose: IVerilog will show extra info.
+    * vcd_output_name: Value for the macro VCD_OUTPUT.
+    * is_interactive: True for apio sim, False otherwise.
+    * extra_params: Optional list of additional IVerilog params.
+    * lib_dirs: Optional list of dir pathes to include.
+    * lib_files: Optional list of library files to compile.
+    *
+    * Returns the scons action string for the IVerilog command.
+    """
+    ivl_path_param = (
+        "" if is_windows(env) or not ivl_path else f'-B "{ivl_path}"'
+    )
+
+    # Optional extra params.
+    if extra_params is None:
+        extra_params = []
+
+    # Optional library dirs.
+    lib_dirs_params = []
+    if lib_dirs:
+        for lib_dir in lib_dirs:
+            lib_dirs_params.append(f'-I"{lib_dir}"')
+
+    # Optional library files.
+    lib_files_params = []
+    if lib_files:
+        for lib_file in lib_files:
+            lib_files_params.append(f'"{lib_file}"')
+
+    # Construct the action string.
+    action = (
+        "iverilog {0} {1} -o $TARGET {2} {3} {4} {5} {6} $SOURCES"
+    ).format(
+        ivl_path_param,
+        "-v" if verbose else "",
+        f"-DVCD_OUTPUT={vcd_output_name}",
+        "-DINTERACTIVE_SIM" if is_interactive else "",
+        " ".join(extra_params),
+        " ".join(lib_dirs_params),
+        " ".join(lib_files_params),
+    )
+
+    return action

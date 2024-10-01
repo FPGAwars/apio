@@ -39,7 +39,6 @@
 
 
 import os
-from platform import system
 from SCons.Script import (
     Builder,
     AlwaysBuild,
@@ -50,6 +49,9 @@ from SCons.Script import (
 )
 from apio.scons_util import (
     TARGET,
+    is_testbench,
+    basename,
+    is_windows,
     get_constraint_file,
     create_construction_env,
     arg_bool,
@@ -62,11 +64,11 @@ from apio.scons_util import (
     get_sim_config,
     get_tests_configs,
     make_waves_target,
+    make_iverilog_action,
 )
 
 # -- Create the environment
 env = create_construction_env(ARGUMENTS)
-
 
 # -- Get arguments.
 FPGA_MODEL = arg_str(env, "fpga_model", "")
@@ -89,11 +91,7 @@ IVL_PATH = os.environ["IVL"] if "IVL" in os.environ else ""
 ICEBOX_PATH = os.environ["ICEBOX"] if "ICEBOX" in os.environ else ""
 CHIPDB_PATH = os.path.join(ICEBOX_PATH, "chipdb-{0}.txt".format(FPGA_SIZE))
 YOSYS_PATH = os.environ["YOSYS_LIB"] if "YOSYS_LIB" in os.environ else ""
-YOSYS_CELLS_DIR = f"{YOSYS_PATH}/gowin"
-
-isWindows = "Windows" == system()
-VVP_PATH = "" if isWindows or not IVL_PATH else '-M "{0}"'.format(IVL_PATH)
-IVER_PATH = "" if isWindows or not IVL_PATH else '-B "{0}"'.format(IVL_PATH)
+YOSYS_LIB_DIR = YOSYS_PATH + "/gowin"
 
 # -- Create scannenr to identify dependencies in verilog files.
 verilog_src_scanner = make_verilog_src_scanner(env)
@@ -197,50 +195,60 @@ AlwaysBuild(time_rpt_target)
 time_target = env.Alias("time", time_rpt_target)
 
 
-# -- Apio sim/test
-# -- Builder helper (iverolog command generator).
-# -- (modules).v -> hardware.out.
-def iverilog_generator(source, target, env, for_signature):
-    """Constructs dynamically a commands for iverlog targets builders."""
-    # E.g. "my_module" or "my_module_tb"
-    target_name, _ = os.path.splitext(str(target[0]))
-    # Testbenches use the macro VCD_OUTPUT to know the name of the waves
-    # output file.We also pass a dummy when the verify command to avoid a
-    # warning about the undefined macro.
-    is_testbench = target_name.upper().endswith("_TB")
-    is_verify = "verify" in COMMAND_LINE_TARGETS
-    vcd_output_flag = (
-        "-DVCD_OUTPUT=dummy_vcd_output"
-        if is_verify
-        else f"-DVCD_OUTPUT={target_name}" if is_testbench else ""
-    )
-    verbose_flag = "-v" if VERBOSE_ALL else ""
-    # The INTERACTIVE_SIM macro allow testbenchs to distinguish between an
-    # automatic simulation (apio test) and interactive simulation (apio sim),
-    # For example, for continuing despire errors in interactive mode.
-    is_interactive_sim = is_testbench and "sim" in COMMAND_LINE_TARGETS
-    interactive_sim_flag = "-DINTERACTIVE_SIM" if is_interactive_sim else ""
-    result = 'iverilog {0} {1} -o $TARGET {2} {3} -I"{4}" $SOURCES'.format(
-        IVER_PATH,
-        verbose_flag,
-        vcd_output_flag,
-        interactive_sim_flag,
-        YOSYS_CELLS_DIR,
-    )
-    return result
-
-
-# -- Apio sim/test.
+# -- Apio verify.
 # -- Builder (iverilog, verilog compiler).
-# -- (modules).v -> hardware.out.
-iverilog_builder = Builder(
-    # Action string is computed automatically by the generator.
-    generator=iverilog_generator,
+# -- (modules + testbenches).v -> hardware.out.
+iverilog_verify_builder = Builder(
+    action=make_iverilog_action(
+        env,
+        ivl_path=IVL_PATH,
+        verbose=VERBOSE_ALL,
+        vcd_output_name="dummy_vcd_output",
+        is_interactive=False,
+        lib_dirs=[YOSYS_LIB_DIR],
+    ),
     suffix=".out",
     src_suffix=".v",
     source_scanner=verilog_src_scanner,
 )
-env.Append(BUILDERS={"IVerilog": iverilog_builder})
+env.Append(BUILDERS={"IVerilogVerify": iverilog_verify_builder})
+
+
+# -- Apio sim/test
+# -- Builder helper (iverolog command generator).
+# -- (modules + testbench).v -> (testbench).out.
+def iverilog_tb_generator(source, target, env, for_signature):
+    """Construct the action string for the iverilog_tb_builder builder
+    for a given testbench target."""
+    # Extract testbench name from target file name.
+    testbench_file = str(target[0])
+    assert is_testbench(env, testbench_file), testbench_file
+    testbench_name = basename(env, testbench_file)
+
+    # Construct the command line.
+    action = make_iverilog_action(
+        env,
+        ivl_path=IVL_PATH,
+        verbose=VERBOSE_ALL,
+        vcd_output_name=testbench_name,
+        is_interactive=("sim" in COMMAND_LINE_TARGETS),
+        extra_params=["-DNO_ICE40_DEFAULT_ASSIGNMENTS"],
+        lib_dirs=[YOSYS_LIB_DIR],
+    )
+    return action
+
+
+# -- Apio sim/test.
+# -- Builder (iverilog, verilog compiler).
+# -- (modules + testbench).v -> (testbench).out.
+iverilog_tb_builder = Builder(
+    # Action string is different for sim and for
+    generator=iverilog_tb_generator,
+    suffix=".out",
+    src_suffix=".v",
+    source_scanner=verilog_src_scanner,
+)
+env.Append(BUILDERS={"IVerilogTestbench": iverilog_tb_builder})
 
 
 # -- Apio graph.
@@ -277,7 +285,11 @@ env.Append(BUILDERS={"SVG": svg_builder})
 # -- Builder (vvp, simulator).
 # -- (testbench).out -> (testbench).vcd.
 vcd_builder = Builder(
-    action="vvp {0} $SOURCE".format(VVP_PATH), suffix=".vcd", src_suffix=".out"
+    action="vvp {0} $SOURCE".format(
+        "" if (is_windows(env) or not IVL_PATH) else f'-M "{IVL_PATH}"'
+    ),
+    suffix=".vcd",
+    src_suffix=".out",
 )
 env.Append(BUILDERS={"VCD": vcd_builder})
 
@@ -285,7 +297,7 @@ env.Append(BUILDERS={"VCD": vcd_builder})
 # -- Apio verify.
 # -- Targets
 # -- (modules).v -> (modules).out
-vout_target = env.IVerilog(TARGET, synth_srcs + test_srcs)
+vout_target = env.IVerilogVerify(TARGET, synth_srcs + test_srcs)
 AlwaysBuild(vout_target)
 verify_target = env.Alias("verify", vout_target)
 
@@ -307,7 +319,7 @@ graph_target = env.Alias("graph", svg_target)
 # -- (modules).v -> (testbench).out -> (testbench).vcd -> gtkwave
 if "sim" in COMMAND_LINE_TARGETS:
     config = get_sim_config(env, TESTBENCH, synth_srcs)
-    sout_target = env.IVerilog(config.top_module, config.srcs)
+    sout_target = env.IVerilogTestbench(config.top_module, config.srcs)
     vcd_file_target = env.VCD(sout_target)
     waves_target = make_waves_target(env, vcd_file_target, config.top_module)
     AlwaysBuild(waves_target)
@@ -320,7 +332,7 @@ if "test" in COMMAND_LINE_TARGETS:
     configs = get_tests_configs(env, TESTBENCH, synth_srcs, test_srcs)
     tests_targets = []
     for config in configs:
-        test_out_target = env.IVerilog(config.top_module, config.srcs)
+        test_out_target = env.IVerilogTestbencg(config.top_module, config.srcs)
         AlwaysBuild(test_out_target)
         test_vcd_target = env.VCD(test_out_target)
         AlwaysBuild(test_vcd_target)
@@ -340,16 +352,18 @@ if "test" in COMMAND_LINE_TARGETS:
 # -- (none) -> hardware.vlt builder.
 verilator_config_builder = make_verilator_config_builder(
     env,
-    "`verilator_config\n"
-    f'lint_off -rule COMBDLY      -file "{YOSYS_CELLS_DIR}/*"\n'
-    f'lint_off -rule WIDTHEXPAND  -file "{YOSYS_CELLS_DIR}/*"\n',
+    (
+        "`verilator_config\n"
+        f'lint_off -rule COMBDLY      -file "{YOSYS_LIB_DIR}/*"\n'
+        f'lint_off -rule WIDTHEXPAND  -file "{YOSYS_LIB_DIR}/*"\n'
+    ),
 )
 env.Append(BUILDERS={"VerilatorConfig": verilator_config_builder})
 
 
 # -- Apio lint.
 # -- Builder (verilator, verilog linter)
-# -- (modules).v -> lint report to stdout builder.
+# -- (modules + testbenches).v -> lint report to stdout builder.
 verilator_builder = Builder(
     action=(
         "verilator --lint-only --bbox-unsup --timing -Wno-TIMESCALEMOD "
@@ -359,7 +373,7 @@ verilator_builder = Builder(
         "-Wno-style" if VERILATOR_NO_STYLE else "",
         VERILATOR_PARAM_STR,
         "--top-module " + TOP_MODULE if TOP_MODULE else "",
-        YOSYS_CELLS_DIR,
+        YOSYS_LIB_DIR,
         TARGET + ".vlt",
     ),
     src_suffix=".v",
