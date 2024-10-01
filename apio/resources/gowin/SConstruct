@@ -86,8 +86,6 @@ VERILATOR_NO_STYLE = arg_bool(env, "nostyle", False)
 
 # -- Resources paths
 IVL_PATH = os.environ["IVL"] if "IVL" in os.environ else ""
-ICEBOX_PATH = os.environ["ICEBOX"] if "ICEBOX" in os.environ else ""
-CHIPDB_PATH = os.path.join(ICEBOX_PATH, "chipdb-{0}.txt".format(FPGA_SIZE))
 YOSYS_PATH = os.environ["YOSYS_LIB"] if "YOSYS_LIB" in os.environ else ""
 YOSYS_LIB_DIR = YOSYS_PATH + "/gowin"
 

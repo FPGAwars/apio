@@ -88,7 +88,6 @@ VERILATOR_NO_STYLE = arg_bool(env, "nostyle", False)
 IVL_PATH = os.environ["IVL"] if "IVL" in os.environ else ""
 TRELLIS_PATH = os.environ["TRELLIS"] if "TRELLIS" in os.environ else ""
 DATABASE_PATH = os.path.join(TRELLIS_PATH, "database")
-CHIPDB_PATH = os.path.join(TRELLIS_PATH, "chipdb-{0}.txt".format(FPGA_SIZE))
 YOSYS_PATH = os.environ["YOSYS_LIB"] if "YOSYS_LIB" in os.environ else ""
 YOSYS_LIB_DIR = YOSYS_PATH + "/ecp5"
 
