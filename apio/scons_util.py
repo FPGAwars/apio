@@ -201,7 +201,7 @@ def dump_env_vars(env: SConsEnvironment) -> None:
     print("----- Env vars end -------")
 
 
-def get_verilator_param_str(env: SConsEnvironment) -> str:
+def get_verilator_warning_params(env: SConsEnvironment) -> str:
     """Construct from the nowwarn and warn arguments an option list
     for verilator. These values are specified by the user to the
     apio lint param.
