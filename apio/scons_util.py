@@ -252,21 +252,21 @@ def get_programmer_cmd(env: SConsEnvironment) -> str:
     # Get the programer command template arg.
     prog_arg = arg_str(env, "prog", "")
 
-    # If empty then return as is.
+    # If empty then return as is. This must be an apio command that doesn't use
+    # the programmer.
     if not prog_arg:
         return prog_arg
 
-    # The programmer template is expected to contain the placeholder
-    # "${SOURCE}" that we need to convert to "$SOURCE" as expected by scons.
-    if "${SOURCE}" not in prog_arg:
+    # It's an error if the programmer command doesn't have the $SOURCE
+    # placeholder when scons inserts the binary file name.
+    if "$SOURCE" not in prog_arg:
         fatal_error(
             env,
             "[Internal] 'prog' argument does not contain "
-            f"the '${{SOURCE}}' marker. [{prog_arg}]",
+            f"the '$SOURCE' marker. [{prog_arg}]",
         )
 
-    prog_cmd = prog_arg.replace("${SOURCE}", "$SOURCE")
-    return prog_cmd
+    return prog_arg
 
 
 def make_verilog_src_scanner(env: SConsEnvironment) -> SCons.Scanner:
