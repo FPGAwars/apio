@@ -262,7 +262,7 @@ class SCons:
             * sram: Perform SRAM programming
             * flash: Perform Flash programming
 
-        * OUTPUT: A string with the command+args to execute and a ${SOURCE}
+        * OUTPUT: A string with the command+args to execute and a $SOURCE
           placeholder for the bitstream file name.
         """
 
@@ -315,12 +315,11 @@ class SCons:
         # --   * "${PID}" (optional): USB Product id
         # --   * "${FTDI_ID}" (optional): FTDI id
         # --   * "${SERIAL_PORT}" (optional): Serial port name
-        # --   * "${SOURCE}" (required): Bitstream file name.
         programmer = self.serialize_programmer(
             board_data, prog[SRAM], prog[FLASH]
         )
         # -- The placeholder for the bitstream file name should always exist.
-        assert "${SOURCE}" in programmer, programmer
+        assert "$SOURCE" in programmer, programmer
 
         # -- Assign the parameters in the Template string
 
@@ -370,9 +369,9 @@ class SCons:
             programmer = programmer.replace("${SERIAL_PORT}", device)
 
         # -- Return the Command to execute for uploading the circuit
-        # -- to the given board. Scons will replace ${SOURCE} with the
+        # -- to the given board. Scons will replace $SOURCE with the
         # -- bitstream file name before executing the command.
-        assert "${SOURCE}" in programmer, programmer
+        assert "$SOURCE" in programmer, programmer
         return programmer
 
     @staticmethod
@@ -522,8 +521,8 @@ class SCons:
            * "${SERIAL_PORT}" (optional): Serial port name
 
           Example of output strings:
-          "'tinyprog --pyserial -c ${SERIAL_PORT} --program ${SOURCE}'"
-          "'iceprog -d i:0x${VID}:0x${PID}:${FTDI_ID} ${SOURCE}'"
+          "'tinyprog --pyserial -c ${SERIAL_PORT} --program $SOURCE'"
+          "'iceprog -d i:0x${VID}:0x${PID}:${FTDI_ID} $SOURCE'"
         """
 
         # -- Get the programmer type
@@ -551,7 +550,7 @@ class SCons:
         # -- Mark the expected location of the bitstream file name, before
         # -- we appened any arg to the command. Some programmers such as
         # -- dfu-util require it immediatly after the "args" string.
-        programmer += " ${SOURCE}"
+        programmer += " $SOURCE"
 
         # -- Some tools need extra arguments
         # -- (like dfu-util for example)
