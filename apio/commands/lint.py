@@ -60,6 +60,8 @@ of the project that contains the apio.ini file.
 \b
 Examples:
   apio lint
+  apio lint -t my_module
+  apio lint --all
 """
 
 

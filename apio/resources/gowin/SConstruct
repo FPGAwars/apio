@@ -56,7 +56,6 @@ from apio.scons_util import (
     create_construction_env,
     arg_bool,
     arg_str,
-    get_verilator_warning_params,
     get_programmer_cmd,
     make_verilog_src_scanner,
     make_verilator_config_builder,
@@ -65,6 +64,7 @@ from apio.scons_util import (
     get_tests_configs,
     make_waves_target,
     make_iverilog_action,
+    make_verilator_action,
 )
 
 # -- Create the environment
@@ -82,7 +82,8 @@ VERBOSE_PNR = arg_bool(env, "verbose_pnr", False)
 TESTBENCH = arg_str(env, "testbench", "")
 VERILATOR_ALL = arg_bool(env, "all", False)
 VERILATOR_NO_STYLE = arg_bool(env, "nostyle", False)
-
+NOWARNS = arg_str(env, "nowarn", "").split(",")
+WARNS = arg_str(env, "warn", "").split(",")
 
 # -- Resources paths
 IVL_PATH = os.environ["IVL"] if "IVL" in os.environ else ""
@@ -361,16 +362,14 @@ env.Append(BUILDERS={"VerilatorConfig": verilator_config_builder})
 # -- Builder (verilator, verilog linter)
 # -- (modules + testbenches).v -> lint report to stdout builder.
 verilator_builder = Builder(
-    action=(
-        "verilator --lint-only --bbox-unsup --timing -Wno-TIMESCALEMOD "
-        '-Wno-MULTITOP {0} {1} {2} {3} -I"{4}" {5} $SOURCES'
-    ).format(
-        "-Wall" if VERILATOR_ALL else "",
-        "-Wno-style" if VERILATOR_NO_STYLE else "",
-        get_verilator_warning_params(env),
-        "--top-module " + TOP_MODULE if TOP_MODULE else "",
-        YOSYS_LIB_DIR,
-        TARGET + ".vlt",
+    action=make_verilator_action(
+        env,
+        warnings_all=VERILATOR_ALL,
+        warnings_no_style=VERILATOR_NO_STYLE,
+        no_warns=NOWARNS,
+        warns=WARNS,
+        top_module=TOP_MODULE,
+        lib_dirs=[YOSYS_LIB_DIR],
     ),
     src_suffix=".v",
     source_scanner=verilog_src_scanner,

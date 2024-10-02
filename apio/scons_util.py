@@ -20,7 +20,7 @@ be called only from the SConstruct.py files.
 import os
 import re
 from platform import system
-from typing import Dict, List, Tuple
+from typing import Dict, Tuple, List, Optional
 from dataclasses import dataclass
 import SCons
 from SCons.Script import DefaultEnvironment
@@ -30,6 +30,28 @@ import click
 
 # -- Target name
 TARGET = "hardware"
+
+
+def map_params(
+    env: SConsEnvironment, params: Optional[List[str]], fmt: str
+) -> str:
+    """A common function construct a command string snippet from a list
+    of arguments. The functon does the following:
+     1. If non replace with []
+     2. Drops empty items.
+     3. Maps the items using the format string which contains exactly one
+        placeholder {}.
+     4. Joins the items with a white space char.
+    """
+    # None designates empty list. Avoiding the pylint non safe default warning.
+    if params is None:
+        params = []
+
+    # Drop empty params and map the rest using the format string.
+    mapped_params = [fmt.format(x.strip()) for x in params if x.strip()]
+
+    # Join using a single space.
+    return " ".join(mapped_params)
 
 
 def basename(env: SConsEnvironment, file_name: str) -> str:
@@ -416,6 +438,7 @@ def make_waves_target(
 # pylint: disable=too-many-positional-arguments
 def make_iverilog_action(
     env: SConsEnvironment,
+    *,
     ivl_path: str,
     verbose: bool,
     vcd_output_name: str,
@@ -440,22 +463,6 @@ def make_iverilog_action(
         "" if is_windows(env) or not ivl_path else f'-B "{ivl_path}"'
     )
 
-    # Optional extra params.
-    if extra_params is None:
-        extra_params = []
-
-    # Optional library dirs.
-    lib_dirs_params = []
-    if lib_dirs:
-        for lib_dir in lib_dirs:
-            lib_dirs_params.append(f'-I"{lib_dir}"')
-
-    # Optional library files.
-    lib_files_params = []
-    if lib_files:
-        for lib_file in lib_files:
-            lib_files_params.append(f'"{lib_file}"')
-
     # Construct the action string.
     action = (
         "iverilog {0} {1} -o $TARGET {2} {3} {4} {5} {6} $SOURCES"
@@ -464,9 +471,53 @@ def make_iverilog_action(
         "-v" if verbose else "",
         f"-DVCD_OUTPUT={vcd_output_name}",
         "-DINTERACTIVE_SIM" if is_interactive else "",
-        " ".join(extra_params),
-        " ".join(lib_dirs_params),
-        " ".join(lib_files_params),
+        map_params(env, extra_params, "{}"),
+        map_params(env, lib_dirs, '-I"{}"'),
+        map_params(env, lib_files, '"{}"'),
+    )
+
+    return action
+
+
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-positional-arguments
+def make_verilator_action(
+    env: SConsEnvironment,
+    *,
+    warnings_all: bool = False,
+    warnings_no_style: bool = False,
+    no_warns: List[str] = None,
+    warns: List[str] = None,
+    top_module: str = "",
+    extra_params: List[str] = None,
+    lib_dirs: List[str] = None,
+    lib_files: List[str] = None,
+) -> str:
+    """Construct an verilator scons action string.
+    * env: Rhe scons environment.
+    * warnings_all: If True, use -Wall.
+    * warnings_no_style: If True, use -Wno-style.
+    * no_warns: Optional list with verilator warning codes to disble.
+    * warns: Optional list with verilator warning codes to enable.
+    * top_module: If not empty, use --top-module <top_module>.
+    * extra_params: Optional additional arguments.
+    * libs_dirs: Optional directories for include search.
+    * lib_files: Optional additional files to include.
+    """
+
+    action = (
+        "verilator --lint-only --bbox-unsup --timing -Wno-TIMESCALEMOD "
+        "-Wno-MULTITOP {0} {1} {2} {3} {4} {5} {6} {7} {8} $SOURCES"
+    ).format(
+        "-Wall" if warnings_all else "",
+        "-Wno-style" if warnings_no_style else "",
+        map_params(env, no_warns, "-Wno-{}"),
+        map_params(env, warns, "-Wwarn-{}"),
+        f"--top-module {top_module}" if top_module else "",
+        map_params(env, extra_params, "{}"),
+        map_params(env, lib_dirs, '-I"{}"'),
+        TARGET + ".vlt",
+        map_params(env, lib_files, '"{}"'),
     )
 
     return action
