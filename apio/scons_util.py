@@ -11,19 +11,71 @@
 be called only from the SConstruct.py files.
 """
 
-# NOTE: We pass the scons construction environment 'env' to the functions
-# below, even when not used, to discourage calling these from outside of a
-# SConstruct script.
-# pylint: disable=unused-argument
+# C0209: Formatting could be an f-string (consider-using-f-string)
+# pylint: disable=C0209
+
+# W0613: Unused argument
+# pylint: disable=W0613
 
 import os
 import re
-from typing import Dict, List
+from platform import system
+from typing import Dict, Tuple, List, Optional
+from dataclasses import dataclass
 import SCons
 from SCons.Script import DefaultEnvironment
 from SCons.Script.SConscript import SConsEnvironment
 import SCons.Node.FS
 import click
+
+# -- Target name
+TARGET = "hardware"
+
+
+def map_params(
+    env: SConsEnvironment, params: Optional[List[str]], fmt: str
+) -> str:
+    """A common function construct a command string snippet from a list
+    of arguments. The functon does the following:
+     1. If non replace with []
+     2. Drops empty items.
+     3. Maps the items using the format string which contains exactly one
+        placeholder {}.
+     4. Joins the items with a white space char.
+    """
+    # None designates empty list. Avoiding the pylint non safe default warning.
+    if params is None:
+        params = []
+
+    # Drop empty params and map the rest using the format string.
+    mapped_params = [fmt.format(x.strip()) for x in params if x.strip()]
+
+    # Join using a single space.
+    return " ".join(mapped_params)
+
+
+def basename(env: SConsEnvironment, file_name: str) -> str:
+    """Given a file name, returns it with the extension removed."""
+    result, _ = os.path.splitext(file_name)
+    return result
+
+
+def is_verilog_src(env: SConsEnvironment, file_name: str) -> str:
+    """Given a file name, determine by its extension if it's a verilog source
+    file (testbenches included)."""
+    _, ext = os.path.splitext(file_name)
+    return ext == "v"
+
+
+def is_testbench(env: SConsEnvironment, file_name: str) -> bool:
+    """Given a file name, return true if it's a testbench file."""
+    name = basename(env, file_name)
+    return name.lower().endswith("_tb")
+
+
+def is_windows(env: SConsEnvironment) -> bool:
+    """Returns True if running on Windows."""
+    return "Windows" == system()
 
 
 def create_construction_env(args: Dict[str, str]) -> SConsEnvironment:
@@ -171,7 +223,7 @@ def dump_env_vars(env: SConsEnvironment) -> None:
     print("----- Env vars end -------")
 
 
-def get_verilator_param_str(env: SConsEnvironment) -> str:
+def get_verilator_warning_params(env: SConsEnvironment) -> str:
     """Construct from the nowwarn and warn arguments an option list
     for verilator. These values are specified by the user to the
     apio lint param.
@@ -200,21 +252,21 @@ def get_programmer_cmd(env: SConsEnvironment) -> str:
     # Get the programer command template arg.
     prog_arg = arg_str(env, "prog", "")
 
-    # If empty then return as is.
+    # If empty then return as is. This must be an apio command that doesn't use
+    # the programmer.
     if not prog_arg:
         return prog_arg
 
-    # The programmer template is expected to contain the placeholder
-    # "${SOURCE}" that we need to convert to "$SOURCE" as expected by scons.
-    if "${SOURCE}" not in prog_arg:
+    # It's an error if the programmer command doesn't have the $SOURCE
+    # placeholder when scons inserts the binary file name.
+    if "$SOURCE" not in prog_arg:
         fatal_error(
             env,
             "[Internal] 'prog' argument does not contain "
-            f"the '${{SOURCE}}' marker. [{prog_arg}]",
+            f"the '$SOURCE' marker. [{prog_arg}]",
         )
 
-    prog_cmd = prog_arg.replace("${SOURCE}", "$SOURCE")
-    return prog_cmd
+    return prog_arg
 
 
 def make_verilog_src_scanner(env: SConsEnvironment) -> SCons.Scanner:
@@ -264,3 +316,208 @@ def make_verilog_src_scanner(env: SConsEnvironment) -> SCons.Scanner:
         return env.File(includes_list)
 
     return env.Scanner(function=verilog_src_scanner_func)
+
+
+def make_verilator_config_builder(env: SConsEnvironment, config_text: str):
+    """Create a scons Builder that writes a verilator config file
+    (hardware.vlt) with the given text."""
+
+    def verilator_config_func(target, source, env):
+        """Creates a verilator .vlt config files."""
+        with open(target[0].get_path(), "w", encoding="utf-8") as target_file:
+            target_file.write(config_text)
+        return 0
+
+    return env.Builder(
+        action=env.Action(
+            verilator_config_func, "Creating verilator config file."
+        ),
+        suffix=".vlt",
+    )
+
+
+def get_source_files(env: SConsEnvironment) -> Tuple[List[str], List[str]]:
+    """Get the list of *.v files, splitted into synth and testbench lists.
+    If a .v file has the suffix _tb.v it's is classified st a testbench,
+    otherwise as a synthesis file.
+    """
+    # -- Get a list of all *.v files in the project dir.
+    files: List[SCons.Node.FS.File] = env.Glob("*.v")
+
+    # Split file names to synth files and testbench file lists
+    synth_srcs = []
+    test_srcs = []
+    for file in files:
+        if is_testbench(env, file.name):
+            test_srcs.append(file.name)
+        else:
+            synth_srcs.append(file.name)
+    return (synth_srcs, test_srcs)
+
+
+@dataclass(frozen=True)
+class SimulationConfig:
+    """Simulation parameters, for sim and test commands."""
+
+    top_module: str  # Top module name of the simulation.
+    srcs: List[str]  # List of source files to compile.
+
+
+def get_sim_config(
+    env: SConsEnvironment, testbench: str, synth_srcs: List[str]
+) -> SimulationConfig:
+    """Returns a SimulationConfig for a sim command. 'testbench' is
+    a required testbench file name. 'synth_srcs' is the list of all
+    module sources as returned by get_source_files()."""
+    # Apio sim requires a testbench arg so ifi this missing here, it's a
+    # programming error.
+    if not testbench:
+        fatal_error(env, "[Internal] Sim testbench name got lost.")
+
+    # Construct a SimulationParams with all the synth files + the
+    # testbench file.
+    top_module = basename(env, testbench)
+    srcs = synth_srcs + [testbench]
+    return SimulationConfig(top_module, srcs)
+
+
+def get_tests_configs(
+    env: SConsEnvironment,
+    testbench: str,
+    synth_srcs: List[str],
+    test_srcs: list[str],
+) -> List[SimulationConfig]:
+    """Return a list of SimulationConfigs for each of the testbenches that
+    need to be run for a 'apio test' command. If testbench is empty,
+    all the testbenches in test_srcs will be tested. Otherwise, only the
+    testbench in testbench will be tested. synth_srcs and test_srcs are
+    source and test file lists as returned by get_source_files()."""
+    # List of testbenches to be tested.
+    if testbench:
+        testbenches = testbench
+    else:
+        testbenches = test_srcs
+
+    # If there are not testbenches, we consider the test as failed.
+    if len(testbenches) == 0:
+        fatal_error(env, "No testbench files found (*_tb.v).")
+
+    # Construct a config for each testbench.
+    configs = []
+    for tb in testbenches:
+        top_module = basename(env, tb)
+        srcs = synth_srcs + [tb]
+        configs.append(SimulationConfig(top_module, srcs))
+
+    return configs
+
+
+def make_waves_target(
+    env: SConsEnvironment,
+    vcd_file_target: SCons.Node.NodeList,
+    top_module: str,
+) -> List[SCons.Node.Alias.Alias]:
+    """Construct a target to launch the QTWave signal viwer. vcd_file_target is
+    the simulator target that generated the vcd file with the signals. Top
+    module is to derive the name of the .gtkw which can be used to save the
+    viewer configuration for future simulations. Returns the new targets.
+    """
+    result = env.Alias(
+        "sim",
+        vcd_file_target,
+        "gtkwave {0} {1} {2}.gtkw".format(
+            '--rcvar "splash_disable on" --rcvar "do_initial_zoom_fit 1"',
+            vcd_file_target[0],
+            top_module,
+        ),
+    )
+    return result
+
+
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-positional-arguments
+def make_iverilog_action(
+    env: SConsEnvironment,
+    *,
+    ivl_path: str,
+    verbose: bool,
+    vcd_output_name: str,
+    is_interactive: bool,
+    extra_params: List[str] = None,
+    lib_dirs: List[str] = None,
+    lib_files: List[str] = None,
+) -> str:
+    """Construct an iverilog scons action string.
+    * env: Rhe scons environment.
+    * lvl: Optional path to the lvl library.
+    * verbose: IVerilog will show extra info.
+    * vcd_output_name: Value for the macro VCD_OUTPUT.
+    * is_interactive: True for apio sim, False otherwise.
+    * extra_params: Optional list of additional IVerilog params.
+    * lib_dirs: Optional list of dir pathes to include.
+    * lib_files: Optional list of library files to compile.
+    *
+    * Returns the scons action string for the IVerilog command.
+    """
+    ivl_path_param = (
+        "" if is_windows(env) or not ivl_path else f'-B "{ivl_path}"'
+    )
+
+    # Construct the action string.
+    action = (
+        "iverilog {0} {1} -o $TARGET {2} {3} {4} {5} {6} $SOURCES"
+    ).format(
+        ivl_path_param,
+        "-v" if verbose else "",
+        f"-DVCD_OUTPUT={vcd_output_name}",
+        "-DINTERACTIVE_SIM" if is_interactive else "",
+        map_params(env, extra_params, "{}"),
+        map_params(env, lib_dirs, '-I"{}"'),
+        map_params(env, lib_files, '"{}"'),
+    )
+
+    return action
+
+
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-positional-arguments
+def make_verilator_action(
+    env: SConsEnvironment,
+    *,
+    warnings_all: bool = False,
+    warnings_no_style: bool = False,
+    no_warns: List[str] = None,
+    warns: List[str] = None,
+    top_module: str = "",
+    extra_params: List[str] = None,
+    lib_dirs: List[str] = None,
+    lib_files: List[str] = None,
+) -> str:
+    """Construct an verilator scons action string.
+    * env: Rhe scons environment.
+    * warnings_all: If True, use -Wall.
+    * warnings_no_style: If True, use -Wno-style.
+    * no_warns: Optional list with verilator warning codes to disble.
+    * warns: Optional list with verilator warning codes to enable.
+    * top_module: If not empty, use --top-module <top_module>.
+    * extra_params: Optional additional arguments.
+    * libs_dirs: Optional directories for include search.
+    * lib_files: Optional additional files to include.
+    """
+
+    action = (
+        "verilator --lint-only --bbox-unsup --timing -Wno-TIMESCALEMOD "
+        "-Wno-MULTITOP {0} {1} {2} {3} {4} {5} {6} {7} {8} $SOURCES"
+    ).format(
+        "-Wall" if warnings_all else "",
+        "-Wno-style" if warnings_no_style else "",
+        map_params(env, no_warns, "-Wno-{}"),
+        map_params(env, warns, "-Wwarn-{}"),
+        f"--top-module {top_module}" if top_module else "",
+        map_params(env, extra_params, "{}"),
+        map_params(env, lib_dirs, '-I"{}"'),
+        TARGET + ".vlt",
+        map_params(env, lib_files, '"{}"'),
+    )
+
+    return action
