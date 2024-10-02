@@ -133,6 +133,11 @@ def cli(
         # -- Print apio package directory.
         click.secho("Package:  ", nl=False)
         click.secho(util.get_path_in_apio_package(""), fg="yellow")
+
+        # -- Print apio home directory.
+        click.secho("Home:     ", nl=False)
+        click.secho(util.get_home_dir(), fg="yellow")
+
         ctx.exit(0)
 
     # -- Invalid option. Just show the help
