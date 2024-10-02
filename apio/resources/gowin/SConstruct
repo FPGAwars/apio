@@ -294,9 +294,9 @@ env.Append(BUILDERS={"VCD": vcd_builder})
 # -- Apio verify.
 # -- Targets
 # -- (modules).v -> (modules).out
-vout_target = env.IVerilogVerify(TARGET, synth_srcs + test_srcs)
-AlwaysBuild(vout_target)
-verify_target = env.Alias("verify", vout_target)
+verify_out_target = env.IVerilogVerify(TARGET, synth_srcs + test_srcs)
+AlwaysBuild(verify_out_target)
+verify_target = env.Alias("verify", verify_out_target)
 
 
 # -- Apio graph.
@@ -316,8 +316,8 @@ graph_target = env.Alias("graph", svg_target)
 # -- (modules).v -> (testbench).out -> (testbench).vcd -> gtkwave
 if "sim" in COMMAND_LINE_TARGETS:
     config = get_sim_config(env, TESTBENCH, synth_srcs)
-    sout_target = env.IVerilogTestbench(config.top_module, config.srcs)
-    vcd_file_target = env.VCD(sout_target)
+    sim_out_target = env.IVerilogTestbench(config.top_module, config.srcs)
+    vcd_file_target = env.VCD(sim_out_target)
     waves_target = make_waves_target(env, vcd_file_target, config.top_module)
     AlwaysBuild(waves_target)
 
@@ -398,5 +398,11 @@ if GetOption("clean"):
             env.Clean(time_target, str(node))
 
     env.Default(
-        [time_target, build_target, vout_target, graph_target, lint_target]
+        [
+            time_target,
+            build_target,
+            verify_out_target,
+            graph_target,
+            lint_target,
+        ]
     )
