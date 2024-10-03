@@ -338,63 +338,91 @@ class Resources:
 
         click.echo("\n")
 
+    # R0914: Too many local variables (17/15)
+    # pylint: disable=R0914
     def list_boards(self):
         """Print all the supported boards and the information of
         their FPGAs
         """
+        # Get terminal configuration. It will help us to adapt the format
+        # to a terminal vs a pipe.
+        config: util.TerminalConfig = util.get_terminal_config()
 
         # -- Table title
         title = (
             click.style("Board", fg="cyan") + " (FPGA, Arch, Type, Size, Pack)"
         )
 
-        # -- Get the terminal size (in characteres)
-        terminal_width, _ = shutil.get_terminal_size()
 
-        # -- String with a horizontal line with the same width
-        # -- as the terminal
-        line = "─" * terminal_width
 
-        # -- Print the table header
-        click.echo(line)
-        click.echo(title)
-        click.echo(line)
+        # -- Print the table header for terminal mode.
+        if config.terminal_mode():
+            title = (
+                click.style("Board", fg="cyan")
+                + " (FPGA, Arch, Type, Size, Pack)"
+            )
+            # -- Horizontal line across the terminal.
+            seperator_line = "─" * config.terminal_width
+            click.echo(seperator_line)
+            click.echo(title)
+            click.echo(seperator_line)
+
+        # -- Sort boards names by case insentive alphabetical order.
+        board_names = list(self.boards.keys())
+        board_names.sort(key=lambda x: x.lower())
+
+        # -- For a pipe, determine the max example name length.
+        max_board_name_len = max(len(x) for x in board_names)
 
         # -- Print all the boards!
-        for board in self.boards:
+        for board in board_names:
+
+            # -- Generate the report for a terminal. Color and multi lines
+            # -- are ok.
 
             # -- Get board FPGA long name
             fpga = self.boards[board]["fpga"]
 
             # -- Get information about the FPGA
             arch = self.fpgas[fpga]["arch"]
-            _type = self.fpgas[fpga]["type"]
+            type_ = self.fpgas[fpga]["type"]
             size = self.fpgas[fpga]["size"]
             pack = self.fpgas[fpga]["pack"]
 
             # -- Print the item with information
             # -- Print the Board in a differnt color
-            board_str = click.style(board, fg="cyan")
-            item_board = f"• {board_str}"
-            item_fpga = f"  (FPGA:{fpga}, {arch}, {_type}, {size}, {pack})"
 
-            # -- Item in one line
-            item = item_board + item_fpga
+            item_fpga = f"(FPGA:{fpga}, {arch}, {type_}, {size}, {pack})"
 
-            # -- If there is enough space, print in one line
-            if len(item) <= terminal_width:
-                click.echo(item)
+            if config.terminal_mode():
+                # -- Board name with a bullet point and color
+                board_str = click.style(board, fg="cyan")
+                item_board = f"• {board_str}"
 
-            # -- Not enough space: Print it in two separate lines
+                # -- Item in one line
+                one_line_item = f"{item_board}  {item_fpga}"
+
+                # -- If there is enough space, print in one line
+                if len(one_line_item) <= config.terminal_width:
+                    click.echo(one_line_item)
+
+                # -- Not enough space: Print it in two separate lines
+                else:
+                    two_lines_item = f"{item_board}\n      {item_fpga}"
+                    click.echo(two_lines_item)
+
             else:
-                click.echo(f"{item_board}\n    {item_fpga}")
+                # -- Generate the report for a pipe. Single line, no color, no
+                # -- bullet points.
+                click.echo(f"{board:<{max_board_name_len}} |  {item_fpga}")
 
-        # -- Print the Footer
-        click.echo(line)
-        click.echo(f"Total: {len(self.boards)} boards")
+        if config.terminal_mode():
+            # -- Print the Footer
+            click.echo(seperator_line)
+            click.echo(f"Total: {len(self.boards)} boards")
 
-        # -- Help message
-        click.secho(BOARDS_MSG, fg="green")
+            # -- Help message
+            click.secho(BOARDS_MSG, fg="green")
 
     def list_fpgas(self):
         """Print all the supported FPGAs"""

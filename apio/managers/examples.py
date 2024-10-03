@@ -134,22 +134,21 @@ class Examples:
             click.echo(terminal_seperator_line)
 
         # -- For a pipe, determine the max example name length.
-        if output_config.pipe_mode():
-            max_example_name_len = max(len(x.name) for x in examples)
+        max_example_name_len = max(len(x.name) for x in examples)
 
         # -- Emit the examples
         for example in examples:
-            if output_config.pipe_mode():
+            if output_config.terminal_mode():
+                # -- For a terminal. Multi lines and colors.
+                click.secho(f"{example.name}", fg="blue", bold=True)
+                click.secho(f"{example.description}")
+                click.secho(terminal_seperator_line)
+            else:
                 # -- For a pipe, single line, no colors.
                 click.secho(
                     f"{example.name:<{max_example_name_len}}  |  "
                     f"{example.description}"
                 )
-            else:
-                # -- For a terminal. Multi lines and colors.
-                click.secho(f"{example.name}", fg="blue", bold=True)
-                click.secho(f"{example.description}")
-                click.secho(terminal_seperator_line)
 
         # -- For a terminal, emit additional summary.
         if output_config.terminal_mode():
