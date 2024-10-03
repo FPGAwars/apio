@@ -13,6 +13,10 @@ import sys
 import os
 import json
 import platform
+import shutil
+from enum import Enum
+from dataclasses import dataclass
+from typing import Optional
 import subprocess
 from threading import Thread
 from pathlib import Path
@@ -98,6 +102,54 @@ class AsyncPipe(Thread):
 
         os.close(self._fd_write)
         self.join()
+
+
+class TerminalMode(Enum):
+    """Represents to two modes of stdout/err."""
+
+    # Output is sent to a terminal. Terminal width is available, and text
+    # can have ansi colors.
+    TERMINAL = 1
+    # Output is sent to a filter or a file. No width and ansi colors should
+    # be avoided.
+    PIPE = 2
+
+
+@dataclass(frozen=True)
+class TerminalConfig:
+    """Contains the stdout/err terminal/pipe configuration."""
+
+    mode: TerminalMode  # TERMINAL or PIPE.
+    terminal_width: Optional[int]  # Terminal width. None in PIPE mode.
+
+    def __post_init__(self):
+        """Validates initialization."""
+        assert isinstance(self.mode, TerminalMode), self
+        assert (self.terminal_width is not None) == self.terminal_mode(), self
+
+    def terminal_mode(self) -> bool:
+        """True iff in terminal mode."""
+        return self.mode == TerminalMode.TERMINAL
+
+    def pipe_mode(self) -> bool:
+        """True iff in pipe mode."""
+        return self.mode == TerminalMode.PIPE
+
+
+def get_terminal_config() -> TerminalConfig:
+    """Return the terminal configuration of of the current process."""
+
+    # Try to get terminal width, with a fallback default if not a terminal.
+    terminal_width, _ = shutil.get_terminal_size(fallback=(999, 999))
+
+    # We got the fallback width so assuming a pipe.
+    if terminal_width == 999:
+        return TerminalConfig(mode=TerminalMode.PIPE, terminal_width=None)
+
+    # We got an actual terminal width so assuming a terminal.
+    return TerminalConfig(
+        mode=TerminalMode.TERMINAL, terminal_width=terminal_width
+    )
 
 
 def get_path_in_apio_package(subpath: str) -> Path:
@@ -452,7 +504,7 @@ def check_package(
 
     # Check package version
     if not check_package_version(version, spec_version):
-        show_package_version_warning(name, version, spec_version)
+        show_package_version_error(name, version, spec_version)
         show_package_install_instructions(name)
         return False
 
@@ -484,14 +536,22 @@ def check_package_version(version: str, spec_version: str) -> bool:
     return semver in spec
 
 
-def show_package_version_warning(name: str, version: str, spec_version: str):
-    """Print warning message: semantic version does not match!"""
+def show_package_version_error(
+    name: str, current_version: str, spec_version: str
+):
+    """Print error message: a package is missing or has a worng version."""
 
-    message = (
-        f"Warning: package '{name}' version {version}\n"
-        f"does not match the semantic version {spec_version}"
-    )
-    click.secho(message, fg="yellow")
+    if current_version:
+        message = (
+            (
+                f"Error: package '{name}' version {current_version} does not\n"
+                f"match the requirement for version {spec_version}."
+            ),
+        )
+
+    else:
+        message = f"Error: package '{name}' is missing."
+    click.secho(message, fg="red")
 
 
 def show_package_path_error(name: str):

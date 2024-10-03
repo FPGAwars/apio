@@ -7,9 +7,10 @@
 # -- Licence GPLv2
 
 import shutil
-from pathlib import Path
+from pathlib import Path, PosixPath
+from dataclasses import dataclass
+from typing import Optional, Tuple, List
 import click
-
 from apio import util
 from apio.profile import Profile
 from apio.resources import Resources
@@ -28,6 +29,15 @@ Example of use:
 
 Type 'apio examples -h' for more details.
 """
+
+
+@dataclass
+class ExampleInfo:
+    """Information about a single example."""
+
+    name: str
+    path: PosixPath
+    description: str
 
 
 class Examples:
@@ -53,84 +63,98 @@ class Examples:
         # -- Get the version restrictions
         self.spec_version = util.get_package_spec_version(self.name, resources)
 
-    def list_examples(self):
-        """Print all the examples available"""
+    def get_examples_infos(self) -> Optional[List[ExampleInfo]]:
+        """Scans the examples and returns a list of ExampleInfos.
+        Returns null if an error."""
 
         # -- Check if the example package is installed
         installed = util.check_package(
             self.name, self.version, self.spec_version, self.examples_dir
         )
 
-        # -- No package installed: return
         if not installed:
+            # -- A message was already printed.
+            return None
+
+        # -- Collect the examples home dir each board.
+        boards_dirs: List[PosixPath] = []
+
+        for board_dir in self.examples_dir.iterdir():
+            if board_dir.is_dir():
+                boards_dirs.append(board_dir)
+
+        # -- Collect the examples of each boards.
+        examples: List[Tuple[str, PosixPath]] = []
+        for board_dir in boards_dirs:
+
+            # -- Iterate board's example subdirectories.
+            for example_dir in board_dir.iterdir():
+
+                # -- Skip files. We care just about directories.
+                if not example_dir.is_dir():
+                    continue
+
+                # -- Try to load description from the example info file.
+                info_file = example_dir / "info"
+                if info_file.exists():
+                    with open(info_file, "r", encoding="utf-8") as f:
+                        description = f.read().replace("\n", "")
+                else:
+                    description = ""
+
+                # -- Append this example to the list.
+                name = f"{board_dir.name}/{example_dir.name}"
+                example_info = ExampleInfo(name, example_dir, description)
+                examples.append(example_info)
+
+        # -- Sort in-place by ascceding example name, case insensitive.
+        examples.sort(key=lambda x: x.name.lower())
+
+        return examples
+
+    def list_examples(self) -> None:
+        """Print all the examples available. Return a process exit
+        code, 0 if ok, non zero otherwise."""
+
+        # -- Get list of examples.
+        examples: List[ExampleInfo] = self.get_examples_infos()
+        if examples is None:
+            # -- Error message is aleady printed.
             return 1
 
-        # -- Calculate the terminal width
-        terminal_width, _ = shutil.get_terminal_size()
+        # -- Get terminal configuration. We format the report differently for
+        # -- a terminal and for a pipe.
+        output_config = util.get_terminal_config()
 
-        # -- String with a horizontal line with the same width
-        # -- as the terminal
-        line = "─" * terminal_width
+        # -- For terminal, print a header with an horizontal line across the
+        # -- terminal.
+        if output_config.terminal_mode():
+            terminal_seperator_line = "─" * output_config.terminal_width
+            click.echo()
+            click.echo(terminal_seperator_line)
 
-        # -- Print the header
-        click.echo()
-        click.echo(line)
+        # -- For a pipe, determine the max example name length.
+        max_example_name_len = max(len(x.name) for x in examples)
 
-        # -- Collect all the board (every folder in the examples packages
-        # -- correspond to a board)
-        boards = []
+        # -- Emit the examples
+        for example in examples:
+            if output_config.terminal_mode():
+                # -- For a terminal. Multi lines and colors.
+                click.secho(f"{example.name}", fg="blue", bold=True)
+                click.secho(f"{example.description}")
+                click.secho(terminal_seperator_line)
+            else:
+                # -- For a pipe, single line, no colors.
+                click.secho(
+                    f"{example.name:<{max_example_name_len}}  |  "
+                    f"{example.description}"
+                )
 
-        for board in sorted(self.examples_dir.iterdir()):
-            if board.is_dir():
-                boards.append(board)
+        # -- For a terminal, emit additional summary.
+        if output_config.terminal_mode():
+            click.secho(f"Total: {len(examples)}")
+            click.secho(USAGE_EXAMPLE, fg="green")
 
-        # -- Collect the examples for each board
-        # -- Valid examples are folders...
-        examples = []
-        examples_names = []
-
-        # -- Every board...
-        for board in boards:
-
-            # -- Has one or more examples...
-            for example in board.iterdir():
-
-                # -- The examples are folders...
-                if example.is_dir():
-
-                    # -- Store the example name
-                    example_str = f"{board.name}/{example.name}"
-                    examples_names.append(example_str)
-
-                    # -- Store the example path
-                    examples.append(example)
-
-        # -- For each example, collect the information in the info file
-        # -- It contains the example description
-        for example, name in zip(examples, examples_names):
-
-            # -- info file
-            info = example / "info"
-
-            # -- Not all the folder has info...
-            if info.exists():
-
-                # -- Open info file
-                with open(info, "r", encoding="utf-8") as info_file:
-
-                    # -- Read info file and remove the new line characters
-                    info_data = info_file.read().replace("\n", "")
-
-                    # -- Print the example name and description!
-                    click.secho(f"{name}", fg="blue", bold=True)
-                    click.secho(f"{info_data}")
-                    click.secho(line)
-
-        # -- Print the total examples
-        click.secho(f"Total: {len(examples)}")
-
-        # -- Print more info about the examples
-        click.secho(USAGE_EXAMPLE, fg="green")
         return 0
 
     def copy_example_dir(self, example: str, project_dir: Path, sayno: bool):

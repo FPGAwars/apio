@@ -49,10 +49,11 @@ board/name where board is the board id and name is the example name.
 
 \b
 Examples:
-  apio examples --list            # List all examples
-  apio examples -f icezum/leds    # Fetch example files
-  apio examples -s icezum/leds    # Fetch example directory
-  apio examples -d icezum         # Fetch all board examples
+  apio examples --list               # List all examples
+  apio examples -l | grep -i icezum  # Filter examples.
+  apio examples -f icezum/leds       # Fetch example files
+  apio examples -s icezum/leds       # Fetch example directory
+  apio examples -d icezum            # Fetch all board examples
 """
 
 

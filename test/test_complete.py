@@ -56,7 +56,7 @@ def test_complete(clirunner, validate_cliresult, configenv, offline):
 
         # -- Execute "apio uninstall examples"
         result = clirunner.invoke(cmd_uninstall, ["examples"], input="y")
-        assert "Do you want to continue?" in result.output
+        assert "Do you want to uninstall?" in result.output
         assert "Error: package 'examples' is not installed" in result.output
 
         # -- Execute "apio install examples@X"
@@ -229,5 +229,5 @@ def test_complete3(clirunner, validate_cliresult, configenv, offline):
         result = clirunner.invoke(cmd_uninstall, ["examples"], input="y")
         validate_cliresult(result)
         assert "Uninstalling examples package" in result.output
-        assert "Do you want to continue?" in result.output
+        assert "Do you want to uninstall?" in result.output
         assert "has been successfully uninstalled!" in result.output

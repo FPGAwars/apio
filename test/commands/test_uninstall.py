@@ -27,5 +27,5 @@ def test_uninstall(clirunner, configenv, validate_cliresult):
             cmd_uninstall, ["missing_package"], input="y"
         )
         assert result.exit_code == 1, result.output
-        assert "Do you want to continue?" in result.output
+        assert "Do you want to uninstall?" in result.output
         assert "Error: no such package" in result.output

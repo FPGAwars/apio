@@ -23,7 +23,7 @@ def _uninstall(packages: list, platform: str, resources: Resources):
     """Uninstall the given list of packages"""
 
     # -- Ask the user for confirmation
-    if click.confirm("Do you want to continue?"):
+    if click.confirm("Do you want to uninstall?"):
 
         # -- Uninstall packages, one by one
         for package in packages:
