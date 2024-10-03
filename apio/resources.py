@@ -353,8 +353,6 @@ class Resources:
             click.style("Board", fg="cyan") + " (FPGA, Arch, Type, Size, Pack)"
         )
 
-
-
         # -- Print the table header for terminal mode.
         if config.terminal_mode():
             title = (
@@ -427,23 +425,25 @@ class Resources:
     def list_fpgas(self):
         """Print all the supported FPGAs"""
 
-        # -- Table title
-        fpga_header = click.style("FPGA", fg="cyan")
-        title = (
-            f"{fpga_header:40} {'Arch':<8} {'Type':<12}"
-            f" {'Size':<5} {'Pack':<10}"
-        )
-        # -- Get the terminal size (in characteres)
-        terminal_width, _ = shutil.get_terminal_size()
+        # Get terminal configuration. It will help us to adapt the format
+        # to a terminal vs a pipe.
+        config: util.TerminalConfig = util.get_terminal_config()
 
-        # -- String with a horizontal line with the same width
-        # -- as the terminal
-        line = "─" * terminal_width
+        if config.terminal_mode():
+            # -- Horizontal line across the terminal,
+            seperator_line = "─" * config.terminal_width
 
-        # -- Print the table header
-        click.echo(line)
-        click.echo(title)
-        click.echo(line)
+            # -- Table title
+            fpga_header = click.style(f"{'  FPGA':34}", fg="cyan")
+            title = (
+                f"{fpga_header} {'Arch':<10} {'Type':<13}"
+                f" {'Size':<8} {'Pack'}"
+            )
+
+            # -- Print the table header
+            click.echo(seperator_line)
+            click.echo(title)
+            click.echo(seperator_line)
 
         # -- Print all the fpgas!
         for fpga in self.fpgas:
@@ -455,16 +455,20 @@ class Resources:
             pack = self.fpgas[fpga]["pack"]
 
             # -- Print the item with information
-            # -- Print the FPGA in a differnt color
-            fpga_str = click.style(fpga, fg="cyan")
-            item = (
-                f"• {fpga_str:40} {arch:<8} {_type:<12} {size:<5} {pack:<10}"
-            )
-            click.echo(item)
+            data_str = f"{arch:<10} {_type:<13} {size:<8} {pack}"
+            if config.terminal_mode():
+                # -- For terminal, print the FPGA name in color.
+                fpga_str = click.style(f"{fpga:32}", fg="cyan")
+                item = f"• {fpga_str} {data_str}"
+                click.echo(item)
+            else:
+                # -- For pipe, no colors and no bullet point.
+                click.echo(f"{fpga:32} {data_str}")
 
         # -- Print the Footer
-        click.echo(line)
-        click.echo(f"Total: {len(self.fpgas)} fpgas\n")
+        if config.terminal_mode():
+            click.echo(seperator_line)
+            click.echo(f"Total: {len(self.fpgas)} fpgas\n")
 
     def _filter_packages(self, given_platform):
         """Filter the apio packages available for the given platform.

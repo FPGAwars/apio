@@ -42,6 +42,7 @@ Examples:
   apio boards --list           # List boards
   apio boards --fpga           # List FPGAs
   apio boards -l | grep ecp5   # Filter boards results
+  apio boards -f | grep gowin  # Filter FPGA results.
 
 [Advanced] Boards with wide availability can be added by contacting the
 apio team. A custom one-of board can be added to your project by
