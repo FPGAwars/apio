@@ -1,11 +1,11 @@
-"""Scons script of ECP5 FPGAs."""
+"""Scons script of Gowin FPGAs."""
 
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # -- Generic Scons script for Sintesizing hardware on an FPGA and more.
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
-# -- Authors Miodrag Milanovic, Juan Gonzáles, Jesús Arroyo
+# -- Authors Riley Wilton, Juan Gonzáles, Jesús Arroyo
 # -- Licence GPLv2
 # ----------------------------------------------------------------------
 
@@ -47,7 +47,7 @@ from SCons.Script import (
     ARGUMENTS,
     Glob,
 )
-from apio.scons_util import (
+from apio.scons.scons_util import (
     TARGET,
     is_testbench,
     basename,
@@ -70,12 +70,12 @@ from apio.scons_util import (
 # -- Create the environment
 env = create_construction_env(ARGUMENTS)
 
-# -- Get arguments
+# -- Get arguments.
+FPGA_MODEL = arg_str(env, "fpga_model", "")
 FPGA_SIZE = arg_str(env, "fpga_size", "")
 FPGA_TYPE = arg_str(env, "fpga_type", "")
 FPGA_PACK = arg_str(env, "fpga_pack", "")
 TOP_MODULE = arg_str(env, "top_module", "")
-FPGA_IDCODE = arg_str(env, "fpga_idcode", "")
 VERBOSE_ALL = arg_bool(env, "verbose_all", False)
 VERBOSE_YOSYS = arg_bool(env, "verbose_yosys", False)
 VERBOSE_PNR = arg_bool(env, "verbose_pnr", False)
@@ -87,10 +87,8 @@ WARNS = arg_str(env, "warn", "").split(",")
 
 # -- Resources paths
 IVL_PATH = os.environ["IVL"] if "IVL" in os.environ else ""
-TRELLIS_PATH = os.environ["TRELLIS"] if "TRELLIS" in os.environ else ""
-DATABASE_PATH = os.path.join(TRELLIS_PATH, "database")
 YOSYS_PATH = os.environ["YOSYS_LIB"] if "YOSYS_LIB" in os.environ else ""
-YOSYS_LIB_DIR = YOSYS_PATH + "/ecp5"
+YOSYS_LIB_DIR = YOSYS_PATH + "/gowin"
 
 # -- Create scannenr to identify dependencies in verilog files.
 verilog_src_scanner = make_verilog_src_scanner(env)
@@ -100,15 +98,14 @@ verilog_src_scanner = make_verilog_src_scanner(env)
 synth_srcs, test_srcs = get_source_files(env)
 
 
-# -- Get the LPF file name.
-LPF = get_constraint_file(env, ".lpf", TOP_MODULE)
-
+# -- Get the CST file name.
+CST = get_constraint_file(env, ".cst", TOP_MODULE)
 
 # -- Apio build/upload.
 # -- Builder (yosys, Synthesis).
 # -- (modules).v -> hardware.json.
 synth_builder = Builder(
-    action='yosys -p "synth_ecp5 {0} -json $TARGET" {1} $SOURCES'.format(
+    action=('yosys -p "synth_gowin {0} -json $TARGET" {1} $SOURCES').format(
         ("-top " + TOP_MODULE) if TOP_MODULE else "",
         "" if VERBOSE_ALL or VERBOSE_YOSYS else "-q",
     ),
@@ -121,18 +118,18 @@ env.Append(BUILDERS={"Synth": synth_builder})
 
 # -- Apio build/upload.
 # -- builder (nextpnr, Place and route).
-# -- hardware.json -> hardware.config.
+# -- hardware.json -> hardware.pnr.json.
 pnr_builder = Builder(
     action=(
-        "nextpnr-ecp5 --{0} --package {1} --json $SOURCE --textcfg $TARGET "
-        "--lpf {2} {3} --timing-allow-fail --force"
+        "nextpnr-himbaechel --device {0} --json $SOURCE --write $TARGET "
+        "--vopt family={1} --vopt cst={2} {3}"
     ).format(
-        "25k" if (FPGA_TYPE == "12k") else FPGA_TYPE,
-        FPGA_PACK,
-        LPF,
+        FPGA_MODEL,
+        FPGA_TYPE,
+        CST,
         "" if VERBOSE_ALL or VERBOSE_PNR else "-q",
     ),
-    suffix=".config",
+    suffix=".pnr.json",
     src_suffix=".json",
 )
 env.Append(BUILDERS={"PnR": pnr_builder})
@@ -140,37 +137,34 @@ env.Append(BUILDERS={"PnR": pnr_builder})
 
 # -- Apio build/upload.
 # -- Builder (icepack, bitstream generator).
-# -- hardware.config -> hardware.bit.
+# -- hardware.pnr.json -> hardware.fs.
 bitstream_builder = Builder(
-    action="ecppack --compress --db {0} {1} $SOURCE hardware.bit".format(
-        DATABASE_PATH,
-        "" if not FPGA_IDCODE else f"--idcode {FPGA_IDCODE}",
-    ),
-    suffix=".bit",
-    src_suffix=".config",
+    action="gowin_pack -d {0} -o $TARGET $SOURCE".format(FPGA_TYPE.upper()),
+    suffix=".fs",
+    src_suffix=".pnr.json",
 )
 env.Append(BUILDERS={"Bin": bitstream_builder})
 
 
 # -- Apio time.
 # -- Builder | not implemented.
-# -- hardware.config -> hardware.rpt
+# -- hardware.pnr.json -> hardware.rpt
 time_rpt_builder = Builder(
     action=(
-        'echo "Time analysis report is not impelemnted for the ECP5 family." '
+        'echo "Time analysis report is not impelemnted for the Gowin family." '
         "> $TARGET"
     ),
     suffix=".rpt",
-    src_suffix=".config",
+    src_suffix=".pnr.json",
 )
 env.Append(BUILDERS={"Time": time_rpt_builder})
 
 
 # -- Apio build/upload.
 # -- Targets.
-# -- (module).v -> hardware.json -> hardware.config -> hardware.report.
+# -- (module).v -> hardware.json -> hardware.pnr.json -> hardware.bin.
 synth_target = env.Synth(TARGET, [synth_srcs])
-pnr_target = env.PnR(TARGET, [synth_target, LPF])
+pnr_target = env.PnR(TARGET, [synth_target, CST])
 bin_target = env.Bin(TARGET, pnr_target)
 build_target = env.Alias("build", bin_target)
 
@@ -184,7 +178,7 @@ if VERBOSE_ALL:
 
 # -- Apio upload.
 # -- Targets.
-# -- hardware.bit -> FPGA.
+# -- hardware.fs -> FPGA.
 programmer_cmd = get_programmer_cmd(env)
 upload_target = env.Alias("upload", bin_target, programmer_cmd)
 AlwaysBuild(upload_target)
@@ -192,7 +186,7 @@ AlwaysBuild(upload_target)
 
 # -- Apio time.
 # -- Targets.
-# -- hardware.config -> hardware.rpt
+# -- hardware.asc -> hardware.rpt
 time_rpt_target = env.Time(pnr_target)
 AlwaysBuild(time_rpt_target)
 time_target = env.Alias("time", time_rpt_target)
@@ -235,6 +229,7 @@ def iverilog_tb_generator(source, target, env, for_signature):
         verbose=VERBOSE_ALL,
         vcd_output_name=testbench_name,
         is_interactive=("sim" in COMMAND_LINE_TARGETS),
+        extra_params=["-DNO_ICE40_DEFAULT_ASSIGNMENTS"],
         lib_dirs=[YOSYS_LIB_DIR],
     )
     return action
@@ -334,7 +329,7 @@ if "test" in COMMAND_LINE_TARGETS:
     configs = get_tests_configs(env, TESTBENCH, synth_srcs, test_srcs)
     tests_targets = []
     for config in configs:
-        test_out_target = env.IVerilogTestbench(config.top_module, config.srcs)
+        test_out_target = env.IVerilogTestbencg(config.top_module, config.srcs)
         AlwaysBuild(test_out_target)
         test_vcd_target = env.VCD(test_out_target)
         AlwaysBuild(test_vcd_target)
@@ -358,10 +353,6 @@ verilator_config_builder = make_verilator_config_builder(
         "`verilator_config\n"
         f'lint_off -rule COMBDLY      -file "{YOSYS_LIB_DIR}/*"\n'
         f'lint_off -rule WIDTHEXPAND  -file "{YOSYS_LIB_DIR}/*"\n'
-        f'lint_off -rule PINMISSING   -file "{YOSYS_LIB_DIR}/*"\n'
-        f'lint_off -rule ASSIGNIN     -file "{YOSYS_LIB_DIR}/*"\n'
-        f'lint_off -rule WIDTHTRUNC   -file "{YOSYS_LIB_DIR}/*"\n'
-        f'lint_off -rule INITIALDLY   -file "{YOSYS_LIB_DIR}/*"\n'
     ),
 )
 env.Append(BUILDERS={"VerilatorConfig": verilator_config_builder})
@@ -378,7 +369,7 @@ verilator_builder = Builder(
         no_warns=NOWARNS,
         warns=WARNS,
         top_module=TOP_MODULE,
-        lib_files=[YOSYS_LIB_DIR],
+        lib_dirs=[YOSYS_LIB_DIR],
     ),
     src_suffix=".v",
     source_scanner=verilog_src_scanner,
@@ -410,8 +401,7 @@ if GetOption("clean"):
         [
             time_target,
             build_target,
-            synth_target,
-            pnr_target,
+            verify_out_target,
             graph_target,
             lint_target,
         ]

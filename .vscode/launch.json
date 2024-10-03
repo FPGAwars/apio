@@ -270,7 +270,7 @@
                 "fpga_pack=tq144", 
                 "top_module=main",
                 "-f",
-                "${workspaceFolder}/apio/resources/ice40/SConstruct",
+                "${workspaceFolder}/apio/scons/ice40/SConstruct",
                 "force_colors=True"
             ],
             "console": "integratedTerminal",
