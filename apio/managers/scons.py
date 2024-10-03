@@ -897,8 +897,8 @@ class SCons:
         """Executes scons"""
 
         # -- Construct the path to the SConstruct file.
-        resources = util.get_path_in_apio_package("resources")
-        scons_file_path = resources / arch / "SConstruct"
+        scons_dir = util.get_path_in_apio_package("scons")
+        scons_file_path = scons_dir / arch / "SConstruct"
 
         # -- It is passed to scons using the flag -f default_scons_file
         variables += ["-f", f"{scons_file_path}"]
@@ -938,7 +938,7 @@ class SCons:
                  'fpga_pack=cm81', 'top_module=main',
                  'prog=tinyprog --pyserial -c /dev/ttyACM0 --program',
                  '-f', '/home/obijuan/Develop/FPGAwars/apio/apio/
-                        resources/ice40/SConstruct']
+                        scons/ice40/SConstruct']
           * board: (string) Board name
 
         * OUTPUT: Exit code
