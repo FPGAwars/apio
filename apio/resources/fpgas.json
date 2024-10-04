@@ -146,8 +146,8 @@
   "iCE40-HX4K-TQ144": {
     "arch": "ice40",
     "type": "hx",
-    "size": "4k",
-    "pack": "tq144"
+    "size": "8k",
+    "pack": "tq144:4k"
   },
   "iCE40-HX4K-BG121": {
     "arch": "ice40",
