@@ -34,3 +34,4 @@ hardware.config
 .DS_Store
 abc.history
 temp-*
+.run.sh
