@@ -991,11 +991,8 @@ class SCons:
             stderr=util.AsyncPipe(self._on_stderr),
         )
 
-        # -- Get the exit code
-        exit_code = result["returncode"]
-
         # -- Is there an error? True/False
-        is_error = exit_code != 0
+        is_error = result.exit_code != 0
 
         # -- Calculate the time it took to execute the command
         duration = time.time() - start_time
@@ -1020,7 +1017,7 @@ class SCons:
         )
 
         # -- Return the exit code
-        return exit_code
+        return result.exit_code
 
     @staticmethod
     def _on_stdout(line):

@@ -615,7 +615,16 @@ def get_package_spec_version(name: str, resources: dict) -> str:
     return spec_version
 
 
-def exec_command(*args, **kwargs) -> dict:
+@dataclass(frozen=True)
+class CommandResult:
+    """Contains the results of a command (subprocess) execution."""
+
+    out_text: Optional[str] = None  # stdout multi-line text.
+    err_text: Optional[str] = None  # stderr multi-line text.
+    exit_code: Optional[int] = None  # Exit code, 0 = OK.
+
+
+def exec_command(*args, **kwargs) -> CommandResult:
     """Execute the given command:
 
     INPUTS:
@@ -635,11 +644,6 @@ def exec_command(*args, **kwargs) -> dict:
     Example:  exec_command(['scons', '-Q', '-c', '-f', 'SConstruct'])
     """
 
-    # -- Default value to return after the command execution
-    # -- out: string with the command output
-    # -- err: string with the command error output
-    result = {"out": None, "err": None, "returncode": None}
-
     # -- Set the default arguments to pass to subprocess.Popen()
     # -- for executing the command
     flags = {
@@ -658,9 +662,14 @@ def exec_command(*args, **kwargs) -> dict:
     try:
         with subprocess.Popen(*args, **flags) as proc:
 
-            # -- Collect the results
-            result["out"], result["err"] = proc.communicate()
-            result["returncode"] = proc.returncode
+            # -- Run the command.
+            out_text, err_text = proc.communicate()
+            exit_code = proc.returncode
+
+            # -- Close the pipes
+            for std in ("stdout", "stderr"):
+                if isinstance(flags[std], AsyncPipe):
+                    flags[std].close()
 
     # -- User has pressed the Ctrl-C for aborting the command
     except KeyboardInterrupt:
@@ -672,31 +681,22 @@ def exec_command(*args, **kwargs) -> dict:
         click.secho(f"Command not found:\n{args}", fg="red")
         sys.exit(1)
 
-    # -- Close the stdout and stderr pipes
-    finally:
-        for std in ("stdout", "stderr"):
-            if isinstance(flags[std], AsyncPipe):
-                flags[std].close()
+    # -- If stdout pipe is an AsyncPipe, extract its text.
+    pipe = flags["stdout"]
+    if isinstance(pipe, AsyncPipe):
+        lines = pipe.get_buffer()
+        text = "\n".join(lines)
+        out_text = text.strip()
 
-    # -- Process the output from the stdout and stderr
-    # -- if they exist
-    for inout in ("out", "err"):
+    # -- If stderr pipe is an AsyncPipe, extract its text.
+    pipe = flags["stderr"]
+    if isinstance(pipe, AsyncPipe):
+        lines = pipe.get_buffer()
+        text = "\n".join(lines)
+        err_text = text.strip()
 
-        # -- Construct the Name "stdout" or "stderr"
-        std = f"std{inout}"
-
-        # -- Do it only if they have been assigned
-        if isinstance(flags[std], AsyncPipe):
-
-            # -- Get the text
-            buffer = flags[std].get_buffer()
-
-            # -- Create the full text message (for stdout or stderr)
-            # -- result["out"] contains stdout
-            # -- result["err"] contains stderr
-            result[inout] = "\n".join(buffer)
-            result[inout].strip()
-
+    # -- All done.
+    result = CommandResult(out_text, err_text, exit_code)
     return result
 
 
@@ -900,12 +900,13 @@ def get_tinyprog_meta() -> list:
     # -- It will return the meta information as a json string
     result = exec_command([_command, "--pyserial", "--meta"])
 
-    # -- Get the output
-    out = result["out"]
+    # pylint: disable=fixme
+    # TODO: Exit with an error if result.exit_code is not zero.
+
+    # -- Convert the json string to an object (list)
 
     try:
-        # -- Convert the json string to an object (list)
-        meta = json.loads(out)
+        meta = json.loads(result.out_text)
 
     except json.decoder.JSONDecodeError as exc:
         click.secho(f"Invalid data provided by {_command}", fg="red")

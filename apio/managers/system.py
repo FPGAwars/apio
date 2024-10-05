@@ -8,6 +8,7 @@
 
 import re
 import platform
+from typing import Optional
 import click
 
 from apio import util
@@ -44,32 +45,23 @@ class System:  # pragma: no cover
     def lsusb(self):
         """Run the lsusb system command"""
 
-        returncode = 1
         result = self._run_command("lsusb")
 
-        if result:
-            returncode = result.get("returncode")
-
-        return returncode
+        return result.exit_code if result else 1
 
     def lsftdi(self):
         """DOC: TODO"""
 
-        returncode = 1
         result = self._run_command("lsftdi")
 
-        if result:
-            returncode = result.get("returncode")
-
-        return returncode
+        return result.exit_code if result else 1
 
     @staticmethod
     def lsserial():
         """DOC: TODO"""
 
-        returncode = 0
         serial_ports = util.get_serial_ports()
-        click.secho(f"Number of Serial devices found: {serial_ports}\n")
+        click.secho(f"Number of Serial devices found: {len(serial_ports)}\n")
 
         for serial_port in serial_ports:
             port = serial_port.get("port")
@@ -79,7 +71,7 @@ class System:  # pragma: no cover
             click.secho(f"Description: {description}")
             click.secho(f"Hardware info: {hwid}\n")
 
-        return returncode
+        return 0
 
     def get_usb_devices(self) -> list:
         """Return a list of the connected USB devices
@@ -99,7 +91,7 @@ class System:  # pragma: no cover
         result = self._run_command("lsusb", silent=True)
 
         # -- Sucess in executing the command
-        if result and result["returncode"] == 0:
+        if result and result.exit_code == 0:
 
             # -- Get the list of the usb devices. It is read
             # -- from the command stdout
@@ -132,7 +124,7 @@ class System:  # pragma: no cover
         result = self._run_command("lsftdi", silent=True)
 
         # -- Sucess in executing the command
-        if result and result["returncode"] == 0:
+        if result and result.exit_code == 0:
 
             # -- Get the list of the ftdi devices. It is read
             # -- from the command stdout
@@ -147,21 +139,18 @@ class System:  # pragma: no cover
         # -- for reading the ftdi devices
         raise RuntimeError("Error executing lsftdi")
 
-    def _run_command(self, command: str, silent=False) -> dict:
+    def _run_command(
+        self, command: str, silent=False
+    ) -> Optional[util.CommandResult]:
         """Execute the given system command
         * INPUT:
           * command: Command to execute  (Ex. "lsusb")
           * silent: What to do with the command output
             * False --> Do not print on the console
             * True  --> Print on the console
-        * OUTPUT: A dictionary with the following properties:
-          * returncode:
-            * 0: OK! Success in executing the command
-            * x: An error has ocurred
-          * out: (string). Command output
-          * err: (string). Command error output
 
-        In case of not executing the command it returns none!
+        * OUTPUT: An ExecResult with the command's outcome.
+          In case of not executing the command it returns none!
         """
 
         # The system tools are locate in the
@@ -200,6 +189,7 @@ class System:  # pragma: no cover
             util.show_package_path_error(self.package_name)
             util.show_package_install_instructions(self.package_name)
 
+            # -- Command not executed.
             return None
 
         # -- The command exist! Let's execute it!
