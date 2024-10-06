@@ -15,6 +15,7 @@ import time
 import datetime
 import shutil
 from pathlib import Path
+from functools import wraps
 
 import importlib.metadata
 import click
@@ -38,6 +39,33 @@ FLASH = "flash"
 # -- ANSI Constants
 CURSOR_UP = "\033[F"
 ERASE_LINE = "\033[K"
+
+
+# W0703: Catching too general exception Exception (broad-except)
+# pylint: disable=W0703
+# pylint: disable=W0150
+#
+# -- Based on
+# -- https://stackoverflow.com/questions/5929107/decorators-with-parameters
+def on_exception(*, exit_code: int):
+    """Decoractor for functions that return int exit code. If the function
+    throws an exception, the error message is printed, and the caller see the
+    returned value exit_code instead of the exception.
+    """
+
+    def decorator(function):
+        @wraps(function)
+        def wrapper(*args, **kwargs):
+            try:
+                return function(*args, **kwargs)
+            except Exception as exc:
+                if str(exc):
+                    click.secho("Error: " + str(exc), fg="red")
+                return exit_code
+
+        return wrapper
+
+    return decorator
 
 
 class SCons:
@@ -70,8 +98,8 @@ class SCons:
             # Change to that folder
             os.chdir(project_dir)
 
-    @util.command
-    def clean(self, args):
+    @on_exception(exit_code=1)
+    def clean(self, args) -> int:
         """Execute apio clean"""
 
         # -- Split the arguments
@@ -80,8 +108,8 @@ class SCons:
         # --Clean the project: run scons -c (with aditional arguments)
         return self.run("-c", arch=arch, variables=[], packages=[])
 
-    @util.command
-    def verify(self, args):
+    @on_exception(exit_code=1)
+    def verify(self, args) -> int:
         """Executes scons for verifying"""
 
         # -- Split the arguments
@@ -98,8 +126,8 @@ class SCons:
             packages=["oss-cad-suite"],
         )
 
-    @util.command
-    def graph(self, args):
+    @on_exception(exit_code=1)
+    def graph(self, args) -> int:
         """Executes scons for visual graph generation"""
 
         # -- Split the arguments
@@ -116,8 +144,8 @@ class SCons:
             packages=["oss-cad-suite"],
         )
 
-    @util.command
-    def lint(self, args):
+    @on_exception(exit_code=1)
+    def lint(self, args) -> int:
         """DOC: TODO"""
 
         config = {}
@@ -138,8 +166,8 @@ class SCons:
             packages=["oss-cad-suite"],
         )
 
-    @util.command
-    def sim(self, args):
+    @on_exception(exit_code=1)
+    def sim(self, args) -> int:
         """Simulates a testbench and shows the result in a gtkwave window."""
 
         # -- Split the arguments
@@ -154,8 +182,8 @@ class SCons:
             packages=["oss-cad-suite", "gtkwave"],
         )
 
-    @util.command
-    def test(self, args):
+    @on_exception(exit_code=1)
+    def test(self, args) -> int:
         """Tests all or a single testbench by simulating."""
 
         # -- Split the arguments
@@ -170,8 +198,8 @@ class SCons:
             packages=["oss-cad-suite"],
         )
 
-    @util.command
-    def build(self, args):
+    @on_exception(exit_code=1)
+    def build(self, args) -> int:
         """Build the circuit"""
 
         # -- Split the arguments
@@ -191,8 +219,8 @@ class SCons:
 
     # run(self, command, variables, packages, board=None, arch=None):
 
-    @util.command
-    def time(self, args):
+    @on_exception(exit_code=1)
+    def time(self, args) -> int:
         """DOC: TODO"""
 
         variables, board, arch = process_arguments(
@@ -206,8 +234,8 @@ class SCons:
             packages=["oss-cad-suite"],
         )
 
-    @util.command
-    def upload(self, config: dict, prog: dict):
+    @on_exception(exit_code=1)
+    def upload(self, config: dict, prog: dict) -> int:
         """Upload the circuit to the board
         INPUTS:
           * config: Dictionary with the initial configuration
@@ -1086,5 +1114,5 @@ class SCons:
 
         # -- Print the line (In YELLOW)
         # -- In case of error print it in RED
-        fgcol = "red" if "error" in line.lower() else "yellow"
+        fgcol = "red" if "error" in line.lower() else None
         click.secho(line, fg=fgcol)

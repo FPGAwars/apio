@@ -797,26 +797,6 @@ def get_project_dir(_dir: Path, create_if_missing: bool = False) -> Path:
     return _dir
 
 
-# W0703: Catching too general exception Exception (broad-except)
-# pylint: disable=W0703
-# pylint: disable=W0150
-def command(function):
-    """Command decorator"""
-
-    def decorate(*args, **kwargs):
-        exit_code = 1
-        try:
-            exit_code = function(*args, **kwargs)
-
-        except Exception as exc:
-            if str(exc):
-                click.secho("Error: " + str(exc), fg="red")
-
-        return exit_code
-
-    return decorate
-
-
 def get_serial_ports() -> list:
     """Get a list of the serial port devices connected
     * OUTPUT: A list with the devides
