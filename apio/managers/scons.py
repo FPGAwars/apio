@@ -227,6 +227,15 @@ class SCons:
         variables, board, arch = process_arguments(
             args, self.resources, self.project
         )
+
+        if arch not in ["ice40"]:
+            click.secho(
+                "Error: Time analysis for "
+                f"{arch.upper()} is not supported yet.",
+                fg="red",
+            )
+            return 99
+
         return self.run(
             "time",
             variables=variables,

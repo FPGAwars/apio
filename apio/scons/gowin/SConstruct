@@ -146,20 +146,6 @@ bitstream_builder = Builder(
 env.Append(BUILDERS={"Bin": bitstream_builder})
 
 
-# -- Apio time.
-# -- Builder | not implemented.
-# -- hardware.pnr.json -> hardware.rpt
-time_rpt_builder = Builder(
-    action=(
-        'echo "Time analysis report is not impelemnted for the Gowin family." '
-        "> $TARGET"
-    ),
-    suffix=".rpt",
-    src_suffix=".pnr.json",
-)
-env.Append(BUILDERS={"Time": time_rpt_builder})
-
-
 # -- Apio build/upload.
 # -- Targets.
 # -- (module).v -> hardware.json -> hardware.pnr.json -> hardware.bin.
@@ -182,14 +168,6 @@ if VERBOSE_ALL:
 programmer_cmd = get_programmer_cmd(env)
 upload_target = env.Alias("upload", bin_target, programmer_cmd)
 AlwaysBuild(upload_target)
-
-
-# -- Apio time.
-# -- Targets.
-# -- hardware.asc -> hardware.rpt
-time_rpt_target = env.Time(pnr_target)
-AlwaysBuild(time_rpt_target)
-time_target = env.Alias("time", time_rpt_target)
 
 
 # -- Apio verify.
@@ -395,11 +373,10 @@ if GetOption("clean"):
     # target are dynamic and changes with the selected testbench.
     for glob_pattern in ["*.out", "*.vcd"]:
         for node in Glob(glob_pattern):
-            env.Clean(time_target, str(node))
+            env.Clean(build_target, str(node))
 
     env.Default(
         [
-            time_target,
             build_target,
             verify_out_target,
             graph_target,

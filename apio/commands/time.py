@@ -30,6 +30,9 @@ of the project that contains the apio.ini file.
 \b
 Examples:
   apio time
+
+The time command supportw ICE40 devcies. ECP5 and Gowin devices are not
+supported yet.
 """
 
 
