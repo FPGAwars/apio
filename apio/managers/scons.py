@@ -101,17 +101,19 @@ class SCons:
 
     @on_exception(exit_code=1)
     def clean(self, args) -> int:
-        """Execute apio clean"""
+        """Runs a scons subprocess with the 'clean' target. Returns process
+        exit code, 0 if ok."""
 
         # -- Split the arguments
         __, __, arch = process_arguments(args, self.resources, self.project)
 
         # --Clean the project: run scons -c (with aditional arguments)
-        return self.run("-c", arch=arch, variables=[], packages=[])
+        return self._run("-c", arch=arch, variables=[], packages=[])
 
     @on_exception(exit_code=1)
     def verify(self, args) -> int:
-        """Executes scons for verifying"""
+        """Runs a scons subprocess with the 'verify' target. Returns process
+        exit code, 0 if ok."""
 
         # -- Split the arguments
         variables, __, arch = process_arguments(
@@ -120,7 +122,7 @@ class SCons:
 
         # -- Execute scons!!!
         # -- The packages to check are passed
-        return self.run(
+        return self._run(
             "verify",
             variables=variables,
             arch=arch,
@@ -129,7 +131,8 @@ class SCons:
 
     @on_exception(exit_code=1)
     def graph(self, args) -> int:
-        """Executes scons for visual graph generation"""
+        """Runs a scons subprocess with the 'verify' target. Returns process
+        exit code, 0 if ok."""
 
         # -- Split the arguments
         variables, _, arch = process_arguments(
@@ -138,7 +141,7 @@ class SCons:
 
         # -- Execute scons!!!
         # -- The packages to check are passed
-        return self.run(
+        return self._run(
             "graph",
             variables=variables,
             arch=arch,
@@ -147,7 +150,8 @@ class SCons:
 
     @on_exception(exit_code=1)
     def lint(self, args) -> int:
-        """DOC: TODO"""
+        """Runs a scons subprocess with the 'lint' target. Returns process
+        exit code, 0 if ok."""
 
         config = {}
         __, __, arch = process_arguments(config, self.resources, self.project)
@@ -160,7 +164,7 @@ class SCons:
                 "nostyle": args.get("nostyle"),
             }
         )
-        return self.run(
+        return self._run(
             "lint",
             variables=variables,
             arch=arch,
@@ -169,14 +173,15 @@ class SCons:
 
     @on_exception(exit_code=1)
     def sim(self, args) -> int:
-        """Simulates a testbench and shows the result in a gtkwave window."""
+        """Runs a scons subprocess with the 'sim' target. Returns process
+        exit code, 0 if ok."""
 
         # -- Split the arguments
         variables, _, arch = process_arguments(
             args, self.resources, self.project
         )
 
-        return self.run(
+        return self._run(
             "sim",
             variables=variables,
             arch=arch,
@@ -185,14 +190,15 @@ class SCons:
 
     @on_exception(exit_code=1)
     def test(self, args) -> int:
-        """Tests all or a single testbench by simulating."""
+        """Runs a scons subprocess with the 'test' target. Returns process
+        exit code, 0 if ok."""
 
         # -- Split the arguments
         variables, _, arch = process_arguments(
             args, self.resources, self.project
         )
 
-        return self.run(
+        return self._run(
             "test",
             variables=variables,
             arch=arch,
@@ -201,7 +207,8 @@ class SCons:
 
     @on_exception(exit_code=1)
     def build(self, args) -> int:
-        """Build the circuit"""
+        """Runs a scons subprocess with the 'build' target. Returns process
+        exit code, 0 if ok."""
 
         # -- Split the arguments
         variables, board, arch = process_arguments(
@@ -210,7 +217,7 @@ class SCons:
 
         # -- Execute scons!!!
         # -- The packages to check are passed
-        return self.run(
+        return self._run(
             "build",
             variables=variables,
             board=board,
@@ -222,7 +229,8 @@ class SCons:
 
     @on_exception(exit_code=1)
     def time(self, args) -> int:
-        """DOC: TODO"""
+        """Runs a scons subprocess with the 'time' target. Returns process
+        exit code, 0 if ok."""
 
         variables, board, arch = process_arguments(
             args, self.resources, self.project
@@ -236,7 +244,7 @@ class SCons:
             )
             return 99
 
-        return self.run(
+        return self._run(
             "time",
             variables=variables,
             board=board,
@@ -246,7 +254,9 @@ class SCons:
 
     @on_exception(exit_code=1)
     def upload(self, config: dict, prog: dict) -> int:
-        """Upload the circuit to the board
+        """Runs a scons subprocess with the 'time' target. Returns process
+        exit code, 0 if ok.
+
         INPUTS:
           * config: Dictionary with the initial configuration
             * board
@@ -257,7 +267,6 @@ class SCons:
             * ftdi_id: ftdi identificator
             * sram: Perform SRAM programming
             * flash: Perform Flash programming
-        OUTPUT: Exit code after executing scons
         """
 
         # -- Get important information from the configuration
@@ -272,13 +281,13 @@ class SCons:
         # -- the FPGA (programmer executable + arguments)
         # -- Ex: 'tinyprog --pyserial -c /dev/ttyACM0 --program'
         # -- Ex: 'iceprog -d i:0x0403:0x6010:0'
-        programmer = self.get_programmer(board, prog)
+        programmer = self._get_programmer(board, prog)
 
         # -- Add as a flag to pass it to scons
         flags += [f"prog={programmer}"]
 
         # -- Execute Scons for uploading!
-        exit_code = self.run(
+        exit_code = self._run(
             "upload",
             variables=flags,
             packages=["oss-cad-suite"],
@@ -288,7 +297,7 @@ class SCons:
 
         return exit_code
 
-    def get_programmer(self, board: str, prog: dict) -> str:
+    def _get_programmer(self, board: str, prog: dict) -> str:
         """Get the command line (string) to execute for programming
         the FPGA (programmer executable + arguments)
 
@@ -324,11 +333,11 @@ class SCons:
 
         # -- Check platform. If the platform is not compatible
         # -- with the board an exception is raised
-        self.check_platform(board_data)
+        self._check_platform(board_data)
 
         # -- Check pip packages. If the corresponding pip_packages
         # -- is not installed, an exception is raised
-        self.check_pip_packages(board_data)
+        self._check_pip_packages(board_data)
 
         # -- Special case for the TinyFPGA on MACOS platforms
         # -- TinyFPGA BX board is not detected in MacOS HighSierra
@@ -353,7 +362,7 @@ class SCons:
         # --   * "${PID}" (optional): USB Product id
         # --   * "${FTDI_ID}" (optional): FTDI id
         # --   * "${SERIAL_PORT}" (optional): Serial port name
-        programmer = self.serialize_programmer(
+        programmer = self._serialize_programmer(
             board_data, prog[SRAM], prog[FLASH]
         )
         # -- The placeholder for the bitstream file name should always exist.
@@ -385,10 +394,10 @@ class SCons:
 
             # -- Check that the board is connected
             # -- If not, an exception is raised
-            self.check_usb(board, board_data)
+            self._check_usb(board, board_data)
 
             # -- Get the FTDI index of the connected board
-            ftdi_id = self.get_ftdi_id(board, board_data, prog[FTDI_ID])
+            ftdi_id = self._get_ftdi_id(board, board_data, prog[FTDI_ID])
 
             # -- Place the value in the command string
             programmer = programmer.replace("${FTDI_ID}", ftdi_id)
@@ -398,10 +407,12 @@ class SCons:
         if "${SERIAL_PORT}" in programmer:
 
             # -- Check that the board is connected
-            self.check_usb(board, board_data)
+            self._check_usb(board, board_data)
 
             # -- Get the serial port
-            device = self.get_serial_port(board, board_data, prog[SERIAL_PORT])
+            device = self._get_serial_port(
+                board, board_data, prog[SERIAL_PORT]
+            )
 
             # -- Place the value in the command string
             programmer = programmer.replace("${SERIAL_PORT}", device)
@@ -413,7 +424,7 @@ class SCons:
         return programmer
 
     @staticmethod
-    def check_platform(board_data: dict) -> None:
+    def _check_platform(board_data: dict) -> None:
         """Check if the current board is compatible with the
         current platform. There are some boards, like icoboard,
         that only runs in the platform linux/arm7
@@ -449,7 +460,7 @@ class SCons:
 
             raise ValueError(f"incorrect platform {platform}")
 
-    def check_pip_packages(self, board_data):
+    def _check_pip_packages(self, board_data):
         """Check if the corresponding pip package with the programmer
         has already been installed. In the case of an apio package
         it is just ignored
@@ -537,7 +548,7 @@ class SCons:
                 # -- Raise an exception
                 raise ValueError(message) from exc
 
-    def serialize_programmer(
+    def _serialize_programmer(
         self, board_data: dict, sram: bool, flash: bool
     ) -> str:
         """
@@ -613,7 +624,7 @@ class SCons:
 
         return programmer
 
-    def check_usb(self, board: str, board_data: dict) -> None:
+    def _check_usb(self, board: str, board_data: dict) -> None:
         """Check if the given board is connected or not to the computer
            If it is not connected, an exception is raised
 
@@ -672,7 +683,7 @@ class SCons:
             # -- Raise an exception
             raise ConnectionError("board " + board + " not connected")
 
-    def get_serial_port(
+    def _get_serial_port(
         self, board: str, board_data: dict, ext_serial_port: str
     ) -> str:
         """Get the serial port of the connected board
@@ -828,7 +839,7 @@ class SCons:
         # -- TinyFPGA board not detected!
         return False
 
-    def get_ftdi_id(self, board, board_data, ext_ftdi_id) -> str:
+    def _get_ftdi_id(self, board, board_data, ext_ftdi_id) -> str:
         """Get the FTDI index of the detected board
 
         * INPUT:
@@ -931,7 +942,7 @@ class SCons:
 
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-positional-arguments
-    def run(self, command, variables, packages, board=None, arch=None):
+    def _run(self, command, variables, packages, board=None, arch=None):
         """Executes scons"""
 
         # -- Construct the path to the SConstruct file.
