@@ -165,8 +165,6 @@ class SconsFilter:
             line_color = self._assign_line_color(
                 line.lower(),
                 {
-                    (r"^max frequency for clock", "blue"),
-                    (r"^max delay", "blue"),
                     (r"^warning:", "yellow"),
                     (r"^error:", "red"),
                 },
