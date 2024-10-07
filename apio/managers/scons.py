@@ -28,6 +28,7 @@ from apio.managers.system import System
 from apio.profile import Profile
 from apio.resources import Resources
 from apio.managers.project import Project
+from apio.managers.scons_filter import SconsFilter
 
 # -- Constant for the dictionary PROG, which contains
 # -- the programming configuration
@@ -1009,14 +1010,15 @@ class SCons:
             ["scons"] + ["-Q", command] + variables + ["force_colors=True"]
         )
 
-        # -- For debugging.
-        # print(f"scons_command = {' '.join(scons_command)}")
+        # -- An output filter that manupulates the scons stdout/err lines as
+        # -- needed and write them to stdout.
+        scons_filter = SconsFilter()
 
         # -- Execute the scons builder!
         result = util.exec_command(
             scons_command,
-            stdout=util.AsyncPipe(self._on_stdout),
-            stderr=util.AsyncPipe(self._on_stderr),
+            stdout=util.AsyncPipe(scons_filter.on_stdout_line),
+            stderr=util.AsyncPipe(scons_filter.on_stderr_line),
         )
 
         # -- Is there an error? True/False
@@ -1046,73 +1048,3 @@ class SCons:
 
         # -- Return the exit code
         return result.exit_code
-
-    @staticmethod
-    def _on_stdout(line):
-
-        # ---- Fomu output processing BEGIN
-        # pattern_fomu = r"^Download\s*\[=*\]\s\d{1,3}%"
-        pattern_fomu = r"^Download\s*\[=*"
-        match = re.search(pattern_fomu, line)
-        if match:
-            # -- Delete the previous line
-            print(CURSOR_UP + ERASE_LINE, end="", flush=True)
-        # ---- Fomu output processing END
-
-        fgcol = "green" if "is up to date" in line else None
-        fgcol = "green" if match else fgcol
-        click.secho(line, fg=fgcol)
-
-    @staticmethod
-    def _on_stderr(line: str):
-        """Callback function. It is called when the running command
-        has printed something on the console
-        """
-
-        # -- Ignore blank lines ('')
-        if not line:
-            return
-
-        # ------- tinyprog output processing BEGIN
-        # -- Check if the line correspond to an output of
-        # -- the tinyprog programmer (TinyFPGA board)
-        # -- Match outputs like these " 97%|█████████▋| "
-        # -- Regular expression remainder:
-        # -- \s --> Match one blank space
-        # -- \d{1,3} one, two or three decimal digits
-        pattern_tinyprog = r"\s\d{1,3}%\|█*"
-
-        # -- Calculate if there is a match
-        match_tinyprog = re.search(pattern_tinyprog, line)
-
-        # -- Math all the progress bar lines except the
-        # -- initial one (when it is 0%)
-        if match_tinyprog and " 0%|" not in line:
-            # -- Delete the previous line
-            print(CURSOR_UP + ERASE_LINE, end="", flush=True)
-        # ------- tinyprog output processing END
-
-        # ------- iceprog output processing BEGIN
-        # -- Match outputs like these "addr 0x001400  3%"
-        # -- Regular expression remainder:
-        # -- ^ --> Match the begining of the line
-        # -- \s --> Match one blank space
-        # -- [0-9A-F]+ one or more hexadecimal digit
-        # -- \d{1,2} one or two decimal digits
-        pattern = r"^addr\s0x[0-9A-F]+\s+\d{1,2}%"
-
-        # -- Calculate if there is a match!
-        match = re.search(pattern, line)
-
-        # -- It is a match! (iceprog is running!)
-        # -- (or if it is the end of the writing!)
-        # -- (or if it is the end of verifying!)
-        if match or "done." in line or "VERIFY OK" in line:
-            # -- Delete the previous line
-            print(CURSOR_UP + ERASE_LINE, end="", flush=True)
-        # ------- Iceprog output processing END
-
-        # -- Print the line (In YELLOW)
-        # -- In case of error print it in RED
-        fgcol = "red" if "error" in line.lower() else None
-        click.secho(line, fg=fgcol)
