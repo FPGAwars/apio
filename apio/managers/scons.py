@@ -105,10 +105,12 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        __, __, arch = process_arguments(args, self.resources, self.project)
+        variables, __, arch = process_arguments(
+            args, self.resources, self.project
+        )
 
         # --Clean the project: run scons -c (with aditional arguments)
-        return self._run("-c", arch=arch, variables=[], packages=[])
+        return self._run("-c", arch=arch, variables=variables, packages=[])
 
     @on_exception(exit_code=1)
     def verify(self, args) -> int:
@@ -1029,6 +1031,11 @@ class SCons:
         scons_command = (
             ["scons"] + ["-Q", command] + variables + ["force_colors=True"]
         )
+
+        # For debugging. Print the scons command line in a forumat that is
+        # useful for the .vscode/launch.json scons debug target.
+        # import json
+        # print(json.dumps(scons_command))
 
         # -- An output filter that manupulates the scons stdout/err lines as
         # -- needed and write them to stdout.
