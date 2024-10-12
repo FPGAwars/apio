@@ -356,7 +356,7 @@ verilator_builder = Builder(
         no_warns=NOWARNS,
         warns=WARNS,
         top_module=TOP_MODULE,
-        lib_files=[YOSYS_LIB_DIR],
+        lib_dirs=[YOSYS_LIB_DIR],
     ),
     src_suffix=".v",
     source_scanner=verilog_src_scanner,
