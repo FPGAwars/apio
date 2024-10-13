@@ -152,20 +152,6 @@ bitstream_builder = Builder(
 env.Append(BUILDERS={"Bin": bitstream_builder})
 
 
-# -- Apio time.
-# -- Builder | not implemented.
-# -- hardware.config -> hardware.rpt
-time_rpt_builder = Builder(
-    action=(
-        'echo "Time analysis report is not impelemnted for the ECP5 family." '
-        "> $TARGET"
-    ),
-    suffix=".rpt",
-    src_suffix=".config",
-)
-env.Append(BUILDERS={"Time": time_rpt_builder})
-
-
 # -- Apio build/upload.
 # -- Targets.
 # -- (module).v -> hardware.json -> hardware.config -> hardware.report.
@@ -188,14 +174,6 @@ if VERBOSE_ALL:
 programmer_cmd = get_programmer_cmd(env)
 upload_target = env.Alias("upload", bin_target, programmer_cmd)
 AlwaysBuild(upload_target)
-
-
-# -- Apio time.
-# -- Targets.
-# -- hardware.config -> hardware.rpt
-time_rpt_target = env.Time(pnr_target)
-AlwaysBuild(time_rpt_target)
-time_target = env.Alias("time", time_rpt_target)
 
 
 # -- Apio verify.
@@ -378,7 +356,7 @@ verilator_builder = Builder(
         no_warns=NOWARNS,
         warns=WARNS,
         top_module=TOP_MODULE,
-        lib_files=[YOSYS_LIB_DIR],
+        lib_dirs=[YOSYS_LIB_DIR],
     ),
     src_suffix=".v",
     source_scanner=verilog_src_scanner,
@@ -404,11 +382,10 @@ if GetOption("clean"):
     # target are dynamic and changes with the selected testbench.
     for glob_pattern in ["*.out", "*.vcd"]:
         for node in Glob(glob_pattern):
-            env.Clean(time_target, str(node))
+            env.Clean(build_target, str(node))
 
     env.Default(
         [
-            time_target,
             build_target,
             synth_target,
             pnr_target,

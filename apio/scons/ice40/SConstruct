@@ -399,7 +399,7 @@ if GetOption("clean"):
     # target are dynamic and changes with the selected testbench.
     for glob_pattern in ["*.out", "*.vcd"]:
         for node in Glob(glob_pattern):
-            env.Clean(time_target, str(node))
+            env.Clean(build_target, str(node))
 
     env.Default(
         [

@@ -461,7 +461,7 @@ class Drivers:
         if zadig_ini_dst.exists():
             zadig_ini_dst.unlink()
 
-        return result.get("returncode")
+        return result.exit_code
 
     @staticmethod
     def _ftdi_disable_windows():
@@ -469,7 +469,7 @@ class Drivers:
         click.secho(FTDI_UNINSTALL_DRIVER_INSTRUCTIONS, fg="yellow")
 
         result = util.exec_command("mmc devmgmt.msc")
-        return result.get("returncode")
+        return result.exit_code
 
     # W0703: Catching too general exception Exception (broad-except)
     # pylint: disable=W0703
@@ -490,14 +490,12 @@ class Drivers:
                     "Serial drivers configuration finished", fg="green"
                 )
             else:
-                result = 1
+                result = util.CommandResult(exit_code=1)
         except Exception as exc:
             click.secho("Error: " + str(exc), fg="red")
-            result = 1
+            result = util.CommandResult(exit_code=1)
 
-        if not isinstance(result, int):
-            result = result.get("returncode")
-        return result
+        return result.exit_code
 
     @staticmethod
     def _serial_disable_windows():
@@ -505,4 +503,4 @@ class Drivers:
         click.secho(SERIAL_UNINSTALL_DRIVER_INSTRUCTIONS, fg="yellow")
 
         result = util.exec_command("mmc devmgmt.msc")
-        return result.get("returncode")
+        return result.exit_code

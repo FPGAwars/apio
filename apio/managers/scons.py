@@ -15,6 +15,7 @@ import time
 import datetime
 import shutil
 from pathlib import Path
+from functools import wraps
 
 import importlib.metadata
 import click
@@ -27,6 +28,7 @@ from apio.managers.system import System
 from apio.profile import Profile
 from apio.resources import Resources
 from apio.managers.project import Project
+from apio.managers.scons_filter import SconsFilter
 
 # -- Constant for the dictionary PROG, which contains
 # -- the programming configuration
@@ -38,6 +40,33 @@ FLASH = "flash"
 # -- ANSI Constants
 CURSOR_UP = "\033[F"
 ERASE_LINE = "\033[K"
+
+
+# W0703: Catching too general exception Exception (broad-except)
+# pylint: disable=W0703
+# pylint: disable=W0150
+#
+# -- Based on
+# -- https://stackoverflow.com/questions/5929107/decorators-with-parameters
+def on_exception(*, exit_code: int):
+    """Decoractor for functions that return int exit code. If the function
+    throws an exception, the error message is printed, and the caller see the
+    returned value exit_code instead of the exception.
+    """
+
+    def decorator(function):
+        @wraps(function)
+        def wrapper(*args, **kwargs):
+            try:
+                return function(*args, **kwargs)
+            except Exception as exc:
+                if str(exc):
+                    click.secho("Error: " + str(exc), fg="red")
+                return exit_code
+
+        return wrapper
+
+    return decorator
 
 
 class SCons:
@@ -70,19 +99,23 @@ class SCons:
             # Change to that folder
             os.chdir(project_dir)
 
-    @util.command
-    def clean(self, args):
-        """Execute apio clean"""
+    @on_exception(exit_code=1)
+    def clean(self, args) -> int:
+        """Runs a scons subprocess with the 'clean' target. Returns process
+        exit code, 0 if ok."""
 
         # -- Split the arguments
-        __, __, arch = process_arguments(args, self.resources, self.project)
+        variables, __, arch = process_arguments(
+            args, self.resources, self.project
+        )
 
         # --Clean the project: run scons -c (with aditional arguments)
-        return self.run("-c", arch=arch, variables=[], packages=[])
+        return self._run("-c", arch=arch, variables=variables, packages=[])
 
-    @util.command
-    def verify(self, args):
-        """Executes scons for verifying"""
+    @on_exception(exit_code=1)
+    def verify(self, args) -> int:
+        """Runs a scons subprocess with the 'verify' target. Returns process
+        exit code, 0 if ok."""
 
         # -- Split the arguments
         variables, __, arch = process_arguments(
@@ -91,16 +124,17 @@ class SCons:
 
         # -- Execute scons!!!
         # -- The packages to check are passed
-        return self.run(
+        return self._run(
             "verify",
             variables=variables,
             arch=arch,
             packages=["oss-cad-suite"],
         )
 
-    @util.command
-    def graph(self, args):
-        """Executes scons for visual graph generation"""
+    @on_exception(exit_code=1)
+    def graph(self, args) -> int:
+        """Runs a scons subprocess with the 'verify' target. Returns process
+        exit code, 0 if ok."""
 
         # -- Split the arguments
         variables, _, arch = process_arguments(
@@ -109,16 +143,17 @@ class SCons:
 
         # -- Execute scons!!!
         # -- The packages to check are passed
-        return self.run(
+        return self._run(
             "graph",
             variables=variables,
             arch=arch,
             packages=["oss-cad-suite"],
         )
 
-    @util.command
-    def lint(self, args):
-        """DOC: TODO"""
+    @on_exception(exit_code=1)
+    def lint(self, args) -> int:
+        """Runs a scons subprocess with the 'lint' target. Returns process
+        exit code, 0 if ok."""
 
         config = {}
         __, __, arch = process_arguments(config, self.resources, self.project)
@@ -131,48 +166,51 @@ class SCons:
                 "nostyle": args.get("nostyle"),
             }
         )
-        return self.run(
+        return self._run(
             "lint",
             variables=variables,
             arch=arch,
             packages=["oss-cad-suite"],
         )
 
-    @util.command
-    def sim(self, args):
-        """Simulates a testbench and shows the result in a gtkwave window."""
+    @on_exception(exit_code=1)
+    def sim(self, args) -> int:
+        """Runs a scons subprocess with the 'sim' target. Returns process
+        exit code, 0 if ok."""
 
         # -- Split the arguments
         variables, _, arch = process_arguments(
             args, self.resources, self.project
         )
 
-        return self.run(
+        return self._run(
             "sim",
             variables=variables,
             arch=arch,
             packages=["oss-cad-suite", "gtkwave"],
         )
 
-    @util.command
-    def test(self, args):
-        """Tests all or a single testbench by simulating."""
+    @on_exception(exit_code=1)
+    def test(self, args) -> int:
+        """Runs a scons subprocess with the 'test' target. Returns process
+        exit code, 0 if ok."""
 
         # -- Split the arguments
         variables, _, arch = process_arguments(
             args, self.resources, self.project
         )
 
-        return self.run(
+        return self._run(
             "test",
             variables=variables,
             arch=arch,
             packages=["oss-cad-suite"],
         )
 
-    @util.command
-    def build(self, args):
-        """Build the circuit"""
+    @on_exception(exit_code=1)
+    def build(self, args) -> int:
+        """Runs a scons subprocess with the 'build' target. Returns process
+        exit code, 0 if ok."""
 
         # -- Split the arguments
         variables, board, arch = process_arguments(
@@ -181,7 +219,7 @@ class SCons:
 
         # -- Execute scons!!!
         # -- The packages to check are passed
-        return self.run(
+        return self._run(
             "build",
             variables=variables,
             board=board,
@@ -191,14 +229,24 @@ class SCons:
 
     # run(self, command, variables, packages, board=None, arch=None):
 
-    @util.command
-    def time(self, args):
-        """DOC: TODO"""
+    @on_exception(exit_code=1)
+    def time(self, args) -> int:
+        """Runs a scons subprocess with the 'time' target. Returns process
+        exit code, 0 if ok."""
 
         variables, board, arch = process_arguments(
             args, self.resources, self.project
         )
-        return self.run(
+
+        if arch not in ["ice40"]:
+            click.secho(
+                "Error: Time analysis for "
+                f"{arch.upper()} is not supported yet.",
+                fg="red",
+            )
+            return 99
+
+        return self._run(
             "time",
             variables=variables,
             board=board,
@@ -206,9 +254,11 @@ class SCons:
             packages=["oss-cad-suite"],
         )
 
-    @util.command
-    def upload(self, config: dict, prog: dict):
-        """Upload the circuit to the board
+    @on_exception(exit_code=1)
+    def upload(self, config: dict, prog: dict) -> int:
+        """Runs a scons subprocess with the 'time' target. Returns process
+        exit code, 0 if ok.
+
         INPUTS:
           * config: Dictionary with the initial configuration
             * board
@@ -219,7 +269,6 @@ class SCons:
             * ftdi_id: ftdi identificator
             * sram: Perform SRAM programming
             * flash: Perform Flash programming
-        OUTPUT: Exit code after executing scons
         """
 
         # -- Get important information from the configuration
@@ -234,13 +283,13 @@ class SCons:
         # -- the FPGA (programmer executable + arguments)
         # -- Ex: 'tinyprog --pyserial -c /dev/ttyACM0 --program'
         # -- Ex: 'iceprog -d i:0x0403:0x6010:0'
-        programmer = self.get_programmer(board, prog)
+        programmer = self._get_programmer(board, prog)
 
         # -- Add as a flag to pass it to scons
         flags += [f"prog={programmer}"]
 
         # -- Execute Scons for uploading!
-        exit_code = self.run(
+        exit_code = self._run(
             "upload",
             variables=flags,
             packages=["oss-cad-suite"],
@@ -250,7 +299,7 @@ class SCons:
 
         return exit_code
 
-    def get_programmer(self, board: str, prog: dict) -> str:
+    def _get_programmer(self, board: str, prog: dict) -> str:
         """Get the command line (string) to execute for programming
         the FPGA (programmer executable + arguments)
 
@@ -286,11 +335,11 @@ class SCons:
 
         # -- Check platform. If the platform is not compatible
         # -- with the board an exception is raised
-        self.check_platform(board_data)
+        self._check_platform(board_data)
 
         # -- Check pip packages. If the corresponding pip_packages
         # -- is not installed, an exception is raised
-        self.check_pip_packages(board_data)
+        self._check_pip_packages(board_data)
 
         # -- Special case for the TinyFPGA on MACOS platforms
         # -- TinyFPGA BX board is not detected in MacOS HighSierra
@@ -315,7 +364,7 @@ class SCons:
         # --   * "${PID}" (optional): USB Product id
         # --   * "${FTDI_ID}" (optional): FTDI id
         # --   * "${SERIAL_PORT}" (optional): Serial port name
-        programmer = self.serialize_programmer(
+        programmer = self._serialize_programmer(
             board_data, prog[SRAM], prog[FLASH]
         )
         # -- The placeholder for the bitstream file name should always exist.
@@ -347,10 +396,10 @@ class SCons:
 
             # -- Check that the board is connected
             # -- If not, an exception is raised
-            self.check_usb(board, board_data)
+            self._check_usb(board, board_data)
 
             # -- Get the FTDI index of the connected board
-            ftdi_id = self.get_ftdi_id(board, board_data, prog[FTDI_ID])
+            ftdi_id = self._get_ftdi_id(board, board_data, prog[FTDI_ID])
 
             # -- Place the value in the command string
             programmer = programmer.replace("${FTDI_ID}", ftdi_id)
@@ -360,10 +409,12 @@ class SCons:
         if "${SERIAL_PORT}" in programmer:
 
             # -- Check that the board is connected
-            self.check_usb(board, board_data)
+            self._check_usb(board, board_data)
 
             # -- Get the serial port
-            device = self.get_serial_port(board, board_data, prog[SERIAL_PORT])
+            device = self._get_serial_port(
+                board, board_data, prog[SERIAL_PORT]
+            )
 
             # -- Place the value in the command string
             programmer = programmer.replace("${SERIAL_PORT}", device)
@@ -375,7 +426,7 @@ class SCons:
         return programmer
 
     @staticmethod
-    def check_platform(board_data: dict) -> None:
+    def _check_platform(board_data: dict) -> None:
         """Check if the current board is compatible with the
         current platform. There are some boards, like icoboard,
         that only runs in the platform linux/arm7
@@ -411,7 +462,7 @@ class SCons:
 
             raise ValueError(f"incorrect platform {platform}")
 
-    def check_pip_packages(self, board_data):
+    def _check_pip_packages(self, board_data):
         """Check if the corresponding pip package with the programmer
         has already been installed. In the case of an apio package
         it is just ignored
@@ -499,7 +550,7 @@ class SCons:
                 # -- Raise an exception
                 raise ValueError(message) from exc
 
-    def serialize_programmer(
+    def _serialize_programmer(
         self, board_data: dict, sram: bool, flash: bool
     ) -> str:
         """
@@ -575,7 +626,7 @@ class SCons:
 
         return programmer
 
-    def check_usb(self, board: str, board_data: dict) -> None:
+    def _check_usb(self, board: str, board_data: dict) -> None:
         """Check if the given board is connected or not to the computer
            If it is not connected, an exception is raised
 
@@ -634,7 +685,7 @@ class SCons:
             # -- Raise an exception
             raise ConnectionError("board " + board + " not connected")
 
-    def get_serial_port(
+    def _get_serial_port(
         self, board: str, board_data: dict, ext_serial_port: str
     ) -> str:
         """Get the serial port of the connected board
@@ -790,7 +841,7 @@ class SCons:
         # -- TinyFPGA board not detected!
         return False
 
-    def get_ftdi_id(self, board, board_data, ext_ftdi_id) -> str:
+    def _get_ftdi_id(self, board, board_data, ext_ftdi_id) -> str:
         """Get the FTDI index of the detected board
 
         * INPUT:
@@ -893,7 +944,7 @@ class SCons:
 
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-positional-arguments
-    def run(self, command, variables, packages, board=None, arch=None):
+    def _run(self, command, variables, packages, board=None, arch=None):
         """Executes scons"""
 
         # -- Construct the path to the SConstruct file.
@@ -981,21 +1032,24 @@ class SCons:
             ["scons"] + ["-Q", command] + variables + ["force_colors=True"]
         )
 
-        # -- For debugging.
-        # print(f"scons_command = {' '.join(scons_command)}")
+        # For debugging. Print the scons command line in a forumat that is
+        # useful for the .vscode/launch.json scons debug target.
+        # import json
+        # print(json.dumps(scons_command))
+
+        # -- An output filter that manupulates the scons stdout/err lines as
+        # -- needed and write them to stdout.
+        scons_filter = SconsFilter()
 
         # -- Execute the scons builder!
         result = util.exec_command(
             scons_command,
-            stdout=util.AsyncPipe(self._on_stdout),
-            stderr=util.AsyncPipe(self._on_stderr),
+            stdout=util.AsyncPipe(scons_filter.on_stdout_line),
+            stderr=util.AsyncPipe(scons_filter.on_stderr_line),
         )
 
-        # -- Get the exit code
-        exit_code = result["returncode"]
-
         # -- Is there an error? True/False
-        is_error = exit_code != 0
+        is_error = result.exit_code != 0
 
         # -- Calculate the time it took to execute the command
         duration = time.time() - start_time
@@ -1020,74 +1074,4 @@ class SCons:
         )
 
         # -- Return the exit code
-        return exit_code
-
-    @staticmethod
-    def _on_stdout(line):
-
-        # ---- Fomu output processing BEGIN
-        # pattern_fomu = r"^Download\s*\[=*\]\s\d{1,3}%"
-        pattern_fomu = r"^Download\s*\[=*"
-        match = re.search(pattern_fomu, line)
-        if match:
-            # -- Delete the previous line
-            print(CURSOR_UP + ERASE_LINE, end="", flush=True)
-        # ---- Fomu output processing END
-
-        fgcol = "green" if "is up to date" in line else None
-        fgcol = "green" if match else fgcol
-        click.secho(line, fg=fgcol)
-
-    @staticmethod
-    def _on_stderr(line: str):
-        """Callback function. It is called when the running command
-        has printed something on the console
-        """
-
-        # -- Ignore blank lines ('')
-        if not line:
-            return
-
-        # ------- tinyprog output processing BEGIN
-        # -- Check if the line correspond to an output of
-        # -- the tinyprog programmer (TinyFPGA board)
-        # -- Match outputs like these " 97%|█████████▋| "
-        # -- Regular expression remainder:
-        # -- \s --> Match one blank space
-        # -- \d{1,3} one, two or three decimal digits
-        pattern_tinyprog = r"\s\d{1,3}%\|█*"
-
-        # -- Calculate if there is a match
-        match_tinyprog = re.search(pattern_tinyprog, line)
-
-        # -- Math all the progress bar lines except the
-        # -- initial one (when it is 0%)
-        if match_tinyprog and " 0%|" not in line:
-            # -- Delete the previous line
-            print(CURSOR_UP + ERASE_LINE, end="", flush=True)
-        # ------- tinyprog output processing END
-
-        # ------- iceprog output processing BEGIN
-        # -- Match outputs like these "addr 0x001400  3%"
-        # -- Regular expression remainder:
-        # -- ^ --> Match the begining of the line
-        # -- \s --> Match one blank space
-        # -- [0-9A-F]+ one or more hexadecimal digit
-        # -- \d{1,2} one or two decimal digits
-        pattern = r"^addr\s0x[0-9A-F]+\s+\d{1,2}%"
-
-        # -- Calculate if there is a match!
-        match = re.search(pattern, line)
-
-        # -- It is a match! (iceprog is running!)
-        # -- (or if it is the end of the writing!)
-        # -- (or if it is the end of verifying!)
-        if match or "done." in line or "VERIFY OK" in line:
-            # -- Delete the previous line
-            print(CURSOR_UP + ERASE_LINE, end="", flush=True)
-        # ------- Iceprog output processing END
-
-        # -- Print the line (In YELLOW)
-        # -- In case of error print it in RED
-        fgcol = "red" if "error" in line.lower() else "yellow"
-        click.secho(line, fg=fgcol)
+        return result.exit_code

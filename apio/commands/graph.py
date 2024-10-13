@@ -26,7 +26,8 @@ of the project that contains the apio.ini file.
 
 \b
 Examples:
-  apio graph
+  apio graph               # Graph the top module
+  apio graph -t my_module  # Graph the selected module
 
 The graph command generates the graph in .dot format and then invokes
 the dot command from the path to convert it to a .svg format. The dot
@@ -46,7 +47,7 @@ to the desired format using the dot command.
 )
 @click.pass_context
 @options.project_dir_option
-@options.top_module_option_gen()
+@options.top_module_option_gen(help="Set the name of the top module to graph.")
 @options.verbose_option
 def cli(
     ctx: Context,
