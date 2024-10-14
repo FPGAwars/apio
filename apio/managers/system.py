@@ -96,7 +96,7 @@ class System:  # pragma: no cover
             # -- Get the list of the usb devices. It is read
             # -- from the command stdout
             # -- Ex: [{'hwid':'1d6b:0003'}, {'hwid':'04f2:b68b'}...]
-            usb_devices = self._parse_usb_devices(result["out"])
+            usb_devices = self._parse_usb_devices(result.out_text)
 
             # -- Return the devices
             return usb_devices
@@ -130,7 +130,7 @@ class System:  # pragma: no cover
             # -- from the command stdout
             # -- Ex: [{'index': '0', 'manufacturer': 'AlhambraBits',
             # --      'description': 'Alhambra II v1.0A - B07-095'}]
-            ftdi_devices = self._parse_ftdi_devices(result["out"])
+            ftdi_devices = self._parse_ftdi_devices(result.out_text)
 
             # -- Return the devices
             return ftdi_devices
