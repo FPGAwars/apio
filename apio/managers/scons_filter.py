@@ -42,15 +42,15 @@ class RangeEvents(Enum):
     END_AFTER = 4  # Range ends, after the current line.
 
 
-class SectionDetector:
-    """Base classifier of a range of lines within the sequence of stdout/err
+class RangeDetector:
+    """Base detector of a range of lines within the sequence of stdout/err
     lines recieves from the scons subprocess."""
 
     def __init__(self):
         self._in_range = False
 
     def update(self, pipe_id: PipeId, line: str) -> bool:
-        """Updates the section classifier with the next stdout/err line.
+        """Updates the range detector with the next stdout/err line.
         return True iff detector classified this line to be within a range."""
 
         prev_state = self._in_range
@@ -85,11 +85,12 @@ class SectionDetector:
         raise NotImplementedError("Should be implemented by a subclass")
 
 
-class PnrSectionDetector(SectionDetector):
-    """Implements a RangeDetector for the nextpnr command verbose log lines."""
+class PnrRangeDetector(RangeDetector):
+    """Implements a RangeDetector for the nextpnr command verbose
+    log lines."""
 
     def classify_line(self, pipe_id: PipeId, line: str) -> RangeEvents:
-        # -- Brek line into words.
+        # -- Break line into words.
         tokens = line.split()
 
         # -- Range start: A nextpnr command on stdout without
@@ -108,6 +109,29 @@ class PnrSectionDetector(SectionDetector):
         return None
 
 
+class IceProgRangeDetector(RangeDetector):
+    """Implements a RangeDetector for the iceprog command output."""
+
+    def __init__(self):
+        super().__init__()
+        # -- Indicates if the last line should be erased before printing the
+        # -- next one. This happens with interactive progress meters.
+        self.pending_erasure = False
+
+    def classify_line(self, pipe_id: PipeId, line: str) -> RangeEvents:
+        # -- Range start: A nextpnr command on stdout without
+        # -- the -q (quiet) flag.
+        if pipe_id == PipeId.STDOUT and line.startswith("iceprog"):
+            self.pending_erasure = False
+            return RangeEvents.START_AFTER
+
+        # Range end: The end message of nextnpr.
+        if pipe_id == PipeId.STDERR and line.startswith("Bye."):
+            return RangeEvents.END_AFTER
+
+        return None
+
+
 class SconsFilter:
     """Implements the filtering and printing of the stdout/err streams of the
     scons subprocess. Accepts a line one at a time, detects lines ranges of
@@ -115,7 +139,8 @@ class SconsFilter:
     stdout."""
 
     def __init__(self):
-        self._pnr_detector = PnrSectionDetector()
+        self._pnr_detector = PnrRangeDetector()
+        self._iceprog_detector = IceProgRangeDetector()
 
     def on_stdout_line(self, line: str) -> None:
         """Stdout pipe calls this on each line."""
@@ -150,8 +175,9 @@ class SconsFilter:
         from other programs. See the PNR detector for an example.
         """
 
-        # -- Update the classifiers
+        # -- Update the range detectors.
         in_pnr_verbose_range = self._pnr_detector.update(pipe_id, line)
+        in_iceprog_range = self._iceprog_detector.update(pipe_id, line)
 
         # -- Handle the line while in the nextpnr verbose log range.
         if pipe_id == PipeId.STDERR and in_pnr_verbose_range:
@@ -164,12 +190,58 @@ class SconsFilter:
             # -- Assign line color.
             line_color = self._assign_line_color(
                 line.lower(),
-                {
+                [
                     (r"^warning:", "yellow"),
                     (r"^error:", "red"),
-                },
+                ],
             )
             click.secho(f"{line}", fg=line_color)
+            return
+
+        # -- Special handling for iceprog line range.
+        if pipe_id == PipeId.STDERR and in_iceprog_range:
+            # -- Iceprog prints blank likes that are used as line erasers.
+            # -- We don't need them here.
+            if len(line) == 0:
+                return
+
+            # -- If the last iceprog line was a to-be-erased line, erase it
+            # -- now and clear the flag.
+            if self._iceprog_detector.pending_erasure:
+                print(
+                    CURSOR_UP + ERASE_LINE,
+                    end="",
+                    flush=True,
+                )
+                self._iceprog_detector.pending_erasure = False
+
+            # -- Determine if the current line should be erased before we will
+            # -- print the next line.
+            # --
+            # -- Match outputs like these "addr 0x001400  3%"
+            # -- Regular expression remainder:
+            # -- ^ --> Match the begining of the line
+            # -- \s --> Match one blank space
+            # -- [0-9A-F]+ one or more hexadecimal digit
+            # -- \d{1,2} one or two decimal digits
+            pattern = r"^addr\s0x[0-9A-F]+\s+\d{1,2}%"
+
+            # -- Calculate if there is a match!
+            match = re.search(pattern, line)
+
+            # -- If the line is to be erased set the flag.
+            if match:
+                self._iceprog_detector.pending_erasure = True
+
+            # -- Determine line color by its content and print it.
+            line_color = self._assign_line_color(
+                line,
+                [
+                    (r"^done.", "green"),
+                    (r"^VERIFY OK", "green"),
+                ],
+            )
+            click.secho(line, fg=line_color)
             return
 
         # -- Special handling for Fumo lines.
@@ -178,8 +250,15 @@ class SconsFilter:
             match = re.search(pattern_fomu, line)
             if match:
                 # -- Delete the previous line
+                #
+                # -- NOTE: If the progress line will scroll instead of
+                # -- overwriting each other, try to add erasure of a second
+                # -- line. This is due to the commit below which restored
+                # -- empty lines.
+                # -  Commit 93fc9bc4f3bfd21568e2d66f11976831467e3b97.
+                #
                 print(CURSOR_UP + ERASE_LINE, end="", flush=True)
-                click.secho(f"{line}", fg="green")
+                click.secho(line, fg="green")
                 return
 
         # -- Special handling for tinyprog lines.
@@ -198,29 +277,14 @@ class SconsFilter:
             # -- Match all the progress bar lines except the
             # -- initial one (when it is 0%)
             if match_tinyprog and " 0%|" not in line:
-                # -- Delete the previous line
-                print(CURSOR_UP + ERASE_LINE, end="", flush=True)
-                click.secho(f"{line}")
-                return
-
-        # -- Special handling for iceprog lines.
-        if pipe_id == PipeId.STDERR:
-            # -- Match outputs like these "addr 0x001400  3%"
-            # -- Regular expression remainder:
-            # -- ^ --> Match the begining of the line
-            # -- \s --> Match one blank space
-            # -- [0-9A-F]+ one or more hexadecimal digit
-            # -- \d{1,2} one or two decimal digits
-            pattern = r"^addr\s0x[0-9A-F]+\s+\d{1,2}%"
-
-            # -- Calculate if there is a match!
-            match = re.search(pattern, line)
-
-            # -- It is a match! (iceprog is running!)
-            # -- (or if it is the end of the writing!)
-            # -- (or if it is the end of verifying!)
-            if match or "done." in line or "VERIFY OK" in line:
-                # -- Delete the previous line
+                # -- Delete the previous line.
+                #
+                # -- NOTE: If the progress line will scroll instead of
+                # -- overwriting each other, try to add erasure of a second
+                # -- line. This is due to the commit below which restored
+                # -- empty lines.
+                # -  Commit 93fc9bc4f3bfd21568e2d66f11976831467e3b97.
+                #
                 print(CURSOR_UP + ERASE_LINE, end="", flush=True)
                 click.secho(line)
                 return
