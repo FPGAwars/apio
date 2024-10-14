@@ -164,10 +164,10 @@ class SconsFilter:
             # -- Assign line color.
             line_color = self._assign_line_color(
                 line.lower(),
-                {
+                [
                     (r"^warning:", "yellow"),
                     (r"^error:", "red"),
-                },
+                ],
             )
             click.secho(f"{line}", fg=line_color)
             return
@@ -178,8 +178,16 @@ class SconsFilter:
             match = re.search(pattern_fomu, line)
             if match:
                 # -- Delete the previous line
+                #
+                # -- TODO: Since the commit listed below we preserve blank
+                # -- stdour/err lines. Iceprog emits an empty line after each
+                # -- percentage line so we changed it below to erase two lines.
+                # -- If this is also the case with tinyprog, apply the same
+                # -- change here. Delete this TODO when resolved.
+                # -  Comit 93fc9bc4f3bfd21568e2d66f11976831467e3b97.
+                #
                 print(CURSOR_UP + ERASE_LINE, end="", flush=True)
-                click.secho(f"{line}", fg="green")
+                click.secho(line, fg="green")
                 return
 
         # -- Special handling for tinyprog lines.
@@ -198,9 +206,17 @@ class SconsFilter:
             # -- Match all the progress bar lines except the
             # -- initial one (when it is 0%)
             if match_tinyprog and " 0%|" not in line:
-                # -- Delete the previous line
+                # -- Delete the previous line.
+                #
+                # -- TODO: Since the commit listed below we preserve blank
+                # -- stdour/err lines. Iceprog emits an empty line after each
+                # -- percentage line so we changed it below to erase two lines.
+                # -- If this is also the case with tinyprog, apply the same
+                # -- change here. Delete this TODO when resolved.
+                # -  Comit 93fc9bc4f3bfd21568e2d66f11976831467e3b97.
+                #
                 print(CURSOR_UP + ERASE_LINE, end="", flush=True)
-                click.secho(f"{line}")
+                click.secho(line)
                 return
 
         # -- Special handling for iceprog lines.
@@ -219,10 +235,17 @@ class SconsFilter:
             # -- It is a match! (iceprog is running!)
             # -- (or if it is the end of the writing!)
             # -- (or if it is the end of verifying!)
-            if match or "done." in line or "VERIFY OK" in line:
-                # -- Delete the previous line
-                print(CURSOR_UP + ERASE_LINE, end="", flush=True)
-                click.secho(line)
+            completed_ok = "done." in line or "VERIFY OK" in line
+            if match or completed_ok:
+                # -- Delete the previous two lines. We erase two lines because
+                # -- iceprog emits an empty line after each percentage line.
+                print(
+                    CURSOR_UP + ERASE_LINE + CURSOR_UP + ERASE_LINE,
+                    end="",
+                    flush=True,
+                )
+                line_color = "green" if completed_ok else None
+                click.secho(line, fg=line_color)
                 return
 
         # Handling the rest of the stdout lines.

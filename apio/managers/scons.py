@@ -60,6 +60,10 @@ def on_exception(*, exit_code: int):
             try:
                 return function(*args, **kwargs)
             except Exception as exc:
+                # For debugging. Uncomment to print the exception's stack.
+                # import traceback
+                # traceback.print_tb(exc.__traceback__)
+
                 if str(exc):
                     click.secho("Error: " + str(exc), fg="red")
                 return exit_code

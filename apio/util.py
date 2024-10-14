@@ -686,14 +686,14 @@ def exec_command(*args, **kwargs) -> CommandResult:
     if isinstance(pipe, AsyncPipe):
         lines = pipe.get_buffer()
         text = "\n".join(lines)
-        out_text = text.strip()
+        out_text = text
 
     # -- If stderr pipe is an AsyncPipe, extract its text.
     pipe = flags["stderr"]
     if isinstance(pipe, AsyncPipe):
         lines = pipe.get_buffer()
         text = "\n".join(lines)
-        err_text = text.strip()
+        err_text = text
 
     # -- All done.
     result = CommandResult(out_text, err_text, exit_code)
