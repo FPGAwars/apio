@@ -34,13 +34,14 @@ class Installer:
 
         force: bool
         checkversion: bool
+        verbose: bool
 
     def __init__(
         self,
         package: str,
         platform: str = "",
         resources=None,
-        modifiers=Modifiers(force=False, checkversion=True),
+        modifiers=Modifiers(force=False, checkversion=True, verbose=False),
     ):
         """Class initialization. Parameters:
         * package:  Package name to manage/install. It can have a sufix with
@@ -79,6 +80,9 @@ class Installer:
         # -- Force installation or not
         self.force_install = modifiers.force
 
+        # -- Show detailed output.
+        self.verbose = modifiers.verbose
+
         # -- Installer.package_dir: path were the packages are stored
         # -- Ex. /home/obijuan/.apio/packages
         self.packages_dir = ""
@@ -116,20 +120,19 @@ class Installer:
             # Check if the version is ok (It is only done if the
             # checkversion flag has been activated)
             if modifiers.checkversion:
-                # Check version. The filename is read from the
-                # repostiroy
-                # -- Get the url of the version.txt file
+                # Check version. The filename is read from the repostiroy.
+                # -- Get the url of the version file
                 url_version = data["release"]["url_version"]
 
                 # -- Get the latest version
                 # -- It will exit in case of error
-                valid_version = self._get_valid_version(url_version)
+                remote_version = self._get_latest_version(url_version)
 
                 # -- It is only execute in case the version is valid
                 # -- it will exit otherwise
 
                 # Store the valid version
-                self.version = valid_version
+                self.version = remote_version
 
                 # Get the plaform_os name
                 # e.g., [linux_x86_64, linux]
@@ -279,6 +282,9 @@ class Installer:
             # -- Ex. '/home/obijuan/.apio/packages/examples'
             package_dir = self.packages_dir / self.package_name
 
+            if self.verbose:
+                click.secho(f"Package dir: {package_dir.absolute()}")
+
             # -- Destination path is a folder (Already exist!)
             if package_dir.is_dir():
 
@@ -350,6 +356,9 @@ class Installer:
         # -- Build the package filename
         file = self.packages_dir / self.package_name
 
+        if self.verbose:
+            click.secho(f"Package dir: {file.absolute()}")
+
         # -- Check that it is a folder...
         if file.is_dir():
 
@@ -379,15 +388,15 @@ class Installer:
         tarball = f"{name}.{extension}"
         return tarball
 
-    def _get_valid_version(self, url_version: str) -> str:
-        """Get the latest valid version from the given remote
-        version.txt file. The file is downloaded and the version is
+    def _get_latest_version(self, url_version: str) -> str:
+        """Get the latest recommanded version from the given remote
+        version file. The file is downloaded and the version is
         read and returned
 
         - INPUTS:
-          * url_version: URL of the package's version.txt file
+          * url_version: URL of the package's version file
             Ex. https://github.com/FPGAwars/apio-examples/raw/master/
-                version.txt
+                VERSION
 
             The url_version for every package is located in the file:
             resources/packages.json
@@ -399,11 +408,13 @@ class Installer:
             # -- No checking... return the required version
             return self.version
 
-        # -- Find latest version number released
-        # -- It is found in the file version.txt located in the root folder of
-        # -- all the APIO packages
+        # -- Find latest version number released. It is found using the
+        # -- version url package configuration.
         if url_version:
-            # -- Get the version.txt with the latest version number
+            if self.verbose:
+                click.secho(f"Version url: {url_version}")
+
+            # -- Get the version file with the latest version number
             req = requests.get(url_version, timeout=5)
 
             # -- Check the server response
@@ -413,26 +424,26 @@ class Installer:
                 == requests.codes.ok
             ):
                 # -- Request OK
-                print("File version.txt downloaded!")
+                print("Remote version file downloaded.")
 
                 # -- Read the version without the ending \n
                 version = req.text.rstrip("\n")
 
                 # -- Debug
-                print(f"Version: {version}")
+                print(f"Remote version: {version}")
 
                 # -- Return the version
                 return version
 
             # -- There was a problem with the request
-            click.secho("Error downloading the version.txt file", fg="red")
+            click.secho("Error downloading the version file", fg="red")
             click.secho(f"URL: {url_version}", fg="red")
             click.secho(f"Error code: {req.status_code}", fg="red")
             sys.exit(1)
 
-        # -- Error: No URL defined for the version.txt file
+        # -- Error: No URL defined for the version file
         click.secho(
-            "No URL defined for the version.txt file\n"
+            "No URL defined for the version file\n"
             + "It is not possible to get the latest version number",
             fg="red",
         )
@@ -449,11 +460,13 @@ class Installer:
         """
 
         # -- Check the installed version of the package
-        installed = self.profile.installed_version(self.package, self.version)
+        installed_ok = self.profile.is_installed_version_ok(
+            self.package, self.version, self.verbose
+        )
 
         # -- Package already installed, and no force_install flag
         # -- Nothing to download
-        if installed and not self.force_install:
+        if installed_ok and not self.force_install:
             click.secho(
                 f"Already installed. Version {self.version}",
                 fg="yellow",
@@ -461,6 +474,9 @@ class Installer:
             return None
 
         # ----- Download the package!
+        if self.verbose:
+            click.secho(f"Src url: {url}")
+
         # -- Object for downloading the file
         filed = FileDownloader(url, self.packages_dir)
 
@@ -468,7 +484,8 @@ class Installer:
         filepath = filed.destination
 
         # -- Inform the user
-        click.secho(f"Download {filed.fname}")
+        if self.verbose:
+            click.secho(f"Local file: {filepath}")
 
         # -- Download start!
         try:

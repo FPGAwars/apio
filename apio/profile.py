@@ -7,6 +7,7 @@
 
 import json
 from pathlib import Path
+import click
 import semantic_version
 from apio import util
 
@@ -32,7 +33,7 @@ class Profile:
         # -- Read the profile from file
         self.load()
 
-    def installed_version(self, name: str, version: str):
+    def is_installed_version_ok(self, name: str, version: str, verbose: bool):
         """Check the if the given package version is installed
         * INPUT:
           - name: Package name
@@ -53,6 +54,9 @@ class Profile:
             # -- Compare versions: current vs version to install
             current_ver = semantic_version.Version(pkg_version)
             to_install_ver = semantic_version.Version(version)
+
+            if verbose:
+                click.secho(f"Current version: {current_ver}")
 
             same_versions = current_ver == to_install_ver
 

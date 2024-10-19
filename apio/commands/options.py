@@ -217,7 +217,7 @@ verbose_option = click.option(
     "-v",
     "--verbose",
     is_flag=True,
-    help="Show the entire output of the command.",
+    help="Show detailed output.",
     cls=cmd_util.ApioOption,
 )
 
@@ -226,7 +226,7 @@ verbose_pnr_option = click.option(
     "verbose_pnr",  # Var name.
     "--verbose-pnr",
     is_flag=True,
-    help="Show the pnr output.",
+    help="Show detailed pnr output.",
     cls=cmd_util.ApioOption,
 )
 
@@ -235,6 +235,6 @@ verbose_yosys_option = click.option(
     "verbose_yosys",  # Var name.
     "--verbose-yosys",
     is_flag=True,
-    help="Show the yosys output.",
+    help="Show detailed yosys output.",
     cls=cmd_util.ApioOption,
 )
