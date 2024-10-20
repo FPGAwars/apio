@@ -49,6 +49,7 @@ from SCons.Script import (
 )
 from apio.scons.scons_util import (
     TARGET,
+    SConstructId,
     is_testbench,
     basename,
     is_windows,
@@ -183,9 +184,10 @@ if VERBOSE_ALL:
 # -- Targets.
 # -- hardware.config -> hardware.pnr -> (report)
 pnr_report_target = env.PnrReport(TARGET, pnr_target)
-report_target = env.Alias(
-    "report", pnr_report_target, get_report_action(env, VERBOSE_PNR)
+report_action = get_report_action(
+    env, SConstructId.SCONSTRUCT_ECP5, VERBOSE_PNR
 )
+report_target = env.Alias("report", pnr_report_target, report_action)
 AlwaysBuild(report_target)
 
 

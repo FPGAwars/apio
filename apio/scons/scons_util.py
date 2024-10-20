@@ -19,6 +19,7 @@ be called only from the SConstruct.py files.
 
 import os
 import re
+from enum import Enum
 import json
 from platform import system
 from typing import Dict, Tuple, List, Optional
@@ -33,8 +34,17 @@ from SCons.Script.SConscript import SConsEnvironment
 from SCons.Action import FunctionAction
 
 
-# -- Target name
+# -- Target name. This is the base file name for various build artifacts.
 TARGET = "hardware"
+
+
+class SConstructId(Enum):
+    """Identifies the SConstruct script that is running. Used to select
+    the desired behavior when it's script dependent."""
+
+    SCONSTRUCT_ICE40 = 1
+    SCONSTRUCT_ECP5 = 2
+    SCONSTRUCT_GOWIN = 3
 
 
 def map_params(
@@ -533,7 +543,10 @@ def make_verilator_action(
 
 
 def _print_pnr_report(
-    env: SConsEnvironment, json_txt: str, verbose: bool
+    env: SConsEnvironment,
+    json_txt: str,
+    script_id: SConstructId,
+    verbose: bool,
 ) -> None:
     """Accepts the text of the pnr json report and prints it in
     a user friendly way. Used by the 'apio report' command."""
@@ -560,7 +573,15 @@ def _print_pnr_report(
         msg(env, "")
         msg(env, "MAX SPEED:", fg="cyan")
         for clk_net, vals in clocks.items():
-            clk_signal = clk_net.split("$")[0]
+            # TODO: Confirm clk name extraction for Gowin.
+            # Extract clock name from the net name.
+            if script_id == SConstructId.SCONSTRUCT_ECP5:
+                # E.g. '$glbnet$CLK$TRELLIS_IO_IN' -> 'CLK'
+                clk_signal = clk_net.split("$")[2]
+            else:
+                # E.g. 'vclk$SB_IO_IN_$glb_clk' -> 'vclk'
+                clk_signal = clk_net.split("$")[0]
+            # Report speed.
             max_mhz = vals["achieved"]
             msg(env, f"{clk_signal:>20}: {max_mhz:9.2f} Mhz")
 
@@ -571,9 +592,13 @@ def _print_pnr_report(
         msg(env, "For more details use 'apio report --verbose'.", fg="yellow")
 
 
-def get_report_action(env: SConsEnvironment, verbose: bool) -> FunctionAction:
+def get_report_action(
+    env: SConsEnvironment, script_id: SConstructId, verbose: bool
+) -> FunctionAction:
     """Returns a SCons action to format and print the PNR reort from the
-    PNR json report file. Used by the 'apio report' command."""
+    PNR json report file. Used by the 'apio report' command.
+    'script_id' identifies the calling SConstruct script and 'verbose'
+    indicates if the --verbose flag was invoked."""
 
     def print_pnr_report(
         source: List[File],
@@ -584,6 +609,6 @@ def get_report_action(env: SConsEnvironment, verbose: bool) -> FunctionAction:
         friendly way."""
         json_file: File = source[0]
         json_txt: str = json_file.get_text_contents()
-        _print_pnr_report(env, json_txt, verbose)
+        _print_pnr_report(env, json_txt, script_id, verbose)
 
     return env.Action(print_pnr_report, "Formatting pnr report.")
