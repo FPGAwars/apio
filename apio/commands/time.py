@@ -19,20 +19,8 @@ from apio.commands import options
 # -- COMMAND
 # ---------------------------
 HELP = """
-The time command analyzes
-and reports the timing of the design. It is useful to determine the
-maximal clock rate that the FPGA can handle with this design. For more
-detailed timing information, inspect the file 'hardware.rpt' that the
-command generates.
-The commands is typically used in the root directory
-of the project that contains the apio.ini file.
-
-\b
-Examples:
-  apio time
-
-The time command supportw ICE40 devcies. ECP5 and Gowin devices are not
-supported yet.
+The time command has been deprecated. Please use the 'apio report' command
+instead.
 """
 
 
@@ -41,7 +29,7 @@ supported yet.
 # pylint: disable=too-many-positional-arguments
 @click.command(
     "time",
-    short_help="Report design timing.",
+    short_help="[Depreciated] Report design timing.",
     help=HELP,
     cls=cmd_util.ApioCommand,
 )
@@ -50,12 +38,12 @@ supported yet.
 @options.verbose_option
 @options.verbose_yosys_option
 @options.verbose_pnr_option
-@options.top_module_option_gen(deprecated=True)
-@options.board_option_gen(deprecated=True)
-@options.fpga_option
-@options.size_option
-@options.type_option
-@options.pack_option
+@options.top_module_option_gen(deprecated=False)
+@options.board_option_gen(deprecated=False)
+@options.fpga_option_gen(deprecated=False)
+@options.size_option_gen(deprecated=False)
+@options.type_option_gen(deprecated=False)
+@options.pack_option_gen(deprecated=False)
 def cli(
     ctx: Context,
     # Options
