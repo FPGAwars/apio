@@ -555,7 +555,7 @@ def _print_pnr_report(
 
     # --- Report utilization
     msg(env, "")
-    msg(env, "DEVICE UTILIZATION:", fg="cyan")
+    msg(env, "UTILIZATION:", fg="cyan")
     utilization = report["utilization"]
     for resource, vals in utilization.items():
         available = vals["available"]
@@ -571,10 +571,10 @@ def _print_pnr_report(
     # -- NOTE: As of Oct 2024, some projects do not generate timing
     # -- information and this is being investigated.
     # -- See https://github.com/FPGAwars/icestudio/issues/774 for details.
+    msg(env, "")
+    msg(env, "CLOCKS:", fg="cyan")
     clocks = report["fmax"]
     if len(clocks) > 0:
-        msg(env, "")
-        msg(env, "MAX SPEED:", fg="cyan")
         for clk_net, vals in clocks.items():
             # TODO: Confirm clk name extraction for Gowin.
             # Extract clock name from the net name.
@@ -586,13 +586,14 @@ def _print_pnr_report(
                 clk_signal = clk_net.split("$")[0]
             # Report speed.
             max_mhz = vals["achieved"]
-            msg(env, f"{clk_signal:>20}: {max_mhz:9.2f} Mhz")
+            styled_max_mhz = click.style(f"{max_mhz:7.2f}", fg="magenta")
+            msg(env, f"{clk_signal:>20}: {styled_max_mhz} Mhz max")
 
     # -- For now we ignore the critical path report in the pnr report and
     # -- refer the user to the pnr verbose output.
     msg(env, "")
     if not verbose:
-        msg(env, "For more details use 'apio report --verbose'.", fg="yellow")
+        msg(env, "Use 'apio report --verbose' for more details.", fg="yellow")
 
 
 def get_report_action(
