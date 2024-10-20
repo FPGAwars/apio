@@ -19,19 +19,26 @@ from apio.commands import options
 
 
 def install_packages(
-    packages: list, platform: str, resources: Resources, force: bool
+    packages: list,
+    platform: str,
+    resources: Resources,
+    force: bool,
+    verbose: bool,
 ):
     """Install the apio packages passed as a list
     * INPUTS:
       - packages: List of packages (Ex. ['examples', 'oss-cad-suite'])
       - platform: Specific platform (Advanced, just for developers)
       - force: Force package installation
+      - verbose: Show detailed output.
     """
     # -- Install packages, one by one...
     for package in packages:
 
         # -- The instalation is performed by the Installer object
-        modifiers = Installer.Modifiers(force=force, checkversion=True)
+        modifiers = Installer.Modifiers(
+            force=force, checkversion=True, verbose=verbose
+        )
         installer = Installer(package, platform, resources, modifiers)
 
         # -- Install the package!
@@ -71,6 +78,7 @@ For packages uninstallation see the apio uninstall command.
 @options.force_option_gen(help="Force the packages installation.")
 @options.project_dir_option
 @options.platform_option
+@options.verbose_option
 def cli(
     ctx: Context,
     # Arguments
@@ -81,6 +89,7 @@ def cli(
     force: bool,
     platform: str,
     project_dir: Path,
+    verbose: bool,
 ):
     """Implements the install command which allows to
     manage the installation of apio packages.
@@ -94,13 +103,15 @@ def cli(
 
     # -- Install the given apio packages
     if packages:
-        install_packages(packages, platform, resources, force)
+        install_packages(packages, platform, resources, force, verbose)
         ctx.exit(0)
 
     # -- Install all the available packages (if any)
     if all_:
         # -- Install all the available packages for this platform!
-        install_packages(resources.packages, platform, resources, force)
+        install_packages(
+            resources.packages, platform, resources, force, verbose
+        )
         ctx.exit(0)
 
     # -- List all the packages (installed or not)

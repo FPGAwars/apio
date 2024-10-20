@@ -27,10 +27,11 @@ test-colorlight-v61.ice
 hardware.json
 hardware.out
 hardware.vlt
-*.out
-*.vcd
 hardware.bit
 hardware.config
+hardware.pnr
+*.out
+*.vcd
 .DS_Store
 abc.history
 temp-*

@@ -19,17 +19,21 @@ from apio.resources import Resources
 from apio.commands import options
 
 
-def _uninstall(packages: list, platform: str, resources: Resources):
+def _uninstall(
+    packages: list, platform: str, resources: Resources, sayyes, verbose: bool
+):
     """Uninstall the given list of packages"""
 
     # -- Ask the user for confirmation
-    if click.confirm("Do you want to uninstall?"):
+    if sayyes or click.confirm("Do you want to uninstall?"):
 
         # -- Uninstall packages, one by one
         for package in packages:
 
             # -- The uninstalation is performed by the Installer object
-            modifiers = Installer.Modifiers(force=False, checkversion=False)
+            modifiers = Installer.Modifiers(
+                force=False, checkversion=False, verbose=verbose
+            )
             installer = Installer(package, platform, resources, modifiers)
 
             # -- Uninstall the package!
@@ -71,6 +75,8 @@ For packages installation see the apio install command.
 @options.all_option_gen(help="Uninstall all packages.")
 @options.project_dir_option
 @options.platform_option
+@options.sayyes
+@options.verbose_option
 def cli(
     ctx: Context,
     # Arguments
@@ -80,6 +86,8 @@ def cli(
     all_: bool,
     project_dir: Path,
     platform: str,
+    sayyes: bool,
+    verbose: bool,
 ):
     """Implements the uninstall command."""
 
@@ -91,7 +99,7 @@ def cli(
 
     # -- Uninstall the given apio packages
     if packages:
-        _uninstall(packages, platform, resources)
+        _uninstall(packages, platform, resources, sayyes, verbose)
         ctx.exit(0)
 
     # -- Uninstall all the packages
@@ -99,7 +107,7 @@ def cli(
         # -- Get all the installed apio packages
         packages = Profile().packages
         # -- Uninstall them!
-        _uninstall(packages, platform, resources)
+        _uninstall(packages, platform, resources, sayyes, verbose)
         ctx.exit(0)
 
     # -- List all the packages (installed or not)

@@ -47,10 +47,10 @@ Examples:
 @options.verbose_pnr_option
 @options.top_module_option_gen(deprecated=True)
 @options.board_option_gen(deprecated=True)
-@options.fpga_option
-@options.size_option
-@options.type_option
-@options.pack_option
+@options.fpga_option_gen(deprecated=True)
+@options.size_option_gen(deprecated=True)
+@options.type_option_gen(deprecated=True)
+@options.pack_option_gen(deprecated=True)
 def cli(
     ctx: Context,
     # Options

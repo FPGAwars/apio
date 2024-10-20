@@ -17,6 +17,40 @@ from click.core import Context
 import click
 from apio import util
 
+# -- Maps group title to command names. Controls how the 'apio -h' help
+# -- information is printed. Should include all commands and without
+# -- duplicates.
+COMMAND_GROUPS = {
+    "Build commands": [
+        "build",
+        "upload",
+        "clean",
+    ],
+    "Verification commands": [
+        "verify",
+        "lint",
+        "sim",
+        "test",
+        "time",
+        "report",
+        "graph",
+    ],
+    "Setup commands": [
+        "create",
+        "modify",
+        "drivers",
+        "install",
+        "uninstall",
+    ],
+    "Utility commands": [
+        "boards",
+        "examples",
+        "raw",
+        "system",
+        "upgrade",
+    ],
+}
+
 
 def select_commands_help(
     command_lines: List[str], command_names: List[str]
@@ -70,55 +104,30 @@ def reformat_apio_help(original_help: str) -> str:
     index += 1  # Skip the Commands: line.
     command_lines = help_lines[index:]
 
-    # -- Select project commands by the order they are listed here.
-    project_help = select_commands_help(
-        command_lines,
-        [
-            "build",
-            "clean",
-            "verify",
-            "sim",
-            "test",
-            "lint",
-            "upload",
-            "time",
-            "graph",
-        ],
-    )
-    # -- Select setup commands by the order they are listed here.
-    setup_help = select_commands_help(
-        command_lines,
-        ["create", "modify", "drivers", "install", "uninstall"],
-    )
-
-    # -- Select utility commands  by the order they are listed here.
-    utility_help = select_commands_help(
-        command_lines,
-        ["boards", "examples", "raw", "system", "upgrade"],
-    )
-
-    # -- Sanity check, in case we mispelled or ommited a command name.
-    num_selected = len(project_help) + len(setup_help) + len(utility_help)
-    assert len(command_lines) == num_selected
-
     # -- Header
     result = []
     result.extend(header_lines)
 
-    # -- Project commands:
-    result.append("Project commands:")
-    result.extend(project_help)
-    result.append("")
+    # -- Print the help of the command groups while verifying that there
+    # -- are no missing or duplicate commands.
+    reported_commands = set()
+    for group_title, command_names in COMMAND_GROUPS.items():
+        # -- Assert no duplicates inter and intra groups.
+        assert len(command_names) == len(set(command_names))
+        assert reported_commands.isdisjoint(command_names)
+        reported_commands.update(command_names)
+        # -- Select the help lines of the commands in this group.
+        group_help = select_commands_help(command_lines, command_names)
+        # -- Append the group title and command lines.
+        result.append(f"{group_title}:")
+        result.extend(group_help)
+        result.append("")
 
-    # -- Setup commands:
-    result.append("Setup commands:")
-    result.extend(setup_help)
-    result.append("")
-
-    # -- Print utility commands:
-    result.append("Utility commands:")
-    result.extend(utility_help)
-    result.append("")
+    # -- If this assertion fails, for a missing command in the groups
+    # -- definitions.
+    assert len(command_lines) == len(
+        reported_commands
+    ), f"{command_lines=}, {len(reported_commands)=}"
 
     return "\n".join(result)
 

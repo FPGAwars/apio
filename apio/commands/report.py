@@ -5,7 +5,7 @@
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""Implementation of 'apio' time' command"""
+"""Implementation of 'apio' report' command"""
 
 from pathlib import Path
 import click
@@ -19,8 +19,17 @@ from apio.commands import options
 # -- COMMAND
 # ---------------------------
 HELP = """
-The time command has been deprecated. Please use the 'apio report' command
-instead.
+The report command reports the utilization and timing of the design.
+It is useful to analyzer utilization bottle neck and to verify that
+the design can run at a desired clock speed.
+The commands is typically used in the root directory
+of the project that contains the apio.ini file.
+
+\b
+Examples:
+  apio report
+  epio report --verbose
+
 """
 
 
@@ -28,30 +37,25 @@ instead.
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-positional-arguments
 @click.command(
-    "time",
-    short_help="[Depreciated] Report design timing.",
+    "report",
+    short_help="Report design utilization and timing.",
     help=HELP,
     cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 @options.project_dir_option
 @options.verbose_option
-@options.verbose_yosys_option
-@options.verbose_pnr_option
-@options.top_module_option_gen(deprecated=False)
-@options.board_option_gen(deprecated=False)
-@options.fpga_option_gen(deprecated=False)
-@options.size_option_gen(deprecated=False)
-@options.type_option_gen(deprecated=False)
-@options.pack_option_gen(deprecated=False)
+@options.top_module_option_gen(deprecated=True)
+@options.board_option_gen(deprecated=True)
+@options.fpga_option_gen(deprecated=True)
+@options.size_option_gen(deprecated=True)
+@options.type_option_gen(deprecated=True)
+@options.pack_option_gen(deprecated=True)
 def cli(
     ctx: Context,
     # Options
     project_dir: Path,
     verbose: bool,
-    verbose_yosys: bool,
-    verbose_pnr: bool,
-    # Deprecated options
     top_module: str,
     board: str,
     fpga: str,
@@ -65,7 +69,7 @@ def cli(
     scons = SCons(project_dir)
 
     # Run scons
-    exit_code = scons.time(
+    exit_code = scons.report(
         {
             "board": board,
             "fpga": fpga,
@@ -73,9 +77,9 @@ def cli(
             "type": type_,
             "pack": pack,
             "verbose": {
-                "all": verbose,
-                "yosys": verbose_yosys,
-                "pnr": verbose_pnr,
+                "all": False,
+                "yosys": False,
+                "pnr": verbose,
             },
             "top-module": top_module,
         }

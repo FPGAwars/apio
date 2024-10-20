@@ -231,8 +231,6 @@ class SCons:
             packages=["oss-cad-suite"],
         )
 
-    # run(self, command, variables, packages, board=None, arch=None):
-
     @on_exception(exit_code=1)
     def time(self, args) -> int:
         """Runs a scons subprocess with the 'time' target. Returns process
@@ -252,6 +250,23 @@ class SCons:
 
         return self._run(
             "time",
+            variables=variables,
+            board=board,
+            arch=arch,
+            packages=["oss-cad-suite"],
+        )
+
+    @on_exception(exit_code=1)
+    def report(self, args) -> int:
+        """Runs a scons subprocess with the 'report' target. Returns process
+        exit code, 0 if ok."""
+
+        variables, board, arch = process_arguments(
+            args, self.resources, self.project
+        )
+
+        return self._run(
+            "report",
             variables=variables,
             board=board,
             arch=arch,

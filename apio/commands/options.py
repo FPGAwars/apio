@@ -107,20 +107,86 @@ def top_module_option_gen(
     )
 
 
+# W0622: Redefining built-in 'help'
+# pylint: disable=W0622
+def fpga_option_gen(
+    *,
+    deprecated: bool = False,
+    help: str = "Set the FPGA.",
+):
+    """Generate a --fpga option with given help text."""
+    return click.option(
+        "fpga",  # Var name.
+        "--fpga",
+        type=str,
+        metavar="str",
+        deprecated=deprecated,
+        help=help,
+        cls=cmd_util.ApioOption,
+    )
+
+
+# W0622: Redefining built-in 'help'
+# pylint: disable=W0622
+def size_option_gen(
+    *,
+    deprecated: bool = False,
+    help: str = "Set the FPGA size (1k/8k).",
+):
+    """Generate a --size option with given help text."""
+    return click.option(
+        "size",  # Var name
+        "--size",
+        type=str,
+        metavar="str",
+        deprecated=deprecated,
+        help=help,
+        cls=cmd_util.ApioOption,
+    )
+
+
+# W0622: Redefining built-in 'help'
+# pylint: disable=W0622
+def type_option_gen(
+    *,
+    deprecated: bool = False,
+    help: str = "Set the FPGA type (hx/lp).",
+):
+    """Generate a --type option with given help text."""
+    return click.option(
+        "type_",  # Var name. Deconflicting from Python's builtin 'type'.
+        "--type",
+        type=str,
+        metavar="str",
+        deprecated=deprecated,
+        help=help,
+        cls=cmd_util.ApioOption,
+    )
+
+
+# W0622: Redefining built-in 'help'
+# pylint: disable=W0622
+def pack_option_gen(
+    *,
+    deprecated: bool = False,
+    help: str = "Set the FPGA package.",
+):
+    """Generate a --pack option with given help text."""
+    return click.option(
+        "pack",  # Var name
+        "--pack",
+        type=str,
+        metavar="str",
+        deprecated=deprecated,
+        help=help,
+        cls=cmd_util.ApioOption,
+    )
+
+
 # ---------------------------
 # -- Static options
 # ---------------------------
 
-
-fpga_option = click.option(
-    "fpga",  # Var name.
-    "--fpga",
-    type=str,
-    metavar="str",
-    deprecated=True,
-    help="Set the FPGA.",
-    cls=cmd_util.ApioOption,
-)
 
 ftdi_id = click.option(
     "ftdi_id",  # Var name.
@@ -128,16 +194,6 @@ ftdi_id = click.option(
     type=str,
     metavar="ftdi-id",
     help="Set the FTDI id.",
-)
-
-pack_option = click.option(
-    "pack",  # Var name
-    "--pack",
-    type=str,
-    metavar="str",
-    deprecated=True,
-    help="Set the FPGA package.",
-    cls=cmd_util.ApioOption,
 )
 
 
@@ -190,34 +246,12 @@ serial_port_option = click.option(
 )
 
 
-size_option = click.option(
-    "size",  # Var name
-    "--size",
-    type=str,
-    metavar="str",
-    deprecated=True,
-    help="Set the FPGA type (1k/8k).",
-    cls=cmd_util.ApioOption,
-)
-
-
-type_option = click.option(
-    "type_",  # Var name. Deconflicting from Python's builtin 'type'.
-    "--type",
-    type=str,
-    metavar="str",
-    deprecated=True,
-    help="Set the FPGA type (hx/lp).",
-    cls=cmd_util.ApioOption,
-)
-
-
 verbose_option = click.option(
     "verbose",  # Var name.
     "-v",
     "--verbose",
     is_flag=True,
-    help="Show the entire output of the command.",
+    help="Show detailed output.",
     cls=cmd_util.ApioOption,
 )
 
@@ -226,7 +260,7 @@ verbose_pnr_option = click.option(
     "verbose_pnr",  # Var name.
     "--verbose-pnr",
     is_flag=True,
-    help="Show the pnr output.",
+    help="Show detailed pnr output.",
     cls=cmd_util.ApioOption,
 )
 
@@ -235,6 +269,6 @@ verbose_yosys_option = click.option(
     "verbose_yosys",  # Var name.
     "--verbose-yosys",
     is_flag=True,
-    help="Show the yosys output.",
+    help="Show detailed yosys output.",
     cls=cmd_util.ApioOption,
 )
