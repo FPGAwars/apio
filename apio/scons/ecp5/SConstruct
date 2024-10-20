@@ -184,7 +184,7 @@ if VERBOSE_ALL:
 # -- hardware.config -> hardware.pnr -> (report)
 pnr_report_target = env.PnrReport(TARGET, pnr_target)
 report_target = env.Alias(
-    "report", pnr_report_target, get_report_action(VERBOSE_PNR)
+    "report", pnr_report_target, get_report_action(env, VERBOSE_PNR)
 )
 AlwaysBuild(report_target)
 

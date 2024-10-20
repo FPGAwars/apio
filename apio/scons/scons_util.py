@@ -23,16 +23,15 @@ import json
 from platform import system
 from typing import Dict, Tuple, List, Optional
 from dataclasses import dataclass
+import click
 from SCons import Scanner
 from SCons.Node import NodeList
 from SCons.Node.FS import File
 from SCons.Node.Alias import Alias
 from SCons.Script import DefaultEnvironment
 from SCons.Script.SConscript import SConsEnvironment
+from SCons.Action import FunctionAction
 
-# import SCons.Node.FS
-from SCons.Action import ActionBase, FunctionAction
-import click
 
 # -- Target name
 TARGET = "hardware"
@@ -572,7 +571,7 @@ def _print_pnr_report(
         msg(env, "For more details use 'apio report --verbose'.", fg="yellow")
 
 
-def get_report_action(verbose: bool) -> ActionBase:
+def get_report_action(env: SConsEnvironment, verbose: bool) -> FunctionAction:
     """Returns a SCons action to format and print the PNR reort from the
     PNR json report file. Used by the 'apio report' command."""
 
@@ -587,4 +586,4 @@ def get_report_action(verbose: bool) -> ActionBase:
         json_txt: str = json_file.get_text_contents()
         _print_pnr_report(env, json_txt, verbose)
 
-    return FunctionAction(print_pnr_report, {})
+    return env.Action(print_pnr_report, "Formatting pnr report.")
