@@ -30,8 +30,6 @@ Examples:
   apio report
   epio report --verbose
 
-NOTE: The timing reports for the architectures ECP5 and Gowin have not
-been implemented yet by the nextpnr project.
 """
 
 
