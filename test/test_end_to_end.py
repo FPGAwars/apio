@@ -41,7 +41,7 @@ def validate_dir_leds(folder=""):
     assert leds_dir.is_dir() and nfiles > 0
 
 
-def test_complete(clirunner, validate_cliresult, configenv, offline):
+def test_end_to_end1(clirunner, validate_cliresult, configenv, offline):
     """Test the installation of the examples package"""
 
     # -- If the option 'offline' is passed, the test is skip
@@ -99,7 +99,7 @@ def test_complete(clirunner, validate_cliresult, configenv, offline):
         assert "examples" in result.output
 
 
-def test_complete2(clirunner, validate_cliresult, configenv, offline):
+def test_end_to_end2(clirunner, validate_cliresult, configenv, offline):
     """Test more 'apio examples' commands"""
 
     # -- If the option 'offline' is passed, the test is skip
@@ -172,7 +172,7 @@ def test_complete2(clirunner, validate_cliresult, configenv, offline):
         validate_dir_leds()
 
 
-def test_complete3(clirunner, validate_cliresult, configenv, offline):
+def test_end_to_end3(clirunner, validate_cliresult, configenv, offline):
     """Test more 'apio examples' commands"""
 
     # -- If the option 'offline' is passed, the test is skip
