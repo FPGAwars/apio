@@ -82,6 +82,7 @@ def reformat_apio_help(original_help: str) -> str:
             "lint",
             "upload",
             "time",
+            "report",
             "graph",
         ],
     )
