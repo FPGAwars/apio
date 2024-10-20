@@ -19,13 +19,19 @@ be called only from the SConstruct.py files.
 
 import os
 import re
+import json
 from platform import system
 from typing import Dict, Tuple, List, Optional
 from dataclasses import dataclass
-import SCons
+from SCons import Scanner
+from SCons.Node import NodeList
+from SCons.Node.FS import File
+from SCons.Node.Alias import Alias
 from SCons.Script import DefaultEnvironment
 from SCons.Script.SConscript import SConsEnvironment
-import SCons.Node.FS
+
+# import SCons.Node.FS
+from SCons.Action import ActionBase, FunctionAction
 import click
 
 # -- Target name
@@ -155,24 +161,28 @@ def force_colors(env: SConsEnvironment) -> bool:
     return flag
 
 
-def info(env: SConsEnvironment, msg: str) -> None:
+def msg(env: SConsEnvironment, text: str, fg: str = None) -> None:
+    click.secho(text, fg=fg, color=force_colors(env))
+
+
+def info(env: SConsEnvironment, text: str) -> None:
     """Prints a short info message and continue."""
-    click.secho(f"Info: {msg}")
+    msg(env, f"Info: {text}")
 
 
-def warning(env: SConsEnvironment, msg: str) -> None:
+def warning(env: SConsEnvironment, text: str) -> None:
     """Prints a short warning message and continue."""
-    click.secho(f"Warning: {msg}", fg="yellow", color=force_colors(env))
+    msg(env, f"Warning: {text}", fg="yellow")
 
 
-def error(env: SConsEnvironment, msg: str) -> None:
+def error(env: SConsEnvironment, text: str) -> None:
     """Prints a short error message and continue."""
-    click.secho(f"Error: {msg}", fg="red", color=force_colors(env))
+    msg(env, f"Error: {text}", fg="red")
 
 
-def fatal_error(env: SConsEnvironment, msg: str) -> None:
+def fatal_error(env: SConsEnvironment, text: str) -> None:
     """Prints a short error message and exit with an error code."""
-    error(env, msg)
+    error(env, text)
     env.Exit(1)
 
 
@@ -269,7 +279,7 @@ def get_programmer_cmd(env: SConsEnvironment) -> str:
     return prog_arg
 
 
-def make_verilog_src_scanner(env: SConsEnvironment) -> SCons.Scanner:
+def make_verilog_src_scanner(env: SConsEnvironment) -> Scanner:
     """Creates and returns a scons Scanner object for scanning verilog
     files for dependencies.
     """
@@ -288,7 +298,7 @@ def make_verilog_src_scanner(env: SConsEnvironment) -> SCons.Scanner:
     )
 
     def verilog_src_scanner_func(
-        file_node: SCons.Node.FS.File, env: SConsEnvironment, ignored_path
+        file_node: File, env: SConsEnvironment, ignored_path
     ) -> List[str]:
         """Given a Verilog file, scan it and return a list of references
         to other files it depends on. It's not require to report dependency
@@ -342,7 +352,7 @@ def get_source_files(env: SConsEnvironment) -> Tuple[List[str], List[str]]:
     otherwise as a synthesis file.
     """
     # -- Get a list of all *.v files in the project dir.
-    files: List[SCons.Node.FS.File] = env.Glob("*.v")
+    files: List[File] = env.Glob("*.v")
 
     # Split file names to synth files and testbench file lists
     synth_srcs = []
@@ -414,9 +424,9 @@ def get_tests_configs(
 
 def make_waves_target(
     env: SConsEnvironment,
-    vcd_file_target: SCons.Node.NodeList,
+    vcd_file_target: NodeList,
     top_module: str,
-) -> List[SCons.Node.Alias.Alias]:
+) -> List[Alias]:
     """Construct a target to launch the QTWave signal viwer. vcd_file_target is
     the simulator target that generated the vcd file with the signals. Top
     module is to derive the name of the .gtkw which can be used to save the
@@ -521,3 +531,58 @@ def make_verilator_action(
     )
 
     return action
+
+
+def _print_pnr_report(
+    env: SConsEnvironment, json_txt: str, verbose: bool
+) -> None:
+    """Accepts the text of the pnr json report and prints it in
+    a user friendly way. Used by the 'apio report' command."""
+    # -- Json text to tree of Dicts.
+    report: Dict[str, any] = json.loads(json_txt)
+
+    # --- Report utilization
+    msg(env, "")
+    msg(env, "DEVICE UTILIZATION:", fg="cyan")
+    utilization = report["utilization"]
+    for resource, vals in utilization.items():
+        available = vals["available"]
+        used = vals["used"]
+        percents = int(100 * used / available)
+        fg = "magenta" if used > 0 else None
+        msg(
+            env, f"{resource:>20}: {used:5} {available:5} {percents:5}%", fg=fg
+        )
+
+    # -- Report max clock speed
+    msg(env, "")
+    msg(env, "MAX SPEED:", fg="cyan")
+    speed = report["fmax"]
+    for clk_net, vals in speed.items():
+        clk_signal = clk_net.split("$")[0]
+        max_mhz = vals["achieved"]
+        msg(env, f"{clk_signal:>20}: {max_mhz:9.2f} Mhz")
+
+    # -- For now we ignore the critical path report in the pnr report and
+    # -- refer the user to the pnr verbose output.
+    msg(env, "")
+    if not verbose:
+        msg(env, "For more details use 'apio report --verbose'.", fg="yellow")
+
+
+def get_report_action(verbose: bool) -> ActionBase:
+    """Returns a SCons action to format and print the PNR reort from the
+    PNR json report file. Used by the 'apio report' command."""
+
+    def print_pnr_report(
+        source: List[File],
+        target: List[Alias],
+        env: SConsEnvironment,
+    ):
+        """Action function. Loads the pnr json report and print in a user
+        friendly way."""
+        json_file: File = source[0]
+        json_txt: str = json_file.get_text_contents()
+        _print_pnr_report(env, json_txt, verbose)
+
+    return FunctionAction(print_pnr_report, {})
