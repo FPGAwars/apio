@@ -566,8 +566,11 @@ def _print_pnr_report(
             env, f"{resource:>20}: {used:5} {available:5} {percents:5}%", fg=fg
         )
 
-    # -- Report max clock speeds. As of Oct 2024 not available for ECP5 and
-    # -- Gowin architectures.
+    # -- Report max clock speeds.
+    # --
+    # -- NOTE: As of Oct 2024, some projects do not generate timing
+    # -- information and this is being investigated.
+    # -- See https://github.com/FPGAwars/icestudio/issues/774 for details.
     clocks = report["fmax"]
     if len(clocks) > 0:
         msg(env, "")
