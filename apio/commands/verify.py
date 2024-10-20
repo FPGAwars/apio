@@ -36,7 +36,7 @@ Examples:
 
 @click.command(
     "verify",
-    short_help="Verify project's verilog code.",
+    short_help="Verify the verilog code.",
     help=HELP,
     cls=cmd_util.ApioCommand,
 )

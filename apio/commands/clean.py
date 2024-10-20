@@ -35,7 +35,7 @@ the temporary apio file names.
 
 @click.command(
     "clean",
-    short_help="Clean the apio generated files.",
+    short_help="Delete the apio generated files.",
     help=HELP,
     cls=cmd_util.ApioCommand,
 )
