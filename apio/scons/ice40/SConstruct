@@ -191,7 +191,7 @@ if VERBOSE_ALL:
 
 # -- Apio report.
 # -- Targets.
-# -- hardware.asd -> hardware.pnr -> (report)
+# -- hardware.asc -> hardware.pnr -> (report)
 pnr_report_target = env.PnrReport(TARGET, pnr_target)
 report_target = env.Alias(
     "report", pnr_report_target, get_report_action(VERBOSE_PNR)

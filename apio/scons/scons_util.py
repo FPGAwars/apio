@@ -554,14 +554,16 @@ def _print_pnr_report(
             env, f"{resource:>20}: {used:5} {available:5} {percents:5}%", fg=fg
         )
 
-    # -- Report max clock speed
-    msg(env, "")
-    msg(env, "MAX SPEED:", fg="cyan")
-    speed = report["fmax"]
-    for clk_net, vals in speed.items():
-        clk_signal = clk_net.split("$")[0]
-        max_mhz = vals["achieved"]
-        msg(env, f"{clk_signal:>20}: {max_mhz:9.2f} Mhz")
+    # -- Report max clock speeds. As of Oct 2024 not available for ECP5 and
+    # -- Gowin architectures.
+    clocks = report["fmax"]
+    if len(clocks) > 0:
+        msg(env, "")
+        msg(env, "MAX SPEED:", fg="cyan")
+        for clk_net, vals in clocks.items():
+            clk_signal = clk_net.split("$")[0]
+            max_mhz = vals["achieved"]
+            msg(env, f"{clk_signal:>20}: {max_mhz:9.2f} Mhz")
 
     # -- For now we ignore the critical path report in the pnr report and
     # -- refer the user to the pnr verbose output.
