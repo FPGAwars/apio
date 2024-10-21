@@ -151,7 +151,7 @@ pnr_builder = Builder(
     ),
     suffix=".config",
     src_suffix=".json",
-    emitter = pnr_builder_emitter,
+    emitter=pnr_builder_emitter,
 )
 env.Append(BUILDERS={"PnR": pnr_builder})
 
