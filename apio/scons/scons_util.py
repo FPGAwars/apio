@@ -525,8 +525,9 @@ def make_verilator_action(
     """
 
     action = (
-        "verilator --lint-only --bbox-unsup --timing -Wno-TIMESCALEMOD "
-        "-Wno-MULTITOP {0} {1} {2} {3} {4} {5} {6} {7} {8} $SOURCES"
+        "verilator --lint-only --quiet --bbox-unsup --timing "
+        "-Wno-TIMESCALEMOD -Wno-MULTITOP "
+        "{0} {1} {2} {3} {4} {5} {6} {7} {8} $SOURCES"
     ).format(
         "-Wall" if warnings_all else "",
         "-Wno-style" if warnings_no_style else "",
