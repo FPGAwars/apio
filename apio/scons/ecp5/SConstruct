@@ -128,7 +128,7 @@ PNR_REPORT_FILE: str = TARGET + ".pnr"
 # -- Apio report.
 # -- emmiter (nextpnr, Place and route).
 # -- hardware.json -> hardware.pnr.
-def pnr_builder_emitter(target, source, env):
+def pnr_emitter(target, source, env):
     """A scons emmiter function for the pnr builder. It declares that the
     nextpnr builder creates also a second file called 'hardware.pnr'."""
     target.append(PNR_REPORT_FILE)
@@ -151,7 +151,7 @@ pnr_builder = Builder(
     ),
     suffix=".config",
     src_suffix=".json",
-    emitter=pnr_builder_emitter,
+    emitter=pnr_emitter,
 )
 env.Append(BUILDERS={"PnR": pnr_builder})
 
