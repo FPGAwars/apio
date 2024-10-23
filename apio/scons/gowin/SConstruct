@@ -72,6 +72,10 @@ from apio.scons.scons_util import (
 # -- Create the environment
 env = create_construction_env(ARGUMENTS)
 
+# -- Uncomment for debugging of the scons subprocess using a remote debugger.
+# from apio.scons import scons_util
+# scons_util.wait_for_remote_debugger(env)
+
 # -- Get arguments.
 FPGA_MODEL = arg_str(env, "fpga_model", "")
 FPGA_SIZE = arg_str(env, "fpga_size", "")

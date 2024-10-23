@@ -617,3 +617,27 @@ def get_report_action(
         _print_pnr_report(env, json_txt, script_id, verbose)
 
     return env.Action(print_pnr_report, "Formatting pnr report.")
+
+
+def wait_for_remote_debugger(env: SConsEnvironment):
+    """For developement only. Useful for debugging SConstruct scripts that apio
+    runs as a subprocesses. Call this from the SCconstruct script, run apio
+    from a command line, and then connect with the Visual Studio Code debugger
+    using the launch.json debug target. Can also be used to debug apio itself,
+    without having to create or modify the Visual Studio Code debug targets
+    in launch.json"""
+
+    # -- We require this import only when using the debugger.
+    import debugpy
+
+    # -- 5678 is the default debugger port.
+    port = 5678
+    msg(
+        env,
+        f"Waiting for remote debugger on port localhost:{port}.",
+        fg="magenta",
+    )
+    debugpy.listen(port)
+    msg(env, "Attach with the Visual Studio Code debugger.")
+    debugpy.wait_for_client()
+    msg(env, "Remote debugger is attached.", fg="green")

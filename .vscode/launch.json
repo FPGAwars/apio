@@ -268,26 +268,14 @@
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
         {
-            "name": "Scon (direct)",
+            "name": "Attach remote",
             "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/scons_run.py",
-            "args": [
-                "-Q",  
-                "build", 
-                "fpga_model=iCE40-HX4K-TQ144",  
-                "fpga_arch=ice40",  
-                "fpga_size=4k",  
-                "fpga_type=hx",  
-                "fpga_pack=tq144", 
-                "top_module=main",
-                "-f",
-                "${workspaceFolder}/apio/scons/ice40/SConstruct",
-                "force_colors=True"
-            ],
-            "console": "integratedTerminal",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
     ]
 }

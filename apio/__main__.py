@@ -236,6 +236,7 @@ For more information on the apio project see
 https://github.com/FPGAwars/apio/wiki/Apio
 """
 
+
 @click.command(
     cls=ApioCLI,
     help=HELP,
