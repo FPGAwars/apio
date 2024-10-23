@@ -12,8 +12,6 @@
 
 import string
 import re
-import platform
-import sys
 from typing import List
 from click.core import Context
 import click
@@ -238,25 +236,6 @@ For more information on the apio project see
 https://github.com/FPGAwars/apio/wiki/Apio
 """
 
-def pre_click_init(cli_func):
-    """A decorator that provides an early initialization. The 
-    init() function is called before click or any command starts.
-    To be invoked as early as possible, this  decorator must be
-    the first decorator of the top level command"""
-    def init(*args, **kwargs):
-        """Program initialization. """
-        if platform.system() == "Windows":
-            """ For windows, force the stdout/err to use utf-8 encoding.
-            This is to avoid the "UnicodeEncodeError: 'charmap'" crash.
-            See https://tinyurl.com/charmap-bug for details. 
-            """
-            sys.stdin.reconfigure(encoding='utf-8')
-            sys.stdout.reconfigure(encoding='utf-8')
-        # Invoke the command as usual.
-        cli_func(*args, **kwargs)
-    return init
-
-@pre_click_init
 @click.command(
     cls=ApioCLI,
     help=HELP,
