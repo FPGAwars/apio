@@ -164,6 +164,11 @@ def force_colors(env: SConsEnvironment) -> bool:
     for example from the scons subprocess to the apio app. To preserve
     the sconstruct text colors, the apio app passes to the sconstract
     scripts a flag to force the preservation of colors.
+
+    NOTE: As of Oct 2024, forcing colors from the scons subprocess does not
+    work on Windows and as result, scons output is colorless.
+    For more details see the click issue at
+    https://github.com/pallets/click/issues/2791.
     """
     flag = env["FORCE_COLORS"]
     assert isinstance(flag, bool)
