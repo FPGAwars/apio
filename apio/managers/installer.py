@@ -14,6 +14,7 @@ import click
 import requests
 
 from apio import util
+from apio import pkg_util
 from apio.resources import Resources
 from apio.profile import Profile
 from apio.managers.downloader import FileDownloader
@@ -60,7 +61,7 @@ class Installer:
         self.resources = resources
         self.profile = None
         self.spec_version = None
-        self.package_name = None
+        self.package_folder_name = None
         self.extension = None
         self.download_urls = None
         self.compressed_name = None
@@ -108,8 +109,8 @@ class Installer:
             # Get the spectec package version
             self.spec_version = distribution["packages"][self.package]
 
-            # Get the package name (from resources/package.json file)
-            self.package_name = data["release"]["package_name"]
+            # Get the package folder name (from resources/package.json file)
+            self.package_folder_name = data["release"]["folder_name"]
 
             # Get the extension given to the toolchain. Tipically tar.gz
             self.extension = data["release"]["extension"]
@@ -157,7 +158,7 @@ class Installer:
             ):
                 self.packages_dir = util.get_home_dir() / dirname
 
-                self.package_name = "toolchain-" + package
+                self.package_folder_name = "toolchain-" + package
 
         # -- If the Installer.package_dir property was not assigned,
         # -- is because the package was not known. Abort!
@@ -280,7 +281,7 @@ class Installer:
 
             # -- Build the destination path
             # -- Ex. '/home/obijuan/.apio/packages/examples'
-            package_dir = self.packages_dir / self.package_name
+            package_dir = self.packages_dir / self.package_folder_name
 
             if self.verbose:
                 click.secho(f"Package dir: {package_dir.absolute()}")
@@ -344,7 +345,7 @@ class Installer:
 
             # -- New folder
             # -. Ex, '/home/obijuan/.apio/packages/examples'
-            package_dir = self.packages_dir / self.package_name
+            package_dir = self.packages_dir / self.package_folder_name
 
             # -- Rename it!
             if unpack_dir.is_dir():
@@ -354,7 +355,7 @@ class Installer:
         """Uninstall the apio package"""
 
         # -- Build the package filename
-        file = self.packages_dir / self.package_name
+        file = self.packages_dir / self.package_folder_name
 
         if self.verbose:
             click.secho(f"Package dir: {file.absolute()}")
@@ -377,7 +378,7 @@ class Installer:
             )
         else:
             # -- Package not installed!
-            util.show_package_path_error(self.package)
+            pkg_util.show_package_path_error(self.package)
 
         # -- Remove the package from the profile file
         self.profile.remove_package(self.package)

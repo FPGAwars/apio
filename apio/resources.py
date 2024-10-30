@@ -105,9 +105,6 @@ class Resources:
             sorted(self.fpgas.items(), key=lambda t: t[0])
         )
 
-        # -- Default profile file
-        self.profile = None
-
     def _load_resource(self, name: str, allow_custom: bool = False) -> dict:
         """Load the resources from a given json file
         * INPUTS:
@@ -195,11 +192,13 @@ class Resources:
         # -- Return the object for the resource
         return resource
 
-    def get_package_release_name(self, package: str) -> str:
-        """return the package name"""
+    def get_package_folder_name(self, package: str) -> str:
+        """return the package folder name"""
 
         try:
-            package_name = self.packages[package]["release"]["package_name"]
+            package_folder_name = self.packages[package]["release"][
+                "folder_name"
+            ]
 
         # -- This error should never ocurr
         except KeyError as excp:
@@ -224,7 +223,7 @@ class Resources:
             sys.exit(1)
 
         # -- Return the name
-        return package_name
+        return package_folder_name
 
     def get_packages(self) -> tuple[list, list]:
         """Get all the packages, classified in installed and
@@ -237,6 +236,8 @@ class Resources:
         installed_packages = []
         notinstalled_packages = []
 
+        profile = Profile()
+
         # -- Go though all the apio packages
         for package in self.packages:
 
@@ -248,10 +249,10 @@ class Resources:
             }
 
             # -- Check if this package is installed
-            if package in self.profile.packages:
+            if package in profile.packages:
 
                 # -- Get the installed version
-                version = self.profile.packages[package]["version"]
+                version = profile.packages[package]["version"]
 
                 # -- Store the version
                 data["version"] = version
@@ -265,7 +266,7 @@ class Resources:
 
         # -- Check the installed packages and update
         # -- its information
-        for package in self.profile.packages:
+        for package in profile.packages:
 
             # -- The package is not known!
             # -- Strange case
@@ -283,7 +284,7 @@ class Resources:
     def list_packages(self, installed=True, notinstalled=True):
         """Return a list with all the installed/notinstalled packages"""
 
-        self.profile = Profile()
+        # profile = Profile()
 
         # Classify packages
         installed_packages, notinstalled_packages = self.get_packages()

@@ -12,6 +12,7 @@ from typing import Optional
 import click
 
 from apio import util
+from apio import pkg_util
 from apio.profile import Profile
 
 
@@ -32,10 +33,12 @@ class System:  # pragma: no cover
         self.package_name = "oss-cad-suite"
 
         # -- Get the installed package versions
-        self.version = util.get_package_version(self.name, profile)
+        self.version = pkg_util.get_package_version(self.name, profile)
 
         # -- Get the spected versions
-        self.spec_version = util.get_package_spec_version(self.name, resources)
+        self.spec_version = pkg_util.get_package_spec_version(
+            self.name, resources
+        )
 
         # -- Windows: Executables should end with .exe
         self.ext = ""
@@ -158,14 +161,14 @@ class System:  # pragma: no cover
 
         # -- Get the package base dir
         # -- Ex. "/home/obijuan/.apio/packages/tools-oss-cad-suite"
-        system_base_dir = util.get_package_dir("tools-oss-cad-suite")
+        system_base_dir = pkg_util.get_package_dir("oss-cad-suite")
 
         # -- Package not found
-        if not system_base_dir:
+        if not system_base_dir.exists():
             # -- Show the error message and a hint
             # -- on how to install the package
-            util.show_package_path_error(self.package_name)
-            util.show_package_install_instructions(self.package_name)
+            pkg_util.show_package_path_error(self.package_name)
+            pkg_util.show_package_install_instructions(self.package_name)
             raise util.ApioException()
 
         # -- Get the folder were the binary file is located (PosixPath)
@@ -186,8 +189,8 @@ class System:  # pragma: no cover
 
             # -- Show the error message and a hint
             # -- on how to install the package
-            util.show_package_path_error(self.package_name)
-            util.show_package_install_instructions(self.package_name)
+            pkg_util.show_package_path_error(self.package_name)
+            pkg_util.show_package_install_instructions(self.package_name)
 
             # -- Command not executed.
             return None

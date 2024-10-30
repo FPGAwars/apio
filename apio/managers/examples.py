@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from typing import Optional, Tuple, List
 import click
 from apio import util
+from apio import pkg_util
 from apio.profile import Profile
 from apio.resources import Resources
 
@@ -55,20 +56,22 @@ class Examples:
         self.name = "examples"
 
         # -- Folder where the example packages was installed
-        self.examples_dir = util.get_package_dir(self.name)
+        self.examples_dir = pkg_util.get_package_dir(self.name)
 
         # -- Get the example package version
-        self.version = util.get_package_version(self.name, profile)
+        self.version = pkg_util.get_package_version(self.name, profile)
 
         # -- Get the version restrictions
-        self.spec_version = util.get_package_spec_version(self.name, resources)
+        self.spec_version = pkg_util.get_package_spec_version(
+            self.name, resources
+        )
 
     def get_examples_infos(self) -> Optional[List[ExampleInfo]]:
         """Scans the examples and returns a list of ExampleInfos.
         Returns null if an error."""
 
         # -- Check if the example package is installed
-        installed = util.check_package(
+        installed = pkg_util.check_package(
             self.name, self.version, self.spec_version, self.examples_dir
         )
 
@@ -168,7 +171,7 @@ class Examples:
         """
 
         # -- Check if the example package is installed
-        installed = util.check_package(
+        installed = pkg_util.check_package(
             self.name, self.version, self.spec_version, self.examples_dir
         )
 
@@ -232,7 +235,7 @@ class Examples:
         """
 
         # -- Check if the example package is installed
-        installed = util.check_package(
+        installed = pkg_util.check_package(
             self.name, self.version, self.spec_version, self.examples_dir
         )
 

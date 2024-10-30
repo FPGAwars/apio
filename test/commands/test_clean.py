@@ -30,7 +30,7 @@ def test_clean(clirunner, configenv):
 
         # -- Execute "apio clean --board alhambra-ii"
         result = clirunner.invoke(cmd_clean, ["--board", "alhambra-ii"])
-        assert result.exit_code != 0, result.output
+        assert result.exit_code == 0, result.output
 
 
 def test_clean_create(clirunner, configenv):
@@ -51,4 +51,4 @@ def test_clean_create(clirunner, configenv):
 
         # --- Execute "apio clean"
         result = clirunner.invoke(cmd_clean)
-        assert result.exit_code != 0, result.output
+        assert result.exit_code == 0, result.output

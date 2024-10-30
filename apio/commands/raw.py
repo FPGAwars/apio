@@ -10,6 +10,7 @@
 import click
 from click.core import Context
 from apio import util
+from apio import pkg_util
 from apio import cmd_util
 
 
@@ -50,6 +51,6 @@ def cli(
     """Implements the apio raw command which executes user
     specified commands from apio installed tools.
     """
-
+    pkg_util.set_env_for_packages()
     exit_code = util.call(cmd)
     ctx.exit(exit_code)

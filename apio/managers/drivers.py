@@ -12,6 +12,7 @@ import subprocess
 from pathlib import Path
 import click
 from apio import util
+from apio import pkg_util
 from apio.profile import Profile
 from apio.resources import Resources
 
@@ -185,8 +186,10 @@ class Drivers:
         # -- On windows the zadig driver installer should be
         # -- execute. Get the package version
         self.name = "drivers"
-        self.version = util.get_package_version(self.name, profile)
-        self.spec_version = util.get_package_spec_version(self.name, resources)
+        self.version = pkg_util.get_package_version(self.name, profile)
+        self.spec_version = pkg_util.get_package_spec_version(
+            self.name, resources
+        )
 
     def _ftdi_enable_linux(self):
         """Drivers enable on Linux. It copies the .rules file into
@@ -401,19 +404,19 @@ class Drivers:
     def _ftdi_enable_windows(self):
 
         # -- Get the drivers apio package base folder
-        drivers_base_dir = util.get_package_dir("tools-drivers")
+        drivers_base_dir = pkg_util.get_package_dir("drivers")
 
         # -- No folder --> package not installer (or not correctly installed)
-        if not drivers_base_dir:
-            util.show_package_path_error(self.name)
-            util.show_package_install_instructions(self.name)
+        if not drivers_base_dir.exists():
+            pkg_util.show_package_path_error(self.name)
+            pkg_util.show_package_install_instructions(self.name)
             sys.exit(1)
 
         # -- Build the drivers base bin dir
         drivers_bin_dir = drivers_base_dir / "bin"
 
         # -- Check if the driver packages is installed
-        package_ok = util.check_package(
+        package_ok = pkg_util.check_package(
             self.name, self.version, self.spec_version, drivers_bin_dir
         )
 
@@ -474,11 +477,11 @@ class Drivers:
     # W0703: Catching too general exception Exception (broad-except)
     # pylint: disable=W0703
     def _serial_enable_windows(self):
-        drivers_base_dir = util.get_package_dir("tools-drivers")
+        drivers_base_dir = pkg_util.get_package_dir("drivers")
         drivers_bin_dir = drivers_base_dir / "bin"
 
         try:
-            if util.check_package(
+            if pkg_util.check_package(
                 self.name, self.version, self.spec_version, drivers_bin_dir
             ):
                 click.secho("Launch drivers configuration tool")
