@@ -42,7 +42,6 @@ def _set_oss_cad_package_env(package_path: Path) -> None:
 
     _add_env_path(package_path / "bin")
     _add_env_path(package_path / "lib")
-    _add_env_path(package_path / "libexec")
 
     _set_env_var("IVL", str(package_path / "lib" / "ivl"))
     _set_env_var("ICEBOX", str(package_path / "share" / "icebox"))
