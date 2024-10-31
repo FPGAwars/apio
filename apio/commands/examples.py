@@ -14,6 +14,7 @@ from click.core import Context
 from apio.managers.examples import Examples
 from apio import cmd_util
 from apio.commands import options
+from apio.resources import Resources
 
 # ---------------------------
 # -- COMMAND SPECIFIC OPTIONS
@@ -87,7 +88,8 @@ def cli(
     cmd_util.check_exclusive_params(ctx, nameof(list_, dir_, files))
 
     # -- Access to the Drivers
-    examples = Examples()
+    resources = Resources()
+    examples = Examples(resources)
 
     # -- Option: List all the available examples
     if list_:

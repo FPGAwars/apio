@@ -984,10 +984,8 @@ class SCons:
             )
         else:
             # Run on `default` config mode
-            # -- Check if the necessary packages are installed
-            if not pkg_util.check_packages(packages_names, self.resources):
-                # Exit if a package is not installed
-                raise AttributeError("Package not installed")
+            # -- Check that the required packages are installed
+            pkg_util.check_required_packages(packages_names, self.resources)
 
             pkg_util.set_env_for_packages()
 

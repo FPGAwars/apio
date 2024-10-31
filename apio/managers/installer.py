@@ -14,7 +14,6 @@ import click
 import requests
 
 from apio import util
-from apio import pkg_util
 from apio.resources import Resources
 from apio.profile import Profile
 from apio.managers.downloader import FileDownloader
@@ -265,7 +264,7 @@ class Installer:
         # Try os name
         # dlpath = self._install_os_package(platform_download_url)
         except util.ApioException:
-            click.secho("Error: Package not found\n", fg="red")
+            click.secho("Error: package not found\n", fg="red")
 
         # -- Second step: Install downloaded package
         self._install_package(dlpath)
@@ -378,7 +377,9 @@ class Installer:
             )
         else:
             # -- Package not installed!
-            pkg_util.show_package_path_error(self.package)
+            click.secho(
+                f"Error: package '{self.package}' is not installed", fg="red"
+            )
 
         # -- Remove the package from the profile file
         self.profile.remove_package(self.package)

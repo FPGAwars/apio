@@ -68,9 +68,11 @@ class Resources:
     def __init__(
         self, *, platform: str = "", project_dir: Optional[Path] = None
     ):
-        project_dir = util.get_project_dir(project_dir)
+        # -- Maps the optional project_dir option to a path.
+        self._project_dir: Path = util.get_project_dir(project_dir)
 
-        self._project_dir = project_dir
+        # -- Profile information, from ~/.apio/profile.json
+        self.profile = Profile()
 
         # -- Read the apio packages information
         self.packages = self._load_resource(PACKAGES_JSON)
@@ -236,8 +238,6 @@ class Resources:
         installed_packages = []
         notinstalled_packages = []
 
-        profile = Profile()
-
         # -- Go though all the apio packages
         for package in self.packages:
 
@@ -249,10 +249,10 @@ class Resources:
             }
 
             # -- Check if this package is installed
-            if package in profile.packages:
+            if package in self.profile.packages:
 
                 # -- Get the installed version
-                version = profile.packages[package]["version"]
+                version = self.profile.packages[package]["version"]
 
                 # -- Store the version
                 data["version"] = version
@@ -266,7 +266,7 @@ class Resources:
 
         # -- Check the installed packages and update
         # -- its information
-        for package in profile.packages:
+        for package in self.profile.packages:
 
             # -- The package is not known!
             # -- Strange case

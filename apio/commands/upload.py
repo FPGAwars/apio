@@ -14,6 +14,7 @@ from apio.managers.scons import SCons
 from apio.managers.drivers import Drivers
 from apio import cmd_util
 from apio.commands import options
+from apio.resources import Resources
 
 
 # ---------------------------
@@ -92,7 +93,8 @@ def cli(
     """Implements the upload command."""
 
     # -- Create a drivers object
-    drivers = Drivers()
+    resources = Resources()
+    drivers = Drivers(resources)
 
     # -- Only for MAC
     # -- Operation to do before uploading a design in MAC

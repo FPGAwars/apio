@@ -61,7 +61,7 @@ def test_end_to_end1(clirunner, validate_cliresult, configenv, offline):
 
         # -- Execute "apio install examples@X"
         result = clirunner.invoke(cmd_install, ["examples@X"])
-        assert "Error: Package not found" in result.output
+        assert "Error: package not found" in result.output
 
         # -- Execute "apio install examples@0.0.34"
         result = clirunner.invoke(cmd_install, ["examples@0.0.34"])

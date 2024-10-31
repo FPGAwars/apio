@@ -13,37 +13,15 @@ import click
 
 from apio import util
 from apio import pkg_util
-from apio.profile import Profile
+from apio.resources import Resources
 
 
 class System:  # pragma: no cover
     """System class. Managing and execution of the system commands"""
 
-    def __init__(self, resources: dict):
-        # -- Read the profile from the file
-        profile = Profile()
+    def __init__(self, resources: Resources):
 
-        # -- This command is called system
-        self.name = "system"
-
-        # -- Package name: apio package were all the system commands
-        # -- are located
-        # -- From apio > 0.7 the system tools are located inside the
-        # -- oss-cad-suite
-        self.package_name = "oss-cad-suite"
-
-        # -- Get the installed package versions
-        self.version = pkg_util.get_package_version(self.name, profile)
-
-        # -- Get the spected versions
-        self.spec_version = pkg_util.get_package_spec_version(
-            self.name, resources
-        )
-
-        # -- Windows: Executables should end with .exe
-        self.ext = ""
-        if platform.system() == "Windows":
-            self.ext = ".exe"
+        self.resources = resources
 
     def lsusb(self):
         """Run the lsusb system command"""
@@ -64,7 +42,7 @@ class System:  # pragma: no cover
         """DOC: TODO"""
 
         serial_ports = util.get_serial_ports()
-        click.secho(f"Number of Serial devices found: {len(serial_ports)}\n")
+        click.secho(f"Number of Serial devices found: {len(serial_ports)}")
 
         for serial_port in serial_ports:
             port = serial_port.get("port")
@@ -156,46 +134,14 @@ class System:  # pragma: no cover
           In case of not executing the command it returns none!
         """
 
-        # The system tools are locate in the
-        # oss-cad-suite package
+        # -- Check that the required package exists.
+        pkg_util.check_required_packages(["oss-cad-suite"], self.resources)
 
-        # -- Get the package base dir
-        # -- Ex. "/home/obijuan/.apio/packages/tools-oss-cad-suite"
-        system_base_dir = pkg_util.get_package_dir("oss-cad-suite")
+        # -- Set system env for using the packages.
+        pkg_util.set_env_for_packages()
 
-        # -- Package not found
-        if not system_base_dir.exists():
-            # -- Show the error message and a hint
-            # -- on how to install the package
-            pkg_util.show_package_path_error(self.package_name)
-            pkg_util.show_package_install_instructions(self.package_name)
-            raise util.ApioException()
-
-        # -- Get the folder were the binary file is located (PosixPath)
-        system_bin_dir = system_base_dir / "bin"
-
-        # -- Get the executable filename
-        # -- Ex. Posix('/home/obijuan/.apio/packages/tools-oss-cad-suite/
-        # --            bin/lsusb')
-        executable_file = system_bin_dir / (command + self.ext)
-
-        # -- Check if the file exist!
-        if not executable_file.exists():
-
-            # -- The command was not in the oss-cad-suit package
-            # -- Print an error message
-            click.secho("Error!\n", fg="red")
-            click.secho(f"Command not fount: {executable_file}", fg="red")
-
-            # -- Show the error message and a hint
-            # -- on how to install the package
-            pkg_util.show_package_path_error(self.package_name)
-            pkg_util.show_package_install_instructions(self.package_name)
-
-            # -- Command not executed.
-            return None
-
-        # -- The command exist! Let's execute it!
+        if platform.system() == "Windows":
+            command = command + ".ext"
 
         # -- Set the stdout and stderr callbacks, when executing the command
         # -- Silent mode (True): No callback
@@ -204,7 +150,7 @@ class System:  # pragma: no cover
 
         # -- Execute the command!
         result = util.exec_command(
-            executable_file,
+            command,
             stdout=util.AsyncPipe(on_stdout),
             stderr=util.AsyncPipe(on_stderr),
         )
