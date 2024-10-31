@@ -9,9 +9,8 @@
 
 import click
 from click.core import Context
-from apio import util
-from apio import pkg_util
-from apio import cmd_util
+from apio import util, pkg_util, cmd_util
+from apio.resources import Resources
 
 
 # ---------------------------
@@ -51,6 +50,13 @@ def cli(
     """Implements the apio raw command which executes user
     specified commands from apio installed tools.
     """
+
+    # -- Make sure the oss-cad-suite is installed.
+    resources = Resources()
+    pkg_util.check_required_packages(["oss-cad-suite"], resources)
+
+    # -- Set the system env for using the packages.
     pkg_util.set_env_for_packages()
+
     exit_code = util.call(cmd)
     ctx.exit(exit_code)

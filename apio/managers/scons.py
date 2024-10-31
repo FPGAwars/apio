@@ -112,7 +112,7 @@ class SCons:
 
         # --Clean the project: run scons -c (with aditional arguments)
         return self._run(
-            "-c", arch=arch, variables=variables, packages_names=[]
+            "-c", arch=arch, variables=variables, required_packages_names=[]
         )
 
     @on_exception(exit_code=1)
@@ -131,7 +131,7 @@ class SCons:
             "verify",
             variables=variables,
             arch=arch,
-            packages_names=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite"],
         )
 
     @on_exception(exit_code=1)
@@ -150,7 +150,7 @@ class SCons:
             "graph",
             variables=variables,
             arch=arch,
-            packages_names=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite"],
         )
 
     @on_exception(exit_code=1)
@@ -173,7 +173,7 @@ class SCons:
             "lint",
             variables=variables,
             arch=arch,
-            packages_names=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite"],
         )
 
     @on_exception(exit_code=1)
@@ -190,7 +190,7 @@ class SCons:
             "sim",
             variables=variables,
             arch=arch,
-            packages_names=["oss-cad-suite", "gtkwave"],
+            required_packages_names=["oss-cad-suite", "gtkwave"],
         )
 
     @on_exception(exit_code=1)
@@ -207,7 +207,7 @@ class SCons:
             "test",
             variables=variables,
             arch=arch,
-            packages_names=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite"],
         )
 
     @on_exception(exit_code=1)
@@ -227,7 +227,7 @@ class SCons:
             variables=variables,
             board=board,
             arch=arch,
-            packages_names=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite"],
         )
 
     @on_exception(exit_code=1)
@@ -252,7 +252,7 @@ class SCons:
             variables=variables,
             board=board,
             arch=arch,
-            packages_names=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite"],
         )
 
     @on_exception(exit_code=1)
@@ -269,7 +269,7 @@ class SCons:
             variables=variables,
             board=board,
             arch=arch,
-            packages_names=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite"],
         )
 
     @on_exception(exit_code=1)
@@ -310,7 +310,7 @@ class SCons:
         exit_code = self._run(
             "upload",
             variables=flags,
-            packages_names=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite"],
             board=board,
             arch=arch,
         )
@@ -962,7 +962,14 @@ class SCons:
 
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-positional-arguments
-    def _run(self, command, variables, packages_names, board=None, arch=None):
+    def _run(
+        self,
+        command,
+        variables,
+        required_packages_names,
+        board=None,
+        arch=None,
+    ):
         """Executes scons"""
 
         # -- Construct the path to the SConstruct file.
@@ -985,7 +992,9 @@ class SCons:
         else:
             # Run on `default` config mode
             # -- Check that the required packages are installed
-            pkg_util.check_required_packages(packages_names, self.resources)
+            pkg_util.check_required_packages(
+                required_packages_names, self.resources
+            )
 
             pkg_util.set_env_for_packages()
 

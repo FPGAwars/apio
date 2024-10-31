@@ -122,7 +122,7 @@ def set_env_for_packages() -> None:
 
 
 def check_required_packages(
-    packages_names: List[str], resources: Resources
+    required_packages_names: List[str], resources: Resources
 ) -> None:
     """Checks that the packages whose names are in 'packages_names' are
     installed and have a version that meets the requirements. If any error,
@@ -135,7 +135,7 @@ def check_required_packages(
     spec_packages = resources.distribution.get("packages")
 
     # -- Check packages
-    for package_name in packages_names:
+    for package_name in required_packages_names:
         package_desc = _PACKAGES[package_name]
         if package_desc.platform_match:
             current_version = installed_packages.get(package_name, {}).get(
@@ -145,7 +145,6 @@ def check_required_packages(
             _check_required_package(
                 package_name, current_version, spec_version
             )
-
 
 
 def _check_required_package(

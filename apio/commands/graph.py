@@ -8,7 +8,6 @@
 """Implementation of 'apio graph' command"""
 
 from pathlib import Path
-import shutil
 import click
 from click.core import Context
 from apio.managers.scons import SCons
@@ -57,37 +56,15 @@ adding the --force flag to the apio graph command.
 @click.pass_context
 @options.project_dir_option
 @options.top_module_option_gen(help="Set the name of the top module to graph.")
-@options.force_option_gen(help="Force execution despite no 'dot' command.")
 @options.verbose_option
 def cli(
     ctx: Context,
     # Options
     project_dir: Path,
-    force: bool,
     verbose: bool,
     top_module: str,
 ):
     """Implements the apio graph command."""
-
-    # -- This program requires a user install graphviz 'dot' available on
-    # -- the path. Verify it.
-    dot_path = shutil.which("dot")
-    if not dot_path:
-        if force:
-            # -- Just print a warning and continue.
-            click.secho(
-                "Warning: Skipping the check for the 'dot' command.",
-                fg="yellow",
-            )
-        else:
-            # -- Print an error message and abort.
-            click.secho()
-            click.secho(
-                "Error: The 'dot' command was not found on the system path.",
-                fg="red",
-            )
-            click.secho(DOT_HELP, fg="yellow")
-            ctx.exit(1)
 
     # -- Crete the scons object
     scons = SCons(project_dir)

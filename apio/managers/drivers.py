@@ -391,9 +391,7 @@ class Drivers:
     # W0703: Catching too general exception Exception (broad-except)
     # pylint: disable=W0703
     def _ftdi_enable_windows(self) -> int:
-        pkg_util.check_required_packages(["drivers"], self.resources)
-
-        # --
+        # -- Check that the required packages are installed.
         pkg_util.check_required_packages(["drivers"], self.resources)
 
         # -- Get the drivers apio package base folder
@@ -442,6 +440,7 @@ class Drivers:
         return result.exit_code
 
     def _ftdi_disable_windows(self) -> int:
+        # -- Check that the required packages exist.
         pkg_util.check_required_packages(["drivers"], self.resources)
 
         click.secho("Launch device manager")
@@ -453,12 +452,11 @@ class Drivers:
     # W0703: Catching too general exception Exception (broad-except)
     # pylint: disable=W0703
     def _serial_enable_windows(self) -> int:
+        # -- Check that the required packages exist.
         pkg_util.check_required_packages(["drivers"], self.resources)
 
         drivers_base_dir = pkg_util.get_package_dir("drivers")
         drivers_bin_dir = drivers_base_dir / "bin"
-
-        pkg_util.check_required_packages(["drivers"], self.resources)
 
         try:
 
@@ -476,6 +474,7 @@ class Drivers:
         return result.exit_code
 
     def _serial_disable_windows(self) -> int:
+        # -- Check that the required packages exist.
         pkg_util.check_required_packages(["drivers"], self.resources)
 
         click.secho("Launch device manager")
