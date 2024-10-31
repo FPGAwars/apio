@@ -11,6 +11,7 @@
 
 from typing import List, Callable, Dict, Optional
 from pathlib import Path
+from dataclasses import dataclass
 import os
 import sys
 import platform
@@ -22,50 +23,60 @@ from apio.profile import Profile
 from apio.resources import Resources
 
 
-def _add_env_path(path: Path) -> None:
-    """Prepends to given path to env variable PATH. Does not check for
-    duplicates."""
-    # print(f"  * Adding path: {path}")
-    old_val = os.environ["PATH"]
-    new_val = os.pathsep.join([str(path), old_val])
-    os.environ["PATH"] = new_val
+@dataclass(frozen=True)
+class EnvMutations:
+    """Contains mutations to the system env."""
+
+    # -- PATH items to add.
+    paths: List[str]
+    # -- Vars name/value paris.
+    vars: Dict[str, str]
 
 
-def _set_env_var(name: str, value: str) -> None:
-    """Sets the env var with given name to given value."""
-    # print(f"  * Setting env: {name} = {value}")
-    os.environ[name] = value
 
 
-def _set_oss_cad_package_env(package_path: Path) -> None:
-    """Sets the environment variasbles for using the oss-cad-suite package."""
 
-    _add_env_path(package_path / "bin")
-    _add_env_path(package_path / "lib")
+def _oss_cad_suite_package_env(package_path: Path) -> EnvMutations:
+    """Returns the env mutations for the oss-cad-suite package."""
 
-    _set_env_var("IVL", str(package_path / "lib" / "ivl"))
-    _set_env_var("ICEBOX", str(package_path / "share" / "icebox"))
-    _set_env_var("TRELLIS", str(package_path / "share" / "trellis"))
-    _set_env_var("YOSYS_LIB", str(package_path / "share" / "yosys"))
-
-
-def _set_examples_package_env(_: Path) -> None:
-    """Sets the environment variasbles for using the examples package."""
-    # -- Nothing to set here.
-
-
-def _set_gtkwave_package_env(package_path: Path) -> None:
-    """Sets the environment variasbles for using the gtkwave package.
-    Called only on Windows, where this package is available.
-    """
-    _add_env_path(package_path / "bin")
+    return EnvMutations(
+        paths=[
+            str(package_path / "bin"),
+            str(package_path / "lib"),
+        ],
+        vars=[
+            ("IVL", str(package_path / "lib" / "ivl")),
+            ("ICEBOX", str(package_path / "share" / "icebox")),
+            ("TRELLIS", str(package_path / "share" / "trellis")),
+            ("YOSYS_LIB", str(package_path / "share" / "yosys")),
+        ],
+    )
 
 
-def _set_drivers_package_env(package_path: Path) -> None:
-    """Sets the environment variasbles for the drivers package.
-    Called only on Windows, where this package is available.
-    """
-    _add_env_path(package_path / "bin")
+def _examples_package_env(_: Path) -> None:
+    """Returns the env mutations for the examples package."""
+    return EnvMutations(
+        paths=[],
+        vars=[],
+    )
+
+
+def _gtkwave_package_env(package_path: Path) -> None:
+    """Returns the env mutations for the gtkwave package."""
+
+    return EnvMutations(
+        paths=[str(package_path / "bin")],
+        vars=[],
+    )
+
+
+def _drivers_package_env(package_path: Path) -> None:
+    """Returns the env mutations for the drivers package."""
+
+    return EnvMutations(
+        paths=[str(package_path / "bin")],
+        vars=[],
+    )
 
 
 @dataclass(frozen=True)
@@ -77,7 +88,7 @@ class _PackageDesc:
     # -- True if the package is available for the current platform.
     platform_match: bool
     # -- A function to set the env for this package.
-    env_setting_func: Callable[[Path], None]
+    env_func: Callable[[Path], EnvMutations]
 
 
 # pylint: disable=fixme
@@ -85,39 +96,66 @@ class _PackageDesc:
 # --   currently they are updated independent, with some overlap.
 # --
 # -- A dictionary that maps package names to package entries.
+# -- The order determines the order of their respective paths in the
+# -- system env PATH variable, and it may matter.
 _PACKAGES: Dict[str, _PackageDesc] = {
     "oss-cad-suite": _PackageDesc(
         folder_name="tools-oss-cad-suite",
         platform_match=True,
-        env_setting_func=_set_oss_cad_package_env,
+        env_func=_oss_cad_suite_package_env,
     ),
     "examples": _PackageDesc(
         folder_name="examples",
         platform_match=True,
-        env_setting_func=_set_examples_package_env,
+        env_func=_examples_package_env,
     ),
     "gtkwave": _PackageDesc(
         folder_name="tool-gtkwave",
         platform_match=platform.system() == "Windows",
-        env_setting_func=_set_gtkwave_package_env,
+        env_func=_gtkwave_package_env,
     ),
     "drivers": _PackageDesc(
         folder_name="tools-drivers",
         platform_match=platform.system() == "Windows",
-        env_setting_func=_set_drivers_package_env,
+        env_func=_drivers_package_env,
     ),
 }
+
+
+def _get_env_mutations_for_packages() -> EnvMutations:
+    """Collects the env mutation for each of the defined packages,
+    in the order they are defined."""
+    result = EnvMutations([], [])
+    for package_name, package_desc in _PACKAGES.items():
+        if package_desc.platform_match:
+            package_path = get_package_dir(package_name)
+            mutations = package_desc.env_func(package_path)
+            result.paths.extend(mutations.paths)
+            result.vars.extend(mutations.vars)
+    return result
+
+
+def _apply_env_mutations(mutations: EnvMutations) -> None:
+    """Apply a given set of env mutations, while preserving their order."""
+
+    # -- Apply the path mutations, while preserving order.
+    old_val = os.environ["PATH"]
+    items = mutations.paths + [old_val]
+    new_val = os.pathsep.join(items)
+    os.environ["PATH"] = new_val
+
+    # -- Apply the vars mutations, while preserving order.
+    for name, value in mutations.vars:
+        os.environ[name] = value
 
 
 def set_env_for_packages() -> None:
     """Sets the environment variables for using all the that are
     available for this platform, even if currently not installed.
     """
-    for package_name, package_desc in _PACKAGES.items():
-        if package_desc.platform_match:
-            # print(f"*** Setting env for package: {package_name}")
-            package_path = get_package_dir(package_name)
-            package_desc.env_setting_func(package_path)
+    mutations = _get_env_mutations_for_packages()
+    # print(f"{mutations = }")
+    _apply_env_mutations(mutations)
 
 
 def check_required_packages(
