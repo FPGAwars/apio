@@ -226,14 +226,11 @@ def get_constraint_file(
     # Case 2: Exactly one file found.
     if n == 1:
         result = str(files[0])
-        info(env, f"Found constraint file '{result}'.")
         return result
-    # Case 3: Multiple matching files. Pick the first file (alphabetically).
-    # We could improve the heuristic here, e.g. to prefer a file with
-    # the top_module name, if exists.
-    result = str(files[0])
-    warning(env, f"Found multiple {file_ext} files, using '{result}'.")
-    return result
+    # Case 3: Multiple matching files.
+    fatal_error(
+        env, f"Found multiple '*{file_ext}' constrain files, expecting one."
+    )
 
 
 def dump_env_vars(env: SConsEnvironment) -> None:

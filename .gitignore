@@ -9,6 +9,7 @@
 *.swp
 *~
 .coverage
+.coverage.*
 .tox/
 .cache/
 .pytest_cache/
