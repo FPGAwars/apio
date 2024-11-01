@@ -18,7 +18,7 @@
   "oss-cad-suite": {
     "repository": {
       "name": "tools-oss-cad-suite",
-      "organization": "FPGAwars"
+      "organization": "zapta"
     },
     "release": {
       "tag_name": "v%V",
@@ -26,30 +26,30 @@
       "uncompressed_name": "",
       "folder_name": "tools-oss-cad-suite",
       "extension": "tar.gz",
-      "url_version": "https://github.com/FPGAwars/tools-oss-cad-suite/raw/main/VERSION_DEV"
+      "url_version": "https://github.com/zapta/tools-oss-cad-suite/raw/main/VERSION_DEV"
     },
     "description": "YosysHQ/oss-cad-suite"
   },
 
-  "gtkwave": {
+  "graphviz": {
     "repository": {
-      "name": "tool-gtkwave",
-      "organization": "FPGAwars"
+      "name": "tool-graphviz",
+      "organization": "zapta"
     },
     "release": {
       "tag_name": "v%V",
-      "compressed_name": "tool-gtkwave-%P-%V",
+      "compressed_name": "tool-graphviz-%P-%V",
       "uncompressed_name": "",
-      "folder_name": "tool-gtkwave",
+      "folder_name": "tool-graphviz",
       "extension": "tar.gz",
-      "url_version": "https://github.com/FPGAwars/tool-gtkwave/raw/master/VERSION",
+      "url_version": "https://github.com/zapta/tool-graphviz/raw/master/VERSION",
       "available_platforms": [
         "windows",
         "windows_x86",
         "windows_amd64"
       ]
     },
-    "description": "GTKWave tool for Windows"
+    "description": "Graphviz tool for Windows"
   },
 
   "drivers": {

@@ -9,13 +9,12 @@
 # ---- Licence Apache v2
 """Utility functions related to apio packages."""
 
-from typing import List, Callable, Dict, Optional
+from typing import List, Callable, Dict, Tuple, Optional
 from pathlib import Path
 from dataclasses import dataclass
 import os
 import sys
 import platform
-from dataclasses import dataclass
 import click
 import semantic_version
 from apio import util
@@ -30,10 +29,7 @@ class EnvMutations:
     # -- PATH items to add.
     paths: List[str]
     # -- Vars name/value paris.
-    vars: Dict[str, str]
-
-
-
+    vars: List[Tuple[str, str]]
 
 
 def _oss_cad_suite_package_env(package_path: Path) -> EnvMutations:
@@ -61,8 +57,8 @@ def _examples_package_env(_: Path) -> None:
     )
 
 
-def _gtkwave_package_env(package_path: Path) -> None:
-    """Returns the env mutations for the gtkwave package."""
+def _graphviz_package_env(package_path: Path) -> None:
+    """Returns the env mutations for the graphviz package."""
 
     return EnvMutations(
         paths=[str(package_path / "bin")],
@@ -109,10 +105,10 @@ _PACKAGES: Dict[str, _PackageDesc] = {
         platform_match=True,
         env_func=_examples_package_env,
     ),
-    "gtkwave": _PackageDesc(
-        folder_name="tool-gtkwave",
+    "graphviz": _PackageDesc(
+        folder_name="tool-graphviz",
         platform_match=platform.system() == "Windows",
-        env_func=_gtkwave_package_env,
+        env_func=_graphviz_package_env,
     ),
     "drivers": _PackageDesc(
         folder_name="tools-drivers",

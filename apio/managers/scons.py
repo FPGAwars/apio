@@ -150,7 +150,7 @@ class SCons:
             "graph",
             variables=variables,
             arch=arch,
-            required_packages_names=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite", "graphviz"],
         )
 
     @on_exception(exit_code=1)
@@ -190,7 +190,7 @@ class SCons:
             "sim",
             variables=variables,
             arch=arch,
-            required_packages_names=["oss-cad-suite", "gtkwave"],
+            required_packages_names=["oss-cad-suite"],
         )
 
     @on_exception(exit_code=1)
