@@ -79,7 +79,7 @@ class SCons:
     def __init__(self, project_dir: Path):
         """Initialization:
         * project_dir: path where the sources are located
-          If not given, the curent working dir is used
+          If not given, the current working dir is used
         """
 
         # -- Read the project file (apio.ini)
