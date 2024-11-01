@@ -140,6 +140,7 @@ class System:  # pragma: no cover
         # -- Set system env for using the packages.
         pkg_util.set_env_for_packages()
 
+        # pylint: disable=fixme
         # TODO: Is this necessary or does windows accepts commands without
         # the '.exe' extension?
         if platform.system() == "Windows":

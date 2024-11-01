@@ -69,7 +69,7 @@ class Resources:
         self, *, platform: str = "", project_dir: Optional[Path] = None
     ):
         # -- Maps the optional project_dir option to a path.
-        self._project_dir: Path = util.get_project_dir(project_dir)
+        self.project_dir: Path = util.get_project_dir(project_dir)
 
         # -- Profile information, from ~/.apio/profile.json
         self.profile = Profile()
@@ -123,7 +123,7 @@ class Resources:
           In case of error it raises an exception and finish
         """
         # -- Try loading a custom resource file from the project directory.
-        filepath = self._project_dir / name
+        filepath = self.project_dir / name
 
         if filepath.exists():
             if allow_custom:

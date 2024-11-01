@@ -13,6 +13,7 @@ from click.core import Context
 from apio.managers.scons import SCons
 from apio import cmd_util
 from apio.commands import options
+from apio.resources import Resources
 
 
 # ---------------------------
@@ -75,7 +76,8 @@ def cli(
     # https://www.scons.org/documentation.html
 
     # -- Create the scons object
-    scons = SCons(project_dir)
+    resources = Resources(project_dir=project_dir)
+    scons = SCons(resources)
 
     # R0801: Similar lines in 2 files
     # pylint: disable=R0801

@@ -13,6 +13,7 @@ from click.core import Context
 from apio.managers.scons import SCons
 from apio import cmd_util
 from apio.commands import options
+from apio.resources import Resources
 
 
 # ---------------------------
@@ -67,7 +68,8 @@ def cli(
     """Implements the apio graph command."""
 
     # -- Crete the scons object
-    scons = SCons(project_dir)
+    resources = Resources(project_dir=project_dir)
+    scons = SCons(resources)
 
     # -- Graph the project with the given parameters
     exit_code = scons.graph(

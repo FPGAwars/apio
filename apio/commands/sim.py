@@ -12,6 +12,8 @@ import click
 from apio.managers.scons import SCons
 from apio import cmd_util
 from apio.commands import options
+from apio.resources import Resources
+
 
 # ---------------------------
 # -- COMMAND
@@ -59,7 +61,8 @@ def cli(
     """
 
     # -- Create the scons object
-    scons = SCons(project_dir)
+    resources = Resources(project_dir=project_dir)
+    scons = SCons(resources)
 
     # -- Simulate the project with the given parameters
     exit_code = scons.sim({"testbench": testbench})

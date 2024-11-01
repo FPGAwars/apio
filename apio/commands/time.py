@@ -13,6 +13,7 @@ from click.core import Context
 from apio.managers.scons import SCons
 from apio import cmd_util
 from apio.commands import options
+from apio.resources import Resources
 
 
 # ---------------------------
@@ -62,7 +63,8 @@ def cli(
     """Analyze the design and report timing."""
 
     # -- Create the scons object
-    scons = SCons(project_dir)
+    resources = Resources(project_dir=project_dir)
+    scons = SCons(resources)
 
     # Run scons
     exit_code = scons.time(

@@ -413,7 +413,9 @@ def print_exception_developers(e):
     click.secho(f"{e}\n", fg="yellow")
 
 
-def get_project_dir(_dir: Path, create_if_missing: bool = False) -> Path:
+def get_project_dir(
+    _dir: Optional[Path], create_if_missing: bool = False
+) -> Path:
     """Check if the given path is a folder. It it does not exists
     and create_if_missing is true, folder is created, otherwise a fatal error.
     If no path is given the current working directory is used.

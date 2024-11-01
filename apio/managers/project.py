@@ -31,9 +31,7 @@ https://github.com/FPGAwars/apio/wiki/Project-configuration-file
 class Project:
     """Class for managing apio projects"""
 
-    def __init__(self, project_dir: Path):
-        # pylint: disable=fixme
-        # TODO: Make these __private and provide getter methods.
+    def __init__(self, project_dir: Optional[Path]):
         self.project_dir = util.get_project_dir(project_dir)
         self.board: str = None
         self.top_module: str = None

@@ -13,6 +13,7 @@ from click.core import Context
 from apio.managers.scons import SCons
 from apio import cmd_util
 from apio.commands import options
+from apio.resources import Resources
 
 
 # ---------------------------
@@ -59,7 +60,8 @@ def cli(
     """Implements the test command."""
 
     # -- Create the scons object
-    scons = SCons(project_dir)
+    resources = Resources(project_dir=project_dir)
+    scons = SCons(resources)
 
     exit_code = scons.test({"testbench": testbench_file})
     ctx.exit(exit_code)

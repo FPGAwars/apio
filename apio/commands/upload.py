@@ -93,7 +93,7 @@ def cli(
     """Implements the upload command."""
 
     # -- Create a drivers object
-    resources = Resources()
+    resources = Resources(project_dir=project_dir)
     drivers = Drivers(resources)
 
     # -- Only for MAC
@@ -101,7 +101,7 @@ def cli(
     drivers.pre_upload()
 
     # -- Create the SCons object
-    scons = SCons(project_dir)
+    scons = SCons(resources)
 
     # -- Construct the configuration params to pass to SCons
     # -- from the arguments

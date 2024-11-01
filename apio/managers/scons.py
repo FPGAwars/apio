@@ -14,7 +14,6 @@ import re
 import time
 import datetime
 import shutil
-from pathlib import Path
 from functools import wraps
 
 import importlib.metadata
@@ -76,29 +75,17 @@ def on_exception(*, exit_code: int):
 class SCons:
     """Class for managing the scons tools"""
 
-    def __init__(self, project_dir: Path):
-        """Initialization:
-        * project_dir: path where the sources are located
-          If not given, the current working dir is used
-        """
+    def __init__(self, resources: Resources):
+        """Initialization."""
+        # -- Cache resources.
+        self.resources = resources
 
         # -- Read the project file (apio.ini)
-        self.project = Project(project_dir)
+        self.project = Project(resources.project_dir)
         self.project.read()
 
-        # -- Read the apio resources
-        self.resources = Resources(project_dir=project_dir)
-
-        # -- Project path is given
-        if project_dir:
-            # Check if it is a correct folder
-            # (or create a new one)
-            project_dir = util.get_project_dir(
-                project_dir, create_if_missing=False
-            )
-
-            # Change to that folder
-            os.chdir(project_dir)
+        # -- Change to the project's folder.
+        os.chdir(resources.project_dir)
 
     @on_exception(exit_code=1)
     def clean(self, args) -> int:
