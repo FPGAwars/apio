@@ -42,7 +42,7 @@
       "uncompressed_name": "",
       "folder_name": "tool-graphviz",
       "extension": "tar.gz",
-      "url_version": "https://github.com/zapta/tool-graphviz/raw/master/VERSION",
+      "url_version": "https://github.com/zapta/tool-graphviz/raw/main/VERSION",
       "available_platforms": [
         "windows",
         "windows_x86",
