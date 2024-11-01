@@ -140,8 +140,10 @@ class System:  # pragma: no cover
         # -- Set system env for using the packages.
         pkg_util.set_env_for_packages()
 
+        # TODO: Is this necessary or does windows accepts commands without
+        # the '.exe' extension?
         if platform.system() == "Windows":
-            command = command + ".ext"
+            command = command + ".exe"
 
         # -- Set the stdout and stderr callbacks, when executing the command
         # -- Silent mode (True): No callback

@@ -131,6 +131,18 @@ def _get_env_mutations_for_packages() -> EnvMutations:
     return result
 
 
+# def _dump_env_mutations_for_batch(mutations: EnvMutations) -> None:
+#     """For debugging. Delete once stabalizing the new oss-cad-suite on
+#     windows."""
+#     print("--- mutations:")
+#     for p in reversed(mutations.paths):
+#         print(f"@set PATH={p};%PATH%")
+#     print()
+#     for name, val in mutations.vars:
+#         print(f"@set {name}={val}")
+#     print("---")
+
+
 def _apply_env_mutations(mutations: EnvMutations) -> None:
     """Apply a given set of env mutations, while preserving their order."""
 
@@ -150,6 +162,9 @@ def set_env_for_packages() -> None:
     available for this platform, even if currently not installed.
     """
     mutations = _get_env_mutations_for_packages()
+    
+    # _dump_env_mutations_for_batch(mutations)
+    
     # print(f"{mutations = }")
     _apply_env_mutations(mutations)
 
