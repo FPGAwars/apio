@@ -8,7 +8,6 @@
 
 import re
 import sys
-from typing import Optional
 import click
 
 from apio import util
@@ -23,23 +22,46 @@ class System:  # pragma: no cover
 
         self.resources = resources
 
-    def lsusb(self):
-        """Run the lsusb system command"""
+    def _lsftdi_fatal_error(self, result: util.CommandResult) -> None:
+        """Handles a failure of a 'lsftdi' command. Print message and exits."""
+        #
+        assert result.exit_code != 0, result
+        click.secho(result.out_text)
+        click.secho(f"{result.err_text}", fg="red")
+        click.secho("Error: the 'lsftdi' command failed.", fg="red")
 
-        result = self._run_command("lsusb")
+        # -- A special hint for zadig on windows.
+        if util.is_windows() and "libusb" in result.err_text:
+            click.secho(
+                "\n"
+                "Hint:\n"
+                "  The FTDI driver may not be enabled yet.\n"
+                "  Try running the command 'apio drivers --ftdi-enable'",
+                fg="yellow",
+            )
+            sys.exit(1)
+
+    def lsusb(self) -> int:
+        """Run the lsusb command. Returns exit code."""
+
+        result = self._run_command("lsusb", silent=False)
 
         return result.exit_code if result else 1
 
-    def lsftdi(self):
-        """DOC: TODO"""
+    def lsftdi(self) -> int:
+        """Runs the lsftdi command. Returns exit code."""
 
-        result = self._run_command("lsftdi")
+        result = self._run_command("lsftdi", silent=True)
 
-        return result.exit_code if result else 1
+        if result.exit_code != 0:
+            # -- Print error message and exit.
+            self._lsftdi_fatal_error(result)
 
-    @staticmethod
-    def lsserial():
-        """DOC: TODO"""
+        click.secho(result.out_text)
+        return 0
+
+    def lsserial(self) -> int:
+        """List the serial ports. Returns exit code."""
 
         serial_ports = util.get_serial_ports()
         click.secho(f"Number of Serial devices found: {len(serial_ports)}")
@@ -71,20 +93,18 @@ class System:  # pragma: no cover
         # -- Run the "lsusb" command!
         result = self._run_command("lsusb", silent=True)
 
-        # -- Sucess in executing the command
-        if result and result.exit_code == 0:
+        if result.exit_code != 0:
+            click.secho(result.out_text)
+            click.secho(result.err_text, fg="red")
+            raise RuntimeError("Error executing lsusb")
 
-            # -- Get the list of the usb devices. It is read
-            # -- from the command stdout
-            # -- Ex: [{'hwid':'1d6b:0003'}, {'hwid':'04f2:b68b'}...]
-            usb_devices = self._parse_usb_devices(result.out_text)
+        # -- Get the list of the usb devices. It is read
+        # -- from the command stdout
+        # -- Ex: [{'hwid':'1d6b:0003'}, {'hwid':'04f2:b68b'}...]
+        usb_devices = self._parse_usb_devices(result.out_text)
 
-            # -- Return the devices
-            return usb_devices
-
-        # -- It was not possible to run the "lsusb" command
-        # -- for reading the usb devices
-        raise RuntimeError("Error executing lsusb")
+        # -- Return the devices
+        return usb_devices
 
     def get_ftdi_devices(self) -> list:
         """Return a list of the connected FTDI devices
@@ -104,42 +124,24 @@ class System:  # pragma: no cover
         # -- Run the "lsftdi" command.
         result = self._run_command("lsftdi", silent=True)
 
-        # If the signs suggest that a zadig configuration is required,
-        # print an error message with a hint.
-        if (
-            util.is_windows
-            and result
-            and result.exit_code != 0
-            and "libusb" in result.err_text
-        ):
-            click.secho("Error executing lsftdi.", fg="red")
-            click.secho(
-                "Hint:\n"
-                "  FTDI driver may not be enabled yet.\n"
-                "  Try running: apio drivers --ftdi-enable",
-                fg="yellow",
-            )
-            sys.exit(1)
+        # -- Exit if error.
+        if result.exit_code != 0:
+            self._lsftdi_fatal_error(result)
 
-        # -- Success in executing the command
-        if result and result.exit_code == 0:
+        # -- Get the list of the ftdi devices. It is read
+        # -- from the command stdout
+        # -- Ex: [{'index': '0', 'manufacturer': 'AlhambraBits',
+        # --      'description': 'Alhambra II v1.0A - B07-095'}]
+        ftdi_devices = self._parse_ftdi_devices(result.out_text)
 
-            # -- Get the list of the ftdi devices. It is read
-            # -- from the command stdout
-            # -- Ex: [{'index': '0', 'manufacturer': 'AlhambraBits',
-            # --      'description': 'Alhambra II v1.0A - B07-095'}]
-            ftdi_devices = self._parse_ftdi_devices(result.out_text)
+        # -- Return the devices
+        return ftdi_devices
 
-            # -- Return the devices
-            return ftdi_devices
-
-        # -- It was not possible to run the "lsftdi" command
-        # -- for reading the ftdi devices
-        raise RuntimeError("lsftdi failed.")
+        # -- Print error message and exit.
 
     def _run_command(
-        self, command: str, silent=False
-    ) -> Optional[util.CommandResult]:
+        self, command: str, *, silent: bool
+    ) -> util.CommandResult:
         """Execute the given system command
         * INPUT:
           * command: Command to execute  (Ex. "lsusb")
@@ -148,7 +150,6 @@ class System:  # pragma: no cover
             * True  --> Print on the console
 
         * OUTPUT: An ExecResult with the command's outcome.
-          In case of not executing the command it returns none!
         """
 
         # -- Check that the required package exists.
@@ -166,7 +167,7 @@ class System:  # pragma: no cover
         # -- Set the stdout and stderr callbacks, when executing the command
         # -- Silent mode (True): No callback
         on_stdout = None if silent else self._on_stdout
-        on_stderr = self._on_stderr
+        on_stderr = None if silent else self._on_stderr
 
         # -- Execute the command!
         result = util.exec_command(

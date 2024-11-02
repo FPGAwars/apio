@@ -6,7 +6,7 @@
 """Manage board drivers"""
 
 
-import sys
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -15,18 +15,37 @@ from apio import util
 from apio import pkg_util
 from apio.resources import Resources
 
-FTDI_INSTALL_DRIVER_INSTRUCTIONS = """
-   FTDI driver installation:
-   Usage instructions
+FTDI_ENABLE_INSTRUCTIONS_WINDOWS = """
+   Please follow these steps:
 
-      1. Connect the FTDI FPGA board
-      2. Select (Interface 0)
-      3. Replace driver by "libusbK"
-      4. Reconnect the board
-      5. Check `apio system --lsftdi`
+      1. Make sure your FPGA board is connected to the computer.
+
+      2. Accept the Zadig request to make changes to your computer.
+
+      3. Find the Zadig window on your screen.
+
+      4. Select your FPGA board from the drop down list, For example
+         'Alhambra II v1.0A - B09-335 (Interface 0)'.
+
+         **VERY IMPORTANT**
+         If your board appears multiple time, select its 'interface 0' entry.
+
+      5. Make sure that 'libusbk' is selected. For example
+         'libusbK (v3.1.0.0)'.
+
+      6. Click the 'Replace Driver' button and wait for a successful
+         completion, this can take a minute or two.
+
+      7. Close the zadig window.
+
+      8. Disconnect and reconnect your FPGA board for the new driver
+         to take affect.
+
+      9. Run the command `apio system --lsftdi` and verify that
+         your board is listed.
 """
 
-FTDI_UNINSTALL_DRIVER_INSTRUCTIONS = """
+FTDI_DISABLE_INSTRUCTIONS_WINDOWS = """
    FTDI driver uninstallation:
    Usage instructions
 
@@ -36,7 +55,7 @@ FTDI_UNINSTALL_DRIVER_INSTRUCTIONS = """
       4. Accept the dialog
 """
 
-SERIAL_INSTALL_DRIVER_INSTRUCTIONS = """
+SERIAL_ENABLE_INSTRUCTIONS_WINDOWS = """
    Serial driver installation:
    Usage instructions
 
@@ -46,7 +65,7 @@ SERIAL_INSTALL_DRIVER_INSTRUCTIONS = """
       4. Check `apio system --lsserial`
 """
 
-SERIAL_UNINSTALL_DRIVER_INSTRUCTIONS = """
+SERIAL_DISABLE_INSTRUCTIONS_WINDOWS = """
    Serial driver uninstallation:
    Usage instructions
 
@@ -399,45 +418,44 @@ class Drivers:
         # -- so that zadig open it when executed
         shutil.copyfile(zadig_ini_src, zadig_ini_dst)
 
-        # -- Show messages for the user
-        click.secho("Launch drivers configuration tool")
-        click.secho(FTDI_INSTALL_DRIVER_INSTRUCTIONS, fg="yellow")
-
         # -- Zadig exe file with full path:
         zadig_exe = drivers_base_dir / "bin" / "zadig.exe"
 
+        # -- Show messages for the user
+        click.secho(
+            "\nStarting the interactive config tool zadig.exe.", fg="green"
+        )
+        click.secho(FTDI_ENABLE_INSTRUCTIONS_WINDOWS, fg="yellow")
+
         try:
             # -- Execute zadig!
-            result = util.exec_command(str(zadig_exe))
+            # -- We execute it using os.system() rather than by
+            # -- util.exec_command() because zadig required permissions
+            # -- elevation.
+            exit_code = os.system(str(zadig_exe))
             click.secho("FTDI drivers configuration finished", fg="green")
 
         # -- It was not possible to execute Zadig...
         except OSError as exc:
-            click.secho("Error: " + str(exc), fg="red")
-            click.secho(
-                "Trying to execute zadig.exe in command line, "
-                "but an error ocurred",
-                fg="red",
-            )
-            click.secho(
-                "Please, execute the command again in the command line with"
-                " administrator privilegdes",
-                fg="red",
-            )
-            sys.exit(1)
+            msg = str(exc)
+            click.secho("\n" + msg, fg="red")
+            click.secho("Error: zadig.exe failed.", fg="red")
+            return 1
 
-        # -- Remove zadig.ini from the current folder. It is no longer needed
-        if zadig_ini_dst.exists():
-            zadig_ini_dst.unlink()
+        finally:
+            # -- Remove zadig.ini from the current folder. It is no longer
+            # -- needed
+            if zadig_ini_dst.exists():
+                zadig_ini_dst.unlink()
 
-        return result.exit_code
+        return exit_code
 
     def _ftdi_disable_windows(self) -> int:
         # -- Check that the required packages exist.
         pkg_util.check_required_packages(["drivers"], self.resources)
 
         click.secho("Launch device manager")
-        click.secho(FTDI_UNINSTALL_DRIVER_INSTRUCTIONS, fg="yellow")
+        click.secho(FTDI_DISABLE_INSTRUCTIONS_WINDOWS, fg="yellow")
 
         result = util.exec_command("mmc devmgmt.msc")
         return result.exit_code
@@ -454,7 +472,7 @@ class Drivers:
         try:
 
             click.secho("Launch drivers configuration tool")
-            click.secho(SERIAL_INSTALL_DRIVER_INSTRUCTIONS, fg="yellow")
+            click.secho(SERIAL_ENABLE_INSTRUCTIONS_WINDOWS, fg="yellow")
             result = util.exec_command(
                 str(Path(drivers_bin_dir) / "serial_install.exe")
             )
@@ -471,7 +489,7 @@ class Drivers:
         pkg_util.check_required_packages(["drivers"], self.resources)
 
         click.secho("Launch device manager")
-        click.secho(SERIAL_UNINSTALL_DRIVER_INSTRUCTIONS, fg="yellow")
+        click.secho(SERIAL_DISABLE_INSTRUCTIONS_WINDOWS, fg="yellow")
 
         result = util.exec_command("mmc devmgmt.msc")
         return result.exit_code
