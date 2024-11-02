@@ -105,7 +105,7 @@ _PACKAGES: Dict[str, _PackageDesc] = {
         env_func=_examples_package_env,
     ),
     "graphviz": _PackageDesc(
-        folder_name="tool-graphviz",
+        folder_name="tools-graphviz",
         platform_match=util.is_windows(),
         env_func=_graphviz_package_env,
     ),

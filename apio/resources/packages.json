@@ -33,16 +33,16 @@
 
   "graphviz": {
     "repository": {
-      "name": "tool-graphviz",
+      "name": "tools-graphviz",
       "organization": "zapta"
     },
     "release": {
       "tag_name": "v%V",
-      "compressed_name": "tool-graphviz-%P-%V",
+      "compressed_name": "tools-graphviz-%P-%V",
       "uncompressed_name": "",
-      "folder_name": "tool-graphviz",
+      "folder_name": "tools-graphviz",
       "extension": "tar.gz",
-      "url_version": "https://github.com/zapta/tool-graphviz/raw/main/VERSION",
+      "url_version": "https://github.com/zapta/tools-graphviz/raw/main/VERSION",
       "available_platforms": [
         "windows",
         "windows_x86",
