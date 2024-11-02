@@ -34,7 +34,7 @@
   "graphviz": {
     "repository": {
       "name": "tools-graphviz",
-      "organization": "zapta"
+      "organization": "FPGAwars"
     },
     "release": {
       "tag_name": "v%V",
@@ -42,7 +42,7 @@
       "uncompressed_name": "",
       "folder_name": "tools-graphviz",
       "extension": "tar.gz",
-      "url_version": "https://github.com/zapta/tools-graphviz/raw/main/VERSION",
+      "url_version": "https://github.com/FPGAwars/tools-graphviz/raw/main/VERSION",
       "available_platforms": [
         "windows",
         "windows_x86",
