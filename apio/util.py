@@ -317,7 +317,7 @@ def exec_command(*args, **kwargs) -> CommandResult:
     # -- Set the default arguments to pass to subprocess.Popen()
     # -- for executing the command
     flags = {
-        # -- Catpure the command output
+        # -- Capture the command output
         "stdout": subprocess.PIPE,
         "stderr": subprocess.PIPE,
         # -- Execute it directly, without using the shell

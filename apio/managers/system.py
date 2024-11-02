@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 
 import re
+import sys
 from typing import Optional
 import click
 
@@ -103,6 +104,23 @@ class System:  # pragma: no cover
         # -- Run the "lsftdi" command.
         result = self._run_command("lsftdi", silent=True)
 
+        # If the signs suggest that a zadig configuration is required,
+        # print an error message with a hint.
+        if (
+            util.is_windows
+            and result
+            and result.exit_code != 0
+            and "libusb" in result.err_text
+        ):
+            click.secho("Error executing lsftdi.", fg="red")
+            click.secho(
+                "Hint:\n"
+                "  FTDI driver may not be enabled yet.\n"
+                "  Try running: apio drivers --ftdi-enable",
+                fg="yellow",
+            )
+            sys.exit(1)
+
         # -- Success in executing the command
         if result and result.exit_code == 0:
 
@@ -117,7 +135,7 @@ class System:  # pragma: no cover
 
         # -- It was not possible to run the "lsftdi" command
         # -- for reading the ftdi devices
-        raise RuntimeError(f"Error executing lsftdi.\n{result.err_text}")
+        raise RuntimeError("lsftdi failed.")
 
     def _run_command(
         self, command: str, silent=False
