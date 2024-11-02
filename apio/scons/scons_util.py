@@ -21,7 +21,7 @@ import os
 import re
 from enum import Enum
 import json
-from platform import system
+import platform
 from typing import Dict, Tuple, List, Optional
 from dataclasses import dataclass
 import click
@@ -90,7 +90,7 @@ def is_testbench(env: SConsEnvironment, file_name: str) -> bool:
 
 def is_windows(env: SConsEnvironment) -> bool:
     """Returns True if running on Windows."""
-    return "Windows" == system()
+    return "windows" in platform.system().lower()
 
 
 def create_construction_env(args: Dict[str, str]) -> SConsEnvironment:

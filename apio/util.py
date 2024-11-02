@@ -166,7 +166,7 @@ def get_path_in_apio_package(subpath: str) -> Path:
     return path
 
 
-def get_systype() -> str:
+def get_system_type() -> str:
     """Return a String with the current platform:
     ex. linux_x86_64
     ex. windows_amd64"""
@@ -189,6 +189,21 @@ def get_systype() -> str:
 
     # -- Return the full platform
     return platform_str
+
+
+def is_linux() -> bool:
+    """Returns True iff running on linux."""
+    return "linux" in platform.system().lower()
+
+
+def is_darwin() -> bool:
+    """Returns True iff running on darwin (Mac OSX)."""
+    return "darwin" in platform.system().lower()
+
+
+def is_windows() -> bool:
+    """Returns True iff running on windows."""
+    return "windows" in platform.system().lower()
 
 
 def get_projconf_option_dir(name: str, default=None):

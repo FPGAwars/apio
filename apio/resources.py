@@ -487,7 +487,7 @@ class Resources:
 
         # -- If not given platform, use the current
         if not given_platform:
-            given_platform = util.get_systype()
+            given_platform = util.get_system_type()
 
         # -- Check all the packages
         for pkg in self.packages.keys():

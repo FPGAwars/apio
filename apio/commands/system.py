@@ -13,7 +13,7 @@ import click
 from click.core import Context
 from apio import util
 from apio import cmd_util
-from apio.util import get_systype
+from apio.util import get_system_type
 from apio.managers.system import System
 from apio.resources import Resources
 from apio.commands import options
@@ -128,7 +128,7 @@ def cli(
     if info:
         # -- Print platform id.
         click.secho("Platform: ", nl=False)
-        click.secho(get_systype(), fg="yellow")
+        click.secho(get_system_type(), fg="yellow")
 
         # -- Print apio package directory.
         click.secho("Package:  ", nl=False)

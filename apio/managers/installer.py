@@ -115,7 +115,7 @@ class Installer:
             self.extension = data["release"]["extension"]
 
             # Get the current platform (if not forced by the user)
-            platform = platform or util.get_systype()
+            platform = platform or util.get_system_type()
 
             # Check if the version is ok (It is only done if the
             # checkversion flag has been activated)

@@ -79,10 +79,6 @@ class Drivers:
 
     def __init__(self, resources: Resources) -> None:
 
-        # -- Get the platform (a string)
-        self.platform = util.get_systype()
-
-        # self.profile = Profile()
         self.resources = resources
 
     def ftdi_enable(self) -> int:
@@ -90,35 +86,32 @@ class Drivers:
         Returns a process exit code.
         """
 
-        if "linux" in self.platform:
+        if util.is_linux():
             return self._ftdi_enable_linux()
 
-        if "darwin" in self.platform:
+        if util.is_darwin():
             return self._ftdi_enable_darwin()
 
-        if "windows" in self.platform:
+        if util.is_windows():
             return self._ftdi_enable_windows()
 
-        click.secho("Error: unknown platform '{self.platform}'.")
+        click.secho(f"Error: unknown platform '{util.get_system_type()}'.")
         return 1
 
     def ftdi_disable(self) -> int:
         """Disables the FTDI driver. Function is platform dependent.
         Returns a process exit code.
         """
-
-        if "linux" in self.platform:
+        if util.is_linux():
             return self._ftdi_disable_linux()
 
-        if "darwin" in self.platform:
-            # self._setup_darwin()
+        if util.is_darwin():
             return self._ftdi_disable_darwin()
 
-        if "windows" in self.platform:
-            # self._setup_windows()
+        if util.is_windows():
             return self._ftdi_disable_windows()
 
-        click.secho("Error: unknown platform '{self.platform}'.")
+        click.secho(f"Error: unknown platform '{util.get_system_type()}'.")
         return 1
 
     def serial_enable(self) -> int:
@@ -126,46 +119,46 @@ class Drivers:
         Returns a process exit code.
         """
 
-        if "linux" in self.platform:
+        if util.is_linux():
             return self._serial_enable_linux()
 
-        if "darwin" in self.platform:
+        if util.is_darwin():
             return self._serial_enable_darwin()
 
-        if "windows" in self.platform:
+        if util.is_windows():
             return self._serial_enable_windows()
 
-        click.secho("Error: unknown platform '{self.platform}'.")
+        click.secho(f"Error: unknown platform '{util.get_system_type()}'.")
         return 1
 
     def serial_disable(self) -> int:
         """Disables the serial driver. Function is platform dependent.
         Returns a process exit code.
         """
-        if "linux" in self.platform:
+        if util.is_linux():
             return self._serial_disable_linux()
 
-        if "darwin" in self.platform:
+        if util.is_darwin():
             return self._serial_disable_darwin()
 
-        if "windows" in self.platform:
+        if util.is_windows():
             return self._serial_disable_windows()
 
-        click.secho("Error: unknown platform '{self.platform}'.")
+        click.secho(f"Error: unknown platform '{util.get_system_type()}'.")
         return 1
 
     def pre_upload(self):
         """Operations to do before uploading a design
         Only for mac platforms"""
 
-        if "darwin" in self.platform:
+        if util.is_darwin():
             self._pre_upload_darwin()
 
     def post_upload(self):
         """Operations to do after uploading a design
         Only for mac platforms"""
 
-        if "darwin" in self.platform:
+        if util.is_darwin():
             self._post_upload_darwin()
 
     def _ftdi_enable_linux(self) -> int:

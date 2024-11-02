@@ -351,7 +351,7 @@ class SCons:
         if "tinyprog" in board_data:
 
             # -- Get the platform
-            platform = util.get_systype()
+            platform = util.get_system_type()
 
             # -- darwin / darwin_arm64 platforms
             if "darwin" in platform or "darwin_arm64" in platform:
@@ -456,7 +456,7 @@ class SCons:
         platform = board_data["platform"]
 
         # -- Get the current platform
-        current_platform = util.get_systype()
+        current_platform = util.get_system_type()
 
         # -- Check if they are not compatible!
         if platform != current_platform:

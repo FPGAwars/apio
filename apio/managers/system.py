@@ -7,7 +7,6 @@
 # -- Licence GPLv2
 
 import re
-import platform
 from typing import Optional
 import click
 
@@ -101,10 +100,10 @@ class System:  # pragma: no cover
         # -- Initial empty ftdi devices list
         ftdi_devices = []
 
-        # -- Run the "lsftdi" command!
+        # -- Run the "lsftdi" command.
         result = self._run_command("lsftdi", silent=True)
 
-        # -- Sucess in executing the command
+        # -- Success in executing the command
         if result and result.exit_code == 0:
 
             # -- Get the list of the ftdi devices. It is read
@@ -118,7 +117,7 @@ class System:  # pragma: no cover
 
         # -- It was not possible to run the "lsftdi" command
         # -- for reading the ftdi devices
-        raise RuntimeError("Error executing lsftdi")
+        raise RuntimeError(f"Error executing lsftdi.\n{result.err_text}")
 
     def _run_command(
         self, command: str, silent=False
@@ -143,7 +142,7 @@ class System:  # pragma: no cover
         # pylint: disable=fixme
         # TODO: Is this necessary or does windows accepts commands without
         # the '.exe' extension?
-        if platform.system() == "Windows":
+        if util.is_windows():
             command = command + ".exe"
 
         # -- Set the stdout and stderr callbacks, when executing the command

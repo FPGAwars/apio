@@ -14,7 +14,6 @@ from pathlib import Path
 from dataclasses import dataclass
 import os
 import sys
-import platform
 import click
 import semantic_version
 from apio import util
@@ -107,12 +106,12 @@ _PACKAGES: Dict[str, _PackageDesc] = {
     ),
     "graphviz": _PackageDesc(
         folder_name="tool-graphviz",
-        platform_match=platform.system() == "Windows",
+        platform_match=util.is_windows(),
         env_func=_graphviz_package_env,
     ),
     "drivers": _PackageDesc(
         folder_name="tools-drivers",
-        platform_match=platform.system() == "Windows",
+        platform_match=util.is_windows(),
         env_func=_drivers_package_env,
     ),
 }
@@ -134,12 +133,12 @@ def _get_env_mutations_for_packages() -> EnvMutations:
 # def _dump_env_mutations_for_batch(mutations: EnvMutations) -> None:
 #     """For debugging. Delete once stabalizing the new oss-cad-suite on
 #     windows."""
-#     print("--- mutations:")
+#     print("--- Env Mutations:")
 #     for p in reversed(mutations.paths):
-#         print(f"@set PATH={p};%PATH%")
+#         print(f"  @set PATH={p};%PATH%")
 #     print()
 #     for name, val in mutations.vars:
-#         print(f"@set {name}={val}")
+#         print(f"  @set {name}={val}")
 #     print("---")
 
 
