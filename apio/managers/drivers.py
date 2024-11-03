@@ -501,7 +501,7 @@ class Drivers:
         drivers_base_dir = pkg_util.get_package_dir("drivers")
         drivers_bin_dir = drivers_base_dir / "bin"
 
-        click.secho("\nStarting the Serial Installer.", fg="green")
+        click.secho("\nStarting the interactive Serial Installer.", fg="green")
         click.secho(SERIAL_ENABLE_INSTRUCTIONS_WINDOWS, fg="yellow")
 
         # -- We launch the device manager using os.system() rather than with
