@@ -45,7 +45,6 @@ from SCons.Script import (
     GetOption,
     COMMAND_LINE_TARGETS,
     ARGUMENTS,
-    Glob,
 )
 from apio.scons.scons_util import (
     TARGET,
@@ -67,6 +66,7 @@ from apio.scons.scons_util import (
     make_iverilog_action,
     make_verilator_action,
     get_report_action,
+    set_up_cleanup,
 )
 
 # -- Create the environment
@@ -396,22 +396,17 @@ lint_target = env.Alias("lint", lint_out_target)
 AlwaysBuild(lint_target)
 
 
-# -- These is for cleaning the artifact files.
+# -- Handle the cleanu of the artifact files.
 if GetOption("clean"):
-    # Identify additional files that may not be associated with targets and
-    # associate them with a target such that they will be cleaned up as well.
-    # This cleans for example artifacts of past simulation since the testbench
-    # target are dynamic and changes with the selected testbench.
-    for glob_pattern in ["*.out", "*.vcd"]:
-        for node in Glob(glob_pattern):
-            env.Clean(build_target, str(node))
-
-    env.Default(
+    set_up_cleanup(
+        env,
         [
             report_target,
             build_target,
-            verify_out_target,
+            synth_target,
+            verify_target,
+            pnr_target,
             graph_target,
             lint_target,
-        ]
+        ],
     )

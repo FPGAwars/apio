@@ -643,3 +643,27 @@ def wait_for_remote_debugger(env: SConsEnvironment):
     msg(env, "Attach with the Visual Studio Code debugger.")
     debugpy.wait_for_client()
     msg(env, "Remote debugger is attached.", fg="green")
+
+
+def set_up_cleanup(env: SConsEnvironment, targets) -> None:
+    """Should be called only when the "clean" target is specified. Configures
+    in env the set of targets that should be cleaned up. 'targets' is a list
+    of top level targets and aliases defined in SConstruct.
+    """
+
+    # -- Should be called only when the 'clean' target is specified.
+    assert env.GetOption("clean")
+
+    # -- Patterns for target files that may not be defined in every invocation
+    # -- of SConstruct. For example xyz_tb.vcd appears only when simulating
+    # -- benchmark xyz_tb.vcd.
+    dynamic_targets = ["*.out", "*.vcd", "zadig.ini"]
+
+    # -- Attach all the existing files that match the dynamic targets to the
+    # -- first given target (this is an arbitrary choice).
+    for dynamic_target in dynamic_targets:
+        for node in env.Glob(dynamic_target):
+            env.Clean(targets[0], str(node))
+
+    # -- Tell SCons to cleanup the given targets and all of their dependencies.
+    env.Default(targets)
