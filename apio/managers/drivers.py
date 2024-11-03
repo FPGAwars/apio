@@ -46,13 +46,28 @@ FTDI_ENABLE_INSTRUCTIONS_WINDOWS = """
 """
 
 FTDI_DISABLE_INSTRUCTIONS_WINDOWS = """
-   FTDI driver uninstallation:
-   Usage instructions
+   Please follow these steps:
 
-      1. Find the FPGA USB Device
-      2. Right click
-      3. Select "Uninstall"
-      4. Accept the dialog
+      1. Make sure your FPGA board is NOT connected to the computer.
+
+      2. If asked, allow the Device Manager to make changes to your system.
+
+      3. Find the Device Manager window.
+
+      4. Connect the board to your computer and a new entry will be added
+         to the device list (though sometimes it may be collapsed).
+
+      5. Identify the entry of your board (e.g. in the 'libusbK USB Devices'
+         section).
+
+      6. Right click on your board entry and select 'Uninstall device'.
+
+      7. If available, check the box 'Delete the driver software for this
+         device'.
+
+      8. Click the 'Uninstall' button.
+
+      9. Close the Device Manager window.
 """
 
 SERIAL_ENABLE_INSTRUCTIONS_WINDOWS = """
@@ -454,11 +469,14 @@ class Drivers:
         # -- Check that the required packages exist.
         pkg_util.check_required_packages(["drivers"], self.resources)
 
-        click.secho("Launch device manager")
+        click.secho("\nStarting the interactive Device Manager..", fg="green")
         click.secho(FTDI_DISABLE_INSTRUCTIONS_WINDOWS, fg="yellow")
 
-        result = util.exec_command("mmc devmgmt.msc")
-        return result.exit_code
+        # -- We launch the device manager using os.system() rather than with
+        # -- util.exec_command() because util.exec_command() does not support
+        # -- elevation.
+        exit_code = os.system("mmc devmgmt.msc")
+        return exit_code
 
     # W0703: Catching too general exception Exception (broad-except)
     # pylint: disable=W0703

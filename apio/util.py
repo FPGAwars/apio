@@ -295,7 +295,10 @@ class CommandResult:
 
 
 def exec_command(*args, **kwargs) -> CommandResult:
-    """Execute the given command:
+    """Execute the given command.
+
+    NOTE: When running on windows, this function does not support
+    privilege elevation, to achieve that, use os.system() instead.
 
     INPUTS:
      *args: List with the command and its arguments to execute
