@@ -16,81 +16,101 @@ from apio import pkg_util
 from apio.resources import Resources
 
 FTDI_ENABLE_INSTRUCTIONS_WINDOWS = """
-   Please follow these steps:
+Please follow these steps:
 
-      1. Make sure your FPGA board is connected to the computer.
+  1. Make sure your FPGA board is connected to the computer.
 
-      2. Accept the Zadig request to make changes to your computer.
+  2. Accept the Zadig request to make changes to your computer.
 
-      3. Find the Zadig window on your screen.
+  3. Find the Zadig window on your screen.
 
-      4. Select your FPGA board from the drop down list, For example
-         'Alhambra II v1.0A - B09-335 (Interface 0)'.
+  4. Select your FPGA board from the drop down list, For example
+    'Alhambra II v1.0A - B09-335 (Interface 0)'.
 
-         **VERY IMPORTANT**
-         If your board appears multiple time, select its 'interface 0' entry.
+    **VERY IMPORTANT**
+    If your board appears multiple time, select its 'interface 0' entry.
 
-      5. Make sure that 'libusbk' is selected. For example
-         'libusbK (v3.1.0.0)'.
+  5. Make sure that 'libusbk' is selected. For example
+     'libusbK (v3.1.0.0)'.
 
-      6. Click the 'Replace Driver' button and wait for a successful
-         completion, this can take a minute or two.
+  6. Click the 'Replace Driver' button and wait for a successful
+     completion, this can take a minute or two.
 
-      7. Close the zadig window.
+  7. Close the zadig window.
 
-      8. Disconnect and reconnect your FPGA board for the new driver
-         to take affect.
+  8. Disconnect and reconnect your FPGA board for the new driver
+     to take affect.
 
-      9. Run the command `apio system --lsftdi` and verify that
-         your board is listed.
+  9. Run the command `apio system --lsftdi` and verify that
+     your board is listed.
 """
 
 FTDI_DISABLE_INSTRUCTIONS_WINDOWS = """
-   Please follow these steps:
+Please follow these steps:
 
-      1. Make sure your FPGA board is NOT connected to the computer.
+  1. Make sure your FPGA board is NOT connected to the computer.
 
-      2. If asked, allow the Device Manager to make changes to your system.
+  2. If asked, allow the Device Manager to make changes to your system.
 
-      3. Find the Device Manager window.
+  3. Find the Device Manager window.
 
-      4. Connect the board to your computer and a new entry will be added
-         to the device list (though sometimes it may be collapsed).
+  4. Connect the board to your computer and a new entry will be added
+      to the device list (though sometimes it may be collapsed).
 
-      5. Identify the entry of your board (e.g. in the 'libusbK USB Devices'
-         section).
+  5. Identify the entry of your board (e.g. in the 'libusbK USB Devices'
+     section).
 
-         NOTE: If your board does not show up or if it's listed as a 
-         COM port, it may not have the FTDI driver enabled for it.
+     NOTE: If your board does not show up or if it's listed as a
+     COM port, it may not have the FTDI driver enabled for it.
 
-      6. Right click on your board entry and select 'Uninstall device'.
+  6. Right click on your board entry and select 'Uninstall device'.
 
-      7. If available, check the box 'Delete the driver software for this
-         device'.
+  7. If available, check the box 'Delete the driver software for this
+     device'.
 
-      8. Click the 'Uninstall' button.
+  8. Click the 'Uninstall' button.
 
-      9. Close the Device Manager window.
+  9. Close the Device Manager window.
 """
 
 SERIAL_ENABLE_INSTRUCTIONS_WINDOWS = """
-   Serial driver installation:
-   Usage instructions
+Please follow these steps:
 
-      1. Connect the Serial FPGA board
-      2. Install the driver
-      3. Reconnect the board
-      4. Check `apio system --lsserial`
+  1. Make sure your FPGA board is connected to the computer.
+
+  2. Accept the Serial Installer request to make changes to your computer.
+
+  3. Find the Serial installer window and follow the instructions.
+
+  4. To verify, disconnect and reconnect the board and run the command
+      'apio system --lsserial'.
 """
 
 SERIAL_DISABLE_INSTRUCTIONS_WINDOWS = """
-   Serial driver uninstallation:
-   Usage instructions
+Please follow these steps:
 
-      1. Find the FPGA USB Device
-      2. Right click
-      3. Select "Uninstall"
-      4. Accept the dialog
+  1. Make sure your FPGA board is NOT connected to the computer.
+
+  2. If asked, allow the Device Manager to make changes to your system.
+
+  3. Find the Device Manager window.
+
+  4. Connect the board to your computer and a new entry will be added
+     to the device list (though sometimes it may be collapsed).
+
+  5. Identify the entry of your board (typically in the Ports section).
+
+     NOTE: If your board does not show up as a COM port, it may not
+     have the 'apio drivers --serial-enable' applied to it.
+
+  6. Right click on your board entry and select 'Uninstall device'.
+
+  7. If available, check the box 'Delete the driver software for this
+     device'.
+
+  8. Click the 'Uninstall' button.
+
+  9. Close the Device Manager window.
 """
 
 
@@ -445,26 +465,17 @@ class Drivers:
         )
         click.secho(FTDI_ENABLE_INSTRUCTIONS_WINDOWS, fg="yellow")
 
-        try:
-            # -- Execute zadig!
-            # -- We execute it using os.system() rather than by
-            # -- util.exec_command() because zadig required permissions
-            # -- elevation.
-            exit_code = os.system(str(zadig_exe))
-            click.secho("FTDI drivers configuration finished", fg="green")
+        # -- Execute zadig!
+        # -- We execute it using os.system() rather than by
+        # -- util.exec_command() because zadig required permissions
+        # -- elevation.
+        exit_code = os.system(str(zadig_exe))
+        click.secho("FTDI drivers configuration finished", fg="green")
 
-        # -- It was not possible to execute Zadig...
-        except OSError as exc:
-            msg = str(exc)
-            click.secho("\n" + msg, fg="red")
-            click.secho("Error: zadig.exe failed.", fg="red")
-            return 1
-
-        finally:
-            # -- Remove zadig.ini from the current folder. It is no longer
-            # -- needed
-            if zadig_ini_dst.exists():
-                zadig_ini_dst.unlink()
+        # -- Remove zadig.ini from the current folder. It is no longer
+        # -- needed
+        if zadig_ini_dst.exists():
+            zadig_ini_dst.unlink()
 
         return exit_code
 
@@ -472,7 +483,7 @@ class Drivers:
         # -- Check that the required packages exist.
         pkg_util.check_required_packages(["drivers"], self.resources)
 
-        click.secho("\nStarting the interactive Device Manager..", fg="green")
+        click.secho("\nStarting the interactive Device Manager.", fg="green")
         click.secho(FTDI_DISABLE_INSTRUCTIONS_WINDOWS, fg="yellow")
 
         # -- We launch the device manager using os.system() rather than with
@@ -490,27 +501,27 @@ class Drivers:
         drivers_base_dir = pkg_util.get_package_dir("drivers")
         drivers_bin_dir = drivers_base_dir / "bin"
 
-        try:
+        click.secho("\nStarting the Serial Installer.", fg="green")
+        click.secho(SERIAL_ENABLE_INSTRUCTIONS_WINDOWS, fg="yellow")
 
-            click.secho("Launch drivers configuration tool")
-            click.secho(SERIAL_ENABLE_INSTRUCTIONS_WINDOWS, fg="yellow")
-            result = util.exec_command(
-                str(Path(drivers_bin_dir) / "serial_install.exe")
-            )
-            click.secho("Serial drivers configuration finished", fg="green")
+        # -- We launch the device manager using os.system() rather than with
+        # -- util.exec_command() because util.exec_command() does not support
+        # -- elevation.
+        exit_code = os.system(
+            str(Path(drivers_bin_dir) / "serial_install.exe")
+        )
 
-        except Exception as exc:
-            click.secho("Error: " + str(exc), fg="red")
-            result = util.CommandResult(exit_code=1)
-
-        return result.exit_code
+        return exit_code
 
     def _serial_disable_windows(self) -> int:
         # -- Check that the required packages exist.
         pkg_util.check_required_packages(["drivers"], self.resources)
 
-        click.secho("Launch device manager")
+        click.secho("\nStarting the interactive Device Manager.", fg="green")
         click.secho(SERIAL_DISABLE_INSTRUCTIONS_WINDOWS, fg="yellow")
 
-        result = util.exec_command("mmc devmgmt.msc")
-        return result.exit_code
+        # -- We launch the device manager using os.system() rather than with
+        # -- util.exec_command() because util.exec_command() does not support
+        # -- elevation.
+        exit_code = os.system("mmc devmgmt.msc")
+        return exit_code
