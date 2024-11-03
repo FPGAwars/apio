@@ -60,6 +60,9 @@ FTDI_DISABLE_INSTRUCTIONS_WINDOWS = """
       5. Identify the entry of your board (e.g. in the 'libusbK USB Devices'
          section).
 
+         NOTE: If your board does not show up or if it's listed as a 
+         COM port, it may not have the FTDI driver enabled for it.
+
       6. Right click on your board entry and select 'Uninstall device'.
 
       7. If available, check the box 'Delete the driver software for this
