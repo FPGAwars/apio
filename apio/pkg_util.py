@@ -134,25 +134,24 @@ def _get_env_mutations_for_packages() -> EnvMutations:
 def _dump_env_mutations(mutations: EnvMutations) -> None:
     """For debugging. Delete once stabalizing the new oss-cad-suite on
     windows."""
-    # batch = util.is_windows()
-    click.secho("Env settings:", fg="magenta")
+    click.secho("Envirnment settings:", fg="magenta")
 
     # -- Print PATH mutations.
-    windows = False
+    windows = util.is_windows()
     for p in reversed(mutations.paths):
         styled_name = click.style("PATH", fg="magenta")
         if windows:
-            print(f"  @set {styled_name}={p};%PATH%")
+            print(f"@set {styled_name}={p};%PATH%")
         else:
-            print(f'  {styled_name}="{p}:$PATH"')
+            print(f'{styled_name}="{p}:$PATH"')
 
     # -- Print vars mutations.
     for name, val in mutations.vars:
         styled_name = click.style(name, fg="magenta")
         if windows:
-            print(f"  @set {styled_name}={val}")
+            print(f"@set {styled_name}={val}")
         else:
-            print(f'  {styled_name}="{val}"')
+            print(f'{styled_name}="{val}"')
 
 
 def _apply_env_mutations(mutations: EnvMutations) -> None:
