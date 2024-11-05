@@ -60,7 +60,7 @@ def cli(
     """Implements the test command."""
 
     # -- Create the scons object
-    resources = Resources(project_dir=project_dir)
+    resources = Resources(project_dir=project_dir, project_scope=True)
     scons = SCons(resources)
 
     exit_code = scons.test({"testbench": testbench_file})

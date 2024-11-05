@@ -97,7 +97,7 @@ def cli(
     )
 
     # -- Access to the Drivers
-    resources = Resources()
+    resources = Resources(project_scope=False)
     drivers = Drivers(resources)
 
     # -- FTDI enable option

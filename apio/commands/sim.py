@@ -61,7 +61,7 @@ def cli(
     """
 
     # -- Create the scons object
-    resources = Resources(project_dir=project_dir)
+    resources = Resources(project_dir=project_dir, project_scope=True)
     scons = SCons(resources)
 
     # -- Simulate the project with the given parameters

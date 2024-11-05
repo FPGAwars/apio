@@ -88,7 +88,7 @@ def cli(
     cmd_util.check_exclusive_params(ctx, nameof(list_, dir_, files))
 
     # -- Access to the Drivers
-    resources = Resources()
+    resources = Resources(project_scope=False)
     examples = Examples(resources)
 
     # -- Option: List all the available examples

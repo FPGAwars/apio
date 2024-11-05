@@ -12,7 +12,7 @@ from typing import Tuple
 from varname import nameof
 import click
 from click.core import Context
-from apio.managers.installer import Installer, list_packages
+from apio.managers.installer import Installer
 from apio.resources import Resources
 from apio import cmd_util
 from apio.commands import options
@@ -98,8 +98,12 @@ def cli(
     # Make sure these params are exclusive.
     cmd_util.check_exclusive_params(ctx, nameof(packages, all_, list_))
 
-    # -- Load the resources.
-    resources = Resources(platform=platform, project_dir=project_dir)
+    # -- Load the resources. We don't care about project specific resources.
+    resources = Resources(
+        platform=platform,
+        project_dir=project_dir,
+        project_scope=False,
+    )
 
     # -- Install the given apio packages
     if packages:
@@ -116,7 +120,7 @@ def cli(
 
     # -- List all the packages (installed or not)
     if list_:
-        list_packages(platform)
+        resources.list_packages()
         ctx.exit(0)
 
     # -- Invalid option. Just show the help

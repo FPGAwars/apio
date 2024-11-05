@@ -63,11 +63,23 @@ DISTRIBUTION_JSON = "distribution.json"
 
 
 class Resources:
-    """Resource manager. Class for accesing to all the resources"""
+    """Resource manager. Class for accesing to all the resources."""
 
     def __init__(
-        self, *, platform: str = "", project_dir: Optional[Path] = None
+        self,
+        *,
+        project_scope: bool,
+        platform: str = "",
+        project_dir: Optional[Path] = None,
     ):
+        """Initializes the Resources object. 'project dir' is an optional path
+        to the project dir, otherwise, the current directory is used.
+        'project_scope' indicates if project specfic resources such as
+        boards.json should be loaded, if available' or that the global
+        default resources should be used instead.  Some commands such as
+        'apio install' uses the global scope while commands such as
+        'apio build' use the project scope.
+        """
         # -- Maps the optional project_dir option to a path.
         self.project_dir: Path = util.get_project_dir(project_dir)
 
@@ -78,14 +90,18 @@ class Resources:
         self.packages = self._load_resource(PACKAGES_JSON)
 
         # -- Read the boards information
-        self.boards = self._load_resource(BOARDS_JSON, allow_custom=True)
+        self.boards = self._load_resource(
+            BOARDS_JSON, allow_custom=project_scope
+        )
 
         # -- Read the FPGAs information
-        self.fpgas = self._load_resource(FPGAS_JSON, allow_custom=True)
+        self.fpgas = self._load_resource(
+            FPGAS_JSON, allow_custom=project_scope
+        )
 
         # -- Read the programmers information
         self.programmers = self._load_resource(
-            PROGRAMMERS_JSON, allow_custom=True
+            PROGRAMMERS_JSON, allow_custom=project_scope
         )
 
         # -- Read the distribution information

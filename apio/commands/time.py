@@ -63,7 +63,7 @@ def cli(
     """Analyze the design and report timing."""
 
     # -- Create the scons object
-    resources = Resources(project_dir=project_dir)
+    resources = Resources(project_dir=project_dir, project_scope=True)
     scons = SCons(resources)
 
     # Run scons

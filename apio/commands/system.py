@@ -104,7 +104,7 @@ def cli(
     cmd_util.check_exclusive_params(ctx, nameof(lsftdi, lsusb, lsserial, info))
 
     # Load the various resource files.
-    resources = Resources(project_dir=project_dir)
+    resources = Resources(project_dir=project_dir, project_scope=False)
 
     # -- Create the system object
     system = System(resources)

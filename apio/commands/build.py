@@ -76,7 +76,7 @@ def cli(
     # https://www.scons.org/documentation.html
 
     # -- Create the scons object
-    resources = Resources(project_dir=project_dir)
+    resources = Resources(project_dir=project_dir, project_scope=True)
     scons = SCons(resources)
 
     # R0801: Similar lines in 2 files

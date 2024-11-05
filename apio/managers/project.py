@@ -38,14 +38,16 @@ class Project:
         self.native_exe_mode: bool = None
 
     @staticmethod
-    def create_ini(project_dir, board, top_module, sayyes=False) -> bool:
+    def create_ini(
+        resources: Resources, board: str, top_module: str, sayyes: bool = False
+    ) -> bool:
         """Creates a new apio project file. Returns True if ok."""
 
         # -- Construct the path
-        ini_path = project_dir / PROJECT_FILENAME
+        ini_path = resources.project_dir / PROJECT_FILENAME
 
         # -- Verify that the board id is valid.
-        boards = Resources().boards
+        boards = resources.boards
         if board not in boards.keys():
             click.secho(f"Error: no such board '{board}'", fg="red")
             return False
@@ -85,17 +87,17 @@ class Project:
 
     @staticmethod
     def modify_ini_file(
-        project_dir: Path, board: Optional[str], top_module: Optional[str]
+        resources: Resources, board: Optional[str], top_module: Optional[str]
     ) -> bool:
         """Update the current ini file with the given optional parameters.
         Returns True if ok."""
 
         # -- construct the file path.
-        ini_path = project_dir / PROJECT_FILENAME
+        ini_path = resources.project_dir / PROJECT_FILENAME
 
         # -- Verify that the board id is valid.
         if board:
-            boards = Resources().boards
+            boards = resources.boards
             if board not in boards.keys():
                 click.secho(
                     f"Error: no such board '{board}'.\n"

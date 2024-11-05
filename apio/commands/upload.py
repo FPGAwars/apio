@@ -93,7 +93,7 @@ def cli(
     """Implements the upload command."""
 
     # -- Create a drivers object
-    resources = Resources(project_dir=project_dir)
+    resources = Resources(project_dir=project_dir, project_scope=True)
     drivers = Drivers(resources)
 
     # -- Only for MAC

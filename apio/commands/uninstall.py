@@ -12,7 +12,7 @@ from typing import Tuple
 from varname import nameof
 import click
 from click.core import Context
-from apio.managers.installer import Installer, list_packages
+from apio.managers.installer import Installer
 from apio.profile import Profile
 from apio import cmd_util
 from apio.resources import Resources
@@ -95,7 +95,11 @@ def cli(
     cmd_util.check_exclusive_params(ctx, nameof(packages, list_, all_))
 
     # -- Load the resources.
-    resources = Resources(platform=platform, project_dir=project_dir)
+    resources = Resources(
+        platform=platform,
+        project_dir=project_dir,
+        project_scope=False,
+    )
 
     # -- Uninstall the given apio packages
     if packages:
@@ -112,7 +116,7 @@ def cli(
 
     # -- List all the packages (installed or not)
     if list_:
-        list_packages(platform)
+        resources.list_packages()
         ctx.exit(0)
 
     # -- Invalid option. Just show the help

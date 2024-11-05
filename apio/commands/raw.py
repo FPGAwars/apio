@@ -76,7 +76,7 @@ def cli(
 
     # -- Make sure the oss-cad-suite is installed.
     if cmd:
-        resources = Resources()
+        resources = Resources(project_scope=False)
         pkg_util.check_required_packages(["oss-cad-suite"], resources)
         exit_code = util.call(cmd)
     else:

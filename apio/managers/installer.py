@@ -14,7 +14,6 @@ import click
 import requests
 
 from apio import util
-from apio.resources import Resources
 from apio.profile import Profile
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
@@ -522,13 +521,3 @@ class Installer:
         success = fileu.start()
 
         return success
-
-
-def list_packages(platform: str):
-    """List all the available packages"""
-
-    # -- Get all the resources
-    resources = Resources(platform=platform)
-
-    # -- List the packages
-    resources.list_packages()
