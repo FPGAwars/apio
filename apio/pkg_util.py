@@ -40,6 +40,7 @@ def _oss_cad_suite_package_env(package_path: Path) -> EnvMutations:
             str(package_path / "lib"),
         ],
         vars=[
+            ("VERILATOR_ROOT", str(package_path / "share" / "verilator")),
             ("IVL", str(package_path / "lib" / "ivl")),
             ("ICEBOX", str(package_path / "share" / "icebox")),
             ("TRELLIS", str(package_path / "share" / "trellis")),
@@ -134,7 +135,7 @@ def _dump_env_mutations(mutations: EnvMutations) -> None:
     """For debugging. Delete once stabalizing the new oss-cad-suite on
     windows."""
     # batch = util.is_windows()
-    click.secho("Env Mutations:", fg="magenta")
+    click.secho("Env settings:", fg="magenta")
 
     # -- Print PATH mutations.
     windows = False
