@@ -160,11 +160,19 @@ def set_env_for_packages() -> None:
     """Sets the environment variables for using all the that are
     available for this platform, even if currently not installed.
     """
+
+    # -- Be transparent to the user about setting the environment, in case
+    # -- they will try to run the commands from a regular shell.
+    click.secho("Setting the envinronment.")
+
+    # -- Collect the env mutations for all packages.
     mutations = _get_env_mutations_for_packages()
 
     # -- For debugging.
     # _dump_env_mutations_for_batch(mutations)
 
+    # -- Apply the env mutations. These mutations are temporary and does not
+    # -- affect the user's shell environment.
     _apply_env_mutations(mutations)
 
 
