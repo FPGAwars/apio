@@ -130,16 +130,28 @@ def _get_env_mutations_for_packages() -> EnvMutations:
     return result
 
 
-# def _dump_env_mutations_for_batch(mutations: EnvMutations) -> None:
-#     """For debugging. Delete once stabalizing the new oss-cad-suite on
-#     windows."""
-#     print("--- Env Mutations:")
-#     for p in reversed(mutations.paths):
-#         print(f"  @set PATH={p};%PATH%")
-#     print()
-#     for name, val in mutations.vars:
-#         print(f"  @set {name}={val}")
-#     print("---")
+def _dump_env_mutations(mutations: EnvMutations) -> None:
+    """For debugging. Delete once stabalizing the new oss-cad-suite on
+    windows."""
+    # batch = util.is_windows()
+    click.secho("Env Mutations:", fg="magenta")
+
+    # -- Print PATH mutations.
+    windows = False
+    for p in reversed(mutations.paths):
+        styled_name = click.style("PATH", fg="magenta")
+        if windows:
+            print(f"  @set {styled_name}={p};%PATH%")
+        else:
+            print(f'  {styled_name}="{p}:$PATH"')
+
+    # -- Print vars mutations.
+    for name, val in mutations.vars:
+        styled_name = click.style(name, fg="magenta")
+        if windows:
+            print(f"  @set {styled_name}={val}")
+        else:
+            print(f'  {styled_name}="{val}"')
 
 
 def _apply_env_mutations(mutations: EnvMutations) -> None:
@@ -156,20 +168,20 @@ def _apply_env_mutations(mutations: EnvMutations) -> None:
         os.environ[name] = value
 
 
-def set_env_for_packages() -> None:
+def set_env_for_packages(verbose: bool = False) -> None:
     """Sets the environment variables for using all the that are
     available for this platform, even if currently not installed.
     """
 
-    # -- Be transparent to the user about setting the environment, in case
-    # -- they will try to run the commands from a regular shell.
-    click.secho("Setting the envinronment.")
-
     # -- Collect the env mutations for all packages.
     mutations = _get_env_mutations_for_packages()
 
-    # -- For debugging.
-    # _dump_env_mutations_for_batch(mutations)
+    if verbose:
+        _dump_env_mutations(mutations)
+    else:
+        # -- Be transparent to the user about setting the environment, in case
+        # -- they will try to run the commands from a regular shell.
+        click.secho("Setting the envinronment.")
 
     # -- Apply the env mutations. These mutations are temporary and does not
     # -- affect the user's shell environment.
