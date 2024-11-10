@@ -55,6 +55,12 @@ def cli(
 ):
     """Implements the verify command."""
 
+    click.secho(
+        "The apio 'verify' command is deprecated. "
+        "Please use the 'lint' command instead.",
+        fg="yellow",
+    )
+
     # -- Crete the scons object
     resources = Resources(project_dir=project_dir, project_scope=True)
     scons = SCons(resources)
