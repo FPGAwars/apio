@@ -156,7 +156,7 @@ class System:  # pragma: no cover
         pkg_util.check_required_packages(["oss-cad-suite"], self.resources)
 
         # -- Set system env for using the packages.
-        pkg_util.set_env_for_packages()
+        pkg_util.set_env_for_packages(self.resources)
 
         # pylint: disable=fixme
         # TODO: Is this necessary or does windows accepts commands without

@@ -94,12 +94,12 @@ class Installer:
 
         # -- If the package is known...
         # --(It is defined in the resources/packages.json file)
-        if self.package in self.resources.packages:
+        if self.package in self.resources.platform_packages:
             # -- Store the package dir
             self.packages_dir = util.get_home_dir() / dirname
 
             # Get the data of the given package
-            data = self.resources.packages[self.package]
+            data = self.resources.platform_packages[self.package]
 
             # Get the information about the valid versions
             distribution = self.resources.distribution

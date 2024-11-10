@@ -114,7 +114,7 @@ def cli(
     if all_:
         # -- Install all the available packages for this platform!
         install_packages(
-            resources.packages, platform, resources, force, verbose
+            resources.platform_packages, platform, resources, force, verbose
         )
         ctx.exit(0)
 

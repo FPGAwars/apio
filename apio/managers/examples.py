@@ -49,7 +49,7 @@ class Examples:
         self.resources = resources
 
         # -- Folder where the example packages was installed
-        self.examples_dir = pkg_util.get_package_dir("examples")
+        self.examples_dir = resources.get_package_dir("examples")
 
     def get_examples_infos(self) -> Optional[List[ExampleInfo]]:
         """Scans the examples and returns a list of ExampleInfos.

@@ -983,7 +983,7 @@ class SCons:
                 required_packages_names, self.resources
             )
 
-            pkg_util.set_env_for_packages()
+            pkg_util.set_env_for_packages(self.resources)
 
         # -- Execute scons
         return self._execute_scons(command, variables, board)

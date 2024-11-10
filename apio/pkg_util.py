@@ -9,7 +9,7 @@
 # ---- Licence Apache v2
 """Utility functions related to apio packages."""
 
-from typing import List, Callable, Dict, Tuple, Optional
+from typing import List, Callable, Tuple, Optional
 from pathlib import Path
 from dataclasses import dataclass
 import os
@@ -31,50 +31,6 @@ class EnvMutations:
     vars: List[Tuple[str, str]]
 
 
-def _oss_cad_suite_package_env(package_path: Path) -> EnvMutations:
-    """Returns the env mutations for the oss-cad-suite package."""
-
-    return EnvMutations(
-        paths=[
-            str(package_path / "bin"),
-            str(package_path / "lib"),
-        ],
-        vars=[
-            ("VERILATOR_ROOT", str(package_path / "share" / "verilator")),
-            ("IVL", str(package_path / "lib" / "ivl")),
-            ("ICEBOX", str(package_path / "share" / "icebox")),
-            ("TRELLIS", str(package_path / "share" / "trellis")),
-            ("YOSYS_LIB", str(package_path / "share" / "yosys")),
-        ],
-    )
-
-
-def _examples_package_env(_: Path) -> None:
-    """Returns the env mutations for the examples package."""
-    return EnvMutations(
-        paths=[],
-        vars=[],
-    )
-
-
-def _graphviz_package_env(package_path: Path) -> None:
-    """Returns the env mutations for the graphviz package."""
-
-    return EnvMutations(
-        paths=[str(package_path / "bin")],
-        vars=[],
-    )
-
-
-def _drivers_package_env(package_path: Path) -> None:
-    """Returns the env mutations for the drivers package."""
-
-    return EnvMutations(
-        paths=[str(package_path / "bin")],
-        vars=[],
-    )
-
-
 @dataclass(frozen=True)
 class _PackageDesc:
     """Represents an entry in the packages table."""
@@ -87,47 +43,59 @@ class _PackageDesc:
     env_func: Callable[[Path], EnvMutations]
 
 
-# pylint: disable=fixme
-# -- TODO: Harmonize this table with the packages.json resource file.
-# --   currently they are updated independent, with some overlap.
-# --
-# -- A dictionary that maps package names to package entries.
-# -- The order determines the order of their respective paths in the
-# -- system env PATH variable, and it may matter.
-_PACKAGES: Dict[str, _PackageDesc] = {
-    "oss-cad-suite": _PackageDesc(
-        folder_name="tools-oss-cad-suite",
-        platform_match=True,
-        env_func=_oss_cad_suite_package_env,
-    ),
-    "examples": _PackageDesc(
-        folder_name="examples",
-        platform_match=True,
-        env_func=_examples_package_env,
-    ),
-    "graphviz": _PackageDesc(
-        folder_name="tools-graphviz",
-        platform_match=util.is_windows(),
-        env_func=_graphviz_package_env,
-    ),
-    "drivers": _PackageDesc(
-        folder_name="tools-drivers",
-        platform_match=util.is_windows(),
-        env_func=_drivers_package_env,
-    ),
-}
+def _expand_env_template(template: str, package_path: Path) -> str:
+    """Fills a packages env value template as they appear in packages.json.
+    Currently it recognizes only a single place holder '%p' representing the
+    package absolute path. The '%p" can appear only at the begigning of the
+    template.
+
+    E.g. '%p/bin' -> '/users/user/.apio/packages/drivers/bin'
+    """
+
+    # Case 1: No place holder.
+    if "%p" not in template:
+        return template
+
+    # Case 2: The template contains only the placeholder.
+    if template == "%p":
+        return str(package_path)
+
+    # Case 3: The place holder is the prefix of the template's path.
+    if template.startswith("%p/"):
+        return str(package_path / template[3:])
+
+    # Case 4: Unsupported.
+    raise RuntimeError(f"Invalid env template: [{template}]")
 
 
-def _get_env_mutations_for_packages() -> EnvMutations:
+def _get_env_mutations_for_packages(resources: Resources) -> EnvMutations:
     """Collects the env mutation for each of the defined packages,
     in the order they are defined."""
+
     result = EnvMutations([], [])
-    for package_name, package_desc in _PACKAGES.items():
-        if package_desc.platform_match:
-            package_path = get_package_dir(package_name)
-            mutations = package_desc.env_func(package_path)
-            result.paths.extend(mutations.paths)
-            result.vars.extend(mutations.vars)
+    for package_name, package_config in resources.platform_packages.items():
+
+        # -- Get the package root dir.
+        package_path = resources.get_package_dir(package_name)
+
+        # -- Get the json env section. We require it, even if it's empty,
+        # -- for clarity reasons.
+        package_env = package_config["env"]
+
+        # -- Collect the path values.
+        path_section = package_env.get("path", {})
+        for path_template in path_section:
+            # -- Replaces place holders, if nay.
+            path_value = _expand_env_template(path_template, package_path)
+            result.paths.append(path_value)
+
+        # -- Collect the vars (name, value) pairs.
+        vars_section = package_env.get("vars", {})
+        for var_name, var_template in vars_section.items():
+            # -- Replaces place holders, if nay.
+            var_value = _expand_env_template(var_template, package_path)
+            result.vars.append((var_name, var_value))
+
     return result
 
 
@@ -168,13 +136,13 @@ def _apply_env_mutations(mutations: EnvMutations) -> None:
         os.environ[name] = value
 
 
-def set_env_for_packages(verbose: bool = False) -> None:
+def set_env_for_packages(resources: Resources, verbose: bool = False) -> None:
     """Sets the environment variables for using all the that are
     available for this platform, even if currently not installed.
     """
 
     # -- Collect the env mutations for all packages.
-    mutations = _get_env_mutations_for_packages()
+    mutations = _get_env_mutations_for_packages(resources)
 
     if verbose:
         _dump_env_mutations(mutations)
@@ -203,21 +171,33 @@ def check_required_packages(
 
     # -- Check packages
     for package_name in required_packages_names:
-        package_desc = _PACKAGES[package_name]
-        if package_desc.platform_match:
-            current_version = installed_packages.get(package_name, {}).get(
-                "version", None
-            )
-            spec_version = spec_packages.get(package_name, "")
-            _check_required_package(
-                package_name, current_version, spec_version
-            )
+        # -- Package name must be in all_packages. Otherwise it's a programming
+        # -- error.
+        if package_name not in resources.all_packages:
+            raise RuntimeError(f"Unknown package named [{package_name}]")
+
+        # -- Skip if packages is not applicable to this platform.
+        if package_name not in resources.platform_packages:
+            continue
+
+        # -- The package is applicable to this platform. Check installed
+        # -- version, if at all.
+        current_version = installed_packages.get(package_name, {}).get(
+            "version", None
+        )
+
+        # -- Check the installed version against the required version.
+        spec_version = spec_packages.get(package_name, "")
+        _check_required_package(
+            package_name, current_version, spec_version, resources
+        )
 
 
 def _check_required_package(
     package_name: str,
     current_version: Optional[str],
     spec_version: str,
+    resources: Resources,
 ) -> None:
     """Checks that the package with the given packages is installed and
     has a version that meets the requirements. If any error, it prints an
@@ -227,6 +207,7 @@ def _check_required_package(
     'current_version' - the version of the install package or None if not
         installed.
     'spec_version' - a specification of the required version.
+    'resources' - the apio resources.
     """
     # -- Case 1: Package is not installed.
     if current_version is None:
@@ -249,7 +230,7 @@ def _check_required_package(
         sys.exit(1)
 
     # -- Case 3: The package's directory does not exist.
-    package_dir = get_package_dir(package_name)
+    package_dir = resources.get_package_dir(package_name)
     if package_dir and not package_dir.is_dir():
         message = f"Error: package '{package_name}' is installed but missing"
         click.secho(message, fg="red")
@@ -292,61 +273,3 @@ def _show_package_install_instructions(package_name: str):
         "   apio packages --install --force",
         fg="yellow",
     )
-
-
-def _get_packages_dir() -> Path:
-    """Return the base directory of apio packages.
-    Packages are installed in the following folder:
-      * Default: $APIO_HOME_DIR/packages
-      * $APIO_PKG_DIR/packages: if the APIO_PKG_DIR env variable is set
-      * INPUT:
-        - pkg_name: Package name (Ex. 'examples')
-      * OUTPUT:
-        - The package folder (PosixPath)
-           (Ex. '/home/obijuan/.apio/packages/examples'))
-        - or None if the packageis not installed
-    """
-
-    # -- Get the apio home dir:
-    # -- Ex. '/home/obijuan/.apio'
-    apio_home_dir = util.get_home_dir()
-
-    # -- Get the APIO_PKG_DIR env variable
-    # -- It returns None if it was not defined
-    apio_pkg_dir_env = util.get_projconf_option_dir("pkg_dir")
-
-    # -- Get the pkg base dir. It is what the APIO_PKG_DIR env variable
-    # -- says, or the default folder if None
-    if apio_pkg_dir_env:
-        pkg_home_dir = Path(apio_pkg_dir_env)
-
-    # -- Default value
-    else:
-        pkg_home_dir = apio_home_dir
-
-    # -- Create the package folder
-    # -- Ex '/home/obijuan/.apio/packages/tools-oss-cad-suite'
-    package_dir = pkg_home_dir / "packages"
-
-    # -- Return the folder if it exists
-    # if package_dir.exists():
-    return package_dir
-
-
-def get_package_dir(package_name: str) -> Path:
-    """Return the APIO package dir of a given package
-    Packages are installed in the following folder:
-      * Default: $APIO_HOME_DIR/packages
-      * $APIO_PKG_DIR/packages: if the APIO_PKG_DIR env variable is set
-      * INPUT:
-        - pkg_name: Package name (Ex. 'examples')
-      * OUTPUT:
-        - The package folder (PosixPath)
-           (Ex. '/home/obijuan/.apio/packages/examples'))
-        - or None if the packageis not installed
-    """
-
-    package_folder = _PACKAGES[package_name].folder_name
-    package_dir = _get_packages_dir() / package_folder
-
-    return package_dir

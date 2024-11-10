@@ -445,7 +445,7 @@ class Drivers:
         pkg_util.check_required_packages(["drivers"], self.resources)
 
         # -- Get the drivers apio package base folder
-        drivers_base_dir = pkg_util.get_package_dir("drivers")
+        drivers_base_dir = self.resources.get_package_dir("drivers")
 
         # -- Path to the zadig.ini file
         # -- It is the zadig config file
@@ -498,7 +498,7 @@ class Drivers:
         # -- Check that the required packages exist.
         pkg_util.check_required_packages(["drivers"], self.resources)
 
-        drivers_base_dir = pkg_util.get_package_dir("drivers")
+        drivers_base_dir = self.resources.get_package_dir("drivers")
         drivers_bin_dir = drivers_base_dir / "bin"
 
         click.secho("\nStarting the interactive Serial Installer.", fg="green")

@@ -179,7 +179,7 @@ def cli(
     if install:
         # -- If packages not specified, use all.
         if not packages:
-            packages = resources.packages
+            packages = resources.platform_packages
         # -- Install the packages.
         _install(packages, platform, resources, force, verbose)
         ctx.exit(0)
@@ -187,7 +187,7 @@ def cli(
     if uninstall:
         # -- If packages not specified, use all.
         if not packages:
-            packages = resources.packages
+            packages = resources.platform_packages
         _uninstall(packages, platform, resources, sayyes, verbose)
         ctx.exit(0)
 

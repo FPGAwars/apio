@@ -71,15 +71,19 @@ def cli(
     if not cmd and not env:
         cmd_util.fatal_usage_error(ctx, "Missing an option or a command")
 
-    # -- Set the system env for using the packages.
-    pkg_util.set_env_for_packages(verbose=env)
-
-    # -- Make sure the oss-cad-suite is installed.
-    if cmd:
+    # -- Set the system env for the packages. This both dumps the env settings
+    # -- if --env option is specifies and prepare the env for the command
+    # -- execution below.
+    if cmd or env:
         resources = Resources(project_scope=False)
-        pkg_util.check_required_packages(["oss-cad-suite"], resources)
-        exit_code = util.call(cmd)
-    else:
-        exit_code = 0
+        pkg_util.set_env_for_packages(resources, verbose=env)
 
-    ctx.exit(exit_code)
+    if cmd:
+        # -- Make sure that at least the oss-cad-suite is installed.
+        pkg_util.check_required_packages(["oss-cad-suite"], resources)
+
+        # -- Invoke the command.
+        exit_code = util.call(cmd)
+        ctx.exit(exit_code)
+
+    ctx.exit(0)

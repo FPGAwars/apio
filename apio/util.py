@@ -271,6 +271,45 @@ def get_home_dir() -> Path:
     return home_dir
 
 
+def get_packages_dir() -> Path:
+    """Return the base directory of apio packages.
+    Packages are installed in the following folder:
+      * Default: $APIO_HOME_DIR/packages
+      * $APIO_PKG_DIR/packages: if the APIO_PKG_DIR env variable is set
+      * INPUT:
+        - pkg_name: Package name (Ex. 'examples')
+      * OUTPUT:
+        - The package folder (PosixPath)
+           (Ex. '/home/obijuan/.apio/packages/examples'))
+        - or None if the packageis not installed
+    """
+
+    # -- Get the apio home dir:
+    # -- Ex. '/home/obijuan/.apio'
+    apio_home_dir = get_home_dir()
+
+    # -- Get the APIO_PKG_DIR env variable
+    # -- It returns None if it was not defined
+    apio_pkg_dir_env = get_projconf_option_dir("pkg_dir")
+
+    # -- Get the pkg base dir. It is what the APIO_PKG_DIR env variable
+    # -- says, or the default folder if None
+    if apio_pkg_dir_env:
+        pkg_home_dir = Path(apio_pkg_dir_env)
+
+    # -- Default value
+    else:
+        pkg_home_dir = apio_home_dir
+
+    # -- Create the package folder
+    # -- Ex '/home/obijuan/.apio/packages/tools-oss-cad-suite'
+    package_dir = pkg_home_dir / "packages"
+
+    # -- Return the folder if it exists
+    # if package_dir.exists():
+    return package_dir
+
+
 def call(cmd):
     """Execute the given command."""
 
