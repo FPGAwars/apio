@@ -93,7 +93,7 @@ def cli(
     )
 
     # Make sure these params are exclusive.
-    cmd_util.check_exclusive_params(ctx, nameof(packages, list_, all_))
+    cmd_util.check_at_most_one_param(ctx, nameof(packages, list_, all_))
 
     # -- Load the resources.
     resources = Resources(

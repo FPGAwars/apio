@@ -72,7 +72,7 @@ def cli(
     """
 
     # Make sure these params are exclusive.
-    cmd_util.check_exclusive_params(ctx, nameof(list_, fpgas))
+    cmd_util.check_at_most_one_param(ctx, nameof(list_, fpgas))
 
     # -- Access to the apio resources. We need project scope since the project
     # -- may override the list of boards.

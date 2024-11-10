@@ -96,7 +96,7 @@ def cli(
     )
 
     # Make sure these params are exclusive.
-    cmd_util.check_exclusive_params(ctx, nameof(packages, all_, list_))
+    cmd_util.check_at_most_one_param(ctx, nameof(packages, all_, list_))
 
     # -- Load the resources. We don't care about project specific resources.
     resources = Resources(

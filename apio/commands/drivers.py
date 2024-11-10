@@ -92,7 +92,7 @@ def cli(
     """Implements the drivers command."""
 
     # Make sure these params are exclusive.
-    cmd_util.check_exclusive_params(
+    cmd_util.check_at_most_one_param(
         ctx, nameof(ftdi_enable, ftdi_disable, serial_enable, serial_disable)
     )
 

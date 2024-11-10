@@ -116,7 +116,7 @@ def _specified_params(ctx: click.Context, param_ids: List[str]) -> List[str]:
     return result
 
 
-def check_exclusive_params(ctx: click.Context, param_ids: List[str]) -> None:
+def check_at_most_one_param(ctx: click.Context, param_ids: List[str]) -> None:
     """Checks that at most one of given params were specified in
     the command line. If more than one param was specified, exits the
     program with a message and error status.
@@ -156,7 +156,7 @@ def check_exactly_one_param(ctx: click.Context, param_ids: List[str]) -> None:
         )
 
 
-def check_required_params(ctx: click.Context, param_ids: List[str]) -> None:
+def check_at_least_one_param(ctx: click.Context, param_ids: List[str]) -> None:
     """Checks that at least one of given params is specified in
     the command line. If none of the params is specified, exits the
     program with a message and error status.

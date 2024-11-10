@@ -60,7 +60,7 @@ def cli(
     """Modify the project file."""
 
     # At least one of these options are required.
-    cmd_util.check_required_params(ctx, nameof(board, top_module))
+    cmd_util.check_at_least_one_param(ctx, nameof(board, top_module))
 
     # Load resources.
     resources = Resources(project_dir=project_dir, project_scope=True)

@@ -101,7 +101,9 @@ def cli(
     system tools"""
 
     # Make sure these params are exclusive.
-    cmd_util.check_exclusive_params(ctx, nameof(lsftdi, lsusb, lsserial, info))
+    cmd_util.check_at_most_one_param(
+        ctx, nameof(lsftdi, lsusb, lsserial, info)
+    )
 
     # Load the various resource files.
     resources = Resources(project_dir=project_dir, project_scope=False)

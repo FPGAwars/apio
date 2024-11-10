@@ -85,7 +85,7 @@ def cli(
     Install with `apio packages --install examples`"""
 
     # Make sure these params are exclusive.
-    cmd_util.check_exclusive_params(ctx, nameof(list_, dir_, files))
+    cmd_util.check_at_most_one_param(ctx, nameof(list_, dir_, files))
 
     # -- Access to the Drivers
     resources = Resources(project_scope=False)

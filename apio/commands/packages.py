@@ -164,8 +164,8 @@ def cli(
 
     # Validate the option combination.
     cmd_util.check_exactly_one_param(ctx, nameof(list_, install, uninstall))
-    cmd_util.check_exclusive_params(ctx, nameof(list_, force))
-    cmd_util.check_exclusive_params(ctx, nameof(uninstall, force))
+    cmd_util.check_at_most_one_param(ctx, nameof(list_, force))
+    cmd_util.check_at_most_one_param(ctx, nameof(uninstall, force))
 
     # -- Load the resources. We don't care about project specific resources.
     resources = Resources(
