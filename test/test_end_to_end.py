@@ -140,30 +140,34 @@ def test_end_to_end2(clirunner, validate_cliresult, configenv, offline):
         assert "leds" in result.output
         assert "icezum" in result.output
 
-        # -- Execute "apio examples --files missing_example"
-        result = clirunner.invoke(cmd_examples, ["--files", "missing_example"])
+        # -- Execute "apio examples --fetch-files missing_example"
+        result = clirunner.invoke(
+            cmd_examples, ["--fetch-files", "missing_example"]
+        )
         assert result.exit_code == 1, result.output
         assert "Warning: this example does not exist" in result.output
 
-        # -- Execute "apio examples --files Alhambra-II/ledon"
+        # -- Execute "apio examples --fetch-files Alhambra-II/ledon"
         result = clirunner.invoke(
-            cmd_examples, ["--files", "Alhambra-II/ledon"]
+            cmd_examples, ["--fetch-files", "Alhambra-II/ledon"]
         )
         validate_cliresult(result)
         assert "Copying Alhambra-II/ledon example files ..." in result.output
         assert "have been successfully created!" in result.output
         validate_files_leds(pathlib.Path())
 
-        # -- Execute "apio examples --dir Alhambra-II/ledon"
-        result = clirunner.invoke(cmd_examples, ["--dir", "Alhambra-II/ledon"])
+        # -- Execute "apio examples --fetch-dir Alhambra-II/ledon"
+        result = clirunner.invoke(
+            cmd_examples, ["--fetch-dir", "Alhambra-II/ledon"]
+        )
         validate_cliresult(result)
         assert "Creating Alhambra-II/ledon directory ..." in result.output
         assert "has been successfully created!" in result.output
         validate_dir_leds()
 
-        # -- Execute "apio examples --dir Alhambra-II/ledon"
+        # -- Execute "apio examples --fetch-dir Alhambra-II/ledon"
         result = clirunner.invoke(
-            cmd_examples, ["--dir", "Alhambra-II/ledon"], input="y"
+            cmd_examples, ["--fetch-dir", "Alhambra-II/ledon"], input="y"
         )
         validate_cliresult(result)
         assert (
@@ -203,10 +207,11 @@ def test_end_to_end3(clirunner, validate_cliresult, configenv, offline):
         p = pathlib.Path("tmp/")
         p.mkdir(parents=True, exist_ok=True)
 
-        # -- Execute "apio examples --files Alhambra-II/ledon
+        # -- Execute "apio examples --fetch-files Alhambra-II/ledon
         # --                        --project-dir=tmp"
         result = clirunner.invoke(
-            cmd_examples, ["--files", "Alhambra-II/ledon", "--project-dir=tmp"]
+            cmd_examples,
+            ["--fetch-files", "Alhambra-II/ledon", "--project-dir=tmp"],
         )
         validate_cliresult(result)
         assert "Copying Alhambra-II/ledon example files ..." in result.output
@@ -215,9 +220,11 @@ def test_end_to_end3(clirunner, validate_cliresult, configenv, offline):
         # -- Check the files in the tmp folder
         validate_files_leds(p)
 
-        # -- Execute "apio examples --dir Alhambra-II/ledon --project-dir=tmp"
+        # -- Execute
+        # -- "apio examples --fetch-dir Alhambra-II/ledon --project-dir=tmp"
         result = clirunner.invoke(
-            cmd_examples, ["--dir", "Alhambra-II/ledon", "--project-dir=tmp"]
+            cmd_examples,
+            ["--fetch-dir", "Alhambra-II/ledon", "--project-dir=tmp"],
         )
         validate_cliresult(result)
         assert "Creating Alhambra-II/ledon directory ..." in result.output

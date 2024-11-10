@@ -20,22 +20,22 @@ from apio.resources import Resources
 # -- COMMAND SPECIFIC OPTIONS
 # ---------------------------
 dir_option = click.option(
-    "dir_",  # Var name. Deconflicting with python builtin 'dir'.
+    "fetch_dir",  # Var name.
     "-d",
-    "--dir",
+    "--fetch-dir",
     type=str,
     metavar="name",
-    help="Copy the selected example directory.",
+    help="Fetch the selected example directory.",
     cls=cmd_util.ApioOption,
 )
 
 files_option = click.option(
-    "files",  # Var name.
+    "fetch_files",  # Var name.
     "-f",
-    "--files",
+    "--fetch-files",
     type=str,
     metavar="name",
-    help="Copy the selected example files.",
+    help="Fetch the selected example files.",
     cls=cmd_util.ApioOption,
 )
 
@@ -57,6 +57,12 @@ Examples:
   apio examples -d icezum            # Fetch all board examples
 """
 
+EPILOG = """
+The format of 'name' is <board>[/<example>], where <board> is a board
+name (e.g. 'icezum') and <example> is a name of an example of that
+board (e.g. 'leds').
+"""
+
 
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-positional-arguments
@@ -64,6 +70,7 @@ Examples:
     "examples",
     short_help="List and fetch apio examples.",
     help=HELP,
+    epilog=EPILOG,
     cls=cmd_util.ApioCommand,
 )
 @click.pass_context
@@ -76,35 +83,38 @@ def cli(
     ctx: Context,
     # Options
     list_: bool,
-    dir_: str,
-    files: str,
+    fetch_dir: str,
+    fetch_files: str,
     project_dir: Path,
     sayno: bool,
 ):
     """Manage verilog examples.\n
     Install with `apio packages --install examples`"""
 
+    ctx.get_help()
+
     # Make sure these params are exclusive.
-    cmd_util.check_at_most_one_param(ctx, nameof(list_, dir_, files))
+    cmd_util.check_exactly_one_param(
+        ctx, nameof(list_, fetch_dir, fetch_files)
+    )
 
     # -- Access to the Drivers
     resources = Resources(project_scope=False)
     examples = Examples(resources)
 
-    # -- Option: List all the available examples
-    if list_:
-        exit_code = examples.list_examples()
-        ctx.exit(exit_code)
-
     # -- Option: Copy the directory
-    if dir_:
-        exit_code = examples.copy_example_dir(dir_, project_dir, sayno)
+    if fetch_dir:
+        exit_code = examples.copy_example_dir(fetch_dir, project_dir, sayno)
         ctx.exit(exit_code)
 
     # -- Option: Copy only the example files (not the initial folders)
-    if files:
-        exit_code = examples.copy_example_files(files, project_dir, sayno)
+    if fetch_files:
+        exit_code = examples.copy_example_files(
+            fetch_files, project_dir, sayno
+        )
         ctx.exit(exit_code)
 
-    # -- no options: Show help!
-    click.secho(ctx.get_help())
+    # -- Option: List all the available examples
+    assert list_
+    exit_code = examples.list_examples()
+    ctx.exit(exit_code)

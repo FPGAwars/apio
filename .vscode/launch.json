@@ -83,7 +83,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/apio_run.py",
             "args": [
-                "examples"
+                "examples",
+                "--list"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
