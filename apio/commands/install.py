@@ -18,6 +18,8 @@ from apio import cmd_util
 from apio.commands import options
 
 
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
 def install_packages(
     packages: list,
     platform: str,
@@ -49,16 +51,8 @@ def install_packages(
 # -- COMMAND
 # ---------------------------
 HELP = """
-The install command lists and installs the apio packages.
-
-\b
-Examples:
-  apio install --list    # List packages
-  apio install --all     # Install all packages
-  apio install --all -f  # Force the re/installation of all packages
-  apio install examples  # Install the examples package
-
-For packages uninstallation see the apio uninstall command.
+The install command has been deprecated. Please use the 'apio packages' command
+instead.
 """
 
 
@@ -67,7 +61,7 @@ For packages uninstallation see the apio uninstall command.
 # pylint: disable=too-many-positional-arguments
 @click.command(
     "install",
-    short_help="Install apio packages.",
+    short_help="[Depreciated] Install apio packages.",
     help=HELP,
     cls=cmd_util.ApioCommand,
 )
@@ -94,6 +88,12 @@ def cli(
     """Implements the install command which allows to
     manage the installation of apio packages.
     """
+
+    click.secho(
+        "The 'apio install' command is deprecated. "
+        "Please use the 'apio packages' command instead.",
+        fg="yellow",
+    )
 
     # Make sure these params are exclusive.
     cmd_util.check_exclusive_params(ctx, nameof(packages, all_, list_))

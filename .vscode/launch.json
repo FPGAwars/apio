@@ -145,6 +145,20 @@
             "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
         },
         {
+            "name": "Apio packages",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/apio_run.py",
+            "args": [
+                "packages",
+                "--install",
+                "--force"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+        },
+        {
             "name": "Apio raw",
             "type": "debugpy",
             "request": "launch",

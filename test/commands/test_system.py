@@ -21,17 +21,17 @@ def test_system(clirunner, validate_cliresult, configenv):
         # -- Execute "apio system --lsftdi"
         result = clirunner.invoke(cmd_system, ["--lsftdi"])
         assert result.exit_code == 1, result.output
-        assert "apio install oss-cad-suite" in result.output
+        assert "apio packages --install --force oss-cad-suite" in result.output
 
         # -- Execute "apio system --lsusb"
         result = clirunner.invoke(cmd_system, ["--lsusb"])
         assert result.exit_code == 1, result.output
-        assert "apio install oss-cad-suite" in result.output
+        assert "apio packages --install --force oss-cad-suite" in result.output
 
         # -- Execute "apio system --lsserial"
         clirunner.invoke(cmd_system, ["--lsserial"])
         assert result.exit_code == 1, result.output
-        assert "apio install oss-cad-suite" in result.output
+        assert "apio packages --install --force oss-cad-suite" in result.output
 
         # -- Execute "apio system --info"
         result = clirunner.invoke(cmd_system, ["--info"])

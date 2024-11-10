@@ -56,8 +56,8 @@ def cli(
     """Implements the verify command."""
 
     click.secho(
-        "The apio 'verify' command is deprecated. "
-        "Please use the 'lint' command instead.",
+        "The 'apio verify' command is deprecated. "
+        "Please use the 'apio lint' command instead.",
         fg="yellow",
     )
 

@@ -287,9 +287,9 @@ def _show_package_install_instructions(package_name: str):
 
     click.secho(
         "Please run:\n"
-        f"   apio install {package_name} --force\n"
+        f"   apio packages --install --force {package_name}\n"
         "or:\n"
-        "   apio install --all --force",
+        "   apio packages --install --force",
         fg="yellow",
     )
 

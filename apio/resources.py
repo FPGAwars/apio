@@ -77,7 +77,7 @@ class Resources:
         'project_scope' indicates if project specfic resources such as
         boards.json should be loaded, if available' or that the global
         default resources should be used instead.  Some commands such as
-        'apio install' uses the global scope while commands such as
+        'apio packages' uses the global scope while commands such as
         'apio build' use the project scope.
         """
         # -- Maps the optional project_dir option to a path.

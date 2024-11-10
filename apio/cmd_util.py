@@ -26,7 +26,7 @@ def fatal_usage_error(ctx: click.Context, msg: str) -> None:
     msg: A single line short error message.
     """
     # Mimiking the usage error message from click/exceptions.py.
-    # E.g. "Try 'apio install -h' for help."
+    # E.g. "Try 'apio packages -h' for help."
     click.secho(ctx.get_usage())
     click.secho(
         f"Try '{ctx.command_path} {ctx.help_option_names[0]}' for help."
@@ -133,6 +133,27 @@ def check_exclusive_params(ctx: click.Context, param_ids: List[str]) -> None:
         canonical_aliases = _params_ids_to_aliases(ctx, specified_param_ids)
         aliases_str = ", ".join(canonical_aliases)
         fatal_usage_error(ctx, f"{aliases_str} are mutually exclusive.")
+
+
+def check_exactly_one_param(ctx: click.Context, param_ids: List[str]) -> None:
+    """Checks that at exactly one of given params is specified in
+    the command line. If more or less than one params is specified, exits the
+    program with a message and error status.
+
+    Params are click options and arguments that are passed to a command.
+    Param ids are the names of variables that are used to pass options and
+    argument values to the command. A safe way to construct param_ids
+    is nameof(param_var1, param_var2, ...)
+    """
+    # The the subset of ids of params that where used in the command.
+    specified_param_ids = _specified_params(ctx, param_ids)
+    # If more 2 or more print an error and exit.
+    if len(specified_param_ids) != 1:
+        canonical_aliases = _params_ids_to_aliases(ctx, param_ids)
+        aliases_str = ", ".join(canonical_aliases)
+        fatal_usage_error(
+            ctx, f"Exactly one of of {aliases_str} must be specified."
+        )
 
 
 def check_required_params(ctx: click.Context, param_ids: List[str]) -> None:

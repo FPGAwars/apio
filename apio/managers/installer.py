@@ -3,7 +3,7 @@
 # -- (C) 2016-2021 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
-"""Implementation for the apio INSTALL command"""
+"""Implementation for the apio PACKAGES command"""
 
 import sys
 import shutil

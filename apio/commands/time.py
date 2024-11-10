@@ -63,8 +63,8 @@ def cli(
     """Analyze the design and report timing."""
 
     click.secho(
-        "The apio 'time' command is deprecated. "
-        "Please use the 'report' command instead.",
+        "The 'apio time' command is deprecated. "
+        "Please use the 'apio report' command instead.",
         fg="yellow",
     )
 

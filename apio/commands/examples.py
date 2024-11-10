@@ -82,7 +82,7 @@ def cli(
     sayno: bool,
 ):
     """Manage verilog examples.\n
-    Install with `apio install examples`"""
+    Install with `apio packages --install examples`"""
 
     # Make sure these params are exclusive.
     cmd_util.check_exclusive_params(ctx, nameof(list_, dir_, files))

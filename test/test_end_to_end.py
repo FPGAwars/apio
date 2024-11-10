@@ -6,10 +6,8 @@ import pathlib
 
 import pytest
 
-# -- Entry point for the apio install, apio uninstall
-# -- apio create, apio upload, apio examples
-from apio.commands.install import cli as cmd_install
-from apio.commands.uninstall import cli as cmd_uninstall
+# -- Entry point for apio commands.
+from apio.commands.packages import cli as cmd_packages
 from apio.commands.create import cli as cmd_create
 from apio.commands.upload import cli as cmd_upload
 from apio.commands.examples import cli as cmd_examples
@@ -54,46 +52,52 @@ def test_end_to_end1(clirunner, validate_cliresult, configenv, offline):
         # -- Config the environment (conftest.configenv())
         configenv()
 
-        # -- Execute "apio uninstall examples"
-        result = clirunner.invoke(cmd_uninstall, ["examples"], input="y")
-        assert "Do you want to uninstall?" in result.output
+        # -- Execute "apio packages --uninstall examples"
+        result = clirunner.invoke(
+            cmd_packages, ["--uninstall", "examples"], input="y"
+        )
+        assert "Do you want to uninstall 1 package?" in result.output
         assert "Error: package 'examples' is not installed" in result.output
 
-        # -- Execute "apio install examples@X"
-        result = clirunner.invoke(cmd_install, ["examples@X"])
+        # -- Execute "apio packages --install examples@X"
+        result = clirunner.invoke(cmd_packages, ["--install", "examples@X"])
         assert "Error: package not found" in result.output
 
-        # -- Execute "apio install examples@0.0.34"
-        result = clirunner.invoke(cmd_install, ["examples@0.0.34"])
-        validate_cliresult(result)
-        assert "Installing examples package" in result.output
-        assert "Download" in result.output
-        assert "has been successfully installed!" in result.output
-
-        # -- Execute "apio install examples"
-        result = clirunner.invoke(cmd_install, ["examples"])
-        validate_cliresult(result)
-        assert "Installing examples package" in result.output
-        assert "Download" in result.output
-        assert "has been successfully installed!" in result.output
-
-        # -- Execute "apio install examples" again
-        result = clirunner.invoke(cmd_install, ["examples"])
-        validate_cliresult(result)
-        assert "Installing examples package" in result.output
-        assert "Already installed. Version " in result.output
-
-        # -- Execute "apio install examples --platform windows --force"
+        # -- Execute "apio packages --install examples@0.0.34"
         result = clirunner.invoke(
-            cmd_install, ["examples", "--platform", "windows", "--force"]
+            cmd_packages, ["--install", "examples@0.0.34"]
         )
         validate_cliresult(result)
         assert "Installing examples package" in result.output
         assert "Download" in result.output
         assert "has been successfully installed!" in result.output
 
-        # -- Execute "apio install --list"
-        result = clirunner.invoke(cmd_install, ["--list"])
+        # -- Execute "apio packages --install examples"
+        result = clirunner.invoke(cmd_packages, ["--install", "examples"])
+        validate_cliresult(result)
+        assert "Installing examples package" in result.output
+        assert "Download" in result.output
+        assert "has been successfully installed!" in result.output
+
+        # -- Execute "apio packages --install examples" again
+        result = clirunner.invoke(cmd_packages, ["--install", "examples"])
+        validate_cliresult(result)
+        assert "Installing examples package" in result.output
+        assert "Already installed. Version " in result.output
+
+        # -- Execute
+        # -- "apio packages --install examples --platform windows --force"
+        result = clirunner.invoke(
+            cmd_packages,
+            ["--install", "examples", "--platform", "windows", "--force"],
+        )
+        validate_cliresult(result)
+        assert "Installing examples package" in result.output
+        assert "Download" in result.output
+        assert "has been successfully installed!" in result.output
+
+        # -- Execute "apio packages --install --list"
+        result = clirunner.invoke(cmd_packages, ["--list"])
         validate_cliresult(result)
         assert "Installed packages:" in result.output
         assert "examples" in result.output
@@ -123,8 +127,8 @@ def test_end_to_end2(clirunner, validate_cliresult, configenv, offline):
         assert result.exit_code == 1, result.output
         assert "package 'oss-cad-suite' is not installed" in result.output
 
-        # -- Execute "apio install examples"
-        result = clirunner.invoke(cmd_install, ["examples"])
+        # -- Execute "apio packages --install examples"
+        result = clirunner.invoke(cmd_packages, ["--install", "examples"])
         validate_cliresult(result)
         assert "Installing examples package" in result.output
         assert "Download" in result.output
@@ -185,8 +189,8 @@ def test_end_to_end3(clirunner, validate_cliresult, configenv, offline):
         # -- Config the environment (conftest.configenv())
         configenv()
 
-        # -- Execute "apio install examples"
-        result = clirunner.invoke(cmd_install, ["examples"])
+        # -- Execute "apio packages --install examples"
+        result = clirunner.invoke(cmd_packages, ["--install", "examples"])
         validate_cliresult(result)
         assert "Installing examples package" in result.output
         assert "Download" in result.output
@@ -220,14 +224,18 @@ def test_end_to_end3(clirunner, validate_cliresult, configenv, offline):
         assert "has been successfully created!" in result.output
         validate_dir_leds("tmp")
 
-        # -- Execute "apio uninstall examples"
-        result = clirunner.invoke(cmd_uninstall, ["examples"], input="n")
+        # -- Execute "apio packages --uninstall examples"
+        result = clirunner.invoke(
+            cmd_packages, ["--uninstall", "examples"], input="n"
+        )
         validate_cliresult(result)
         assert "Abort!" in result.output
 
-        # -- Execute "apio uninstall examples"
-        result = clirunner.invoke(cmd_uninstall, ["examples"], input="y")
+        # -- Execute "apio packages --uninstall examples"
+        result = clirunner.invoke(
+            cmd_packages, ["--uninstall", "examples"], input="y"
+        )
         validate_cliresult(result)
         assert "Uninstalling examples package" in result.output
-        assert "Do you want to uninstall?" in result.output
+        assert "Do you want to uninstall 1 package?" in result.output
         assert "has been successfully uninstalled!" in result.output
