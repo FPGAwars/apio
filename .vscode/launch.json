@@ -96,7 +96,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/apio_run.py",
             "args": [
-                "graph"
+                "graph",
+                "--svg"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,

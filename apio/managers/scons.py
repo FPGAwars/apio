@@ -123,7 +123,7 @@ class SCons:
 
     @on_exception(exit_code=1)
     def graph(self, args) -> int:
-        """Runs a scons subprocess with the 'verify' target. Returns process
+        """Runs a scons subprocess with the 'graph' target. Returns process
         exit code, 0 if ok."""
 
         # -- Split the arguments

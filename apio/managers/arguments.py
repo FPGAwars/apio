@@ -28,6 +28,7 @@ YOSYS = "yosys"  # -- Key for Verbose-yosys
 PNR = "pnr"  # -- Key for Verbose-pnr
 TOP_MODULE = "top-module"  # -- Key for top-module
 TESTBENCH = "testbench"  # -- Key for testbench file name
+GRAPH_TYPE = "graph_type"  # -- Key for graph type name
 
 
 def debug_params(fun):
@@ -125,6 +126,7 @@ def process_arguments(
         VERBOSE: {ALL: False, "yosys": False, "pnr": False},
         TOP_MODULE: None,
         TESTBENCH: None,
+        GRAPH_TYPE: None,
     }
 
     # -- Merge the initial configuration to the current configuration
@@ -258,6 +260,7 @@ def process_arguments(
             ),
             "top_module": config[TOP_MODULE],
             "testbench": config[TESTBENCH],
+            "graph_type": config[GRAPH_TYPE],
         }
     )
 
@@ -340,6 +343,7 @@ def print_configuration(config: dict) -> None:
     print(f"  idcode: {config[IDCODE]}")
     print(f"  top-module: {config[TOP_MODULE]}")
     print(f"  testbench: {config[TESTBENCH]}")
+    print(f"  graph_type: {config[GRAPH_TYPE]}")
     print("  verbose:")
     print(f"    all: {config[VERBOSE][ALL]}")
     # These two flags appear only in some of the commands.

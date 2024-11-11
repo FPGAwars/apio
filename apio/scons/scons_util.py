@@ -357,6 +357,72 @@ def make_verilator_config_builder(env: SConsEnvironment, config_text: str):
     )
 
 
+def make_dot_builder(
+    env: SConsEnvironment,
+    top_module: str,
+    graph_type: str,
+    verilog_src_scanner,
+    verbose: bool,
+):
+    """Creates and returns an SCons dot builder. The builder has two modes,
+    interactive viewer (graph_type = "") and batch file generation
+    (e.g. graph_type = "svg).
+
+    'verilog_src_scanner' is a verilog file scanner that identify additional
+    dependencies for the build, for example, icestudio proprietry includes.
+
+    In batch mode, we add a small action to print a message with the
+    generated file name.
+    """
+
+    def print_graph_completion(source, target, env):
+        """Action function that prints the generated file name. Used only
+        when file_type != ""
+        """
+        # -- SCons prints a blank line with the action description so we
+        # -- move the cursor one line up before printing.
+        cursor_up = "\033[F"
+        msg(env, f"{cursor_up}Generated {TARGET}.{graph_type}", fg="green")
+
+    def dot_emitter(target, source, env):
+        """Tells scons to clean all the possible graph file types."""
+        supported_types = ["svg", "pdf", "png"]
+        assert not graph_type or graph_type in supported_types, graph_type
+        for supported_type in supported_types:
+            target.append(TARGET + f".{supported_type}")
+        return target, source
+
+    actions = [
+        # -- The actual dot action. Uses Yosys to open the viewer or to
+        # -- generate the output file.
+        (
+            'yosys -f verilog -p "show -format {0} {1} -colors 1 '
+            '-prefix hardware {2}" {3} $SOURCES'
+        ).format(
+            graph_type if graph_type else "dot",
+            "" if graph_type else "-viewer xdot",
+            top_module if top_module else "unknown_top",
+            "" if verbose else "-q",
+        )
+    ]
+
+    # -- If generating a file, add an action to print a message with the
+    # -- file name.
+    if graph_type:
+        actions.append(env.Action(print_graph_completion, " "))
+
+    # -- The builder.
+    dot_builder = env.Builder(
+        action=actions,
+        suffix=f".{graph_type}" if graph_type else ".dot",
+        src_suffix=".v",
+        source_scanner=verilog_src_scanner,
+        emitter=dot_emitter,
+    )
+
+    return dot_builder
+
+
 def get_source_files(env: SConsEnvironment) -> Tuple[List[str], List[str]]:
     """Get the list of *.v files, splitted into synth and testbench lists.
     If a .v file has the suffix _tb.v it's is classified st a testbench,
