@@ -43,57 +43,24 @@ class _PackageDesc:
     env_func: Callable[[Path], EnvMutations]
 
 
-def _expand_env_template(template: str, package_path: Path) -> str:
-    """Fills a packages env value template as they appear in packages.json.
-    Currently it recognizes only a single place holder '%p' representing the
-    package absolute path. The '%p" can appear only at the begigning of the
-    template.
-
-    E.g. '%p/bin' -> '/users/user/.apio/packages/drivers/bin'
-    """
-
-    # Case 1: No place holder.
-    if "%p" not in template:
-        return template
-
-    # Case 2: The template contains only the placeholder.
-    if template == "%p":
-        return str(package_path)
-
-    # Case 3: The place holder is the prefix of the template's path.
-    if template.startswith("%p/"):
-        return str(package_path / template[3:])
-
-    # Case 4: Unsupported.
-    raise RuntimeError(f"Invalid env template: [{template}]")
-
-
 def _get_env_mutations_for_packages(resources: Resources) -> EnvMutations:
     """Collects the env mutation for each of the defined packages,
     in the order they are defined."""
 
     result = EnvMutations([], [])
-    for package_name, package_config in resources.platform_packages.items():
-
-        # -- Get the package root dir.
-        package_path = resources.get_package_dir(package_name)
-
-        # -- Get the json env section. We require it, even if it's empty,
+    for _, package_config in resources.platform_packages.items():
+        # -- Get the json 'env' section. We require it, even if it's empty,
         # -- for clarity reasons.
+        assert "env" in package_config
         package_env = package_config["env"]
 
         # -- Collect the path values.
-        path_section = package_env.get("path", {})
-        for path_template in path_section:
-            # -- Replaces place holders, if nay.
-            path_value = _expand_env_template(path_template, package_path)
-            result.paths.append(path_value)
+        path_list = package_env.get("path", [])
+        result.paths.extend(path_list)
 
-        # -- Collect the vars (name, value) pairs.
+        # -- Collect the env vars (name, value) pairs.
         vars_section = package_env.get("vars", {})
-        for var_name, var_template in vars_section.items():
-            # -- Replaces place holders, if nay.
-            var_value = _expand_env_template(var_template, package_path)
+        for var_name, var_value in vars_section.items():
             result.vars.append((var_name, var_value))
 
     return result

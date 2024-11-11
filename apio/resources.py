@@ -11,7 +11,7 @@ import json
 from collections import OrderedDict
 import shutil
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Dict
 import click
 from apio import util
 from apio.profile import Profile
@@ -90,6 +90,9 @@ class Resources:
         # -- Read the apio packages information
         self.all_packages = self._load_resource(PACKAGES_JSON)
 
+        # -- Expand in place the env templates in all_packages.
+        Resources._resolve_package_envs(self.all_packages)
+
         # The subset of packages that are applicable to this platform.
         self.platform_packages = self._select_platform_packages(
             self.all_packages, platform
@@ -113,14 +116,11 @@ class Resources:
         # -- Read the distribution information
         self.distribution = self._load_resource(DISTRIBUTION_JSON)
 
-        # ---------  Sort resources for consistency and intunitiveness.
-        self.all_packages = OrderedDict(
-            sorted(self.all_packages.items(), key=lambda t: t[0])
-        )
-
-        self.platform_packages = OrderedDict(
-            sorted(self.platform_packages.items(), key=lambda t: t[0])
-        )
+        # -- Sort resources for consistency and intunitiveness.
+        # --
+        # -- We don't sort the all_packages and platform_packages dictionaries
+        # -- because that will affect the order of the env path items.
+        # -- Instead we preserve the order from the packages.json file.
 
         self.boards = OrderedDict(
             sorted(self.boards.items(), key=lambda t: t[0])
@@ -216,6 +216,67 @@ class Resources:
         # -- Return the object for the resource
         return resource
 
+    @staticmethod
+    def _expand_env_template(template: str, package_path: Path) -> str:
+        """Fills a packages env value template as they appear in packages.json.
+        Currently it recognizes only a single place holder '%p' representing
+        the package absolute path. The '%p" can appear only at the begigning
+        of the template.
+
+        E.g. '%p/bin' -> '/users/user/.apio/packages/drivers/bin'
+
+        NOTE: This format is very basic but is sufficient for the current
+        needs. If needed, extend or modify it.
+        """
+
+        # Case 1: No place holder.
+        if "%p" not in template:
+            return template
+
+        # Case 2: The template contains only the placeholder.
+        if template == "%p":
+            return str(package_path)
+
+        # Case 3: The place holder is the prefix of the template's path.
+        if template.startswith("%p/"):
+            return str(package_path / template[3:])
+
+        # Case 4: Unsupported.
+        raise RuntimeError(f"Invalid env template: [{template}]")
+
+    @staticmethod
+    def _resolve_package_envs(packages: Dict[str, Dict]) -> None:
+        """Resolve in place the path and var value templates in the
+        given packages dictionary. For example, %p is replaced with
+        the package's absolute path."""
+
+        packages_dir = util.get_packages_dir()
+        for _, package_config in packages.items():
+
+            # -- Get the package root dir.
+            package_path = (
+                packages_dir / package_config["release"]["folder_name"]
+            )
+
+            # -- Get the json 'env' section. We require it, even if empty,
+            # -- for clarity reasons.
+            assert "env" in package_config
+            package_env = package_config["env"]
+
+            # -- Expand the values in the "path" section, if any.
+            path_section = package_env.get("path", [])
+            for i, path_template in enumerate(path_section):
+                path_section[i] = Resources._expand_env_template(
+                    path_template, package_path
+                )
+
+            # -- Expand the values in the "vars" section, if any.
+            vars_section = package_env.get("vars", {})
+            for var_name, val_template in vars_section.items():
+                vars_section[var_name] = Resources._expand_env_template(
+                    val_template, package_path
+                )
+
     def get_package_folder_name(self, package: str) -> str:
         """return the package folder name"""
 
@@ -260,21 +321,22 @@ class Resources:
         installed_packages = []
         notinstalled_packages = []
 
-        # -- Go though all the apio packages
-        for package in self.platform_packages:
+        # -- Go though all the apio packages and add them to the installed
+        # -- or uninstalled lists.
+        for package_name, package_config in self.platform_packages.items():
 
             # -- Collect information about the package
             data = {
-                "name": package,
+                "name": package_name,
                 "version": None,
-                "description": self.platform_packages[package]["description"],
+                "description": package_config["description"],
             }
 
             # -- Check if this package is installed
-            if package in self.profile.packages:
+            if package_name in self.profile.packages:
 
                 # -- Get the installed version
-                version = self.profile.packages[package]["version"]
+                version = self.profile.packages[package_name]["version"]
 
                 # -- Store the version
                 data["version"] = version
@@ -286,15 +348,14 @@ class Resources:
             else:
                 notinstalled_packages += [data]
 
-        # -- Check the installed packages and update
-        # -- its information
-        for package in self.profile.packages:
-
-            # -- The package is not known!
-            # -- Strange case
-            if package not in self.platform_packages:
+        # -- If there are in the profile packages that are not in the
+        # -- platform packages, add them well to the uninstalled list, as
+        # -- 'unknown'. These must be some left overs, e.g. if apio is
+        # -- upgraded.
+        for package_name in self.profile.packages:
+            if package_name not in self.platform_packages:
                 data = {
-                    "name": package,
+                    "name": package_name,
                     "version": "Unknown",
                     "description": "Unknown deprecated package",
                 }
