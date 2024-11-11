@@ -37,6 +37,8 @@ from SCons.Action import FunctionAction
 # -- Target name. This is the base file name for various build artifacts.
 TARGET = "hardware"
 
+SUPPORTED_GRAPH_TYPES = ["svg", "pdf", "png"]
+
 
 class SConstructId(Enum):
     """Identifies the SConstruct script that is running. Used to select
@@ -384,14 +386,6 @@ def make_dot_builder(
         cursor_up = "\033[F"
         msg(env, f"{cursor_up}Generated {TARGET}.{graph_type}", fg="green")
 
-    def dot_emitter(target, source, env):
-        """Tells scons to clean all the possible graph file types."""
-        supported_types = ["svg", "pdf", "png"]
-        assert not graph_type or graph_type in supported_types, graph_type
-        for supported_type in supported_types:
-            target.append(TARGET + f".{supported_type}")
-        return target, source
-
     actions = [
         # -- The actual dot action. Uses Yosys to open the viewer or to
         # -- generate the output file.
@@ -406,8 +400,7 @@ def make_dot_builder(
         )
     ]
 
-    # -- If generating a file, add an action to print a message with the
-    # -- file name.
+    # -- If generating a file, add an action to print completion message.
     if graph_type:
         actions.append(env.Action(print_graph_completion, " "))
 
@@ -417,7 +410,6 @@ def make_dot_builder(
         suffix=f".{graph_type}" if graph_type else ".dot",
         src_suffix=".v",
         source_scanner=verilog_src_scanner,
-        emitter=dot_emitter,
     )
 
     return dot_builder
@@ -730,6 +722,10 @@ def set_up_cleanup(env: SConsEnvironment, targets) -> None:
     for dynamic_target in dynamic_targets:
         for node in env.Glob(dynamic_target):
             env.Clean(targets[0], str(node))
+
+    # -- Do the same for the apio graph output files.
+    for graph_type in SUPPORTED_GRAPH_TYPES:
+        env.Clean(targets[0], TARGET + "." + graph_type)
 
     # -- Tell SCons to cleanup the given targets and all of their dependencies.
     env.Default(targets)
