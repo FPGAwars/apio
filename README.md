@@ -67,6 +67,7 @@ Find all the information on this [WIKI PAGE](https://github.com/FPGAwars/apio/wi
 * [devbisme](https://github.com/devbisme)
 * [Miodrag Milanovic](https://github.com/mmicko)
 * [Carlos Venegas](https://github.com/cavearr)
+* [Zapta](https://github.com/zapta)
 
 ## Credits
 
