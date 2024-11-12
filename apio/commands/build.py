@@ -28,8 +28,12 @@ of the project that contains the apio.ini file.
 
 \b
 Examples:
-  apio build
-  apio build -v
+  apio build       # Build
+  apio build -v    # Build with verbose info
+
+The build command builds all the .v files (e.g. my_module.v) in the project
+directory except for those whose name ends with _tb (e.g. my_module_tb.v) to
+indicate that they are testbenches.
 """
 
 

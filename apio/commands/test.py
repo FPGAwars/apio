@@ -22,9 +22,9 @@ from apio.resources import Resources
 HELP = """
 The sim command simulates one or all the testbenches in the project
 and is useful for automatic unit testing of the code. Testbenches
-are expected to exist with the $fatal directive if any error is
-detected. The commands is typically used in the root directory
-of the project that contains the apio.ini.
+are expected have a name ending with _tb (e.g my_module_tb.v) and to exit
+with the $fatal directive if any error is detected. The commands is typically
+used in the root directory of the project that contains the apio.ini.
 
 \b
 Examples

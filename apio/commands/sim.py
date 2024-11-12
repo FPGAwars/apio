@@ -21,8 +21,9 @@ from apio.resources import Resources
 
 HELP = """
 The sim command simulates a testbench file and shows
-the simulation results a GTKWave graphical window.
-The commands is typically used in the root directory
+the simulation results a GTKWave graphical window. The testbench is expected
+to have a name ending with _tb (e.g. my_module_tb.v) and the
+commands is typically used in the root directory
 of the project that contains the apio.ini file and it
 accepts the testbench file name as an argument. For example:
 
