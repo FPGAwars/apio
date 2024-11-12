@@ -45,8 +45,8 @@ Examples:
   apio boards -f | grep gowin  # Filter FPGA results.
 
 [Advanced] Boards with wide availability can be added by contacting the
-apio team. A custom one-of board can be added to your project by
-placing a boards.json file next to apio.ini.
+apio team. Custom one-of boards can be added to your project by
+placing an alternative boards.json file in your apio project directory.
 """
 
 
