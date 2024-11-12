@@ -19,13 +19,7 @@ from apio.resources import Resources
 # ---------------------------
 # -- COMMAND SPECIFIC OPTIONS
 # ---------------------------
-svg_option = click.option(
-    "svg",  # Var name.
-    "--svg",
-    is_flag=True,
-    help="Generate a svg file.",
-    cls=cmd_util.ApioOption,
-)
+
 
 pdf_option = click.option(
     "pdf",  # Var name.
@@ -48,17 +42,23 @@ png_option = click.option(
 # -- COMMAND
 # ---------------------------
 HELP = """
-The graph command generates a graphical representation of the
-verilog code in the project.
-The commands is typically used in the root directory
-of the project that contains the apio.ini file.
+The graph command generates a graphical representation of
+the verilog code of the project. The commands is typically
+used in the root directory of the project that contains
+the apio.ini file.
 
 \b
 Examples:
-  apio graph --svg         # Generate a svg file.
-  apio graph               # Open an interactive viewer.
-  apio graph -t my_module  # Graph the selected module
+  apio graph               # Generate a svg file.
+  apio graph --pdf         # Generate a pdf file.
+  apio graph --png         # Generate a png file.
+  apio graph -t my_module  # Graph my_module module.
 
+"""
+
+EPILOG = """
+[Hint] On windows, type 'explorer hardware.svg' to
+view the graph, and on Mac OS type 'open hardware.svg'.
 """
 
 
@@ -68,10 +68,10 @@ Examples:
     "graph",
     short_help="Generate a visual graph of the code.",
     help=HELP,
+    epilog=EPILOG,
     cls=cmd_util.ApioCommand,
 )
 @click.pass_context
-@svg_option
 @pdf_option
 @png_option
 @options.project_dir_option
@@ -80,7 +80,6 @@ Examples:
 def cli(
     ctx: Context,
     # Options
-    svg: bool,
     pdf: bool,
     png: bool,
     project_dir: Path,
@@ -89,17 +88,16 @@ def cli(
 ):
     """Implements the apio graph command."""
     # -- Sanity check the options.
-    cmd_util.check_at_most_one_param(ctx, nameof(svg, pdf, png))
+    cmd_util.check_at_most_one_param(ctx, nameof(pdf, png))
 
-    # -- Determien graph type. An empty string for an interactive viewer.
-    if svg:
-        graph_type = "svg"
-    elif pdf:
-        graph_type = "pdf"
+    # -- Construct the graph spec to pass to scons.
+    # -- For now it's trivial.
+    if pdf:
+        graph_spec = "pdf"
     elif png:
-        graph_type = "png"
+        graph_spec = "png"
     else:
-        graph_type = ""
+        graph_spec = "svg"
 
     # -- Load apio resources.
     resources = Resources(project_dir=project_dir, project_scope=True)
@@ -112,7 +110,7 @@ def cli(
         {
             "verbose": {"all": verbose, "yosys": False, "pnr": False},
             "top-module": top_module,
-            "graph_type": graph_type,
+            "graph_spec": graph_spec,
         }
     )
 

@@ -60,6 +60,7 @@ from apio.scons.scons_util import (
     make_verilog_src_scanner,
     make_verilator_config_builder,
     make_dot_builder,
+    make_graphviz_builder,
     get_source_files,
     get_sim_config,
     get_tests_configs,
@@ -91,7 +92,7 @@ VERILATOR_ALL = arg_bool(env, "all", False)
 VERILATOR_NO_STYLE = arg_bool(env, "nostyle", False)
 NOWARNS = arg_str(env, "nowarn", "").split(",")
 WARNS = arg_str(env, "warn", "").split(",")
-GRAPH_TYPE = arg_str(env, "graph_type", "")
+GRAPH_SPEC = arg_str(env, "graph_spec", "")
 
 
 # -- Resources paths
@@ -289,9 +290,15 @@ env.Append(BUILDERS={"IVerilogTestbench": iverilog_tb_builder})
 # -- Builder (yosys, .dot graph generator).
 # -- hardware.v -> hardware.dot.
 dot_builder = make_dot_builder(
-    env, TOP_MODULE, GRAPH_TYPE, verilog_src_scanner, VERBOSE_ALL
+    env, TOP_MODULE, verilog_src_scanner, VERBOSE_ALL
 )
 env.Append(BUILDERS={"DOT": dot_builder})
+
+# -- Apio graph.
+# -- Builder  (dot, svg/pdf/png renderer).
+# -- hardware.dot -> hardware.svg/pdf/png.
+graphviz_builder = make_graphviz_builder(env, GRAPH_SPEC)
+env.Append(BUILDERS={"GRAPHVIZ": graphviz_builder})
 
 
 # -- Apio sim/test.
@@ -318,11 +325,11 @@ verify_target = env.Alias("verify", verify_out_target)
 # -- Apio graph.
 # -- Targets.
 # -- (modules).v -> hardware.dot -> hardware.svg.
-#
-# TODO: Launch a portable SVG (or differentn format) viewer.
 dot_target = env.DOT(TARGET, synth_srcs)
 AlwaysBuild(dot_target)
-graph_target = env.Alias("graph", dot_target)
+graphviz_target = env.GRAPHVIZ(TARGET, dot_target)
+AlwaysBuild(graphviz_target)
+graph_target = env.Alias("graph", graphviz_target)
 
 
 # -- Apio sim.

@@ -31,7 +31,8 @@ from SCons.Node.FS import File
 from SCons.Node.Alias import Alias
 from SCons.Script import DefaultEnvironment
 from SCons.Script.SConscript import SConsEnvironment
-from SCons.Action import FunctionAction
+from SCons.Action import FunctionAction, Action
+from SCons.Builder import Builder
 
 
 # -- Target name. This is the base file name for various build artifacts.
@@ -351,8 +352,8 @@ def make_verilator_config_builder(env: SConsEnvironment, config_text: str):
             target_file.write(config_text)
         return 0
 
-    return env.Builder(
-        action=env.Action(
+    return Builder(
+        action=Action(
             verilator_config_func, "Creating verilator config file."
         ),
         suffix=".vlt",
@@ -362,57 +363,71 @@ def make_verilator_config_builder(env: SConsEnvironment, config_text: str):
 def make_dot_builder(
     env: SConsEnvironment,
     top_module: str,
-    graph_type: str,
     verilog_src_scanner,
     verbose: bool,
 ):
-    """Creates and returns an SCons dot builder. The builder has two modes,
-    interactive viewer (graph_type = "") and batch file generation
-    (e.g. graph_type = "svg).
+    """Creates and returns an SCons dot builder that generates the graph
+    in .dot format.
 
     'verilog_src_scanner' is a verilog file scanner that identify additional
-    dependencies for the build, for example, icestudio proprietry includes.
-
-    In batch mode, we add a small action to print a message with the
-    generated file name.
+    dependencies for the build, for example, icestudio propriety includes.
     """
 
-    def print_graph_completion(source, target, env):
-        """Action function that prints the generated file name. Used only
-        when file_type != ""
-        """
-        # -- SCons prints a blank line with the action description so we
-        # -- move the cursor one line up before printing.
-        cursor_up = "\033[F"
-        msg(env, f"{cursor_up}Generated {TARGET}.{graph_type}", fg="green")
-
-    actions = [
-        # -- The actual dot action. Uses Yosys to open the viewer or to
-        # -- generate the output file.
-        (
-            'yosys -f verilog -p "show -format {0} {1} -colors 1 '
-            '-prefix hardware {2}" {3} $SOURCES'
+    # -- The builder.
+    dot_builder = Builder(
+        action=(
+            'yosys -f verilog -p "show -format dot -colors 1 '
+            '-prefix hardware {0}" {1} $SOURCES'
         ).format(
-            graph_type if graph_type else "dot",
-            "" if graph_type else "-viewer xdot",
             top_module if top_module else "unknown_top",
             "" if verbose else "-q",
-        )
-    ]
-
-    # -- If generating a file, add an action to print completion message.
-    if graph_type:
-        actions.append(env.Action(print_graph_completion, " "))
-
-    # -- The builder.
-    dot_builder = env.Builder(
-        action=actions,
-        suffix=f".{graph_type}" if graph_type else ".dot",
+        ),
+        suffix=".dot",
         src_suffix=".v",
         source_scanner=verilog_src_scanner,
     )
 
     return dot_builder
+
+
+def make_graphviz_builder(
+    env: SConsEnvironment,
+    graph_spec: str,
+):
+    """Creates and returns an SCons graphviz builder that renders
+    a .dot file to one of the supported formats.
+
+    'graph_spec' contains the rendering specification and currently
+    it includes a single value which is the target file format".
+    """
+
+    # --Decode the graphic spec. Currently it's trivial since it
+    # -- contains a single value.
+    if graph_spec:
+        # -- This is the case when scons target is 'graph'.
+        graph_type = graph_spec
+        assert graph_type in SUPPORTED_GRAPH_TYPES, graph_type
+    else:
+        # -- This is the case when scons target is not 'graph'.
+        graph_type = "svg"
+
+    def completion_action(source, target, env):
+        """Action function that prints a completion message."""
+        msg(env, f"Generated {TARGET}.{graph_type}", fg="green")
+
+    actions = [
+        f"dot -T{graph_type} $SOURCES -o $TARGET",
+        Action(completion_action, "completion_action"),
+    ]
+
+    graphviz_builder = Builder(
+        # Expecting graphviz dot to be installed and in the path.
+        action=actions,
+        suffix=f".{graph_type}",
+        src_suffix=".dot",
+    )
+
+    return graphviz_builder
 
 
 def get_source_files(env: SConsEnvironment) -> Tuple[List[str], List[str]]:
@@ -676,7 +691,7 @@ def get_report_action(
         json_txt: str = json_file.get_text_contents()
         _print_pnr_report(env, json_txt, script_id, verbose)
 
-    return env.Action(print_pnr_report, "Formatting pnr report.")
+    return Action(print_pnr_report, "Formatting pnr report.")
 
 
 def wait_for_remote_debugger(env: SConsEnvironment):
