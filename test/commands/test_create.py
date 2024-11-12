@@ -70,20 +70,6 @@ def test_create(clirunner, configenv, validate_cliresult):
             apio_ini, {"board": "alhambra-ii", "top-module": "my_module"}
         )
 
-        # -- Add to the ini file an additional var. It should disappear after
-        # -- the next wrire.
-        conf = ConfigObj(str(apio_ini))
-        conf["env"]["exe-mode"] = "native"
-        conf.write()
-        check_ini_file(
-            apio_ini,
-            {
-                "board": "alhambra-ii",
-                "top-module": "my_module",
-                "exe-mode": "native",
-            },
-        )
-
         # -- Execute "apio create --board icezum
         # --                      --top-module my_module
         # --                      --sayyse" with 'y' input

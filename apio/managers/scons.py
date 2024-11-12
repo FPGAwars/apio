@@ -966,24 +966,13 @@ class SCons:
         # -- It is passed to scons using the flag -f default_scons_file
         variables += ["-f", f"{scons_file_path}"]
 
-        # -- Verify necessary packages if needed.
-        # pylint: disable=fixme
-        # TODO: Drop the 'native' mode for simplicity? It is broken anyway.
-        # E.g. when referencing yosys libraries in Sconstruct.
-        if self.project.native_exe_mode:
-            # Assuming blindly that the binaries we need are on the path.
-            click.secho(
-                "Warning: native exe mode (binaries should be on path)",
-                fg="yellow",
-            )
-        else:
-            # Run on `default` config mode
-            # -- Check that the required packages are installed
-            pkg_util.check_required_packages(
-                required_packages_names, self.resources
-            )
+        # -- Check that the required packages are installed
+        pkg_util.check_required_packages(
+            required_packages_names, self.resources
+        )
 
-            pkg_util.set_env_for_packages(self.resources)
+        # -- Set env path and vars to use the packages.
+        pkg_util.set_env_for_packages(self.resources)
 
         # -- Execute scons
         return self._execute_scons(command, variables, board)
