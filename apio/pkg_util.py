@@ -103,24 +103,37 @@ def _apply_env_mutations(mutations: EnvMutations) -> None:
         os.environ[name] = value
 
 
+# -- A static flag that is used to make sure we set the env only once.
+# -- This is to avoid extending the $PATH variable multiple time with the
+# -- same directories.
+__ENV_ALREADY_SET_FLAG = False
+
+
 def set_env_for_packages(resources: Resources, verbose: bool = False) -> None:
     """Sets the environment variables for using all the that are
     available for this platform, even if currently not installed.
+
+    The function sets the environment only on first call and in latter calls
+    skips the operation silently.
     """
+    # pylint: disable=global-statement
+    global __ENV_ALREADY_SET_FLAG
 
     # -- Collect the env mutations for all packages.
     mutations = _get_env_mutations_for_packages(resources)
 
     if verbose:
         _dump_env_mutations(mutations)
-    else:
-        # -- Be transparent to the user about setting the environment, in case
-        # -- they will try to run the commands from a regular shell.
-        click.secho("Setting the envinronment.")
 
-    # -- Apply the env mutations. These mutations are temporary and does not
-    # -- affect the user's shell environment.
-    _apply_env_mutations(mutations)
+    # -- If this is the first call, apply the mutations. These mutations are
+    # -- temporary for the lifetime of this process and does not affect the
+    # -- user's shell environment. The mutations are also inheritated by
+    # -- child processes such as the scons processes.
+    if not __ENV_ALREADY_SET_FLAG:
+        _apply_env_mutations(mutations)
+        __ENV_ALREADY_SET_FLAG = True
+        if not verbose:
+            click.secho("Setting the envinronment.")
 
 
 def check_required_packages(
