@@ -35,7 +35,6 @@ class Project:
         self.project_dir = util.get_project_dir(project_dir)
         self.board: str = None
         self.top_module: str = None
-        self.native_exe_mode: bool = None
 
     @staticmethod
     def create_ini(
@@ -178,8 +177,6 @@ class Project:
         self.top_module = self._parse_top_module(
             config_parser, parsed_attributes
         )
-        exe_mode = self._parse_exe_mode(config_parser, parsed_attributes)
-        self.native_exe_mode = {"default": False, "native": True}[exe_mode]
 
         # Verify that the project file (api.ini) doesn't contain additional
         # (illegal) keys that where not parsed
@@ -233,25 +230,3 @@ class Project:
             )
             return DEFAULT_TOP_MODULE
         return top_module
-
-    @staticmethod
-    def _parse_exe_mode(
-        config_parser: ConfigParser, parsed_attributes: set[str]
-    ) -> str:
-        """Read the configured exe mode from the
-            project file parser and add the keys used
-          to parsed_attributes.
-        RETURN:
-          * A string with "default" (default) or "native"
-        """
-        parsed_attributes.add("exe-mode")
-        exe_mode = config_parser.get("env", "exe-mode", fallback="default")
-        if exe_mode not in {"default", "native"}:
-            click.secho(
-                f"Error: invalid {PROJECT_FILENAME} project file\n"
-                "Optional attribute 'exe-mode' should have"
-                " the value 'default' or 'native'.",
-                fg="red",
-            )
-            sys.exit(1)
-        return exe_mode
