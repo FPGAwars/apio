@@ -12,13 +12,15 @@ from typing import Tuple
 from varname import nameof
 import click
 from click.core import Context
-from apio.managers.installer import Installer, list_packages
+from apio.managers.installer import Installer
 from apio.profile import Profile
 from apio import cmd_util
 from apio.resources import Resources
 from apio.commands import options
 
 
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
 def _uninstall(
     packages: list, platform: str, resources: Resources, sayyes, verbose: bool
 ):
@@ -48,15 +50,8 @@ def _uninstall(
 # -- COMMAND
 # ---------------------------
 HELP = """
-The uninstall command lists and installs apio packages.
-
-\b
-Examples:
-  apio uninstall --list    # List packages
-  apio uninstall --all     # Uninstall all packages
-  apio uninstall examples  # Uninstall the examples package
-
-For packages installation see the apio install command.
+The uninstall command has been deprecated. Please use the 'apio packages'
+command instead.
 """
 
 
@@ -65,7 +60,7 @@ For packages installation see the apio install command.
 # pylint: disable=too-many-positional-arguments
 @click.command(
     "uninstall",
-    short_help="Uninstall apio packages.",
+    short_help="[Depreciated] Uninstall apio packages.",
     help=HELP,
     cls=cmd_util.ApioCommand,
 )
@@ -91,11 +86,21 @@ def cli(
 ):
     """Implements the uninstall command."""
 
+    click.secho(
+        "The 'apio uninstall' command is deprecated. "
+        "Please use the 'apio packages' command instead.",
+        fg="yellow",
+    )
+
     # Make sure these params are exclusive.
-    cmd_util.check_exclusive_params(ctx, nameof(packages, list_, all_))
+    cmd_util.check_at_most_one_param(ctx, nameof(packages, list_, all_))
 
     # -- Load the resources.
-    resources = Resources(platform=platform, project_dir=project_dir)
+    resources = Resources(
+        platform=platform,
+        project_dir=project_dir,
+        project_scope=False,
+    )
 
     # -- Uninstall the given apio packages
     if packages:
@@ -112,7 +117,7 @@ def cli(
 
     # -- List all the packages (installed or not)
     if list_:
-        list_packages(platform)
+        resources.list_packages()
         ctx.exit(0)
 
     # -- Invalid option. Just show the help

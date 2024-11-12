@@ -3,7 +3,7 @@
 # -- (C) 2016-2021 FPGAwars
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
-"""Implementation for the apio INSTALL command"""
+"""Implementation for the apio PACKAGES command"""
 
 import sys
 import shutil
@@ -14,7 +14,6 @@ import click
 import requests
 
 from apio import util
-from apio.resources import Resources
 from apio.profile import Profile
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
@@ -60,7 +59,7 @@ class Installer:
         self.resources = resources
         self.profile = None
         self.spec_version = None
-        self.package_name = None
+        self.package_folder_name = None
         self.extension = None
         self.download_urls = None
         self.compressed_name = None
@@ -95,12 +94,12 @@ class Installer:
 
         # -- If the package is known...
         # --(It is defined in the resources/packages.json file)
-        if self.package in self.resources.packages:
+        if self.package in self.resources.platform_packages:
             # -- Store the package dir
             self.packages_dir = util.get_home_dir() / dirname
 
             # Get the data of the given package
-            data = self.resources.packages[self.package]
+            data = self.resources.platform_packages[self.package]
 
             # Get the information about the valid versions
             distribution = self.resources.distribution
@@ -108,14 +107,14 @@ class Installer:
             # Get the spectec package version
             self.spec_version = distribution["packages"][self.package]
 
-            # Get the package name (from resources/package.json file)
-            self.package_name = data["release"]["package_name"]
+            # Get the package folder name (from resources/package.json file)
+            self.package_folder_name = data["release"]["folder_name"]
 
             # Get the extension given to the toolchain. Tipically tar.gz
             self.extension = data["release"]["extension"]
 
             # Get the current platform (if not forced by the user)
-            platform = platform or util.get_systype()
+            platform = platform or util.get_system_type()
 
             # Check if the version is ok (It is only done if the
             # checkversion flag has been activated)
@@ -157,7 +156,7 @@ class Installer:
             ):
                 self.packages_dir = util.get_home_dir() / dirname
 
-                self.package_name = "toolchain-" + package
+                self.package_folder_name = "toolchain-" + package
 
         # -- If the Installer.package_dir property was not assigned,
         # -- is because the package was not known. Abort!
@@ -264,7 +263,7 @@ class Installer:
         # Try os name
         # dlpath = self._install_os_package(platform_download_url)
         except util.ApioException:
-            click.secho("Error: Package not found\n", fg="red")
+            click.secho("Error: package not found\n", fg="red")
 
         # -- Second step: Install downloaded package
         self._install_package(dlpath)
@@ -280,7 +279,7 @@ class Installer:
 
             # -- Build the destination path
             # -- Ex. '/home/obijuan/.apio/packages/examples'
-            package_dir = self.packages_dir / self.package_name
+            package_dir = self.packages_dir / self.package_folder_name
 
             if self.verbose:
                 click.secho(f"Package dir: {package_dir.absolute()}")
@@ -344,7 +343,7 @@ class Installer:
 
             # -- New folder
             # -. Ex, '/home/obijuan/.apio/packages/examples'
-            package_dir = self.packages_dir / self.package_name
+            package_dir = self.packages_dir / self.package_folder_name
 
             # -- Rename it!
             if unpack_dir.is_dir():
@@ -354,7 +353,7 @@ class Installer:
         """Uninstall the apio package"""
 
         # -- Build the package filename
-        file = self.packages_dir / self.package_name
+        file = self.packages_dir / self.package_folder_name
 
         if self.verbose:
             click.secho(f"Package dir: {file.absolute()}")
@@ -377,7 +376,9 @@ class Installer:
             )
         else:
             # -- Package not installed!
-            util.show_package_path_error(self.package)
+            click.secho(
+                f"Error: package '{self.package}' is not installed", fg="red"
+            )
 
         # -- Remove the package from the profile file
         self.profile.remove_package(self.package)
@@ -520,13 +521,3 @@ class Installer:
         success = fileu.start()
 
         return success
-
-
-def list_packages(platform: str):
-    """List all the available packages"""
-
-    # -- Get all the resources
-    resources = Resources(platform=platform)
-
-    # -- List the packages
-    resources.list_packages()

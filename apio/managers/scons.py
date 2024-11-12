@@ -14,7 +14,6 @@ import re
 import time
 import datetime
 import shutil
-from pathlib import Path
 from functools import wraps
 
 import importlib.metadata
@@ -22,10 +21,10 @@ import click
 import semantic_version
 
 from apio import util
+from apio import pkg_util
 from apio.managers.arguments import process_arguments
 from apio.managers.arguments import serialize_scons_flags
 from apio.managers.system import System
-from apio.profile import Profile
 from apio.resources import Resources
 from apio.managers.project import Project
 from apio.managers.scons_filter import SconsFilter
@@ -76,32 +75,17 @@ def on_exception(*, exit_code: int):
 class SCons:
     """Class for managing the scons tools"""
 
-    def __init__(self, project_dir: Path):
-        """Initialization:
-        * project_dir: path where the sources are located
-          If not given, the curent working dir is used
-        """
+    def __init__(self, resources: Resources):
+        """Initialization."""
+        # -- Cache resources.
+        self.resources = resources
 
         # -- Read the project file (apio.ini)
-        self.project = Project(project_dir)
+        self.project = Project(resources.project_dir)
         self.project.read()
 
-        # -- Read the apio profile file
-        self.profile = Profile()
-
-        # -- Read the apio resources
-        self.resources = Resources(project_dir=project_dir)
-
-        # -- Project path is given
-        if project_dir:
-            # Check if it is a correct folder
-            # (or create a new one)
-            project_dir = util.get_project_dir(
-                project_dir, create_if_missing=False
-            )
-
-            # Change to that folder
-            os.chdir(project_dir)
+        # -- Change to the project's folder.
+        os.chdir(resources.project_dir)
 
     @on_exception(exit_code=1)
     def clean(self, args) -> int:
@@ -114,7 +98,9 @@ class SCons:
         )
 
         # --Clean the project: run scons -c (with aditional arguments)
-        return self._run("-c", arch=arch, variables=variables, packages=[])
+        return self._run(
+            "-c", arch=arch, variables=variables, required_packages_names=[]
+        )
 
     @on_exception(exit_code=1)
     def verify(self, args) -> int:
@@ -132,12 +118,12 @@ class SCons:
             "verify",
             variables=variables,
             arch=arch,
-            packages=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite"],
         )
 
     @on_exception(exit_code=1)
     def graph(self, args) -> int:
-        """Runs a scons subprocess with the 'verify' target. Returns process
+        """Runs a scons subprocess with the 'graph' target. Returns process
         exit code, 0 if ok."""
 
         # -- Split the arguments
@@ -151,7 +137,7 @@ class SCons:
             "graph",
             variables=variables,
             arch=arch,
-            packages=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite", "graphviz"],
         )
 
     @on_exception(exit_code=1)
@@ -174,7 +160,7 @@ class SCons:
             "lint",
             variables=variables,
             arch=arch,
-            packages=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite"],
         )
 
     @on_exception(exit_code=1)
@@ -191,7 +177,7 @@ class SCons:
             "sim",
             variables=variables,
             arch=arch,
-            packages=["oss-cad-suite", "gtkwave"],
+            required_packages_names=["oss-cad-suite"],
         )
 
     @on_exception(exit_code=1)
@@ -208,7 +194,7 @@ class SCons:
             "test",
             variables=variables,
             arch=arch,
-            packages=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite"],
         )
 
     @on_exception(exit_code=1)
@@ -228,7 +214,7 @@ class SCons:
             variables=variables,
             board=board,
             arch=arch,
-            packages=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite"],
         )
 
     @on_exception(exit_code=1)
@@ -253,7 +239,7 @@ class SCons:
             variables=variables,
             board=board,
             arch=arch,
-            packages=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite"],
         )
 
     @on_exception(exit_code=1)
@@ -270,7 +256,7 @@ class SCons:
             variables=variables,
             board=board,
             arch=arch,
-            packages=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite"],
         )
 
     @on_exception(exit_code=1)
@@ -311,7 +297,7 @@ class SCons:
         exit_code = self._run(
             "upload",
             variables=flags,
-            packages=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite"],
             board=board,
             arch=arch,
         )
@@ -365,7 +351,7 @@ class SCons:
         if "tinyprog" in board_data:
 
             # -- Get the platform
-            platform = util.get_systype()
+            platform = util.get_system_type()
 
             # -- darwin / darwin_arm64 platforms
             if "darwin" in platform or "darwin_arm64" in platform:
@@ -470,7 +456,7 @@ class SCons:
         platform = board_data["platform"]
 
         # -- Get the current platform
-        current_platform = util.get_systype()
+        current_platform = util.get_system_type()
 
         # -- Check if they are not compatible!
         if platform != current_platform:
@@ -963,7 +949,14 @@ class SCons:
 
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-positional-arguments
-    def _run(self, command, variables, packages, board=None, arch=None):
+    def _run(
+        self,
+        command,
+        variables,
+        required_packages_names,
+        board=None,
+        arch=None,
+    ):
         """Executes scons"""
 
         # -- Construct the path to the SConstruct file.
@@ -985,14 +978,12 @@ class SCons:
             )
         else:
             # Run on `default` config mode
-            # -- Check if the necessary packages are installed
-            if not util.resolve_packages(
-                packages,
-                self.profile.packages,
-                self.resources.distribution.get("packages"),
-            ):
-                # Exit if a package is not installed
-                raise AttributeError("Package not installed")
+            # -- Check that the required packages are installed
+            pkg_util.check_required_packages(
+                required_packages_names, self.resources
+            )
+
+            pkg_util.set_env_for_packages(self.resources)
 
         # -- Execute scons
         return self._execute_scons(command, variables, board)

@@ -22,4 +22,4 @@ def test_verify(clirunner, configenv):
 
         # -- Check the result
         assert result.exit_code != 0, result.output
-        assert "apio install oss-cad-suite" in result.output
+        assert "apio packages --install --force oss-cad-suite" in result.output

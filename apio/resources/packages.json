@@ -8,50 +8,66 @@
       "tag_name": "%V",
       "compressed_name": "apio-examples-%V",
       "uncompressed_name": "apio-examples-%V",
-      "package_name": "examples",
+      "folder_name": "examples",
       "extension": "zip",
       "url_version": "https://github.com/FPGAwars/apio-examples/raw/master/VERSION"
     },
-    "description": "Verilog examples"
+    "description": "Verilog examples",
+    "env": {}
   },
-  
   "oss-cad-suite": {
     "repository": {
       "name": "tools-oss-cad-suite",
-      "organization": "FPGAwars"
+      "organization": "zapta"
     },
     "release": {
       "tag_name": "v%V",
       "compressed_name": "tools-oss-cad-suite-%P-%V",
       "uncompressed_name": "",
-      "package_name": "tools-oss-cad-suite",
+      "folder_name": "tools-oss-cad-suite",
       "extension": "tar.gz",
-      "url_version": "https://github.com/FPGAwars/tools-oss-cad-suite/raw/main/VERSION_DEV"
+      "url_version": "https://github.com/zapta/tools-oss-cad-suite/raw/main/VERSION_DEV"
     },
-    "description": "YosysHQ/oss-cad-suite"
+    "description": "YosysHQ/oss-cad-suite",
+    "env": {
+      "path": [
+        "%p/bin",
+        "%p/lib"
+      ],
+      "vars": {
+        "VERILATOR_ROOT": "%p/share/verilator",
+        "IVL": "%p/lib/ivl",
+        "ICEBOX": "%p/share/icebox",
+        "TRELLIS": "%p/share/trellis",
+        "YOSYS_LIB": "%p/share/yosys"
+      }
+    }
   },
-
-  "gtkwave": {
+  "graphviz": {
     "repository": {
-      "name": "tool-gtkwave",
+      "name": "tools-graphviz",
       "organization": "FPGAwars"
     },
     "release": {
       "tag_name": "v%V",
-      "compressed_name": "tool-gtkwave-%P-%V",
+      "compressed_name": "tools-graphviz-%P-%V",
       "uncompressed_name": "",
-      "package_name": "tool-gtkwave",
+      "folder_name": "tools-graphviz",
       "extension": "tar.gz",
-      "url_version": "https://github.com/FPGAwars/tool-gtkwave/raw/master/VERSION",
+      "url_version": "https://github.com/FPGAwars/tools-graphviz/raw/main/VERSION",
       "available_platforms": [
         "windows",
         "windows_x86",
         "windows_amd64"
       ]
     },
-    "description": "GTKWave tool for Windows"
+    "description": "Graphviz tool for Windows",
+    "env": {
+      "path": [
+        "%p/bin"
+      ]
+    }
   },
-
   "drivers": {
     "repository": {
       "name": "tools-drivers",
@@ -61,7 +77,7 @@
       "tag_name": "v%V",
       "compressed_name": "tools-drivers-%P-%V",
       "uncompressed_name": "",
-      "package_name": "tools-drivers",
+      "folder_name": "tools-drivers",
       "extension": "tar.gz",
       "url_version": "https://github.com/FPGAwars/tools-drivers/raw/master/VERSION",
       "available_platforms": [
@@ -70,6 +86,11 @@
         "windows_amd64"
       ]
     },
-    "description": "Drivers tools for Windows"
+    "description": "Drivers tools for Windows",
+    "env": {
+      "path": [
+        "%p/bin"
+      ]
+    }
   }
 }

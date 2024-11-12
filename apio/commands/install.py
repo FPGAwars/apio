@@ -12,12 +12,14 @@ from typing import Tuple
 from varname import nameof
 import click
 from click.core import Context
-from apio.managers.installer import Installer, list_packages
+from apio.managers.installer import Installer
 from apio.resources import Resources
 from apio import cmd_util
 from apio.commands import options
 
 
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
 def install_packages(
     packages: list,
     platform: str,
@@ -49,16 +51,8 @@ def install_packages(
 # -- COMMAND
 # ---------------------------
 HELP = """
-The install command lists and installs the apio packages.
-
-\b
-Examples:
-  apio install --list    # List packages
-  apio install --all     # Install all packages
-  apio install --all -f  # Force the re/installation of all packages
-  apio install examples  # Install the examples package
-
-For packages uninstallation see the apio uninstall command.
+The install command has been deprecated. Please use the 'apio packages' command
+instead.
 """
 
 
@@ -67,7 +61,7 @@ For packages uninstallation see the apio uninstall command.
 # pylint: disable=too-many-positional-arguments
 @click.command(
     "install",
-    short_help="Install apio packages.",
+    short_help="[Depreciated] Install apio packages.",
     help=HELP,
     cls=cmd_util.ApioCommand,
 )
@@ -95,11 +89,21 @@ def cli(
     manage the installation of apio packages.
     """
 
-    # Make sure these params are exclusive.
-    cmd_util.check_exclusive_params(ctx, nameof(packages, all_, list_))
+    click.secho(
+        "The 'apio install' command is deprecated. "
+        "Please use the 'apio packages' command instead.",
+        fg="yellow",
+    )
 
-    # -- Load the resources.
-    resources = Resources(platform=platform, project_dir=project_dir)
+    # Make sure these params are exclusive.
+    cmd_util.check_at_most_one_param(ctx, nameof(packages, all_, list_))
+
+    # -- Load the resources. We don't care about project specific resources.
+    resources = Resources(
+        platform=platform,
+        project_dir=project_dir,
+        project_scope=False,
+    )
 
     # -- Install the given apio packages
     if packages:
@@ -110,13 +114,13 @@ def cli(
     if all_:
         # -- Install all the available packages for this platform!
         install_packages(
-            resources.packages, platform, resources, force, verbose
+            resources.platform_packages, platform, resources, force, verbose
         )
         ctx.exit(0)
 
     # -- List all the packages (installed or not)
     if list_:
-        list_packages(platform)
+        resources.list_packages()
         ctx.exit(0)
 
     # -- Invalid option. Just show the help

@@ -38,6 +38,7 @@ COMMAND_GROUPS = {
     "Setup commands": [
         "create",
         "modify",
+        "packages",
         "drivers",
         "install",
         "uninstall",

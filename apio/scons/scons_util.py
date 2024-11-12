@@ -21,7 +21,7 @@ import os
 import re
 from enum import Enum
 import json
-from platform import system
+import platform
 from typing import Dict, Tuple, List, Optional
 from dataclasses import dataclass
 import click
@@ -31,11 +31,14 @@ from SCons.Node.FS import File
 from SCons.Node.Alias import Alias
 from SCons.Script import DefaultEnvironment
 from SCons.Script.SConscript import SConsEnvironment
-from SCons.Action import FunctionAction
+from SCons.Action import FunctionAction, Action
+from SCons.Builder import Builder
 
 
 # -- Target name. This is the base file name for various build artifacts.
 TARGET = "hardware"
+
+SUPPORTED_GRAPH_TYPES = ["svg", "pdf", "png"]
 
 
 class SConstructId(Enum):
@@ -90,7 +93,7 @@ def is_testbench(env: SConsEnvironment, file_name: str) -> bool:
 
 def is_windows(env: SConsEnvironment) -> bool:
     """Returns True if running on Windows."""
-    return "Windows" == system()
+    return "windows" in platform.system().lower()
 
 
 def create_construction_env(args: Dict[str, str]) -> SConsEnvironment:
@@ -164,6 +167,11 @@ def force_colors(env: SConsEnvironment) -> bool:
     for example from the scons subprocess to the apio app. To preserve
     the sconstruct text colors, the apio app passes to the sconstract
     scripts a flag to force the preservation of colors.
+
+    NOTE: As of Oct 2024, forcing colors from the scons subprocess does not
+    work on Windows and as result, scons output is colorless.
+    For more details see the click issue at
+    https://github.com/pallets/click/issues/2791.
     """
     flag = env["FORCE_COLORS"]
     assert isinstance(flag, bool)
@@ -221,14 +229,11 @@ def get_constraint_file(
     # Case 2: Exactly one file found.
     if n == 1:
         result = str(files[0])
-        info(env, f"Found constraint file '{result}'.")
         return result
-    # Case 3: Multiple matching files. Pick the first file (alphabetically).
-    # We could improve the heuristic here, e.g. to prefer a file with
-    # the top_module name, if exists.
-    result = str(files[0])
-    warning(env, f"Found multiple {file_ext} files, using '{result}'.")
-    return result
+    # Case 3: Multiple matching files.
+    fatal_error(
+        env, f"Found multiple '*{file_ext}' constrain files, expecting one."
+    )
 
 
 def dump_env_vars(env: SConsEnvironment) -> None:
@@ -347,12 +352,82 @@ def make_verilator_config_builder(env: SConsEnvironment, config_text: str):
             target_file.write(config_text)
         return 0
 
-    return env.Builder(
-        action=env.Action(
+    return Builder(
+        action=Action(
             verilator_config_func, "Creating verilator config file."
         ),
         suffix=".vlt",
     )
+
+
+def make_dot_builder(
+    env: SConsEnvironment,
+    top_module: str,
+    verilog_src_scanner,
+    verbose: bool,
+):
+    """Creates and returns an SCons dot builder that generates the graph
+    in .dot format.
+
+    'verilog_src_scanner' is a verilog file scanner that identify additional
+    dependencies for the build, for example, icestudio propriety includes.
+    """
+
+    # -- The builder.
+    dot_builder = Builder(
+        action=(
+            'yosys -f verilog -p "show -format dot -colors 1 '
+            '-prefix hardware {0}" {1} $SOURCES'
+        ).format(
+            top_module if top_module else "unknown_top",
+            "" if verbose else "-q",
+        ),
+        suffix=".dot",
+        src_suffix=".v",
+        source_scanner=verilog_src_scanner,
+    )
+
+    return dot_builder
+
+
+def make_graphviz_builder(
+    env: SConsEnvironment,
+    graph_spec: str,
+):
+    """Creates and returns an SCons graphviz builder that renders
+    a .dot file to one of the supported formats.
+
+    'graph_spec' contains the rendering specification and currently
+    it includes a single value which is the target file format".
+    """
+
+    # --Decode the graphic spec. Currently it's trivial since it
+    # -- contains a single value.
+    if graph_spec:
+        # -- This is the case when scons target is 'graph'.
+        graph_type = graph_spec
+        assert graph_type in SUPPORTED_GRAPH_TYPES, graph_type
+    else:
+        # -- This is the case when scons target is not 'graph'.
+        graph_type = "svg"
+
+    def completion_action(source, target, env):
+        """Action function that prints a completion message."""
+        msg(env, f"Generated {TARGET}.{graph_type}", fg="green")
+
+    actions = [
+        f"dot -T{graph_type} $SOURCES -o $TARGET",
+        Action(completion_action, "completion_action"),
+    ]
+
+    graphviz_builder = Builder(
+        # Expecting graphviz dot to be installed and in the path.
+        action=actions,
+        suffix=f".{graph_type}",
+        src_suffix=".dot",
+    )
+
+    return graphviz_builder
 
 
 def get_source_files(env: SConsEnvironment) -> Tuple[List[str], List[str]]:
@@ -525,8 +600,9 @@ def make_verilator_action(
     """
 
     action = (
-        "verilator --lint-only --bbox-unsup --timing -Wno-TIMESCALEMOD "
-        "-Wno-MULTITOP {0} {1} {2} {3} {4} {5} {6} {7} {8} $SOURCES"
+        "verilator_bin --lint-only --quiet --bbox-unsup --timing "
+        "-Wno-TIMESCALEMOD -Wno-MULTITOP "
+        "{0} {1} {2} {3} {4} {5} {6} {7} {8} $SOURCES"
     ).format(
         "-Wall" if warnings_all else "",
         "-Wno-style" if warnings_no_style else "",
@@ -615,4 +691,56 @@ def get_report_action(
         json_txt: str = json_file.get_text_contents()
         _print_pnr_report(env, json_txt, script_id, verbose)
 
-    return env.Action(print_pnr_report, "Formatting pnr report.")
+    return Action(print_pnr_report, "Formatting pnr report.")
+
+
+def wait_for_remote_debugger(env: SConsEnvironment):
+    """For developement only. Useful for debugging SConstruct scripts that apio
+    runs as a subprocesses. Call this from the SCconstruct script, run apio
+    from a command line, and then connect with the Visual Studio Code debugger
+    using the launch.json debug target. Can also be used to debug apio itself,
+    without having to create or modify the Visual Studio Code debug targets
+    in launch.json"""
+
+    # -- We require this import only when using the debugger.
+    import debugpy
+
+    # -- 5678 is the default debugger port.
+    port = 5678
+    msg(
+        env,
+        f"Waiting for remote debugger on port localhost:{port}.",
+        fg="magenta",
+    )
+    debugpy.listen(port)
+    msg(env, "Attach with the Visual Studio Code debugger.")
+    debugpy.wait_for_client()
+    msg(env, "Remote debugger is attached.", fg="green")
+
+
+def set_up_cleanup(env: SConsEnvironment, targets) -> None:
+    """Should be called only when the "clean" target is specified. Configures
+    in env the set of targets that should be cleaned up. 'targets' is a list
+    of top level targets and aliases defined in SConstruct.
+    """
+
+    # -- Should be called only when the 'clean' target is specified.
+    assert env.GetOption("clean")
+
+    # -- Patterns for target files that may not be defined in every invocation
+    # -- of SConstruct. For example xyz_tb.vcd appears only when simulating
+    # -- benchmark xyz_tb.vcd.
+    dynamic_targets = ["*.out", "*.vcd", "zadig.ini"]
+
+    # -- Attach all the existing files that match the dynamic targets to the
+    # -- first given target (this is an arbitrary choice).
+    for dynamic_target in dynamic_targets:
+        for node in env.Glob(dynamic_target):
+            env.Clean(targets[0], str(node))
+
+    # -- Do the same for the apio graph output files.
+    for graph_type in SUPPORTED_GRAPH_TYPES:
+        env.Clean(targets[0], TARGET + "." + graph_type)
+
+    # -- Tell SCons to cleanup the given targets and all of their dependencies.
+    env.Default(targets)

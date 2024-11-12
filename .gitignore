@@ -9,6 +9,7 @@
 *.swp
 *~
 .coverage
+.coverage.*
 .tox/
 .cache/
 .pytest_cache/
@@ -30,6 +31,8 @@ hardware.vlt
 hardware.bit
 hardware.config
 hardware.pnr
+hardware.dot
+hardware.svg
 *.out
 *.vcd
 .DS_Store

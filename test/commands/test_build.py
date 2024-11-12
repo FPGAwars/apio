@@ -47,7 +47,7 @@ def test_build_board(clirunner, configenv):
 
         # -- Check the result
         assert result.exit_code != 0, result.output
-        assert "install oss-cad-suite" in result.output
+        assert "apio packages --install --force oss-cad-suite" in result.output
 
 
 def test_build_complete1(clirunner, configenv):
@@ -61,12 +61,12 @@ def test_build_complete1(clirunner, configenv):
         # apio build --board icestick
         result = clirunner.invoke(cmd_build, ["--board", "icestick"])
         assert result.exit_code == 1, result.output
-        assert "install oss-cad-suite" in result.output
+        assert "apio packages --install --force oss-cad-suite" in result.output
 
         # apio build --fpga iCE40-HX1K-VQ100
         result = clirunner.invoke(cmd_build, ["--fpga", "iCE40-HX1K-VQ100"])
         assert result.exit_code == 1, result.output
-        assert "install oss-cad-suite" in result.output
+        assert "apio packages --install --force oss-cad-suite" in result.output
 
         # apio build --type lp --size 8k --pack cm225:4k
         result = clirunner.invoke(
@@ -80,7 +80,7 @@ def test_build_complete1(clirunner, configenv):
             cmd_build, ["--board", "icezum", "--size", "1k"]
         )
         assert result.exit_code != 0, result.output
-        assert "install oss-cad-suite" in result.output
+        assert "apio packages --install --force oss-cad-suite" in result.output
 
         # apio build --board icezum --fpga iCE40-HX1K-TQ144 --type hx
         result = clirunner.invoke(
@@ -95,14 +95,14 @@ def test_build_complete1(clirunner, configenv):
             ],
         )
         assert result.exit_code != 0, result.output
-        assert "install oss-cad-suite" in result.output
+        assert "apio packages --install --force oss-cad-suite" in result.output
 
         # apio build --board icezum --pack tq144
         result = clirunner.invoke(
             cmd_build, ["--board", "icezum", "--pack", "tq144"]
         )
         assert result.exit_code != 0, result.output
-        assert "install oss-cad-suite" in result.output
+        assert "apio packages --install --force oss-cad-suite" in result.output
 
         # apio build --fpga iCE40-HX1K-TQ144 --pack tq144 --size 1k
         result = clirunner.invoke(
@@ -110,14 +110,14 @@ def test_build_complete1(clirunner, configenv):
             ["--fpga", "iCE40-HX1K-TQ144", "--pack", "tq144", "--size", "1k"],
         )
         assert result.exit_code != 0, result.output
-        assert "install oss-cad-suite" in result.output
+        assert "apio packages --install --force oss-cad-suite" in result.output
 
         # apio build --fpga iCE40-HX1K-TQ144 --type hx
         result = clirunner.invoke(
             cmd_build, ["--fpga", "iCE40-HX1K-TQ144", "--type", "hx"]
         )
         assert result.exit_code != 0, result.output
-        assert "install oss-cad-suite" in result.output
+        assert "apio packages --install --force oss-cad-suite" in result.output
 
         # apio build --board icezum --size 8k
         result = clirunner.invoke(

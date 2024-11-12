@@ -13,6 +13,7 @@ from click.core import Context
 from apio.managers.scons import SCons
 from apio import cmd_util
 from apio.commands import options
+from apio.resources import Resources
 
 
 # ---------------------------
@@ -21,9 +22,9 @@ from apio.commands import options
 HELP = """
 The sim command simulates one or all the testbenches in the project
 and is useful for automatic unit testing of the code. Testbenches
-are expected to exist with the $fatal directive if any error is
-detected. The commands is typically used in the root directory
-of the project that contains the apio.ini.
+are expected have a name ending with _tb (e.g my_module_tb.v) and to exit
+with the $fatal directive if any error is detected. The commands is typically
+used in the root directory of the project that contains the apio.ini.
 
 \b
 Examples
@@ -59,7 +60,8 @@ def cli(
     """Implements the test command."""
 
     # -- Create the scons object
-    scons = SCons(project_dir)
+    resources = Resources(project_dir=project_dir, project_scope=True)
+    scons = SCons(resources)
 
     exit_code = scons.test({"testbench": testbench_file})
     ctx.exit(exit_code)

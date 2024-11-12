@@ -197,9 +197,9 @@ ftdi_id = click.option(
 )
 
 
+# -- NOTE: Not using -p to avoid conflict with --project-dir.
 platform_option = click.option(
     "platform",  # Var name.
-    "-p",
     "--platform",
     type=click.Choice(util.PLATFORMS),
     help=("(Advanced, for developers) Set the platform."),

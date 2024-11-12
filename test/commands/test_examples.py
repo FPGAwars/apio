@@ -6,7 +6,7 @@
 from apio.commands.examples import cli as cmd_examples
 
 
-def test_examples(clirunner, validate_cliresult, configenv):
+def test_examples(clirunner, configenv):
     """Test "apio examples" with different parameters"""
 
     with clirunner.isolated_filesystem():
@@ -16,19 +16,23 @@ def test_examples(clirunner, validate_cliresult, configenv):
 
         # -- Execute "apio examples"
         result = clirunner.invoke(cmd_examples)
-        validate_cliresult(result)
+        assert result.exit_code == 1, result.output
+        assert (
+            "Exactly one of of --list, --fetch-dir, --fetch-files "
+            "must be specified" in result.output
+        )
 
         # -- Execute "apio examples --list"
         result = clirunner.invoke(cmd_examples, ["--list"])
         assert result.exit_code == 1, result.output
-        assert "apio install examples" in result.output
+        assert "apio packages --install --force examples" in result.output
 
         # -- Execute "apio examples --dir dir"
-        result = clirunner.invoke(cmd_examples, ["--dir", "dir"])
+        result = clirunner.invoke(cmd_examples, ["--fetch-dir", "dir"])
         assert result.exit_code == 1, result.output
-        assert "apio install examples" in result.output
+        assert "apio packages --install --force examples" in result.output
 
         # -- Execute "apio examples --files file"
-        result = clirunner.invoke(cmd_examples, ["--files", "file"])
+        result = clirunner.invoke(cmd_examples, ["--fetch-files", "file"])
         assert result.exit_code == 1, result.output
-        assert "apio install examples" in result.output
+        assert "apio packages --install --force examples" in result.output

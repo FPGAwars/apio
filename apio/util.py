@@ -21,7 +21,6 @@ import subprocess
 from threading import Thread
 from pathlib import Path
 import click
-import semantic_version
 from serial.tools.list_ports import comports
 import requests
 
@@ -29,20 +28,6 @@ import requests
 # -- Constants
 # ----------------------------------------
 
-# -- Packages names
-# -- If you need to create new packages, you should
-# -- define first the constants here
-# --
-OSS_CAD_SUITE = "oss-cad-suite"
-GTKWAVE = "gtkwave"
-
-# -- Name of the subfolder to store de executable files
-BIN = "bin"
-
-# -- Folder names. They are built from the
-# -- packages names
-OSS_CAD_SUITE_FOLDER = f"tools-{OSS_CAD_SUITE}"
-GTKWAVE_FOLDER = f"tool-{GTKWAVE}"
 
 # -- AVAILABLE PLATFORMS
 PLATFORMS = [
@@ -181,7 +166,7 @@ def get_path_in_apio_package(subpath: str) -> Path:
     return path
 
 
-def get_systype() -> str:
+def get_system_type() -> str:
     """Return a String with the current platform:
     ex. linux_x86_64
     ex. windows_amd64"""
@@ -206,7 +191,22 @@ def get_systype() -> str:
     return platform_str
 
 
-def _get_projconf_option_dir(name: str, default=None):
+def is_linux() -> bool:
+    """Returns True iff running on linux."""
+    return "linux" in platform.system().lower()
+
+
+def is_darwin() -> bool:
+    """Returns True iff running on darwin (Mac OSX)."""
+    return "darwin" in platform.system().lower()
+
+
+def is_windows() -> bool:
+    """Returns True iff running on windows."""
+    return "windows" in platform.system().lower()
+
+
+def get_projconf_option_dir(name: str, default=None):
     """Return the project option with the given name
     These options are place either on environment variables or
     into the /etc/apio.json file in the case of debian distributions
@@ -251,7 +251,7 @@ def get_home_dir() -> Path:
 
     # -- Get the APIO_HOME_DIR env variable
     # -- It returns None if it was not defined
-    apio_home_dir_env = _get_projconf_option_dir("home_dir")
+    apio_home_dir_env = get_projconf_option_dir("home_dir")
 
     # -- Get the home dir. It is what the APIO_HOME_DIR env variable
     # -- says, or the default folder if None
@@ -271,8 +271,8 @@ def get_home_dir() -> Path:
     return home_dir
 
 
-def get_package_dir(pkg_name: str) -> Path:
-    """Return the APIO package dir of a given package
+def get_packages_dir() -> Path:
+    """Return the base directory of apio packages.
     Packages are installed in the following folder:
       * Default: $APIO_HOME_DIR/packages
       * $APIO_PKG_DIR/packages: if the APIO_PKG_DIR env variable is set
@@ -290,7 +290,7 @@ def get_package_dir(pkg_name: str) -> Path:
 
     # -- Get the APIO_PKG_DIR env variable
     # -- It returns None if it was not defined
-    apio_pkg_dir_env = _get_projconf_option_dir("pkg_dir")
+    apio_pkg_dir_env = get_projconf_option_dir("pkg_dir")
 
     # -- Get the pkg base dir. It is what the APIO_PKG_DIR env variable
     # -- says, or the default folder if None
@@ -303,22 +303,15 @@ def get_package_dir(pkg_name: str) -> Path:
 
     # -- Create the package folder
     # -- Ex '/home/obijuan/.apio/packages/tools-oss-cad-suite'
-    package_dir = pkg_home_dir / "packages" / pkg_name
+    package_dir = pkg_home_dir / "packages"
 
     # -- Return the folder if it exists
-    if package_dir.exists():
-        return package_dir
-
-    # -- No path...
-    return None
+    # if package_dir.exists():
+    return package_dir
 
 
 def call(cmd):
-    """Execute the given command from the installed apio packages"""
-
-    # -- Set the PATH environment variable for finding the
-    # -- executables on the apio package folders first
-    setup_environment()
+    """Execute the given command."""
 
     # -- Execute the command from the shell
     result = subprocess.call(cmd, shell=True)
@@ -331,290 +324,6 @@ def call(cmd):
     return result
 
 
-def setup_environment():
-    """Set the environment variables and the system PATH"""
-
-    # --- Get the table with the paths of all the apio packages
-    base_dirs = get_base_dirs()
-
-    # --- Get the table with the paths of all the executables
-    # --- of the apio packages
-    bin_dirs = get_bin_dirs(base_dirs)
-
-    # --- Set the system env. variables
-    set_env_variables(base_dirs, bin_dirs)
-
-    return bin_dirs
-
-
-def set_env_variables(base_dirs: dict, bin_dirs: dict):
-    """Set the environment variables"""
-
-    # -- Get the current system PATH
-    path = os.environ["PATH"]
-
-    # -- Add the packages to the path. The first packages added
-    # -- have the lowest priority. The latest the highest
-
-    # -- Add the gtkwave to the path if installed,
-    # -- but only for windows platforms
-    if platform.system() == "Windows":
-        # -- Gtkwave package is installed
-        if bin_dirs[GTKWAVE]:
-            path = os.pathsep.join([str(bin_dirs[GTKWAVE]), path])
-
-    # -- Add the binary folders of the installed packages
-    # -- to the path, except for the OSS_CAD_SUITE package
-    for pack in base_dirs:
-        if base_dirs[pack] and pack != OSS_CAD_SUITE:
-            path = os.pathsep.join([str(bin_dirs[pack]), path])
-
-    # -- Add the OSS_CAD_SUITE package to the path
-    # -- if installed (Maximum priority)
-    if base_dirs[OSS_CAD_SUITE]:
-        # -- Get the lib folder (where the shared libraries are located)
-        oss_cad_suite_lib = str(base_dirs[OSS_CAD_SUITE] / "lib")
-
-        # -- Add the lib folder
-        path = os.pathsep.join([oss_cad_suite_lib, path])
-        path = os.pathsep.join([str(bin_dirs[OSS_CAD_SUITE]), path])
-
-    # Add the virtual python environment to the path
-    os.environ["PATH"] = path
-
-    # Add other environment variables
-
-    os.environ["IVL"] = str(base_dirs[OSS_CAD_SUITE] / "lib" / "ivl")
-
-    os.environ["ICEBOX"] = str(base_dirs[OSS_CAD_SUITE] / "share" / "icebox")
-
-    os.environ["TRELLIS"] = str(base_dirs[OSS_CAD_SUITE] / "share" / "trellis")
-
-    os.environ["YOSYS_LIB"] = str(base_dirs[OSS_CAD_SUITE] / "share" / "yosys")
-
-
-def resolve_packages(
-    packages: list, installed_packages: list, spec_packages: dict
-) -> bool:
-    """Check the given packages
-    * make sure they all are installed
-    * make sure they versions are ok and have no conflicts...
-    * INPUTS
-      * package: List of package names to check
-      * installed_packages: Dictionry with all the apio packages installed
-      * spec_packages: Dictionary with the spec version:
-        (Ex. {'drivers': '>=1.1.0,<1.2.0'....})
-
-    * OUTPUT:
-      * True: All the packages are ok!
-      * False: There is an error...
-    """
-
-    # --- Get the table with the paths of all the apio packages
-    base_dirs = get_base_dirs()
-
-    # --- Get the table with the paths of all the executables
-    # --- of the apio packages
-    bin_dirs = get_bin_dirs(base_dirs)
-
-    # -- Check packages
-    check = True
-    for package in packages:
-        version = installed_packages.get(package, {}).get("version", "")
-
-        spec_version = spec_packages.get(package, "")
-
-        # -- Get the package binary dir as a PosixPath object
-        _bin = bin_dirs[package]
-
-        # -- Check this package
-        check &= check_package(package, version, spec_version, _bin)
-
-    # -- Load packages
-    if check:
-        # --- Set the system env. variables
-        set_env_variables(base_dirs, bin_dirs)
-
-    return check
-
-
-def get_base_dirs():
-    """Return a dictionary with the local paths of the apio packages
-    installed on the system. If the packages is not installed,
-    the path is ''
-    """
-
-    # -- Create the dictionary:
-    # --  Package Name  :  Folder (string)
-    base_dirs = {
-        OSS_CAD_SUITE: get_package_dir(OSS_CAD_SUITE_FOLDER),
-        GTKWAVE: get_package_dir(GTKWAVE_FOLDER),
-    }
-
-    return base_dirs
-
-
-def get_bin_dirs(base_dirs: dict):
-    """Return a table with the package name and the folder were
-    the executable files are stored
-    * INPUT
-      -base_dirs: A Dict with the package base_dir
-    """
-
-    if base_dirs[GTKWAVE]:
-        gtkwave_path = base_dirs[GTKWAVE] / BIN
-    else:
-        gtkwave_path = None
-
-    if base_dirs[OSS_CAD_SUITE]:
-        oss_cad_suite_path = base_dirs[OSS_CAD_SUITE] / BIN
-    else:
-        oss_cad_suite_path = None
-
-    bin_dir = {OSS_CAD_SUITE: oss_cad_suite_path, GTKWAVE: gtkwave_path}
-
-    return bin_dir
-
-
-def check_package(
-    name: str, version: str, spec_version: str, path: Path
-) -> bool:
-    """Check if the given package is ok
-       (and can be installed without problems)
-    * INPUTS:
-      - name: Package name
-      - version: Package version
-      - spec_version: semantic version constraint
-      - path: path where the binary files of the package are stored
-
-    * OUTPUT:
-      - True: Package
-    """
-
-    # Apio package 'gtkwave' only exists for Windows.
-    # Linux and MacOS user must install the native GTKWave.
-    if name == "gtkwave" and platform.system() != "Windows":
-        return True
-
-    # Check package path
-    if path and not path.is_dir():
-        show_package_path_error(name)
-        show_package_install_instructions(name)
-        return False
-
-    # Check package version
-    if not check_package_version(version, spec_version):
-        show_package_version_error(name, version, spec_version)
-        show_package_install_instructions(name)
-        return False
-
-    return True
-
-
-def check_package_version(version: str, spec_version: str) -> bool:
-    """Check if a given version satisfy the semantic version constraints
-    * INPUTS:
-      - version: Package version (Ex. '0.0.9')
-      - spec_version: semantic version constraint (Ex. '>=0.0.1')
-    * OUTPUT:
-      - True: Version ok!
-      - False: Version not ok! or incorrect version number
-    """
-
-    # -- Build a semantic version object
-    spec = semantic_version.SimpleSpec(spec_version)
-
-    # -- Check it!
-    try:
-        semver = semantic_version.Version(version)
-
-    # -- Incorrect version number
-    except ValueError:
-        return False
-
-    # -- Check the version (True if the semantic version is satisfied)
-    return semver in spec
-
-
-def show_package_version_error(
-    name: str, current_version: str, spec_version: str
-):
-    """Print error message: a package is missing or has a worng version."""
-
-    if current_version:
-        message = (
-            (
-                f"Error: package '{name}' version {current_version} does not\n"
-                f"match the requirement for version {spec_version}."
-            ),
-        )
-
-    else:
-        message = f"Error: package '{name}' is missing."
-    click.secho(message, fg="red")
-
-
-def show_package_path_error(name: str):
-    """Display an error: package Not installed
-    * INPUTs:
-      - name: Package name
-    """
-
-    message = f"Error: package '{name}' is not installed"
-    click.secho(message, fg="red")
-
-
-def show_package_install_instructions(name: str):
-    """Print the package install instructions
-    * INPUTs:
-      - name: Package name
-    """
-
-    click.secho(f"Please run:\n   apio install {name}", fg="yellow")
-
-
-def get_package_version(name: str, profile: dict) -> str:
-    """Get the version of a given package
-    * INPUTs:
-      - name: Package name
-      - profile: Dictrionary with the profile information
-    * OUTPUT:
-      - The version (Ex. '0.0.9')
-    """
-
-    # -- Default version
-    version = ""
-
-    # -- Check if the package is intalled
-    if name in profile.packages:
-        version = profile.packages[name]["version"]
-
-    # -- Return the version
-    return version
-
-
-def get_package_spec_version(name: str, resources: dict) -> str:
-    """Get the version restrictions for a given package
-    * INPUTs:
-      * name: Package name
-      * resources: Apio resources object
-    * OUTPUT: version restrictions for that package
-      Ex. '>=1.1.0,<1.2.0'
-    """
-
-    # -- No restrictions by default
-    spec_version = ""
-
-    # -- Check that the package is valid
-    if name in resources.distribution["packages"]:
-
-        # -- Get the package restrictions
-        spec_version = resources.distribution["packages"][name]
-
-    # -- Return the restriction
-    return spec_version
-
-
 @dataclass(frozen=True)
 class CommandResult:
     """Contains the results of a command (subprocess) execution."""
@@ -625,7 +334,10 @@ class CommandResult:
 
 
 def exec_command(*args, **kwargs) -> CommandResult:
-    """Execute the given command:
+    """Execute the given command.
+
+    NOTE: When running on windows, this function does not support
+    privilege elevation, to achieve that, use os.system() instead.
 
     INPUTS:
      *args: List with the command and its arguments to execute
@@ -647,7 +359,7 @@ def exec_command(*args, **kwargs) -> CommandResult:
     # -- Set the default arguments to pass to subprocess.Popen()
     # -- for executing the command
     flags = {
-        # -- Catpure the command output
+        # -- Capture the command output
         "stdout": subprocess.PIPE,
         "stderr": subprocess.PIPE,
         # -- Execute it directly, without using the shell
@@ -758,7 +470,9 @@ def print_exception_developers(e):
     click.secho(f"{e}\n", fg="yellow")
 
 
-def get_project_dir(_dir: Path, create_if_missing: bool = False) -> Path:
+def get_project_dir(
+    _dir: Optional[Path], create_if_missing: bool = False
+) -> Path:
     """Check if the given path is a folder. It it does not exists
     and create_if_missing is true, folder is created, otherwise a fatal error.
     If no path is given the current working directory is used.

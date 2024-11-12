@@ -45,8 +45,8 @@ Examples:
   apio boards -f | grep gowin  # Filter FPGA results.
 
 [Advanced] Boards with wide availability can be added by contacting the
-apio team. A custom one-of board can be added to your project by
-placing a boards.json file next to apio.ini.
+apio team. Custom one-of boards can be added to your project by
+placing an alternative boards.json file in your apio project directory.
 """
 
 
@@ -72,10 +72,11 @@ def cli(
     """
 
     # Make sure these params are exclusive.
-    cmd_util.check_exclusive_params(ctx, nameof(list_, fpgas))
+    cmd_util.check_at_most_one_param(ctx, nameof(list_, fpgas))
 
-    # -- Access to the apio resources
-    resources = Resources(project_dir=project_dir)
+    # -- Access to the apio resources. We need project scope since the project
+    # -- may override the list of boards.
+    resources = Resources(project_dir=project_dir, project_scope=True)
 
     # -- Option 1: List boards
     if list_:

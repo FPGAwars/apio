@@ -11,7 +11,7 @@ import json
 from collections import OrderedDict
 import shutil
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Dict
 import click
 from apio import util
 from apio.profile import Profile
@@ -62,41 +62,65 @@ PROGRAMMERS_JSON = "programmers.json"
 DISTRIBUTION_JSON = "distribution.json"
 
 
+# pylint: disable=too-many-instance-attributes
 class Resources:
-    """Resource manager. Class for accesing to all the resources"""
+    """Resource manager. Class for accesing to all the resources."""
 
     def __init__(
-        self, *, platform: str = "", project_dir: Optional[Path] = None
+        self,
+        *,
+        project_scope: bool,
+        platform: str = "",
+        project_dir: Optional[Path] = None,
     ):
-        project_dir = util.get_project_dir(project_dir)
+        """Initializes the Resources object. 'project dir' is an optional path
+        to the project dir, otherwise, the current directory is used.
+        'project_scope' indicates if project specfic resources such as
+        boards.json should be loaded, if available' or that the global
+        default resources should be used instead.  Some commands such as
+        'apio packages' uses the global scope while commands such as
+        'apio build' use the project scope.
+        """
+        # -- Maps the optional project_dir option to a path.
+        self.project_dir: Path = util.get_project_dir(project_dir)
 
-        self._project_dir = project_dir
+        # -- Profile information, from ~/.apio/profile.json
+        self.profile = Profile()
 
         # -- Read the apio packages information
-        self.packages = self._load_resource(PACKAGES_JSON)
+        self.all_packages = self._load_resource(PACKAGES_JSON)
+
+        # -- Expand in place the env templates in all_packages.
+        Resources._resolve_package_envs(self.all_packages)
+
+        # The subset of packages that are applicable to this platform.
+        self.platform_packages = self._select_platform_packages(
+            self.all_packages, platform
+        )
 
         # -- Read the boards information
-        self.boards = self._load_resource(BOARDS_JSON, allow_custom=True)
+        self.boards = self._load_resource(
+            BOARDS_JSON, allow_custom=project_scope
+        )
 
         # -- Read the FPGAs information
-        self.fpgas = self._load_resource(FPGAS_JSON, allow_custom=True)
+        self.fpgas = self._load_resource(
+            FPGAS_JSON, allow_custom=project_scope
+        )
 
         # -- Read the programmers information
         self.programmers = self._load_resource(
-            PROGRAMMERS_JSON, allow_custom=True
+            PROGRAMMERS_JSON, allow_custom=project_scope
         )
 
         # -- Read the distribution information
         self.distribution = self._load_resource(DISTRIBUTION_JSON)
 
-        # -- Filter packages: Store only the packages for
-        # -- the given platform
-        self._filter_packages(platform)
-
-        # ---------  Sort resources
-        self.packages = OrderedDict(
-            sorted(self.packages.items(), key=lambda t: t[0])
-        )
+        # -- Sort resources for consistency and intunitiveness.
+        # --
+        # -- We don't sort the all_packages and platform_packages dictionaries
+        # -- because that will affect the order of the env path items.
+        # -- Instead we preserve the order from the packages.json file.
 
         self.boards = OrderedDict(
             sorted(self.boards.items(), key=lambda t: t[0])
@@ -104,9 +128,6 @@ class Resources:
         self.fpgas = OrderedDict(
             sorted(self.fpgas.items(), key=lambda t: t[0])
         )
-
-        # -- Default profile file
-        self.profile = None
 
     def _load_resource(self, name: str, allow_custom: bool = False) -> dict:
         """Load the resources from a given json file
@@ -124,11 +145,11 @@ class Resources:
           In case of error it raises an exception and finish
         """
         # -- Try loading a custom resource file from the project directory.
-        filepath = self._project_dir / name
+        filepath = self.project_dir / name
 
         if filepath.exists():
             if allow_custom:
-                click.secho(f"Using project's custom '{name}' file.")
+                click.secho(f"Loading project's custom '{name}' file.")
                 return self._load_resource_file(filepath)
 
         # -- Load the stock resource file from the APIO package.
@@ -195,11 +216,74 @@ class Resources:
         # -- Return the object for the resource
         return resource
 
-    def get_package_release_name(self, package: str) -> str:
-        """return the package name"""
+    @staticmethod
+    def _expand_env_template(template: str, package_path: Path) -> str:
+        """Fills a packages env value template as they appear in packages.json.
+        Currently it recognizes only a single place holder '%p' representing
+        the package absolute path. The '%p" can appear only at the begigning
+        of the template.
+
+        E.g. '%p/bin' -> '/users/user/.apio/packages/drivers/bin'
+
+        NOTE: This format is very basic but is sufficient for the current
+        needs. If needed, extend or modify it.
+        """
+
+        # Case 1: No place holder.
+        if "%p" not in template:
+            return template
+
+        # Case 2: The template contains only the placeholder.
+        if template == "%p":
+            return str(package_path)
+
+        # Case 3: The place holder is the prefix of the template's path.
+        if template.startswith("%p/"):
+            return str(package_path / template[3:])
+
+        # Case 4: Unsupported.
+        raise RuntimeError(f"Invalid env template: [{template}]")
+
+    @staticmethod
+    def _resolve_package_envs(packages: Dict[str, Dict]) -> None:
+        """Resolve in place the path and var value templates in the
+        given packages dictionary. For example, %p is replaced with
+        the package's absolute path."""
+
+        packages_dir = util.get_packages_dir()
+        for _, package_config in packages.items():
+
+            # -- Get the package root dir.
+            package_path = (
+                packages_dir / package_config["release"]["folder_name"]
+            )
+
+            # -- Get the json 'env' section. We require it, even if empty,
+            # -- for clarity reasons.
+            assert "env" in package_config
+            package_env = package_config["env"]
+
+            # -- Expand the values in the "path" section, if any.
+            path_section = package_env.get("path", [])
+            for i, path_template in enumerate(path_section):
+                path_section[i] = Resources._expand_env_template(
+                    path_template, package_path
+                )
+
+            # -- Expand the values in the "vars" section, if any.
+            vars_section = package_env.get("vars", {})
+            for var_name, val_template in vars_section.items():
+                vars_section[var_name] = Resources._expand_env_template(
+                    val_template, package_path
+                )
+
+    def get_package_folder_name(self, package: str) -> str:
+        """return the package folder name"""
 
         try:
-            package_name = self.packages[package]["release"]["package_name"]
+            package_folder_name = self.platform_packages[package]["release"][
+                "folder_name"
+            ]
 
         # -- This error should never ocurr
         except KeyError as excp:
@@ -224,11 +308,11 @@ class Resources:
             sys.exit(1)
 
         # -- Return the name
-        return package_name
+        return package_folder_name
 
-    def get_packages(self) -> tuple[list, list]:
-        """Get all the packages, classified in installed and
-        not installed
+    def get_platform_packages_lists(self) -> tuple[list, list]:
+        """Get all the packages that are applicable to this platform,
+        grouped as installed and not installed
         * OUTPUT:
           - A tuple of two lists: Installed and not installed packages
         """
@@ -237,21 +321,22 @@ class Resources:
         installed_packages = []
         notinstalled_packages = []
 
-        # -- Go though all the apio packages
-        for package in self.packages:
+        # -- Go though all the apio packages and add them to the installed
+        # -- or uninstalled lists.
+        for package_name, package_config in self.platform_packages.items():
 
             # -- Collect information about the package
             data = {
-                "name": package,
+                "name": package_name,
                 "version": None,
-                "description": self.packages[package]["description"],
+                "description": package_config["description"],
             }
 
             # -- Check if this package is installed
-            if package in self.profile.packages:
+            if package_name in self.profile.packages:
 
                 # -- Get the installed version
-                version = self.profile.packages[package]["version"]
+                version = self.profile.packages[package_name]["version"]
 
                 # -- Store the version
                 data["version"] = version
@@ -263,15 +348,14 @@ class Resources:
             else:
                 notinstalled_packages += [data]
 
-        # -- Check the installed packages and update
-        # -- its information
-        for package in self.profile.packages:
-
-            # -- The package is not known!
-            # -- Strange case
-            if package not in self.packages:
+        # -- If there are in the profile packages that are not in the
+        # -- platform packages, add them well to the uninstalled list, as
+        # -- 'unknown'. These must be some left overs, e.g. if apio is
+        # -- upgraded.
+        for package_name in self.profile.packages:
+            if package_name not in self.platform_packages:
                 data = {
-                    "name": package,
+                    "name": package_name,
                     "version": "Unknown",
                     "description": "Unknown deprecated package",
                 }
@@ -283,10 +367,12 @@ class Resources:
     def list_packages(self, installed=True, notinstalled=True):
         """Return a list with all the installed/notinstalled packages"""
 
-        self.profile = Profile()
+        # profile = Profile()
 
         # Classify packages
-        installed_packages, notinstalled_packages = self.get_packages()
+        installed_packages, notinstalled_packages = (
+            self.get_platform_packages_lists()
+        )
 
         # -- Calculate the terminal width
         terminal_width, _ = shutil.get_terminal_size()
@@ -335,6 +421,14 @@ class Resources:
             click.echo(f"Total: {len(notinstalled_packages)}")
 
         click.echo("\n")
+
+    def get_package_dir(self, package_name: str) -> Path:
+        """Returns the root path of a package with given name."""
+
+        package_folder = self.get_package_folder_name(package_name)
+        package_dir = util.get_packages_dir() / package_folder
+
+        return package_dir
 
     # R0914: Too many local variables (17/15)
     # pylint: disable=R0914
@@ -468,17 +562,11 @@ class Resources:
             click.echo(seperator_line)
             click.echo(f"Total: {len(self.fpgas)} fpgas\n")
 
-    def _filter_packages(self, given_platform):
-        """Filter the apio packages available for the given platform.
-        Some platforms has special packages (Ex. package Drivers is
-        only for windows)
-        * INPUT:
-          * packages: All the apio packages
-          * given_platform: Platform used for filtering the packages.
-              If not given,the current system platform is used
-
-        self.packages is updated. It now contains only the packages
-          for the given platform
+    @staticmethod
+    def _select_platform_packages(all_packages, given_platform):
+        """Given a dictionary with the packages.json packages configurations,
+        returns subset dictionary with packages that are applicable to the
+        this platform.
         """
 
         # -- Final dict with the output packages
@@ -486,13 +574,13 @@ class Resources:
 
         # -- If not given platform, use the current
         if not given_platform:
-            given_platform = util.get_systype()
+            given_platform = util.get_system_type()
 
         # -- Check all the packages
-        for pkg in self.packages.keys():
+        for pkg in all_packages.keys():
 
             # -- Get the information about the package
-            release = self.packages[pkg]["release"]
+            release = all_packages[pkg]["release"]
 
             # -- This packages is available only for certain platforms
             if "available_platforms" in release:
@@ -507,13 +595,13 @@ class Resources:
                     if given_platform in platform:
 
                         # -- Add it to the output dictionary
-                        filtered_packages[pkg] = self.packages[pkg]
+                        filtered_packages[pkg] = all_packages[pkg]
 
             # -- Package for all the platforms
             else:
 
                 # -- Add it to the output dictionary
-                filtered_packages[pkg] = self.packages[pkg]
+                filtered_packages[pkg] = all_packages[pkg]
 
         # -- Update the current packages!
-        self.packages = filtered_packages
+        return filtered_packages

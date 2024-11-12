@@ -8,95 +8,109 @@
 """Implementation of 'apio graph' command"""
 
 from pathlib import Path
-import shutil
 import click
 from click.core import Context
+from varname import nameof
 from apio.managers.scons import SCons
 from apio import cmd_util
 from apio.commands import options
+from apio.resources import Resources
+
+# ---------------------------
+# -- COMMAND SPECIFIC OPTIONS
+# ---------------------------
+
+
+pdf_option = click.option(
+    "pdf",  # Var name.
+    "--pdf",
+    is_flag=True,
+    help="Generate a pdf file.",
+    cls=cmd_util.ApioOption,
+)
+
+png_option = click.option(
+    "png",  # Var name.
+    "--png",
+    is_flag=True,
+    help="Generate a png file.",
+    cls=cmd_util.ApioOption,
+)
 
 
 # ---------------------------
 # -- COMMAND
 # ---------------------------
 HELP = """
-The graph command generates a graphical representation of the
-verilog code in the project.
-The commands is typically used in the root directory
-of the project that contains the apio.ini file.
+The graph command generates a graphical representation of
+the verilog code of the project. The commands is typically
+used in the root directory of the project that contains
+the apio.ini file.
 
 \b
 Examples:
-  apio graph               # Graph the top module
-  apio graph -t my_module  # Graph the selected module
+  apio graph               # Generate a svg file.
+  apio graph --pdf         # Generate a pdf file.
+  apio graph --png         # Generate a png file.
+  apio graph -t my_module  # Graph my_module module.
 
-The graph command generates the graph in .dot format and then invokes
-the dot command from the path to convert it to a .svg format. The dot
-command is not included with the apio distribution and needed to be
-installed seperatly. See https://graphviz.org for more details.
-
-[Hint] If you need the graph in other formats, convert the .dot file
-to the desired format using the dot command.
 """
 
-DOT_HELP = """
-The 'dot' command is part of the 'graphviz' suite. Please install
-it per the instructions at https://graphviz.org/download and run
-this command again. If you think that the 'dot' command is available
-on the system path, you can try supressing this error message by
-adding the --force flag to the apio graph command.
+EPILOG = """
+[Hint] On windows, type 'explorer hardware.svg' to
+view the graph, and on Mac OS type 'open hardware.svg'.
 """
 
 
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-positional-arguments
 @click.command(
     "graph",
     short_help="Generate a visual graph of the code.",
     help=HELP,
+    epilog=EPILOG,
     cls=cmd_util.ApioCommand,
 )
 @click.pass_context
+@pdf_option
+@png_option
 @options.project_dir_option
 @options.top_module_option_gen(help="Set the name of the top module to graph.")
-@options.force_option_gen(help="Force execution despite no 'dot' command.")
 @options.verbose_option
 def cli(
     ctx: Context,
     # Options
+    pdf: bool,
+    png: bool,
     project_dir: Path,
-    force: bool,
     verbose: bool,
     top_module: str,
 ):
     """Implements the apio graph command."""
+    # -- Sanity check the options.
+    cmd_util.check_at_most_one_param(ctx, nameof(pdf, png))
 
-    # -- This program requires a user install graphviz 'dot' available on
-    # -- the path. Verify it.
-    dot_path = shutil.which("dot")
-    if not dot_path:
-        if force:
-            # -- Just print a warning and continue.
-            click.secho(
-                "Warning: Skipping the check for the 'dot' command.",
-                fg="yellow",
-            )
-        else:
-            # -- Print an error message and abort.
-            click.secho()
-            click.secho(
-                "Error: The 'dot' command was not found on the system path.",
-                fg="red",
-            )
-            click.secho(DOT_HELP, fg="yellow")
-            ctx.exit(1)
+    # -- Construct the graph spec to pass to scons.
+    # -- For now it's trivial.
+    if pdf:
+        graph_spec = "pdf"
+    elif png:
+        graph_spec = "png"
+    else:
+        graph_spec = "svg"
 
-    # -- Crete the scons object
-    scons = SCons(project_dir)
+    # -- Load apio resources.
+    resources = Resources(project_dir=project_dir, project_scope=True)
+
+    # -- Create the scons object.
+    scons = SCons(resources)
 
     # -- Graph the project with the given parameters
     exit_code = scons.graph(
         {
             "verbose": {"all": verbose, "yosys": False, "pnr": False},
             "top-module": top_module,
+            "graph_spec": graph_spec,
         }
     )
 

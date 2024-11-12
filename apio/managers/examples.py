@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from typing import Optional, Tuple, List
 import click
 from apio import util
-from apio.profile import Profile
+from apio import pkg_util
 from apio.resources import Resources
 
 # -- Error messages
@@ -22,7 +22,7 @@ Use `apio examples -l` to list all the available examples"""
 
 USAGE_EXAMPLE = """
 To fetch example files:
-   apio examples -f example-name
+   apio examples -f <example-name>
 
 Example of use:
    apio examples -f icesum/leds
@@ -43,38 +43,20 @@ class ExampleInfo:
 class Examples:
     """Manage the apio examples"""
 
-    def __init__(self):
-
-        # -- Access to the profile information
-        profile = Profile()
+    def __init__(self, resources: Resources):
 
         # -- Access to the resources
-        resources = Resources()
-
-        # -- Apio examples package name
-        self.name = "examples"
+        self.resources = resources
 
         # -- Folder where the example packages was installed
-        self.examples_dir = util.get_package_dir(self.name)
-
-        # -- Get the example package version
-        self.version = util.get_package_version(self.name, profile)
-
-        # -- Get the version restrictions
-        self.spec_version = util.get_package_spec_version(self.name, resources)
+        self.examples_dir = resources.get_package_dir("examples")
 
     def get_examples_infos(self) -> Optional[List[ExampleInfo]]:
         """Scans the examples and returns a list of ExampleInfos.
         Returns null if an error."""
 
-        # -- Check if the example package is installed
-        installed = util.check_package(
-            self.name, self.version, self.spec_version, self.examples_dir
-        )
-
-        if not installed:
-            # -- A message was already printed.
-            return None
+        # -- Check that the example package is installed
+        pkg_util.check_required_packages(["examples"], self.resources)
 
         # -- Collect the examples home dir each board.
         boards_dirs: List[PosixPath] = []
@@ -115,6 +97,9 @@ class Examples:
     def list_examples(self) -> None:
         """Print all the examples available. Return a process exit
         code, 0 if ok, non zero otherwise."""
+
+        # -- Check that the examples package is installed.
+        pkg_util.check_required_packages(["examples"], self.resources)
 
         # -- Get list of examples.
         examples: List[ExampleInfo] = self.get_examples_infos()
@@ -167,14 +152,8 @@ class Examples:
             * sayno: Automatically answer no
         """
 
-        # -- Check if the example package is installed
-        installed = util.check_package(
-            self.name, self.version, self.spec_version, self.examples_dir
-        )
-
-        # -- No package installed: return
-        if not installed:
-            return 1
+        # -- Check that the examples package is installed.
+        pkg_util.check_required_packages(["examples"], self.resources)
 
         # -- Get the working dir (current or given)
         project_dir = util.get_project_dir(project_dir, create_if_missing=True)
@@ -231,14 +210,8 @@ class Examples:
             * sayno: Automatically answer no
         """
 
-        # -- Check if the example package is installed
-        installed = util.check_package(
-            self.name, self.version, self.spec_version, self.examples_dir
-        )
-
-        # -- No package installed: return
-        if not installed:
-            return 1
+        # -- Check that the examples package is installed.
+        pkg_util.check_required_packages(["examples"], self.resources)
 
         # -- Get the working dir (current or given)
         dst_example_path = util.get_project_dir(
@@ -261,9 +234,8 @@ class Examples:
 
         return exit_code
 
-    @staticmethod
     def _copy_files(
-        example: str, src_path: Path, dest_path: Path, sayno: bool
+        self, example: str, src_path: Path, dest_path: Path, sayno: bool
     ):
         """Copy the example files to the destination folder
         * INPUTS:
@@ -329,8 +301,7 @@ class Examples:
 
         return 0
 
-    @staticmethod
-    def _copy_dir(example: str, src_path: Path, dest_path: Path):
+    def _copy_dir(self, example: str, src_path: Path, dest_path: Path):
         """Copy example of the src_path on the dest_path
         * INPUT
           * example: Name of the example (Ex. 'Alhambra-II/ledon')

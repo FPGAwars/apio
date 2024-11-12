@@ -12,6 +12,7 @@ import click
 from click.core import Context
 from apio.managers.drivers import Drivers
 from apio import cmd_util
+from apio.resources import Resources
 
 # ---------------------------
 # -- COMMAND SPECIFIC OPTIONS
@@ -91,12 +92,13 @@ def cli(
     """Implements the drivers command."""
 
     # Make sure these params are exclusive.
-    cmd_util.check_exclusive_params(
+    cmd_util.check_at_most_one_param(
         ctx, nameof(ftdi_enable, ftdi_disable, serial_enable, serial_disable)
     )
 
     # -- Access to the Drivers
-    drivers = Drivers()
+    resources = Resources(project_scope=False)
+    drivers = Drivers(resources)
 
     # -- FTDI enable option
     if ftdi_enable:

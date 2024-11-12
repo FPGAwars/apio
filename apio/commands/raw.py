@@ -9,8 +9,8 @@
 
 import click
 from click.core import Context
-from apio import util
-from apio import cmd_util
+from apio import util, pkg_util, cmd_util
+from apio.resources import Resources
 
 
 # ---------------------------
@@ -19,7 +19,9 @@ from apio import cmd_util
 HELP = """
 The raw command allows to bypass  apio and run underlying
 tools directly. This is an advanced command that requires familiarity
-with the underlying tools.
+with the underlying tools. Before running the command, apio changes the
+internal env settings to provide access to its packages. To view the
+env changes, use the --env option.
 
 \b
 Examples:
@@ -28,10 +30,22 @@ Examples:
   apio raw "yosys -p 'read_verilog leds.v; show' -q"  # Graph a module
   apio raw "verilator --lint-only  leds.v"            # Lint a module
   apio raw "icepll -i 12 -o 30"                       # ICE PLL parameters
+  apio raw --env                                      # Show env changes
+  apio raw --env "yosys --version"                    # Show also env changes
+
 
 [Note] If you find a raw command that would benefit other apio users
 consider suggesting it as an apio feature request.
 """
+
+verbose_option = click.option(
+    "env",  # Var name.
+    "-e",
+    "--env",
+    is_flag=True,
+    help="Show env changes.",
+    cls=cmd_util.ApioOption,
+)
 
 
 @click.command(
@@ -41,15 +55,35 @@ consider suggesting it as an apio feature request.
     cls=cmd_util.ApioCommand,
 )
 @click.pass_context
-@click.argument("cmd")
+@click.argument("cmd", metavar="COMMAND", required=False)
+@verbose_option
 def cli(
     ctx: Context,
     # Arguments
     cmd: str,
+    # Options
+    env: bool,
 ):
     """Implements the apio raw command which executes user
     specified commands from apio installed tools.
     """
 
-    exit_code = util.call(cmd)
-    ctx.exit(exit_code)
+    if not cmd and not env:
+        cmd_util.fatal_usage_error(ctx, "Missing an option or a command")
+
+    # -- Set the system env for the packages. This both dumps the env settings
+    # -- if --env option is specifies and prepare the env for the command
+    # -- execution below.
+    if cmd or env:
+        resources = Resources(project_scope=False)
+        pkg_util.set_env_for_packages(resources, verbose=env)
+
+    if cmd:
+        # -- Make sure that at least the oss-cad-suite is installed.
+        pkg_util.check_required_packages(["oss-cad-suite"], resources)
+
+        # -- Invoke the command.
+        exit_code = util.call(cmd)
+        ctx.exit(exit_code)
+
+    ctx.exit(0)

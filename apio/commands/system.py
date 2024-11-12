@@ -13,7 +13,7 @@ import click
 from click.core import Context
 from apio import util
 from apio import cmd_util
-from apio.util import get_systype
+from apio.util import get_system_type
 from apio.managers.system import System
 from apio.resources import Resources
 from apio.commands import options
@@ -101,10 +101,12 @@ def cli(
     system tools"""
 
     # Make sure these params are exclusive.
-    cmd_util.check_exclusive_params(ctx, nameof(lsftdi, lsusb, lsserial, info))
+    cmd_util.check_at_most_one_param(
+        ctx, nameof(lsftdi, lsusb, lsserial, info)
+    )
 
     # Load the various resource files.
-    resources = Resources(project_dir=project_dir)
+    resources = Resources(project_dir=project_dir, project_scope=False)
 
     # -- Create the system object
     system = System(resources)
@@ -128,7 +130,7 @@ def cli(
     if info:
         # -- Print platform id.
         click.secho("Platform: ", nl=False)
-        click.secho(get_systype(), fg="yellow")
+        click.secho(get_system_type(), fg="yellow")
 
         # -- Print apio package directory.
         click.secho("Package:  ", nl=False)
