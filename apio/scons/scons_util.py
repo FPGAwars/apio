@@ -516,14 +516,32 @@ def make_waves_target(
     module is to derive the name of the .gtkw which can be used to save the
     viewer configuration for future simulations. Returns the new targets.
     """
-    result = env.Alias(
-        "sim",
-        vcd_file_target,
+
+    # -- Construct the commands list.
+    commands = []
+
+    # -- On windows we need to setup the cache. This could be done once
+    # -- when the oss-cad-suite is installed but since we currently don't
+    # -- have a package setup mechanism, we do it here on each invocation.
+    # -- The time penalty is negligible.
+    # -- With the stock oss-cad-suite windows package, this is done in the
+    # -- environment.bat script.
+    if is_windows(env):
+        commands.append("gdk-pixbuf-query-loaders --update-cache")
+
+    # -- The actual wave viewer command.
+    commands.append(
         "gtkwave {0} {1} {2}.gtkw".format(
             '--rcvar "splash_disable on" --rcvar "do_initial_zoom_fit 1"',
             vcd_file_target[0],
             top_module,
-        ),
+        )
+    )
+
+    result = env.Alias(
+        "sim",
+        vcd_file_target,
+        commands,
     )
     return result
 
