@@ -1,5 +1,6 @@
 {
   "packages": {
+    "system": ">=1.1.2",
     "drivers": ">=1.1.0",
     "examples": ">=0.0.7",
     "graphviz": ">=12.1.2",
