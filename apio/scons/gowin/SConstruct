@@ -59,6 +59,8 @@ from apio.scons.scons_util import (
     get_programmer_cmd,
     make_verilog_src_scanner,
     make_verilator_config_builder,
+    make_dot_builder,
+    make_graphviz_builder,
     get_source_files,
     get_sim_config,
     get_tests_configs,
@@ -68,6 +70,7 @@ from apio.scons.scons_util import (
     get_report_action,
     set_up_cleanup,
 )
+
 
 # -- Create the environment
 env = create_construction_env(ARGUMENTS)
@@ -90,6 +93,7 @@ VERILATOR_ALL = arg_bool(env, "all", False)
 VERILATOR_NO_STYLE = arg_bool(env, "nostyle", False)
 NOWARNS = arg_str(env, "nowarn", "").split(",")
 WARNS = arg_str(env, "warn", "").split(",")
+GRAPH_SPEC = arg_str(env, "graph_spec", "")
 
 
 # -- Resources paths
@@ -260,31 +264,16 @@ env.Append(BUILDERS={"IVerilogTestbench": iverilog_tb_builder})
 # -- Apio graph.
 # -- Builder (yosys, .dot graph generator).
 # -- hardware.v -> hardware.dot.
-dot_builder = Builder(
-    action=(
-        'yosys -f verilog -p "show -format dot -colors 1 '
-        '-prefix hardware {0}" {1} $SOURCES'
-    ).format(
-        TOP_MODULE if TOP_MODULE else "unknown_top",
-        "" if VERBOSE_ALL else "-q",
-    ),
-    suffix=".dot",
-    src_suffix=".v",
-    source_scanner=verilog_src_scanner,
+dot_builder = make_dot_builder(
+    env, TOP_MODULE, verilog_src_scanner, VERBOSE_ALL
 )
 env.Append(BUILDERS={"DOT": dot_builder})
 
-
 # -- Apio graph.
-# -- Builder  (dot, svg renderer).
-# -- hardware.dot -> hardware.svg.
-svg_builder = Builder(
-    # Expecting graphviz dot to be installed and in the path.
-    action="dot -Tsvg $SOURCES -o $TARGET",
-    suffix=".svg",
-    src_suffix=".dot",
-)
-env.Append(BUILDERS={"SVG": svg_builder})
+# -- Builder  (dot, svg/pdf/png renderer).
+# -- hardware.dot -> hardware.svg/pdf/png.
+graphviz_builder = make_graphviz_builder(env, GRAPH_SPEC)
+env.Append(BUILDERS={"GRAPHVIZ": graphviz_builder})
 
 
 # -- Apio sim/test.
@@ -311,13 +300,11 @@ verify_target = env.Alias("verify", verify_out_target)
 # -- Apio graph.
 # -- Targets.
 # -- (modules).v -> hardware.dot -> hardware.svg.
-#
-# TODO: Launch a portable SVG (or differentn format) viewer.
 dot_target = env.DOT(TARGET, synth_srcs)
 AlwaysBuild(dot_target)
-svg_target = env.SVG(TARGET, dot_target)
-AlwaysBuild(svg_target)
-graph_target = env.Alias("graph", svg_target)
+graphviz_target = env.GRAPHVIZ(TARGET, dot_target)
+AlwaysBuild(graphviz_target)
+graph_target = env.Alias("graph", graphviz_target)
 
 
 # -- Apio sim.
@@ -338,7 +325,7 @@ if "test" in COMMAND_LINE_TARGETS:
     configs = get_tests_configs(env, TESTBENCH, synth_srcs, test_srcs)
     tests_targets = []
     for config in configs:
-        test_out_target = env.IVerilogTestbencg(config.top_module, config.srcs)
+        test_out_target = env.IVerilogTestbench(config.top_module, config.srcs)
         AlwaysBuild(test_out_target)
         test_vcd_target = env.VCD(test_out_target)
         AlwaysBuild(test_vcd_target)
