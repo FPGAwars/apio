@@ -71,7 +71,7 @@
             "program": "${workspaceFolder}/apio_run.py",
             "args": [
                 "drivers",
-                "--ftdi-enable"
+                "--ftdi-install"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
