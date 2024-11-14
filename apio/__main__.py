@@ -27,11 +27,9 @@ COMMAND_GROUPS = {
         "clean",
     ],
     "Verification commands": [
-        "verify",
         "lint",
         "sim",
         "test",
-        "time",
         "report",
         "graph",
     ],
@@ -40,8 +38,6 @@ COMMAND_GROUPS = {
         "modify",
         "packages",
         "drivers",
-        "install",
-        "uninstall",
     ],
     "Utility commands": [
         "boards",
@@ -49,6 +45,12 @@ COMMAND_GROUPS = {
         "raw",
         "system",
         "upgrade",
+    ],
+    "Deprecated commands": [
+        "time",
+        "verify",
+        "install",
+        "uninstall",
     ],
 }
 

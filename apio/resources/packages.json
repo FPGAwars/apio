@@ -92,5 +92,30 @@
         "%p/bin"
       ]
     }
+  },
+  "system": {
+    "repository": {
+      "name": "tools-system",
+      "organization": "FPGAwars"
+    },
+    "release": {
+      "tag_name": "v%V",
+      "compressed_name": "tools-system-%P-%V",
+      "uncompressed_name": "",
+      "folder_name": "tools-system",
+      "extension": "tar.gz",
+      "url_version": "https://github.com/FPGAwars/tools-system/raw/master/VERSION",
+      "available_platforms": [
+        "windows",
+        "windows_x86",
+        "windows_amd64"
+      ]
+    },
+    "description": "System tools",
+    "env": {
+      "path": [
+        "%p/bin"
+      ]
+    }
   }
 }

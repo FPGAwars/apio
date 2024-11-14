@@ -15,7 +15,7 @@ from apio import util
 from apio import pkg_util
 from apio.resources import Resources
 
-FTDI_ENABLE_INSTRUCTIONS_WINDOWS = """
+FTDI_INSTALL_INSTRUCTIONS_WINDOWS = """
 Please follow these steps:
 
   1. Make sure your FPGA board is connected to the computer.
@@ -45,7 +45,7 @@ Please follow these steps:
      your board is listed.
 """
 
-FTDI_DISABLE_INSTRUCTIONS_WINDOWS = """
+FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS = """
 Please follow these steps:
 
   1. Make sure your FPGA board is NOT connected to the computer.
@@ -61,7 +61,7 @@ Please follow these steps:
      section).
 
      NOTE: If your board does not show up or if it's listed as a
-     COM port, it may not have the FTDI driver enabled for it.
+     COM port, it may not have the FTDI driver installed for it.
 
   6. Right click on your board entry and select 'Uninstall device'.
 
@@ -73,7 +73,7 @@ Please follow these steps:
   9. Close the Device Manager window.
 """
 
-SERIAL_ENABLE_INSTRUCTIONS_WINDOWS = """
+SERIAL_INSTALL_INSTRUCTIONS_WINDOWS = """
 Please follow these steps:
 
   1. Make sure your FPGA board is connected to the computer.
@@ -86,7 +86,7 @@ Please follow these steps:
       'apio system --lsserial'.
 """
 
-SERIAL_DISABLE_INSTRUCTIONS_WINDOWS = """
+SERIAL_UNINSTALL_INSTRUCTIONS_WINDOWS = """
 Please follow these steps:
 
   1. Make sure your FPGA board is NOT connected to the computer.
@@ -101,7 +101,7 @@ Please follow these steps:
   5. Identify the entry of your board (typically in the Ports section).
 
      NOTE: If your board does not show up as a COM port, it may not
-     have the 'apio drivers --serial-enable' applied to it.
+     have the 'apio drivers --serial-install' applied to it.
 
   6. Right click on your board entry and select 'Uninstall device'.
 
@@ -138,68 +138,68 @@ class Drivers:
 
         self.resources = resources
 
-    def ftdi_enable(self) -> int:
-        """Enables the FTDI driver. Function is platform dependent.
+    def ftdi_install(self) -> int:
+        """Installs the FTDI driver. Function is platform dependent.
         Returns a process exit code.
         """
 
         if util.is_linux():
-            return self._ftdi_enable_linux()
+            return self._ftdi_install_linux()
 
         if util.is_darwin():
-            return self._ftdi_enable_darwin()
+            return self._ftdi_install_darwin()
 
         if util.is_windows():
-            return self._ftdi_enable_windows()
+            return self._ftdi_install_windows()
 
         click.secho(f"Error: unknown platform '{util.get_system_type()}'.")
         return 1
 
-    def ftdi_disable(self) -> int:
-        """Disables the FTDI driver. Function is platform dependent.
+    def ftdi_uninstall(self) -> int:
+        """Uninstalls the FTDI driver. Function is platform dependent.
         Returns a process exit code.
         """
         if util.is_linux():
-            return self._ftdi_disable_linux()
+            return self._ftdi_uninstall_linux()
 
         if util.is_darwin():
-            return self._ftdi_disable_darwin()
+            return self._ftdi_uninstall_darwin()
 
         if util.is_windows():
-            return self._ftdi_disable_windows()
+            return self._ftdi_uninstall_windows()
 
         click.secho(f"Error: unknown platform '{util.get_system_type()}'.")
         return 1
 
-    def serial_enable(self) -> int:
-        """Enables the serial driver. Function is platform dependent.
+    def serial_install(self) -> int:
+        """Installs the serial driver. Function is platform dependent.
         Returns a process exit code.
         """
 
         if util.is_linux():
-            return self._serial_enable_linux()
+            return self._serial_install_linux()
 
         if util.is_darwin():
-            return self._serial_enable_darwin()
+            return self._serial_install_darwin()
 
         if util.is_windows():
-            return self._serial_enable_windows()
+            return self._serial_install_windows()
 
         click.secho(f"Error: unknown platform '{util.get_system_type()}'.")
         return 1
 
-    def serial_disable(self) -> int:
-        """Disables the serial driver. Function is platform dependent.
+    def serial_uninstall(self) -> int:
+        """Uninstalls the serial driver. Function is platform dependent.
         Returns a process exit code.
         """
         if util.is_linux():
-            return self._serial_disable_linux()
+            return self._serial_uninstall_linux()
 
         if util.is_darwin():
-            return self._serial_disable_darwin()
+            return self._serial_uninstall_darwin()
 
         if util.is_windows():
-            return self._serial_disable_windows()
+            return self._serial_uninstall_windows()
 
         click.secho(f"Error: unknown platform '{util.get_system_type()}'.")
         return 1
@@ -218,8 +218,8 @@ class Drivers:
         if util.is_darwin():
             self._post_upload_darwin()
 
-    def _ftdi_enable_linux(self) -> int:
-        """Drivers enable on Linux. It copies the .rules file into
+    def _ftdi_install_linux(self) -> int:
+        """Drivers install on Linux. It copies the .rules file into
         the corresponding folder. Return process exit code."""
 
         click.secho("Configure FTDI drivers for FPGA")
@@ -241,15 +241,15 @@ class Drivers:
             # -- Execute the commands for reloading the udev system
             self._reload_rules_linux()
 
-            click.secho("FTDI drivers enabled", fg="green")
+            click.secho("FTDI drivers installed", fg="green")
             click.secho("Unplug and reconnect your board", fg="yellow")
         else:
-            click.secho("Already enabled", fg="yellow")
+            click.secho("Already installed", fg="yellow")
 
         return 0
 
-    def _ftdi_disable_linux(self):
-        """Disable the FTDI drivers on linux. Returns process exist code."""
+    def _ftdi_uninstall_linux(self):
+        """Uninstall the FTDI drivers on linux. Returns process exist code."""
 
         # -- For disabling the FTDI driver the .rules files should be
         # -- removed from the /etc/udev/rules.d/ folder
@@ -264,15 +264,15 @@ class Drivers:
             # -- # -- Execute the commands for reloading the udev system
             self._reload_rules_linux()
 
-            click.secho("FTDI drivers disabled", fg="green")
+            click.secho("FTDI drivers uninstalled", fg="green")
             click.secho("Unplug and reconnect your board", fg="yellow")
         else:
-            click.secho("Already disabled", fg="yellow")
+            click.secho("Already uninstalled", fg="yellow")
 
         return 0
 
-    def _serial_enable_linux(self):
-        """Serial drivers enable on Linux. Returns process exit code."""
+    def _serial_install_linux(self):
+        """Serial drivers install on Linux. Returns process exit code."""
 
         click.secho("Configure Serial drivers for FPGA")
 
@@ -296,20 +296,20 @@ class Drivers:
             # -- Execute the commands for reloading the udev system
             self._reload_rules_linux()
 
-            click.secho("Serial drivers enabled", fg="green")
+            click.secho("Serial drivers installed", fg="green")
             click.secho("Unplug and reconnect your board", fg="yellow")
             if group_added:
                 click.secho(
-                    "Restart your machine to enable the dialout group",
+                    "Restart your machine to install the dialout group",
                     fg="yellow",
                 )
         else:
-            click.secho("Already enabled", fg="yellow")
+            click.secho("Already installed", fg="yellow")
 
         return 0
 
-    def _serial_disable_linux(self) -> int:
-        """Disable the serial driver on Linux. Return process exit code."""
+    def _serial_uninstall_linux(self) -> int:
+        """Uninstall the serial driver on Linux. Return process exit code."""
 
         # -- For disabling the serial driver the corresponding .rules file
         # -- should be removed, it it exists
@@ -321,10 +321,10 @@ class Drivers:
 
             # -- Execute the commands for reloading the udev system
             self._reload_rules_linux()
-            click.secho("Serial drivers disabled", fg="green")
+            click.secho("Serial drivers uninstalled", fg="green")
             click.secho("Unplug and reconnect your board", fg="yellow")
         else:
-            click.secho("Already disabled", fg="yellow")
+            click.secho("Already uninstalled", fg="yellow")
 
         return 0
 
@@ -352,51 +352,51 @@ class Drivers:
             return True
         return None
 
-    def _ftdi_enable_darwin(self) -> int:
-        """Enables FTDI driver on darwin. Returns process status code."""
+    def _ftdi_install_darwin(self) -> int:
+        """Installs FTDI driver on darwin. Returns process status code."""
         # Check homebrew
         brew = subprocess.call("which brew > /dev/null", shell=True)
         if brew != 0:
             click.secho("Error: homebrew is required", fg="red")
             return 1
 
-        click.secho("Enable FTDI drivers for FPGA")
+        click.secho("Install FTDI drivers for FPGA")
         subprocess.call(["brew", "update"])
         self._brew_install_darwin("libffi")
         self._brew_install_darwin("libftdi")
         self.resources.profile.add_setting("macos_ftdi_drivers", True)
         self.resources.profile.save()
-        click.secho("FTDI drivers enabled", fg="green")
+        click.secho("FTDI drivers installed", fg="green")
         return 0
 
-    def _ftdi_disable_darwin(self):
-        """Disables FTDI driver on darwin. Returns process status code."""
-        click.secho("Disable FTDI drivers configuration")
+    def _ftdi_uninstall_darwin(self):
+        """Uninstalls FTDI driver on darwin. Returns process status code."""
+        click.secho("Uninstall FTDI drivers configuration")
         self.resources.profile.add_setting("macos_ftdi_drivers", False)
         self.resources.profile.save()
-        click.secho("FTDI drivers disabled", fg="green")
+        click.secho("FTDI drivers uninstalled", fg="green")
         return 0
 
-    def _serial_enable_darwin(self):
-        """Enables serial driver on darwin. Returns process status code."""
+    def _serial_install_darwin(self):
+        """Installs serial driver on darwin. Returns process status code."""
         # Check homebrew
         brew = subprocess.call("which brew > /dev/null", shell=True)
         if brew != 0:
             click.secho("Error: homebrew is required", fg="red")
             return 1
 
-        click.secho("Enable Serial drivers for FPGA")
+        click.secho("Install Serial drivers for FPGA")
         subprocess.call(["brew", "update"])
         self._brew_install_darwin("libffi")
         self._brew_install_darwin("libusb")
         # self._brew_install_serial_drivers_darwin()
-        click.secho("Serial drivers enabled", fg="green")
+        click.secho("Serial drivers installed", fg="green")
         return 0
 
-    def _serial_disable_darwin(self):
-        """Disables serial driver on darwin. Returns process status code."""
-        click.secho("Disable Serial drivers configuration")
-        click.secho("Serial drivers disabled", fg="green")
+    def _serial_uninstall_darwin(self):
+        """Uninstalls serial driver on darwin. Returns process status code."""
+        click.secho("Uninstall Serial drivers configuration")
+        click.secho("Serial drivers uninstalled", fg="green")
         return 0
 
     def _brew_install_darwin(self, brew_package):
@@ -440,7 +440,7 @@ class Drivers:
 
     # W0703: Catching too general exception Exception (broad-except)
     # pylint: disable=W0703
-    def _ftdi_enable_windows(self) -> int:
+    def _ftdi_install_windows(self) -> int:
         # -- Check that the required packages are installed.
         pkg_util.check_required_packages(["drivers"], self.resources)
 
@@ -463,7 +463,7 @@ class Drivers:
         click.secho(
             "\nStarting the interactive config tool zadig.exe.", fg="green"
         )
-        click.secho(FTDI_ENABLE_INSTRUCTIONS_WINDOWS, fg="yellow")
+        click.secho(FTDI_INSTALL_INSTRUCTIONS_WINDOWS, fg="yellow")
 
         # -- Execute zadig!
         # -- We execute it using os.system() rather than by
@@ -479,12 +479,12 @@ class Drivers:
 
         return exit_code
 
-    def _ftdi_disable_windows(self) -> int:
+    def _ftdi_uninstall_windows(self) -> int:
         # -- Check that the required packages exist.
         pkg_util.check_required_packages(["drivers"], self.resources)
 
         click.secho("\nStarting the interactive Device Manager.", fg="green")
-        click.secho(FTDI_DISABLE_INSTRUCTIONS_WINDOWS, fg="yellow")
+        click.secho(FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS, fg="yellow")
 
         # -- We launch the device manager using os.system() rather than with
         # -- util.exec_command() because util.exec_command() does not support
@@ -494,7 +494,7 @@ class Drivers:
 
     # W0703: Catching too general exception Exception (broad-except)
     # pylint: disable=W0703
-    def _serial_enable_windows(self) -> int:
+    def _serial_install_windows(self) -> int:
         # -- Check that the required packages exist.
         pkg_util.check_required_packages(["drivers"], self.resources)
 
@@ -502,7 +502,7 @@ class Drivers:
         drivers_bin_dir = drivers_base_dir / "bin"
 
         click.secho("\nStarting the interactive Serial Installer.", fg="green")
-        click.secho(SERIAL_ENABLE_INSTRUCTIONS_WINDOWS, fg="yellow")
+        click.secho(SERIAL_INSTALL_INSTRUCTIONS_WINDOWS, fg="yellow")
 
         # -- We launch the device manager using os.system() rather than with
         # -- util.exec_command() because util.exec_command() does not support
@@ -513,12 +513,12 @@ class Drivers:
 
         return exit_code
 
-    def _serial_disable_windows(self) -> int:
+    def _serial_uninstall_windows(self) -> int:
         # -- Check that the required packages exist.
         pkg_util.check_required_packages(["drivers"], self.resources)
 
         click.secho("\nStarting the interactive Device Manager.", fg="green")
-        click.secho(SERIAL_DISABLE_INSTRUCTIONS_WINDOWS, fg="yellow")
+        click.secho(SERIAL_UNINSTALL_INSTRUCTIONS_WINDOWS, fg="yellow")
 
         # -- We launch the device manager using os.system() rather than with
         # -- util.exec_command() because util.exec_command() does not support

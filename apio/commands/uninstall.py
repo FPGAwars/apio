@@ -50,8 +50,8 @@ def _uninstall(
 # -- COMMAND
 # ---------------------------
 HELP = """
-The uninstall command has been deprecated. Please use the 'apio packages'
-command instead.
+The command 'apio uninstall' has been deprecated. Please use the
+command 'apio packages' instead.
 """
 
 

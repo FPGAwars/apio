@@ -35,8 +35,8 @@ class System:  # pragma: no cover
             click.secho(
                 "\n"
                 "Hint:\n"
-                "  The FTDI driver may not be enabled yet.\n"
-                "  Try running the command 'apio drivers --ftdi-enable'",
+                "The FTDI driver may not be enabled yet.\n"
+                "Try running the command 'apio drivers --ftdi-install'",
                 fg="yellow",
             )
             sys.exit(1)

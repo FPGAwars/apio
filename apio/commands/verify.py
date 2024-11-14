@@ -21,23 +21,14 @@ from apio.resources import Resources
 # ---------------------------
 
 HELP = """
-The verify command performs a shallow verification of the verilog code
-it finds without requiring a top module or a constraint file.
-Is useful mainly in early stages of the project, before the
-strictier build and lint commands can be used.
-The verify commands is typically used in the root directory
-of the project that contains the apio.ini file.
-
-\b
-Examples:
-  apio verify
-
+The command 'apio verify' has been deprecated. Please use the command
+'apio lint' instead.
 """
 
 
 @click.command(
     "verify",
-    short_help="Verify the verilog code.",
+    short_help="[Depreciated] Verify the verilog code.",
     help=HELP,
     cls=cmd_util.ApioCommand,
 )

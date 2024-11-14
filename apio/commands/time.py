@@ -20,8 +20,8 @@ from apio.resources import Resources
 # -- COMMAND
 # ---------------------------
 HELP = """
-The time command has been deprecated. Please use the 'apio report' command
-instead.
+The command 'apio time' has been deprecated. Please use the command
+'apio report' instead.
 """
 
 

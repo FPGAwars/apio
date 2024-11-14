@@ -51,8 +51,8 @@ def install_packages(
 # -- COMMAND
 # ---------------------------
 HELP = """
-The install command has been deprecated. Please use the 'apio packages' command
-instead.
+The command 'apio install' has been deprecated. Please use the command
+'apio packages' command instead.
 """
 
 
