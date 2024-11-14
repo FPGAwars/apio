@@ -14,7 +14,6 @@ import click
 import requests
 
 from apio import util
-from apio.profile import Profile
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
 
@@ -57,7 +56,6 @@ class Installer:
         self.force_install = None
         self.packages_dir = None
         self.resources = resources
-        self.profile = None
         self.spec_version = None
         self.package_folder_name = None
         self.extension = None
@@ -85,9 +83,6 @@ class Installer:
         # -- Installer.package_dir: path were the packages are stored
         # -- Ex. /home/obijuan/.apio/packages
         self.packages_dir = ""
-
-        # -- Read the profile file
-        self.profile = Profile()
 
         # -- Folder name were the packages are stored
         dirname = "packages"
@@ -151,7 +146,7 @@ class Installer:
         # -- The package is kwnown but the version is not correct
         else:
             if (
-                self.package in self.profile.packages
+                self.package in self.resources.profile.packages
                 and modifiers.checkversion is False
             ):
                 self.packages_dir = util.get_home_dir() / dirname
@@ -315,10 +310,10 @@ class Installer:
             dlpath.unlink()
 
             # -- Add package to profile
-            self.profile.add_package(self.package, self.version)
+            self.resources.profile.add_package(self.package, self.version)
 
             # -- Save the profile
-            self.profile.save()
+            self.resources.profile.save()
 
             # -- Inform the user!
             click.secho(
@@ -381,8 +376,8 @@ class Installer:
             )
 
         # -- Remove the package from the profile file
-        self.profile.remove_package(self.package)
-        self.profile.save()
+        self.resources.profile.remove_package(self.package)
+        self.resources.profile.save()
 
     @staticmethod
     def _get_tarball_name(name, extension):
@@ -461,7 +456,7 @@ class Installer:
         """
 
         # -- Check the installed version of the package
-        installed_ok = self.profile.is_installed_version_ok(
+        installed_ok = self.resources.profile.is_installed_version_ok(
             self.package, self.version, self.verbose
         )
 

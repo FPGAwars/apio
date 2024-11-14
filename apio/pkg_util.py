@@ -17,7 +17,6 @@ import sys
 import click
 import semantic_version
 from apio import util
-from apio.profile import Profile
 from apio.resources import Resources
 
 
@@ -145,8 +144,7 @@ def check_required_packages(
     code.
     """
 
-    profile = Profile()
-    installed_packages = profile.packages
+    installed_packages = resources.profile.packages
     spec_packages = resources.distribution.get("packages")
 
     # -- Check packages

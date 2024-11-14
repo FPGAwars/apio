@@ -13,7 +13,6 @@ from varname import nameof
 import click
 from click.core import Context
 from apio.managers.installer import Installer
-from apio.profile import Profile
 from apio import cmd_util
 from apio.resources import Resources
 from apio.commands import options
@@ -110,7 +109,7 @@ def cli(
     # -- Uninstall all the packages
     if all_:
         # -- Get all the installed apio packages
-        packages = Profile().packages
+        packages = resources.profile.packages
         # -- Uninstall them!
         _uninstall(packages, platform, resources, sayyes, verbose)
         ctx.exit(0)

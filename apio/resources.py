@@ -367,8 +367,6 @@ class Resources:
     def list_packages(self, installed=True, notinstalled=True):
         """Return a list with all the installed/notinstalled packages"""
 
-        # profile = Profile()
-
         # Classify packages
         installed_packages, notinstalled_packages = (
             self.get_platform_packages_lists()
