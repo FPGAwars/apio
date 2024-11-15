@@ -22,7 +22,6 @@ from apio.commands import options
 # pylint: disable=R0801
 def _install(
     packages: list,
-    platform: str,
     resources: Resources,
     force: bool,
     verbose: bool,
@@ -41,7 +40,7 @@ def _install(
         modifiers = Installer.Modifiers(
             force=force, checkversion=True, verbose=verbose
         )
-        installer = Installer(package, platform, resources, modifiers)
+        installer = Installer(package, resources, modifiers)
 
         # -- Install the package!
         installer.install()
@@ -49,9 +48,7 @@ def _install(
 
 # R0801: Similar lines in 2 files
 # pylint: disable=R0801
-def _uninstall(
-    packages: list, platform: str, resources: Resources, sayyes, verbose: bool
-):
+def _uninstall(packages: list, resources: Resources, sayyes, verbose: bool):
     """Uninstall the given list of packages"""
 
     # -- Ask the user for confirmation
@@ -67,7 +64,7 @@ def _uninstall(
             modifiers = Installer.Modifiers(
                 force=False, checkversion=False, verbose=verbose
             )
-            installer = Installer(package, platform, resources, modifiers)
+            installer = Installer(package, resources, modifiers)
 
             # -- Uninstall the package!
             installer.uninstall()
@@ -166,10 +163,11 @@ def cli(
     cmd_util.check_exactly_one_param(ctx, nameof(list_, install, uninstall))
     cmd_util.check_at_most_one_param(ctx, nameof(list_, force))
     cmd_util.check_at_most_one_param(ctx, nameof(uninstall, force))
+    cmd_util.check_at_most_one_param(ctx, nameof(list_, packages))
 
     # -- Load the resources. We don't care about project specific resources.
     resources = Resources(
-        platform=platform,
+        platform_id_override=platform,
         project_dir=project_dir,
         project_scope=False,
     )
@@ -181,14 +179,14 @@ def cli(
         if not packages:
             packages = resources.platform_packages
         # -- Install the packages.
-        _install(packages, platform, resources, force, verbose)
+        _install(packages, resources, force, verbose)
         ctx.exit(0)
 
     if uninstall:
         # -- If packages not specified, use all.
         if not packages:
             packages = resources.platform_packages
-        _uninstall(packages, platform, resources, sayyes, verbose)
+        _uninstall(packages, resources, sayyes, verbose)
         ctx.exit(0)
 
     # -- Here it must be --list.

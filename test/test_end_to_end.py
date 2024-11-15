@@ -57,7 +57,7 @@ def test_end_to_end1(clirunner, validate_cliresult, configenv, offline):
             cmd_packages, ["--uninstall", "examples"], input="y"
         )
         assert "Do you want to uninstall 1 package?" in result.output
-        assert "Error: package 'examples' is not installed" in result.output
+        assert "Package 'examples' was not installed." in result.output
 
         # -- Execute "apio packages --install examples@X"
         result = clirunner.invoke(cmd_packages, ["--install", "examples@X"])
@@ -86,10 +86,19 @@ def test_end_to_end1(clirunner, validate_cliresult, configenv, offline):
         assert "Already installed. Version " in result.output
 
         # -- Execute
-        # -- "apio packages --install examples --platform windows --force"
+        # -- "apio packages
+        # --    --install examples
+        # --    --platform windows_amd64
+        # --    --force"
         result = clirunner.invoke(
             cmd_packages,
-            ["--install", "examples", "--platform", "windows", "--force"],
+            [
+                "--install",
+                "examples",
+                "--platform",
+                "windows_amd64",
+                "--force",
+            ],
         )
         validate_cliresult(result)
         assert "Installing examples package" in result.output
@@ -245,4 +254,4 @@ def test_end_to_end3(clirunner, validate_cliresult, configenv, offline):
         validate_cliresult(result)
         assert "Uninstalling examples package" in result.output
         assert "Do you want to uninstall 1 package?" in result.output
-        assert "has been successfully uninstalled!" in result.output
+        assert "has been successfully uninstalled" in result.output

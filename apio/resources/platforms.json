@@ -1,0 +1,22 @@
+{
+  "darwin": {
+    "description": "Mac OSX, x86 64 bit",
+    "package_selector": "darwin"
+  },
+  "darwin_arm64": {
+    "description": "Mac OSX, ARM 64 bit",
+    "package_selector": "darwin_arm64"
+  },
+  "linux_aarch64": {
+    "description": "Linux ARM 64 bit",
+    "package_selector": "linux_aarch64"
+  },
+  "linux_x86_64": {
+    "description": "Linux X86 64 bit",
+    "package_selector": "linux_x86_64"
+  },
+  "windows_amd64": {
+    "description": "Windows x86 64 bit",
+    "package_selector": "windows_amd64"
+  }
+}

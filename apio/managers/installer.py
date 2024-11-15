@@ -37,7 +37,6 @@ class Installer:
     def __init__(
         self,
         package: str,
-        platform: str = "",
         resources=None,
         modifiers=Modifiers(force=False, checkversion=True, verbose=False),
     ):
@@ -59,7 +58,7 @@ class Installer:
         self.spec_version = None
         self.package_folder_name = None
         self.extension = None
-        self.download_urls = None
+        self.download_url = None
         self.compressed_name = None
 
         # Parse version. The following attributes are used:
@@ -93,8 +92,8 @@ class Installer:
             # -- Store the package dir
             self.packages_dir = util.get_home_dir() / dirname
 
-            # Get the data of the given package
-            data = self.resources.platform_packages[self.package]
+            # Get the metadata of the given package
+            package_info = self.resources.platform_packages[self.package]
 
             # Get the information about the valid versions
             distribution = self.resources.distribution
@@ -102,21 +101,18 @@ class Installer:
             # Get the spectec package version
             self.spec_version = distribution["packages"][self.package]
 
-            # Get the package folder name (from resources/package.json file)
-            self.package_folder_name = data["release"]["folder_name"]
+            # Get the package folder name under the packages root dir.
+            self.package_folder_name = package_info["release"]["folder_name"]
 
             # Get the extension given to the toolchain. Tipically tar.gz
-            self.extension = data["release"]["extension"]
-
-            # Get the current platform (if not forced by the user)
-            platform = platform or util.get_system_type()
+            self.extension = package_info["release"]["extension"]
 
             # Check if the version is ok (It is only done if the
             # checkversion flag has been activated)
             if modifiers.checkversion:
                 # Check version. The filename is read from the repostiroy.
                 # -- Get the url of the version file
-                url_version = data["release"]["url_version"]
+                url_version = package_info["release"]["url_version"]
 
                 # -- Get the latest version
                 # -- It will exit in case of error
@@ -130,19 +126,11 @@ class Installer:
 
                 # Get the plaform_os name
                 # e.g., [linux_x86_64, linux]
-                platform_os = platform.split("_")[0]
+                # platform_os = platform.split("_")[0]
 
                 # Build the URLs for downloading the package
-                self.download_urls = [
-                    {
-                        "url": self.get_download_url(data, platform),
-                        "platform": platform,
-                    },
-                    {
-                        "url": self.get_download_url(data, platform_os),
-                        "platform": platform_os,
-                    },
-                ]
+                self.download_url = self._get_download_url(package_info)
+
         # -- The package is kwnown but the version is not correct
         else:
             if (
@@ -159,7 +147,7 @@ class Installer:
             click.secho(f"Error: no such package '{self.package}'", fg="red")
             sys.exit(1)
 
-    def get_download_url(self, package: dict, platform: str) -> str:
+    def _get_download_url(self, package_info: dict) -> str:
         """Get the download URL for the given package
         * INPUTS:
           - package: Object with the package information:
@@ -185,24 +173,30 @@ class Installer:
         # --  %V : Version
         # --  %P : Platfom
         # -- Ex: 'apio-examples-%V'
-        compressed_name = package["release"]["compressed_name"]
+        compressed_name = package_info["release"]["compressed_name"]
 
         # -- Replace the '%V' parameter with the package version
         compressed_name_version = compressed_name.replace("%V", self.version)
 
-        # -- Replace the '%P' parameter with the platform
-        self.compressed_name = compressed_name_version.replace("%P", platform)
+        # -- Map Replace the '%P' parameter with the package selector of this
+        # -- platform (the package selectors are specified in platforms.json).
+        package_selector = self.resources.platforms[
+            self.resources.platform_id
+        ]["package_selector"]
+        self.compressed_name = compressed_name_version.replace(
+            "%P", package_selector
+        )
 
         # -- Get the uncompressed name. It is also a template with the
         # -- same parameters: %V and %P
-        uncompressed_name = package["release"]["uncompressed_name"]
+        uncompressed_name = package_info["release"]["uncompressed_name"]
 
         # -- Replace the '%V' parameter
         uncompress_name_version = uncompressed_name.replace("%V", self.version)
 
         # -- Replace the '%P' parameter
         self.uncompressed_name = uncompress_name_version.replace(
-            "%P", platform
+            "%P", self.resources.platform_id
         )
 
         # -- Build the package tarball filename
@@ -210,9 +204,9 @@ class Installer:
         tarball = f"{self.compressed_name}.{self.extension}"
 
         # -- Build the Download URL!
-        name = package["repository"]["name"]
-        organization = package["repository"]["organization"]
-        tag = package["release"]["tag_name"].replace("%V", self.version)
+        name = package_info["repository"]["name"]
+        organization = package_info["repository"]["organization"]
+        tag = package_info["release"]["tag_name"].replace("%V", self.version)
 
         download_url = (
             f"https://github.com/{organization}/{name}/releases/"
@@ -236,13 +230,8 @@ class Installer:
         dlpath = None
 
         try:
-            # Try full platform
-            # --  Ex. 'https://github.com/FPGAwars/apio-examples/releases/
-            # --       download/0.0.35/apio-examples-0.0.35.zip'
-            platform_download_url = self.download_urls[0]["url"]
-
-            # -- First step: Download the file
-            dlpath = self._download(platform_download_url)
+            # -- Try downloading the file
+            dlpath = self._download(self.download_url)
 
         # -- There is no write access to the package folder
         except IOError as exc:
@@ -365,14 +354,14 @@ class Installer:
 
             # -- Inform the user
             click.secho(
-                f"""Package \'{self.package}\' has been """
-                """successfully uninstalled!""",
+                f"Package '{self.package}' has been "
+                "successfully uninstalled.",
                 fg="green",
             )
         else:
-            # -- Package not installed!
+            # -- Package not installed. We treat it as a success.
             click.secho(
-                f"Error: package '{self.package}' is not installed", fg="red"
+                f"Package '{self.package}' was not installed.", fg="green"
             )
 
         # -- Remove the package from the profile file

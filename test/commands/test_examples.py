@@ -18,7 +18,7 @@ def test_examples(clirunner, configenv):
         result = clirunner.invoke(cmd_examples)
         assert result.exit_code == 1, result.output
         assert (
-            "Exactly one of of --list, --fetch-dir, --fetch-files "
+            "One of [--list, --fetch-dir, --fetch-files] "
             "must be specified" in result.output
         )
 

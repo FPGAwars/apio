@@ -21,7 +21,6 @@ import os
 import re
 from enum import Enum
 import json
-import platform
 from typing import Dict, Tuple, List, Optional
 from dataclasses import dataclass
 import click
@@ -92,8 +91,11 @@ def is_testbench(env: SConsEnvironment, file_name: str) -> bool:
 
 
 def is_windows(env: SConsEnvironment) -> bool:
-    """Returns True if running on Windows."""
-    return "windows" in platform.system().lower()
+    """Returns True if running the platform id represents windows."""
+    # -- This bool bar is created when constructing the env.
+    val = env["IS_WINDOWS"]
+    assert isinstance(val, bool), type(val)
+    return val
 
 
 def create_construction_env(args: Dict[str, str]) -> SConsEnvironment:
@@ -113,6 +115,14 @@ def create_construction_env(args: Dict[str, str]) -> SConsEnvironment:
     env.Replace(FORCE_COLORS=flag)  # Tentative.
     if not flag:
         warning(env, "Not forcing scons text colors.")
+
+    # Set the IS_WINDOWS flag based on the required "platform_id" arg.
+    platform_id = arg_str(env, "platform_id", False)
+    # Note: this is a programming error, not a user error.
+    assert platform_id, "Missing required scons arg 'platform_id'."
+    flag = "windows" in platform_id.lower()
+    assert env.get("IS_WINDOWS") is None
+    env.Replace(IS_WINDOWS=flag)  # Tentative.
 
     # For debugging.
     # dump_env_vars(env)

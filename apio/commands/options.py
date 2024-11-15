@@ -9,7 +9,6 @@
 
 from pathlib import Path
 import click
-from apio import util
 from apio import cmd_util
 
 
@@ -201,8 +200,8 @@ ftdi_id = click.option(
 platform_option = click.option(
     "platform",  # Var name.
     "--platform",
-    type=click.Choice(util.PLATFORMS),
-    help=("(Advanced, for developers) Set the platform."),
+    type=str,
+    help=("(Advanced, for developers) Platform id override."),
     cls=cmd_util.ApioOption,
 )
 

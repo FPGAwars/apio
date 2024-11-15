@@ -18,7 +18,7 @@ def test_packages(clirunner, configenv, validate_cliresult):
         result = clirunner.invoke(cmd_packages)
         assert result.exit_code == 1, result.output
         assert (
-            "Exactly one of of --list, --install, --uninstall "
+            "One of [--list, --install, --uninstall] "
             "must be specified" in result.output
         )
 

@@ -56,8 +56,6 @@
       "extension": "tar.gz",
       "url_version": "https://github.com/FPGAwars/tools-graphviz/raw/main/VERSION",
       "available_platforms": [
-        "windows",
-        "windows_x86",
         "windows_amd64"
       ]
     },
@@ -81,8 +79,6 @@
       "extension": "tar.gz",
       "url_version": "https://github.com/FPGAwars/tools-drivers/raw/master/VERSION",
       "available_platforms": [
-        "windows",
-        "windows_x86",
         "windows_amd64"
       ]
     },
@@ -106,8 +102,6 @@
       "extension": "tar.gz",
       "url_version": "https://github.com/FPGAwars/tools-system/raw/master/VERSION",
       "available_platforms": [
-        "windows",
-        "windows_x86",
         "windows_amd64"
       ]
     },

@@ -143,32 +143,34 @@ class Drivers:
         Returns a process exit code.
         """
 
-        if util.is_linux():
+        if self.resources.is_linux():
             return self._ftdi_install_linux()
 
-        if util.is_darwin():
+        if self.resources.is_darwin():
             return self._ftdi_install_darwin()
 
-        if util.is_windows():
+        if self.resources.is_windows():
             return self._ftdi_install_windows()
 
-        click.secho(f"Error: unknown platform '{util.get_system_type()}'.")
+        click.secho(
+            f"Error: unknown platform type '{self.resources.platform_id}'."
+        )
         return 1
 
     def ftdi_uninstall(self) -> int:
         """Uninstalls the FTDI driver. Function is platform dependent.
         Returns a process exit code.
         """
-        if util.is_linux():
+        if self.resources.is_linux():
             return self._ftdi_uninstall_linux()
 
-        if util.is_darwin():
+        if self.resources.is_darwin():
             return self._ftdi_uninstall_darwin()
 
-        if util.is_windows():
+        if self.resources.is_windows():
             return self._ftdi_uninstall_windows()
 
-        click.secho(f"Error: unknown platform '{util.get_system_type()}'.")
+        click.secho(f"Error: unknown platform '{self.resources.platform_id}'.")
         return 1
 
     def serial_install(self) -> int:
@@ -176,46 +178,46 @@ class Drivers:
         Returns a process exit code.
         """
 
-        if util.is_linux():
+        if self.resources.is_linux():
             return self._serial_install_linux()
 
-        if util.is_darwin():
+        if self.resources.is_darwin():
             return self._serial_install_darwin()
 
-        if util.is_windows():
+        if self.resources.is_windows():
             return self._serial_install_windows()
 
-        click.secho(f"Error: unknown platform '{util.get_system_type()}'.")
+        click.secho(f"Error: unknown platform '{self.resources.platform_id}'.")
         return 1
 
     def serial_uninstall(self) -> int:
         """Uninstalls the serial driver. Function is platform dependent.
         Returns a process exit code.
         """
-        if util.is_linux():
+        if self.resources.is_linux():
             return self._serial_uninstall_linux()
 
-        if util.is_darwin():
+        if self.resources.is_darwin():
             return self._serial_uninstall_darwin()
 
-        if util.is_windows():
+        if self.resources.is_windows():
             return self._serial_uninstall_windows()
 
-        click.secho(f"Error: unknown platform '{util.get_system_type()}'.")
+        click.secho(f"Error: unknown platform '{self.resources.platform_id}'.")
         return 1
 
     def pre_upload(self):
         """Operations to do before uploading a design
         Only for mac platforms"""
 
-        if util.is_darwin():
+        if self.resources.is_darwin():
             self._pre_upload_darwin()
 
     def post_upload(self):
         """Operations to do after uploading a design
         Only for mac platforms"""
 
-        if util.is_darwin():
+        if self.resources.is_darwin():
             self._post_upload_darwin()
 
     def _ftdi_install_linux(self) -> int:

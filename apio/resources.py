@@ -8,6 +8,7 @@
 
 import sys
 import json
+import platform
 from collections import OrderedDict
 import shutil
 from pathlib import Path
@@ -16,6 +17,10 @@ import click
 from apio import util
 from apio.profile import Profile
 
+
+# pylint: disable=fixme
+# TODO: Rename this file and class to repreent its more general role and the
+# main apio data holder. For example ApioContext or ApioEnv.
 
 # -- Info message
 BOARDS_MSG = (
@@ -26,12 +31,19 @@ BOARDS_MSG = (
 
 # ---------- RESOURCES
 RESOURCES_DIR = "resources"
+
+# ---------------------------------------
+# ---- File: resources/platforms.json
+# --------------------------------------
+# -- This file contains  the information regarding the supported platforms
+# -- and their attributes.
+PLATFORMS_JSON = "platforms.json"
+
 # ---------------------------------------
 # ---- File: resources/packages.json
 # --------------------------------------
 # -- This file contains all the information regarding the available apio
 # -- packages: Repository, version, name...
-# -- This information is access through the Resources.packages method
 PACKAGES_JSON = "packages.json"
 
 # -----------------------------------------
@@ -70,7 +82,7 @@ class Resources:
         self,
         *,
         project_scope: bool,
-        platform: str = "",
+        platform_id_override: str = "",
         project_dir: Optional[Path] = None,
     ):
         """Initializes the Resources object. 'project dir' is an optional path
@@ -87,6 +99,14 @@ class Resources:
         # -- Profile information, from ~/.apio/profile.json
         self.profile = Profile()
 
+        # -- Read the platforms information.
+        self.platforms = self._load_resource(PLATFORMS_JSON)
+
+        # -- Determine the platform_id for this APIO session.
+        self.platform_id = self._determine_platform_id(
+            platform_id_override, self.platforms
+        )
+
         # -- Read the apio packages information
         self.all_packages = self._load_resource(PACKAGES_JSON)
 
@@ -94,8 +114,8 @@ class Resources:
         Resources._resolve_package_envs(self.all_packages)
 
         # The subset of packages that are applicable to this platform.
-        self.platform_packages = self._select_platform_packages(
-            self.all_packages, platform
+        self.platform_packages = self._select_packages_for_platform(
+            self.all_packages, self.platform_id, self.platforms
         )
 
         # -- Read the boards information
@@ -561,7 +581,38 @@ class Resources:
             click.echo(f"Total: {len(self.fpgas)} fpgas\n")
 
     @staticmethod
-    def _select_platform_packages(all_packages, given_platform):
+    def _determine_platform_id(
+        platform_id_override: str, platforms: Dict[str, Dict]
+    ) -> str:
+        """Determines and returns the platform io based on system info and
+        optional override."""
+        # -- Use override and get from the underlying system.
+        if platform_id_override:
+            platform_id = platform_id_override
+        else:
+            platform_id = Resources._get_system_platform_id()
+
+        # -- Verify it's valid. This can be a user error if the override
+        # -- is invalid.
+        if platform_id not in platforms.keys():
+            click.secho(f"Error: unknown platform id: [{platform_id}]")
+            click.secho(
+                "\n"
+                "[Hint]: For the list of supported platforms\n"
+                "type 'apio system --platforms'.",
+                fg="yellow",
+            )
+            sys.exit(1)
+
+        # -- All done ok.
+        return platform_id
+
+    @staticmethod
+    def _select_packages_for_platform(
+        all_packages: Dict[str, Dict],
+        platform_id: str,
+        platforms: Dict[str, Dict],
+    ):
         """Given a dictionary with the packages.json packages configurations,
         returns subset dictionary with packages that are applicable to the
         this platform.
@@ -570,27 +621,30 @@ class Resources:
         # -- Final dict with the output packages
         filtered_packages = {}
 
-        # -- If not given platform, use the current
-        if not given_platform:
-            given_platform = util.get_system_type()
-
         # -- Check all the packages
         for pkg in all_packages.keys():
 
             # -- Get the information about the package
             release = all_packages[pkg]["release"]
 
-            # -- This packages is available only for certain platforms
+            # -- This packages is available only for certain platforms.
             if "available_platforms" in release:
 
                 # -- Get the available platforms
-                platforms = release["available_platforms"]
+                available_platforms = release["available_platforms"]
 
                 # -- Check all the available platforms
-                for platform in platforms:
+                for avalilable_platform in available_platforms:
+
+                    # -- Sanity check. If this fails, it's a programming error
+                    # -- rather than a user error.
+                    assert avalilable_platform in platforms, (
+                        f"Unknown available platform: '{avalilable_platform}' "
+                        "in package '{pkg}'"
+                    )
 
                     # -- Match!
-                    if given_platform in platform:
+                    if platform_id == available_platforms:
 
                         # -- Add it to the output dictionary
                         filtered_packages[pkg] = all_packages[pkg]
@@ -603,3 +657,40 @@ class Resources:
 
         # -- Update the current packages!
         return filtered_packages
+
+    @staticmethod
+    def _get_system_platform_id() -> str:
+        """Return a String with the current platform:
+        ex. linux_x86_64
+        ex. windows_amd64"""
+
+        # -- Get the platform: linux, windows, darwin
+        type_ = platform.system().lower()
+        platform_str = f"{type_}"
+
+        # -- Get the architecture
+        arch = platform.machine().lower()
+
+        # -- Special case for windows
+        if type_ == "windows":
+            # -- Assume all the windows to be 64-bits
+            arch = "amd64"
+
+        # -- Add the architecture, if it exists
+        if arch:
+            platform_str += f"_{arch}"
+
+        # -- Return the full platform
+        return platform_str
+
+    def is_linux(self) -> bool:
+        """Returns True iff platform_id indicates linux."""
+        return "linux" in self.platform_id
+
+    def is_darwin(self) -> bool:
+        """Returns True iff platform_id indicates Mac OSX."""
+        return "darwin" in self.platform_id
+
+    def is_windows(self) -> bool:
+        """Returns True iff platform_id indicates windows."""
+        return "windows" in self.platform_id

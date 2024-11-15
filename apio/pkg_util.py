@@ -16,7 +16,6 @@ import os
 import sys
 import click
 import semantic_version
-from apio import util
 from apio.resources import Resources
 
 
@@ -65,13 +64,13 @@ def _get_env_mutations_for_packages(resources: Resources) -> EnvMutations:
     return result
 
 
-def _dump_env_mutations(mutations: EnvMutations) -> None:
+def _dump_env_mutations(mutations: EnvMutations, resources: Resources) -> None:
     """For debugging. Delete once stabalizing the new oss-cad-suite on
     windows."""
     click.secho("Envirnment settings:", fg="magenta")
 
     # -- Print PATH mutations.
-    windows = util.is_windows()
+    windows = resources.is_windows()
     for p in reversed(mutations.paths):
         styled_name = click.style("PATH", fg="magenta")
         if windows:
@@ -122,7 +121,7 @@ def set_env_for_packages(resources: Resources, verbose: bool = False) -> None:
     mutations = _get_env_mutations_for_packages(resources)
 
     if verbose:
-        _dump_env_mutations(mutations)
+        _dump_env_mutations(mutations, resources)
 
     # -- If this is the first call, apply the mutations. These mutations are
     # -- temporary for the lifetime of this process and does not affect the

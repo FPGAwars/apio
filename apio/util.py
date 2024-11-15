@@ -12,7 +12,6 @@
 import sys
 import os
 import json
-import platform
 import shutil
 from enum import Enum
 from dataclasses import dataclass
@@ -27,21 +26,6 @@ import requests
 # ----------------------------------------
 # -- Constants
 # ----------------------------------------
-
-
-# -- AVAILABLE PLATFORMS
-PLATFORMS = [
-    "linux",
-    "linux_x86_64",
-    "linux_i686",
-    "linux_armv7l",
-    "linux_aarch64",
-    "windows",
-    "windows_x86",
-    "windows_amd64",
-    "darwin",
-    "darwin_arm64",
-]
 
 
 class ApioException(Exception):
@@ -164,46 +148,6 @@ def get_path_in_apio_package(subpath: str) -> Path:
 
     # -- Return the path
     return path
-
-
-def get_system_type() -> str:
-    """Return a String with the current platform:
-    ex. linux_x86_64
-    ex. windows_amd64"""
-
-    # -- Get the platform: linux, windows, darwin
-    type_ = platform.system().lower()
-    platform_str = f"{type_}"
-
-    # -- Get the architecture
-    arch = platform.machine().lower()
-
-    # -- Special case for windows
-    if type_ == "windows":
-        # -- Assume all the windows to be 64-bits
-        arch = "amd64"
-
-    # -- Add the architecture, if it exists
-    if arch:
-        platform_str += f"_{arch}"
-
-    # -- Return the full platform
-    return platform_str
-
-
-def is_linux() -> bool:
-    """Returns True iff running on linux."""
-    return "linux" in platform.system().lower()
-
-
-def is_darwin() -> bool:
-    """Returns True iff running on darwin (Mac OSX)."""
-    return "darwin" in platform.system().lower()
-
-
-def is_windows() -> bool:
-    """Returns True iff running on windows."""
-    return "windows" in platform.system().lower()
 
 
 def get_projconf_option_dir(name: str, default=None):

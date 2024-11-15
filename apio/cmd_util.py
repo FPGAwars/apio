@@ -32,7 +32,7 @@ def fatal_usage_error(ctx: click.Context, msg: str) -> None:
         f"Try '{ctx.command_path} {ctx.help_option_names[0]}' for help."
     )
     click.secho()
-    click.secho(f"Error: {msg}")
+    click.secho(f"Error: {msg}", fg="red")
     ctx.exit(1)
 
 
@@ -132,7 +132,7 @@ def check_at_most_one_param(ctx: click.Context, param_ids: List[str]) -> None:
     if len(specified_param_ids) >= 2:
         canonical_aliases = _params_ids_to_aliases(ctx, specified_param_ids)
         aliases_str = ", ".join(canonical_aliases)
-        fatal_usage_error(ctx, f"{aliases_str} are mutually exclusive.")
+        fatal_usage_error(ctx, f"[{aliases_str}] are mutually exclusive.")
 
 
 def check_exactly_one_param(ctx: click.Context, param_ids: List[str]) -> None:
@@ -151,9 +151,7 @@ def check_exactly_one_param(ctx: click.Context, param_ids: List[str]) -> None:
     if len(specified_param_ids) != 1:
         canonical_aliases = _params_ids_to_aliases(ctx, param_ids)
         aliases_str = ", ".join(canonical_aliases)
-        fatal_usage_error(
-            ctx, f"Exactly one of of {aliases_str} must be specified."
-        )
+        fatal_usage_error(ctx, f"One of [{aliases_str}] must be specified.")
 
 
 def check_at_least_one_param(ctx: click.Context, param_ids: List[str]) -> None:
@@ -173,7 +171,7 @@ def check_at_least_one_param(ctx: click.Context, param_ids: List[str]) -> None:
         canonical_aliases = _params_ids_to_aliases(ctx, param_ids)
         aliases_str = ", ".join(canonical_aliases)
         fatal_usage_error(
-            ctx, f"At list one of {aliases_str} must be specified."
+            ctx, f"At list one of [{aliases_str}] must be specified."
         )
 
 
