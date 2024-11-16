@@ -622,10 +622,10 @@ class Resources:
         filtered_packages = {}
 
         # -- Check all the packages
-        for pkg in all_packages.keys():
+        for package_name in all_packages.keys():
 
             # -- Get the information about the package
-            release = all_packages[pkg]["release"]
+            release = all_packages[package_name]["release"]
 
             # -- This packages is available only for certain platforms.
             if "available_platforms" in release:
@@ -634,26 +634,26 @@ class Resources:
                 available_platforms = release["available_platforms"]
 
                 # -- Check all the available platforms
-                for avalilable_platform in available_platforms:
+                for available_platform in available_platforms:
 
                     # -- Sanity check. If this fails, it's a programming error
                     # -- rather than a user error.
-                    assert avalilable_platform in platforms, (
-                        f"Unknown available platform: '{avalilable_platform}' "
+                    assert available_platform in platforms, (
+                        f"Unknown available platform: '{available_platform}' "
                         "in package '{pkg}'"
                     )
 
                     # -- Match!
-                    if platform_id == available_platforms:
+                    if platform_id == available_platform:
 
                         # -- Add it to the output dictionary
-                        filtered_packages[pkg] = all_packages[pkg]
+                        filtered_packages[package_name] = all_packages[package_name]
 
             # -- Package for all the platforms
             else:
 
                 # -- Add it to the output dictionary
-                filtered_packages[pkg] = all_packages[pkg]
+                filtered_packages[package_name] = all_packages[package_name]
 
         # -- Update the current packages!
         return filtered_packages
