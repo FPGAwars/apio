@@ -297,13 +297,13 @@ class Resources:
                     val_template, package_path
                 )
 
-    def get_package_folder_name(self, package: str) -> str:
-        """return the package folder name"""
+    def get_package_folder_name(self, package_name: str) -> str:
+        """Returns name of the package folder, within the packages dir."""
 
         try:
-            package_folder_name = self.platform_packages[package]["release"][
-                "folder_name"
-            ]
+            package_folder_name = self.platform_packages[package_name][
+                "release"
+            ]["folder_name"]
 
         # -- This error should never ocurr
         except KeyError as excp:
@@ -404,7 +404,7 @@ class Resources:
 
             # ------- Print installed packages table
             # -- Print the header
-            click.echo()
+            click.secho()
             click.secho(dline, fg="green")
             click.secho("Installed packages:", fg="green")
 
@@ -418,27 +418,27 @@ class Resources:
                 click.secho(f"  {description}")
 
             click.secho(dline, fg="green")
-            click.echo(f"Total: {len(installed_packages)}")
+            click.secho(f"Total: {len(installed_packages)}")
 
         if notinstalled and notinstalled_packages:
 
             # ------ Print not installed packages table
             # -- Print the header
-            click.echo()
+            click.secho()
             click.secho(dline, fg="yellow")
             click.secho("Available packages (Not installed):", fg="yellow")
 
             for package in notinstalled_packages:
 
-                click.echo(line)
+                click.secho(line)
                 name = click.style(f"• {package['name']}", fg="red")
                 description = package["description"]
-                click.echo(f"{name}  {description}")
+                click.secho(f"{name}  {description}")
 
             click.secho(dline, fg="yellow")
-            click.echo(f"Total: {len(notinstalled_packages)}")
+            click.secho(f"Total: {len(notinstalled_packages)}")
 
-        click.echo("\n")
+        click.secho("\n")
 
     def get_package_dir(self, package_name: str) -> Path:
         """Returns the root path of a package with given name."""
@@ -471,9 +471,9 @@ class Resources:
             )
             # -- Horizontal line across the terminal.
             seperator_line = "─" * config.terminal_width
-            click.echo(seperator_line)
-            click.echo(title)
-            click.echo(seperator_line)
+            click.secho(seperator_line)
+            click.secho(title)
+            click.secho(seperator_line)
 
         # -- Sort boards names by case insentive alphabetical order.
         board_names = list(self.boards.keys())
@@ -512,22 +512,22 @@ class Resources:
 
                 # -- If there is enough space, print in one line
                 if len(one_line_item) <= config.terminal_width:
-                    click.echo(one_line_item)
+                    click.secho(one_line_item)
 
                 # -- Not enough space: Print it in two separate lines
                 else:
                     two_lines_item = f"{item_board}\n      {item_fpga}"
-                    click.echo(two_lines_item)
+                    click.secho(two_lines_item)
 
             else:
                 # -- Generate the report for a pipe. Single line, no color, no
                 # -- bullet points.
-                click.echo(f"{board:<{max_board_name_len}} |  {item_fpga}")
+                click.secho(f"{board:<{max_board_name_len}} |  {item_fpga}")
 
         if config.terminal_mode():
             # -- Print the Footer
-            click.echo(seperator_line)
-            click.echo(f"Total: {len(self.boards)} boards")
+            click.secho(seperator_line)
+            click.secho(f"Total: {len(self.boards)} boards")
 
             # -- Help message
             click.secho(BOARDS_MSG, fg="green")
@@ -551,9 +551,9 @@ class Resources:
             )
 
             # -- Print the table header
-            click.echo(seperator_line)
-            click.echo(title)
-            click.echo(seperator_line)
+            click.secho(seperator_line)
+            click.secho(title)
+            click.secho(seperator_line)
 
         # -- Print all the fpgas!
         for fpga in self.fpgas:
@@ -570,15 +570,15 @@ class Resources:
                 # -- For terminal, print the FPGA name in color.
                 fpga_str = click.style(f"{fpga:32}", fg="cyan")
                 item = f"• {fpga_str} {data_str}"
-                click.echo(item)
+                click.secho(item)
             else:
                 # -- For pipe, no colors and no bullet point.
-                click.echo(f"{fpga:32} {data_str}")
+                click.secho(f"{fpga:32} {data_str}")
 
         # -- Print the Footer
         if config.terminal_mode():
-            click.echo(seperator_line)
-            click.echo(f"Total: {len(self.fpgas)} fpgas\n")
+            click.secho(seperator_line)
+            click.secho(f"Total: {len(self.fpgas)} fpgas\n")
 
     @staticmethod
     def _determine_platform_id(
@@ -647,7 +647,9 @@ class Resources:
                     if platform_id == available_platform:
 
                         # -- Add it to the output dictionary
-                        filtered_packages[package_name] = all_packages[package_name]
+                        filtered_packages[package_name] = all_packages[
+                            package_name
+                        ]
 
             # -- Package for all the platforms
             else:

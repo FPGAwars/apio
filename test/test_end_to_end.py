@@ -68,22 +68,22 @@ def test_end_to_end1(clirunner, validate_cliresult, configenv, offline):
             cmd_packages, ["--install", "examples@0.0.34"]
         )
         validate_cliresult(result)
-        assert "Installing examples package" in result.output
+        assert "Installing package 'examples@" in result.output
         assert "Download" in result.output
-        assert "has been successfully installed!" in result.output
+        assert "Package 'examples' installed successfully" in result.output
 
         # -- Execute "apio packages --install examples"
         result = clirunner.invoke(cmd_packages, ["--install", "examples"])
         validate_cliresult(result)
-        assert "Installing examples package" in result.output
+        assert "Installing package 'examples'" in result.output
         assert "Download" in result.output
-        assert "has been successfully installed!" in result.output
+        assert "Package 'examples' installed successfully" in result.output
 
         # -- Execute "apio packages --install examples" again
         result = clirunner.invoke(cmd_packages, ["--install", "examples"])
         validate_cliresult(result)
-        assert "Installing examples package" in result.output
-        assert "Already installed. Version " in result.output
+        assert "Installing package 'examples'" in result.output
+        assert "was already installed" in result.output
 
         # -- Execute
         # -- "apio packages
@@ -101,9 +101,9 @@ def test_end_to_end1(clirunner, validate_cliresult, configenv, offline):
             ],
         )
         validate_cliresult(result)
-        assert "Installing examples package" in result.output
+        assert "Installing package 'examples'" in result.output
         assert "Download" in result.output
-        assert "has been successfully installed!" in result.output
+        assert "Package 'examples' installed successfully" in result.output
 
         # -- Execute "apio packages --install --list"
         result = clirunner.invoke(cmd_packages, ["--list"])
@@ -139,9 +139,9 @@ def test_end_to_end2(clirunner, validate_cliresult, configenv, offline):
         # -- Execute "apio packages --install examples"
         result = clirunner.invoke(cmd_packages, ["--install", "examples"])
         validate_cliresult(result)
-        assert "Installing examples package" in result.output
+        assert "Installing package 'examples'" in result.output
         assert "Download" in result.output
-        assert "has been successfully installed!" in result.output
+        assert "Package 'examples' installed successfully" in result.output
 
         # -- Execute "apio examples --list"
         result = clirunner.invoke(cmd_examples, ["--list"])
@@ -171,7 +171,7 @@ def test_end_to_end2(clirunner, validate_cliresult, configenv, offline):
         )
         validate_cliresult(result)
         assert "Creating Alhambra-II/ledon directory ..." in result.output
-        assert "has been successfully created!" in result.output
+        assert "has been successfully created" in result.output
         validate_dir_leds()
 
         # -- Execute "apio examples --fetch-dir Alhambra-II/ledon"
@@ -185,7 +185,7 @@ def test_end_to_end2(clirunner, validate_cliresult, configenv, offline):
         )
         assert "Do you want to replace it?" in result.output
         assert "Creating Alhambra-II/ledon directory ..." in result.output
-        assert "has been successfully created!" in result.output
+        assert "has been successfully created" in result.output
         validate_dir_leds()
 
 
@@ -205,9 +205,9 @@ def test_end_to_end3(clirunner, validate_cliresult, configenv, offline):
         # -- Execute "apio packages --install examples"
         result = clirunner.invoke(cmd_packages, ["--install", "examples"])
         validate_cliresult(result)
-        assert "Installing examples package" in result.output
+        assert "Installing package 'examples'" in result.output
         assert "Download" in result.output
-        assert "has been successfully installed!" in result.output
+        assert "Package 'examples' installed successfully" in result.output
 
         # ------------------------------------------
         # -- Check the --project-dir parameter
@@ -237,7 +237,7 @@ def test_end_to_end3(clirunner, validate_cliresult, configenv, offline):
         )
         validate_cliresult(result)
         assert "Creating Alhambra-II/ledon directory ..." in result.output
-        assert "has been successfully created!" in result.output
+        assert "has been successfully created" in result.output
         validate_dir_leds("tmp")
 
         # -- Execute "apio packages --uninstall examples"
@@ -245,13 +245,13 @@ def test_end_to_end3(clirunner, validate_cliresult, configenv, offline):
             cmd_packages, ["--uninstall", "examples"], input="n"
         )
         validate_cliresult(result)
-        assert "Abort!" in result.output
+        assert "User said no." in result.output
 
         # -- Execute "apio packages --uninstall examples"
         result = clirunner.invoke(
             cmd_packages, ["--uninstall", "examples"], input="y"
         )
         validate_cliresult(result)
-        assert "Uninstalling examples package" in result.output
+        assert "Uninstalling package 'examples'" in result.output
         assert "Do you want to uninstall 1 package?" in result.output
-        assert "has been successfully uninstalled" in result.output
+        assert "Package 'examples' uninstalled successfuly" in result.output

@@ -593,11 +593,11 @@ def safe_click(text, *args, **kwargs):
     error_flag = kwargs.pop("err", False)
 
     try:
-        click.echo(text, err=error_flag, *args, **kwargs)
+        click.secho(text, err=error_flag, *args, **kwargs)
     except UnicodeEncodeError:
         cleaned_text = text.encode("ascii", errors="replace").decode("ascii")
         # if encoding fails, after retry without errors , bad characters are
         # replaced by '?' character, and is better replace for = because is the
         # most common character error
         cleaned_text = "".join([ch if ord(ch) < 128 else "=" for ch in text])
-        click.echo(cleaned_text, err=error_flag, *args, **kwargs)
+        click.secho(cleaned_text, err=error_flag, *args, **kwargs)

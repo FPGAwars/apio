@@ -969,7 +969,7 @@ class SCons:
             board_color = click.style(processing_board, fg="cyan", bold=True)
 
             # -- Print information on the console
-            click.echo(f"[{date_time_str}] Processing {board_color}")
+            click.secho(f"[{date_time_str}] Processing {board_color}")
 
             # -- Print a horizontal line
             click.secho("-" * terminal_width, bold=True)

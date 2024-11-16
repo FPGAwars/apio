@@ -56,7 +56,8 @@ class FileDownloader:
         # -- Raise an exception in case of download error...
         if self._request.status_code != 200:
             click.secho(
-                f"Got an unrecognized status code: {self._request.status_code}"
+                "Got an unexpected HTTP status code: "
+                f"{self._request.status_code}"
                 f"\nWhen downloading {url}",
                 fg="red",
             )

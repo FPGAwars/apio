@@ -347,7 +347,7 @@ class Installer:
 
             # -- Inform the user
             package_color = click.style(self.package, fg="cyan")
-            click.echo(f"Uninstalling {package_color} package:")
+            click.secho(f"Uninstalling {package_color} package:")
 
             # -- Remove the folder with all its content!!
             shutil.rmtree(file)

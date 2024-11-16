@@ -74,17 +74,17 @@ def _dump_env_mutations(mutations: EnvMutations, resources: Resources) -> None:
     for p in reversed(mutations.paths):
         styled_name = click.style("PATH", fg="magenta")
         if windows:
-            click.echo(f"@set {styled_name}={p};%PATH%")
+            click.secho(f"@set {styled_name}={p};%PATH%")
         else:
-            click.echo(f'{styled_name}="{p}:$PATH"')
+            click.secho(f'{styled_name}="{p}:$PATH"')
 
     # -- Print vars mutations.
     for name, val in mutations.vars:
         styled_name = click.style(name, fg="magenta")
         if windows:
-            click.echo(f"@set {styled_name}={val}")
+            click.secho(f"@set {styled_name}={val}")
         else:
-            click.echo(f'{styled_name}="{val}"')
+            click.secho(f'{styled_name}="{val}"')
 
 
 def _apply_env_mutations(mutations: EnvMutations) -> None:

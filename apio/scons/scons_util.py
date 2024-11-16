@@ -135,7 +135,9 @@ def __dump_parsed_arg(env, name, value, from_default: bool) -> None:
     # Uncomment below for debugging.
     # type_name = type(value).__name__
     # default = "(default)" if from_default else ""
-    # click.echo(f"Arg  {name:15} ->  {str(value):15} {type_name:6} {default}")
+    # click.secho(
+    #     f"Arg  {name:15} ->  {str(value):15} " f"{type_name:6} {default}"
+    # )
 
 
 def get_args(env: SConsEnvironment) -> Dict[str, str]:
