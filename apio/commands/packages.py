@@ -12,7 +12,7 @@ from typing import Tuple
 from varname import nameof
 import click
 from click.core import Context
-from apio.managers import new_installer
+from apio.managers import installer
 from apio.resources import Resources
 from apio import cmd_util
 from apio.commands import options
@@ -124,7 +124,7 @@ def cli(
             packages = resources.platform_packages
         # -- Install the packages.
         for package in packages:
-            new_installer.install_package(
+            installer.install_package(
                 resources, package_spec=package, force=force, verbose=verbose
             )
 
@@ -148,7 +148,7 @@ def cli(
 
             # -- Uninstall packages, one by one
             for package in packages:
-                new_installer.uninstall_package(
+                installer.uninstall_package(
                     resources, package_spec=package, verbose=verbose
                 )
 
