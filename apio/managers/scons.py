@@ -395,6 +395,14 @@ class SCons:
         # -- Replace FTDI index
         # -- Ex. "${FTDI_ID}" --> "0"
         if "${FTDI_ID}" in programmer:
+            # -- Inform the user we are accessing the programmer
+            # -- to give context for ftdi failures.
+            # -- We force an early env setting message to have
+            # -- the programmer message closer to the error message.
+            pkg_util.set_env_for_packages(
+                self.resources,
+            )
+            click.secho("Querying programmer parameters.")
 
             # -- Check that the board is connected
             # -- If not, an exception is raised
@@ -409,6 +417,12 @@ class SCons:
         # Replace Serial port
         # -- The board uses a Serial port for uploading the circuit
         if "${SERIAL_PORT}" in programmer:
+            # -- Inform the user we are accessing the programmer
+            # -- to give context for ftdi failures.
+            # -- We force an early env setting message to have
+            # -- the programmer message closer to the error message.
+            pkg_util.set_env_for_packages(self.resources)
+            click.secho("Querying serial port parameters.")
 
             # -- Check that the board is connected
             self._check_usb(board, board_info)

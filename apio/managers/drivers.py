@@ -28,15 +28,15 @@ Please follow these steps:
     'Alhambra II v1.0A - B09-335 (Interface 0)'.
 
     **VERY IMPORTANT**
-    If your board appears multiple time, select its 'interface 0' entry.
+    If your board appears multiple time, select the 'interface 0' entry.
 
-  5. Make sure that 'libusbk' is selected. For example
-     'libusbK (v3.1.0.0)'.
+  5. Make sure that 'WinUSB' is selected. For example
+     'WinUSB (v6.1.7600.16385)'.
 
   6. Click the 'Replace Driver' button and wait for a successful
      completion, this can take a minute or two.
 
-  7. Close the zadig window.
+  7. Close the Zadig window.
 
   8. Disconnect and reconnect your FPGA board for the new driver
      to take affect.
@@ -55,13 +55,15 @@ Please follow these steps:
   3. Find the Device Manager window.
 
   4. Connect the board to your computer and a new entry will be added
-      to the device list (though sometimes it may be collapsed).
+     to the device list (though sometimes it may be collapsed and
+     hidden).
 
-  5. Identify the entry of your board (e.g. in the 'libusbK USB Devices'
-     section).
+  5. Identify the entry of your board (e.g. in the 'Universal Serial
+     Bus Devices' section).
 
-     NOTE: If your board does not show up or if it's listed as a
-     COM port, it may not have the FTDI driver installed for it.
+     NOTE: Boards with FT2232 ICs have two channels, 'interface 0'
+     and 'interface 1'. Here we care only about 'interface 0' and
+     ignore 'interface 1' if it appears as a COM port.
 
   6. Right click on your board entry and select 'Uninstall device'.
 

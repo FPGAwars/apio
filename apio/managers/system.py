@@ -31,12 +31,11 @@ class System:  # pragma: no cover
         click.secho("Error: the 'lsftdi' command failed.", fg="red")
 
         # -- A special hint for zadig on windows.
-        if self.resources.is_windows() and "libusb" in result.err_text:
+        if self.resources.is_windows():
             click.secho(
                 "\n"
-                "Hint:\n"
-                "The FTDI driver may not be enabled yet.\n"
-                "Try running the command 'apio drivers --ftdi-install'",
+                "[Hint]: did you install the ftdi driver using "
+                "'apio drivers --ftdi-install'?",
                 fg="yellow",
             )
             sys.exit(1)
