@@ -105,11 +105,12 @@ def _list(resources: Resources, verbose: bool) -> int:
     # -- Print an hint or summary based on the findings.
     if scan.num_errors():
         click.secho(
-            "[Hint] run 'apio packages -c' to fix the errors.", fg="yellow"
+            "[Hint] run 'apio packages -fix' to fix the errors.", fg="yellow"
         )
     elif scan.uninstalled_package_ids:
         click.secho(
-            "[Hint] run 'apio packages -i' to install all available packages.",
+            "[Hint] run 'apio packages -install' to install all "
+            "available packages.",
             fg="yellow",
         )
     else:
