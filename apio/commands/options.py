@@ -201,6 +201,7 @@ platform_option = click.option(
     "platform",  # Var name.
     "--platform",
     type=str,
+    metavar="platform_id",
     help=("(Advanced, for developers) Platform id override."),
     cls=cmd_util.ApioOption,
 )
