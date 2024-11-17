@@ -36,7 +36,7 @@ def _get_remote_version(
     """
 
     # -- Get package inforation (originated from packages.json)
-    package_info = resources.platform_packages[package_name]
+    package_info = resources.get_package_info(package_name)
 
     # -- Get the version file URL. This is a text file with the recomanded
     # -- version for this package.
@@ -79,7 +79,7 @@ def _construct_package_download_url(
     """
 
     # -- Get the package info (originated from packages.json)
-    package_info = resources.platform_packages[package_name]
+    package_info = resources.get_package_info(package_name)
 
     # -- Get the package selector of this platform (the package selectors
     # -- are specified in platforms.json). E.g. 'darwin_arm64'
@@ -257,10 +257,7 @@ def install_package(
     package_name, target_version = _parse_package_spec(package_spec)
 
     # -- Get package information (originated from packages.json)
-    package_info = resources.platform_packages.get(package_name, None)
-    if not package_info:
-        click.secho(f"Error: no such package '{package_name}'", fg="red")
-        sys.exit(1)
+    package_info = resources.get_package_info(package_name)
 
     # -- If the user didn't specify a target version we use the one recomanded
     # -- by the release server.

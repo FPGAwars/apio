@@ -297,38 +297,36 @@ class Resources:
                     val_template, package_path
                 )
 
+    def get_package_info(self, package_name: str) -> str:
+        """Returns the information of the package with given name.
+        The information is a JSON dict originated at packages.jsnon().
+        Exits with an error message if the package is not defined.
+        """
+        package_info = self.platform_packages.get(package_name, None)
+        if package_info is None:
+            click.secho(f"Error: unknown package '{package_name}'", fg="red")
+            sys.exit(1)
+
+        return package_info
+
     def get_package_folder_name(self, package_name: str) -> str:
-        """Returns name of the package folder, within the packages dir."""
+        """Returns name of the package folder, within the packages dir.
+        Exits with an error message if not found."""
 
-        try:
-            package_folder_name = self.platform_packages[package_name][
-                "release"
-            ]["folder_name"]
+        package_info = self.get_package_info(package_name)
 
-        # -- This error should never ocurr
-        except KeyError as excp:
-            click.secho(f"Apio System Error! Invalid key: {excp}", fg="red")
+        release = package_info.get("release", {})
+        folder_name = release.get("folder_name", None)
+        if not folder_name:
+            # -- This is a programming error, not a user error
             click.secho(
-                "Module: resources.py. Function: get_package_release_name()",
+                f"Error: package '{package_name}' definition has an "
+                "empty or missing 'folder_name' field.",
                 fg="red",
             )
-
-            # -- Abort!
             sys.exit(1)
 
-        except TypeError as excp:
-
-            click.secho(f"Apio System Error! {excp}", fg="red")
-            click.secho(
-                "Module: resources.py. Function: get_package_release_name()",
-                fg="red",
-            )
-
-            # -- Abort!
-            sys.exit(1)
-
-        # -- Return the name
-        return package_folder_name
+        return folder_name
 
     def get_platform_packages_lists(self) -> tuple[list, list]:
         """Get all the packages that are applicable to this platform,

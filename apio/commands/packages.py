@@ -121,7 +121,7 @@ def cli(
 
         # -- If packages not specified, use all.
         if not packages:
-            packages = resources.platform_packages
+            packages = resources.platform_packages.keys()
         # -- Install the packages.
         for package in packages:
             installer.install_package(
@@ -131,10 +131,9 @@ def cli(
         ctx.exit(0)
 
     if uninstall:
-
         # -- If packages not specified, use all.
         if not packages:
-            packages = resources.platform_packages
+            packages = resources.platform_packages.keys()
 
         # -- Ask the user for confirmation
         num_packages = (
