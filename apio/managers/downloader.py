@@ -7,7 +7,13 @@
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
 # ---- Licence Apache v2
-"""TODO"""
+"""Implement a remote file downloader. Used to fetch packages from github
+packages release repositorie.s
+"""
+
+# pylint: disable=fixme
+# TODO: capture all the exceptions and return them as method return status.
+# Motivation is simplifying the usage.
 
 from math import ceil
 import requests
