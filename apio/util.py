@@ -15,7 +15,7 @@ import json
 import shutil
 from enum import Enum
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Any
 import subprocess
 from threading import Thread
 from pathlib import Path
@@ -601,3 +601,21 @@ def safe_click(text, *args, **kwargs):
         # most common character error
         cleaned_text = "".join([ch if ord(ch) < 128 else "=" for ch in text])
         click.secho(cleaned_text, err=error_flag, *args, **kwargs)
+
+
+def count(obj: Any, singular: str, plural: str = None) -> str:
+    """Returns singular or plural based on the size of the object."""
+    # -- Figure out the size of the object
+    if isinstance(obj, int):
+        n = obj
+    else:
+        n = len(obj)
+
+    # -- For value of 1 return the signgular form.
+    if n == 1:
+        return f"{n} {singular}"
+
+    # -- For all other values, return the plural form.
+    if plural is None:
+        plural = singular + "s"
+    return f"{n} {plural}"

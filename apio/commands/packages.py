@@ -8,14 +8,114 @@
 """Implementation of 'apio packages' command"""
 
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, List
 from varname import nameof
 import click
 from click.core import Context
 from apio.managers import installer
 from apio.resources import Resources
-from apio import cmd_util
+from apio import cmd_util, pkg_util, util
 from apio.commands import options
+
+
+def _install(
+    resources: Resources, packages: List[str], force: bool, verbose: bool
+) -> int:
+    """Handles the --install operation. Returns exit code."""
+    click.secho(f"Platform id '{resources.platform_id}'")
+
+    # -- If packages where specified, install all packages that are valid
+    # -- for this platform.
+    if not packages:
+        packages = resources.platform_packages.keys()
+
+    # -- Install the packages, one by one.
+    for package in packages:
+        installer.install_package(
+            resources, package_spec=package, force=force, verbose=verbose
+        )
+
+    return 0
+
+
+def _uninstall(
+    resources: Resources, packages: List[str], verbose: bool, sayyes: bool
+) -> int:
+    """Handles the --uninstall operation. Returns exit code."""
+
+    # -- If packages where specified, uninstall all packages that are valid
+    # -- for this platform.
+    if not packages:
+        packages = resources.platform_packages.keys()
+
+    # -- Ask the user for confirmation
+    if not (
+        sayyes
+        or click.confirm(
+            "Do you want to uninstall " f"{util.count(packages, 'package')}?"
+        )
+    ):
+        # -- User doesn't want to continue.
+        click.secho("User said no", fg="red")
+        return 1
+
+    # -- Here when going on with the uninstallation.
+    click.secho(f"Platform id '{resources.platform_id}'")
+
+    # -- Uninstall the packages, one by one
+    for package in packages:
+        installer.uninstall_package(
+            resources, package_spec=package, verbose=verbose
+        )
+
+    return 0
+
+
+def _fix(resources: Resources, verbose: bool) -> int:
+    """Handles the --fix operation. Returns exit code."""
+
+    # -- Scan the availeable and installed packages.
+    scan = pkg_util.scan_packages(resources)
+
+    # -- Fix any errors.
+    if scan.num_errors():
+        installer.fix_packages(resources, scan, verbose)
+    else:
+        click.secho("No errors to fix")
+
+    # -- Show the new state
+    new_scan = pkg_util.scan_packages(resources)
+    pkg_util.list_packages(resources, new_scan)
+
+    return 0
+
+
+def _list(resources: Resources, verbose: bool) -> int:
+    """Handles the --list operation. Returns exit code."""
+
+    if verbose:
+        click.secho(f"Platform id '{resources.platform_id}'")
+
+    # -- Scan the available and installed packages.
+    scan = pkg_util.scan_packages(resources)
+
+    # -- List the findings.
+    pkg_util.list_packages(resources, scan)
+
+    # -- Print an hint or summary based on the findings.
+    if scan.num_errors():
+        click.secho(
+            "[Hint] run 'apio packages -c' to fix the errors.", fg="yellow"
+        )
+    elif scan.uninstalled_package_ids:
+        click.secho(
+            "[Hint] run 'apio packages -i' to install all available packages.",
+            fg="yellow",
+        )
+    else:
+        click.secho("All available messages are installed.", fg="green")
+
+    return 0
 
 
 # ---------------------------
@@ -38,6 +138,7 @@ Examples:
   apio packages --install examples@0.0.32   # Install a specific version.
   apio packages --uninstall                 # Uninstall all packages.
   apio packages --uninstall oss-cad-suite   # Uninstall only given package(s).
+  apio packages --fix                       # Fix package errors.
 
 Adding --force to --install forces the reinstallation of existing packages,
 otherwise, packages that are already installed correctly are left with no
@@ -48,7 +149,7 @@ all packages from scratch.
 """
 
 install_option = click.option(
-    "install",  # Var name. Deconflicting from Python'g builtin 'all'.
+    "install",  # Var name.
     "-i",
     "--install",
     is_flag=True,
@@ -57,11 +158,19 @@ install_option = click.option(
 )
 
 uninstall_option = click.option(
-    "uninstall",  # Var name. Deconflicting from Python'g builtin 'all'.
+    "uninstall",  # Var name.
     "-u",
     "--uninstall",
     is_flag=True,
     help="Uninstall packages.",
+    cls=cmd_util.ApioOption,
+)
+
+fix_option = click.option(
+    "fix",  # Var name.
+    "--fix",
+    is_flag=True,
+    help="Fix package errors.",
     cls=cmd_util.ApioOption,
 )
 
@@ -80,6 +189,7 @@ uninstall_option = click.option(
 @options.list_option_gen(help="List packages.")
 @install_option
 @uninstall_option
+@fix_option
 @options.force_option_gen(help="Force installation.")
 @options.project_dir_option
 @options.platform_option
@@ -91,8 +201,9 @@ def cli(
     packages: Tuple[str],
     # Options
     list_: bool,
-    install,
-    uninstall,
+    install: bool,
+    uninstall: bool,
+    fix: bool,
     force: bool,
     platform: str,
     project_dir: Path,
@@ -104,10 +215,14 @@ def cli(
     """
 
     # Validate the option combination.
-    cmd_util.check_exactly_one_param(ctx, nameof(list_, install, uninstall))
+    cmd_util.check_exactly_one_param(
+        ctx, nameof(list_, install, uninstall, fix)
+    )
     cmd_util.check_at_most_one_param(ctx, nameof(list_, force))
     cmd_util.check_at_most_one_param(ctx, nameof(uninstall, force))
+    cmd_util.check_at_most_one_param(ctx, nameof(fix, force))
     cmd_util.check_at_most_one_param(ctx, nameof(list_, packages))
+    cmd_util.check_at_most_one_param(ctx, nameof(fix, packages))
 
     # -- Load the resources. We don't care about project specific resources.
     resources = Resources(
@@ -117,47 +232,17 @@ def cli(
     )
 
     if install:
-        click.secho(f"Platform id '{resources.platform_id}'")
-
-        # -- If packages not specified, use all.
-        if not packages:
-            packages = resources.platform_packages.keys()
-        # -- Install the packages.
-        for package in packages:
-            installer.install_package(
-                resources, package_spec=package, force=force, verbose=verbose
-            )
-
-        ctx.exit(0)
+        exit_code = _install(resources, packages, force, verbose)
+        ctx.exit(exit_code)
 
     if uninstall:
-        # -- If packages not specified, use all.
-        if not packages:
-            packages = resources.platform_packages.keys()
+        exit_code = _uninstall(resources, packages, verbose, sayyes)
+        ctx.exit(exit_code)
 
-        # -- Ask the user for confirmation
-        num_packages = (
-            "1 package" if len(packages) == 1 else f"{len(packages)} packages"
-        )
-        if sayyes or click.confirm(
-            f"Do you want to uninstall {num_packages}?"
-        ):
-
-            click.secho(f"Platform id '{resources.platform_id}'")
-
-            # -- Uninstall packages, one by one
-            for package in packages:
-                installer.uninstall_package(
-                    resources, package_spec=package, verbose=verbose
-                )
-
-        # -- User quit!
-        else:
-            click.secho("User said no", fg="red")
-        ctx.exit(0)
+    if fix:
+        exit_code = _fix(resources, verbose)
+        ctx.exit(exit_code)
 
     # -- Here it must be --list.
-    if verbose:
-        click.secho(f"Platform id '{resources.platform_id}'")
-    resources.list_packages()
-    ctx.exit(0)
+    exit_code = _list(resources, verbose)
+    ctx.exit(exit_code)

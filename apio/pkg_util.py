@@ -17,6 +17,7 @@ import sys
 import click
 import semantic_version
 from apio.resources import Resources
+from apio import util
 
 
 @dataclass(frozen=True)
@@ -250,3 +251,170 @@ def _show_package_install_instructions(package_name: str):
         "   apio packages --install --force",
         fg="yellow",
     )
+
+
+@dataclass
+class PackageScanResults:
+    """Represents results of packages scan."""
+
+    # -- Normal. Packages in platform_packages that are instaleld properly.
+    installed_package_ids: List[str]
+    # -- Normal. Packages in platform_packages that are uninstaleld properly.
+    uninstalled_package_ids: List[str]
+    # -- Error. Packages in platform_packages with broken installation. E.g,
+    # -- registered in profile but package directory is missing.
+    broken_package_ids: List[str]
+    # -- Error. Packages that are marked in profile as registered but are not
+    # -- in platform_packages.
+    orphan_package_ids: List[str]
+    # -- Error. Basenames of directories in packages dir that don't match
+    # -- folder_name of packages in platform_packates.
+    orphan_dir_names: List[str]
+    # -- Error. Basenames of all files in packages directory. That directory is
+    # -- expected to contain only directories for packages.a
+    orphan_file_names: List[str]
+
+    def num_errors(self) -> bool:
+        """Returns the number of errors.."""
+        return (
+            len(self.broken_package_ids)
+            + len(self.orphan_package_ids)
+            + len(self.orphan_dir_names)
+            + len(self.orphan_file_names)
+        )
+
+    def dump(self):
+        """Dump the content of this object. For debugging."""
+        print("Package scan results:")
+        print(f"  Installed    {self.installed_package_ids}")
+        print(f"  Uninstalled  {self.uninstalled_package_ids}")
+        print(f"  Broken       {self.broken_package_ids}")
+        print(f"  Orphan ids   {self.orphan_package_ids}")
+        print(f"  Orphan dirs  {self.orphan_dir_names}")
+        print(f"  Orphan files {self.orphan_file_names}")
+
+
+def scan_packages(resources: Resources) -> PackageScanResults:
+    """Scans the available and installed packages and returns
+    the findings as a PackageScanResults object."""
+
+    # Initialize the result with empty data.
+    result = PackageScanResults([], [], [], [], [], [])
+
+    # -- A helper set that we populate with the 'folder_name' values of the
+    # -- all the packages for this platform.
+    platform_folder_names = set()
+
+    # -- Scan packages ids in platform_packages and populate
+    # -- the installed/uninstall/broken packages lists.
+    for package_id in resources.platform_packages.keys():
+        # -- Collect package's folder names in a set. For a later use.
+        package_folder_name = resources.get_package_folder_name(package_id)
+        platform_folder_names.add(package_folder_name)
+
+        # -- Classify the package as one of three cases.
+        in_profile = package_id in resources.profile.packages
+        has_dir = resources.get_package_dir(package_id).is_dir()
+        if in_profile and has_dir:
+            result.installed_package_ids.append(package_id)
+        elif not in_profile and not has_dir:
+            result.uninstalled_package_ids.append(package_id)
+        else:
+            result.broken_package_ids.append(package_id)
+
+    # -- Scan the packagtes ids that are registered in profile as installed
+    # -- the ones that are not platform_packages as orphans.
+    for package_id in resources.profile.packages:
+        if package_id not in resources.platform_packages:
+            result.orphan_package_ids.append(package_id)
+
+    # -- Scan the packages directory and identify orphan dirs and files.
+    for path in util.get_packages_dir().glob("*"):
+        base_name = os.path.basename(path)
+        if path.is_dir():
+            if base_name not in platform_folder_names:
+                result.orphan_dir_names.append(base_name)
+        else:
+            result.orphan_file_names.append(base_name)
+
+    # -- Return results
+    return result
+
+
+def _list_section(title: str, items: List[List[str]], color: str) -> None:
+    """A helper function for printing one serction of list_packages()."""
+    # -- Construct horizontal lines at terminal width.
+    output_config = util.get_terminal_config()
+    line = "─" * output_config.terminal_width
+    dline = "═" * output_config.terminal_width
+
+    # -- Print the section.
+    click.secho()
+    click.secho(dline, fg=color)
+    click.secho(title, fg=color, bold=True)
+    for item in items:
+        click.secho(line)
+        for sub_item in item:
+            click.secho(sub_item)
+    click.secho(dline, fg=color)
+
+
+def list_packages(resources: Resources, scan: PackageScanResults) -> None:
+    """Prints in a user friendly format the results of a packages scan."""
+
+    # -- Shortcuts to reduce clutter.
+    get_package_version = resources.profile.get_package_installed_version
+    get_package_info = resources.get_package_info
+
+    # --Print the installed packages, if any.
+    if scan.installed_package_ids:
+        items = []
+        for package_id in scan.installed_package_ids:
+            name = click.style(f"{package_id}", fg="cyan", bold=True)
+            version = get_package_version(package_id)
+            description = get_package_info(package_id)["description"]
+            items.append([f"{name} {version}", f"{description}"])
+        _list_section("Installed packages:", items, "green")
+
+    # -- Print the uninstalled packages, if any,
+    if scan.uninstalled_package_ids:
+        items = []
+        for package_id in scan.uninstalled_package_ids:
+            name = click.style(f"{package_id}", fg="cyan", bold=True)
+            description = get_package_info(package_id)["description"]
+            items.append([f"{name}  {description}"])
+        _list_section("Available packages (Not installed):", items, "yellow")
+
+    # -- Print the broken packages, if any,
+    if scan.broken_package_ids:
+        items = []
+        for package_id in scan.broken_package_ids:
+            name = click.style(f"{package_id}", fg="red", bold=True)
+            description = get_package_info(package_id)["description"]
+            items.append([f"{name}  {description}"])
+        _list_section("[Error] Broken packages:", items, None)
+
+    # -- Print the orphan packages, if any,
+    if scan.orphan_package_ids:
+        items = []
+        for package_id in scan.orphan_package_ids:
+            name = click.style(f"{package_id}", fg="red", bold=True)
+            items.append([name])
+        _list_section("[Error] Unknown packages:", items, None)
+
+    # -- Print orphan directories and files, if any,
+    if scan.orphan_dir_names or scan.orphan_file_names:
+        items = []
+        for name in sorted(scan.orphan_dir_names + scan.orphan_file_names):
+            name = click.style(f"{name}", fg="red", bold=True)
+            items.append([name])
+        _list_section("[Error] Unknown files and directories:", items, None)
+
+    # -- Print an error summary
+    if scan.num_errors():
+        click.secho(f"Total of {util.count(scan.num_errors(), 'error')}")
+    else:
+        click.secho("No errors.")
+
+    # -- A line seperator. For asthetic reasons.
+    click.secho()
