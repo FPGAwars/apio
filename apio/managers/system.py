@@ -31,12 +31,11 @@ class System:  # pragma: no cover
         click.secho("Error: the 'lsftdi' command failed.", fg="red")
 
         # -- A special hint for zadig on windows.
-        if util.is_windows() and "libusb" in result.err_text:
+        if self.resources.is_windows():
             click.secho(
                 "\n"
-                "Hint:\n"
-                "The FTDI driver may not be enabled yet.\n"
-                "Try running the command 'apio drivers --ftdi-install'",
+                "[Hint]: did you install the ftdi driver using "
+                "'apio drivers --ftdi-install'?",
                 fg="yellow",
             )
             sys.exit(1)
@@ -161,7 +160,7 @@ class System:  # pragma: no cover
         # pylint: disable=fixme
         # TODO: Is this necessary or does windows accepts commands without
         # the '.exe' extension?
-        if util.is_windows():
+        if self.resources.is_windows():
             command = command + ".exe"
 
         # -- Set the stdout and stderr callbacks, when executing the command

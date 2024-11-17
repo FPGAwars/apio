@@ -115,8 +115,8 @@ class Examples:
         # -- terminal.
         if output_config.terminal_mode():
             terminal_seperator_line = "─" * output_config.terminal_width
-            click.echo()
-            click.echo(terminal_seperator_line)
+            click.secho()
+            click.secho(terminal_seperator_line)
 
         # -- For a pipe, determine the max example name length.
         max_example_name_len = max(len(x.name) for x in examples)

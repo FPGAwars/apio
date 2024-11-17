@@ -12,8 +12,7 @@ from typing import Tuple
 from varname import nameof
 import click
 from click.core import Context
-from apio.managers.installer import Installer
-from apio.profile import Profile
+from apio.managers.old_installer import Installer
 from apio import cmd_util
 from apio.resources import Resources
 from apio.commands import options
@@ -21,9 +20,7 @@ from apio.commands import options
 
 # R0801: Similar lines in 2 files
 # pylint: disable=R0801
-def _uninstall(
-    packages: list, platform: str, resources: Resources, sayyes, verbose: bool
-):
+def _uninstall(packages: list, resources: Resources, sayyes, verbose: bool):
     """Uninstall the given list of packages"""
 
     # -- Ask the user for confirmation
@@ -36,7 +33,7 @@ def _uninstall(
             modifiers = Installer.Modifiers(
                 force=False, checkversion=False, verbose=verbose
             )
-            installer = Installer(package, platform, resources, modifiers)
+            installer = Installer(package, resources, modifiers)
 
             # -- Uninstall the package!
             installer.uninstall()
@@ -97,22 +94,22 @@ def cli(
 
     # -- Load the resources.
     resources = Resources(
-        platform=platform,
+        platform_id_override=platform,
         project_dir=project_dir,
         project_scope=False,
     )
 
     # -- Uninstall the given apio packages
     if packages:
-        _uninstall(packages, platform, resources, sayyes, verbose)
+        _uninstall(packages, resources, sayyes, verbose)
         ctx.exit(0)
 
     # -- Uninstall all the packages
     if all_:
         # -- Get all the installed apio packages
-        packages = Profile().packages
+        packages = resources.profile.packages
         # -- Uninstall them!
-        _uninstall(packages, platform, resources, sayyes, verbose)
+        _uninstall(packages, resources, sayyes, verbose)
         ctx.exit(0)
 
     # -- List all the packages (installed or not)

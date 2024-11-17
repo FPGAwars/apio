@@ -6,7 +6,7 @@
 from apio.commands.system import cli as cmd_system
 
 
-def test_system(clirunner, validate_cliresult, configenv):
+def test_system(clirunner, configenv):
     """Test "apio system" with different parameters"""
 
     with clirunner.isolated_filesystem():
@@ -16,7 +16,11 @@ def test_system(clirunner, validate_cliresult, configenv):
 
         # -- Execute "apio system"
         result = clirunner.invoke(cmd_system)
-        validate_cliresult(result)
+        assert result.exit_code == 1, result.output
+        assert (
+            "One of [--lsftdi, --lsusb, --lsserial, --info, --platforms] "
+            "must be specified" in result.output
+        )
 
         # -- Execute "apio system --lsftdi"
         result = clirunner.invoke(cmd_system, ["--lsftdi"])
@@ -36,4 +40,4 @@ def test_system(clirunner, validate_cliresult, configenv):
         # -- Execute "apio system --info"
         result = clirunner.invoke(cmd_system, ["--info"])
         assert result.exit_code == 0, result.output
-        assert "Platform:" in result.output
+        assert "Platform id" in result.output

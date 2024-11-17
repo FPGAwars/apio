@@ -12,69 +12,10 @@ from typing import Tuple
 from varname import nameof
 import click
 from click.core import Context
-from apio.managers.installer import Installer
+from apio.managers import installer
 from apio.resources import Resources
 from apio import cmd_util
 from apio.commands import options
-
-
-# R0801: Similar lines in 2 files
-# pylint: disable=R0801
-def _install(
-    packages: list,
-    platform: str,
-    resources: Resources,
-    force: bool,
-    verbose: bool,
-):
-    """Install the apio packages passed as a list
-    * INPUTS:
-      - packages: List of packages (Ex. ['examples', 'oss-cad-suite'])
-      - platform: Specific platform (Advanced, just for developers)
-      - force: Force package installation
-      - verbose: Show detailed output.
-    """
-    # -- Install packages, one by one...
-    for package in packages:
-
-        # -- The instalation is performed by the Installer object
-        modifiers = Installer.Modifiers(
-            force=force, checkversion=True, verbose=verbose
-        )
-        installer = Installer(package, platform, resources, modifiers)
-
-        # -- Install the package!
-        installer.install()
-
-
-# R0801: Similar lines in 2 files
-# pylint: disable=R0801
-def _uninstall(
-    packages: list, platform: str, resources: Resources, sayyes, verbose: bool
-):
-    """Uninstall the given list of packages"""
-
-    # -- Ask the user for confirmation
-    num_packages = (
-        "1 package" if len(packages) == 1 else f"{len(packages)} packages"
-    )
-    if sayyes or click.confirm(f"Do you want to uninstall {num_packages}?"):
-
-        # -- Uninstall packages, one by one
-        for package in packages:
-
-            # -- The uninstalation is performed by the Installer object
-            modifiers = Installer.Modifiers(
-                force=False, checkversion=False, verbose=verbose
-            )
-            installer = Installer(package, platform, resources, modifiers)
-
-            # -- Uninstall the package!
-            installer.uninstall()
-
-    # -- User quit!
-    else:
-        click.secho("Abort!", fg="red")
 
 
 # ---------------------------
@@ -166,31 +107,57 @@ def cli(
     cmd_util.check_exactly_one_param(ctx, nameof(list_, install, uninstall))
     cmd_util.check_at_most_one_param(ctx, nameof(list_, force))
     cmd_util.check_at_most_one_param(ctx, nameof(uninstall, force))
+    cmd_util.check_at_most_one_param(ctx, nameof(list_, packages))
 
     # -- Load the resources. We don't care about project specific resources.
     resources = Resources(
-        platform=platform,
+        platform_id_override=platform,
         project_dir=project_dir,
         project_scope=False,
     )
 
-    # -- List all the packages (installed or not)
-
     if install:
+        click.secho(f"Platform id '{resources.platform_id}'")
+
         # -- If packages not specified, use all.
         if not packages:
-            packages = resources.platform_packages
+            packages = resources.platform_packages.keys()
         # -- Install the packages.
-        _install(packages, platform, resources, force, verbose)
+        for package in packages:
+            installer.install_package(
+                resources, package_spec=package, force=force, verbose=verbose
+            )
+
         ctx.exit(0)
 
     if uninstall:
         # -- If packages not specified, use all.
         if not packages:
-            packages = resources.platform_packages
-        _uninstall(packages, platform, resources, sayyes, verbose)
+            packages = resources.platform_packages.keys()
+
+        # -- Ask the user for confirmation
+        num_packages = (
+            "1 package" if len(packages) == 1 else f"{len(packages)} packages"
+        )
+        if sayyes or click.confirm(
+            f"Do you want to uninstall {num_packages}?"
+        ):
+
+            click.secho(f"Platform id '{resources.platform_id}'")
+
+            # -- Uninstall packages, one by one
+            for package in packages:
+                installer.uninstall_package(
+                    resources, package_spec=package, verbose=verbose
+                )
+
+        # -- User quit!
+        else:
+            click.secho("User said no", fg="red")
         ctx.exit(0)
 
     # -- Here it must be --list.
+    if verbose:
+        click.secho(f"Platform id '{resources.platform_id}'")
     resources.list_packages()
     ctx.exit(0)

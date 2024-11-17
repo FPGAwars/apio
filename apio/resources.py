@@ -8,6 +8,7 @@
 
 import sys
 import json
+import platform
 from collections import OrderedDict
 import shutil
 from pathlib import Path
@@ -16,6 +17,10 @@ import click
 from apio import util
 from apio.profile import Profile
 
+
+# pylint: disable=fixme
+# TODO: Rename this file and class to repreent its more general role and the
+# main apio data holder. For example ApioContext or ApioEnv.
 
 # -- Info message
 BOARDS_MSG = (
@@ -26,12 +31,19 @@ BOARDS_MSG = (
 
 # ---------- RESOURCES
 RESOURCES_DIR = "resources"
+
+# ---------------------------------------
+# ---- File: resources/platforms.json
+# --------------------------------------
+# -- This file contains  the information regarding the supported platforms
+# -- and their attributes.
+PLATFORMS_JSON = "platforms.json"
+
 # ---------------------------------------
 # ---- File: resources/packages.json
 # --------------------------------------
 # -- This file contains all the information regarding the available apio
 # -- packages: Repository, version, name...
-# -- This information is access through the Resources.packages method
 PACKAGES_JSON = "packages.json"
 
 # -----------------------------------------
@@ -70,7 +82,7 @@ class Resources:
         self,
         *,
         project_scope: bool,
-        platform: str = "",
+        platform_id_override: str = "",
         project_dir: Optional[Path] = None,
     ):
         """Initializes the Resources object. 'project dir' is an optional path
@@ -87,6 +99,14 @@ class Resources:
         # -- Profile information, from ~/.apio/profile.json
         self.profile = Profile()
 
+        # -- Read the platforms information.
+        self.platforms = self._load_resource(PLATFORMS_JSON)
+
+        # -- Determine the platform_id for this APIO session.
+        self.platform_id = self._determine_platform_id(
+            platform_id_override, self.platforms
+        )
+
         # -- Read the apio packages information
         self.all_packages = self._load_resource(PACKAGES_JSON)
 
@@ -94,8 +114,8 @@ class Resources:
         Resources._resolve_package_envs(self.all_packages)
 
         # The subset of packages that are applicable to this platform.
-        self.platform_packages = self._select_platform_packages(
-            self.all_packages, platform
+        self.platform_packages = self._select_packages_for_platform(
+            self.all_packages, self.platform_id, self.platforms
         )
 
         # -- Read the boards information
@@ -277,38 +297,36 @@ class Resources:
                     val_template, package_path
                 )
 
-    def get_package_folder_name(self, package: str) -> str:
-        """return the package folder name"""
-
-        try:
-            package_folder_name = self.platform_packages[package]["release"][
-                "folder_name"
-            ]
-
-        # -- This error should never ocurr
-        except KeyError as excp:
-            click.secho(f"Apio System Error! Invalid key: {excp}", fg="red")
-            click.secho(
-                "Module: resources.py. Function: get_package_release_name()",
-                fg="red",
-            )
-
-            # -- Abort!
+    def get_package_info(self, package_name: str) -> str:
+        """Returns the information of the package with given name.
+        The information is a JSON dict originated at packages.jsnon().
+        Exits with an error message if the package is not defined.
+        """
+        package_info = self.platform_packages.get(package_name, None)
+        if package_info is None:
+            click.secho(f"Error: unknown package '{package_name}'", fg="red")
             sys.exit(1)
 
-        except TypeError as excp:
+        return package_info
 
-            click.secho(f"Apio System Error! {excp}", fg="red")
+    def get_package_folder_name(self, package_name: str) -> str:
+        """Returns name of the package folder, within the packages dir.
+        Exits with an error message if not found."""
+
+        package_info = self.get_package_info(package_name)
+
+        release = package_info.get("release", {})
+        folder_name = release.get("folder_name", None)
+        if not folder_name:
+            # -- This is a programming error, not a user error
             click.secho(
-                "Module: resources.py. Function: get_package_release_name()",
+                f"Error: package '{package_name}' definition has an "
+                "empty or missing 'folder_name' field.",
                 fg="red",
             )
-
-            # -- Abort!
             sys.exit(1)
 
-        # -- Return the name
-        return package_folder_name
+        return folder_name
 
     def get_platform_packages_lists(self) -> tuple[list, list]:
         """Get all the packages that are applicable to this platform,
@@ -367,8 +385,6 @@ class Resources:
     def list_packages(self, installed=True, notinstalled=True):
         """Return a list with all the installed/notinstalled packages"""
 
-        # profile = Profile()
-
         # Classify packages
         installed_packages, notinstalled_packages = (
             self.get_platform_packages_lists()
@@ -386,7 +402,7 @@ class Resources:
 
             # ------- Print installed packages table
             # -- Print the header
-            click.echo()
+            click.secho()
             click.secho(dline, fg="green")
             click.secho("Installed packages:", fg="green")
 
@@ -400,27 +416,27 @@ class Resources:
                 click.secho(f"  {description}")
 
             click.secho(dline, fg="green")
-            click.echo(f"Total: {len(installed_packages)}")
+            click.secho(f"Total: {len(installed_packages)}")
 
         if notinstalled and notinstalled_packages:
 
             # ------ Print not installed packages table
             # -- Print the header
-            click.echo()
+            click.secho()
             click.secho(dline, fg="yellow")
             click.secho("Available packages (Not installed):", fg="yellow")
 
             for package in notinstalled_packages:
 
-                click.echo(line)
+                click.secho(line)
                 name = click.style(f"• {package['name']}", fg="red")
                 description = package["description"]
-                click.echo(f"{name}  {description}")
+                click.secho(f"{name}  {description}")
 
             click.secho(dline, fg="yellow")
-            click.echo(f"Total: {len(notinstalled_packages)}")
+            click.secho(f"Total: {len(notinstalled_packages)}")
 
-        click.echo("\n")
+        click.secho("\n")
 
     def get_package_dir(self, package_name: str) -> Path:
         """Returns the root path of a package with given name."""
@@ -453,9 +469,9 @@ class Resources:
             )
             # -- Horizontal line across the terminal.
             seperator_line = "─" * config.terminal_width
-            click.echo(seperator_line)
-            click.echo(title)
-            click.echo(seperator_line)
+            click.secho(seperator_line)
+            click.secho(title)
+            click.secho(seperator_line)
 
         # -- Sort boards names by case insentive alphabetical order.
         board_names = list(self.boards.keys())
@@ -494,22 +510,22 @@ class Resources:
 
                 # -- If there is enough space, print in one line
                 if len(one_line_item) <= config.terminal_width:
-                    click.echo(one_line_item)
+                    click.secho(one_line_item)
 
                 # -- Not enough space: Print it in two separate lines
                 else:
                     two_lines_item = f"{item_board}\n      {item_fpga}"
-                    click.echo(two_lines_item)
+                    click.secho(two_lines_item)
 
             else:
                 # -- Generate the report for a pipe. Single line, no color, no
                 # -- bullet points.
-                click.echo(f"{board:<{max_board_name_len}} |  {item_fpga}")
+                click.secho(f"{board:<{max_board_name_len}} |  {item_fpga}")
 
         if config.terminal_mode():
             # -- Print the Footer
-            click.echo(seperator_line)
-            click.echo(f"Total: {len(self.boards)} boards")
+            click.secho(seperator_line)
+            click.secho(f"Total: {len(self.boards)} boards")
 
             # -- Help message
             click.secho(BOARDS_MSG, fg="green")
@@ -533,9 +549,9 @@ class Resources:
             )
 
             # -- Print the table header
-            click.echo(seperator_line)
-            click.echo(title)
-            click.echo(seperator_line)
+            click.secho(seperator_line)
+            click.secho(title)
+            click.secho(seperator_line)
 
         # -- Print all the fpgas!
         for fpga in self.fpgas:
@@ -552,18 +568,49 @@ class Resources:
                 # -- For terminal, print the FPGA name in color.
                 fpga_str = click.style(f"{fpga:32}", fg="cyan")
                 item = f"• {fpga_str} {data_str}"
-                click.echo(item)
+                click.secho(item)
             else:
                 # -- For pipe, no colors and no bullet point.
-                click.echo(f"{fpga:32} {data_str}")
+                click.secho(f"{fpga:32} {data_str}")
 
         # -- Print the Footer
         if config.terminal_mode():
-            click.echo(seperator_line)
-            click.echo(f"Total: {len(self.fpgas)} fpgas\n")
+            click.secho(seperator_line)
+            click.secho(f"Total: {len(self.fpgas)} fpgas\n")
 
     @staticmethod
-    def _select_platform_packages(all_packages, given_platform):
+    def _determine_platform_id(
+        platform_id_override: str, platforms: Dict[str, Dict]
+    ) -> str:
+        """Determines and returns the platform io based on system info and
+        optional override."""
+        # -- Use override and get from the underlying system.
+        if platform_id_override:
+            platform_id = platform_id_override
+        else:
+            platform_id = Resources._get_system_platform_id()
+
+        # -- Verify it's valid. This can be a user error if the override
+        # -- is invalid.
+        if platform_id not in platforms.keys():
+            click.secho(f"Error: unknown platform id: [{platform_id}]")
+            click.secho(
+                "\n"
+                "[Hint]: For the list of supported platforms\n"
+                "type 'apio system --platforms'.",
+                fg="yellow",
+            )
+            sys.exit(1)
+
+        # -- All done ok.
+        return platform_id
+
+    @staticmethod
+    def _select_packages_for_platform(
+        all_packages: Dict[str, Dict],
+        platform_id: str,
+        platforms: Dict[str, Dict],
+    ):
         """Given a dictionary with the packages.json packages configurations,
         returns subset dictionary with packages that are applicable to the
         this platform.
@@ -572,36 +619,78 @@ class Resources:
         # -- Final dict with the output packages
         filtered_packages = {}
 
-        # -- If not given platform, use the current
-        if not given_platform:
-            given_platform = util.get_system_type()
-
         # -- Check all the packages
-        for pkg in all_packages.keys():
+        for package_name in all_packages.keys():
 
             # -- Get the information about the package
-            release = all_packages[pkg]["release"]
+            release = all_packages[package_name]["release"]
 
-            # -- This packages is available only for certain platforms
+            # -- This packages is available only for certain platforms.
             if "available_platforms" in release:
 
                 # -- Get the available platforms
-                platforms = release["available_platforms"]
+                available_platforms = release["available_platforms"]
 
                 # -- Check all the available platforms
-                for platform in platforms:
+                for available_platform in available_platforms:
+
+                    # -- Sanity check. If this fails, it's a programming error
+                    # -- rather than a user error.
+                    assert available_platform in platforms, (
+                        f"Unknown available platform: '{available_platform}' "
+                        "in package '{pkg}'"
+                    )
 
                     # -- Match!
-                    if given_platform in platform:
+                    if platform_id == available_platform:
 
                         # -- Add it to the output dictionary
-                        filtered_packages[pkg] = all_packages[pkg]
+                        filtered_packages[package_name] = all_packages[
+                            package_name
+                        ]
 
             # -- Package for all the platforms
             else:
 
                 # -- Add it to the output dictionary
-                filtered_packages[pkg] = all_packages[pkg]
+                filtered_packages[package_name] = all_packages[package_name]
 
         # -- Update the current packages!
         return filtered_packages
+
+    @staticmethod
+    def _get_system_platform_id() -> str:
+        """Return a String with the current platform:
+        ex. linux_x86_64
+        ex. windows_amd64"""
+
+        # -- Get the platform: linux, windows, darwin
+        type_ = platform.system().lower()
+        platform_str = f"{type_}"
+
+        # -- Get the architecture
+        arch = platform.machine().lower()
+
+        # -- Special case for windows
+        if type_ == "windows":
+            # -- Assume all the windows to be 64-bits
+            arch = "amd64"
+
+        # -- Add the architecture, if it exists
+        if arch:
+            platform_str += f"_{arch}"
+
+        # -- Return the full platform
+        return platform_str
+
+    def is_linux(self) -> bool:
+        """Returns True iff platform_id indicates linux."""
+        return "linux" in self.platform_id
+
+    def is_darwin(self) -> bool:
+        """Returns True iff platform_id indicates Mac OSX."""
+        return "darwin" in self.platform_id
+
+    def is_windows(self) -> bool:
+        """Returns True iff platform_id indicates windows."""
+        return "windows" in self.platform_id

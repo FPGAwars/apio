@@ -18,7 +18,7 @@ def test_packages(clirunner, configenv, validate_cliresult):
         result = clirunner.invoke(cmd_packages)
         assert result.exit_code == 1, result.output
         assert (
-            "Exactly one of of --list, --install, --uninstall "
+            "One of [--list, --install, --uninstall] "
             "must be specified" in result.output
         )
 
@@ -31,11 +31,11 @@ def test_packages(clirunner, configenv, validate_cliresult):
             cmd_packages, ["--install", "missing_package"]
         )
         assert result.exit_code == 1, result.output
-        assert "Error: no such package" in result.output
+        assert "Error: unknown package 'missing_package'" in result.output
 
         # -- Execute "apio packages --uninstall --sayyes missing_package"
         result = clirunner.invoke(
             cmd_packages, ["--uninstall", "--sayyes", "missing_package"]
         )
         assert result.exit_code == 1, result.output
-        assert "Error: no such package" in result.output
+        assert "Error: no such package 'missing_package'" in result.output

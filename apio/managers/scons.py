@@ -336,30 +336,27 @@ class SCons:
         # -- Programmer type
         # -- Programmer name
         # -- USB id  (vid, pid)
-        board_data = self.resources.boards[board]
+        board_info = self.resources.boards[board]
 
         # -- Check platform. If the platform is not compatible
         # -- with the board an exception is raised
-        self._check_platform(board_data)
+        self._check_platform(board_info, self.resources.platform_id)
 
         # -- Check pip packages. If the corresponding pip_packages
         # -- is not installed, an exception is raised
-        self._check_pip_packages(board_data)
+        self._check_pip_packages(board_info)
 
+        # -- pylint: disable=fixme
+        # -- TODO: abstract this better in boards.json. For example, add a
+        # -- property "darwin-no-detection".
+        # --
         # -- Special case for the TinyFPGA on MACOS platforms
         # -- TinyFPGA BX board is not detected in MacOS HighSierra
-        if "tinyprog" in board_data:
-
-            # -- Get the platform
-            platform = util.get_system_type()
-
-            # -- darwin / darwin_arm64 platforms
-            if "darwin" in platform or "darwin_arm64" in platform:
-
-                # In this case the serial check is ignored
-                # This is the command line to execute for uploading the
-                # circuit
-                return "tinyprog --libusb --program"
+        if "tinyprog" in board_info and self.resources.is_darwin():
+            # In this case the serial check is ignored
+            # This is the command line to execute for uploading the
+            # circuit
+            return "tinyprog --libusb --program"
 
         # -- Serialize programmer command
         # -- Get a string with the command line to execute
@@ -370,7 +367,7 @@ class SCons:
         # --   * "${FTDI_ID}" (optional): FTDI id
         # --   * "${SERIAL_PORT}" (optional): Serial port name
         programmer = self._serialize_programmer(
-            board_data, prog[SRAM], prog[FLASH]
+            board_info, prog[SRAM], prog[FLASH]
         )
         # -- The placeholder for the bitstream file name should always exist.
         assert "$SOURCE" in programmer, programmer
@@ -382,7 +379,7 @@ class SCons:
         if "${VID}" in programmer:
 
             # -- Get the vendor id
-            vid = board_data["usb"]["vid"]
+            vid = board_info["usb"]["vid"]
             # -- Place the value in the command string
             programmer = programmer.replace("${VID}", vid)
 
@@ -391,20 +388,28 @@ class SCons:
         if "${PID}" in programmer:
 
             # -- Get the product id
-            pid = board_data["usb"]["pid"]
+            pid = board_info["usb"]["pid"]
             # -- Place the value in the command string
             programmer = programmer.replace("${PID}", pid)
 
         # -- Replace FTDI index
         # -- Ex. "${FTDI_ID}" --> "0"
         if "${FTDI_ID}" in programmer:
+            # -- Inform the user we are accessing the programmer
+            # -- to give context for ftdi failures.
+            # -- We force an early env setting message to have
+            # -- the programmer message closer to the error message.
+            pkg_util.set_env_for_packages(
+                self.resources,
+            )
+            click.secho("Querying programmer parameters.")
 
             # -- Check that the board is connected
             # -- If not, an exception is raised
-            self._check_usb(board, board_data)
+            self._check_usb(board, board_info)
 
             # -- Get the FTDI index of the connected board
-            ftdi_id = self._get_ftdi_id(board, board_data, prog[FTDI_ID])
+            ftdi_id = self._get_ftdi_id(board, board_info, prog[FTDI_ID])
 
             # -- Place the value in the command string
             programmer = programmer.replace("${FTDI_ID}", ftdi_id)
@@ -412,13 +417,19 @@ class SCons:
         # Replace Serial port
         # -- The board uses a Serial port for uploading the circuit
         if "${SERIAL_PORT}" in programmer:
+            # -- Inform the user we are accessing the programmer
+            # -- to give context for ftdi failures.
+            # -- We force an early env setting message to have
+            # -- the programmer message closer to the error message.
+            pkg_util.set_env_for_packages(self.resources)
+            click.secho("Querying serial port parameters.")
 
             # -- Check that the board is connected
-            self._check_usb(board, board_data)
+            self._check_usb(board, board_info)
 
             # -- Get the serial port
             device = self._get_serial_port(
-                board, board_data, prog[SERIAL_PORT]
+                board, board_info, prog[SERIAL_PORT]
             )
 
             # -- Place the value in the command string
@@ -431,17 +442,12 @@ class SCons:
         return programmer
 
     @staticmethod
-    def _check_platform(board_data: dict) -> None:
+    def _check_platform(board_info: dict, actual_platform_id: str) -> None:
         """Check if the current board is compatible with the
         current platform. There are some boards, like icoboard,
         that only runs in the platform linux/arm7
         * INPUT:
-          * board_data: Dictionary with board information
-            * Board name
-            * FPGA
-            * Programmer type
-            * Programmer name
-            * USB id  (vid, pid)
+          * board_info: Dictionary with board info from boards.json.
 
         Only in case the platform is not compatible with the board,
         and exception is raised
@@ -449,40 +455,35 @@ class SCons:
 
         # -- Normal case: the board does not have a special platform
         # -- (it can be used in many platforms)
-        if "platform" not in board_data:
+        if "platform" not in board_info:
             return
 
         # -- Get the platform were the board should be used
-        platform = board_data["platform"]
-
-        # -- Get the current platform
-        current_platform = util.get_system_type()
+        required_platform_id = board_info["platform"]
 
         # -- Check if they are not compatible!
-        if platform != current_platform:
+        if actual_platform_id != required_platform_id:
 
             # Incorrect platform
-            if platform == "linux_armv7l":
+            if actual_platform_id == "linux_armv7l":
                 raise ValueError("incorrect platform: RPI2 or RPI3 required")
 
-            raise ValueError(f"incorrect platform {platform}")
+            raise ValueError(
+                "Board is restricted to platform "
+                f"'{required_platform_id}' but '{actual_platform_id}' found."
+            )
 
-    def _check_pip_packages(self, board_data):
+    def _check_pip_packages(self, board_info):
         """Check if the corresponding pip package with the programmer
         has already been installed. In the case of an apio package
         it is just ignored
 
         * INPUT:
-          * board_data: Dictionary with board information
-            * Board name
-            * FPGA
-            * Programmer type
-            * Programmer name
-            * USB id  (vid, pid)
+          * board_info: Dictionary with board info from boards.json.
         """
 
         # -- Get the programmer object for the given board
-        prog_info = board_data["programmer"]
+        prog_info = board_info["programmer"]
 
         # -- Get the programmer type
         prog_type = prog_info["type"]
@@ -556,18 +557,11 @@ class SCons:
                 raise ValueError(message) from exc
 
     def _serialize_programmer(
-        self, board_data: dict, sram: bool, flash: bool
+        self, board_info: dict, sram: bool, flash: bool
     ) -> str:
         """
         * INPUT:
-          * board_data: Dictionary with board information
-            * Board name
-            * FPGA
-            * Programmer type
-            * Programmer name
-            * USB id  (vid, pid)
-          * sram: Perform sram programming
-          * flash: Perform flash programming
+          * board_info: Dictionary with board info from boards.json.
         * OUTPUT: It returns a template string with the command line
            to execute for uploading the circuit. It has the following
            parameters (in the string):
@@ -584,7 +578,7 @@ class SCons:
         # -- Get the programmer type
         # -- Ex. type: "tinyprog"
         # -- Ex. type: "iceprog"
-        prog_info = board_data["programmer"]
+        prog_info = board_info["programmer"]
         prog_type = prog_info["type"]
 
         # -- Get all the information for that type of programmer
@@ -631,29 +625,24 @@ class SCons:
 
         return programmer
 
-    def _check_usb(self, board: str, board_data: dict) -> None:
+    def _check_usb(self, board: str, board_info: dict) -> None:
         """Check if the given board is connected or not to the computer
            If it is not connected, an exception is raised
 
         * INPUT:
           * board: Board name (string)
-          * board_data: Dictionary with board information
-            * Board name
-            * FPGA
-            * Programmer type
-            * Programmer name
-            * USB id  (vid, pid)
+          * board_info: Dictionary with board info from boards.json.
         """
 
         # -- The board is connected by USB
         # -- If it does not have the "usb" property, it means
         # -- the board configuration is wrong...Raise an exception
-        if "usb" not in board_data:
+        if "usb" not in board_info:
             raise AttributeError("Missing board configuration: usb")
 
         # -- Get the vid and pid from the configuration
         # -- Ex. {'vid': '0403', 'pid':'6010'}
-        usb_data = board_data["usb"]
+        usb_data = board_info["usb"]
 
         # -- Create a string with vid, pid in the format "vid:pid"
         hwid = f"{usb_data['vid']}:{usb_data['pid']}"
@@ -681,7 +670,7 @@ class SCons:
             # -- Maybe the board is NOT detected because
             # -- the user has not press the reset button and the bootloader
             # -- is not active
-            if "tinyprog" in board_data:
+            if "tinyprog" in board_info:
                 click.secho(
                     "Activate bootloader by pressing the reset button",
                     fg="yellow",
@@ -691,17 +680,12 @@ class SCons:
             raise ConnectionError("board " + board + " not connected")
 
     def _get_serial_port(
-        self, board: str, board_data: dict, ext_serial_port: str
+        self, board: str, borad_info: dict, ext_serial_port: str
     ) -> str:
         """Get the serial port of the connected board
         * INPUT:
           * board: Board name (string)
-          * board_data: Dictionary with board information
-            * Board name
-            * FPGA
-            * Programmer type
-            * Programmer name
-            * USB id  (vid, pid)
+          * board_info: Dictionary with board info from boards.json.
           * ext_serial_port: serial port name given by the user (optional)
 
         * OUTPUT: (string) The serial port name
@@ -710,7 +694,7 @@ class SCons:
         """
 
         # -- Search Serial port by USB id
-        device = self._check_serial(board, board_data, ext_serial_port)
+        device = self._check_serial(board, borad_info, ext_serial_port)
 
         # -- Board not connected
         if not device:
@@ -720,19 +704,14 @@ class SCons:
         return device
 
     def _check_serial(
-        self, board: str, board_data: dict, ext_serial_port: str
+        self, board: str, board_info: dict, ext_serial_port: str
     ) -> str:
         """Check the that the serial port for the given board exists
          (board connedted)
 
         * INPUT:
           * board: Board name (string)
-          * board_data: Dictionary with board information
-            * Board name
-            * FPGA
-            * Programmer type
-            * Programmer name
-            * USB id  (vid, pid)
+          * board_info: Dictionary with board info from boards.json.
           * ext_serial_port: serial port name given by the user (optional)
 
         * OUTPUT: (string) The serial port name
@@ -741,12 +720,12 @@ class SCons:
         # -- The board is connected by USB
         # -- If it does not have the "usb" property, it means
         # -- the board configuration is wrong...Raise an exception
-        if "usb" not in board_data:
+        if "usb" not in board_info:
             raise AttributeError("Missing board configuration: usb")
 
         # -- Get the vid and pid from the configuration
         # -- Ex. {'vid': '0403', 'pid':'6010'}
-        usb_data = board_data["usb"]
+        usb_data = board_info["usb"]
 
         # -- Create a string with vid, pid in the format "vid:pid"
         hwid = f"{usb_data['vid']}:{usb_data['pid']}"
@@ -775,14 +754,14 @@ class SCons:
                 continue
 
             # -- Check if the TinyFPGA board is connected
-            connected = self._check_tinyprog(board_data, port)
+            connected = self._check_tinyprog(board_info, port)
 
             # -- If the usb id matches...
             if hwid.lower() in serial_port_data["hwid"].lower():
 
                 # -- Special case: TinyFPGA. Ignore usb id if
                 # -- board not detected
-                if "tinyprog" in board_data and not connected:
+                if "tinyprog" in board_info and not connected:
                     continue
 
                 # -- Return the serial port
@@ -792,15 +771,10 @@ class SCons:
         return None
 
     @staticmethod
-    def _check_tinyprog(board_data: dict, port: str) -> bool:
+    def _check_tinyprog(board_info: dict, port: str) -> bool:
         """Check if the correct TinyFPGA board is connected
         * INPUT:
-          * board_data: Dictionary with board information
-             * Board name
-             * FPGA
-             * Programmer type
-             * Programmer name
-             * USB id  (vid, pid)
+          * board_info: Dictionary with board info from boards.json.
           * port: Serial port name
 
         * OUTPUT:
@@ -810,11 +784,11 @@ class SCons:
 
         # -- Check that the given board has the property "tinyprog"
         # -- If not, return False
-        if "tinyprog" not in board_data:
+        if "tinyprog" not in board_info:
             return False
 
         # -- Get the board description from the the apio database
-        board_desc = board_data["tinyprog"]["desc"]
+        board_desc = board_info["tinyprog"]["desc"]
 
         # -- Build a regular expresion for finding this board
         # -- description in the connected board
@@ -846,17 +820,12 @@ class SCons:
         # -- TinyFPGA board not detected!
         return False
 
-    def _get_ftdi_id(self, board, board_data, ext_ftdi_id) -> str:
+    def _get_ftdi_id(self, board, board_info, ext_ftdi_id) -> str:
         """Get the FTDI index of the detected board
 
         * INPUT:
           * board: Board name (string)
-          * board_data: Dictionary with board information
-            * Board name
-            * FPGA
-            * Programmer type
-            * Programmer name
-            * USB id  (vid, pid)
+          * board_info: Dictionary with board info from boards.json.
           * ext_ftdi_id: FTDI index given by the user (optional)
 
         * OUTPUT: It return the FTDI index (as a string)
@@ -866,7 +835,7 @@ class SCons:
         """
 
         # -- Search device by FTDI id
-        ftdi_id = self._check_ftdi(board, board_data, ext_ftdi_id)
+        ftdi_id = self._check_ftdi(board, board_info, ext_ftdi_id)
 
         # -- No FTDI board connected
         if ftdi_id is None:
@@ -877,19 +846,14 @@ class SCons:
         return ftdi_id
 
     def _check_ftdi(
-        self, board: str, board_data: dict, ext_ftdi_id: str
+        self, board: str, board_info: dict, ext_ftdi_id: str
     ) -> str:
         """Check if the given ftdi board is connected or not to the computer
            and return its FTDI index
 
         * INPUT:
           * board: Board name (string)
-          * board_data: Dictionary with board information
-            * Board name
-            * FPGA
-            * Programmer type
-            * Programmer name
-            * USB id  (vid, pid)
+          * board_info: Dictionary with board info from boards.json.
           * ext_ftdi_id: FTDI index given by the user (optional)
 
         * OUTPUT: It return the FTDI index (as a string)
@@ -899,11 +863,11 @@ class SCons:
 
         # -- Check that the given board has the property "ftdi"
         # -- If not, it is an error. Raise an exception
-        if "ftdi" not in board_data:
+        if "ftdi" not in board_info:
             raise AttributeError("Missing board configuration: ftdi")
 
         # -- Get the board description from the the apio database
-        board_desc = board_data["ftdi"]["desc"]
+        board_desc = board_info["ftdi"]["desc"]
 
         # -- Build a regular expresion for finding this board
         # -- description in the connected board
@@ -1019,7 +983,7 @@ class SCons:
             board_color = click.style(processing_board, fg="cyan", bold=True)
 
             # -- Print information on the console
-            click.echo(f"[{date_time_str}] Processing {board_color}")
+            click.secho(f"[{date_time_str}] Processing {board_color}")
 
             # -- Print a horizontal line
             click.secho("-" * terminal_width, bold=True)

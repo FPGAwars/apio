@@ -13,7 +13,6 @@ import click
 from click.core import Context
 from apio import util
 from apio import cmd_util
-from apio.util import get_system_type
 from apio.managers.system import System
 from apio.resources import Resources
 from apio.commands import options
@@ -54,6 +53,15 @@ info_option = click.option(
     cls=cmd_util.ApioOption,
 )
 
+platforms_option = click.option(
+    "platforms",  # Var name.
+    "-p",
+    "--platforms",
+    is_flag=True,
+    help="Show supported platforms ids.",
+    cls=cmd_util.ApioOption,
+)
+
 
 # ---------------------------
 # -- COMMAND
@@ -64,10 +72,11 @@ installation and connectivity issue.
 
 \b
 Examples:
-  apio system --lsftdi    # List FTDI devices
-  apio system --lsusb     # List USB devices
-  apio system --lsserial  # List serial devices
-  apio system --info      # Show platform id
+  apio system --lsftdi     # List FTDI devices
+  apio system --lsusb      # List USB devices
+  apio system --lsserial   # List serial devices
+  apio system --info       # Show platform id and info.
+  apio system --platforms  # Show supported platforms
 
 The flags --lstdi, --lsusb, --lsserial, and --info are exclusive and
 cannot be mixed in the same command.
@@ -76,6 +85,7 @@ cannot be mixed in the same command.
 
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-positional-arguments
+# pylint: disable=too-many-locals
 @click.command(
     "system",
     short_help="Provides system info.",
@@ -88,6 +98,7 @@ cannot be mixed in the same command.
 @lsusb_option
 @lsserial_option
 @info_option
+@platforms_option
 def cli(
     ctx: Context,
     # Options
@@ -96,13 +107,14 @@ def cli(
     lsusb: bool,
     lsserial: bool,
     info: bool,
+    platforms: bool,
 ):
     """Implements the system command. This command executes assorted
     system tools"""
 
     # Make sure these params are exclusive.
-    cmd_util.check_at_most_one_param(
-        ctx, nameof(lsftdi, lsusb, lsserial, info)
+    cmd_util.check_exactly_one_param(
+        ctx, nameof(lsftdi, lsusb, lsserial, info, platforms)
     )
 
     # Load the various resource files.
@@ -129,18 +141,40 @@ def cli(
     # -- Show system information
     if info:
         # -- Print platform id.
-        click.secho("Platform: ", nl=False)
-        click.secho(get_system_type(), fg="yellow")
+        click.secho("Platform id     ", nl=False)
+        click.secho(resources.platform_id, fg="cyan")
 
         # -- Print apio package directory.
-        click.secho("Package:  ", nl=False)
-        click.secho(util.get_path_in_apio_package(""), fg="yellow")
+        click.secho("Python package  ", nl=False)
+        click.secho(util.get_path_in_apio_package(""), fg="cyan")
 
         # -- Print apio home directory.
-        click.secho("Home:     ", nl=False)
-        click.secho(util.get_home_dir(), fg="yellow")
+        click.secho("Apio home       ", nl=False)
+        click.secho(util.get_home_dir(), fg="cyan")
+
+        # -- Print apio home directory.
+        click.secho("Apio packages   ", nl=False)
+        click.secho(util.get_packages_dir(), fg="cyan")
 
         ctx.exit(0)
 
-    # -- Invalid option. Just show the help
-    click.secho(ctx.get_help())
+    if platforms:
+        click.secho(
+            f"  {'[PLATFORM ID]':18} "
+            f"{'[PACKAGE SELECTOR]':20} "
+            f"{'[DESCRIPTION]'}",
+            fg="magenta",
+        )
+        for platform_id, platform_info in resources.platforms.items():
+            description = platform_info.get("description")
+            package_selector = platform_info.get("package_selector")
+            this_package = platform_id == resources.platform_id
+            fg = "green" if this_package else None
+            click.secho(
+                f"  {platform_id:18} {package_selector:20} {description}",
+                fg=fg,
+            )
+        ctx.exit(0)
+
+    # -- Error, no option selected.
+    assert 0, "Non reachable"

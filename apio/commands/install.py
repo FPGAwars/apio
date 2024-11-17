@@ -12,7 +12,7 @@ from typing import Tuple
 from varname import nameof
 import click
 from click.core import Context
-from apio.managers.installer import Installer
+from apio.managers.old_installer import Installer
 from apio.resources import Resources
 from apio import cmd_util
 from apio.commands import options
@@ -22,7 +22,6 @@ from apio.commands import options
 # pylint: disable=R0801
 def install_packages(
     packages: list,
-    platform: str,
     resources: Resources,
     force: bool,
     verbose: bool,
@@ -41,7 +40,7 @@ def install_packages(
         modifiers = Installer.Modifiers(
             force=force, checkversion=True, verbose=verbose
         )
-        installer = Installer(package, platform, resources, modifiers)
+        installer = Installer(package, resources, modifiers)
 
         # -- Install the package!
         installer.install()
@@ -100,21 +99,21 @@ def cli(
 
     # -- Load the resources. We don't care about project specific resources.
     resources = Resources(
-        platform=platform,
+        platform_id_override=platform,
         project_dir=project_dir,
         project_scope=False,
     )
 
     # -- Install the given apio packages
     if packages:
-        install_packages(packages, platform, resources, force, verbose)
+        install_packages(packages, resources, force, verbose)
         ctx.exit(0)
 
     # -- Install all the available packages (if any)
     if all_:
         # -- Install all the available packages for this platform!
         install_packages(
-            resources.platform_packages, platform, resources, force, verbose
+            resources.platform_packages.keys(), resources, force, verbose
         )
         ctx.exit(0)
 

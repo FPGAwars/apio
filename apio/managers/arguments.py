@@ -6,6 +6,7 @@
 """Utilities for procesing the arguments passed to apio commands"""
 
 from functools import wraps
+from typing import Dict, Tuple
 
 import click
 from apio.managers.project import Project, DEFAULT_TOP_MODULE
@@ -29,6 +30,7 @@ PNR = "pnr"  # -- Key for Verbose-pnr
 TOP_MODULE = "top-module"  # -- Key for top-module
 TESTBENCH = "testbench"  # -- Key for testbench file name
 GRAPH_SPEC = "graph_spec"  # -- Key for graph specification
+PLATFORM_ID = "platform_id"  # -- Key for the platform id
 
 
 def debug_params(fun):
@@ -85,8 +87,8 @@ def debug_params(fun):
 # pylint: disable=R0912
 # @debug_params
 def process_arguments(
-    config_ini: dict, resources: type[Resources], project: type[Project]
-) -> tuple:  # noqa
+    config_ini: Dict, resources: Resources, project: Project
+) -> Tuple:  # noqa
     """Get the final CONFIGURATION, depending on the board and
     arguments passed in the command line.
     The config_ini parameter has higher priority. If not specified,
@@ -127,6 +129,7 @@ def process_arguments(
         TOP_MODULE: None,
         TESTBENCH: None,
         GRAPH_SPEC: None,
+        PLATFORM_ID: None,
     }
 
     # -- Merge the initial configuration to the current configuration
@@ -238,6 +241,9 @@ def process_arguments(
 
             click.secho("Using the default top-module: `main`", fg="blue")
 
+    # -- Set the platform id.
+    config[PLATFORM_ID] = resources.platform_id
+
     # -- Debug: Print current configuration
     # print_configuration(config)
 
@@ -261,6 +267,7 @@ def process_arguments(
             "top_module": config[TOP_MODULE],
             "testbench": config[TESTBENCH],
             "graph_spec": config[GRAPH_SPEC],
+            "platform_id": config[PLATFORM_ID],
         }
     )
 
@@ -344,6 +351,7 @@ def print_configuration(config: dict) -> None:
     print(f"  top-module: {config[TOP_MODULE]}")
     print(f"  testbench: {config[TESTBENCH]}")
     print(f"  graph_spec: {config[GRAPH_SPEC]}")
+    print(f"  platform_id: {config[PLATFORM_ID]}")
     print("  verbose:")
     print(f"    all: {config[VERBOSE][ALL]}")
     # These two flags appear only in some of the commands.
