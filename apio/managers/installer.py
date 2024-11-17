@@ -13,7 +13,7 @@ from typing import Tuple
 import shutil
 import click
 import requests
-from apio import util
+from apio import util, pkg_util
 from apio.resources import Resources
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
@@ -208,12 +208,12 @@ def _parse_package_spec(package_spec: str) -> Tuple[str, str]:
 
 
 def _delete_package_dir(
-    resources: Resources, package_name: str, verbose: bool
+    resources: Resources, package_id: str, verbose: bool
 ) -> bool:
     """Delete the directory of the package with given name.  Returns
     True if the packages existed. Exits with an error message on error."""
 
-    package_dir = resources.get_package_dir(package_name)
+    package_dir = resources.get_package_dir(package_id)
 
     dir_found = package_dir.is_dir()
     if dir_found:
@@ -221,7 +221,7 @@ def _delete_package_dir(
             click.secho(f"Deleting {str(package_dir)}")
 
         # -- Sanity check the path and delete.
-        package_folder_name = resources.get_package_folder_name(package_name)
+        package_folder_name = resources.get_package_folder_name(package_id)
         assert package_folder_name in str(package_dir), package_dir
         shutil.rmtree(package_dir)
 
@@ -396,3 +396,40 @@ def uninstall_package(
     else:
         # -- Package not installed. We treat it as a success.
         click.secho(f"Package '{package_name}' was not installed", fg="green")
+
+
+def fix_packages(
+    resources: Resources, scan: pkg_util.PackageScanResults, verbose: bool
+) -> None:
+    """If the package scan result contains errors, fix them."""
+
+    # -- If non verbose, print a summary message.
+    if not verbose:
+        click.secho(
+            f"Fixing {util.count(scan.num_errors(), 'package error')}."
+        )
+
+    # -- Fix broken packages.
+    for package_id in scan.broken_package_ids:
+        if verbose:
+            print(f"Uninstalling broken package '{package_id}'")
+        _delete_package_dir(resources, package_id, verbose=False)
+        resources.profile.remove_package(package_id)
+        resources.profile.save()
+
+    for package_id in scan.orphan_package_ids:
+        if verbose:
+            print(f"Uninstalling unknown package '{package_id}'")
+        resources.profile.remove_package(package_id)
+        resources.profile.save()
+
+    for dir_name in scan.orphan_dir_names:
+        if verbose:
+            print(f"Deleting unknown dir '{dir_name}'")
+        shutil.rmtree(util.get_packages_dir() / dir_name)
+
+    for file_name in scan.orphan_file_names:
+        if verbose:
+            print(f"Deleting unknown file '{file_name}'")
+        file_path = util.get_packages_dir() / file_name
+        file_path.unlink()

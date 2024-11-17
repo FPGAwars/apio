@@ -6,7 +6,7 @@
 from apio.commands.packages import cli as cmd_packages
 
 
-def test_packages(clirunner, configenv, validate_cliresult):
+def test_packages(clirunner, configenv):
     """Test "apio packages" with different parameters"""
 
     with clirunner.isolated_filesystem():
@@ -18,13 +18,14 @@ def test_packages(clirunner, configenv, validate_cliresult):
         result = clirunner.invoke(cmd_packages)
         assert result.exit_code == 1, result.output
         assert (
-            "One of [--list, --install, --uninstall] "
+            "One of [--list, --install, --uninstall, --fix] "
             "must be specified" in result.output
         )
 
         # -- Execute "apio packages --list"
         result = clirunner.invoke(cmd_packages, ["--list"])
-        validate_cliresult(result)
+        assert result.exit_code == 0, result.output
+        assert "No errors" in result.output
 
         # -- Execute "apio packages --install missing_package"
         result = clirunner.invoke(
