@@ -196,17 +196,6 @@ ftdi_id = click.option(
 )
 
 
-# -- NOTE: Not using -p to avoid conflict with --project-dir.
-platform_option = click.option(
-    "platform",  # Var name.
-    "--platform",
-    type=str,
-    metavar="platform_id",
-    help=("(Advanced, for developers) Platform id override."),
-    cls=cmd_util.ApioOption,
-)
-
-
 project_dir_option = click.option(
     "project_dir",  # Var name.
     "-p",

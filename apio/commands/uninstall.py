@@ -66,7 +66,6 @@ command 'apio packages' instead.
 @options.list_option_gen(help="List all installed packages.")
 @options.all_option_gen(help="Uninstall all packages.")
 @options.project_dir_option
-@options.platform_option
 @options.sayyes
 @options.verbose_option
 def cli(
@@ -77,7 +76,6 @@ def cli(
     list_: bool,
     all_: bool,
     project_dir: Path,
-    platform: str,
     sayyes: bool,
     verbose: bool,
 ):
@@ -94,7 +92,6 @@ def cli(
 
     # -- Load the resources.
     resources = Resources(
-        platform_id_override=platform,
         project_dir=project_dir,
         project_scope=False,
     )

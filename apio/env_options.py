@@ -14,16 +14,26 @@ variables that are used to modify the default behavior of APIO.
 import os
 from typing import List
 
-# -- Env variable to override the apio home dir ~/.apio
+# -- Env variable to override the apio home dir ~/.apio. If specified,
+# -- it will contains the profile.json file and if APIO_PACKAGES_DIR is not
+# -- specified, the 'packages' directory with the individual packages.
 APIO_HOME_DIR = "APIO_HOME_DIR"
 
 # -- Env variable to override the apio packages dir ~/.apio/packages.
-APIO_PKG_DIR = "APIO_PKG_DIR"
+# -- If specified, it contains the installed packages directories such as
+# -- 'examples' or 'tools-oss-cad-suite.
+APIO_PACKAGES_DIR = "APIO_PACKAGES_DIR"
 
+# -- Env variable to override the platform id that is determined automatically
+# -- from the system properties. If specified, the value should match one
+# -- of the platforms specified in resources/platforms.json.
+APIO_PLATFORM = "APIO_PLATFORM"
 
+# -- List of all supported env options.
 _SUPPORTED_APIO_VARS = [
     APIO_HOME_DIR,
-    APIO_PKG_DIR,
+    APIO_PACKAGES_DIR,
+    APIO_PLATFORM,
 ]
 
 

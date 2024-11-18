@@ -189,7 +189,7 @@ def get_packages_dir() -> Path:
     """Return the base directory of apio packages.
     Packages are installed in the following folder:
       * Default: $APIO_HOME_DIR/packages
-      * $APIO_PKG_DIR/packages: if the APIO_PKG_DIR env variable is set
+      * $APIO_PACKAGES_DIR: if the APIO_PACKAGES_DIR env variable is set
       * INPUT:
         - pkg_name: Package name (Ex. 'examples')
       * OUTPUT:
@@ -198,30 +198,21 @@ def get_packages_dir() -> Path:
         - or None if the packageis not installed
     """
 
-    # -- Get the apio home dir:
-    # -- Ex. '/home/obijuan/.apio'
-    apio_home_dir = get_home_dir()
-
-    # -- Get the APIO_PKG_DIR env variable
+    # -- Get the APIO_PACKAGES_DIR env variable
     # -- It returns None if it was not defined
-    apio_pkg_dir_env = env_options.get(env_options.APIO_PKG_DIR)
+    packaged_dir_override = env_options.get(env_options.APIO_PACKAGES_DIR)
 
-    # -- Get the pkg base dir. It is what the APIO_PKG_DIR env variable
-    # -- says, or the default folder if None
-    if apio_pkg_dir_env:
-        pkg_home_dir = Path(apio_pkg_dir_env)
+    # -- If specified, use the override.
+    if packaged_dir_override:
+        pkg_home_dir = Path(packaged_dir_override)
 
-    # -- Default value
+    # -- Else, use the default value.
     else:
-        pkg_home_dir = apio_home_dir
-
-    # -- Create the package folder
-    # -- Ex '/home/obijuan/.apio/packages/tools-oss-cad-suite'
-    package_dir = pkg_home_dir / "packages"
+        # -- Ex '/home/obijuan/.apio/packages/tools-oss-cad-suite'
+        pkg_home_dir = get_home_dir() / "packages"
 
     # -- Return the folder if it exists
-    # if package_dir.exists():
-    return package_dir
+    return pkg_home_dir
 
 
 def call(cmd):
