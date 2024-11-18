@@ -22,6 +22,7 @@ from pathlib import Path
 import click
 from serial.tools.list_ports import comports
 import requests
+from apio import env_options
 
 # ----------------------------------------
 # -- Constants
@@ -150,39 +151,6 @@ def get_path_in_apio_package(subpath: str) -> Path:
     return path
 
 
-def get_projconf_option_dir(name: str, default=None):
-    """Return the project option with the given name
-    These options are place either on environment variables or
-    into the /etc/apio.json file in the case of debian distributions
-
-    All the APIO environment variables have the prefix "APIO_"
-
-    Project options:
-
-    * home_dir : APIO home directory
-    """
-
-    # -- Get the full name of the environment variable
-    _env_name = f"APIO_{name.upper()}"
-
-    # -- Check if the environment variable
-    # -- is defined
-    if _env_name in os.environ:
-        # -- Read the value of the environmental variable
-        _env_value = os.getenv(_env_name)
-
-        # -- On window systems the environmental variables can
-        # -- include the quotes (""). But not in Linux
-        # -- If there are quotes, remove them
-        if _env_value.startswith('"') and _env_value.endswith('"'):
-            _env_value = _env_value[1:-1]
-
-        return _env_value
-
-    # -- Return the default home_dir
-    return default
-
-
 def get_home_dir() -> Path:
     """Get the APIO Home dir. This is the apio folder where the profle is
     located and the packages installed. The APIO Home dir can be set in the
@@ -195,7 +163,9 @@ def get_home_dir() -> Path:
 
     # -- Get the APIO_HOME_DIR env variable
     # -- It returns None if it was not defined
-    apio_home_dir_env = get_projconf_option_dir("home_dir")
+    apio_home_dir_env = env_options.get(
+        env_options.APIO_HOME_DIR, default=None
+    )
 
     # -- Get the home dir. It is what the APIO_HOME_DIR env variable
     # -- says, or the default folder if None
@@ -234,7 +204,7 @@ def get_packages_dir() -> Path:
 
     # -- Get the APIO_PKG_DIR env variable
     # -- It returns None if it was not defined
-    apio_pkg_dir_env = get_projconf_option_dir("pkg_dir")
+    apio_pkg_dir_env = env_options.get(env_options.APIO_PKG_DIR)
 
     # -- Get the pkg base dir. It is what the APIO_PKG_DIR env variable
     # -- says, or the default folder if None

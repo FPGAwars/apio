@@ -84,6 +84,10 @@ class Installer:
         self.packages_dir = ""
 
         # -- Folder name were the packages are stored
+        # --
+        # -- NOTE: we shouldn't assume the directory name since it can be
+        # -- overriden with APIO_PKG_DIR but since this old installer is
+        # -- going away, we leave this as is.  (Nov 2024)
         dirname = "packages"
 
         # -- If the package is known...

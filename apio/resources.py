@@ -14,7 +14,7 @@ import shutil
 from pathlib import Path
 from typing import Optional, Dict
 import click
-from apio import util
+from apio import util, env_options
 from apio.profile import Profile
 
 
@@ -93,6 +93,15 @@ class Resources:
         'apio packages' uses the global scope while commands such as
         'apio build' use the project scope.
         """
+
+        # -- Inform as soon as possible about the list of apio env options
+        # -- that modify its default behavior.
+        defined_env_options = env_options.get_defined()
+        if defined_env_options:
+            click.secho(
+                f"Active env options {defined_env_options}.", fg="yellow"
+            )
+
         # -- Maps the optional project_dir option to a path.
         self.project_dir: Path = util.get_project_dir(project_dir)
 
