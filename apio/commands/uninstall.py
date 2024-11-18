@@ -13,13 +13,13 @@ from varname import nameof
 import click
 from apio.managers.old_installer import Installer
 from apio import cmd_util
-from apio.resources import Resources
+from apio.resources import ApioContext
 from apio.commands import options
 
 
 # R0801: Similar lines in 2 files
 # pylint: disable=R0801
-def _uninstall(packages: list, resources: Resources, sayyes, verbose: bool):
+def _uninstall(packages: list, apio_ctx: ApioContext, sayyes, verbose: bool):
     """Uninstall the given list of packages"""
 
     # -- Ask the user for confirmation
@@ -32,7 +32,7 @@ def _uninstall(packages: list, resources: Resources, sayyes, verbose: bool):
             modifiers = Installer.Modifiers(
                 force=False, checkversion=False, verbose=verbose
             )
-            installer = Installer(package, resources, modifiers)
+            installer = Installer(package, apio_ctx, modifiers)
 
             # -- Uninstall the package!
             installer.uninstall()
@@ -89,28 +89,25 @@ def cli(
     # Make sure these params are exclusive.
     cmd_util.check_at_most_one_param(cmd_ctx, nameof(packages, list_, all_))
 
-    # -- Load the resources.
-    resources = Resources(
-        project_dir=project_dir,
-        project_scope=False,
-    )
+    # -- Create the apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, project_scope=False)
 
     # -- Uninstall the given apio packages
     if packages:
-        _uninstall(packages, resources, sayyes, verbose)
+        _uninstall(packages, apio_ctx, sayyes, verbose)
         cmd_ctx.exit(0)
 
     # -- Uninstall all the packages
     if all_:
         # -- Get all the installed apio packages
-        packages = resources.profile.packages
+        packages = apio_ctx.profile.packages
         # -- Uninstall them!
-        _uninstall(packages, resources, sayyes, verbose)
+        _uninstall(packages, apio_ctx, sayyes, verbose)
         cmd_ctx.exit(0)
 
     # -- List all the packages (installed or not)
     if list_:
-        resources.list_packages()
+        apio_ctx.list_packages()
         cmd_ctx.exit(0)
 
     # -- Invalid option. Just show the help

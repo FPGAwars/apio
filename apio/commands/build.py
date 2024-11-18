@@ -12,7 +12,7 @@ import click
 from apio.managers.scons import SCons
 from apio import cmd_util
 from apio.commands import options
-from apio.resources import Resources
+from apio.resources import ApioContext
 
 
 # ---------------------------
@@ -78,9 +78,11 @@ def cli(
     # by means of the scons tool
     # https://www.scons.org/documentation.html
 
-    # -- Create the scons object
-    resources = Resources(project_dir=project_dir, project_scope=True)
-    scons = SCons(resources)
+    # -- Create apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, project_scope=True)
+
+    # -- Create the scons manager.
+    scons = SCons(apio_ctx)
 
     # R0801: Similar lines in 2 files
     # pylint: disable=R0801

@@ -13,7 +13,7 @@ from pathlib import Path
 import click
 from apio import util
 from apio import pkg_util
-from apio.resources import Resources
+from apio.resources import ApioContext
 
 FTDI_INSTALL_INSTRUCTIONS_WINDOWS = """
 Please follow these steps:
@@ -136,26 +136,26 @@ class Drivers:
     # Driver to restore: mac os
     driver_c = ""
 
-    def __init__(self, resources: Resources) -> None:
+    def __init__(self, apio_ctx: ApioContext) -> None:
 
-        self.resources = resources
+        self.apio_ctx = apio_ctx
 
     def ftdi_install(self) -> int:
         """Installs the FTDI driver. Function is platform dependent.
         Returns a process exit code.
         """
 
-        if self.resources.is_linux():
+        if self.apio_ctx.is_linux():
             return self._ftdi_install_linux()
 
-        if self.resources.is_darwin():
+        if self.apio_ctx.is_darwin():
             return self._ftdi_install_darwin()
 
-        if self.resources.is_windows():
+        if self.apio_ctx.is_windows():
             return self._ftdi_install_windows()
 
         click.secho(
-            f"Error: unknown platform type '{self.resources.platform_id}'."
+            f"Error: unknown platform type '{self.apio_ctx.platform_id}'."
         )
         return 1
 
@@ -163,16 +163,16 @@ class Drivers:
         """Uninstalls the FTDI driver. Function is platform dependent.
         Returns a process exit code.
         """
-        if self.resources.is_linux():
+        if self.apio_ctx.is_linux():
             return self._ftdi_uninstall_linux()
 
-        if self.resources.is_darwin():
+        if self.apio_ctx.is_darwin():
             return self._ftdi_uninstall_darwin()
 
-        if self.resources.is_windows():
+        if self.apio_ctx.is_windows():
             return self._ftdi_uninstall_windows()
 
-        click.secho(f"Error: unknown platform '{self.resources.platform_id}'.")
+        click.secho(f"Error: unknown platform '{self.apio_ctx.platform_id}'.")
         return 1
 
     def serial_install(self) -> int:
@@ -180,46 +180,46 @@ class Drivers:
         Returns a process exit code.
         """
 
-        if self.resources.is_linux():
+        if self.apio_ctx.is_linux():
             return self._serial_install_linux()
 
-        if self.resources.is_darwin():
+        if self.apio_ctx.is_darwin():
             return self._serial_install_darwin()
 
-        if self.resources.is_windows():
+        if self.apio_ctx.is_windows():
             return self._serial_install_windows()
 
-        click.secho(f"Error: unknown platform '{self.resources.platform_id}'.")
+        click.secho(f"Error: unknown platform '{self.apio_ctx.platform_id}'.")
         return 1
 
     def serial_uninstall(self) -> int:
         """Uninstalls the serial driver. Function is platform dependent.
         Returns a process exit code.
         """
-        if self.resources.is_linux():
+        if self.apio_ctx.is_linux():
             return self._serial_uninstall_linux()
 
-        if self.resources.is_darwin():
+        if self.apio_ctx.is_darwin():
             return self._serial_uninstall_darwin()
 
-        if self.resources.is_windows():
+        if self.apio_ctx.is_windows():
             return self._serial_uninstall_windows()
 
-        click.secho(f"Error: unknown platform '{self.resources.platform_id}'.")
+        click.secho(f"Error: unknown platform '{self.apio_ctx.platform_id}'.")
         return 1
 
     def pre_upload(self):
         """Operations to do before uploading a design
         Only for mac platforms"""
 
-        if self.resources.is_darwin():
+        if self.apio_ctx.is_darwin():
             self._pre_upload_darwin()
 
     def post_upload(self):
         """Operations to do after uploading a design
         Only for mac platforms"""
 
-        if self.resources.is_darwin():
+        if self.apio_ctx.is_darwin():
             self._post_upload_darwin()
 
     def _ftdi_install_linux(self) -> int:
@@ -368,16 +368,16 @@ class Drivers:
         subprocess.call(["brew", "update"])
         self._brew_install_darwin("libffi")
         self._brew_install_darwin("libftdi")
-        self.resources.profile.add_setting("macos_ftdi_drivers", True)
-        self.resources.profile.save()
+        self.apio_ctx.profile.add_setting("macos_ftdi_drivers", True)
+        self.apio_ctx.profile.save()
         click.secho("FTDI drivers installed", fg="green")
         return 0
 
     def _ftdi_uninstall_darwin(self):
         """Uninstalls FTDI driver on darwin. Returns process status code."""
         click.secho("Uninstall FTDI drivers configuration")
-        self.resources.profile.add_setting("macos_ftdi_drivers", False)
-        self.resources.profile.save()
+        self.apio_ctx.profile.add_setting("macos_ftdi_drivers", False)
+        self.apio_ctx.profile.save()
         click.secho("FTDI drivers uninstalled", fg="green")
         return 0
 
@@ -422,7 +422,7 @@ class Drivers:
     #     )
 
     def _pre_upload_darwin(self):
-        if self.resources.profile.settings.get("macos_ftdi_drivers", False):
+        if self.apio_ctx.profile.settings.get("macos_ftdi_drivers", False):
             # Check and unload the drivers
             driver_a = "com.FTDI.driver.FTDIUSBSerialDriver"
             driver_b = "com.apple.driver.AppleUSBFTDI"
@@ -434,7 +434,7 @@ class Drivers:
                 self.driver_c = driver_b
 
     def _post_upload_darwin(self):
-        if self.resources.profile.settings.get("macos_ftdi_drivers", False):
+        if self.apio_ctx.profile.settings.get("macos_ftdi_drivers", False):
             # Restore previous driver configuration
             if self.driver_c:
                 subprocess.call(["sudo", "kextload", "-b", self.driver_c])
@@ -446,10 +446,10 @@ class Drivers:
     # pylint: disable=W0703
     def _ftdi_install_windows(self) -> int:
         # -- Check that the required packages are installed.
-        pkg_util.check_required_packages(["drivers"], self.resources)
+        pkg_util.check_required_packages(["drivers"], self.apio_ctx)
 
         # -- Get the drivers apio package base folder
-        drivers_base_dir = self.resources.get_package_dir("drivers")
+        drivers_base_dir = self.apio_ctx.get_package_dir("drivers")
 
         # -- Path to the zadig.ini file
         # -- It is the zadig config file
@@ -485,7 +485,7 @@ class Drivers:
 
     def _ftdi_uninstall_windows(self) -> int:
         # -- Check that the required packages exist.
-        pkg_util.check_required_packages(["drivers"], self.resources)
+        pkg_util.check_required_packages(["drivers"], self.apio_ctx)
 
         click.secho("\nStarting the interactive Device Manager.", fg="green")
         click.secho(FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS, fg="yellow")
@@ -500,9 +500,9 @@ class Drivers:
     # pylint: disable=W0703
     def _serial_install_windows(self) -> int:
         # -- Check that the required packages exist.
-        pkg_util.check_required_packages(["drivers"], self.resources)
+        pkg_util.check_required_packages(["drivers"], self.apio_ctx)
 
-        drivers_base_dir = self.resources.get_package_dir("drivers")
+        drivers_base_dir = self.apio_ctx.get_package_dir("drivers")
         drivers_bin_dir = drivers_base_dir / "bin"
 
         click.secho("\nStarting the interactive Serial Installer.", fg="green")
@@ -519,7 +519,7 @@ class Drivers:
 
     def _serial_uninstall_windows(self) -> int:
         # -- Check that the required packages exist.
-        pkg_util.check_required_packages(["drivers"], self.resources)
+        pkg_util.check_required_packages(["drivers"], self.apio_ctx)
 
         click.secho("\nStarting the interactive Device Manager.", fg="green")
         click.secho(SERIAL_UNINSTALL_INSTRUCTIONS_WINDOWS, fg="yellow")

@@ -13,7 +13,7 @@ import click
 from apio.managers.examples import Examples
 from apio import cmd_util
 from apio.commands import options
-from apio.resources import Resources
+from apio.resources import ApioContext
 
 # ---------------------------
 # -- COMMAND SPECIFIC OPTIONS
@@ -97,9 +97,9 @@ def cli(
         cmd_ctx, nameof(list_, fetch_dir, fetch_files)
     )
 
-    # -- Access to the Drivers
-    resources = Resources(project_scope=False)
-    examples = Examples(resources)
+    # -- Access to the examples.
+    apio_ctx = ApioContext(project_scope=False)
+    examples = Examples(apio_ctx)
 
     # -- Option: Copy the directory
     if fetch_dir:

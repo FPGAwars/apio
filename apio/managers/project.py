@@ -15,7 +15,7 @@ from typing import Optional
 from configobj import ConfigObj
 import click
 from apio import util
-from apio.resources import Resources
+from apio.resources import ApioContext
 
 # -- Apio projecto filename
 PROJECT_FILENAME = "apio.ini"
@@ -38,15 +38,18 @@ class Project:
 
     @staticmethod
     def create_ini(
-        resources: Resources, board: str, top_module: str, sayyes: bool = False
+        apio_ctx: ApioContext,
+        board: str,
+        top_module: str,
+        sayyes: bool = False,
     ) -> bool:
         """Creates a new apio project file. Returns True if ok."""
 
         # -- Construct the path
-        ini_path = resources.project_dir / PROJECT_FILENAME
+        ini_path = apio_ctx.project_dir / PROJECT_FILENAME
 
         # -- Verify that the board id is valid.
-        boards = resources.boards
+        boards = apio_ctx.boards
         if board not in boards.keys():
             click.secho(f"Error: no such board '{board}'", fg="red")
             return False
@@ -86,17 +89,17 @@ class Project:
 
     @staticmethod
     def modify_ini_file(
-        resources: Resources, board: Optional[str], top_module: Optional[str]
+        apio_ctx: ApioContext, board: Optional[str], top_module: Optional[str]
     ) -> bool:
         """Update the current ini file with the given optional parameters.
         Returns True if ok."""
 
         # -- construct the file path.
-        ini_path = resources.project_dir / PROJECT_FILENAME
+        ini_path = apio_ctx.project_dir / PROJECT_FILENAME
 
         # -- Verify that the board id is valid.
         if board:
-            boards = resources.boards
+            boards = apio_ctx.boards
             if board not in boards.keys():
                 click.secho(
                     f"Error: no such board '{board}'.\n"

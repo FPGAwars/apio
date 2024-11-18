@@ -11,7 +11,7 @@ from varname import nameof
 import click
 from apio.managers.drivers import Drivers
 from apio import cmd_util
-from apio.resources import Resources
+from apio.resources import ApioContext
 
 # ---------------------------
 # -- COMMAND SPECIFIC OPTIONS
@@ -97,8 +97,8 @@ def cli(
     )
 
     # -- Access to the Drivers
-    resources = Resources(project_scope=False)
-    drivers = Drivers(resources)
+    apio_ctx = ApioContext(project_scope=False)
+    drivers = Drivers(apio_ctx)
 
     # -- FTDI install option
     if ftdi_install:

@@ -13,7 +13,7 @@ import click
 from apio import util
 from apio import cmd_util
 from apio.managers.system import System
-from apio.resources import Resources
+from apio.resources import ApioContext
 from apio.commands import options
 
 # ---------------------------
@@ -118,11 +118,11 @@ def cli(
         cmd_ctx, nameof(lsftdi, lsusb, lsserial, info, platforms)
     )
 
-    # Load the various resource files.
-    resources = Resources(project_dir=project_dir, project_scope=False)
+    # Create the apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, project_scope=False)
 
     # -- Create the system object
-    system = System(resources)
+    system = System(apio_ctx)
 
     # -- List all connected ftdi devices
     if lsftdi:
@@ -143,7 +143,7 @@ def cli(
     if info:
         # -- Print platform id.
         click.secho("Platform id     ", nl=False)
-        click.secho(resources.platform_id, fg="cyan")
+        click.secho(apio_ctx.platform_id, fg="cyan")
 
         # -- Print apio package directory.
         click.secho("Python package  ", nl=False)
@@ -166,10 +166,10 @@ def cli(
             f"{'[DESCRIPTION]'}",
             fg="magenta",
         )
-        for platform_id, platform_info in resources.platforms.items():
+        for platform_id, platform_info in apio_ctx.platforms.items():
             description = platform_info.get("description")
             package_selector = platform_info.get("package_selector")
-            this_package = platform_id == resources.platform_id
+            this_package = platform_id == apio_ctx.platform_id
             fg = "green" if this_package else None
             click.secho(
                 f"  {platform_id:18} {package_selector:20} {description}",

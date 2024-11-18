@@ -13,7 +13,7 @@ from apio.managers.project import Project, DEFAULT_TOP_MODULE, PROJECT_FILENAME
 from apio import util
 from apio import cmd_util
 from apio.commands import options
-from apio.resources import Resources
+from apio.resources import ApioContext
 
 
 # ---------------------------
@@ -74,15 +74,15 @@ def cli(
     if not top_module:
         top_module = DEFAULT_TOP_MODULE
 
-    # -- Load resources. We use project scope in case the project dir
+    # -- Create an apio context. We use project scope in case the project dir
     # -- already has a custom boards.json file so we validate 'board'
     # -- against that board list.
-    resources = Resources(project_dir=project_dir, project_scope=True)
+    apio_ctx = ApioContext(project_dir=project_dir, project_scope=True)
 
     project_dir = util.get_project_dir(project_dir)
 
     # Create the apio.ini file
-    ok = Project.create_ini(resources, board, top_module, sayyes)
+    ok = Project.create_ini(apio_ctx, board, top_module, sayyes)
 
     exit_code = 0 if ok else 1
     cmd_ctx.exit(exit_code)

@@ -12,7 +12,7 @@ from typing import Tuple
 from varname import nameof
 import click
 from apio.managers.old_installer import Installer
-from apio.resources import Resources
+from apio.resources import ApioContext
 from apio import cmd_util
 from apio.commands import options
 
@@ -21,7 +21,7 @@ from apio.commands import options
 # pylint: disable=R0801
 def install_packages(
     packages: list,
-    resources: Resources,
+    apio_ctx: ApioContext,
     force: bool,
     verbose: bool,
 ):
@@ -39,7 +39,7 @@ def install_packages(
         modifiers = Installer.Modifiers(
             force=force, checkversion=True, verbose=verbose
         )
-        installer = Installer(package, resources, modifiers)
+        installer = Installer(package, apio_ctx, modifiers)
 
         # -- Install the package!
         installer.install()
@@ -94,28 +94,29 @@ def cli(
     # Make sure these params are exclusive.
     cmd_util.check_at_most_one_param(cmd_ctx, nameof(packages, all_, list_))
 
-    # -- Load the resources. We don't care about project specific resources.
-    resources = Resources(
+    # -- Create an apio context. We don't care about project specific
+    # -- configuration.
+    apio_ctx = ApioContext(
         project_dir=project_dir,
         project_scope=False,
     )
 
     # -- Install the given apio packages
     if packages:
-        install_packages(packages, resources, force, verbose)
+        install_packages(packages, apio_ctx, force, verbose)
         cmd_ctx.exit(0)
 
     # -- Install all the available packages (if any)
     if all_:
         # -- Install all the available packages for this platform!
         install_packages(
-            resources.platform_packages.keys(), resources, force, verbose
+            apio_ctx.platform_packages.keys(), apio_ctx, force, verbose
         )
         cmd_ctx.exit(0)
 
     # -- List all the packages (installed or not)
     if list_:
-        resources.list_packages()
+        apio_ctx.list_packages()
         cmd_ctx.exit(0)
 
     # -- Invalid option. Just show the help

@@ -10,7 +10,7 @@
 from pathlib import Path
 from varname import nameof
 import click
-from apio.resources import Resources
+from apio.resources import ApioContext
 from apio import cmd_util
 from apio.commands import options
 
@@ -73,18 +73,18 @@ def cli(
     # Make sure these params are exclusive.
     cmd_util.check_at_most_one_param(cmd_ctx, nameof(list_, fpgas))
 
-    # -- Access to the apio resources. We need project scope since the project
+    # -- Create an apio context. We need project scope since the project
     # -- may override the list of boards.
-    resources = Resources(project_dir=project_dir, project_scope=True)
+    apio_ctx = ApioContext(project_dir=project_dir, project_scope=True)
 
     # -- Option 1: List boards
     if list_:
-        resources.list_boards()
+        apio_ctx.list_boards()
         cmd_ctx.exit(0)
 
     # -- Option 2: List fpgas
     if fpgas:
-        resources.list_fpgas()
+        apio_ctx.list_fpgas()
         cmd_ctx.exit(0)
 
     # -- No options: show help

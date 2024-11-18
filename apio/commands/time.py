@@ -12,7 +12,7 @@ import click
 from apio.managers.scons import SCons
 from apio import cmd_util
 from apio.commands import options
-from apio.resources import Resources
+from apio.resources import ApioContext
 
 
 # ---------------------------
@@ -67,9 +67,11 @@ def cli(
         fg="yellow",
     )
 
-    # -- Create the scons object
-    resources = Resources(project_dir=project_dir, project_scope=True)
-    scons = SCons(resources)
+    # -- Create the apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, project_scope=True)
+
+    # -- Create the scons manager.
+    scons = SCons(apio_ctx)
 
     # Run scons
     exit_code = scons.time(

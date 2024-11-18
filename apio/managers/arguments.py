@@ -7,12 +7,9 @@
 
 from functools import wraps
 from typing import Dict, Tuple
-
 import click
 from apio.managers.project import Project, DEFAULT_TOP_MODULE
-
-# -- Class for accesing api resources (boards, fpgas...)
-from apio.resources import Resources
+from apio.resources import ApioContext
 
 
 # ----- Constant for accesing dicctionaries
@@ -87,7 +84,7 @@ def debug_params(fun):
 # pylint: disable=R0912
 # @debug_params
 def process_arguments(
-    config_ini: Dict, resources: Resources, project: Project
+    config_ini: Dict, apio_ctx: ApioContext, project: Project
 ) -> Tuple:  # noqa
     """Get the final CONFIGURATION, depending on the board and
     arguments passed in the command line.
@@ -104,7 +101,7 @@ def process_arguments(
            'verbose': dict  //-- Verbose level
            'top-module`: str  //-- Top module name
          }
-       * Resources: Object for accessing the apio resources
+       * apio_ctx: Object for accessing the apio configuration and state.
        * Project: the contentn of apio.ini, possibly empty if does not exist.
     * OUTPUT:
       * Return a tuple (flags, board, arch)
@@ -174,11 +171,11 @@ def process_arguments(
 
         # -- First, check if the board is valid
         # -- If not, exit
-        if config[BOARD] not in resources.boards:
+        if config[BOARD] not in apio_ctx.boards:
             raise ValueError(f"unknown board: {config[BOARD]}")
 
         # -- Read the FPGA name for the current board
-        fpga = resources.boards.get(config[BOARD]).get(FPGA)
+        fpga = apio_ctx.boards.get(config[BOARD]).get(FPGA)
 
         # -- Add it to the current configuration
         update_config_item(config, FPGA, fpga)
@@ -190,7 +187,7 @@ def process_arguments(
 
     # -- Check if the FPGA is valid
     # -- If not, exit
-    if config[FPGA] not in resources.fpgas:
+    if config[FPGA] not in apio_ctx.fpgas:
         raise ValueError(f"unknown FPGA: {config[FPGA]}")
 
     # -- Update the FPGA items according to the current board and fpga
@@ -199,7 +196,7 @@ def process_arguments(
     # -- (The board determine the fpga and the size, but the user has
     # --  specificied a different size. It is a contradiction!)
     for item in [ARCH, TYPE, SIZE, PACK, IDCODE]:
-        update_config_fpga_item(config, item, resources)
+        update_config_fpga_item(config, item, apio_ctx)
 
     # -- We already have a final configuration
     # -- Check that this configuration is ok
@@ -242,7 +239,7 @@ def process_arguments(
             click.secho("Using the default top-module: `main`", fg="blue")
 
     # -- Set the platform id.
-    config[PLATFORM_ID] = resources.platform_id
+    config[PLATFORM_ID] = apio_ctx.platform_id
 
     # -- Debug: Print current configuration
     # print_configuration(config)
@@ -274,7 +271,7 @@ def process_arguments(
     return flags, config[BOARD], config[ARCH]
 
 
-def update_config_fpga_item(config, item, resources):
+def update_config_fpga_item(config, item, apio_ctx: ApioContext):
     """Update an item for the current FPGA configuration, if there is no
     contradiction.
     It raises an exception in case of contradiction: the current FPGA item
@@ -285,8 +282,8 @@ def update_config_fpga_item(config, item, resources):
       * value: New valur for the FPGA item, if there is no contradiction
     """
 
-    # -- Read the FPGA item from the apio resources
-    fpga_item = resources.fpgas.get(config[FPGA]).get(item)
+    # -- Read the FPGA item from the apio context.
+    fpga_item = apio_ctx.fpgas.get(config[FPGA]).get(item)
 
     # -- Update the current configuration with that item
     # -- and check that there are no contradictions

@@ -13,7 +13,7 @@ from varname import nameof
 from apio.managers.scons import SCons
 from apio import cmd_util
 from apio.commands import options
-from apio.resources import Resources
+from apio.resources import ApioContext
 
 # ---------------------------
 # -- COMMAND SPECIFIC OPTIONS
@@ -98,11 +98,11 @@ def cli(
     else:
         graph_spec = "svg"
 
-    # -- Load apio resources.
-    resources = Resources(project_dir=project_dir, project_scope=True)
+    # -- Create an apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, project_scope=True)
 
-    # -- Create the scons object.
-    scons = SCons(resources)
+    # -- Create the scons manager.
+    scons = SCons(apio_ctx)
 
     # -- Graph the project with the given parameters
     exit_code = scons.graph(

@@ -13,7 +13,7 @@ import click
 from apio.managers.project import Project
 from apio import cmd_util
 from apio.commands import options
-from apio.resources import Resources
+from apio.resources import ApioContext
 
 
 # ---------------------------
@@ -61,11 +61,11 @@ def cli(
     # At least one of these options are required.
     cmd_util.check_at_least_one_param(cmd_ctx, nameof(board, top_module))
 
-    # Load resources.
-    resources = Resources(project_dir=project_dir, project_scope=True)
+    # Create an apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, project_scope=True)
 
     # Create the apio.ini file
-    ok = Project.modify_ini_file(resources, board, top_module)
+    ok = Project.modify_ini_file(apio_ctx, board, top_module)
 
     exit_code = 0 if ok else 1
     cmd_ctx.exit(exit_code)

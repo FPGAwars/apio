@@ -16,7 +16,7 @@ import os
 import sys
 import click
 import semantic_version
-from apio.resources import Resources
+from apio.resources import ApioContext
 from apio import util
 
 
@@ -42,12 +42,12 @@ class _PackageDesc:
     env_func: Callable[[Path], EnvMutations]
 
 
-def _get_env_mutations_for_packages(resources: Resources) -> EnvMutations:
+def _get_env_mutations_for_packages(apio_ctx: ApioContext) -> EnvMutations:
     """Collects the env mutation for each of the defined packages,
     in the order they are defined."""
 
     result = EnvMutations([], [])
-    for _, package_config in resources.platform_packages.items():
+    for _, package_config in apio_ctx.platform_packages.items():
         # -- Get the json 'env' section. We require it, even if it's empty,
         # -- for clarity reasons.
         assert "env" in package_config
@@ -65,13 +65,15 @@ def _get_env_mutations_for_packages(resources: Resources) -> EnvMutations:
     return result
 
 
-def _dump_env_mutations(mutations: EnvMutations, resources: Resources) -> None:
+def _dump_env_mutations(
+    mutations: EnvMutations, apio_ctx: ApioContext
+) -> None:
     """For debugging. Delete once stabalizing the new oss-cad-suite on
     windows."""
     click.secho("Envirnment settings:", fg="magenta")
 
     # -- Print PATH mutations.
-    windows = resources.is_windows()
+    windows = apio_ctx.is_windows()
     for p in reversed(mutations.paths):
         styled_name = click.style("PATH", fg="magenta")
         if windows:
@@ -108,7 +110,7 @@ def _apply_env_mutations(mutations: EnvMutations) -> None:
 __ENV_ALREADY_SET_FLAG = False
 
 
-def set_env_for_packages(resources: Resources, verbose: bool = False) -> None:
+def set_env_for_packages(apio_ctx: ApioContext, verbose: bool = False) -> None:
     """Sets the environment variables for using all the that are
     available for this platform, even if currently not installed.
 
@@ -119,10 +121,10 @@ def set_env_for_packages(resources: Resources, verbose: bool = False) -> None:
     global __ENV_ALREADY_SET_FLAG
 
     # -- Collect the env mutations for all packages.
-    mutations = _get_env_mutations_for_packages(resources)
+    mutations = _get_env_mutations_for_packages(apio_ctx)
 
     if verbose:
-        _dump_env_mutations(mutations, resources)
+        _dump_env_mutations(mutations, apio_ctx)
 
     # -- If this is the first call, apply the mutations. These mutations are
     # -- temporary for the lifetime of this process and does not affect the
@@ -136,7 +138,7 @@ def set_env_for_packages(resources: Resources, verbose: bool = False) -> None:
 
 
 def check_required_packages(
-    required_packages_names: List[str], resources: Resources
+    required_packages_names: List[str], apio_ctx: ApioContext
 ) -> None:
     """Checks that the packages whose names are in 'packages_names' are
     installed and have a version that meets the requirements. If any error,
@@ -144,18 +146,18 @@ def check_required_packages(
     code.
     """
 
-    installed_packages = resources.profile.packages
-    spec_packages = resources.distribution.get("packages")
+    installed_packages = apio_ctx.profile.packages
+    spec_packages = apio_ctx.distribution.get("packages")
 
     # -- Check packages
     for package_name in required_packages_names:
         # -- Package name must be in all_packages. Otherwise it's a programming
         # -- error.
-        if package_name not in resources.all_packages:
+        if package_name not in apio_ctx.all_packages:
             raise RuntimeError(f"Unknown package named [{package_name}]")
 
         # -- Skip if packages is not applicable to this platform.
-        if package_name not in resources.platform_packages:
+        if package_name not in apio_ctx.platform_packages:
             continue
 
         # -- The package is applicable to this platform. Check installed
@@ -167,7 +169,7 @@ def check_required_packages(
         # -- Check the installed version against the required version.
         spec_version = spec_packages.get(package_name, "")
         _check_required_package(
-            package_name, current_version, spec_version, resources
+            package_name, current_version, spec_version, apio_ctx
         )
 
 
@@ -175,7 +177,7 @@ def _check_required_package(
     package_name: str,
     current_version: Optional[str],
     spec_version: str,
-    resources: Resources,
+    apio_ctx: ApioContext,
 ) -> None:
     """Checks that the package with the given packages is installed and
     has a version that meets the requirements. If any error, it prints an
@@ -185,7 +187,7 @@ def _check_required_package(
     'current_version' - the version of the install package or None if not
         installed.
     'spec_version' - a specification of the required version.
-    'resources' - the apio resources.
+    'apio_ctx' - the apio context.
     """
     # -- Case 1: Package is not installed.
     if current_version is None:
@@ -208,7 +210,7 @@ def _check_required_package(
         sys.exit(1)
 
     # -- Case 3: The package's directory does not exist.
-    package_dir = resources.get_package_dir(package_name)
+    package_dir = apio_ctx.get_package_dir(package_name)
     if package_dir and not package_dir.is_dir():
         message = f"Error: package '{package_name}' is installed but missing"
         click.secho(message, fg="red")
@@ -294,7 +296,7 @@ class PackageScanResults:
         print(f"  Orphan files {self.orphan_file_names}")
 
 
-def scan_packages(resources: Resources) -> PackageScanResults:
+def scan_packages(apio_ctx: ApioContext) -> PackageScanResults:
     """Scans the available and installed packages and returns
     the findings as a PackageScanResults object."""
 
@@ -307,14 +309,14 @@ def scan_packages(resources: Resources) -> PackageScanResults:
 
     # -- Scan packages ids in platform_packages and populate
     # -- the installed/uninstall/broken packages lists.
-    for package_id in resources.platform_packages.keys():
+    for package_id in apio_ctx.platform_packages.keys():
         # -- Collect package's folder names in a set. For a later use.
-        package_folder_name = resources.get_package_folder_name(package_id)
+        package_folder_name = apio_ctx.get_package_folder_name(package_id)
         platform_folder_names.add(package_folder_name)
 
         # -- Classify the package as one of three cases.
-        in_profile = package_id in resources.profile.packages
-        has_dir = resources.get_package_dir(package_id).is_dir()
+        in_profile = package_id in apio_ctx.profile.packages
+        has_dir = apio_ctx.get_package_dir(package_id).is_dir()
         if in_profile and has_dir:
             result.installed_package_ids.append(package_id)
         elif not in_profile and not has_dir:
@@ -324,8 +326,8 @@ def scan_packages(resources: Resources) -> PackageScanResults:
 
     # -- Scan the packagtes ids that are registered in profile as installed
     # -- the ones that are not platform_packages as orphans.
-    for package_id in resources.profile.packages:
-        if package_id not in resources.platform_packages:
+    for package_id in apio_ctx.profile.packages:
+        if package_id not in apio_ctx.platform_packages:
             result.orphan_package_ids.append(package_id)
 
     # -- Scan the packages directory and identify orphan dirs and files.
@@ -360,12 +362,12 @@ def _list_section(title: str, items: List[List[str]], color: str) -> None:
     click.secho(dline, fg=color)
 
 
-def list_packages(resources: Resources, scan: PackageScanResults) -> None:
+def list_packages(apio_ctx: ApioContext, scan: PackageScanResults) -> None:
     """Prints in a user friendly format the results of a packages scan."""
 
     # -- Shortcuts to reduce clutter.
-    get_package_version = resources.profile.get_package_installed_version
-    get_package_info = resources.get_package_info
+    get_package_version = apio_ctx.profile.get_package_installed_version
+    get_package_info = apio_ctx.get_package_info
 
     # --Print the installed packages, if any.
     if scan.installed_package_ids:

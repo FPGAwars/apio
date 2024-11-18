@@ -9,7 +9,7 @@
 
 import click
 from apio import util, pkg_util, cmd_util
-from apio.resources import Resources
+from apio.resources import ApioContext
 
 
 # ---------------------------
@@ -74,12 +74,12 @@ def cli(
     # -- if --env option is specifies and prepare the env for the command
     # -- execution below.
     if cmd or env:
-        resources = Resources(project_scope=False)
-        pkg_util.set_env_for_packages(resources, verbose=env)
+        apio_ctx = ApioContext(project_scope=False)
+        pkg_util.set_env_for_packages(apio_ctx, verbose=env)
 
     if cmd:
         # -- Make sure that at least the oss-cad-suite is installed.
-        pkg_util.check_required_packages(["oss-cad-suite"], resources)
+        pkg_util.check_required_packages(["oss-cad-suite"], apio_ctx)
 
         # -- Invoke the command.
         exit_code = util.call(cmd)

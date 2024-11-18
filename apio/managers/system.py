@@ -12,15 +12,15 @@ import click
 
 from apio import util
 from apio import pkg_util
-from apio.resources import Resources
+from apio.resources import ApioContext
 
 
 class System:  # pragma: no cover
     """System class. Managing and execution of the system commands"""
 
-    def __init__(self, resources: Resources):
+    def __init__(self, apio_ctx: ApioContext):
 
-        self.resources = resources
+        self.apio_ctx = apio_ctx
 
     def _lsftdi_fatal_error(self, result: util.CommandResult) -> None:
         """Handles a failure of a 'lsftdi' command. Print message and exits."""
@@ -31,7 +31,7 @@ class System:  # pragma: no cover
         click.secho("Error: the 'lsftdi' command failed.", fg="red")
 
         # -- A special hint for zadig on windows.
-        if self.resources.is_windows():
+        if self.apio_ctx.is_windows():
             click.secho(
                 "\n"
                 "[Hint]: did you install the ftdi driver using "
@@ -152,15 +152,15 @@ class System:  # pragma: no cover
         """
 
         # -- Check that the required package exists.
-        pkg_util.check_required_packages(["oss-cad-suite"], self.resources)
+        pkg_util.check_required_packages(["oss-cad-suite"], self.apio_ctx)
 
         # -- Set system env for using the packages.
-        pkg_util.set_env_for_packages(self.resources)
+        pkg_util.set_env_for_packages(self.apio_ctx)
 
         # pylint: disable=fixme
         # TODO: Is this necessary or does windows accepts commands without
         # the '.exe' extension?
-        if self.resources.is_windows():
+        if self.apio_ctx.is_windows():
             command = command + ".exe"
 
         # -- Set the stdout and stderr callbacks, when executing the command

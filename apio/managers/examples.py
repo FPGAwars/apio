@@ -13,7 +13,7 @@ from typing import Optional, Tuple, List
 import click
 from apio import util
 from apio import pkg_util
-from apio.resources import Resources
+from apio.resources import ApioContext
 
 # -- Error messages
 EXAMPLE_NOT_FOUND_MSG = """
@@ -43,20 +43,20 @@ class ExampleInfo:
 class Examples:
     """Manage the apio examples"""
 
-    def __init__(self, resources: Resources):
+    def __init__(self, apio_ctx: ApioContext):
 
-        # -- Access to the resources
-        self.resources = resources
+        # -- Save the apio context.
+        self.apio_ctx = apio_ctx
 
         # -- Folder where the example packages was installed
-        self.examples_dir = resources.get_package_dir("examples")
+        self.examples_dir = apio_ctx.get_package_dir("examples")
 
     def get_examples_infos(self) -> Optional[List[ExampleInfo]]:
         """Scans the examples and returns a list of ExampleInfos.
         Returns null if an error."""
 
         # -- Check that the example package is installed
-        pkg_util.check_required_packages(["examples"], self.resources)
+        pkg_util.check_required_packages(["examples"], self.apio_ctx)
 
         # -- Collect the examples home dir each board.
         boards_dirs: List[PosixPath] = []
@@ -99,7 +99,7 @@ class Examples:
         code, 0 if ok, non zero otherwise."""
 
         # -- Check that the examples package is installed.
-        pkg_util.check_required_packages(["examples"], self.resources)
+        pkg_util.check_required_packages(["examples"], self.apio_ctx)
 
         # -- Get list of examples.
         examples: List[ExampleInfo] = self.get_examples_infos()
@@ -153,7 +153,7 @@ class Examples:
         """
 
         # -- Check that the examples package is installed.
-        pkg_util.check_required_packages(["examples"], self.resources)
+        pkg_util.check_required_packages(["examples"], self.apio_ctx)
 
         # -- Get the working dir (current or given)
         project_dir = util.get_project_dir(project_dir, create_if_missing=True)
@@ -211,7 +211,7 @@ class Examples:
         """
 
         # -- Check that the examples package is installed.
-        pkg_util.check_required_packages(["examples"], self.resources)
+        pkg_util.check_required_packages(["examples"], self.apio_ctx)
 
         # -- Get the working dir (current or given)
         dst_example_path = util.get_project_dir(

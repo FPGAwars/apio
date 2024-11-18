@@ -1,4 +1,4 @@
-"""Resources module"""
+"""The apio context."""
 
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
@@ -75,8 +75,8 @@ DISTRIBUTION_JSON = "distribution.json"
 
 
 # pylint: disable=too-many-instance-attributes
-class Resources:
-    """Resource manager. Class for accesing to all the resources."""
+class ApioContext:
+    """Apio context. Class for accesing apio resources and configurations."""
 
     def __init__(
         self,
@@ -84,11 +84,11 @@ class Resources:
         project_scope: bool,
         project_dir: Optional[Path] = None,
     ):
-        """Initializes the Resources object. 'project dir' is an optional path
-        to the project dir, otherwise, the current directory is used.
-        'project_scope' indicates if project specfic resources such as
+        """Initializes the ApioContext object. 'project dir' is an optional
+        path to the project dir, otherwise, the current directory is used.
+        'project_scope' indicates if project specfic context such as
         boards.json should be loaded, if available' or that the global
-        default resources should be used instead.  Some commands such as
+        default context should be used instead.  Some commands such as
         'apio packages' uses the global scope while commands such as
         'apio build' use the project scope.
         """
@@ -117,7 +117,7 @@ class Resources:
         self.all_packages = self._load_resource(PACKAGES_JSON)
 
         # -- Expand in place the env templates in all_packages.
-        Resources._resolve_package_envs(self.all_packages)
+        ApioContext._resolve_package_envs(self.all_packages)
 
         # The subset of packages that are applicable to this platform.
         self.platform_packages = self._select_packages_for_platform(
@@ -292,14 +292,14 @@ class Resources:
             # -- Expand the values in the "path" section, if any.
             path_section = package_env.get("path", [])
             for i, path_template in enumerate(path_section):
-                path_section[i] = Resources._expand_env_template(
+                path_section[i] = ApioContext._expand_env_template(
                     path_template, package_path
                 )
 
             # -- Expand the values in the "vars" section, if any.
             vars_section = package_env.get("vars", {})
             for var_name, val_template in vars_section.items():
-                vars_section[var_name] = Resources._expand_env_template(
+                vars_section[var_name] = ApioContext._expand_env_template(
                     val_template, package_path
                 )
 
@@ -593,7 +593,7 @@ class Resources:
         if platform_id_override:
             platform_id = platform_id_override
         else:
-            platform_id = Resources._get_system_platform_id()
+            platform_id = ApioContext._get_system_platform_id()
 
         # -- Verify it's valid. This can be a user error if the override
         # -- is invalid.
