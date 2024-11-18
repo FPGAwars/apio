@@ -13,7 +13,7 @@ from pathlib import Path
 import click
 from apio import util
 from apio import pkg_util
-from apio.resources import ApioContext
+from apio.apio_context import ApioContext
 
 FTDI_INSTALL_INSTRUCTIONS_WINDOWS = """
 Please follow these steps:

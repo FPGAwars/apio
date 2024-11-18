@@ -9,7 +9,7 @@
 
 import click
 from apio import util, pkg_util, cmd_util
-from apio.resources import ApioContext
+from apio.apio_context import ApioContext
 
 
 # ---------------------------

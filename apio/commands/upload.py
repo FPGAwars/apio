@@ -13,7 +13,7 @@ from apio.managers.scons import SCons
 from apio.managers.drivers import Drivers
 from apio import cmd_util
 from apio.commands import options
-from apio.resources import ApioContext
+from apio.apio_context import ApioContext
 
 
 # ---------------------------

@@ -12,7 +12,7 @@ import click
 
 from apio import util
 from apio import pkg_util
-from apio.resources import ApioContext
+from apio.apio_context import ApioContext
 
 
 class System:  # pragma: no cover

@@ -13,7 +13,7 @@ from typing import Optional, Tuple, List
 import click
 from apio import util
 from apio import pkg_util
-from apio.resources import ApioContext
+from apio.apio_context import ApioContext
 
 # -- Error messages
 EXAMPLE_NOT_FOUND_MSG = """

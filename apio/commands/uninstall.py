@@ -13,7 +13,7 @@ from varname import nameof
 import click
 from apio.managers.old_installer import Installer
 from apio import cmd_util
-from apio.resources import ApioContext
+from apio.apio_context import ApioContext
 from apio.commands import options
 
 

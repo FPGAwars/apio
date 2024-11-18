@@ -16,7 +16,7 @@ import os
 import sys
 import click
 import semantic_version
-from apio.resources import ApioContext
+from apio.apio_context import ApioContext
 from apio import util
 
 

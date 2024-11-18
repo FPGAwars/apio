@@ -9,7 +9,7 @@ from functools import wraps
 from typing import Dict, Tuple
 import click
 from apio.managers.project import Project, DEFAULT_TOP_MODULE
-from apio.resources import ApioContext
+from apio.apio_context import ApioContext
 
 
 # ----- Constant for accesing dicctionaries

@@ -13,7 +13,7 @@ import click
 from apio import util
 from apio import cmd_util
 from apio.managers.system import System
-from apio.resources import ApioContext
+from apio.apio_context import ApioContext
 from apio.commands import options
 
 # ---------------------------

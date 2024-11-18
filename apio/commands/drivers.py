@@ -11,7 +11,7 @@ from varname import nameof
 import click
 from apio.managers.drivers import Drivers
 from apio import cmd_util
-from apio.resources import ApioContext
+from apio.apio_context import ApioContext
 
 # ---------------------------
 # -- COMMAND SPECIFIC OPTIONS

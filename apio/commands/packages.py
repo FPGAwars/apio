@@ -12,7 +12,7 @@ from typing import Tuple, List
 from varname import nameof
 import click
 from apio.managers import installer
-from apio.resources import ApioContext
+from apio.apio_context import ApioContext
 from apio import cmd_util, pkg_util, util
 from apio.commands import options
 

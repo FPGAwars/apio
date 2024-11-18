@@ -14,7 +14,7 @@ import shutil
 import click
 import requests
 from apio import util, pkg_util
-from apio.resources import ApioContext
+from apio.apio_context import ApioContext
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
 

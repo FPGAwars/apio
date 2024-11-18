@@ -25,7 +25,7 @@ from apio import pkg_util
 from apio.managers.arguments import process_arguments
 from apio.managers.arguments import serialize_scons_flags
 from apio.managers.system import System
-from apio.resources import ApioContext
+from apio.apio_context import ApioContext
 from apio.managers.project import Project
 from apio.managers.scons_filter import SconsFilter
 

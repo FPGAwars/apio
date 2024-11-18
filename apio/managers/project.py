@@ -15,7 +15,7 @@ from typing import Optional
 from configobj import ConfigObj
 import click
 from apio import util
-from apio.resources import ApioContext
+from apio.apio_context import ApioContext
 
 # -- Apio projecto filename
 PROJECT_FILENAME = "apio.ini"
