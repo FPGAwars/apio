@@ -154,6 +154,7 @@ class SCons:
                 "nowarn": args.get("nowarn"),
                 "warn": args.get("warn"),
                 "nostyle": args.get("nostyle"),
+                "platform_id": self.resources.platform_id,
             }
         )
         return self._run(
