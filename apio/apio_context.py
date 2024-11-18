@@ -98,7 +98,8 @@ class ApioContext:
         defined_env_options = env_options.get_defined()
         if defined_env_options:
             click.secho(
-                f"Active env options {defined_env_options}.", fg="yellow"
+                f"Active env options [{', '.join(defined_env_options)}].",
+                fg="yellow",
             )
 
         # -- Maps the optional project_dir option to a path.
