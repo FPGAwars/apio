@@ -9,7 +9,6 @@
 
 from pathlib import Path
 import click
-from click.core import Context
 from apio.managers.scons import SCons
 from apio import cmd_util
 from apio.commands import options
@@ -45,7 +44,7 @@ the temporary apio file names.
 @options.verbose_option
 @options.board_option_gen(deprecated=True)
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Options
     project_dir: Path,
     verbose: bool,
@@ -64,4 +63,4 @@ def cli(
     exit_code = scons.clean({"board": board, "verbose": {"all": verbose}})
 
     # -- Done!
-    ctx.exit(exit_code)
+    cmd_ctx.exit(exit_code)

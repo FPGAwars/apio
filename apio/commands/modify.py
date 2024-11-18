@@ -10,7 +10,6 @@
 from pathlib import Path
 from varname import nameof
 import click
-from click.core import Context
 from apio.managers.project import Project
 from apio import cmd_util
 from apio.commands import options
@@ -51,7 +50,7 @@ the supported boards.
 @options.top_module_option_gen(help="Set the top level module name.")
 @options.project_dir_option
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Options
     board: str,
     top_module: str,
@@ -60,7 +59,7 @@ def cli(
     """Modify the project file."""
 
     # At least one of these options are required.
-    cmd_util.check_at_least_one_param(ctx, nameof(board, top_module))
+    cmd_util.check_at_least_one_param(cmd_ctx, nameof(board, top_module))
 
     # Load resources.
     resources = Resources(project_dir=project_dir, project_scope=True)
@@ -69,4 +68,4 @@ def cli(
     ok = Project.modify_ini_file(resources, board, top_module)
 
     exit_code = 0 if ok else 1
-    ctx.exit(exit_code)
+    cmd_ctx.exit(exit_code)

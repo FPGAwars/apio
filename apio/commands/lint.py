@@ -9,7 +9,6 @@
 
 from pathlib import Path
 import click
-from click.core import Context
 from apio.managers.scons import SCons
 from apio import cmd_util
 from apio.commands import options
@@ -86,7 +85,7 @@ Examples:
 @warn_option
 @options.project_dir_option
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Options
     top_module: str,
     all_: bool,
@@ -111,4 +110,4 @@ def cli(
             "warn": warn,
         }
     )
-    ctx.exit(exit_code)
+    cmd_ctx.exit(exit_code)

@@ -9,7 +9,6 @@
 
 from pathlib import Path
 import click
-from click.core import Context
 from apio.managers.scons import SCons
 from apio import cmd_util
 from apio.commands import options
@@ -51,7 +50,7 @@ signals see the apio sim command.
 @options.project_dir_option
 # @options.testbench
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Arguments
     testbench_file: str,
     # Options
@@ -64,4 +63,4 @@ def cli(
     scons = SCons(resources)
 
     exit_code = scons.test({"testbench": testbench_file})
-    ctx.exit(exit_code)
+    cmd_ctx.exit(exit_code)

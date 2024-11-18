@@ -9,7 +9,6 @@
 
 from pathlib import Path
 import click
-from click.core import Context
 from varname import nameof
 from apio.managers.scons import SCons
 from apio import cmd_util
@@ -78,7 +77,7 @@ view the graph, and on Mac OS type 'open hardware.svg'.
 @options.top_module_option_gen(help="Set the name of the top module to graph.")
 @options.verbose_option
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Options
     pdf: bool,
     png: bool,
@@ -88,7 +87,7 @@ def cli(
 ):
     """Implements the apio graph command."""
     # -- Sanity check the options.
-    cmd_util.check_at_most_one_param(ctx, nameof(pdf, png))
+    cmd_util.check_at_most_one_param(cmd_ctx, nameof(pdf, png))
 
     # -- Construct the graph spec to pass to scons.
     # -- For now it's trivial.
@@ -115,4 +114,4 @@ def cli(
     )
 
     # -- Done!
-    ctx.exit(exit_code)
+    cmd_ctx.exit(exit_code)

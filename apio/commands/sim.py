@@ -51,7 +51,7 @@ configuration for future invocations.
 @click.argument("testbench", nargs=1, required=True)
 @options.project_dir_option
 def cli(
-    ctx,
+    cmd_ctx,
     # Arguments
     testbench: str,
     # Options
@@ -69,4 +69,4 @@ def cli(
     exit_code = scons.sim({"testbench": testbench})
 
     # -- Done!
-    ctx.exit(exit_code)
+    cmd_ctx.exit(exit_code)

@@ -8,7 +8,6 @@
 """Implementation of 'apio raw' command"""
 
 import click
-from click.core import Context
 from apio import util, pkg_util, cmd_util
 from apio.resources import Resources
 
@@ -58,7 +57,7 @@ verbose_option = click.option(
 @click.argument("cmd", metavar="COMMAND", required=False)
 @verbose_option
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Arguments
     cmd: str,
     # Options
@@ -69,7 +68,7 @@ def cli(
     """
 
     if not cmd and not env:
-        cmd_util.fatal_usage_error(ctx, "Missing an option or a command")
+        cmd_util.fatal_usage_error(cmd_ctx, "Missing an option or a command")
 
     # -- Set the system env for the packages. This both dumps the env settings
     # -- if --env option is specifies and prepare the env for the command
@@ -84,6 +83,6 @@ def cli(
 
         # -- Invoke the command.
         exit_code = util.call(cmd)
-        ctx.exit(exit_code)
+        cmd_ctx.exit(exit_code)
 
-    ctx.exit(0)
+    cmd_ctx.exit(0)

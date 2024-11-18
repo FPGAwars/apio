@@ -10,7 +10,6 @@
 from pathlib import Path
 from varname import nameof
 import click
-from click.core import Context
 from apio import util
 from apio import cmd_util
 from apio.managers.system import System
@@ -102,7 +101,7 @@ variable APIO_HOME_DIR, APIO_PACKAGES_DIR, APIO_PLATFORM.
 @info_option
 @platforms_option
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Options
     project_dir: Path,
     lsftdi: bool,
@@ -116,7 +115,7 @@ def cli(
 
     # Make sure these params are exclusive.
     cmd_util.check_exactly_one_param(
-        ctx, nameof(lsftdi, lsusb, lsserial, info, platforms)
+        cmd_ctx, nameof(lsftdi, lsusb, lsserial, info, platforms)
     )
 
     # Load the various resource files.
@@ -128,17 +127,17 @@ def cli(
     # -- List all connected ftdi devices
     if lsftdi:
         exit_code = system.lsftdi()
-        ctx.exit(exit_code)
+        cmd_ctx.exit(exit_code)
 
     # -- List all connected USB devices
     if lsusb:
         exit_code = system.lsusb()
-        ctx.exit(exit_code)
+        cmd_ctx.exit(exit_code)
 
     # -- List all connected serial devices
     if lsserial:
         exit_code = system.lsserial()
-        ctx.exit(exit_code)
+        cmd_ctx.exit(exit_code)
 
     # -- Show system information
     if info:
@@ -158,7 +157,7 @@ def cli(
         click.secho("Apio packages   ", nl=False)
         click.secho(util.get_packages_dir(), fg="cyan")
 
-        ctx.exit(0)
+        cmd_ctx.exit(0)
 
     if platforms:
         click.secho(
@@ -176,7 +175,7 @@ def cli(
                 f"  {platform_id:18} {package_selector:20} {description}",
                 fg=fg,
             )
-        ctx.exit(0)
+        cmd_ctx.exit(0)
 
     # -- Error, no option selected.
     assert 0, "Non reachable"

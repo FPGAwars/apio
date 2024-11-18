@@ -13,7 +13,6 @@
 import string
 import re
 from typing import List
-from click.core import Context
 import click
 from apio import util
 
@@ -95,8 +94,6 @@ def reformat_apio_help(original_help: str) -> str:
     by category.
     """
 
-    # -- No command typed: show help
-    # if ctx.invoked_subcommand is None:
     # -- The auto generated click help lines (apio --help)
     help_lines = original_help.split("\n")
 
@@ -155,7 +152,7 @@ class ApioCLI(click.MultiCommand):
 
     # -- Return  a list of all the available commands
     # @override
-    def list_commands(self, ctx):
+    def list_commands(self, ctx: click.core.Context):
         # -- All the python files inside the apio/commands folder are commands,
         # -- except __init__.py
         # -- Create the list
@@ -178,7 +175,7 @@ class ApioCLI(click.MultiCommand):
     # -- INPUT:
     # --   * cmd_name: Apio command name
     # @override
-    def get_command(self, ctx, cmd_name: string):
+    def get_command(self, ctx: click.core.Context, cmd_name: string):
         nnss = {}
 
         # -- Get the python filename asociated with the give command
@@ -200,7 +197,7 @@ class ApioCLI(click.MultiCommand):
         return nnss.get("cli")
 
     # @override
-    def get_help(self, ctx: Context) -> str:
+    def get_help(self, ctx: click.core.Context) -> str:
         """Formats the help into a string and returns it.
 
         Calls :meth:`format_help` internally.
@@ -248,15 +245,15 @@ https://github.com/FPGAwars/apio/wiki/Apio
 )
 @click.pass_context
 @click.version_option()
-def cli(ctx: Context):
+def cli(cmd_ctx: click.core.Context):
     """This function is executed when apio is invoked without
     any parameter. It prints the high level usage text of Apio.
     """
 
     # -- If no command was typed show top help. Equivalent to 'apio -h'.
-    if ctx.invoked_subcommand is None:
-        click.secho(ctx.get_help())
+    if cmd_ctx.invoked_subcommand is None:
+        click.secho(cmd_ctx.get_help())
 
     # -- If there is a command, it is executed when this function is finished
     # -- Debug: print the command invoked
-    # print(f"{ctx.invoked_subcommand}")
+    # print(f"{cmd_ctx.invoked_subcommand}")

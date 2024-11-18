@@ -11,7 +11,6 @@ from pathlib import Path
 from typing import Tuple, List
 from varname import nameof
 import click
-from click.core import Context
 from apio.managers import installer
 from apio.resources import Resources
 from apio import cmd_util, pkg_util, util
@@ -196,7 +195,7 @@ fix_option = click.option(
 @options.sayyes
 @options.verbose_option
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Arguments
     packages: Tuple[str],
     # Options
@@ -215,13 +214,13 @@ def cli(
 
     # Validate the option combination.
     cmd_util.check_exactly_one_param(
-        ctx, nameof(list_, install, uninstall, fix)
+        cmd_ctx, nameof(list_, install, uninstall, fix)
     )
-    cmd_util.check_at_most_one_param(ctx, nameof(list_, force))
-    cmd_util.check_at_most_one_param(ctx, nameof(uninstall, force))
-    cmd_util.check_at_most_one_param(ctx, nameof(fix, force))
-    cmd_util.check_at_most_one_param(ctx, nameof(list_, packages))
-    cmd_util.check_at_most_one_param(ctx, nameof(fix, packages))
+    cmd_util.check_at_most_one_param(cmd_ctx, nameof(list_, force))
+    cmd_util.check_at_most_one_param(cmd_ctx, nameof(uninstall, force))
+    cmd_util.check_at_most_one_param(cmd_ctx, nameof(fix, force))
+    cmd_util.check_at_most_one_param(cmd_ctx, nameof(list_, packages))
+    cmd_util.check_at_most_one_param(cmd_ctx, nameof(fix, packages))
 
     # -- Load the resources. We don't care about project specific resources.
     resources = Resources(
@@ -231,16 +230,16 @@ def cli(
 
     if install:
         exit_code = _install(resources, packages, force, verbose)
-        ctx.exit(exit_code)
+        cmd_ctx.exit(exit_code)
 
     if uninstall:
         exit_code = _uninstall(resources, packages, verbose, sayyes)
-        ctx.exit(exit_code)
+        cmd_ctx.exit(exit_code)
 
     if fix:
         exit_code = _fix(resources, verbose)
-        ctx.exit(exit_code)
+        cmd_ctx.exit(exit_code)
 
     # -- Here it must be --list.
     exit_code = _list(resources, verbose)
-    ctx.exit(exit_code)
+    cmd_ctx.exit(exit_code)

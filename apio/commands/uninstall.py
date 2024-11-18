@@ -11,7 +11,6 @@ from pathlib import Path
 from typing import Tuple
 from varname import nameof
 import click
-from click.core import Context
 from apio.managers.old_installer import Installer
 from apio import cmd_util
 from apio.resources import Resources
@@ -69,7 +68,7 @@ command 'apio packages' instead.
 @options.sayyes
 @options.verbose_option
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Arguments
     packages: Tuple[str],
     # Options
@@ -88,7 +87,7 @@ def cli(
     )
 
     # Make sure these params are exclusive.
-    cmd_util.check_at_most_one_param(ctx, nameof(packages, list_, all_))
+    cmd_util.check_at_most_one_param(cmd_ctx, nameof(packages, list_, all_))
 
     # -- Load the resources.
     resources = Resources(
@@ -99,7 +98,7 @@ def cli(
     # -- Uninstall the given apio packages
     if packages:
         _uninstall(packages, resources, sayyes, verbose)
-        ctx.exit(0)
+        cmd_ctx.exit(0)
 
     # -- Uninstall all the packages
     if all_:
@@ -107,12 +106,12 @@ def cli(
         packages = resources.profile.packages
         # -- Uninstall them!
         _uninstall(packages, resources, sayyes, verbose)
-        ctx.exit(0)
+        cmd_ctx.exit(0)
 
     # -- List all the packages (installed or not)
     if list_:
         resources.list_packages()
-        ctx.exit(0)
+        cmd_ctx.exit(0)
 
     # -- Invalid option. Just show the help
-    click.secho(ctx.get_help())
+    click.secho(cmd_ctx.get_help())

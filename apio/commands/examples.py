@@ -10,7 +10,6 @@
 from pathlib import Path
 from varname import nameof
 import click
-from click.core import Context
 from apio.managers.examples import Examples
 from apio import cmd_util
 from apio.commands import options
@@ -80,7 +79,7 @@ board (e.g. 'leds').
 @options.project_dir_option
 @options.sayno
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Options
     list_: bool,
     fetch_dir: str,
@@ -91,11 +90,11 @@ def cli(
     """Manage verilog examples.\n
     Install with `apio packages --install examples`"""
 
-    ctx.get_help()
+    cmd_ctx.get_help()
 
     # Make sure these params are exclusive.
     cmd_util.check_exactly_one_param(
-        ctx, nameof(list_, fetch_dir, fetch_files)
+        cmd_ctx, nameof(list_, fetch_dir, fetch_files)
     )
 
     # -- Access to the Drivers
@@ -105,16 +104,16 @@ def cli(
     # -- Option: Copy the directory
     if fetch_dir:
         exit_code = examples.copy_example_dir(fetch_dir, project_dir, sayno)
-        ctx.exit(exit_code)
+        cmd_ctx.exit(exit_code)
 
     # -- Option: Copy only the example files (not the initial folders)
     if fetch_files:
         exit_code = examples.copy_example_files(
             fetch_files, project_dir, sayno
         )
-        ctx.exit(exit_code)
+        cmd_ctx.exit(exit_code)
 
     # -- Option: List all the available examples
     assert list_
     exit_code = examples.list_examples()
-    ctx.exit(exit_code)
+    cmd_ctx.exit(exit_code)

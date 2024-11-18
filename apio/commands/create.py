@@ -9,7 +9,6 @@
 
 from pathlib import Path
 import click
-from click.core import Context
 from apio.managers.project import Project, DEFAULT_TOP_MODULE, PROJECT_FILENAME
 from apio import util
 from apio import cmd_util
@@ -60,7 +59,7 @@ the supported boards.
 @options.project_dir_option
 @options.sayyes
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Options
     board: str,
     top_module: str,
@@ -86,4 +85,4 @@ def cli(
     ok = Project.create_ini(resources, board, top_module, sayyes)
 
     exit_code = 0 if ok else 1
-    ctx.exit(exit_code)
+    cmd_ctx.exit(exit_code)

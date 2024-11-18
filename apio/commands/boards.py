@@ -10,7 +10,6 @@
 from pathlib import Path
 from varname import nameof
 import click
-from click.core import Context
 from apio.resources import Resources
 from apio import cmd_util
 from apio.commands import options
@@ -61,7 +60,7 @@ placing an alternative boards.json file in your apio project directory.
 @options.list_option_gen(help="List supported FPGA boards.")
 @list_fpgas_option
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Options
     project_dir: Path,
     list_: bool,
@@ -72,7 +71,7 @@ def cli(
     """
 
     # Make sure these params are exclusive.
-    cmd_util.check_at_most_one_param(ctx, nameof(list_, fpgas))
+    cmd_util.check_at_most_one_param(cmd_ctx, nameof(list_, fpgas))
 
     # -- Access to the apio resources. We need project scope since the project
     # -- may override the list of boards.
@@ -81,12 +80,12 @@ def cli(
     # -- Option 1: List boards
     if list_:
         resources.list_boards()
-        ctx.exit(0)
+        cmd_ctx.exit(0)
 
     # -- Option 2: List fpgas
     if fpgas:
         resources.list_fpgas()
-        ctx.exit(0)
+        cmd_ctx.exit(0)
 
     # -- No options: show help
-    click.secho(ctx.get_help())
+    click.secho(cmd_ctx.get_help())

@@ -9,7 +9,6 @@
 
 from varname import nameof
 import click
-from click.core import Context
 from apio.managers.drivers import Drivers
 from apio import cmd_util
 from apio.resources import Resources
@@ -82,7 +81,7 @@ Examples:
 @serial_install_option
 @serial_uninstall_option
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Options:
     ftdi_install: bool,
     ftdi_uninstall: bool,
@@ -93,7 +92,7 @@ def cli(
 
     # Make sure these params are exclusive.
     cmd_util.check_at_most_one_param(
-        ctx,
+        cmd_ctx,
         nameof(ftdi_install, ftdi_uninstall, serial_install, serial_uninstall),
     )
 
@@ -104,22 +103,22 @@ def cli(
     # -- FTDI install option
     if ftdi_install:
         exit_code = drivers.ftdi_install()
-        ctx.exit(exit_code)
+        cmd_ctx.exit(exit_code)
 
     # -- FTDI uninstall option
     if ftdi_uninstall:
         exit_code = drivers.ftdi_uninstall()
-        ctx.exit(exit_code)
+        cmd_ctx.exit(exit_code)
 
     # -- Serial install option
     if serial_install:
         exit_code = drivers.serial_install()
-        ctx.exit(exit_code)
+        cmd_ctx.exit(exit_code)
 
     # -- Serial uninstall option
     if serial_uninstall:
         exit_code = drivers.serial_uninstall()
-        ctx.exit(exit_code)
+        cmd_ctx.exit(exit_code)
 
     # -- No options. Show the help
-    click.secho(ctx.get_help())
+    click.secho(cmd_ctx.get_help())

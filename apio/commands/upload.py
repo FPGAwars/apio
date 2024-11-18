@@ -9,7 +9,6 @@
 
 from pathlib import Path
 import click
-from click.core import Context
 from apio.managers.scons import SCons
 from apio.managers.drivers import Drivers
 from apio import cmd_util
@@ -76,7 +75,7 @@ Examples:
 @options.top_module_option_gen(deprecated=True)
 @options.board_option_gen(deprecated=True)
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Options
     project_dir: Path,
     serial_port: str,
@@ -131,7 +130,7 @@ def cli(
     drivers.post_upload()
 
     # -- Done!
-    ctx.exit(exit_code)
+    cmd_ctx.exit(exit_code)
 
 
 # Advanced notes: https://github.com/FPGAwars/apio/wiki/Commands#apio-upload

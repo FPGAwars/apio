@@ -9,7 +9,6 @@
 
 import importlib.metadata
 import click
-from click.core import Context
 from packaging import version
 from apio.util import get_pypi_latest_version
 from apio import cmd_util
@@ -35,7 +34,7 @@ Examples:
     cls=cmd_util.ApioCommand,
 )
 @click.pass_context
-def cli(ctx: Context):
+def cli(cmd_ctx: click.core.Context):
     """Check the latest Apio version."""
 
     # -- Get the current apio version from the python package installed
@@ -47,7 +46,7 @@ def cli(ctx: Context):
 
     # -- There was an error getting the version from pypi
     if latest_version is None:
-        ctx.exit(1)
+        cmd_ctx.exit(1)
 
     # -- Print information about apio (Debug)
     print(f"Local Apio version: {current_version}")
