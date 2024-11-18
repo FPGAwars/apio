@@ -19,7 +19,7 @@ from apio.commands import options
 
 # R0801: Similar lines in 2 files
 # pylint: disable=R0801
-def _uninstall(packages: list, apio_ctx: ApioContext, sayyes, verbose: bool):
+def _uninstall(apio_ctx: ApioContext, packages: list, sayyes, verbose: bool):
     """Uninstall the given list of packages"""
 
     # -- Ask the user for confirmation
@@ -94,7 +94,7 @@ def cli(
 
     # -- Uninstall the given apio packages
     if packages:
-        _uninstall(packages, apio_ctx, sayyes, verbose)
+        _uninstall(apio_ctx, packages, sayyes, verbose)
         cmd_ctx.exit(0)
 
     # -- Uninstall all the packages
@@ -102,7 +102,7 @@ def cli(
         # -- Get all the installed apio packages
         packages = apio_ctx.profile.packages
         # -- Uninstall them!
-        _uninstall(packages, apio_ctx, sayyes, verbose)
+        _uninstall(apio_ctx, packages, sayyes, verbose)
         cmd_ctx.exit(0)
 
     # -- List all the packages (installed or not)

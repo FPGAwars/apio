@@ -94,7 +94,7 @@ class SCons:
 
         # -- Split the arguments
         variables, __, arch = process_arguments(
-            args, self.apio_ctx, self.project
+            self.apio_ctx, args, self.project
         )
 
         # --Clean the project: run scons -c (with aditional arguments)
@@ -109,7 +109,7 @@ class SCons:
 
         # -- Split the arguments
         variables, __, arch = process_arguments(
-            args, self.apio_ctx, self.project
+            self.apio_ctx, args, self.project
         )
 
         # -- Execute scons!!!
@@ -128,7 +128,7 @@ class SCons:
 
         # -- Split the arguments
         variables, _, arch = process_arguments(
-            args, self.apio_ctx, self.project
+            self.apio_ctx, args, self.project
         )
 
         # -- Execute scons!!!
@@ -146,7 +146,7 @@ class SCons:
         exit code, 0 if ok."""
 
         config = {}
-        __, __, arch = process_arguments(config, self.apio_ctx, self.project)
+        __, __, arch = process_arguments(self.apio_ctx, config, self.project)
         variables = serialize_scons_flags(
             {
                 "all": args.get("all"),
@@ -171,7 +171,7 @@ class SCons:
 
         # -- Split the arguments
         variables, _, arch = process_arguments(
-            args, self.apio_ctx, self.project
+            self.apio_ctx, args, self.project
         )
 
         return self._run(
@@ -188,7 +188,7 @@ class SCons:
 
         # -- Split the arguments
         variables, _, arch = process_arguments(
-            args, self.apio_ctx, self.project
+            self.apio_ctx, args, self.project
         )
 
         return self._run(
@@ -205,7 +205,7 @@ class SCons:
 
         # -- Split the arguments
         variables, board, arch = process_arguments(
-            args, self.apio_ctx, self.project
+            self.apio_ctx, args, self.project
         )
 
         # -- Execute scons!!!
@@ -224,7 +224,7 @@ class SCons:
         exit code, 0 if ok."""
 
         variables, board, arch = process_arguments(
-            args, self.apio_ctx, self.project
+            self.apio_ctx, args, self.project
         )
 
         if arch not in ["ice40"]:
@@ -249,7 +249,7 @@ class SCons:
         exit code, 0 if ok."""
 
         variables, board, arch = process_arguments(
-            args, self.apio_ctx, self.project
+            self.apio_ctx, args, self.project
         )
 
         return self._run(
@@ -280,7 +280,7 @@ class SCons:
         # -- Get important information from the configuration
         # -- It will raise an exception if it cannot be solved
         flags, board, arch = process_arguments(
-            config, self.apio_ctx, self.project
+            self.apio_ctx, config, self.project
         )
 
         # -- Information about the FPGA is ok!
@@ -933,7 +933,7 @@ class SCons:
 
         # -- Check that the required packages are installed
         pkg_util.check_required_packages(
-            required_packages_names, self.apio_ctx
+            self.apio_ctx, required_packages_names
         )
 
         # -- Set env path and vars to use the packages.

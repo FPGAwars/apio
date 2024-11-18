@@ -152,7 +152,7 @@ class System:  # pragma: no cover
         """
 
         # -- Check that the required package exists.
-        pkg_util.check_required_packages(["oss-cad-suite"], self.apio_ctx)
+        pkg_util.check_required_packages(self.apio_ctx, ["oss-cad-suite"])
 
         # -- Set system env for using the packages.
         pkg_util.set_env_for_packages(self.apio_ctx)

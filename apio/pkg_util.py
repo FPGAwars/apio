@@ -66,7 +66,7 @@ def _get_env_mutations_for_packages(apio_ctx: ApioContext) -> EnvMutations:
 
 
 def _dump_env_mutations(
-    mutations: EnvMutations, apio_ctx: ApioContext
+    apio_ctx: ApioContext, mutations: EnvMutations
 ) -> None:
     """For debugging. Delete once stabalizing the new oss-cad-suite on
     windows."""
@@ -124,7 +124,7 @@ def set_env_for_packages(apio_ctx: ApioContext, verbose: bool = False) -> None:
     mutations = _get_env_mutations_for_packages(apio_ctx)
 
     if verbose:
-        _dump_env_mutations(mutations, apio_ctx)
+        _dump_env_mutations(apio_ctx, mutations)
 
     # -- If this is the first call, apply the mutations. These mutations are
     # -- temporary for the lifetime of this process and does not affect the
@@ -138,7 +138,7 @@ def set_env_for_packages(apio_ctx: ApioContext, verbose: bool = False) -> None:
 
 
 def check_required_packages(
-    required_packages_names: List[str], apio_ctx: ApioContext
+    apio_ctx: ApioContext, required_packages_names: List[str]
 ) -> None:
     """Checks that the packages whose names are in 'packages_names' are
     installed and have a version that meets the requirements. If any error,
@@ -169,15 +169,15 @@ def check_required_packages(
         # -- Check the installed version against the required version.
         spec_version = spec_packages.get(package_name, "")
         _check_required_package(
-            package_name, current_version, spec_version, apio_ctx
+            apio_ctx, package_name, current_version, spec_version
         )
 
 
 def _check_required_package(
+    apio_ctx: ApioContext,
     package_name: str,
     current_version: Optional[str],
     spec_version: str,
-    apio_ctx: ApioContext,
 ) -> None:
     """Checks that the package with the given packages is installed and
     has a version that meets the requirements. If any error, it prints an

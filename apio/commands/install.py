@@ -19,9 +19,9 @@ from apio.commands import options
 
 # R0801: Similar lines in 2 files
 # pylint: disable=R0801
-def install_packages(
-    packages: list,
+def _install_packages(
     apio_ctx: ApioContext,
+    packages: list,
     force: bool,
     verbose: bool,
 ):
@@ -103,14 +103,14 @@ def cli(
 
     # -- Install the given apio packages
     if packages:
-        install_packages(packages, apio_ctx, force, verbose)
+        _install_packages(apio_ctx, packages, force, verbose)
         cmd_ctx.exit(0)
 
     # -- Install all the available packages (if any)
     if all_:
         # -- Install all the available packages for this platform!
-        install_packages(
-            apio_ctx.platform_packages.keys(), apio_ctx, force, verbose
+        _install_packages(
+            apio_ctx, apio_ctx.platform_packages.keys(), force, verbose
         )
         cmd_ctx.exit(0)
 

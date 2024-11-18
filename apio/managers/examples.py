@@ -56,7 +56,7 @@ class Examples:
         Returns null if an error."""
 
         # -- Check that the example package is installed
-        pkg_util.check_required_packages(["examples"], self.apio_ctx)
+        pkg_util.check_required_packages(self.apio_ctx, ["examples"])
 
         # -- Collect the examples home dir each board.
         boards_dirs: List[PosixPath] = []
@@ -99,7 +99,7 @@ class Examples:
         code, 0 if ok, non zero otherwise."""
 
         # -- Check that the examples package is installed.
-        pkg_util.check_required_packages(["examples"], self.apio_ctx)
+        pkg_util.check_required_packages(self.apio_ctx, ["examples"])
 
         # -- Get list of examples.
         examples: List[ExampleInfo] = self.get_examples_infos()
@@ -153,7 +153,7 @@ class Examples:
         """
 
         # -- Check that the examples package is installed.
-        pkg_util.check_required_packages(["examples"], self.apio_ctx)
+        pkg_util.check_required_packages(self.apio_ctx, ["examples"])
 
         # -- Get the working dir (current or given)
         project_dir = util.get_project_dir(project_dir, create_if_missing=True)
@@ -211,7 +211,7 @@ class Examples:
         """
 
         # -- Check that the examples package is installed.
-        pkg_util.check_required_packages(["examples"], self.apio_ctx)
+        pkg_util.check_required_packages(self.apio_ctx, ["examples"])
 
         # -- Get the working dir (current or given)
         dst_example_path = util.get_project_dir(

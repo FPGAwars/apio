@@ -446,7 +446,7 @@ class Drivers:
     # pylint: disable=W0703
     def _ftdi_install_windows(self) -> int:
         # -- Check that the required packages are installed.
-        pkg_util.check_required_packages(["drivers"], self.apio_ctx)
+        pkg_util.check_required_packages(self.apio_ctx, ["drivers"])
 
         # -- Get the drivers apio package base folder
         drivers_base_dir = self.apio_ctx.get_package_dir("drivers")
@@ -485,7 +485,7 @@ class Drivers:
 
     def _ftdi_uninstall_windows(self) -> int:
         # -- Check that the required packages exist.
-        pkg_util.check_required_packages(["drivers"], self.apio_ctx)
+        pkg_util.check_required_packages(self.apio_ctx, ["drivers"])
 
         click.secho("\nStarting the interactive Device Manager.", fg="green")
         click.secho(FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS, fg="yellow")
@@ -500,7 +500,7 @@ class Drivers:
     # pylint: disable=W0703
     def _serial_install_windows(self) -> int:
         # -- Check that the required packages exist.
-        pkg_util.check_required_packages(["drivers"], self.apio_ctx)
+        pkg_util.check_required_packages(self.apio_ctx, ["drivers"])
 
         drivers_base_dir = self.apio_ctx.get_package_dir("drivers")
         drivers_bin_dir = drivers_base_dir / "bin"
@@ -519,7 +519,7 @@ class Drivers:
 
     def _serial_uninstall_windows(self) -> int:
         # -- Check that the required packages exist.
-        pkg_util.check_required_packages(["drivers"], self.apio_ctx)
+        pkg_util.check_required_packages(self.apio_ctx, ["drivers"])
 
         click.secho("\nStarting the interactive Device Manager.", fg="green")
         click.secho(SERIAL_UNINSTALL_INSTRUCTIONS_WINDOWS, fg="yellow")

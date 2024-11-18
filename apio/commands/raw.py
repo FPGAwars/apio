@@ -79,7 +79,7 @@ def cli(
 
     if cmd:
         # -- Make sure that at least the oss-cad-suite is installed.
-        pkg_util.check_required_packages(["oss-cad-suite"], apio_ctx)
+        pkg_util.check_required_packages(apio_ctx, ["oss-cad-suite"])
 
         # -- Invoke the command.
         exit_code = util.call(cmd)

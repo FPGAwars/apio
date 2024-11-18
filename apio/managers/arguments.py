@@ -84,7 +84,7 @@ def debug_params(fun):
 # pylint: disable=R0912
 # @debug_params
 def process_arguments(
-    config_ini: Dict, apio_ctx: ApioContext, project: Project
+    apio_ctx: ApioContext, config_ini: Dict, project: Project
 ) -> Tuple:  # noqa
     """Get the final CONFIGURATION, depending on the board and
     arguments passed in the command line.
@@ -196,7 +196,7 @@ def process_arguments(
     # -- (The board determine the fpga and the size, but the user has
     # --  specificied a different size. It is a contradiction!)
     for item in [ARCH, TYPE, SIZE, PACK, IDCODE]:
-        update_config_fpga_item(config, item, apio_ctx)
+        _update_config_fpga_item(apio_ctx, config, item)
 
     # -- We already have a final configuration
     # -- Check that this configuration is ok
@@ -271,7 +271,11 @@ def process_arguments(
     return flags, config[BOARD], config[ARCH]
 
 
-def update_config_fpga_item(config, item, apio_ctx: ApioContext):
+def _update_config_fpga_item(
+    apio_ctx: ApioContext,
+    config,
+    item,
+):
     """Update an item for the current FPGA configuration, if there is no
     contradiction.
     It raises an exception in case of contradiction: the current FPGA item
