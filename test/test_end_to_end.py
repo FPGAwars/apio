@@ -85,18 +85,12 @@ def test_end_to_end1(clirunner, validate_cliresult, configenv, offline):
         assert "Installing package 'examples'" in result.output
         assert "was already installed" in result.output
 
-        # -- Execute
-        # -- "apio packages
-        # --    --install examples
-        # --    --platform windows_amd64
-        # --    --force"
+        # -- Execute "apio packages --install examples --force"
         result = clirunner.invoke(
             cmd_packages,
             [
                 "--install",
                 "examples",
-                "--platform",
-                "windows_amd64",
                 "--force",
             ],
         )
@@ -105,7 +99,7 @@ def test_end_to_end1(clirunner, validate_cliresult, configenv, offline):
         assert "Download" in result.output
         assert "Package 'examples' installed successfully" in result.output
 
-        # -- Execute "apio packages --install --list"
+        # -- Execute "apio packages --list"
         result = clirunner.invoke(cmd_packages, ["--list"])
         assert result.exit_code == 0, result.output
         assert "No errors" in result.output

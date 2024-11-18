@@ -22,6 +22,7 @@ from pathlib import Path
 import click
 from serial.tools.list_ports import comports
 import requests
+from apio import env_options
 
 # ----------------------------------------
 # -- Constants
@@ -150,39 +151,6 @@ def get_path_in_apio_package(subpath: str) -> Path:
     return path
 
 
-def get_projconf_option_dir(name: str, default=None):
-    """Return the project option with the given name
-    These options are place either on environment variables or
-    into the /etc/apio.json file in the case of debian distributions
-
-    All the APIO environment variables have the prefix "APIO_"
-
-    Project options:
-
-    * home_dir : APIO home directory
-    """
-
-    # -- Get the full name of the environment variable
-    _env_name = f"APIO_{name.upper()}"
-
-    # -- Check if the environment variable
-    # -- is defined
-    if _env_name in os.environ:
-        # -- Read the value of the environmental variable
-        _env_value = os.getenv(_env_name)
-
-        # -- On window systems the environmental variables can
-        # -- include the quotes (""). But not in Linux
-        # -- If there are quotes, remove them
-        if _env_value.startswith('"') and _env_value.endswith('"'):
-            _env_value = _env_value[1:-1]
-
-        return _env_value
-
-    # -- Return the default home_dir
-    return default
-
-
 def get_home_dir() -> Path:
     """Get the APIO Home dir. This is the apio folder where the profle is
     located and the packages installed. The APIO Home dir can be set in the
@@ -195,7 +163,9 @@ def get_home_dir() -> Path:
 
     # -- Get the APIO_HOME_DIR env variable
     # -- It returns None if it was not defined
-    apio_home_dir_env = get_projconf_option_dir("home_dir")
+    apio_home_dir_env = env_options.get(
+        env_options.APIO_HOME_DIR, default=None
+    )
 
     # -- Get the home dir. It is what the APIO_HOME_DIR env variable
     # -- says, or the default folder if None
@@ -219,7 +189,7 @@ def get_packages_dir() -> Path:
     """Return the base directory of apio packages.
     Packages are installed in the following folder:
       * Default: $APIO_HOME_DIR/packages
-      * $APIO_PKG_DIR/packages: if the APIO_PKG_DIR env variable is set
+      * $APIO_PACKAGES_DIR: if the APIO_PACKAGES_DIR env variable is set
       * INPUT:
         - pkg_name: Package name (Ex. 'examples')
       * OUTPUT:
@@ -228,30 +198,21 @@ def get_packages_dir() -> Path:
         - or None if the packageis not installed
     """
 
-    # -- Get the apio home dir:
-    # -- Ex. '/home/obijuan/.apio'
-    apio_home_dir = get_home_dir()
-
-    # -- Get the APIO_PKG_DIR env variable
+    # -- Get the APIO_PACKAGES_DIR env variable
     # -- It returns None if it was not defined
-    apio_pkg_dir_env = get_projconf_option_dir("pkg_dir")
+    packaged_dir_override = env_options.get(env_options.APIO_PACKAGES_DIR)
 
-    # -- Get the pkg base dir. It is what the APIO_PKG_DIR env variable
-    # -- says, or the default folder if None
-    if apio_pkg_dir_env:
-        pkg_home_dir = Path(apio_pkg_dir_env)
+    # -- If specified, use the override.
+    if packaged_dir_override:
+        pkg_home_dir = Path(packaged_dir_override)
 
-    # -- Default value
+    # -- Else, use the default value.
     else:
-        pkg_home_dir = apio_home_dir
-
-    # -- Create the package folder
-    # -- Ex '/home/obijuan/.apio/packages/tools-oss-cad-suite'
-    package_dir = pkg_home_dir / "packages"
+        # -- Ex '/home/obijuan/.apio/packages/tools-oss-cad-suite'
+        pkg_home_dir = get_home_dir() / "packages"
 
     # -- Return the folder if it exists
-    # if package_dir.exists():
-    return package_dir
+    return pkg_home_dir
 
 
 def call(cmd):

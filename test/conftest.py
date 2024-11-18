@@ -38,18 +38,18 @@ def configenv():
         # -- Set a strange directory for executing
         # -- apio: it contains spaces and unicode characters
         # -- for testing. It should work
-        cwd = str(Path.cwd() / " ñ")
+        cwd = Path.cwd() / " ñ"
 
         # -- Debug
         if DEBUG:
             print("")
             print("  --> configenv():")
-            print(f"      apio working directory: {cwd}")
+            print(f"      apio working directory: {str(cwd)}")
 
         # -- Set the apio home dir and apio packages dir to
         # -- this test folder
-        environ["APIO_HOME_DIR"] = cwd
-        environ["APIO_PKG_DIR"] = cwd
+        environ["APIO_HOME_DIR"] = str(cwd)
+        environ["APIO_PACKAGES_DIR"] = str(cwd / "packages")
         environ["TESTING"] = ""
 
     return decorator

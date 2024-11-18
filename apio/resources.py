@@ -14,7 +14,7 @@ import shutil
 from pathlib import Path
 from typing import Optional, Dict
 import click
-from apio import util
+from apio import util, env_options
 from apio.profile import Profile
 
 
@@ -82,7 +82,6 @@ class Resources:
         self,
         *,
         project_scope: bool,
-        platform_id_override: str = "",
         project_dir: Optional[Path] = None,
     ):
         """Initializes the Resources object. 'project dir' is an optional path
@@ -93,6 +92,15 @@ class Resources:
         'apio packages' uses the global scope while commands such as
         'apio build' use the project scope.
         """
+
+        # -- Inform as soon as possible about the list of apio env options
+        # -- that modify its default behavior.
+        defined_env_options = env_options.get_defined()
+        if defined_env_options:
+            click.secho(
+                f"Active env options {defined_env_options}.", fg="yellow"
+            )
+
         # -- Maps the optional project_dir option to a path.
         self.project_dir: Path = util.get_project_dir(project_dir)
 
@@ -103,9 +111,7 @@ class Resources:
         self.platforms = self._load_resource(PLATFORMS_JSON)
 
         # -- Determine the platform_id for this APIO session.
-        self.platform_id = self._determine_platform_id(
-            platform_id_override, self.platforms
-        )
+        self.platform_id = self._determine_platform_id(self.platforms)
 
         # -- Read the apio packages information
         self.all_packages = self._load_resource(PACKAGES_JSON)
@@ -579,12 +585,11 @@ class Resources:
             click.secho(f"Total: {len(self.fpgas)} fpgas\n")
 
     @staticmethod
-    def _determine_platform_id(
-        platform_id_override: str, platforms: Dict[str, Dict]
-    ) -> str:
+    def _determine_platform_id(platforms: Dict[str, Dict]) -> str:
         """Determines and returns the platform io based on system info and
         optional override."""
         # -- Use override and get from the underlying system.
+        platform_id_override = env_options.get(env_options.APIO_PLATFORM)
         if platform_id_override:
             platform_id = platform_id_override
         else:

@@ -193,7 +193,6 @@ fix_option = click.option(
 @fix_option
 @options.force_option_gen(help="Force installation.")
 @options.project_dir_option
-@options.platform_option
 @options.sayyes
 @options.verbose_option
 def cli(
@@ -206,7 +205,6 @@ def cli(
     uninstall: bool,
     fix: bool,
     force: bool,
-    platform: str,
     project_dir: Path,
     sayyes: bool,
     verbose: bool,
@@ -227,7 +225,6 @@ def cli(
 
     # -- Load the resources. We don't care about project specific resources.
     resources = Resources(
-        platform_id_override=platform,
         project_dir=project_dir,
         project_scope=False,
     )

@@ -76,10 +76,12 @@ Examples:
   apio system --lsusb      # List USB devices
   apio system --lsserial   # List serial devices
   apio system --info       # Show platform id and info.
-  apio system --platforms  # Show supported platforms
 
 The flags --lstdi, --lsusb, --lsserial, and --info are exclusive and
 cannot be mixed in the same command.
+
+[Advanced] The system configuration can be overriden using the system env
+variable APIO_HOME_DIR, APIO_PACKAGES_DIR, APIO_PLATFORM.
 """
 
 

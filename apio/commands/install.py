@@ -70,7 +70,6 @@ The command 'apio install' has been deprecated. Please use the command
 @options.all_option_gen(help="Install all packages.")
 @options.force_option_gen(help="Force the packages installation.")
 @options.project_dir_option
-@options.platform_option
 @options.verbose_option
 def cli(
     ctx: Context,
@@ -80,7 +79,6 @@ def cli(
     list_: bool,
     all_: bool,
     force: bool,
-    platform: str,
     project_dir: Path,
     verbose: bool,
 ):
@@ -99,7 +97,6 @@ def cli(
 
     # -- Load the resources. We don't care about project specific resources.
     resources = Resources(
-        platform_id_override=platform,
         project_dir=project_dir,
         project_scope=False,
     )
