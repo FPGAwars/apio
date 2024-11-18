@@ -51,7 +51,8 @@ def _uninstall(
     if not (
         sayyes
         or click.confirm(
-            "Do you want to uninstall " f"{util.count(packages, 'package')}?"
+            "Do you want to uninstall "
+            f"{util.plurality(packages, 'package')}?"
         )
     ):
         # -- User doesn't want to continue.
@@ -104,11 +105,11 @@ def _list(apio_ctx: ApioContext, verbose: bool) -> int:
     # -- Print an hint or summary based on the findings.
     if scan.num_errors():
         click.secho(
-            "[Hint] run 'apio packages -fix' to fix the errors.", fg="yellow"
+            "[Hint] run 'apio packages --fix' to fix the errors.", fg="yellow"
         )
     elif scan.uninstalled_package_ids:
         click.secho(
-            "[Hint] run 'apio packages -install' to install all "
+            "[Hint] run 'apio packages --install' to install all "
             "available packages.",
             fg="yellow",
         )

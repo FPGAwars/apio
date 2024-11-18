@@ -152,13 +152,14 @@ def get_path_in_apio_package(subpath: str) -> Path:
 
 
 def get_home_dir() -> Path:
-    """Get the APIO Home dir. This is the apio folder where the profle is
-    located and the packages installed. The APIO Home dir can be set in the
-    APIO_HOME_DIR environment varible or in the /etc/apio.json file (in
+    """Get the absolute apio home dir. This is the apio folder where the
+    profle is located and the packages are installed (unless APIO_PACKAGES_DIR
+    is used).
+    The apio home dir can be overridden using the APIO_HOME_DIR environment
+    varible or in the /etc/apio.json file (in
     Debian). If not set, the user_HOME/.apio folder is used by default:
     Ej. Linux:  /home/obijuan/.apio
     If the folders does not exist, they are created
-    It returns a list with all the folders
     """
 
     # -- Get the APIO_HOME_DIR env variable
@@ -174,7 +175,10 @@ def get_home_dir() -> Path:
     else:
         home_dir = Path.home() / ".apio"
 
-    # -- Create the folders if they do not exist
+    # -- Make it absolute
+    home_dir = home_dir.absolute()
+
+    # -- Create the folder if it does not exist
     try:
         home_dir.mkdir(parents=True, exist_ok=True)
     except PermissionError:
@@ -193,26 +197,53 @@ def get_packages_dir() -> Path:
       * INPUT:
         - pkg_name: Package name (Ex. 'examples')
       * OUTPUT:
-        - The package folder (PosixPath)
-           (Ex. '/home/obijuan/.apio/packages/examples'))
-        - or None if the packageis not installed
+        - The package absolute folder (PosixPath)
+           (Ex. '/home/obijuan/.apio/packages)
+           The absolute path of the returned directory is guaranteed to have
+           the word packages in it.
     """
 
     # -- Get the APIO_PACKAGES_DIR env variable
     # -- It returns None if it was not defined
     packaged_dir_override = env_options.get(env_options.APIO_PACKAGES_DIR)
 
-    # -- If specified, use the override.
+    # -- Handle override.
     if packaged_dir_override:
-        pkg_home_dir = Path(packaged_dir_override)
+        # -- Verify that the override dir contains the word packages in its
+        # -- absolute path. This is a safety mechanism to prevent uninentional
+        # -- bulk deletions in unintended directories. We check it each time
+        # -- before we perform a package deletion.
+        path = Path(packaged_dir_override).absolute()
+        if "packages" not in str(path).lower():
+            click.secho(
+                "Error: packages directory path does not contain the word "
+                f"packages: {str(path)}",
+                fg="red",
+            )
+            click.secho(
+                "For safety reasons, if you use the environment variable "
+                "APIO_PACKAGE_DIR to override\n"
+                "the packages dir, the new directory must have the word "
+                "'packages' (case insensitive)\n"
+                "in its absolute path.",
+                fg="yellow",
+            )
+            sys.exit(1)
+
+        # -- Override is OK. Use it as the packages dir.
+        packages_dir = Path(packaged_dir_override)
 
     # -- Else, use the default value.
     else:
         # -- Ex '/home/obijuan/.apio/packages/tools-oss-cad-suite'
-        pkg_home_dir = get_home_dir() / "packages"
+        # -- Guaranteed to be absolute.
+        packages_dir = get_home_dir() / "packages"
 
-    # -- Return the folder if it exists
-    return pkg_home_dir
+    # -- Sanity check. If this fails, this is a programming error.
+    assert "packages" in str(packages_dir).lower(), packages_dir
+
+    # -- All done.
+    return packages_dir
 
 
 def call(cmd):
@@ -564,7 +595,7 @@ def safe_click(text, *args, **kwargs):
         click.secho(cleaned_text, err=error_flag, *args, **kwargs)
 
 
-def count(obj: Any, singular: str, plural: str = None) -> str:
+def plurality(obj: Any, singular: str, plural: str = None) -> str:
     """Returns singular or plural based on the size of the object."""
     # -- Figure out the size of the object
     if isinstance(obj, int):

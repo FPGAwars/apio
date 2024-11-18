@@ -222,6 +222,7 @@ def _delete_package_dir(
 
         # -- Sanity check the path and delete.
         package_folder_name = apio_ctx.get_package_folder_name(package_id)
+        assert "packages" in str(package_dir).lower(), package_dir
         assert package_folder_name in str(package_dir), package_dir
         shutil.rmtree(package_dir)
 
@@ -406,7 +407,7 @@ def fix_packages(
     # -- If non verbose, print a summary message.
     if not verbose:
         click.secho(
-            f"Fixing {util.count(scan.num_errors(), 'package error')}."
+            f"Fixing {util.plurality(scan.num_errors(), 'package error')}."
         )
 
     # -- Fix broken packages.
@@ -426,10 +427,19 @@ def fix_packages(
     for dir_name in scan.orphan_dir_names:
         if verbose:
             print(f"Deleting unknown dir '{dir_name}'")
-        shutil.rmtree(util.get_packages_dir() / dir_name)
+        # -- Sanity check. Since get_packages_dir() guarranted to include
+        # -- the word packages, this can fail only due to programming error.
+        dir_path = util.get_packages_dir() / dir_name
+        assert "packages" in str(dir_path).lower(), dir_path
+        # -- Delete.
+        shutil.rmtree(dir_path)
 
     for file_name in scan.orphan_file_names:
         if verbose:
             print(f"Deleting unknown file '{file_name}'")
+        # -- Sanity check. Since get_packages_dir() guarranted to include
+        # -- the word packages, this can fail only due to programming error.
         file_path = util.get_packages_dir() / file_name
+        assert "packages" in str(file_path).lower(), dir_path
+        # -- Delete.
         file_path.unlink()
