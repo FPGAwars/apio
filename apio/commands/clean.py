@@ -41,13 +41,11 @@ the temporary apio file names.
 )
 @click.pass_context
 @options.project_dir_option
-@options.verbose_option
 @options.board_option_gen(deprecated=True)
 def cli(
     cmd_ctx: click.core.Context,
     # Options
     project_dir: Path,
-    verbose: bool,
     # Deprecated options.
     board: str,
 ):
@@ -62,7 +60,7 @@ def cli(
     scons = SCons(apio_ctx)
 
     # -- Build the project with the given parameters
-    exit_code = scons.clean({"board": board, "verbose": {"all": verbose}})
+    exit_code = scons.clean({"board": board})
 
     # -- Done!
     cmd_ctx.exit(exit_code)

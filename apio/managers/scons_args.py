@@ -20,10 +20,9 @@ TYPE = "type"  # -- Key for the FPGA Type
 SIZE = "size"  # -- Key for the FPGA size
 PACK = "pack"  # -- Key for the FPGA pack
 IDCODE = "idcode"  # -- Key for the FPGA IDCODE
-VERBOSE = "verbose"  # -- Key for the Verbose flag
-ALL = "all"  # -- Key for Verbose all
-YOSYS = "yosys"  # -- Key for Verbose-yosys
-PNR = "pnr"  # -- Key for Verbose-pnr
+VERBOSE_ALL = "verbose_all"  # -- Key for the Verbose-all
+VERBOSE_YOSYS = "verbose_yosys"  # -- Key for Verbose-yosys
+VERBOSE_PNR = "verbose_pnr"  # -- Key for Verbose-pnr
 TOP_MODULE = "top-module"  # -- Key for top-module
 TESTBENCH = "testbench"  # -- Key for testbench file name
 GRAPH_SPEC = "graph_spec"  # -- Key for graph specification
@@ -122,7 +121,9 @@ def process_arguments(
         SIZE: None,
         PACK: None,
         IDCODE: None,
-        VERBOSE: {ALL: False, "yosys": False, "pnr": False},
+        VERBOSE_ALL: False,
+        VERBOSE_YOSYS: False,
+        VERBOSE_PNR: False,
         TOP_MODULE: None,
         TESTBENCH: None,
         GRAPH_SPEC: None,
@@ -253,14 +254,9 @@ def process_arguments(
             "fpga_type": config[TYPE],
             "fpga_pack": config[PACK],
             "fpga_idcode": config[IDCODE],
-            "verbose_all": config[VERBOSE][ALL],
-            # These two flags appear only in some of the commands.
-            "verbose_yosys": (
-                config[VERBOSE][YOSYS] if YOSYS in config[VERBOSE] else False
-            ),
-            "verbose_pnr": (
-                config[VERBOSE][PNR] if PNR in config[VERBOSE] else False
-            ),
+            "verbose_all": config[VERBOSE_ALL],
+            "verbose_yosys": config[VERBOSE_YOSYS],
+            "verbose_pnr": config[VERBOSE_PNR],
             "top_module": config[TOP_MODULE],
             "testbench": config[TESTBENCH],
             "graph_spec": config[GRAPH_SPEC],
@@ -353,13 +349,9 @@ def print_configuration(config: dict) -> None:
     print(f"  testbench: {config[TESTBENCH]}")
     print(f"  graph_spec: {config[GRAPH_SPEC]}")
     print(f"  platform_id: {config[PLATFORM_ID]}")
-    print("  verbose:")
-    print(f"    all: {config[VERBOSE][ALL]}")
-    # These two flags appear only in some of the commands.
-    if YOSYS in config[VERBOSE]:
-        print(f"    yosys: {config[VERBOSE][YOSYS]}")
-    if PNR in config[VERBOSE]:
-        print(f"    pnr: {config[VERBOSE][PNR]}")
+    print(f"  verbose_all: {config[VERBOSE_ALL]}")
+    print(f"  verbose_yosys: {config[VERBOSE_YOSYS]}")
+    print(f"  verbose_pnr: {config[VERBOSE_PNR]}")
     print()
 
 

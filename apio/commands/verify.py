@@ -61,7 +61,7 @@ def cli(
     exit_code = scons.verify(
         {
             "board": board,
-            "verbose": {"all": verbose, "yosys": False, "pnr": False},
+            "verbose_all": verbose,
         }
     )
 

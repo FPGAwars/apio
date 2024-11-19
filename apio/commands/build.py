@@ -94,12 +94,10 @@ def cli(
             "size": size,
             "type": type_,
             "pack": pack,
-            "verbose": {
-                "all": verbose,
-                "yosys": verbose_yosys,
-                "pnr": verbose_pnr,
-            },
             "top-module": top_module,
+            "verbose_all": verbose,
+            "verbose_yosys": verbose_yosys,
+            "verbose_pnr": verbose_pnr,
         }
     )
 

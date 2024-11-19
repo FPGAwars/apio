@@ -107,9 +107,9 @@ def cli(
     # -- Graph the project with the given parameters
     exit_code = scons.graph(
         {
-            "verbose": {"all": verbose, "yosys": False, "pnr": False},
             "top-module": top_module,
             "graph_spec": graph_spec,
+            "verbose_all": verbose,
         }
     )
 
