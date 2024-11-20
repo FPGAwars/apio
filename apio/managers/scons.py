@@ -23,7 +23,7 @@ import semantic_version
 from apio import util
 from apio import pkg_util
 from apio.managers.scons_args import process_arguments
-from apio.managers.scons_args import serialize_scons_flags
+from apio.managers.scons_args import serialize_scons_variables
 from apio.managers.system import System
 from apio.apio_context import ApioContext
 from apio.managers.project import Project
@@ -147,7 +147,7 @@ class SCons:
 
         config = {}
         __, __, arch = process_arguments(self.apio_ctx, config, self.project)
-        variables = serialize_scons_flags(
+        variables = serialize_scons_variables(
             {
                 "all": args.get("all"),
                 "top_module": args.get("top_module"),

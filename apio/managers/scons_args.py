@@ -5,42 +5,54 @@
 # -- Licence GPLv2
 """Utilities for procesing the arguments passed to apio commands"""
 
+# pylint: disable=fixme
+# TODO: Instead of costructing new_args and then mapping it to
+# variables_dict and filtering variables dict, , it would be
+# more straight forward to directly constructing the filtered
+# variables dict.
+
 from functools import wraps
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Optional, List
 import click
 from apio.managers.project import Project, DEFAULT_TOP_MODULE
 from apio.apio_context import ApioContext
 
 
-# ----- Constant for accesing dicctionaries
-BOARD = "board"  # -- Key for the board name
-FPGA = "fpga"  # -- Key for the fpga
-ARCH = "arch"  # -- Key for the FPGA Architecture
-TYPE = "type"  # -- Key for the FPGA Type
-SIZE = "size"  # -- Key for the FPGA size
-PACK = "pack"  # -- Key for the FPGA pack
-IDCODE = "idcode"  # -- Key for the FPGA IDCODE
-VERBOSE_ALL = "verbose_all"  # -- Key for the Verbose-all
-VERBOSE_YOSYS = "verbose_yosys"  # -- Key for Verbose-yosys
-VERBOSE_PNR = "verbose_pnr"  # -- Key for Verbose-pnr
-TOP_MODULE = "top-module"  # -- Key for top-module
-TESTBENCH = "testbench"  # -- Key for testbench file name
-GRAPH_SPEC = "graph_spec"  # -- Key for graph specification
-PLATFORM_ID = "platform_id"  # -- Key for the platform id
+# -- Names of supported keys in the input process_arguments' args dict.
+# -- Unless specified otherwise, all values are strings and optional (that is,
+# -- can not exist in 'args' or have a None or empty value).
+ARG_BOARD = "board"  # Required.
+ARG_FPGA_ID = "fpga"  # Required, ids per fpgas.json.
+ARG_FPGA_ARCH = "arch"
+ARG_FPGA_TYPE = "type"
+ARG_FPGA_SIZE = "size"
+ARG_FPGA_PACK = "pack"
+ARG_FPGA_IDCODE = "idcode"
+ARG_VERBOSE_ALL = "verbose_all"  # Bool.
+ARG_VERBOSE_YOSYS = "verbose_yosys"  # Bool
+ARG_VERBOSE_PNR = "verbose_pnr"  # Bool
+ARG_TOP_MODULE = "top-module"
+ARG_TESTBENCH = "testbench"
+ARG_GRAPH_SPEC = "graph_spec"
+ARG_PLATFORM_ID = "platform_id"
 
 
-def debug_params(fun):
-    """DEBUG. Use it as a decorator. It prints the received arguments
-    and the return value
+def debug_dump_input_output(process_arguments_func):
+    """A decorator for debugging. It prints the input and output of
+    process_arguments(). Comment out the '@debug_params' statement
+    below to enable, comment to disable..
+
     INPUTS:
       * fun: Function to DEBUG
     """
 
-    @wraps(fun)
+    @wraps(process_arguments_func)
     def outer(*args):
 
         # -- Print the arguments
-        print(f"--> DEBUG!. Function {fun.__name__}(). BEGIN")
+        print(
+            f"--> DEBUG!. Function {process_arguments_func.__name__}(). BEGIN"
+        )
         print("    * Arguments:")
         for arg in args:
 
@@ -56,10 +68,10 @@ def debug_params(fun):
         print()
 
         # -- Call the function
-        result = fun(*args)
+        result = process_arguments_func(*args)
 
         # -- Print its output
-        print(f"--> DEBUG!. Function {fun.__name__}(). END")
+        print(f"--> DEBUG!. Function {process_arguments_func.__name__}(). END")
         print("     Returns: ")
 
         # -- The return object always is a tuple
@@ -81,72 +93,58 @@ def debug_params(fun):
 
 # R0912: Too many branches (14/12)
 # pylint: disable=R0912
-# @debug_params
+#
+# -- Uncomment the decoracotor below for debugging.
+# @debug_dump_input_output
 def process_arguments(
-    apio_ctx: ApioContext, config_ini: Dict, project: Project
-) -> Tuple:  # noqa
-    """Get the final CONFIGURATION, depending on the board and
-    arguments passed in the command line.
-    The config_ini parameter has higher priority. If not specified,
-    they are read from the Project file (apio.ini)
-    * INPUTS:
-       * config_ini: Dictionary with the initial configuration:
-         {
-           'board': str,  //-- Board name
-           'fpga': str,   //-- FPGA name
-           'size': str,   //-- FPGA size
-           'type': str,   //-- FPGA type
-           'pack': str,   //-- FPGA packaging
-           'verbose': dict  //-- Verbose level
-           'top-module`: str  //-- Top module name
-         }
-       * apio_ctx: Object for accessing the apio configuration and state.
-       * Project: the contentn of apio.ini, possibly empty if does not exist.
+    apio_ctx: ApioContext, args: Dict, project: Project
+) -> Tuple[List[str], str, Optional[str]]:
+    """Construct the scons variables list from an ApioContext and user
+    provided scons args.  The list of the valid entires in the args ditct,
+    see ARG_XX definitions above.
+
+       * apio_ctx: ApioContext of this apio invocation.
+       * args: a Dictionary with the scons args.
+       * Project: Optional project information.
     * OUTPUT:
-      * Return a tuple (flags, board, arch)
-        - flags: A list of strings with the flags valures:
+      * Return a tuple (variables, board, arch)
+        - variables: A list of strings scons variables. For example
           ['fpga_arch=ice40', 'fpga_size=8k', 'fpga_type=hx',
           fpga_pack='tq144:4k']...
         - board: Board name ('alhambra-ii', 'icezum'...)
         - arch: FPGA architecture ('ice40', 'ecp5'...)
     """
 
-    # -- Current configuration
-    # -- Initially it is the default project configuration
-    config = {
-        BOARD: None,
-        FPGA: None,
-        ARCH: None,
-        TYPE: None,
-        SIZE: None,
-        PACK: None,
-        IDCODE: None,
-        VERBOSE_ALL: False,
-        VERBOSE_YOSYS: False,
-        VERBOSE_PNR: False,
-        TOP_MODULE: None,
-        TESTBENCH: None,
-        GRAPH_SPEC: None,
-        PLATFORM_ID: None,
+    # -- We will populate a new set of args from input args and other values
+    # -- we pull from the apio context.
+    new_args = {
+        ARG_BOARD: None,
+        ARG_FPGA_ID: None,
+        ARG_FPGA_ARCH: None,
+        ARG_FPGA_TYPE: None,
+        ARG_FPGA_SIZE: None,
+        ARG_FPGA_PACK: None,
+        ARG_FPGA_IDCODE: None,
+        ARG_VERBOSE_ALL: False,
+        ARG_VERBOSE_YOSYS: False,
+        ARG_VERBOSE_PNR: False,
+        ARG_TOP_MODULE: None,
+        ARG_TESTBENCH: None,
+        ARG_GRAPH_SPEC: None,
+        ARG_PLATFORM_ID: None,
     }
 
+    # -- We expect new_args to contain all the supported args and we expect
+    # -- args to contain only supported args. A failure here indicates a
+    # -- programming error.
+    unknown_args = [x for x in args.keys() if x not in new_args]
+    assert len(unknown_args) == 0, unknown_args
+
     # -- Merge the initial configuration to the current configuration
-    config.update(config_ini)
-
-    # -- proj.board:
-    # --   * None: No apio.ini file
-    # --   * "name": Board name (str)
-
-    # -- proj.top_module:
-    # --  * None: Not specified in apio.ini file
-    # --  * "name": name of the top-module to use
-    # -- (if not overriden by arguments)
-
-    # -- DEBUG: Print both: project board and configuration board
-    # debug_config_item(config, BOARD, proj.board)
+    new_args.update(args)
 
     # -- Board name given in the command line
-    if config[BOARD]:
+    if new_args[ARG_BOARD]:
 
         # -- If there is a project file (apio.ini) the board
         # -- given by command line overrides it
@@ -156,7 +154,7 @@ def process_arguments(
             # -- As the command line has more priority, and the board
             # -- given in args is different than the one in the project,
             # -- inform the user
-            if config[BOARD] != project.board:
+            if new_args[ARG_BOARD] != project.board:
                 click.secho(
                     "Info: ignoring board specification from apio.ini.",
                     fg="yellow",
@@ -165,60 +163,70 @@ def process_arguments(
     # -- Board name given in the project file
     else:
         # -- ...read it from the apio.ini file
-        config[BOARD] = project.board
+        # new_args[ARG_BOARD] = project.board
+        if project.board:
+            update_arg(new_args, ARG_BOARD, project.board)
 
     # -- The board is given (either by arguments or by project file)
-    if config[BOARD]:
+    if new_args[ARG_BOARD]:
 
         # -- First, check if the board is valid
         # -- If not, exit
-        if config[BOARD] not in apio_ctx.boards:
-            raise ValueError(f"unknown board: {config[BOARD]}")
+        if new_args[ARG_BOARD] not in apio_ctx.boards:
+            raise ValueError(f"unknown board: {new_args[ARG_BOARD]}")
 
         # -- Read the FPGA name for the current board
-        fpga = apio_ctx.boards.get(config[BOARD]).get(FPGA)
+        fpga = apio_ctx.boards.get(new_args[ARG_BOARD]).get(ARG_FPGA_ID)
 
         # -- Add it to the current configuration
-        update_config_item(config, FPGA, fpga)
+        if fpga:
+            update_arg(new_args, ARG_FPGA_ID, fpga)
 
     # -- Check that the FPGA was given
-    if not config[FPGA]:
+    if not new_args[ARG_FPGA_ID]:
         perror_insuficient_arguments()
         raise ValueError("Missing FPGA")
 
     # -- Check if the FPGA is valid
     # -- If not, exit
-    if config[FPGA] not in apio_ctx.fpgas:
-        raise ValueError(f"unknown FPGA: {config[FPGA]}")
+    if new_args[ARG_FPGA_ID] not in apio_ctx.fpgas:
+        raise ValueError(f"unknown FPGA: {new_args[ARG_FPGA_ID]}")
 
     # -- Update the FPGA items according to the current board and fpga
     # -- Raise an exception in case of a contradiction
     # -- For example: board = icezum, and size='8k' given by arguments
     # -- (The board determine the fpga and the size, but the user has
     # --  specificied a different size. It is a contradiction!)
-    for item in [ARCH, TYPE, SIZE, PACK, IDCODE]:
-        _update_config_fpga_item(apio_ctx, config, item)
+    for arg_name, fpga_property in [
+        [ARG_FPGA_ARCH, "arch"],
+        [ARG_FPGA_TYPE, "type"],
+        [ARG_FPGA_SIZE, "size"],
+        [ARG_FPGA_PACK, "pack"],
+        [ARG_FPGA_IDCODE, "idcode"],
+    ]:
+        _update_fpga_property_arg(apio_ctx, new_args, arg_name, fpga_property)
 
     # -- We already have a final configuration
     # -- Check that this configuration is ok
     # -- At least it should have fpga, type, size and pack
     # -- Exit if it is not correct
-    for item in [TYPE, SIZE, PACK]:
+    for arg_name in [ARG_FPGA_TYPE, ARG_FPGA_SIZE, ARG_FPGA_PACK]:
 
         # -- Config item not defined!! it is mandatory!
-        if not config[item]:
+        if not new_args[arg_name]:
             perror_insuficient_arguments()
-            raise ValueError(f"Missing FPGA {item.upper()}")
+            raise ValueError(f"Missing FPGA {arg_name.upper()}")
 
     # -- Process the top-module
     # -- Priority 1: Given by arguments in the command line
     # -- If it has not been set by arguments...
-    if not config[TOP_MODULE]:
+    if not new_args[ARG_TOP_MODULE]:
 
         # -- Priority 2: Use the top module in the apio.ini file
         # -- if it exists...
         if project.top_module:
-            config[TOP_MODULE] = project.top_module
+            # new_args[ARG_TOP_MODULE] = project.top_module
+            update_arg(new_args, ARG_TOP_MODULE, project.top_module)
 
         # -- NO top-module specified!! Warn the user
         else:
@@ -235,124 +243,101 @@ def process_arguments(
             )
 
             # -- Use the default top-level
-            config[TOP_MODULE] = DEFAULT_TOP_MODULE
+            # new_args[ARG_TOP_MODULE] = DEFAULT_TOP_MODULE
+            update_arg(new_args, ARG_TOP_MODULE, DEFAULT_TOP_MODULE)
 
-            click.secho("Using the default top-module: `main`", fg="blue")
+            click.secho(
+                f"Using the default top-module: `{DEFAULT_TOP_MODULE}`",
+                fg="blue",
+            )
 
     # -- Set the platform id.
-    config[PLATFORM_ID] = apio_ctx.platform_id
+    update_arg(new_args, ARG_PLATFORM_ID, apio_ctx.platform_id)
 
-    # -- Debug: Print current configuration
-    # print_configuration(config)
+    # -- Build Scons flag list. This is a differnet set of names that may
+    # -- be different from the args set of names.
+    variables_dict = {
+        "fpga_model": new_args[ARG_FPGA_ID],
+        "fpga_arch": new_args[ARG_FPGA_ARCH],
+        "fpga_size": new_args[ARG_FPGA_SIZE],
+        "fpga_type": new_args[ARG_FPGA_TYPE],
+        "fpga_pack": new_args[ARG_FPGA_PACK],
+        "fpga_idcode": new_args[ARG_FPGA_IDCODE],
+        "verbose_all": new_args[ARG_VERBOSE_ALL],
+        "verbose_yosys": new_args[ARG_VERBOSE_YOSYS],
+        "verbose_pnr": new_args[ARG_VERBOSE_PNR],
+        "top_module": new_args[ARG_TOP_MODULE],
+        "testbench": new_args[ARG_TESTBENCH],
+        "graph_spec": new_args[ARG_GRAPH_SPEC],
+        "platform_id": new_args[ARG_PLATFORM_ID],
+    }
 
-    # -- Build Scons flag list
-    flags = serialize_scons_flags(
-        {
-            "fpga_model": config[FPGA],
-            "fpga_arch": config[ARCH],
-            "fpga_size": config[SIZE],
-            "fpga_type": config[TYPE],
-            "fpga_pack": config[PACK],
-            "fpga_idcode": config[IDCODE],
-            "verbose_all": config[VERBOSE_ALL],
-            "verbose_yosys": config[VERBOSE_YOSYS],
-            "verbose_pnr": config[VERBOSE_PNR],
-            "top_module": config[TOP_MODULE],
-            "testbench": config[TESTBENCH],
-            "graph_spec": config[GRAPH_SPEC],
-            "platform_id": config[PLATFORM_ID],
-        }
-    )
+    # -- Convert to a list of 'name=value' strings. Entires with
+    # -- bool(value) == False are skipped.
+    variables = serialize_scons_variables(variables_dict)
 
-    return flags, config[BOARD], config[ARCH]
+    # -- All done.
+    return variables, new_args[ARG_BOARD], new_args[ARG_FPGA_ARCH]
 
 
-def _update_config_fpga_item(
-    apio_ctx: ApioContext,
-    config,
-    item,
+def _update_fpga_property_arg(
+    apio_ctx: ApioContext, new_args, arg_name, fpga_property_name
 ):
-    """Update an item for the current FPGA configuration, if there is no
-    contradiction.
-    It raises an exception in case of contradiction: the current FPGA item
-    in the configuration has already a value, but another has been specified
+    """Update an fpga property in the given new_args dictionary.
+
+    It raises an exception if the there are differnet values in the new_args
+    dictionary and the fpga property.
+
+    It assumes that new_args already contains the FPGA id arg.
+
     * INPUTS:
-      * Config: Current configuration
-      * item: FPGA item to update: ARCH, TYPE, SIZE, PACK, IDCODE
-      * value: New valur for the FPGA item, if there is no contradiction
+      * Apio_ctx: the context of this apio invocation.
+      * New_args: the args dictionary to populate.
+      * arg_name: the arg name in the dictionary
+      * fpga_property: the matching property name in fpgas.json.
     """
 
-    # -- Read the FPGA item from the apio context.
-    fpga_item = apio_ctx.fpgas.get(config[FPGA]).get(item)
+    # -- Get the fpga definition.
+    fpga_config = apio_ctx.fpgas.get(new_args[ARG_FPGA_ID])
 
-    # -- Update the current configuration with that item
-    # -- and check that there are no contradictions
-    update_config_item(config, item, fpga_item)
+    # -- Get the fpga property value, if exists.
+    fpga_property_value = fpga_config.get(fpga_property_name, None)
+
+    # -- Update the arg in new_args, error if the value conflicts.
+    if fpga_property_value:
+        update_arg(new_args, arg_name, fpga_property_value)
 
 
-def update_config_item(config: dict, item: str, value: str) -> None:
-    """Update the value of the configuration item, if there is no contradiction
-    It raises an exception in case of contradiction: the current item in the
-    configuration has one value (ex. size='1k') but another has been specified
+def update_arg(new_args: dict, arg_name: str, new_value: str) -> None:
+    """Update the a value in the new_args dict. If arg_name doesn't exist
+    in new_args or if it has a non None value that is different from new_value
+    than an exception is thrown.
     * INPUTS:
-      * Config: Current configuration
-      * item: Item to update (key): BOARD, ARCH,TYPE, SIZE...
-      * value: New value for the item, if there are no contradictions
+      * new_args: A dictionary with the args.
+      * arg_name: The arg name, e.g. ARG_BOARD.
+      * value: New value for the arg. Can't be None.
     """
+    # -- Sanity checks. These are all programming errors.
+    assert arg_name in new_args, f"Unknown arg: {arg_name}"
+    assert new_value is not None, f"Trying to set {arg_name} = None"
 
-    # -- Debug messages
-    # debug_config_item(config, item, value)
+    # -- Get the old value. May be None.
+    old_value = new_args[arg_name]
 
-    # -- This item has not been set in the current configuration: ok, set it!
-    if config[item] is None:
-        config[item] = value
+    # -- If no old value then set the new value.
+    if old_value is None:
+        new_args[arg_name] = new_value
+        return
 
-    # -- That item already has a value... and another difffernt is being
-    # -- given.. This is a contradiction!!!
-    else:
-        # -- It is a contradiction if their names are different
-        # -- When the name is the same, it is redundant...
-        # -- but it is not a problem
-        if value != config[item]:
-            raise ValueError(f"contradictory arguments: {value, config[item]}")
+    # -- If new value is same as old value, do nothing.
+    if old_value == new_value:
+        return
 
-
-def debug_config_item(config: dict, item: str, value: str) -> None:
-    """Print a Debug message related to the project configuration
-    INPUTS:
-      * config: Current configuration
-      * item: item name to print. It is a key of the configuration:
-        BOARD, ARCH, TYPE, SIZE, PACK, IDCODE....
-      * Value: Value of that item specified in the project
-    """
-    print(f"(Debug): {item}, Project: {value}, Argument: {config[item]}")
-
-
-def print_configuration(config: dict) -> None:
-    """DEBUG function: Print the current configuration on the
-    console
-      * INPUTS:
-        * configuration: Current project configuration
-    """
-    print()
-    print("(Debug): Current configuration:")
-    print("  ITEM:  VALUE")
-    print("  ----   -----")
-    print(f"  board: {config[BOARD]}")
-    print(f"  fpga: {config[FPGA]}")
-    print(f"  arch: {config[ARCH]}")
-    print(f"  type: {config[TYPE]}")
-    print(f"  size: {config[SIZE]}")
-    print(f"  pack: {config[PACK]}")
-    print(f"  idcode: {config[IDCODE]}")
-    print(f"  top-module: {config[TOP_MODULE]}")
-    print(f"  testbench: {config[TESTBENCH]}")
-    print(f"  graph_spec: {config[GRAPH_SPEC]}")
-    print(f"  platform_id: {config[PLATFORM_ID]}")
-    print(f"  verbose_all: {config[VERBOSE_ALL]}")
-    print(f"  verbose_yosys: {config[VERBOSE_YOSYS]}")
-    print(f"  verbose_pnr: {config[VERBOSE_PNR]}")
-    print()
+    # -- Having conflicting values.
+    raise ValueError(
+        f"contradictory argument values: "
+        f"{arg_name} ({new_value} vs {old_value})"
+    )
 
 
 def perror_insuficient_arguments():
@@ -375,7 +360,7 @@ def perror_insuficient_arguments():
     )
 
 
-def serialize_scons_flags(flags: dict) -> list:
+def serialize_scons_variables(flags: dict) -> list:
     """Format the scons flags as a list of string of
     the form: 'flag=value'
     """
