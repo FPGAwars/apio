@@ -336,10 +336,12 @@ graph_target = env.Alias("graph", graphviz_target)
 # -- Targets.
 # -- (modules).v -> (testbench).out -> (testbench).vcd -> gtkwave
 if "sim" in COMMAND_LINE_TARGETS:
-    config = get_sim_config(env, TESTBENCH, synth_srcs)
-    sim_out_target = env.IVerilogTestbench(config.output, config.srcs)
+    sim_config = get_sim_config(env, TESTBENCH, synth_srcs)
+    sim_out_target = env.IVerilogTestbench(
+        sim_config.build_testbench_name, sim_config.srcs
+    )
     vcd_file_target = env.VCD(sim_out_target)
-    waves_target = make_waves_target(env, vcd_file_target, config.output)
+    waves_target = make_waves_target(env, vcd_file_target, sim_config)
     AlwaysBuild(waves_target)
 
 
@@ -347,15 +349,17 @@ if "sim" in COMMAND_LINE_TARGETS:
 # -- Targets.
 # -- (modules).v -> (testbenchs).out -> (testbenchs).vcd
 if "test" in COMMAND_LINE_TARGETS:
-    configs = get_tests_configs(env, TESTBENCH, synth_srcs, test_srcs)
+    sim_configs = get_tests_configs(env, TESTBENCH, synth_srcs, test_srcs)
     tests_targets = []
-    for config in configs:
-        test_out_target = env.IVerilogTestbench(config.output, config.srcs)
+    for sim_config in sim_configs:
+        test_out_target = env.IVerilogTestbench(
+            sim_config.build_testbench_name, sim_config.srcs
+        )
         AlwaysBuild(test_out_target)
         test_vcd_target = env.VCD(test_out_target)
         AlwaysBuild(test_vcd_target)
         test_target = env.Alias(
-            config.output, [test_out_target, test_vcd_target]
+            sim_config.build_testbench_name, [test_out_target, test_vcd_target]
         )
         tests_targets.append(test_target)
 

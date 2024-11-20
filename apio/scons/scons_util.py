@@ -472,7 +472,8 @@ def get_source_files(env: SConsEnvironment) -> Tuple[List[str], List[str]]:
 class SimulationConfig:
     """Simulation parameters, for sim and test commands."""
 
-    output: str  # .out file name, includes build directory..
+    testbench_name: str  # The testbench name, without the 'v' suffix.
+    build_testbench_name: str  # testbench_name prefixed by build dir.
     srcs: List[str]  # List of source files to compile.
 
 
@@ -489,9 +490,10 @@ def get_sim_config(
 
     # Construct a SimulationParams with all the synth files + the
     # testbench file.
-    output = BUILD_DIR_SEP + basename(env, testbench)
+    testbench_name = basename(env, testbench)
+    build_testbench_name = BUILD_DIR_SEP + testbench_name
     srcs = synth_srcs + [testbench]
-    return SimulationConfig(output, srcs)
+    return SimulationConfig(testbench_name, build_testbench_name, srcs)
 
 
 def get_tests_configs(
@@ -518,9 +520,12 @@ def get_tests_configs(
     # Construct a config for each testbench.
     configs = []
     for tb in testbenches:
-        output = BUILD_DIR_SEP + basename(env, tb)
+        testbench_name = basename(env, tb)
+        build_testbench_name = BUILD_DIR_SEP + testbench_name
         srcs = synth_srcs + [tb]
-        configs.append(SimulationConfig(output, srcs))
+        configs.append(
+            SimulationConfig(testbench_name, build_testbench_name, srcs)
+        )
 
     return configs
 
@@ -528,12 +533,11 @@ def get_tests_configs(
 def make_waves_target(
     env: SConsEnvironment,
     vcd_file_target: NodeList,
-    top_module: str,
+    sim_config: SimulationConfig,
 ) -> List[Alias]:
     """Construct a target to launch the QTWave signal viwer. vcd_file_target is
-    the simulator target that generated the vcd file with the signals. Top
-    module is to derive the name of the .gtkw which can be used to save the
-    viewer configuration for future simulations. Returns the new targets.
+    the simulator target that generated the vcd file with the signals.
+    Returns the new targets.
     """
 
     # -- Construct the commands list.
@@ -553,7 +557,7 @@ def make_waves_target(
         "gtkwave {0} {1} {2}.gtkw".format(
             '--rcvar "splash_disable on" --rcvar "do_initial_zoom_fit 1"',
             vcd_file_target[0],
-            top_module,
+            sim_config.testbench_name,
         )
     )
 
