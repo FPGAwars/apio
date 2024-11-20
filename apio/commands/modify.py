@@ -20,20 +20,8 @@ from apio.apio_context import ApioContext
 # -- COMMAND
 # ---------------------------
 HELP = """
-The modify command modifies selected fields in an existing
-apio.ini project file. The commands is typically used in
-the root directory of the project that contains the apio.ini file.
-
-\b
-Examples:
-  apio modify --board icezum
-  apio modify --board icezum --top-module MyModule
-  apio create --top-module MyModule
-
-At least one of the flags --board and --top-module must be specified.
-
-[Hint] Use the command 'apio examples -l' to see a list of
-the supported boards.
+The command 'apio modify' has been deprecated. Please edit the 'apio.ini'
+file manually with a text editor.
 """
 
 
@@ -41,7 +29,7 @@ the supported boards.
 # pylint: disable=R0913
 @click.command(
     "modify",
-    short_help="Modify the apio.ini project file.",
+    short_help="[Depreciated] Modify the apio.ini project file.",
     help=HELP,
     cls=cmd_util.ApioCommand,
 )

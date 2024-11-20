@@ -34,7 +34,6 @@ COMMAND_GROUPS = {
     ],
     "Setup commands": [
         "create",
-        "modify",
         "packages",
         "drivers",
     ],
@@ -46,6 +45,7 @@ COMMAND_GROUPS = {
         "upgrade",
     ],
     "Deprecated commands": [
+        "modify",
         "time",
         "verify",
         "install",
