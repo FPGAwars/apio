@@ -8,6 +8,7 @@
 """Implementation of 'apio system' command"""
 
 from pathlib import Path
+import importlib.metadata
 from varname import nameof
 import click
 from apio import util
@@ -141,6 +142,10 @@ def cli(
 
     # -- Show system information
     if info:
+        # -- Apio version.
+        click.secho("Apio version    ", nl=False)
+        click.secho(importlib.metadata.version("apio"), fg="cyan")
+
         # -- Print platform id.
         click.secho("Platform id     ", nl=False)
         click.secho(apio_ctx.platform_id, fg="cyan")
