@@ -91,8 +91,8 @@ VERBOSE_PNR = arg_bool(env, "verbose_pnr", False)
 TESTBENCH = arg_str(env, "testbench", "")
 VERILATOR_ALL = arg_bool(env, "all", False)
 VERILATOR_NO_STYLE = arg_bool(env, "nostyle", False)
-NOWARNS = arg_str(env, "nowarn", "").split(",")
-WARNS = arg_str(env, "warn", "").split(",")
+VERILATOR_NOWARNS = arg_str(env, "nowarn", "").split(",")
+VERILATOR_WARNS = arg_str(env, "warn", "").split(",")
 GRAPH_SPEC = arg_str(env, "graph_spec", "")
 
 
@@ -362,8 +362,8 @@ verilator_builder = Builder(
         env,
         warnings_all=VERILATOR_ALL,
         warnings_no_style=VERILATOR_NO_STYLE,
-        no_warns=NOWARNS,
-        warns=WARNS,
+        no_warns=VERILATOR_NOWARNS,
+        warns=VERILATOR_WARNS,
         top_module=TOP_MODULE,
         lib_dirs=[YOSYS_LIB_DIR],
     ),

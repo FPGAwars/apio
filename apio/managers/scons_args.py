@@ -336,7 +336,7 @@ def update_arg(new_args: dict, arg_name: str, new_value: str) -> None:
     # -- Having conflicting values.
     raise ValueError(
         f"contradictory argument values: "
-        f"{arg_name} ({new_value} vs {old_value})"
+        f"'{arg_name}' = ({new_value} vs {old_value})"
     )
 
 
