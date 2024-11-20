@@ -598,13 +598,16 @@ def make_iverilog_action(
         "" if is_windows(env) or not ivl_path else f'-B "{ivl_path}"'
     )
 
-    # Construct the action string.
+    # Escaping for windows. '\' -> '\\'
+    escaped_vcd_output_name = vcd_output_name.replace("\\", "\\\\")
+
+    # -- Construct the action string.
     action = (
         "iverilog {0} {1} -o $TARGET {2} {3} {4} {5} {6} $SOURCES"
     ).format(
         ivl_path_param,
         "-v" if verbose else "",
-        f"-DVCD_OUTPUT={vcd_output_name}",
+        f"-DVCD_OUTPUT={escaped_vcd_output_name}",
         "-DINTERACTIVE_SIM" if is_interactive else "",
         map_params(env, extra_params, "{}"),
         map_params(env, lib_dirs, '-I"{}"'),
