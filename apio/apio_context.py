@@ -82,16 +82,15 @@ class ApioContext:
     def __init__(
         self,
         *,
-        project_scope: bool,
+        load_project: bool,
         project_dir: Optional[Path] = None,
     ):
         """Initializes the ApioContext object. 'project dir' is an optional
         path to the project dir, otherwise, the current directory is used.
-        'project_scope' indicates if project specfic context such as
-        boards.json should be loaded, if available' or that the global
-        default context should be used instead.  Some commands such as
-        'apio packages' uses the global scope while commands such as
-        'apio build' use the project scope.
+        'load_project' indicates if project specfic context such as
+        apio.ini or custom boards.json should be loaded. Some commands operate
+        on project while other, such as apio drivers and apio packages,
+        do not require a project.
         """
 
         # -- Inform as soon as possible about the list of apio env options
@@ -102,6 +101,9 @@ class ApioContext:
                 f"Active env options [{', '.join(defined_env_options)}].",
                 fg="yellow",
             )
+
+        # -- Save the load project status.
+        self._load_project = load_project
 
         # -- Maps the optional project_dir option to a path.
         self.project_dir: Path = util.get_project_dir(project_dir)
@@ -126,19 +128,16 @@ class ApioContext:
             self.all_packages, self.platform_id, self.platforms
         )
 
-        # -- Read the boards information
-        self.boards = self._load_resource(
-            BOARDS_JSON, allow_custom=project_scope
-        )
+        # -- Read the boards information. Allow override files in project dir.
+        self.boards = self._load_resource(BOARDS_JSON, allow_custom=True)
 
-        # -- Read the FPGAs information
-        self.fpgas = self._load_resource(
-            FPGAS_JSON, allow_custom=project_scope
-        )
+        # -- Read the FPGAs information. Allow override files in project dir.
+        self.fpgas = self._load_resource(FPGAS_JSON, allow_custom=True)
 
-        # -- Read the programmers information
+        # -- Read the programmers information. Allow override files in project
+        # -- dir.
         self.programmers = self._load_resource(
-            PROGRAMMERS_JSON, allow_custom=project_scope
+            PROGRAMMERS_JSON, allow_custom=True
         )
 
         # -- Read the distribution information
@@ -157,13 +156,23 @@ class ApioContext:
             sorted(self.fpgas.items(), key=lambda t: t[0])
         )
 
-        # -- If in project scope, load project.
-        if project_scope:
-            self.project = Project(self.project_dir)
-            self.project.read()
+        # -- If requested, load the project's apio.ini
+        if load_project:
+            self._project = Project(self.project_dir)
+            self._project.read()
 
-        else:
-            self.project = None
+    def check_project_loaded(self):
+        """Assert that context was created with project loading.."""
+        assert (
+            self._load_project
+        ), "Apio context created without project loading."
+
+    @property
+    def project(self):
+        """Property to return the project after verification that it was
+        loaded."""
+        self.check_project_loaded()
+        return self._project
 
     def _load_resource(self, name: str, allow_custom: bool = False) -> dict:
         """Load the resources from a given json file

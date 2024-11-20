@@ -66,7 +66,7 @@ def cli(
     """Analyze the design and report timing."""
 
     # -- Create the apio context.
-    apio_ctx = ApioContext(project_dir=project_dir, project_scope=True)
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=True)
 
     # -- Create the scons manager.
     scons = SCons(apio_ctx)

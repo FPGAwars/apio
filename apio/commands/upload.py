@@ -92,7 +92,7 @@ def cli(
     """Implements the upload command."""
 
     # -- Create a apio context.
-    apio_ctx = ApioContext(project_dir=project_dir, project_scope=True)
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=True)
 
     # -- Create the drivers manager.
     drivers = Drivers(apio_ctx)

@@ -94,12 +94,8 @@ def cli(
     # Make sure these params are exclusive.
     cmd_util.check_at_most_one_param(cmd_ctx, nameof(packages, all_, list_))
 
-    # -- Create an apio context. We don't care about project specific
-    # -- configuration.
-    apio_ctx = ApioContext(
-        project_dir=project_dir,
-        project_scope=False,
-    )
+    # -- Create the apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=False)
 
     # -- Install the given apio packages
     if packages:

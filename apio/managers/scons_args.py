@@ -182,8 +182,8 @@ def process_arguments(
     provided scons args.  The list of the valid entires in the args ditct,
     see ARG_XX definitions above.
 
-       * apio_ctx: ApioContext of this apio invocation. Assumed to be in
-         'project scope' and contain a valid apio_ctx.project.
+       * apio_ctx: ApioContext of this apio invocation. Should be created with
+         'load_project'  = True.
        * args: a Dictionary with the scons args.
     * OUTPUT:
       * Return a tuple (variables, board, arch)
@@ -194,6 +194,11 @@ def process_arguments(
         - arch: FPGA architecture ('ice40', 'ecp5'...)
     """
 
+    # -- We expect that the apio context was created with project loading.
+    apio_ctx.check_project_loaded()
+
+    # -- Construct the args dictionary with all supported args. Most of the
+    # -- args also have the name of their exported scons variable.
     args: Dict[str, Arg] = {
         ARG_BOARD_ID: Arg(ARG_BOARD_ID),
         ARG_FPGA_ID: Arg(ARG_FPGA_ID, "fpga_model"),

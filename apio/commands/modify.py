@@ -61,8 +61,8 @@ def cli(
     # At least one of these options are required.
     cmd_util.check_at_least_one_param(cmd_ctx, nameof(board, top_module))
 
-    # Create an apio context.
-    apio_ctx = ApioContext(project_dir=project_dir, project_scope=False)
+    # -- Create the apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=False)
 
     # Create the apio.ini file
     ok = Project.modify_ini_file(

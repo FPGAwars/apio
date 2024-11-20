@@ -73,9 +73,8 @@ def cli(
     # Make sure these params are exclusive.
     cmd_util.check_at_most_one_param(cmd_ctx, nameof(list_, fpgas))
 
-    # -- Create an apio context. We need project scope since the project
-    # -- may override the list of boards.
-    apio_ctx = ApioContext(project_dir=project_dir, project_scope=True)
+    # -- Create the apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=False)
 
     # -- Option 1: List boards
     if list_:

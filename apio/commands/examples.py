@@ -97,8 +97,10 @@ def cli(
         cmd_ctx, nameof(list_, fetch_dir, fetch_files)
     )
 
-    # -- Access to the examples.
-    apio_ctx = ApioContext(project_scope=False)
+    # -- Create the apio context.
+    apio_ctx = ApioContext(load_project=False)
+
+    # -- Create the examples manager.
     examples = Examples(apio_ctx)
 
     # -- Option: Copy the directory

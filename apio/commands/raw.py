@@ -74,7 +74,7 @@ def cli(
     # -- if --env option is specifies and prepare the env for the command
     # -- execution below.
     if cmd or env:
-        apio_ctx = ApioContext(project_scope=False)
+        apio_ctx = ApioContext(load_project=False)
         pkg_util.set_env_for_packages(apio_ctx, verbose=env)
 
     if cmd:

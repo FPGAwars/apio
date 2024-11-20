@@ -90,7 +90,7 @@ def cli(
     cmd_util.check_at_most_one_param(cmd_ctx, nameof(packages, list_, all_))
 
     # -- Create the apio context.
-    apio_ctx = ApioContext(project_dir=project_dir, project_scope=False)
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=False)
 
     # -- Uninstall the given apio packages
     if packages:

@@ -96,8 +96,10 @@ def cli(
         nameof(ftdi_install, ftdi_uninstall, serial_install, serial_uninstall),
     )
 
-    # -- Access to the Drivers
-    apio_ctx = ApioContext(project_scope=False)
+    # -- Create the apio context.
+    apio_ctx = ApioContext(load_project=False)
+
+    # -- Create the drivers manager.
     drivers = Drivers(apio_ctx)
 
     # -- FTDI install option

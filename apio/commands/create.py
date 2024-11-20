@@ -74,10 +74,8 @@ def cli(
     if not top_module:
         top_module = DEFAULT_TOP_MODULE
 
-    # -- Create an apio context. We use project scope in case the project dir
-    # -- already has a custom boards.json file so we validate 'board'
-    # -- against that board list.
-    apio_ctx = ApioContext(project_dir=project_dir, project_scope=False)
+    # -- Create the apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=False)
 
     project_dir = util.get_project_dir(project_dir)
 

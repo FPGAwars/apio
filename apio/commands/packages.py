@@ -223,13 +223,11 @@ def cli(
     cmd_util.check_at_most_one_param(cmd_ctx, nameof(list_, packages))
     cmd_util.check_at_most_one_param(cmd_ctx, nameof(fix, packages))
 
-    # -- Create the apio context. We don't care about project specific
-    # -- configuration.
-    apio_ctx = ApioContext(
-        project_dir=project_dir,
-        project_scope=False,
-    )
+    # -- Create the apio context.
 
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=False)
+
+    # -- Dispatch the operation.
     if install:
         exit_code = _install(apio_ctx, packages, force, verbose)
         cmd_ctx.exit(exit_code)

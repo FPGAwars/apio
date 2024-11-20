@@ -78,8 +78,8 @@ def cli(
     # by means of the scons tool
     # https://www.scons.org/documentation.html
 
-    # -- Create apio context.
-    apio_ctx = ApioContext(project_dir=project_dir, project_scope=True)
+    # -- Create the apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=True)
 
     # -- Create the scons manager.
     scons = SCons(apio_ctx)

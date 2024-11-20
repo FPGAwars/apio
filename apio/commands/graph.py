@@ -98,8 +98,8 @@ def cli(
     else:
         graph_spec = "svg"
 
-    # -- Create an apio context.
-    apio_ctx = ApioContext(project_dir=project_dir, project_scope=True)
+    # -- Create the apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=True)
 
     # -- Create the scons manager.
     scons = SCons(apio_ctx)
