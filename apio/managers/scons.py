@@ -25,7 +25,6 @@ from apio import pkg_util
 from apio.managers.scons_args import process_arguments
 from apio.managers.system import System
 from apio.apio_context import ApioContext
-from apio.managers.project import Project
 from apio.managers.scons_filter import SconsFilter
 
 # -- Constant for the dictionary PROG, which contains
@@ -79,10 +78,6 @@ class SCons:
         # -- Cache the apio context.
         self.apio_ctx = apio_ctx
 
-        # -- Read the project file (apio.ini)
-        self.project = Project(apio_ctx.project_dir)
-        self.project.read()
-
         # -- Change to the project's folder.
         os.chdir(apio_ctx.project_dir)
 
@@ -92,9 +87,7 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        variables, __, arch = process_arguments(
-            self.apio_ctx, args, self.project
-        )
+        variables, __, arch = process_arguments(self.apio_ctx, args)
 
         # --Clean the project: run scons -c (with aditional arguments)
         return self._run(
@@ -107,9 +100,7 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        variables, __, arch = process_arguments(
-            self.apio_ctx, args, self.project
-        )
+        variables, __, arch = process_arguments(self.apio_ctx, args)
 
         # -- Execute scons!!!
         # -- The packages to check are passed
@@ -126,9 +117,7 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        variables, _, arch = process_arguments(
-            self.apio_ctx, args, self.project
-        )
+        variables, _, arch = process_arguments(self.apio_ctx, args)
 
         # -- Execute scons!!!
         # -- The packages to check are passed
@@ -144,9 +133,7 @@ class SCons:
         """Runs a scons subprocess with the 'lint' target. Returns process
         exit code, 0 if ok."""
 
-        variables, __, arch = process_arguments(
-            self.apio_ctx, args, self.project
-        )
+        variables, __, arch = process_arguments(self.apio_ctx, args)
         return self._run(
             "lint",
             variables=variables,
@@ -160,9 +147,7 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        variables, _, arch = process_arguments(
-            self.apio_ctx, args, self.project
-        )
+        variables, _, arch = process_arguments(self.apio_ctx, args)
 
         return self._run(
             "sim",
@@ -177,9 +162,7 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        variables, _, arch = process_arguments(
-            self.apio_ctx, args, self.project
-        )
+        variables, _, arch = process_arguments(self.apio_ctx, args)
 
         return self._run(
             "test",
@@ -194,9 +177,7 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        variables, board, arch = process_arguments(
-            self.apio_ctx, args, self.project
-        )
+        variables, board, arch = process_arguments(self.apio_ctx, args)
 
         # -- Execute scons!!!
         # -- The packages to check are passed
@@ -213,9 +194,7 @@ class SCons:
         """Runs a scons subprocess with the 'time' target. Returns process
         exit code, 0 if ok."""
 
-        variables, board, arch = process_arguments(
-            self.apio_ctx, args, self.project
-        )
+        variables, board, arch = process_arguments(self.apio_ctx, args)
 
         if arch not in ["ice40"]:
             click.secho(
@@ -238,9 +217,7 @@ class SCons:
         """Runs a scons subprocess with the 'report' target. Returns process
         exit code, 0 if ok."""
 
-        variables, board, arch = process_arguments(
-            self.apio_ctx, args, self.project
-        )
+        variables, board, arch = process_arguments(self.apio_ctx, args)
 
         return self._run(
             "report",
@@ -269,9 +246,7 @@ class SCons:
 
         # -- Get important information from the configuration
         # -- It will raise an exception if it cannot be solved
-        flags, board, arch = process_arguments(
-            self.apio_ctx, config, self.project
-        )
+        flags, board, arch = process_arguments(self.apio_ctx, config)
 
         # -- Information about the FPGA is ok!
 

@@ -16,6 +16,7 @@ from typing import Optional, Dict
 import click
 from apio import util, env_options
 from apio.profile import Profile
+from apio.managers.project import Project
 
 
 # pylint: disable=fixme
@@ -155,6 +156,14 @@ class ApioContext:
         self.fpgas = OrderedDict(
             sorted(self.fpgas.items(), key=lambda t: t[0])
         )
+
+        # -- If in project scope, load project.
+        if project_scope:
+            self.project = Project(self.project_dir)
+            self.project.read()
+
+        else:
+            self.project = None
 
     def _load_resource(self, name: str, allow_custom: bool = False) -> dict:
         """Load the resources from a given json file

@@ -77,12 +77,18 @@ def cli(
     # -- Create an apio context. We use project scope in case the project dir
     # -- already has a custom boards.json file so we validate 'board'
     # -- against that board list.
-    apio_ctx = ApioContext(project_dir=project_dir, project_scope=True)
+    apio_ctx = ApioContext(project_dir=project_dir, project_scope=False)
 
     project_dir = util.get_project_dir(project_dir)
 
     # Create the apio.ini file
-    ok = Project.create_ini(apio_ctx, board, top_module, sayyes)
+    ok = Project.create_ini_file(
+        apio_ctx.project_dir,
+        board,
+        top_module,
+        apio_ctx.boards,
+        sayyes,
+    )
 
     exit_code = 0 if ok else 1
     cmd_ctx.exit(exit_code)

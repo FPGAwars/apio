@@ -10,7 +10,7 @@ import traceback
 from functools import wraps
 from typing import Dict, Tuple, Optional, List, Any
 import click
-from apio.managers.project import Project, DEFAULT_TOP_MODULE
+from apio.managers.project import DEFAULT_TOP_MODULE
 from apio.apio_context import ApioContext
 
 
@@ -176,15 +176,15 @@ class Arg:
 # -- Uncomment the decoracotor below for debugging.
 # @debug_dump
 def process_arguments(
-    apio_ctx: ApioContext, seed_args: Dict, project: Project
+    apio_ctx: ApioContext, seed_args: Dict
 ) -> Tuple[List[str], str, Optional[str]]:
     """Construct the scons variables list from an ApioContext and user
     provided scons args.  The list of the valid entires in the args ditct,
     see ARG_XX definitions above.
 
-       * apio_ctx: ApioContext of this apio invocation.
+       * apio_ctx: ApioContext of this apio invocation. Assumed to be in
+         'project scope' and contain a valid apio_ctx.project.
        * args: a Dictionary with the scons args.
-       * Project: Optional project information.
     * OUTPUT:
       * Return a tuple (variables, board, arch)
         - variables: A list of strings scons variables. For example
@@ -221,6 +221,9 @@ def process_arguments(
     for arg_name, seed_value in seed_args.items():
         if seed_value:
             args[arg_name].set(seed_value)
+
+    # -- Keep a shortcut, for convinience.
+    project = apio_ctx.project
 
     # -- Board name given in the command line
     if args[ARG_BOARD_ID].has_value:

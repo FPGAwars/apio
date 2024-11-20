@@ -11,11 +11,11 @@ import sys
 from os.path import isfile
 from pathlib import Path
 from configparser import ConfigParser
+from typing import Dict
 from typing import Optional
 from configobj import ConfigObj
 import click
 from apio import util
-from apio.apio_context import ApioContext
 
 # -- Apio projecto filename
 PROJECT_FILENAME = "apio.ini"
@@ -32,24 +32,27 @@ class Project:
     """Class for managing apio projects"""
 
     def __init__(self, project_dir: Optional[Path]):
+        """Avoid instantiating this object. Use the instance from
+        ApioContext when possible.
+        """
         self.project_dir = util.get_project_dir(project_dir)
         self.board: str = None
         self.top_module: str = None
 
     @staticmethod
-    def create_ini(
-        apio_ctx: ApioContext,
+    def create_ini_file(
+        project_dir: Path,
         board: str,
         top_module: str,
+        boards: Dict,
         sayyes: bool = False,
     ) -> bool:
         """Creates a new apio project file. Returns True if ok."""
 
         # -- Construct the path
-        ini_path = apio_ctx.project_dir / PROJECT_FILENAME
+        ini_path = project_dir / PROJECT_FILENAME
 
         # -- Verify that the board id is valid.
-        boards = apio_ctx.boards
         if board not in boards.keys():
             click.secho(f"Error: no such board '{board}'", fg="red")
             return False
@@ -89,17 +92,19 @@ class Project:
 
     @staticmethod
     def modify_ini_file(
-        apio_ctx: ApioContext, board: Optional[str], top_module: Optional[str]
+        project_dir: Path,
+        board: Optional[str],
+        top_module: Optional[str],
+        boards: Dict,
     ) -> bool:
         """Update the current ini file with the given optional parameters.
         Returns True if ok."""
 
         # -- construct the file path.
-        ini_path = apio_ctx.project_dir / PROJECT_FILENAME
+        ini_path = project_dir / PROJECT_FILENAME
 
         # -- Verify that the board id is valid.
         if board:
-            boards = apio_ctx.boards
             if board not in boards.keys():
                 click.secho(
                     f"Error: no such board '{board}'.\n"

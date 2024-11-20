@@ -62,10 +62,15 @@ def cli(
     cmd_util.check_at_least_one_param(cmd_ctx, nameof(board, top_module))
 
     # Create an apio context.
-    apio_ctx = ApioContext(project_dir=project_dir, project_scope=True)
+    apio_ctx = ApioContext(project_dir=project_dir, project_scope=False)
 
     # Create the apio.ini file
-    ok = Project.modify_ini_file(apio_ctx, board, top_module)
+    ok = Project.modify_ini_file(
+        apio_ctx.project_dir,
+        board,
+        top_module,
+        apio_ctx.boards,
+    )
 
     exit_code = 0 if ok else 1
     cmd_ctx.exit(exit_code)
