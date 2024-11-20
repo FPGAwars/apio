@@ -35,11 +35,15 @@ ARG_TOP_MODULE = "top-module"
 ARG_TESTBENCH = "testbench"
 ARG_GRAPH_SPEC = "graph_spec"
 ARG_PLATFORM_ID = "platform_id"
+ARG_VERILATOR_ALL = "all"
+ARG_VERILATOR_NO_STYLE = "nostyle"
+ARG_VERILATOR_NO_WARN = "nowarn"
+ARG_VERILATOR_WARN = "warn"
 
 
-def debug_dump_input_output(process_arguments_func):
+def debug_dump(process_arguments_func):
     """A decorator for debugging. It prints the input and output of
-    process_arguments(). Comment out the '@debug_params' statement
+    process_arguments(). Comment out the '@debug_dump' statement
     below to enable, comment to disable..
 
     INPUTS:
@@ -95,7 +99,7 @@ def debug_dump_input_output(process_arguments_func):
 # pylint: disable=R0912
 #
 # -- Uncomment the decoracotor below for debugging.
-# @debug_dump_input_output
+# @debug_dump
 def process_arguments(
     apio_ctx: ApioContext, args: Dict, project: Project
 ) -> Tuple[List[str], str, Optional[str]]:
@@ -125,20 +129,24 @@ def process_arguments(
         ARG_FPGA_SIZE: None,
         ARG_FPGA_PACK: None,
         ARG_FPGA_IDCODE: None,
-        ARG_VERBOSE_ALL: False,
-        ARG_VERBOSE_YOSYS: False,
-        ARG_VERBOSE_PNR: False,
+        ARG_VERBOSE_ALL: None,
+        ARG_VERBOSE_YOSYS: None,
+        ARG_VERBOSE_PNR: None,
         ARG_TOP_MODULE: None,
         ARG_TESTBENCH: None,
         ARG_GRAPH_SPEC: None,
         ARG_PLATFORM_ID: None,
+        ARG_VERILATOR_ALL: None,
+        ARG_VERILATOR_NO_STYLE: None,
+        ARG_VERILATOR_NO_WARN: None,
+        ARG_VERILATOR_WARN: None,
     }
 
     # -- We expect new_args to contain all the supported args and we expect
     # -- args to contain only supported args. A failure here indicates a
     # -- programming error.
     unknown_args = [x for x in args.keys() if x not in new_args]
-    assert len(unknown_args) == 0, unknown_args
+    assert len(unknown_args) == 0, f"Unexpected sconsargs: {unknown_args}"
 
     # -- Merge the initial configuration to the current configuration
     new_args.update(args)
@@ -255,7 +263,8 @@ def process_arguments(
     update_arg(new_args, ARG_PLATFORM_ID, apio_ctx.platform_id)
 
     # -- Build Scons flag list. This is a differnet set of names that may
-    # -- be different from the args set of names.
+    # -- be different from the args set of names. These keys should match
+    # -- the arg keys at the begining of the SConstruct files.
     variables_dict = {
         "fpga_model": new_args[ARG_FPGA_ID],
         "fpga_arch": new_args[ARG_FPGA_ARCH],
@@ -270,6 +279,10 @@ def process_arguments(
         "testbench": new_args[ARG_TESTBENCH],
         "graph_spec": new_args[ARG_GRAPH_SPEC],
         "platform_id": new_args[ARG_PLATFORM_ID],
+        "all": new_args[ARG_VERILATOR_ALL],
+        "nostyle": new_args[ARG_VERILATOR_NO_STYLE],
+        "nowarn": new_args[ARG_VERILATOR_NO_WARN],
+        "warn": new_args[ARG_VERILATOR_WARN],
     }
 
     # -- Convert to a list of 'name=value' strings. Entires with

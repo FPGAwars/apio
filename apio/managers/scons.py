@@ -23,7 +23,6 @@ import semantic_version
 from apio import util
 from apio import pkg_util
 from apio.managers.scons_args import process_arguments
-from apio.managers.scons_args import serialize_scons_variables
 from apio.managers.system import System
 from apio.apio_context import ApioContext
 from apio.managers.project import Project
@@ -145,17 +144,8 @@ class SCons:
         """Runs a scons subprocess with the 'lint' target. Returns process
         exit code, 0 if ok."""
 
-        config = {}
-        __, __, arch = process_arguments(self.apio_ctx, config, self.project)
-        variables = serialize_scons_variables(
-            {
-                "all": args.get("all"),
-                "top_module": args.get("top_module"),
-                "nowarn": args.get("nowarn"),
-                "warn": args.get("warn"),
-                "nostyle": args.get("nostyle"),
-                "platform_id": self.apio_ctx.platform_id,
-            }
+        variables, __, arch = process_arguments(
+            self.apio_ctx, args, self.project
         )
         return self._run(
             "lint",

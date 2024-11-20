@@ -153,7 +153,8 @@ def test_build_complete1(clirunner, configenv):
         )
         assert result.exit_code != 0, result.output
         assert (
-            "Error: contradictory argument values: 'fpga' = ""(iCE40-HX1K-TQ144 vs iCE40-HX1K-VQ100)" in result.output
+            "Error: contradictory argument values: 'fpga' = "
+            "(iCE40-HX1K-TQ144 vs iCE40-HX1K-VQ100)" in result.output
         )
 
         # apio build --fpga iCE40-HX1K-TQ144 --type lp --size 8k

@@ -106,7 +106,7 @@ def cli(
     exit_code = scons.lint(
         {
             "all": all_,
-            "top_module": top_module,
+            "top-module": top_module,
             "nostyle": nostyle,
             "nowarn": nowarn,
             "warn": warn,
