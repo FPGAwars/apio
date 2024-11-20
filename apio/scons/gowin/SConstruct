@@ -312,9 +312,9 @@ graph_target = env.Alias("graph", graphviz_target)
 # -- (modules).v -> (testbench).out -> (testbench).vcd -> gtkwave
 if "sim" in COMMAND_LINE_TARGETS:
     config = get_sim_config(env, TESTBENCH, synth_srcs)
-    sim_out_target = env.IVerilogTestbench(config.top_module, config.srcs)
+    sim_out_target = env.IVerilogTestbench(config.output, config.srcs)
     vcd_file_target = env.VCD(sim_out_target)
-    waves_target = make_waves_target(env, vcd_file_target, config.top_module)
+    waves_target = make_waves_target(env, vcd_file_target, config.output)
     AlwaysBuild(waves_target)
 
 
@@ -325,12 +325,12 @@ if "test" in COMMAND_LINE_TARGETS:
     configs = get_tests_configs(env, TESTBENCH, synth_srcs, test_srcs)
     tests_targets = []
     for config in configs:
-        test_out_target = env.IVerilogTestbench(config.top_module, config.srcs)
+        test_out_target = env.IVerilogTestbench(config.output, config.srcs)
         AlwaysBuild(test_out_target)
         test_vcd_target = env.VCD(test_out_target)
         AlwaysBuild(test_vcd_target)
         test_target = env.Alias(
-            config.top_module, [test_out_target, test_vcd_target]
+            config.output, [test_out_target, test_vcd_target]
         )
         tests_targets.append(test_target)
 
@@ -385,15 +385,4 @@ AlwaysBuild(lint_target)
 
 # -- Handle the cleanu of the artifact files.
 if GetOption("clean"):
-    set_up_cleanup(
-        env,
-        [
-            report_target,
-            build_target,
-            synth_target,
-            verify_target,
-            pnr_target,
-            graph_target,
-            lint_target,
-        ],
-    )
+    set_up_cleanup(env)

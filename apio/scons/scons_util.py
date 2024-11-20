@@ -33,9 +33,15 @@ from SCons.Script.SConscript import SConsEnvironment
 from SCons.Action import FunctionAction, Action
 from SCons.Builder import Builder
 
+# -- All the build files and other artifcats are created in this this
+# -- subdirectory.
+BUILD_DIR = "_build"
+
+# -- A shortcut with '/' or '\' appended to the build dir name.
+BUILD_DIR_SEP = BUILD_DIR + os.sep
 
 # -- Target name. This is the base file name for various build artifacts.
-TARGET = "hardware"
+TARGET = BUILD_DIR_SEP + "hardware"
 
 SUPPORTED_GRAPH_TYPES = ["svg", "pdf", "png"]
 
@@ -389,8 +395,9 @@ def make_dot_builder(
     dot_builder = Builder(
         action=(
             'yosys -f verilog -p "show -format dot -colors 1 '
-            '-prefix hardware {0}" {1} $SOURCES'
+            '-prefix {0}hardware {1}" {2} $SOURCES'
         ).format(
+            BUILD_DIR_SEP,
             top_module if top_module else "unknown_top",
             "" if verbose else "-q",
         ),
@@ -465,7 +472,7 @@ def get_source_files(env: SConsEnvironment) -> Tuple[List[str], List[str]]:
 class SimulationConfig:
     """Simulation parameters, for sim and test commands."""
 
-    top_module: str  # Top module name of the simulation.
+    output: str  # .out file name, includes build directory..
     srcs: List[str]  # List of source files to compile.
 
 
@@ -482,9 +489,9 @@ def get_sim_config(
 
     # Construct a SimulationParams with all the synth files + the
     # testbench file.
-    top_module = basename(env, testbench)
+    output = BUILD_DIR_SEP + basename(env, testbench)
     srcs = synth_srcs + [testbench]
-    return SimulationConfig(top_module, srcs)
+    return SimulationConfig(output, srcs)
 
 
 def get_tests_configs(
@@ -511,9 +518,9 @@ def get_tests_configs(
     # Construct a config for each testbench.
     configs = []
     for tb in testbenches:
-        top_module = basename(env, tb)
+        output = BUILD_DIR_SEP + basename(env, tb)
         srcs = synth_srcs + [tb]
-        configs.append(SimulationConfig(top_module, srcs))
+        configs.append(SimulationConfig(output, srcs))
 
     return configs
 
@@ -748,29 +755,23 @@ def wait_for_remote_debugger(env: SConsEnvironment):
     msg(env, "Remote debugger is attached.", fg="green")
 
 
-def set_up_cleanup(env: SConsEnvironment, targets) -> None:
+def set_up_cleanup(env: SConsEnvironment) -> None:
     """Should be called only when the "clean" target is specified. Configures
-    in env the set of targets that should be cleaned up. 'targets' is a list
-    of top level targets and aliases defined in SConstruct.
+    in scons env do delete all the files in the build directory.
     """
 
     # -- Should be called only when the 'clean' target is specified.
     assert env.GetOption("clean")
 
-    # -- Patterns for target files that may not be defined in every invocation
-    # -- of SConstruct. For example xyz_tb.vcd appears only when simulating
-    # -- benchmark xyz_tb.vcd.
-    dynamic_targets = ["*.out", "*.vcd", "zadig.ini"]
+    # -- Get the list of all files to clean. Scons adds to the list non
+    # -- existing files from other targets it encountered.
+    files_to_clean = env.Glob(f"{BUILD_DIR_SEP}*") + env.Glob("zadig.ini")
 
-    # -- Attach all the existing files that match the dynamic targets to the
-    # -- first given target (this is an arbitrary choice).
-    for dynamic_target in dynamic_targets:
-        for node in env.Glob(dynamic_target):
-            env.Clean(targets[0], str(node))
+    # -- Create a dummy target.  I
+    dummy_target = env.Command(
+        "no-such-file-1", "no-such-file-2", "no-such-action"
+    )
 
-    # -- Do the same for the apio graph output files.
-    for graph_type in SUPPORTED_GRAPH_TYPES:
-        env.Clean(targets[0], TARGET + "." + graph_type)
-
-    # -- Tell SCons to cleanup the given targets and all of their dependencies.
-    env.Default(targets)
+    # -- Associate all the files with the dummy target.
+    for file in files_to_clean:
+        env.Clean(dummy_target, str(file))
