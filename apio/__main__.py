@@ -39,9 +39,10 @@ COMMAND_GROUPS = {
     ],
     "Utility commands": [
         "boards",
+        "fpgas",
         "examples",
-        "raw",
         "system",
+        "raw",
         "upgrade",
     ],
     "Deprecated commands": [
