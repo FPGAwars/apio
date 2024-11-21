@@ -10,31 +10,18 @@
 from pathlib import Path
 from varname import nameof
 import click
-from click.core import Context
 from apio.managers.project import Project
 from apio import cmd_util
 from apio.commands import options
-from apio.resources import Resources
+from apio.apio_context import ApioContext
 
 
 # ---------------------------
 # -- COMMAND
 # ---------------------------
 HELP = """
-The modify command modifies selected fields in an existing
-apio.ini project file. The commands is typically used in
-the root directory of the project that contains the apio.ini file.
-
-\b
-Examples:
-  apio modify --board icezum
-  apio modify --board icezum --top-module MyModule
-  apio create --top-module MyModule
-
-At least one of the flags --board and --top-module must be specified.
-
-[Hint] Use the command 'apio examples -l' to see a list of
-the supported boards.
+The command 'apio modify' has been deprecated. Please edit the 'apio.ini'
+file manually with a text editor.
 """
 
 
@@ -42,7 +29,7 @@ the supported boards.
 # pylint: disable=R0913
 @click.command(
     "modify",
-    short_help="Modify the apio.ini project file.",
+    short_help="[Depreciated] Modify the apio.ini project file.",
     help=HELP,
     cls=cmd_util.ApioCommand,
 )
@@ -51,7 +38,7 @@ the supported boards.
 @options.top_module_option_gen(help="Set the top level module name.")
 @options.project_dir_option
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Options
     board: str,
     top_module: str,
@@ -60,13 +47,18 @@ def cli(
     """Modify the project file."""
 
     # At least one of these options are required.
-    cmd_util.check_at_least_one_param(ctx, nameof(board, top_module))
+    cmd_util.check_at_least_one_param(cmd_ctx, nameof(board, top_module))
 
-    # Load resources.
-    resources = Resources(project_dir=project_dir, project_scope=True)
+    # -- Create the apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=False)
 
     # Create the apio.ini file
-    ok = Project.modify_ini_file(resources, board, top_module)
+    ok = Project.modify_ini_file(
+        apio_ctx.project_dir,
+        board,
+        top_module,
+        apio_ctx.boards,
+    )
 
     exit_code = 0 if ok else 1
-    ctx.exit(exit_code)
+    cmd_ctx.exit(exit_code)

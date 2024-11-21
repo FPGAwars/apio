@@ -9,12 +9,11 @@
 
 from pathlib import Path
 import click
-from click.core import Context
 from varname import nameof
 from apio.managers.scons import SCons
 from apio import cmd_util
 from apio.commands import options
-from apio.resources import Resources
+from apio.apio_context import ApioContext
 
 # ---------------------------
 # -- COMMAND SPECIFIC OPTIONS
@@ -78,7 +77,7 @@ view the graph, and on Mac OS type 'open hardware.svg'.
 @options.top_module_option_gen(help="Set the name of the top module to graph.")
 @options.verbose_option
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Options
     pdf: bool,
     png: bool,
@@ -88,7 +87,7 @@ def cli(
 ):
     """Implements the apio graph command."""
     # -- Sanity check the options.
-    cmd_util.check_at_most_one_param(ctx, nameof(pdf, png))
+    cmd_util.check_at_most_one_param(cmd_ctx, nameof(pdf, png))
 
     # -- Construct the graph spec to pass to scons.
     # -- For now it's trivial.
@@ -99,20 +98,20 @@ def cli(
     else:
         graph_spec = "svg"
 
-    # -- Load apio resources.
-    resources = Resources(project_dir=project_dir, project_scope=True)
+    # -- Create the apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=True)
 
-    # -- Create the scons object.
-    scons = SCons(resources)
+    # -- Create the scons manager.
+    scons = SCons(apio_ctx)
 
     # -- Graph the project with the given parameters
     exit_code = scons.graph(
         {
-            "verbose": {"all": verbose, "yosys": False, "pnr": False},
             "top-module": top_module,
             "graph_spec": graph_spec,
+            "verbose_all": verbose,
         }
     )
 
     # -- Done!
-    ctx.exit(exit_code)
+    cmd_ctx.exit(exit_code)

@@ -11,18 +11,17 @@ from pathlib import Path
 from typing import Tuple
 from varname import nameof
 import click
-from click.core import Context
 from apio.managers.old_installer import Installer
-from apio.resources import Resources
+from apio.apio_context import ApioContext
 from apio import cmd_util
 from apio.commands import options
 
 
 # R0801: Similar lines in 2 files
 # pylint: disable=R0801
-def install_packages(
+def _install_packages(
+    apio_ctx: ApioContext,
     packages: list,
-    resources: Resources,
     force: bool,
     verbose: bool,
 ):
@@ -40,7 +39,7 @@ def install_packages(
         modifiers = Installer.Modifiers(
             force=force, checkversion=True, verbose=verbose
         )
-        installer = Installer(package, resources, modifiers)
+        installer = Installer(package, apio_ctx, modifiers)
 
         # -- Install the package!
         installer.install()
@@ -72,7 +71,7 @@ The command 'apio install' has been deprecated. Please use the command
 @options.project_dir_option
 @options.verbose_option
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Arguments
     packages: Tuple[str],
     # Options
@@ -93,31 +92,28 @@ def cli(
     )
 
     # Make sure these params are exclusive.
-    cmd_util.check_at_most_one_param(ctx, nameof(packages, all_, list_))
+    cmd_util.check_at_most_one_param(cmd_ctx, nameof(packages, all_, list_))
 
-    # -- Load the resources. We don't care about project specific resources.
-    resources = Resources(
-        project_dir=project_dir,
-        project_scope=False,
-    )
+    # -- Create the apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=False)
 
     # -- Install the given apio packages
     if packages:
-        install_packages(packages, resources, force, verbose)
-        ctx.exit(0)
+        _install_packages(apio_ctx, packages, force, verbose)
+        cmd_ctx.exit(0)
 
     # -- Install all the available packages (if any)
     if all_:
         # -- Install all the available packages for this platform!
-        install_packages(
-            resources.platform_packages.keys(), resources, force, verbose
+        _install_packages(
+            apio_ctx, apio_ctx.platform_packages.keys(), force, verbose
         )
-        ctx.exit(0)
+        cmd_ctx.exit(0)
 
     # -- List all the packages (installed or not)
     if list_:
-        resources.list_packages()
-        ctx.exit(0)
+        apio_ctx.list_packages()
+        cmd_ctx.exit(0)
 
     # -- Invalid option. Just show the help
-    click.secho(ctx.get_help())
+    click.secho(cmd_ctx.get_help())

@@ -14,19 +14,19 @@ import shutil
 import click
 import requests
 from apio import util, pkg_util
-from apio.resources import Resources
+from apio.apio_context import ApioContext
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
 
 
 def _get_remote_version(
-    resources: Resources, package_name: str, verbose: bool
+    apio_ctx: ApioContext, package_name: str, verbose: bool
 ) -> str:
     """Get the recommanded package version from the remote release server.
     This version is not necessarily the latest one on the server.
 
     - INPUTS:
-      'resources' the Resources object of this apio session.
+      'apio_ctx' the context object of this apio session.
       'package_name' the package name, e.g. 'oss-cad-suite'.
       'verbose' indicates if to print detailed info.
 
@@ -36,7 +36,7 @@ def _get_remote_version(
     """
 
     # -- Get package inforation (originated from packages.json)
-    package_info = resources.get_package_info(package_name)
+    package_info = apio_ctx.get_package_info(package_name)
 
     # -- Get the version file URL. This is a text file with the recomanded
     # -- version for this package.
@@ -69,7 +69,7 @@ def _get_remote_version(
 
 
 def _construct_package_download_url(
-    resources: Resources, package_name: str, target_version: str
+    apio_ctx: ApioContext, package_name: str, target_version: str
 ) -> str:
     """Construct the download URL for the given package name and version.
 
@@ -79,12 +79,12 @@ def _construct_package_download_url(
     """
 
     # -- Get the package info (originated from packages.json)
-    package_info = resources.get_package_info(package_name)
+    package_info = apio_ctx.get_package_info(package_name)
 
     # -- Get the package selector of this platform (the package selectors
     # -- are specified in platforms.json). E.g. 'darwin_arm64'
-    platform_id = resources.platform_id
-    package_selector = resources.platforms[platform_id]["package_selector"]
+    platform_id = apio_ctx.platform_id
+    package_selector = apio_ctx.platforms[platform_id]["package_selector"]
 
     # -- Get the compressed name of the package. This is base name of the
     # -- downloaded file. E.g. "tools-oss-cad-suite-%P-%V"
@@ -208,12 +208,12 @@ def _parse_package_spec(package_spec: str) -> Tuple[str, str]:
 
 
 def _delete_package_dir(
-    resources: Resources, package_id: str, verbose: bool
+    apio_ctx: ApioContext, package_id: str, verbose: bool
 ) -> bool:
     """Delete the directory of the package with given name.  Returns
     True if the packages existed. Exits with an error message on error."""
 
-    package_dir = resources.get_package_dir(package_id)
+    package_dir = apio_ctx.get_package_dir(package_id)
 
     dir_found = package_dir.is_dir()
     if dir_found:
@@ -221,7 +221,8 @@ def _delete_package_dir(
             click.secho(f"Deleting {str(package_dir)}")
 
         # -- Sanity check the path and delete.
-        package_folder_name = resources.get_package_folder_name(package_id)
+        package_folder_name = apio_ctx.get_package_folder_name(package_id)
+        assert "packages" in str(package_dir).lower(), package_dir
         assert package_folder_name in str(package_dir), package_dir
         shutil.rmtree(package_dir)
 
@@ -237,11 +238,11 @@ def _delete_package_dir(
 
 # pylint: disable=too-many-branches
 def install_package(
-    resources: Resources, *, package_spec: str, force: bool, verbose: bool
+    apio_ctx: ApioContext, *, package_spec: str, force: bool, verbose: bool
 ) -> None:
     """Install a given package.
 
-    'resources' is the Resources object of this apio invocation.
+    'apio_ctx' is the context object of this apio invocation.
     'package_spec' is a package name with optional version suffix
         e.b. 'drivers', 'drivers@1.2.0'.
     'force' indicates if to perform the installation even if a matching
@@ -257,7 +258,7 @@ def install_package(
     package_name, target_version = _parse_package_spec(package_spec)
 
     # -- Get package information (originated from packages.json)
-    package_info = resources.get_package_info(package_name)
+    package_info = apio_ctx.get_package_info(package_name)
 
     # -- If the user didn't specify a target version we use the one recomanded
     # -- by the release server.
@@ -265,14 +266,14 @@ def install_package(
     # -- Note that we use the remote version even if the current installed
     # -- version is ok by the version spec in distribution.json.
     if not target_version:
-        target_version = _get_remote_version(resources, package_name, verbose)
+        target_version = _get_remote_version(apio_ctx, package_name, verbose)
 
     click.secho(f"Target version {target_version}")
 
     # -- If not focring and the target version already installed nothing to do.
     if not force:
         # -- Get the version of the installed package, None otherwise.
-        installed_version = resources.profile.get_package_installed_version(
+        installed_version = apio_ctx.profile.get_package_installed_version(
             package_name, default=None
         )
 
@@ -289,7 +290,7 @@ def install_package(
 
     # -- Construct the download URL.
     download_url = _construct_package_download_url(
-        resources, package_name, target_version
+        apio_ctx, package_name, target_version
     )
     if verbose:
         print(f"Download URL: {download_url}")
@@ -299,7 +300,7 @@ def install_package(
     packages_dir.mkdir(exist_ok=True)
 
     # -- Prepare the package directory.
-    package_dir = resources.get_package_dir(package_name)
+    package_dir = apio_ctx.get_package_dir(package_name)
 
     # -- Downlod the package file from the remote server.
     local_file = _download_package_file(download_url, packages_dir)
@@ -311,7 +312,7 @@ def install_package(
 
     # -- Delete the old package dir, if exists, to avoid name conflicts and
     # -- left over files.
-    _delete_package_dir(resources, package_name, verbose)
+    _delete_package_dir(apio_ctx, package_name, verbose)
 
     if uncompressed_name:
 
@@ -348,8 +349,8 @@ def install_package(
     local_file.unlink()
 
     # -- Add package to profile and save.
-    resources.profile.add_package(package_name, target_version)
-    resources.profile.save()
+    apio_ctx.profile.add_package(package_name, target_version)
+    apio_ctx.profile.save()
 
     # -- Inform the user!
     click.secho(
@@ -359,14 +360,14 @@ def install_package(
 
 
 def uninstall_package(
-    resources: Resources, *, package_spec: str, verbose: bool
+    apio_ctx: ApioContext, *, package_spec: str, verbose: bool
 ):
     """Uninstall the apio package"""
 
     # -- Parse package spec. We ignore the version silently.
     package_name, _ = _parse_package_spec(package_spec)
 
-    package_info = resources.platform_packages.get(package_name, None)
+    package_info = apio_ctx.platform_packages.get(package_name, None)
     if not package_info:
         click.secho(f"Error: no such package '{package_name}'", fg="red")
         sys.exit(1)
@@ -375,15 +376,15 @@ def uninstall_package(
     click.secho(f"Uninstalling package '{package_name}'")
 
     # -- Remove the folder with all its content!!
-    dir_existed = _delete_package_dir(resources, package_name, verbose)
+    dir_existed = _delete_package_dir(apio_ctx, package_name, verbose)
 
-    installed_version = resources.profile.get_package_installed_version(
+    installed_version = apio_ctx.profile.get_package_installed_version(
         package_name, None
     )
 
     # -- Remove the package from the profile file
-    resources.profile.remove_package(package_name)
-    resources.profile.save()
+    apio_ctx.profile.remove_package(package_name)
+    apio_ctx.profile.save()
 
     # -- Check that it is a folder...
     if dir_existed or installed_version:
@@ -399,37 +400,46 @@ def uninstall_package(
 
 
 def fix_packages(
-    resources: Resources, scan: pkg_util.PackageScanResults, verbose: bool
+    apio_ctx: ApioContext, scan: pkg_util.PackageScanResults, verbose: bool
 ) -> None:
     """If the package scan result contains errors, fix them."""
 
     # -- If non verbose, print a summary message.
     if not verbose:
         click.secho(
-            f"Fixing {util.count(scan.num_errors(), 'package error')}."
+            f"Fixing {util.plurality(scan.num_errors(), 'package error')}."
         )
 
     # -- Fix broken packages.
     for package_id in scan.broken_package_ids:
         if verbose:
             print(f"Uninstalling broken package '{package_id}'")
-        _delete_package_dir(resources, package_id, verbose=False)
-        resources.profile.remove_package(package_id)
-        resources.profile.save()
+        _delete_package_dir(apio_ctx, package_id, verbose=False)
+        apio_ctx.profile.remove_package(package_id)
+        apio_ctx.profile.save()
 
     for package_id in scan.orphan_package_ids:
         if verbose:
             print(f"Uninstalling unknown package '{package_id}'")
-        resources.profile.remove_package(package_id)
-        resources.profile.save()
+        apio_ctx.profile.remove_package(package_id)
+        apio_ctx.profile.save()
 
     for dir_name in scan.orphan_dir_names:
         if verbose:
             print(f"Deleting unknown dir '{dir_name}'")
-        shutil.rmtree(util.get_packages_dir() / dir_name)
+        # -- Sanity check. Since get_packages_dir() guarranted to include
+        # -- the word packages, this can fail only due to programming error.
+        dir_path = util.get_packages_dir() / dir_name
+        assert "packages" in str(dir_path).lower(), dir_path
+        # -- Delete.
+        shutil.rmtree(dir_path)
 
     for file_name in scan.orphan_file_names:
         if verbose:
             print(f"Deleting unknown file '{file_name}'")
+        # -- Sanity check. Since get_packages_dir() guarranted to include
+        # -- the word packages, this can fail only due to programming error.
         file_path = util.get_packages_dir() / file_name
+        assert "packages" in str(file_path).lower(), dir_path
+        # -- Delete.
         file_path.unlink()

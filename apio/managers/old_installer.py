@@ -37,7 +37,7 @@ class Installer:
     def __init__(
         self,
         package: str,
-        resources=None,
+        apio_ctx=None,
         modifiers=Modifiers(force=False, checkversion=True, verbose=False),
     ):
         """Class initialization. Parameters:
@@ -54,7 +54,7 @@ class Installer:
         self.version = None
         self.force_install = None
         self.packages_dir = None
-        self.resources = resources
+        self.apio_ctx = apio_ctx
         self.spec_version = None
         self.package_folder_name = None
         self.extension = None
@@ -92,15 +92,15 @@ class Installer:
 
         # -- If the package is known...
         # --(It is defined in the resources/packages.json file)
-        if self.package in self.resources.platform_packages:
+        if self.package in self.apio_ctx.platform_packages:
             # -- Store the package dir
             self.packages_dir = util.get_home_dir() / dirname
 
             # Get the metadata of the given package
-            package_info = self.resources.platform_packages[self.package]
+            package_info = self.apio_ctx.platform_packages[self.package]
 
             # Get the information about the valid versions
-            distribution = self.resources.distribution
+            distribution = self.apio_ctx.distribution
 
             # Get the spectec package version
             self.spec_version = distribution["packages"][self.package]
@@ -138,7 +138,7 @@ class Installer:
         # -- The package is kwnown but the version is not correct
         else:
             if (
-                self.package in self.resources.profile.packages
+                self.package in self.apio_ctx.profile.packages
                 and modifiers.checkversion is False
             ):
                 self.packages_dir = util.get_home_dir() / dirname
@@ -184,9 +184,9 @@ class Installer:
 
         # -- Map Replace the '%P' parameter with the package selector of this
         # -- platform (the package selectors are specified in platforms.json).
-        package_selector = self.resources.platforms[
-            self.resources.platform_id
-        ]["package_selector"]
+        package_selector = self.apio_ctx.platforms[self.apio_ctx.platform_id][
+            "package_selector"
+        ]
         self.compressed_name = compressed_name_version.replace(
             "%P", package_selector
         )
@@ -200,7 +200,7 @@ class Installer:
 
         # -- Replace the '%P' parameter
         self.uncompressed_name = uncompress_name_version.replace(
-            "%P", self.resources.platform_id
+            "%P", self.apio_ctx.platform_id
         )
 
         # -- Build the package tarball filename
@@ -303,10 +303,10 @@ class Installer:
             dlpath.unlink()
 
             # -- Add package to profile
-            self.resources.profile.add_package(self.package, self.version)
+            self.apio_ctx.profile.add_package(self.package, self.version)
 
             # -- Save the profile
-            self.resources.profile.save()
+            self.apio_ctx.profile.save()
 
             # -- Inform the user!
             click.secho(
@@ -369,8 +369,8 @@ class Installer:
             )
 
         # -- Remove the package from the profile file
-        self.resources.profile.remove_package(self.package)
-        self.resources.profile.save()
+        self.apio_ctx.profile.remove_package(self.package)
+        self.apio_ctx.profile.save()
 
     @staticmethod
     def _get_tarball_name(name, extension):
@@ -449,7 +449,7 @@ class Installer:
         """
 
         # -- Check the installed version of the package
-        installed_ok = self.resources.profile.is_installed_version_ok(
+        installed_ok = self.apio_ctx.profile.is_installed_version_ok(
             self.package, self.version, self.verbose
         )
 

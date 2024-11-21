@@ -19,29 +19,30 @@ import click
 DEPRECATED_MARKER = "[DEPRECATED]"
 
 
-def fatal_usage_error(ctx: click.Context, msg: str) -> None:
+def fatal_usage_error(cmd_ctx: click.Context, msg: str) -> None:
     """Prints a an error message and command help hint, and exists the program
      with an error status.
-    ctx: The context that was passed to the command.
+    cmd_ctx: The context that was passed to the command.
     msg: A single line short error message.
     """
     # Mimiking the usage error message from click/exceptions.py.
     # E.g. "Try 'apio packages -h' for help."
-    click.secho(ctx.get_usage())
+    click.secho(cmd_ctx.get_usage())
     click.secho(
-        f"Try '{ctx.command_path} {ctx.help_option_names[0]}' for help."
+        f"Try '{cmd_ctx.command_path} {cmd_ctx.help_option_names[0]}' "
+        "for help."
     )
     click.secho()
     click.secho(f"Error: {msg}", fg="red")
-    ctx.exit(1)
+    cmd_ctx.exit(1)
 
 
 def _get_params_objs(
-    ctx: click.Context,
+    cmd_ctx: click.Context,
 ) -> Dict[str, Union[click.Option, click.Argument]]:
     """Return a mapping from param id to param obj."""
     result = {}
-    for param_obj in ctx.command.get_params(ctx):
+    for param_obj in cmd_ctx.command.get_params(cmd_ctx):
         assert isinstance(param_obj, (click.Option, click.Argument)), type(
             param_obj
         )
@@ -50,7 +51,7 @@ def _get_params_objs(
 
 
 def _params_ids_to_aliases(
-    ctx: click.Context, params_ids: List[str]
+    cmd_ctx: click.Context, params_ids: List[str]
 ) -> List[str]:
     """Maps param ids to their respective user facing canonical aliases.
     The order of the params is in the inptut list is preserved.
@@ -63,7 +64,7 @@ def _params_ids_to_aliases(
     e.g. "PACKAGES" for the argument packages.
     """
     # Param id -> param obj.
-    params_dict = _get_params_objs(ctx)
+    params_dict = _get_params_objs(cmd_ctx)
 
     # Map the param ids to their canonical aliases.
     result = []
@@ -84,39 +85,43 @@ def _params_ids_to_aliases(
     return result
 
 
-def _is_param_specified(ctx, param_id) -> bool:
+def _is_param_specified(cmd_ctx, param_id) -> bool:
     """Determine if the param with given id was specified in the
     command line."""
     # Mapping: param id -> param obj.
-    params_dict = _get_params_objs(ctx)
+    params_dict = _get_params_objs(cmd_ctx)
     # Get the official status.
-    param_src = ctx.get_parameter_source(param_id)
+    param_src = cmd_ctx.get_parameter_source(param_id)
     is_specified = param_src == click.core.ParameterSource.COMMANDLINE
     # A special case for repeating arguments. Click considers the
     # empty tuple value to come with the command line but we consider
     # it to come from the default.
     is_arg = isinstance(params_dict[param_id], click.Argument)
     if is_specified and is_arg:
-        arg_value = ctx.params[param_id]
+        arg_value = cmd_ctx.params[param_id]
         if arg_value == tuple():
             is_specified = False
     # All done
     return is_specified
 
 
-def _specified_params(ctx: click.Context, param_ids: List[str]) -> List[str]:
+def _specified_params(
+    cmd_ctx: click.Context, param_ids: List[str]
+) -> List[str]:
     """Returns the subset of param ids that were used in the command line.
     The original order of the list is preserved.
     For definition of params and param ids see check_exclusive_params().
     """
     result = []
     for param_id in param_ids:
-        if _is_param_specified(ctx, param_id):
+        if _is_param_specified(cmd_ctx, param_id):
             result.append(param_id)
     return result
 
 
-def check_at_most_one_param(ctx: click.Context, param_ids: List[str]) -> None:
+def check_at_most_one_param(
+    cmd_ctx: click.Context, param_ids: List[str]
+) -> None:
     """Checks that at most one of given params were specified in
     the command line. If more than one param was specified, exits the
     program with a message and error status.
@@ -127,15 +132,19 @@ def check_at_most_one_param(ctx: click.Context, param_ids: List[str]) -> None:
     is nameof(param_var1, param_var2, ...)
     """
     # The the subset of ids of params that where used in the command.
-    specified_param_ids = _specified_params(ctx, param_ids)
+    specified_param_ids = _specified_params(cmd_ctx, param_ids)
     # If more 2 or more print an error and exit.
     if len(specified_param_ids) >= 2:
-        canonical_aliases = _params_ids_to_aliases(ctx, specified_param_ids)
+        canonical_aliases = _params_ids_to_aliases(
+            cmd_ctx, specified_param_ids
+        )
         aliases_str = ", ".join(canonical_aliases)
-        fatal_usage_error(ctx, f"[{aliases_str}] are mutually exclusive.")
+        fatal_usage_error(cmd_ctx, f"[{aliases_str}] are mutually exclusive.")
 
 
-def check_exactly_one_param(ctx: click.Context, param_ids: List[str]) -> None:
+def check_exactly_one_param(
+    cmd_ctx: click.Context, param_ids: List[str]
+) -> None:
     """Checks that at exactly one of given params is specified in
     the command line. If more or less than one params is specified, exits the
     program with a message and error status.
@@ -146,15 +155,19 @@ def check_exactly_one_param(ctx: click.Context, param_ids: List[str]) -> None:
     is nameof(param_var1, param_var2, ...)
     """
     # The the subset of ids of params that where used in the command.
-    specified_param_ids = _specified_params(ctx, param_ids)
+    specified_param_ids = _specified_params(cmd_ctx, param_ids)
     # If more 2 or more print an error and exit.
     if len(specified_param_ids) != 1:
-        canonical_aliases = _params_ids_to_aliases(ctx, param_ids)
+        canonical_aliases = _params_ids_to_aliases(cmd_ctx, param_ids)
         aliases_str = ", ".join(canonical_aliases)
-        fatal_usage_error(ctx, f"One of [{aliases_str}] must be specified.")
+        fatal_usage_error(
+            cmd_ctx, f"One of [{aliases_str}] must be specified."
+        )
 
 
-def check_at_least_one_param(ctx: click.Context, param_ids: List[str]) -> None:
+def check_at_least_one_param(
+    cmd_ctx: click.Context, param_ids: List[str]
+) -> None:
     """Checks that at least one of given params is specified in
     the command line. If none of the params is specified, exits the
     program with a message and error status.
@@ -165,13 +178,13 @@ def check_at_least_one_param(ctx: click.Context, param_ids: List[str]) -> None:
     is nameof(param_var1, param_var2, ...)
     """
     # The the subset of ids of params that where used in the command.
-    specified_param_ids = _specified_params(ctx, param_ids)
+    specified_param_ids = _specified_params(cmd_ctx, param_ids)
     # If more 2 or more print an error and exit.
     if len(specified_param_ids) < 1:
-        canonical_aliases = _params_ids_to_aliases(ctx, param_ids)
+        canonical_aliases = _params_ids_to_aliases(cmd_ctx, param_ids)
         aliases_str = ", ".join(canonical_aliases)
         fatal_usage_error(
-            ctx, f"At list one of [{aliases_str}] must be specified."
+            cmd_ctx, f"At list one of [{aliases_str}] must be specified."
         )
 
 
@@ -216,10 +229,10 @@ class ApioCommand(click.Command):
     commands that contains deprecated ApioOptions.
     """
 
-    def _num_deprecated_options(self, ctx: click.Context) -> None:
+    def _num_deprecated_options(self, cmd_ctx: click.Context) -> None:
         """Returns the number of deprecated options of this command."""
         deprecated_options = 0
-        for param in self.get_params(ctx):
+        for param in self.get_params(cmd_ctx):
             if isinstance(param, ApioOption) and param.deprecated:
                 deprecated_options += 1
         return deprecated_options

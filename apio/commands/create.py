@@ -9,12 +9,11 @@
 
 from pathlib import Path
 import click
-from click.core import Context
 from apio.managers.project import Project, DEFAULT_TOP_MODULE, PROJECT_FILENAME
 from apio import util
 from apio import cmd_util
 from apio.commands import options
-from apio.resources import Resources
+from apio.apio_context import ApioContext
 
 
 # ---------------------------
@@ -60,7 +59,7 @@ the supported boards.
 @options.project_dir_option
 @options.sayyes
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Options
     board: str,
     top_module: str,
@@ -75,15 +74,19 @@ def cli(
     if not top_module:
         top_module = DEFAULT_TOP_MODULE
 
-    # -- Load resources. We use project scope in case the project dir
-    # -- already has a custom boards.json file so we validate 'board'
-    # -- against that board list.
-    resources = Resources(project_dir=project_dir, project_scope=True)
+    # -- Create the apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=False)
 
     project_dir = util.get_project_dir(project_dir)
 
     # Create the apio.ini file
-    ok = Project.create_ini(resources, board, top_module, sayyes)
+    ok = Project.create_ini_file(
+        apio_ctx.project_dir,
+        board,
+        top_module,
+        apio_ctx.boards,
+        sayyes,
+    )
 
     exit_code = 0 if ok else 1
-    ctx.exit(exit_code)
+    cmd_ctx.exit(exit_code)

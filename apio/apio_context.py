@@ -1,4 +1,4 @@
-"""Resources module"""
+"""The apio context."""
 
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
@@ -16,17 +16,7 @@ from typing import Optional, Dict
 import click
 from apio import util, env_options
 from apio.profile import Profile
-
-
-# pylint: disable=fixme
-# TODO: Rename this file and class to repreent its more general role and the
-# main apio data holder. For example ApioContext or ApioEnv.
-
-# -- Info message
-BOARDS_MSG = (
-    "\nUse `apio create --board <boardname>` to create a new apio "
-    "project for that board\n"
-)
+from apio.managers.project import Project
 
 
 # ---------- RESOURCES
@@ -75,22 +65,21 @@ DISTRIBUTION_JSON = "distribution.json"
 
 
 # pylint: disable=too-many-instance-attributes
-class Resources:
-    """Resource manager. Class for accesing to all the resources."""
+class ApioContext:
+    """Apio context. Class for accesing apio resources and configurations."""
 
     def __init__(
         self,
         *,
-        project_scope: bool,
+        load_project: bool,
         project_dir: Optional[Path] = None,
     ):
-        """Initializes the Resources object. 'project dir' is an optional path
-        to the project dir, otherwise, the current directory is used.
-        'project_scope' indicates if project specfic resources such as
-        boards.json should be loaded, if available' or that the global
-        default resources should be used instead.  Some commands such as
-        'apio packages' uses the global scope while commands such as
-        'apio build' use the project scope.
+        """Initializes the ApioContext object. 'project dir' is an optional
+        path to the project dir, otherwise, the current directory is used.
+        'load_project' indicates if project specfic context such as
+        apio.ini or custom boards.json should be loaded. Some commands operate
+        on project while other, such as apio drivers and apio packages,
+        do not require a project.
         """
 
         # -- Inform as soon as possible about the list of apio env options
@@ -98,8 +87,12 @@ class Resources:
         defined_env_options = env_options.get_defined()
         if defined_env_options:
             click.secho(
-                f"Active env options {defined_env_options}.", fg="yellow"
+                f"Active env options [{', '.join(defined_env_options)}].",
+                fg="yellow",
             )
+
+        # -- Save the load project status.
+        self._load_project = load_project
 
         # -- Maps the optional project_dir option to a path.
         self.project_dir: Path = util.get_project_dir(project_dir)
@@ -117,26 +110,23 @@ class Resources:
         self.all_packages = self._load_resource(PACKAGES_JSON)
 
         # -- Expand in place the env templates in all_packages.
-        Resources._resolve_package_envs(self.all_packages)
+        ApioContext._resolve_package_envs(self.all_packages)
 
         # The subset of packages that are applicable to this platform.
         self.platform_packages = self._select_packages_for_platform(
             self.all_packages, self.platform_id, self.platforms
         )
 
-        # -- Read the boards information
-        self.boards = self._load_resource(
-            BOARDS_JSON, allow_custom=project_scope
-        )
+        # -- Read the boards information. Allow override files in project dir.
+        self.boards = self._load_resource(BOARDS_JSON, allow_custom=True)
 
-        # -- Read the FPGAs information
-        self.fpgas = self._load_resource(
-            FPGAS_JSON, allow_custom=project_scope
-        )
+        # -- Read the FPGAs information. Allow override files in project dir.
+        self.fpgas = self._load_resource(FPGAS_JSON, allow_custom=True)
 
-        # -- Read the programmers information
+        # -- Read the programmers information. Allow override files in project
+        # -- dir.
         self.programmers = self._load_resource(
-            PROGRAMMERS_JSON, allow_custom=project_scope
+            PROGRAMMERS_JSON, allow_custom=True
         )
 
         # -- Read the distribution information
@@ -154,6 +144,24 @@ class Resources:
         self.fpgas = OrderedDict(
             sorted(self.fpgas.items(), key=lambda t: t[0])
         )
+
+        # -- If requested, load the project's apio.ini
+        if load_project:
+            self._project = Project(self.project_dir)
+            self._project.read()
+
+    def check_project_loaded(self):
+        """Assert that context was created with project loading.."""
+        assert (
+            self._load_project
+        ), "Apio context created without project loading."
+
+    @property
+    def project(self):
+        """Property to return the project after verification that it was
+        loaded."""
+        self.check_project_loaded()
+        return self._project
 
     def _load_resource(self, name: str, allow_custom: bool = False) -> dict:
         """Load the resources from a given json file
@@ -292,14 +300,14 @@ class Resources:
             # -- Expand the values in the "path" section, if any.
             path_section = package_env.get("path", [])
             for i, path_template in enumerate(path_section):
-                path_section[i] = Resources._expand_env_template(
+                path_section[i] = ApioContext._expand_env_template(
                     path_template, package_path
                 )
 
             # -- Expand the values in the "vars" section, if any.
             vars_section = package_env.get("vars", {})
             for var_name, val_template in vars_section.items():
-                vars_section[var_name] = Resources._expand_env_template(
+                vars_section[var_name] = ApioContext._expand_env_template(
                     val_template, package_path
                 )
 
@@ -452,138 +460,6 @@ class Resources:
 
         return package_dir
 
-    # R0914: Too many local variables (17/15)
-    # pylint: disable=R0914
-    def list_boards(self):
-        """Print all the supported boards and the information of
-        their FPGAs
-        """
-        # Get terminal configuration. It will help us to adapt the format
-        # to a terminal vs a pipe.
-        config: util.TerminalConfig = util.get_terminal_config()
-
-        # -- Table title
-        title = (
-            click.style("Board", fg="cyan") + " (FPGA, Arch, Type, Size, Pack)"
-        )
-
-        # -- Print the table header for terminal mode.
-        if config.terminal_mode():
-            title = (
-                click.style("Board", fg="cyan")
-                + " (FPGA, Arch, Type, Size, Pack)"
-            )
-            # -- Horizontal line across the terminal.
-            seperator_line = "─" * config.terminal_width
-            click.secho(seperator_line)
-            click.secho(title)
-            click.secho(seperator_line)
-
-        # -- Sort boards names by case insentive alphabetical order.
-        board_names = list(self.boards.keys())
-        board_names.sort(key=lambda x: x.lower())
-
-        # -- For a pipe, determine the max example name length.
-        max_board_name_len = max(len(x) for x in board_names)
-
-        # -- Print all the boards!
-        for board in board_names:
-
-            # -- Generate the report for a terminal. Color and multi lines
-            # -- are ok.
-
-            # -- Get board FPGA long name
-            fpga = self.boards[board]["fpga"]
-
-            # -- Get information about the FPGA
-            arch = self.fpgas[fpga]["arch"]
-            type_ = self.fpgas[fpga]["type"]
-            size = self.fpgas[fpga]["size"]
-            pack = self.fpgas[fpga]["pack"]
-
-            # -- Print the item with information
-            # -- Print the Board in a differnt color
-
-            item_fpga = f"(FPGA:{fpga}, {arch}, {type_}, {size}, {pack})"
-
-            if config.terminal_mode():
-                # -- Board name with a bullet point and color
-                board_str = click.style(board, fg="cyan")
-                item_board = f"• {board_str}"
-
-                # -- Item in one line
-                one_line_item = f"{item_board}  {item_fpga}"
-
-                # -- If there is enough space, print in one line
-                if len(one_line_item) <= config.terminal_width:
-                    click.secho(one_line_item)
-
-                # -- Not enough space: Print it in two separate lines
-                else:
-                    two_lines_item = f"{item_board}\n      {item_fpga}"
-                    click.secho(two_lines_item)
-
-            else:
-                # -- Generate the report for a pipe. Single line, no color, no
-                # -- bullet points.
-                click.secho(f"{board:<{max_board_name_len}} |  {item_fpga}")
-
-        if config.terminal_mode():
-            # -- Print the Footer
-            click.secho(seperator_line)
-            click.secho(f"Total: {len(self.boards)} boards")
-
-            # -- Help message
-            click.secho(BOARDS_MSG, fg="green")
-
-    def list_fpgas(self):
-        """Print all the supported FPGAs"""
-
-        # Get terminal configuration. It will help us to adapt the format
-        # to a terminal vs a pipe.
-        config: util.TerminalConfig = util.get_terminal_config()
-
-        if config.terminal_mode():
-            # -- Horizontal line across the terminal,
-            seperator_line = "─" * config.terminal_width
-
-            # -- Table title
-            fpga_header = click.style(f"{'  FPGA':34}", fg="cyan")
-            title = (
-                f"{fpga_header} {'Arch':<10} {'Type':<13}"
-                f" {'Size':<8} {'Pack'}"
-            )
-
-            # -- Print the table header
-            click.secho(seperator_line)
-            click.secho(title)
-            click.secho(seperator_line)
-
-        # -- Print all the fpgas!
-        for fpga in self.fpgas:
-
-            # -- Get information about the FPGA
-            arch = self.fpgas[fpga]["arch"]
-            _type = self.fpgas[fpga]["type"]
-            size = self.fpgas[fpga]["size"]
-            pack = self.fpgas[fpga]["pack"]
-
-            # -- Print the item with information
-            data_str = f"{arch:<10} {_type:<13} {size:<8} {pack}"
-            if config.terminal_mode():
-                # -- For terminal, print the FPGA name in color.
-                fpga_str = click.style(f"{fpga:32}", fg="cyan")
-                item = f"• {fpga_str} {data_str}"
-                click.secho(item)
-            else:
-                # -- For pipe, no colors and no bullet point.
-                click.secho(f"{fpga:32} {data_str}")
-
-        # -- Print the Footer
-        if config.terminal_mode():
-            click.secho(seperator_line)
-            click.secho(f"Total: {len(self.fpgas)} fpgas\n")
-
     @staticmethod
     def _determine_platform_id(platforms: Dict[str, Dict]) -> str:
         """Determines and returns the platform io based on system info and
@@ -593,7 +469,7 @@ class Resources:
         if platform_id_override:
             platform_id = platform_id_override
         else:
-            platform_id = Resources._get_system_platform_id()
+            platform_id = ApioContext._get_system_platform_id()
 
         # -- Verify it's valid. This can be a user error if the override
         # -- is invalid.

@@ -91,8 +91,8 @@ VERBOSE_PNR = arg_bool(env, "verbose_pnr", False)
 TESTBENCH = arg_str(env, "testbench", "")
 VERILATOR_ALL = arg_bool(env, "all", False)
 VERILATOR_NO_STYLE = arg_bool(env, "nostyle", False)
-NOWARNS = arg_str(env, "nowarn", "").split(",")
-WARNS = arg_str(env, "warn", "").split(",")
+VERILATOR_NOWARNS = arg_str(env, "nowarn", "").split(",")
+VERILATOR_WARNS = arg_str(env, "warn", "").split(",")
 GRAPH_SPEC = arg_str(env, "graph_spec", "")
 
 
@@ -311,10 +311,12 @@ graph_target = env.Alias("graph", graphviz_target)
 # -- Targets.
 # -- (modules).v -> (testbench).out -> (testbench).vcd -> gtkwave
 if "sim" in COMMAND_LINE_TARGETS:
-    config = get_sim_config(env, TESTBENCH, synth_srcs)
-    sim_out_target = env.IVerilogTestbench(config.top_module, config.srcs)
+    sim_config = get_sim_config(env, TESTBENCH, synth_srcs)
+    sim_out_target = env.IVerilogTestbench(
+        sim_config.build_testbench_name, sim_config.srcs
+    )
     vcd_file_target = env.VCD(sim_out_target)
-    waves_target = make_waves_target(env, vcd_file_target, config.top_module)
+    waves_target = make_waves_target(env, vcd_file_target, sim_config)
     AlwaysBuild(waves_target)
 
 
@@ -322,15 +324,17 @@ if "sim" in COMMAND_LINE_TARGETS:
 # -- Targets.
 # -- (modules).v -> (testbenchs).out -> (testbenchs).vcd
 if "test" in COMMAND_LINE_TARGETS:
-    configs = get_tests_configs(env, TESTBENCH, synth_srcs, test_srcs)
+    sim_configs = get_tests_configs(env, TESTBENCH, synth_srcs, test_srcs)
     tests_targets = []
-    for config in configs:
-        test_out_target = env.IVerilogTestbench(config.top_module, config.srcs)
+    for sim_config in sim_configs:
+        test_out_target = env.IVerilogTestbench(
+            sim_config.build_testbench_name, sim_config.srcs
+        )
         AlwaysBuild(test_out_target)
         test_vcd_target = env.VCD(test_out_target)
         AlwaysBuild(test_vcd_target)
         test_target = env.Alias(
-            config.top_module, [test_out_target, test_vcd_target]
+            sim_config.build_testbench_name, [test_out_target, test_vcd_target]
         )
         tests_targets.append(test_target)
 
@@ -362,8 +366,8 @@ verilator_builder = Builder(
         env,
         warnings_all=VERILATOR_ALL,
         warnings_no_style=VERILATOR_NO_STYLE,
-        no_warns=NOWARNS,
-        warns=WARNS,
+        no_warns=VERILATOR_NOWARNS,
+        warns=VERILATOR_WARNS,
         top_module=TOP_MODULE,
         lib_dirs=[YOSYS_LIB_DIR],
     ),
@@ -385,15 +389,4 @@ AlwaysBuild(lint_target)
 
 # -- Handle the cleanu of the artifact files.
 if GetOption("clean"):
-    set_up_cleanup(
-        env,
-        [
-            report_target,
-            build_target,
-            synth_target,
-            verify_target,
-            pnr_target,
-            graph_target,
-            lint_target,
-        ],
-    )
+    set_up_cleanup(env)

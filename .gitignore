@@ -25,6 +25,7 @@ examples/
 ice-build/
 work/
 test-colorlight-v61.ice
+_build
 hardware.json
 hardware.out
 hardware.vlt

@@ -8,13 +8,13 @@
 """Implementation of 'apio system' command"""
 
 from pathlib import Path
+import importlib.metadata
 from varname import nameof
 import click
-from click.core import Context
 from apio import util
 from apio import cmd_util
 from apio.managers.system import System
-from apio.resources import Resources
+from apio.apio_context import ApioContext
 from apio.commands import options
 
 # ---------------------------
@@ -102,7 +102,7 @@ variable APIO_HOME_DIR, APIO_PACKAGES_DIR, APIO_PLATFORM.
 @info_option
 @platforms_option
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Options
     project_dir: Path,
     lsftdi: bool,
@@ -116,35 +116,39 @@ def cli(
 
     # Make sure these params are exclusive.
     cmd_util.check_exactly_one_param(
-        ctx, nameof(lsftdi, lsusb, lsserial, info, platforms)
+        cmd_ctx, nameof(lsftdi, lsusb, lsserial, info, platforms)
     )
 
-    # Load the various resource files.
-    resources = Resources(project_dir=project_dir, project_scope=False)
+    # Create the apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=False)
 
     # -- Create the system object
-    system = System(resources)
+    system = System(apio_ctx)
 
     # -- List all connected ftdi devices
     if lsftdi:
         exit_code = system.lsftdi()
-        ctx.exit(exit_code)
+        cmd_ctx.exit(exit_code)
 
     # -- List all connected USB devices
     if lsusb:
         exit_code = system.lsusb()
-        ctx.exit(exit_code)
+        cmd_ctx.exit(exit_code)
 
     # -- List all connected serial devices
     if lsserial:
         exit_code = system.lsserial()
-        ctx.exit(exit_code)
+        cmd_ctx.exit(exit_code)
 
     # -- Show system information
     if info:
+        # -- Apio version.
+        click.secho("Apio version    ", nl=False)
+        click.secho(importlib.metadata.version("apio"), fg="cyan")
+
         # -- Print platform id.
         click.secho("Platform id     ", nl=False)
-        click.secho(resources.platform_id, fg="cyan")
+        click.secho(apio_ctx.platform_id, fg="cyan")
 
         # -- Print apio package directory.
         click.secho("Python package  ", nl=False)
@@ -158,7 +162,7 @@ def cli(
         click.secho("Apio packages   ", nl=False)
         click.secho(util.get_packages_dir(), fg="cyan")
 
-        ctx.exit(0)
+        cmd_ctx.exit(0)
 
     if platforms:
         click.secho(
@@ -167,16 +171,16 @@ def cli(
             f"{'[DESCRIPTION]'}",
             fg="magenta",
         )
-        for platform_id, platform_info in resources.platforms.items():
+        for platform_id, platform_info in apio_ctx.platforms.items():
             description = platform_info.get("description")
             package_selector = platform_info.get("package_selector")
-            this_package = platform_id == resources.platform_id
+            this_package = platform_id == apio_ctx.platform_id
             fg = "green" if this_package else None
             click.secho(
                 f"  {platform_id:18} {package_selector:20} {description}",
                 fg=fg,
             )
-        ctx.exit(0)
+        cmd_ctx.exit(0)
 
     # -- Error, no option selected.
     assert 0, "Non reachable"

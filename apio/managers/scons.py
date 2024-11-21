@@ -22,11 +22,9 @@ import semantic_version
 
 from apio import util
 from apio import pkg_util
-from apio.managers.arguments import process_arguments
-from apio.managers.arguments import serialize_scons_flags
+from apio.managers.scons_args import process_arguments
 from apio.managers.system import System
-from apio.resources import Resources
-from apio.managers.project import Project
+from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
 
 # -- Constant for the dictionary PROG, which contains
@@ -75,17 +73,13 @@ def on_exception(*, exit_code: int):
 class SCons:
     """Class for managing the scons tools"""
 
-    def __init__(self, resources: Resources):
+    def __init__(self, apio_ctx: ApioContext):
         """Initialization."""
-        # -- Cache resources.
-        self.resources = resources
-
-        # -- Read the project file (apio.ini)
-        self.project = Project(resources.project_dir)
-        self.project.read()
+        # -- Cache the apio context.
+        self.apio_ctx = apio_ctx
 
         # -- Change to the project's folder.
-        os.chdir(resources.project_dir)
+        os.chdir(apio_ctx.project_dir)
 
     @on_exception(exit_code=1)
     def clean(self, args) -> int:
@@ -93,9 +87,7 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        variables, __, arch = process_arguments(
-            args, self.resources, self.project
-        )
+        variables, __, arch = process_arguments(self.apio_ctx, args)
 
         # --Clean the project: run scons -c (with aditional arguments)
         return self._run(
@@ -108,9 +100,7 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        variables, __, arch = process_arguments(
-            args, self.resources, self.project
-        )
+        variables, __, arch = process_arguments(self.apio_ctx, args)
 
         # -- Execute scons!!!
         # -- The packages to check are passed
@@ -127,9 +117,7 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        variables, _, arch = process_arguments(
-            args, self.resources, self.project
-        )
+        variables, _, arch = process_arguments(self.apio_ctx, args)
 
         # -- Execute scons!!!
         # -- The packages to check are passed
@@ -145,18 +133,7 @@ class SCons:
         """Runs a scons subprocess with the 'lint' target. Returns process
         exit code, 0 if ok."""
 
-        config = {}
-        __, __, arch = process_arguments(config, self.resources, self.project)
-        variables = serialize_scons_flags(
-            {
-                "all": args.get("all"),
-                "top_module": args.get("top_module"),
-                "nowarn": args.get("nowarn"),
-                "warn": args.get("warn"),
-                "nostyle": args.get("nostyle"),
-                "platform_id": self.resources.platform_id,
-            }
-        )
+        variables, __, arch = process_arguments(self.apio_ctx, args)
         return self._run(
             "lint",
             variables=variables,
@@ -170,9 +147,7 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        variables, _, arch = process_arguments(
-            args, self.resources, self.project
-        )
+        variables, _, arch = process_arguments(self.apio_ctx, args)
 
         return self._run(
             "sim",
@@ -187,9 +162,7 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        variables, _, arch = process_arguments(
-            args, self.resources, self.project
-        )
+        variables, _, arch = process_arguments(self.apio_ctx, args)
 
         return self._run(
             "test",
@@ -204,9 +177,7 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        variables, board, arch = process_arguments(
-            args, self.resources, self.project
-        )
+        variables, board, arch = process_arguments(self.apio_ctx, args)
 
         # -- Execute scons!!!
         # -- The packages to check are passed
@@ -223,9 +194,7 @@ class SCons:
         """Runs a scons subprocess with the 'time' target. Returns process
         exit code, 0 if ok."""
 
-        variables, board, arch = process_arguments(
-            args, self.resources, self.project
-        )
+        variables, board, arch = process_arguments(self.apio_ctx, args)
 
         if arch not in ["ice40"]:
             click.secho(
@@ -248,9 +217,7 @@ class SCons:
         """Runs a scons subprocess with the 'report' target. Returns process
         exit code, 0 if ok."""
 
-        variables, board, arch = process_arguments(
-            args, self.resources, self.project
-        )
+        variables, board, arch = process_arguments(self.apio_ctx, args)
 
         return self._run(
             "report",
@@ -279,9 +246,7 @@ class SCons:
 
         # -- Get important information from the configuration
         # -- It will raise an exception if it cannot be solved
-        flags, board, arch = process_arguments(
-            config, self.resources, self.project
-        )
+        flags, board, arch = process_arguments(self.apio_ctx, config)
 
         # -- Information about the FPGA is ok!
 
@@ -337,11 +302,11 @@ class SCons:
         # -- Programmer type
         # -- Programmer name
         # -- USB id  (vid, pid)
-        board_info = self.resources.boards[board]
+        board_info = self.apio_ctx.boards[board]
 
         # -- Check platform. If the platform is not compatible
         # -- with the board an exception is raised
-        self._check_platform(board_info, self.resources.platform_id)
+        self._check_platform(board_info, self.apio_ctx.platform_id)
 
         # -- Check pip packages. If the corresponding pip_packages
         # -- is not installed, an exception is raised
@@ -353,7 +318,7 @@ class SCons:
         # --
         # -- Special case for the TinyFPGA on MACOS platforms
         # -- TinyFPGA BX board is not detected in MacOS HighSierra
-        if "tinyprog" in board_info and self.resources.is_darwin():
+        if "tinyprog" in board_info and self.apio_ctx.is_darwin():
             # In this case the serial check is ignored
             # This is the command line to execute for uploading the
             # circuit
@@ -401,7 +366,7 @@ class SCons:
             # -- We force an early env setting message to have
             # -- the programmer message closer to the error message.
             pkg_util.set_env_for_packages(
-                self.resources,
+                self.apio_ctx,
             )
             click.secho("Querying programmer parameters.")
 
@@ -422,7 +387,7 @@ class SCons:
             # -- to give context for ftdi failures.
             # -- We force an early env setting message to have
             # -- the programmer message closer to the error message.
-            pkg_util.set_env_for_packages(self.resources)
+            pkg_util.set_env_for_packages(self.apio_ctx)
             click.secho("Querying serial port parameters.")
 
             # -- Check that the board is connected
@@ -491,10 +456,10 @@ class SCons:
 
         # -- Get the programmer information
         # -- Command, arguments, pip package, etc...
-        prog_data = self.resources.programmers[prog_type]
+        prog_data = self.apio_ctx.programmers[prog_type]
 
         # -- Get all the pip packages from the distribution
-        all_pip_packages = self.resources.distribution["pip_packages"]
+        all_pip_packages = self.apio_ctx.distribution["pip_packages"]
 
         # -- Get the name of the pip package of the current programmer,
         # -- if any (The programmer maybe in a pip package or an apio package)
@@ -586,7 +551,7 @@ class SCons:
         # -- * command
         # -- * arguments
         # -- * pip package
-        content = self.resources.programmers[prog_type]
+        content = self.apio_ctx.programmers[prog_type]
 
         # -- Get the command (without arguments) to execute
         # -- for programming the current board
@@ -650,7 +615,7 @@ class SCons:
 
         # -- Get the list of the connected USB devices
         # -- (execute the command "lsusb" from the apio System module)
-        system = System(self.resources)
+        system = System(self.apio_ctx)
         connected_devices = system.get_usb_devices()
 
         # -- Check if the given device (vid:pid) is connected!
@@ -882,7 +847,7 @@ class SCons:
 
         # -- Get the list of the connected FTDI devices
         # -- (execute the command "lsftdi" from the apio System module)
-        system = System(self.resources)
+        system = System(self.apio_ctx)
         connected_devices = system.get_ftdi_devices()
 
         # -- No FTDI devices detected --> Error!
@@ -933,11 +898,11 @@ class SCons:
 
         # -- Check that the required packages are installed
         pkg_util.check_required_packages(
-            required_packages_names, self.resources
+            self.apio_ctx, required_packages_names
         )
 
         # -- Set env path and vars to use the packages.
-        pkg_util.set_env_for_packages(self.resources)
+        pkg_util.set_env_for_packages(self.apio_ctx)
 
         # -- Execute scons
         return self._execute_scons(command, variables, board)

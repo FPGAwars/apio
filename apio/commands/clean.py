@@ -9,11 +9,10 @@
 
 from pathlib import Path
 import click
-from click.core import Context
 from apio.managers.scons import SCons
 from apio import cmd_util
 from apio.commands import options
-from apio.resources import Resources
+from apio.apio_context import ApioContext
 
 
 # ---------------------------
@@ -42,13 +41,11 @@ the temporary apio file names.
 )
 @click.pass_context
 @options.project_dir_option
-@options.verbose_option
 @options.board_option_gen(deprecated=True)
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Options
     project_dir: Path,
-    verbose: bool,
     # Deprecated options.
     board: str,
 ):
@@ -56,12 +53,14 @@ def cli(
     by apio commands.
     """
 
-    # -- Create the scons object
-    resources = Resources(project_dir=project_dir, project_scope=True)
-    scons = SCons(resources)
+    # -- Create the apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=True)
+
+    # -- Create the scons manager.
+    scons = SCons(apio_ctx)
 
     # -- Build the project with the given parameters
-    exit_code = scons.clean({"board": board, "verbose": {"all": verbose}})
+    exit_code = scons.clean({"board": board})
 
     # -- Done!
-    ctx.exit(exit_code)
+    cmd_ctx.exit(exit_code)

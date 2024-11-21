@@ -11,48 +11,48 @@ from pathlib import Path
 from typing import Tuple, List
 from varname import nameof
 import click
-from click.core import Context
 from apio.managers import installer
-from apio.resources import Resources
+from apio.apio_context import ApioContext
 from apio import cmd_util, pkg_util, util
 from apio.commands import options
 
 
 def _install(
-    resources: Resources, packages: List[str], force: bool, verbose: bool
+    apio_ctx: ApioContext, packages: List[str], force: bool, verbose: bool
 ) -> int:
     """Handles the --install operation. Returns exit code."""
-    click.secho(f"Platform id '{resources.platform_id}'")
+    click.secho(f"Platform id '{apio_ctx.platform_id}'")
 
     # -- If packages where specified, install all packages that are valid
     # -- for this platform.
     if not packages:
-        packages = resources.platform_packages.keys()
+        packages = apio_ctx.platform_packages.keys()
 
     # -- Install the packages, one by one.
     for package in packages:
         installer.install_package(
-            resources, package_spec=package, force=force, verbose=verbose
+            apio_ctx, package_spec=package, force=force, verbose=verbose
         )
 
     return 0
 
 
 def _uninstall(
-    resources: Resources, packages: List[str], verbose: bool, sayyes: bool
+    apio_ctx: ApioContext, packages: List[str], verbose: bool, sayyes: bool
 ) -> int:
     """Handles the --uninstall operation. Returns exit code."""
 
     # -- If packages where specified, uninstall all packages that are valid
     # -- for this platform.
     if not packages:
-        packages = resources.platform_packages.keys()
+        packages = apio_ctx.platform_packages.keys()
 
     # -- Ask the user for confirmation
     if not (
         sayyes
         or click.confirm(
-            "Do you want to uninstall " f"{util.count(packages, 'package')}?"
+            "Do you want to uninstall "
+            f"{util.plurality(packages, 'package')}?"
         )
     ):
         # -- User doesn't want to continue.
@@ -60,56 +60,56 @@ def _uninstall(
         return 1
 
     # -- Here when going on with the uninstallation.
-    click.secho(f"Platform id '{resources.platform_id}'")
+    click.secho(f"Platform id '{apio_ctx.platform_id}'")
 
     # -- Uninstall the packages, one by one
     for package in packages:
         installer.uninstall_package(
-            resources, package_spec=package, verbose=verbose
+            apio_ctx, package_spec=package, verbose=verbose
         )
 
     return 0
 
 
-def _fix(resources: Resources, verbose: bool) -> int:
+def _fix(apio_ctx: ApioContext, verbose: bool) -> int:
     """Handles the --fix operation. Returns exit code."""
 
     # -- Scan the availeable and installed packages.
-    scan = pkg_util.scan_packages(resources)
+    scan = pkg_util.scan_packages(apio_ctx)
 
     # -- Fix any errors.
     if scan.num_errors():
-        installer.fix_packages(resources, scan, verbose)
+        installer.fix_packages(apio_ctx, scan, verbose)
     else:
         click.secho("No errors to fix")
 
     # -- Show the new state
-    new_scan = pkg_util.scan_packages(resources)
-    pkg_util.list_packages(resources, new_scan)
+    new_scan = pkg_util.scan_packages(apio_ctx)
+    pkg_util.list_packages(apio_ctx, new_scan)
 
     return 0
 
 
-def _list(resources: Resources, verbose: bool) -> int:
+def _list(apio_ctx: ApioContext, verbose: bool) -> int:
     """Handles the --list operation. Returns exit code."""
 
     if verbose:
-        click.secho(f"Platform id '{resources.platform_id}'")
+        click.secho(f"Platform id '{apio_ctx.platform_id}'")
 
     # -- Scan the available and installed packages.
-    scan = pkg_util.scan_packages(resources)
+    scan = pkg_util.scan_packages(apio_ctx)
 
     # -- List the findings.
-    pkg_util.list_packages(resources, scan)
+    pkg_util.list_packages(apio_ctx, scan)
 
     # -- Print an hint or summary based on the findings.
     if scan.num_errors():
         click.secho(
-            "[Hint] run 'apio packages -fix' to fix the errors.", fg="yellow"
+            "[Hint] run 'apio packages --fix' to fix the errors.", fg="yellow"
         )
     elif scan.uninstalled_package_ids:
         click.secho(
-            "[Hint] run 'apio packages -install' to install all "
+            "[Hint] run 'apio packages --install' to install all "
             "available packages.",
             fg="yellow",
         )
@@ -196,7 +196,7 @@ fix_option = click.option(
 @options.sayyes
 @options.verbose_option
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Arguments
     packages: Tuple[str],
     # Options
@@ -215,32 +215,31 @@ def cli(
 
     # Validate the option combination.
     cmd_util.check_exactly_one_param(
-        ctx, nameof(list_, install, uninstall, fix)
+        cmd_ctx, nameof(list_, install, uninstall, fix)
     )
-    cmd_util.check_at_most_one_param(ctx, nameof(list_, force))
-    cmd_util.check_at_most_one_param(ctx, nameof(uninstall, force))
-    cmd_util.check_at_most_one_param(ctx, nameof(fix, force))
-    cmd_util.check_at_most_one_param(ctx, nameof(list_, packages))
-    cmd_util.check_at_most_one_param(ctx, nameof(fix, packages))
+    cmd_util.check_at_most_one_param(cmd_ctx, nameof(list_, force))
+    cmd_util.check_at_most_one_param(cmd_ctx, nameof(uninstall, force))
+    cmd_util.check_at_most_one_param(cmd_ctx, nameof(fix, force))
+    cmd_util.check_at_most_one_param(cmd_ctx, nameof(list_, packages))
+    cmd_util.check_at_most_one_param(cmd_ctx, nameof(fix, packages))
 
-    # -- Load the resources. We don't care about project specific resources.
-    resources = Resources(
-        project_dir=project_dir,
-        project_scope=False,
-    )
+    # -- Create the apio context.
 
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=False)
+
+    # -- Dispatch the operation.
     if install:
-        exit_code = _install(resources, packages, force, verbose)
-        ctx.exit(exit_code)
+        exit_code = _install(apio_ctx, packages, force, verbose)
+        cmd_ctx.exit(exit_code)
 
     if uninstall:
-        exit_code = _uninstall(resources, packages, verbose, sayyes)
-        ctx.exit(exit_code)
+        exit_code = _uninstall(apio_ctx, packages, verbose, sayyes)
+        cmd_ctx.exit(exit_code)
 
     if fix:
-        exit_code = _fix(resources, verbose)
-        ctx.exit(exit_code)
+        exit_code = _fix(apio_ctx, verbose)
+        cmd_ctx.exit(exit_code)
 
     # -- Here it must be --list.
-    exit_code = _list(resources, verbose)
-    ctx.exit(exit_code)
+    exit_code = _list(apio_ctx, verbose)
+    cmd_ctx.exit(exit_code)

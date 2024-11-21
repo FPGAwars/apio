@@ -124,7 +124,10 @@ def test_build_complete1(clirunner, configenv):
             cmd_build, ["--board", "icezum", "--size", "8k"]
         )
         assert result.exit_code != 0, result.output
-        assert "Error: contradictory arguments: ('1k', '8k')" in result.output
+        assert (
+            "Error: contradictory argument values: 'size' = (1k vs 8k)"
+            in result.output
+        )
 
         # apio build --board icezum --fpga iCE40-HX1K-TQ144 --type lp
         result = clirunner.invoke(
@@ -139,7 +142,10 @@ def test_build_complete1(clirunner, configenv):
             ],
         )
         assert result.exit_code != 0, result.output
-        assert "Error: contradictory arguments: ('hx', 'lp')" in result.output
+        assert (
+            "Error: contradictory argument values: 'type' = (hx vs lp)"
+            in result.output
+        )
 
         # apio build --board icezum --fpga iCE40-HX1K-VQ100
         result = clirunner.invoke(
@@ -147,8 +153,8 @@ def test_build_complete1(clirunner, configenv):
         )
         assert result.exit_code != 0, result.output
         assert (
-            "Error: contradictory arguments: ('iCE40-HX1K-TQ144', "
-            "'iCE40-HX1K-VQ100')" in result.output
+            "Error: contradictory argument values: 'fpga' = "
+            "(iCE40-HX1K-TQ144 vs iCE40-HX1K-VQ100)" in result.output
         )
 
         # apio build --fpga iCE40-HX1K-TQ144 --type lp --size 8k
@@ -157,7 +163,10 @@ def test_build_complete1(clirunner, configenv):
             ["--fpga", "iCE40-HX1K-TQ144", "--type", "lp", "--size", "8k"],
         )
         assert result.exit_code != 0, result.output
-        assert "Error: contradictory arguments: ('hx', 'lp')" in result.output
+        assert (
+            "Error: contradictory argument values: 'type' = (hx vs lp)"
+            in result.output
+        )
 
         # apio build --fpga iCE40-HX1K-TQ144 --pack vq100
         result = clirunner.invoke(
@@ -165,7 +174,7 @@ def test_build_complete1(clirunner, configenv):
         )
         assert result.exit_code != 0, result.output
         assert (
-            "Error: contradictory arguments: ('tq144', 'vq100')"
+            "Error: contradictory argument values: 'pack' = (tq144 vs vq100)"
             in result.output
         )
 
@@ -175,7 +184,7 @@ def test_build_complete1(clirunner, configenv):
         )
         assert result.exit_code != 0, result.output
         assert (
-            "Error: contradictory arguments: ('tq144', 'vq100')"
+            "Error: contradictory argument values: 'pack' = (tq144 vs vq100)"
             in result.output
         )
 
@@ -233,8 +242,8 @@ def test_build_complete2(clirunner, configenv):
         )
         assert result.exit_code != 0, result.output
         assert (
-            "Error: contradictory arguments: "
-            "('iCE40-HX1K-TQ144', 'iCE40-FAKE')" in result.output
+            "Error: contradictory argument values: 'fpga' = "
+            "(iCE40-HX1K-TQ144 vs iCE40-FAKE)" in result.output
         )
 
 
@@ -268,8 +277,8 @@ def test_build_create(clirunner, configenv):
         result = clirunner.invoke(cmd_build, ["--fpga", "iCE40-HX1K-VQ100"])
         assert result.exit_code != 0, result.output
         assert (
-            "Error: contradictory arguments: "
-            "('iCE40-HX1K-TQ144', 'iCE40-HX1K-VQ100')" in result.output
+            "Error: contradictory argument values: 'fpga' = "
+            "(iCE40-HX1K-TQ144 vs iCE40-HX1K-VQ100)" in result.output
         )
 
         # apio build --type lp --size 8k --pack cm225:4k
@@ -277,9 +286,15 @@ def test_build_create(clirunner, configenv):
             cmd_build, ["--type", "lp", "--size", "8k", "--pack", "cm225:4k"]
         )
         assert result.exit_code != 0, result.output
-        assert "Error: contradictory arguments: ('hx', 'lp')" in result.output
+        assert (
+            "Error: contradictory argument values: 'type' = (hx vs lp)"
+            in result.output
+        )
 
         # apio build --type lp --size 8k
         result = clirunner.invoke(cmd_build, ["--type", "lp", "--size", "8k"])
         assert result.exit_code != 0, result.output
-        assert "Error: contradictory arguments: ('hx', 'lp')" in result.output
+        assert (
+            "Error: contradictory argument values: 'type' = (hx vs lp)"
+            in result.output
+        )

@@ -9,11 +9,10 @@
 
 from pathlib import Path
 import click
-from click.core import Context
 from apio.managers.scons import SCons
 from apio import cmd_util
 from apio.commands import options
-from apio.resources import Resources
+from apio.apio_context import ApioContext
 
 
 # ---------------------------
@@ -57,7 +56,7 @@ indicate that they are testbenches.
 @options.type_option_gen(deprecated=True)
 @options.pack_option_gen(deprecated=True)
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Options
     project_dir: Path,
     verbose: bool,
@@ -79,9 +78,11 @@ def cli(
     # by means of the scons tool
     # https://www.scons.org/documentation.html
 
-    # -- Create the scons object
-    resources = Resources(project_dir=project_dir, project_scope=True)
-    scons = SCons(resources)
+    # -- Create the apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=True)
+
+    # -- Create the scons manager.
+    scons = SCons(apio_ctx)
 
     # R0801: Similar lines in 2 files
     # pylint: disable=R0801
@@ -93,17 +94,15 @@ def cli(
             "size": size,
             "type": type_,
             "pack": pack,
-            "verbose": {
-                "all": verbose,
-                "yosys": verbose_yosys,
-                "pnr": verbose_pnr,
-            },
             "top-module": top_module,
+            "verbose_all": verbose,
+            "verbose_yosys": verbose_yosys,
+            "verbose_pnr": verbose_pnr,
         }
     )
 
     # -- Done!
-    ctx.exit(exit_code)
+    cmd_ctx.exit(exit_code)
 
 
 # Advanced notes: https://github.com/FPGAwars/apio/wiki/Commands#apio-build

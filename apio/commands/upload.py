@@ -9,12 +9,11 @@
 
 from pathlib import Path
 import click
-from click.core import Context
 from apio.managers.scons import SCons
 from apio.managers.drivers import Drivers
 from apio import cmd_util
 from apio.commands import options
-from apio.resources import Resources
+from apio.apio_context import ApioContext
 
 
 # ---------------------------
@@ -76,7 +75,7 @@ Examples:
 @options.top_module_option_gen(deprecated=True)
 @options.board_option_gen(deprecated=True)
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Options
     project_dir: Path,
     serial_port: str,
@@ -92,27 +91,27 @@ def cli(
 ):
     """Implements the upload command."""
 
-    # -- Create a drivers object
-    resources = Resources(project_dir=project_dir, project_scope=True)
-    drivers = Drivers(resources)
+    # -- Create a apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=True)
+
+    # -- Create the drivers manager.
+    drivers = Drivers(apio_ctx)
 
     # -- Only for MAC
     # -- Operation to do before uploading a design in MAC
     drivers.pre_upload()
 
-    # -- Create the SCons object
-    scons = SCons(resources)
+    # -- Create the scons manager
+    scons = SCons(apio_ctx)
 
     # -- Construct the configuration params to pass to SCons
     # -- from the arguments
     config = {
         "board": board,
-        "verbose": {
-            "all": verbose,
-            "yosys": verbose_yosys,
-            "pnr": verbose_pnr,
-        },
         "top-module": top_module,
+        "verbose_all": verbose,
+        "verbose_yosys": verbose_yosys,
+        "verbose_pnr": verbose_pnr,
     }
 
     # -- Construct the programming configuration
@@ -131,7 +130,7 @@ def cli(
     drivers.post_upload()
 
     # -- Done!
-    ctx.exit(exit_code)
+    cmd_ctx.exit(exit_code)
 
 
 # Advanced notes: https://github.com/FPGAwars/apio/wiki/Commands#apio-upload
