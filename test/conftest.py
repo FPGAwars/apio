@@ -113,6 +113,20 @@ def write_apio_ini():
     return decorator
 
 
+@pytest.fixture(scope="session")
+def path_in_project():
+    """A pytest fixutre that provides a function that convert a file name
+    to a path within the project.
+    """
+
+    def decorator(name: str):
+        """The implementation"""
+
+        return Path.cwd() / name
+
+    return decorator
+
+
 # -- This function is called by pytest. It addes the pytest --offline flag
 # -- which is is passed to tests that ask for it using the fixture
 # -- 'offline_flag' below.
