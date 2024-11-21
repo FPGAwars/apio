@@ -14,7 +14,7 @@ def test_graph(click_cmd_runner, setup_apio_test_env):
 
     with click_cmd_runner.isolated_filesystem():
 
-        # -- Config the environment (conftest.configenv())
+        # -- Config the apio test environment
         setup_apio_test_env()
 
         # -- Execute "apio graph"

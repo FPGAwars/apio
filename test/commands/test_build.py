@@ -17,7 +17,7 @@ def test_build(click_cmd_runner, setup_apio_test_env):
 
     with click_cmd_runner.isolated_filesystem():
 
-        # -- Config the environment (conftest.configenv())
+        # -- Config the apio test environment
         setup_apio_test_env()
 
         # -- Execute "apio build"
@@ -39,7 +39,7 @@ def test_build_board(click_cmd_runner, setup_apio_test_env):
 
     with click_cmd_runner.isolated_filesystem():
 
-        # -- Config the environment (conftest.configenv())
+        # -- Config the apio test environment
         setup_apio_test_env()
 
         # -- Execute "apio build --board icezum"
@@ -55,7 +55,7 @@ def test_build_complete1(click_cmd_runner, setup_apio_test_env):
 
     with click_cmd_runner.isolated_filesystem():
 
-        # -- Config the environment (conftest.configenv())
+        # -- Config the apio test environment
         setup_apio_test_env()
 
         # apio build --board icestick
@@ -201,7 +201,7 @@ def test_build_complete2(click_cmd_runner, setup_apio_test_env):
 
     with click_cmd_runner.isolated_filesystem():
 
-        # -- Config the environment (conftest.configenv())
+        # -- Config the apio test environment
         setup_apio_test_env()
 
         # apio build --type lp
@@ -256,7 +256,7 @@ def test_build_create(click_cmd_runner, setup_apio_test_env):
 
     with click_cmd_runner.isolated_filesystem():
 
-        # -- Config the environment (conftest.configenv())
+        # -- Config the apio test environment
         setup_apio_test_env()
 
         # apio create --board icezum

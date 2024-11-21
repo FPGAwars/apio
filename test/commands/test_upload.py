@@ -14,7 +14,7 @@ def test_upload(click_cmd_runner, setup_apio_test_env):
 
     with click_cmd_runner.isolated_filesystem():
 
-        # -- Config the environment (conftest.configenv())
+        # -- Config the apio test environment
         setup_apio_test_env()
 
         # -- Execute "apio upload"
@@ -33,7 +33,7 @@ def test_upload_board(click_cmd_runner, setup_apio_test_env):
 
     with click_cmd_runner.isolated_filesystem():
 
-        # -- Config the environment (conftest.configenv())
+        # -- Config the apio test environment
         setup_apio_test_env()
 
         # -- Execute "apio upload --board icezum"
@@ -53,7 +53,7 @@ def test_upload_complete(click_cmd_runner, setup_apio_test_env):
 
     with click_cmd_runner.isolated_filesystem():
 
-        # -- Config the environment (conftest.configenv())
+        # -- Config the apio test environment
         setup_apio_test_env()
 
         # -- Execute "apio upload --serial-port COM0"

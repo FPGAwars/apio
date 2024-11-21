@@ -30,7 +30,7 @@ def test_list_ok(click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok):
 
     with click_cmd_runner.isolated_filesystem():
 
-        # -- Config the environment (conftest.configenv())
+        # -- Config the apio test environment
         setup_apio_test_env()
 
         # -- Execute "apio boards"
@@ -51,7 +51,7 @@ def test_custom_board(
 
     with click_cmd_runner.isolated_filesystem():
 
-        # -- Config the environment (conftest.configenv())
+        # -- Config the apio test environment
         setup_apio_test_env()
 
         # -- Write a custom boards.json file in the project's directory.

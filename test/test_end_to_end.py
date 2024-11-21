@@ -51,7 +51,7 @@ def test_end_to_end1(
 
     with click_cmd_runner.isolated_filesystem():
 
-        # -- Config the environment (conftest.configenv())
+        # -- Config the apio test environment
         setup_apio_test_env()
 
         # -- Execute "apio packages --uninstall examples"
@@ -127,7 +127,7 @@ def test_end_to_end2(
 
     with click_cmd_runner.isolated_filesystem():
 
-        # -- Config the environment (conftest.configenv())
+        # -- Config the apio test environment
         setup_apio_test_env()
 
         # -- Execute "apio create --board alhambra-ii"
@@ -210,7 +210,7 @@ def test_end_to_end3(
 
     with click_cmd_runner.isolated_filesystem():
 
-        # -- Config the environment (conftest.configenv())
+        # -- Config the apio test environment
         setup_apio_test_env()
 
         # -- Execute "apio packages --install examples"

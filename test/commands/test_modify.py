@@ -29,7 +29,7 @@ def test_modify(click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok):
 
     with click_cmd_runner.isolated_filesystem():
 
-        # -- Config the environment (conftest.configenv())
+        # -- Config the apio test environment
         setup_apio_test_env()
 
         apio_ini = Path("apio.ini")
