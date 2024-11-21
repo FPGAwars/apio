@@ -6,23 +6,23 @@
 from apio.commands.install import cli as cmd_install
 
 
-def test_install(clirunner, configenv, validate_cliresult):
+def test_install(click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok):
     """Test "apio install" with different parameters"""
 
-    with clirunner.isolated_filesystem():
+    with click_cmd_runner.isolated_filesystem():
 
         # -- Config the environment (conftest.configenv())
-        configenv()
+        setup_apio_test_env()
 
         # -- Execute "apio install"
-        result = clirunner.invoke(cmd_install)
-        validate_cliresult(result)
+        result = click_cmd_runner.invoke(cmd_install)
+        assert_apio_cmd_ok(result)
 
         # -- Execute "apio install --list"
-        result = clirunner.invoke(cmd_install, ["--list"])
-        validate_cliresult(result)
+        result = click_cmd_runner.invoke(cmd_install, ["--list"])
+        assert_apio_cmd_ok(result)
 
         # -- Execute "apio install missing_package"
-        result = clirunner.invoke(cmd_install, ["missing_package"])
+        result = click_cmd_runner.invoke(cmd_install, ["missing_package"])
         assert result.exit_code == 1, result.output
         assert "Error: no such package" in result.output

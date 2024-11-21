@@ -23,15 +23,16 @@ DEBUG = True
 
 
 @pytest.fixture(scope="module")
-def clirunner():
-    """Return a special oject for executing a click cli command"""
+def click_cmd_runner():
+    """A pytest fixture that provides tests with a click commands runner."""
     return CliRunner()
 
 
 @pytest.fixture(scope="session")
-def configenv():
-    """Return a function for configuring the apio test environment
-    By default it is tested in a temporaly folder (in /tmp/xxxxx)
+def setup_apio_test_env():
+    """An pytest fixture that provides tests with a function to set up the
+    apio test environment. By default, the tests run in a temporaly folder
+    (in /tmp/xxxxx).
     """
 
     def decorator():
@@ -43,7 +44,7 @@ def configenv():
         # -- Debug
         if DEBUG:
             print("")
-            print("  --> configenv():")
+            print("  --> setup_apio_test_env():")
             print(f"      apio working directory: {str(cwd)}")
 
         # -- Set the apio home dir and apio packages dir to
@@ -56,9 +57,9 @@ def configenv():
 
 
 @pytest.fixture(scope="session")
-def validate_cliresult():
-    """Return a function for Checking if a given click command
-    has executed ok
+def assert_apio_cmd_ok():
+    """A pytest fixture that provides a function to assert that apio click
+    command result were ok.
     """
 
     def decorator(result: Result):
@@ -76,6 +77,10 @@ def validate_cliresult():
     return decorator
 
 
+# -- This function is called by pytest. It addes the pytest --offline flag
+# -- which is is passed to tests that ask for it using the fixture
+# -- 'offline_flag' below.
+# --
 # -- More info: https://docs.pytest.org/en/7.1.x/example/simple.html
 def pytest_addoption(parser: pytest.Parser):
     """Register the --offline command line option when invoking pytest"""
@@ -89,8 +94,9 @@ def pytest_addoption(parser: pytest.Parser):
 
 
 @pytest.fixture
-def offline(request):
-    """Return the value of the offline parameter, given by the user
-    when calling pytest
+def offline_flag(request):
+    """Return the value of the pytest '--offline' flag register above.
+    This flag can be set by the user when invoking pytest to disable
+    test functionality that requires internet connectivity.
     """
     return request.config.getoption("--offline")

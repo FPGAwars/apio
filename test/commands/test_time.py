@@ -8,19 +8,19 @@ from apio.commands.time import cli as cmd_time
 
 # R0801: Similar lines in 2 files
 # pylint: disable=R0801
-def test_time(clirunner, configenv):
+def test_time(click_cmd_runner, setup_apio_test_env):
     """Test: apio time
     when no apio.ini file is given
     No additional parameters are given
     """
 
-    with clirunner.isolated_filesystem():
+    with click_cmd_runner.isolated_filesystem():
 
         # -- Config the environment (conftest.configenv())
-        configenv()
+        setup_apio_test_env()
 
         # -- Execute "apio time"
-        result = clirunner.invoke(cmd_time)
+        result = click_cmd_runner.invoke(cmd_time)
 
         # -- Check the result
         assert result.exit_code != 0, result.output
@@ -28,18 +28,18 @@ def test_time(clirunner, configenv):
         assert "Error: insufficient arguments: missing board" in result.output
 
 
-def test_time_board(clirunner, configenv):
+def test_time_board(click_cmd_runner, setup_apio_test_env):
     """Test: apio time
     when parameters are given
     """
 
-    with clirunner.isolated_filesystem():
+    with click_cmd_runner.isolated_filesystem():
 
         # -- Config the environment (conftest.configenv())
-        configenv()
+        setup_apio_test_env()
 
         # -- Execute "apio time"
-        result = clirunner.invoke(cmd_time, ["--board", "icezum"])
+        result = click_cmd_runner.invoke(cmd_time, ["--board", "icezum"])
 
         # -- Check the result
         assert result.exit_code != 0, result.output

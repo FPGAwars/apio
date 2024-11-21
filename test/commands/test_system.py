@@ -6,16 +6,16 @@
 from apio.commands.system import cli as cmd_system
 
 
-def test_system(clirunner, configenv):
+def test_system(click_cmd_runner, setup_apio_test_env):
     """Test "apio system" with different parameters"""
 
-    with clirunner.isolated_filesystem():
+    with click_cmd_runner.isolated_filesystem():
 
         # -- Config the environment (conftest.configenv())
-        configenv()
+        setup_apio_test_env()
 
         # -- Execute "apio system"
-        result = clirunner.invoke(cmd_system)
+        result = click_cmd_runner.invoke(cmd_system)
         assert result.exit_code == 1, result.output
         assert (
             "One of [--lsftdi, --lsusb, --lsserial, --info, --platforms] "
@@ -23,22 +23,22 @@ def test_system(clirunner, configenv):
         )
 
         # -- Execute "apio system --lsftdi"
-        result = clirunner.invoke(cmd_system, ["--lsftdi"])
+        result = click_cmd_runner.invoke(cmd_system, ["--lsftdi"])
         assert result.exit_code == 1, result.output
         assert "apio packages --install --force oss-cad-suite" in result.output
 
         # -- Execute "apio system --lsusb"
-        result = clirunner.invoke(cmd_system, ["--lsusb"])
+        result = click_cmd_runner.invoke(cmd_system, ["--lsusb"])
         assert result.exit_code == 1, result.output
         assert "apio packages --install --force oss-cad-suite" in result.output
 
         # -- Execute "apio system --lsserial"
-        clirunner.invoke(cmd_system, ["--lsserial"])
+        click_cmd_runner.invoke(cmd_system, ["--lsserial"])
         assert result.exit_code == 1, result.output
         assert "apio packages --install --force oss-cad-suite" in result.output
 
         # -- Execute "apio system --info"
-        result = clirunner.invoke(cmd_system, ["--info"])
+        result = click_cmd_runner.invoke(cmd_system, ["--info"])
         assert result.exit_code == 0, result.output
         assert "Platform id" in result.output
         # -- The these env options are set by the apio text fixture.

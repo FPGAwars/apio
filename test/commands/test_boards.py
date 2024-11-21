@@ -6,15 +6,15 @@
 from apio.commands.boards import cli as cmd_boards
 
 
-def test_boards(clirunner, configenv, validate_cliresult):
+def test_boards(click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok):
     """Test "apio boards" command."""
 
-    with clirunner.isolated_filesystem():
+    with click_cmd_runner.isolated_filesystem():
 
         # -- Config the environment (conftest.configenv())
-        configenv()
+        setup_apio_test_env()
 
         # -- Execute "apio boards"
-        result = clirunner.invoke(cmd_boards)
-        validate_cliresult(result)
+        result = click_cmd_runner.invoke(cmd_boards)
+        assert_apio_cmd_ok(result)
         assert "alhambra-ii" in result.output
