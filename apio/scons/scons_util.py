@@ -768,11 +768,31 @@ def set_up_cleanup(env: SConsEnvironment) -> None:
     """
 
     # -- Should be called only when the 'clean' target is specified.
+    # -- If this fails, this is a programming error and not a user error.
     assert env.GetOption("clean")
 
     # -- Get the list of all files to clean. Scons adds to the list non
     # -- existing files from other targets it encountered.
     files_to_clean = env.Glob(f"{BUILD_DIR_SEP}*") + env.Glob("zadig.ini")
+
+    # -- TODO: Remove the cleanup of legacy files after releasing the first
+    # -- release with the _build directory.
+    # --
+    # --
+    # -- Until apio 0.9.6, the build artifacts were created in the project
+    # -- directory rather than the _build directory. To simplify the transition
+    # -- we clean here also left over files from 0.9.5.
+    legacy_files_to_clean = (
+        env.Glob("hardware.*") + env.Glob("*_tb.vcd") + env.Glob("*_tb.out")
+    )
+
+    if legacy_files_to_clean:
+        msg(
+            env,
+            "Deleting also left-over files from previous release.",
+            fg="yellow",
+        )
+        files_to_clean.extend(legacy_files_to_clean)
 
     # -- Create a dummy target.  I
     dummy_target = env.Command(
