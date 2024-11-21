@@ -14,9 +14,6 @@ from apio import cmd_util, util
 from apio.commands import options
 
 
-# )
-
-
 # R0914: Too many local variables (17/15)
 # pylint: disable=R0914
 def list_boards(apio_ctx: ApioContext):
