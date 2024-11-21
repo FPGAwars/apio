@@ -5,8 +5,9 @@ TEST configuration file
 
 # os.environ: Access to environment variables
 #   https://docs.python.org/3/library/os.html#os.environ
-from os import environ
+from os import environ, listdir
 from pathlib import Path
+from typing import Dict
 
 import pytest
 
@@ -36,21 +37,33 @@ def setup_apio_test_env():
     """
 
     def decorator():
+        # -- Current directory is the project dir.
+        project_dir = Path.cwd()
+
         # -- Set a strange directory for executing
         # -- apio: it contains spaces and unicode characters
         # -- for testing. It should work
-        cwd = Path.cwd() / " ñ"
+        apio_home_dir = project_dir / " ñ"
+        apio_packages_dir = apio_home_dir / "packages"
 
         # -- Debug
         if DEBUG:
             print("")
             print("  --> setup_apio_test_env():")
-            print(f"      apio working directory: {str(cwd)}")
+            print(f"     apio project dir  : {str(project_dir)}")
+            print(f"     apio home dir     : {str(apio_home_dir)}")
+            print(f"     apio packages dir : {str(apio_packages_dir)}")
+
+        # -- Since the test run in a fresh temp directory, we expect it to be
+        # -- empty with no left over files (such as apio.ini) from a previous
+        # -- tests.
+        project_dir_content = listdir(".")
+        assert not project_dir_content, project_dir_content
 
         # -- Set the apio home dir and apio packages dir to
         # -- this test folder
-        environ["APIO_HOME_DIR"] = str(cwd)
-        environ["APIO_PACKAGES_DIR"] = str(cwd / "packages")
+        environ["APIO_HOME_DIR"] = str(apio_home_dir)
+        environ["APIO_PACKAGES_DIR"] = str(apio_packages_dir)
         environ["TESTING"] = ""
 
     return decorator
@@ -73,6 +86,29 @@ def assert_apio_cmd_ok():
 
         # -- The word 'error' should NOT appear on the standard output
         assert "error" not in result.output.lower()
+
+    return decorator
+
+
+@pytest.fixture(scope="session")
+def write_apio_ini():
+    """A pytest fixture to write a project apio.ini file. If properties
+    is Nonethe file apio.ini is deleted if it exists.
+    """
+
+    def decorator(properties: Dict[str, str]):
+        """The apio.ini actual writer"""
+
+        path = Path("apio.ini")
+
+        if properties is None:
+            path.unlink(missing_ok=True)
+            return
+
+        with open(path, "w", encoding="utf-8") as f:
+            f.write("[env]\n")
+            for name, value in properties.items():
+                f.write(f"{name} = {value}\n")
 
     return decorator
 

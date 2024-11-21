@@ -5,15 +5,11 @@
 # -- apio build entry point
 from apio.commands.build import cli as cmd_build
 
-# -- This is for testing "apio create"
-from apio.commands.create import cli as cmd_create
 
-
-def test_build(click_cmd_runner, setup_apio_test_env):
-    """Test: apio build
-    when no apio.ini file is given
-    No additional parameters are given
-    """
+# pylint: disable=too-many-statements
+def test_errors_without_apio_ini_1(click_cmd_runner, setup_apio_test_env):
+    """Test: Various errors 1/2. All tests are without apio.ini and without
+    apio packages installed."""
 
     with click_cmd_runner.isolated_filesystem():
 
@@ -22,41 +18,10 @@ def test_build(click_cmd_runner, setup_apio_test_env):
 
         # -- Execute "apio build"
         result = click_cmd_runner.invoke(cmd_build)
-
-        # -- It is an error. Exit code should not be 0
         assert result.exit_code != 0, result.output
-
-        # -- Messages thtat should appear
         assert "Info: Project has no apio.ini file" in result.output
         assert "Error: insufficient arguments: missing board" in result.output
         assert "Error: Missing FPGA" in result.output
-
-
-def test_build_board(click_cmd_runner, setup_apio_test_env):
-    """Test: apio build --board icezum
-    No oss-cad-suite package is installed
-    """
-
-    with click_cmd_runner.isolated_filesystem():
-
-        # -- Config the apio test environment
-        setup_apio_test_env()
-
-        # -- Execute "apio build --board icezum"
-        result = click_cmd_runner.invoke(cmd_build, ["--board", "icezum"])
-
-        # -- Check the result
-        assert result.exit_code != 0, result.output
-        assert "apio packages --install --force oss-cad-suite" in result.output
-
-
-def test_build_complete1(click_cmd_runner, setup_apio_test_env):
-    """Test: apio build with different arguments. Part 1/2"""
-
-    with click_cmd_runner.isolated_filesystem():
-
-        # -- Config the apio test environment
-        setup_apio_test_env()
 
         # apio build --board icestick
         result = click_cmd_runner.invoke(cmd_build, ["--board", "icestick"])
@@ -196,9 +161,9 @@ def test_build_complete1(click_cmd_runner, setup_apio_test_env):
         assert "Error: insufficient arguments" in result.output
 
 
-def test_build_complete2(click_cmd_runner, setup_apio_test_env):
-    """Test: apio build with different arguments. Part 2/2"""
-
+def test_errors_without_apio_ini_2(click_cmd_runner, setup_apio_test_env):
+    """Test: Various errors 2/2. All tests are without apio.ini and without
+    apio packages installed."""
     with click_cmd_runner.isolated_filesystem():
 
         # -- Config the apio test environment
@@ -251,7 +216,9 @@ def test_build_complete2(click_cmd_runner, setup_apio_test_env):
         )
 
 
-def test_build_create(click_cmd_runner, setup_apio_test_env):
+def test_errors_with_apio_ini(
+    click_cmd_runner, setup_apio_test_env, write_apio_ini
+):
     """Test: apio build with apio create"""
 
     with click_cmd_runner.isolated_filesystem():
@@ -259,17 +226,14 @@ def test_build_create(click_cmd_runner, setup_apio_test_env):
         # -- Config the apio test environment
         setup_apio_test_env()
 
-        # apio create --board icezum
-        result = click_cmd_runner.invoke(cmd_create, ["--board", "icezum"])
-        assert result.exit_code == 0, result.output
-        assert "Creating apio.ini file ..." in result.output
-        assert "was created successfully" in result.output
+        # -- Write apio.ini
+        write_apio_ini({"board": "icezum", "top-module": "main"})
 
         # apio build
         result = click_cmd_runner.invoke(cmd_build)
         assert result.exit_code != 0, result.output
 
-        # apio build --board icezum
+        # apio build --board icestick
         result = click_cmd_runner.invoke(cmd_build, ["--board", "icestick"])
         assert result.exit_code != 0, result.output
         assert (
