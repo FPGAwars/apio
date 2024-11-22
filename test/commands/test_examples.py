@@ -25,11 +25,13 @@ def test_examples(click_cmd_runner, setup_apio_test_env):
         # -- Execute "apio examples --list"
         result = click_cmd_runner.invoke(cmd_examples, ["--list"])
         assert result.exit_code == 1, result.output
+        assert "Error: package 'examples' is not installed" in result.output
         assert "apio packages --install --force examples" in result.output
 
-        # -- Execute "apio examples --dir dir"
+        # -- Execute "apio examples --fetch-dir dir"
         result = click_cmd_runner.invoke(cmd_examples, ["--fetch-dir", "dir"])
         assert result.exit_code == 1, result.output
+        assert "Error: package 'examples' is not installed" in result.output
         assert "apio packages --install --force examples" in result.output
 
         # -- Execute "apio examples --files file"
@@ -37,4 +39,5 @@ def test_examples(click_cmd_runner, setup_apio_test_env):
             cmd_examples, ["--fetch-files", "file"]
         )
         assert result.exit_code == 1, result.output
+        assert "Error: package 'examples' is not installed" in result.output
         assert "apio packages --install --force examples" in result.output
