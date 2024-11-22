@@ -7,6 +7,7 @@ TEST configuration file
 #   https://docs.python.org/3/library/os.html#os.environ
 from os import environ, listdir
 from pathlib import Path
+from dataclasses import dataclass
 from typing import Dict
 
 import pytest
@@ -23,6 +24,26 @@ from click.testing import Result
 DEBUG = True
 
 
+@dataclass(frozen=True)
+class TestValues:
+    """Contains apio tests related values."""
+
+    test_dir: Path
+    home_dir: Path
+    packages_dir: Path
+
+    @staticmethod
+    def get():
+        """Returns a filled in TestValues object."""
+        # -- Current directory is the project dir.
+        test_dir = Path.cwd()
+        # -- Using unicode and space to verify that they are handled correctly.
+        home_dir = test_dir / " ñ"
+        packages_dir = home_dir / "packages"
+
+        return TestValues(test_dir, home_dir, packages_dir)
+
+
 @pytest.fixture(scope="module")
 def click_cmd_runner():
     """A pytest fixture that provides tests with a click commands runner."""
@@ -37,22 +58,16 @@ def setup_apio_test_env():
     """
 
     def decorator():
-        # -- Current directory is the project dir.
-        project_dir = Path.cwd()
+        test_values = TestValues.get()
 
-        # -- Set a strange directory for executing
-        # -- apio: it contains spaces and unicode characters
-        # -- for testing. It should work
-        apio_home_dir = project_dir / " ñ"
-        apio_packages_dir = apio_home_dir / "packages"
-
-        # -- Debug
         if DEBUG:
             print("")
             print("  --> setup_apio_test_env():")
-            print(f"     apio project dir  : {str(project_dir)}")
-            print(f"     apio home dir     : {str(apio_home_dir)}")
-            print(f"     apio packages dir : {str(apio_packages_dir)}")
+            print(f"     test dir          : {str(test_values.test_dir)}")
+            print(f"     apio home dir     : {str(test_values.home_dir)}")
+            print(
+                "     apio packages dir : " f"{str(test_values.packages_dir)}"
+            )
 
         # -- Since the test run in a fresh temp directory, we expect it to be
         # -- empty with no left over files (such as apio.ini) from a previous
@@ -61,9 +76,11 @@ def setup_apio_test_env():
         assert not project_dir_content, project_dir_content
 
         # -- Set the apio home dir and apio packages dir to
-        # -- this test folder
-        environ["APIO_HOME_DIR"] = str(apio_home_dir)
-        environ["APIO_PACKAGES_DIR"] = str(apio_packages_dir)
+        # -- this test folder. Apio uses these as an override to the defaults.
+        environ["APIO_HOME_DIR"] = str(test_values.home_dir)
+        environ["APIO_PACKAGES_DIR"] = str(test_values.packages_dir)
+
+        # -- TODO: This looks like a flag. Describe what it do.
         environ["TESTING"] = ""
 
     return decorator
@@ -113,20 +130,6 @@ def write_apio_ini():
     return decorator
 
 
-@pytest.fixture(scope="session")
-def path_in_project():
-    """A pytest fixutre that provides a function that convert a file name
-    to a path within the project.
-    """
-
-    def decorator(name: str):
-        """The implementation"""
-
-        return Path.cwd() / name
-
-    return decorator
-
-
 # -- This function is called by pytest. It addes the pytest --offline flag
 # -- which is is passed to tests that ask for it using the fixture
 # -- 'offline_flag' below.
@@ -150,3 +153,25 @@ def offline_flag(request):
     test functionality that requires internet connectivity.
     """
     return request.config.getoption("--offline")
+
+
+@pytest.fixture(scope="session")
+def apio_home_dir():
+    """A pytest fixture that provide function that returns a path to the test
+    apio home dir."""
+
+    def decorator():
+        return TestValues.get().home_dir
+
+    return decorator
+
+
+@pytest.fixture(scope="session")
+def apio_packages_dir():
+    """A pytest fixture that provide function that returns a path to the test
+    apio packages dir."""
+
+    def decorator():
+        return TestValues.get().packages_dir
+
+    return decorator
