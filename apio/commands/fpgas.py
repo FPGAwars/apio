@@ -59,7 +59,9 @@ def list_fpgas(apio_ctx: ApioContext):
     # -- Print the Footer
     if config.terminal_mode():
         click.secho(seperator_line)
-        click.secho(f"Total: {len(apio_ctx.fpgas)} fpgas\n")
+
+    click.secho(f"Total of {util.plurality(apio_ctx.fpgas, 'fpga')}")
+
 
 
 # ---------------------------
