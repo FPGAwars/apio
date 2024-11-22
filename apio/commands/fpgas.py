@@ -63,7 +63,6 @@ def list_fpgas(apio_ctx: ApioContext):
     click.secho(f"Total of {util.plurality(apio_ctx.fpgas, 'fpga')}")
 
 
-
 # ---------------------------
 # -- COMMAND
 # ---------------------------

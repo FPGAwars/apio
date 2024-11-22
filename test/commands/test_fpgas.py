@@ -16,6 +16,7 @@ CUSTOM_FPGAS = """
 }
 """
 
+
 def test_fpgas_ok(click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok):
     """Test "apio fpgas" command with standard fpgas.json."""
 
