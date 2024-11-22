@@ -5,8 +5,9 @@ TEST configuration file
 
 # os.environ: Access to environment variables
 #   https://docs.python.org/3/library/os.html#os.environ
-from os import environ
+from os import environ, listdir
 from pathlib import Path
+from typing import Dict
 
 import pytest
 
@@ -23,42 +24,55 @@ DEBUG = True
 
 
 @pytest.fixture(scope="module")
-def clirunner():
-    """Return a special oject for executing a click cli command"""
+def click_cmd_runner():
+    """A pytest fixture that provides tests with a click commands runner."""
     return CliRunner()
 
 
 @pytest.fixture(scope="session")
-def configenv():
-    """Return a function for configuring the apio test environment
-    By default it is tested in a temporaly folder (in /tmp/xxxxx)
+def setup_apio_test_env():
+    """An pytest fixture that provides tests with a function to set up the
+    apio test environment. By default, the tests run in a temporaly folder
+    (in /tmp/xxxxx).
     """
 
     def decorator():
+        # -- Current directory is the project dir.
+        project_dir = Path.cwd()
+
         # -- Set a strange directory for executing
         # -- apio: it contains spaces and unicode characters
         # -- for testing. It should work
-        cwd = Path.cwd() / " ñ"
+        apio_home_dir = project_dir / " ñ"
+        apio_packages_dir = apio_home_dir / "packages"
 
         # -- Debug
         if DEBUG:
             print("")
-            print("  --> configenv():")
-            print(f"      apio working directory: {str(cwd)}")
+            print("  --> setup_apio_test_env():")
+            print(f"     apio project dir  : {str(project_dir)}")
+            print(f"     apio home dir     : {str(apio_home_dir)}")
+            print(f"     apio packages dir : {str(apio_packages_dir)}")
+
+        # -- Since the test run in a fresh temp directory, we expect it to be
+        # -- empty with no left over files (such as apio.ini) from a previous
+        # -- tests.
+        project_dir_content = listdir(".")
+        assert not project_dir_content, project_dir_content
 
         # -- Set the apio home dir and apio packages dir to
         # -- this test folder
-        environ["APIO_HOME_DIR"] = str(cwd)
-        environ["APIO_PACKAGES_DIR"] = str(cwd / "packages")
+        environ["APIO_HOME_DIR"] = str(apio_home_dir)
+        environ["APIO_PACKAGES_DIR"] = str(apio_packages_dir)
         environ["TESTING"] = ""
 
     return decorator
 
 
 @pytest.fixture(scope="session")
-def validate_cliresult():
-    """Return a function for Checking if a given click command
-    has executed ok
+def assert_apio_cmd_ok():
+    """A pytest fixture that provides a function to assert that apio click
+    command result were ok.
     """
 
     def decorator(result: Result):
@@ -76,6 +90,47 @@ def validate_cliresult():
     return decorator
 
 
+@pytest.fixture(scope="session")
+def write_apio_ini():
+    """A pytest fixture to write a project apio.ini file. If properties
+    is Nonethe file apio.ini is deleted if it exists.
+    """
+
+    def decorator(properties: Dict[str, str]):
+        """The apio.ini actual writer"""
+
+        path = Path("apio.ini")
+
+        if properties is None:
+            path.unlink(missing_ok=True)
+            return
+
+        with open(path, "w", encoding="utf-8") as f:
+            f.write("[env]\n")
+            for name, value in properties.items():
+                f.write(f"{name} = {value}\n")
+
+    return decorator
+
+
+@pytest.fixture(scope="session")
+def path_in_project():
+    """A pytest fixutre that provides a function that convert a file name
+    to a path within the project.
+    """
+
+    def decorator(name: str):
+        """The implementation"""
+
+        return Path.cwd() / name
+
+    return decorator
+
+
+# -- This function is called by pytest. It addes the pytest --offline flag
+# -- which is is passed to tests that ask for it using the fixture
+# -- 'offline_flag' below.
+# --
 # -- More info: https://docs.pytest.org/en/7.1.x/example/simple.html
 def pytest_addoption(parser: pytest.Parser):
     """Register the --offline command line option when invoking pytest"""
@@ -89,8 +144,9 @@ def pytest_addoption(parser: pytest.Parser):
 
 
 @pytest.fixture
-def offline(request):
-    """Return the value of the offline parameter, given by the user
-    when calling pytest
+def offline_flag(request):
+    """Return the value of the pytest '--offline' flag register above.
+    This flag can be set by the user when invoking pytest to disable
+    test functionality that requires internet connectivity.
     """
     return request.config.getoption("--offline")

@@ -39,54 +39,62 @@ def validate_dir_leds(folder=""):
     assert leds_dir.is_dir() and nfiles > 0
 
 
-def test_end_to_end1(clirunner, validate_cliresult, configenv, offline):
+def test_end_to_end1(
+    click_cmd_runner, assert_apio_cmd_ok, setup_apio_test_env, offline_flag
+):
     """Test the installation of the examples package"""
 
     # -- If the option 'offline' is passed, the test is skip
     # -- (These tests require internet)
-    if offline:
+    if offline_flag:
         pytest.skip("requires internet connection")
 
-    with clirunner.isolated_filesystem():
+    with click_cmd_runner.isolated_filesystem():
 
-        # -- Config the environment (conftest.configenv())
-        configenv()
+        # -- Config the apio test environment
+        setup_apio_test_env()
 
         # -- Execute "apio packages --uninstall examples"
-        result = clirunner.invoke(
+        result = click_cmd_runner.invoke(
             cmd_packages, ["--uninstall", "examples"], input="y"
         )
         assert "Do you want to uninstall 1 package?" in result.output
         assert "Package 'examples' was not installed" in result.output
 
         # -- Execute "apio packages --install examples@X"
-        result = clirunner.invoke(cmd_packages, ["--install", "examples@X"])
+        result = click_cmd_runner.invoke(
+            cmd_packages, ["--install", "examples@X"]
+        )
         assert "Error: package not found" in result.output
 
         # -- Execute "apio packages --install examples@0.0.34"
-        result = clirunner.invoke(
+        result = click_cmd_runner.invoke(
             cmd_packages, ["--install", "examples@0.0.34"]
         )
-        validate_cliresult(result)
+        assert_apio_cmd_ok(result)
         assert "Installing package 'examples@" in result.output
         assert "Download" in result.output
         assert "Package 'examples' installed successfully" in result.output
 
         # -- Execute "apio packages --install examples"
-        result = clirunner.invoke(cmd_packages, ["--install", "examples"])
-        validate_cliresult(result)
+        result = click_cmd_runner.invoke(
+            cmd_packages, ["--install", "examples"]
+        )
+        assert_apio_cmd_ok(result)
         assert "Installing package 'examples'" in result.output
         assert "Download" in result.output
         assert "Package 'examples' installed successfully" in result.output
 
         # -- Execute "apio packages --install examples" again
-        result = clirunner.invoke(cmd_packages, ["--install", "examples"])
-        validate_cliresult(result)
+        result = click_cmd_runner.invoke(
+            cmd_packages, ["--install", "examples"]
+        )
+        assert_apio_cmd_ok(result)
         assert "Installing package 'examples'" in result.output
         assert "was already installed" in result.output
 
         # -- Execute "apio packages --install examples --force"
-        result = clirunner.invoke(
+        result = click_cmd_runner.invoke(
             cmd_packages,
             [
                 "--install",
@@ -94,86 +102,92 @@ def test_end_to_end1(clirunner, validate_cliresult, configenv, offline):
                 "--force",
             ],
         )
-        validate_cliresult(result)
+        assert_apio_cmd_ok(result)
         assert "Installing package 'examples'" in result.output
         assert "Download" in result.output
         assert "Package 'examples' installed successfully" in result.output
 
         # -- Execute "apio packages --list"
-        result = clirunner.invoke(cmd_packages, ["--list"])
+        result = click_cmd_runner.invoke(cmd_packages, ["--list"])
         assert result.exit_code == 0, result.output
         assert "No errors" in result.output
         assert "Installed packages:" in result.output
         assert "examples" in result.output
 
 
-def test_end_to_end2(clirunner, validate_cliresult, configenv, offline):
+def test_end_to_end2(
+    click_cmd_runner, assert_apio_cmd_ok, setup_apio_test_env, offline_flag
+):
     """Test more 'apio examples' commands"""
 
     # -- If the option 'offline' is passed, the test is skip
     # -- (These tests require internet)
-    if offline:
+    if offline_flag:
         pytest.skip("requires internet connection")
 
-    with clirunner.isolated_filesystem():
+    with click_cmd_runner.isolated_filesystem():
 
-        # -- Config the environment (conftest.configenv())
-        configenv()
+        # -- Config the apio test environment
+        setup_apio_test_env()
 
         # -- Execute "apio create --board alhambra-ii"
-        result = clirunner.invoke(cmd_create, ["--board", "alhambra-ii"])
-        validate_cliresult(result)
+        result = click_cmd_runner.invoke(
+            cmd_create, ["--board", "alhambra-ii"]
+        )
+        assert_apio_cmd_ok(result)
         assert "Creating apio.ini file ..." in result.output
         assert "was created successfully" in result.output
 
         # -- Execute "apio upload"
-        result = clirunner.invoke(cmd_upload)
+        result = click_cmd_runner.invoke(cmd_upload)
         assert result.exit_code == 1, result.output
         assert "package 'oss-cad-suite' is not installed" in result.output
 
         # -- Execute "apio packages --install examples"
-        result = clirunner.invoke(cmd_packages, ["--install", "examples"])
-        validate_cliresult(result)
+        result = click_cmd_runner.invoke(
+            cmd_packages, ["--install", "examples"]
+        )
+        assert_apio_cmd_ok(result)
         assert "Installing package 'examples'" in result.output
         assert "Download" in result.output
         assert "Package 'examples' installed successfully" in result.output
 
         # -- Execute "apio examples --list"
-        result = clirunner.invoke(cmd_examples, ["--list"])
-        validate_cliresult(result)
+        result = click_cmd_runner.invoke(cmd_examples, ["--list"])
+        assert_apio_cmd_ok(result)
         assert "leds" in result.output
         assert "icezum" in result.output
 
         # -- Execute "apio examples --fetch-files missing_example"
-        result = clirunner.invoke(
+        result = click_cmd_runner.invoke(
             cmd_examples, ["--fetch-files", "missing_example"]
         )
         assert result.exit_code == 1, result.output
         assert "Warning: this example does not exist" in result.output
 
         # -- Execute "apio examples --fetch-files Alhambra-II/ledon"
-        result = clirunner.invoke(
+        result = click_cmd_runner.invoke(
             cmd_examples, ["--fetch-files", "Alhambra-II/ledon"]
         )
-        validate_cliresult(result)
+        assert_apio_cmd_ok(result)
         assert "Copying Alhambra-II/ledon example files ..." in result.output
         assert "have been successfully created!" in result.output
         validate_files_leds(pathlib.Path())
 
         # -- Execute "apio examples --fetch-dir Alhambra-II/ledon"
-        result = clirunner.invoke(
+        result = click_cmd_runner.invoke(
             cmd_examples, ["--fetch-dir", "Alhambra-II/ledon"]
         )
-        validate_cliresult(result)
+        assert_apio_cmd_ok(result)
         assert "Creating Alhambra-II/ledon directory ..." in result.output
         assert "has been successfully created" in result.output
         validate_dir_leds()
 
         # -- Execute "apio examples --fetch-dir Alhambra-II/ledon"
-        result = clirunner.invoke(
+        result = click_cmd_runner.invoke(
             cmd_examples, ["--fetch-dir", "Alhambra-II/ledon"], input="y"
         )
-        validate_cliresult(result)
+        assert_apio_cmd_ok(result)
         assert (
             "Warning: Alhambra-II/ledon directory already exists"
             in result.output
@@ -184,22 +198,26 @@ def test_end_to_end2(clirunner, validate_cliresult, configenv, offline):
         validate_dir_leds()
 
 
-def test_end_to_end3(clirunner, validate_cliresult, configenv, offline):
+def test_end_to_end3(
+    click_cmd_runner, assert_apio_cmd_ok, setup_apio_test_env, offline_flag
+):
     """Test more 'apio examples' commands"""
 
     # -- If the option 'offline' is passed, the test is skip
     # -- (These tests require internet)
-    if offline:
+    if offline_flag:
         pytest.skip("requires internet connection")
 
-    with clirunner.isolated_filesystem():
+    with click_cmd_runner.isolated_filesystem():
 
-        # -- Config the environment (conftest.configenv())
-        configenv()
+        # -- Config the apio test environment
+        setup_apio_test_env()
 
         # -- Execute "apio packages --install examples"
-        result = clirunner.invoke(cmd_packages, ["--install", "examples"])
-        validate_cliresult(result)
+        result = click_cmd_runner.invoke(
+            cmd_packages, ["--install", "examples"]
+        )
+        assert_apio_cmd_ok(result)
         assert "Installing package 'examples'" in result.output
         assert "Download" in result.output
         assert "Package 'examples' installed successfully" in result.output
@@ -213,11 +231,11 @@ def test_end_to_end3(clirunner, validate_cliresult, configenv, offline):
 
         # -- Execute "apio examples --fetch-files Alhambra-II/ledon
         # --                        --project-dir=tmp"
-        result = clirunner.invoke(
+        result = click_cmd_runner.invoke(
             cmd_examples,
             ["--fetch-files", "Alhambra-II/ledon", "--project-dir=tmp"],
         )
-        validate_cliresult(result)
+        assert_apio_cmd_ok(result)
         assert "Copying Alhambra-II/ledon example files ..." in result.output
         assert "have been successfully created!" in result.output
 
@@ -226,27 +244,27 @@ def test_end_to_end3(clirunner, validate_cliresult, configenv, offline):
 
         # -- Execute
         # -- "apio examples --fetch-dir Alhambra-II/ledon --project-dir=tmp"
-        result = clirunner.invoke(
+        result = click_cmd_runner.invoke(
             cmd_examples,
             ["--fetch-dir", "Alhambra-II/ledon", "--project-dir=tmp"],
         )
-        validate_cliresult(result)
+        assert_apio_cmd_ok(result)
         assert "Creating Alhambra-II/ledon directory ..." in result.output
         assert "has been successfully created" in result.output
         validate_dir_leds("tmp")
 
         # -- Execute "apio packages --uninstall examples"
-        result = clirunner.invoke(
+        result = click_cmd_runner.invoke(
             cmd_packages, ["--uninstall", "examples"], input="n"
         )
         assert result.exit_code != 0, result.output
         assert "User said no" in result.output
 
         # -- Execute "apio packages --uninstall examples"
-        result = clirunner.invoke(
+        result = click_cmd_runner.invoke(
             cmd_packages, ["--uninstall", "examples"], input="y"
         )
-        validate_cliresult(result)
+        assert_apio_cmd_ok(result)
         assert "Uninstalling package 'examples'" in result.output
         assert "Do you want to uninstall 1 package?" in result.output
         assert "Package 'examples' uninstalled successfuly" in result.output

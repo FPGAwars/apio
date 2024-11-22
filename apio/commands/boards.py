@@ -14,9 +14,6 @@ from apio import cmd_util, util
 from apio.commands import options
 
 
-# )
-
-
 # R0914: Too many local variables (17/15)
 # pylint: disable=R0914
 def list_boards(apio_ctx: ApioContext):
@@ -88,13 +85,11 @@ def list_boards(apio_ctx: ApioContext):
             # -- bullet points.
             click.secho(f"{board:<{max_board_name_len}} |  {item_fpga}")
 
+    # -- Print the footer.
     if config.terminal_mode():
-        # -- Print the Footer
         click.secho(seperator_line)
-        click.secho(f"Total: {len(apio_ctx.boards)} boards")
 
-        # -- Help message
-        # click.secho(BOARDS_MSG, fg="green")
+    click.secho(f"Total of {util.plurality(apio_ctx.boards, 'board')}")
 
 
 # ---------------------------

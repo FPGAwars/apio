@@ -24,19 +24,21 @@ def check_ini_file(apio_ini: Path, expected_vars: Dict[str, str]) -> None:
     assert conf.dict() == {"env": expected_vars}
 
 
-def test_modify(clirunner, configenv, validate_cliresult):
+def test_modify(click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok):
     """Test "apio modify" with different parameters"""
 
-    with clirunner.isolated_filesystem():
+    with click_cmd_runner.isolated_filesystem():
 
-        # -- Config the environment (conftest.configenv())
-        configenv()
+        # -- Config the apio test environment
+        setup_apio_test_env()
 
         apio_ini = Path("apio.ini")
         assert not exists(apio_ini)
 
         # -- Execute "apio modify --top-module my_module"
-        result = clirunner.invoke(cmd_modify, ["--top-module", "my_module"])
+        result = click_cmd_runner.invoke(
+            cmd_modify, ["--top-module", "my_module"]
+        )
         assert result.exit_code != 0, result.output
         assert "Error: 'apio.ini' not found" in result.output
         assert not exists(apio_ini)
@@ -60,7 +62,9 @@ def test_modify(clirunner, configenv, validate_cliresult):
         )
 
         # -- Execute "apio modify --board missed_board"
-        result = clirunner.invoke(cmd_modify, ["--board", "missed_board"])
+        result = click_cmd_runner.invoke(
+            cmd_modify, ["--board", "missed_board"]
+        )
         assert result.exit_code == 1, result.output
         assert "Error: no such board" in result.output
         check_ini_file(
@@ -73,8 +77,10 @@ def test_modify(clirunner, configenv, validate_cliresult):
         )
 
         # -- Execute "apio modify --board alhambra-ii"
-        result = clirunner.invoke(cmd_modify, ["--board", "alhambra-ii"])
-        validate_cliresult(result)
+        result = click_cmd_runner.invoke(
+            cmd_modify, ["--board", "alhambra-ii"]
+        )
+        assert_apio_cmd_ok(result)
         assert "was modified successfully." in result.output
         check_ini_file(
             apio_ini,
@@ -86,8 +92,10 @@ def test_modify(clirunner, configenv, validate_cliresult):
         )
 
         # -- Execute "apio modify --top-module my_main"
-        result = clirunner.invoke(cmd_modify, ["--top-module", "my_main"])
-        validate_cliresult(result)
+        result = click_cmd_runner.invoke(
+            cmd_modify, ["--top-module", "my_main"]
+        )
+        assert_apio_cmd_ok(result)
         assert "was modified successfully." in result.output
         check_ini_file(
             apio_ini,
@@ -99,10 +107,10 @@ def test_modify(clirunner, configenv, validate_cliresult):
         )
 
         # -- Execute "apio modify --board icezum --top-module my_top"
-        result = clirunner.invoke(
+        result = click_cmd_runner.invoke(
             cmd_modify, ["--board", "icezum", "--top-module", "my_top"]
         )
-        validate_cliresult(result)
+        assert_apio_cmd_ok(result)
         assert "was modified successfully." in result.output
         check_ini_file(
             apio_ini,

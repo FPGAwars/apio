@@ -293,5 +293,18 @@
             },
             "justMyCode": false,
         },
+        {
+            "name": "Apio test",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "-s",
+                "test/commands/test_build.py"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "cwd": "${workspaceFolder}"
+        },
     ]
 }
