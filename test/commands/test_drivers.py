@@ -7,7 +7,7 @@ from apio.commands.drivers import cli as cmd_drivers
 
 
 def test_drivers(click_cmd_runner, assert_apio_cmd_ok, setup_apio_test_env):
-    """Test "apio drivers" with different parameters"""
+    """Test "apio drivers" """
 
     with click_cmd_runner.isolated_filesystem():
 
@@ -17,3 +17,13 @@ def test_drivers(click_cmd_runner, assert_apio_cmd_ok, setup_apio_test_env):
         # -- Execute "apio drivers"
         result = click_cmd_runner.invoke(cmd_drivers)
         assert_apio_cmd_ok(result)
+
+        # -- Execute "apio --ftdi-install, --serial-install"
+        result = click_cmd_runner.invoke(
+            cmd_drivers, ["--ftdi-install", "--serial-install"]
+        )
+        assert result.exit_code == 1, result.output
+        assert (
+            "Error: [--ftdi-install, --serial-install] "
+            "are mutually exclusive" in result.output
+        )
