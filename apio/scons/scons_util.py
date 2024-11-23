@@ -773,7 +773,12 @@ def set_up_cleanup(env: SConsEnvironment) -> None:
 
     # -- Get the list of all files to clean. Scons adds to the list non
     # -- existing files from other targets it encountered.
-    files_to_clean = env.Glob(f"{BUILD_DIR_SEP}*") + env.Glob("zadig.ini")
+    files_to_clean = (
+        env.Glob(f"{BUILD_DIR_SEP}*")
+        + env.Glob("zadig.ini")
+        + env.Glob(".sconsign.dblite")
+        + env.Glob("_build")
+    )
 
     # -- TODO: Remove the cleanup of legacy files after releasing the first
     # -- release with the _build directory.
@@ -792,6 +797,7 @@ def set_up_cleanup(env: SConsEnvironment) -> None:
             "Deleting also left-over files from previous release.",
             fg="yellow",
         )
+
         files_to_clean.extend(legacy_files_to_clean)
 
     # -- Create a dummy target.  I
