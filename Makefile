@@ -22,13 +22,15 @@ lint:
 	python -m tox -e lint
 
 
-# Tests only, no lint, single python version.
+# Offline tests only, no lint, single python version, skipping online tests.
+# This is a partial but fast test.
 test:	
-	python -m tox --skip-missing-interpreters false -e py312
+	python -m tox --skip-missing-interpreters false -e py312 -- --offline
 
 
-# Tests and lint, single python version.
-# Run this before submitting code.
+# Tests and lint, single python version, all tests including online..
+# This is a thorough but slow test and sufficient for testign before 
+# commiting changes run this before submitting code.
  check:	
 	python -m tox --skip-missing-interpreters false -e lint,py312
 
