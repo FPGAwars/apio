@@ -21,8 +21,9 @@ from apio import util
 class ArchiveBase:
     """DOC: TODO"""
 
-    def __init__(self, arhfileobj):
+    def __init__(self, arhfileobj, is_tar_file: bool):
         self._afo = arhfileobj
+        self._is_tar_file = is_tar_file
 
     def get_items(self):  # pragma: no cover
         """DOC: TODO"""
@@ -34,7 +35,13 @@ class ArchiveBase:
 
         if hasattr(item, "filename") and item.filename.endswith(".gitignore"):
             return
-        self._afo.extract(item, dest_dir)
+        if self._is_tar_file and util.get_python_ver_tuple() >= (3, 12, 0):
+            # -- Special case for avoiding the tar deprecation warning. Search
+            # -- 'extraction_filter' in the page
+            # -- https://docs.python.org/3/library/tarfile.html
+            self._afo.extract(item, dest_dir, filter="fully_trusted")
+        else:
+            self._afo.extract(item, dest_dir)
         self.after_extract(item, dest_dir)
 
     def after_extract(self, item, dest_dir):
@@ -48,7 +55,7 @@ class TARArchive(ArchiveBase):
         # R1732: Consider using 'with' for resource-allocating operations
         # (consider-using-with)
         # pylint: disable=R1732
-        ArchiveBase.__init__(self, tarfile_open(archpath))
+        ArchiveBase.__init__(self, tarfile_open(archpath), is_tar_file=True)
 
     def get_items(self):
         return self._afo.getmembers()
@@ -61,7 +68,7 @@ class ZIPArchive(ArchiveBase):
         # R1732: Consider using 'with' for resource-allocating operations
         # (consider-using-with)
         # pylint: disable=R1732
-        ArchiveBase.__init__(self, ZipFile(archpath))
+        ArchiveBase.__init__(self, ZipFile(archpath), is_tar_file=False)
 
     @staticmethod
     def preserve_permissions(item, dest_dir):

@@ -15,7 +15,7 @@ import json
 import shutil
 from enum import Enum
 from dataclasses import dataclass
-from typing import Optional, Any
+from typing import Optional, Any, Tuple
 import subprocess
 from threading import Thread
 from pathlib import Path
@@ -575,6 +575,11 @@ def get_python_version() -> str:
     """Return a string with the python version"""
 
     return f"{sys.version_info[0]}.{sys.version_info[1]}"
+
+
+def get_python_ver_tuple() -> Tuple[int, int, int]:
+    """Return a tuple with the python version. e.g. (3, 12, 1)."""
+    return sys.version_info[:3]
 
 
 def safe_click(text, *args, **kwargs):
