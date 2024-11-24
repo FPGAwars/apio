@@ -3,7 +3,7 @@
 """
 
 # -- apio sim entry point
-from apio.commands.sim import cli as cmd_sim
+from apio.commands.sim import cli as apio_sim
 
 
 def test_sim(click_cmd_runner, setup_apio_test_env):
@@ -18,6 +18,6 @@ def test_sim(click_cmd_runner, setup_apio_test_env):
         setup_apio_test_env()
 
         # -- apio sim --board icezum
-        result = click_cmd_runner.invoke(cmd_sim)
+        result = click_cmd_runner.invoke(apio_sim)
         assert result.exit_code != 0, result.output
         # -- TODO

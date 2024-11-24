@@ -3,7 +3,7 @@
 """
 
 # -- apio fpgas entry point
-from apio.commands.fpgas import cli as cmd_fpgas
+from apio.commands.fpgas import cli as apio_fpgas
 
 CUSTOM_FPGAS = """
 {
@@ -26,7 +26,7 @@ def test_fpgas_ok(click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok):
         setup_apio_test_env()
 
         # -- Execute "apio fpgas"
-        result = click_cmd_runner.invoke(cmd_fpgas)
+        result = click_cmd_runner.invoke(apio_fpgas)
         assert_apio_cmd_ok(result)
         # -- Note: pytest sees the piped version of the command's output.
         # -- Run 'apio fpgas' | cat' to reproduce it.
@@ -50,7 +50,7 @@ def test_custom_fpga(
             f.write(CUSTOM_FPGAS)
 
         # -- Execute "apio boards"
-        result = click_cmd_runner.invoke(cmd_fpgas)
+        result = click_cmd_runner.invoke(apio_fpgas)
         assert_apio_cmd_ok(result)
         # -- Note: pytest sees the piped version of the command's output.
         # -- Run 'apio build' | cat' to reproduce it.

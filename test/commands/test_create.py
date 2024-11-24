@@ -8,7 +8,7 @@ from typing import Dict
 from configobj import ConfigObj
 
 # -- apio create entry point
-from apio.commands.create import cli as cmd_create
+from apio.commands.create import cli as apio_create
 
 
 # R0801: Similar lines in 2 files
@@ -36,21 +36,21 @@ def test_create(click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok):
         assert not exists(apio_ini)
 
         # -- Execute "apio create"
-        result = click_cmd_runner.invoke(cmd_create)
+        result = click_cmd_runner.invoke(apio_create)
         assert result.exit_code != 0, result.output
         assert "Error: Missing option" in result.output
         assert not exists(apio_ini)
 
         # -- Execute "apio create --board missed_board"
         result = click_cmd_runner.invoke(
-            cmd_create, ["--board", "missed_board"]
+            apio_create, ["--board", "missed_board"]
         )
         assert result.exit_code == 1, result.output
         assert "Error: no such board" in result.output
         assert not exists(apio_ini)
 
         # -- Execute "apio create --board icezum"
-        result = click_cmd_runner.invoke(cmd_create, ["--board", "icezum"])
+        result = click_cmd_runner.invoke(apio_create, ["--board", "icezum"])
         assert_apio_cmd_ok(result)
         assert "file already exists" not in result.output
         assert "Do you want to replace it?" not in result.output
@@ -61,7 +61,7 @@ def test_create(click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok):
         # -- Execute "apio create --board alhambra-ii
         # --                      --top-module my_module" with 'y' input"
         result = click_cmd_runner.invoke(
-            cmd_create,
+            apio_create,
             ["--board", "alhambra-ii", "--top-module", "my_module"],
             input="y",
         )
@@ -78,7 +78,7 @@ def test_create(click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok):
         # --                      --top-module my_module
         # --                      --sayyse" with 'y' input
         result = click_cmd_runner.invoke(
-            cmd_create,
+            apio_create,
             ["--board", "icezum", "--top-module", "my_module", "--sayyes"],
         )
         assert_apio_cmd_ok(result)
@@ -90,7 +90,7 @@ def test_create(click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok):
         # -- Execute "apio create --board alhambra-ii
         # --                      --top-module my_module" with 'n' input
         result = click_cmd_runner.invoke(
-            cmd_create,
+            apio_create,
             ["--board", "alhambra-ii", "--top-module", "my_module"],
             input="n",
         )

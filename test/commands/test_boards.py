@@ -3,7 +3,7 @@
 """
 
 # -- apio boards entry point
-from apio.commands.boards import cli as cmd_boards
+from apio.commands.boards import cli as apio_boards
 
 CUSTOM_BOARDS = """
 {
@@ -34,7 +34,7 @@ def test_list_ok(click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok):
         setup_apio_test_env()
 
         # -- Execute "apio boards"
-        result = click_cmd_runner.invoke(cmd_boards)
+        result = click_cmd_runner.invoke(apio_boards)
         assert_apio_cmd_ok(result)
         # -- Note: pytest sees the piped version of the command's output.
         # -- Run 'apio build' | cat' to reproduce it.
@@ -59,7 +59,7 @@ def test_custom_board(
             f.write(CUSTOM_BOARDS)
 
         # -- Execute "apio boards"
-        result = click_cmd_runner.invoke(cmd_boards)
+        result = click_cmd_runner.invoke(apio_boards)
         assert_apio_cmd_ok(result)
         # -- Note: pytest sees the piped version of the command's output.
         # -- Run 'apio build' | cat' to reproduce it.

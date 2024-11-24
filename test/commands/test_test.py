@@ -3,7 +3,7 @@
 """
 
 # -- apio test entry point
-from apio.commands.sim import cli as cmd_test
+from apio.commands.sim import cli as apio_test
 
 
 def test_test(click_cmd_runner, setup_apio_test_env):
@@ -18,6 +18,6 @@ def test_test(click_cmd_runner, setup_apio_test_env):
         setup_apio_test_env()
 
         # -- Execute "apio test"
-        result = click_cmd_runner.invoke(cmd_test)
+        result = click_cmd_runner.invoke(apio_test)
         assert result.exit_code != 0, result.output
         # -- TODO

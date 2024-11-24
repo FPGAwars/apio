@@ -3,7 +3,7 @@
 """
 
 # -- apio examples entry point
-from apio.commands.examples import cli as cmd_examples
+from apio.commands.examples import cli as apio_examples
 
 
 def test_examples(click_cmd_runner, setup_apio_test_env):
@@ -15,7 +15,7 @@ def test_examples(click_cmd_runner, setup_apio_test_env):
         setup_apio_test_env()
 
         # -- Execute "apio examples"
-        result = click_cmd_runner.invoke(cmd_examples)
+        result = click_cmd_runner.invoke(apio_examples)
         assert result.exit_code == 1, result.output
         assert (
             "One of [--list, --fetch-dir, --fetch-files] "
@@ -23,20 +23,20 @@ def test_examples(click_cmd_runner, setup_apio_test_env):
         )
 
         # -- Execute "apio examples --list"
-        result = click_cmd_runner.invoke(cmd_examples, ["--list"])
+        result = click_cmd_runner.invoke(apio_examples, ["--list"])
         assert result.exit_code == 1, result.output
         assert "Error: package 'examples' is not installed" in result.output
         assert "apio packages --install --force examples" in result.output
 
         # -- Execute "apio examples --fetch-dir dir"
-        result = click_cmd_runner.invoke(cmd_examples, ["--fetch-dir", "dir"])
+        result = click_cmd_runner.invoke(apio_examples, ["--fetch-dir", "dir"])
         assert result.exit_code == 1, result.output
         assert "Error: package 'examples' is not installed" in result.output
         assert "apio packages --install --force examples" in result.output
 
         # -- Execute "apio examples --files file"
         result = click_cmd_runner.invoke(
-            cmd_examples, ["--fetch-files", "file"]
+            apio_examples, ["--fetch-files", "file"]
         )
         assert result.exit_code == 1, result.output
         assert "Error: package 'examples' is not installed" in result.output

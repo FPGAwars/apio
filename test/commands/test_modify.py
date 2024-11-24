@@ -8,7 +8,7 @@ from typing import Dict
 from configobj import ConfigObj
 
 # -- apio modify entry point
-from apio.commands.modify import cli as cmd_modify
+from apio.commands.modify import cli as apio_modify
 
 
 # R0801: Similar lines in 2 files
@@ -37,7 +37,7 @@ def test_modify(click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok):
 
         # -- Execute "apio modify --top-module my_module"
         result = click_cmd_runner.invoke(
-            cmd_modify, ["--top-module", "my_module"]
+            apio_modify, ["--top-module", "my_module"]
         )
         assert result.exit_code != 0, result.output
         assert "Error: 'apio.ini' not found" in result.output
@@ -63,7 +63,7 @@ def test_modify(click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok):
 
         # -- Execute "apio modify --board missed_board"
         result = click_cmd_runner.invoke(
-            cmd_modify, ["--board", "missed_board"]
+            apio_modify, ["--board", "missed_board"]
         )
         assert result.exit_code == 1, result.output
         assert "Error: no such board" in result.output
@@ -78,7 +78,7 @@ def test_modify(click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok):
 
         # -- Execute "apio modify --board alhambra-ii"
         result = click_cmd_runner.invoke(
-            cmd_modify, ["--board", "alhambra-ii"]
+            apio_modify, ["--board", "alhambra-ii"]
         )
         assert_apio_cmd_ok(result)
         assert "was modified successfully." in result.output
@@ -93,7 +93,7 @@ def test_modify(click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok):
 
         # -- Execute "apio modify --top-module my_main"
         result = click_cmd_runner.invoke(
-            cmd_modify, ["--top-module", "my_main"]
+            apio_modify, ["--top-module", "my_main"]
         )
         assert_apio_cmd_ok(result)
         assert "was modified successfully." in result.output
@@ -108,7 +108,7 @@ def test_modify(click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok):
 
         # -- Execute "apio modify --board icezum --top-module my_top"
         result = click_cmd_runner.invoke(
-            cmd_modify, ["--board", "icezum", "--top-module", "my_top"]
+            apio_modify, ["--board", "icezum", "--top-module", "my_top"]
         )
         assert_apio_cmd_ok(result)
         assert "was modified successfully." in result.output

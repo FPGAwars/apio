@@ -5,7 +5,7 @@
 import pytest
 
 # -- apio upgrade entry point
-from apio.commands.upgrade import cli as cmd_upgrade
+from apio.commands.upgrade import cli as apio_upgrade
 
 
 def test_upgrade(
@@ -24,5 +24,5 @@ def test_upgrade(
         setup_apio_test_env()
 
         # -- Execute "apio upgrade"
-        result = click_cmd_runner.invoke(cmd_upgrade)
+        result = click_cmd_runner.invoke(apio_upgrade)
         assert_apio_cmd_ok(result)

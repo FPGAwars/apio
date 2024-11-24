@@ -3,7 +3,7 @@
 """
 
 # -- apio lint entry point
-from apio.commands.lint import cli as cmd_lint
+from apio.commands.lint import cli as apio_lint
 
 
 def test_lint_no_packages(
@@ -20,7 +20,7 @@ def test_lint_no_packages(
         write_apio_ini({"board": "icezum", "top-module": "main"})
 
         # -- Execute "apio lint"
-        result = click_cmd_runner.invoke(cmd_lint)
+        result = click_cmd_runner.invoke(apio_lint)
         assert result.exit_code == 1, result.output
         assert (
             "Error: package 'oss-cad-suite' is not installed" in result.output

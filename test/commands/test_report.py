@@ -3,7 +3,7 @@
 """
 
 # -- apio report entry point
-from apio.commands.report import cli as cmd_report
+from apio.commands.report import cli as apio_report
 
 
 # R0801: Similar lines in 2 files
@@ -20,7 +20,7 @@ def test_report(click_cmd_runner, setup_apio_test_env):
         setup_apio_test_env()
 
         # -- Execute "apio report"
-        result = click_cmd_runner.invoke(cmd_report)
+        result = click_cmd_runner.invoke(apio_report)
 
         # -- Check the result
         assert result.exit_code != 0, result.output
@@ -39,7 +39,7 @@ def test_report_board(click_cmd_runner, setup_apio_test_env):
         setup_apio_test_env()
 
         # -- Execute "apio report"
-        result = click_cmd_runner.invoke(cmd_report, ["--board", "icezum"])
+        result = click_cmd_runner.invoke(apio_report, ["--board", "icezum"])
 
         # -- Check the result
         assert result.exit_code != 0, result.output

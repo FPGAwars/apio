@@ -3,7 +3,7 @@
 """
 
 # -- apio verify entry point
-from apio.commands.verify import cli as cmd_verify
+from apio.commands.verify import cli as apio_verify
 
 
 def test_verify(click_cmd_runner, setup_apio_test_env):
@@ -18,7 +18,7 @@ def test_verify(click_cmd_runner, setup_apio_test_env):
         setup_apio_test_env()
 
         # -- Execute "apio verify"
-        result = click_cmd_runner.invoke(cmd_verify, ["--board", "icezum"])
+        result = click_cmd_runner.invoke(apio_verify, ["--board", "icezum"])
 
         # -- Check the result
         assert result.exit_code != 0, result.output
