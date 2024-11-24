@@ -91,6 +91,11 @@ class ApioContext:
                 fg="yellow",
             )
 
+        # -- A flag to indicate if the system env was already set in this
+        # -- apio session. Used to avoid multiple repeated settings that
+        # -- make the path longer and longer.
+        self.env_was_already_set = False
+
         # -- Save the load project status.
         self._load_project = load_project
 

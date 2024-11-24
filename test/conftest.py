@@ -7,7 +7,6 @@ TEST configuration file
 #   https://docs.python.org/3/library/os.html#os.environ
 from os import environ, listdir
 from pathlib import Path
-from dataclasses import dataclass
 from typing import Dict
 
 import pytest
@@ -24,26 +23,6 @@ from click.testing import Result
 DEBUG = True
 
 
-@dataclass(frozen=True)
-class TestValues:
-    """Contains apio tests related values."""
-
-    test_dir: Path
-    home_dir: Path
-    packages_dir: Path
-
-    @staticmethod
-    def get():
-        """Returns a filled in TestValues object."""
-        # -- Current directory is the project dir.
-        test_dir = Path.cwd()
-        # -- Using unicode and space to verify that they are handled correctly.
-        home_dir = test_dir / " ñ"
-        packages_dir = home_dir / "packages"
-
-        return TestValues(test_dir, home_dir, packages_dir)
-
-
 @pytest.fixture(scope="module")
 def click_cmd_runner():
     """A pytest fixture that provides tests with a click commands runner."""
@@ -55,33 +34,56 @@ def setup_apio_test_env():
     """An pytest fixture that provides tests with a function to set up the
     apio test environment. By default, the tests run in a temporaly folder
     (in /tmp/xxxxx).
+
+    Should be called within the click_cmd_runner.isolated_filesystem() scope.
     """
 
     def decorator():
-        test_values = TestValues.get()
+        # -- Current directory is the root test dir. Should be empty.
+        test_dir = Path.cwd()
+        assert not listdir(test_dir)
+
+        # -- Using unicode and space to verify that they are handled correctly.
+        # funny_marker = " fuññy "
+        funny_marker = "fuññy"
+        funny_dir = test_dir / funny_marker
+        funny_dir.mkdir(parents=False, exist_ok=False)
+
+        # -- Apio dirs
+        apio_proj_dir = funny_dir / "proj"
+        apio_home_dir = funny_dir / "apio"
+        apio_packages_dir = apio_home_dir / "packages"
 
         if DEBUG:
             print("")
             print("  --> setup_apio_test_env():")
-            print(f"     test dir          : {str(test_values.test_dir)}")
-            print(f"     apio home dir     : {str(test_values.home_dir)}")
-            print(
-                "     apio packages dir : " f"{str(test_values.packages_dir)}"
-            )
+            print(f"     test dir          : {str(test_dir)}")
+            print(f"     apio proj dir     : {str(apio_proj_dir)}")
+            print(f"     apio home dir     : {str(apio_home_dir)}")
+            print(f"     apio packages dir : {str(apio_packages_dir)}")
 
-        # -- Since the test run in a fresh temp directory, we expect it to be
-        # -- empty with no left over files (such as apio.ini) from a previous
-        # -- tests.
-        project_dir_content = listdir(".")
-        assert not project_dir_content, project_dir_content
+            # pylint: disable=fixme
+            # TODO: solve the problem of the over growing PATH because we run
+            # multiple apio invocations within one pytest process.
+            print()
+            print(f"PATH={environ['PATH']}")
+            print()
 
         # -- Set the apio home dir and apio packages dir to
         # -- this test folder. Apio uses these as an override to the defaults.
-        environ["APIO_HOME_DIR"] = str(test_values.home_dir)
-        environ["APIO_PACKAGES_DIR"] = str(test_values.packages_dir)
+        environ["APIO_HOME_DIR"] = str(apio_home_dir)
+        environ["APIO_PACKAGES_DIR"] = str(apio_packages_dir)
 
         # -- TODO: This looks like a flag. Describe what it do.
         environ["TESTING"] = ""
+
+        # -- Apio dirs do not exist yet.
+        assert not apio_proj_dir.exists()
+        assert not apio_home_dir.exists()
+        assert not apio_packages_dir.exists()
+
+        # -- All done, return the values.
+        return (apio_proj_dir, apio_home_dir, apio_packages_dir)
 
     return decorator
 
@@ -153,25 +155,3 @@ def offline_flag(request):
     test functionality that requires internet connectivity.
     """
     return request.config.getoption("--offline")
-
-
-@pytest.fixture(scope="session")
-def apio_home_dir():
-    """A pytest fixture that provide function that returns a path to the test
-    apio home dir."""
-
-    def decorator():
-        return TestValues.get().home_dir
-
-    return decorator
-
-
-@pytest.fixture(scope="session")
-def apio_packages_dir():
-    """A pytest fixture that provide function that returns a path to the test
-    apio packages dir."""
-
-    def decorator():
-        return TestValues.get().packages_dir
-
-    return decorator
