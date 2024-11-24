@@ -43,16 +43,19 @@ def setup_apio_test_env():
         test_dir = Path.cwd()
         assert not listdir(test_dir)
 
+        # -- TODO: Having a space in the funny directory name fails
+        # -- the test. Fix it and change to " fuññy ". The problem seems to be
+        # -- in the invocation of iverilog by 'apio test' when the packges dir
+        # -- contain a space.
+        #
         # -- Using unicode and space to verify that they are handled correctly.
-        # funny_marker = " fuññy "
-        funny_marker = "fuññy"
-        funny_dir = test_dir / funny_marker
+        funny_dir = test_dir / "fuññy"
         funny_dir.mkdir(parents=False, exist_ok=False)
 
         # -- Apio dirs
         apio_proj_dir = funny_dir / "proj"
         apio_home_dir = funny_dir / "apio"
-        apio_packages_dir = apio_home_dir / "packages"
+        apio_packages_dir = funny_dir / "packages"
 
         if DEBUG:
             print("")
