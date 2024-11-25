@@ -48,6 +48,7 @@ from SCons.Script import (
 )
 from apio.scons.scons_util import (
     TARGET,
+    BUILD_DIR,
     SConstructId,
     is_testbench,
     basename,
@@ -168,9 +169,10 @@ env.Append(BUILDERS={"PnR": pnr_builder})
 # -- Builder (icepack, bitstream generator).
 # -- hardware.config -> hardware.bit.
 bitstream_builder = Builder(
-    action="ecppack --compress --db {0} {1} $SOURCE hardware.bit".format(
+    action="ecppack --compress --db {0} {1} $SOURCE {2}/hardware.bit".format(
         DATABASE_PATH,
         "" if not FPGA_IDCODE else f"--idcode {FPGA_IDCODE}",
+        BUILD_DIR,
     ),
     suffix=".bit",
     src_suffix=".config",

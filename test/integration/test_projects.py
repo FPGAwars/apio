@@ -21,8 +21,17 @@ from apio.commands.examples import cli as apio_examples
 
 # R0801: Similar lines in 2 files
 # pylint: disable=R0801
-def test_project_ice40(apio_runner: ApioRunner):
-    """Tests building and testing a project."""
+def _test_project(
+    apio_runner: ApioRunner,
+    *,
+    example: str,
+    testbench: str,
+    binary: str,
+    report_item: str,
+):
+    """A common project integration test. Invoked per each tested
+    architecture.
+    """
 
     # -- If the option 'offline' is passed, the test is skip
     # -- (This test is slow and requires internet connectivity)
@@ -52,10 +61,10 @@ def test_project_ice40(apio_runner: ApioRunner):
         # -- Fetch example files to current directory
         result = apio_runner.invoke(
             apio_examples,
-            ["--fetch-files", "Alhambra-II/ledon"],
+            ["--fetch-files", example],
         )
         apio_runner.assert_ok(result)
-        assert "Copying Alhambra-II/ledon example files" in result.output
+        assert f"Copying {example} example files" in result.output
         assert "have been successfully created!" in result.output
         assert getsize("apio.ini")
 
@@ -66,7 +75,7 @@ def test_project_ice40(apio_runner: ApioRunner):
         result = apio_runner.invoke(apio_build)
         apio_runner.assert_ok(result)
         assert "SUCCESS" in result.output
-        assert getsize("_build/hardware.bin")
+        assert getsize(f"_build/{binary}")
 
         # -- Lint
         result = apio_runner.invoke(apio_lint)
@@ -78,14 +87,14 @@ def test_project_ice40(apio_runner: ApioRunner):
         result = apio_runner.invoke(apio_test)
         apio_runner.assert_ok(result)
         assert "SUCCESS" in result.output
-        assert getsize("_build/ledon_tb.out")
-        assert getsize("_build/ledon_tb.vcd")
+        assert getsize(f"_build/{testbench}.out")
+        assert getsize(f"_build/{testbench}.vcd")
 
         # -- Report
         result = apio_runner.invoke(apio_report)
         apio_runner.assert_ok(result)
         assert "SUCCESS" in result.output
-        assert "ICESTORM_LC:" in result.output
+        assert report_item in result.output
         assert getsize("_build/hardware.pnr")
 
         # -- Graph svg
@@ -103,3 +112,25 @@ def test_project_ice40(apio_runner: ApioRunner):
 
         # -- Check that we have exactly the original project files,
         assert set(listdir(".")) == set(project_files)
+
+
+def test_project_ice40(apio_runner: ApioRunner):
+    """Tests building and testing an ice40  project."""
+    _test_project(
+        apio_runner,
+        example="Alhambra-II/ledon",
+        testbench="ledon_tb",
+        binary="hardware.bin",
+        report_item="ICESTORM_LC:",
+    )
+
+
+def test_project_ecp5(apio_runner: ApioRunner):
+    """Tests building and testing an ecp5 project."""
+    _test_project(
+        apio_runner,
+        example="ColorLight-5A-75B-V8/Ledon",
+        testbench="ledon_tb",
+        binary="hardware.bit",
+        report_item="ALU54B:",
+    )
