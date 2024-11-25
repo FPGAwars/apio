@@ -2,6 +2,9 @@
 Test for command apio
 """
 
+from test.conftest import ApioRunner
+
+
 # -----------------------------------------------------------------------
 # -- RUN manually:
 # --   pytest -v test/test_apio.py
@@ -14,34 +17,31 @@ Test for command apio
 # --   pytest -v -s test/test_apio.py::test_apio
 # ------------------------------------------------------------------------
 
-from click.testing import CliRunner
 
 # -- Import the cli entry point: apio/__main__.py
 from apio.__main__ import cli as cmd_apio
 
 
-def test_apio(
-    click_cmd_runner: CliRunner, assert_apio_cmd_ok, setup_apio_test_env
-):
+def test_apio(apio_runner: ApioRunner):
     """Test command "apio" without arguments
     $ apio
     Usage: apio [OPTIONS] COMMAND [ARGS]...
     [...]
     """
 
-    with click_cmd_runner.isolated_filesystem():
+    with apio_runner.in_disposable_temp_dir():
 
         # -- Config the apio test environment
-        setup_apio_test_env()
+        apio_runner.setup_env()
 
         # -- Invoke the apio command
-        result = click_cmd_runner.invoke(cmd_apio)
+        result = apio_runner.invoke(cmd_apio)
 
         # -- Check that everything is ok
-        assert_apio_cmd_ok(result)
+        apio_runner.assert_ok(result)
 
 
-def test_apio_wrong_command(click_cmd_runner: CliRunner, setup_apio_test_env):
+def test_apio_wrong_command(apio_runner: ApioRunner):
     """Test apio command with an invalid command
     $ apio wrong
     Usage: apio [OPTIONS] COMMAND [ARGS]...
@@ -50,13 +50,13 @@ def test_apio_wrong_command(click_cmd_runner: CliRunner, setup_apio_test_env):
     Error: No such command 'wrong'.
     """
 
-    with click_cmd_runner.isolated_filesystem():
+    with apio_runner.in_disposable_temp_dir():
 
         # -- Config the environment
-        setup_apio_test_env()
+        apio_runner.setup_env()
 
         # -- Execute "apio mmissing_command"
-        result = click_cmd_runner.invoke(cmd_apio, ["wrong_command"])
+        result = apio_runner.invoke(cmd_apio, ["wrong_command"])
 
         # -- Check the error code
         assert result.exit_code == 2, result.output

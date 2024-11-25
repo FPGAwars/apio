@@ -2,20 +2,22 @@
   Test for the "apio drivers" command
 """
 
+from test.conftest import ApioRunner
+
 # -- apio drivers entry point
 from apio.commands.drivers import cli as apio_drivers
 
 
-def test_drivers(click_cmd_runner, setup_apio_test_env):
+def test_drivers(apio_runner: ApioRunner):
     """Test "apio drivers" """
 
-    with click_cmd_runner.isolated_filesystem():
+    with apio_runner.in_disposable_temp_dir():
 
         # -- Config the apio test environment
-        setup_apio_test_env()
+        apio_runner.setup_env()
 
         # -- Execute "apio drivers"
-        result = click_cmd_runner.invoke(apio_drivers)
+        result = apio_runner.invoke(apio_drivers)
         assert result.exit_code == 1
         assert (
             "Error: Specify one of [--ftdi-install, --ftdi-uninstall, "
@@ -23,7 +25,7 @@ def test_drivers(click_cmd_runner, setup_apio_test_env):
         )
 
         # -- Execute "apio --ftdi-install, --serial-install"
-        result = click_cmd_runner.invoke(
+        result = apio_runner.invoke(
             apio_drivers, ["--ftdi-install", "--serial-install"]
         )
         assert result.exit_code == 1, result.output

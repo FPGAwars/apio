@@ -2,20 +2,22 @@
   Test for the "apio examples" command
 """
 
+from test.conftest import ApioRunner
+
 # -- apio examples entry point
 from apio.commands.examples import cli as apio_examples
 
 
-def test_examples(click_cmd_runner, setup_apio_test_env):
+def test_examples(apio_runner: ApioRunner):
     """Test "apio examples" with different parameters"""
 
-    with click_cmd_runner.isolated_filesystem():
+    with apio_runner.in_disposable_temp_dir():
 
         # -- Config the apio test environment
-        setup_apio_test_env()
+        apio_runner.setup_env()
 
         # -- Execute "apio examples"
-        result = click_cmd_runner.invoke(apio_examples)
+        result = apio_runner.invoke(apio_examples)
         assert result.exit_code == 1, result.output
         assert (
             "Error: Specify one of [--list, --fetch-dir, --fetch-files]"
@@ -23,21 +25,19 @@ def test_examples(click_cmd_runner, setup_apio_test_env):
         )
 
         # -- Execute "apio examples --list"
-        result = click_cmd_runner.invoke(apio_examples, ["--list"])
+        result = apio_runner.invoke(apio_examples, ["--list"])
         assert result.exit_code == 1, result.output
         assert "Error: package 'examples' is not installed" in result.output
         assert "apio packages --install --force examples" in result.output
 
         # -- Execute "apio examples --fetch-dir dir"
-        result = click_cmd_runner.invoke(apio_examples, ["--fetch-dir", "dir"])
+        result = apio_runner.invoke(apio_examples, ["--fetch-dir", "dir"])
         assert result.exit_code == 1, result.output
         assert "Error: package 'examples' is not installed" in result.output
         assert "apio packages --install --force examples" in result.output
 
         # -- Execute "apio examples --files file"
-        result = click_cmd_runner.invoke(
-            apio_examples, ["--fetch-files", "file"]
-        )
+        result = apio_runner.invoke(apio_examples, ["--fetch-files", "file"])
         assert result.exit_code == 1, result.output
         assert "Error: package 'examples' is not installed" in result.output
         assert "apio packages --install --force examples" in result.output
