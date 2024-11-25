@@ -18,8 +18,8 @@ def test_examples(click_cmd_runner, setup_apio_test_env):
         result = click_cmd_runner.invoke(apio_examples)
         assert result.exit_code == 1, result.output
         assert (
-            "One of [--list, --fetch-dir, --fetch-files] "
-            "must be specified" in result.output
+            "Error: Specify one of [--list, --fetch-dir, --fetch-files]"
+            in result.output
         )
 
         # -- Execute "apio examples --list"

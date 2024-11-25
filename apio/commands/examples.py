@@ -90,8 +90,6 @@ def cli(
     """Manage verilog examples.\n
     Install with `apio packages --install examples`"""
 
-    cmd_ctx.get_help()
-
     # Make sure these params are exclusive.
     cmd_util.check_exactly_one_param(
         cmd_ctx, nameof(list_, fetch_dir, fetch_files)

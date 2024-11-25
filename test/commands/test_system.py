@@ -18,8 +18,9 @@ def test_system(click_cmd_runner, setup_apio_test_env):
         result = click_cmd_runner.invoke(apio_system)
         assert result.exit_code == 1, result.output
         assert (
-            "One of [--lsftdi, --lsusb, --lsserial, --info, --platforms] "
-            "must be specified" in result.output
+            "Specify one of "
+            "[--lsftdi, --lsusb, --lsserial, --info, --platforms]"
+            in result.output
         )
 
         # -- Execute "apio system --lsftdi"
