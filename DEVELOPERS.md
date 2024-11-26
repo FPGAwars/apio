@@ -1,6 +1,6 @@
-# Apio Developers Hints
+# Apio Developers Information
 
-This file is not intended for APIO users.
+This file is intended for APIO developers.
 
 ## Pre commit tests
 Before submitting a new commit, make sure to run successfuly the following command
@@ -9,6 +9,39 @@ in the root directory of the repository.:
 ```shell
 make check
 ```
+
+For complete tests with several python versions run the command below. 
+
+```shell
+make check_all
+```
+
+For quick tests that that don't load lengthy packagtes from the internet
+run the command below. It will skip all the tests that require internet 
+connection.
+
+```shell
+make test
+```
+
+For running the linters only, run
+
+```shell
+make lint
+```
+
+## Test coverage
+
+When running any of the commands below, a test coverage is generated in the
+``htmlcov``, to view it open ``htmlcov/index.html`` it with a browser. The ``htmldev`` directory is not checked in the apio repository.
+
+```
+make test          // Partial coverage by offline tests
+make check         // Full coverage
+make check_all     // Full coverage by the last python env run.
+```
+
+
 
 ## Running an individual APIO test
 
@@ -31,7 +64,7 @@ python apio_run.py build --project_dir ~/projects/fpga/repo/hdl
 ## Running apio in the Visual Studio Code debugger.
 
 The ``apio`` repository contains at its root the file ``.vscode/launch.json`` with debug
-target for most of the ``apio`` commands. Make sure to open the roo folder of the repository for VSC to recognize the targets file. To select the debug target, click on the debug icon on the left sidebar and this will display above a pull down menu with the available debug target and a start icon.
+target for most of the ``apio`` commands. Make sure to open the root folder of the repository for VSC to recognize the targets file. To select the debug target, click on the debug icon on the left sidebar and this will display above a pull down menu with the available debug target and a start icon.
 
 [NOTE] This method doesn't not work for debugging the SConstruct scripts since they are run as subprocesses of the apio process. For debugging SConstruct scripts see the next section.
 
