@@ -14,6 +14,7 @@ import click
 import requests
 
 from apio import util
+from apio.apio_context import ApioContext
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
 
@@ -37,7 +38,7 @@ class Installer:
     def __init__(
         self,
         package: str,
-        apio_ctx=None,
+        apio_ctx: ApioContext = None,
         modifiers=Modifiers(force=False, checkversion=True, verbose=False),
     ):
         """Class initialization. Parameters:
@@ -94,7 +95,7 @@ class Installer:
         # --(It is defined in the resources/packages.json file)
         if self.package in self.apio_ctx.platform_packages:
             # -- Store the package dir
-            self.packages_dir = util.get_home_dir() / dirname
+            self.packages_dir = apio_ctx.packages_dir / dirname
 
             # Get the metadata of the given package
             package_info = self.apio_ctx.platform_packages[self.package]
@@ -141,7 +142,7 @@ class Installer:
                 self.package in self.apio_ctx.profile.packages
                 and modifiers.checkversion is False
             ):
-                self.packages_dir = util.get_home_dir() / dirname
+                self.packages_dir = apio_ctx.home_dir / dirname
 
                 self.package_folder_name = "toolchain-" + package
 

@@ -330,7 +330,7 @@ def scan_packages(apio_ctx: ApioContext) -> PackageScanResults:
             result.orphan_package_ids.append(package_id)
 
     # -- Scan the packages directory and identify orphan dirs and files.
-    for path in util.get_packages_dir().glob("*"):
+    for path in apio_ctx.packages_dir.glob("*"):
         base_name = os.path.basename(path)
         if path.is_dir():
             if base_name not in platform_folder_names:

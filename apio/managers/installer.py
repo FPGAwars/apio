@@ -296,14 +296,13 @@ def install_package(
         print(f"Download URL: {download_url}")
 
     # -- Prepare the packages directory.
-    packages_dir = util.get_packages_dir()
-    packages_dir.mkdir(exist_ok=True)
+    apio_ctx.packages_dir.mkdir(exist_ok=True)
 
     # -- Prepare the package directory.
     package_dir = apio_ctx.get_package_dir(package_name)
 
     # -- Downlod the package file from the remote server.
-    local_file = _download_package_file(download_url, packages_dir)
+    local_file = _download_package_file(download_url, apio_ctx.packages_dir)
     if verbose:
         print(f"Local file: {local_file}")
 
@@ -319,14 +318,14 @@ def install_package(
         # -- Case 1: The package include a top level wrapper directory.
         #
         # -- Unpack the package one level up, in the packages directory.
-        _unpack_package_file(local_file, packages_dir)
+        _unpack_package_file(local_file, apio_ctx.packages_dir)
 
         # -- The uncompressed name may contain a %V placeholder, Replace it
         # -- with target version.
         uncompressed_name = uncompressed_name.replace("%V", target_version)
 
         # -- Construct the local path of the wrapper dir.
-        wrapper_dir = packages_dir / uncompressed_name
+        wrapper_dir = apio_ctx.packages_dir / uncompressed_name
 
         # -- Rename the wrapper dir to the package dir.
         if verbose:
@@ -427,9 +426,9 @@ def fix_packages(
     for dir_name in scan.orphan_dir_names:
         if verbose:
             print(f"Deleting unknown dir '{dir_name}'")
-        # -- Sanity check. Since get_packages_dir() guarranted to include
+        # -- Sanity check. Since apio_ctx.packages_dir is guarranted to include
         # -- the word packages, this can fail only due to programming error.
-        dir_path = util.get_packages_dir() / dir_name
+        dir_path = apio_ctx.packages_dir / dir_name
         assert "packages" in str(dir_path).lower(), dir_path
         # -- Delete.
         shutil.rmtree(dir_path)
@@ -437,9 +436,10 @@ def fix_packages(
     for file_name in scan.orphan_file_names:
         if verbose:
             print(f"Deleting unknown file '{file_name}'")
-        # -- Sanity check. Since get_packages_dir() guarranted to include
-        # -- the word packages, this can fail only due to programming error.
-        file_path = util.get_packages_dir() / file_name
+        # -- Sanity check. Since apio_ctx.packages_dir is guarranted to
+        # -- include the word packages, this can fail only due to programming
+        # -- error.
+        file_path = apio_ctx.packages_dir / file_name
         assert "packages" in str(file_path).lower(), dir_path
         # -- Delete.
         file_path.unlink()

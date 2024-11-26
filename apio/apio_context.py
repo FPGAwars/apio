@@ -8,6 +8,7 @@
 
 import sys
 import json
+import re
 import platform
 from collections import OrderedDict
 import shutil
@@ -101,9 +102,18 @@ class ApioContext:
 
         # -- Maps the optional project_dir option to a path.
         self.project_dir: Path = util.get_project_dir(project_dir)
+        ApioContext._check_no_spaces_in_dir(self.project_dir, "project")
+
+        # -- Determine apio home dir
+        self.home_dir: Path = ApioContext._get_home_dir()
+        ApioContext._check_no_spaces_in_dir(self.home_dir, "home")
+
+        # -- Determine apio home dir
+        self.packages_dir: Path = ApioContext._get_packages_dir(self.home_dir)
+        ApioContext._check_no_spaces_in_dir(self.packages_dir, "packages")
 
         # -- Profile information, from ~/.apio/profile.json
-        self.profile = Profile()
+        self.profile = Profile(self.home_dir)
 
         # -- Read the platforms information.
         self.platforms = self._load_resource(PLATFORMS_JSON)
@@ -115,7 +125,7 @@ class ApioContext:
         self.all_packages = self._load_resource(PACKAGES_JSON)
 
         # -- Expand in place the env templates in all_packages.
-        ApioContext._resolve_package_envs(self.all_packages)
+        ApioContext._resolve_package_envs(self.all_packages, self.packages_dir)
 
         # The subset of packages that are applicable to this platform.
         self.platform_packages = self._select_packages_for_platform(
@@ -154,6 +164,23 @@ class ApioContext:
         if load_project:
             self._project = Project(self.project_dir)
             self._project.read()
+
+    @staticmethod
+    def _check_no_spaces_in_dir(dir_path: Path, subject: str):
+        """Give the user an early error message if their apio setup dir
+        contains white space. See https://github.com/FPGAwars/apio/issues/474
+        """
+        # -- Match a single white space in the dir path.
+        if re.search("\\s", str(dir_path)):
+            # -- Here space found. This is a fatal error since we don't hand
+            # -- it well later in the process.
+            click.secho(
+                f"Error: The apio {subject} directory path contains white "
+                "space.",
+                fg="red",
+            )
+            click.secho(f"'{str(dir_path)}'", fg="red")
+            sys.exit(1)
 
     def check_project_loaded(self):
         """Assert that context was created with project loading.."""
@@ -284,12 +311,13 @@ class ApioContext:
         raise RuntimeError(f"Invalid env template: [{template}]")
 
     @staticmethod
-    def _resolve_package_envs(packages: Dict[str, Dict]) -> None:
+    def _resolve_package_envs(
+        packages: Dict[str, Dict], packages_dir: Path
+    ) -> None:
         """Resolve in place the path and var value templates in the
         given packages dictionary. For example, %p is replaced with
         the package's absolute path."""
 
-        packages_dir = util.get_packages_dir()
         for _, package_config in packages.items():
 
             # -- Get the package root dir.
@@ -461,7 +489,7 @@ class ApioContext:
         """Returns the root path of a package with given name."""
 
         package_folder = self.get_package_folder_name(package_name)
-        package_dir = util.get_packages_dir() / package_folder
+        package_dir = self.packages_dir / package_folder
 
         return package_dir
 
@@ -580,3 +608,100 @@ class ApioContext:
     def is_windows(self) -> bool:
         """Returns True iff platform_id indicates windows."""
         return "windows" in self.platform_id
+
+    @staticmethod
+    def _get_home_dir() -> Path:
+        """Get the absolute apio home dir. This is the apio folder where the
+        profle is located and the packages are installed (unless
+        APIO_PACKAGES_DIR is used).
+        The apio home dir can be overridden using the APIO_HOME_DIR environment
+        varible or in the /etc/apio.json file (in
+        Debian). If not set, the user_HOME/.apio folder is used by default:
+        Ej. Linux:  /home/obijuan/.apio
+        If the folders does not exist, they are created
+        """
+
+        # -- Get the APIO_HOME_DIR env variable
+        # -- It returns None if it was not defined
+        apio_home_dir_env = env_options.get(
+            env_options.APIO_HOME_DIR, default=None
+        )
+
+        # -- Get the home dir. It is what the APIO_HOME_DIR env variable
+        # -- says, or the default folder if None
+        if apio_home_dir_env:
+            home_dir = Path(apio_home_dir_env)
+        else:
+            home_dir = Path.home() / ".apio"
+
+        # -- Make it absolute
+        home_dir = home_dir.absolute()
+
+        # -- Create the folder if it does not exist
+        try:
+            home_dir.mkdir(parents=True, exist_ok=True)
+        except PermissionError:
+            click.secho(
+                f"Error: no usable home directory {home_dir}", fg="red"
+            )
+            sys.exit(1)
+
+        # Return the home_dir as a Path
+        return home_dir
+
+    @staticmethod
+    def _get_packages_dir(home_dir: Path) -> Path:
+        """Return the base directory of apio packages.
+        Packages are installed in the following folder:
+        * Default: $APIO_HOME_DIR/packages
+        * $APIO_PACKAGES_DIR: if the APIO_PACKAGES_DIR env variable is set
+        * INPUT:
+            - pkg_name: Package name (Ex. 'examples')
+        * OUTPUT:
+            - The package absolute folder (PosixPath)
+            (Ex. '/home/obijuan/.apio/packages)
+            The absolute path of the returned directory is guaranteed to have
+            the word packages in it.
+        """
+
+        # -- Get the APIO_PACKAGES_DIR env variable
+        # -- It returns None if it was not defined
+        packaged_dir_override = env_options.get(env_options.APIO_PACKAGES_DIR)
+
+        # -- Handle override.
+        if packaged_dir_override:
+            # -- Verify that the override dir contains the word packages in its
+            # -- absolute path. This is a safety mechanism to prevent
+            # -- uninentional bulk deletions in unintended directories. We
+            # -- check it each time before we perform a package deletion.
+            path = Path(packaged_dir_override).absolute()
+            if "packages" not in str(path).lower():
+                click.secho(
+                    "Error: packages directory path does not contain the word "
+                    f"packages: {str(path)}",
+                    fg="red",
+                )
+                click.secho(
+                    "For safety reasons, if you use the environment variable "
+                    "APIO_PACKAGE_DIR to override\n"
+                    "the packages dir, the new directory must have the word "
+                    "'packages' (case insensitive)\n"
+                    "in its absolute path.",
+                    fg="yellow",
+                )
+                sys.exit(1)
+
+            # -- Override is OK. Use it as the packages dir.
+            packages_dir = Path(packaged_dir_override)
+
+        # -- Else, use the default value.
+        else:
+            # -- Ex '/home/obijuan/.apio/packages/tools-oss-cad-suite'
+            # -- Guaranteed to be absolute.
+            packages_dir = home_dir / "packages"
+
+        # -- Sanity check. If this fails, this is a programming error.
+        assert "packages" in str(packages_dir).lower(), packages_dir
+
+        # -- All done.
+        return packages_dir

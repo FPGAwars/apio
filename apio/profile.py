@@ -9,7 +9,6 @@ import json
 from pathlib import Path
 import click
 import semantic_version
-from apio import util
 
 
 class Profile:
@@ -17,7 +16,7 @@ class Profile:
     ex. ~/.apio/profile.json
     """
 
-    def __init__(self):
+    def __init__(self, home_dir: Path):
 
         # ---- Set the default parameters
         # Apio settings
@@ -28,7 +27,7 @@ class Profile:
 
         # -- Get the profile path
         # -- Ex. '/home/obijuan/.apio'
-        self._profile_path = util.get_home_dir() / "profile.json"
+        self._profile_path = home_dir / "profile.json"
 
         # -- Read the profile from file
         self.load()
