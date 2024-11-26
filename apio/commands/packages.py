@@ -138,6 +138,7 @@ Examples:
   apio packages --install oss-cad-suite     # Install a specific package.
   apio packages --install examples@0.0.32   # Install a specific version.
   apio packages --uninstall                 # Uninstall all packages.
+  apio packages --uninstall --sayyes        # Same but does not ask yes/no.
   apio packages --uninstall oss-cad-suite   # Uninstall only given package(s).
   apio packages --fix                       # Fix package errors.
 
@@ -222,6 +223,10 @@ def cli(
     cmd_util.check_at_most_one_param(cmd_ctx, nameof(fix, force))
     cmd_util.check_at_most_one_param(cmd_ctx, nameof(list_, packages))
     cmd_util.check_at_most_one_param(cmd_ctx, nameof(fix, packages))
+
+    cmd_util.check_at_most_one_param(cmd_ctx, nameof(sayyes, list_))
+    cmd_util.check_at_most_one_param(cmd_ctx, nameof(sayyes, install))
+    cmd_util.check_at_most_one_param(cmd_ctx, nameof(sayyes, fix))
 
     # -- Create the apio context.
 

@@ -2,43 +2,46 @@
   Test for the "apio system" command
 """
 
+from test.conftest import ApioRunner
+
 # -- apio system entry point
-from apio.commands.system import cli as cmd_system
+from apio.commands.system import cli as apio_system
 
 
-def test_system(click_cmd_runner, setup_apio_test_env):
+def test_system(apio_runner: ApioRunner):
     """Test "apio system" with different parameters"""
 
-    with click_cmd_runner.isolated_filesystem():
+    with apio_runner.in_disposable_temp_dir():
 
         # -- Config the apio test environment
-        setup_apio_test_env()
+        apio_runner.setup_env()
 
         # -- Execute "apio system"
-        result = click_cmd_runner.invoke(cmd_system)
+        result = apio_runner.invoke(apio_system)
         assert result.exit_code == 1, result.output
         assert (
-            "One of [--lsftdi, --lsusb, --lsserial, --info, --platforms] "
-            "must be specified" in result.output
+            "Specify one of "
+            "[--lsftdi, --lsusb, --lsserial, --info, --platforms]"
+            in result.output
         )
 
         # -- Execute "apio system --lsftdi"
-        result = click_cmd_runner.invoke(cmd_system, ["--lsftdi"])
+        result = apio_runner.invoke(apio_system, ["--lsftdi"])
         assert result.exit_code == 1, result.output
         assert "apio packages --install --force oss-cad-suite" in result.output
 
         # -- Execute "apio system --lsusb"
-        result = click_cmd_runner.invoke(cmd_system, ["--lsusb"])
+        result = apio_runner.invoke(apio_system, ["--lsusb"])
         assert result.exit_code == 1, result.output
         assert "apio packages --install --force oss-cad-suite" in result.output
 
         # -- Execute "apio system --lsserial"
-        click_cmd_runner.invoke(cmd_system, ["--lsserial"])
+        apio_runner.invoke(apio_system, ["--lsserial"])
         assert result.exit_code == 1, result.output
         assert "apio packages --install --force oss-cad-suite" in result.output
 
         # -- Execute "apio system --info"
-        result = click_cmd_runner.invoke(cmd_system, ["--info"])
+        result = apio_runner.invoke(apio_system, ["--info"])
         assert result.exit_code == 0, result.output
         assert "Platform id" in result.output
         # -- The these env options are set by the apio text fixture.

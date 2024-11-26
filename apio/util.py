@@ -15,14 +15,13 @@ import json
 import shutil
 from enum import Enum
 from dataclasses import dataclass
-from typing import Optional, Any
+from typing import Optional, Any, Tuple
 import subprocess
 from threading import Thread
 from pathlib import Path
 import click
 from serial.tools.list_ports import comports
 import requests
-from apio import env_options
 
 # ----------------------------------------
 # -- Constants
@@ -149,101 +148,6 @@ def get_path_in_apio_package(subpath: str) -> Path:
 
     # -- Return the path
     return path
-
-
-def get_home_dir() -> Path:
-    """Get the absolute apio home dir. This is the apio folder where the
-    profle is located and the packages are installed (unless APIO_PACKAGES_DIR
-    is used).
-    The apio home dir can be overridden using the APIO_HOME_DIR environment
-    varible or in the /etc/apio.json file (in
-    Debian). If not set, the user_HOME/.apio folder is used by default:
-    Ej. Linux:  /home/obijuan/.apio
-    If the folders does not exist, they are created
-    """
-
-    # -- Get the APIO_HOME_DIR env variable
-    # -- It returns None if it was not defined
-    apio_home_dir_env = env_options.get(
-        env_options.APIO_HOME_DIR, default=None
-    )
-
-    # -- Get the home dir. It is what the APIO_HOME_DIR env variable
-    # -- says, or the default folder if None
-    if apio_home_dir_env:
-        home_dir = Path(apio_home_dir_env)
-    else:
-        home_dir = Path.home() / ".apio"
-
-    # -- Make it absolute
-    home_dir = home_dir.absolute()
-
-    # -- Create the folder if it does not exist
-    try:
-        home_dir.mkdir(parents=True, exist_ok=True)
-    except PermissionError:
-        click.secho(f"Error: no usable home directory {home_dir}", fg="red")
-        sys.exit(1)
-
-    # Return the home_dir as a Path
-    return home_dir
-
-
-def get_packages_dir() -> Path:
-    """Return the base directory of apio packages.
-    Packages are installed in the following folder:
-      * Default: $APIO_HOME_DIR/packages
-      * $APIO_PACKAGES_DIR: if the APIO_PACKAGES_DIR env variable is set
-      * INPUT:
-        - pkg_name: Package name (Ex. 'examples')
-      * OUTPUT:
-        - The package absolute folder (PosixPath)
-           (Ex. '/home/obijuan/.apio/packages)
-           The absolute path of the returned directory is guaranteed to have
-           the word packages in it.
-    """
-
-    # -- Get the APIO_PACKAGES_DIR env variable
-    # -- It returns None if it was not defined
-    packaged_dir_override = env_options.get(env_options.APIO_PACKAGES_DIR)
-
-    # -- Handle override.
-    if packaged_dir_override:
-        # -- Verify that the override dir contains the word packages in its
-        # -- absolute path. This is a safety mechanism to prevent uninentional
-        # -- bulk deletions in unintended directories. We check it each time
-        # -- before we perform a package deletion.
-        path = Path(packaged_dir_override).absolute()
-        if "packages" not in str(path).lower():
-            click.secho(
-                "Error: packages directory path does not contain the word "
-                f"packages: {str(path)}",
-                fg="red",
-            )
-            click.secho(
-                "For safety reasons, if you use the environment variable "
-                "APIO_PACKAGE_DIR to override\n"
-                "the packages dir, the new directory must have the word "
-                "'packages' (case insensitive)\n"
-                "in its absolute path.",
-                fg="yellow",
-            )
-            sys.exit(1)
-
-        # -- Override is OK. Use it as the packages dir.
-        packages_dir = Path(packaged_dir_override)
-
-    # -- Else, use the default value.
-    else:
-        # -- Ex '/home/obijuan/.apio/packages/tools-oss-cad-suite'
-        # -- Guaranteed to be absolute.
-        packages_dir = get_home_dir() / "packages"
-
-    # -- Sanity check. If this fails, this is a programming error.
-    assert "packages" in str(packages_dir).lower(), packages_dir
-
-    # -- All done.
-    return packages_dir
 
 
 def call(cmd):
@@ -575,6 +479,11 @@ def get_python_version() -> str:
     """Return a string with the python version"""
 
     return f"{sys.version_info[0]}.{sys.version_info[1]}"
+
+
+def get_python_ver_tuple() -> Tuple[int, int, int]:
+    """Return a tuple with the python version. e.g. (3, 12, 1)."""
+    return sys.version_info[:3]
 
 
 def safe_click(text, *args, **kwargs):

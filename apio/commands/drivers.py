@@ -90,8 +90,8 @@ def cli(
 ):
     """Implements the drivers command."""
 
-    # Make sure these params are exclusive.
-    cmd_util.check_at_most_one_param(
+    # User should select exactly on of these operations.
+    cmd_util.check_exactly_one_param(
         cmd_ctx,
         nameof(ftdi_install, ftdi_uninstall, serial_install, serial_uninstall),
     )

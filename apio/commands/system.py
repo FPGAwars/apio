@@ -156,11 +156,11 @@ def cli(
 
         # -- Print apio home directory.
         click.secho("Apio home       ", nl=False)
-        click.secho(util.get_home_dir(), fg="cyan")
+        click.secho(apio_ctx.home_dir, fg="cyan")
 
         # -- Print apio home directory.
         click.secho("Apio packages   ", nl=False)
-        click.secho(util.get_packages_dir(), fg="cyan")
+        click.secho(apio_ctx.packages_dir, fg="cyan")
 
         cmd_ctx.exit(0)
 

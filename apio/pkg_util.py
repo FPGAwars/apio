@@ -117,8 +117,6 @@ def set_env_for_packages(apio_ctx: ApioContext, verbose: bool = False) -> None:
     The function sets the environment only on first call and in latter calls
     skips the operation silently.
     """
-    # pylint: disable=global-statement
-    global __ENV_ALREADY_SET_FLAG
 
     # -- Collect the env mutations for all packages.
     mutations = _get_env_mutations_for_packages(apio_ctx)
@@ -126,13 +124,14 @@ def set_env_for_packages(apio_ctx: ApioContext, verbose: bool = False) -> None:
     if verbose:
         _dump_env_mutations(apio_ctx, mutations)
 
-    # -- If this is the first call, apply the mutations. These mutations are
-    # -- temporary for the lifetime of this process and does not affect the
-    # -- user's shell environment. The mutations are also inheritated by
-    # -- child processes such as the scons processes.
-    if not __ENV_ALREADY_SET_FLAG:
+    # -- If this is the first call in this apio invocation, apply the
+    # -- mutations. These mutations are temporary for the lifetime of this
+    # -- process and does not affect the user's shell environment.
+    # -- The mutations are also inheritated by child processes such as the
+    # -- scons processes.
+    if not apio_ctx.env_was_already_set:
         _apply_env_mutations(mutations)
-        __ENV_ALREADY_SET_FLAG = True
+        apio_ctx.env_was_already_set = True
         if not verbose:
             click.secho("Setting the envinronment.")
 
@@ -331,7 +330,7 @@ def scan_packages(apio_ctx: ApioContext) -> PackageScanResults:
             result.orphan_package_ids.append(package_id)
 
     # -- Scan the packages directory and identify orphan dirs and files.
-    for path in util.get_packages_dir().glob("*"):
+    for path in apio_ctx.packages_dir.glob("*"):
         base_name = os.path.basename(path)
         if path.is_dir():
             if base_name not in platform_folder_names:

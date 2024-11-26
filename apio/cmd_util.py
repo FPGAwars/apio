@@ -156,13 +156,21 @@ def check_exactly_one_param(
     """
     # The the subset of ids of params that where used in the command.
     specified_param_ids = _specified_params(cmd_ctx, param_ids)
-    # If more 2 or more print an error and exit.
-    if len(specified_param_ids) != 1:
+    # If exactly one than we are good.
+    if len(specified_param_ids) == 1:
+        return
+    if len(specified_param_ids) < 1:
+        # -- User specified Less flags than required.
         canonical_aliases = _params_ids_to_aliases(cmd_ctx, param_ids)
         aliases_str = ", ".join(canonical_aliases)
-        fatal_usage_error(
-            cmd_ctx, f"One of [{aliases_str}] must be specified."
+        fatal_usage_error(cmd_ctx, f"Specify one of [{aliases_str}].")
+    else:
+        # -- User specified more flags than allowed.
+        canonical_aliases = _params_ids_to_aliases(
+            cmd_ctx, specified_param_ids
         )
+        aliases_str = ", ".join(canonical_aliases)
+        fatal_usage_error(cmd_ctx, f"Specify only one of [{aliases_str}].")
 
 
 def check_at_least_one_param(

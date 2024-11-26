@@ -2,8 +2,11 @@
   Test for the "apio boards" command
 """
 
+from test.conftest import ApioRunner
+
 # -- apio boards entry point
-from apio.commands.boards import cli as cmd_boards
+from apio.commands.boards import cli as apio_boards
+
 
 CUSTOM_BOARDS = """
 {
@@ -25,17 +28,15 @@ CUSTOM_BOARDS = """
 """
 
 
-def test_list_ok(click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok):
+def test_list_ok(apio_runner: ApioRunner):
     """Test normal board listing with the apio's boards.json."""
 
-    with click_cmd_runner.isolated_filesystem():
+    with apio_runner.in_disposable_temp_dir():
 
-        # -- Config the apio test environment
-        setup_apio_test_env()
+        apio_runner.setup_env()
 
-        # -- Execute "apio boards"
-        result = click_cmd_runner.invoke(cmd_boards)
-        assert_apio_cmd_ok(result)
+        result = apio_runner.invoke(apio_boards)
+        apio_runner.assert_ok(result)
         # -- Note: pytest sees the piped version of the command's output.
         # -- Run 'apio build' | cat' to reproduce it.
         assert "Loading custom 'boards.json'" not in result.output
@@ -44,23 +45,21 @@ def test_list_ok(click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok):
         assert "Total of 1 board" not in result.output
 
 
-def test_custom_board(
-    click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok
-):
+def test_custom_board(apio_runner: ApioRunner):
     """Test boards listing with a custom boards.json file."""
 
-    with click_cmd_runner.isolated_filesystem():
+    with apio_runner.in_disposable_temp_dir():
 
         # -- Config the apio test environment
-        setup_apio_test_env()
+        apio_runner.setup_env()
 
         # -- Write a custom boards.json file in the project's directory.
         with open("boards.json", "w", encoding="utf-8") as f:
             f.write(CUSTOM_BOARDS)
 
         # -- Execute "apio boards"
-        result = click_cmd_runner.invoke(cmd_boards)
-        assert_apio_cmd_ok(result)
+        result = apio_runner.invoke(apio_boards)
+        apio_runner.assert_ok(result)
         # -- Note: pytest sees the piped version of the command's output.
         # -- Run 'apio build' | cat' to reproduce it.
         assert "Loading custom 'boards.json'" in result.output

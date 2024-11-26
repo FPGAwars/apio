@@ -5,10 +5,12 @@
 from pathlib import Path
 from os.path import isfile, exists
 from typing import Dict
+from test.conftest import ApioRunner
 from configobj import ConfigObj
 
+
 # -- apio modify entry point
-from apio.commands.modify import cli as cmd_modify
+from apio.commands.modify import cli as apio_modify
 
 
 # R0801: Similar lines in 2 files
@@ -24,21 +26,19 @@ def check_ini_file(apio_ini: Path, expected_vars: Dict[str, str]) -> None:
     assert conf.dict() == {"env": expected_vars}
 
 
-def test_modify(click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok):
+def test_modify(apio_runner: ApioRunner):
     """Test "apio modify" with different parameters"""
 
-    with click_cmd_runner.isolated_filesystem():
+    with apio_runner.in_disposable_temp_dir():
 
         # -- Config the apio test environment
-        setup_apio_test_env()
+        apio_runner.setup_env()
 
         apio_ini = Path("apio.ini")
         assert not exists(apio_ini)
 
         # -- Execute "apio modify --top-module my_module"
-        result = click_cmd_runner.invoke(
-            cmd_modify, ["--top-module", "my_module"]
-        )
+        result = apio_runner.invoke(apio_modify, ["--top-module", "my_module"])
         assert result.exit_code != 0, result.output
         assert "Error: 'apio.ini' not found" in result.output
         assert not exists(apio_ini)
@@ -62,9 +62,7 @@ def test_modify(click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok):
         )
 
         # -- Execute "apio modify --board missed_board"
-        result = click_cmd_runner.invoke(
-            cmd_modify, ["--board", "missed_board"]
-        )
+        result = apio_runner.invoke(apio_modify, ["--board", "missed_board"])
         assert result.exit_code == 1, result.output
         assert "Error: no such board" in result.output
         check_ini_file(
@@ -77,10 +75,8 @@ def test_modify(click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok):
         )
 
         # -- Execute "apio modify --board alhambra-ii"
-        result = click_cmd_runner.invoke(
-            cmd_modify, ["--board", "alhambra-ii"]
-        )
-        assert_apio_cmd_ok(result)
+        result = apio_runner.invoke(apio_modify, ["--board", "alhambra-ii"])
+        apio_runner.assert_ok(result)
         assert "was modified successfully." in result.output
         check_ini_file(
             apio_ini,
@@ -92,10 +88,8 @@ def test_modify(click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok):
         )
 
         # -- Execute "apio modify --top-module my_main"
-        result = click_cmd_runner.invoke(
-            cmd_modify, ["--top-module", "my_main"]
-        )
-        assert_apio_cmd_ok(result)
+        result = apio_runner.invoke(apio_modify, ["--top-module", "my_main"])
+        apio_runner.assert_ok(result)
         assert "was modified successfully." in result.output
         check_ini_file(
             apio_ini,
@@ -107,10 +101,10 @@ def test_modify(click_cmd_runner, setup_apio_test_env, assert_apio_cmd_ok):
         )
 
         # -- Execute "apio modify --board icezum --top-module my_top"
-        result = click_cmd_runner.invoke(
-            cmd_modify, ["--board", "icezum", "--top-module", "my_top"]
+        result = apio_runner.invoke(
+            apio_modify, ["--board", "icezum", "--top-module", "my_top"]
         )
-        assert_apio_cmd_ok(result)
+        apio_runner.assert_ok(result)
         assert "was modified successfully." in result.output
         check_ini_file(
             apio_ini,
