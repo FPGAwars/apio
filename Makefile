@@ -1,5 +1,9 @@
 .PHONY: deps cenv env lint test presubmit publish_test publish install
 
+# NOTE: Some targets have a shortcuts or alias names that are listed on the same line.
+#       The are provided for convinience or for backward competibility. For example
+#       'check-all' has the aliases 'check_all' and 'ca'.
+
 # Install dependencies for apio development
 deps:
 	python -m pip install --upgrade pip
@@ -18,31 +22,31 @@ env:
 
 
 # Lint only, no tests. 
-lint:
+lint l:
 	python -m tox -e lint
 
 
 # Offline tests only, no lint, single python version, skipping online tests.
 # This is a partial but fast test.
-test:	
+test t:	
 	python -m tox --skip-missing-interpreters false -e py312 -- --offline
 
 
 # Tests and lint, single python version, all tests including online..
 # This is a thorough but slow test and sufficient for testign before 
 # commiting changes run this before submitting code.
- check:	
+check c:	
 	python -m tox --skip-missing-interpreters false -e lint,py312
 
 
 # Tests and lint, multiple python versions.
 # Should be be run automatically on github.
-check_all:
+check-all check_all ca:
 	python -m tox --skip-missing-interpreters false
 
 
 # Publish to testPypi
-publish_test:
+publish-test publish_test:
 	flit publish --repository testpypi
 
 

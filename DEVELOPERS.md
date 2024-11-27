@@ -13,7 +13,7 @@ make check
 For complete tests with several python versions run the command below. 
 
 ```shell
-make check_all
+make check-all
 ```
 
 For quick tests that that don't load lengthy packagtes from the internet
@@ -38,7 +38,7 @@ When running any of the commands below, a test coverage is generated in the
 ```
 make test          // Partial coverage by offline tests
 make check         // Full coverage
-make check_all     // Full coverage by the last python env run.
+make check-all     // Full coverage by the last python env run.
 ```
 
 
