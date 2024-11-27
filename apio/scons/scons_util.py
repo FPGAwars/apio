@@ -28,10 +28,12 @@ from SCons import Scanner
 from SCons.Node import NodeList
 from SCons.Node.FS import File
 from SCons.Node.Alias import Alias
-from SCons.Script import DefaultEnvironment
+from SCons.Script import Environment
 from SCons.Script.SConscript import SConsEnvironment
 from SCons.Action import FunctionAction, Action
 from SCons.Builder import Builder
+import SCons.Defaults
+
 
 # -- All the build files and other artifcats are created in this this
 # -- subdirectory.
@@ -109,8 +111,15 @@ def is_windows(env: SConsEnvironment) -> bool:
 
 def create_construction_env(args: Dict[str, str]) -> SConsEnvironment:
     """Creates a scons env. Should be called very early in SConstruct.py"""
-    # Create the default env.
-    env: SConsEnvironment = DefaultEnvironment(ENV=os.environ, tools=[])
+
+    # Check that the default env is not used by mistake. SConstruct to use
+    # only our env.
+    check_default_scons_env_not_used()
+
+    # Create the env. We don't use the DefaultEnvironment (a singleton) to
+    # allow the creation in pytest multiple test environments in the same
+    # tesing process.
+    env: SConsEnvironment = Environment(ENV=os.environ, tools=[])
 
     # Add the args dictionary as a new ARGUMENTS var.
     assert env.get("ARGUMENTS") is None
@@ -820,3 +829,22 @@ def set_up_cleanup(env: SConsEnvironment) -> None:
     # -- Associate all the files with the dummy target.
     for file in files_to_clean:
         env.Clean(dummy_target, str(file))
+
+    # -- Since the this function is called at the end of the SCOnstruct files,
+    # -- we use it to check that the SConstruct code didn't use by mistate
+    # -- the scons default env instead of the env we created in this file.
+    check_default_scons_env_not_used()
+
+
+def check_default_scons_env_not_used():
+    """A method to check that the default scons env has not been used.
+    We avoid using the default scons env because it's a singleton and thus,
+    don't play well with pytest where multiple indendepent scons envs
+    are created by tests in the same python process. This function asserts
+    that the default scons env was not instantiated by mistake, e.g.
+    by calling in SConstrut AllwaysBuild() instead of env.AlwaysBuild().
+    """
+
+    # pylint: disable=protected-access
+    assert SCons.Defaults._default_env is None
+    # pylint: enable=protected-access
