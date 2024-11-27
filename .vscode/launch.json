@@ -300,7 +300,7 @@
             "module": "pytest",
             "args": [
                 "-s",
-                "test/commands/test_build.py"
+                "test/test_scons_util.py"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,

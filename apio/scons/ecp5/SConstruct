@@ -50,7 +50,7 @@ from apio.scons.scons_util import (
     TARGET,
     BUILD_DIR,
     SConstructId,
-    is_testbench,
+    has_testbench_name,
     basename,
     is_windows,
     get_constraint_file,
@@ -240,7 +240,7 @@ def iverilog_tb_generator(source, target, env, for_signature):
     for a given testbench target."""
     # Extract testbench name from target file name.
     testbench_file = str(target[0])
-    assert is_testbench(env, testbench_file), testbench_file
+    assert has_testbench_name(env, testbench_file), testbench_file
     testbench_name = basename(env, testbench_file)
 
     # Construct the command line.

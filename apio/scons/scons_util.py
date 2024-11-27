@@ -21,7 +21,7 @@ import os
 import re
 from enum import Enum
 import json
-from typing import Dict, Tuple, List, Optional
+from typing import Dict, Tuple, List, Optional, NoReturn
 from dataclasses import dataclass
 import click
 from SCons import Scanner
@@ -87,12 +87,15 @@ def is_verilog_src(env: SConsEnvironment, file_name: str) -> str:
     """Given a file name, determine by its extension if it's a verilog source
     file (testbenches included)."""
     _, ext = os.path.splitext(file_name)
-    return ext == "v"
+    return ext == ".v"
 
 
-def is_testbench(env: SConsEnvironment, file_name: str) -> bool:
-    """Given a file name, return true if it's a testbench file."""
-    name = basename(env, file_name)
+def has_testbench_name(env: SConsEnvironment, file_name: str) -> bool:
+    """Given a file name, return true if it's base name indicates a
+    testbench. It can be for example abc_tb.v or _build/abc_tb.out.
+    The file extension is ignored.
+    """
+    name, _ = os.path.splitext(file_name)
     return name.lower().endswith("_tb")
 
 
@@ -197,6 +200,9 @@ def force_colors(env: SConsEnvironment) -> bool:
 
 
 def msg(env: SConsEnvironment, text: str, fg: str = None) -> None:
+    """Print a message to the user. Similar to click.secho but with
+    proper color enforcement.
+    """
     click.secho(text, fg=fg, color=force_colors(env))
 
 
@@ -215,7 +221,7 @@ def error(env: SConsEnvironment, text: str) -> None:
     msg(env, f"Error: {text}", fg="red")
 
 
-def fatal_error(env: SConsEnvironment, text: str) -> None:
+def fatal_error(env: SConsEnvironment, text: str) -> NoReturn:
     """Prints a short error message and exit with an error code."""
     error(env, text)
     env.Exit(1)
@@ -311,7 +317,7 @@ def get_programmer_cmd(env: SConsEnvironment) -> str:
     return prog_arg
 
 
-def make_verilog_src_scanner(env: SConsEnvironment) -> Scanner:
+def make_verilog_src_scanner(env: SConsEnvironment) -> Scanner.Base:
     """Creates and returns a scons Scanner object for scanning verilog
     files for dependencies.
     """
@@ -344,6 +350,7 @@ def make_verilog_src_scanner(env: SConsEnvironment) -> Scanner:
             ".v"
         ), f"Not a .v file: {file_node.name}"
         includes_set = set()
+        # If the file doesn't exist, this returns an empty string.
         file_text = file_node.get_text_contents()
         # Get IceStudio includes.
         includes = icestudio_list_re.findall(file_text)
@@ -351,7 +358,7 @@ def make_verilog_src_scanner(env: SConsEnvironment) -> Scanner:
         # Get Standard verilog includes.
         includes = verilog_include_re.findall(file_text)
         includes_set.update(includes)
-        # Get a deterministic list.
+        # Get a deterministic list. (Does it sort by file.name?)
         includes_list = sorted(list(includes_set))
         # For debugging
         # info(env, f"*** {file_node.name} includes {includes_list}")
@@ -461,7 +468,7 @@ def get_source_files(env: SConsEnvironment) -> Tuple[List[str], List[str]]:
     synth_srcs = []
     test_srcs = []
     for file in files:
-        if is_testbench(env, file.name):
+        if has_testbench_name(env, file.name):
             test_srcs.append(file.name)
         else:
             synth_srcs.append(file.name)
@@ -662,6 +669,7 @@ def make_verilator_action(
     return action
 
 
+# pylint: disable=too-many-locals
 def _print_pnr_report(
     env: SConsEnvironment,
     json_txt: str,
@@ -696,6 +704,7 @@ def _print_pnr_report(
     clocks = report["fmax"]
     if len(clocks) > 0:
         for clk_net, vals in clocks.items():
+            # pylint: disable=fixme
             # TODO: Confirm clk name extraction for Gowin.
             # Extract clock name from the net name.
             if script_id == SConstructId.SCONSTRUCT_ECP5:
@@ -738,28 +747,30 @@ def get_report_action(
     return Action(print_pnr_report, "Formatting pnr report.")
 
 
-def wait_for_remote_debugger(env: SConsEnvironment):
-    """For developement only. Useful for debugging SConstruct scripts that apio
-    runs as a subprocesses. Call this from the SCconstruct script, run apio
-    from a command line, and then connect with the Visual Studio Code debugger
-    using the launch.json debug target. Can also be used to debug apio itself,
-    without having to create or modify the Visual Studio Code debug targets
-    in launch.json"""
+# Enable for debugging a scons process and call from SConstruct.
+#
+# def wait_for_remote_debugger(env: SConsEnvironment):
+#     """For developement only. Useful for debugging SConstruct scripts that
+#     apio runs as a subprocesses. Call this from the SCconstruct script, run
+#     apio from a command line, and then connect with the Visual Studio Code
+#     debugger using the launch.json debug target. Can also be used to debug
+#     apio itself, without having to create or modify the Visual Studio Code
+#     debug targets in launch.json"""
 
-    # -- We require this import only when using the debugger.
-    import debugpy
+#     # -- We require this import only when using the debugger.
+#     import debugpy
 
-    # -- 5678 is the default debugger port.
-    port = 5678
-    msg(
-        env,
-        f"Waiting for remote debugger on port localhost:{port}.",
-        fg="magenta",
-    )
-    debugpy.listen(port)
-    msg(env, "Attach with the Visual Studio Code debugger.")
-    debugpy.wait_for_client()
-    msg(env, "Remote debugger is attached.", fg="green")
+#     # -- 5678 is the default debugger port.
+#     port = 5678
+#     msg(
+#         env,
+#         f"Waiting for remote debugger on port localhost:{port}.",
+#         fg="magenta",
+#     )
+#     debugpy.listen(port)
+#     msg(env, "Attach with the Visual Studio Code debugger.")
+#     debugpy.wait_for_client()
+#     msg(env, "Remote debugger is attached.", fg="green")
 
 
 def set_up_cleanup(env: SConsEnvironment) -> None:
@@ -780,6 +791,7 @@ def set_up_cleanup(env: SConsEnvironment) -> None:
         + env.Glob("_build")
     )
 
+    # pylint: disable=fixme
     # -- TODO: Remove the cleanup of legacy files after releasing the first
     # -- release with the _build directory.
     # --
