@@ -62,11 +62,13 @@ def map_params(
 ) -> str:
     """A common function construct a command string snippet from a list
     of arguments. The functon does the following:
-     1. If non replace with []
-     2. Drops empty items.
+     1. If params arg is None replace it with []
+     2. Drops empty or white space only items.
      3. Maps the items using the format string which contains exactly one
         placeholder {}.
      4. Joins the items with a white space char.
+
+     For examples, see the unit test at test_scons_util.py.
     """
     # None designates empty list. Avoiding the pylint non safe default warning.
     if params is None:
@@ -128,12 +130,9 @@ def create_construction_env(args: Dict[str, str]) -> SConsEnvironment:
     # Evaluate the optional force_color arg and set its value
     # an env var on its own.
     assert env.get("FORCE_COLORS") is None
-    env.Replace(FORCE_COLORS=False)  # Tentative.
+    env.Replace(FORCE_COLORS=False)  # Tentative, so we can call arg_bool.
     flag = arg_bool(env, "force_colors", False)
-    env.Replace(FORCE_COLORS=flag)  # Tentative.
-    if not flag:
-        warning(env, "Not forcing scons text colors.")
-
+    env.Replace(FORCE_COLORS=flag)
     # Set the IS_WINDOWS flag based on the required "platform_id" arg.
     platform_id = arg_str(env, "platform_id", False)
     # Note: this is a programming error, not a user error.
@@ -758,7 +757,7 @@ def get_report_action(
 
 # Enable for debugging a scons process and call from SConstruct.
 #
-# def wait_for_remote_debugger(env: SConsEnvironment):
+# def wait_for_remote_debugger():
 #     """For developement only. Useful for debugging SConstruct scripts that
 #     apio runs as a subprocesses. Call this from the SCconstruct script, run
 #     apio from a command line, and then connect with the Visual Studio Code
@@ -771,15 +770,13 @@ def get_report_action(
 
 #     # -- 5678 is the default debugger port.
 #     port = 5678
-#     msg(
-#         env,
-#         f"Waiting for remote debugger on port localhost:{port}.",
-#         fg="magenta",
+#     print(
+#         f"Waiting for remote debugger on port localhost:{port}."
 #     )
 #     debugpy.listen(port)
-#     msg(env, "Attach with the Visual Studio Code debugger.")
+#     print("Attach with the Visual Studio Code debugger.")
 #     debugpy.wait_for_client()
-#     msg(env, "Remote debugger is attached.", fg="green")
+#     print("Remote debugger is attached.")
 
 
 def set_up_cleanup(env: SConsEnvironment) -> None:
@@ -789,7 +786,7 @@ def set_up_cleanup(env: SConsEnvironment) -> None:
 
     # -- Should be called only when the 'clean' target is specified.
     # -- If this fails, this is a programming error and not a user error.
-    assert env.GetOption("clean")
+    assert env.GetOption("clean"), "Option 'clean' is missing."
 
     # -- Get the list of all files to clean. Scons adds to the list non
     # -- existing files from other targets it encountered.
@@ -822,13 +819,10 @@ def set_up_cleanup(env: SConsEnvironment) -> None:
         files_to_clean.extend(legacy_files_to_clean)
 
     # -- Create a dummy target.  I
-    dummy_target = env.Command(
-        "no-such-file-1", "no-such-file-2", "no-such-action"
-    )
+    dummy_target = env.Command("cleanup-target", "", "")
 
     # -- Associate all the files with the dummy target.
-    for file in files_to_clean:
-        env.Clean(dummy_target, str(file))
+    env.Clean(dummy_target, files_to_clean)
 
     # -- Since the this function is called at the end of the SCOnstruct files,
     # -- we use it to check that the SConstruct code didn't use by mistate
@@ -846,5 +840,7 @@ def check_default_scons_env_not_used():
     """
 
     # pylint: disable=protected-access
-    assert SCons.Defaults._default_env is None
+    assert (
+        SCons.Defaults._default_env is None
+    ), "Detected usage of scons default env."
     # pylint: enable=protected-access
