@@ -54,8 +54,7 @@ def test_custom_board(apio_runner: ApioRunner):
         apio_runner.setup_env()
 
         # -- Write a custom boards.json file in the project's directory.
-        with open("boards.json", "w", encoding="utf-8") as f:
-            f.write(CUSTOM_BOARDS)
+        apio_runner.write_file("boards.json", CUSTOM_BOARDS)
 
         # -- Execute "apio boards"
         result = apio_runner.invoke(apio_boards)

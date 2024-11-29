@@ -125,8 +125,7 @@ def test_dependencies(apio_runner: ApioRunner):
     with apio_runner.in_disposable_temp_dir():
 
         # -- Write a test file name in the current directory.
-        with open("test_file.v", "w", encoding="utf-8") as f:
-            f.write(DEPENDECIES_TEST_TEXT)
+        apio_runner.write_file("test_file.v", DEPENDECIES_TEST_TEXT)
 
         # -- Create a scanner
         env = _make_test_env()
@@ -458,8 +457,7 @@ def test_make_verilator_config_builder(apio_runner: ApioRunner):
         assert isfile("hardware.vlt")
 
         # -- Verify that the the file was created with the tiven text.
-        with open("hardware.vlt", "r", encoding="utf8") as f:
-            text = f.read()
+        text = apio_runner.read_file("hardware.vlt")
 
         assert text == "test-text"
 

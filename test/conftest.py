@@ -4,7 +4,7 @@ TEST configuration file
 """
 
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, List, Union
 from typing import Dict
 import os
 
@@ -187,20 +187,62 @@ class ApioRunner:
 
         path = Path("apio.ini")
 
+        # -- Handle a deletion request.
         if properties is None:
             path.unlink(missing_ok=True)
             return
 
-        with open(path, "w", encoding="utf-8") as f:
-            f.write("[env]\n")
-            for name, value in properties.items():
-                f.write(f"{name} = {value}\n")
+        # -- Requested to write. Construct the lines.
+        lines = ["[env]"]
+        for name, value in properties.items():
+            lines.append(f"{name} = {value}")
+
+        # -- Write the file.
+        self.write_file(path, lines)
 
     @property
     def offline_flag(self) -> bool:
         """Returns True if pytest was invoked with --offline to skip
         tests that require internet connectivity and are slower in general."""
         return self._request.config.getoption("--offline")
+
+    def write_file(
+        self,
+        file: Union[str, Path],
+        text: Union[str, List[str]],
+        exists_ok=False,
+    ) -> None:
+        """Write text to given file. If text is a list, items are joined with
+        "\n". 'file' can be a string or a Path."""
+
+        assert exists_ok or not Path(file).exists(), f"File exists: {file}"
+
+        # -- If a list is given, join with '\n"
+        if isinstance(text, list):
+            text = "\n".join(text)
+
+        # -- Write.
+        with open(file, "w", encoding="utf-8") as f:
+            f.write(text)
+
+    def read_file(
+        self, file: Union[str, Path], lines_mode=False
+    ) -> Union[str, List[str]]:
+        """Read a text file. Returns a string with the text or if
+        lines_mode is True, a list with the individual lines (excluding
+        the \n delimiters)
+        """
+
+        # -- Read the text.
+        with open(file, "r", encoding="utf8") as f:
+            text = f.read()
+
+        # -- Split to lines if requested.
+        if lines_mode:
+            text = text.split("\n")
+
+        # -- All done
+        return text
 
 
 @pytest.fixture(scope="session")

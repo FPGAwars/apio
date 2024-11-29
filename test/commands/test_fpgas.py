@@ -46,8 +46,7 @@ def test_custom_fpga(apio_runner: ApioRunner):
         apio_runner.setup_env()
 
         # -- Write a custom boards.json file in the project's directory.
-        with open("fpgas.json", "w", encoding="utf-8") as f:
-            f.write(CUSTOM_FPGAS)
+        apio_runner.write_file("fpgas.json", CUSTOM_FPGAS)
 
         # -- Execute "apio boards"
         result = apio_runner.invoke(apio_fpgas)
