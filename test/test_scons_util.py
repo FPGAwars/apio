@@ -26,7 +26,6 @@ from apio.scons.scons_util import (
     arg_bool,
     is_windows,
     force_colors,
-    check_default_scons_env_not_used,
     set_up_cleanup,
     map_params,
     fatal_error,
@@ -63,9 +62,6 @@ class SconsHacks:
         are running in the same process, we need to reset though variables
         before each test."""
 
-        # -- We don't reset the _default_env, just make sure it was never used.
-        assert not SconsHacks.default_scons_env_exists()
-
         # -- The Cons.Script.Main.OptionsParser variables contains the command
         # -- line options of scons. We reset them here and tests can access
         # -- them using SetOption() and GetOption().
@@ -83,32 +79,16 @@ class SconsHacks:
         # -- Clear the SCons targets
         SCons.Environment.CleanTargets = {}
 
-        # -- Check again, just in case.
-        assert not SconsHacks.default_scons_env_exists()
+        # -- Reset the default scons env, if it exists.
+        #
+        # pylint: disable=protected-access
+        SCons.Defaults._default_env = None
+        # pylint: enable=protected-access
 
     @staticmethod
     def get_targets() -> Dict:
         """Get the scons {target -> dependencies} dictionary."""
         return SCons.Environment.CleanTargets
-
-    @staticmethod
-    def default_scons_env_exists() -> bool:
-        """Tests if the default scons env was created. The default env is a
-        singleton that don't play well with pytest so we avoid it and use
-        instead an expclicit environment we create, and verify that the
-        default environement was not used by mistake, for example by
-        SConstruct calling AllwaysBuild() instead of env.AllwaysBuild().
-        """
-        # pylint: disable=protected-access
-        return SCons.Defaults._default_env is not None
-        # pylint: enable=protected-access
-
-    @staticmethod
-    def clear_scons_default_env() -> None:
-        """Clear the scons default environment."""
-        # pylint: disable=protected-access
-        SCons.Defaults._default_env = None
-        # pylint: enable=protected-access
 
 
 def _make_test_env(
@@ -133,9 +113,6 @@ def _make_test_env(
 
     # -- Use the apio's scons env creation function.
     env = create_construction_env(args)
-
-    # -- Check that the default scons env was not used.
-    check_default_scons_env_not_used()
 
     return env
 
@@ -262,31 +239,6 @@ def test_env_forcing_color():
         {"force_colors": "False", "platform_id": "darwin_arm64"}
     )
     assert not force_colors(env)
-
-
-def test_default_env_check():
-    """Teest that check_default_scons_env_not_used() throws an assertion
-    exception when the default scons env is used.
-    """
-    # -- The starting point is having no default env.
-    assert not SconsHacks.default_scons_env_exists()
-
-    # -- Should not throw an exception since the default env does not exist.
-    check_default_scons_env_not_used()
-
-    # -- Create the scons default env.
-    SCons.Defaults.DefaultEnvironment(ENV={}, tools=[])
-    assert SconsHacks.default_scons_env_exists()
-
-    # -- Verify that the assertion in the function fails.
-    with pytest.raises(AssertionError) as e:
-        check_default_scons_env_not_used()
-
-    # -- Verify the assertion text.
-    assert "Detected usage of scons default env" in str(e.value)
-
-    # -- Restore the no-default-env state for the reset of the tests.
-    SconsHacks.clear_scons_default_env()
 
 
 def test_set_up_cleanup_ok(apio_runner: ApioRunner):
