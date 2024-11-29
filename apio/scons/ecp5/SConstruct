@@ -41,7 +41,6 @@
 import os
 from SCons.Script import (
     Builder,
-    AlwaysBuild,
     GetOption,
     COMMAND_LINE_TARGETS,
     ARGUMENTS,
@@ -50,7 +49,7 @@ from apio.scons.scons_util import (
     TARGET,
     BUILD_DIR,
     SConstructId,
-    is_testbench,
+    has_testbench_name,
     basename,
     is_windows,
     get_constraint_file,
@@ -72,13 +71,13 @@ from apio.scons.scons_util import (
     set_up_cleanup,
 )
 
+# # -- Uncomment for debugging of the scons subprocess using a remote debugger.
+# from apio.scons import scons_util
+# scons_util.wait_for_remote_debugger()
 
 # -- Create the environment
 env = create_construction_env(ARGUMENTS)
 
-# -- Uncomment for debugging of the scons subprocess using a remote debugger.
-# from apio.scons import scons_util
-# scons_util.wait_for_remote_debugger(env)
 
 # -- Get arguments.
 FPGA_SIZE = arg_str(env, "fpga_size", "")
@@ -189,11 +188,11 @@ bin_target = env.Bin(TARGET, pnr_target)
 build_target = env.Alias("build", bin_target)
 
 if VERBOSE_YOSYS:
-    AlwaysBuild(synth_target)
+    env.AlwaysBuild(synth_target)
 if VERBOSE_PNR:
-    AlwaysBuild(pnr_target)
+    env.AlwaysBuild(pnr_target)
 if VERBOSE_ALL:
-    AlwaysBuild(synth_target, pnr_target, build_target)
+    env.AlwaysBuild(synth_target, pnr_target, build_target)
 
 # -- Apio report.
 # -- Targets.
@@ -202,7 +201,7 @@ report_action = get_report_action(
     env, SConstructId.SCONSTRUCT_ECP5, VERBOSE_PNR
 )
 report_target = env.Alias("report", PNR_REPORT_FILE, report_action)
-AlwaysBuild(report_target)
+env.AlwaysBuild(report_target)
 
 
 # -- Apio upload.
@@ -210,7 +209,7 @@ AlwaysBuild(report_target)
 # -- hardware.bit -> FPGA.
 programmer_cmd = get_programmer_cmd(env)
 upload_target = env.Alias("upload", bin_target, programmer_cmd)
-AlwaysBuild(upload_target)
+env.AlwaysBuild(upload_target)
 
 
 # -- Apio verify.
@@ -240,7 +239,7 @@ def iverilog_tb_generator(source, target, env, for_signature):
     for a given testbench target."""
     # Extract testbench name from target file name.
     testbench_file = str(target[0])
-    assert is_testbench(env, testbench_file), testbench_file
+    assert has_testbench_name(env, testbench_file), testbench_file
     testbench_name = basename(env, testbench_file)
 
     # Construct the command line.
@@ -300,7 +299,7 @@ env.Append(BUILDERS={"VCD": vcd_builder})
 # -- Targets
 # -- (modules).v -> (modules).out
 verify_out_target = env.IVerilogVerify(TARGET, synth_srcs + test_srcs)
-AlwaysBuild(verify_out_target)
+env.AlwaysBuild(verify_out_target)
 verify_target = env.Alias("verify", verify_out_target)
 
 
@@ -308,9 +307,9 @@ verify_target = env.Alias("verify", verify_out_target)
 # -- Targets.
 # -- (modules).v -> hardware.dot -> hardware.svg.
 dot_target = env.DOT(TARGET, synth_srcs)
-AlwaysBuild(dot_target)
+env.AlwaysBuild(dot_target)
 graphviz_target = env.GRAPHVIZ(TARGET, dot_target)
-AlwaysBuild(graphviz_target)
+env.AlwaysBuild(graphviz_target)
 graph_target = env.Alias("graph", graphviz_target)
 
 
@@ -324,7 +323,7 @@ if "sim" in COMMAND_LINE_TARGETS:
     )
     vcd_file_target = env.VCD(sim_out_target)
     waves_target = make_waves_target(env, vcd_file_target, sim_config)
-    AlwaysBuild(waves_target)
+    env.AlwaysBuild(waves_target)
 
 
 # -- Apio test.
@@ -337,9 +336,9 @@ if "test" in COMMAND_LINE_TARGETS:
         test_out_target = env.IVerilogTestbench(
             sim_config.build_testbench_name, sim_config.srcs
         )
-        AlwaysBuild(test_out_target)
+        env.AlwaysBuild(test_out_target)
         test_vcd_target = env.VCD(test_out_target)
-        AlwaysBuild(test_vcd_target)
+        env.AlwaysBuild(test_vcd_target)
         test_target = env.Alias(
             sim_config.build_testbench_name, [test_out_target, test_vcd_target]
         )
@@ -348,7 +347,7 @@ if "test" in COMMAND_LINE_TARGETS:
     # Create a target for the test command that depends on all the test
     # targets.
     tests_target = env.Alias("test", tests_targets)
-    AlwaysBuild(tests_target)
+    env.AlwaysBuild(tests_target)
 
 
 # -- Apio lint.
@@ -395,7 +394,7 @@ lint_config_target = env.VerilatorConfig(TARGET, [])
 lint_out_target = env.Verilator(TARGET, synth_srcs + test_srcs)
 env.Depends(lint_out_target, lint_config_target)
 lint_target = env.Alias("lint", lint_out_target)
-AlwaysBuild(lint_target)
+env.AlwaysBuild(lint_target)
 
 
 # -- Handle the cleanu of the artifact files.

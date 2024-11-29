@@ -40,3 +40,4 @@ hardware.svg
 abc.history
 temp-*
 .run.sh
+,coverage.*
