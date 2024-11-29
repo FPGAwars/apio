@@ -119,6 +119,26 @@ class ApioRunner:
             self._packages_dir,
         )
 
+    @property
+    def proj_dir(self):
+        """Return the apio project dir. Must call setup_env() first."""
+        assert self._proj_dir is not None, "Apio runner env was not set yet."
+        return self._proj_dir
+
+    @property
+    def home_dir(self):
+        """Return the apio home dir. Must call setup_env() first."""
+        assert self._home_dir is not None, "Apio runner env was not set yet."
+        return self._home_dir
+
+    @property
+    def packages_dir(self):
+        """Return the apio packages dir. Must call setup_env() first."""
+        assert (
+            self._packages_dir is not None
+        ), "Apio runner env was not set yet."
+        return self._packages_dir
+
     # R0913: Too many arguments (7/5) (too-many-arguments)
     # pylint: disable=R0913
     # W0622: Redefining built-in 'input' (redefined-builtin)

@@ -195,7 +195,9 @@ def process_arguments(
     """
 
     # -- We expect that the apio context was created with project loading.
-    apio_ctx.check_project_loaded()
+    assert (
+        apio_ctx.has_project_loaded
+    ), "process_args: apio context project is not loaded."
 
     # -- Construct the args dictionary with all supported args. Most of the
     # -- args also have the name of their exported scons variable.
