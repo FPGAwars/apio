@@ -2,6 +2,7 @@
 Tests of scons_util.py
 """
 
+from os.path import isfile, exists
 from pathlib import Path
 from typing import Dict
 from test.conftest import ApioRunner
@@ -14,6 +15,7 @@ import SCons.Environment
 import SCons.Defaults
 import SCons.Script.Main
 from SCons.Script import SetOption
+from pytest import LogCaptureFixture
 from apio.scons.scons_util import (
     make_verilog_src_scanner,
     has_testbench_name,
@@ -32,6 +34,10 @@ from apio.scons.scons_util import (
     warning,
     info,
     msg,
+    get_constraint_file,
+    get_programmer_cmd,
+    make_verilator_config_builder,
+    get_source_files,
 )
 
 DEPENDECIES_TEST_TEXT = """
@@ -119,7 +125,6 @@ def _make_test_env(
     if args is None:
         args = {
             "platform_id": "darwin_arm64",
-            "force_colors": "False",
         }
 
     # -- If specified, overite/add extra args.
@@ -353,7 +358,7 @@ def test_map_params():
     assert map_params(env, ["a", "a", "b"], "x_{}_y") == "x_a_y x_a_y x_b_y"
 
 
-def test_log_functions(capsys):
+def test_log_functions(capsys: LogCaptureFixture):
     """Tests the fatal_error() function."""
 
     # -- Create the scons env.
@@ -387,4 +392,151 @@ def test_log_functions(capsys):
     assert "Error: My fatal error\n" == captured.out
 
 
-# Add test for color forcing on/off
+def test_force_colors(capsys: LogCaptureFixture):
+    """Tests that the "force_colors" controls text coloring."""
+    # -- Creating an env without force_colors defaul to false.
+    env = _make_test_env()
+    assert not force_colors(env)
+
+    # -- Output a message and verify no ansi colors.
+    capsys.readouterr()  # clear
+    msg(env, "xyz", fg="red")
+    captured = capsys.readouterr()
+    assert captured.out == "xyz\n"
+
+    # -- Output a message and verify no ansi colors.
+    env = _make_test_env(extra_args={"force_colors": "False"})
+    assert not force_colors(env)
+
+    # -- Output a message and verify text is not colored.
+    capsys.readouterr()  # clear
+    msg(env, "xyz", fg="red")
+    captured = capsys.readouterr()
+    assert captured.out == "xyz\n"
+
+    # -- Creating an env without with force_colors = True
+    env = _make_test_env(extra_args={"force_colors": "True"})
+    assert force_colors(env)
+
+    # -- Output a message and verify text is colored.
+    capsys.readouterr()  # clear
+    msg(env, "xyz", fg="red")
+    captured = capsys.readouterr()
+    assert captured.out == "\x1b[31mxyz\x1b[0m\n"
+
+
+def test_get_constraint_file(
+    capsys: LogCaptureFixture, apio_runner: ApioRunner
+):
+    """Test the get_constraint_file() function."""
+
+    with apio_runner.in_disposable_temp_dir():
+
+        env = _make_test_env()
+
+        # -- If not .pcf files, should assume main name + extension and
+        # -- inform the user about it.
+        capsys.readouterr()  # Reset capture
+        result = get_constraint_file(env, ".pcf", "my_main")
+        captured = capsys.readouterr()
+        assert "assuming 'my_main.pcf'" in captured.out
+        assert result == "my_main.pcf"
+
+        # -- If a single .pcf file, return it.
+        Path("pinout.pcf").touch()
+        result = get_constraint_file(env, ".pcf", "my_main")
+        captured = capsys.readouterr()
+        assert captured.out == ""
+        assert result == "pinout.pcf"
+
+        # -- If thre is more than one, exit with an error message.
+        Path("other.pcf").touch()
+        capsys.readouterr()  # Reset capture
+        with pytest.raises(SystemExit) as e:
+            result = get_constraint_file(env, ".pcf", "my_main")
+        captured = capsys.readouterr()
+        assert e.value.code == 1
+        assert "Error: Found multiple '*.pcf'" in captured.out
+
+
+def test_get_programmer_cmd(capsys: LogCaptureFixture):
+    """Tests the function get_programmer_cmd()."""
+
+    # -- Without a "prog" arg, expected to return "". This is the case
+    # -- when scons handles a command that doesn't use the programmer.
+    env = _make_test_env()
+    assert get_programmer_cmd(env) == ""
+
+    # -- If prog is specified, expected to return it.
+    env = _make_test_env(extra_args={"prog": "my_prog aa $SOURCE bb"})
+    assert get_programmer_cmd(env) == "my_prog aa $SOURCE bb"
+
+    # -- If prog string doesn't contains $SOURCE, expected to exit with an
+    # -- error message.
+    env = _make_test_env(extra_args={"prog": "my_prog aa SOURCE bb"})
+    with pytest.raises(SystemExit) as e:
+        capsys.readouterr()  # Reset capturing.
+        get_programmer_cmd(env)
+    captured = capsys.readouterr()
+    assert e.value.code == 1
+    assert "does not contain the '$SOURCE'" in captured.out
+
+
+def test_make_verilator_config_builder(apio_runner: ApioRunner):
+    """Tests the make_verilator_config_builder() function."""
+
+    with apio_runner.in_disposable_temp_dir():
+
+        # -- Create a test scons env.
+        env = _make_test_env()
+
+        # -- Call the tested function to create a builder.
+        builder = make_verilator_config_builder(env, "test-text")
+
+        # -- Verify builder suffixes.
+        assert builder.suffix == ".vlt"
+        assert builder.src_suffix == []
+
+        # -- Create a target that doesn't exist yet.
+        assert not exists("hardware.vlt")
+        target = FS.File(FS(), "hardware.vlt")
+
+        # -- Invoke the builder's action to create the target.
+        builder.action(target, [], env)
+        assert isfile("hardware.vlt")
+
+        # -- Verify that the the file was created with the tiven text.
+        with open("hardware.vlt", "r", encoding="utf8") as f:
+            text = f.read()
+
+        assert text == "test-text"
+
+
+def test_get_source_files(apio_runner):
+    """Tests the get_source_files() function."""
+
+    with apio_runner.in_disposable_temp_dir():
+
+        # -- Create a test scons env.
+        env = _make_test_env()
+
+        # -- Make files verilog src names (out of order)
+        Path("bbb.v").touch()
+        Path("aaa.v").touch()
+
+        # -- Make files with testbench names (out of order)
+        Path("ccc_tb.v").touch()
+        Path("aaa_tb.v").touch()
+
+        # -- Make files with non related names.
+        Path("ddd.vh").touch()
+        Path("eee.vlt").touch()
+        Path("subdir").mkdir()
+        Path("subdir/eee.v").touch()
+
+        # -- Invoked the tested function.
+        srcs, testbenches = get_source_files(env)
+
+        # -- Verify results.
+        assert srcs == ["aaa.v", "bbb.v"]
+        assert testbenches == ["aaa_tb.v", "ccc_tb.v"]
