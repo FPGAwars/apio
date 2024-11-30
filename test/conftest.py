@@ -110,8 +110,7 @@ class ApioSandbox:
     ):
         """Invoke an apio command."""
 
-        print()
-        print(f"Invoking apio command [{cli.name}], args={args}.")
+        print(f"\nInvoking apio command [{cli.name}], args={args}.")
 
         # -- Check that this sandbox is still alive.
         assert not self.expired, "Sandbox expired."
@@ -123,14 +122,10 @@ class ApioSandbox:
         # -- Take a snapshot of the system env.
         original_env = os.environ.copy()
 
-        # -- Set the env to infrom the apio command where are the apio test
-        # -- home and packages dir are.
-        os.environ["APIO_HOME_DIR"] = str(self.home_dir)
-        os.environ["APIO_PACKAGES_DIR"] = str(self.packages_dir)
-
-        # -- We expect
-        assert FUNNY_MARKER in os.environ["APIO_HOME_DIR"]
-        assert FUNNY_MARKER in os.environ["APIO_PACKAGES_DIR"]
+        # -- These two env vars are set when creating the context. Let's
+        # -- check that the test didn't corrupt them.
+        assert os.environ["APIO_HOME_DIR"] == str(self.home_dir)
+        assert os.environ["APIO_PACKAGES_DIR"] == str(self.packages_dir)
 
         # -- Invoke the command. Get back the collected results.
         result = self._click_runner.invoke(
@@ -233,15 +228,13 @@ class ApioSandbox:
 
     def write_apio_ini(self, properties: Dict[str, str]):
         """Write in the current directory an apio.ini file with given
-        values. If an apio.ini file alread exists, it is overwritten.
-        if properties is None and an apio.ini file exists, it is deleted."""
+        values. If an apio.ini file alread exists, it is overwritten."""
 
         path = Path("apio.ini")
 
         # -- Handle a deletion request.
         if properties is None:
-            path.unlink(missing_ok=True)
-            return
+            properties = {"board": "icezum", "top-module": "main"}
 
         # -- Requested to write. Construct the lines.
         lines = ["[env]"]
@@ -312,7 +305,7 @@ class ApioRunner:
         packages_dir = temp_dir / "packages"
 
         if DEBUG:
-            print("")
+            print()
             print("--> apio sandbox:")
             print(f"       test dir          : {str(temp_dir)}")
             print(f"       apio proj dir     : {str(proj_dir)}")
@@ -323,6 +316,11 @@ class ApioRunner:
         # -- Register a sanbox objet to indicate that we are in a sandbox.
         assert self._sandbox is None
         self._sandbox = ApioSandbox(self, proj_dir, home_dir, packages_dir)
+
+        # -- Set the system env vars to inform ApioContext what are the
+        # -- home and packages dirs.
+        os.environ["APIO_HOME_DIR"] = str(home_dir)
+        os.environ["APIO_PACKAGES_DIR"] = str(packages_dir)
 
         try:
             # -- This is the end of the context manager _entry part. The
@@ -346,7 +344,7 @@ class ApioRunner:
             # -- Delete the temp directory.
             shutil.rmtree(temp_dir)
 
-            print("Exited apio sandbox. ")
+            print("\nSandbox deleted. ")
 
     @property
     def offline_flag(self) -> bool:
