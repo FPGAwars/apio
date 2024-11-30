@@ -996,10 +996,9 @@ class SCons:
             else click.style("SUCCESS", fg="green", bold=True)
         )
 
-        # -- Print all the information!
-        util.safe_click(
-            f"{half_line} [{status}]{summary_text}{half_line}",
-            err=is_error,
+        # -- Print the summary line.
+        click.secho(
+            f"{half_line} [{status}]{summary_text}{half_line}", err=is_error
         )
 
         # -- Return the exit code
