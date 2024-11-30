@@ -37,10 +37,11 @@ def fatal_usage_error(cmd_ctx: click.Context, msg: str) -> None:
     sys.exit(1)
 
 
-def _get_params_objs(
+def _get_all_params_definitions(
     cmd_ctx: click.Context,
 ) -> Dict[str, Union[click.Option, click.Argument]]:
-    """Return a mapping from param id to param obj."""
+    """Return a mapping from param id to param obj, for all options and
+    arguments that are defined for the command."""
     result = {}
     for param_obj in cmd_ctx.command.get_params(cmd_ctx):
         assert isinstance(param_obj, (click.Option, click.Argument)), type(
@@ -64,7 +65,7 @@ def _params_ids_to_aliases(
     e.g. "PACKAGES" for the argument packages.
     """
     # Param id -> param obj.
-    params_dict = _get_params_objs(cmd_ctx)
+    params_dict = _get_all_params_definitions(cmd_ctx)
 
     # Map the param ids to their canonical aliases.
     result = []
@@ -89,7 +90,7 @@ def _is_param_specified(cmd_ctx, param_id) -> bool:
     """Determine if the param with given id was specified in the
     command line."""
     # Mapping: param id -> param obj.
-    params_dict = _get_params_objs(cmd_ctx)
+    params_dict = _get_all_params_definitions(cmd_ctx)
     # Get the official status.
     param_src = cmd_ctx.get_parameter_source(param_id)
     is_specified = param_src == click.core.ParameterSource.COMMANDLINE
