@@ -14,13 +14,10 @@ def test_upload(apio_runner: ApioRunner):
     No additional parameters are given
     """
 
-    with apio_runner.in_disposable_temp_dir():
-
-        # -- Config the apio test environment
-        apio_runner.setup_env()
+    with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio upload"
-        result = apio_runner.invoke(apio_upload)
+        result = sb.invoke_apio_cmd(apio_upload)
 
         # -- Check the result
         assert result.exit_code == 1, result.output
@@ -33,13 +30,10 @@ def test_upload_board(apio_runner: ApioRunner):
     No oss-cad-suite package is installed
     """
 
-    with apio_runner.in_disposable_temp_dir():
-
-        # -- Config the apio test environment
-        apio_runner.setup_env()
+    with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio upload --board icezum"
-        result = apio_runner.invoke(apio_upload, ["--board", "icezum"])
+        result = sb.invoke_apio_cmd(apio_upload, ["--board", "icezum"])
 
         # -- Check the result
         assert result.exit_code == 1
@@ -53,31 +47,28 @@ def test_upload_complete(apio_runner: ApioRunner):
     No apio.ini file is given
     """
 
-    with apio_runner.in_disposable_temp_dir():
-
-        # -- Config the apio test environment
-        apio_runner.setup_env()
+    with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio upload --serial-port COM0"
-        result = apio_runner.invoke(apio_upload, ["--serial-port", "COM0"])
+        result = sb.invoke_apio_cmd(apio_upload, ["--serial-port", "COM0"])
         assert result.exit_code == 1, result.output
         assert "Info: Project has no apio.ini file" in result.output
         assert "Error: insufficient arguments: missing board" in result.output
 
         # -- Execute "apio upload --ftdi-id 0"
-        result = apio_runner.invoke(apio_upload, ["--ftdi-id", "0"])
+        result = sb.invoke_apio_cmd(apio_upload, ["--ftdi-id", "0"])
         assert result.exit_code == 1, result.output
         assert "Info: Project has no apio.ini file" in result.output
         assert "Error: insufficient arguments: missing board" in result.output
 
         # -- Execute "apio upload --sram"
-        result = apio_runner.invoke(apio_upload, ["--sram"])
+        result = sb.invoke_apio_cmd(apio_upload, ["--sram"])
         assert result.exit_code == 1, result.output
         assert "Info: Project has no apio.ini file" in result.output
         assert "Error: insufficient arguments: missing board" in result.output
 
         # -- Execute "apio upload --board icezum --serial-port COM0"
-        result = apio_runner.invoke(
+        result = sb.invoke_apio_cmd(
             apio_upload, ["--board", "icezum", "--serial-port", "COM0"]
         )
         assert result.exit_code == 1, result.output
@@ -86,7 +77,7 @@ def test_upload_complete(apio_runner: ApioRunner):
         )
 
         # -- Execute "apio upload --board icezum --ftdi-id 0"
-        result = apio_runner.invoke(
+        result = sb.invoke_apio_cmd(
             apio_upload, ["--board", "icezum", "--ftdi-id", "0"]
         )
         assert result.exit_code == 1, result.output
@@ -95,7 +86,7 @@ def test_upload_complete(apio_runner: ApioRunner):
         )
 
         # -- Execute "apio upload --board icezum --sram"
-        result = apio_runner.invoke(
+        result = sb.invoke_apio_cmd(
             apio_upload, ["--board", "icezum", "--sram"]
         )
         assert result.exit_code == 1, result.output

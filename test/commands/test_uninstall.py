@@ -11,21 +11,18 @@ from apio.commands.uninstall import cli as apio_uninstall
 def test_uninstall(apio_runner: ApioRunner):
     """Test "apio uninstall" with different parameters"""
 
-    with apio_runner.in_disposable_temp_dir():
-
-        # -- Config the apio test environment
-        apio_runner.setup_env()
+    with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio uninstall"
-        result = apio_runner.invoke(apio_uninstall)
-        apio_runner.assert_ok(result)
+        result = sb.invoke_apio_cmd(apio_uninstall)
+        sb.assert_ok(result)
 
         # -- Execute "apio uninstall --list"
-        result = apio_runner.invoke(apio_uninstall, ["--list"])
-        apio_runner.assert_ok(result)
+        result = sb.invoke_apio_cmd(apio_uninstall, ["--list"])
+        sb.assert_ok(result)
 
         # -- Execute "apio uninstall missing_packge"
-        result = apio_runner.invoke(
+        result = sb.invoke_apio_cmd(
             apio_uninstall, ["missing_package"], input="y"
         )
         assert result.exit_code == 1, result.output

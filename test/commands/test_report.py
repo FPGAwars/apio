@@ -16,13 +16,10 @@ def test_report(apio_runner: ApioRunner):
     No additional parameters are given
     """
 
-    with apio_runner.in_disposable_temp_dir():
-
-        # -- Config the apio test environment
-        apio_runner.setup_env()
+    with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio report"
-        result = apio_runner.invoke(apio_report)
+        result = sb.invoke_apio_cmd(apio_report)
 
         # -- Check the result
         assert result.exit_code != 0, result.output
@@ -35,13 +32,10 @@ def test_report_board(apio_runner: ApioRunner):
     when parameters are given
     """
 
-    with apio_runner.in_disposable_temp_dir():
-
-        # -- Config the apio test environment
-        apio_runner.setup_env()
+    with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio report"
-        result = apio_runner.invoke(apio_report, ["--board", "icezum"])
+        result = sb.invoke_apio_cmd(apio_report, ["--board", "icezum"])
 
         # -- Check the result
         assert result.exit_code != 0, result.output

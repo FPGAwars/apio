@@ -14,13 +14,10 @@ def test_verify(apio_runner: ApioRunner):
     No additional parameters are given
     """
 
-    with apio_runner.in_disposable_temp_dir():
-
-        # -- Config the apio test environment
-        apio_runner.setup_env()
+    with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio verify"
-        result = apio_runner.invoke(apio_verify, ["--board", "icezum"])
+        result = sb.invoke_apio_cmd(apio_verify, ["--board", "icezum"])
 
         # -- Check the result
         assert result.exit_code != 0, result.output

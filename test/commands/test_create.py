@@ -29,29 +29,26 @@ def _check_ini_file(apio_ini: Path, expected_vars: Dict[str, str]) -> None:
 def test_create(apio_runner: ApioRunner):
     """Test "apio create" with different parameters"""
 
-    with apio_runner.in_disposable_temp_dir():
-
-        # -- Config the apio test environment
-        apio_runner.setup_env()
+    with apio_runner.in_sandbox() as sb:
 
         apio_ini = Path("apio.ini")
         assert not exists(apio_ini)
 
         # -- Execute "apio create"
-        result = apio_runner.invoke(apio_create)
+        result = sb.invoke_apio_cmd(apio_create)
         assert result.exit_code != 0, result.output
         assert "Error: Missing option" in result.output
         assert not exists(apio_ini)
 
         # -- Execute "apio create --board missed_board"
-        result = apio_runner.invoke(apio_create, ["--board", "missed_board"])
+        result = sb.invoke_apio_cmd(apio_create, ["--board", "missed_board"])
         assert result.exit_code == 1, result.output
         assert "Error: no such board" in result.output
         assert not exists(apio_ini)
 
         # -- Execute "apio create --board icezum"
-        result = apio_runner.invoke(apio_create, ["--board", "icezum"])
-        apio_runner.assert_ok(result)
+        result = sb.invoke_apio_cmd(apio_create, ["--board", "icezum"])
+        sb.assert_ok(result)
         assert "file already exists" not in result.output
         assert "Do you want to replace it?" not in result.output
         assert "Creating apio.ini file ..." in result.output
@@ -60,12 +57,12 @@ def test_create(apio_runner: ApioRunner):
 
         # -- Execute "apio create --board alhambra-ii
         # --                      --top-module my_module" with 'y' input"
-        result = apio_runner.invoke(
+        result = sb.invoke_apio_cmd(
             apio_create,
             ["--board", "alhambra-ii", "--top-module", "my_module"],
             input="y",
         )
-        apio_runner.assert_ok(result)
+        sb.assert_ok(result)
         assert "Warning" in result.output
         assert "file already exists" in result.output
         assert "Do you want to replace it?" in result.output
@@ -77,11 +74,11 @@ def test_create(apio_runner: ApioRunner):
         # -- Execute "apio create --board icezum
         # --                      --top-module my_module
         # --                      --sayyse" with 'y' input
-        result = apio_runner.invoke(
+        result = sb.invoke_apio_cmd(
             apio_create,
             ["--board", "icezum", "--top-module", "my_module", "--sayyes"],
         )
-        apio_runner.assert_ok(result)
+        sb.assert_ok(result)
         assert "was created successfully." in result.output
         _check_ini_file(
             apio_ini, {"board": "icezum", "top-module": "my_module"}
@@ -89,7 +86,7 @@ def test_create(apio_runner: ApioRunner):
 
         # -- Execute "apio create --board alhambra-ii
         # --                      --top-module my_module" with 'n' input
-        result = apio_runner.invoke(
+        result = sb.invoke_apio_cmd(
             apio_create,
             ["--board", "alhambra-ii", "--top-module", "my_module"],
             input="n",

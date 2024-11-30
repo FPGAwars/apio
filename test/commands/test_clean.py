@@ -15,13 +15,10 @@ def test_clean_no_apio_ini_no_params(apio_runner: ApioRunner):
     No additional parameters are given
     """
 
-    with apio_runner.in_disposable_temp_dir():
-
-        # -- Config the apio test environment
-        apio_runner.setup_env()
+    with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio clean"
-        result = apio_runner.invoke(apio_clean)
+        result = sb.invoke_apio_cmd(apio_clean)
 
         # -- It is an error. Exit code should not be 0
         assert result.exit_code != 0, result.output
@@ -29,7 +26,7 @@ def test_clean_no_apio_ini_no_params(apio_runner: ApioRunner):
         assert "Error: insufficient arguments: missing board" in result.output
 
         # -- Execute "apio clean --board alhambra-ii"
-        result = apio_runner.invoke(apio_clean, ["--board", "alhambra-ii"])
+        result = sb.invoke_apio_cmd(apio_clean, ["--board", "alhambra-ii"])
         assert result.exit_code == 0, result.output
 
 
@@ -38,10 +35,7 @@ def test_clean_no_apio_ini_params(apio_runner: ApioRunner):
     comes from --board parameter.
     """
 
-    with apio_runner.in_disposable_temp_dir():
-
-        # -- Config the apio test environment
-        apio_runner.setup_env()
+    with apio_runner.in_sandbox() as sb:
 
         # -- Create a legacy artifact file.
         Path("main_tb.vcd").touch()
@@ -55,7 +49,7 @@ def test_clean_no_apio_ini_params(apio_runner: ApioRunner):
         assert Path("_build/main_tb.vcd").is_file()
 
         # -- Execute "apio clean --board alhambra-ii"
-        result = apio_runner.invoke(apio_clean, ["--board", "alhambra-ii"])
+        result = sb.invoke_apio_cmd(apio_clean, ["--board", "alhambra-ii"])
         assert result.exit_code == 0, result.output
 
         # Confirm that the files do not exist.
@@ -66,13 +60,10 @@ def test_clean_no_apio_ini_params(apio_runner: ApioRunner):
 def test_clean_create(apio_runner: ApioRunner):
     """Test: apio clean when there is an apio.ini file"""
 
-    with apio_runner.in_disposable_temp_dir():
-
-        # -- Config the apio test environment
-        apio_runner.setup_env()
+    with apio_runner.in_sandbox() as sb:
 
         # -- Create apio.ini
-        apio_runner.write_apio_ini({"board": "icezum", "top-module": "main"})
+        sb.write_apio_ini({"board": "icezum", "top-module": "main"})
 
         # -- Create a legacy artifact file.
         Path("main_tb.vcd").touch()
@@ -86,7 +77,7 @@ def test_clean_create(apio_runner: ApioRunner):
         assert Path("_build/main_tb.vcd").is_file()
 
         # --- Execute "apio clean"
-        result = apio_runner.invoke(apio_clean)
+        result = sb.invoke_apio_cmd(apio_clean)
         assert result.exit_code == 0, result.output
 
         # Confirm that the files do not exist.

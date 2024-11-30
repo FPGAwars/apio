@@ -3,8 +3,11 @@ Pytest
 TEST configuration file
 """
 
+import shutil
+import tempfile
+import contextlib
 from pathlib import Path
-from typing import Tuple, List, Union
+from typing import List, Union, cast, Optional
 from typing import Dict
 import os
 
@@ -47,96 +50,46 @@ def pytest_addoption(parser: pytest.Parser):
     )
 
 
-class ApioRunner:
-    """Apio commands test helper. An object of this class is provided to the
-    tests via the apio_runner fixture and a typical tests looks like this:
+class ApioSandbox:
+    """Accessor for sandbox values. Available to the user inside an
+    ApioRunner sandbox scope."""
 
-    def test_my_cmd(apio_runner):
-        with apio_runner.isolated_filesystem():
-
-           apio_runner.setup_env()
-
-           <the test body>
-    """
-
-    def __init__(self, request):
-        # -- A CliRunner instance that is used for creating temp directories
-        # -- and to invoke apio commands.
-        self._request = request
+    def __init__(
+        self,
+        apio_runner_: "ApioRunner",
+        proj_dir: Path,
+        home_dir: Path,
+        packages_dir: Path,
+    ):
+        self._apio_runner = apio_runner_
+        self._proj_dir = proj_dir
+        self._home_dir = home_dir
+        self._packages_dir = packages_dir
         self._click_runner = CliRunner()
 
-        # -- Save the original system path so we can restore it before each
-        # -- invocation since some apio commands mutate it and pytest runs
-        # -- multiple apio command in the same python process.
-        self._original_path = os.environ["PATH"]
-
-        # -- Set later by set_env().
-        self._proj_dir: Path = None
-        self._home_dir: Path = None
-        self._packages_dir: Path = None
-
-    def in_disposable_temp_dir(self):
-        """Returns a context manager which creates a temp directory upon
-        entering it and deleting it upon existing."""
-        return self._click_runner.isolated_filesystem()
-
-    def setup_env(self) -> Tuple[Path, Path, Path]:
-        """Should be called by the test within the 'in_disposable_temp_dir'
-        scope to set up the apio specific environment."""
-        # -- Current directory is the root test dir. Should be empty.
-        test_dir = Path.cwd()
-        assert not os.listdir(test_dir)
-
-        # -- Using unicode and space to verify that they are handled correctly.
-        funny_dir = test_dir / FUNNY_MARKER
-        funny_dir.mkdir(parents=False, exist_ok=False)
-
-        # -- Apio dirs
-        self._proj_dir = funny_dir / "proj"
-        self._home_dir = funny_dir / "apio"
-        self._packages_dir = funny_dir / "packages"
-
-        if DEBUG:
-            print("")
-            print("  --> apio_runner.setup_env():")
-            print(f"       test dir          : {str(test_dir)}")
-            print(f"       apio proj dir     : {str(self._proj_dir)}")
-            print(f"       apio home dir     : {str(self._home_dir)}")
-            print(f"       apio packages dir : {str(self._packages_dir)}")
-
-        # -- Apio dirs do not exist yet.
-        assert not self._proj_dir.exists()
-        assert not self._home_dir.exists()
-        assert not self._packages_dir.exists()
-
-        # -- TODO: This looks like a flag. Describe what it do.
-        os.environ["TESTING"] = ""
-
-        # -- All done, return the values.
-        return (
-            self._proj_dir,
-            self._home_dir,
-            self._packages_dir,
-        )
+    @property
+    def expired(self) -> bool:
+        """Returns true if this sandbox was expired."""
+        # -- This tests if this sandbox is still the active sandbox at the
+        # -- apio runner that creates it.
+        return self is not self._apio_runner.sandbox
 
     @property
-    def proj_dir(self):
-        """Return the apio project dir. Must call setup_env() first."""
-        assert self._proj_dir is not None, "Apio runner env was not set yet."
+    def proj_dir(self) -> Path:
+        """Returns the sandbox's apio project dir."""
+        assert not self.expired, "Sanbox expired"
         return self._proj_dir
 
     @property
-    def home_dir(self):
-        """Return the apio home dir. Must call setup_env() first."""
-        assert self._home_dir is not None, "Apio runner env was not set yet."
+    def home_dir(self) -> Path:
+        """Returns the sandbox's apio home dir."""
+        assert not self.expired, "Sanbox expired"
         return self._home_dir
 
     @property
-    def packages_dir(self):
-        """Return the apio packages dir. Must call setup_env() first."""
-        assert (
-            self._packages_dir is not None
-        ), "Apio runner env was not set yet."
+    def packages_dir(self) -> Path:
+        """Returns the sandbox's apio packages dir."""
+        assert not self.expired, "Sanbox expired"
         return self._packages_dir
 
     # R0913: Too many arguments (7/5) (too-many-arguments)
@@ -145,7 +98,7 @@ class ApioRunner:
     # pylint: disable=W0622
     # R0917: Too many positional arguments (7/5)
     # pylint: disable=R0917
-    def invoke(
+    def invoke_apio_cmd(
         self,
         cli,
         args=None,
@@ -157,21 +110,25 @@ class ApioRunner:
     ):
         """Invoke an apio command."""
 
-        # -- Restore the original path, since some apio commands mutate it and
-        # -- pytest runs multiple commands in the same python process.
-        os.environ["PATH"] = self._original_path
+        print()
+        print(f"Invoking apio command [{cli.name}], args={args}.")
 
-        # -- This typically fails if the test did not call setup_env() before4
-        # -- invoking a command.
-        assert FUNNY_MARKER in str(self._home_dir)
-        assert FUNNY_MARKER in str(self._packages_dir)
+        # -- Check that this sandbox is still alive.
+        assert not self.expired, "Sandbox expired."
+
+        # -- Since we restore the env after invoking the apio command, we
+        # -- don't expect path changes by the command to survive here.
+        assert FUNNY_MARKER not in os.environ["PATH"]
+
+        # -- Take a snapshot of the system env.
+        original_env = os.environ.copy()
 
         # -- Set the env to infrom the apio command where are the apio test
         # -- home and packages dir are.
-        os.environ["APIO_HOME_DIR"] = str(self._home_dir)
-        os.environ["APIO_PACKAGES_DIR"] = str(self._packages_dir)
+        os.environ["APIO_HOME_DIR"] = str(self.home_dir)
+        os.environ["APIO_PACKAGES_DIR"] = str(self.packages_dir)
 
-        # -- Double check.
+        # -- We expect
         assert FUNNY_MARKER in os.environ["APIO_HOME_DIR"]
         assert FUNNY_MARKER in os.environ["APIO_PACKAGES_DIR"]
 
@@ -185,6 +142,10 @@ class ApioRunner:
             color=color,
             **extra,
         )
+
+        # -- Restore system env. Since apio commands tend to change vars
+        # -- such as PATH.
+        self.set_system_env(original_env)
 
         return result
 
@@ -200,31 +161,37 @@ class ApioRunner:
         # -- The word 'error' should NOT appear on the standard output
         assert "error" not in result.output.lower()
 
-    def write_apio_ini(self, properties: Dict[str, str]):
-        """Write in the current directory an apio.ini file with given
-        values. If an apio.ini file alread exists, it is overwritten.
-        if properties is None and an apio.ini file exists, it is deleted."""
+    def set_system_env(self, new_vars: Dict[str, str]) -> None:
+        """Overwirte the existing sys.environ with the given dirct. Vars
+        that are not in the dict are deleted and vars that have a different
+        value in the dict is updated.  Can be called only within a
+        an apio sandbox."""
 
-        path = Path("apio.ini")
+        # -- Check that the sandox not expired.
+        assert not self.expired, "Sandox expired"
 
-        # -- Handle a deletion request.
-        if properties is None:
-            path.unlink(missing_ok=True)
-            return
+        # -- NOTE: naivly assining the dict to os.environ will break
+        # -- os.environ since a simple dict doesn't update the underlying
+        # -- system env when it's mutated.
 
-        # -- Requested to write. Construct the lines.
-        lines = ["[env]"]
-        for name, value in properties.items():
-            lines.append(f"{name} = {value}")
+        print("\nRestoring os.environ:")
 
-        # -- Write the file.
-        self.write_file(path, lines)
+        # -- Construct the union of the env and the dict var names.
+        all_var_names = set(os.environ.keys()).union(new_vars.keys())
+        for name in all_var_names:
+            # Get the env and dict values. None if doesn't exist.
+            env_val = os.environ.get(name, None)
+            dict_val = new_vars.get(name, None)
+            # -- If values are not the same, update the env.
+            if env_val != dict_val:
+                print(f"  set ${name}={dict_val}  (was {env_val})")
+                if dict_val is None:
+                    os.environ.pop(name)
+                else:
+                    os.environ[name] = dict_val
 
-    @property
-    def offline_flag(self) -> bool:
-        """Returns True if pytest was invoked with --offline to skip
-        tests that require internet connectivity and are slower in general."""
-        return self._request.config.getoption("--offline")
+        # -- Sanity check. System env and the dict should be the same.
+        assert os.environ == new_vars
 
     def write_file(
         self,
@@ -263,6 +230,129 @@ class ApioRunner:
 
         # -- All done
         return text
+
+    def write_apio_ini(self, properties: Dict[str, str]):
+        """Write in the current directory an apio.ini file with given
+        values. If an apio.ini file alread exists, it is overwritten.
+        if properties is None and an apio.ini file exists, it is deleted."""
+
+        path = Path("apio.ini")
+
+        # -- Handle a deletion request.
+        if properties is None:
+            path.unlink(missing_ok=True)
+            return
+
+        # -- Requested to write. Construct the lines.
+        lines = ["[env]"]
+        for name, value in properties.items():
+            lines.append(f"{name} = {value}")
+
+        # -- Write the file.
+        self.write_file(path, lines)
+
+    @property
+    def offline_flag(self):
+        """Returns True if pytest was invoked with --offline to skip
+        tests that require internet connectivity and are slower in general."""
+        assert not self.expired, "Trying to use an expired sandbox"
+        return self._apio_runner.offline_flag
+
+
+class ApioRunner:
+    """Apio commands test helper. Provides an apio sandbox functionality
+    (disposable temp dirs and sys.environ restoration) as well as a few
+    utility functions. A typical test with the ApiRunner looks like this:
+
+    def test_my_cmd(apio_runner):
+        with apio_runner.in_sandbox() as sb:
+
+           <the test body>
+    """
+
+    def __init__(self, request):
+        # -- A CliRunner instance that is used for creating temp directories
+        # -- and to invoke apio commands.
+        self._request = request
+
+        # -- Indicate that we are not in a sandbox
+        self._sandbox: ApioSandbox = None
+
+    @property
+    def sandbox(self) -> Optional[ApioSandbox]:
+        """Returns the sandbox object or None if not in a sandbox."""
+        return self._sandbox
+
+    @contextlib.contextmanager
+    def in_sandbox(self):
+        """Create an apio sandbox context manager that delete the temp dir
+        and restore the system env upon exist. A typical invocation is
+
+        with apio_runner.in_sandbox() as sb:
+
+           ...
+        """
+        # -- Make sure we don't try to nest sandboxes.
+        assert self._sandbox is None, "Already in a sandbox."
+
+        # -- Snatpshot the system env.
+        original_env: Dict[str, str] = os.environ.copy()
+
+        # -- Snapshot the current directory.
+        original_cwd = os.getcwd()
+
+        # -- Create a temp dir that will be deleted on exit and change to it.
+        temp_dir = Path(tempfile.mkdtemp(prefix=FUNNY_MARKER + "-"))
+        os.chdir(temp_dir)
+
+        # -- Construct the sandbox dir pathes. User will create the dirs
+        # -- as needed.
+        proj_dir = temp_dir / "proj"
+        home_dir = temp_dir / "apio"
+        packages_dir = temp_dir / "packages"
+
+        if DEBUG:
+            print("")
+            print("--> apio sandbox:")
+            print(f"       test dir          : {str(temp_dir)}")
+            print(f"       apio proj dir     : {str(proj_dir)}")
+            print(f"       apio home dir     : {str(home_dir)}")
+            print(f"       apio packages dir : {str(packages_dir)}")
+            print()
+
+        # -- Register a sanbox objet to indicate that we are in a sandbox.
+        assert self._sandbox is None
+        self._sandbox = ApioSandbox(self, proj_dir, home_dir, packages_dir)
+
+        try:
+            # -- This is the end of the context manager _entry part. The
+            # -- call to _exit will continue execution after the yeield.
+            # -- Value is the sandox object we pass to the user.
+            yield cast(ApioSandbox, self._sandbox)
+
+        finally:
+            # -- Here when the context manager exit, normally or through an
+            # -- exception.
+
+            # -- Restore the original system env.
+            self._sandbox.set_system_env(original_env)
+
+            # -- Mark that we exited the sanbox. This expires the sandbox.
+            self._sandbox = None
+
+            # -- Change back to the original directory.
+            os.chdir(original_cwd)
+
+            # -- Delete the temp directory.
+            shutil.rmtree(temp_dir)
+
+            print("Exited apio sandbox. ")
+
+    @property
+    def offline_flag(self) -> bool:
+        """Returns True if pytest was invoked with --offline to skip
+        tests that require internet connectivity and are slower in general."""
+        return self._request.config.getoption("--offline")
 
 
 @pytest.fixture(scope="session")

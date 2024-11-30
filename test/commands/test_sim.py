@@ -14,12 +14,9 @@ def test_sim(apio_runner: ApioRunner):
     No additional parameters are given
     """
 
-    with apio_runner.in_disposable_temp_dir():
-
-        # -- Config the apio test environment
-        apio_runner.setup_env()
+    with apio_runner.in_sandbox() as sb:
 
         # -- apio sim --board icezum
-        result = apio_runner.invoke(apio_sim)
+        result = sb.invoke_apio_cmd(apio_sim)
         assert result.exit_code != 0, result.output
         # -- TODO
