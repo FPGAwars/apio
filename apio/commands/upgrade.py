@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 """Implementation of 'apio upgrade' command"""
 
+import sys
 import importlib.metadata
 import click
 from packaging import version
@@ -34,7 +35,7 @@ Examples:
     cls=cmd_util.ApioCommand,
 )
 @click.pass_context
-def cli(cmd_ctx: click.core.Context):
+def cli(_: click.core.Context):
     """Check the latest Apio version."""
 
     # -- Get the current apio version from the python package installed
@@ -46,7 +47,7 @@ def cli(cmd_ctx: click.core.Context):
 
     # -- There was an error getting the version from pypi
     if latest_version is None:
-        cmd_ctx.exit(1)
+        sys.exit(1)
 
     # -- Print information about apio (Debug)
     print(f"Local Apio version: {current_version}")

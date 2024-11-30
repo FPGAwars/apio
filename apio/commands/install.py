@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 """Implementation of 'apio install' command"""
 
+import sys
 import shutil
 from pathlib import Path
 from typing import Tuple
@@ -158,7 +159,7 @@ def cli(
     # -- Install the given apio packages
     if packages:
         _install_packages(apio_ctx, packages, force, verbose)
-        cmd_ctx.exit(0)
+        sys.exit(0)
 
     # -- Install all the available packages (if any)
     if all_:
@@ -166,12 +167,12 @@ def cli(
         _install_packages(
             apio_ctx, apio_ctx.platform_packages.keys(), force, verbose
         )
-        cmd_ctx.exit(0)
+        sys.exit(0)
 
     # -- List all the packages (installed or not)
     if list_:
         _list_packages(apio_ctx)
-        cmd_ctx.exit(0)
+        sys.exit(0)
 
     # -- Invalid option. Just show the help
     click.secho(cmd_ctx.get_help())

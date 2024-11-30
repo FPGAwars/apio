@@ -254,7 +254,7 @@ class ApioContext:
             click.secho(f"{exc}\n", fg="red")
 
             # -- Abort!
-            sys.exit(2)
+            sys.exit(1)
 
         # -- Parse the json format!
         try:

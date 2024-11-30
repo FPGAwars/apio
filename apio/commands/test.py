@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 """Implementation of 'apio test' command"""
 
+import sys
 from pathlib import Path
 import click
 from apio.managers.scons import SCons
@@ -50,7 +51,7 @@ signals see the apio sim command.
 @options.project_dir_option
 # @options.testbench
 def cli(
-    cmd_ctx: click.core.Context,
+    _: click.core.Context,
     # Arguments
     testbench_file: str,
     # Options
@@ -65,4 +66,4 @@ def cli(
     scons = SCons(apio_ctx)
 
     exit_code = scons.test({"testbench": testbench_file})
-    cmd_ctx.exit(exit_code)
+    sys.exit(exit_code)

@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 """Implementation of 'apio' time' command"""
 
+import sys
 from pathlib import Path
 import click
 from apio.managers.scons import SCons
@@ -45,7 +46,7 @@ The command 'apio time' has been deprecated. Please use the command
 @options.type_option_gen(deprecated=False)
 @options.pack_option_gen(deprecated=False)
 def cli(
-    cmd_ctx: click.core.Context,
+    _: click.core.Context,
     # Options
     project_dir: Path,
     verbose: bool,
@@ -89,4 +90,4 @@ def cli(
     )
 
     # -- Done!
-    cmd_ctx.exit(exit_code)
+    sys.exit(exit_code)

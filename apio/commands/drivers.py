@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 """Implementation of 'apio drivers' command"""
 
+import sys
 from varname import nameof
 import click
 from apio.managers.drivers import Drivers
@@ -105,22 +106,22 @@ def cli(
     # -- FTDI install option
     if ftdi_install:
         exit_code = drivers.ftdi_install()
-        cmd_ctx.exit(exit_code)
+        sys.exit(exit_code)
 
     # -- FTDI uninstall option
     if ftdi_uninstall:
         exit_code = drivers.ftdi_uninstall()
-        cmd_ctx.exit(exit_code)
+        sys.exit(exit_code)
 
     # -- Serial install option
     if serial_install:
         exit_code = drivers.serial_install()
-        cmd_ctx.exit(exit_code)
+        sys.exit(exit_code)
 
     # -- Serial uninstall option
     if serial_uninstall:
         exit_code = drivers.serial_uninstall()
-        cmd_ctx.exit(exit_code)
+        sys.exit(exit_code)
 
     # -- No options. Show the help
     click.secho(cmd_ctx.get_help())

@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 """Implementation of 'apio create' command"""
 
+import sys
 from pathlib import Path
 import click
 from apio.managers.project import Project, DEFAULT_TOP_MODULE, PROJECT_FILENAME
@@ -59,7 +60,7 @@ the supported boards.
 @options.project_dir_option
 @options.sayyes
 def cli(
-    cmd_ctx: click.core.Context,
+    _: click.core.Context,
     # Options
     board: str,
     top_module: str,
@@ -89,4 +90,4 @@ def cli(
     )
 
     exit_code = 0 if ok else 1
-    cmd_ctx.exit(exit_code)
+    sys.exit(exit_code)

@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 """Implementation of 'apio sim' command"""
 
+import sys
 from pathlib import Path
 import click
 from apio.managers.scons import SCons
@@ -51,7 +52,7 @@ configuration for future invocations.
 @click.argument("testbench", nargs=1, required=True)
 @options.project_dir_option
 def cli(
-    cmd_ctx,
+    _: click.core.Context,
     # Arguments
     testbench: str,
     # Options
@@ -71,4 +72,4 @@ def cli(
     exit_code = scons.sim({"testbench": testbench})
 
     # -- Done!
-    cmd_ctx.exit(exit_code)
+    sys.exit(exit_code)

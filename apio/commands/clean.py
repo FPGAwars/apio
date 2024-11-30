@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 """Implementation of 'apio clean' command"""
 
+import sys
 from pathlib import Path
 import click
 from apio.managers.scons import SCons
@@ -43,7 +44,7 @@ the temporary apio file names.
 @options.project_dir_option
 @options.board_option_gen(deprecated=True)
 def cli(
-    cmd_ctx: click.core.Context,
+    _: click.core.Context,
     # Options
     project_dir: Path,
     # Deprecated options.
@@ -63,4 +64,4 @@ def cli(
     exit_code = scons.clean({"board": board})
 
     # -- Done!
-    cmd_ctx.exit(exit_code)
+    sys.exit(exit_code)

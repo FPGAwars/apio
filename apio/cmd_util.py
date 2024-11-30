@@ -9,7 +9,7 @@
 # ---- Licence Apache v2
 """Utility functionality for apio click commands. """
 
-
+import sys
 from typing import Mapping, List, Tuple, Any, Dict, Union
 import click
 
@@ -34,7 +34,7 @@ def fatal_usage_error(cmd_ctx: click.Context, msg: str) -> None:
     )
     click.secho()
     click.secho(f"Error: {msg}", fg="red")
-    cmd_ctx.exit(1)
+    sys.exit(1)
 
 
 def _get_params_objs(

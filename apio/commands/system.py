@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 """Implementation of 'apio system' command"""
 
+import sys
 from pathlib import Path
 import importlib.metadata
 from varname import nameof
@@ -128,17 +129,17 @@ def cli(
     # -- List all connected ftdi devices
     if lsftdi:
         exit_code = system.lsftdi()
-        cmd_ctx.exit(exit_code)
+        sys.exit(exit_code)
 
     # -- List all connected USB devices
     if lsusb:
         exit_code = system.lsusb()
-        cmd_ctx.exit(exit_code)
+        sys.exit(exit_code)
 
     # -- List all connected serial devices
     if lsserial:
         exit_code = system.lsserial()
-        cmd_ctx.exit(exit_code)
+        sys.exit(exit_code)
 
     # -- Show system information
     if info:
@@ -162,7 +163,7 @@ def cli(
         click.secho("Apio packages   ", nl=False)
         click.secho(apio_ctx.packages_dir, fg="cyan")
 
-        cmd_ctx.exit(0)
+        sys.exit(0)
 
     if platforms:
         click.secho(
@@ -180,7 +181,7 @@ def cli(
                 f"  {platform_id:18} {package_selector:20} {description}",
                 fg=fg,
             )
-        cmd_ctx.exit(0)
+        sys.exit(0)
 
     # -- Error, no option selected.
     assert 0, "Non reachable"

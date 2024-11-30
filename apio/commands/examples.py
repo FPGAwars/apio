@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 """Implementation of 'apio examples' command"""
 
+import sys
 from pathlib import Path
 from varname import nameof
 import click
@@ -104,16 +105,16 @@ def cli(
     # -- Option: Copy the directory
     if fetch_dir:
         exit_code = examples.copy_example_dir(fetch_dir, project_dir, sayno)
-        cmd_ctx.exit(exit_code)
+        sys.exit(exit_code)
 
     # -- Option: Copy only the example files (not the initial folders)
     if fetch_files:
         exit_code = examples.copy_example_files(
             fetch_files, project_dir, sayno
         )
-        cmd_ctx.exit(exit_code)
+        sys.exit(exit_code)
 
     # -- Option: List all the available examples
     assert list_
     exit_code = examples.list_examples()
-    cmd_ctx.exit(exit_code)
+    sys.exit(exit_code)
