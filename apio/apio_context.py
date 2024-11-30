@@ -11,7 +11,6 @@ import json
 import re
 import platform
 from collections import OrderedDict
-import shutil
 from pathlib import Path
 from typing import Optional, Dict
 import click
@@ -429,62 +428,6 @@ class ApioContext:
 
         # -- Return the packages, classified
         return installed_packages, notinstalled_packages
-
-    def list_packages(self, installed=True, notinstalled=True):
-        """Return a list with all the installed/notinstalled packages"""
-
-        # Classify packages
-        installed_packages, notinstalled_packages = (
-            self.get_platform_packages_lists()
-        )
-
-        # -- Calculate the terminal width
-        terminal_width, _ = shutil.get_terminal_size()
-
-        # -- String with a horizontal line with the same width
-        # -- as the terminal
-        line = "─" * terminal_width
-        dline = "═" * terminal_width
-
-        if installed and installed_packages:
-
-            # ------- Print installed packages table
-            # -- Print the header
-            click.secho()
-            click.secho(dline, fg="green")
-            click.secho("Installed packages:", fg="green")
-
-            for package in installed_packages:
-                click.secho(line)
-                name = click.style(f"{package['name']}", fg="cyan", bold=True)
-                version = package["version"]
-                description = package["description"]
-
-                click.secho(f"• {name} {version}")
-                click.secho(f"  {description}")
-
-            click.secho(dline, fg="green")
-            click.secho(f"Total: {len(installed_packages)}")
-
-        if notinstalled and notinstalled_packages:
-
-            # ------ Print not installed packages table
-            # -- Print the header
-            click.secho()
-            click.secho(dline, fg="yellow")
-            click.secho("Available packages (Not installed):", fg="yellow")
-
-            for package in notinstalled_packages:
-
-                click.secho(line)
-                name = click.style(f"• {package['name']}", fg="red")
-                description = package["description"]
-                click.secho(f"{name}  {description}")
-
-            click.secho(dline, fg="yellow")
-            click.secho(f"Total: {len(notinstalled_packages)}")
-
-        click.secho("\n")
 
     def get_package_dir(self, package_name: str) -> Path:
         """Returns the root path of a package with given name."""

@@ -14,7 +14,7 @@ import click
 from apio.managers.old_installer import Installer
 from apio import cmd_util
 from apio.apio_context import ApioContext
-from apio.commands import options
+from apio.commands import options, install
 
 
 # R0801: Similar lines in 2 files
@@ -107,7 +107,9 @@ def cli(
 
     # -- List all the packages (installed or not)
     if list_:
-        apio_ctx.list_packages()
+        # pylint: disable=protected-access
+        install._list_packages(apio_ctx)
+        # pylint: enable=protected-access
         cmd_ctx.exit(0)
 
     # -- Invalid option. Just show the help

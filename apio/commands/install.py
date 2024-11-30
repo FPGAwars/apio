@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 """Implementation of 'apio install' command"""
 
+import shutil
 from pathlib import Path
 from typing import Tuple
 from varname import nameof
@@ -43,6 +44,63 @@ def _install_packages(
 
         # -- Install the package!
         installer.install()
+
+
+def _list_packages(apio_ctx: ApioContext, installed=True, notinstalled=True):
+    """Print the packages list."""
+
+    # Classify packages
+    installed_packages, notinstalled_packages = (
+        apio_ctx.get_platform_packages_lists()
+    )
+
+    # -- Calculate the terminal width
+    terminal_width, _ = shutil.get_terminal_size()
+
+    # -- String with a horizontal line with the same width
+    # -- as the terminal
+    line = "─" * terminal_width
+    dline = "═" * terminal_width
+
+    if installed and installed_packages:
+
+        # ------- Print installed packages table
+        # -- Print the header
+        click.secho()
+        click.secho(dline, fg="green")
+        click.secho("Installed packages:", fg="green")
+
+        for package in installed_packages:
+            click.secho(line)
+            name = click.style(f"{package['name']}", fg="cyan", bold=True)
+            version = package["version"]
+            description = package["description"]
+
+            click.secho(f"• {name} {version}")
+            click.secho(f"  {description}")
+
+        click.secho(dline, fg="green")
+        click.secho(f"Total: {len(installed_packages)}")
+
+    if notinstalled and notinstalled_packages:
+
+        # ------ Print not installed packages table
+        # -- Print the header
+        click.secho()
+        click.secho(dline, fg="yellow")
+        click.secho("Available packages (Not installed):", fg="yellow")
+
+        for package in notinstalled_packages:
+
+            click.secho(line)
+            name = click.style(f"• {package['name']}", fg="red")
+            description = package["description"]
+            click.secho(f"{name}  {description}")
+
+        click.secho(dline, fg="yellow")
+        click.secho(f"Total: {len(notinstalled_packages)}")
+
+    click.secho("\n")
 
 
 # ---------------------------
@@ -112,7 +170,7 @@ def cli(
 
     # -- List all the packages (installed or not)
     if list_:
-        apio_ctx.list_packages()
+        _list_packages(apio_ctx)
         cmd_ctx.exit(0)
 
     # -- Invalid option. Just show the help
