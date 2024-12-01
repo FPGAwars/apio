@@ -32,9 +32,13 @@ accepts the testbench file name as an argument. For example:
 Example:
   apio sim my_module_tb.v
 
-The sim command defines the macros VCD_OUTPUT and INTERACTIVE_SIM
-that can be used by the testbench. For a sample testbench that
-uses those macro see the example at
+It is recommanded NOT to use the `$dumpfile()` function in your testbenchs as
+this may override the default name and location of the generated .vcd file.
+
+The sim command defines the INTERACTIVE_SIM that can be used in the testbench
+to distinguise between 'apio test' and 'apio sim', for example to ignore error
+with 'apio sim' and view the erronous signals gtkwave. For a sample testbench
+that uses those macro see the example at
 https://github.com/FPGAwars/apio-examples/tree/master/upduino31/testbench
 
 [Hint] when you configure the signals in GTKWave, you can save the

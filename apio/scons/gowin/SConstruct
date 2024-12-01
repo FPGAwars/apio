@@ -279,7 +279,7 @@ env.Append(BUILDERS={"GRAPHVIZ": graphviz_builder})
 # -- Builder (vvp, simulator).
 # -- (testbench).out -> (testbench).vcd.
 vcd_builder = Builder(
-    action="vvp {0} $SOURCE".format(
+    action="vvp {0} $SOURCE -dumpfile=$TARGET".format(
         "" if (is_windows(env) or not IVL_PATH) else f'-M "{IVL_PATH}"'
     ),
     suffix=".vcd",

@@ -31,12 +31,15 @@ Examples
   apio test                 # Run all *_tb.v testbenches.
   apio test my_module_tb.v  # Run a single testbench
 
+It is recommanded NOT to use the `$dumpfile()` function in your testbenchs as
+this may override the default name and location of the generated .vcd file.
+
 For a sample testbench that is compatible with apio see the
 example at
 https://github.com/FPGAwars/apio-examples/tree/master/upduino31/testbench
 
 [Hint] To simulate the testbench with a graphical visualizaiton of the
-signals see the apio sim command.
+signals see the 'apio sim' command.
 """
 
 

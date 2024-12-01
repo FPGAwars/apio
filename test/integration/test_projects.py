@@ -40,11 +40,11 @@ def _test_project(
 
     with apio_runner.in_sandbox() as sb:
 
-        # -- Create and change to project dir.
+        # -- Create and change to project directory.
         sb.proj_dir.mkdir()
         chdir(sb.proj_dir)
 
-        # -- Install all packages
+        # -- 'apio packages --install --verbose'
         result = sb.invoke_apio_cmd(apio_packages, ["--install", "--verbose"])
         sb.assert_ok(result)
         assert "'examples' installed successfully" in result.output
@@ -52,10 +52,10 @@ def _test_project(
         assert listdir(sb.packages_dir / "examples")
         assert listdir(sb.packages_dir / "tools-oss-cad-suite")
 
-        # -- The current proj directory should be still empty
+        # -- the project directory should be empty.
         assert not listdir(".")
 
-        # -- Fetch example files to current directory
+        # -- 'apio examples --fetch-files <example>``
         result = sb.invoke_apio_cmd(
             apio_examples,
             ["--fetch-files", example],
@@ -65,49 +65,49 @@ def _test_project(
         assert "have been successfully created!" in result.output
         assert getsize("apio.ini")
 
-        # -- Remember the list of project files.
+        # -- Remember the original list of project files.
         project_files = listdir(".")
 
-        # -- Build the project.
+        # -- 'apio build'
         result = sb.invoke_apio_cmd(apio_build)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert getsize(f"_build/{binary}")
 
-        # -- Lint
+        # -- 'apio lint'
         result = sb.invoke_apio_cmd(apio_lint)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert getsize("_build/hardware.vlt")
 
-        # -- Test
+        # -- 'apio test'
         result = sb.invoke_apio_cmd(apio_test)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert getsize(f"_build/{testbench}.out")
         assert getsize(f"_build/{testbench}.vcd")
 
-        # -- Report
+        # -- 'apio report'
         result = sb.invoke_apio_cmd(apio_report)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert report_item in result.output
         assert getsize("_build/hardware.pnr")
 
-        # -- Graph svg
+        # -- 'apio graph'
         result = sb.invoke_apio_cmd(apio_graph)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert getsize("_build/hardware.dot")
         assert getsize("_build/hardware.svg")
 
-        # -- Clean
+        # -- 'apio clean'
         result = sb.invoke_apio_cmd(apio_clean)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert not Path("_build").exists()
 
-        # -- Check that we have exactly the original project files,
+        # -- Here we should have only the original project files.
         assert set(listdir(".")) == set(project_files)
 
 
