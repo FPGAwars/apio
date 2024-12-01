@@ -308,6 +308,44 @@ def get_programmer_cmd(env: SConsEnvironment) -> str:
     return prog_arg
 
 
+# A regex to identify "$dumpfile(" in testbenches.
+testbench_dumpfile_re = re.compile(r"[$]dumpfile\s*[(]")
+
+
+def get_source_file_issue_action(env: SConsEnvironment) -> FunctionAction:
+    """Returns a SCons action that scans the source files and print
+    error or warning messages about issues it finds."""
+
+    def report_source_files_issues(
+        source: List[File],
+        target: List[Alias],
+        env: SConsEnvironment,
+    ):
+        """The scanner function.."""
+
+        for file in source:
+
+            # --For now we report issues only in testbenches so skip otherwise.
+            if not is_verilog_src(env, file.name) or not has_testbench_name(
+                env, file.name
+            ):
+                continue
+
+            # -- Read the testbench file text.
+            file_text = file.get_text_contents()
+
+            # -- if contains $dumpfile, print a warning.
+            if testbench_dumpfile_re.findall(file_text):
+                msg(
+                    env,
+                    f"Warning: [{file.name}] Using $dumpfile() in apio "
+                    "testbenches is not recomanded.",
+                    fg="magenta",
+                )
+
+    return Action(report_source_files_issues, "Scanning for issues.")
+
+
 def make_verilog_src_scanner(env: SConsEnvironment) -> Scanner.Base:
     """Creates and returns a scons Scanner object for scanning verilog
     files for dependencies.
