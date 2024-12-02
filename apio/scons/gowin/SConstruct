@@ -89,6 +89,7 @@ VERBOSE_ALL = arg_bool(env, "verbose_all", False)
 VERBOSE_YOSYS = arg_bool(env, "verbose_yosys", False)
 VERBOSE_PNR = arg_bool(env, "verbose_pnr", False)
 TESTBENCH = arg_str(env, "testbench", "")
+FORCE_SIM = arg_bool(env, "force_sim", False)
 VERILATOR_ALL = arg_bool(env, "all", False)
 VERILATOR_NO_STYLE = arg_bool(env, "nostyle", False)
 VERILATOR_NOWARNS = arg_str(env, "nowarn", "").split(",")
@@ -320,9 +321,11 @@ if "sim" in COMMAND_LINE_TARGETS:
     sim_out_target = env.IVerilogTestbench(
         sim_config.build_testbench_name, sim_config.srcs
     )
-    env.AlwaysBuild(sim_out_target)
+    if FORCE_SIM:
+        env.AlwaysBuild(sim_out_target)
     sim_vcd_target = env.VCD(sim_out_target)
-    env.AlwaysBuild(sim_vcd_target)
+    if FORCE_SIM:
+        env.AlwaysBuild(sim_vcd_target)
     waves_target = make_waves_target(env, sim_vcd_target, sim_config)
     env.AlwaysBuild(waves_target)
 

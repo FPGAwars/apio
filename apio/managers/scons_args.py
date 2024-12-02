@@ -29,6 +29,7 @@ ARG_VERBOSE_YOSYS = "verbose_yosys"  # Bool
 ARG_VERBOSE_PNR = "verbose_pnr"  # Bool
 ARG_TOP_MODULE = "top-module"
 ARG_TESTBENCH = "testbench"
+ARG_FORCE_SIM = "force_sim"  # Bool
 ARG_GRAPH_SPEC = "graph_spec"
 ARG_PLATFORM_ID = "platform_id"
 ARG_VERILATOR_ALL = "all"
@@ -214,6 +215,7 @@ def process_arguments(
         ARG_VERBOSE_PNR: Arg(ARG_VERBOSE_PNR, "verbose_pnr"),
         ARG_TOP_MODULE: Arg(ARG_TOP_MODULE, "top_module"),
         ARG_TESTBENCH: Arg(ARG_TESTBENCH, "testbench"),
+        ARG_FORCE_SIM: Arg(ARG_FORCE_SIM, "force_sim"),
         ARG_GRAPH_SPEC: Arg(ARG_GRAPH_SPEC, "graph_spec"),
         ARG_PLATFORM_ID: Arg(ARG_PLATFORM_ID, "platform_id"),
         ARG_VERILATOR_ALL: Arg(ARG_VERILATOR_ALL, "all"),

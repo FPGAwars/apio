@@ -140,7 +140,7 @@ def create_construction_env(args: Dict[str, str]) -> SConsEnvironment:
     flag = arg_bool(env, "force_colors", False)
     env.Replace(FORCE_COLORS=flag)
     # Set the IS_WINDOWS flag based on the required "platform_id" arg.
-    platform_id = arg_str(env, "platform_id", False)
+    platform_id = arg_str(env, "platform_id", "")
     # Note: this is a programming error, not a user error.
     assert platform_id, "Missing required scons arg 'platform_id'."
     flag = "windows" in platform_id.lower()
@@ -170,6 +170,7 @@ def get_args(env: SConsEnvironment) -> Dict[str, str]:
 
 def arg_bool(env: SConsEnvironment, name: str, default: bool) -> bool:
     """Parse and return a boolean arg."""
+    assert isinstance(default, bool) or default is None, f"{name}: {default}"
     args = get_args(env)
     raw_value = args.get(name, None)
     if raw_value is None:
@@ -188,6 +189,7 @@ def arg_bool(env: SConsEnvironment, name: str, default: bool) -> bool:
 
 def arg_str(env: SConsEnvironment, name: str, default: str) -> str:
     """Parse and return a string arg."""
+    assert isinstance(default, str) or default is None, f"{name}: {default}"
     args = get_args(env)
     raw_value = args.get(name, None)
     value = default if raw_value is None else raw_value

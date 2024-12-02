@@ -31,6 +31,7 @@ accepts the testbench file name as an argument. For example:
 \b
 Example:
   apio sim my_module_tb.v
+  apio sim my_module_tb.v --force
 
 It is recommanded NOT to use the `$dumpfile()` function in your testbenchs as
 this may override the default name and location of the generated .vcd file.
@@ -54,12 +55,14 @@ configuration for future invocations.
 )
 @click.pass_context
 @click.argument("testbench", nargs=1, required=True)
+@options.force_option_gen(help="Force simulation.")
 @options.project_dir_option
 def cli(
     _: click.core.Context,
     # Arguments
     testbench: str,
     # Options
+    force: bool,
     project_dir: Path,
 ):
     """Implements the apio sim command. It simulates a single testbench
@@ -73,7 +76,7 @@ def cli(
     scons = SCons(apio_ctx)
 
     # -- Simulate the project with the given parameters
-    exit_code = scons.sim({"testbench": testbench})
+    exit_code = scons.sim({"testbench": testbench, "force_sim": force})
 
     # -- Done!
     sys.exit(exit_code)
