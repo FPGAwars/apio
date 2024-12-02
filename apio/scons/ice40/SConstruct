@@ -345,7 +345,9 @@ if "sim" in COMMAND_LINE_TARGETS:
     sim_out_target = env.IVerilogTestbench(
         sim_config.build_testbench_name, sim_config.srcs
     )
+    env.AlwaysBuild(sim_out_target)
     vcd_file_target = env.VCD(sim_out_target)
+    env.AlwaysBuild(vcd_file_target)
     waves_target = make_waves_target(env, vcd_file_target, sim_config)
     env.AlwaysBuild(waves_target)
 
