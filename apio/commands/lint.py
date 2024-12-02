@@ -6,7 +6,7 @@
 # --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
 """Implementation of 'apio lint' command"""
-
+import sys
 from pathlib import Path
 import click
 from apio.managers.scons import SCons
@@ -85,7 +85,7 @@ Examples:
 @warn_option
 @options.project_dir_option
 def cli(
-    cmd_ctx: click.core.Context,
+    _: click.core.Context,
     # Options
     top_module: str,
     all_: bool,
@@ -112,4 +112,4 @@ def cli(
             "warn": warn,
         }
     )
-    cmd_ctx.exit(exit_code)
+    sys.exit(exit_code)

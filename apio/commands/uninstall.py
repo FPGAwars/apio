@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 """Implementation of 'apio uninstall' command"""
 
+import sys
 from pathlib import Path
 from typing import Tuple
 from varname import nameof
@@ -14,7 +15,7 @@ import click
 from apio.managers.old_installer import Installer
 from apio import cmd_util
 from apio.apio_context import ApioContext
-from apio.commands import options
+from apio.commands import options, install
 
 
 # R0801: Similar lines in 2 files
@@ -95,7 +96,7 @@ def cli(
     # -- Uninstall the given apio packages
     if packages:
         _uninstall(apio_ctx, packages, sayyes, verbose)
-        cmd_ctx.exit(0)
+        sys.exit(0)
 
     # -- Uninstall all the packages
     if all_:
@@ -103,12 +104,14 @@ def cli(
         packages = apio_ctx.profile.packages
         # -- Uninstall them!
         _uninstall(apio_ctx, packages, sayyes, verbose)
-        cmd_ctx.exit(0)
+        sys.exit(0)
 
     # -- List all the packages (installed or not)
     if list_:
-        apio_ctx.list_packages()
-        cmd_ctx.exit(0)
+        # pylint: disable=protected-access
+        install._list_packages(apio_ctx)
+        # pylint: enable=protected-access
+        sys.exit(0)
 
     # -- Invalid option. Just show the help
     click.secho(cmd_ctx.get_help())

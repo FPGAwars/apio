@@ -4,7 +4,6 @@
 // Testbench template
 
 `default_nettype none
-`define DUMPSTR(x) `"x.vcd`"
 `timescale 10 ns / 1 ns
 
 
@@ -23,8 +22,7 @@ module main_tb
  );
  
  initial begin
-  // File were to store the simulation results
-  $dumpfile(`DUMPSTR(`VCD_OUTPUT));
+  // Dump vars to the output .vcd file
   $dumpvars(0, main_tb);
  
   // TODO: initialize the registers here

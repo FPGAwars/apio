@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 """Implementation of 'apio upload' command"""
 
+import sys
 from pathlib import Path
 import click
 from apio.managers.scons import SCons
@@ -75,7 +76,7 @@ Examples:
 @options.top_module_option_gen(deprecated=True)
 @options.board_option_gen(deprecated=True)
 def cli(
-    cmd_ctx: click.core.Context,
+    _: click.core.Context,
     # Options
     project_dir: Path,
     serial_port: str,
@@ -130,7 +131,7 @@ def cli(
     drivers.post_upload()
 
     # -- Done!
-    cmd_ctx.exit(exit_code)
+    sys.exit(exit_code)
 
 
 # Advanced notes: https://github.com/FPGAwars/apio/wiki/Commands#apio-upload

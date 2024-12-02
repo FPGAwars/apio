@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 """Implementation of 'apio packages' command"""
 
+import sys
 from pathlib import Path
 from typing import Tuple, List
 from varname import nameof
@@ -235,16 +236,16 @@ def cli(
     # -- Dispatch the operation.
     if install:
         exit_code = _install(apio_ctx, packages, force, verbose)
-        cmd_ctx.exit(exit_code)
+        sys.exit(exit_code)
 
     if uninstall:
         exit_code = _uninstall(apio_ctx, packages, verbose, sayyes)
-        cmd_ctx.exit(exit_code)
+        sys.exit(exit_code)
 
     if fix:
         exit_code = _fix(apio_ctx, verbose)
-        cmd_ctx.exit(exit_code)
+        sys.exit(exit_code)
 
     # -- Here it must be --list.
     exit_code = _list(apio_ctx, verbose)
-    cmd_ctx.exit(exit_code)
+    sys.exit(exit_code)

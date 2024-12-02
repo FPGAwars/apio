@@ -11,7 +11,6 @@ import json
 import re
 import platform
 from collections import OrderedDict
-import shutil
 from pathlib import Path
 from typing import Optional, Dict
 import click
@@ -97,9 +96,6 @@ class ApioContext:
         # -- make the path longer and longer.
         self.env_was_already_set = False
 
-        # -- Save the load project status.
-        self._load_project = load_project
-
         # -- Maps the optional project_dir option to a path.
         self.project_dir: Path = util.get_project_dir(project_dir)
         ApioContext._check_no_spaces_in_dir(self.project_dir, "project")
@@ -164,6 +160,8 @@ class ApioContext:
         if load_project:
             self._project = Project(self.project_dir)
             self._project.read()
+        else:
+            self._project = None
 
     @staticmethod
     def _check_no_spaces_in_dir(dir_path: Path, subject: str):
@@ -182,17 +180,19 @@ class ApioContext:
             click.secho(f"'{str(dir_path)}'", fg="red")
             sys.exit(1)
 
-    def check_project_loaded(self):
-        """Assert that context was created with project loading.."""
-        assert (
-            self._load_project
-        ), "Apio context created without project loading."
+    @property
+    def has_project_loaded(self):
+        """Returns True if the project is loaded."""
+        return self._project is not None
 
     @property
     def project(self):
         """Property to return the project after verification that it was
-        loaded."""
-        self.check_project_loaded()
+        loaded. It's a programming error to call this method on a context
+        that was initialized with load_project = False."""
+        assert (
+            self.has_project_loaded
+        ), "ApioContext.project() called with no project loaded."
         return self._project
 
     def _load_resource(self, name: str, allow_custom: bool = False) -> dict:
@@ -254,7 +254,7 @@ class ApioContext:
             click.secho(f"{exc}\n", fg="red")
 
             # -- Abort!
-            sys.exit(2)
+            sys.exit(1)
 
         # -- Parse the json format!
         try:
@@ -428,62 +428,6 @@ class ApioContext:
 
         # -- Return the packages, classified
         return installed_packages, notinstalled_packages
-
-    def list_packages(self, installed=True, notinstalled=True):
-        """Return a list with all the installed/notinstalled packages"""
-
-        # Classify packages
-        installed_packages, notinstalled_packages = (
-            self.get_platform_packages_lists()
-        )
-
-        # -- Calculate the terminal width
-        terminal_width, _ = shutil.get_terminal_size()
-
-        # -- String with a horizontal line with the same width
-        # -- as the terminal
-        line = "─" * terminal_width
-        dline = "═" * terminal_width
-
-        if installed and installed_packages:
-
-            # ------- Print installed packages table
-            # -- Print the header
-            click.secho()
-            click.secho(dline, fg="green")
-            click.secho("Installed packages:", fg="green")
-
-            for package in installed_packages:
-                click.secho(line)
-                name = click.style(f"{package['name']}", fg="cyan", bold=True)
-                version = package["version"]
-                description = package["description"]
-
-                click.secho(f"• {name} {version}")
-                click.secho(f"  {description}")
-
-            click.secho(dline, fg="green")
-            click.secho(f"Total: {len(installed_packages)}")
-
-        if notinstalled and notinstalled_packages:
-
-            # ------ Print not installed packages table
-            # -- Print the header
-            click.secho()
-            click.secho(dline, fg="yellow")
-            click.secho("Available packages (Not installed):", fg="yellow")
-
-            for package in notinstalled_packages:
-
-                click.secho(line)
-                name = click.style(f"• {package['name']}", fg="red")
-                description = package["description"]
-                click.secho(f"{name}  {description}")
-
-            click.secho(dline, fg="yellow")
-            click.secho(f"Total: {len(notinstalled_packages)}")
-
-        click.secho("\n")
 
     def get_package_dir(self, package_name: str) -> Path:
         """Returns the root path of a package with given name."""

@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 """Implementation of 'apio test' command"""
 
+import sys
 from pathlib import Path
 import click
 from apio.managers.scons import SCons
@@ -30,12 +31,15 @@ Examples
   apio test                 # Run all *_tb.v testbenches.
   apio test my_module_tb.v  # Run a single testbench
 
+It is recommanded NOT to use the `$dumpfile()` function in your testbenchs as
+this may override the default name and location of the generated .vcd file.
+
 For a sample testbench that is compatible with apio see the
 example at
 https://github.com/FPGAwars/apio-examples/tree/master/upduino31/testbench
 
 [Hint] To simulate the testbench with a graphical visualizaiton of the
-signals see the apio sim command.
+signals see the 'apio sim' command.
 """
 
 
@@ -50,7 +54,7 @@ signals see the apio sim command.
 @options.project_dir_option
 # @options.testbench
 def cli(
-    cmd_ctx: click.core.Context,
+    _: click.core.Context,
     # Arguments
     testbench_file: str,
     # Options
@@ -65,4 +69,4 @@ def cli(
     scons = SCons(apio_ctx)
 
     exit_code = scons.test({"testbench": testbench_file})
-    cmd_ctx.exit(exit_code)
+    sys.exit(exit_code)

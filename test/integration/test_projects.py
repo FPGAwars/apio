@@ -38,79 +38,76 @@ def _test_project(
     if apio_runner.offline_flag:
         pytest.skip("requires internet connection")
 
-    with apio_runner.in_disposable_temp_dir():
+    with apio_runner.in_sandbox() as sb:
 
-        # -- Config the apio test environment.
-        proj_dir, _, packages_dir = apio_runner.setup_env()
+        # -- Create and change to project directory.
+        sb.proj_dir.mkdir()
+        chdir(sb.proj_dir)
 
-        # -- Create and change to project dir.
-        proj_dir.mkdir(exist_ok=False)
-        chdir(proj_dir)
-
-        # -- Install all packages
-        result = apio_runner.invoke(apio_packages, ["--install", "--verbose"])
-        apio_runner.assert_ok(result)
+        # -- 'apio packages --install --verbose'
+        result = sb.invoke_apio_cmd(apio_packages, ["--install", "--verbose"])
+        sb.assert_ok(result)
         assert "'examples' installed successfully" in result.output
         assert "'oss-cad-suite' installed successfully" in result.output
-        assert listdir(packages_dir / "examples")
-        assert listdir(packages_dir / "tools-oss-cad-suite")
+        assert listdir(sb.packages_dir / "examples")
+        assert listdir(sb.packages_dir / "tools-oss-cad-suite")
 
-        # -- The current proj directory should be still empty
+        # -- the project directory should be empty.
         assert not listdir(".")
 
-        # -- Fetch example files to current directory
-        result = apio_runner.invoke(
+        # -- 'apio examples --fetch-files <example>``
+        result = sb.invoke_apio_cmd(
             apio_examples,
             ["--fetch-files", example],
         )
-        apio_runner.assert_ok(result)
+        sb.assert_ok(result)
         assert f"Copying {example} example files" in result.output
         assert "have been successfully created!" in result.output
         assert getsize("apio.ini")
 
-        # -- Remember the list of project files.
+        # -- Remember the original list of project files.
         project_files = listdir(".")
 
-        # -- Build the project.
-        result = apio_runner.invoke(apio_build)
-        apio_runner.assert_ok(result)
+        # -- 'apio build'
+        result = sb.invoke_apio_cmd(apio_build)
+        sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert getsize(f"_build/{binary}")
 
-        # -- Lint
-        result = apio_runner.invoke(apio_lint)
-        apio_runner.assert_ok(result)
+        # -- 'apio lint'
+        result = sb.invoke_apio_cmd(apio_lint)
+        sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert getsize("_build/hardware.vlt")
 
-        # -- Test
-        result = apio_runner.invoke(apio_test)
-        apio_runner.assert_ok(result)
+        # -- 'apio test'
+        result = sb.invoke_apio_cmd(apio_test)
+        sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert getsize(f"_build/{testbench}.out")
         assert getsize(f"_build/{testbench}.vcd")
 
-        # -- Report
-        result = apio_runner.invoke(apio_report)
-        apio_runner.assert_ok(result)
+        # -- 'apio report'
+        result = sb.invoke_apio_cmd(apio_report)
+        sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert report_item in result.output
         assert getsize("_build/hardware.pnr")
 
-        # -- Graph svg
-        result = apio_runner.invoke(apio_graph)
-        apio_runner.assert_ok(result)
+        # -- 'apio graph'
+        result = sb.invoke_apio_cmd(apio_graph)
+        sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert getsize("_build/hardware.dot")
         assert getsize("_build/hardware.svg")
 
-        # -- Clean
-        result = apio_runner.invoke(apio_clean)
-        apio_runner.assert_ok(result)
+        # -- 'apio clean'
+        result = sb.invoke_apio_cmd(apio_clean)
+        sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert not Path("_build").exists()
 
-        # -- Check that we have exactly the original project files,
+        # -- Here we should have only the original project files.
         assert set(listdir(".")) == set(project_files)
 
 

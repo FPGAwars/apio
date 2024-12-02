@@ -69,6 +69,7 @@ from apio.scons.scons_util import (
     make_verilator_action,
     get_report_action,
     set_up_cleanup,
+    get_source_file_issue_action,
 )
 
 # # -- Uncomment for debugging of the scons subprocess using a remote debugger.
@@ -89,6 +90,7 @@ VERBOSE_ALL = arg_bool(env, "verbose_all", False)
 VERBOSE_YOSYS = arg_bool(env, "verbose_yosys", False)
 VERBOSE_PNR = arg_bool(env, "verbose_pnr", False)
 TESTBENCH = arg_str(env, "testbench", "")
+FORCE_SIM = arg_bool(env, "force_sim", False)
 VERILATOR_ALL = arg_bool(env, "all", False)
 VERILATOR_NO_STYLE = arg_bool(env, "nostyle", False)
 VERILATOR_NOWARNS = arg_str(env, "nowarn", "").split(",")
@@ -243,14 +245,19 @@ def iverilog_tb_generator(source, target, env, for_signature):
     testbench_name = basename(env, testbench_file)
 
     # Construct the command line.
-    action = make_iverilog_action(
-        env,
-        ivl_path=IVL_PATH,
-        verbose=VERBOSE_ALL,
-        vcd_output_name=testbench_name,
-        is_interactive=("sim" in COMMAND_LINE_TARGETS),
-        lib_dirs=[YOSYS_LIB_DIR],
-    )
+    action = [
+        # -- Scan source files for issues.
+        get_source_file_issue_action(env),
+        # -- Perform the actual test or sim compilation.
+        make_iverilog_action(
+            env,
+            ivl_path=IVL_PATH,
+            verbose=VERBOSE_ALL,
+            vcd_output_name=testbench_name,
+            is_interactive=("sim" in COMMAND_LINE_TARGETS),
+            lib_dirs=[YOSYS_LIB_DIR],
+        ),
+    ]
     return action
 
 
@@ -286,7 +293,7 @@ env.Append(BUILDERS={"GRAPHVIZ": graphviz_builder})
 # -- Builder (vvp, simulator).
 # -- (testbench).out -> (testbench).vcd.
 vcd_builder = Builder(
-    action="vvp {0} $SOURCE".format(
+    action="vvp {0} $SOURCE -dumpfile=$TARGET".format(
         "" if (is_windows(env) or not IVL_PATH) else f'-M "{IVL_PATH}"'
     ),
     suffix=".vcd",
@@ -321,8 +328,12 @@ if "sim" in COMMAND_LINE_TARGETS:
     sim_out_target = env.IVerilogTestbench(
         sim_config.build_testbench_name, sim_config.srcs
     )
-    vcd_file_target = env.VCD(sim_out_target)
-    waves_target = make_waves_target(env, vcd_file_target, sim_config)
+    if FORCE_SIM:
+        env.AlwaysBuild(sim_out_target)
+    sim_vcd_target = env.VCD(sim_out_target)
+    if FORCE_SIM:
+        env.AlwaysBuild(sim_vcd_target)
+    waves_target = make_waves_target(env, sim_vcd_target, sim_config)
     env.AlwaysBuild(waves_target)
 
 
@@ -372,15 +383,20 @@ env.Append(BUILDERS={"VerilatorConfig": verilator_config_builder})
 # -- Builder (verilator, verilog linter)
 # -- (modules + testbenches).v -> lint report to stdout builder.
 verilator_builder = Builder(
-    action=make_verilator_action(
-        env,
-        warnings_all=VERILATOR_ALL,
-        warnings_no_style=VERILATOR_NO_STYLE,
-        no_warns=VERILATOR_NOWARNS,
-        warns=VERILATOR_WARNS,
-        top_module=TOP_MODULE,
-        lib_dirs=[YOSYS_LIB_DIR],
-    ),
+    action=[
+        # -- Scan the source files for 'other' issues.
+        get_source_file_issue_action(env),
+        # -- Perform the lint.
+        make_verilator_action(
+            env,
+            warnings_all=VERILATOR_ALL,
+            warnings_no_style=VERILATOR_NO_STYLE,
+            no_warns=VERILATOR_NOWARNS,
+            warns=VERILATOR_WARNS,
+            top_module=TOP_MODULE,
+            lib_dirs=[YOSYS_LIB_DIR],
+        ),
+    ],
     src_suffix=".v",
     source_scanner=verilog_src_scanner,
 )

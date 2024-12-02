@@ -29,16 +29,13 @@ def check_ini_file(apio_ini: Path, expected_vars: Dict[str, str]) -> None:
 def test_modify(apio_runner: ApioRunner):
     """Test "apio modify" with different parameters"""
 
-    with apio_runner.in_disposable_temp_dir():
-
-        # -- Config the apio test environment
-        apio_runner.setup_env()
+    with apio_runner.in_sandbox() as sb:
 
         apio_ini = Path("apio.ini")
         assert not exists(apio_ini)
 
         # -- Execute "apio modify --top-module my_module"
-        result = apio_runner.invoke(apio_modify, ["--top-module", "my_module"])
+        result = sb.invoke_apio_cmd(apio_modify, ["--top-module", "my_module"])
         assert result.exit_code != 0, result.output
         assert "Error: 'apio.ini' not found" in result.output
         assert not exists(apio_ini)
@@ -62,7 +59,7 @@ def test_modify(apio_runner: ApioRunner):
         )
 
         # -- Execute "apio modify --board missed_board"
-        result = apio_runner.invoke(apio_modify, ["--board", "missed_board"])
+        result = sb.invoke_apio_cmd(apio_modify, ["--board", "missed_board"])
         assert result.exit_code == 1, result.output
         assert "Error: no such board" in result.output
         check_ini_file(
@@ -75,8 +72,8 @@ def test_modify(apio_runner: ApioRunner):
         )
 
         # -- Execute "apio modify --board alhambra-ii"
-        result = apio_runner.invoke(apio_modify, ["--board", "alhambra-ii"])
-        apio_runner.assert_ok(result)
+        result = sb.invoke_apio_cmd(apio_modify, ["--board", "alhambra-ii"])
+        sb.assert_ok(result)
         assert "was modified successfully." in result.output
         check_ini_file(
             apio_ini,
@@ -88,8 +85,8 @@ def test_modify(apio_runner: ApioRunner):
         )
 
         # -- Execute "apio modify --top-module my_main"
-        result = apio_runner.invoke(apio_modify, ["--top-module", "my_main"])
-        apio_runner.assert_ok(result)
+        result = sb.invoke_apio_cmd(apio_modify, ["--top-module", "my_main"])
+        sb.assert_ok(result)
         assert "was modified successfully." in result.output
         check_ini_file(
             apio_ini,
@@ -101,10 +98,10 @@ def test_modify(apio_runner: ApioRunner):
         )
 
         # -- Execute "apio modify --board icezum --top-module my_top"
-        result = apio_runner.invoke(
+        result = sb.invoke_apio_cmd(
             apio_modify, ["--board", "icezum", "--top-module", "my_top"]
         )
-        apio_runner.assert_ok(result)
+        sb.assert_ok(result)
         assert "was modified successfully." in result.output
         check_ini_file(
             apio_ini,

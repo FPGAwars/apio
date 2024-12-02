@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 """Implementation of 'apio modify' command"""
 
+import sys
 from pathlib import Path
 from varname import nameof
 import click
@@ -61,4 +62,4 @@ def cli(
     )
 
     exit_code = 0 if ok else 1
-    cmd_ctx.exit(exit_code)
+    sys.exit(exit_code)

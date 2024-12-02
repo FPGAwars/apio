@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 """Implementation of 'apio graph' command"""
 
+import sys
 from pathlib import Path
 import click
 from varname import nameof
@@ -114,4 +115,4 @@ def cli(
     )
 
     # -- Done!
-    cmd_ctx.exit(exit_code)
+    sys.exit(exit_code)

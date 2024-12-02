@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 """Implementation of 'apio raw' command"""
 
+import sys
 import click
 from apio import util, pkg_util, cmd_util
 from apio.apio_context import ApioContext
@@ -83,6 +84,6 @@ def cli(
 
         # -- Invoke the command.
         exit_code = util.call(cmd)
-        cmd_ctx.exit(exit_code)
+        sys.exit(exit_code)
 
-    cmd_ctx.exit(0)
+    sys.exit(0)

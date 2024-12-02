@@ -29,6 +29,7 @@ ARG_VERBOSE_YOSYS = "verbose_yosys"  # Bool
 ARG_VERBOSE_PNR = "verbose_pnr"  # Bool
 ARG_TOP_MODULE = "top-module"
 ARG_TESTBENCH = "testbench"
+ARG_FORCE_SIM = "force_sim"  # Bool
 ARG_GRAPH_SPEC = "graph_spec"
 ARG_PLATFORM_ID = "platform_id"
 ARG_VERILATOR_ALL = "all"
@@ -195,7 +196,9 @@ def process_arguments(
     """
 
     # -- We expect that the apio context was created with project loading.
-    apio_ctx.check_project_loaded()
+    assert (
+        apio_ctx.has_project_loaded
+    ), "process_args: apio context project is not loaded."
 
     # -- Construct the args dictionary with all supported args. Most of the
     # -- args also have the name of their exported scons variable.
@@ -212,6 +215,7 @@ def process_arguments(
         ARG_VERBOSE_PNR: Arg(ARG_VERBOSE_PNR, "verbose_pnr"),
         ARG_TOP_MODULE: Arg(ARG_TOP_MODULE, "top_module"),
         ARG_TESTBENCH: Arg(ARG_TESTBENCH, "testbench"),
+        ARG_FORCE_SIM: Arg(ARG_FORCE_SIM, "force_sim"),
         ARG_GRAPH_SPEC: Arg(ARG_GRAPH_SPEC, "graph_spec"),
         ARG_PLATFORM_ID: Arg(ARG_PLATFORM_ID, "platform_id"),
         ARG_VERILATOR_ALL: Arg(ARG_VERILATOR_ALL, "all"),

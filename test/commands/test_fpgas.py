@@ -22,14 +22,11 @@ CUSTOM_FPGAS = """
 def test_fpgas_ok(apio_runner: ApioRunner):
     """Test "apio fpgas" command with standard fpgas.json."""
 
-    with apio_runner.in_disposable_temp_dir():
-
-        # -- Config the apio test environment
-        apio_runner.setup_env()
+    with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio fpgas"
-        result = apio_runner.invoke(apio_fpgas)
-        apio_runner.assert_ok(result)
+        result = sb.invoke_apio_cmd(apio_fpgas)
+        sb.assert_ok(result)
         # -- Note: pytest sees the piped version of the command's output.
         # -- Run 'apio fpgas' | cat' to reproduce it.
         assert "Loading custom 'fpgas.json'" not in result.output
@@ -40,18 +37,14 @@ def test_fpgas_ok(apio_runner: ApioRunner):
 def test_custom_fpga(apio_runner: ApioRunner):
     """Test "apio fpgas" command with a custom fpgas.json."""
 
-    with apio_runner.in_disposable_temp_dir():
-
-        # -- Config the apio test environment
-        apio_runner.setup_env()
+    with apio_runner.in_sandbox() as sb:
 
         # -- Write a custom boards.json file in the project's directory.
-        with open("fpgas.json", "w", encoding="utf-8") as f:
-            f.write(CUSTOM_FPGAS)
+        sb.write_file("fpgas.json", CUSTOM_FPGAS)
 
         # -- Execute "apio boards"
-        result = apio_runner.invoke(apio_fpgas)
-        apio_runner.assert_ok(result)
+        result = sb.invoke_apio_cmd(apio_fpgas)
+        sb.assert_ok(result)
         # -- Note: pytest sees the piped version of the command's output.
         # -- Run 'apio build' | cat' to reproduce it.
         assert "Loading custom 'fpgas.json'" in result.output

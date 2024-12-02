@@ -29,16 +29,13 @@ def test_apio(apio_runner: ApioRunner):
     [...]
     """
 
-    with apio_runner.in_disposable_temp_dir():
-
-        # -- Config the apio test environment
-        apio_runner.setup_env()
+    with apio_runner.in_sandbox() as sb:
 
         # -- Invoke the apio command
-        result = apio_runner.invoke(cmd_apio)
+        result = sb.invoke_apio_cmd(cmd_apio)
 
         # -- Check that everything is ok
-        apio_runner.assert_ok(result)
+        sb.assert_ok(result)
 
 
 def test_apio_wrong_command(apio_runner: ApioRunner):
@@ -50,13 +47,10 @@ def test_apio_wrong_command(apio_runner: ApioRunner):
     Error: No such command 'wrong'.
     """
 
-    with apio_runner.in_disposable_temp_dir():
-
-        # -- Config the environment
-        apio_runner.setup_env()
+    with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio mmissing_command"
-        result = apio_runner.invoke(cmd_apio, ["wrong_command"])
+        result = sb.invoke_apio_cmd(cmd_apio, ["wrong_command"])
 
         # -- Check the error code
         assert result.exit_code == 2, result.output

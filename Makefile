@@ -1,5 +1,3 @@
-.PHONY: deps cenv env lint test presubmit publish_test publish install
-
 # NOTE: Some targets have a shortcuts or alias names that are listed on the same line.
 #       The are provided for convinience or for backward competibility. For example
 #       'check-all' has the aliases 'check_all' and 'ca'.
@@ -8,6 +6,8 @@
 #
 # Usage:
 #     make deps
+#
+.PHONY: deps
 deps:
 	python -m pip install --upgrade pip
 	pip install flit black flake8 pylint tox pytest semantic-version pyserial importlib-metadata
@@ -17,12 +17,16 @@ deps:
 # 
 # Usage:
 #     make cenv
+#
+.PHONY: cenv
 cenv:  
 	python3 -m venv venv
 	python3 -m venv venv --upgrade
 
 # Usage
 #     make env
+#
+.PHONY: env
 env:
 	@echo "For entering the virtual-environment just type:"
 	@echo ". venv/bin/activate"
@@ -33,6 +37,8 @@ env:
 # Usage:
 #     make lint
 #     make l
+#
+.PHONY: lint l
 lint l:
 	python -m tox -e lint
 
@@ -43,6 +49,8 @@ lint l:
 # Usage:
 #     make test
 #     make t
+#
+.PHONY: test t
 test t:	
 	python -m tox --skip-missing-interpreters false -e py312 -- --offline
 
@@ -54,6 +62,8 @@ test t:
 # Usage:
 #     make check
 #     make c
+#
+.PHONY: check c
 check c:	
 	python -m tox --skip-missing-interpreters false -e lint,py312
 
@@ -65,6 +75,8 @@ check c:
 #     make check-all
 #     make check_all   // deprecated, to be deleted.
 #     make ca
+#
+.PHONY: check-all check_all ca
 check-all check_all ca:
 	python -m tox --skip-missing-interpreters false
 
@@ -74,6 +86,8 @@ check-all check_all ca:
 # Usage:
 #     make publish-test
 #     make publish_test  // deprecated, to be deleted. 
+#
+.PHONY: publish-test publish_test
 publish-test publish_test:
 	flit publish --repository testpypi
 
@@ -82,6 +96,8 @@ publish-test publish_test:
 #
 # Usage:
 #     make publish
+#
+.PHONY: publish
 publish:
 	python -m flit publish
 
@@ -89,6 +105,8 @@ publish:
 #
 # Usage:
 #     make instll
+#
+.PHONY: install
 install:
 	flit build
 	flit install
