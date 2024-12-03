@@ -195,10 +195,11 @@ def process_arguments(
         - arch: FPGA architecture ('ice40', 'ecp5'...)
     """
 
-    # -- We expect that the apio context was created with project loading.
+    # -- We expect here only contexts at project scope. Currently apio.ini
+    # -- is still not required so apio_ctx.project can still be None.
     assert (
-        apio_ctx.has_project_loaded
-    ), "process_args: apio context project is not loaded."
+        apio_ctx.project_loading_requested
+    ), "Apio context not at project scope."
 
     # -- Construct the args dictionary with all supported args. Most of the
     # -- args also have the name of their exported scons variable.
@@ -231,7 +232,8 @@ def process_arguments(
         if seed_value:
             args[arg_name].set(seed_value)
 
-    # -- Keep a shortcut, for convinience.
+    # -- Keep a shortcut, for convinience. Note that project can be None
+    # -- if the project doesn't have a apio.ini file.
     project = apio_ctx.project
 
     # -- Board name given in the command line
@@ -240,12 +242,12 @@ def process_arguments(
         # -- If there is a project file (apio.ini) the board
         # -- given by command line overrides it
         # -- (command line has the highest priority)
-        if project.board:
+        if project and project["board"]:
 
             # -- As the command line has more priority, and the board
             # -- given in args is different than the one in the project,
             # -- inform the user
-            if args[ARG_BOARD_ID].value != project.board:
+            if args[ARG_BOARD_ID].value != project["board"]:
                 click.secho(
                     "Info: ignoring board specification from apio.ini.",
                     fg="yellow",
@@ -254,8 +256,8 @@ def process_arguments(
     # -- Try getting the board id from the project
     else:
         # -- ...read it from the apio.ini file
-        if project.board:
-            args[ARG_BOARD_ID].set(project.board)
+        if project and project["board"]:
+            args[ARG_BOARD_ID].set(project["board"])
 
             # update_arg(args, ARG_BOARD, project.board)
 
@@ -315,18 +317,19 @@ def process_arguments(
     # -- If top-module not specified by the user, determine what value to use.
     if not args[ARG_TOP_MODULE].has_value:
 
-        if project.top_module:
+        if project and project["top-module"]:
             # -- If apio.ini has a top-module value use it.
 
-            args[ARG_TOP_MODULE].set(project.top_module)
+            args[ARG_TOP_MODULE].set(project["top-module"])
         else:
 
             # -- Use the default top-level
             args[ARG_TOP_MODULE].set(DEFAULT_TOP_MODULE)
 
             click.secho(
-                f"Top-module is missing, assuming: `{DEFAULT_TOP_MODULE}`",
-                fg="blue",
+                "Warning: 'top-module' is not specified in apio.ini, "
+                f"assuming: '{DEFAULT_TOP_MODULE}'",
+                fg="yellow",
             )
 
     # -- Set the platform id.

@@ -1,24 +1,25 @@
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
-# -- (C) 2016-2024 FPGAwars
-# -- Authors
-# --  * Jesús Arroyo (2016-2019)
-# --  * Juan Gonzalez (obijuan) (2019-2024)
+# -- (C) 2016-2018 FPGAwars
+# -- Author Jesús Arroyo
 # -- Licence GPLv2
-"""Utilities for accesing the apio.ini projects"""
+# -- Derived from:
+# ---- Platformio project
+# ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
+# ---- Licence Apache v2
+"""Utility functionality for apio click commands. """
 
 import sys
-from os.path import isfile
-from pathlib import Path
+from abc import ABC, abstractmethod
+
 from configparser import ConfigParser
-from typing import Dict
-from typing import Optional
+from pathlib import Path
+from typing import Dict, Optional
 from configobj import ConfigObj
 import click
-from apio import util
 
 # -- Apio projecto filename
-PROJECT_FILENAME = "apio.ini"
+APIO_INI = "apio.ini"
 
 DEFAULT_TOP_MODULE = "main"
 
@@ -27,214 +28,211 @@ APIO project configuration file. For details see
 https://github.com/FPGAwars/apio/wiki/Project-configuration-file
 """
 
+# -- Set of options every valid project should have.
+REQUIRED_OPTIONS = {"board"}
+
+# -- Set of additional options a project may have.
+OPTIONAL_OPTIONS = {"top-module"}
+
+# -- Set of all options a project may have.
+ALL_OPTIONS = REQUIRED_OPTIONS | OPTIONAL_OPTIONS
+
+
+# pylint: disable=too-few-public-methods
+class ProjectResolver(ABC):
+    """An abstract class with services that are needed for project validation.
+    Generally speaking it provides a subset of the functionality of ApioContext
+    and we use it to avoid a cyclic import between Project and ApioContext.
+    """
+
+    @abstractmethod
+    def lookup_board_id(self, board: str) -> str:
+        """Similar to ApioContext.lookup_board()"""
+
 
 class Project:
-    """Class for managing apio projects"""
+    """An instance of this class holds the information from the project's
+    apio.ini file.
+    """
 
-    def __init__(self, project_dir: Optional[Path]):
-        """Avoid instantiating this object. Use the instance from
-        ApioContext when possible.
+    def __init__(self, options: Dict[str, str], resolver: ProjectResolver):
+        """Construct with given {name, value} options dict. To validate the
+        option call validate()."""
+        self._options = options
+        self._validate(resolver)
+
+    def __str__(self):
+        """For debugging."""
+        lines = ["Project options:"]
+        for name, val in self._options.items():
+            lines.append(f"  {name} = {val}")
+        return "\n".join(lines)
+
+    def _validate(self, resolver: ProjectResolver):
+        """Validates the options. Exists with an error message on any problem.
+        'resolver' is an object that allows to validate the board id and
+        to set the board option to a new board id if a legacy one was
+        specified.
         """
-        self.project_dir = util.get_project_dir(project_dir)
-        self.board: str = None
-        self.top_module: str = None
 
-    @staticmethod
-    def create_ini_file(
-        project_dir: Path,
-        board: str,
-        top_module: str,
-        boards: Dict,
-        sayyes: bool = False,
-    ) -> bool:
-        """Creates a new apio project file. Returns True if ok."""
-
-        # -- Construct the path
-        ini_path = project_dir / PROJECT_FILENAME
-
-        # -- Verify that the board id is valid.
-        if board not in boards.keys():
-            click.secho(f"Error: no such board '{board}'", fg="red")
-            return False
-
-        # -- If the ini file already exists, ask if it's ok to delete.
-        if ini_path.is_file():
-
-            # -- Warn the user, unless the flag sayyes is active
-            if not sayyes:
+        # -- Check that all the required options are present.
+        for option in REQUIRED_OPTIONS:
+            if option not in self._options:
                 click.secho(
-                    f"Warning: {PROJECT_FILENAME} file already exists",
-                    fg="yellow",
-                )
-
-                # -- Ask for confirmation
-                replace = click.confirm("Do you want to replace it?")
-
-                # -- User say: NO! --> Abort
-                if not replace:
-                    click.secho("Abort!", fg="red")
-                    return False
-
-        # -- Create the apio.ini from scratch.
-        click.secho(f"Creating {ini_path} file ...")
-        config = ConfigObj(str(ini_path))
-        config.initial_comment = TOP_COMMENT.split("\n")
-        config["env"] = {}
-        config["env"]["board"] = board
-        config["env"]["top-module"] = top_module
-        config.write()
-        click.secho(
-            f"The file '{ini_path}' was created successfully.\n"
-            "Run the apio clean command for project consistency.",
-            fg="green",
-        )
-        return True
-
-    @staticmethod
-    def modify_ini_file(
-        project_dir: Path,
-        board: Optional[str],
-        top_module: Optional[str],
-        boards: Dict,
-    ) -> bool:
-        """Update the current ini file with the given optional parameters.
-        Returns True if ok."""
-
-        # -- construct the file path.
-        ini_path = project_dir / PROJECT_FILENAME
-
-        # -- Verify that the board id is valid.
-        if board:
-            if board not in boards.keys():
-                click.secho(
-                    f"Error: no such board '{board}'.\n"
-                    "Use 'apio boards -l' to list supported boards.",
-                    fg="red",
-                )
-                return False
-
-        # -- Check if the apio.ini file exists
-        if not ini_path.is_file():
-            click.secho(
-                f"Error: '{ini_path}' not found. You should create it first.\n"
-                "see 'apio create -h' for more details.",
-                fg="red",
-            )
-            return False
-
-        # -- Read the current apio.ini file
-        config = ConfigObj(str(ini_path))
-
-        # -- Set specified fields.
-        if board:
-            config["env"]["board"] = board
-
-        if top_module:
-            config["env"]["top-module"] = top_module
-
-        # -- Write the apio ini file
-        config.write()
-
-        click.secho(
-            f"File '{ini_path}' was modified successfully.\n"
-            f"Run the apio clean command for project consistency.",
-            fg="green",
-        )
-        return True
-
-    def read(self):
-        """Read the project config file"""
-
-        project_file = self.project_dir / PROJECT_FILENAME
-
-        # -- If no project file found, just return
-        if not isfile(project_file):
-            click.secho(
-                f"Info: Project has no {PROJECT_FILENAME} file", fg="yellow"
-            )
-            return
-
-        # pylint: disable=fixme
-        # TODO: Can we replace ConfigParser with ConfigObj for consistency?
-
-        # Load the project file.
-        config_parser = ConfigParser()
-        config_parser.read(project_file)
-
-        for section in config_parser.sections():
-            if section != "env":
-                click.secho(
-                    f"Project file {project_file} has an invalid "
-                    "section named "
-                    f"[{section}].",
+                    f"Error: missing option '{option}' in {APIO_INI}.",
                     fg="red",
                 )
                 sys.exit(1)
 
-        if "env" not in config_parser.sections():
-            click.secho(
-                f"Project file {project_file} does not have an "
-                "[env] section.",
-                fg="red",
-            )
-            sys.exit(1)
-
-        # Parse attributes in the env section.
-        parsed_attributes = set()
-        self.board = self._parse_board(config_parser, parsed_attributes)
-        self.top_module = self._parse_top_module(
-            config_parser, parsed_attributes
-        )
-
-        # Verify that the project file (api.ini) doesn't contain additional
-        # (illegal) keys that where not parsed
-        for attribute in config_parser.options("env"):
-            if attribute not in parsed_attributes:
+        # -- Check that there are no unknown options.
+        supported_options = ALL_OPTIONS
+        for option in self._options:
+            if option not in supported_options:
                 click.secho(
-                    f"Project file {project_file} contains"
-                    f" an unknown attribute '{attribute}'.",
-                    fg="red",
+                    f"Error: unknown project option '{option}'", fg="red"
                 )
                 sys.exit(1)
 
-    @staticmethod
-    def _parse_board(
-        config_parser: ConfigParser, parsed_attributes: set[str]
-    ) -> str:
-        """Parse the configured board from the project
-            file parser and add the keys used
-          to parsed_attributes.
-        RETURN:
-          * A string with the name of the board
-        """
-        parsed_attributes.add("board")
-        board = config_parser.get("env", "board", fallback=None)
-        if not board:
-            click.secho(
-                "Error: Missing required 'board' specification "
-                f"in {PROJECT_FILENAME}",
-                fg="red",
-            )
-            sys.exit(1)
-        return board
+        # -- Force 'board' to have the canonical id of the board.
+        # -- This exists with an error message if the board is unknown.
+        self._options["board"] = resolver.lookup_board_id(
+            self._options["board"]
+        )
 
-    @staticmethod
-    def _parse_top_module(
-        config_parser: ConfigParser, parsed_attributes: set[str]
-    ) -> str:
-        """Read the configured top-module from the project file
-        parser and add the keys used
-          to parsed_attributes.
-        RETURN:
-          * A string with the name of the top-module
-        """
-        parsed_attributes.add("top-module")
-        top_module = config_parser.get("env", "top-module", fallback=None)
-        if not top_module:
+    def __getitem__(self, option: str) -> Optional[str]:
+        # -- If this fails, this is a programming error.
+        assert option in ALL_OPTIONS, f"Invalid project option: [{option}]"
+
+        # -- Lookup with default
+        return self._options.get(option, None)
+
+
+def load_project_from_file(
+    project_dir: Path, resolver: ProjectResolver
+) -> Project:
+    """Read project file from given project dir. Returns None if file
+    does not exists. Exits on any error. Otherwise creates adn
+    return an Project with the values. To validate the project object
+    call its validate() method."""
+
+    # -- Construct the apio.ini path.
+    file_path = project_dir / APIO_INI
+
+    # -- Currently, apio.ini is still optional so we just warn.
+    if not file_path.exists():
+        click.secho(f"Info: Project has no {APIO_INI} file.", fg="yellow")
+        return None
+
+    # -- Read and parse the file.
+    parser = ConfigParser()
+    parser.read(file_path)
+
+    # -- Should contain an [env] section.
+    if "env" not in parser.sections():
+        click.secho(f"Error: {APIO_INI} has no [env] section.", fg="red")
+        sys.exit(1)
+
+    # -- Should not contain any other section.
+    if len(parser.sections()) > 1:
+        click.secho(
+            f"Error: {APIO_INI} should contain only an [env] section.",
+            fg="red",
+        )
+        sys.exit(1)
+
+    # -- Collect the name/value pairs.
+    options = {}
+    for name, val in parser.items("env"):
+        options[name] = val
+
+    # -- Construct the Project object. Its constructor validates the options.
+    return Project(options, resolver)
+
+
+def create_project_file(
+    project_dir: Path,
+    board_id: str,
+    top_module: str,
+    sayyes: bool = False,
+) -> bool:
+    """Creates a new apio project file. Returns True if ok.
+    'board_id' is assumed to be the canonical if of a supported board
+    (caller should validate)"""
+
+    # -- Construct the path
+    ini_path = project_dir / APIO_INI
+
+    # -- If the ini file already exists, ask if it's ok to delete.
+    if ini_path.is_file():
+
+        # -- Warn the user, unless the flag sayyes is active
+        if not sayyes:
             click.secho(
-                f"Warning: Missing 'top-module' specification in "
-                f"{PROJECT_FILENAME}, assuming 'main'",
+                f"Warning: {APIO_INI} file already exists",
                 fg="yellow",
             )
-            return DEFAULT_TOP_MODULE
-        return top_module
+
+            # -- Ask for confirmation
+            replace = click.confirm("Do you want to replace it?")
+
+            # -- User say: NO! --> Abort
+            if not replace:
+                click.secho("Abort!", fg="red")
+                return False
+
+    # -- Create the apio.ini from scratch.
+    click.secho(f"Creating {ini_path} file ...")
+    config = ConfigObj(str(ini_path))
+    config.initial_comment = TOP_COMMENT.split("\n")
+    config["env"] = {}
+    config["env"]["board"] = board_id
+    config["env"]["top-module"] = top_module
+    config.write()
+    click.secho(
+        f"The file '{ini_path}' was created successfully.\n"
+        "Run the apio clean command for project consistency.",
+        fg="green",
+    )
+    return True
+
+
+def modify_project_file(
+    project_dir: Path,
+    board: Optional[str],
+    top_module: Optional[str],
+) -> bool:
+    """Update the current ini file with the given optional parameters.
+    Returns True if ok. Board is assumed to be None or a canonical id of an
+    exiting board (caller should validate)"""
+
+    # -- construct the file path.
+    ini_path = project_dir / APIO_INI
+
+    # -- Check if the apio.ini file exists
+    if not ini_path.is_file():
+        click.secho(
+            f"Error: '{ini_path}' not found. You should create it first.\n"
+            "see 'apio create -h' for more details.",
+            fg="red",
+        )
+        return False
+
+    # -- Read the current apio.ini file
+    config = ConfigObj(str(ini_path))
+
+    # -- Set specified fields.
+    if board:
+        config["env"]["board"] = board
+
+    if top_module:
+        config["env"]["top-module"] = top_module
+
+    # -- Write the apio ini file
+    config.write()
+
+    click.secho(
+        f"File '{ini_path}' was modified successfully.\n"
+        f"Run the apio clean command for project consistency.",
+        fg="green",
+    )
+    return True

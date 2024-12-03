@@ -300,7 +300,7 @@
             "module": "pytest",
             "args": [
                 "-s",
-                "test/commands/test_boards.py"
+                "test/commands/test_build.py::test_errors_without_apio_ini_1"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
