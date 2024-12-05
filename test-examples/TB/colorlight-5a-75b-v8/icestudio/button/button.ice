@@ -8,7 +8,7 @@
     "image": ""
   },
   "design": {
-    "board": "ColorLight-5A-75B-V8",
+    "board": "colorlight-5a-75b-v8",
     "graph": {
       "blocks": [
         {

@@ -1,4 +1,4 @@
-# -- Board: ColorLight-5A-75E-V71_(FT2232H)
+# -- Board: colorlight-5a-75e-v71-FT2232H
 
 # -- CLK
 LOCATE COMP "CLK" SITE "P6";
