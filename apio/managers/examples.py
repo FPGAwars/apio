@@ -9,7 +9,7 @@
 import shutil
 from pathlib import Path, PosixPath
 from dataclasses import dataclass
-from typing import Optional, Tuple, List
+from typing import Optional, List
 import click
 from apio import util
 from apio import pkg_util
@@ -49,7 +49,7 @@ class Examples:
         self.apio_ctx = apio_ctx
 
         # -- Folder where the example packages was installed
-        self.examples_dir = apio_ctx.get_package_dir("examples")
+        self.examples_dir = apio_ctx.get_package_dir("examples") / "examples"
 
     def get_examples_infos(self) -> Optional[List[ExampleInfo]]:
         """Scans the examples and returns a list of ExampleInfos.
@@ -66,7 +66,7 @@ class Examples:
                 boards_dirs.append(board_dir)
 
         # -- Collect the examples of each boards.
-        examples: List[Tuple[str, PosixPath]] = []
+        examples: List[ExampleInfo] = []
         for board_dir in boards_dirs:
 
             # -- Iterate board's example subdirectories.

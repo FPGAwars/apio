@@ -43,7 +43,7 @@ def test_packages(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(apio_packages, ["--install", "examples"])
         sb.assert_ok(result)
         assert "Package 'examples' installed successfully" in result.output
-        assert listdir(sb.packages_dir / "examples/alhambra-ii")
+        assert listdir(sb.packages_dir / "examples/examples/alhambra-ii")
         assert "tools-oss-cad-suite" not in listdir(sb.packages_dir)
 
         # -- Install the reset of the packages.
@@ -55,12 +55,14 @@ def test_packages(apio_runner: ApioRunner):
         assert (
             "Package 'oss-cad-suite' installed successfully" in result.output
         )
-        assert listdir(sb.packages_dir / "examples/alhambra-ii")
+        assert listdir(sb.packages_dir / "examples/examples/alhambra-ii")
         assert listdir(sb.packages_dir / "tools-oss-cad-suite/bin")
 
         # -- Delete a file from the examples package, we will use it as an
         # -- indicator for the reinstallation of the package.
-        marker_file = sb.packages_dir / "examples/alhambra-ii/ledon/ledon.v"
+        marker_file = (
+            sb.packages_dir / "examples/examples/alhambra-ii/ledon/ledon.v"
+        )
         assert marker_file.is_file()
         marker_file.unlink()
         assert not marker_file.exists()
