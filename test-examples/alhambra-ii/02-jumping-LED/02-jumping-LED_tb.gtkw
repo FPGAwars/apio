@@ -2,10 +2,10 @@
 [*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
 [*] Thu Apr 28 10:41:03 2022
 [*]
-[dumpfile] "/home/obijuan/Develop/FPGAwars/apio/test-examples/Alhambra-II/02-jumping-LED/02-jumping-LED_tb.vcd"
+[dumpfile] "/home/obijuan/Develop/FPGAwars/apio/test-examples/alhambra-ii/02-jumping-LED/02-jumping-LED_tb.vcd"
 [dumpfile_mtime] "Thu Apr 28 10:38:49 2022"
 [dumpfile_size] 739918
-[savefile] "/home/obijuan/Develop/FPGAwars/apio/test-examples/Alhambra-II/02-jumping-LED/02-jumping-LED_tb.gtkw"
+[savefile] "/home/obijuan/Develop/FPGAwars/apio/test-examples/alhambra-ii/02-jumping-LED/02-jumping-LED_tb.gtkw"
 [timestart] 0
 [size] 1860 1016
 [pos] 60 27

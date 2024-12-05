@@ -142,7 +142,7 @@
           "id": "548537d2-05af-4772-8269-4a4a038e8fd5",
           "type": "basic.info",
           "data": {
-            "info": "## Alhambra-II: RISC-V stopwatch on LEDs",
+            "info": "## alhambra-ii: RISC-V stopwatch on LEDs",
             "readonly": true
           },
           "position": {

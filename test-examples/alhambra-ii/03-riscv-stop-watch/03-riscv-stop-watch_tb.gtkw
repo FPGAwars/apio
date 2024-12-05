@@ -2,10 +2,10 @@
 [*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
 [*] Thu Apr 28 10:51:01 2022
 [*]
-[dumpfile] "/home/obijuan/Develop/FPGAwars/apio/test-examples/Alhambra-II/03-riscv-stop-watch/03-riscv-stop-watch_tb.vcd"
+[dumpfile] "/home/obijuan/Develop/FPGAwars/apio/test-examples/alhambra-ii/03-riscv-stop-watch/03-riscv-stop-watch_tb.vcd"
 [dumpfile_mtime] "Thu Apr 28 10:47:25 2022"
 [dumpfile_size] 264544
-[savefile] "/home/obijuan/Develop/FPGAwars/apio/test-examples/Alhambra-II/03-riscv-stop-watch/03-riscv-stop-watch_tb.gtkw"
+[savefile] "/home/obijuan/Develop/FPGAwars/apio/test-examples/alhambra-ii/03-riscv-stop-watch/03-riscv-stop-watch_tb.gtkw"
 [timestart] 0
 [size] 1920 1043
 [pos] 1771 -116
