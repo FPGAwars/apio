@@ -67,7 +67,7 @@ def list_boards(apio_ctx: ApioContext):
         if config.terminal_mode():
             # -- Board name with a bullet point and color
             board_str = click.style(board, fg="cyan")
-            item_board = f"• {board_str}"
+            item_board = f"{board_str}"
 
             # -- Item in one line
             one_line_item = f"{item_board}  {item_fpga}"

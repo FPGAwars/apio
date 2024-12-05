@@ -77,7 +77,7 @@ def _list_packages(apio_ctx: ApioContext, installed=True, notinstalled=True):
             version = package["version"]
             description = package["description"]
 
-            click.secho(f"• {name} {version}")
+            click.secho(f"{name} {version}")
             click.secho(f"  {description}")
 
         click.secho(dline, fg="green")
@@ -94,7 +94,7 @@ def _list_packages(apio_ctx: ApioContext, installed=True, notinstalled=True):
         for package in notinstalled_packages:
 
             click.secho(line)
-            name = click.style(f"• {package['name']}", fg="red")
+            name = click.style(f"{package['name']}", fg="red")
             description = package["description"]
             click.secho(f"{name}  {description}")
 

@@ -10,7 +10,11 @@
 import sys
 from pathlib import Path
 import click
-from apio.managers.project import Project, DEFAULT_TOP_MODULE, PROJECT_FILENAME
+from apio.managers.project import (
+    DEFAULT_TOP_MODULE,
+    APIO_INI,
+    create_project_file,
+)
 from apio import util
 from apio import cmd_util
 from apio.commands import options
@@ -36,7 +40,7 @@ the default '{DEFAULT_TOP_MODULE}'. If the file apio.ini already exists
 the command asks for permision to delete it. If --sayyes is specified,
 the file is deleted automatically.
 
-[Note] this command creates just the '{PROJECT_FILENAME}' file
+[Note] this command creates just the '{APIO_INI}' file
 rather than a full buildable project.
 Some users use instead the examples command to copy a working
 project for their board, and then modify it with with their design.
@@ -80,12 +84,14 @@ def cli(
 
     project_dir = util.get_project_dir(project_dir)
 
+    # -- Map to canonical board id. This fails if the board is unknown.
+    board_id = apio_ctx.lookup_board_id(board)
+
     # Create the apio.ini file
-    ok = Project.create_ini_file(
+    ok = create_project_file(
         apio_ctx.project_dir,
-        board,
+        board_id,
         top_module,
-        apio_ctx.boards,
         sayyes,
     )
 

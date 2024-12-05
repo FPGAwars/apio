@@ -51,7 +51,7 @@ def list_fpgas(apio_ctx: ApioContext):
         if config.terminal_mode():
             # -- For terminal, print the FPGA name in color.
             fpga_str = click.style(f"{fpga:32}", fg="cyan")
-            item = f"• {fpga_str} {data_str}"
+            item = f"{fpga_str} {data_str}"
             click.secho(item)
         else:
             # -- For pipe, no colors and no bullet point.

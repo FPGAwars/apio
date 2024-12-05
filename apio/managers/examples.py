@@ -144,10 +144,10 @@ class Examples:
 
     def copy_example_dir(self, example: str, project_dir: Path, sayno: bool):
         """Copy the example creating the folder
-        Ex. The example Alhambra-II/ledon --> the folder Alhambra-II/ledon
+        Ex. The example alhambra-ii/ledon --> the folder alhambra-ii/ledon
         is created
           * INPUTS:
-            * example: Example name (Ex. 'Alhambra-II/ledon')
+            * example: Example name (Ex. 'alhambra-ii/ledon')
             * project_dir: (optional)
             * sayno: Automatically answer no
         """
@@ -205,7 +205,7 @@ class Examples:
     def copy_example_files(self, example: str, project_dir: Path, sayno: bool):
         """Copy the example files (not the initial folders)
         * INPUTS:
-            * example: Example name (Ex. 'Alhambra-II/ledon')
+            * example: Example name (Ex. 'alhambra-ii/ledon')
             * project_dir: (optional)
             * sayno: Automatically answer no
         """
@@ -239,7 +239,7 @@ class Examples:
     ):
         """Copy the example files to the destination folder
         * INPUTS:
-          * example: Name of the example (Ex. 'Alhambra-II/ledon')
+          * example: Name of the example (Ex. 'alhambra-ii/ledon')
           * src_path: Source folder to copy
           * dest_path: Destination folder
         """
@@ -304,7 +304,7 @@ class Examples:
     def _copy_dir(self, example: str, src_path: Path, dest_path: Path):
         """Copy example of the src_path on the dest_path
         * INPUT
-          * example: Name of the example (Ex. 'Alhambra-II/ledon')
+          * example: Name of the example (Ex. 'alhambra-ii/ledon')
           * src_path: Source folder to copy
           * dest_path: Destination folder
         """

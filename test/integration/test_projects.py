@@ -115,7 +115,7 @@ def test_project_ice40(apio_runner: ApioRunner):
     """Tests building and testing an ice40  project."""
     _test_project(
         apio_runner,
-        example="Alhambra-II/ledon",
+        example="alhambra-ii/ledon",
         testbench="ledon_tb",
         binary="hardware.bin",
         report_item="ICESTORM_LC:",

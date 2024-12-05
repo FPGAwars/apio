@@ -1,5 +1,5 @@
 """
-Testing the ledon example on the Alhambra-II board
+Testing the ledon example on the alhambra-ii board
 """
 
 import os
@@ -30,7 +30,7 @@ from apio.commands.upload import cli as apio_upload
 cwd = Path.cwd()
 
 # -- Create the new path
-ledon_dir = cwd / "test-examples" / "Alhambra-II" / "01-LEDs-buttons"
+ledon_dir = cwd / "test-examples" / "alhambra-ii" / "01-LEDs-buttons"
 
 # -- Change to the new folder!
 os.chdir(ledon_dir)
@@ -80,7 +80,7 @@ def test_ledon_verify():
 
 
 def test_ledon_upload():
-    """Test the apio upload. This requires a connected Alhambra-II board."""
+    """Test the apio upload. This requires a connected alhambra-ii board."""
 
     # ----------------------------
     # -- Execute "apio upload"

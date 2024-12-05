@@ -16,7 +16,11 @@ from typing import Optional, Dict
 import click
 from apio import util, env_options
 from apio.profile import Profile
-from apio.managers.project import Project
+from apio.managers.project import (
+    Project,
+    ProjectResolver,
+    load_project_from_file,
+)
 
 
 # ---------- RESOURCES
@@ -156,12 +160,60 @@ class ApioContext:
             sorted(self.fpgas.items(), key=lambda t: t[0])
         )
 
-        # -- If requested, load the project's apio.ini
+        # -- Save the load_project request, mostly for debugging.
+        self.project_loading_requested = load_project
+
+        # -- If requested, try to load the project's apio.ini. If apio.ini
+        # -- does not exist, the loading returns None.
+        self._project: Project = None
         if load_project:
-            self._project = Project(self.project_dir)
-            self._project.read()
+            resolver = _ProjectResolverImpl(self)
+            self._project = load_project_from_file(self.project_dir, resolver)
+
+    def lookup_board_id(
+        self, board: str, *, warn: bool = True, strict: bool = True
+    ) -> str:
+        """Lookup and return the board's canonical board id which is its key
+        in boards.json().  'board' can be the canonical id itself or a
+        legacy id of the board as defined in boards.json.  The method prints
+        a warning if 'board' is a legacy board id that is mapped to its
+        canonical name and 'warn' is True. If the  board is not found, the
+        method returns None if 'strict' is False or exit the program with a
+        message if 'strict' is True."""
+        # -- If this fails, it's a programming error.
+        assert board is not None
+
+        # -- The result. The board's key in boards.json.
+        canonical_id = None
+
+        if board in self.boards:
+            # -- Here when board is already the canonical id.
+            canonical_id = board
         else:
-            self._project = None
+            # -- Look up for a board with 'board' as its legacy id.
+            for board_key, board_val in self.boards.items():
+                if board == board_val.get("legacy_id", None):
+                    canonical_id = board_key
+                    break
+
+        # -- Fatal error if unknown board.
+        if strict and canonical_id is None:
+            click.secho(f"Error: no such board '{board}'", fg="red")
+            click.secho(
+                "\nRun 'apio boards' for the list of board ids.", fg="yellow"
+            )
+            sys.exit(1)
+
+        # -- Warning if caller used a legacy board id.
+        if warn and canonical_id and board != canonical_id:
+            click.secho(
+                f"Warning: '{board}' board name was changed. "
+                f"Please use '{canonical_id}' instead.",
+                fg="yellow",
+            )
+
+        # -- Return the canonical board id.
+        return canonical_id
 
     @staticmethod
     def _check_no_spaces_in_dir(dir_path: Path, subject: str):
@@ -186,13 +238,10 @@ class ApioContext:
         return self._project is not None
 
     @property
-    def project(self):
-        """Property to return the project after verification that it was
-        loaded. It's a programming error to call this method on a context
-        that was initialized with load_project = False."""
-        assert (
-            self.has_project_loaded
-        ), "ApioContext.project() called with no project loaded."
+    def project(self) -> Project:
+        """Return the project. It's None if project loading not requested or
+        project doesn't have apio.ini.
+        ."""
         return self._project
 
     def _load_resource(self, name: str, allow_custom: bool = False) -> dict:
@@ -649,3 +698,16 @@ class ApioContext:
 
         # -- All done.
         return packages_dir
+
+
+# pylint: disable=too-few-public-methods
+class _ProjectResolverImpl(ProjectResolver):
+    def __init__(self, apio_context: ApioContext):
+        """When ApioContext instanciates this object, ApioContext is fully
+        constructed, except for the project field."""
+        self._apio_context = apio_context
+
+    # @override
+    def lookup_board_id(self, board: str) -> str:
+        """Implementation of lookup_board_id."""
+        return self._apio_context.lookup_board_id(board)

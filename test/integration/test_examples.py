@@ -34,7 +34,7 @@ def test_examples(apio_runner: ApioRunner):
         # assert "Installing package 'examples'" in result.output
         # assert "Download" in result.output
         assert "Package 'examples' installed successfully" in result.output
-        assert getsize(sb.packages_dir / "examples/Alhambra-II/ledon/ledon.v")
+        assert getsize(sb.packages_dir / "examples/alhambra-ii/ledon/ledon.v")
 
         # -- List the examples
         result = sb.invoke_apio_cmd(
@@ -42,44 +42,44 @@ def test_examples(apio_runner: ApioRunner):
             ["--list"],
         )
         sb.assert_ok(result)
-        assert "Alhambra-II/ledon" in result.output
+        assert "alhambra-ii/ledon" in result.output
 
         # -- Fetch example files to current directory
         result = sb.invoke_apio_cmd(
             apio_examples,
-            ["--fetch-files", "Alhambra-II/ledon"],
+            ["--fetch-files", "alhambra-ii/ledon"],
         )
         sb.assert_ok(result)
-        assert "Copying Alhambra-II/ledon example files" in result.output
+        assert "Copying alhambra-ii/ledon example files" in result.output
         assert "have been successfully created!" in result.output
         assert getsize("ledon.v")
 
         # -- Fetch example dir to current directory
         result = sb.invoke_apio_cmd(
             apio_examples,
-            ["--fetch-dir", "Alhambra-II/ledon"],
+            ["--fetch-dir", "alhambra-ii/ledon"],
         )
         sb.assert_ok(result)
-        assert "Creating Alhambra-II/ledon directory" in result.output
+        assert "Creating alhambra-ii/ledon directory" in result.output
         assert "has been successfully created" in result.output
-        assert getsize("Alhambra-II/ledon/ledon.v")
+        assert getsize("alhambra-ii/ledon/ledon.v")
 
         # -- Fetch example files to another project dir
         result = sb.invoke_apio_cmd(
             apio_examples,
-            ["--fetch-files", "Alhambra-II/ledon", "--project-dir=./dir1"],
+            ["--fetch-files", "alhambra-ii/ledon", "--project-dir=./dir1"],
         )
         sb.assert_ok(result)
-        assert "Copying Alhambra-II/ledon example files" in result.output
+        assert "Copying alhambra-ii/ledon example files" in result.output
         assert "have been successfully created!" in result.output
         assert getsize("dir1/ledon.v")
 
         # -- Fetch example dir to another project dir
         result = sb.invoke_apio_cmd(
             apio_examples,
-            ["--fetch-dir", "Alhambra-II/ledon", "--project-dir=dir2"],
+            ["--fetch-dir", "alhambra-ii/ledon", "--project-dir=dir2"],
         )
         sb.assert_ok(result)
-        assert "Creating Alhambra-II/ledon directory" in result.output
+        assert "Creating alhambra-ii/ledon directory" in result.output
         assert "has been successfully created" in result.output
-        assert getsize("dir2/Alhambra-II/ledon/ledon.v")
+        assert getsize("dir2/alhambra-ii/ledon/ledon.v")
