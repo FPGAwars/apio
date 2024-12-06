@@ -140,7 +140,9 @@ def check_at_most_one_param(
             cmd_ctx, specified_param_ids
         )
         aliases_str = ", ".join(canonical_aliases)
-        fatal_usage_error(cmd_ctx, f"[{aliases_str}] are mutually exclusive.")
+        fatal_usage_error(
+            cmd_ctx, f"[{aliases_str}] cannot be combined together."
+        )
 
 
 def check_exactly_one_param(
