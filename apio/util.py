@@ -15,7 +15,7 @@ import json
 import shutil
 from enum import Enum
 from dataclasses import dataclass
-from typing import Optional, Any, Tuple
+from typing import Optional, Any, Tuple, List
 import subprocess
 from threading import Thread
 from pathlib import Path
@@ -488,3 +488,20 @@ def plurality(obj: Any, singular: str, plural: str = None) -> str:
     if plural is None:
         plural = singular + "s"
     return f"{n} {plural}"
+
+
+def list_plurality(str_list: List[str], conjunction: str) -> str:
+    """Format a list as a human friendly string."""
+    # -- This is a programming error. Not a user error.
+    assert str_list, "list_plurarlity expect len() >= 1."
+
+    # -- Handle the case of a single item.
+    if len(str_list) == 1:
+        return str_list[0]
+
+    # -- Handle the case of 2 items.
+    if len(str_list) == 2:
+        return f"{str_list[0]} {conjunction} {str_list[1]}"
+
+    # -- Handle the case of three or more items.
+    return ", ".join(str_list[:-1]) + f", {conjunction} {str_list[-1]}"

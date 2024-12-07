@@ -12,6 +12,7 @@
 import sys
 from typing import Mapping, List, Tuple, Any, Dict, Union
 import click
+from apio import util
 
 
 # This text marker is inserted into the help text to indicates
@@ -139,9 +140,9 @@ def check_at_most_one_param(
         canonical_aliases = _params_ids_to_aliases(
             cmd_ctx, specified_param_ids
         )
-        aliases_str = ", ".join(canonical_aliases)
+        aliases_str = util.list_plurality(canonical_aliases, "and")
         fatal_usage_error(
-            cmd_ctx, f"[{aliases_str}] cannot be combined together."
+            cmd_ctx, f"{aliases_str} cannot be combined together."
         )
 
 
@@ -165,15 +166,17 @@ def check_exactly_one_param(
     if len(specified_param_ids) < 1:
         # -- User specified Less flags than required.
         canonical_aliases = _params_ids_to_aliases(cmd_ctx, param_ids)
-        aliases_str = ", ".join(canonical_aliases)
-        fatal_usage_error(cmd_ctx, f"Specify one of [{aliases_str}].")
+        aliases_str = util.list_plurality(canonical_aliases, "or")
+        fatal_usage_error(cmd_ctx, f"specify one of {aliases_str}.")
     else:
         # -- User specified more flags than allowed.
         canonical_aliases = _params_ids_to_aliases(
             cmd_ctx, specified_param_ids
         )
-        aliases_str = ", ".join(canonical_aliases)
-        fatal_usage_error(cmd_ctx, f"Specify only one of [{aliases_str}].")
+        aliases_str = util.list_plurality(canonical_aliases, "and")
+        fatal_usage_error(
+            cmd_ctx, f"{aliases_str} cannot be combined together."
+        )
 
 
 def check_at_least_one_param(
@@ -193,9 +196,9 @@ def check_at_least_one_param(
     # If more 2 or more print an error and exit.
     if len(specified_param_ids) < 1:
         canonical_aliases = _params_ids_to_aliases(cmd_ctx, param_ids)
-        aliases_str = ", ".join(canonical_aliases)
+        aliases_str = util.list_plurality(canonical_aliases, "or")
         fatal_usage_error(
-            cmd_ctx, f"At list one of [{aliases_str}] must be specified."
+            cmd_ctx, f"at list one of {aliases_str} must be specified."
         )
 
 

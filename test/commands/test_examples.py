@@ -17,7 +17,7 @@ def test_examples(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(apio_examples)
         assert result.exit_code == 1, result.output
         assert (
-            "Error: Specify one of [--list, --fetch-dir, --fetch-files]"
+            "specify one of --list, --fetch-dir, or --fetch-files"
             in result.output
         )
 

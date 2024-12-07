@@ -15,21 +15,6 @@ from apio import util
 from apio import pkg_util
 from apio.apio_context import ApioContext
 
-# -- Error messages
-EXAMPLE_NOT_FOUND_MSG = """
-Warning: this example does not exist
-Use `apio examples -l` to list all the available examples"""
-
-USAGE_EXAMPLE = """
-To fetch example files:
-   apio examples -f <example-name>
-
-Example of use:
-   apio examples -f icesum/leds
-
-Type 'apio examples -h' for more details.
-"""
-
 
 @dataclass
 class ExampleInfo:
@@ -138,7 +123,6 @@ class Examples:
         # -- For a terminal, emit additional summary.
         if output_config.terminal_mode():
             click.secho(f"Total: {len(examples)}")
-            click.secho(USAGE_EXAMPLE, fg="green")
 
         return 0
 
@@ -166,7 +150,7 @@ class Examples:
 
         # -- If the source example path is not a folder... it is an error
         if not src_example_path.is_dir():
-            click.secho(EXAMPLE_NOT_FOUND_MSG, fg="yellow")
+            click.secho(f"Error: example [{example}] not found.", fg="red")
             return 1
 
         # -- The destination path is a folder...It means that the
@@ -221,9 +205,9 @@ class Examples:
         # -- Build the source example path (where the example was installed)
         src_example_path = self.examples_dir / example
 
-        # -- If the source example path is not a folder... it is an error
+        # -- If the source example path is not a folder. it is an error
         if not src_example_path.is_dir():
-            click.secho(EXAMPLE_NOT_FOUND_MSG, fg="yellow")
+            click.secho(f"Error: example [{example}] not found.", fg="red")
             return 1
 
         # -- Copy the example files!!

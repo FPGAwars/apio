@@ -17,9 +17,8 @@ def test_system(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(apio_system)
         assert result.exit_code == 1, result.output
         assert (
-            "Specify one of "
-            "[--lsftdi, --lsusb, --lsserial, --info, --platforms]"
-            in result.output
+            "specify one of --lsftdi, --lsusb, --lsserial, --info, "
+            "or --platforms" in result.output
         )
 
         # -- Execute "apio system --lsftdi"

@@ -57,4 +57,4 @@ def test_check_at_most_one_param(capsys):
         check_at_most_one_param(cmd_ctx, ["_opt1", "_opt2", "_opt3"])
     captured = capsys.readouterr()
     assert e.value.code == 1
-    assert "[--opt1, --opt2] cannot be combined together" in captured.out
+    assert "--opt1 and --opt2 cannot be combined together" in captured.out
