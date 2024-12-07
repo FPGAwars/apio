@@ -48,8 +48,14 @@ def test_utilities(apio_runner: ApioRunner):
         sb.assert_ok(result)
         assert "Apio version" in result.output
 
-        # -- Run 'apio raw --env "nextpnr-ice40 --help"
+        # -- Run 'apio raw  "nextpnr-ice40 --help"'
         result = sb.invoke_apio_cmd(
-            apio_raw, ["--env", "nextpnr-ice40 --help"], input="exit"
+            apio_raw, ["--", "nextpnr-ice40", "--help"]
         )
         sb.assert_ok(result)
+
+        # -- Run 'apio raw --env'
+        result = sb.invoke_apio_cmd(apio_raw, ["--env"])
+        sb.assert_ok(result)
+        assert "Envirnment settings:" in result.output
+        assert "YOSYS_LIB" in result.output

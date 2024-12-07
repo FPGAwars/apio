@@ -150,20 +150,6 @@ def get_path_in_apio_package(subpath: str) -> Path:
     return path
 
 
-def call(cmd):
-    """Execute the given command."""
-
-    # -- Execute the command from the shell
-    result = subprocess.call(cmd, shell=True)
-
-    # -- Command not found
-    if result == 127:
-        message = f"ERROR. Comand not found!: {cmd}"
-        click.secho(message, fg="red")
-
-    return result
-
-
 @dataclass(frozen=True)
 class CommandResult:
     """Contains the results of a command (subprocess) execution."""

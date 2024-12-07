@@ -77,7 +77,7 @@ def _dump_env_mutations(
     for p in reversed(mutations.paths):
         styled_name = click.style("PATH", fg="magenta")
         if windows:
-            click.secho(f"@set {styled_name}={p};%PATH%")
+            click.secho(f"set {styled_name}={p};%PATH%")
         else:
             click.secho(f'{styled_name}="{p}:$PATH"')
 
@@ -85,7 +85,7 @@ def _dump_env_mutations(
     for name, val in mutations.vars:
         styled_name = click.style(name, fg="magenta")
         if windows:
-            click.secho(f"@set {styled_name}={val}")
+            click.secho(f"set {styled_name}={val}")
         else:
             click.secho(f'{styled_name}="{val}"')
 
