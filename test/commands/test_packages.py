@@ -17,7 +17,7 @@ def test_packages(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(apio_packages)
         assert result.exit_code == 1, result.output
         assert (
-            "Error: Specify one of [--list, --install, --uninstall, --fix]"
+            "specify one of --list, --install, --uninstall, or --fix"
             in result.output
         )
 

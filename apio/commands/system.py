@@ -147,6 +147,10 @@ def cli(
         click.secho("Apio version    ", nl=False)
         click.secho(importlib.metadata.version("apio"), fg="cyan")
 
+        # -- Apio version.
+        click.secho("Python version  ", nl=False)
+        click.secho(util.get_python_version(), fg="cyan")
+
         # -- Print platform id.
         click.secho("Platform id     ", nl=False)
         click.secho(apio_ctx.platform_id, fg="cyan")

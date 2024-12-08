@@ -17,8 +17,8 @@ def test_drivers(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(apio_drivers)
         assert result.exit_code == 1
         assert (
-            "Error: Specify one of [--ftdi-install, --ftdi-uninstall, "
-            "--serial-install, --serial-uninstall]" in result.output
+            "specify one of --ftdi-install, --ftdi-uninstall, "
+            "--serial-install, or --serial-uninstall" in result.output
         )
 
         # -- Execute "apio --ftdi-install, --serial-install"
@@ -27,6 +27,6 @@ def test_drivers(apio_runner: ApioRunner):
         )
         assert result.exit_code == 1, result.output
         assert (
-            "Error: Specify only one of [--ftdi-install, --serial-install]"
+            "Error: --ftdi-install and --serial-install cannot be combined"
             in result.output
         )

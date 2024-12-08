@@ -53,7 +53,7 @@ Examples:
   apio examples --list               # List all examples
   apio examples -l | grep -i icezum  # Filter examples.
   apio examples -f icezum/leds       # Fetch example files
-  apio examples -s icezum/leds       # Fetch example directory
+  apio examples -d icezum/leds       # Fetch example directory
   apio examples -d icezum            # Fetch all board examples
 """
 
