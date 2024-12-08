@@ -10,7 +10,7 @@
       "uncompressed_name": "apio-examples-%V",
       "folder_name": "examples",
       "extension": "zip",
-      "url_version": "https://github.com/FPGAwars/apio-examples/raw/master/VERSION"
+      "url_version": "https://github.com/FPGAwars/apio-examples/raw/master/VERSION_DEV"
     },
     "description": "Verilog examples",
     "env": {}
