@@ -24,6 +24,6 @@ jobs:
               run: |
                   make deps
 
-            - name: Run tox
+            - name: Run Tests
               run: |
-                  make tox
+                  make check-all
