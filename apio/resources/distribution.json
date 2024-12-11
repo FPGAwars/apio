@@ -4,7 +4,7 @@
     "drivers": ">=1.1.0",
     "examples": ">=0.0.7",
     "graphviz": ">=12.1.2",
-    "oss-cad-suite": ">=0.2.0"
+    "oss-cad-suite": ">=0.2.1"
   },
   "pip_packages": {
     "blackiceprog": ">=2.0.0,<3.0.0",
