@@ -12,7 +12,7 @@
       "extension": "zip",
       "url_version": "https://github.com/FPGAwars/apio-examples/raw/master/VERSION"
     },
-    "description": "Verilog examples",
+    "description": "Apio's project examples",
     "env": {}
   },
   "oss-cad-suite": {
@@ -28,7 +28,7 @@
       "extension": "tar.gz",
       "url_version": "https://github.com/FPGAwars/tools-oss-cad-suite/raw/main/VERSION_DEV"
     },
-    "description": "YosysHQ/oss-cad-suite",
+    "description": "YosysHQ's oss-cad-suite",
     "env": {
       "path": [
         "%p/bin",
@@ -60,6 +60,26 @@
       ]
     },
     "description": "Graphviz tool for Windows",
+    "env": {
+      "path": [
+        "%p/bin"
+      ]
+    }
+  },
+  "verible": {
+    "repository": {
+      "name": "tools-verible",
+      "organization": "FPGAwars"
+    },
+    "release": {
+      "tag_name": "v%V",
+      "compressed_name": "tools-verible-%P-%V",
+      "uncompressed_name": "",
+      "folder_name": "tools-verible",
+      "extension": "tar.gz",
+      "url_version": "https://github.com/FPGAwars/tools-verible/raw/main/VERSION_DEV"
+    },
+    "description": "Chips Aliance's Verible toolset",
     "env": {
       "path": [
         "%p/bin"
