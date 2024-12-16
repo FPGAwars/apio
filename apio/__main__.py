@@ -45,13 +45,6 @@ COMMAND_GROUPS = {
         "raw",
         "upgrade",
     ],
-    "Deprecated commands": [
-        "modify",
-        "time",
-        "verify",
-        "install",
-        "uninstall",
-    ],
 }
 
 

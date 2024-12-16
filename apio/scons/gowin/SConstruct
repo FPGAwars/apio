@@ -113,7 +113,7 @@ synth_srcs, test_srcs = get_source_files(env)
 # -- Get the CST file name.
 CST = get_constraint_file(env, ".cst", TOP_MODULE)
 
-# -- Apio build/upload/time/report.
+# -- Apio build/upload/report.
 # -- Builder (yosys, Synthesis).
 # -- (modules).v -> hardware.json.
 synth_builder = Builder(
@@ -141,7 +141,7 @@ def pnr_emitter(target, source, env):
     return target, source
 
 
-# -- Apio build/upload/time/report.
+# -- Apio build/upload/report.
 # -- builder (nextpnr, Place and route).
 # -- hardware.json -> hardware.pnr.json.
 pnr_builder = Builder(
@@ -204,25 +204,6 @@ env.AlwaysBuild(report_target)
 programmer_cmd = get_programmer_cmd(env)
 upload_target = env.Alias("upload", bin_target, programmer_cmd)
 env.AlwaysBuild(upload_target)
-
-
-# -- Apio verify.
-# -- Builder (iverilog, verilog compiler).
-# -- (modules + testbenches).v -> hardware.out.
-iverilog_verify_builder = Builder(
-    action=make_iverilog_action(
-        env,
-        ivl_path=IVL_PATH,
-        verbose=VERBOSE_ALL,
-        vcd_output_name="dummy_vcd_output",
-        is_interactive=False,
-        lib_dirs=[YOSYS_LIB_DIR],
-    ),
-    suffix=".out",
-    src_suffix=".v",
-    source_scanner=verilog_src_scanner,
-)
-env.Append(BUILDERS={"IVerilogVerify": iverilog_verify_builder})
 
 
 # -- Apio sim/test
@@ -293,14 +274,6 @@ vcd_builder = Builder(
     src_suffix=".out",
 )
 env.Append(BUILDERS={"VCD": vcd_builder})
-
-
-# -- Apio verify.
-# -- Targets
-# -- (modules).v -> (modules).out
-verify_out_target = env.IVerilogVerify(TARGET, synth_srcs + test_srcs)
-env.AlwaysBuild(verify_out_target)
-verify_target = env.Alias("verify", verify_out_target)
 
 
 # -- Apio graph.

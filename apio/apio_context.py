@@ -424,60 +424,6 @@ class ApioContext:
 
         return folder_name
 
-    def get_platform_packages_lists(self) -> tuple[list, list]:
-        """Get all the packages that are applicable to this platform,
-        grouped as installed and not installed
-        * OUTPUT:
-          - A tuple of two lists: Installed and not installed packages
-        """
-
-        # -- Classify the packages in two lists
-        installed_packages = []
-        notinstalled_packages = []
-
-        # -- Go though all the apio packages and add them to the installed
-        # -- or uninstalled lists.
-        for package_name, package_config in self.platform_packages.items():
-
-            # -- Collect information about the package
-            data = {
-                "name": package_name,
-                "version": None,
-                "description": package_config["description"],
-            }
-
-            # -- Check if this package is installed
-            if package_name in self.profile.packages:
-
-                # -- Get the installed version
-                version = self.profile.packages[package_name]["version"]
-
-                # -- Store the version
-                data["version"] = version
-
-                # -- Store the package
-                installed_packages += [data]
-
-            # -- The package is not installed
-            else:
-                notinstalled_packages += [data]
-
-        # -- If there are in the profile packages that are not in the
-        # -- platform packages, add them well to the uninstalled list, as
-        # -- 'unknown'. These must be some left overs, e.g. if apio is
-        # -- upgraded.
-        for package_name in self.profile.packages:
-            if package_name not in self.platform_packages:
-                data = {
-                    "name": package_name,
-                    "version": "Unknown",
-                    "description": "Unknown deprecated package",
-                }
-                installed_packages += [data]
-
-        # -- Return the packages, classified
-        return installed_packages, notinstalled_packages
-
     def get_package_dir(self, package_name: str) -> Path:
         """Returns the root path of a package with given name."""
 

@@ -95,23 +95,6 @@ class SCons:
         )
 
     @on_exception(exit_code=1)
-    def verify(self, args) -> int:
-        """Runs a scons subprocess with the 'verify' target. Returns process
-        exit code, 0 if ok."""
-
-        # -- Split the arguments
-        variables, __, arch = process_arguments(self.apio_ctx, args)
-
-        # -- Execute scons!!!
-        # -- The packages to check are passed
-        return self._run(
-            "verify",
-            variables=variables,
-            arch=arch,
-            required_packages_names=["oss-cad-suite"],
-        )
-
-    @on_exception(exit_code=1)
     def graph(self, args) -> int:
         """Runs a scons subprocess with the 'graph' target. Returns process
         exit code, 0 if ok."""
@@ -183,29 +166,6 @@ class SCons:
         # -- The packages to check are passed
         return self._run(
             "build",
-            variables=variables,
-            board=board,
-            arch=arch,
-            required_packages_names=["oss-cad-suite"],
-        )
-
-    @on_exception(exit_code=1)
-    def time(self, args) -> int:
-        """Runs a scons subprocess with the 'time' target. Returns process
-        exit code, 0 if ok."""
-
-        variables, board, arch = process_arguments(self.apio_ctx, args)
-
-        if arch not in ["ice40"]:
-            click.secho(
-                "Error: Time analysis for "
-                f"{arch.upper()} is not supported yet.",
-                fg="red",
-            )
-            return 99
-
-        return self._run(
-            "time",
             variables=variables,
             board=board,
             arch=arch,
