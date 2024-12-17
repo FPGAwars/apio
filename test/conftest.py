@@ -31,7 +31,7 @@ DEBUG = True
 # -- TODO: Currently apio doesn't handle well spaces in the pathes. Fix it and
 # -- change this to " fuññy ". For more details see
 # -- https://github.com/FPGAwars/apio/issues/474.
-FUNNY_MARKER = "fuññy"
+FUNNY_MARKER = " fuññy "
 
 
 # -- This function is called by pytest. It addes the pytest --offline flag

@@ -84,6 +84,7 @@ To use the local repo run this in the repo's root directory:
 ```
 pip uninstall apio
 pip install -e .
+make
 ```
 
 To return back to the release package run this (in any directory):
@@ -98,3 +99,19 @@ $ apio system -i
 Platform: darwin_arm64
 Package:  /Users/user/projects/apio_dev/repo/apio
 ```
+
+### Manage python environment with Conda
+
+This section is a tip if you don't have python installed or you want to have independent versions of python isolated by apps or environments.
+Conda is a powerful tool for this, and it is multiplatform, providing you a way to work in all operating systems in the same way.
+
+To install Conda:
+
+[https://docs.anaconda.com/miniconda/install/#quick-command-line-install](https://docs.anaconda.com/miniconda/install/#quick-command-line-install)
+
+Once you installed Conda type in your shell:
+```
+conda create --name apio python=3.13
+conda activate apio
+```
+After this, you could install apio like the parent section explains.
