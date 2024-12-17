@@ -24,17 +24,14 @@ def test_examples(apio_runner: ApioRunner):
         # -- Execute "apio examples --list"
         result = sb.invoke_apio_cmd(apio_examples, ["--list"])
         assert result.exit_code == 1, result.output
-        assert "Error: package 'examples' is not installed" in result.output
-        assert "apio packages --install --force examples" in result.output
+        assert "package 'examples' is not installed" in result.output
 
         # -- Execute "apio examples --fetch-dir dir"
         result = sb.invoke_apio_cmd(apio_examples, ["--fetch-dir", "dir"])
         assert result.exit_code == 1, result.output
-        assert "Error: package 'examples' is not installed" in result.output
-        assert "apio packages --install --force examples" in result.output
+        assert "package 'examples' is not installed" in result.output
 
         # -- Execute "apio examples --files file"
         result = sb.invoke_apio_cmd(apio_examples, ["--fetch-files", "file"])
         assert result.exit_code == 1, result.output
-        assert "Error: package 'examples' is not installed" in result.output
-        assert "apio packages --install --force examples" in result.output
+        assert "package 'examples' is not installed" in result.output

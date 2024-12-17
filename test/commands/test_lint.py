@@ -19,7 +19,4 @@ def test_lint_no_packages(apio_runner: ApioRunner):
         # -- Execute "apio lint"
         result = sb.invoke_apio_cmd(apio_lint)
         assert result.exit_code == 1, result.output
-        assert (
-            "Error: package 'oss-cad-suite' is not installed" in result.output
-        )
-        assert "apio packages --install --force oss-cad-suite" in result.output
+        assert "package 'oss-cad-suite' is not installed" in result.output

@@ -21,6 +21,17 @@ from apio.commands import options
 from apio.apio_context import ApioContext
 
 
+board_option = click.option(
+    "board",  # Var name.
+    "-b",
+    "--board",
+    type=str,
+    required=True,
+    metavar="board_id",
+    help="Set the board.",
+    cls=cmd_util.ApioOption,
+)
+
 # ---------------------------
 # -- COMMAND
 # ---------------------------
@@ -59,7 +70,7 @@ the supported boards.
     cls=cmd_util.ApioCommand,
 )
 @click.pass_context
-@options.board_option_gen(help="Set the board.", required=True)
+@board_option
 @options.top_module_option_gen(help="Set the top level module name.")
 @options.project_dir_option
 @options.sayyes

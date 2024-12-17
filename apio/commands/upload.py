@@ -73,8 +73,6 @@ Examples:
 @options.verbose_option
 @options.verbose_yosys_option
 @options.verbose_pnr_option
-@options.top_module_option_gen(deprecated=True)
-@options.board_option_gen(deprecated=True)
 def cli(
     _: click.core.Context,
     # Options
@@ -86,9 +84,6 @@ def cli(
     verbose: bool,
     verbose_yosys: bool,
     verbose_pnr: bool,
-    # Deprecated options
-    top_module: str,
-    board: str,
 ):
     """Implements the upload command."""
 
@@ -108,8 +103,6 @@ def cli(
     # -- Construct the configuration params to pass to SCons
     # -- from the arguments
     config = {
-        "board": board,
-        "top-module": top_module,
         "verbose_all": verbose,
         "verbose_yosys": verbose_yosys,
         "verbose_pnr": verbose_pnr,

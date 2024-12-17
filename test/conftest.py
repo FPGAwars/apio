@@ -203,6 +203,9 @@ class ApioSandbox:
         if isinstance(text, list):
             text = "\n".join(text)
 
+        # -- Make dir(s) if needed.
+        Path(file).parent.mkdir(parents=True, exist_ok=True)
+
         # -- Write.
         with open(file, "w", encoding="utf-8") as f:
             f.write(text)
@@ -242,7 +245,7 @@ class ApioSandbox:
             lines.append(f"{name} = {value}")
 
         # -- Write the file.
-        self.write_file(path, lines)
+        self.write_file(path, lines, exists_ok=True)
 
     @property
     def offline_flag(self):

@@ -191,9 +191,9 @@ def _check_required_package(
     # -- Case 1: Package is not installed.
     if current_version is None:
         click.secho(
-            f"Error: package '{package_name}' is not installed.", fg="red"
+            f"Error: apio package '{package_name}' is not installed.", fg="red"
         )
-        _show_package_install_instructions(package_name)
+        click.secho("Please run:\n  apio packages --install", fg="yellow")
         sys.exit(1)
 
     # -- Case 2: Version does not match requirmeents.
@@ -204,8 +204,9 @@ def _check_required_package(
             f"match the requirement for version {spec_version}.",
             fg="red",
         )
-
-        _show_package_install_instructions(package_name)
+        click.secho(
+            "Please run:\n  apio packages --install --force", fg="yellow"
+        )
         sys.exit(1)
 
     # -- Case 3: The package's directory does not exist.
@@ -213,7 +214,13 @@ def _check_required_package(
     if package_dir and not package_dir.is_dir():
         message = f"Error: package '{package_name}' is installed but missing"
         click.secho(message, fg="red")
-        _show_package_install_instructions(package_name)
+        click.secho(
+            "Please run:\n"
+            "  apio packages --fix\n"
+            "  apio packages --install -- force",
+            fg="yellow",
+        )
+
         sys.exit(1)
 
 
@@ -240,18 +247,6 @@ def _version_matches(current_version: str, spec_version: str) -> bool:
 
     # -- Check the version (True if the semantic version is satisfied)
     return semver in spec
-
-
-def _show_package_install_instructions(package_name: str):
-    """Prints hints on how to install a package with a given name."""
-
-    click.secho(
-        "Please run:\n"
-        f"   apio packages --install --force {package_name}\n"
-        "or:\n"
-        "   apio packages --install --force",
-        fg="yellow",
-    )
 
 
 @dataclass

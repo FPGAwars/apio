@@ -160,15 +160,15 @@ class ApioContext:
             sorted(self.fpgas.items(), key=lambda t: t[0])
         )
 
-        # -- Save the load_project request, mostly for debugging.
-        self.project_loading_requested = load_project
-
-        # -- If requested, try to load the project's apio.ini. If apio.ini
-        # -- does not exist, the loading returns None.
-        self._project: Project = None
+        # -- If requested, load apio.ini, fatal error if not found.
         if load_project:
             resolver = _ProjectResolverImpl(self)
             self._project = load_project_from_file(self.project_dir, resolver)
+            assert self.has_project_loaded, "init(): roject not loaded"
+        else:
+            self._project: Project = None
+            assert self.has_project_loaded, "init(): project loaded"
+
 
     def lookup_board_id(
         self, board: str, *, warn: bool = True, strict: bool = True
@@ -239,9 +239,10 @@ class ApioContext:
 
     @property
     def project(self) -> Project:
-        """Return the project. It's None if project loading not requested or
-        project doesn't have apio.ini.
-        ."""
+        """Return the project. Should be called only if has_project_loaded() is
+        True."""
+        # -- Failure here is a programming error, not a user error.
+        assert self.has_project_loaded, "project(): project is not loaded"
         return self._project
 
     def _load_resource(self, name: str, allow_custom: bool = False) -> dict:

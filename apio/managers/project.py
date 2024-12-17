@@ -99,6 +99,15 @@ class Project:
             self._options["board"]
         )
 
+        # -- If top-module was not specified, fill in the default value.
+        if "top-module" not in self._options:
+            self._options["top-module"] = DEFAULT_TOP_MODULE
+            click.secho(
+                "Project file has no 'top-module', "
+                f"assuming '{DEFAULT_TOP_MODULE}'.",
+                fg="yellow",
+            )
+
     def __getitem__(self, option: str) -> Optional[str]:
         # -- If this fails, this is a programming error.
         assert option in ALL_OPTIONS, f"Invalid project option: [{option}]"
@@ -120,8 +129,8 @@ def load_project_from_file(
 
     # -- Currently, apio.ini is still optional so we just warn.
     if not file_path.exists():
-        click.secho(f"Info: Project has no {APIO_INI} file.", fg="yellow")
-        return None
+        click.secho(f"Error: missing project file {APIO_INI}.", fg="red")
+        sys.exit(1)
 
     # -- Read and parse the file.
     parser = ConfigParser()

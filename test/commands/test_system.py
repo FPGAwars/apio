@@ -24,17 +24,17 @@ def test_system(apio_runner: ApioRunner):
         # -- Execute "apio system --lsftdi"
         result = sb.invoke_apio_cmd(apio_system, ["--lsftdi"])
         assert result.exit_code == 1, result.output
-        assert "apio packages --install --force oss-cad-suite" in result.output
+        assert "package 'oss-cad-suite' is not installed" in result.output
 
         # -- Execute "apio system --lsusb"
         result = sb.invoke_apio_cmd(apio_system, ["--lsusb"])
         assert result.exit_code == 1, result.output
-        assert "apio packages --install --force oss-cad-suite" in result.output
+        assert "package 'oss-cad-suite' is not installed" in result.output
 
         # -- Execute "apio system --lsserial"
         sb.invoke_apio_cmd(apio_system, ["--lsserial"])
         assert result.exit_code == 1, result.output
-        assert "apio packages --install --force oss-cad-suite" in result.output
+        assert "package 'oss-cad-suite' is not installed" in result.output
 
         # -- Execute "apio system --info"
         result = sb.invoke_apio_cmd(apio_system, ["--info"])
