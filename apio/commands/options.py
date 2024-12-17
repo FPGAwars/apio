@@ -27,20 +27,6 @@ from apio import cmd_util
 
 # W0622: Redefining built-in 'help'
 # pylint: disable=W0622
-def all_option_gen(*, help: str):
-    """Generate an --all option with given help text."""
-    return click.option(
-        "all_",  # Var name. Deconflicting from Python'g builtin 'all'.
-        "-a",
-        "--all",
-        is_flag=True,
-        help=help,
-        cls=cmd_util.ApioOption,
-    )
-
-
-# W0622: Redefining built-in 'help'
-# pylint: disable=W0622
 def force_option_gen(*, help: str):
     """Generate a --force option with given help text."""
     return click.option(
@@ -92,15 +78,6 @@ def top_module_option_gen(
 # ---------------------------
 
 
-ftdi_id = click.option(
-    "ftdi_id",  # Var name.
-    "--ftdi-id",
-    type=str,
-    metavar="ftdi-id",
-    help="Set the FTDI id.",
-)
-
-
 project_dir_option = click.option(
     "project_dir",  # Var name.
     "-p",
@@ -127,15 +104,6 @@ sayyes = click.option(
     "--sayyes",
     is_flag=True,
     help="Automatically answer YES to all the questions.",
-    cls=cmd_util.ApioOption,
-)
-
-serial_port_option = click.option(
-    "serial_port",  # Var name.
-    "--serial-port",
-    type=str,
-    metavar="serial-port",
-    help="Set the serial port.",
     cls=cmd_util.ApioOption,
 )
 

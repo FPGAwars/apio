@@ -167,8 +167,7 @@ class ApioContext:
             assert self.has_project_loaded, "init(): roject not loaded"
         else:
             self._project: Project = None
-            assert self.has_project_loaded, "init(): project loaded"
-
+            assert not self.has_project_loaded, "init(): project loaded"
 
     def lookup_board_id(
         self, board: str, *, warn: bool = True, strict: bool = True
