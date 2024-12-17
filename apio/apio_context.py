@@ -102,7 +102,6 @@ class ApioContext:
 
         # -- Maps the optional project_dir option to a path.
         self.project_dir: Path = util.get_project_dir(project_dir)
-        ApioContext._check_no_spaces_in_dir(self.project_dir, "project")
 
         # -- Determine apio home dir
         self.home_dir: Path = ApioContext._get_home_dir()

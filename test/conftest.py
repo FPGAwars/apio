@@ -24,13 +24,8 @@ from click.testing import Result
 # -- Debug mode on/off
 DEBUG = True
 
-# -- Apio should be able to handle spaces and unicode in its home, packages,
-# -- and project directory path. We insert this marker in the test pathes to
-# -- test it.
-#
-# -- TODO: Currently apio doesn't handle well spaces in the pathes. Fix it and
-# -- change this to " fuññy ". For more details see
-# -- https://github.com/FPGAwars/apio/issues/474.
+# -- We insert unicode to the test pathes to make sure apio handle them
+# -- properly.
 FUNNY_MARKER = "fuññy"
 
 
@@ -303,7 +298,12 @@ class ApioRunner:
 
         # -- Construct the sandbox dir pathes. User will create the dirs
         # -- as needed.
-        proj_dir = temp_dir / "proj"
+        # --
+        # -- We do allow spaces in the project dir.
+        proj_dir = temp_dir / " proj"
+
+        # -- Spaces are not supported yet in the home and packges dirs.
+        # -- For more details see https://github.com/FPGAwars/apio/issues/474.
         home_dir = temp_dir / "apio"
         packages_dir = temp_dir / "packages"
 
