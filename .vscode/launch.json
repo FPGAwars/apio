@@ -8,7 +8,7 @@
             "program": "${workspaceFolder}/apio_run.py",
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+            "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
         },
         {
             "name": "Apio boards",
@@ -21,7 +21,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+            "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
         },
         {
             "name": "Apio build",
@@ -33,7 +33,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+            "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
         },
         {
             "name": "Apio clean",
@@ -45,7 +45,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+            "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
         },
         {
             "name": "Apio create",
@@ -62,7 +62,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+            "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
         },
         {
             "name": "Apio drivers",
@@ -71,11 +71,11 @@
             "program": "${workspaceFolder}/apio_run.py",
             "args": [
                 "drivers",
-                "--ftdi-enable"
+                "--ftdi-install"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+            "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
         },
         {
             "name": "Apio examples",
@@ -83,11 +83,12 @@
             "request": "launch",
             "program": "${workspaceFolder}/apio_run.py",
             "args": [
-                "examples"
+                "examples",
+                "--list"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+            "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
         },
         {
             "name": "Apio graph",
@@ -95,11 +96,12 @@
             "request": "launch",
             "program": "${workspaceFolder}/apio_run.py",
             "args": [
-                "graph"
+                "graph",
+                "--svg"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+            "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
         },
         {
             "name": "Apio install",
@@ -114,7 +116,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+            "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
         },
         {
             "name": "Apio lint",
@@ -126,7 +128,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+            "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
         },
         {
             "name": "Apio modify",
@@ -142,7 +144,21 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+            "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
+        },
+        {
+            "name": "Apio packages",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/apio_run.py",
+            "args": [
+                "packages",
+                "--install",
+                "--force"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
         },
         {
             "name": "Apio raw",
@@ -155,7 +171,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+            "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
         },
         {
             "name": "Apio report",
@@ -167,7 +183,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+            "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
         },
         {
             "name": "Apio system",
@@ -180,7 +196,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+            "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
         },
         {
             "name": "Apio time",
@@ -192,7 +208,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+            "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
         },
         {
             "name": "Apio uninstall",
@@ -205,7 +221,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+            "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
         },
         {
             "name": "Apio upload [alhambra-ii]",
@@ -217,7 +233,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+            "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
         },
         {
             "name": "Apio upload [TinyFPGA-BX]",
@@ -265,29 +281,30 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+            "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
         },
         {
-            "name": "Scon (direct)",
+            "name": "Attach remote",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "justMyCode": false,
+        },
+        {
+            "name": "Apio test",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/scons_run.py",
+            "module": "pytest",
             "args": [
-                "-Q",  
-                "build", 
-                "fpga_model=iCE40-HX4K-TQ144",  
-                "fpga_arch=ice40",  
-                "fpga_size=4k",  
-                "fpga_type=hx",  
-                "fpga_pack=tq144", 
-                "top_module=main",
-                "-f",
-                "${workspaceFolder}/apio/scons/ice40/SConstruct",
-                "force_colors=True"
+                "-s",
+                "test/commands/test_build.py::test_errors_without_apio_ini_1"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/test-examples/Alhambra-II/02-jumping-LED"
+            "cwd": "${workspaceFolder}"
         },
     ]
 }

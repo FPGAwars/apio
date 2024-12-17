@@ -7,12 +7,13 @@
 # -- Licence GPLv2
 """Implementation of 'apio clean' command"""
 
+import sys
 from pathlib import Path
 import click
-from click.core import Context
 from apio.managers.scons import SCons
 from apio import cmd_util
 from apio.commands import options
+from apio.apio_context import ApioContext
 
 
 # ---------------------------
@@ -41,13 +42,11 @@ the temporary apio file names.
 )
 @click.pass_context
 @options.project_dir_option
-@options.verbose_option
 @options.board_option_gen(deprecated=True)
 def cli(
-    ctx: Context,
+    _: click.core.Context,
     # Options
     project_dir: Path,
-    verbose: bool,
     # Deprecated options.
     board: str,
 ):
@@ -55,11 +54,14 @@ def cli(
     by apio commands.
     """
 
-    # -- Create the scons object
-    scons = SCons(project_dir)
+    # -- Create the apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=True)
+
+    # -- Create the scons manager.
+    scons = SCons(apio_ctx)
 
     # -- Build the project with the given parameters
-    exit_code = scons.clean({"board": board, "verbose": {"all": verbose}})
+    exit_code = scons.clean({"board": board})
 
     # -- Done!
-    ctx.exit(exit_code)
+    sys.exit(exit_code)

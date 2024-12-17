@@ -7,20 +7,21 @@
 # -- Licence GPLv2
 """Implementation of 'apio' time' command"""
 
+import sys
 from pathlib import Path
 import click
-from click.core import Context
 from apio.managers.scons import SCons
 from apio import cmd_util
 from apio.commands import options
+from apio.apio_context import ApioContext
 
 
 # ---------------------------
 # -- COMMAND
 # ---------------------------
 HELP = """
-The time command has been deprecated. Please use the 'apio report' command
-instead.
+The command 'apio time' has been deprecated. Please use the command
+'apio report' instead.
 """
 
 
@@ -45,7 +46,7 @@ instead.
 @options.type_option_gen(deprecated=False)
 @options.pack_option_gen(deprecated=False)
 def cli(
-    ctx: Context,
+    _: click.core.Context,
     # Options
     project_dir: Path,
     verbose: bool,
@@ -61,8 +62,17 @@ def cli(
 ):
     """Analyze the design and report timing."""
 
-    # -- Create the scons object
-    scons = SCons(project_dir)
+    click.secho(
+        "The 'apio time' command is deprecated. "
+        "Please use the 'apio report' command instead.",
+        fg="yellow",
+    )
+
+    # -- Create the apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=True)
+
+    # -- Create the scons manager.
+    scons = SCons(apio_ctx)
 
     # Run scons
     exit_code = scons.time(
@@ -72,14 +82,12 @@ def cli(
             "size": size,
             "type": type_,
             "pack": pack,
-            "verbose": {
-                "all": verbose,
-                "yosys": verbose_yosys,
-                "pnr": verbose_pnr,
-            },
             "top-module": top_module,
+            "verbose_all": verbose,
+            "verbose_yosys": verbose_yosys,
+            "verbose_pnr": verbose_pnr,
         }
     )
 
     # -- Done!
-    ctx.exit(exit_code)
+    sys.exit(exit_code)

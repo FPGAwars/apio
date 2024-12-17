@@ -2,89 +2,53 @@
   Test for the "apio build" command
 """
 
+from test.conftest import ApioRunner
+
 # -- apio build entry point
-from apio.commands.build import cli as cmd_build
-
-# -- This is for testing "apio create"
-from apio.commands.create import cli as cmd_create
+from apio.commands.build import cli as apio_build
 
 
-def test_build(clirunner, configenv):
-    """Test: apio build
-    when no apio.ini file is given
-    No additional parameters are given
-    """
+# pylint: disable=too-many-statements
+def test_errors_without_apio_ini_1(apio_runner: ApioRunner):
+    """Test: Various errors 1/2. All tests are without apio.ini and without
+    apio packages installed."""
 
-    with clirunner.isolated_filesystem():
-
-        # -- Config the environment (conftest.configenv())
-        configenv()
+    with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio build"
-        result = clirunner.invoke(cmd_build)
-
-        # -- It is an error. Exit code should not be 0
+        result = sb.invoke_apio_cmd(apio_build)
         assert result.exit_code != 0, result.output
-
-        # -- Messages thtat should appear
         assert "Info: Project has no apio.ini file" in result.output
         assert "Error: insufficient arguments: missing board" in result.output
         assert "Error: Missing FPGA" in result.output
 
-
-def test_build_board(clirunner, configenv):
-    """Test: apio build --board icezum
-    No oss-cad-suite package is installed
-    """
-
-    with clirunner.isolated_filesystem():
-
-        # -- Config the environment (conftest.configenv())
-        configenv()
-
-        # -- Execute "apio build --board icezum"
-        result = clirunner.invoke(cmd_build, ["--board", "icezum"])
-
-        # -- Check the result
-        assert result.exit_code != 0, result.output
-        assert "install oss-cad-suite" in result.output
-
-
-def test_build_complete1(clirunner, configenv):
-    """Test: apio build with different arguments. Part 1/2"""
-
-    with clirunner.isolated_filesystem():
-
-        # -- Config the environment (conftest.configenv())
-        configenv()
-
         # apio build --board icestick
-        result = clirunner.invoke(cmd_build, ["--board", "icestick"])
+        result = sb.invoke_apio_cmd(apio_build, ["--board", "icestick"])
         assert result.exit_code == 1, result.output
-        assert "install oss-cad-suite" in result.output
+        assert "apio packages --install --force oss-cad-suite" in result.output
 
         # apio build --fpga iCE40-HX1K-VQ100
-        result = clirunner.invoke(cmd_build, ["--fpga", "iCE40-HX1K-VQ100"])
+        result = sb.invoke_apio_cmd(apio_build, ["--fpga", "iCE40-HX1K-VQ100"])
         assert result.exit_code == 1, result.output
-        assert "install oss-cad-suite" in result.output
+        assert "apio packages --install --force oss-cad-suite" in result.output
 
         # apio build --type lp --size 8k --pack cm225:4k
-        result = clirunner.invoke(
-            cmd_build, ["--type", "lp", "--size", "8k", "--pack", "cm225:4k"]
+        result = sb.invoke_apio_cmd(
+            apio_build, ["--type", "lp", "--size", "8k", "--pack", "cm225:4k"]
         )
         assert result.exit_code == 1, result.output
         assert "Error: insufficient arguments" in result.output
 
         # apio build --board icezum --size 1k
-        result = clirunner.invoke(
-            cmd_build, ["--board", "icezum", "--size", "1k"]
+        result = sb.invoke_apio_cmd(
+            apio_build, ["--board", "icezum", "--size", "1k"]
         )
         assert result.exit_code != 0, result.output
-        assert "install oss-cad-suite" in result.output
+        assert "apio packages --install --force oss-cad-suite" in result.output
 
         # apio build --board icezum --fpga iCE40-HX1K-TQ144 --type hx
-        result = clirunner.invoke(
-            cmd_build,
+        result = sb.invoke_apio_cmd(
+            apio_build,
             [
                 "--board",
                 "icezum",
@@ -95,40 +59,43 @@ def test_build_complete1(clirunner, configenv):
             ],
         )
         assert result.exit_code != 0, result.output
-        assert "install oss-cad-suite" in result.output
+        assert "apio packages --install --force oss-cad-suite" in result.output
 
         # apio build --board icezum --pack tq144
-        result = clirunner.invoke(
-            cmd_build, ["--board", "icezum", "--pack", "tq144"]
+        result = sb.invoke_apio_cmd(
+            apio_build, ["--board", "icezum", "--pack", "tq144"]
         )
         assert result.exit_code != 0, result.output
-        assert "install oss-cad-suite" in result.output
+        assert "apio packages --install --force oss-cad-suite" in result.output
 
         # apio build --fpga iCE40-HX1K-TQ144 --pack tq144 --size 1k
-        result = clirunner.invoke(
-            cmd_build,
+        result = sb.invoke_apio_cmd(
+            apio_build,
             ["--fpga", "iCE40-HX1K-TQ144", "--pack", "tq144", "--size", "1k"],
         )
         assert result.exit_code != 0, result.output
-        assert "install oss-cad-suite" in result.output
+        assert "apio packages --install --force oss-cad-suite" in result.output
 
         # apio build --fpga iCE40-HX1K-TQ144 --type hx
-        result = clirunner.invoke(
-            cmd_build, ["--fpga", "iCE40-HX1K-TQ144", "--type", "hx"]
+        result = sb.invoke_apio_cmd(
+            apio_build, ["--fpga", "iCE40-HX1K-TQ144", "--type", "hx"]
         )
         assert result.exit_code != 0, result.output
-        assert "install oss-cad-suite" in result.output
+        assert "apio packages --install --force oss-cad-suite" in result.output
 
         # apio build --board icezum --size 8k
-        result = clirunner.invoke(
-            cmd_build, ["--board", "icezum", "--size", "8k"]
+        result = sb.invoke_apio_cmd(
+            apio_build, ["--board", "icezum", "--size", "8k"]
         )
         assert result.exit_code != 0, result.output
-        assert "Error: contradictory arguments: ('1k', '8k')" in result.output
+        assert (
+            "Error: contradictory argument values: 'size' = (1k vs 8k)"
+            in result.output
+        )
 
         # apio build --board icezum --fpga iCE40-HX1K-TQ144 --type lp
-        result = clirunner.invoke(
-            cmd_build,
+        result = sb.invoke_apio_cmd(
+            apio_build,
             [
                 "--board",
                 "icezum",
@@ -139,125 +106,124 @@ def test_build_complete1(clirunner, configenv):
             ],
         )
         assert result.exit_code != 0, result.output
-        assert "Error: contradictory arguments: ('hx', 'lp')" in result.output
+        assert (
+            "Error: contradictory argument values: 'type' = (hx vs lp)"
+            in result.output
+        )
 
         # apio build --board icezum --fpga iCE40-HX1K-VQ100
-        result = clirunner.invoke(
-            cmd_build, ["--board", "icezum", "--fpga", "iCE40-HX1K-VQ100"]
+        result = sb.invoke_apio_cmd(
+            apio_build, ["--board", "icezum", "--fpga", "iCE40-HX1K-VQ100"]
         )
         assert result.exit_code != 0, result.output
         assert (
-            "Error: contradictory arguments: ('iCE40-HX1K-TQ144', "
-            "'iCE40-HX1K-VQ100')" in result.output
+            "Error: contradictory argument values: 'fpga' = "
+            "(iCE40-HX1K-TQ144 vs iCE40-HX1K-VQ100)" in result.output
         )
 
         # apio build --fpga iCE40-HX1K-TQ144 --type lp --size 8k
-        result = clirunner.invoke(
-            cmd_build,
+        result = sb.invoke_apio_cmd(
+            apio_build,
             ["--fpga", "iCE40-HX1K-TQ144", "--type", "lp", "--size", "8k"],
         )
         assert result.exit_code != 0, result.output
-        assert "Error: contradictory arguments: ('hx', 'lp')" in result.output
+        assert (
+            "Error: contradictory argument values: 'type' = (hx vs lp)"
+            in result.output
+        )
 
         # apio build --fpga iCE40-HX1K-TQ144 --pack vq100
-        result = clirunner.invoke(
-            cmd_build, ["--fpga", "iCE40-HX1K-TQ144", "--pack", "vq100"]
+        result = sb.invoke_apio_cmd(
+            apio_build, ["--fpga", "iCE40-HX1K-TQ144", "--pack", "vq100"]
         )
         assert result.exit_code != 0, result.output
         assert (
-            "Error: contradictory arguments: ('tq144', 'vq100')"
+            "Error: contradictory argument values: 'pack' = (tq144 vs vq100)"
             in result.output
         )
 
         # apio build --board icezum --pack vq100
-        result = clirunner.invoke(
-            cmd_build, ["--board", "icezum", "--pack", "vq100"]
+        result = sb.invoke_apio_cmd(
+            apio_build, ["--board", "icezum", "--pack", "vq100"]
         )
         assert result.exit_code != 0, result.output
         assert (
-            "Error: contradictory arguments: ('tq144', 'vq100')"
+            "Error: contradictory argument values: 'pack' = (tq144 vs vq100)"
             in result.output
         )
 
         # apio build --size 8k
-        result = clirunner.invoke(cmd_build, ["--size", "8k"])
+        result = sb.invoke_apio_cmd(apio_build, ["--size", "8k"])
         assert result.exit_code != 0, result.output
         assert "Error: insufficient arguments" in result.output
 
 
-def test_build_complete2(clirunner, configenv):
-    """Test: apio build with different arguments. Part 2/2"""
-
-    with clirunner.isolated_filesystem():
-
-        # -- Config the environment (conftest.configenv())
-        configenv()
+def test_errors_without_apio_ini_2(apio_runner: ApioRunner):
+    """Test: Various errors 2/2. All tests are without apio.ini and without
+    apio packages installed."""
+    with apio_runner.in_sandbox() as sb:
 
         # apio build --type lp
-        result = clirunner.invoke(cmd_build, ["--type", "lp"])
+        result = sb.invoke_apio_cmd(apio_build, ["--type", "lp"])
         assert result.exit_code != 0, result.output
         assert "Error: insufficient arguments" in result.output
 
         # apio build --type lp --size 8k
-        result = clirunner.invoke(cmd_build, ["--type", "lp", "--size", "8k"])
+        result = sb.invoke_apio_cmd(
+            apio_build, ["--type", "lp", "--size", "8k"]
+        )
         assert result.exit_code != 0, result.output
         assert "Error: insufficient arguments" in result.output
 
         # apio build --board icefake
-        result = clirunner.invoke(cmd_build, ["--board", "icefake"])
+        result = sb.invoke_apio_cmd(apio_build, ["--board", "icefake"])
         assert result.exit_code != 0, result.output
         assert "Error: unknown board: icefake" in result.output
 
         # apio build --board icefake --fpga iCE40-HX1K-TQ144
-        result = clirunner.invoke(
-            cmd_build, ["--board", "icefake", "--fpga", "iCE40-HX1K-TQ144"]
+        result = sb.invoke_apio_cmd(
+            apio_build, ["--board", "icefake", "--fpga", "iCE40-HX1K-TQ144"]
         )
         assert result.exit_code != 0, result.output
         assert "Error: unknown board: icefake" in result.output
 
         # apio build --fpga iCE40-FAKE
-        result = clirunner.invoke(cmd_build, ["--fpga", "iCE40-FAKE"])
+        result = sb.invoke_apio_cmd(apio_build, ["--fpga", "iCE40-FAKE"])
         assert result.exit_code != 0, result.output
         assert "Error: unknown FPGA: iCE40-FAKE" in result.output
 
         # apio build --fpga iCE40-FAKE --size 8k
-        result = clirunner.invoke(
-            cmd_build, ["--fpga", "iCE40-FAKE", "--size", "8k"]
+        result = sb.invoke_apio_cmd(
+            apio_build, ["--fpga", "iCE40-FAKE", "--size", "8k"]
         )
         assert result.exit_code != 0, result.output
         assert "Error: unknown FPGA: iCE40-FAKE" in result.output
 
         # apio build --board icezum --fpga iCE40-FAKE
-        result = clirunner.invoke(
-            cmd_build, ["--board", "icezum", "--fpga", "iCE40-FAKE"]
+        result = sb.invoke_apio_cmd(
+            apio_build, ["--board", "icezum", "--fpga", "iCE40-FAKE"]
         )
         assert result.exit_code != 0, result.output
         assert (
-            "Error: contradictory arguments: "
-            "('iCE40-HX1K-TQ144', 'iCE40-FAKE')" in result.output
+            "Error: contradictory argument values: 'fpga' = "
+            "(iCE40-HX1K-TQ144 vs iCE40-FAKE)" in result.output
         )
 
 
-def test_build_create(clirunner, configenv):
+def test_errors_with_apio_ini(apio_runner: ApioRunner):
     """Test: apio build with apio create"""
 
-    with clirunner.isolated_filesystem():
+    with apio_runner.in_sandbox() as sb:
 
-        # -- Config the environment (conftest.configenv())
-        configenv()
-
-        # apio create --board icezum
-        result = clirunner.invoke(cmd_create, ["--board", "icezum"])
-        assert result.exit_code == 0, result.output
-        assert "Creating apio.ini file ..." in result.output
-        assert "was created successfully" in result.output
+        # -- Write apio.ini
+        sb.write_apio_ini({"board": "icezum", "top-module": "main"})
 
         # apio build
-        result = clirunner.invoke(cmd_build)
+        result = sb.invoke_apio_cmd(apio_build)
         assert result.exit_code != 0, result.output
 
-        # apio build --board icezum
-        result = clirunner.invoke(cmd_build, ["--board", "icestick"])
+        # apio build --board icestick
+        result = sb.invoke_apio_cmd(apio_build, ["--board", "icestick"])
         assert result.exit_code != 0, result.output
         assert (
             "Info: ignoring board specification from apio.ini."
@@ -265,21 +231,29 @@ def test_build_create(clirunner, configenv):
         )
 
         # apio build --fpga iCE40-HX1K-VQ100
-        result = clirunner.invoke(cmd_build, ["--fpga", "iCE40-HX1K-VQ100"])
+        result = sb.invoke_apio_cmd(apio_build, ["--fpga", "iCE40-HX1K-VQ100"])
         assert result.exit_code != 0, result.output
         assert (
-            "Error: contradictory arguments: "
-            "('iCE40-HX1K-TQ144', 'iCE40-HX1K-VQ100')" in result.output
+            "Error: contradictory argument values: 'fpga' = "
+            "(iCE40-HX1K-TQ144 vs iCE40-HX1K-VQ100)" in result.output
         )
 
         # apio build --type lp --size 8k --pack cm225:4k
-        result = clirunner.invoke(
-            cmd_build, ["--type", "lp", "--size", "8k", "--pack", "cm225:4k"]
+        result = sb.invoke_apio_cmd(
+            apio_build, ["--type", "lp", "--size", "8k", "--pack", "cm225:4k"]
         )
         assert result.exit_code != 0, result.output
-        assert "Error: contradictory arguments: ('hx', 'lp')" in result.output
+        assert (
+            "Error: contradictory argument values: 'type' = (hx vs lp)"
+            in result.output
+        )
 
         # apio build --type lp --size 8k
-        result = clirunner.invoke(cmd_build, ["--type", "lp", "--size", "8k"])
+        result = sb.invoke_apio_cmd(
+            apio_build, ["--type", "lp", "--size", "8k"]
+        )
         assert result.exit_code != 0, result.output
-        assert "Error: contradictory arguments: ('hx', 'lp')" in result.output
+        assert (
+            "Error: contradictory argument values: 'type' = (hx vs lp)"
+            in result.output
+        )

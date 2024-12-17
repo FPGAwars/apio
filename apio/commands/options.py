@@ -9,7 +9,6 @@
 
 from pathlib import Path
 import click
-from apio import util
 from apio import cmd_util
 
 
@@ -194,16 +193,6 @@ ftdi_id = click.option(
     type=str,
     metavar="ftdi-id",
     help="Set the FTDI id.",
-)
-
-
-platform_option = click.option(
-    "platform",  # Var name.
-    "-p",
-    "--platform",
-    type=click.Choice(util.PLATFORMS),
-    help=("(Advanced, for developers) Set the platform."),
-    cls=cmd_util.ApioOption,
 )
 
 

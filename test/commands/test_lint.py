@@ -2,21 +2,24 @@
   Test for the "apio lint" command
 """
 
+from test.conftest import ApioRunner
+
 # -- apio lint entry point
-from apio.commands.lint import cli as cmd_lint
+from apio.commands.lint import cli as apio_lint
 
 
-def test_lint(clirunner, configenv):
-    """Test: apio lint
-    when no apio.ini file is given
-    No additional parameters are given
-    """
+def test_lint_no_packages(apio_runner: ApioRunner):
+    """Test: apio lint with missing packages."""
 
-    with clirunner.isolated_filesystem():
+    with apio_runner.in_sandbox() as sb:
 
-        # -- Config the environment (conftest.configenv())
-        configenv()
+        # -- Create apio.ini file.
+        sb.write_apio_ini({"board": "icezum", "top-module": "main"})
 
         # -- Execute "apio lint"
-        result = clirunner.invoke(cmd_lint, ["--board", "alhambra-ii"])
-        assert result.exit_code != 0, result.output
+        result = sb.invoke_apio_cmd(apio_lint)
+        assert result.exit_code == 1, result.output
+        assert (
+            "Error: package 'oss-cad-suite' is not installed" in result.output
+        )
+        assert "apio packages --install --force oss-cad-suite" in result.output

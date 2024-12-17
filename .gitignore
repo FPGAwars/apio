@@ -9,6 +9,7 @@
 *.swp
 *~
 .coverage
+.coverage.*
 .tox/
 .cache/
 .pytest_cache/
@@ -24,15 +25,19 @@ examples/
 ice-build/
 work/
 test-colorlight-v61.ice
+_build
 hardware.json
 hardware.out
 hardware.vlt
 hardware.bit
 hardware.config
 hardware.pnr
+hardware.dot
+hardware.svg
 *.out
 *.vcd
 .DS_Store
 abc.history
 temp-*
 .run.sh
+,coverage.*

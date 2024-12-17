@@ -21,21 +21,31 @@ import os
 import re
 from enum import Enum
 import json
-from platform import system
-from typing import Dict, Tuple, List, Optional
+from typing import Dict, Tuple, List, Optional, NoReturn
 from dataclasses import dataclass
 import click
 from SCons import Scanner
 from SCons.Node import NodeList
 from SCons.Node.FS import File
 from SCons.Node.Alias import Alias
-from SCons.Script import DefaultEnvironment
 from SCons.Script.SConscript import SConsEnvironment
-from SCons.Action import FunctionAction
+from SCons.Script import DefaultEnvironment
+from SCons.Action import FunctionAction, Action
+from SCons.Builder import Builder
+import SCons.Defaults
 
+
+# -- All the build files and other artifcats are created in this this
+# -- subdirectory.
+BUILD_DIR = "_build"
+
+# -- A shortcut with '/' or '\' appended to the build dir name.
+BUILD_DIR_SEP = BUILD_DIR + os.sep
 
 # -- Target name. This is the base file name for various build artifacts.
-TARGET = "hardware"
+TARGET = BUILD_DIR_SEP + "hardware"
+
+SUPPORTED_GRAPH_TYPES = ["svg", "pdf", "png"]
 
 
 class SConstructId(Enum):
@@ -52,11 +62,13 @@ def map_params(
 ) -> str:
     """A common function construct a command string snippet from a list
     of arguments. The functon does the following:
-     1. If non replace with []
-     2. Drops empty items.
+     1. If params arg is None replace it with []
+     2. Drops empty or white space only items.
      3. Maps the items using the format string which contains exactly one
         placeholder {}.
      4. Joins the items with a white space char.
+
+     For examples, see the unit test at test_scons_util.py.
     """
     # None designates empty list. Avoiding the pylint non safe default warning.
     if params is None:
@@ -79,23 +91,42 @@ def is_verilog_src(env: SConsEnvironment, file_name: str) -> str:
     """Given a file name, determine by its extension if it's a verilog source
     file (testbenches included)."""
     _, ext = os.path.splitext(file_name)
-    return ext == "v"
+    return ext == ".v"
 
 
-def is_testbench(env: SConsEnvironment, file_name: str) -> bool:
-    """Given a file name, return true if it's a testbench file."""
-    name = basename(env, file_name)
+def has_testbench_name(env: SConsEnvironment, file_name: str) -> bool:
+    """Given a file name, return true if it's base name indicates a
+    testbench. It can be for example abc_tb.v or _build/abc_tb.out.
+    The file extension is ignored.
+    """
+    name, _ = os.path.splitext(file_name)
     return name.lower().endswith("_tb")
 
 
 def is_windows(env: SConsEnvironment) -> bool:
-    """Returns True if running on Windows."""
-    return "Windows" == system()
+    """Returns True if running the platform id represents windows."""
+    # -- This bool bar is created when constructing the env.
+    val = env["IS_WINDOWS"]
+    assert isinstance(val, bool), type(val)
+    return val
 
 
 def create_construction_env(args: Dict[str, str]) -> SConsEnvironment:
     """Creates a scons env. Should be called very early in SConstruct.py"""
-    # Create the default env.
+
+    # -- Make sure that the default environment doesn't exist, to make sure
+    # -- we create a fresh environment. This is important with pytest which
+    # -- can run multiple tests in the same python process.
+    # --
+    # pylint: disable=protected-access
+    assert (
+        SCons.Defaults._default_env is None
+    ), "DefaultEnvironment already exists"
+    # pylint: enable=protected-access
+
+    # Create the env. We don't use the DefaultEnvironment (a singleton) to
+    # allow the creation in pytest multiple test environments in the same
+    # tesing process.
     env: SConsEnvironment = DefaultEnvironment(ENV=os.environ, tools=[])
 
     # Add the args dictionary as a new ARGUMENTS var.
@@ -105,11 +136,16 @@ def create_construction_env(args: Dict[str, str]) -> SConsEnvironment:
     # Evaluate the optional force_color arg and set its value
     # an env var on its own.
     assert env.get("FORCE_COLORS") is None
-    env.Replace(FORCE_COLORS=False)  # Tentative.
+    env.Replace(FORCE_COLORS=False)  # Tentative, so we can call arg_bool.
     flag = arg_bool(env, "force_colors", False)
-    env.Replace(FORCE_COLORS=flag)  # Tentative.
-    if not flag:
-        warning(env, "Not forcing scons text colors.")
+    env.Replace(FORCE_COLORS=flag)
+    # Set the IS_WINDOWS flag based on the required "platform_id" arg.
+    platform_id = arg_str(env, "platform_id", "")
+    # Note: this is a programming error, not a user error.
+    assert platform_id, "Missing required scons arg 'platform_id'."
+    flag = "windows" in platform_id.lower()
+    assert env.get("IS_WINDOWS") is None
+    env.Replace(IS_WINDOWS=flag)  # Tentative.
 
     # For debugging.
     # dump_env_vars(env)
@@ -122,7 +158,9 @@ def __dump_parsed_arg(env, name, value, from_default: bool) -> None:
     # Uncomment below for debugging.
     # type_name = type(value).__name__
     # default = "(default)" if from_default else ""
-    # click.echo(f"Arg  {name:15} ->  {str(value):15} {type_name:6} {default}")
+    # click.secho(
+    #     f"Arg  {name:15} ->  {str(value):15} " f"{type_name:6} {default}"
+    # )
 
 
 def get_args(env: SConsEnvironment) -> Dict[str, str]:
@@ -132,6 +170,7 @@ def get_args(env: SConsEnvironment) -> Dict[str, str]:
 
 def arg_bool(env: SConsEnvironment, name: str, default: bool) -> bool:
     """Parse and return a boolean arg."""
+    assert isinstance(default, bool) or default is None, f"{name}: {default}"
     args = get_args(env)
     raw_value = args.get(name, None)
     if raw_value is None:
@@ -150,6 +189,7 @@ def arg_bool(env: SConsEnvironment, name: str, default: bool) -> bool:
 
 def arg_str(env: SConsEnvironment, name: str, default: str) -> str:
     """Parse and return a string arg."""
+    assert isinstance(default, str) or default is None, f"{name}: {default}"
     args = get_args(env)
     raw_value = args.get(name, None)
     value = default if raw_value is None else raw_value
@@ -164,6 +204,11 @@ def force_colors(env: SConsEnvironment) -> bool:
     for example from the scons subprocess to the apio app. To preserve
     the sconstruct text colors, the apio app passes to the sconstract
     scripts a flag to force the preservation of colors.
+
+    NOTE: As of Oct 2024, forcing colors from the scons subprocess does not
+    work on Windows and as result, scons output is colorless.
+    For more details see the click issue at
+    https://github.com/pallets/click/issues/2791.
     """
     flag = env["FORCE_COLORS"]
     assert isinstance(flag, bool)
@@ -171,6 +216,9 @@ def force_colors(env: SConsEnvironment) -> bool:
 
 
 def msg(env: SConsEnvironment, text: str, fg: str = None) -> None:
+    """Print a message to the user. Similar to click.secho but with
+    proper color enforcement.
+    """
     click.secho(text, fg=fg, color=force_colors(env))
 
 
@@ -189,7 +237,7 @@ def error(env: SConsEnvironment, text: str) -> None:
     msg(env, f"Error: {text}", fg="red")
 
 
-def fatal_error(env: SConsEnvironment, text: str) -> None:
+def fatal_error(env: SConsEnvironment, text: str) -> NoReturn:
     """Prints a short error message and exit with an error code."""
     error(env, text)
     env.Exit(1)
@@ -221,14 +269,11 @@ def get_constraint_file(
     # Case 2: Exactly one file found.
     if n == 1:
         result = str(files[0])
-        info(env, f"Found constraint file '{result}'.")
         return result
-    # Case 3: Multiple matching files. Pick the first file (alphabetically).
-    # We could improve the heuristic here, e.g. to prefer a file with
-    # the top_module name, if exists.
-    result = str(files[0])
-    warning(env, f"Found multiple {file_ext} files, using '{result}'.")
-    return result
+    # Case 3: Multiple matching files.
+    fatal_error(
+        env, f"Found multiple '*{file_ext}' constrain files, expecting one."
+    )
 
 
 def dump_env_vars(env: SConsEnvironment) -> None:
@@ -240,29 +285,6 @@ def dump_env_vars(env: SConsEnvironment) -> None:
     for key in keys:
         print(f"{key} = {env[key]}")
     print("----- Env vars end -------")
-
-
-def get_verilator_warning_params(env: SConsEnvironment) -> str:
-    """Construct from the nowwarn and warn arguments an option list
-    for verilator. These values are specified by the user to the
-    apio lint param.
-
-    To test:  apio lint --warn aaa,bbb  --nowarn ccc,ddd
-    """
-
-    no_warn_list = arg_str(env, "nowarn", "").split(",")
-    warn_list = arg_str(env, "warn", "").split(",")
-    # No warn.
-    result = ""
-    for warn in no_warn_list:
-        if warn != "":
-            result += " -Wno-" + warn
-    # Warn.
-    for warn in warn_list:
-        if warn != "":
-            result += " -Wwarn-" + warn
-
-    return result
 
 
 def get_programmer_cmd(env: SConsEnvironment) -> str:
@@ -288,7 +310,45 @@ def get_programmer_cmd(env: SConsEnvironment) -> str:
     return prog_arg
 
 
-def make_verilog_src_scanner(env: SConsEnvironment) -> Scanner:
+# A regex to identify "$dumpfile(" in testbenches.
+testbench_dumpfile_re = re.compile(r"[$]dumpfile\s*[(]")
+
+
+def get_source_file_issue_action(env: SConsEnvironment) -> FunctionAction:
+    """Returns a SCons action that scans the source files and print
+    error or warning messages about issues it finds."""
+
+    def report_source_files_issues(
+        source: List[File],
+        target: List[Alias],
+        env: SConsEnvironment,
+    ):
+        """The scanner function.."""
+
+        for file in source:
+
+            # --For now we report issues only in testbenches so skip otherwise.
+            if not is_verilog_src(env, file.name) or not has_testbench_name(
+                env, file.name
+            ):
+                continue
+
+            # -- Read the testbench file text.
+            file_text = file.get_text_contents()
+
+            # -- if contains $dumpfile, print a warning.
+            if testbench_dumpfile_re.findall(file_text):
+                msg(
+                    env,
+                    f"Warning: [{file.name}] Using $dumpfile() in apio "
+                    "testbenches is not recomanded.",
+                    fg="magenta",
+                )
+
+    return Action(report_source_files_issues, "Scanning for issues.")
+
+
+def make_verilog_src_scanner(env: SConsEnvironment) -> Scanner.Base:
     """Creates and returns a scons Scanner object for scanning verilog
     files for dependencies.
     """
@@ -321,6 +381,7 @@ def make_verilog_src_scanner(env: SConsEnvironment) -> Scanner:
             ".v"
         ), f"Not a .v file: {file_node.name}"
         includes_set = set()
+        # If the file doesn't exist, this returns an empty string.
         file_text = file_node.get_text_contents()
         # Get IceStudio includes.
         includes = icestudio_list_re.findall(file_text)
@@ -328,7 +389,7 @@ def make_verilog_src_scanner(env: SConsEnvironment) -> Scanner:
         # Get Standard verilog includes.
         includes = verilog_include_re.findall(file_text)
         includes_set.update(includes)
-        # Get a deterministic list.
+        # Get a deterministic list. (Does it sort by file.name?)
         includes_list = sorted(list(includes_set))
         # For debugging
         # info(env, f"*** {file_node.name} includes {includes_list}")
@@ -347,12 +408,83 @@ def make_verilator_config_builder(env: SConsEnvironment, config_text: str):
             target_file.write(config_text)
         return 0
 
-    return env.Builder(
-        action=env.Action(
+    return Builder(
+        action=Action(
             verilator_config_func, "Creating verilator config file."
         ),
         suffix=".vlt",
     )
+
+
+def make_dot_builder(
+    env: SConsEnvironment,
+    top_module: str,
+    verilog_src_scanner,
+    verbose: bool,
+):
+    """Creates and returns an SCons dot builder that generates the graph
+    in .dot format.
+
+    'verilog_src_scanner' is a verilog file scanner that identify additional
+    dependencies for the build, for example, icestudio propriety includes.
+    """
+
+    # -- The builder.
+    dot_builder = Builder(
+        action=(
+            'yosys -f verilog -p "show -format dot -colors 1 '
+            '-prefix {0}hardware {1}" {2} $SOURCES'
+        ).format(
+            BUILD_DIR_SEP,
+            top_module if top_module else "unknown_top",
+            "" if verbose else "-q",
+        ),
+        suffix=".dot",
+        src_suffix=".v",
+        source_scanner=verilog_src_scanner,
+    )
+
+    return dot_builder
+
+
+def make_graphviz_builder(
+    env: SConsEnvironment,
+    graph_spec: str,
+):
+    """Creates and returns an SCons graphviz builder that renders
+    a .dot file to one of the supported formats.
+
+    'graph_spec' contains the rendering specification and currently
+    it includes a single value which is the target file format".
+    """
+
+    # --Decode the graphic spec. Currently it's trivial since it
+    # -- contains a single value.
+    if graph_spec:
+        # -- This is the case when scons target is 'graph'.
+        graph_type = graph_spec
+        assert graph_type in SUPPORTED_GRAPH_TYPES, graph_type
+    else:
+        # -- This is the case when scons target is not 'graph'.
+        graph_type = "svg"
+
+    def completion_action(source, target, env):
+        """Action function that prints a completion message."""
+        msg(env, f"Generated {TARGET}.{graph_type}", fg="green")
+
+    actions = [
+        f"dot -T{graph_type} $SOURCES -o $TARGET",
+        Action(completion_action, "completion_action"),
+    ]
+
+    graphviz_builder = Builder(
+        # Expecting graphviz dot to be installed and in the path.
+        action=actions,
+        suffix=f".{graph_type}",
+        src_suffix=".dot",
+    )
+
+    return graphviz_builder
 
 
 def get_source_files(env: SConsEnvironment) -> Tuple[List[str], List[str]]:
@@ -367,7 +499,7 @@ def get_source_files(env: SConsEnvironment) -> Tuple[List[str], List[str]]:
     synth_srcs = []
     test_srcs = []
     for file in files:
-        if is_testbench(env, file.name):
+        if has_testbench_name(env, file.name):
             test_srcs.append(file.name)
         else:
             synth_srcs.append(file.name)
@@ -378,7 +510,8 @@ def get_source_files(env: SConsEnvironment) -> Tuple[List[str], List[str]]:
 class SimulationConfig:
     """Simulation parameters, for sim and test commands."""
 
-    top_module: str  # Top module name of the simulation.
+    testbench_name: str  # The testbench name, without the 'v' suffix.
+    build_testbench_name: str  # testbench_name prefixed by build dir.
     srcs: List[str]  # List of source files to compile.
 
 
@@ -395,9 +528,10 @@ def get_sim_config(
 
     # Construct a SimulationParams with all the synth files + the
     # testbench file.
-    top_module = basename(env, testbench)
+    testbench_name = basename(env, testbench)
+    build_testbench_name = BUILD_DIR_SEP + testbench_name
     srcs = synth_srcs + [testbench]
-    return SimulationConfig(top_module, srcs)
+    return SimulationConfig(testbench_name, build_testbench_name, srcs)
 
 
 def get_tests_configs(
@@ -424,9 +558,12 @@ def get_tests_configs(
     # Construct a config for each testbench.
     configs = []
     for tb in testbenches:
-        top_module = basename(env, tb)
+        testbench_name = basename(env, tb)
+        build_testbench_name = BUILD_DIR_SEP + testbench_name
         srcs = synth_srcs + [tb]
-        configs.append(SimulationConfig(top_module, srcs))
+        configs.append(
+            SimulationConfig(testbench_name, build_testbench_name, srcs)
+        )
 
     return configs
 
@@ -434,21 +571,38 @@ def get_tests_configs(
 def make_waves_target(
     env: SConsEnvironment,
     vcd_file_target: NodeList,
-    top_module: str,
+    sim_config: SimulationConfig,
 ) -> List[Alias]:
     """Construct a target to launch the QTWave signal viwer. vcd_file_target is
-    the simulator target that generated the vcd file with the signals. Top
-    module is to derive the name of the .gtkw which can be used to save the
-    viewer configuration for future simulations. Returns the new targets.
+    the simulator target that generated the vcd file with the signals.
+    Returns the new targets.
     """
-    result = env.Alias(
-        "sim",
-        vcd_file_target,
+
+    # -- Construct the commands list.
+    commands = []
+
+    # -- On windows we need to setup the cache. This could be done once
+    # -- when the oss-cad-suite is installed but since we currently don't
+    # -- have a package setup mechanism, we do it here on each invocation.
+    # -- The time penalty is negligible.
+    # -- With the stock oss-cad-suite windows package, this is done in the
+    # -- environment.bat script.
+    if is_windows(env):
+        commands.append("gdk-pixbuf-query-loaders --update-cache")
+
+    # -- The actual wave viewer command.
+    commands.append(
         "gtkwave {0} {1} {2}.gtkw".format(
             '--rcvar "splash_disable on" --rcvar "do_initial_zoom_fit 1"',
             vcd_file_target[0],
-            top_module,
-        ),
+            sim_config.testbench_name,
+        )
+    )
+
+    result = env.Alias(
+        "sim",
+        vcd_file_target,
+        commands,
     )
     return result
 
@@ -482,13 +636,16 @@ def make_iverilog_action(
         "" if is_windows(env) or not ivl_path else f'-B "{ivl_path}"'
     )
 
-    # Construct the action string.
+    # Escaping for windows. '\' -> '\\'
+    escaped_vcd_output_name = vcd_output_name.replace("\\", "\\\\")
+
+    # -- Construct the action string.
     action = (
         "iverilog {0} {1} -o $TARGET {2} {3} {4} {5} {6} $SOURCES"
     ).format(
         ivl_path_param,
         "-v" if verbose else "",
-        f"-DVCD_OUTPUT={vcd_output_name}",
+        f"-DVCD_OUTPUT={escaped_vcd_output_name}",
         "-DINTERACTIVE_SIM" if is_interactive else "",
         map_params(env, extra_params, "{}"),
         map_params(env, lib_dirs, '-I"{}"'),
@@ -525,8 +682,9 @@ def make_verilator_action(
     """
 
     action = (
-        "verilator --lint-only --bbox-unsup --timing -Wno-TIMESCALEMOD "
-        "-Wno-MULTITOP {0} {1} {2} {3} {4} {5} {6} {7} {8} $SOURCES"
+        "verilator_bin --lint-only --quiet --bbox-unsup --timing "
+        "-Wno-TIMESCALEMOD -Wno-MULTITOP "
+        "{0} {1} {2} {3} {4} {5} {6} {7} {8} $SOURCES"
     ).format(
         "-Wall" if warnings_all else "",
         "-Wno-style" if warnings_no_style else "",
@@ -542,6 +700,7 @@ def make_verilator_action(
     return action
 
 
+# pylint: disable=too-many-locals
 def _print_pnr_report(
     env: SConsEnvironment,
     json_txt: str,
@@ -576,6 +735,7 @@ def _print_pnr_report(
     clocks = report["fmax"]
     if len(clocks) > 0:
         for clk_net, vals in clocks.items():
+            # pylint: disable=fixme
             # TODO: Confirm clk name extraction for Gowin.
             # Extract clock name from the net name.
             if script_id == SConstructId.SCONSTRUCT_ECP5:
@@ -615,4 +775,72 @@ def get_report_action(
         json_txt: str = json_file.get_text_contents()
         _print_pnr_report(env, json_txt, script_id, verbose)
 
-    return env.Action(print_pnr_report, "Formatting pnr report.")
+    return Action(print_pnr_report, "Formatting pnr report.")
+
+
+# Enable for debugging a scons process and call from SConstruct.
+#
+# def wait_for_remote_debugger():
+#     """For developement only. Useful for debugging SConstruct scripts that
+#     apio runs as a subprocesses. Call this from the SCconstruct script, run
+#     apio from a command line, and then connect with the Visual Studio Code
+#     debugger using the launch.json debug target. Can also be used to debug
+#     apio itself, without having to create or modify the Visual Studio Code
+#     debug targets in launch.json"""
+
+#     # -- We require this import only when using the debugger.
+#     import debugpy
+
+#     # -- 5678 is the default debugger port.
+#     port = 5678
+#     print(f"Waiting for remote debugger on port localhost:{port}.")
+#     debugpy.listen(port)
+#     print("Attach with the Visual Studio Code debugger.")
+#     debugpy.wait_for_client()
+#     print("Remote debugger is attached.")
+
+
+def set_up_cleanup(env: SConsEnvironment) -> None:
+    """Should be called only when the "clean" target is specified. Configures
+    in scons env do delete all the files in the build directory.
+    """
+
+    # -- Should be called only when the 'clean' target is specified.
+    # -- If this fails, this is a programming error and not a user error.
+    assert env.GetOption("clean"), "Option 'clean' is missing."
+
+    # -- Get the list of all files to clean. Scons adds to the list non
+    # -- existing files from other targets it encountered.
+    files_to_clean = (
+        env.Glob(f"{BUILD_DIR_SEP}*")
+        + env.Glob("zadig.ini")
+        + env.Glob(".sconsign.dblite")
+        + env.Glob("_build")
+    )
+
+    # pylint: disable=fixme
+    # -- TODO: Remove the cleanup of legacy files after releasing the first
+    # -- release with the _build directory.
+    # --
+    # --
+    # -- Until apio 0.9.6, the build artifacts were created in the project
+    # -- directory rather than the _build directory. To simplify the transition
+    # -- we clean here also left over files from 0.9.5.
+    legacy_files_to_clean = (
+        env.Glob("hardware.*") + env.Glob("*_tb.vcd") + env.Glob("*_tb.out")
+    )
+
+    if legacy_files_to_clean:
+        msg(
+            env,
+            "Deleting also left-over files from previous release.",
+            fg="yellow",
+        )
+
+        files_to_clean.extend(legacy_files_to_clean)
+
+    # -- Create a dummy target.  I
+    dummy_target = env.Command("cleanup-target", "", "")
+
+    # -- Associate all the files with the dummy target.
+    env.Clean(dummy_target, files_to_clean)

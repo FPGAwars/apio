@@ -7,21 +7,20 @@
 # -- Licence GPLv2
 """Implementation of 'apio uninstall' command"""
 
+import sys
 from pathlib import Path
 from typing import Tuple
 from varname import nameof
 import click
-from click.core import Context
-from apio.managers.installer import Installer, list_packages
-from apio.profile import Profile
+from apio.managers.old_installer import Installer
 from apio import cmd_util
-from apio.resources import Resources
-from apio.commands import options
+from apio.apio_context import ApioContext
+from apio.commands import options, install
 
 
-def _uninstall(
-    packages: list, platform: str, resources: Resources, sayyes, verbose: bool
-):
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
+def _uninstall(apio_ctx: ApioContext, packages: list, sayyes, verbose: bool):
     """Uninstall the given list of packages"""
 
     # -- Ask the user for confirmation
@@ -34,7 +33,7 @@ def _uninstall(
             modifiers = Installer.Modifiers(
                 force=False, checkversion=False, verbose=verbose
             )
-            installer = Installer(package, platform, resources, modifiers)
+            installer = Installer(package, apio_ctx, modifiers)
 
             # -- Uninstall the package!
             installer.uninstall()
@@ -48,15 +47,8 @@ def _uninstall(
 # -- COMMAND
 # ---------------------------
 HELP = """
-The uninstall command lists and installs apio packages.
-
-\b
-Examples:
-  apio uninstall --list    # List packages
-  apio uninstall --all     # Uninstall all packages
-  apio uninstall examples  # Uninstall the examples package
-
-For packages installation see the apio install command.
+The command 'apio uninstall' has been deprecated. Please use the
+command 'apio packages' instead.
 """
 
 
@@ -65,7 +57,7 @@ For packages installation see the apio install command.
 # pylint: disable=too-many-positional-arguments
 @click.command(
     "uninstall",
-    short_help="Uninstall apio packages.",
+    short_help="[Depreciated] Uninstall apio packages.",
     help=HELP,
     cls=cmd_util.ApioCommand,
 )
@@ -74,46 +66,52 @@ For packages installation see the apio install command.
 @options.list_option_gen(help="List all installed packages.")
 @options.all_option_gen(help="Uninstall all packages.")
 @options.project_dir_option
-@options.platform_option
 @options.sayyes
 @options.verbose_option
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Arguments
     packages: Tuple[str],
     # Options
     list_: bool,
     all_: bool,
     project_dir: Path,
-    platform: str,
     sayyes: bool,
     verbose: bool,
 ):
     """Implements the uninstall command."""
 
-    # Make sure these params are exclusive.
-    cmd_util.check_exclusive_params(ctx, nameof(packages, list_, all_))
+    click.secho(
+        "The 'apio uninstall' command is deprecated. "
+        "Please use the 'apio packages' command instead.",
+        fg="yellow",
+    )
 
-    # -- Load the resources.
-    resources = Resources(platform=platform, project_dir=project_dir)
+    # Make sure these params are exclusive.
+    cmd_util.check_at_most_one_param(cmd_ctx, nameof(packages, list_, all_))
+
+    # -- Create the apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=False)
 
     # -- Uninstall the given apio packages
     if packages:
-        _uninstall(packages, platform, resources, sayyes, verbose)
-        ctx.exit(0)
+        _uninstall(apio_ctx, packages, sayyes, verbose)
+        sys.exit(0)
 
     # -- Uninstall all the packages
     if all_:
         # -- Get all the installed apio packages
-        packages = Profile().packages
+        packages = apio_ctx.profile.packages
         # -- Uninstall them!
-        _uninstall(packages, platform, resources, sayyes, verbose)
-        ctx.exit(0)
+        _uninstall(apio_ctx, packages, sayyes, verbose)
+        sys.exit(0)
 
     # -- List all the packages (installed or not)
     if list_:
-        list_packages(platform)
-        ctx.exit(0)
+        # pylint: disable=protected-access
+        install._list_packages(apio_ctx)
+        # pylint: enable=protected-access
+        sys.exit(0)
 
     # -- Invalid option. Just show the help
-    click.secho(ctx.get_help())
+    click.secho(cmd_ctx.get_help())

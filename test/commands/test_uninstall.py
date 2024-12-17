@@ -2,29 +2,28 @@
   Test for the "apio uninstall" command
 """
 
+from test.conftest import ApioRunner
+
 # -- apio uninstall entry point
-from apio.commands.uninstall import cli as cmd_uninstall
+from apio.commands.uninstall import cli as apio_uninstall
 
 
-def test_uninstall(clirunner, configenv, validate_cliresult):
+def test_uninstall(apio_runner: ApioRunner):
     """Test "apio uninstall" with different parameters"""
 
-    with clirunner.isolated_filesystem():
-
-        # -- Config the environment (conftest.configenv())
-        configenv()
+    with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio uninstall"
-        result = clirunner.invoke(cmd_uninstall)
-        validate_cliresult(result)
+        result = sb.invoke_apio_cmd(apio_uninstall)
+        sb.assert_ok(result)
 
         # -- Execute "apio uninstall --list"
-        result = clirunner.invoke(cmd_uninstall, ["--list"])
-        validate_cliresult(result)
+        result = sb.invoke_apio_cmd(apio_uninstall, ["--list"])
+        sb.assert_ok(result)
 
         # -- Execute "apio uninstall missing_packge"
-        result = clirunner.invoke(
-            cmd_uninstall, ["missing_package"], input="y"
+        result = sb.invoke_apio_cmd(
+            apio_uninstall, ["missing_package"], input="y"
         )
         assert result.exit_code == 1, result.output
         assert "Do you want to uninstall?" in result.output

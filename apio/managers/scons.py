@@ -14,7 +14,6 @@ import re
 import time
 import datetime
 import shutil
-from pathlib import Path
 from functools import wraps
 
 import importlib.metadata
@@ -22,12 +21,10 @@ import click
 import semantic_version
 
 from apio import util
-from apio.managers.arguments import process_arguments
-from apio.managers.arguments import serialize_scons_flags
+from apio import pkg_util
+from apio.managers.scons_args import process_arguments
 from apio.managers.system import System
-from apio.profile import Profile
-from apio.resources import Resources
-from apio.managers.project import Project
+from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
 
 # -- Constant for the dictionary PROG, which contains
@@ -76,32 +73,13 @@ def on_exception(*, exit_code: int):
 class SCons:
     """Class for managing the scons tools"""
 
-    def __init__(self, project_dir: Path):
-        """Initialization:
-        * project_dir: path where the sources are located
-          If not given, the curent working dir is used
-        """
+    def __init__(self, apio_ctx: ApioContext):
+        """Initialization."""
+        # -- Cache the apio context.
+        self.apio_ctx = apio_ctx
 
-        # -- Read the project file (apio.ini)
-        self.project = Project(project_dir)
-        self.project.read()
-
-        # -- Read the apio profile file
-        self.profile = Profile()
-
-        # -- Read the apio resources
-        self.resources = Resources(project_dir=project_dir)
-
-        # -- Project path is given
-        if project_dir:
-            # Check if it is a correct folder
-            # (or create a new one)
-            project_dir = util.get_project_dir(
-                project_dir, create_if_missing=False
-            )
-
-            # Change to that folder
-            os.chdir(project_dir)
+        # -- Change to the project's folder.
+        os.chdir(apio_ctx.project_dir)
 
     @on_exception(exit_code=1)
     def clean(self, args) -> int:
@@ -109,12 +87,12 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        variables, __, arch = process_arguments(
-            args, self.resources, self.project
-        )
+        variables, __, arch = process_arguments(self.apio_ctx, args)
 
         # --Clean the project: run scons -c (with aditional arguments)
-        return self._run("-c", arch=arch, variables=variables, packages=[])
+        return self._run(
+            "-c", arch=arch, variables=variables, required_packages_names=[]
+        )
 
     @on_exception(exit_code=1)
     def verify(self, args) -> int:
@@ -122,9 +100,7 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        variables, __, arch = process_arguments(
-            args, self.resources, self.project
-        )
+        variables, __, arch = process_arguments(self.apio_ctx, args)
 
         # -- Execute scons!!!
         # -- The packages to check are passed
@@ -132,18 +108,16 @@ class SCons:
             "verify",
             variables=variables,
             arch=arch,
-            packages=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite"],
         )
 
     @on_exception(exit_code=1)
     def graph(self, args) -> int:
-        """Runs a scons subprocess with the 'verify' target. Returns process
+        """Runs a scons subprocess with the 'graph' target. Returns process
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        variables, _, arch = process_arguments(
-            args, self.resources, self.project
-        )
+        variables, _, arch = process_arguments(self.apio_ctx, args)
 
         # -- Execute scons!!!
         # -- The packages to check are passed
@@ -151,7 +125,7 @@ class SCons:
             "graph",
             variables=variables,
             arch=arch,
-            packages=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite", "graphviz"],
         )
 
     @on_exception(exit_code=1)
@@ -159,22 +133,12 @@ class SCons:
         """Runs a scons subprocess with the 'lint' target. Returns process
         exit code, 0 if ok."""
 
-        config = {}
-        __, __, arch = process_arguments(config, self.resources, self.project)
-        variables = serialize_scons_flags(
-            {
-                "all": args.get("all"),
-                "top_module": args.get("top_module"),
-                "nowarn": args.get("nowarn"),
-                "warn": args.get("warn"),
-                "nostyle": args.get("nostyle"),
-            }
-        )
+        variables, __, arch = process_arguments(self.apio_ctx, args)
         return self._run(
             "lint",
             variables=variables,
             arch=arch,
-            packages=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite"],
         )
 
     @on_exception(exit_code=1)
@@ -183,15 +147,13 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        variables, _, arch = process_arguments(
-            args, self.resources, self.project
-        )
+        variables, _, arch = process_arguments(self.apio_ctx, args)
 
         return self._run(
             "sim",
             variables=variables,
             arch=arch,
-            packages=["oss-cad-suite", "gtkwave"],
+            required_packages_names=["oss-cad-suite"],
         )
 
     @on_exception(exit_code=1)
@@ -200,15 +162,13 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        variables, _, arch = process_arguments(
-            args, self.resources, self.project
-        )
+        variables, _, arch = process_arguments(self.apio_ctx, args)
 
         return self._run(
             "test",
             variables=variables,
             arch=arch,
-            packages=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite"],
         )
 
     @on_exception(exit_code=1)
@@ -217,9 +177,7 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        variables, board, arch = process_arguments(
-            args, self.resources, self.project
-        )
+        variables, board, arch = process_arguments(self.apio_ctx, args)
 
         # -- Execute scons!!!
         # -- The packages to check are passed
@@ -228,7 +186,7 @@ class SCons:
             variables=variables,
             board=board,
             arch=arch,
-            packages=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite"],
         )
 
     @on_exception(exit_code=1)
@@ -236,9 +194,7 @@ class SCons:
         """Runs a scons subprocess with the 'time' target. Returns process
         exit code, 0 if ok."""
 
-        variables, board, arch = process_arguments(
-            args, self.resources, self.project
-        )
+        variables, board, arch = process_arguments(self.apio_ctx, args)
 
         if arch not in ["ice40"]:
             click.secho(
@@ -253,7 +209,7 @@ class SCons:
             variables=variables,
             board=board,
             arch=arch,
-            packages=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite"],
         )
 
     @on_exception(exit_code=1)
@@ -261,16 +217,14 @@ class SCons:
         """Runs a scons subprocess with the 'report' target. Returns process
         exit code, 0 if ok."""
 
-        variables, board, arch = process_arguments(
-            args, self.resources, self.project
-        )
+        variables, board, arch = process_arguments(self.apio_ctx, args)
 
         return self._run(
             "report",
             variables=variables,
             board=board,
             arch=arch,
-            packages=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite"],
         )
 
     @on_exception(exit_code=1)
@@ -292,9 +246,7 @@ class SCons:
 
         # -- Get important information from the configuration
         # -- It will raise an exception if it cannot be solved
-        flags, board, arch = process_arguments(
-            config, self.resources, self.project
-        )
+        flags, board, arch = process_arguments(self.apio_ctx, config)
 
         # -- Information about the FPGA is ok!
 
@@ -311,7 +263,7 @@ class SCons:
         exit_code = self._run(
             "upload",
             variables=flags,
-            packages=["oss-cad-suite"],
+            required_packages_names=["oss-cad-suite"],
             board=board,
             arch=arch,
         )
@@ -350,30 +302,27 @@ class SCons:
         # -- Programmer type
         # -- Programmer name
         # -- USB id  (vid, pid)
-        board_data = self.resources.boards[board]
+        board_info = self.apio_ctx.boards[board]
 
         # -- Check platform. If the platform is not compatible
         # -- with the board an exception is raised
-        self._check_platform(board_data)
+        self._check_platform(board_info, self.apio_ctx.platform_id)
 
         # -- Check pip packages. If the corresponding pip_packages
         # -- is not installed, an exception is raised
-        self._check_pip_packages(board_data)
+        self._check_pip_packages(board_info)
 
+        # -- pylint: disable=fixme
+        # -- TODO: abstract this better in boards.json. For example, add a
+        # -- property "darwin-no-detection".
+        # --
         # -- Special case for the TinyFPGA on MACOS platforms
         # -- TinyFPGA BX board is not detected in MacOS HighSierra
-        if "tinyprog" in board_data:
-
-            # -- Get the platform
-            platform = util.get_systype()
-
-            # -- darwin / darwin_arm64 platforms
-            if "darwin" in platform or "darwin_arm64" in platform:
-
-                # In this case the serial check is ignored
-                # This is the command line to execute for uploading the
-                # circuit
-                return "tinyprog --libusb --program"
+        if "tinyprog" in board_info and self.apio_ctx.is_darwin():
+            # In this case the serial check is ignored
+            # This is the command line to execute for uploading the
+            # circuit
+            return "tinyprog --libusb --program"
 
         # -- Serialize programmer command
         # -- Get a string with the command line to execute
@@ -384,7 +333,7 @@ class SCons:
         # --   * "${FTDI_ID}" (optional): FTDI id
         # --   * "${SERIAL_PORT}" (optional): Serial port name
         programmer = self._serialize_programmer(
-            board_data, prog[SRAM], prog[FLASH]
+            board_info, prog[SRAM], prog[FLASH]
         )
         # -- The placeholder for the bitstream file name should always exist.
         assert "$SOURCE" in programmer, programmer
@@ -396,7 +345,7 @@ class SCons:
         if "${VID}" in programmer:
 
             # -- Get the vendor id
-            vid = board_data["usb"]["vid"]
+            vid = board_info["usb"]["vid"]
             # -- Place the value in the command string
             programmer = programmer.replace("${VID}", vid)
 
@@ -405,20 +354,28 @@ class SCons:
         if "${PID}" in programmer:
 
             # -- Get the product id
-            pid = board_data["usb"]["pid"]
+            pid = board_info["usb"]["pid"]
             # -- Place the value in the command string
             programmer = programmer.replace("${PID}", pid)
 
         # -- Replace FTDI index
         # -- Ex. "${FTDI_ID}" --> "0"
         if "${FTDI_ID}" in programmer:
+            # -- Inform the user we are accessing the programmer
+            # -- to give context for ftdi failures.
+            # -- We force an early env setting message to have
+            # -- the programmer message closer to the error message.
+            pkg_util.set_env_for_packages(
+                self.apio_ctx,
+            )
+            click.secho("Querying programmer parameters.")
 
             # -- Check that the board is connected
             # -- If not, an exception is raised
-            self._check_usb(board, board_data)
+            self._check_usb(board, board_info)
 
             # -- Get the FTDI index of the connected board
-            ftdi_id = self._get_ftdi_id(board, board_data, prog[FTDI_ID])
+            ftdi_id = self._get_ftdi_id(board, board_info, prog[FTDI_ID])
 
             # -- Place the value in the command string
             programmer = programmer.replace("${FTDI_ID}", ftdi_id)
@@ -426,13 +383,19 @@ class SCons:
         # Replace Serial port
         # -- The board uses a Serial port for uploading the circuit
         if "${SERIAL_PORT}" in programmer:
+            # -- Inform the user we are accessing the programmer
+            # -- to give context for ftdi failures.
+            # -- We force an early env setting message to have
+            # -- the programmer message closer to the error message.
+            pkg_util.set_env_for_packages(self.apio_ctx)
+            click.secho("Querying serial port parameters.")
 
             # -- Check that the board is connected
-            self._check_usb(board, board_data)
+            self._check_usb(board, board_info)
 
             # -- Get the serial port
             device = self._get_serial_port(
-                board, board_data, prog[SERIAL_PORT]
+                board, board_info, prog[SERIAL_PORT]
             )
 
             # -- Place the value in the command string
@@ -445,17 +408,12 @@ class SCons:
         return programmer
 
     @staticmethod
-    def _check_platform(board_data: dict) -> None:
+    def _check_platform(board_info: dict, actual_platform_id: str) -> None:
         """Check if the current board is compatible with the
         current platform. There are some boards, like icoboard,
         that only runs in the platform linux/arm7
         * INPUT:
-          * board_data: Dictionary with board information
-            * Board name
-            * FPGA
-            * Programmer type
-            * Programmer name
-            * USB id  (vid, pid)
+          * board_info: Dictionary with board info from boards.json.
 
         Only in case the platform is not compatible with the board,
         and exception is raised
@@ -463,50 +421,45 @@ class SCons:
 
         # -- Normal case: the board does not have a special platform
         # -- (it can be used in many platforms)
-        if "platform" not in board_data:
+        if "platform" not in board_info:
             return
 
         # -- Get the platform were the board should be used
-        platform = board_data["platform"]
-
-        # -- Get the current platform
-        current_platform = util.get_systype()
+        required_platform_id = board_info["platform"]
 
         # -- Check if they are not compatible!
-        if platform != current_platform:
+        if actual_platform_id != required_platform_id:
 
             # Incorrect platform
-            if platform == "linux_armv7l":
+            if actual_platform_id == "linux_armv7l":
                 raise ValueError("incorrect platform: RPI2 or RPI3 required")
 
-            raise ValueError(f"incorrect platform {platform}")
+            raise ValueError(
+                "Board is restricted to platform "
+                f"'{required_platform_id}' but '{actual_platform_id}' found."
+            )
 
-    def _check_pip_packages(self, board_data):
+    def _check_pip_packages(self, board_info):
         """Check if the corresponding pip package with the programmer
         has already been installed. In the case of an apio package
         it is just ignored
 
         * INPUT:
-          * board_data: Dictionary with board information
-            * Board name
-            * FPGA
-            * Programmer type
-            * Programmer name
-            * USB id  (vid, pid)
+          * board_info: Dictionary with board info from boards.json.
         """
 
         # -- Get the programmer object for the given board
-        prog_info = board_data["programmer"]
+        prog_info = board_info["programmer"]
 
         # -- Get the programmer type
         prog_type = prog_info["type"]
 
         # -- Get the programmer information
         # -- Command, arguments, pip package, etc...
-        prog_data = self.resources.programmers[prog_type]
+        prog_data = self.apio_ctx.programmers[prog_type]
 
         # -- Get all the pip packages from the distribution
-        all_pip_packages = self.resources.distribution["pip_packages"]
+        all_pip_packages = self.apio_ctx.distribution["pip_packages"]
 
         # -- Get the name of the pip package of the current programmer,
         # -- if any (The programmer maybe in a pip package or an apio package)
@@ -570,18 +523,11 @@ class SCons:
                 raise ValueError(message) from exc
 
     def _serialize_programmer(
-        self, board_data: dict, sram: bool, flash: bool
+        self, board_info: dict, sram: bool, flash: bool
     ) -> str:
         """
         * INPUT:
-          * board_data: Dictionary with board information
-            * Board name
-            * FPGA
-            * Programmer type
-            * Programmer name
-            * USB id  (vid, pid)
-          * sram: Perform sram programming
-          * flash: Perform flash programming
+          * board_info: Dictionary with board info from boards.json.
         * OUTPUT: It returns a template string with the command line
            to execute for uploading the circuit. It has the following
            parameters (in the string):
@@ -598,14 +544,14 @@ class SCons:
         # -- Get the programmer type
         # -- Ex. type: "tinyprog"
         # -- Ex. type: "iceprog"
-        prog_info = board_data["programmer"]
+        prog_info = board_info["programmer"]
         prog_type = prog_info["type"]
 
         # -- Get all the information for that type of programmer
         # -- * command
         # -- * arguments
         # -- * pip package
-        content = self.resources.programmers[prog_type]
+        content = self.apio_ctx.programmers[prog_type]
 
         # -- Get the command (without arguments) to execute
         # -- for programming the current board
@@ -645,36 +591,31 @@ class SCons:
 
         return programmer
 
-    def _check_usb(self, board: str, board_data: dict) -> None:
+    def _check_usb(self, board: str, board_info: dict) -> None:
         """Check if the given board is connected or not to the computer
            If it is not connected, an exception is raised
 
         * INPUT:
           * board: Board name (string)
-          * board_data: Dictionary with board information
-            * Board name
-            * FPGA
-            * Programmer type
-            * Programmer name
-            * USB id  (vid, pid)
+          * board_info: Dictionary with board info from boards.json.
         """
 
         # -- The board is connected by USB
         # -- If it does not have the "usb" property, it means
         # -- the board configuration is wrong...Raise an exception
-        if "usb" not in board_data:
+        if "usb" not in board_info:
             raise AttributeError("Missing board configuration: usb")
 
         # -- Get the vid and pid from the configuration
         # -- Ex. {'vid': '0403', 'pid':'6010'}
-        usb_data = board_data["usb"]
+        usb_data = board_info["usb"]
 
         # -- Create a string with vid, pid in the format "vid:pid"
         hwid = f"{usb_data['vid']}:{usb_data['pid']}"
 
         # -- Get the list of the connected USB devices
         # -- (execute the command "lsusb" from the apio System module)
-        system = System(self.resources)
+        system = System(self.apio_ctx)
         connected_devices = system.get_usb_devices()
 
         # -- Check if the given device (vid:pid) is connected!
@@ -695,7 +636,7 @@ class SCons:
             # -- Maybe the board is NOT detected because
             # -- the user has not press the reset button and the bootloader
             # -- is not active
-            if "tinyprog" in board_data:
+            if "tinyprog" in board_info:
                 click.secho(
                     "Activate bootloader by pressing the reset button",
                     fg="yellow",
@@ -705,17 +646,12 @@ class SCons:
             raise ConnectionError("board " + board + " not connected")
 
     def _get_serial_port(
-        self, board: str, board_data: dict, ext_serial_port: str
+        self, board: str, borad_info: dict, ext_serial_port: str
     ) -> str:
         """Get the serial port of the connected board
         * INPUT:
           * board: Board name (string)
-          * board_data: Dictionary with board information
-            * Board name
-            * FPGA
-            * Programmer type
-            * Programmer name
-            * USB id  (vid, pid)
+          * board_info: Dictionary with board info from boards.json.
           * ext_serial_port: serial port name given by the user (optional)
 
         * OUTPUT: (string) The serial port name
@@ -724,7 +660,7 @@ class SCons:
         """
 
         # -- Search Serial port by USB id
-        device = self._check_serial(board, board_data, ext_serial_port)
+        device = self._check_serial(board, borad_info, ext_serial_port)
 
         # -- Board not connected
         if not device:
@@ -734,19 +670,14 @@ class SCons:
         return device
 
     def _check_serial(
-        self, board: str, board_data: dict, ext_serial_port: str
+        self, board: str, board_info: dict, ext_serial_port: str
     ) -> str:
         """Check the that the serial port for the given board exists
          (board connedted)
 
         * INPUT:
           * board: Board name (string)
-          * board_data: Dictionary with board information
-            * Board name
-            * FPGA
-            * Programmer type
-            * Programmer name
-            * USB id  (vid, pid)
+          * board_info: Dictionary with board info from boards.json.
           * ext_serial_port: serial port name given by the user (optional)
 
         * OUTPUT: (string) The serial port name
@@ -755,12 +686,12 @@ class SCons:
         # -- The board is connected by USB
         # -- If it does not have the "usb" property, it means
         # -- the board configuration is wrong...Raise an exception
-        if "usb" not in board_data:
+        if "usb" not in board_info:
             raise AttributeError("Missing board configuration: usb")
 
         # -- Get the vid and pid from the configuration
         # -- Ex. {'vid': '0403', 'pid':'6010'}
-        usb_data = board_data["usb"]
+        usb_data = board_info["usb"]
 
         # -- Create a string with vid, pid in the format "vid:pid"
         hwid = f"{usb_data['vid']}:{usb_data['pid']}"
@@ -789,14 +720,14 @@ class SCons:
                 continue
 
             # -- Check if the TinyFPGA board is connected
-            connected = self._check_tinyprog(board_data, port)
+            connected = self._check_tinyprog(board_info, port)
 
             # -- If the usb id matches...
             if hwid.lower() in serial_port_data["hwid"].lower():
 
                 # -- Special case: TinyFPGA. Ignore usb id if
                 # -- board not detected
-                if "tinyprog" in board_data and not connected:
+                if "tinyprog" in board_info and not connected:
                     continue
 
                 # -- Return the serial port
@@ -806,15 +737,10 @@ class SCons:
         return None
 
     @staticmethod
-    def _check_tinyprog(board_data: dict, port: str) -> bool:
+    def _check_tinyprog(board_info: dict, port: str) -> bool:
         """Check if the correct TinyFPGA board is connected
         * INPUT:
-          * board_data: Dictionary with board information
-             * Board name
-             * FPGA
-             * Programmer type
-             * Programmer name
-             * USB id  (vid, pid)
+          * board_info: Dictionary with board info from boards.json.
           * port: Serial port name
 
         * OUTPUT:
@@ -824,11 +750,11 @@ class SCons:
 
         # -- Check that the given board has the property "tinyprog"
         # -- If not, return False
-        if "tinyprog" not in board_data:
+        if "tinyprog" not in board_info:
             return False
 
         # -- Get the board description from the the apio database
-        board_desc = board_data["tinyprog"]["desc"]
+        board_desc = board_info["tinyprog"]["desc"]
 
         # -- Build a regular expresion for finding this board
         # -- description in the connected board
@@ -860,17 +786,12 @@ class SCons:
         # -- TinyFPGA board not detected!
         return False
 
-    def _get_ftdi_id(self, board, board_data, ext_ftdi_id) -> str:
+    def _get_ftdi_id(self, board, board_info, ext_ftdi_id) -> str:
         """Get the FTDI index of the detected board
 
         * INPUT:
           * board: Board name (string)
-          * board_data: Dictionary with board information
-            * Board name
-            * FPGA
-            * Programmer type
-            * Programmer name
-            * USB id  (vid, pid)
+          * board_info: Dictionary with board info from boards.json.
           * ext_ftdi_id: FTDI index given by the user (optional)
 
         * OUTPUT: It return the FTDI index (as a string)
@@ -880,7 +801,7 @@ class SCons:
         """
 
         # -- Search device by FTDI id
-        ftdi_id = self._check_ftdi(board, board_data, ext_ftdi_id)
+        ftdi_id = self._check_ftdi(board, board_info, ext_ftdi_id)
 
         # -- No FTDI board connected
         if ftdi_id is None:
@@ -891,19 +812,14 @@ class SCons:
         return ftdi_id
 
     def _check_ftdi(
-        self, board: str, board_data: dict, ext_ftdi_id: str
+        self, board: str, board_info: dict, ext_ftdi_id: str
     ) -> str:
         """Check if the given ftdi board is connected or not to the computer
            and return its FTDI index
 
         * INPUT:
           * board: Board name (string)
-          * board_data: Dictionary with board information
-            * Board name
-            * FPGA
-            * Programmer type
-            * Programmer name
-            * USB id  (vid, pid)
+          * board_info: Dictionary with board info from boards.json.
           * ext_ftdi_id: FTDI index given by the user (optional)
 
         * OUTPUT: It return the FTDI index (as a string)
@@ -913,11 +829,11 @@ class SCons:
 
         # -- Check that the given board has the property "ftdi"
         # -- If not, it is an error. Raise an exception
-        if "ftdi" not in board_data:
+        if "ftdi" not in board_info:
             raise AttributeError("Missing board configuration: ftdi")
 
         # -- Get the board description from the the apio database
-        board_desc = board_data["ftdi"]["desc"]
+        board_desc = board_info["ftdi"]["desc"]
 
         # -- Build a regular expresion for finding this board
         # -- description in the connected board
@@ -931,7 +847,7 @@ class SCons:
 
         # -- Get the list of the connected FTDI devices
         # -- (execute the command "lsftdi" from the apio System module)
-        system = System(self.resources)
+        system = System(self.apio_ctx)
         connected_devices = system.get_ftdi_devices()
 
         # -- No FTDI devices detected --> Error!
@@ -963,7 +879,14 @@ class SCons:
 
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-positional-arguments
-    def _run(self, command, variables, packages, board=None, arch=None):
+    def _run(
+        self,
+        command,
+        variables,
+        required_packages_names,
+        board=None,
+        arch=None,
+    ):
         """Executes scons"""
 
         # -- Construct the path to the SConstruct file.
@@ -973,26 +896,13 @@ class SCons:
         # -- It is passed to scons using the flag -f default_scons_file
         variables += ["-f", f"{scons_file_path}"]
 
-        # -- Verify necessary packages if needed.
-        # pylint: disable=fixme
-        # TODO: Drop the 'native' mode for simplicity? It is broken anyway.
-        # E.g. when referencing yosys libraries in Sconstruct.
-        if self.project.native_exe_mode:
-            # Assuming blindly that the binaries we need are on the path.
-            click.secho(
-                "Warning: native exe mode (binaries should be on path)",
-                fg="yellow",
-            )
-        else:
-            # Run on `default` config mode
-            # -- Check if the necessary packages are installed
-            if not util.resolve_packages(
-                packages,
-                self.profile.packages,
-                self.resources.distribution.get("packages"),
-            ):
-                # Exit if a package is not installed
-                raise AttributeError("Package not installed")
+        # -- Check that the required packages are installed
+        pkg_util.check_required_packages(
+            self.apio_ctx, required_packages_names
+        )
+
+        # -- Set env path and vars to use the packages.
+        pkg_util.set_env_for_packages(self.apio_ctx)
 
         # -- Execute scons
         return self._execute_scons(command, variables, board)
@@ -1039,7 +949,7 @@ class SCons:
             board_color = click.style(processing_board, fg="cyan", bold=True)
 
             # -- Print information on the console
-            click.echo(f"[{date_time_str}] Processing {board_color}")
+            click.secho(f"[{date_time_str}] Processing {board_color}")
 
             # -- Print a horizontal line
             click.secho("-" * terminal_width, bold=True)
@@ -1086,10 +996,9 @@ class SCons:
             else click.style("SUCCESS", fg="green", bold=True)
         )
 
-        # -- Print all the information!
-        util.safe_click(
-            f"{half_line} [{status}]{summary_text}{half_line}",
-            err=is_error,
+        # -- Print the summary line.
+        click.secho(
+            f"{half_line} [{status}]{summary_text}{half_line}", err=is_error
         )
 
         # -- Return the exit code

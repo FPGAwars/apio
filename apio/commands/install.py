@@ -7,21 +7,23 @@
 # -- Licence GPLv2
 """Implementation of 'apio install' command"""
 
+import sys
+import shutil
 from pathlib import Path
 from typing import Tuple
 from varname import nameof
 import click
-from click.core import Context
-from apio.managers.installer import Installer, list_packages
-from apio.resources import Resources
+from apio.managers.old_installer import Installer
+from apio.apio_context import ApioContext
 from apio import cmd_util
 from apio.commands import options
 
 
-def install_packages(
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
+def _install_packages(
+    apio_ctx: ApioContext,
     packages: list,
-    platform: str,
-    resources: Resources,
     force: bool,
     verbose: bool,
 ):
@@ -39,26 +41,75 @@ def install_packages(
         modifiers = Installer.Modifiers(
             force=force, checkversion=True, verbose=verbose
         )
-        installer = Installer(package, platform, resources, modifiers)
+        installer = Installer(package, apio_ctx, modifiers)
 
         # -- Install the package!
         installer.install()
+
+
+def _list_packages(apio_ctx: ApioContext, installed=True, notinstalled=True):
+    """Print the packages list."""
+
+    # Classify packages
+    installed_packages, notinstalled_packages = (
+        apio_ctx.get_platform_packages_lists()
+    )
+
+    # -- Calculate the terminal width
+    terminal_width, _ = shutil.get_terminal_size()
+
+    # -- String with a horizontal line with the same width
+    # -- as the terminal
+    line = "─" * terminal_width
+    dline = "═" * terminal_width
+
+    if installed and installed_packages:
+
+        # ------- Print installed packages table
+        # -- Print the header
+        click.secho()
+        click.secho(dline, fg="green")
+        click.secho("Installed packages:", fg="green")
+
+        for package in installed_packages:
+            click.secho(line)
+            name = click.style(f"{package['name']}", fg="cyan", bold=True)
+            version = package["version"]
+            description = package["description"]
+
+            click.secho(f"{name} {version}")
+            click.secho(f"  {description}")
+
+        click.secho(dline, fg="green")
+        click.secho(f"Total: {len(installed_packages)}")
+
+    if notinstalled and notinstalled_packages:
+
+        # ------ Print not installed packages table
+        # -- Print the header
+        click.secho()
+        click.secho(dline, fg="yellow")
+        click.secho("Available packages (Not installed):", fg="yellow")
+
+        for package in notinstalled_packages:
+
+            click.secho(line)
+            name = click.style(f"{package['name']}", fg="red")
+            description = package["description"]
+            click.secho(f"{name}  {description}")
+
+        click.secho(dline, fg="yellow")
+        click.secho(f"Total: {len(notinstalled_packages)}")
+
+    click.secho("\n")
 
 
 # ---------------------------
 # -- COMMAND
 # ---------------------------
 HELP = """
-The install command lists and installs the apio packages.
-
-\b
-Examples:
-  apio install --list    # List packages
-  apio install --all     # Install all packages
-  apio install --all -f  # Force the re/installation of all packages
-  apio install examples  # Install the examples package
-
-For packages uninstallation see the apio uninstall command.
+The command 'apio install' has been deprecated. Please use the command
+'apio packages' command instead.
 """
 
 
@@ -67,7 +118,7 @@ For packages uninstallation see the apio uninstall command.
 # pylint: disable=too-many-positional-arguments
 @click.command(
     "install",
-    short_help="Install apio packages.",
+    short_help="[Depreciated] Install apio packages.",
     help=HELP,
     cls=cmd_util.ApioCommand,
 )
@@ -77,17 +128,15 @@ For packages uninstallation see the apio uninstall command.
 @options.all_option_gen(help="Install all packages.")
 @options.force_option_gen(help="Force the packages installation.")
 @options.project_dir_option
-@options.platform_option
 @options.verbose_option
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Arguments
     packages: Tuple[str],
     # Options
     list_: bool,
     all_: bool,
     force: bool,
-    platform: str,
     project_dir: Path,
     verbose: bool,
 ):
@@ -95,29 +144,35 @@ def cli(
     manage the installation of apio packages.
     """
 
-    # Make sure these params are exclusive.
-    cmd_util.check_exclusive_params(ctx, nameof(packages, all_, list_))
+    click.secho(
+        "The 'apio install' command is deprecated. "
+        "Please use the 'apio packages' command instead.",
+        fg="yellow",
+    )
 
-    # -- Load the resources.
-    resources = Resources(platform=platform, project_dir=project_dir)
+    # Make sure these params are exclusive.
+    cmd_util.check_at_most_one_param(cmd_ctx, nameof(packages, all_, list_))
+
+    # -- Create the apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=False)
 
     # -- Install the given apio packages
     if packages:
-        install_packages(packages, platform, resources, force, verbose)
-        ctx.exit(0)
+        _install_packages(apio_ctx, packages, force, verbose)
+        sys.exit(0)
 
     # -- Install all the available packages (if any)
     if all_:
         # -- Install all the available packages for this platform!
-        install_packages(
-            resources.packages, platform, resources, force, verbose
+        _install_packages(
+            apio_ctx, apio_ctx.platform_packages.keys(), force, verbose
         )
-        ctx.exit(0)
+        sys.exit(0)
 
     # -- List all the packages (installed or not)
     if list_:
-        list_packages(platform)
-        ctx.exit(0)
+        _list_packages(apio_ctx)
+        sys.exit(0)
 
     # -- Invalid option. Just show the help
-    click.secho(ctx.get_help())
+    click.secho(cmd_ctx.get_help())

@@ -7,12 +7,13 @@
 # -- Licence GPLv2
 """Implementation of 'apio test' command"""
 
+import sys
 from pathlib import Path
 import click
-from click.core import Context
 from apio.managers.scons import SCons
 from apio import cmd_util
 from apio.commands import options
+from apio.apio_context import ApioContext
 
 
 # ---------------------------
@@ -21,21 +22,24 @@ from apio.commands import options
 HELP = """
 The sim command simulates one or all the testbenches in the project
 and is useful for automatic unit testing of the code. Testbenches
-are expected to exist with the $fatal directive if any error is
-detected. The commands is typically used in the root directory
-of the project that contains the apio.ini.
+are expected have a name ending with _tb (e.g my_module_tb.v) and to exit
+with the $fatal directive if any error is detected. The commands is typically
+used in the root directory of the project that contains the apio.ini.
 
 \b
 Examples
   apio test                 # Run all *_tb.v testbenches.
   apio test my_module_tb.v  # Run a single testbench
 
+It is recommanded NOT to use the `$dumpfile()` function in your testbenchs as
+this may override the default name and location of the generated .vcd file.
+
 For a sample testbench that is compatible with apio see the
 example at
 https://github.com/FPGAwars/apio-examples/tree/master/upduino31/testbench
 
 [Hint] To simulate the testbench with a graphical visualizaiton of the
-signals see the apio sim command.
+signals see the 'apio sim' command.
 """
 
 
@@ -50,7 +54,7 @@ signals see the apio sim command.
 @options.project_dir_option
 # @options.testbench
 def cli(
-    ctx: Context,
+    _: click.core.Context,
     # Arguments
     testbench_file: str,
     # Options
@@ -58,8 +62,11 @@ def cli(
 ):
     """Implements the test command."""
 
-    # -- Create the scons object
-    scons = SCons(project_dir)
+    # -- Create the apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=True)
+
+    # -- Create the scons manager.
+    scons = SCons(apio_ctx)
 
     exit_code = scons.test({"testbench": testbench_file})
-    ctx.exit(exit_code)
+    sys.exit(exit_code)

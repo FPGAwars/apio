@@ -1,0 +1,25 @@
+[*]
+[*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
+[*] Thu Apr 28 09:24:55 2022
+[*]
+[dumpfile] "/home/obijuan/Develop/FPGAwars/apio/test-examples/TB/alhambra-ii/icestudio/tff/tff_tb.vcd"
+[dumpfile_mtime] "Thu Apr 28 09:24:05 2022"
+[dumpfile_size] 1734
+[savefile] "/home/obijuan/Develop/FPGAwars/apio/test-examples/TB/alhambra-ii/icestudio/tff/tff_tb.gtkw"
+[timestart] 0
+[size] 1860 1016
+[pos] -89 -89
+*-7.079701 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] main_tb.
+[sst_width] 233
+[signals_width] 94
+[sst_expanded] 1
+[sst_vpaned_height] 289
+@29
+main_tb.clk
+@200
+-
+@28
+main_tb.LED_test
+[pattern_trace] 1
+[pattern_trace] 0

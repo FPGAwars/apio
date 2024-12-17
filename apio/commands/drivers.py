@@ -7,44 +7,45 @@
 # -- Licence GPLv2
 """Implementation of 'apio drivers' command"""
 
+import sys
 from varname import nameof
 import click
-from click.core import Context
 from apio.managers.drivers import Drivers
 from apio import cmd_util
+from apio.apio_context import ApioContext
 
 # ---------------------------
 # -- COMMAND SPECIFIC OPTIONS
 # ---------------------------
-frdi_enable_option = click.option(
-    "ftdi_enable",  # Var name.
-    "--ftdi-enable",
+ftdi_install_option = click.option(
+    "ftdi_install",  # Var name.
+    "--ftdi-install",
     is_flag=True,
-    help="Enable FTDI drivers.",
+    help="Install the FTDI driver.",
     cls=cmd_util.ApioOption,
 )
 
-ftdi_disable_option = click.option(
-    "ftdi_disable",  # Var name.
-    "--ftdi-disable",
+ftdi_uninstall_option = click.option(
+    "ftdi_uninstall",  # Var name.
+    "--ftdi-uninstall",
     is_flag=True,
-    help="Disable FTDI drivers.",
+    help="Uninstall the FTDI driver.",
     cls=cmd_util.ApioOption,
 )
 
-serial_enable_option = click.option(
-    "serial_enable",  # Var name.
-    "--serial-enable",
+serial_install_option = click.option(
+    "serial_install",  # Var name.
+    "--serial-install",
     is_flag=True,
-    help="Enable Serial drivers.",
+    help="Install the Serial driver.",
     cls=cmd_util.ApioOption,
 )
 
-serial_disable_option = click.option(
-    "serial_disable",  # Var name.
-    "--serial-disable",
+serial_uninstall_option = click.option(
+    "serial_uninstall",  # Var name.
+    "--serial-uninstall",
     is_flag=True,
-    help="Disable Serial drivers.",
+    help="Uninstall the Serial driver.",
     cls=cmd_util.ApioOption,
 )
 
@@ -60,10 +61,10 @@ and affects all the projects on the local host.
 
 \b
 Examples:
-  apio drivers --ftdi-enable     # Install FTDI driver
-  apio drivers --ftdi-disable    # Uninstall FTDI driver
-  apio drivers --serial-enable   # Install serial driver
-  apio drivers --serial-disable  # Uninstall serial driver
+  apio drivers --ftdi-install      # Install the FTDI driver.
+  apio drivers --ftdi-uninstall    # Uninstall the FTDI driver.
+  apio drivers --serial-install    # Install the serial driver.
+  apio drivers --serial-uninstall  # Uninstall the serial driver.
 
   Do not specify more than flag per command invocation.
 """
@@ -76,47 +77,51 @@ Examples:
     cls=cmd_util.ApioCommand,
 )
 @click.pass_context
-@frdi_enable_option
-@ftdi_disable_option
-@serial_enable_option
-@serial_disable_option
+@ftdi_install_option
+@ftdi_uninstall_option
+@serial_install_option
+@serial_uninstall_option
 def cli(
-    ctx: Context,
+    cmd_ctx: click.core.Context,
     # Options:
-    ftdi_enable: bool,
-    ftdi_disable: bool,
-    serial_enable: bool,
-    serial_disable: bool,
+    ftdi_install: bool,
+    ftdi_uninstall: bool,
+    serial_install: bool,
+    serial_uninstall: bool,
 ):
     """Implements the drivers command."""
 
-    # Make sure these params are exclusive.
-    cmd_util.check_exclusive_params(
-        ctx, nameof(ftdi_enable, ftdi_disable, serial_enable, serial_disable)
+    # User should select exactly on of these operations.
+    cmd_util.check_exactly_one_param(
+        cmd_ctx,
+        nameof(ftdi_install, ftdi_uninstall, serial_install, serial_uninstall),
     )
 
-    # -- Access to the Drivers
-    drivers = Drivers()
+    # -- Create the apio context.
+    apio_ctx = ApioContext(load_project=False)
 
-    # -- FTDI enable option
-    if ftdi_enable:
-        exit_code = drivers.ftdi_enable()
-        ctx.exit(exit_code)
+    # -- Create the drivers manager.
+    drivers = Drivers(apio_ctx)
 
-    # -- FTDI disable option
-    if ftdi_disable:
-        exit_code = drivers.ftdi_disable()
-        ctx.exit(exit_code)
+    # -- FTDI install option
+    if ftdi_install:
+        exit_code = drivers.ftdi_install()
+        sys.exit(exit_code)
 
-    # -- Serial enable option
-    if serial_enable:
-        exit_code = drivers.serial_enable()
-        ctx.exit(exit_code)
+    # -- FTDI uninstall option
+    if ftdi_uninstall:
+        exit_code = drivers.ftdi_uninstall()
+        sys.exit(exit_code)
 
-    # -- Serial disable option
-    if serial_disable:
-        exit_code = drivers.serial_disable()
-        ctx.exit(exit_code)
+    # -- Serial install option
+    if serial_install:
+        exit_code = drivers.serial_install()
+        sys.exit(exit_code)
+
+    # -- Serial uninstall option
+    if serial_uninstall:
+        exit_code = drivers.serial_uninstall()
+        sys.exit(exit_code)
 
     # -- No options. Show the help
-    click.secho(ctx.get_help())
+    click.secho(cmd_ctx.get_help())

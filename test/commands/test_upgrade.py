@@ -2,25 +2,24 @@
   Test for the "apio upgrade" command
 """
 
+from test.conftest import ApioRunner
 import pytest
 
+
 # -- apio upgrade entry point
-from apio.commands.upgrade import cli as cmd_upgrade
+from apio.commands.upgrade import cli as apio_upgrade
 
 
-def test_upgrade(clirunner, configenv, validate_cliresult, offline):
+def test_upgrade(apio_runner: ApioRunner):
     """Test "apio upgrade" """
 
     # -- If the option 'offline' is passed, the test is skip
     # -- (apio upgrade uses internet)
-    if offline:
+    if apio_runner.offline_flag:
         pytest.skip("requires internet connection")
 
-    with clirunner.isolated_filesystem():
-
-        # -- Config the environment (conftest.configenv())
-        configenv()
+    with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio upgrade"
-        result = clirunner.invoke(cmd_upgrade)
-        validate_cliresult(result)
+        result = sb.invoke_apio_cmd(apio_upgrade)
+        sb.assert_ok(result)

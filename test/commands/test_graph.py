@@ -2,24 +2,45 @@
   Test for the "apio graph" command
 """
 
+from test.conftest import ApioRunner
+
 # -- apio graph entry point
-from apio.commands.graph import cli as cmd_graph
+from apio.commands.graph import cli as apio_graph
 
 
-def test_graph(clirunner, configenv):
-    """Test: apio graph
-    when no apio.ini file is given
-    No additional parameters are given
-    """
+def test_graph_no_apio_ini(apio_runner: ApioRunner):
+    """Test: apio graph with no apio.ini"""
 
-    with clirunner.isolated_filesystem():
-
-        # -- Config the environment (conftest.configenv())
-        configenv()
+    with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio graph"
-        result = clirunner.invoke(cmd_graph)
+        result = sb.invoke_apio_cmd(apio_graph)
+        assert result.exit_code == 1, result.output
+        assert "Error: insufficient arguments: missing board" in result.output
 
-        # -- Check the result
-        assert result.exit_code != 0, result.output
-        # -- TODO (FIXME!)
+
+def test_graph_with_apio_ini(apio_runner: ApioRunner):
+    """Test: apio graph with apio.ini"""
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Create an apio.ini file
+        sb.write_apio_ini({"board": "icezum", "top-module": "main"})
+
+        # -- Execute "apio graph"
+        result = sb.invoke_apio_cmd(apio_graph)
+        assert result.exit_code == 1, result.output
+        assert "package 'oss-cad-suite' is not installed" in result.output
+        assert "apio packages --install --force oss-cad-suite" in result.output
+
+        # -- Execute "apio graph -pdf"
+        result = sb.invoke_apio_cmd(apio_graph)
+        assert result.exit_code == 1, result.output
+        assert "package 'oss-cad-suite' is not installed" in result.output
+        assert "apio packages --install --force oss-cad-suite" in result.output
+
+        # -- Execute "apio graph -png"
+        result = sb.invoke_apio_cmd(apio_graph)
+        assert result.exit_code == 1, result.output
+        assert "package 'oss-cad-suite' is not installed" in result.output
+        assert "apio packages --install --force oss-cad-suite" in result.output

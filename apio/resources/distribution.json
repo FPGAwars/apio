@@ -1,9 +1,10 @@
 {
   "packages": {
+    "system": ">=1.1.2",
     "drivers": ">=1.1.0",
     "examples": ">=0.0.7",
-    "gtkwave": ">=3.3.77,<3.4.0",
-    "oss-cad-suite": ">=0.0.1"
+    "graphviz": ">=12.1.2",
+    "oss-cad-suite": ">=0.2.1"
   },
   "pip_packages": {
     "blackiceprog": ">=2.0.0,<3.0.0",

@@ -7,11 +7,14 @@
 # -- Licence GPLv2
 """Implementation of 'apio sim' command"""
 
+import sys
 from pathlib import Path
 import click
 from apio.managers.scons import SCons
 from apio import cmd_util
 from apio.commands import options
+from apio.apio_context import ApioContext
+
 
 # ---------------------------
 # -- COMMAND
@@ -19,18 +22,24 @@ from apio.commands import options
 
 HELP = """
 The sim command simulates a testbench file and shows
-the simulation results a GTKWave graphical window.
-The commands is typically used in the root directory
+the simulation results a GTKWave graphical window. The testbench is expected
+to have a name ending with _tb (e.g. my_module_tb.v) and the
+commands is typically used in the root directory
 of the project that contains the apio.ini file and it
 accepts the testbench file name as an argument. For example:
 
 \b
 Example:
   apio sim my_module_tb.v
+  apio sim my_module_tb.v --force
 
-The sim command defines the macros VCD_OUTPUT and INTERACTIVE_SIM
-that can be used by the testbench. For a sample testbench that
-uses those macro see the example at
+It is recommanded NOT to use the `$dumpfile()` function in your testbenchs as
+this may override the default name and location of the generated .vcd file.
+
+The sim command defines the INTERACTIVE_SIM that can be used in the testbench
+to distinguise between 'apio test' and 'apio sim', for example to ignore error
+with 'apio sim' and view the erronous signals gtkwave. For a sample testbench
+that uses those macro see the example at
 https://github.com/FPGAwars/apio-examples/tree/master/upduino31/testbench
 
 [Hint] when you configure the signals in GTKWave, you can save the
@@ -46,23 +55,28 @@ configuration for future invocations.
 )
 @click.pass_context
 @click.argument("testbench", nargs=1, required=True)
+@options.force_option_gen(help="Force simulation.")
 @options.project_dir_option
 def cli(
-    ctx,
+    _: click.core.Context,
     # Arguments
     testbench: str,
     # Options
+    force: bool,
     project_dir: Path,
 ):
     """Implements the apio sim command. It simulates a single testbench
     file and shows graphically the signal graphs.
     """
 
-    # -- Create the scons object
-    scons = SCons(project_dir)
+    # -- Create the apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=True)
+
+    # -- Create the scons manager.
+    scons = SCons(apio_ctx)
 
     # -- Simulate the project with the given parameters
-    exit_code = scons.sim({"testbench": testbench})
+    exit_code = scons.sim({"testbench": testbench, "force_sim": force})
 
     # -- Done!
-    ctx.exit(exit_code)
+    sys.exit(exit_code)

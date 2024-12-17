@@ -6,13 +6,13 @@
 # --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
 """Implementation of 'apio lint' command"""
-
+import sys
 from pathlib import Path
 import click
-from click.core import Context
 from apio.managers.scons import SCons
 from apio import cmd_util
 from apio.commands import options
+from apio.apio_context import ApioContext
 
 
 # ---------------------------
@@ -85,7 +85,7 @@ Examples:
 @warn_option
 @options.project_dir_option
 def cli(
-    ctx: Context,
+    _: click.core.Context,
     # Options
     top_module: str,
     all_: bool,
@@ -96,17 +96,20 @@ def cli(
 ):
     """Lint the verilog code."""
 
-    # -- Create the scons object
-    scons = SCons(project_dir)
+    # -- Create the apio context.
+    apio_ctx = ApioContext(project_dir=project_dir, load_project=True)
+
+    # -- Create the scons manager.
+    scons = SCons(apio_ctx)
 
     # -- Lint the project with the given parameters
     exit_code = scons.lint(
         {
             "all": all_,
-            "top_module": top_module,
+            "top-module": top_module,
             "nostyle": nostyle,
             "nowarn": nowarn,
             "warn": warn,
         }
     )
-    ctx.exit(exit_code)
+    sys.exit(exit_code)

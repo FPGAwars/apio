@@ -2,6 +2,9 @@
 Test for command apio
 """
 
+from test.conftest import ApioRunner
+
+
 # -----------------------------------------------------------------------
 # -- RUN manually:
 # --   pytest -v test/test_apio.py
@@ -14,32 +17,28 @@ Test for command apio
 # --   pytest -v -s test/test_apio.py::test_apio
 # ------------------------------------------------------------------------
 
-from click.testing import CliRunner
 
 # -- Import the cli entry point: apio/__main__.py
 from apio.__main__ import cli as cmd_apio
 
 
-def test_apio(clirunner: CliRunner, validate_cliresult, configenv):
+def test_apio(apio_runner: ApioRunner):
     """Test command "apio" without arguments
     $ apio
     Usage: apio [OPTIONS] COMMAND [ARGS]...
     [...]
     """
 
-    with clirunner.isolated_filesystem():
-
-        # -- Config the environment (conftest.configenv())
-        configenv()
+    with apio_runner.in_sandbox() as sb:
 
         # -- Invoke the apio command
-        result = clirunner.invoke(cmd_apio)
+        result = sb.invoke_apio_cmd(cmd_apio)
 
         # -- Check that everything is ok
-        validate_cliresult(result)
+        sb.assert_ok(result)
 
 
-def test_apio_wrong_command(clirunner: CliRunner, configenv):
+def test_apio_wrong_command(apio_runner: ApioRunner):
     """Test apio command with an invalid command
     $ apio wrong
     Usage: apio [OPTIONS] COMMAND [ARGS]...
@@ -48,13 +47,10 @@ def test_apio_wrong_command(clirunner: CliRunner, configenv):
     Error: No such command 'wrong'.
     """
 
-    with clirunner.isolated_filesystem():
-
-        # -- Config the environment
-        configenv()
+    with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio mmissing_command"
-        result = clirunner.invoke(cmd_apio, ["wrong_command"])
+        result = sb.invoke_apio_cmd(cmd_apio, ["wrong_command"])
 
         # -- Check the error code
         assert result.exit_code == 2, result.output

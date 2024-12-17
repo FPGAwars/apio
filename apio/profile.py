@@ -9,7 +9,6 @@ import json
 from pathlib import Path
 import click
 import semantic_version
-from apio import util
 
 
 class Profile:
@@ -17,7 +16,7 @@ class Profile:
     ex. ~/.apio/profile.json
     """
 
-    def __init__(self):
+    def __init__(self, home_dir: Path):
 
         # ---- Set the default parameters
         # Apio settings
@@ -28,7 +27,7 @@ class Profile:
 
         # -- Get the profile path
         # -- Ex. '/home/obijuan/.apio'
-        self._profile_path = util.get_home_dir() / "profile.json"
+        self._profile_path = home_dir / "profile.json"
 
         # -- Read the profile from file
         self.load()
@@ -49,7 +48,7 @@ class Profile:
         if name in self.packages:
 
             # -- Get the current version
-            pkg_version = self.get_package_version(name)
+            pkg_version = self.get_package_installed_version(name)
 
             # -- Compare versions: current vs version to install
             current_ver = semantic_version.Version(pkg_version)
@@ -84,19 +83,18 @@ class Profile:
         if name in self.packages.keys():
             del self.packages[name]
 
-    def get_package_version(self, name: str) -> str:
-        """Return the version of the given package"""
+    def get_package_installed_version(
+        self, package_name: str, default="0.0.0"
+    ) -> str:
+        """Return the installed version of the given package of default if
+        not installed."""
 
-        # -- If the package is installed
-        if name in self.packages:
+        # -- If package is installed, return the installed version.
+        if package_name in self.packages:
+            return self.packages[package_name]["version"]
 
-            # -- Get the version
-            version = self.packages[name]["version"]
-
-        else:
-            version = "0.0.0"
-
-        return version
+        # -- Else, return the default value.
+        return default
 
     def load(self):
         """Load the profile from the file"""

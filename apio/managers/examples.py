@@ -9,26 +9,11 @@
 import shutil
 from pathlib import Path, PosixPath
 from dataclasses import dataclass
-from typing import Optional, Tuple, List
+from typing import Optional, List
 import click
 from apio import util
-from apio.profile import Profile
-from apio.resources import Resources
-
-# -- Error messages
-EXAMPLE_NOT_FOUND_MSG = """
-Warning: this example does not exist
-Use `apio examples -l` to list all the available examples"""
-
-USAGE_EXAMPLE = """
-To fetch example files:
-   apio examples -f example-name
-
-Example of use:
-   apio examples -f icesum/leds
-
-Type 'apio examples -h' for more details.
-"""
+from apio import pkg_util
+from apio.apio_context import ApioContext
 
 
 @dataclass
@@ -43,38 +28,20 @@ class ExampleInfo:
 class Examples:
     """Manage the apio examples"""
 
-    def __init__(self):
+    def __init__(self, apio_ctx: ApioContext):
 
-        # -- Access to the profile information
-        profile = Profile()
-
-        # -- Access to the resources
-        resources = Resources()
-
-        # -- Apio examples package name
-        self.name = "examples"
+        # -- Save the apio context.
+        self.apio_ctx = apio_ctx
 
         # -- Folder where the example packages was installed
-        self.examples_dir = util.get_package_dir(self.name)
-
-        # -- Get the example package version
-        self.version = util.get_package_version(self.name, profile)
-
-        # -- Get the version restrictions
-        self.spec_version = util.get_package_spec_version(self.name, resources)
+        self.examples_dir = apio_ctx.get_package_dir("examples")
 
     def get_examples_infos(self) -> Optional[List[ExampleInfo]]:
         """Scans the examples and returns a list of ExampleInfos.
         Returns null if an error."""
 
-        # -- Check if the example package is installed
-        installed = util.check_package(
-            self.name, self.version, self.spec_version, self.examples_dir
-        )
-
-        if not installed:
-            # -- A message was already printed.
-            return None
+        # -- Check that the example package is installed
+        pkg_util.check_required_packages(self.apio_ctx, ["examples"])
 
         # -- Collect the examples home dir each board.
         boards_dirs: List[PosixPath] = []
@@ -84,7 +51,7 @@ class Examples:
                 boards_dirs.append(board_dir)
 
         # -- Collect the examples of each boards.
-        examples: List[Tuple[str, PosixPath]] = []
+        examples: List[ExampleInfo] = []
         for board_dir in boards_dirs:
 
             # -- Iterate board's example subdirectories.
@@ -116,6 +83,9 @@ class Examples:
         """Print all the examples available. Return a process exit
         code, 0 if ok, non zero otherwise."""
 
+        # -- Check that the examples package is installed.
+        pkg_util.check_required_packages(self.apio_ctx, ["examples"])
+
         # -- Get list of examples.
         examples: List[ExampleInfo] = self.get_examples_infos()
         if examples is None:
@@ -130,8 +100,8 @@ class Examples:
         # -- terminal.
         if output_config.terminal_mode():
             terminal_seperator_line = "─" * output_config.terminal_width
-            click.echo()
-            click.echo(terminal_seperator_line)
+            click.secho()
+            click.secho(terminal_seperator_line)
 
         # -- For a pipe, determine the max example name length.
         max_example_name_len = max(len(x.name) for x in examples)
@@ -153,28 +123,21 @@ class Examples:
         # -- For a terminal, emit additional summary.
         if output_config.terminal_mode():
             click.secho(f"Total: {len(examples)}")
-            click.secho(USAGE_EXAMPLE, fg="green")
 
         return 0
 
     def copy_example_dir(self, example: str, project_dir: Path, sayno: bool):
         """Copy the example creating the folder
-        Ex. The example Alhambra-II/ledon --> the folder Alhambra-II/ledon
+        Ex. The example alhambra-ii/ledon --> the folder alhambra-ii/ledon
         is created
           * INPUTS:
-            * example: Example name (Ex. 'Alhambra-II/ledon')
+            * example: Example name (Ex. 'alhambra-ii/ledon')
             * project_dir: (optional)
             * sayno: Automatically answer no
         """
 
-        # -- Check if the example package is installed
-        installed = util.check_package(
-            self.name, self.version, self.spec_version, self.examples_dir
-        )
-
-        # -- No package installed: return
-        if not installed:
-            return 1
+        # -- Check that the examples package is installed.
+        pkg_util.check_required_packages(self.apio_ctx, ["examples"])
 
         # -- Get the working dir (current or given)
         project_dir = util.get_project_dir(project_dir, create_if_missing=True)
@@ -187,7 +150,7 @@ class Examples:
 
         # -- If the source example path is not a folder... it is an error
         if not src_example_path.is_dir():
-            click.secho(EXAMPLE_NOT_FOUND_MSG, fg="yellow")
+            click.secho(f"Error: example [{example}] not found.", fg="red")
             return 1
 
         # -- The destination path is a folder...It means that the
@@ -226,19 +189,13 @@ class Examples:
     def copy_example_files(self, example: str, project_dir: Path, sayno: bool):
         """Copy the example files (not the initial folders)
         * INPUTS:
-            * example: Example name (Ex. 'Alhambra-II/ledon')
+            * example: Example name (Ex. 'alhambra-ii/ledon')
             * project_dir: (optional)
             * sayno: Automatically answer no
         """
 
-        # -- Check if the example package is installed
-        installed = util.check_package(
-            self.name, self.version, self.spec_version, self.examples_dir
-        )
-
-        # -- No package installed: return
-        if not installed:
-            return 1
+        # -- Check that the examples package is installed.
+        pkg_util.check_required_packages(self.apio_ctx, ["examples"])
 
         # -- Get the working dir (current or given)
         dst_example_path = util.get_project_dir(
@@ -248,9 +205,9 @@ class Examples:
         # -- Build the source example path (where the example was installed)
         src_example_path = self.examples_dir / example
 
-        # -- If the source example path is not a folder... it is an error
+        # -- If the source example path is not a folder. it is an error
         if not src_example_path.is_dir():
-            click.secho(EXAMPLE_NOT_FOUND_MSG, fg="yellow")
+            click.secho(f"Error: example [{example}] not found.", fg="red")
             return 1
 
         # -- Copy the example files!!
@@ -261,13 +218,12 @@ class Examples:
 
         return exit_code
 
-    @staticmethod
     def _copy_files(
-        example: str, src_path: Path, dest_path: Path, sayno: bool
+        self, example: str, src_path: Path, dest_path: Path, sayno: bool
     ):
         """Copy the example files to the destination folder
         * INPUTS:
-          * example: Name of the example (Ex. 'Alhambra-II/ledon')
+          * example: Name of the example (Ex. 'alhambra-ii/ledon')
           * src_path: Source folder to copy
           * dest_path: Destination folder
         """
@@ -329,11 +285,10 @@ class Examples:
 
         return 0
 
-    @staticmethod
-    def _copy_dir(example: str, src_path: Path, dest_path: Path):
+    def _copy_dir(self, example: str, src_path: Path, dest_path: Path):
         """Copy example of the src_path on the dest_path
         * INPUT
-          * example: Name of the example (Ex. 'Alhambra-II/ledon')
+          * example: Name of the example (Ex. 'alhambra-ii/ledon')
           * src_path: Source folder to copy
           * dest_path: Destination folder
         """

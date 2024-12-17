@@ -7,61 +7,63 @@
 # -- Licence GPLv2
 
 import re
-import platform
-from typing import Optional
+import sys
 import click
 
 from apio import util
-from apio.profile import Profile
+from apio import pkg_util
+from apio.apio_context import ApioContext
 
 
 class System:  # pragma: no cover
     """System class. Managing and execution of the system commands"""
 
-    def __init__(self, resources: dict):
-        # -- Read the profile from the file
-        profile = Profile()
+    def __init__(self, apio_ctx: ApioContext):
 
-        # -- This command is called system
-        self.name = "system"
+        self.apio_ctx = apio_ctx
 
-        # -- Package name: apio package were all the system commands
-        # -- are located
-        # -- From apio > 0.7 the system tools are located inside the
-        # -- oss-cad-suite
-        self.package_name = "oss-cad-suite"
+    def _lsftdi_fatal_error(self, result: util.CommandResult) -> None:
+        """Handles a failure of a 'lsftdi' command. Print message and exits."""
+        #
+        assert result.exit_code != 0, result
+        click.secho(result.out_text)
+        click.secho(f"{result.err_text}", fg="red")
+        click.secho("Error: the 'lsftdi' command failed.", fg="red")
 
-        # -- Get the installed package versions
-        self.version = util.get_package_version(self.name, profile)
+        # -- A special hint for zadig on windows.
+        if self.apio_ctx.is_windows():
+            click.secho(
+                "\n"
+                "[Hint]: did you install the ftdi driver using "
+                "'apio drivers --ftdi-install'?",
+                fg="yellow",
+            )
+            sys.exit(1)
 
-        # -- Get the spected versions
-        self.spec_version = util.get_package_spec_version(self.name, resources)
+    def lsusb(self) -> int:
+        """Run the lsusb command. Returns exit code."""
 
-        # -- Windows: Executables should end with .exe
-        self.ext = ""
-        if platform.system() == "Windows":
-            self.ext = ".exe"
-
-    def lsusb(self):
-        """Run the lsusb system command"""
-
-        result = self._run_command("lsusb")
+        result = self._run_command("lsusb", silent=False)
 
         return result.exit_code if result else 1
 
-    def lsftdi(self):
-        """DOC: TODO"""
+    def lsftdi(self) -> int:
+        """Runs the lsftdi command. Returns exit code."""
 
-        result = self._run_command("lsftdi")
+        result = self._run_command("lsftdi", silent=True)
 
-        return result.exit_code if result else 1
+        if result.exit_code != 0:
+            # -- Print error message and exit.
+            self._lsftdi_fatal_error(result)
 
-    @staticmethod
-    def lsserial():
-        """DOC: TODO"""
+        click.secho(result.out_text)
+        return 0
+
+    def lsserial(self) -> int:
+        """List the serial ports. Returns exit code."""
 
         serial_ports = util.get_serial_ports()
-        click.secho(f"Number of Serial devices found: {len(serial_ports)}\n")
+        click.secho(f"Number of Serial devices found: {len(serial_ports)}")
 
         for serial_port in serial_ports:
             port = serial_port.get("port")
@@ -90,20 +92,18 @@ class System:  # pragma: no cover
         # -- Run the "lsusb" command!
         result = self._run_command("lsusb", silent=True)
 
-        # -- Sucess in executing the command
-        if result and result.exit_code == 0:
+        if result.exit_code != 0:
+            click.secho(result.out_text)
+            click.secho(result.err_text, fg="red")
+            raise RuntimeError("Error executing lsusb")
 
-            # -- Get the list of the usb devices. It is read
-            # -- from the command stdout
-            # -- Ex: [{'hwid':'1d6b:0003'}, {'hwid':'04f2:b68b'}...]
-            usb_devices = self._parse_usb_devices(result.out_text)
+        # -- Get the list of the usb devices. It is read
+        # -- from the command stdout
+        # -- Ex: [{'hwid':'1d6b:0003'}, {'hwid':'04f2:b68b'}...]
+        usb_devices = self._parse_usb_devices(result.out_text)
 
-            # -- Return the devices
-            return usb_devices
-
-        # -- It was not possible to run the "lsusb" command
-        # -- for reading the usb devices
-        raise RuntimeError("Error executing lsusb")
+        # -- Return the devices
+        return usb_devices
 
     def get_ftdi_devices(self) -> list:
         """Return a list of the connected FTDI devices
@@ -120,28 +120,27 @@ class System:  # pragma: no cover
         # -- Initial empty ftdi devices list
         ftdi_devices = []
 
-        # -- Run the "lsftdi" command!
+        # -- Run the "lsftdi" command.
         result = self._run_command("lsftdi", silent=True)
 
-        # -- Sucess in executing the command
-        if result and result.exit_code == 0:
+        # -- Exit if error.
+        if result.exit_code != 0:
+            self._lsftdi_fatal_error(result)
 
-            # -- Get the list of the ftdi devices. It is read
-            # -- from the command stdout
-            # -- Ex: [{'index': '0', 'manufacturer': 'AlhambraBits',
-            # --      'description': 'Alhambra II v1.0A - B07-095'}]
-            ftdi_devices = self._parse_ftdi_devices(result.out_text)
+        # -- Get the list of the ftdi devices. It is read
+        # -- from the command stdout
+        # -- Ex: [{'index': '0', 'manufacturer': 'AlhambraBits',
+        # --      'description': 'Alhambra II v1.0A - B07-095'}]
+        ftdi_devices = self._parse_ftdi_devices(result.out_text)
 
-            # -- Return the devices
-            return ftdi_devices
+        # -- Return the devices
+        return ftdi_devices
 
-        # -- It was not possible to run the "lsftdi" command
-        # -- for reading the ftdi devices
-        raise RuntimeError("Error executing lsftdi")
+        # -- Print error message and exit.
 
     def _run_command(
-        self, command: str, silent=False
-    ) -> Optional[util.CommandResult]:
+        self, command: str, *, silent: bool
+    ) -> util.CommandResult:
         """Execute the given system command
         * INPUT:
           * command: Command to execute  (Ex. "lsusb")
@@ -150,58 +149,28 @@ class System:  # pragma: no cover
             * True  --> Print on the console
 
         * OUTPUT: An ExecResult with the command's outcome.
-          In case of not executing the command it returns none!
         """
 
-        # The system tools are locate in the
-        # oss-cad-suite package
+        # -- Check that the required package exists.
+        pkg_util.check_required_packages(self.apio_ctx, ["oss-cad-suite"])
 
-        # -- Get the package base dir
-        # -- Ex. "/home/obijuan/.apio/packages/tools-oss-cad-suite"
-        system_base_dir = util.get_package_dir("tools-oss-cad-suite")
+        # -- Set system env for using the packages.
+        pkg_util.set_env_for_packages(self.apio_ctx)
 
-        # -- Package not found
-        if not system_base_dir:
-            # -- Show the error message and a hint
-            # -- on how to install the package
-            util.show_package_path_error(self.package_name)
-            util.show_package_install_instructions(self.package_name)
-            raise util.ApioException()
-
-        # -- Get the folder were the binary file is located (PosixPath)
-        system_bin_dir = system_base_dir / "bin"
-
-        # -- Get the executable filename
-        # -- Ex. Posix('/home/obijuan/.apio/packages/tools-oss-cad-suite/
-        # --            bin/lsusb')
-        executable_file = system_bin_dir / (command + self.ext)
-
-        # -- Check if the file exist!
-        if not executable_file.exists():
-
-            # -- The command was not in the oss-cad-suit package
-            # -- Print an error message
-            click.secho("Error!\n", fg="red")
-            click.secho(f"Command not fount: {executable_file}", fg="red")
-
-            # -- Show the error message and a hint
-            # -- on how to install the package
-            util.show_package_path_error(self.package_name)
-            util.show_package_install_instructions(self.package_name)
-
-            # -- Command not executed.
-            return None
-
-        # -- The command exist! Let's execute it!
+        # pylint: disable=fixme
+        # TODO: Is this necessary or does windows accepts commands without
+        # the '.exe' extension?
+        if self.apio_ctx.is_windows():
+            command = command + ".exe"
 
         # -- Set the stdout and stderr callbacks, when executing the command
         # -- Silent mode (True): No callback
         on_stdout = None if silent else self._on_stdout
-        on_stderr = self._on_stderr
+        on_stderr = None if silent else self._on_stderr
 
         # -- Execute the command!
         result = util.exec_command(
-            executable_file,
+            command,
             stdout=util.AsyncPipe(on_stdout),
             stderr=util.AsyncPipe(on_stderr),
         )
