@@ -219,16 +219,16 @@ class ApioContext:
         contains white space. See https://github.com/FPGAwars/apio/issues/474
         """
         # -- Match a single white space in the dir path.
-        if re.search("\\s", str(dir_path)):
-            # -- Here space found. This is a fatal error since we don't hand
-            # -- it well later in the process.
-            click.secho(
-                f"Error: The apio {subject} directory path contains white "
-                "space.",
-                fg="red",
-            )
-            click.secho(f"'{str(dir_path)}'", fg="red")
-            sys.exit(1)
+        # *- if re.search("\\s", str(dir_path)):
+        # -- Here space found. This is a fatal error since we don't hand
+        # -- it well later in the process.
+        # *-     click.secho(
+        # *-         f"Error: The apio {subject} directory path contains white "
+        # *-         "space.",
+        # *-         fg="red",
+        # *-       )
+        # *-      click.secho(f"'{str(dir_path)}'", fg="red")
+        # *-      sys.exit(1)
 
     @property
     def has_project_loaded(self):
