@@ -143,7 +143,7 @@ def test_dependencies(apio_runner: ApioRunner):
 
         # -- Check the list. The scanner returns the files sorted and
         # -- with dulicates removed.
-        assert file_names == ["apio_testing.vh", "v771499.list"]
+        assert file_names == ["apio.ini", "apio_testing.vh", "v771499.list"]
 
 
 def test_has_testbench_name():

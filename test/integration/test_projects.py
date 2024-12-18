@@ -19,6 +19,8 @@ from apio.commands.packages import cli as apio_packages
 from apio.commands.examples import cli as apio_examples
 
 
+# Too many statements (60/50) (too-many-statements)
+# pylint: disable=too-many-statements
 # R0801: Similar lines in 2 files
 # pylint: disable=R0801
 # R0913: Too many arguments (6/5) (too-many-arguments)
@@ -83,6 +85,26 @@ def _test_project(
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert getsize(sb.proj_dir / "_build" / binary)
+
+        # -- 'apio build' (no change)
+        result = sb.invoke_apio_cmd(apio_build, proj_arg)
+        sb.assert_ok(result)
+        assert "SUCCESS" in result.output
+        assert "yosys" not in result.output
+
+        # -- Modify apio.ini
+        apio_ini_lines = sb.read_file(
+            sb.proj_dir / "apio.ini", lines_mode=True
+        )
+        apio_ini_lines.append(" ")
+        sb.write_file(sb.proj_dir / "apio.ini", apio_ini_lines, exists_ok=True)
+
+        # -- 'apio build'
+        # -- Apio.ini modification should triggers a new build.
+        result = sb.invoke_apio_cmd(apio_build, proj_arg)
+        sb.assert_ok(result)
+        assert "SUCCESS" in result.output
+        assert "yosys" in result.output
 
         # -- 'apio lint'
         result = sb.invoke_apio_cmd(apio_lint, proj_arg)

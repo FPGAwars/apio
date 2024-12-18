@@ -376,21 +376,35 @@ def make_verilog_src_scanner(env: SConsEnvironment) -> Scanner.Base:
 
         Returns a list of files.
         """
-        # Sanity check. Should be called only to scan verilog files.
-        assert file_node.name.lower().endswith(
-            ".v"
-        ), f"Not a .v file: {file_node.name}"
+        # Sanity check. Should be called only to scan verilog files. If this
+        # fails, this is a programming error rather than a user error.
+        assert is_verilog_src(
+            env, file_node.name
+        ), f"Not a src file: {file_node.name}"
+
+        # Create the initial set. All source file depend on apio.ini and must
+        # be built when apio.ini changes.
+        #
+        # pylint: disable=fixme
+        # TODO: add also other config files aush as boards.json and
+        # programmers.json. Since they are optional, need to figure out how to
+        # handle the case when they are deleted or created.
         includes_set = set()
+        includes_set.add("apio.ini")
+
         # If the file doesn't exist, this returns an empty string.
         file_text = file_node.get_text_contents()
         # Get IceStudio includes.
         includes = icestudio_list_re.findall(file_text)
         includes_set.update(includes)
+
         # Get Standard verilog includes.
         includes = verilog_include_re.findall(file_text)
         includes_set.update(includes)
+
         # Get a deterministic list. (Does it sort by file.name?)
         includes_list = sorted(list(includes_set))
+
         # For debugging
         # info(env, f"*** {file_node.name} includes {includes_list}")
         return env.File(includes_list)
