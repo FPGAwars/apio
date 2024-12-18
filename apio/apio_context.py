@@ -107,10 +107,6 @@ class ApioContext:
         self.home_dir: Path = ApioContext._get_home_dir()
         ApioContext._check_no_spaces_in_dir(self.home_dir, "home")
 
-        # -- Determine apio home dir
-        self.packages_dir: Path = ApioContext._get_packages_dir(self.home_dir)
-        ApioContext._check_no_spaces_in_dir(self.packages_dir, "packages")
-
         # -- Profile information, from ~/.apio/profile.json
         self.profile = Profile(self.home_dir)
 
@@ -229,6 +225,11 @@ class ApioContext:
             )
             click.secho(f"'{str(dir_path)}'", fg="red")
             sys.exit(1)
+
+    @property
+    def packages_dir(self):
+        """Returns the directory hat contains the installed apio packages."""
+        return self.home_dir / "packages"
 
     @property
     def has_project_loaded(self):
@@ -550,11 +551,10 @@ class ApioContext:
     @staticmethod
     def _get_home_dir() -> Path:
         """Get the absolute apio home dir. This is the apio folder where the
-        profle is located and the packages are installed (unless
-        APIO_PACKAGES_DIR is used).
+        profle is located and the packages are installed.
         The apio home dir can be overridden using the APIO_HOME_DIR environment
         varible or in the /etc/apio.json file (in
-        Debian). If not set, the user_HOME/.apio folder is used by default:
+        Debian). If not set, the user_home/.apio folder is used by default:
         Ej. Linux:  /home/obijuan/.apio
         If the folders does not exist, they are created
         """
@@ -586,63 +586,6 @@ class ApioContext:
 
         # Return the home_dir as a Path
         return home_dir
-
-    @staticmethod
-    def _get_packages_dir(home_dir: Path) -> Path:
-        """Return the base directory of apio packages.
-        Packages are installed in the following folder:
-        * Default: $APIO_HOME_DIR/packages
-        * $APIO_PACKAGES_DIR: if the APIO_PACKAGES_DIR env variable is set
-        * INPUT:
-            - pkg_name: Package name (Ex. 'examples')
-        * OUTPUT:
-            - The package absolute folder (PosixPath)
-            (Ex. '/home/obijuan/.apio/packages)
-            The absolute path of the returned directory is guaranteed to have
-            the word packages in it.
-        """
-
-        # -- Get the APIO_PACKAGES_DIR env variable
-        # -- It returns None if it was not defined
-        packaged_dir_override = env_options.get(env_options.APIO_PACKAGES_DIR)
-
-        # -- Handle override.
-        if packaged_dir_override:
-            # -- Verify that the override dir contains the word packages in its
-            # -- absolute path. This is a safety mechanism to prevent
-            # -- uninentional bulk deletions in unintended directories. We
-            # -- check it each time before we perform a package deletion.
-            path = Path(packaged_dir_override).absolute()
-            if "packages" not in str(path).lower():
-                click.secho(
-                    "Error: packages directory path does not contain the word "
-                    f"packages: {str(path)}",
-                    fg="red",
-                )
-                click.secho(
-                    "For safety reasons, if you use the environment variable "
-                    "APIO_PACKAGE_DIR to override\n"
-                    "the packages dir, the new directory must have the word "
-                    "'packages' (case insensitive)\n"
-                    "in its absolute path.",
-                    fg="yellow",
-                )
-                sys.exit(1)
-
-            # -- Override is OK. Use it as the packages dir.
-            packages_dir = Path(packaged_dir_override)
-
-        # -- Else, use the default value.
-        else:
-            # -- Ex '/home/obijuan/.apio/packages/tools-oss-cad-suite'
-            # -- Guaranteed to be absolute.
-            packages_dir = home_dir / "packages"
-
-        # -- Sanity check. If this fails, this is a programming error.
-        assert "packages" in str(packages_dir).lower(), packages_dir
-
-        # -- All done.
-        return packages_dir
 
 
 # pylint: disable=too-few-public-methods

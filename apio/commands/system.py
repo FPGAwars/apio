@@ -82,7 +82,7 @@ The flags --lstdi, --lsusb, --lsserial, and --info are exclusive and
 cannot be mixed in the same command.
 
 [Advanced] The system configuration can be overriden using the system env
-variable APIO_HOME_DIR, APIO_PACKAGES_DIR, APIO_PLATFORM.
+variable APIO_HOME_DIR, and APIO_PLATFORM.
 """
 
 
