@@ -20,6 +20,23 @@ from apio.apio_context import ApioContext
 # ---------------------------
 # -- COMMAND SPECIFIC OPTIONS
 # ---------------------------
+serial_port_option = click.option(
+    "serial_port",  # Var name.
+    "--serial-port",
+    type=str,
+    metavar="serial-port",
+    help="Set the serial port.",
+    cls=cmd_util.ApioOption,
+)
+
+ftdi_id_option = click.option(
+    "ftdi_id",  # Var name.
+    "--ftdi-id",
+    type=str,
+    metavar="ftdi-id",
+    help="Set the FTDI id.",
+)
+
 sram_option = click.option(
     "sram",  # Var name.
     "-s",
@@ -65,20 +82,17 @@ Examples:
     cls=cmd_util.ApioCommand,
 )
 @click.pass_context
-@options.project_dir_option
-@options.serial_port_option
-@options.ftdi_id
+@serial_port_option
+@ftdi_id_option
 @sram_option
 @flash_option
 @options.verbose_option
 @options.verbose_yosys_option
 @options.verbose_pnr_option
-@options.top_module_option_gen(deprecated=True)
-@options.board_option_gen(deprecated=True)
+@options.project_dir_option
 def cli(
     _: click.core.Context,
     # Options
-    project_dir: Path,
     serial_port: str,
     ftdi_id: str,
     sram: bool,
@@ -86,9 +100,7 @@ def cli(
     verbose: bool,
     verbose_yosys: bool,
     verbose_pnr: bool,
-    # Deprecated options
-    top_module: str,
-    board: str,
+    project_dir: Path,
 ):
     """Implements the upload command."""
 
@@ -108,8 +120,6 @@ def cli(
     # -- Construct the configuration params to pass to SCons
     # -- from the arguments
     config = {
-        "board": board,
-        "top-module": top_module,
         "verbose_all": verbose,
         "verbose_yosys": verbose_yosys,
         "verbose_pnr": verbose_pnr,

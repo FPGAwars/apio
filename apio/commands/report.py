@@ -46,23 +46,11 @@ Examples:
 @click.pass_context
 @options.project_dir_option
 @options.verbose_option
-@options.top_module_option_gen(deprecated=True)
-@options.board_option_gen(deprecated=True)
-@options.fpga_option_gen(deprecated=True)
-@options.size_option_gen(deprecated=True)
-@options.type_option_gen(deprecated=True)
-@options.pack_option_gen(deprecated=True)
 def cli(
     _: click.core.Context,
     # Options
     project_dir: Path,
     verbose: bool,
-    top_module: str,
-    board: str,
-    fpga: str,
-    size: str,
-    type_: str,
-    pack: str,
 ):
     """Analyze the design and report timing."""
 
@@ -75,13 +63,7 @@ def cli(
     # Run scons
     exit_code = scons.report(
         {
-            "board": board,
-            "fpga": fpga,
-            "size": size,
-            "type": type_,
-            "pack": pack,
             "verbose_pnr": verbose,
-            "top-module": top_module,
         }
     )
 

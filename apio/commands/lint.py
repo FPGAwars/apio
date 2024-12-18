@@ -18,6 +18,16 @@ from apio.apio_context import ApioContext
 # ---------------------------
 # -- COMMAND SPECIFIC OPTIONS
 # ---------------------------
+
+all_option = click.option(
+    "all_",  # Var name. Deconflicting from Python'g builtin 'all'.
+    "-a",
+    "--all",
+    is_flag=True,
+    help="Enable all warnings, including code style warnings.",
+    cls=cmd_util.ApioOption,
+)
+
 nostyle_option = click.option(
     "nostyle",  # Var name
     "--nostyle",
@@ -77,9 +87,7 @@ Examples:
 @options.top_module_option_gen(
     help="Restrict linting to this module and its depedencies."
 )
-@options.all_option_gen(
-    help="Enable all warnings, including code style warnings."
-)
+@all_option
 @nostyle_option
 @nowarn_option
 @warn_option

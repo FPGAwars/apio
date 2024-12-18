@@ -7,8 +7,6 @@
 
 import json
 from pathlib import Path
-import click
-import semantic_version
 
 
 class Profile:
@@ -31,41 +29,6 @@ class Profile:
 
         # -- Read the profile from file
         self.load()
-
-    def is_installed_version_ok(self, name: str, version: str, verbose: bool):
-        """Check the if the given package version is installed
-        * INPUT:
-          - name: Package name
-          - version: Version to install
-        * OUTPUT:
-          - True: Version installed, with the given version
-          - False:
-            - Package not installed
-            - Package installed but different version
-        """
-
-        # -- If the package is installed...
-        if name in self.packages:
-
-            # -- Get the current version
-            pkg_version = self.get_package_installed_version(name)
-
-            # -- Compare versions: current vs version to install
-            current_ver = semantic_version.Version(pkg_version)
-            to_install_ver = semantic_version.Version(version)
-
-            if verbose:
-                click.secho(f"Current version: {current_ver}")
-
-            same_versions = current_ver == to_install_ver
-
-            # -- Return the state of the installed package:
-            # -- True: Package installed (with the given version)
-            # -- False: Package installed (but different version)
-            return same_versions
-
-        # -- Package not installed
-        return False
 
     def add_package(self, name: str, version: str):
         """Add a package to the profile class"""

@@ -42,13 +42,10 @@ the temporary apio file names.
 )
 @click.pass_context
 @options.project_dir_option
-@options.board_option_gen(deprecated=True)
 def cli(
     _: click.core.Context,
     # Options
     project_dir: Path,
-    # Deprecated options.
-    board: str,
 ):
     """Implements the apio clean command. It deletes temporary files generated
     by apio commands.
@@ -61,7 +58,7 @@ def cli(
     scons = SCons(apio_ctx)
 
     # -- Build the project with the given parameters
-    exit_code = scons.clean({"board": board})
+    exit_code = scons.clean(args={})
 
     # -- Done!
     sys.exit(exit_code)

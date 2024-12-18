@@ -2,12 +2,8 @@
   Test different "apio" commands
 """
 
-from os import stat
 from os import chdir
 from os.path import getsize
-from os import path
-from os import system
-from pathlib import Path
 from test.conftest import ApioRunner
 import pytest
 
@@ -32,21 +28,11 @@ def test_examples(apio_runner: ApioRunner):
         sb.proj_dir.mkdir()
         chdir(sb.proj_dir)
 
-        base_path = Path(sb.packages_dir)
-        file_path = (
-            base_path / "examples" / "Alhambra-II" / "ledon" / "ledon.v"
-        )
-        file_path = path.normpath(str(file_path))
-
         # -- Install the examples package.
         result = sb.invoke_apio_cmd(apio_packages, ["--install", "examples"])
         sb.assert_ok(result)
         assert "Package 'examples' installed successfully" in result.output
-        try:
-            size = stat(file_path).st_size
-            assert size > 0
-        except FileNotFoundError:
-            assert False, f"El archivo {file_path} no existe"
+        assert getsize(sb.packages_dir / "examples/alhambra-ii/ledon/ledon.v")
 
         # -- 'apio examples --list'
         result = sb.invoke_apio_cmd(
@@ -54,45 +40,45 @@ def test_examples(apio_runner: ApioRunner):
             ["--list"],
         )
         sb.assert_ok(result)
-        assert "Alhambra-II/ledon" in result.output
+        assert "alhambra-ii/ledon" in result.output
         assert "Hello world for the Alhambra-II board" in result.output
 
-        # -- 'apio examples --fetch-files Alhambra-II/ledon'
+        # -- 'apio examples --fetch-files alhambra-ii/ledon'
         result = sb.invoke_apio_cmd(
             apio_examples,
-            ["--fetch-files", "Alhambra-II/ledon"],
+            ["--fetch-files", "alhambra-ii/ledon"],
         )
         sb.assert_ok(result)
-        assert "Copying Alhambra-II/ledon example files" in result.output
+        assert "Copying alhambra-ii/ledon example files" in result.output
         assert "have been successfully created!" in result.output
         assert getsize("ledon.v")
 
-        # -- 'apio examples --fetch-dir Alhambra-II/ledon'
+        # -- 'apio examples --fetch-dir alhambra-ii/ledon'
         result = sb.invoke_apio_cmd(
             apio_examples,
-            ["--fetch-dir", "Alhambra-II/ledon"],
+            ["--fetch-dir", "alhambra-ii/ledon"],
         )
         sb.assert_ok(result)
-        assert "Creating Alhambra-II/ledon directory" in result.output
+        assert "Creating alhambra-ii/ledon directory" in result.output
         assert "has been successfully created" in result.output
-        assert getsize("Alhambra-II/ledon/ledon.v")
+        assert getsize("alhambra-ii/ledon/ledon.v")
 
-        # -- 'apio examples --fetch-files" Alhambra-II/ledon -p dir1'
+        # -- 'apio examples --fetch-files" alhambra-ii/ledon -p dir1'
         result = sb.invoke_apio_cmd(
             apio_examples,
-            ["--fetch-files", "Alhambra-II/ledon", "-p", "dir1"],
+            ["--fetch-files", "alhambra-ii/ledon", "-p", "dir1"],
         )
         sb.assert_ok(result)
-        assert "Copying Alhambra-II/ledon example files" in result.output
+        assert "Copying alhambra-ii/ledon example files" in result.output
         assert "have been successfully created!" in result.output
         assert getsize("dir1/ledon.v")
 
-        # -- 'apio examples --fetch-dir Alhambra-II/ledon -p dir2
+        # -- 'apio examples --fetch-dir alhambra-ii/ledon -p dir2
         result = sb.invoke_apio_cmd(
             apio_examples,
-            ["--fetch-dir", "Alhambra-II/ledon", "-p", "dir2"],
+            ["--fetch-dir", "alhambra-ii/ledon", "-p", "dir2"],
         )
         sb.assert_ok(result)
-        assert "Creating Alhambra-II/ledon directory" in result.output
+        assert "Creating alhambra-ii/ledon directory" in result.output
         assert "has been successfully created" in result.output
-        assert getsize("dir2/Alhambra-II/ledon/ledon.v")
+        assert getsize("dir2/alhambra-ii/ledon/ledon.v")

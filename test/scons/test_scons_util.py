@@ -143,7 +143,7 @@ def test_dependencies(apio_runner: ApioRunner):
 
         # -- Check the list. The scanner returns the files sorted and
         # -- with dulicates removed.
-        assert file_names == ["apio_testing.vh", "v771499.list"]
+        assert file_names == ["apio.ini", "apio_testing.vh", "v771499.list"]
 
 
 def test_has_testbench_name():
@@ -171,17 +171,35 @@ def test_is_verilog_src():
 
     env = _make_test_scons_env()
 
-    # -- Verilog source names
+    # -- Verilog and system-verilog source names, system-verilog included.
     assert is_verilog_src(env, "aaa.v")
     assert is_verilog_src(env, "bbb/aaa.v")
     assert is_verilog_src(env, "bbb\\aaa.v")
     assert is_verilog_src(env, "aaatb.v")
     assert is_verilog_src(env, "aaa_tb.v")
+    assert is_verilog_src(env, "aaa.sv")
+    assert is_verilog_src(env, "bbb\\aaa.sv")
+    assert is_verilog_src(env, "aaa_tb.sv")
 
-    # -- Non verilog source names.
+    # -- Verilog and system-verilog source names, system-verilog excluded.
+    assert is_verilog_src(env, "aaa.v", include_sv=False)
+    assert is_verilog_src(env, "bbb/aaa.v", include_sv=False)
+    assert is_verilog_src(env, "bbb\\aaa.v", include_sv=False)
+    assert is_verilog_src(env, "aaatb.v", include_sv=False)
+    assert is_verilog_src(env, "aaa_tb.v", include_sv=False)
+    assert not is_verilog_src(env, "aaa.sv", include_sv=False)
+    assert not is_verilog_src(env, "bbb\\aaa.sv", include_sv=False)
+    assert not is_verilog_src(env, "aaa_tb.sv", include_sv=False)
+
+    # -- Non verilog source names, system-verilog included.
     assert not is_verilog_src(env, "aaatb.vv")
     assert not is_verilog_src(env, "aaatb.V")
     assert not is_verilog_src(env, "aaa_tb.vh")
+
+    # -- Non verilog source names, system-verilog excluded.
+    assert not is_verilog_src(env, "aaatb.vv", include_sv=False)
+    assert not is_verilog_src(env, "aaatb.V", include_sv=False)
+    assert not is_verilog_src(env, "aaa_tb.vh", include_sv=False)
 
 
 def test_env_args():

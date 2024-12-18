@@ -99,6 +99,15 @@ class Project:
             self._options["board"]
         )
 
+        # -- If top-module was not specified, fill in the default value.
+        if "top-module" not in self._options:
+            self._options["top-module"] = DEFAULT_TOP_MODULE
+            click.secho(
+                "Project file has no 'top-module', "
+                f"assuming '{DEFAULT_TOP_MODULE}'.",
+                fg="yellow",
+            )
+
     def __getitem__(self, option: str) -> Optional[str]:
         # -- If this fails, this is a programming error.
         assert option in ALL_OPTIONS, f"Invalid project option: [{option}]"
@@ -120,8 +129,8 @@ def load_project_from_file(
 
     # -- Currently, apio.ini is still optional so we just warn.
     if not file_path.exists():
-        click.secho(f"Info: Project has no {APIO_INI} file.", fg="yellow")
-        return None
+        click.secho(f"Error: missing project file {APIO_INI}.", fg="red")
+        sys.exit(1)
 
     # -- Read and parse the file.
     parser = ConfigParser()
@@ -191,48 +200,6 @@ def create_project_file(
     click.secho(
         f"The file '{ini_path}' was created successfully.\n"
         "Run the apio clean command for project consistency.",
-        fg="green",
-    )
-    return True
-
-
-def modify_project_file(
-    project_dir: Path,
-    board: Optional[str],
-    top_module: Optional[str],
-) -> bool:
-    """Update the current ini file with the given optional parameters.
-    Returns True if ok. Board is assumed to be None or a canonical id of an
-    exiting board (caller should validate)"""
-
-    # -- construct the file path.
-    ini_path = project_dir / APIO_INI
-
-    # -- Check if the apio.ini file exists
-    if not ini_path.is_file():
-        click.secho(
-            f"Error: '{ini_path}' not found. You should create it first.\n"
-            "see 'apio create -h' for more details.",
-            fg="red",
-        )
-        return False
-
-    # -- Read the current apio.ini file
-    config = ConfigObj(str(ini_path))
-
-    # -- Set specified fields.
-    if board:
-        config["env"]["board"] = board
-
-    if top_module:
-        config["env"]["top-module"] = top_module
-
-    # -- Write the apio ini file
-    config.write()
-
-    click.secho(
-        f"File '{ini_path}' was modified successfully.\n"
-        f"Run the apio clean command for project consistency.",
         fg="green",
     )
     return True

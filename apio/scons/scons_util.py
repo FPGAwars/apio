@@ -87,11 +87,16 @@ def basename(env: SConsEnvironment, file_name: str) -> str:
     return result
 
 
-def is_verilog_src(env: SConsEnvironment, file_name: str) -> str:
+def is_verilog_src(
+    env: SConsEnvironment, file_name: str, *, include_sv: bool = True
+) -> bool:
     """Given a file name, determine by its extension if it's a verilog source
-    file (testbenches included)."""
+    file (testbenches included).  If include_sv is True, include also
+    system verilog files."""
     _, ext = os.path.splitext(file_name)
-    return ext == ".v"
+    if include_sv:
+        return ext in [".v", ".sv"]
+    return ext in [".v"]
 
 
 def has_testbench_name(env: SConsEnvironment, file_name: str) -> bool:
@@ -376,21 +381,35 @@ def make_verilog_src_scanner(env: SConsEnvironment) -> Scanner.Base:
 
         Returns a list of files.
         """
-        # Sanity check. Should be called only to scan verilog files.
-        assert file_node.name.lower().endswith(
-            ".v"
-        ), f"Not a .v file: {file_node.name}"
+        # Sanity check. Should be called only to scan verilog files. If this
+        # fails, this is a programming error rather than a user error.
+        assert is_verilog_src(
+            env, file_node.name
+        ), f"Not a src file: {file_node.name}"
+
+        # Create the initial set. All source file depend on apio.ini and must
+        # be built when apio.ini changes.
+        #
+        # pylint: disable=fixme
+        # TODO: add also other config files aush as boards.json and
+        # programmers.json. Since they are optional, need to figure out how to
+        # handle the case when they are deleted or created.
         includes_set = set()
+        includes_set.add("apio.ini")
+
         # If the file doesn't exist, this returns an empty string.
         file_text = file_node.get_text_contents()
         # Get IceStudio includes.
         includes = icestudio_list_re.findall(file_text)
         includes_set.update(includes)
+
         # Get Standard verilog includes.
         includes = verilog_include_re.findall(file_text)
         includes_set.update(includes)
+
         # Get a deterministic list. (Does it sort by file.name?)
         includes_list = sorted(list(includes_set))
+
         # For debugging
         # info(env, f"*** {file_node.name} includes {includes_list}")
         return env.File(includes_list)
@@ -492,8 +511,15 @@ def get_source_files(env: SConsEnvironment) -> Tuple[List[str], List[str]]:
     If a .v file has the suffix _tb.v it's is classified st a testbench,
     otherwise as a synthesis file.
     """
-    # -- Get a list of all *.v files in the project dir.
-    files: List[File] = env.Glob("*.v")
+    # -- Get a list of all *.v and .sv files in the project dir.
+    files: List[File] = env.Glob("*.sv")
+    if files:
+        click.secho(
+            "Warning: project contains .sv files, system-verilog support "
+            "is experimental.",
+            fg="yellow",
+        )
+    files = files + env.Glob("*.v")
 
     # Split file names to synth files and testbench file lists
     synth_srcs = []
@@ -640,8 +666,10 @@ def make_iverilog_action(
     escaped_vcd_output_name = vcd_output_name.replace("\\", "\\\\")
 
     # -- Construct the action string.
+    # -- The -g2012 is for system-verilog support and we use it here as an
+    # -- experimental feature.
     action = (
-        "iverilog {0} {1} -o $TARGET {2} {3} {4} {5} {6} $SOURCES"
+        "iverilog -g2012 {0} {1} -o $TARGET {2} {3} {4} {5} {6} $SOURCES"
     ).format(
         ivl_path_param,
         "-v" if verbose else "",

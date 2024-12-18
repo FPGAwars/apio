@@ -24,14 +24,9 @@ from click.testing import Result
 # -- Debug mode on/off
 DEBUG = True
 
-# -- Apio should be able to handle spaces and unicode in its home, packages,
-# -- and project directory path. We insert this marker in the test pathes to
-# -- test it.
-#
-# -- TODO: Currently apio doesn't handle well spaces in the pathes. Fix it and
-# -- change this to " fuññy ". For more details see
-# -- https://github.com/FPGAwars/apio/issues/474.
-FUNNY_MARKER = " fuññy "
+# -- We insert unicode to the test pathes to make sure apio handle them
+# -- properly.
+FUNNY_MARKER = "fuññy"
 
 
 # -- This function is called by pytest. It addes the pytest --offline flag
@@ -59,12 +54,10 @@ class ApioSandbox:
         apio_runner_: "ApioRunner",
         proj_dir: Path,
         home_dir: Path,
-        packages_dir: Path,
     ):
         self._apio_runner = apio_runner_
         self._proj_dir = proj_dir
         self._home_dir = home_dir
-        self._packages_dir = packages_dir
         self._click_runner = CliRunner()
 
     @property
@@ -89,8 +82,7 @@ class ApioSandbox:
     @property
     def packages_dir(self) -> Path:
         """Returns the sandbox's apio packages dir."""
-        assert not self.expired, "Sanbox expired"
-        return self._packages_dir
+        return self.home_dir / "packages"
 
     # R0913: Too many arguments (7/5) (too-many-arguments)
     # pylint: disable=R0913
@@ -125,7 +117,6 @@ class ApioSandbox:
         # -- These two env vars are set when creating the context. Let's
         # -- check that the test didn't corrupt them.
         assert os.environ["APIO_HOME_DIR"] == str(self.home_dir)
-        assert os.environ["APIO_PACKAGES_DIR"] == str(self.packages_dir)
 
         # -- Invoke the command. Get back the collected results.
         result = self._click_runner.invoke(
@@ -203,6 +194,9 @@ class ApioSandbox:
         if isinstance(text, list):
             text = "\n".join(text)
 
+        # -- Make dir(s) if needed.
+        Path(file).parent.mkdir(parents=True, exist_ok=True)
+
         # -- Write.
         with open(file, "w", encoding="utf-8") as f:
             f.write(text)
@@ -242,7 +236,7 @@ class ApioSandbox:
             lines.append(f"{name} = {value}")
 
         # -- Write the file.
-        self.write_file(path, lines)
+        self.write_file(path, lines, exists_ok=True)
 
     @property
     def offline_flag(self):
@@ -300,9 +294,13 @@ class ApioRunner:
 
         # -- Construct the sandbox dir pathes. User will create the dirs
         # -- as needed.
-        proj_dir = temp_dir / "proj"
+        # --
+        # -- We do allow spaces in the project dir.
+        proj_dir = temp_dir / " proj"
+
+        # -- Spaces are not supported yet in the home and packges dirs.
+        # -- For more details see https://github.com/FPGAwars/apio/issues/474.
         home_dir = temp_dir / "apio"
-        packages_dir = temp_dir / "packages"
 
         if DEBUG:
             print()
@@ -310,17 +308,15 @@ class ApioRunner:
             print(f"       test dir          : {str(temp_dir)}")
             print(f"       apio proj dir     : {str(proj_dir)}")
             print(f"       apio home dir     : {str(home_dir)}")
-            print(f"       apio packages dir : {str(packages_dir)}")
             print()
 
         # -- Register a sanbox objet to indicate that we are in a sandbox.
         assert self._sandbox is None
-        self._sandbox = ApioSandbox(self, proj_dir, home_dir, packages_dir)
+        self._sandbox = ApioSandbox(self, proj_dir, home_dir)
 
         # -- Set the system env vars to inform ApioContext what are the
         # -- home and packages dirs.
         os.environ["APIO_HOME_DIR"] = str(home_dir)
-        os.environ["APIO_PACKAGES_DIR"] = str(packages_dir)
 
         try:
             # -- This is the end of the context manager _entry part. The

@@ -19,10 +19,6 @@ from typing import List
 # -- specified, the 'packages' directory with the individual packages.
 APIO_HOME_DIR = "APIO_HOME_DIR"
 
-# -- Env variable to override the apio packages dir ~/.apio/packages.
-# -- If specified, it contains the installed packages directories such as
-# -- 'examples' or 'tools-oss-cad-suite.
-APIO_PACKAGES_DIR = "APIO_PACKAGES_DIR"
 
 # -- Env variable to override the platform id that is determined automatically
 # -- from the system properties. If specified, the value should match one
@@ -32,7 +28,6 @@ APIO_PLATFORM = "APIO_PLATFORM"
 # -- List of all supported env options.
 _SUPPORTED_APIO_VARS = [
     APIO_HOME_DIR,
-    APIO_PACKAGES_DIR,
     APIO_PLATFORM,
 ]
 

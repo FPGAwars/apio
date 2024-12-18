@@ -15,8 +15,8 @@ from apio.commands.build import cli as apio_build
 # -- apio clean entry point
 from apio.commands.clean import cli as apio_clean
 
-# -- apio verify entry point
-from apio.commands.verify import cli as apio_verify
+# -- apio lint entry point
+from apio.commands.lint import cli as apio_lint
 
 # -- apio time entry point
 from apio.commands.upload import cli as apio_upload
@@ -65,18 +65,18 @@ def test_ledon_build():
     assert "icepack" in result.output
 
 
-def test_ledon_verify():
-    """Test the apio verify command"""
+def test_ledon_lint():
+    """Test the apio lint command"""
 
     # ----------------------------
-    # -- Execute "apio verify"
+    # -- Execute "apio lint"
     # ----------------------------
-    result = CliRunner().invoke(apio_verify)
+    result = CliRunner().invoke(apio_lint)
 
     # -- It should return an exit code of 0: success
     assert result.exit_code == 0, result.output
     assert "[SUCCESS]" in result.output
-    assert "iverilog" in result.output
+    assert "verilator" in result.output
 
 
 def test_ledon_upload():

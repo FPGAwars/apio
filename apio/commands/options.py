@@ -27,20 +27,6 @@ from apio import cmd_util
 
 # W0622: Redefining built-in 'help'
 # pylint: disable=W0622
-def all_option_gen(*, help: str):
-    """Generate an --all option with given help text."""
-    return click.option(
-        "all_",  # Var name. Deconflicting from Python'g builtin 'all'.
-        "-a",
-        "--all",
-        is_flag=True,
-        help=help,
-        cls=cmd_util.ApioOption,
-    )
-
-
-# W0622: Redefining built-in 'help'
-# pylint: disable=W0622
 def force_option_gen(*, help: str):
     """Generate a --force option with given help text."""
     return click.option(
@@ -69,25 +55,6 @@ def list_option_gen(*, help: str):
 
 # W0622: Redefining built-in 'help'
 # pylint: disable=W0622
-def board_option_gen(
-    *, deprecated: bool = False, required=False, help: str = "Set the board."
-):
-    """Generate a --board option with given help text."""
-    return click.option(
-        "board",  # Var name.
-        "-b",
-        "--board",
-        type=str,
-        required=required,
-        metavar="str",
-        deprecated=deprecated,
-        help=help,
-        cls=cmd_util.ApioOption,
-    )
-
-
-# W0622: Redefining built-in 'help'
-# pylint: disable=W0622
 def top_module_option_gen(
     *,
     deprecated: bool = False,
@@ -106,94 +73,9 @@ def top_module_option_gen(
     )
 
 
-# W0622: Redefining built-in 'help'
-# pylint: disable=W0622
-def fpga_option_gen(
-    *,
-    deprecated: bool = False,
-    help: str = "Set the FPGA.",
-):
-    """Generate a --fpga option with given help text."""
-    return click.option(
-        "fpga",  # Var name.
-        "--fpga",
-        type=str,
-        metavar="str",
-        deprecated=deprecated,
-        help=help,
-        cls=cmd_util.ApioOption,
-    )
-
-
-# W0622: Redefining built-in 'help'
-# pylint: disable=W0622
-def size_option_gen(
-    *,
-    deprecated: bool = False,
-    help: str = "Set the FPGA size (1k/8k).",
-):
-    """Generate a --size option with given help text."""
-    return click.option(
-        "size",  # Var name
-        "--size",
-        type=str,
-        metavar="str",
-        deprecated=deprecated,
-        help=help,
-        cls=cmd_util.ApioOption,
-    )
-
-
-# W0622: Redefining built-in 'help'
-# pylint: disable=W0622
-def type_option_gen(
-    *,
-    deprecated: bool = False,
-    help: str = "Set the FPGA type (hx/lp).",
-):
-    """Generate a --type option with given help text."""
-    return click.option(
-        "type_",  # Var name. Deconflicting from Python's builtin 'type'.
-        "--type",
-        type=str,
-        metavar="str",
-        deprecated=deprecated,
-        help=help,
-        cls=cmd_util.ApioOption,
-    )
-
-
-# W0622: Redefining built-in 'help'
-# pylint: disable=W0622
-def pack_option_gen(
-    *,
-    deprecated: bool = False,
-    help: str = "Set the FPGA package.",
-):
-    """Generate a --pack option with given help text."""
-    return click.option(
-        "pack",  # Var name
-        "--pack",
-        type=str,
-        metavar="str",
-        deprecated=deprecated,
-        help=help,
-        cls=cmd_util.ApioOption,
-    )
-
-
 # ---------------------------
 # -- Static options
 # ---------------------------
-
-
-ftdi_id = click.option(
-    "ftdi_id",  # Var name.
-    "--ftdi-id",
-    type=str,
-    metavar="ftdi-id",
-    help="Set the FTDI id.",
-)
 
 
 project_dir_option = click.option(
@@ -222,15 +104,6 @@ sayyes = click.option(
     "--sayyes",
     is_flag=True,
     help="Automatically answer YES to all the questions.",
-    cls=cmd_util.ApioOption,
-)
-
-serial_port_option = click.option(
-    "serial_port",  # Var name.
-    "--serial-port",
-    type=str,
-    metavar="serial-port",
-    help="Set the serial port.",
     cls=cmd_util.ApioOption,
 )
 

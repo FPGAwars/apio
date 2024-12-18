@@ -24,24 +24,21 @@ def test_system(apio_runner: ApioRunner):
         # -- Execute "apio system --lsftdi"
         result = sb.invoke_apio_cmd(apio_system, ["--lsftdi"])
         assert result.exit_code == 1, result.output
-        assert "apio packages --install --force oss-cad-suite" in result.output
+        assert "package 'oss-cad-suite' is not installed" in result.output
 
         # -- Execute "apio system --lsusb"
         result = sb.invoke_apio_cmd(apio_system, ["--lsusb"])
         assert result.exit_code == 1, result.output
-        assert "apio packages --install --force oss-cad-suite" in result.output
+        assert "package 'oss-cad-suite' is not installed" in result.output
 
         # -- Execute "apio system --lsserial"
         sb.invoke_apio_cmd(apio_system, ["--lsserial"])
         assert result.exit_code == 1, result.output
-        assert "apio packages --install --force oss-cad-suite" in result.output
+        assert "package 'oss-cad-suite' is not installed" in result.output
 
         # -- Execute "apio system --info"
         result = sb.invoke_apio_cmd(apio_system, ["--info"])
         assert result.exit_code == 0, result.output
         assert "Platform id" in result.output
         # -- The these env options are set by the apio text fixture.
-        assert (
-            "Active env options [APIO_HOME_DIR, APIO_PACKAGES_DIR]"
-            in result.output
-        )
+        assert "Active env options [APIO_HOME_DIR]" in result.output

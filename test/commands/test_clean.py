@@ -2,84 +2,53 @@
   Test for the "apio clean" command
 """
 
+from os import chdir
 from pathlib import Path
 from test.conftest import ApioRunner
-
-
-# -- apio clean entry point
 from apio.commands.clean import cli as apio_clean
 
 
-def test_clean_no_apio_ini_no_params(apio_runner: ApioRunner):
-    """Test: apio clean when no apio.ini file is given
-    No additional parameters are given
-    """
+def test_clean_without_apio_ini(apio_runner: ApioRunner):
+    """Tests the apio clean command without an apio.ini file."""
 
     with apio_runner.in_sandbox() as sb:
 
-        # -- Execute "apio clean"
-        result = sb.invoke_apio_cmd(apio_clean)
+        # -- Create and change to project dir.
+        sb.proj_dir.mkdir()
+        chdir(sb.proj_dir)
 
-        # -- It is an error. Exit code should not be 0
+        # -- Run "apio clean" with no apio.ini
+        result = sb.invoke_apio_cmd(apio_clean)
         assert result.exit_code != 0, result.output
-        assert "Info: Project has no apio.ini file" in result.output
-        assert "Error: insufficient arguments: missing board" in result.output
-
-        # -- Execute "apio clean --board alhambra-ii"
-        result = sb.invoke_apio_cmd(apio_clean, ["--board", "alhambra-ii"])
-        assert result.exit_code == 0, result.output
+        assert "Error: missing project file apio.ini" in result.output
 
 
-def test_clean_no_apio_ini_params(apio_runner: ApioRunner):
-    """Test: apio clean when no apio.ini file is given. Board definition
-    comes from --board parameter.
-    """
+def test_clean_with_apio_ini(apio_runner: ApioRunner):
+    """Tests the apio clean command with an apio.ini file."""
 
     with apio_runner.in_sandbox() as sb:
 
-        # -- Create a legacy artifact file.
-        Path("main_tb.vcd").touch()
+        # -- Create and change to project dir.
+        sb.proj_dir.mkdir()
+        chdir(sb.proj_dir)
 
-        # -- Create a current artifact file.
-        Path("_build").mkdir()
-        Path("_build/main_tb.vcd").touch()
-
-        # Confirm that the files exists
-        assert Path("main_tb.vcd").is_file()
-        assert Path("_build/main_tb.vcd").is_file()
-
-        # -- Execute "apio clean --board alhambra-ii"
-        result = sb.invoke_apio_cmd(apio_clean, ["--board", "alhambra-ii"])
-        assert result.exit_code == 0, result.output
-
-        # Confirm that the files do not exist.
-        assert not Path("main_tb.vcd").exists()
-        assert not Path("_build/main_tb.vcd").exists()
-
-
-def test_clean_create(apio_runner: ApioRunner):
-    """Test: apio clean when there is an apio.ini file"""
-
-    with apio_runner.in_sandbox() as sb:
-
-        # -- Create apio.ini
-        sb.write_apio_ini({"board": "icezum", "top-module": "main"})
-
-        # -- Create a legacy artifact file.
-        Path("main_tb.vcd").touch()
-
-        # -- Create a current artifact file.
-        Path("_build").mkdir()
-        Path("_build/main_tb.vcd").touch()
-
-        # Confirm that the files exists
-        assert Path("main_tb.vcd").is_file()
-        assert Path("_build/main_tb.vcd").is_file()
-
-        # --- Execute "apio clean"
+        # -- Run "apio clean" with a valid apio.ini and no dirty files.
+        sb.write_apio_ini({"board": "alhambra-ii", "top-module": "main"})
         result = sb.invoke_apio_cmd(apio_clean)
         assert result.exit_code == 0, result.output
 
-        # Confirm that the files do not exist.
-        assert not Path("main_tb.vcd").exists()
-        assert not Path("_build/main_tb.vcd").exists()
+        # -- Run "apio clean" with apio.ini and dirty files.
+        sb.write_apio_ini({"board": "alhambra-ii", "top-module": "main"})
+        sb.write_file(".sconsign.dblite", "dummy text")
+        sb.write_file("_build/hardware.out", "dummy text")
+        assert Path(".sconsign.dblite").exists()
+        assert Path("_build/hardware.out").exists()
+        assert Path("_build").exists()
+        result = sb.invoke_apio_cmd(apio_clean)
+        assert result.exit_code == 0, result.output
+        assert "Removed .sconsign.dblite" in result.output
+        assert "Removed _build/hardware.out" in result.output
+        assert "Removed directory _build" in result.output
+        assert not Path(".sconsign.dblite").exists()
+        assert not Path("_build/hardware.out").exists()
+        assert not Path("_build").exists()
