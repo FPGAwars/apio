@@ -924,9 +924,8 @@
       "type": "apollo"
     }
   },
-  "Mimas-ECP5-Mini": {
-    "legacy_id": "Mimas-ECP5-Mini",
-    "description": "Mimas-ECP5-Mini",
+  "mimas-ecp5-mini": {
+    "description": "Mimas ECP5 Mini",
     "fpga": "ECP5-LFE5U-45F-CABGA256",
     "programmer": {
       "type": "openfpgaloader_ft2232"
