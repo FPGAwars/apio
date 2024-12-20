@@ -49,7 +49,7 @@ def cli(_: click.core.Context):
     if latest_version is None:
         sys.exit(1)
 
-    # -- Print information about apio (Debug)
+    # -- Print information about apio.
     print(f"Local Apio version: {current_version}")
     print(f"Lastest Apio stable version (Pypi): {latest_version}")
 

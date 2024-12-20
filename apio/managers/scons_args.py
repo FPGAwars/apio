@@ -11,6 +11,7 @@ from functools import wraps
 from typing import Dict, Tuple, Optional, List, Any
 import click
 from apio.apio_context import ApioContext
+from apio import util
 
 
 # -- Names of supported args. Unless specified otherwise, all args are optional
@@ -34,9 +35,10 @@ ARG_VERILATOR_ALL = "all"
 ARG_VERILATOR_NO_STYLE = "nostyle"
 ARG_VERILATOR_NO_WARN = "nowarn"
 ARG_VERILATOR_WARN = "warn"
+ARG_DEBUG = "debug"
 
 
-def debug_dump(process_arguments_func):
+def _debug_args_dump(process_arguments_func):
     """A decorator for debugging. It prints the input and output of
     process_arguments(). Comment out the '@debug_dump' statement
     below to enable, comment to disable..
@@ -45,50 +47,59 @@ def debug_dump(process_arguments_func):
       * fun: Function to DEBUG
     """
 
+    debug = util.is_debug()
+
     @wraps(process_arguments_func)
     def outer(*args):
 
-        # -- Print the arguments
-        print(
-            f"--> DEBUG!. Function {process_arguments_func.__name__}(). BEGIN"
-        )
-        print("    * Arguments:")
-        for arg in args:
+        if debug:
+            # -- Print the arguments
+            print(
+                f"--> DEBUG!. Function {process_arguments_func.__name__}(). "
+                "BEGIN"
+            )
+            print("    * Arguments:")
+            for arg in args:
 
-            # -- Print all the key,values if it is a dictionary
-            if isinstance(arg, dict):
-                print("        * Dict:")
-                for key, value in arg.items():
-                    print(f"          * {key}: {value}")
+                # -- Print all the key,values if it is a dictionary
+                if isinstance(arg, dict):
+                    print("        * Dict:")
+                    for key, value in arg.items():
+                        print(f"          * {key}: {value}")
 
-            # -- Print the plain argument if it is not a dicctionary
-            else:
-                print(f"        * {arg}")
-        print()
+                # -- Print the plain argument if it is not a dicctionary
+                else:
+                    print(f"        * {arg}")
+            print()
 
         # -- Call the function, dump exceptions, if any.
         try:
             result = process_arguments_func(*args)
 
         except Exception:
-            print(traceback.format_exc())
+            if debug:
+                print(traceback.format_exc())
             raise
 
-        # -- Print its output
-        print(f"--> DEBUG!. Function {process_arguments_func.__name__}(). END")
-        print("     Returns: ")
+        if debug:
+            # -- Print its output
+            print(
+                f"--> DEBUG!. Function {process_arguments_func.__name__}(). "
+                "END"
+            )
+            print("     Returns: ")
 
-        # -- The return object always is a tuple
-        if isinstance(result, tuple):
+            # -- The return object always is a tuple
+            if isinstance(result, tuple):
 
-            # -- Print all the values in the tuple
-            for value in result:
-                print(f"      * {value}")
+                # -- Print all the values in the tuple
+                for value in result:
+                    print(f"      * {value}")
 
-        # -- But just in case it is not a tuple (because of an error...)
-        else:
-            print(f"      * No tuple: {result}")
-        print()
+            # -- But just in case it is not a tuple (because of an error...)
+            else:
+                print(f"      * No tuple: {result}")
+            print()
 
         return result
 
@@ -121,7 +132,9 @@ class Arg:
         that is evaluated to a bool False. Value can be set only once, unless
         if writing the same value."""
         # -- These are programming errors, not user error.
-        assert value, f"Setting arg '{self.arg_name}' with a None value."
+        assert (
+            value is not None
+        ), f"Setting arg '{self.arg_name}' with None value."
         if not self.has_value:
             self._value = value
             self.has_value = True
@@ -147,8 +160,7 @@ class Arg:
 # R0912: Too many branches (14/12)
 # pylint: disable=R0912
 #
-# -- Uncomment the decoracotor below for debugging.
-# @debug_dump
+@_debug_args_dump
 def process_arguments(
     apio_ctx: ApioContext, seed_args: Dict
 ) -> Tuple[List[str], str, Optional[str]]:
@@ -189,6 +201,7 @@ def process_arguments(
         ARG_VERILATOR_NO_STYLE: Arg(ARG_VERILATOR_NO_STYLE, "nostyle"),
         ARG_VERILATOR_NO_WARN: Arg(ARG_VERILATOR_NO_WARN, "nowarn"),
         ARG_VERILATOR_WARN: Arg(ARG_VERILATOR_WARN, "warn"),
+        ARG_DEBUG: Arg(ARG_DEBUG, "debug"),
     }
 
     # -- Populate a subset of the args from the seed. We ignore values such as
@@ -255,13 +268,16 @@ def process_arguments(
     assert apio_ctx.platform_id, "Missing platform_id in apio context"
     args[ARG_PLATFORM_ID].set(apio_ctx.platform_id)
 
+    # -- Set the debug flag.
+    args[ARG_DEBUG].set(util.is_debug())
+
     # -- Construct the vars list we send to the scons process.
     # -- We ignore values such as None, "", 0, and False which evaluate
     # -- to boolean False. We expect those to be the default at the
     # -- SConstruct arg parsing.
     variables = []
     for arg in args.values():
-        if arg.has_value:
+        if arg.has_value and arg.value:
             variables.append(f"{arg.var_name}={arg.value}")
 
     # -- All done.

@@ -22,6 +22,7 @@ from pathlib import Path
 import click
 from serial.tools.list_ports import comports
 import requests
+from apio import env_options
 
 # ----------------------------------------
 # -- Constants
@@ -505,3 +506,10 @@ def list_plurality(str_list: List[str], conjunction: str) -> str:
 
     # -- Handle the case of three or more items.
     return ", ".join(str_list[:-1]) + f", {conjunction} {str_list[-1]}"
+
+
+def is_debug() -> bool:
+    """Returns True if apio is in debug mode. Use it to enable printing of
+    debug information but not to modify the behavior of the code.
+    Also, all apio tests should be performed with debug disabled."""
+    return env_options.is_defined("APIO_DEBUG")

@@ -9,6 +9,7 @@
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
+import traceback
 import os
 import re
 import time
@@ -57,9 +58,8 @@ def on_exception(*, exit_code: int):
             try:
                 return function(*args, **kwargs)
             except Exception as exc:
-                # For debugging. Uncomment to print the exception's stack.
-                # import traceback
-                # traceback.print_tb(exc.__traceback__)
+                if util.is_debug():
+                    traceback.print_tb(exc.__traceback__)
 
                 if str(exc):
                     click.secho("Error: " + str(exc), fg="red")
@@ -863,6 +863,13 @@ class SCons:
 
         # -- Set env path and vars to use the packages.
         pkg_util.set_env_for_packages(self.apio_ctx)
+
+        if util.is_debug():
+            print("\nSCons call")
+            print(f"* command:   {command}")
+            print(f"* board:     {board}")
+            print(f"* variables: {variables}")
+            print()
 
         # -- Execute scons
         return self._execute_scons(command, variables, board)

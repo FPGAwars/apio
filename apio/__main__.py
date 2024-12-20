@@ -247,7 +247,3 @@ def cli(cmd_ctx: click.core.Context):
     # -- If no command was typed show top help. Equivalent to 'apio -h'.
     if cmd_ctx.invoked_subcommand is None:
         click.secho(cmd_ctx.get_help())
-
-    # -- If there is a command, it is executed when this function is finished
-    # -- Debug: print the command invoked
-    # print(f"{cmd_ctx.invoked_subcommand}")

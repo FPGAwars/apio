@@ -116,6 +116,12 @@ def is_windows(env: SConsEnvironment) -> bool:
     return val
 
 
+def is_debug(env: SConsEnvironment) -> bool:
+    """Returns True iff running in debug mode. The debug flag is passed to
+    the SCons process from the apio process via the scons variable list."""
+    return arg_bool(env, "debug", False)
+
+
 def create_construction_env(args: Dict[str, str]) -> SConsEnvironment:
     """Creates a scons env. Should be called very early in SConstruct.py"""
 
@@ -158,14 +164,11 @@ def create_construction_env(args: Dict[str, str]) -> SConsEnvironment:
     return env
 
 
-def __dump_parsed_arg(env, name, value, from_default: bool) -> None:
+def _dump_parsed_arg(env, name, value, from_default: bool) -> None:
     """Used to dump parsed scons arg. For debugging only."""
-    # Uncomment below for debugging.
-    # type_name = type(value).__name__
-    # default = "(default)" if from_default else ""
-    # click.secho(
-    #     f"Arg  {name:15} ->  {str(value):15} " f"{type_name:6} {default}"
-    # )
+    type_name = type(value).__name__
+    default = "(default)" if from_default else ""
+    msg(env, f"Arg  {name:15} ->  {str(value):15} " f"{type_name:6} {default}")
 
 
 def get_args(env: SConsEnvironment) -> Dict[str, str]:
@@ -188,7 +191,10 @@ def arg_bool(env: SConsEnvironment, name: str, default: bool) -> bool:
             fatal_error(
                 env, f"Invalid boolean argument '{name} = '{raw_value}'."
             )
-    __dump_parsed_arg(env, name, value, from_default=raw_value is None)
+    # -- We avoid infinite recustion if arg is "debug" since is_debug() calls
+    # -- arg_bool().
+    if name != "debug" and is_debug(env):
+        _dump_parsed_arg(env, name, value, from_default=raw_value is None)
     return value
 
 
@@ -198,7 +204,8 @@ def arg_str(env: SConsEnvironment, name: str, default: str) -> str:
     args = get_args(env)
     raw_value = args.get(name, None)
     value = default if raw_value is None else raw_value
-    __dump_parsed_arg(env, name, value, from_default=raw_value is None)
+    if is_debug(env):
+        _dump_parsed_arg(env, name, value, from_default=raw_value is None)
     return value
 
 
@@ -394,25 +401,31 @@ def make_verilog_src_scanner(env: SConsEnvironment) -> Scanner.Base:
         # TODO: add also other config files aush as boards.json and
         # programmers.json. Since they are optional, need to figure out how to
         # handle the case when they are deleted or created.
-        includes_set = set()
-        includes_set.add("apio.ini")
+        dependencies_set = set()
+        dependencies_set.add("apio.ini")
 
         # If the file doesn't exist, this returns an empty string.
         file_text = file_node.get_text_contents()
         # Get IceStudio includes.
         includes = icestudio_list_re.findall(file_text)
-        includes_set.update(includes)
+        dependencies_set.update(includes)
 
         # Get Standard verilog includes.
         includes = verilog_include_re.findall(file_text)
-        includes_set.update(includes)
+        dependencies_set.update(includes)
 
         # Get a deterministic list. (Does it sort by file.name?)
-        includes_list = sorted(list(includes_set))
+        dependencies_list = sorted(list(dependencies_set))
+
+        # Debug info.
+        if is_debug(env):
+            msg(env, f"Dependencies of {file_node.name}:", fg="blue")
+            for dependency in dependencies_list:
+                msg(env, f"  {dependency}", fg="blue")
 
         # For debugging
         # info(env, f"*** {file_node.name} includes {includes_list}")
-        return env.File(includes_list)
+        return env.File(dependencies_list)
 
     return env.Scanner(function=verilog_src_scanner_func)
 
@@ -521,7 +534,8 @@ def get_source_files(env: SConsEnvironment) -> Tuple[List[str], List[str]]:
     # -- Get a list of all *.v and .sv files in the project dir.
     files: List[File] = env.Glob("*.sv")
     if files:
-        click.secho(
+        msg(
+            env,
             "Warning: project contains .sv files, system-verilog support "
             "is experimental.",
             fg="yellow",

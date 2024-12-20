@@ -68,8 +68,7 @@ def _get_env_mutations_for_packages(apio_ctx: ApioContext) -> EnvMutations:
 def _dump_env_mutations(
     apio_ctx: ApioContext, mutations: EnvMutations
 ) -> None:
-    """For debugging. Delete once stabalizing the new oss-cad-suite on
-    windows."""
+    """Dumps a user friendly representation of the env mutations."""
     click.secho("Envirnment settings:", fg="magenta")
 
     # -- Print PATH mutations.
