@@ -69,6 +69,7 @@ from apio.scons.scons_util import (
     get_report_action,
     set_up_cleanup,
     get_source_file_issue_action,
+    vlt_path,
 )
 
 # # -- Uncomment for debugging of the scons subprocess using a remote debugger.
@@ -334,8 +335,8 @@ verilator_config_builder = make_verilator_config_builder(
     env,
     (
         "`verilator_config\n"
-        f'lint_off -rule COMBDLY      -file "{YOSYS_LIB_DIR}/*"\n'
-        f'lint_off -rule WIDTHEXPAND  -file "{YOSYS_LIB_DIR}/*"\n'
+        f'lint_off -rule COMBDLY      -file "{vlt_path(YOSYS_LIB_DIR)}/*"\n'
+        f'lint_off -rule WIDTHEXPAND  -file "{vlt_path(YOSYS_LIB_DIR)}/*"\n'
     ),
 )
 env.Append(BUILDERS={"VerilatorConfig": verilator_config_builder})
