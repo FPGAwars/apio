@@ -417,6 +417,13 @@ def make_verilog_src_scanner(env: SConsEnvironment) -> Scanner.Base:
     return env.Scanner(function=verilog_src_scanner_func)
 
 
+def vlt_path(path: str) -> str:
+    """Normalize a path that is used in the verilator config file hardware.vlt.
+    On windows it replaces "\" with "/". Otherwise it leaves the path as is.
+    """
+    return path.replace("\\", "/")
+
+
 def make_verilator_config_builder(env: SConsEnvironment, config_text: str):
     """Create a scons Builder that writes a verilator config file
     (hardware.vlt) with the given text."""

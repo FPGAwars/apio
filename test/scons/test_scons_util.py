@@ -37,6 +37,7 @@ from apio.scons.scons_util import (
     get_programmer_cmd,
     make_verilator_config_builder,
     get_source_files,
+    vlt_path
 )
 
 DEPENDECIES_TEST_TEXT = """
@@ -508,3 +509,11 @@ def test_get_source_files(apio_runner):
         # -- Verify results.
         assert srcs == ["aaa.v", "bbb.v"]
         assert testbenches == ["aaa_tb.v", "ccc_tb.v"]
+
+def test_vlt_path(apio_runner):
+    """Tests the vlt_path path string mapping."""
+
+    assert vlt_path("") == ""
+    assert vlt_path("/aa/bb/cc.xyz") == "/aa/bb/cc.xyz"
+    assert vlt_path("C:\\aa\\bb/cc.xyz") == "C:/aa/bb/cc.xyz"
+    
