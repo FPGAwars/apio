@@ -52,7 +52,7 @@ lint l:
 #
 .PHONY: test t
 test t:	
-	python -m tox --skip-missing-interpreters false -e py312 -- --offline
+	python -m tox --skip-missing-interpreters false -e py313 -- --offline
 
 
 # Tests and lint, single python version, all tests including online..
@@ -65,7 +65,7 @@ test t:
 #
 .PHONY: check c
 check c:	
-	python -m tox --skip-missing-interpreters false -e lint,py312
+	python -m tox --skip-missing-interpreters false -e lint,py313
 
 
 # Tests and lint, multiple python versions.
