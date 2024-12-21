@@ -39,7 +39,7 @@ configured by setting its flags in the apio.ini project file.
 For example:
 
 \b
-verible-format-options =
+format-verible-options =
     --column_limit=80
     --indentation_spaces=4
 
@@ -83,16 +83,10 @@ def cli(
     # -- Error if the apio verible package is not installed.
     pkg_util.check_required_packages(apio_ctx, ["verible"])
 
-    # pylint: disable=fixme
-    # -- TODO: Move this project option list parsing to the Project object so
-    # -- it can be shared.
-    #
-    # -- Get the optional verible formatter flags from apio.ini.
-    cmd_options = apio_ctx.project.get("verible-format-options", "")
-    # Break to a list of lines.
-    cmd_options = cmd_options.split("\n")
-    # -- Ignore empty lines.
-    cmd_options = [x for x in cmd_options if x]
+    # -- Get the optional formatter options from apio.ini
+    cmd_options = apio_ctx.project.get_as_lines_list(
+        "format-verible-options", default=[]
+    )
 
     # -- Add verbose option if needed.
     if verbose and "--verbose" not in cmd_options:
