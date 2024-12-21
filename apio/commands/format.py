@@ -145,9 +145,9 @@ def cli(
         click.secho(f"Formatting {styled_f}")
 
         # -- Construct the formatter command line.
-
         command = (
-            f'verible-verilog-format  --inplace {" ".join(cmd_options)} "{f}"'
+            "verible-verilog-format --nofailsafe_success --inplace "
+            f' {" ".join(cmd_options)} "{f}"'
         )
         if verbose:
             click.secho(command)
