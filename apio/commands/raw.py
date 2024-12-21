@@ -14,6 +14,7 @@ from varname import nameof
 import click
 from apio import pkg_util, cmd_util
 from apio.apio_context import ApioContext
+from apio.commands import options
 
 
 # ---------------------------
@@ -22,24 +23,29 @@ from apio.apio_context import ApioContext
 HELP = """
 The raw command allows to bypass  apio and run underlying
 tools directly. This is an advanced command that requires familiarity
-with the underlying tools. Before running the command, apio changes the
-internal env settings to provide access to its packages. To view the
+with the underlying tools.
+
+Before running the command, apio changes temporarly
+system env vars such as $PATH to provide access to its packages. To view those
 env changes, run `apio raw --env'.
 
 \b
 Examples:
-  apio raw yosys --version                                # Yosys version
-  apio raw -- nextpnr-ice40 --help                        # Nextpnr help
-  apio raw yosys -f verilog -p "show -format dot" main.v  # Graph a module
-  apio raw icepll -i 12 -o 30                             # Calc ICE PLL
-  apio raw --env                                          # Show env
+  apio raw -- yosys --version           # Yosys version
+  apio raw -v -- yosys --version        # Same but with verbose apio info.
+  apio raw -- yosys                     # Run Yosys in interactive mode.
+  apio raw -- icepll -i 12 -o 30        # Calc ICE PLL
+  apio raw --env                        # Show apio env setting.
+  apio raw -h                           # Print this help info.
 
-The '--' token may be used to seperate between apio arguments and the
-commands arguments (e.g. '-h' or '--help').
+The '--' token is used  to seperate between apio commands and its argument
+and the executed command and its arguments. It can be ommited in some cases
+but it's a good paractice to always use it. As a rule of thumb, prepend the
+command you want to run with 'apio raw -- ' and it should work.
 """
 
 
-verbose_option = click.option(
+env_option = click.option(
     "env",  # Var name.
     "-e",
     "--env",
@@ -58,13 +64,15 @@ verbose_option = click.option(
 )
 @click.pass_context
 @click.argument("cmd", metavar="COMMAND", nargs=-1, type=click.UNPROCESSED)
-@verbose_option
+@env_option
+@options.verbose_option
 def cli(
     cmd_ctx: click.core.Context,
     # Arguments
     cmd: Tuple[str],
     # Options
     env: bool,
+    verbose: bool,
 ):
     """Implements the apio raw command which executes user
     specified commands from apio installed tools.
@@ -84,7 +92,9 @@ def cli(
     # -- execution below.
     if cmd or env:
         apio_ctx = ApioContext(load_project=False)
-        pkg_util.set_env_for_packages(apio_ctx, verbose=env)
+        pkg_util.set_env_for_packages(
+            apio_ctx, quiet=not (env or verbose), verbose=env or verbose
+        )
 
     if cmd:
         # -- Make sure that at least the oss-cad-suite is installed.
@@ -92,7 +102,8 @@ def cli(
 
         # -- Echo the commands. The apio raw command is platform dependent
         # -- so this may help us and the user diagnosing issues.
-        click.secho(f"cmd = {cmd}")
+        if verbose:
+            click.secho(f"\n---- Executing {cmd}:")
 
         # -- Invoke the command.
         try:
@@ -101,10 +112,12 @@ def cli(
             click.secho(f"{e}", fg="red")
             sys.exit(1)
 
-        if exit_code != 0:
-            click.secho(f"Exist status [{exit_code}] ERROR", fg="red")
-        else:
-            click.secho("Exit status [0] OK", fg="green")
+        if verbose:
+            click.secho("----\n")
+            if exit_code != 0:
+                click.secho(f"Exist status [{exit_code}] ERROR", fg="red")
+            else:
+                click.secho("Exit status [0] OK", fg="green")
 
         # -- Return the command's status code.
         sys.exit(exit_code)
