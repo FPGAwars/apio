@@ -52,7 +52,7 @@ can use the following verible formatter's directives:
 // verilog_format: on
 
 For the ull list of the verible formatter flags, see its documentation page
-online or type 'apio raw verible-verilog-format --helpfull'.
+online or type 'apio raw -- verible-verilog-format --helpfull'.
 """
 
 
