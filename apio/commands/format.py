@@ -99,7 +99,7 @@ def cli(
         cmd_options.append("--verbose")
 
     # -- Set the system envs to access the binaries in the paio packages.
-    pkg_util.set_env_for_packages(apio_ctx, verbose=verbose)
+    pkg_util.set_env_for_packages(apio_ctx)
 
     # -- Convert the tuple with file names into a list.
     files: List[str] = list(files)
