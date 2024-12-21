@@ -179,7 +179,9 @@
             "program": "${workspaceFolder}/apio_run.py",
             "args": [
                 "raw",
-                "yosys --version"
+                "--",
+                "yosys",
+                "--version"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
