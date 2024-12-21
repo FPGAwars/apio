@@ -11,6 +11,7 @@ import pytest
 # -- Entry point for apio commands.
 from apio.commands.clean import cli as apio_clean
 from apio.commands.graph import cli as apio_graph
+from apio.commands.format import cli as apio_format
 from apio.commands.test import cli as apio_test
 from apio.commands.report import cli as apio_report
 from apio.commands.lint import cli as apio_lint
@@ -111,6 +112,10 @@ def _test_project(
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert getsize(sb.proj_dir / "_build/hardware.vlt")
+
+        # -- 'apio format'
+        result = sb.invoke_apio_cmd(apio_format, proj_arg)
+        sb.assert_ok(result)
 
         # -- 'apio test'
         result = sb.invoke_apio_cmd(apio_test, proj_arg)

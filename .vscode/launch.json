@@ -91,6 +91,18 @@
             "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
         },
         {
+            "name": "Apio format",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/apio_run.py",
+            "args": [
+                "format"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
+        },
+        {
             "name": "Apio graph",
             "type": "debugpy",
             "request": "launch",

@@ -27,6 +27,7 @@ COMMAND_GROUPS = {
     ],
     "Verification commands": [
         "lint",
+        "format",
         "sim",
         "test",
         "report",
