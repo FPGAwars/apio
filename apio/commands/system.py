@@ -10,9 +10,9 @@
 import sys
 from pathlib import Path
 import importlib.metadata
-from varname import nameof
 import click
 from apio import util
+from apio.util import nameof
 from apio import cmd_util
 from apio.managers.system import System
 from apio.apio_context import ApioContext

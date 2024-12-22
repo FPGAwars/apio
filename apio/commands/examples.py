@@ -9,12 +9,13 @@
 
 import sys
 from pathlib import Path
-from varname import nameof
 import click
 from apio.managers.examples import Examples
 from apio import cmd_util
 from apio.commands import options
 from apio.apio_context import ApioContext
+from apio.util import nameof
+
 
 # ---------------------------
 # -- COMMAND SPECIFIC OPTIONS

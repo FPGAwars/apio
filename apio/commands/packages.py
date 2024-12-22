@@ -10,12 +10,12 @@
 import sys
 from pathlib import Path
 from typing import Tuple, List
-from varname import nameof
 import click
 from apio.managers import installer
 from apio.apio_context import ApioContext
 from apio import cmd_util, pkg_util, util
 from apio.commands import options
+from apio.util import nameof
 
 
 def _install(

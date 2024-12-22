@@ -10,11 +10,12 @@
 import sys
 from pathlib import Path
 import click
-from varname import nameof
 from apio.managers.scons import SCons
 from apio import cmd_util
 from apio.commands import options
 from apio.apio_context import ApioContext
+from apio.util import nameof
+
 
 # ---------------------------
 # -- COMMAND SPECIFIC OPTIONS

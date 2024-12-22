@@ -20,6 +20,7 @@ import subprocess
 from threading import Thread
 from pathlib import Path
 import click
+from varname import argname
 from serial.tools.list_ports import comports
 import requests
 from apio import env_options
@@ -513,3 +514,12 @@ def is_debug() -> bool:
     debug information but not to modify the behavior of the code.
     Also, all apio tests should be performed with debug disabled."""
     return env_options.is_defined("APIO_DEBUG")
+
+
+def nameof(*_args) -> List[str]:
+    """A workaround for the deprecation of varname.nameof(). Returns a list
+    of names of the arguments passed to it."""
+
+    # See this discussion for details.
+    # github.com/pwwang/python-varname/issues/117#issuecomment-2558351368
+    return list(argname("*_args"))

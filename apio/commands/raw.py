@@ -10,11 +10,11 @@
 import sys
 import subprocess
 from typing import Tuple, List
-from varname import nameof
 import click
 from apio import pkg_util, cmd_util
 from apio.apio_context import ApioContext
 from apio.commands import options
+from apio.util import nameof
 
 
 # ---------------------------

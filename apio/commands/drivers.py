@@ -8,11 +8,11 @@
 """Implementation of 'apio drivers' command"""
 
 import sys
-from varname import nameof
 import click
 from apio.managers.drivers import Drivers
 from apio import cmd_util
 from apio.apio_context import ApioContext
+from apio.util import nameof
 
 # ---------------------------
 # -- COMMAND SPECIFIC OPTIONS
