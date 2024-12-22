@@ -257,7 +257,10 @@ class ApioRunner:
            <the test body>
     """
 
-    def __init__(self, request):
+    def __init__(self, request: pytest.FixtureRequest):
+        print("*** creating ApioRunner")
+        assert isinstance(request, pytest.FixtureRequest)
+
         # -- A CliRunner instance that is used for creating temp directories
         # -- and to invoke apio commands.
         self._request = request
@@ -265,19 +268,33 @@ class ApioRunner:
         # -- Indicate that we are not in a sandbox
         self._sandbox: ApioSandbox = None
 
+        # -- A placeholder for a shared apio home that we may use in some
+        # -- of the sandboxes.
+        self._shared_apio_home: Path = None
+
+        # -- Register a cleanup method. It's called at the end of the
+        # -- apio_runner fixture scope.
+        request.addfinalizer(self._teardown)
+
+    def _teardown(self):
+        """Teardown at the end of the apio_runner fixture scope."""
+        if self._shared_apio_home:
+            print(f"Deleting apio shared home {str(self._shared_apio_home)}")
+            assert "apio" in str(self._shared_apio_home)
+            shutil.rmtree(self._shared_apio_home)
+            self._shared_apio_home = None
+
     @property
     def sandbox(self) -> Optional[ApioSandbox]:
         """Returns the sandbox object or None if not in a sandbox."""
         return self._sandbox
 
     @contextlib.contextmanager
-    def in_sandbox(self):
+    def in_sandbox(self, shared_home: bool = False):
         """Create an apio sandbox context manager that delete the temp dir
-        and restore the system env upon exist. A typical invocation is
-
-        with apio_runner.in_sandbox() as sb:
-
-           ...
+        and restore the system env upon exist. Shared_home indicates if the
+        sandbox uses a unique apio shared home directory or shares it with
+        other sandboxes in the same apio_runner scope that set it to True.
         """
         # -- Make sure we don't try to nest sandboxes.
         assert self._sandbox is None, "Already in a sandbox."
@@ -300,7 +317,19 @@ class ApioRunner:
 
         # -- Spaces are not supported yet in the home and packges dirs.
         # -- For more details see https://github.com/FPGAwars/apio/issues/474.
-        home_dir = temp_dir / "apio"
+        if shared_home:
+            # -- Using a shared home. If first time, create and save the path.
+            if self._shared_apio_home is None:
+                self._shared_apio_home = (
+                    Path(tempfile.mkdtemp(prefix=FUNNY_MARKER + "-"))
+                    / "shared-apio"
+                )
+            # -- Use the shared home. It's common to all the sandboxes with
+            # -- this instance of ApioRunner fixture.
+            home_dir = self._shared_apio_home
+        else:
+            # -- Using a home dir unique to this sandbox.
+            home_dir = temp_dir / "apio"
 
         if DEBUG:
             print()
@@ -337,7 +366,9 @@ class ApioRunner:
             # -- Change back to the original directory.
             os.chdir(original_cwd)
 
-            # -- Delete the temp directory.
+            # -- Delete the temp directory. This also deletes the apio home
+            # -- if it's not shared but doesn't touch it if we use a shared
+            # -- home.
             shutil.rmtree(temp_dir)
 
             print("\nSandbox deleted. ")
@@ -349,8 +380,11 @@ class ApioRunner:
         return self._request.config.getoption("--offline")
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def apio_runner(request):
     """A pytest fixture that provides tests with a ApioRunner test
-    helper object."""
+    helper object. We use a 'module' scope so sandboxes can share the apio
+    home with other tests in the same file, if we choose to do so,
+    to reused previously installed packages.
+    """
     return ApioRunner(request)

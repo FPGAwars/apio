@@ -44,7 +44,10 @@ def _test_project(
     if apio_runner.offline_flag:
         pytest.skip("requires internet connection")
 
-    with apio_runner.in_sandbox() as sb:
+    # -- We shared the apio home with the other tests in this file to speed
+    # -- up apio package installation. Tests should not mutate the shared home
+    # -- to avoid cross-interferance between tests in this file.
+    with apio_runner.in_sandbox(shared_home=True) as sb:
 
         # -- Create and change to project directory.
         sb.proj_dir.mkdir()
@@ -55,13 +58,11 @@ def _test_project(
         # -- and pass it as an arg.
         proj_arg = ["-p", str(sb.proj_dir)] if remote_proj_dir else []
 
-        # -- 'apio packages --install --verbose'
-        result = sb.invoke_apio_cmd(
-            apio_packages, ["--install", "--verbose"] + proj_arg
-        )
+        # -- 'apio packages --install'.
+        # -- Note that since we used a sandbox with a shared home, the packages
+        # -- may already been installed from a previous test in this file.
+        result = sb.invoke_apio_cmd(apio_packages, ["--install"] + proj_arg)
         sb.assert_ok(result)
-        assert "'examples' installed successfully" in result.output
-        assert "'oss-cad-suite' installed successfully" in result.output
         assert listdir(sb.packages_dir / "examples")
         assert listdir(sb.packages_dir / "tools-oss-cad-suite")
 
