@@ -27,7 +27,8 @@ requires = [
     'wheel>=0.35.0,<1',
     'configobj==5.0.8',
     'varname==0.13.3',
-    'scons==4.2.0'
+    'scons==4.2.0',
+    'packaging==24.2'
 ]
 
 [tool.flit.sdist]
