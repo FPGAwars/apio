@@ -46,6 +46,8 @@ parameter v771499 = "v771499.list"
 `include "apio_testing.vh"
 parameter v771499 = "v771499.list"
 `include "apio_testing.v
+$readmemh("my_data.hex", State_buff);
+`include "missing_file.xyz"
 """
 
 
@@ -132,6 +134,17 @@ def test_dependencies(apio_runner: ApioRunner):
         env = _make_test_scons_env()
         scanner = make_verilog_src_scanner(env)
 
+        # -- Create dummy files. Only dependencies that have a matching files
+        # -- should be reported. Note that we don't create a file for the
+        # -- dependency 'missing_file.xyz'.
+        for f in [
+            "apio.ini",
+            "apio_testing.vh",
+            "my_data.hex",
+            "v771499.list",
+        ]:
+            sb.write_file(f, "dummy-file")
+
         # -- Run the scanner. It returns a list of File.
         file = FS.File(FS(), "test_file.v")
         dependency_files = scanner.function(file, env, None)
@@ -144,7 +157,12 @@ def test_dependencies(apio_runner: ApioRunner):
 
         # -- Check the list. The scanner returns the files sorted and
         # -- with dulicates removed.
-        assert file_names == ["apio.ini", "apio_testing.vh", "v771499.list"]
+        assert file_names == [
+            "apio.ini",
+            "apio_testing.vh",
+            "my_data.hex",
+            "v771499.list",
+        ]
 
 
 def test_has_testbench_name():

@@ -18,6 +18,7 @@ be called only from the SConstruct.py files.
 # pylint: disable=W0613
 
 import os
+from pathlib import Path
 import re
 from enum import Enum
 import json
@@ -378,6 +379,14 @@ def make_verilog_src_scanner(env: SConsEnvironment) -> Scanner.Base:
         r'`\s*include\s+["]([a-zA-Z_./]+)["]', re.M
     )
 
+    # A regex for inclusion via $readmemh()
+    # Example
+    #   Test:      '$readmemh("my_data.hex", State_buff);'
+    #   Capture:   'my_data.hex'
+    readmemh_reference_re = re.compile(
+        r"\$readmemh\([\'\"]([^\'\"]+)[\'\"]", re.M
+    )
+
     def verilog_src_scanner_func(
         file_node: File, env: SConsEnvironment, ignored_path
     ) -> List[str]:
@@ -386,7 +395,9 @@ def make_verilog_src_scanner(env: SConsEnvironment) -> Scanner.Base:
         on another .v file in the project since scons loads anyway
         all the .v files in the project.
 
-        Returns a list of files.
+        Returns a list of files. Dependencies that don't have an existing file
+        are ignored and not returned. This is to avoid references in commented
+        out code to break scons dependencies.
         """
         # Sanity check. Should be called only to scan verilog files. If this
         # fails, this is a programming error rather than a user error.
@@ -414,18 +425,36 @@ def make_verilog_src_scanner(env: SConsEnvironment) -> Scanner.Base:
         includes = verilog_include_re.findall(file_text)
         dependencies_set.update(includes)
 
+        # Get $readmemh() file references.
+        includes = readmemh_reference_re.findall(file_text)
+        dependencies_set.update(includes)
+
         # Get a deterministic list. (Does it sort by file.name?)
         dependencies_list = sorted(list(dependencies_set))
+
+        # Filter out dependencies that do not exist. This is to handle cases
+        # where the references are in commented out code and not needed for
+        # the build.
+        filtered_dependencies = []
+        for dependency in dependencies_list:
+            if Path(dependency).exists():
+                filtered_dependencies.append(dependency)
+            elif is_debug(env):
+                msg(
+                    env,
+                    f"Dependency {dependency} does not exist, ignoring.",
+                    fg="red",
+                )
 
         # Debug info.
         if is_debug(env):
             msg(env, f"Dependencies of {file_node.name}:", fg="blue")
-            for dependency in dependencies_list:
+            for dependency in filtered_dependencies:
                 msg(env, f"  {dependency}", fg="blue")
 
         # For debugging
         # info(env, f"*** {file_node.name} includes {includes_list}")
-        return env.File(dependencies_list)
+        return env.File(filtered_dependencies)
 
     return env.Scanner(function=verilog_src_scanner_func)
 
