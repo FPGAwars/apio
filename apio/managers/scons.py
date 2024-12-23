@@ -391,10 +391,6 @@ class SCons:
         # -- Check if they are not compatible!
         if actual_platform_id != required_platform_id:
 
-            # Incorrect platform
-            if actual_platform_id == "linux_armv7l":
-                raise ValueError("incorrect platform: RPI2 or RPI3 required")
-
             raise ValueError(
                 "Board is restricted to platform "
                 f"'{required_platform_id}' but '{actual_platform_id}' found."
