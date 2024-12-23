@@ -112,7 +112,7 @@ def has_testbench_name(env: SConsEnvironment, file_name: str) -> bool:
 def is_windows(env: SConsEnvironment) -> bool:
     """Returns True if running the platform id represents windows."""
     # -- This bool bar is created when constructing the env.
-    val = env["IS_WINDOWS"]
+    val = env["APIO_IS_WINDOWS"]
     assert isinstance(val, bool), type(val)
     return val
 
@@ -147,20 +147,21 @@ def create_construction_env(args: Dict[str, str]) -> SConsEnvironment:
 
     # Evaluate the optional force_color arg and set its value
     # an env var on its own.
-    assert env.get("FORCE_COLORS") is None
-    env.Replace(FORCE_COLORS=False)  # Tentative, so we can call arg_bool.
+    assert env.get("APIO_FORCE_COLORS") is None
+    env.Replace(APIO_FORCE_COLORS=False)  # Tentative, so we can call arg_bool.
     flag = arg_bool(env, "force_colors", False)
-    env.Replace(FORCE_COLORS=flag)
-    # Set the IS_WINDOWS flag based on the required "platform_id" arg.
+    env.Replace(APIO_FORCE_COLORS=flag)
+    # Set the APIO_IS_WINDOWS flag based on the required "platform_id" arg.
     platform_id = arg_str(env, "platform_id", "")
     # Note: this is a programming error, not a user error.
     assert platform_id, "Missing required scons arg 'platform_id'."
     flag = "windows" in platform_id.lower()
-    assert env.get("IS_WINDOWS") is None
-    env.Replace(IS_WINDOWS=flag)  # Tentative.
+    assert env.get("APIO_IS_WINDOWS") is None
+    env.Replace(APIO_IS_WINDOWS=flag)  # Tentative.
 
-    # For debugging.
-    # dump_env_vars(env)
+    # Extra info for debugging.
+    if is_debug(env):
+        dump_env_vars(env)
 
     return env
 
@@ -223,7 +224,7 @@ def force_colors(env: SConsEnvironment) -> bool:
     For more details see the click issue at
     https://github.com/pallets/click/issues/2791.
     """
-    flag = env["FORCE_COLORS"]
+    flag = env["APIO_FORCE_COLORS"]
     assert isinstance(flag, bool)
     return flag
 
@@ -294,10 +295,11 @@ def dump_env_vars(env: SConsEnvironment) -> None:
     dictionary = env.Dictionary()
     keys = list(dictionary.keys())
     keys.sort()
-    print("----- Env vars begin -----")
+    click.secho()
+    msg(env, ">>> Env vars BEGIN", fg="magenta")
     for key in keys:
         print(f"{key} = {env[key]}")
-    print("----- Env vars end -------")
+    msg(env, "<<< Env vars END\n", fg="magenta")
 
 
 def get_programmer_cmd(env: SConsEnvironment) -> str:
