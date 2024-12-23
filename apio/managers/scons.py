@@ -16,6 +16,7 @@ import time
 import datetime
 import shutil
 from functools import wraps
+from typing import List
 
 import importlib.metadata
 import click
@@ -865,18 +866,20 @@ class SCons:
         pkg_util.set_env_for_packages(self.apio_ctx)
 
         if util.is_debug():
-            print("\nSCons call")
-            print(f"* command:   {command}")
-            print(f"* board:     {board}")
-            print(f"* variables: {variables}")
-            print()
+            click.secho("\nSCONS CALL:", fg="magenta")
+            click.secho(f"* command:   {command}")
+            click.secho(f"* board:     {board}")
+            click.secho(f"* variables: {variables}")
+            click.secho()
 
         # -- Execute scons
         return self._execute_scons(command, variables, board)
 
     # R0914: Too many local variables (19/15)
     # pylint: disable=R0914
-    def _execute_scons(self, command: str, variables: list, board: str) -> int:
+    def _execute_scons(
+        self, command: str, variables: List[str], board: str
+    ) -> int:
         """Execute the scons builder
         * INPUTS:
           * command: (string): Apio command. Ex. 'upload', 'build'...

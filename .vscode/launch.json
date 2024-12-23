@@ -31,6 +31,9 @@
             "args": [
                 "build"
             ],
+            "env": {
+                "APIO_DEBUG": ""
+            },
             "console": "integratedTerminal",
             "justMyCode": false,
             "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"

@@ -541,19 +541,23 @@ def debug_decoractor(func):
 
         if debug:
             # -- Print the arguments
-            print(f"--> DEBUG!. Function {func.__name__}(). " "BEGIN")
-            print("    * Arguments:")
+            click.secho(
+                f"\n>>> Function {os.path.basename(func.__code__.co_filename)}"
+                f"/{func.__name__}() BEGIN",
+                fg="magenta",
+            )
+            click.secho("    * Arguments:")
             for arg in args:
 
                 # -- Print all the key,values if it is a dictionary
                 if isinstance(arg, dict):
-                    print("        * Dict:")
+                    click.secho("        * Dict:")
                     for key, value in arg.items():
-                        print(f"          * {key}: {value}")
+                        click.secho(f"          * {key}: {value}")
 
                 # -- Print the plain argument if it is not a dicctionary
                 else:
-                    print(f"        * {arg}")
+                    click.secho(f"        * {arg}")
             print()
 
         # -- Call the function, dump exceptions, if any.
@@ -561,25 +565,29 @@ def debug_decoractor(func):
             result = func(*args)
         except Exception:
             if debug:
-                print(traceback.format_exc())
+                click.secho(traceback.format_exc())
             raise
 
         if debug:
             # -- Print its output
-            print(f"--> DEBUG!. Function {func.__name__}(). " "END")
-            print("     Returns: ")
+            click.secho("     Returns: ")
 
             # -- The return object always is a tuple
             if isinstance(result, tuple):
 
                 # -- Print all the values in the tuple
                 for value in result:
-                    print(f"      * {value}")
+                    click.secho(f"      * {value}")
 
             # -- But just in case it is not a tuple (because of an error...)
             else:
-                print(f"      * No tuple: {result}")
-            print()
+                click.secho(f"      * No tuple: {result}")
+
+            click.secho(
+                f"<<< Function {os.path.basename(func.__code__.co_filename)}"
+                f"/{func.__name__}() END\n",
+                fg="magenta",
+            )
 
         return result
 
