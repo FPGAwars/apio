@@ -387,6 +387,15 @@ def make_verilog_src_scanner(env: SConsEnvironment) -> Scanner.Base:
         r"\$readmemh\([\'\"]([^\'\"]+)[\'\"]", re.M
     )
 
+    # -- List of required and optional files that may require a rebuild if
+    # -- changed.
+    core_dependencies = [
+        "apio.ini",
+        "boards.json",
+        "fpgas.json",
+        "programmers.json",
+    ]
+
     def verilog_src_scanner_func(
         file_node: File, env: SConsEnvironment, ignored_path
     ) -> List[str]:
@@ -405,56 +414,48 @@ def make_verilog_src_scanner(env: SConsEnvironment) -> Scanner.Base:
             env, file_node.name
         ), f"Not a src file: {file_node.name}"
 
-        # Create the initial set. All source file depend on apio.ini and must
-        # be built when apio.ini changes.
-        #
-        # pylint: disable=fixme
-        # TODO: add also other config files aush as boards.json and
-        # programmers.json. Since they are optional, need to figure out how to
-        # handle the case when they are deleted or created.
-        dependencies_set = set()
-        dependencies_set.add("apio.ini")
+        # Create the initial set with the core dependencies.
+        candidates_set = set()
+        candidates_set.update(core_dependencies)
 
-        # If the file doesn't exist, this returns an empty string.
-        file_text = file_node.get_text_contents()
-        # Get IceStudio includes.
-        includes = icestudio_list_re.findall(file_text)
-        dependencies_set.update(includes)
+        # Read the file. This returns [] if the file doesn't exist.
+        file_content = file_node.get_text_contents()
 
-        # Get Standard verilog includes.
-        includes = verilog_include_re.findall(file_text)
-        dependencies_set.update(includes)
+        # Get verilog includes references.
+        candidates_set.update(verilog_include_re.findall(file_content))
 
-        # Get $readmemh() file references.
-        includes = readmemh_reference_re.findall(file_text)
-        dependencies_set.update(includes)
+        # Get $readmemh() function references.
+        candidates_set.update(readmemh_reference_re.findall(file_content))
 
-        # Get a deterministic list. (Does it sort by file.name?)
-        dependencies_list = sorted(list(dependencies_set))
+        # Get IceStudio references.
+        candidates_set.update(icestudio_list_re.findall(file_content))
 
-        # Filter out dependencies that do not exist. This is to handle cases
-        # where the references are in commented out code and not needed for
-        # the build.
-        filtered_dependencies = []
-        for dependency in dependencies_list:
+        # Filter out candidates that don't have a matching files to prevert
+        # breakign the build. This handle for example the case where the
+        # file references is in a comment or non reachable code.
+        # See also https://stackoverflow.com/q/79302552/15038713
+        dependencies = []
+        for dependency in candidates_set:
             if Path(dependency).exists():
-                filtered_dependencies.append(dependency)
+                dependencies.append(dependency)
             elif is_debug(env):
                 msg(
                     env,
-                    f"Dependency {dependency} does not exist, ignoring.",
-                    fg="red",
+                    f"Dependency candidate {dependency} does not exist, "
+                    "droping.",
                 )
+
+        # Sort the strings for determinism.
+        dependencies = sorted(list(dependencies))
 
         # Debug info.
         if is_debug(env):
             msg(env, f"Dependencies of {file_node.name}:", fg="blue")
-            for dependency in filtered_dependencies:
+            for dependency in dependencies:
                 msg(env, f"  {dependency}", fg="blue")
 
-        # For debugging
-        # info(env, f"*** {file_node.name} includes {includes_list}")
-        return env.File(filtered_dependencies)
+        # All done
+        return env.File(dependencies)
 
     return env.Scanner(function=verilog_src_scanner_func)
 
