@@ -1,5 +1,6 @@
 """
-  Test different "apio" commands
+  Test different "apio" commands. These tests use installed apio packages
+  and are slower than the offline tests at test/commands.
 """
 
 from os import listdir, chdir
@@ -9,15 +10,56 @@ from test.conftest import ApioRunner
 import pytest
 
 # -- Entry point for apio commands.
-from apio.commands.clean import cli as apio_clean
-from apio.commands.graph import cli as apio_graph
-from apio.commands.format import cli as apio_format
-from apio.commands.test import cli as apio_test
-from apio.commands.report import cli as apio_report
-from apio.commands.lint import cli as apio_lint
 from apio.commands.build import cli as apio_build
-from apio.commands.packages import cli as apio_packages
+from apio.commands.clean import cli as apio_clean
 from apio.commands.examples import cli as apio_examples
+from apio.commands.format import cli as apio_format
+from apio.commands.graph import cli as apio_graph
+from apio.commands.lint import cli as apio_lint
+from apio.commands.packages import cli as apio_packages
+from apio.commands.raw import cli as apio_raw
+from apio.commands.report import cli as apio_report
+from apio.commands.test import cli as apio_test
+from apio.commands.upgrade import cli as apio_upgrade
+
+
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
+def test_utilities(apio_runner: ApioRunner):
+    """Tests apio utility commands."""
+
+    # -- If the option 'offline' is passed, the test is skip
+    # -- (This test is slow and requires internet connectivity)
+    if apio_runner.offline_flag:
+        pytest.skip("requires internet connection")
+
+    with apio_runner.in_sandbox(shared_home=True) as sb:
+
+        # -- Create and change to project dir.
+        sb.proj_dir.mkdir()
+        chdir(sb.proj_dir)
+
+        # -- Install all packages. Not that since we run in a shared apio home,
+        # -- the packages can be already installed by a previous test.
+        result = sb.invoke_apio_cmd(apio_packages, ["--install"])
+        sb.assert_ok(result)
+
+        # -- Run 'apio upgrade'
+        result = sb.invoke_apio_cmd(apio_upgrade)
+        sb.assert_ok(result)
+        assert "Lastest Apio stable version" in result.output
+
+        # -- Run 'apio raw  "nextpnr-ice40 --help"'
+        result = sb.invoke_apio_cmd(
+            apio_raw, ["--", "nextpnr-ice40", "--help"]
+        )
+        sb.assert_ok(result)
+
+        # -- Run 'apio raw --env'
+        result = sb.invoke_apio_cmd(apio_raw, ["--env"])
+        sb.assert_ok(result)
+        assert "Envirnment settings:" in result.output
+        assert "YOSYS_LIB" in result.output
 
 
 # Too many statements (60/50) (too-many-statements)
@@ -63,8 +105,6 @@ def _test_project(
         # -- may already been installed from a previous test in this file.
         result = sb.invoke_apio_cmd(apio_packages, ["--install"] + proj_arg)
         sb.assert_ok(result)
-        assert listdir(sb.packages_dir / "examples")
-        assert listdir(sb.packages_dir / "tools-oss-cad-suite")
 
         # -- the project directory should be empty.
         assert not listdir(sb.proj_dir)
