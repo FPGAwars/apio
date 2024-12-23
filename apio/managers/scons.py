@@ -924,11 +924,23 @@ class SCons:
             # -- Print a horizontal line
             click.secho("-" * terminal_width, bold=True)
 
+        # -- Create the scons debug options. See details at
+        # -- https://scons.org/doc/2.4.1/HTML/scons-man.html
+        debug_options = (
+            ["--debug=explain,prepare,stacktrace", "--tree=all"]
+            if util.is_debug()
+            else []
+        )
+
         # -- Command to execute: scons -Q apio_cmd flags
         # -- Without force_colors=True, click.secho() colors from the scons
         # -- child process will be stripped out becaused they are piped out.
         scons_command = (
-            ["scons"] + ["-Q", command] + variables + ["force_colors=True"]
+            ["scons"]
+            + ["-Q", command]
+            + debug_options
+            + variables
+            + ["force_colors=True"]
         )
 
         # For debugging. Print the scons command line in a forumat that is
