@@ -6,8 +6,6 @@
 """Utilities for procesing the arguments passed to apio commands"""
 
 
-import traceback
-from functools import wraps
 from typing import Dict, Tuple, Optional, List, Any
 import click
 from apio.apio_context import ApioContext
@@ -36,74 +34,6 @@ ARG_VERILATOR_NO_STYLE = "nostyle"
 ARG_VERILATOR_NO_WARN = "nowarn"
 ARG_VERILATOR_WARN = "warn"
 ARG_DEBUG = "debug"
-
-
-def _debug_args_dump(process_arguments_func):
-    """A decorator for debugging. It prints the input and output of
-    process_arguments(). Comment out the '@debug_dump' statement
-    below to enable, comment to disable..
-
-    INPUTS:
-      * fun: Function to DEBUG
-    """
-
-    debug = util.is_debug()
-
-    @wraps(process_arguments_func)
-    def outer(*args):
-
-        if debug:
-            # -- Print the arguments
-            print(
-                f"--> DEBUG!. Function {process_arguments_func.__name__}(). "
-                "BEGIN"
-            )
-            print("    * Arguments:")
-            for arg in args:
-
-                # -- Print all the key,values if it is a dictionary
-                if isinstance(arg, dict):
-                    print("        * Dict:")
-                    for key, value in arg.items():
-                        print(f"          * {key}: {value}")
-
-                # -- Print the plain argument if it is not a dicctionary
-                else:
-                    print(f"        * {arg}")
-            print()
-
-        # -- Call the function, dump exceptions, if any.
-        try:
-            result = process_arguments_func(*args)
-
-        except Exception:
-            if debug:
-                print(traceback.format_exc())
-            raise
-
-        if debug:
-            # -- Print its output
-            print(
-                f"--> DEBUG!. Function {process_arguments_func.__name__}(). "
-                "END"
-            )
-            print("     Returns: ")
-
-            # -- The return object always is a tuple
-            if isinstance(result, tuple):
-
-                # -- Print all the values in the tuple
-                for value in result:
-                    print(f"      * {value}")
-
-            # -- But just in case it is not a tuple (because of an error...)
-            else:
-                print(f"      * No tuple: {result}")
-            print()
-
-        return result
-
-    return outer
 
 
 class Arg:
@@ -160,7 +90,7 @@ class Arg:
 # R0912: Too many branches (14/12)
 # pylint: disable=R0912
 #
-@_debug_args_dump
+@util.debug_decoractor
 def process_arguments(
     apio_ctx: ApioContext, seed_args: Dict
 ) -> Tuple[List[str], str, Optional[str]]:

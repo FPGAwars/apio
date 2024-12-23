@@ -12,6 +12,8 @@
 import sys
 import os
 import json
+import traceback
+from functools import wraps
 import shutil
 from enum import Enum
 from dataclasses import dataclass
@@ -523,3 +525,62 @@ def nameof(*_args) -> List[str]:
     # See this discussion for details.
     # github.com/pwwang/python-varname/issues/117#issuecomment-2558351368
     return list(argname("*_args"))
+
+
+def debug_decoractor(func):
+    """A decorator for dumping the input and output of a function when
+    APIO_DEBUG is defined.  Add it to functions and methods that you want
+    to examine with APIO_DEBUG.
+    """
+
+    # -- We sample the debug flag upon start.
+    debug = is_debug()
+
+    @wraps(func)
+    def outer(*args):
+
+        if debug:
+            # -- Print the arguments
+            print(f"--> DEBUG!. Function {func.__name__}(). " "BEGIN")
+            print("    * Arguments:")
+            for arg in args:
+
+                # -- Print all the key,values if it is a dictionary
+                if isinstance(arg, dict):
+                    print("        * Dict:")
+                    for key, value in arg.items():
+                        print(f"          * {key}: {value}")
+
+                # -- Print the plain argument if it is not a dicctionary
+                else:
+                    print(f"        * {arg}")
+            print()
+
+        # -- Call the function, dump exceptions, if any.
+        try:
+            result = func(*args)
+        except Exception:
+            if debug:
+                print(traceback.format_exc())
+            raise
+
+        if debug:
+            # -- Print its output
+            print(f"--> DEBUG!. Function {func.__name__}(). " "END")
+            print("     Returns: ")
+
+            # -- The return object always is a tuple
+            if isinstance(result, tuple):
+
+                # -- Print all the values in the tuple
+                for value in result:
+                    print(f"      * {value}")
+
+            # -- But just in case it is not a tuple (because of an error...)
+            else:
+                print(f"      * No tuple: {result}")
+            print()
+
+        return result
+
+    return outer
