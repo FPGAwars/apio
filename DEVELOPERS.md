@@ -51,6 +51,19 @@ Run from the repo root. Replace with the path to the desire test. Running ``pyte
 pytest test/code_commands/test_build.py
 ```
 
+## Using APIO_DEBUG to print debug information
+
+To print internal debugging informaion define the environment variable ``APIO_DEBUG`` before running the apio command. The value of ``APIO_DEBUG`` doesn't matter as long as it's defined. Currently the the debugging information is mostly for commands that invoke scons.
+
+Linux and Mac OSX:
+```
+export APIO_DEV=
+```
+
+Windows:
+```
+set APIO_DEV=
+```
 
 ## Running apio in a debugger
 
