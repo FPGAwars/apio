@@ -93,7 +93,6 @@ variable APIO_HOME_DIR, and APIO_PLATFORM.
     "system",
     short_help="Provides system info.",
     help=HELP,
-    cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 @options.project_dir_option

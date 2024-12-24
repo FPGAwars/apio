@@ -12,7 +12,6 @@ import importlib.metadata
 import click
 from packaging import version
 from apio.util import get_pypi_latest_version
-from apio import cmd_util
 
 
 # ---------------------------
@@ -32,7 +31,6 @@ Examples:
     "upgrade",
     short_help="Check the latest Apio version.",
     help=HELP,
-    cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 def cli(_: click.core.Context):

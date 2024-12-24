@@ -57,7 +57,7 @@ def list_option_gen(*, help: str):
 # pylint: disable=W0622
 def top_module_option_gen(
     *,
-    deprecated: bool = False,
+    # deprecated: bool = False,
     help: str = "Set the top level module name.",
 ):
     """Generate a --top-module option with given help text."""
@@ -67,7 +67,7 @@ def top_module_option_gen(
         "--top-module",
         type=str,
         metavar="name",
-        deprecated=deprecated,
+        # deprecated=deprecated,
         help=help,
         cls=cmd_util.ApioOption,
     )

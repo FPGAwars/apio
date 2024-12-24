@@ -74,7 +74,6 @@ Examples:
     "drivers",
     short_help="Manage the operating system drivers.",
     help=HELP,
-    cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 @ftdi_install_option

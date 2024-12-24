@@ -70,7 +70,6 @@ view the graph, and on Mac OS type 'open hardware.svg'.
     short_help="Generate a visual graph of the code.",
     help=HELP,
     epilog=EPILOG,
-    cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 @pdf_option

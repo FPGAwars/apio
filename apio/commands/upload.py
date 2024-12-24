@@ -79,7 +79,6 @@ Examples:
     "upload",
     short_help="Upload the bitstream to the FPGA.",
     help=HELP,
-    cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 @serial_port_option

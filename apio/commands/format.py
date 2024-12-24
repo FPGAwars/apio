@@ -14,7 +14,7 @@ from glob import glob
 from typing import Tuple, List
 import click
 from apio.apio_context import ApioContext
-from apio import cmd_util, pkg_util, util
+from apio import pkg_util, util
 from apio.commands import options
 
 
@@ -60,7 +60,6 @@ online or type 'apio raw -- verible-verilog-format --helpfull'.
     "format",
     short_help="Format verilog source files.",
     help=HELP,
-    cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 @click.argument("files", nargs=-1, required=False)

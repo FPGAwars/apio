@@ -59,7 +59,6 @@ env_option = click.option(
     "raw",
     short_help="Execute commands directly from the Apio packages.",
     help=HELP,
-    cls=cmd_util.ApioCommand,
     context_settings={"ignore_unknown_options": True},
 )
 @click.pass_context

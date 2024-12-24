@@ -81,7 +81,6 @@ Examples:
     "lint",
     short_help="Lint the verilog code.",
     help=HELP,
-    cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 @options.top_module_option_gen(

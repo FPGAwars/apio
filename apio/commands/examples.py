@@ -72,7 +72,6 @@ board (e.g. 'leds').
     short_help="List and fetch apio examples.",
     help=HELP,
     epilog=EPILOG,
-    cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 @options.list_option_gen(help="List all available examples.")

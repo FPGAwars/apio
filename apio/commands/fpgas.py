@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 import click
 from apio.apio_context import ApioContext
-from apio import cmd_util, util
+from apio import util
 from apio.commands import options
 
 
@@ -90,7 +90,6 @@ Examples:
     "fpgas",
     short_help="List available FPGA definitions.",
     help=HELP,
-    cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 @options.project_dir_option

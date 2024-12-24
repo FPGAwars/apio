@@ -185,7 +185,6 @@ fix_option = click.option(
     "install",
     short_help="Manage the apio packages.",
     help=HELP,
-    cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 @click.argument("packages", nargs=-1, required=False)

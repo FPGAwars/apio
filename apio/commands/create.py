@@ -67,7 +67,6 @@ the supported boards.
     "create",
     short_help="Create an apio.ini project file.",
     help=HELP,
-    cls=cmd_util.ApioCommand,
 )
 @click.pass_context
 @board_option
