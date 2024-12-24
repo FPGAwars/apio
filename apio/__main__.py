@@ -235,16 +235,11 @@ https://github.com/FPGAwars/apio/wiki/Apio
 @click.command(
     cls=ApioCLI,
     help=HELP,
-    invoke_without_command=True,
     context_settings=context_settings(),
 )
-@click.pass_context
 @click.version_option()
-def cli(cmd_ctx: click.core.Context):
-    """This function is executed when apio is invoked without
-    any parameter. It prints the high level usage text of Apio.
-    """
+def cli():
+    """This function is invoked before each subcommand but there
+    is nothing to do here."""
 
-    # -- If no command was typed show top help. Equivalent to 'apio -h'.
-    if cmd_ctx.invoked_subcommand is None:
-        click.secho(cmd_ctx.get_help())
+    # Nothing to do here.
