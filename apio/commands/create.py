@@ -74,7 +74,7 @@ the supported boards.
 @options.project_dir_option
 @options.sayyes
 def cli(
-    _: click.core.Context,
+    _: click.Context,
     # Options
     board: str,
     top_module: str,

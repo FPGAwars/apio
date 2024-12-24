@@ -52,7 +52,7 @@ signals see the 'apio sim' command.
 @options.project_dir_option
 # @options.testbench
 def cli(
-    _: click.core.Context,
+    _: click.Context,
     # Arguments
     testbench_file: str,
     # Options

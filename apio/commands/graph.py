@@ -78,7 +78,7 @@ view the graph, and on Mac OS type 'open hardware.svg'.
 @options.top_module_option_gen(help="Set the name of the top module to graph.")
 @options.verbose_option
 def cli(
-    cmd_ctx: click.core.Context,
+    cmd_ctx: click.Context,
     # Options
     pdf: bool,
     png: bool,

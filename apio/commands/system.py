@@ -102,7 +102,7 @@ variable APIO_HOME_DIR, and APIO_PLATFORM.
 @info_option
 @platforms_option
 def cli(
-    cmd_ctx: click.core.Context,
+    cmd_ctx: click.Context,
     # Options
     project_dir: Path,
     lsftdi: bool,

@@ -56,7 +56,7 @@ configuration for future invocations.
 @options.force_option_gen(help="Force simulation.")
 @options.project_dir_option
 def cli(
-    _: click.core.Context,
+    _: click.Context,
     # Arguments
     testbench: str,
     # Options

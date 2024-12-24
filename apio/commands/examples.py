@@ -80,7 +80,7 @@ board (e.g. 'leds').
 @options.project_dir_option
 @options.sayno
 def cli(
-    cmd_ctx: click.core.Context,
+    cmd_ctx: click.Context,
     # Options
     list_: bool,
     fetch_dir: str,

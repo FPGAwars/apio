@@ -147,7 +147,7 @@ class ApioCLI(click.MultiCommand):
 
     # -- Return  a list of all the available commands
     # @override
-    def list_commands(self, ctx: click.core.Context):
+    def list_commands(self, ctx: click.Context):
         # -- All the python files inside the apio/commands folder are commands,
         # -- except __init__.py
         # -- Create the list
@@ -170,7 +170,7 @@ class ApioCLI(click.MultiCommand):
     # -- INPUT:
     # --   * cmd_name: Apio command name
     # @override
-    def get_command(self, ctx: click.core.Context, cmd_name: string):
+    def get_command(self, ctx: click.Context, cmd_name: string):
         nnss = {}
 
         # -- Get the python filename asociated with the give command
@@ -192,7 +192,7 @@ class ApioCLI(click.MultiCommand):
         return nnss.get("cli")
 
     # @override
-    def get_help(self, ctx: click.core.Context) -> str:
+    def get_help(self, ctx: click.Context) -> str:
         """Formats the help into a string and returns it.
 
         Calls :meth:`format_help` internally.

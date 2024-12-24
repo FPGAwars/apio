@@ -66,7 +66,7 @@ env_option = click.option(
 @env_option
 @options.verbose_option
 def cli(
-    cmd_ctx: click.core.Context,
+    cmd_ctx: click.Context,
     # Arguments
     cmd: Tuple[str],
     # Options

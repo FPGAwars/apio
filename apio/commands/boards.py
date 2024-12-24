@@ -124,7 +124,7 @@ Examples:
 @click.pass_context
 @options.project_dir_option
 def cli(
-    _: click.core.Context,
+    _: click.Context,
     # Options
     project_dir: Path,
 ):

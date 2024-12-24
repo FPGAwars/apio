@@ -33,7 +33,7 @@ Examples:
     help=HELP,
 )
 @click.pass_context
-def cli(_: click.core.Context):
+def cli(_: click.Context):
     """Check the latest Apio version."""
 
     # -- Get the current apio version from the python package installed

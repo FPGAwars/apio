@@ -66,7 +66,7 @@ online or type 'apio raw -- verible-verilog-format --helpfull'.
 @options.project_dir_option
 @options.verbose_option
 def cli(
-    _cmd_ctx: click.core.Context,
+    _cmd_ctx: click.Context,
     # Arguments
     files: Tuple[str],
     project_dir: Path,

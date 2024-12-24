@@ -81,7 +81,7 @@ Examples:
 @serial_install_option
 @serial_uninstall_option
 def cli(
-    cmd_ctx: click.core.Context,
+    cmd_ctx: click.Context,
     # Options:
     ftdi_install: bool,
     ftdi_uninstall: bool,

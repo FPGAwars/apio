@@ -45,7 +45,7 @@ Examples:
 @options.project_dir_option
 @options.verbose_option
 def cli(
-    _: click.core.Context,
+    _: click.Context,
     # Options
     project_dir: Path,
     verbose: bool,

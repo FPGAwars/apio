@@ -49,7 +49,7 @@ indicate that they are testbenches.
 @options.verbose_yosys_option
 @options.verbose_pnr_option
 def cli(
-    _: click.core.Context,
+    _: click.Context,
     # Options
     project_dir: Path,
     verbose: bool,

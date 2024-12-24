@@ -197,7 +197,7 @@ fix_option = click.option(
 @options.sayyes
 @options.verbose_option
 def cli(
-    cmd_ctx: click.core.Context,
+    cmd_ctx: click.Context,
     # Arguments
     packages: Tuple[str],
     # Options

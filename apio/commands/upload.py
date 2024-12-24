@@ -90,7 +90,7 @@ Examples:
 @options.verbose_pnr_option
 @options.project_dir_option
 def cli(
-    _: click.core.Context,
+    _: click.Context,
     # Options
     serial_port: str,
     ftdi_id: str,
