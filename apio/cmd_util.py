@@ -15,9 +15,6 @@ import click
 from apio import util
 
 
-
-
-
 def fatal_usage_error(cmd_ctx: click.Context, msg: str) -> None:
     """Prints a an error message and command help hint, and exists the program
      with an error status.
