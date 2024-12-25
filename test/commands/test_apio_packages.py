@@ -15,27 +15,28 @@ def test_packages(apio_runner: ApioRunner):
 
         # -- Execute "apio packages"
         result = sb.invoke_apio_cmd(apio_packages)
-        assert result.exit_code == 1, result.output
-        assert (
-            "specify one of --list, --install, --uninstall, or --fix"
-            in result.output
-        )
+        sb.assert_ok(result)
+        assert "Subcommands:" in result.output
+        assert "apio packages install" in result.output
 
-        # -- Execute "apio packages --list"
-        result = sb.invoke_apio_cmd(apio_packages, ["--list"])
+        # -- Execute "apio packages list"
+        result = sb.invoke_apio_cmd(apio_packages, ["list"])
+        sb.assert_ok(result)
+
+        # -- Execute "apio packages install no-such-package"
+        result = sb.invoke_apio_cmd(
+            apio_packages, ["install", "no-such-package"]
+        )
+        assert result.exit_code == 1, result.output
+        assert "Error: unknown package 'no-such-package'" in result.output
+
+        # -- Execute "apio packages uninstall --sayyes no-such-package"
+        result = sb.invoke_apio_cmd(
+            apio_packages, ["uninstall", "--sayyes", "no-such-package"]
+        )
+        assert result.exit_code == 1, result.output
+        assert "Error: no such package 'no-such-package'" in result.output
+
+        # -- Execute "apio packages fix"
+        result = sb.invoke_apio_cmd(apio_packages, ["fix"])
         assert result.exit_code == 0, result.output
-        assert "No errors" in result.output
-
-        # -- Execute "apio packages --install missing_package"
-        result = sb.invoke_apio_cmd(
-            apio_packages, ["--install", "missing_package"]
-        )
-        assert result.exit_code == 1, result.output
-        assert "Error: unknown package 'missing_package'" in result.output
-
-        # -- Execute "apio packages --uninstall --sayyes missing_package"
-        result = sb.invoke_apio_cmd(
-            apio_packages, ["--uninstall", "--sayyes", "missing_package"]
-        )
-        assert result.exit_code == 1, result.output
-        assert "Error: no such package 'missing_package'" in result.output

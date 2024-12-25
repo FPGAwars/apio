@@ -31,7 +31,7 @@ def test_utilities(apio_runner: ApioRunner):
 
         # -- Install all packages. Not that since we run in a shared apio home,
         # -- the packages can be already installed by a previous test.
-        result = sb.invoke_apio_cmd(apio, ["packages", "--install"])
+        result = sb.invoke_apio_cmd(apio, ["packages", "install"])
         sb.assert_ok(result)
 
         # -- Run 'apio upgrade'
@@ -90,10 +90,10 @@ def _test_project(
         # -- and pass it as an arg.
         proj_arg = ["-p", str(sb.proj_dir)] if remote_proj_dir else []
 
-        # -- 'apio packages --install'.
+        # -- 'apio packages install'.
         # -- Note that since we used a sandbox with a shared home, the packages
         # -- may already been installed from a previous test in this file.
-        result = sb.invoke_apio_cmd(apio, ["packages", "--install"] + proj_arg)
+        result = sb.invoke_apio_cmd(apio, ["packages", "install"])
         sb.assert_ok(result)
 
         # -- the project directory should be empty.

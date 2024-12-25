@@ -420,8 +420,6 @@ def list_packages(apio_ctx: ApioContext, scan: PackageScanResults) -> None:
     # -- Print an error summary
     if scan.num_errors():
         click.secho(f"Total of {util.plurality(scan.num_errors(), 'error')}")
-    else:
-        click.secho("No errors.")
 
     # -- A line seperator. For asthetic reasons.
     click.secho()

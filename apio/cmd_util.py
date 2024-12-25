@@ -237,7 +237,7 @@ class ApioGroup(click.Group):
         # -- group.
         for subgroup in self._subgroups:
             for cmd in subgroup.commands:
-                self.add_command(cmd)
+                self.add_command(cmd=cmd, name=cmd.name)
 
     # @override
     def get_help(self, ctx: click.Context) -> str:
