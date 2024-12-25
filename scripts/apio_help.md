@@ -1,7 +1,33 @@
+## Apio commands
+* [apio boards](#apio-boards)
+* [apio build](#apio-build)
+* [apio clean](#apio-clean)
+* [apio create](#apio-create)
+* [apio drivers](#apio-drivers)
+* [apio examples](#apio-examples)
+* [apio format](#apio-format)
+* [apio fpgas](#apio-fpgas)
+* [apio graph](#apio-graph)
+* [apio lint](#apio-lint)
+* [apio packages fix](#apio-packages-fix)
+* [apio packages install](#apio-packages-install)
+* [apio packages list](#apio-packages-list)
+* [apio packages uninstall](#apio-packages-uninstall)
+* [apio raw](#apio-raw)
+* [apio report](#apio-report)
+* [apio sim](#apio-sim)
+* [apio system info](#apio-system-info)
+* [apio system lsftdi](#apio-system-lsftdi)
+* [apio system lsserial](#apio-system-lsserial)
+* [apio system lsusb](#apio-system-lsusb)
+* [apio system platforms](#apio-system-platforms)
+* [apio test](#apio-test)
+* [apio upgrade](#apio-upgrade)
+* [apio upload](#apio-upload)
 
 <br><br>
 
-### APIO
+### APIO{#apio}
 
 ```
 Usage: apio [OPTIONS] COMMAND [ARGS]...
@@ -54,7 +80,7 @@ Utility commands:
 
 <br><br>
 
-### APIO BOARDS
+### APIO BOARDS{#apio-boards}
 
 ```
 Usage: apio boards [OPTIONS]
@@ -79,7 +105,7 @@ Options:
 
 <br><br>
 
-### APIO BUILD
+### APIO BUILD{#apio-build}
 
 ```
 Usage: apio build [OPTIONS]
@@ -106,7 +132,7 @@ Options:
 
 <br><br>
 
-### APIO CLEAN
+### APIO CLEAN{#apio-clean}
 
 ```
 Usage: apio clean [OPTIONS]
@@ -128,7 +154,7 @@ Options:
 
 <br><br>
 
-### APIO CREATE
+### APIO CREATE{#apio-create}
 
 ```
 Usage: apio create [OPTIONS]
@@ -164,7 +190,7 @@ Options:
 
 <br><br>
 
-### APIO DRIVERS
+### APIO DRIVERS{#apio-drivers}
 
 ```
 Usage: apio drivers [OPTIONS]
@@ -191,7 +217,7 @@ Options:
 
 <br><br>
 
-### APIO EXAMPLES
+### APIO EXAMPLES{#apio-examples}
 
 ```
 Usage: apio examples [OPTIONS]
@@ -222,7 +248,7 @@ Options:
 
 <br><br>
 
-### APIO FORMAT
+### APIO FORMAT{#apio-format}
 
 ```
 Usage: apio format [OPTIONS] [FILES]...
@@ -263,7 +289,7 @@ Options:
 
 <br><br>
 
-### APIO FPGAS
+### APIO FPGAS{#apio-fpgas}
 
 ```
 Usage: apio fpgas [OPTIONS]
@@ -285,7 +311,7 @@ Options:
 
 <br><br>
 
-### APIO GRAPH
+### APIO GRAPH{#apio-graph}
 
 ```
 Usage: apio graph [OPTIONS]
@@ -314,7 +340,7 @@ Options:
 
 <br><br>
 
-### APIO LINT
+### APIO LINT{#apio-lint}
 
 ```
 Usage: apio lint [OPTIONS]
@@ -342,7 +368,7 @@ Options:
 
 <br><br>
 
-### APIO PACKAGES
+### APIO PACKAGES{#apio-packages}
 
 ```
 Usage: apio packages [OPTIONS] COMMAND [ARGS]...
@@ -370,7 +396,7 @@ Subcommands:
 
 <br><br>
 
-### APIO PACKAGES FIX
+### APIO PACKAGES FIX{#apio-packages-fix}
 
 ```
 Usage: apio packages fix [OPTIONS]
@@ -390,7 +416,7 @@ Options:
 
 <br><br>
 
-### APIO PACKAGES INSTALL
+### APIO PACKAGES INSTALL{#apio-packages-install}
 
 ```
 Usage: apio packages install [OPTIONS] [PACKAGES]...
@@ -416,7 +442,7 @@ Options:
 
 <br><br>
 
-### APIO PACKAGES LIST
+### APIO PACKAGES LIST{#apio-packages-list}
 
 ```
 Usage: apio packages list [OPTIONS]
@@ -434,7 +460,7 @@ Options:
 
 <br><br>
 
-### APIO PACKAGES UNINSTALL
+### APIO PACKAGES UNINSTALL{#apio-packages-uninstall}
 
 ```
 Usage: apio packages uninstall [OPTIONS] [PACKAGES]...
@@ -455,7 +481,7 @@ Options:
 
 <br><br>
 
-### APIO RAW
+### APIO RAW{#apio-raw}
 
 ```
 Usage: apio raw [OPTIONS] COMMAND
@@ -489,7 +515,7 @@ Options:
 
 <br><br>
 
-### APIO REPORT
+### APIO REPORT{#apio-report}
 
 ```
 Usage: apio report [OPTIONS]
@@ -511,7 +537,7 @@ Options:
 
 <br><br>
 
-### APIO SIM
+### APIO SIM{#apio-sim}
 
 ```
 Usage: apio sim [OPTIONS] TESTBENCH
@@ -547,7 +573,7 @@ Options:
 
 <br><br>
 
-### APIO SYSTEM
+### APIO SYSTEM{#apio-system}
 
 ```
 Usage: apio system [OPTIONS] COMMAND [ARGS]...
@@ -572,7 +598,7 @@ Subcommands:
 
 <br><br>
 
-### APIO SYSTEM INFO
+### APIO SYSTEM INFO{#apio-system-info}
 
 ```
 Usage: apio system info [OPTIONS]
@@ -593,7 +619,7 @@ Options:
 
 <br><br>
 
-### APIO SYSTEM LSFTDI
+### APIO SYSTEM LSFTDI{#apio-system-lsftdi}
 
 ```
 Usage: apio system lsftdi [OPTIONS]
@@ -614,7 +640,7 @@ Options:
 
 <br><br>
 
-### APIO SYSTEM LSSERIAL
+### APIO SYSTEM LSSERIAL{#apio-system-lsserial}
 
 ```
 Usage: apio system lsserial [OPTIONS]
@@ -631,7 +657,7 @@ Options:
 
 <br><br>
 
-### APIO SYSTEM LSUSB
+### APIO SYSTEM LSUSB{#apio-system-lsusb}
 
 ```
 Usage: apio system lsusb [OPTIONS]
@@ -652,7 +678,7 @@ Options:
 
 <br><br>
 
-### APIO SYSTEM PLATFORMS
+### APIO SYSTEM PLATFORMS{#apio-system-platforms}
 
 ```
 Usage: apio system platforms [OPTIONS]
@@ -673,7 +699,7 @@ Options:
 
 <br><br>
 
-### APIO TEST
+### APIO TEST{#apio-test}
 
 ```
 Usage: apio test [OPTIONS] [TESTBENCH_FILE]
@@ -705,7 +731,7 @@ Options:
 
 <br><br>
 
-### APIO UPGRADE
+### APIO UPGRADE{#apio-upgrade}
 
 ```
 Usage: apio upgrade [OPTIONS]
@@ -722,7 +748,7 @@ Options:
 
 <br><br>
 
-### APIO UPLOAD
+### APIO UPLOAD{#apio-upload}
 
 ```
 Usage: apio upload [OPTIONS]
