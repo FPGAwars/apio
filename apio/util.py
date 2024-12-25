@@ -12,6 +12,8 @@
 import sys
 import os
 import json
+import traceback
+from functools import wraps
 import shutil
 from enum import Enum
 from dataclasses import dataclass
@@ -20,8 +22,10 @@ import subprocess
 from threading import Thread
 from pathlib import Path
 import click
+from varname import argname
 from serial.tools.list_ports import comports
 import requests
+from apio import env_options
 
 # ----------------------------------------
 # -- Constants
@@ -505,3 +509,86 @@ def list_plurality(str_list: List[str], conjunction: str) -> str:
 
     # -- Handle the case of three or more items.
     return ", ".join(str_list[:-1]) + f", {conjunction} {str_list[-1]}"
+
+
+def is_debug() -> bool:
+    """Returns True if apio is in debug mode. Use it to enable printing of
+    debug information but not to modify the behavior of the code.
+    Also, all apio tests should be performed with debug disabled."""
+    return env_options.is_defined("APIO_DEBUG")
+
+
+def nameof(*_args) -> List[str]:
+    """A workaround for the deprecation of varname.nameof(). Returns a list
+    of names of the arguments passed to it."""
+
+    # See this discussion for details.
+    # github.com/pwwang/python-varname/issues/117#issuecomment-2558351368
+    return list(argname("*_args"))
+
+
+def debug_decoractor(func):
+    """A decorator for dumping the input and output of a function when
+    APIO_DEBUG is defined.  Add it to functions and methods that you want
+    to examine with APIO_DEBUG.
+    """
+
+    # -- We sample the debug flag upon start.
+    debug = is_debug()
+
+    @wraps(func)
+    def outer(*args):
+
+        if debug:
+            # -- Print the arguments
+            click.secho(
+                f"\n>>> Function {os.path.basename(func.__code__.co_filename)}"
+                f"/{func.__name__}() BEGIN",
+                fg="magenta",
+            )
+            click.secho("    * Arguments:")
+            for arg in args:
+
+                # -- Print all the key,values if it is a dictionary
+                if isinstance(arg, dict):
+                    click.secho("        * Dict:")
+                    for key, value in arg.items():
+                        click.secho(f"          * {key}: {value}")
+
+                # -- Print the plain argument if it is not a dicctionary
+                else:
+                    click.secho(f"        * {arg}")
+            print()
+
+        # -- Call the function, dump exceptions, if any.
+        try:
+            result = func(*args)
+        except Exception:
+            if debug:
+                click.secho(traceback.format_exc())
+            raise
+
+        if debug:
+            # -- Print its output
+            click.secho("     Returns: ")
+
+            # -- The return object always is a tuple
+            if isinstance(result, tuple):
+
+                # -- Print all the values in the tuple
+                for value in result:
+                    click.secho(f"      * {value}")
+
+            # -- But just in case it is not a tuple (because of an error...)
+            else:
+                click.secho(f"      * No tuple: {result}")
+
+            click.secho(
+                f"<<< Function {os.path.basename(func.__code__.co_filename)}"
+                f"/{func.__name__}() END\n",
+                fg="magenta",
+            )
+
+        return result
+
+    return outer

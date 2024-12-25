@@ -5,7 +5,10 @@
             "name": "Apio",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/apio_run.py",
+            "program": "${workspaceFolder}/apio/main.py",
+            "args": [
+                "build"
+            ],
             "console": "integratedTerminal",
             "justMyCode": false,
             "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
@@ -14,7 +17,7 @@
             "name": "Apio boards",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/apio_run.py",
+            "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "boards",
                 "-l"
@@ -27,10 +30,13 @@
             "name": "Apio build",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/apio_run.py",
+            "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "build"
             ],
+            "env": {
+                "APIO_DEBUG": ""
+            },
             "console": "integratedTerminal",
             "justMyCode": false,
             "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
@@ -39,7 +45,7 @@
             "name": "Apio clean",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/apio_run.py",
+            "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "clean"
             ],
@@ -51,7 +57,7 @@
             "name": "Apio create",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/apio_run.py",
+            "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "create",
                 "--board",
@@ -68,7 +74,7 @@
             "name": "Apio drivers",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/apio_run.py",
+            "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "drivers",
                 "--ftdi-install"
@@ -81,7 +87,7 @@
             "name": "Apio examples",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/apio_run.py",
+            "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "examples",
                 "--list"
@@ -91,10 +97,22 @@
             "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
         },
         {
+            "name": "Apio format",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/apio/main.py",
+            "args": [
+                "format"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
+        },
+        {
             "name": "Apio graph",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/apio_run.py",
+            "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "graph",
                 "--svg"
@@ -107,7 +125,7 @@
             "name": "Apio install",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/apio_run.py",
+            "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "install",
                 "drivers",
@@ -122,7 +140,7 @@
             "name": "Apio lint",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/apio_run.py",
+            "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "lint"
             ],
@@ -134,7 +152,7 @@
             "name": "Apio modify",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/apio_run.py",
+            "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "modify",
                 "--board",
@@ -150,7 +168,7 @@
             "name": "Apio packages",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/apio_run.py",
+            "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "packages",
                 "--install",
@@ -164,10 +182,12 @@
             "name": "Apio raw",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/apio_run.py",
+            "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "raw",
-                "yosys --version"
+                "--",
+                "yosys",
+                "--version"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
@@ -177,7 +197,7 @@
             "name": "Apio report",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/apio_run.py",
+            "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "report",
             ],
@@ -189,7 +209,7 @@
             "name": "Apio system",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/apio_run.py",
+            "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "system",
                 "--info"
@@ -202,7 +222,7 @@
             "name": "Apio time",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/apio_run.py",
+            "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "time",
             ],
@@ -214,7 +234,7 @@
             "name": "Apio uninstall",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/apio_run.py",
+            "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "uninstall",
                 "examples"
@@ -227,7 +247,7 @@
             "name": "Apio upload [alhambra-ii]",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/apio_run.py",
+            "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "upload"
             ],
@@ -239,7 +259,7 @@
             "name": "Apio upload [TinyFPGA-BX]",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/apio_run.py",
+            "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "upload"
             ],
@@ -251,7 +271,7 @@
             "name": "Apio upload [fomu]",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/apio_run.py",
+            "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "upload"
             ],
@@ -263,7 +283,7 @@
             "name": "Apio upload [blackice]",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/apio_run.py",
+            "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "upload"
             ],
@@ -275,7 +295,7 @@
             "name": "Apio verify",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/apio_run.py",
+            "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "verify"
             ],

@@ -51,15 +51,30 @@ Run from the repo root. Replace with the path to the desire test. Running ``pyte
 pytest test/code_commands/test_build.py
 ```
 
+## Using APIO_DEBUG to print debug information
+
+To print internal debugging informaion define the environment variable ``APIO_DEBUG`` before running the apio command. The value of ``APIO_DEBUG`` doesn't matter as long as it's defined. Currently the the debugging information is mostly for commands that invoke scons.
+
+Linux and Mac OSX:
+```
+export APIO_DEV=
+```
+
+Windows:
+```
+set APIO_DEV=
+```
 
 ## Running apio in a debugger
 
-Set the debugger to run the ``apio_run.py`` main with the regular ``apio`` arguments. Set the project directory ot the project file or use the ``--project_dir`` apio argument to point to the project directory.
+Set the debugger to run apio main module ``apio/main.py`` main and pass to it the apio arguments. You can run in the project directory or
+to add the flag ``--project_dir`` with a path to the project directory.
 
 Example of an equivalent manual command:
 ```
-python apio_run.py build --project_dir ~/projects/fpga/repo/hdl
+python apio/main.py build --project_dir test-examples/alhambra-ii/01-LEDs-buttons
 ```
+
 
 ## Running apio in the Visual Studio Code debugger.
 

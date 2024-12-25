@@ -25,16 +25,29 @@ APIO_HOME_DIR = "APIO_HOME_DIR"
 # -- of the platforms specified in resources/platforms.json.
 APIO_PLATFORM = "APIO_PLATFORM"
 
+# -- Env variable to enable printout of additional information for debugging.
+# -- It is not intended to change the logic of apio but just to provide
+# -- additional information about its internal behavior. Currently
+# -- it's used as a binary flag with existance indicating True and non
+# -- existance indicating False.
+# --
+# -- Do not access it directly. For the apio process use util.is_debug() and
+# -- for the scons process use scons_util.is_debug().
+APIO_DEBUG = "APIO_DEBUG"
+
 # -- List of all supported env options.
 _SUPPORTED_APIO_VARS = [
     APIO_HOME_DIR,
     APIO_PLATFORM,
+    APIO_DEBUG,
 ]
 
 
 def get(var_name: str, default: str = None):
     """Return the given APIO config env value or default if not found.
-    var_name must start with 'APIO_' and match _API_ENV_NAME_REGEX.
+    var_name must be in _SUPPORTED_APIO_VARS. The returned
+    value is not cached such that mutating the var in this program will
+    affect the result of this function.
     """
 
     # -- Sanity check. To make sure we are aware of all the vars used.
@@ -56,10 +69,27 @@ def get(var_name: str, default: str = None):
     return var_value
 
 
+def is_defined(var_name) -> bool:
+    """Returns true if the env var is currently defined, regardless to its
+    value, or False otherwise. var_name must be in _SUPPORTED_APIO_VARS. The
+    returned value is not cached such that mutating the var in this program may
+    affect the result of this function."""
+    # -- Sanity check. To make sure we are aware of all the vars used.
+    assert (
+        var_name in _SUPPORTED_APIO_VARS
+    ), f"Unknown apio env var '{var_name}'"
+
+    # -- Get the value, None if not defined.
+    var_value = os.getenv(var_name)
+    return var_value is not None
+
+
 def get_defined() -> List[str]:
-    """Return the list of apio env options vars that are defined."""
+    """Return the list of apio env options vars in _SUPPORTED_APIO_VARS
+    that are currently defined. The returned value is not cached such that
+    mutating the var in this program may affect the result."""
     result = []
     for var in _SUPPORTED_APIO_VARS:
-        if get(var):
+        if is_defined(var):
             result.append(var)
     return result

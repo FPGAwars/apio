@@ -18,6 +18,7 @@ be called only from the SConstruct.py files.
 # pylint: disable=W0613
 
 import os
+from pathlib import Path
 import re
 from enum import Enum
 import json
@@ -111,9 +112,15 @@ def has_testbench_name(env: SConsEnvironment, file_name: str) -> bool:
 def is_windows(env: SConsEnvironment) -> bool:
     """Returns True if running the platform id represents windows."""
     # -- This bool bar is created when constructing the env.
-    val = env["IS_WINDOWS"]
+    val = env["APIO_IS_WINDOWS"]
     assert isinstance(val, bool), type(val)
     return val
+
+
+def is_debug(env: SConsEnvironment) -> bool:
+    """Returns True iff running in debug mode. The debug flag is passed to
+    the SCons process from the apio process via the scons variable list."""
+    return arg_bool(env, "debug", False)
 
 
 def create_construction_env(args: Dict[str, str]) -> SConsEnvironment:
@@ -140,32 +147,30 @@ def create_construction_env(args: Dict[str, str]) -> SConsEnvironment:
 
     # Evaluate the optional force_color arg and set its value
     # an env var on its own.
-    assert env.get("FORCE_COLORS") is None
-    env.Replace(FORCE_COLORS=False)  # Tentative, so we can call arg_bool.
+    assert env.get("APIO_FORCE_COLORS") is None
+    env.Replace(APIO_FORCE_COLORS=False)  # Tentative, so we can call arg_bool.
     flag = arg_bool(env, "force_colors", False)
-    env.Replace(FORCE_COLORS=flag)
-    # Set the IS_WINDOWS flag based on the required "platform_id" arg.
+    env.Replace(APIO_FORCE_COLORS=flag)
+    # Set the APIO_IS_WINDOWS flag based on the required "platform_id" arg.
     platform_id = arg_str(env, "platform_id", "")
     # Note: this is a programming error, not a user error.
     assert platform_id, "Missing required scons arg 'platform_id'."
     flag = "windows" in platform_id.lower()
-    assert env.get("IS_WINDOWS") is None
-    env.Replace(IS_WINDOWS=flag)  # Tentative.
+    assert env.get("APIO_IS_WINDOWS") is None
+    env.Replace(APIO_IS_WINDOWS=flag)  # Tentative.
 
-    # For debugging.
-    # dump_env_vars(env)
+    # Extra info for debugging.
+    if is_debug(env):
+        dump_env_vars(env)
 
     return env
 
 
-def __dump_parsed_arg(env, name, value, from_default: bool) -> None:
+def _dump_parsed_arg(env, name, value, from_default: bool) -> None:
     """Used to dump parsed scons arg. For debugging only."""
-    # Uncomment below for debugging.
-    # type_name = type(value).__name__
-    # default = "(default)" if from_default else ""
-    # click.secho(
-    #     f"Arg  {name:15} ->  {str(value):15} " f"{type_name:6} {default}"
-    # )
+    type_name = type(value).__name__
+    default = "(default)" if from_default else ""
+    msg(env, f"Arg  {name:15} ->  {str(value):15} " f"{type_name:6} {default}")
 
 
 def get_args(env: SConsEnvironment) -> Dict[str, str]:
@@ -188,7 +193,10 @@ def arg_bool(env: SConsEnvironment, name: str, default: bool) -> bool:
             fatal_error(
                 env, f"Invalid boolean argument '{name} = '{raw_value}'."
             )
-    __dump_parsed_arg(env, name, value, from_default=raw_value is None)
+    # -- We avoid infinite recustion if arg is "debug" since is_debug() calls
+    # -- arg_bool().
+    if name != "debug" and is_debug(env):
+        _dump_parsed_arg(env, name, value, from_default=raw_value is None)
     return value
 
 
@@ -198,7 +206,8 @@ def arg_str(env: SConsEnvironment, name: str, default: str) -> str:
     args = get_args(env)
     raw_value = args.get(name, None)
     value = default if raw_value is None else raw_value
-    __dump_parsed_arg(env, name, value, from_default=raw_value is None)
+    if is_debug(env):
+        _dump_parsed_arg(env, name, value, from_default=raw_value is None)
     return value
 
 
@@ -215,7 +224,7 @@ def force_colors(env: SConsEnvironment) -> bool:
     For more details see the click issue at
     https://github.com/pallets/click/issues/2791.
     """
-    flag = env["FORCE_COLORS"]
+    flag = env["APIO_FORCE_COLORS"]
     assert isinstance(flag, bool)
     return flag
 
@@ -286,10 +295,11 @@ def dump_env_vars(env: SConsEnvironment) -> None:
     dictionary = env.Dictionary()
     keys = list(dictionary.keys())
     keys.sort()
-    print("----- Env vars begin -----")
+    click.secho()
+    msg(env, ">>> Env vars BEGIN", fg="magenta")
     for key in keys:
         print(f"{key} = {env[key]}")
-    print("----- Env vars end -------")
+    msg(env, "<<< Env vars END\n", fg="magenta")
 
 
 def get_programmer_cmd(env: SConsEnvironment) -> str:
@@ -371,6 +381,23 @@ def make_verilog_src_scanner(env: SConsEnvironment) -> Scanner.Base:
         r'`\s*include\s+["]([a-zA-Z_./]+)["]', re.M
     )
 
+    # A regex for inclusion via $readmemh()
+    # Example
+    #   Test:      '$readmemh("my_data.hex", State_buff);'
+    #   Capture:   'my_data.hex'
+    readmemh_reference_re = re.compile(
+        r"\$readmemh\([\'\"]([^\'\"]+)[\'\"]", re.M
+    )
+
+    # -- List of required and optional files that may require a rebuild if
+    # -- changed.
+    core_dependencies = [
+        "apio.ini",
+        "boards.json",
+        "fpgas.json",
+        "programmers.json",
+    ]
+
     def verilog_src_scanner_func(
         file_node: File, env: SConsEnvironment, ignored_path
     ) -> List[str]:
@@ -379,7 +406,9 @@ def make_verilog_src_scanner(env: SConsEnvironment) -> Scanner.Base:
         on another .v file in the project since scons loads anyway
         all the .v files in the project.
 
-        Returns a list of files.
+        Returns a list of files. Dependencies that don't have an existing file
+        are ignored and not returned. This is to avoid references in commented
+        out code to break scons dependencies.
         """
         # Sanity check. Should be called only to scan verilog files. If this
         # fails, this is a programming error rather than a user error.
@@ -387,32 +416,48 @@ def make_verilog_src_scanner(env: SConsEnvironment) -> Scanner.Base:
             env, file_node.name
         ), f"Not a src file: {file_node.name}"
 
-        # Create the initial set. All source file depend on apio.ini and must
-        # be built when apio.ini changes.
-        #
-        # pylint: disable=fixme
-        # TODO: add also other config files aush as boards.json and
-        # programmers.json. Since they are optional, need to figure out how to
-        # handle the case when they are deleted or created.
-        includes_set = set()
-        includes_set.add("apio.ini")
+        # Create the initial set with the core dependencies.
+        candidates_set = set()
+        candidates_set.update(core_dependencies)
 
-        # If the file doesn't exist, this returns an empty string.
-        file_text = file_node.get_text_contents()
-        # Get IceStudio includes.
-        includes = icestudio_list_re.findall(file_text)
-        includes_set.update(includes)
+        # Read the file. This returns [] if the file doesn't exist.
+        file_content = file_node.get_text_contents()
 
-        # Get Standard verilog includes.
-        includes = verilog_include_re.findall(file_text)
-        includes_set.update(includes)
+        # Get verilog includes references.
+        candidates_set.update(verilog_include_re.findall(file_content))
 
-        # Get a deterministic list. (Does it sort by file.name?)
-        includes_list = sorted(list(includes_set))
+        # Get $readmemh() function references.
+        candidates_set.update(readmemh_reference_re.findall(file_content))
 
-        # For debugging
-        # info(env, f"*** {file_node.name} includes {includes_list}")
-        return env.File(includes_list)
+        # Get IceStudio references.
+        candidates_set.update(icestudio_list_re.findall(file_content))
+
+        # Filter out candidates that don't have a matching files to prevert
+        # breakign the build. This handle for example the case where the
+        # file references is in a comment or non reachable code.
+        # See also https://stackoverflow.com/q/79302552/15038713
+        dependencies = []
+        for dependency in candidates_set:
+            if Path(dependency).exists():
+                dependencies.append(dependency)
+            elif is_debug(env):
+                msg(
+                    env,
+                    f"Dependency candidate {dependency} does not exist, "
+                    "droping.",
+                )
+
+        # Sort the strings for determinism.
+        dependencies = sorted(list(dependencies))
+
+        # Debug info.
+        if is_debug(env):
+            msg(env, f"Dependencies of {file_node.name}:", fg="blue")
+            for dependency in dependencies:
+                msg(env, f"  {dependency}", fg="blue")
+
+        # All done
+        return env.File(dependencies)
 
     return env.Scanner(function=verilog_src_scanner_func)
 
@@ -521,7 +566,8 @@ def get_source_files(env: SConsEnvironment) -> Tuple[List[str], List[str]]:
     # -- Get a list of all *.v and .sv files in the project dir.
     files: List[File] = env.Glob("*.sv")
     if files:
-        click.secho(
+        msg(
+            env,
             "Warning: project contains .sv files, system-verilog support "
             "is experimental.",
             fg="yellow",

@@ -14,7 +14,7 @@ from abc import ABC, abstractmethod
 
 from configparser import ConfigParser
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, Optional, Union, Any, List
 from configobj import ConfigObj
 import click
 
@@ -32,7 +32,7 @@ https://github.com/FPGAwars/apio/wiki/Project-configuration-file
 REQUIRED_OPTIONS = {"board"}
 
 # -- Set of additional options a project may have.
-OPTIONAL_OPTIONS = {"top-module"}
+OPTIONAL_OPTIONS = {"top-module", "format-verible-options"}
 
 # -- Set of all options a project may have.
 ALL_OPTIONS = REQUIRED_OPTIONS | OPTIONAL_OPTIONS
@@ -108,12 +108,42 @@ class Project:
                 fg="yellow",
             )
 
-    def __getitem__(self, option: str) -> Optional[str]:
+    def get(self, option: str, default: Any = None) -> Union[str, Any]:
+        """Lookup an option value by name. Returns default if not found."""
         # -- If this fails, this is a programming error.
         assert option in ALL_OPTIONS, f"Invalid project option: [{option}]"
 
         # -- Lookup with default
-        return self._options.get(option, None)
+        return self._options.get(option, default)
+
+    def __getitem__(self, option: str) -> Optional[str]:
+        """Lookup an option value by name using the [] operator. Returns
+        None if not found."""
+        return self.get(option, None)
+
+    def get_as_lines_list(
+        self, option: str, default: Any = None
+    ) -> Union[List[str], Any]:
+        """Lookup an option value that has a line list format. Returns
+        the list of non empty lines or default if no value. Option
+        must be in ALL_OPTIONS."""
+
+        # -- Get the raw value.
+        values = self.get(option, None)
+
+        # -- If not found, return default
+        if values is None:
+            return default
+
+        # -- Break the values to a list of lines. Each line is already
+        # -- right and left of white space by configparser and comments
+        # -- are removed.
+        values = values.split("\n")
+
+        # -- Select the non empty items.
+        values = [x for x in values if x]
+
+        return values
 
 
 def load_project_from_file(

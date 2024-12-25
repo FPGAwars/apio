@@ -9,12 +9,14 @@
 # -- Author Jesús Arroyo
 # -- Licence GPLv2
 
+import traceback
 import os
 import re
 import time
 import datetime
 import shutil
 from functools import wraps
+from typing import List
 
 import importlib.metadata
 import click
@@ -57,9 +59,8 @@ def on_exception(*, exit_code: int):
             try:
                 return function(*args, **kwargs)
             except Exception as exc:
-                # For debugging. Uncomment to print the exception's stack.
-                # import traceback
-                # traceback.print_tb(exc.__traceback__)
+                if util.is_debug():
+                    traceback.print_tb(exc.__traceback__)
 
                 if str(exc):
                     click.secho("Error: " + str(exc), fg="red")
@@ -389,10 +390,6 @@ class SCons:
 
         # -- Check if they are not compatible!
         if actual_platform_id != required_platform_id:
-
-            # Incorrect platform
-            if actual_platform_id == "linux_armv7l":
-                raise ValueError("incorrect platform: RPI2 or RPI3 required")
 
             raise ValueError(
                 "Board is restricted to platform "
@@ -864,12 +861,21 @@ class SCons:
         # -- Set env path and vars to use the packages.
         pkg_util.set_env_for_packages(self.apio_ctx)
 
+        if util.is_debug():
+            click.secho("\nSCONS CALL:", fg="magenta")
+            click.secho(f"* command:   {command}")
+            click.secho(f"* board:     {board}")
+            click.secho(f"* variables: {variables}")
+            click.secho()
+
         # -- Execute scons
         return self._execute_scons(command, variables, board)
 
     # R0914: Too many local variables (19/15)
     # pylint: disable=R0914
-    def _execute_scons(self, command: str, variables: list, board: str) -> int:
+    def _execute_scons(
+        self, command: str, variables: List[str], board: str
+    ) -> int:
         """Execute the scons builder
         * INPUTS:
           * command: (string): Apio command. Ex. 'upload', 'build'...
@@ -914,11 +920,23 @@ class SCons:
             # -- Print a horizontal line
             click.secho("-" * terminal_width, bold=True)
 
+        # -- Create the scons debug options. See details at
+        # -- https://scons.org/doc/2.4.1/HTML/scons-man.html
+        debug_options = (
+            ["--debug=explain,prepare,stacktrace", "--tree=all"]
+            if util.is_debug()
+            else []
+        )
+
         # -- Command to execute: scons -Q apio_cmd flags
         # -- Without force_colors=True, click.secho() colors from the scons
         # -- child process will be stripped out becaused they are piped out.
         scons_command = (
-            ["scons"] + ["-Q", command] + variables + ["force_colors=True"]
+            ["scons"]
+            + ["-Q", command]
+            + debug_options
+            + variables
+            + ["force_colors=True"]
         )
 
         # For debugging. Print the scons command line in a forumat that is

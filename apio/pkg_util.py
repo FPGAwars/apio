@@ -68,8 +68,7 @@ def _get_env_mutations_for_packages(apio_ctx: ApioContext) -> EnvMutations:
 def _dump_env_mutations(
     apio_ctx: ApioContext, mutations: EnvMutations
 ) -> None:
-    """For debugging. Delete once stabalizing the new oss-cad-suite on
-    windows."""
+    """Dumps a user friendly representation of the env mutations."""
     click.secho("Envirnment settings:", fg="magenta")
 
     # -- Print PATH mutations.
@@ -110,13 +109,24 @@ def _apply_env_mutations(mutations: EnvMutations) -> None:
 __ENV_ALREADY_SET_FLAG = False
 
 
-def set_env_for_packages(apio_ctx: ApioContext, verbose: bool = False) -> None:
+def set_env_for_packages(
+    apio_ctx: ApioContext, *, quiet: bool = False, verbose: bool = False
+) -> None:
     """Sets the environment variables for using all the that are
     available for this platform, even if currently not installed.
 
     The function sets the environment only on first call and in latter calls
     skips the operation silently.
+
+    If quite is set, no output is printed. When verbose is set, additional
+    output such as the env vars mutations are printed, otherwise, a minimal
+    information is printed to make the user aware that they commands they
+    see are exectuted in a modified env settings.
     """
+
+    # -- If this fails, this is a programming error. Quiet and verbose
+    # -- cannot be combined.
+    assert not (quiet and verbose), "Can't have both quite and verbose."
 
     # -- Collect the env mutations for all packages.
     mutations = _get_env_mutations_for_packages(apio_ctx)
@@ -132,7 +142,7 @@ def set_env_for_packages(apio_ctx: ApioContext, verbose: bool = False) -> None:
     if not apio_ctx.env_was_already_set:
         _apply_env_mutations(mutations)
         apio_ctx.env_was_already_set = True
-        if not verbose:
+        if not verbose and not quiet:
             click.secho("Setting the envinronment.")
 
 
@@ -410,8 +420,6 @@ def list_packages(apio_ctx: ApioContext, scan: PackageScanResults) -> None:
     # -- Print an error summary
     if scan.num_errors():
         click.secho(f"Total of {util.plurality(scan.num_errors(), 'error')}")
-    else:
-        click.secho("No errors.")
 
     # -- A line seperator. For asthetic reasons.
     click.secho()

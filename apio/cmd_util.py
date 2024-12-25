@@ -10,14 +10,10 @@
 """Utility functionality for apio click commands. """
 
 import sys
-from typing import Mapping, List, Tuple, Any, Dict, Union
+from dataclasses import dataclass
+from typing import List, Dict, Union
 import click
 from apio import util
-
-
-# This text marker is inserted into the help text to indicates
-# deprecated options.
-DEPRECATED_MARKER = "[DEPRECATED]"
 
 
 def fatal_usage_error(cmd_ctx: click.Context, msg: str) -> None:
@@ -210,54 +206,77 @@ class ApioOption(click.Option):
     def __init__(self, *args, **kwargs):
         # Cache a list of option's aliases. E.g. ["-t", "--top-model"].
         self.aliases = [k for k in args[0] if k.startswith("-")]
-        # Consume the "deprecated" arg is specified. This args is
-        # added by this class and is not passed to super.
-        self.deprecated = kwargs.pop("deprecated", False)
-        # Tweak the help text to have a [DEPRECATED] prefix.
-        if self.deprecated:
-            kwargs["help"] = (
-                DEPRECATED_MARKER + " " + kwargs.get("help", "").strip()
-            )
+
+        # Pass the rest to the base class.
         super().__init__(*args, **kwargs)
 
-    # @override
-    def handle_parse_result(
-        self, ctx: click.Context, opts: Mapping[str, Any], args: List[str]
-    ) -> Tuple[Any, List[str]]:
-        """Overides the parent method to print a deprecated option message."""
-        if self.deprecated and self.name in opts:
-            click.secho(f"Info: {self.aliases} is deprecated.", fg="yellow")
-        return super().handle_parse_result(ctx, opts, args)
+
+@dataclass(frozen=True)
+class ApioSubgroup:
+    """A class to represent a named group of subcommands. An apio command
+    of type group, contains two or more subcommand in one or more subgroups."""
+
+    title: str
+    commands: List[click.Command]
 
 
-DEPRECATION_NOTE = f"""
-[Note] Flags marked with {DEPRECATED_MARKER} are not recomanded for use.
-For project configuration, use an apio.ini project file and if neaded,
-project specific 'boards.json' and 'fpga.json' definition files.
-"""
+class ApioGroup(click.Group):
+    """A customized click.Group class that allow to group subcommand by
+    categories."""
 
+    def __init__(self, *args, **kwargs):
+        # -- Consume the 'subgroups' arg.
+        self._subgroups: List[ApioSubgroup] = kwargs.pop("subgroups")
+        assert isinstance(self._subgroups, list)
+        assert isinstance(self._subgroups[0], ApioSubgroup)
 
-class ApioCommand(click.Command):
-    """Override click.Command with Apio specific behavior.
-    Currently it adds a clarification note to the help text of
-    commands that contains deprecated ApioOptions.
-    """
+        # -- Pass the rest of the arg to init the base class.
+        super().__init__(*args, **kwargs)
 
-    def _num_deprecated_options(self, cmd_ctx: click.Context) -> None:
-        """Returns the number of deprecated options of this command."""
-        deprecated_options = 0
-        for param in self.get_params(cmd_ctx):
-            if isinstance(param, ApioOption) and param.deprecated:
-                deprecated_options += 1
-        return deprecated_options
+        # -- Register the commands of the subgroups as subcommands of this
+        # -- group.
+        for subgroup in self._subgroups:
+            for cmd in subgroup.commands:
+                self.add_command(cmd=cmd, name=cmd.name)
 
     # @override
-    def format_help_text(
-        self, ctx: click.Context, formatter: click.HelpFormatter
-    ) -> None:
-        super().format_help_text(ctx, formatter)
-        deprecated = self._num_deprecated_options(ctx)
-        if deprecated > 0:
-            formatter.write_paragraph()
-            with formatter.indentation():
-                formatter.write_text(DEPRECATION_NOTE)
+    def get_help(self, ctx: click.Context) -> str:
+        """Formats the help into a string and returns it. We override the
+        base class method to list the subcommands by categories.
+        """
+
+        # -- Get the default help text for this command.
+        original_help = super().get_help(ctx)
+
+        # -- The auto generated click help lines (apio --help)
+        help_lines = original_help.split("\n")
+
+        # -- Extract the header of the text help. We will generate ourselves
+        # -- and append the command list.
+        index = help_lines.index("Commands:")
+        result_lines = help_lines[:index]
+
+        # -- Get a flat list of all subcommand names.
+        cmd_names = [
+            cmd.name
+            for subgroup in self._subgroups
+            for cmd in subgroup.commands
+        ]
+
+        # -- Find the length of the longerst name.
+        max_name_len = max(len(name) for name in cmd_names)
+
+        # -- Generate the subcommands short help, grouped by subgroup.
+        for subgroup in self._subgroups:
+            result_lines.append(f"{subgroup.title}:")
+            for cmd in subgroup.commands:
+                # -- We pad for field width and then apply color.
+                styled_name = click.style(
+                    f"{cmd.name:{max_name_len}}", fg="magenta"
+                )
+                result_lines.append(
+                    f"  {ctx.command_path} {styled_name}  {cmd.short_help}"
+                )
+            result_lines.append("")
+
+        return "\n".join(result_lines)

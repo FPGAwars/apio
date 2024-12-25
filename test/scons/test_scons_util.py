@@ -9,7 +9,7 @@ from test.conftest import ApioRunner
 import pytest
 from SCons.Script.SConscript import SConsEnvironment
 import SCons.Script.SConsOptions
-from SCons.Node.FS import FS, File
+from SCons.Node.FS import FS
 import SCons.Node.FS
 import SCons.Environment
 import SCons.Defaults
@@ -37,16 +37,8 @@ from apio.scons.scons_util import (
     get_programmer_cmd,
     make_verilator_config_builder,
     get_source_files,
-    vlt_path
+    vlt_path,
 )
-
-DEPENDECIES_TEST_TEXT = """
-// Test file
-parameter v771499 = "v771499.list"
-`include "apio_testing.vh"
-parameter v771499 = "v771499.list"
-`include "apio_testing.v
-"""
 
 
 class SconsHacks:
@@ -123,10 +115,31 @@ def test_dependencies(apio_runner: ApioRunner):
     reference of files it uses.
     """
 
+    # -- Test file content with references. Contains duplicates and
+    # -- references out of alphabetical order.
+    file_content = """
+        // Dummy file for testing.
+
+        // Icestudio reference.
+        parameter v771499 = "v771499.list"
+
+        // System verilog include reference.
+        `include "apio_testing.vh"
+
+        // Duplicate icestudio reference.
+        parameter v771499 = "v771499.list"
+
+        // Verilog include reference.
+        `include "apio_testing.v
+
+        // $readmemh() function reference.
+        $readmemh("my_data.hex", State_buff);
+        """
+
     with apio_runner.in_sandbox() as sb:
 
         # -- Write a test file name in the current directory.
-        sb.write_file("test_file.v", DEPENDECIES_TEST_TEXT)
+        sb.write_file("test_file.v", file_content)
 
         # -- Create a scanner
         env = _make_test_scons_env()
@@ -136,15 +149,37 @@ def test_dependencies(apio_runner: ApioRunner):
         file = FS.File(FS(), "test_file.v")
         dependency_files = scanner.function(file, env, None)
 
-        # -- Create a list with file name strings.
-        file_names = []
-        for f in dependency_files:
-            assert isinstance(f, File)
-            file_names.append(f.name)
+        # -- Files list should be empty since none of the dependency candidate
+        # has a file.
+        file_names = [f.name for f in dependency_files]
+        assert file_names == []
 
-        # -- Check the list. The scanner returns the files sorted and
-        # -- with dulicates removed.
-        assert file_names == ["apio.ini", "apio_testing.vh", "v771499.list"]
+        # -- Create file lists
+        core_dependencies = [
+            "apio.ini",
+            "boards.json",
+            "programmers.json",
+            "fpgas.json",
+        ]
+
+        file_dependencies = [
+            "apio_testing.vh",
+            "my_data.hex",
+            "v771499.list",
+        ]
+
+        # -- Create dummy files. This should cause the dependencies to be
+        # -- reported. (Candidate dependencies with no matching file are
+        # -- filtered out)
+        for f in core_dependencies + file_dependencies + ["non-related.txt"]:
+            sb.write_file(f, "dummy-file")
+
+        # -- Run the scanner again
+        dependency_files = scanner.function(file, env, None)
+
+        # -- Check the dependnecies
+        file_names = [f.name for f in dependency_files]
+        assert file_names == sorted(core_dependencies + file_dependencies)
 
 
 def test_has_testbench_name():
@@ -510,10 +545,10 @@ def test_get_source_files(apio_runner):
         assert srcs == ["aaa.v", "bbb.v"]
         assert testbenches == ["aaa_tb.v", "ccc_tb.v"]
 
-def test_vlt_path(apio_runner):
+
+def test_vlt_path():
     """Tests the vlt_path path string mapping."""
 
     assert vlt_path("") == ""
     assert vlt_path("/aa/bb/cc.xyz") == "/aa/bb/cc.xyz"
     assert vlt_path("C:\\aa\\bb/cc.xyz") == "C:/aa/bb/cc.xyz"
-    
