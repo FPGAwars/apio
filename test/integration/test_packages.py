@@ -7,7 +7,7 @@ from test.conftest import ApioRunner
 import pytest
 
 # -- Entry point for apio commands.
-from apio.commands.packages import cli as apio_packages
+from apio.commands.apio_packages import cli as apio_packages
 
 
 # R0801: Similar lines in 2 files

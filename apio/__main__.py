@@ -152,7 +152,7 @@ class ApioCLI(click.MultiCommand):
         # -- except __init__.py
         # -- Create the list
         cmd_list = [
-            element.stem  # -- Name without path and extension
+            element.stem.replace("apio_", "") # -- Name without path and extension
             for element in self.commands_folder.iterdir()
             if (
                 element.is_file()
@@ -175,7 +175,7 @@ class ApioCLI(click.MultiCommand):
 
         # -- Get the python filename asociated with the give command
         # -- Ex. "system" --> "/home/obijuan/.../apio/commands/system.py"
-        filename = self.commands_folder / f"{cmd_name}.py"
+        filename = self.commands_folder / f"apio_{cmd_name}.py"
 
         # -- Check if the file exists
         if filename.exists():
@@ -192,12 +192,12 @@ class ApioCLI(click.MultiCommand):
         return nnss.get("cli")
 
     # @override
-    def get_help(self, ctx: click.Context) -> str:
-        """Formats the help into a string and returns it.
+    # def get_help(self, ctx: click.Context) -> str:
+    #     """Formats the help into a string and returns it.
 
-        Calls :meth:`format_help` internally.
-        """
-        return reformat_apio_help(super().get_help(ctx))
+    #     Calls :meth:`format_help` internally.
+    #     """
+    #     return reformat_apio_help(super().get_help(ctx))
 
 
 def context_settings():

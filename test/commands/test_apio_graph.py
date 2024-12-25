@@ -4,7 +4,7 @@
 
 from os import chdir
 from test.conftest import ApioRunner
-from apio.commands.graph import cli as apio_graph
+from apio.commands.apio_graph import cli as apio_graph
 
 
 # R0801: Similar lines in 2 files

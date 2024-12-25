@@ -5,7 +5,7 @@
 from test.conftest import ApioRunner
 
 # -- apio drivers entry point
-from apio.commands.drivers import cli as apio_drivers
+from apio.commands.apio_drivers import cli as apio_drivers
 
 
 def test_drivers(apio_runner: ApioRunner):

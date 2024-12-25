@@ -7,7 +7,7 @@ import pytest
 
 
 # -- apio upgrade entry point
-from apio.commands.upgrade import cli as apio_upgrade
+from apio.commands.apio_upgrade import cli as apio_upgrade
 
 
 def test_upgrade(apio_runner: ApioRunner):

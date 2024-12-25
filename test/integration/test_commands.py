@@ -10,17 +10,17 @@ from test.conftest import ApioRunner
 import pytest
 
 # -- Entry point for apio commands.
-from apio.commands.build import cli as apio_build
-from apio.commands.clean import cli as apio_clean
-from apio.commands.examples import cli as apio_examples
-from apio.commands.format import cli as apio_format
-from apio.commands.graph import cli as apio_graph
-from apio.commands.lint import cli as apio_lint
-from apio.commands.packages import cli as apio_packages
-from apio.commands.raw import cli as apio_raw
-from apio.commands.report import cli as apio_report
-from apio.commands.test import cli as apio_test
-from apio.commands.upgrade import cli as apio_upgrade
+from apio.commands.apio_build import cli as apio_build
+from apio.commands.apio_clean import cli as apio_clean
+from apio.commands.apio_examples import cli as apio_examples
+from apio.commands.apio_format import cli as apio_format
+from apio.commands.apio_graph import cli as apio_graph
+from apio.commands.apio_lint import cli as apio_lint
+from apio.commands.apio_packages import cli as apio_packages
+from apio.commands.apio_raw import cli as apio_raw
+from apio.commands.apio_report import cli as apio_report
+from apio.commands.apio_test import cli as apio_test
+from apio.commands.apio_upgrade import cli as apio_upgrade
 
 
 # R0801: Similar lines in 2 files

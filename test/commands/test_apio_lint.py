@@ -5,7 +5,7 @@
 from test.conftest import ApioRunner
 
 # -- apio lint entry point
-from apio.commands.lint import cli as apio_lint
+from apio.commands.apio_lint import cli as apio_lint
 
 
 def test_lint_no_packages(apio_runner: ApioRunner):

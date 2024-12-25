@@ -6,7 +6,7 @@ from os import chdir
 from test.conftest import ApioRunner
 
 # -- apio report entry point
-from apio.commands.report import cli as apio_report
+from apio.commands.apio_report import cli as apio_report
 
 
 # R0801: Similar lines in 2 files

@@ -5,7 +5,7 @@
 from test.conftest import ApioRunner
 
 # -- apio fpgas entry point
-from apio.commands.fpgas import cli as apio_fpgas
+from apio.commands.apio_fpgas import cli as apio_fpgas
 
 CUSTOM_FPGAS = """
 {

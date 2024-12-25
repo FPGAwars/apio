@@ -6,7 +6,7 @@ from os import chdir
 from os.path import join
 from pathlib import Path
 from test.conftest import ApioRunner
-from apio.commands.clean import cli as apio_clean
+from apio.commands.apio_clean import cli as apio_clean
 
 
 def test_clean_without_apio_ini(apio_runner: ApioRunner):

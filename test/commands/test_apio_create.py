@@ -10,7 +10,7 @@ from configobj import ConfigObj
 
 
 # -- apio create entry point
-from apio.commands.create import cli as apio_create
+from apio.commands.apio_create import cli as apio_create
 
 
 # R0801: Similar lines in 2 files

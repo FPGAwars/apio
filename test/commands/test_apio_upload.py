@@ -4,7 +4,7 @@
 
 from os import chdir
 from test.conftest import ApioRunner
-from apio.commands.upload import cli as apio_upload
+from apio.commands.apio_upload import cli as apio_upload
 
 
 # R0801: Similar lines in 2 files

@@ -5,7 +5,7 @@
 from test.conftest import ApioRunner
 
 # -- apio examples entry point
-from apio.commands.examples import cli as apio_examples
+from apio.commands.apio_examples import cli as apio_examples
 
 
 def test_examples(apio_runner: ApioRunner):

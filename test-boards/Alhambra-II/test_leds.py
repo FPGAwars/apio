@@ -10,16 +10,16 @@ from pathlib import Path
 from click.testing import CliRunner
 
 # -- apio build entry point
-from apio.commands.build import cli as apio_build
+from apio.commands.apio_build import cli as apio_build
 
 # -- apio clean entry point
-from apio.commands.clean import cli as apio_clean
+from apio.commands.apio_clean import cli as apio_clean
 
 # -- apio lint entry point
-from apio.commands.lint import cli as apio_lint
+from apio.commands.apio_lint import cli as apio_lint
 
 # -- apio time entry point
-from apio.commands.upload import cli as apio_upload
+from apio.commands.apio_upload import cli as apio_upload
 
 
 # -------------------------------------------

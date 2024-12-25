@@ -5,7 +5,7 @@
 from test.conftest import ApioRunner
 
 # -- apio system entry point
-from apio.commands.raw import cli as apio_raw
+from apio.commands.apio_raw import cli as apio_raw
 
 
 def test_raw(apio_runner: ApioRunner):

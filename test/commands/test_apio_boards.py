@@ -5,7 +5,7 @@
 from test.conftest import ApioRunner
 
 # -- apio boards entry point
-from apio.commands.boards import cli as apio_boards
+from apio.commands.apio_boards import cli as apio_boards
 
 
 CUSTOM_BOARDS = """

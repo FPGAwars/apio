@@ -4,7 +4,7 @@
 
 from os import chdir
 from test.conftest import ApioRunner
-from apio.commands.format import cli as apio_format
+from apio.commands.apio_format import cli as apio_format
 
 
 def test_format_without_apio_ini(apio_runner: ApioRunner):

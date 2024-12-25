@@ -5,7 +5,7 @@
 from test.conftest import ApioRunner
 
 # -- apio sim entry point
-from apio.commands.sim import cli as apio_sim
+from apio.commands.apio_sim import cli as apio_sim
 
 
 def test_sim(apio_runner: ApioRunner):
