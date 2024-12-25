@@ -64,7 +64,7 @@ the supported boards.
 # R0913: Too many arguments (6/5)
 # pylint: disable=R0913
 @click.command(
-    "create",
+    name="create",
     short_help="Create an apio.ini project file.",
     help=HELP,
 )

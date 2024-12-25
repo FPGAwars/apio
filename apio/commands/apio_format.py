@@ -57,7 +57,7 @@ online or type 'apio raw -- verible-verilog-format --helpfull'.
 
 
 @click.command(
-    "format",
+    name="format",
     short_help="Format verilog source files.",
     help=HELP,
 )

@@ -10,10 +10,13 @@
 # command line or via Visual Studio Code debug
 # targets at .vscode/launch.json.
 
+# In prod, the top command is invoked directly based on
+# the specification in the the package file pyproject.toml.
+
 import sys
 
 # -- Import the apio entry point
-from apio.__main__ import cli as apio
+from apio.commands.apio import cli as apio
 
 try:
     apio(None)

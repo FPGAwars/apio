@@ -28,7 +28,7 @@ Examples:
 
 
 @click.command(
-    "upgrade",
+    name="upgrade",
     short_help="Check the latest Apio version.",
     help=HELP,
 )

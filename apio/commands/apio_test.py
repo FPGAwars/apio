@@ -43,7 +43,7 @@ signals see the 'apio sim' command.
 
 
 @click.command(
-    "test",
+    name="test",
     short_help="Test all or a single verilog testbench module.",
     help=HELP,
 )

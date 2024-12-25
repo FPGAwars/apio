@@ -76,7 +76,7 @@ Examples:
 # pylint: disable=too-many-positional-arguments
 # pylint: disable=too-many-locals
 @click.command(
-    "upload",
+    name="upload",
     short_help="Upload the bitstream to the FPGA.",
     help=HELP,
 )

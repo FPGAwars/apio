@@ -71,7 +71,7 @@ Examples:
 
 
 @click.command(
-    "drivers",
+    name="drivers",
     short_help="Manage the operating system drivers.",
     help=HELP,
 )

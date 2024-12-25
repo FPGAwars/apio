@@ -90,7 +90,7 @@ variable APIO_HOME_DIR, and APIO_PLATFORM.
 # pylint: disable=too-many-positional-arguments
 # pylint: disable=too-many-locals
 @click.command(
-    "system",
+    name="system",
     short_help="Provides system info.",
     help=HELP,
 )

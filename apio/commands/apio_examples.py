@@ -68,7 +68,7 @@ board (e.g. 'leds').
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-positional-arguments
 @click.command(
-    "examples",
+    name="examples",
     short_help="List and fetch apio examples.",
     help=HELP,
     epilog=EPILOG,

@@ -87,7 +87,7 @@ Examples:
 
 
 @click.command(
-    "fpgas",
+    name="fpgas",
     short_help="List available FPGA definitions.",
     help=HELP,
 )

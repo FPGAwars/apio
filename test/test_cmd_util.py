@@ -16,7 +16,7 @@ from apio.cmd_util import (
 
 
 # -- A fake command for testing.
-@click.command("fake_cmd")
+@click.command(name="fake_cmd")
 @click.option("_opt1", "--opt1", is_flag=True, cls=ApioOption)
 @click.option("_opt2", "--opt2", is_flag=True, cls=ApioOption)
 @click.option("_opt3", "--opt3", is_flag=True, cls=ApioOption)

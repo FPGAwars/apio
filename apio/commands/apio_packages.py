@@ -182,7 +182,7 @@ fix_option = click.option(
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-positional-arguments
 @click.command(
-    "install",
+    name="install",
     short_help="Manage the apio packages.",
     help=HELP,
 )

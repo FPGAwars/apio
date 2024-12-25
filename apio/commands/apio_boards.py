@@ -117,7 +117,7 @@ Examples:
 
 
 @click.command(
-    "boards",
+    name="boards",
     short_help="List available board definitions.",
     help=HELP,
 )

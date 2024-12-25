@@ -78,7 +78,7 @@ Examples:
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-positional-arguments
 @click.command(
-    "lint",
+    name="lint",
     short_help="Lint the verilog code.",
     help=HELP,
 )

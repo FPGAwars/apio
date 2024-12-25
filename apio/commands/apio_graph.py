@@ -66,7 +66,7 @@ view the graph, and on Mac OS type 'open hardware.svg'.
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-positional-arguments
 @click.command(
-    "graph",
+    name="graph",
     short_help="Generate a visual graph of the code.",
     help=HELP,
     epilog=EPILOG,

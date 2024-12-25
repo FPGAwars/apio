@@ -37,7 +37,7 @@ Examples:
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-positional-arguments
 @click.command(
-    "report",
+    name="report",
     short_help="Report design utilization and timing.",
     help=HELP,
 )

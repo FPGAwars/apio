@@ -47,7 +47,7 @@ configuration for future invocations.
 
 
 @click.command(
-    "sim",
+    name="sim",
     short_help="Simulate a testbench with graphic results.",
     help=HELP,
 )

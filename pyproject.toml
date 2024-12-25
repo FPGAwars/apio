@@ -43,7 +43,7 @@ icefunprog = ['icefunprog==2.0.3']
 
 
 [tool.flit.scripts]
-apio = "apio.__main__:cli"
+apio = "apio.commands.apio:cli"
 
 [tool.black]
 line-length = 79

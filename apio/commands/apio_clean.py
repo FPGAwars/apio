@@ -34,7 +34,7 @@ the temporary apio file names.
 
 
 @click.command(
-    "clean",
+    name="clean",
     short_help="Delete the apio generated files.",
     help=HELP,
 )

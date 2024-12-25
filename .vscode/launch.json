@@ -6,6 +6,9 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/apio_run.py",
+            "args": [
+                "build"
+            ],
             "console": "integratedTerminal",
             "justMyCode": false,
             "cwd": "${workspaceFolder}/test-examples/alhambra-ii/02-jumping-LED"
