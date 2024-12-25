@@ -161,11 +161,11 @@ def _list_cli():
     # -- Print an hint or summary based on the findings.
     if scan.num_errors():
         click.secho(
-            "[Hint] run 'apio packages --fix' to fix the errors.", fg="yellow"
+            "[Hint] run 'apio packages fix' to fix the errors.", fg="yellow"
         )
     elif scan.uninstalled_package_ids:
         click.secho(
-            "[Hint] run 'apio packages --install' to install all "
+            "[Hint] run 'apio packages install' to install all "
             "available packages.",
             fg="yellow",
         )
@@ -220,7 +220,8 @@ def _fix_cli(
 
 
 HELP = """
-'apio packages' is a group of commands that manage the apio installed packages.
+The 'apio packages' command groups provides commands to manage the the
+instllation of the apio packages
 These are not python packages but apio specific packages that contain various
 tools and data that are necessary for the operation of apio.
 These packages are installed after the installation of the apio python package
@@ -228,7 +229,7 @@ using the command 'apio packages install'.
 Note that the list of available packages depends on the operatingsystem you
 use as some require more packages than others.
 
-See below the list of commands in the 'apio packages' group.
+The subcommands of this group are listed below.
 """
 
 
@@ -256,4 +257,4 @@ SUBGROUPS = [
 def cli():
     """Implements the 'apio packages' command group.'"""
 
-    # Nothing to do here.
+    # pass

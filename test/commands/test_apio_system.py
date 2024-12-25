@@ -15,29 +15,27 @@ def test_system(apio_runner: ApioRunner):
 
         # -- Execute "apio system"
         result = sb.invoke_apio_cmd(apio_system)
-        assert result.exit_code == 1, result.output
-        assert (
-            "specify one of --lsftdi, --lsusb, --lsserial, --info, "
-            "or --platforms" in result.output
-        )
+        sb.assert_ok(result)
+        assert "Subcommands" in result.output
+        assert "lsftdi" in result.output
 
-        # -- Execute "apio system --lsftdi"
-        result = sb.invoke_apio_cmd(apio_system, ["--lsftdi"])
+        # -- Execute "apio system lsftdi"
+        result = sb.invoke_apio_cmd(apio_system, ["lsftdi"])
         assert result.exit_code == 1, result.output
         assert "package 'oss-cad-suite' is not installed" in result.output
 
-        # -- Execute "apio system --lsusb"
-        result = sb.invoke_apio_cmd(apio_system, ["--lsusb"])
+        # -- Execute "apio system lsusb"
+        result = sb.invoke_apio_cmd(apio_system, ["lsusb"])
         assert result.exit_code == 1, result.output
         assert "package 'oss-cad-suite' is not installed" in result.output
 
         # -- Execute "apio system --lsserial"
-        sb.invoke_apio_cmd(apio_system, ["--lsserial"])
+        sb.invoke_apio_cmd(apio_system, ["lsserial"])
         assert result.exit_code == 1, result.output
         assert "package 'oss-cad-suite' is not installed" in result.output
 
-        # -- Execute "apio system --info"
-        result = sb.invoke_apio_cmd(apio_system, ["--info"])
+        # -- Execute "apio system info"
+        result = sb.invoke_apio_cmd(apio_system, ["info"])
         assert result.exit_code == 0, result.output
         assert "Platform id" in result.output
         # -- The these env options are set by the apio text fixture.

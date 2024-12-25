@@ -203,7 +203,7 @@ def _check_required_package(
         click.secho(
             f"Error: apio package '{package_name}' is not installed.", fg="red"
         )
-        click.secho("Please run:\n  apio packages --install", fg="yellow")
+        click.secho("Please run:\n  apio packages install", fg="yellow")
         sys.exit(1)
 
     # -- Case 2: Version does not match requirmeents.
@@ -215,7 +215,7 @@ def _check_required_package(
             fg="red",
         )
         click.secho(
-            "Please run:\n  apio packages --install --force", fg="yellow"
+            "Please run:\n  apio packages install --force", fg="yellow"
         )
         sys.exit(1)
 
@@ -226,8 +226,8 @@ def _check_required_package(
         click.secho(message, fg="red")
         click.secho(
             "Please run:\n"
-            "  apio packages --fix\n"
-            "  apio packages --install -- force",
+            "  apio packages fix\n"
+            "  apio packages install -- force",
             fg="yellow",
         )
 

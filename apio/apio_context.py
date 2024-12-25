@@ -450,7 +450,7 @@ class ApioContext:
             click.secho(
                 "\n"
                 "[Hint]: For the list of supported platforms\n"
-                "type 'apio system --platforms'.",
+                "type 'apio system platforms'.",
                 fg="yellow",
             )
             sys.exit(1)
