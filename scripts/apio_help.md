@@ -1,29 +1,38 @@
 ## Apio commands
-* [apio boards](#apio-boards)
-* [apio build](#apio-build)
-* [apio clean](#apio-clean)
-* [apio create](#apio-create)
-* [apio drivers](#apio-drivers)
-* [apio examples](#apio-examples)
-* [apio format](#apio-format)
-* [apio fpgas](#apio-fpgas)
-* [apio graph](#apio-graph)
-* [apio lint](#apio-lint)
-* [apio packages fix](#apio-packages-fix)
-* [apio packages install](#apio-packages-install)
-* [apio packages list](#apio-packages-list)
-* [apio packages uninstall](#apio-packages-uninstall)
-* [apio raw](#apio-raw)
-* [apio report](#apio-report)
-* [apio sim](#apio-sim)
-* [apio system info](#apio-system-info)
-* [apio system lsftdi](#apio-system-lsftdi)
-* [apio system lsserial](#apio-system-lsserial)
-* [apio system lsusb](#apio-system-lsusb)
-* [apio system platforms](#apio-system-platforms)
-* [apio test](#apio-test)
-* [apio upgrade](#apio-upgrade)
-* [apio upload](#apio-upload)
+* [apio](#apio)
+  * [apio boards](#apio-boards)
+  * [apio build](#apio-build)
+  * [apio clean](#apio-clean)
+  * [apio create](#apio-create)
+  * [apio drivers](#apio-drivers)
+    * [apio drivers ftdi](#apio-drivers-ftdi)
+      * [apio drivers ftdi install](#apio-drivers-ftdi-install)
+      * [apio drivers ftdi list](#apio-drivers-ftdi-list)
+      * [apio drivers ftdi uninstall](#apio-drivers-ftdi-uninstall)
+    * [apio drivers serial](#apio-drivers-serial)
+      * [apio drivers serial install](#apio-drivers-serial-install)
+      * [apio drivers serial list](#apio-drivers-serial-list)
+      * [apio drivers serial uninstall](#apio-drivers-serial-uninstall)
+  * [apio examples](#apio-examples)
+  * [apio format](#apio-format)
+  * [apio fpgas](#apio-fpgas)
+  * [apio graph](#apio-graph)
+  * [apio lint](#apio-lint)
+  * [apio packages](#apio-packages)
+    * [apio packages fix](#apio-packages-fix)
+    * [apio packages install](#apio-packages-install)
+    * [apio packages list](#apio-packages-list)
+    * [apio packages uninstall](#apio-packages-uninstall)
+  * [apio raw](#apio-raw)
+  * [apio report](#apio-report)
+  * [apio sim](#apio-sim)
+  * [apio system](#apio-system)
+    * [apio system info](#apio-system-info)
+    * [apio system lsusb](#apio-system-lsusb)
+    * [apio system platforms](#apio-system-platforms)
+  * [apio test](#apio-test)
+  * [apio upgrade](#apio-upgrade)
+  * [apio upload](#apio-upload)
 
 <br><br>
 
@@ -193,7 +202,7 @@ Options:
 ### APIO DRIVERS{#apio-drivers}
 
 ```
-Usage: apio drivers [OPTIONS]
+Usage: apio drivers [OPTIONS] COMMAND [ARGS]...
 
   The drivers command allows to install or uninstall operating system drivers
   that are used to program the FPGA boards. This command is global and affects
@@ -208,11 +217,182 @@ Usage: apio drivers [OPTIONS]
     Do not specify more than flag per command invocation.
 
 Options:
-  --ftdi-install      Install the FTDI driver.
-  --ftdi-uninstall    Uninstall the FTDI driver.
-  --serial-install    Install the Serial driver.
-  --serial-uninstall  Uninstall the Serial driver.
-  -h, --help          Show this message and exit.
+  -h, --help  Show this message and exit.
+
+Subcommands:
+  apio drivers ftdi    Manage the ftdi drivers.
+  apio drivers serial  Manage the serial drivers.
+
+```
+
+<br><br>
+
+### APIO DRIVERS FTDI{#apio-drivers-ftdi}
+
+```
+Usage: apio drivers ftdi [OPTIONS] COMMAND [ARGS]...
+
+  The 'apio drivers ftdi' commands group includes subcommands that are  useful
+  to manage the ftdi drivers and devices on your system.
+
+  The subcommands of this group are listed below.
+
+Options:
+  -h, --help  Show this message and exit.
+
+Subcommands:
+  apio drivers ftdi install    Install the ftdi drivers.
+  apio drivers ftdi uninstall  Uninstall the ftdi drivers.
+  apio drivers ftdi list       List the connected ftdi devices.
+
+```
+
+<br><br>
+
+### APIO DRIVERS FTDI INSTALL{#apio-drivers-ftdi-install}
+
+```
+Usage: apio drivers ftdi install [OPTIONS]
+
+  The command 'apio drivers ftdi install' installs the driver on your system
+  as required by some FPGA boards.
+
+  Examples:
+    apio drivers fdri install      # Install the FTDI drivers.
+    apio drivers fdri uinstall     # Uinstall the FTDI drivers.
+
+Options:
+  -h, --help  Show this message and exit.
+```
+
+<br><br>
+
+### APIO DRIVERS FTDI LIST{#apio-drivers-ftdi-list}
+
+```
+Usage: apio drivers ftdi list [OPTIONS]
+
+  The command 'apio system ftdi list' lists ftdi devices that are connected to
+  your computer. It is useful in diagnosing FPGA board connectivity issues.
+
+  Examples:
+    apio drivers ftdi      # List FTDI devices.
+
+  [Hint] This command executes the utility `lsftdi` which can be invoked
+  explicitly using the command `apio raw -- lsftdi`
+
+Options:
+  -h, --help  Show this message and exit.
+```
+
+<br><br>
+
+### APIO DRIVERS FTDI UNINSTALL{#apio-drivers-ftdi-uninstall}
+
+```
+Usage: apio drivers ftdi uninstall [OPTIONS]
+
+  The command 'apio drivers ftdi uninstall' uninstalled the ftdi drivers that
+  you may installed eariler. .
+
+  Examples:
+    apio drivers fdri install      # Install the FTDI drivers.
+    apio drivers fdri uinstall     # Uinstall the FTDI drivers.
+
+Options:
+  -h, --help  Show this message and exit.
+```
+
+<br><br>
+
+### APIO DRIVERS SERIAL{#apio-drivers-serial}
+
+```
+Usage: apio drivers serial [OPTIONS] COMMAND [ARGS]...
+
+  The drivers command allows to install or uninstall operating system drivers
+  that are used to program the FPGA boards. This command is global and affects
+  all the projects on the local host.
+
+  Examples:
+    apio drivers --ftdi-install      # Install the FTDI driver.
+    apio drivers --ftdi-uninstall    # Uninstall the FTDI driver.
+    apio drivers --serial-install    # Install the serial driver.
+    apio drivers --serial-uninstall  # Uninstall the serial driver.
+
+    Do not specify more than flag per command invocation.
+
+Options:
+  -h, --help  Show this message and exit.
+
+Subcommands:
+  apio drivers serial install    Install the serial drivers.
+  apio drivers serial uninstall  Uninstall the serial drivers.
+  apio drivers serial list       List the connected serial devices.
+
+```
+
+<br><br>
+
+### APIO DRIVERS SERIAL INSTALL{#apio-drivers-serial-install}
+
+```
+Usage: apio drivers serial install [OPTIONS]
+
+  The drivers command allows to install or uninstall operating system drivers
+  that are used to program the FPGA boards. This command is global and affects
+  all the projects on the local host.
+
+  Examples:
+    apio drivers --ftdi-install      # Install the FTDI driver.
+    apio drivers --ftdi-uninstall    # Uninstall the FTDI driver.
+    apio drivers --serial-install    # Install the serial driver.
+    apio drivers --serial-uninstall  # Uninstall the serial driver.
+
+    Do not specify more than flag per command invocation.
+
+Options:
+  -h, --help  Show this message and exit.
+```
+
+<br><br>
+
+### APIO DRIVERS SERIAL LIST{#apio-drivers-serial-list}
+
+```
+Usage: apio drivers serial list [OPTIONS]
+
+  The system command provides system info that help diagnosing apio
+  installation and connectivity issue.
+
+  Examples:
+    apio system lsserial   # List serial devices
+
+Options:
+  -h, --help  Show this message and exit.
+```
+
+<br><br>
+
+### APIO DRIVERS SERIAL UNINSTALL{#apio-drivers-serial-uninstall}
+
+```
+Usage: apio drivers serial uninstall [OPTIONS]
+
+  The drivers command allows to install or uninstall operating system drivers
+  that are used to program the FPGA boards. This command is global and affects
+  all the projects on the local host.
+
+  Examples:
+    apio drivers --ftdi-install      # Install the FTDI driver.
+    apio drivers --ftdi-uninstall    # Uninstall the FTDI driver.
+    apio drivers --serial-install    # Install the serial driver.
+    apio drivers --serial-uninstall  # Uninstall the serial driver.
+
+    Do not specify more than flag per command invocation.
+
+Options:
+  -h, --help  Show this message and exit.
 ```
 
 <br><br>
@@ -588,9 +768,7 @@ Options:
   -h, --help  Show this message and exit.
 
 Subcommands:
-  apio system lsftdi     List connected FTDI devices.
   apio system lsusb      List connected USB devices.
-  apio system lsserial   List connected serial devices.
   apio system platforms  List supported platforms ids.
   apio system info       Show platform id and other info.
 
@@ -603,53 +781,16 @@ Subcommands:
 ```
 Usage: apio system info [OPTIONS]
 
-  The 'apio system lsftdi' commands runs the lsftdi utility to list ftdi
-  devices connector to your computer and is useful for diagnosing connectivity
-  issues with FPGA boards.
+  The 'apio system info' command provides general informaion about your system
+  and apio installation and is useful for diagnosing apio installation issues.
 
   Examples:
-    apio system  lsftdi      # List FTDI devices
+    apio system info       # Show platform id and info.
 
-  [Hint] Another way to run the lsftd utility is using the command 'apio raw
-  -- lsftdi <flags>'
-
-Options:
-  -h, --help  Show this message and exit.
-```
-
-<br><br>
-
-### APIO SYSTEM LSFTDI{#apio-system-lsftdi}
-
-```
-Usage: apio system lsftdi [OPTIONS]
-
-  The 'apio system lsftdi' commands runs the lsftdi utility to list ftdi
-  devices connector to your computer and is useful for diagnosing connectivity
-  issues with FPGA boards.
-
-  Examples:
-    apio system  lsftdi      # List FTDI devices
-
-  [Hint] Another way to run the lsftd utility is using the command 'apio raw
-  -- lsftdi <flags>'
-
-Options:
-  -h, --help  Show this message and exit.
-```
-
-<br><br>
-
-### APIO SYSTEM LSSERIAL{#apio-system-lsserial}
-
-```
-Usage: apio system lsserial [OPTIONS]
-
-  The system command provides system info that help diagnosing apio
-  installation and connectivity issue.
-
-  Examples:
-    apio system lsserial   # List serial devices
+  [Advanced] The default location of the apio home directory, where
+  preferences and packages are stored, is in the .apio directory under the
+  user home directory, but can be changed using the APIO_HOME environment
+  variable.
 
 Options:
   -h, --help  Show this message and exit.
@@ -662,15 +803,15 @@ Options:
 ```
 Usage: apio system lsusb [OPTIONS]
 
-  The 'apio system lsftdi' commands runs the lsftdi utility to list ftdi
-  devices connector to your computer and is useful for diagnosing connectivity
-  issues with FPGA boards.
+  The 'apio system lsusb' commands runs the lsusb utility to list ftdi devices
+  connector to your computer and is useful for diagnosing connectivity issues
+  with FPGA boards.
 
   Examples:
-    apio system  lsftdi      # List FTDI devices
+    apio system  lsusb      # List USB devices
 
-  [Hint] Another way to run the lsftd utility is using the command 'apio raw
-  -- lsftdi <flags>'
+  [Hint] Another way to run the lsusb utility is using the command 'apio raw
+  -- lsusb <flags>'
 
 Options:
   -h, --help  Show this message and exit.
@@ -683,15 +824,14 @@ Options:
 ```
 Usage: apio system platforms [OPTIONS]
 
-  The 'apio system lsftdi' commands runs the lsftdi utility to list ftdi
-  devices connector to your computer and is useful for diagnosing connectivity
-  issues with FPGA boards.
+  The 'apio system platforms' command lists the platforms ids supported by
+  apio, with the effective platform id of your system highlightd.
 
   Examples:
-    apio system  lsftdi      # List FTDI devices
+    apio system platforms   # List supported platform ids.
 
-  [Hint] Another way to run the lsftd utility is using the command 'apio raw
-  -- lsftdi <flags>'
+  [Advanced] The automatic platform id detection of apio can be overriden by
+  defining a different platform id using the env variable APIO_PLATFORM.
 
 Options:
   -h, --help  Show this message and exit.
