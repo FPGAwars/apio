@@ -8,6 +8,7 @@
 
 
 import click
+from apio.cmd_util import ApioSubgroup, ApioGroup
 
 # -- Import sub commands.
 from apio.commands import (
@@ -31,83 +32,48 @@ from apio.commands import (
     apio_upload,
 )
 
-# -- Subcommands, grouped by categories.
-SUBCOMMANDS = {
-    "Build commands": [
-        apio_build.cli,
-        apio_upload.cli,
-        apio_clean.cli,
-    ],
-    "Verification commands": [
-        apio_lint.cli,
-        apio_format.cli,
-        apio_sim.cli,
-        apio_test.cli,
-        apio_report.cli,
-        apio_graph.cli,
-    ],
-    "Setup commands": [
-        apio_create.cli,
-        apio_packages.cli,
-        apio_drivers.cli,
-    ],
-    "Utility commands": [
-        apio_boards.cli,
-        apio_fpgas.cli,
-        apio_examples.cli,
-        apio_system.cli,
-        apio_raw.cli,
-        apio_upgrade.cli,
-    ],
-}
 
-
-class ApioGroup(click.Group):
-    """A customized click.Group class that allow to group subcommand by
-    categories."""
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    # @override
-    def get_help(self, ctx: click.Context) -> str:
-        """Formats the help into a string and returns it. We override the
-        base class method to list the subcommands by categories.
-        """
-
-        # -- Get the default help text for this command.
-        original_help = super().get_help(ctx)
-
-        # -- The auto generated click help lines (apio --help)
-        help_lines = original_help.split("\n")
-
-        # -- Extract the header of the text help. We will generate ourselves
-        # -- and append the command list.
-        index = help_lines.index("Commands:")
-        result_lines = help_lines[:index]
-
-        # -- Get a flat list of all command names.
-        cmd_names = [
-            cmd.name for group in SUBCOMMANDS.values() for cmd in group
-        ]
-
-        # -- Find the length of the longerst name.
-        max_name_len = max(len(name) for name in cmd_names)
-
-        # -- Generate the subcommands short help, grouped by command category.
-        for group_title, subcommands in SUBCOMMANDS.items():
-            result_lines.append(f"{group_title}:")
-            for cmd in subcommands:
-                # -- We pad for field width and then apply color.
-                styled_name = click.style(
-                    f"{cmd.name:{max_name_len}}", fg="magenta"
-                )
-                result_lines.append(
-                    f"  {ctx.command_path} {styled_name}  {cmd.short_help}"
-                )
-            result_lines.append("")
-
-        return "\n".join(result_lines)
+# -- The subcommands of this command, grouped by category.
+SUBGROUPS = [
+    ApioSubgroup(
+        "Build commands",
+        [
+            apio_build.cli,
+            apio_upload.cli,
+            apio_clean.cli,
+        ],
+    ),
+    ApioSubgroup(
+        "Verification commands",
+        [
+            apio_lint.cli,
+            apio_format.cli,
+            apio_sim.cli,
+            apio_test.cli,
+            apio_report.cli,
+            apio_graph.cli,
+        ],
+    ),
+    ApioSubgroup(
+        "Setup commands",
+        [
+            apio_create.cli,
+            apio_packages.cli,
+            apio_drivers.cli,
+        ],
+    ),
+    ApioSubgroup(
+        "Utility commands",
+        [
+            apio_boards.cli,
+            apio_fpgas.cli,
+            apio_examples.cli,
+            apio_system.cli,
+            apio_raw.cli,
+            apio_upgrade.cli,
+        ],
+    ),
+]
 
 
 def context_settings():
@@ -145,6 +111,7 @@ https://github.com/FPGAwars/apio/wiki/Apio
 @click.group(
     name="apio",
     cls=ApioGroup,
+    subgroups=SUBGROUPS,
     help=HELP,
     context_settings=context_settings(),
 )
@@ -154,9 +121,3 @@ def cli():
     is nothing to do here."""
 
     # Nothing to do here.
-
-
-# -- Register the sub commands.
-for group in SUBCOMMANDS.values():
-    for subcommand in group:
-        cli.add_command(subcommand)

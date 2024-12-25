@@ -10,6 +10,7 @@
 """Utility functionality for apio click commands. """
 
 import sys
+from dataclasses import dataclass
 from typing import List, Dict, Union
 import click
 from apio import util
@@ -208,3 +209,74 @@ class ApioOption(click.Option):
 
         # Pass the rest to the base class.
         super().__init__(*args, **kwargs)
+
+
+@dataclass(frozen=True)
+class ApioSubgroup:
+    """A class to represent a named group of subcommands. An apio command
+    of type group, contains two or more subcommand in one or more subgroups."""
+
+    title: str
+    commands: List[click.Command]
+
+
+class ApioGroup(click.Group):
+    """A customized click.Group class that allow to group subcommand by
+    categories."""
+
+    def __init__(self, *args, **kwargs):
+        # -- Consume the 'subgroups' arg.
+        self._subgroups: List[ApioSubgroup] = kwargs.pop("subgroups")
+        assert isinstance(self._subgroups, list)
+        assert isinstance(self._subgroups[0], ApioSubgroup)
+
+        # -- Pass the rest of the arg to init the base class.
+        super().__init__(*args, **kwargs)
+
+        # -- Register the commands of the subgroups as subcommands of this
+        # -- group.
+        for subgroup in self._subgroups:
+            for cmd in subgroup.commands:
+                self.add_command(cmd)
+
+    # @override
+    def get_help(self, ctx: click.Context) -> str:
+        """Formats the help into a string and returns it. We override the
+        base class method to list the subcommands by categories.
+        """
+
+        # -- Get the default help text for this command.
+        original_help = super().get_help(ctx)
+
+        # -- The auto generated click help lines (apio --help)
+        help_lines = original_help.split("\n")
+
+        # -- Extract the header of the text help. We will generate ourselves
+        # -- and append the command list.
+        index = help_lines.index("Commands:")
+        result_lines = help_lines[:index]
+
+        # -- Get a flat list of all subcommand names.
+        cmd_names = [
+            cmd.name
+            for subgroup in self._subgroups
+            for cmd in subgroup.commands
+        ]
+
+        # -- Find the length of the longerst name.
+        max_name_len = max(len(name) for name in cmd_names)
+
+        # -- Generate the subcommands short help, grouped by subgroup.
+        for subgroup in self._subgroups:
+            result_lines.append(f"{subgroup.title}:")
+            for cmd in subgroup.commands:
+                # -- We pad for field width and then apply color.
+                styled_name = click.style(
+                    f"{cmd.name:{max_name_len}}", fg="magenta"
+                )
+                result_lines.append(
+                    f"  {ctx.command_path} {styled_name}  {cmd.short_help}"
+                )
+            result_lines.append("")
+
+        return "\n".join(result_lines)
