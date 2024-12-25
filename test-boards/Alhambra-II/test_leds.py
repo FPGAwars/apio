@@ -1,5 +1,7 @@
 """
-Testing the ledon example on the alhambra-ii board
+Testing the ledon example on the alhambra-ii board. This test does not
+use a sandbox and doesn't install the apio packages, and therefore, apio
+is expected to be preinstalled.
 """
 
 import os
@@ -9,17 +11,8 @@ from pathlib import Path
 # https://click.palletsprojects.com/en/8.1.x/api/#click.testing.CliRunner
 from click.testing import CliRunner
 
-# -- apio build entry point
-from apio.commands.apio_build import cli as apio_build
-
-# -- apio clean entry point
-from apio.commands.apio_clean import cli as apio_clean
-
-# -- apio lint entry point
-from apio.commands.apio_lint import cli as apio_lint
-
-# -- apio time entry point
-from apio.commands.apio_upload import cli as apio_upload
+# -- Entry point for apio's top level command.
+from apio.commands.apio import cli as apio
 
 
 # -------------------------------------------
@@ -42,7 +35,7 @@ def test_ledon_clean():
     # ----------------------------
     # -- Execute "apio clean"
     # ----------------------------
-    result = CliRunner().invoke(apio_clean)
+    result = CliRunner().invoke(apio, ["clean"])
 
     # -- It should return an exit code of 0: success
     assert result.exit_code == 0, result.output
@@ -55,7 +48,7 @@ def test_ledon_build():
     # ----------------------------
     # -- Execute "apio build"
     # ----------------------------
-    result = CliRunner().invoke(apio_build)
+    result = CliRunner().invoke(apio, ["build"])
 
     # -- It should return an exit code of 0: success
     assert result.exit_code == 0, result.output
@@ -71,7 +64,7 @@ def test_ledon_lint():
     # ----------------------------
     # -- Execute "apio lint"
     # ----------------------------
-    result = CliRunner().invoke(apio_lint)
+    result = CliRunner().invoke(apio, ["lint"])
 
     # -- It should return an exit code of 0: success
     assert result.exit_code == 0, result.output
@@ -85,7 +78,7 @@ def test_ledon_upload():
     # ----------------------------
     # -- Execute "apio upload"
     # ----------------------------
-    result = CliRunner().invoke(apio_upload)
+    result = CliRunner().invoke(apio, ["upload"])
 
     # -- It should return an exit code of 0: success
     assert result.exit_code == 0, result.output

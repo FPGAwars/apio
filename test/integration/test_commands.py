@@ -9,18 +9,8 @@ from pathlib import Path
 from test.conftest import ApioRunner
 import pytest
 
-# -- Entry point for apio commands.
-from apio.commands.apio_build import cli as apio_build
-from apio.commands.apio_clean import cli as apio_clean
-from apio.commands.apio_examples import cli as apio_examples
-from apio.commands.apio_format import cli as apio_format
-from apio.commands.apio_graph import cli as apio_graph
-from apio.commands.apio_lint import cli as apio_lint
-from apio.commands.apio_packages import cli as apio_packages
-from apio.commands.apio_raw import cli as apio_raw
-from apio.commands.apio_report import cli as apio_report
-from apio.commands.apio_test import cli as apio_test
-from apio.commands.apio_upgrade import cli as apio_upgrade
+# -- Entry point for the apio top command.
+from apio.commands.apio import cli as apio
 
 
 # R0801: Similar lines in 2 files
@@ -41,22 +31,22 @@ def test_utilities(apio_runner: ApioRunner):
 
         # -- Install all packages. Not that since we run in a shared apio home,
         # -- the packages can be already installed by a previous test.
-        result = sb.invoke_apio_cmd(apio_packages, ["--install"])
+        result = sb.invoke_apio_cmd(apio, ["packages", "--install"])
         sb.assert_ok(result)
 
         # -- Run 'apio upgrade'
-        result = sb.invoke_apio_cmd(apio_upgrade)
+        result = sb.invoke_apio_cmd(apio, ["upgrade"])
         sb.assert_ok(result)
         assert "Lastest Apio stable version" in result.output
 
         # -- Run 'apio raw  "nextpnr-ice40 --help"'
         result = sb.invoke_apio_cmd(
-            apio_raw, ["--", "nextpnr-ice40", "--help"]
+            apio, ["raw", "--", "nextpnr-ice40", "--help"]
         )
         sb.assert_ok(result)
 
         # -- Run 'apio raw --env'
-        result = sb.invoke_apio_cmd(apio_raw, ["--env"])
+        result = sb.invoke_apio_cmd(apio, ["raw", "--env"])
         sb.assert_ok(result)
         assert "Envirnment settings:" in result.output
         assert "YOSYS_LIB" in result.output
@@ -103,7 +93,7 @@ def _test_project(
         # -- 'apio packages --install'.
         # -- Note that since we used a sandbox with a shared home, the packages
         # -- may already been installed from a previous test in this file.
-        result = sb.invoke_apio_cmd(apio_packages, ["--install"] + proj_arg)
+        result = sb.invoke_apio_cmd(apio, ["packages", "--install"] + proj_arg)
         sb.assert_ok(result)
 
         # -- the project directory should be empty.
@@ -111,8 +101,8 @@ def _test_project(
 
         # -- 'apio examples --fetch-files <example>``
         result = sb.invoke_apio_cmd(
-            apio_examples,
-            ["--fetch-files", example] + proj_arg,
+            apio,
+            ["examples", "--fetch-files", example] + proj_arg,
         )
         sb.assert_ok(result)
         assert f"Copying {example} example files" in result.output
@@ -123,13 +113,13 @@ def _test_project(
         project_files = listdir(sb.proj_dir)
 
         # -- 'apio build'
-        result = sb.invoke_apio_cmd(apio_build, proj_arg)
+        result = sb.invoke_apio_cmd(apio, ["build"] + proj_arg)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert getsize(sb.proj_dir / "_build" / binary)
 
         # -- 'apio build' (no change)
-        result = sb.invoke_apio_cmd(apio_build, proj_arg)
+        result = sb.invoke_apio_cmd(apio, ["build"] + proj_arg)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert "yosys" not in result.output
@@ -143,44 +133,44 @@ def _test_project(
 
         # -- 'apio build'
         # -- Apio.ini modification should triggers a new build.
-        result = sb.invoke_apio_cmd(apio_build, proj_arg)
+        result = sb.invoke_apio_cmd(apio, ["build"] + proj_arg)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert "yosys" in result.output
 
         # -- 'apio lint'
-        result = sb.invoke_apio_cmd(apio_lint, proj_arg)
+        result = sb.invoke_apio_cmd(apio, ["lint"] + proj_arg)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert getsize(sb.proj_dir / "_build/hardware.vlt")
 
         # -- 'apio format'
-        result = sb.invoke_apio_cmd(apio_format, proj_arg)
+        result = sb.invoke_apio_cmd(apio, ["format"] + proj_arg)
         sb.assert_ok(result)
 
         # -- 'apio test'
-        result = sb.invoke_apio_cmd(apio_test, proj_arg)
+        result = sb.invoke_apio_cmd(apio, ["test"] + proj_arg)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert getsize(sb.proj_dir / f"_build/{testbench}.out")
         assert getsize(sb.proj_dir / f"_build/{testbench}.vcd")
 
         # -- 'apio report'
-        result = sb.invoke_apio_cmd(apio_report, proj_arg)
+        result = sb.invoke_apio_cmd(apio, ["report"] + proj_arg)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert report_item in result.output
         assert getsize(sb.proj_dir / "_build/hardware.pnr")
 
         # -- 'apio graph'
-        result = sb.invoke_apio_cmd(apio_graph, proj_arg)
+        result = sb.invoke_apio_cmd(apio, ["graph"] + proj_arg)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert getsize(sb.proj_dir / "_build/hardware.dot")
         assert getsize(sb.proj_dir / "_build/hardware.svg")
 
         # -- 'apio clean'
-        result = sb.invoke_apio_cmd(apio_clean, proj_arg)
+        result = sb.invoke_apio_cmd(apio, ["clean"] + proj_arg)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert not Path(sb.proj_dir / "_build").exists()
