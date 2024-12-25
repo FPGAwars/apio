@@ -67,12 +67,14 @@ set APIO_DEV=
 
 ## Running apio in a debugger
 
-Set the debugger to run the ``apio_run.py`` main with the regular ``apio`` arguments. Set the project directory ot the project file or use the ``--project_dir`` apio argument to point to the project directory.
+Set the debugger to run apio main module ``apio/main.py`` main and pass to it the apio arguments. You can run in the project directory or
+to add the flag ``--project_dir`` with a path to the project directory.
 
 Example of an equivalent manual command:
 ```
-python apio_run.py build --project_dir ~/projects/fpga/repo/hdl
+python apio/main.py build --project_dir test-examples/alhambra-ii/01-LEDs-buttons
 ```
+
 
 ## Running apio in the Visual Studio Code debugger.
 
