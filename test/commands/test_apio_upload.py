@@ -2,7 +2,6 @@
   Test for the "apio upload" command
 """
 
-from os import chdir
 from test.conftest import ApioRunner
 from apio.commands.apio_upload import cli as apio_upload
 
@@ -16,10 +15,6 @@ def test_upload_without_apio_ini(apio_runner: ApioRunner):
     """
 
     with apio_runner.in_sandbox() as sb:
-
-        # -- Create and change to project dir.
-        sb.proj_dir.mkdir()
-        chdir(sb.proj_dir)
 
         # -- Execute "apio upload"
         result = sb.invoke_apio_cmd(apio_upload)
@@ -35,10 +30,6 @@ def test_upload_complete(apio_runner: ApioRunner):
     """
 
     with apio_runner.in_sandbox() as sb:
-
-        # -- Create and change to project dir.
-        sb.proj_dir.mkdir()
-        chdir(sb.proj_dir)
 
         # -- Execute "apio upload --serial-port COM0"
         sb.write_default_apio_ini()

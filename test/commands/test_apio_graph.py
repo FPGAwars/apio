@@ -2,7 +2,6 @@
   Test for the "apio graph" command
 """
 
-from os import chdir
 from test.conftest import ApioRunner
 from apio.commands.apio_graph import cli as apio_graph
 
@@ -14,10 +13,6 @@ def test_graph_no_apio_ini(apio_runner: ApioRunner):
 
     with apio_runner.in_sandbox() as sb:
 
-        # -- Create and change to project dir.
-        sb.proj_dir.mkdir()
-        chdir(sb.proj_dir)
-
         # -- Execute "apio graph"
         result = sb.invoke_apio_cmd(apio_graph)
         assert result.exit_code == 1, result.output
@@ -28,10 +23,6 @@ def test_graph_with_apio_ini(apio_runner: ApioRunner):
     """Test: apio graph with apio.ini"""
 
     with apio_runner.in_sandbox() as sb:
-
-        # -- Create and change to project dir.
-        sb.proj_dir.mkdir()
-        chdir(sb.proj_dir)
 
         # -- Create an apio.ini file
         sb.write_default_apio_ini()

@@ -2,7 +2,6 @@
 Tests of apio_context.py
 """
 
-import os
 from pathlib import Path
 from test.conftest import ApioRunner
 from apio.apio_context import ApioContext, ApioContextScope
@@ -15,8 +14,6 @@ def test_init(apio_runner: ApioRunner):
     """Tests the initialization of the apio context."""
 
     with apio_runner.in_sandbox() as sb:
-        sb.proj_dir.mkdir()
-        os.chdir(sb.proj_dir)
 
         # -- Create an apio.ini file.
         sb.write_default_apio_ini()

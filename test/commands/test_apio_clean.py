@@ -2,7 +2,6 @@
   Test for the "apio clean" command
 """
 
-from os import chdir
 from os.path import join
 from pathlib import Path
 from test.conftest import ApioRunner
@@ -13,10 +12,6 @@ def test_clean_without_apio_ini(apio_runner: ApioRunner):
     """Tests the apio clean command without an apio.ini file."""
 
     with apio_runner.in_sandbox() as sb:
-
-        # -- Create and change to project dir.
-        sb.proj_dir.mkdir()
-        chdir(sb.proj_dir)
 
         # -- Run "apio clean" with no apio.ini
         result = sb.invoke_apio_cmd(apio_clean)
@@ -30,10 +25,6 @@ def test_clean_with_apio_ini(apio_runner: ApioRunner):
     """Tests the apio clean command with an apio.ini file."""
 
     with apio_runner.in_sandbox() as sb:
-
-        # -- Create and change to project dir.
-        sb.proj_dir.mkdir()
-        chdir(sb.proj_dir)
 
         # -- Run "apio clean" with a valid apio.ini and no dirty files.
         sb.write_default_apio_ini()

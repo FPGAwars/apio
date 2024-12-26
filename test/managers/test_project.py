@@ -2,7 +2,6 @@
 Tests of project.py
 """
 
-from os import chdir
 from test.conftest import ApioRunner
 from apio.apio_context import ApioContext, ApioContextScope
 
@@ -14,10 +13,6 @@ def test_options(apio_runner: ApioRunner):
     """Tests the options access."""
 
     with apio_runner.in_sandbox() as sb:
-
-        # -- Create and change to project dir.
-        sb.proj_dir.mkdir()
-        chdir(sb.proj_dir)
 
         # -- Create an apio.ini.
         sb.write_apio_ini(

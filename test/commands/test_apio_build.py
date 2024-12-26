@@ -2,7 +2,6 @@
   Test for the "apio build" command
 """
 
-from os import chdir
 from test.conftest import ApioRunner
 from apio.commands.apio_build import cli as apio_build
 
@@ -15,10 +14,6 @@ def test_build_without_apio_init(apio_runner: ApioRunner):
 
     with apio_runner.in_sandbox() as sb:
 
-        # -- Create and change to project dir.
-        sb.proj_dir.mkdir()
-        chdir(sb.proj_dir)
-
         # -- Run "apio build" without apio.ini
         result = sb.invoke_apio_cmd(apio_build)
         assert result.exit_code != 0, result.output
@@ -30,10 +25,6 @@ def test_build_with_apio_init(apio_runner: ApioRunner):
     are offline and without any apio package installed."""
 
     with apio_runner.in_sandbox() as sb:
-
-        # -- Create and change to project dir.
-        sb.proj_dir.mkdir()
-        chdir(sb.proj_dir)
 
         # -- Run "apio build" with a valid apio.
         sb.write_apio_ini({"board": "alhambra-ii", "top-module": "main"})

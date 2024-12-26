@@ -2,7 +2,6 @@
   Test different "apio" commands
 """
 
-from os import chdir
 from os.path import getsize
 from test.conftest import ApioRunner
 import pytest
@@ -22,10 +21,6 @@ def test_examples(apio_runner: ApioRunner):
         pytest.skip("requires internet connection")
 
     with apio_runner.in_sandbox() as sb:
-
-        # -- Create and change to project dir.
-        sb.proj_dir.mkdir()
-        chdir(sb.proj_dir)
 
         # -- Install the examples package.
         result = sb.invoke_apio_cmd(apio, ["packages", "install", "examples"])

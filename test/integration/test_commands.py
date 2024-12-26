@@ -3,7 +3,7 @@
   and are slower than the offline tests at test/commands.
 """
 
-from os import listdir, chdir
+import os
 from os.path import getsize
 from pathlib import Path
 from test.conftest import ApioRunner
@@ -24,10 +24,6 @@ def test_utilities(apio_runner: ApioRunner):
         pytest.skip("requires internet connection")
 
     with apio_runner.in_sandbox(shared_home=True) as sb:
-
-        # -- Create and change to project dir.
-        sb.proj_dir.mkdir()
-        chdir(sb.proj_dir)
 
         # -- Install all packages. Not that since we run in a shared apio home,
         # -- the packages can be already installed by a previous test.
@@ -81,14 +77,14 @@ def _test_project(
     # -- to avoid cross-interferance between tests in this file.
     with apio_runner.in_sandbox(shared_home=True) as sb:
 
-        # -- Create and change to project directory.
-        sb.proj_dir.mkdir()
-        if not remote_proj_dir:
-            chdir(sb.proj_dir)
-
-        # -- In remote project dir mode we don't step into the project dir
-        # -- and pass it as an arg.
-        proj_arg = ["-p", str(sb.proj_dir)] if remote_proj_dir else []
+        # -- If testing from a remote dir, step out of the proj dir, and
+        # -- use -p proj_dir arg.
+        if remote_proj_dir:
+            os.chdir(sb.sandbox_dir)
+            sb.proj_dir.rmdir()
+            proj_arg = ["-p", str(sb.proj_dir)]
+        else:
+            proj_arg = []
 
         # -- 'apio packages install'.
         # -- Note that since we used a sandbox with a shared home, the packages
@@ -96,10 +92,14 @@ def _test_project(
         result = sb.invoke_apio_cmd(apio, ["packages", "install"])
         sb.assert_ok(result)
 
-        # -- the project directory should be empty.
-        assert not listdir(sb.proj_dir)
+        # -- If testing from a remote dir, the proj dir should not exist yet,
+        # -- else, the project dir should be empty.
+        if remote_proj_dir:
+            assert not sb.proj_dir.exists()
+        else:
+            assert not os.listdir(sb.proj_dir)
 
-        # -- 'apio examples --fetch-files <example>``
+        # -- 'apio examples --fetch-files <example> -p <proj_dir>'
         result = sb.invoke_apio_cmd(
             apio,
             ["examples", "--fetch-files", example] + proj_arg,
@@ -110,7 +110,7 @@ def _test_project(
         assert getsize(sb.proj_dir / "apio.ini")
 
         # -- Remember the original list of project files.
-        project_files = listdir(sb.proj_dir)
+        project_files = os.listdir(sb.proj_dir)
 
         # -- 'apio build'
         result = sb.invoke_apio_cmd(apio, ["build"] + proj_arg)
@@ -176,7 +176,7 @@ def _test_project(
         assert not Path(sb.proj_dir / "_build").exists()
 
         # -- Here we should have only the original project files.
-        assert set(listdir(sb.proj_dir)) == set(project_files)
+        assert set(os.listdir(sb.proj_dir)) == set(project_files)
 
 
 def test_project_ice40_local_dir(apio_runner: ApioRunner):
