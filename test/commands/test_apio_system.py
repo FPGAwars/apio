@@ -17,22 +17,7 @@ def test_system(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(apio_system)
         sb.assert_ok(result)
         assert "Subcommands" in result.output
-        assert "lsftdi" in result.output
-
-        # -- Execute "apio system lsftdi"
-        result = sb.invoke_apio_cmd(apio_system, ["lsftdi"])
-        assert result.exit_code == 1, result.output
-        assert "package 'oss-cad-suite' is not installed" in result.output
-
-        # -- Execute "apio system lsusb"
-        result = sb.invoke_apio_cmd(apio_system, ["lsusb"])
-        assert result.exit_code == 1, result.output
-        assert "package 'oss-cad-suite' is not installed" in result.output
-
-        # -- Execute "apio system --lsserial"
-        sb.invoke_apio_cmd(apio_system, ["lsserial"])
-        assert result.exit_code == 1, result.output
-        assert "package 'oss-cad-suite' is not installed" in result.output
+        assert "platforms" in result.output
 
         # -- Execute "apio system info"
         result = sb.invoke_apio_cmd(apio_system, ["info"])
@@ -40,3 +25,9 @@ def test_system(apio_runner: ApioRunner):
         assert "Platform id" in result.output
         # -- The these env options are set by the apio text fixture.
         assert "Active env options [APIO_HOME_DIR]" in result.output
+
+        # -- Execute "apio system platforms"
+        result = sb.invoke_apio_cmd(apio_system, ["platforms"])
+        assert result.exit_code == 0, result.output
+        assert "darwin_arm64" in result.output
+        assert "Mac OSX, ARM 64 bit" in result.output

@@ -113,7 +113,7 @@ https://github.com/FPGAwars/apio/wiki/Apio
     cls=ApioGroup,
     subgroups=SUBGROUPS,
     help=HELP,
-    short_help = "Work with FPGAs with ease",
+    short_help="Work with FPGAs with ease",
     context_settings=context_settings(),
 )
 @click.version_option()

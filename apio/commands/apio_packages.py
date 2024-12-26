@@ -229,7 +229,7 @@ using the command 'apio packages install'.
 Note that the list of available packages depends on the operatingsystem you
 use as some require more packages than others.
 
-The subcommands of this group are listed below.
+The subcommands are listed below.
 """
 
 
