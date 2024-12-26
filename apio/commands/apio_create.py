@@ -7,7 +7,6 @@
 # -- Licence GPLv2
 """Implementation of 'apio create' command"""
 
-import sys
 from pathlib import Path
 import click
 from apio.managers.project import (
@@ -36,28 +35,22 @@ board_option = click.option(
 # -- COMMAND
 # ---------------------------
 HELP = f"""
-The create command creates the project file apio.ini from scratch.
-The commands is typically used in the root directory
-of the project where the apio.ini file is created.
+The 'apio create' command creates a new apio.ini project file and may
+be use when creating a new apio project.
 
 \b
 Examples:
   apio create --board icezum
   apio create --board icezum --top-module MyModule
-  apio create --board icezum --sayyes
 
 The flag --board is required. The flag --top-module is optional and has
 the default '{DEFAULT_TOP_MODULE}'. If the file apio.ini already exists
-the command asks for permision to delete it. If --sayyes is specified,
-the file is deleted automatically.
+the command exists with an error message.
 
 [Note] this command creates just the '{APIO_INI}' file
-rather than a full buildable project.
-Some users use instead the examples command to copy a working
+rather than a complete and buildable project.
+Some users use instead the'apio examples' command to copy a working
 project for their board, and then modify it with with their design.
-
-[Hint] Use the command 'apio examples -l' to see a list of
-the supported boards.
 """
 
 
@@ -72,14 +65,12 @@ the supported boards.
 @board_option
 @options.top_module_option_gen(help="Set the top level module name.")
 @options.project_dir_option
-@options.sayyes
 def cli(
     _: click.Context,
     # Options
     board: str,
     top_module: str,
     project_dir: Path,
-    sayyes: bool,
 ):
     """Create a project file."""
 
@@ -98,13 +89,9 @@ def cli(
     # -- Map the optional project dir argument to an actual project dir.
     project_dir = util.resolve_project_dir(project_dir, create_if_missing=True)
 
-    # Create the apio.ini file
-    ok = create_project_file(
+    # Create the apio.ini file. It exists with an error status if any error.
+    create_project_file(
         project_dir,
         board_id,
         top_module,
-        sayyes,
     )
-
-    exit_code = 0 if ok else 1
-    sys.exit(exit_code)

@@ -49,9 +49,6 @@ def test_create(apio_runner: ApioRunner):
         # -- Execute "apio create --board icezum"
         result = sb.invoke_apio_cmd(apio_create, ["--board", "icezum"])
         sb.assert_ok(result)
-        assert "file already exists" not in result.output
-        assert "Do you want to replace it?" not in result.output
-        assert "Creating apio.ini file ..." in result.output
         assert "was created successfully." in result.output
         _check_ini_file(apio_ini, {"board": "icezum", "top-module": "main"})
 
@@ -60,42 +57,18 @@ def test_create(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(
             apio_create,
             ["--board", "alhambra-ii", "--top-module", "my_module"],
-            input="y",
         )
-        sb.assert_ok(result)
-        assert "Warning" in result.output
-        assert "file already exists" in result.output
-        assert "Do you want to replace it?" in result.output
-        assert "was created successfully." in result.output
-        _check_ini_file(
-            apio_ini, {"board": "alhambra-ii", "top-module": "my_module"}
-        )
+        assert result.exit_code != 0
+        assert "the file apio.ini already exists" in result.output
+        _check_ini_file(apio_ini, {"board": "icezum", "top-module": "main"})
 
-        # -- Execute "apio create --board icezum
-        # --                      --top-module my_module
-        # --                      --sayyse" with 'y' input
+        # -- Execute "apio create --board icezum -p aa/bb"
         result = sb.invoke_apio_cmd(
-            apio_create,
-            ["--board", "icezum", "--top-module", "my_module", "--sayyes"],
+            apio_create, ["--board", "alhambra-ii", "-p", "aa/bb"]
         )
         sb.assert_ok(result)
         assert "was created successfully." in result.output
         _check_ini_file(
-            apio_ini, {"board": "icezum", "top-module": "my_module"}
-        )
-
-        # -- Execute "apio create --board alhambra-ii
-        # --                      --top-module my_module" with 'n' input
-        result = sb.invoke_apio_cmd(
-            apio_create,
-            ["--board", "alhambra-ii", "--top-module", "my_module"],
-            input="n",
-        )
-        assert result.exit_code != 0, result.output
-        assert "Warning" in result.output
-        assert "file already exists" in result.output
-        assert "Do you want to replace it?" in result.output
-        assert "Abort!" in result.output
-        _check_ini_file(
-            apio_ini, {"board": "icezum", "top-module": "my_module"}
+            Path("aa/bb") / apio_ini,
+            {"board": "alhambra-ii", "top-module": "main"},
         )

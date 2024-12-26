@@ -192,40 +192,26 @@ def create_project_file(
     project_dir: Path,
     board_id: str,
     top_module: str,
-    sayyes: bool = False,
-) -> bool:
-    """Creates a new apio project file. Returns True if ok.
-    'board_id' is assumed to be the canonical if of a supported board
-    (caller should validate)"""
+):
+    """Creates a new apio project file. Exits on any error."""
 
     # -- Construct the path
     ini_path = project_dir / APIO_INI
 
-    # -- If the ini file already exists, ask if it's ok to delete.
-    if ini_path.is_file():
+    # -- Error if apio.ini already exists.
+    if ini_path.exists():
 
-        # -- Warn the user, unless the flag sayyes is active
-        if not sayyes:
-            click.secho(
-                f"Warning: {APIO_INI} file already exists",
-                fg="yellow",
-            )
+        click.secho(f"Error: the file {APIO_INI} already exists.", fg="red")
+        sys.exit(1)
 
-            # -- Ask for confirmation
-            replace = click.confirm("Do you want to replace it?")
-
-            # -- User say: NO! --> Abort
-            if not replace:
-                click.secho("Abort!", fg="red")
-                return False
-
-    # -- Create the apio.ini from scratch.
+    # -- Construct and write the apio.ini file..
     click.secho(f"Creating {ini_path} file ...")
+
     config = ConfigObj(str(ini_path))
     config.initial_comment = TOP_COMMENT.split("\n")
     config["env"] = {}
     config["env"]["board"] = board_id
     config["env"]["top-module"] = top_module
+
     config.write()
     click.secho(f"The file '{ini_path}' was created successfully.", fg="green")
-    return True
