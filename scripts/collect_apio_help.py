@@ -57,10 +57,9 @@ cmds_infos.sort(key=lambda x: x.path)
 # -- Dump a command list
 click.secho("## Apio commands", fg="magenta")
 for cmd in cmds_infos:
-    # if cmd.children:
-    #     continue
+    description = cmd.cli.short_help
     indent = "  " * (len(cmd.path) - 1)
-    click.secho(f"{indent}* [{cmd.path_str}](#{cmd.anchor})")
+    click.secho(f'{indent}* [{cmd.path_str}](#{cmd.anchor}) - {description}')
 
 # -- Dump the command's help text.
 for cmd in cmds_infos:
