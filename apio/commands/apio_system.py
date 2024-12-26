@@ -10,7 +10,7 @@
 import importlib.metadata
 import click
 from apio import util
-from apio.apio_context import ApioContext
+from apio.apio_context import ApioContext, ApioContextScope
 from apio.cmd_util import ApioGroup, ApioSubgroup
 
 
@@ -40,7 +40,7 @@ def _info_cli():
     """Implements the 'apio system info' command."""
 
     # Create the apio context.
-    apio_ctx = ApioContext(load_project=False)
+    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Print apio version.
     click.secho("Apio version    ", nl=False)
@@ -91,7 +91,7 @@ def _platforms_cli():
     """Implements the 'apio system platforms' command."""
 
     # Create the apio context.
-    apio_ctx = ApioContext(load_project=False)
+    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Print title line
     click.secho(

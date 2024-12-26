@@ -48,6 +48,9 @@ def test_custom_board(apio_runner: ApioRunner):
 
     with apio_runner.in_sandbox() as sb:
 
+        # -- Write an apio.ini file.
+        sb.write_apio_ini({"board": "my_custom_board", "top-module": "main"})
+
         # -- Write a custom boards.json file in the project's directory.
         sb.write_file("boards.json", CUSTOM_BOARDS)
 
@@ -55,7 +58,6 @@ def test_custom_board(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(apio_boards)
         sb.assert_ok(result)
         # -- Note: pytest sees the piped version of the command's output.
-        # -- Run 'apio build' | cat' to reproduce it.
         assert "Loading custom 'boards.json'" in result.output
         assert "alhambra-ii" not in result.output
         assert "my_custom_board" in result.output

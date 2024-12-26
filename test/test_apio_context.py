@@ -5,7 +5,7 @@ Tests of apio_context.py
 import os
 from pathlib import Path
 from test.conftest import ApioRunner
-from apio.apio_context import ApioContext
+from apio.apio_context import ApioContext, ApioContextScope
 
 # pylint: disable=fixme
 # TODO: Add more tests.
@@ -18,12 +18,13 @@ def test_init(apio_runner: ApioRunner):
         sb.proj_dir.mkdir()
         os.chdir(sb.proj_dir)
 
-        sb.write_apio_ini({"board": "icezum", "top-module": "main"})
+        # -- Create an apio.ini file.
+        sb.write_default_apio_ini()
 
         # -- Default init.
-        apio_ctx = ApioContext(load_project=True)
+        apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
 
-        assert apio_ctx.has_project_loaded
+        assert apio_ctx.has_project
 
         # -- Verify context's project dir.
         assert str(apio_ctx.project_dir) == "."

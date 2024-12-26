@@ -11,7 +11,7 @@ import sys
 import click
 from apio.managers.drivers import Drivers
 from apio.managers.system import System
-from apio.apio_context import ApioContext
+from apio.apio_context import ApioContext, ApioContextScope
 from apio.cmd_util import ApioGroup, ApioSubgroup
 
 
@@ -37,7 +37,7 @@ def _install_cli():
     """Implements the 'apio drivers serial install' command."""
 
     # -- Create the apio context.
-    apio_ctx = ApioContext(load_project=False)
+    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Create the drivers manager.
     drivers = Drivers(apio_ctx)
@@ -70,7 +70,7 @@ def _uninstall_cli():
     """Implements the 'apio drivers serial uninstall' command."""
 
     # -- Create the apio context.
-    apio_ctx = ApioContext(load_project=False)
+    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Create the drivers manager.
     drivers = Drivers(apio_ctx)
@@ -104,7 +104,7 @@ def _list_cli():
     """Implements the 'apio drivers serial list' command."""
 
     # Create the apio context.
-    apio_ctx = ApioContext(load_project=False)
+    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Create the system object
     system = System(apio_ctx)

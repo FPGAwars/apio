@@ -11,7 +11,7 @@ import sys
 from typing import Tuple
 import click
 from apio.managers import installer
-from apio.apio_context import ApioContext
+from apio.apio_context import ApioContext, ApioContextScope
 from apio import pkg_util, util
 from apio.commands import options
 from apio.cmd_util import ApioGroup, ApioSubgroup
@@ -53,7 +53,7 @@ def _install_cli(
 ):
     """Implements the 'apio packages install' command."""
 
-    apio_ctx = ApioContext(load_project=False)
+    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     click.secho(f"Platform id '{apio_ctx.platform_id}'")
 
@@ -99,7 +99,7 @@ def _uninstall_cli(
 ):
     """Implements the 'apio packages uninstall' command."""
 
-    apio_ctx = ApioContext(load_project=False)
+    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- If packages where specified, uninstall all packages that are valid
     # -- for this platform.
@@ -150,7 +150,7 @@ Examples:
 def _list_cli():
     """Implements the 'apio packages list' command."""
 
-    apio_ctx = ApioContext(load_project=False)
+    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Scan the available and installed packages.
     scan = pkg_util.scan_packages(apio_ctx)
@@ -200,7 +200,7 @@ def _fix_cli(
     """Implements the 'apio packages fix' command."""
 
     # -- Create the apio context.
-    apio_ctx = ApioContext(load_project=False)
+    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Scan the availeable and installed packages.
     scan = pkg_util.scan_packages(apio_ctx)

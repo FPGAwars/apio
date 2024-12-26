@@ -18,7 +18,7 @@ from apio.managers.project import (
 from apio import util
 from apio import cmd_util
 from apio.commands import options
-from apio.apio_context import ApioContext
+from apio.apio_context import ApioContext, ApioContextScope
 
 
 board_option = click.option(
@@ -90,16 +90,17 @@ def cli(
         top_module = DEFAULT_TOP_MODULE
 
     # -- Create the apio context.
-    apio_ctx = ApioContext(project_dir=project_dir, load_project=False)
-
-    project_dir = util.get_project_dir(project_dir)
+    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Map to canonical board id. This fails if the board is unknown.
     board_id = apio_ctx.lookup_board_id(board)
 
+    # -- Map the optional project dir argument to an actual project dir.
+    project_dir = util.resolve_project_dir(project_dir, create_if_missing=True)
+
     # Create the apio.ini file
     ok = create_project_file(
-        apio_ctx.project_dir,
+        project_dir,
         board_id,
         top_module,
         sayyes,

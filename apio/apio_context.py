@@ -10,6 +10,7 @@ import sys
 import json
 import re
 import platform
+from enum import Enum
 from collections import OrderedDict
 from pathlib import Path
 from typing import Optional, Dict
@@ -68,6 +69,19 @@ PROGRAMMERS_JSON = "programmers.json"
 DISTRIBUTION_JSON = "distribution.json"
 
 
+class ApioContextScope(Enum):
+    """Represents the possible scopes of ApioContext creations."""
+
+    # -- Apio.ini and optional custom resource files are not loaded.
+    NO_PROJECT = 1
+    # -- If project dir contains a file named apio.ini then the project
+    # -- and optional custom resources are loaded.
+    PROJECT_OPTIONAL = 2
+    # -- Project dir must contain the apio.ini file and it is always loaded
+    # -- together with optional custom resource files.
+    PROJECT_REQUIRED = 3
+
+
 # pylint: disable=too-many-instance-attributes
 class ApioContext:
     """Apio context. Class for accesing apio resources and configurations."""
@@ -75,15 +89,17 @@ class ApioContext:
     def __init__(
         self,
         *,
-        load_project: bool,
-        project_dir: Optional[Path] = None,
+        scope: ApioContextScope,
+        project_dir_arg: Optional[Path] = None,
     ):
-        """Initializes the ApioContext object. 'project dir' is an optional
-        path to the project dir, otherwise, the current directory is used.
-        'load_project' indicates if project specfic context such as
-        apio.ini or custom boards.json should be loaded. Some commands operate
-        on project while other, such as apio drivers and apio packages,
-        do not require a project.
+        """Initializes the ApioContext object.
+
+        'scope' controls the loading of the project (apio.ini and
+        optional custom resource files.)
+
+        'project_dir_arg' is an optional user specification of the project dir.
+        Must be None if scope is NO_PROJECT.
+
         """
 
         # -- Inform as soon as possible about the list of apio env options
@@ -95,13 +111,33 @@ class ApioContext:
                 fg="yellow",
             )
 
+        # -- Store the scope
+        assert isinstance(scope, ApioContextScope), "Not an ApioContextScope"
+        self.scope = scope
+
         # -- A flag to indicate if the system env was already set in this
         # -- apio session. Used to avoid multiple repeated settings that
         # -- make the path longer and longer.
         self.env_was_already_set = False
 
-        # -- Maps the optional project_dir option to a path.
-        self.project_dir: Path = util.get_project_dir(project_dir)
+        # -- Determine if we need to load the project, and if so, set
+        # -- self._project_dir to the project dir, otherwise, leave it None.
+        self._project_dir: Path = None
+        if scope == ApioContextScope.PROJECT_REQUIRED:
+            self._project_dir = util.resolve_project_dir(
+                project_dir_arg, must_exist=True
+            )
+        elif scope == ApioContextScope.PROJECT_OPTIONAL:
+            project_dir = util.resolve_project_dir(project_dir_arg)
+            if (project_dir / "apio.ini").exists():
+                self._project_dir = project_dir
+        else:
+            assert (
+                scope == ApioContextScope.NO_PROJECT
+            ), f"Unexpected scope: {scope}"
+            assert (
+                project_dir_arg is None
+            ), "project_dir_arg specified for scope None"
 
         # -- Determine apio home dir
         self.home_dir: Path = ApioContext._get_home_dir()
@@ -155,14 +191,15 @@ class ApioContext:
             sorted(self.fpgas.items(), key=lambda t: t[0])
         )
 
-        # -- If requested, load apio.ini, fatal error if not found.
-        if load_project:
+        # -- If we determined that we need to load the project, load the
+        # -- apio.ini data.
+        self._project: Optional[Project] = None
+        if self._project_dir:
             resolver = _ProjectResolverImpl(self)
-            self._project = load_project_from_file(self.project_dir, resolver)
-            assert self.has_project_loaded, "init(): roject not loaded"
+            self._project = load_project_from_file(self._project_dir, resolver)
+            assert self.has_project, "init(): project not loaded"
         else:
-            self._project: Project = None
-            assert not self.has_project_loaded, "init(): project loaded"
+            assert not self.has_project, "init(): project loaded"
 
     def lookup_board_id(
         self, board: str, *, warn: bool = True, strict: bool = True
@@ -232,16 +269,24 @@ class ApioContext:
         return self.home_dir / "packages"
 
     @property
-    def has_project_loaded(self):
+    def has_project(self):
         """Returns True if the project is loaded."""
         return self._project is not None
+
+    @property
+    def project_dir(self):
+        """Returns the project dir. Should be called only if has_project_loaded
+        is true."""
+        assert self.has_project, "project_dir(): project is not loaded"
+        assert self._project_dir, "project_dir(): missing value."
+        return self._project_dir
 
     @property
     def project(self) -> Project:
         """Return the project. Should be called only if has_project_loaded() is
         True."""
         # -- Failure here is a programming error, not a user error.
-        assert self.has_project_loaded, "project(): project is not loaded"
+        assert self.has_project, "project(): project is not loaded"
         return self._project
 
     def _load_resource(self, name: str, allow_custom: bool = False) -> dict:
@@ -260,12 +305,14 @@ class ApioContext:
           In case of error it raises an exception and finish
         """
         # -- Try loading a custom resource file from the project directory.
-        filepath = self.project_dir / name
-
-        if filepath.exists():
-            if allow_custom:
-                click.secho(f"Loading custom '{name}'.")
-                return self._load_resource_file(filepath)
+        # -- Since this method is called in an early stage of __init__(), we
+        # -- can't use the abstracted self.project_dir.
+        if self._project_dir:
+            filepath = self._project_dir / name
+            if filepath.exists():
+                if allow_custom:
+                    click.secho(f"Loading custom '{name}'.")
+                    return self._load_resource_file(filepath)
 
         # -- Load the stock resource file from the APIO package.
         filepath = util.get_path_in_apio_package(RESOURCES_DIR) / name

@@ -11,7 +11,7 @@ import sys
 import click
 from apio.cmd_util import ApioGroup, ApioSubgroup
 from apio.commands import apio_drivers_ftdi, apio_drivers_serial
-from apio.apio_context import ApioContext
+from apio.apio_context import ApioContext, ApioContextScope
 from apio.managers.system import System
 
 # --- apio drivers lsusb
@@ -39,7 +39,7 @@ def _lsusb_cli():
     """Implements the 'apio driverss lsusb' command."""
 
     # Create the apio context.
-    apio_ctx = ApioContext(load_project=False)
+    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Create the system object
     system = System(apio_ctx)

@@ -12,7 +12,7 @@ from pathlib import Path
 import click
 from apio.managers.scons import SCons
 from apio.commands import options
-from apio.apio_context import ApioContext
+from apio.apio_context import ApioContext, ApioContextScope
 
 
 # ---------------------------
@@ -61,7 +61,9 @@ def cli(
     """Implements the test command."""
 
     # -- Create the apio context.
-    apio_ctx = ApioContext(project_dir=project_dir, load_project=True)
+    apio_ctx = ApioContext(
+        scope=ApioContextScope.PROJECT_REQUIRED, project_dir_arg=project_dir
+    )
 
     # -- Create the scons manager.
     scons = SCons(apio_ctx)

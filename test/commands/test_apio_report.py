@@ -36,7 +36,7 @@ def test_report_with_apio(apio_runner: ApioRunner):
         chdir(sb.proj_dir)
 
         # -- Run "apio report" with apio.ini
-        sb.write_apio_ini({"board": "alhambra-ii", "top-module": "main"})
+        sb.write_default_apio_ini()
         result = sb.invoke_apio_cmd(apio_report)
         assert result.exit_code != 0, result.output
         assert "package 'oss-cad-suite' is not installed" in result.output

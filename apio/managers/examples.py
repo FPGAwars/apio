@@ -140,7 +140,9 @@ class Examples:
         pkg_util.check_required_packages(self.apio_ctx, ["examples"])
 
         # -- Get the working dir (current or given)
-        project_dir = util.get_project_dir(project_dir, create_if_missing=True)
+        project_dir = util.resolve_project_dir(
+            project_dir, create_if_missing=True
+        )
 
         # -- Build the destination example path
         dst_example_path = project_dir / example
@@ -198,7 +200,7 @@ class Examples:
         pkg_util.check_required_packages(self.apio_ctx, ["examples"])
 
         # -- Get the working dir (current or given)
-        dst_example_path = util.get_project_dir(
+        dst_example_path = util.resolve_project_dir(
             project_dir, create_if_missing=True
         )
 

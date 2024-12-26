@@ -36,12 +36,12 @@ def test_clean_with_apio_ini(apio_runner: ApioRunner):
         chdir(sb.proj_dir)
 
         # -- Run "apio clean" with a valid apio.ini and no dirty files.
-        sb.write_apio_ini({"board": "alhambra-ii", "top-module": "main"})
+        sb.write_default_apio_ini()
         result = sb.invoke_apio_cmd(apio_clean)
         assert result.exit_code == 0, result.output
 
         # -- Run "apio clean" with apio.ini and dirty files.
-        sb.write_apio_ini({"board": "alhambra-ii", "top-module": "main"})
+        sb.write_default_apio_ini()
         sb.write_file(".sconsign.dblite", "dummy text")
         sb.write_file("_build/hardware.out", "dummy text")
         assert Path(".sconsign.dblite").exists()

@@ -13,7 +13,7 @@ import click
 from apio.managers.examples import Examples
 from apio import cmd_util
 from apio.commands import options
-from apio.apio_context import ApioContext
+from apio.apio_context import ApioContext, ApioContextScope
 from apio.util import nameof
 
 
@@ -97,7 +97,7 @@ def cli(
     )
 
     # -- Create the apio context.
-    apio_ctx = ApioContext(load_project=False)
+    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Create the examples manager.
     examples = Examples(apio_ctx)

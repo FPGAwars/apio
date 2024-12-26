@@ -34,7 +34,7 @@ def test_format_with_apio_ini(apio_runner: ApioRunner):
         chdir(sb.proj_dir)
 
         # -- Run "apio format" with a valid apio.ini.
-        sb.write_apio_ini({"board": "alhambra-ii", "top-module": "main"})
+        sb.write_default_apio_ini()
         result = sb.invoke_apio_cmd(apio_format)
         assert result.exit_code == 1, result.output
         assert "package 'verible' is not installed" in result.output

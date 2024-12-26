@@ -143,7 +143,7 @@ def process_arguments(
 
     # -- Get the project object. All commands that invoke scons are expected
     # -- to be in a project context.
-    assert apio_ctx.has_project_loaded, "Scons encountered a missing project."
+    assert apio_ctx.has_project, "Scons encountered a missing project."
     project = apio_ctx.project
 
     # -- Get project's board. It should be prevalidated when loading the

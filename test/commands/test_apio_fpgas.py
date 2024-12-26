@@ -39,6 +39,10 @@ def test_custom_fpga(apio_runner: ApioRunner):
 
     with apio_runner.in_sandbox() as sb:
 
+        # -- Write apio.ini for apio to pick the project's default
+        # -- fpgas.json.
+        sb.write_default_apio_ini()
+
         # -- Write a custom boards.json file in the project's directory.
         sb.write_file("fpgas.json", CUSTOM_FPGAS)
 

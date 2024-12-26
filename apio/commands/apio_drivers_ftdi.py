@@ -10,7 +10,7 @@
 import sys
 import click
 from apio.managers.drivers import Drivers
-from apio.apio_context import ApioContext
+from apio.apio_context import ApioContext, ApioContextScope
 from apio.cmd_util import ApioGroup, ApioSubgroup
 from apio.managers.system import System
 
@@ -37,7 +37,7 @@ def _install_cli():
     """Implements the 'apio drivers ftdi install' command."""
 
     # -- Create the apio context.
-    apio_ctx = ApioContext(load_project=False)
+    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # # -- Create the drivers manager.
     drivers = Drivers(apio_ctx)
@@ -71,7 +71,7 @@ def _uninstall_cli():
     """Implements the 'apio drivers ftdi uninstall' command."""
 
     # -- Create the apio context.
-    apio_ctx = ApioContext(load_project=False)
+    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Create the drivers manager.
     drivers = Drivers(apio_ctx)
@@ -106,7 +106,7 @@ def _list_cli():
     """Implements the 'apio drivers ftdi list' command."""
 
     # Create the apio context.
-    apio_ctx = ApioContext(load_project=False)
+    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Create the system object
     system = System(apio_ctx)

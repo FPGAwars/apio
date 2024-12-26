@@ -4,7 +4,7 @@ Tests of project.py
 
 from os import chdir
 from test.conftest import ApioRunner
-from apio.apio_context import ApioContext
+from apio.apio_context import ApioContext, ApioContextScope
 
 # pylint: disable=fixme
 # TODO: Add more tests.
@@ -29,7 +29,10 @@ def test_options(apio_runner: ApioRunner):
         )
 
         # -- We use ApioContext to instantiate the Project object.
-        apio_ctx = ApioContext(project_dir=sb.proj_dir, load_project=True)
+        apio_ctx = ApioContext(
+            scope=ApioContextScope.PROJECT_REQUIRED,
+            project_dir_arg=sb.proj_dir,
+        )
         project = apio_ctx.project
 
         assert project.get("board") == "alhambra-ii"

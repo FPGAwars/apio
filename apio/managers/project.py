@@ -227,9 +227,5 @@ def create_project_file(
     config["env"]["board"] = board_id
     config["env"]["top-module"] = top_module
     config.write()
-    click.secho(
-        f"The file '{ini_path}' was created successfully.\n"
-        "Run the apio clean command for project consistency.",
-        fg="green",
-    )
+    click.secho(f"The file '{ini_path}' was created successfully.", fg="green")
     return True

@@ -14,7 +14,7 @@ def test_lint_no_packages(apio_runner: ApioRunner):
     with apio_runner.in_sandbox() as sb:
 
         # -- Create apio.ini file.
-        sb.write_apio_ini({"board": "icezum", "top-module": "main"})
+        sb.write_default_apio_ini()
 
         # -- Execute "apio lint"
         result = sb.invoke_apio_cmd(apio_lint)

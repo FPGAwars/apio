@@ -34,7 +34,7 @@ def test_graph_with_apio_ini(apio_runner: ApioRunner):
         chdir(sb.proj_dir)
 
         # -- Create an apio.ini file
-        sb.write_apio_ini({"board": "icezum", "top-module": "main"})
+        sb.write_default_apio_ini()
 
         # -- Execute "apio graph"
         result = sb.invoke_apio_cmd(apio_graph)

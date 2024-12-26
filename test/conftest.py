@@ -238,6 +238,15 @@ class ApioSandbox:
         # -- Write the file.
         self.write_file(path, lines, exists_ok=True)
 
+    def write_default_apio_ini(self):
+        """Write in the local directory an apio.ini file with default values
+        for testing. If the file exists, it's overwritten."""
+        default_apio_ini = {
+            "board": "alhambra-ii",
+            "top-module": "main",
+        }
+        self.write_apio_ini(default_apio_ini)
+
     @property
     def offline_flag(self):
         """Returns True if pytest was invoked with --offline to skip

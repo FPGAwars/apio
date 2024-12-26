@@ -13,7 +13,7 @@ from pathlib import Path
 from glob import glob
 from typing import Tuple, List
 import click
-from apio.apio_context import ApioContext
+from apio.apio_context import ApioContext, ApioContextScope
 from apio import pkg_util, util
 from apio.commands import options
 
@@ -77,7 +77,9 @@ def cli(
     """
 
     # -- Create an apio context with a project object.
-    apio_ctx = ApioContext(project_dir=project_dir, load_project=True)
+    apio_ctx = ApioContext(
+        scope=ApioContextScope.PROJECT_REQUIRED, project_dir_arg=project_dir
+    )
 
     # -- Error if the apio verible package is not installed.
     pkg_util.check_required_packages(apio_ctx, ["verible"])

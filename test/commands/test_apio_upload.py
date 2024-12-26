@@ -41,7 +41,7 @@ def test_upload_complete(apio_runner: ApioRunner):
         chdir(sb.proj_dir)
 
         # -- Execute "apio upload --serial-port COM0"
-        sb.write_apio_ini({"board": "alhambra-ii", "top-module": "main"})
+        sb.write_default_apio_ini()
         result = sb.invoke_apio_cmd(apio_upload, ["--serial-port", "COM0"])
         assert result.exit_code == 1, result.output
         assert "package 'oss-cad-suite' is not installed" in result.output

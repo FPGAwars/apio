@@ -12,7 +12,7 @@ import subprocess
 from typing import Tuple, List
 import click
 from apio import pkg_util, cmd_util
-from apio.apio_context import ApioContext
+from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import options
 from apio.util import nameof
 
@@ -90,7 +90,7 @@ def cli(
     # -- if --env option is specifies and prepare the env for the command
     # -- execution below.
     if cmd or env:
-        apio_ctx = ApioContext(load_project=False)
+        apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
         pkg_util.set_env_for_packages(
             apio_ctx, quiet=not (env or verbose), verbose=env or verbose
         )
