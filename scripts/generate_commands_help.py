@@ -66,7 +66,7 @@ for cmd in cmds_infos:
     # cmd_path = ' '.join(cmd_info.path)
     click.secho("\n<br>\n")
     click.secho(
-        f"### {cmd.path_str}" "{" f"#{cmd.anchor}" "}",
+        f"### {cmd.path_str}",
         fg="magenta",
     )
     click.secho()

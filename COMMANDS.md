@@ -39,7 +39,7 @@
 
 <br>
 
-### apio{#apio}
+### apio
 
 ```
 Usage: apio [OPTIONS] COMMAND [ARGS]...
@@ -92,7 +92,7 @@ Utility commands:
 
 <br>
 
-### apio boards{#apio-boards}
+### apio boards
 
 ```
 Usage: apio boards [OPTIONS]
@@ -117,7 +117,7 @@ Options:
 
 <br>
 
-### apio build{#apio-build}
+### apio build
 
 ```
 Usage: apio build [OPTIONS]
@@ -144,7 +144,7 @@ Options:
 
 <br>
 
-### apio clean{#apio-clean}
+### apio clean
 
 ```
 Usage: apio clean [OPTIONS]
@@ -166,7 +166,7 @@ Options:
 
 <br>
 
-### apio create{#apio-create}
+### apio create
 
 ```
 Usage: apio create [OPTIONS]
@@ -196,7 +196,7 @@ Options:
 
 <br>
 
-### apio drivers{#apio-drivers}
+### apio drivers
 
 ```
 Usage: apio drivers [OPTIONS] COMMAND [ARGS]...
@@ -218,7 +218,7 @@ Subcommands:
 
 <br>
 
-### apio drivers ftdi{#apio-drivers-ftdi}
+### apio drivers ftdi
 
 ```
 Usage: apio drivers ftdi [OPTIONS] COMMAND [ARGS]...
@@ -240,7 +240,7 @@ Subcommands:
 
 <br>
 
-### apio drivers ftdi install{#apio-drivers-ftdi-install}
+### apio drivers ftdi install
 
 ```
 Usage: apio drivers ftdi install [OPTIONS]
@@ -258,7 +258,7 @@ Options:
 
 <br>
 
-### apio drivers ftdi list{#apio-drivers-ftdi-list}
+### apio drivers ftdi list
 
 ```
 Usage: apio drivers ftdi list [OPTIONS]
@@ -278,7 +278,7 @@ Options:
 
 <br>
 
-### apio drivers ftdi uninstall{#apio-drivers-ftdi-uninstall}
+### apio drivers ftdi uninstall
 
 ```
 Usage: apio drivers ftdi uninstall [OPTIONS]
@@ -296,7 +296,7 @@ Options:
 
 <br>
 
-### apio drivers lsusb{#apio-drivers-lsusb}
+### apio drivers lsusb
 
 ```
 Usage: apio drivers lsusb [OPTIONS]
@@ -317,7 +317,7 @@ Options:
 
 <br>
 
-### apio drivers serial{#apio-drivers-serial}
+### apio drivers serial
 
 ```
 Usage: apio drivers serial [OPTIONS] COMMAND [ARGS]...
@@ -339,7 +339,7 @@ Subcommands:
 
 <br>
 
-### apio drivers serial install{#apio-drivers-serial-install}
+### apio drivers serial install
 
 ```
 Usage: apio drivers serial install [OPTIONS]
@@ -357,7 +357,7 @@ Options:
 
 <br>
 
-### apio drivers serial list{#apio-drivers-serial-list}
+### apio drivers serial list
 
 ```
 Usage: apio drivers serial list [OPTIONS]
@@ -377,7 +377,7 @@ Options:
 
 <br>
 
-### apio drivers serial uninstall{#apio-drivers-serial-uninstall}
+### apio drivers serial uninstall
 
 ```
 Usage: apio drivers serial uninstall [OPTIONS]
@@ -395,7 +395,7 @@ Options:
 
 <br>
 
-### apio examples{#apio-examples}
+### apio examples
 
 ```
 Usage: apio examples [OPTIONS] COMMAND [ARGS]...
@@ -418,7 +418,7 @@ Subcommands:
 
 <br>
 
-### apio examples fetch{#apio-examples-fetch}
+### apio examples fetch
 
 ```
 Usage: apio examples fetch [OPTIONS] EXAMPLE
@@ -441,7 +441,7 @@ Options:
 
 <br>
 
-### apio examples fetch-board{#apio-examples-fetch-board}
+### apio examples fetch-board
 
 ```
 Usage: apio examples fetch-board [OPTIONS] BOARD
@@ -461,7 +461,7 @@ Options:
 
 <br>
 
-### apio examples list{#apio-examples-list}
+### apio examples list
 
 ```
 Usage: apio examples list [OPTIONS]
@@ -482,7 +482,7 @@ Options:
 
 <br>
 
-### apio format{#apio-format}
+### apio format
 
 ```
 Usage: apio format [OPTIONS] [FILES]...
@@ -523,7 +523,7 @@ Options:
 
 <br>
 
-### apio fpgas{#apio-fpgas}
+### apio fpgas
 
 ```
 Usage: apio fpgas [OPTIONS]
@@ -545,7 +545,7 @@ Options:
 
 <br>
 
-### apio graph{#apio-graph}
+### apio graph
 
 ```
 Usage: apio graph [OPTIONS]
@@ -574,7 +574,7 @@ Options:
 
 <br>
 
-### apio lint{#apio-lint}
+### apio lint
 
 ```
 Usage: apio lint [OPTIONS]
@@ -602,7 +602,7 @@ Options:
 
 <br>
 
-### apio packages{#apio-packages}
+### apio packages
 
 ```
 Usage: apio packages [OPTIONS] COMMAND [ARGS]...
@@ -630,7 +630,7 @@ Subcommands:
 
 <br>
 
-### apio packages fix{#apio-packages-fix}
+### apio packages fix
 
 ```
 Usage: apio packages fix [OPTIONS]
@@ -650,7 +650,7 @@ Options:
 
 <br>
 
-### apio packages install{#apio-packages-install}
+### apio packages install
 
 ```
 Usage: apio packages install [OPTIONS] [PACKAGES]...
@@ -676,7 +676,7 @@ Options:
 
 <br>
 
-### apio packages list{#apio-packages-list}
+### apio packages list
 
 ```
 Usage: apio packages list [OPTIONS]
@@ -694,7 +694,7 @@ Options:
 
 <br>
 
-### apio packages uninstall{#apio-packages-uninstall}
+### apio packages uninstall
 
 ```
 Usage: apio packages uninstall [OPTIONS] [PACKAGES]...
@@ -715,7 +715,7 @@ Options:
 
 <br>
 
-### apio raw{#apio-raw}
+### apio raw
 
 ```
 Usage: apio raw [OPTIONS] COMMAND
@@ -749,7 +749,7 @@ Options:
 
 <br>
 
-### apio report{#apio-report}
+### apio report
 
 ```
 Usage: apio report [OPTIONS]
@@ -771,7 +771,7 @@ Options:
 
 <br>
 
-### apio sim{#apio-sim}
+### apio sim
 
 ```
 Usage: apio sim [OPTIONS] TESTBENCH
@@ -807,7 +807,7 @@ Options:
 
 <br>
 
-### apio system{#apio-system}
+### apio system
 
 ```
 Usage: apio system [OPTIONS] COMMAND [ARGS]...
@@ -828,7 +828,7 @@ Subcommands:
 
 <br>
 
-### apio system info{#apio-system-info}
+### apio system info
 
 ```
 Usage: apio system info [OPTIONS]
@@ -850,7 +850,7 @@ Options:
 
 <br>
 
-### apio system platforms{#apio-system-platforms}
+### apio system platforms
 
 ```
 Usage: apio system platforms [OPTIONS]
@@ -870,7 +870,7 @@ Options:
 
 <br>
 
-### apio test{#apio-test}
+### apio test
 
 ```
 Usage: apio test [OPTIONS] [TESTBENCH_FILE]
@@ -902,7 +902,7 @@ Options:
 
 <br>
 
-### apio upgrade{#apio-upgrade}
+### apio upgrade
 
 ```
 Usage: apio upgrade [OPTIONS]
@@ -919,7 +919,7 @@ Options:
 
 <br>
 
-### apio upload{#apio-upload}
+### apio upload
 
 ```
 Usage: apio upload [OPTIONS]
