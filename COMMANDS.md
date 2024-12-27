@@ -240,8 +240,8 @@ Usage: apio drivers ftdi install [OPTIONS]
   drivers required by some FPGA boards.
 
   Examples:
-    apio drivers fdri install      # Install the ftdi drivers.
-    apio drivers fdri uinstall     # Uinstall the ftdi drivers.
+    apio drivers ftdi install      # Install the ftdi drivers.
+    apio drivers ftdi uinstall     # Uinstall the ftdi drivers.
 
 Options:
   -h, --help  Show this message and exit.
