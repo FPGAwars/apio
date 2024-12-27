@@ -155,7 +155,7 @@ class System:  # pragma: no cover
         pkg_util.check_required_packages(self.apio_ctx, ["oss-cad-suite"])
 
         # -- Set system env for using the packages.
-        pkg_util.set_env_for_packages(self.apio_ctx)
+        pkg_util.set_env_for_packages(self.apio_ctx, quiet=True)
 
         # pylint: disable=fixme
         # TODO: Is this necessary or does windows accepts commands without

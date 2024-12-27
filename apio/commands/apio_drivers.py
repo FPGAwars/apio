@@ -5,122 +5,80 @@
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""Implementation of 'apio drivers' command"""
+"""Implementation of 'apio drivers' command group."""
 
 import sys
 import click
-from apio.managers.drivers import Drivers
-from apio import cmd_util
-from apio.apio_context import ApioContext
-from apio.util import nameof
+from apio.cmd_util import ApioGroup, ApioSubgroup
+from apio.commands import apio_drivers_ftdi, apio_drivers_serial
+from apio.apio_context import ApioContext, ApioContextScope
+from apio.managers.system import System
 
-# ---------------------------
-# -- COMMAND SPECIFIC OPTIONS
-# ---------------------------
-ftdi_install_option = click.option(
-    "ftdi_install",  # Var name.
-    "--ftdi-install",
-    is_flag=True,
-    help="Install the FTDI driver.",
-    cls=cmd_util.ApioOption,
-)
+# --- apio drivers lsusb
 
-ftdi_uninstall_option = click.option(
-    "ftdi_uninstall",  # Var name.
-    "--ftdi-uninstall",
-    is_flag=True,
-    help="Uninstall the FTDI driver.",
-    cls=cmd_util.ApioOption,
-)
-
-serial_install_option = click.option(
-    "serial_install",  # Var name.
-    "--serial-install",
-    is_flag=True,
-    help="Install the Serial driver.",
-    cls=cmd_util.ApioOption,
-)
-
-serial_uninstall_option = click.option(
-    "serial_uninstall",  # Var name.
-    "--serial-uninstall",
-    is_flag=True,
-    help="Uninstall the Serial driver.",
-    cls=cmd_util.ApioOption,
-)
-
-
-# ---------------------------
-# -- COMMAND
-# ---------------------------
-
-HELP = """
-The drivers command allows to install or uninstall operating system
-drivers that are used to program the FPGA boards. This command is global
-and affects all the projects on the local host.
+LSUSB_HELP = """
+The 'apio drivers lsusb' commands runs the lsusb utility to list the usb
+devices connected to your computer.  It is typically used  for diagnosing
+connectivity issues with FPGA boards.
 
 \b
 Examples:
-  apio drivers --ftdi-install      # Install the FTDI driver.
-  apio drivers --ftdi-uninstall    # Uninstall the FTDI driver.
-  apio drivers --serial-install    # Install the serial driver.
-  apio drivers --serial-uninstall  # Uninstall the serial driver.
+  apio drivers lsusb      # List the usb devices
 
-  Do not specify more than flag per command invocation.
+[Hint] You can also run the lsusb utility using the command
+'apio raw -- lsusb <flags>'
 """
 
 
 @click.command(
-    name="drivers",
-    short_help="Manage the operating system drivers.",
-    help=HELP,
+    name="lsusb",
+    short_help="List connected USB devices.",
+    help=LSUSB_HELP,
 )
-@click.pass_context
-@ftdi_install_option
-@ftdi_uninstall_option
-@serial_install_option
-@serial_uninstall_option
-def cli(
-    cmd_ctx: click.Context,
-    # Options:
-    ftdi_install: bool,
-    ftdi_uninstall: bool,
-    serial_install: bool,
-    serial_uninstall: bool,
-):
+def _lsusb_cli():
+    """Implements the 'apio driverss lsusb' command."""
+
+    # Create the apio context.
+    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+
+    # -- Create the system object
+    system = System(apio_ctx)
+
+    # -- List the USB device.
+    exit_code = system.lsusb()
+    sys.exit(exit_code)
+
+
+# --- apio drivers
+
+DRIVERS_HELP = """
+The 'apio drivers' commands group contains subcommands that are used
+to manage the drivers on your system.
+
+The subcommands are listed below.
+"""
+
+# -- We have only a single group with the title 'Subcommands'.
+SUBGROUPS = [
+    ApioSubgroup(
+        "Subcommands",
+        [
+            apio_drivers_ftdi.cli,
+            apio_drivers_serial.cli,
+            _lsusb_cli,
+        ],
+    )
+]
+
+
+@click.command(
+    name="drivers",
+    cls=ApioGroup,
+    subgroups=SUBGROUPS,
+    short_help="Manage the operating system drivers.",
+    help=DRIVERS_HELP,
+)
+def cli():
     """Implements the drivers command."""
 
-    # User should select exactly on of these operations.
-    cmd_util.check_exactly_one_param(
-        cmd_ctx,
-        nameof(ftdi_install, ftdi_uninstall, serial_install, serial_uninstall),
-    )
-
-    # -- Create the apio context.
-    apio_ctx = ApioContext(load_project=False)
-
-    # -- Create the drivers manager.
-    drivers = Drivers(apio_ctx)
-
-    # -- FTDI install option
-    if ftdi_install:
-        exit_code = drivers.ftdi_install()
-        sys.exit(exit_code)
-
-    # -- FTDI uninstall option
-    if ftdi_uninstall:
-        exit_code = drivers.ftdi_uninstall()
-        sys.exit(exit_code)
-
-    # -- Serial install option
-    if serial_install:
-        exit_code = drivers.serial_install()
-        sys.exit(exit_code)
-
-    # -- Serial uninstall option
-    if serial_uninstall:
-        exit_code = drivers.serial_uninstall()
-        sys.exit(exit_code)
-
-    # -- No options. Show the help
-    click.secho(cmd_ctx.get_help())
+    # pass

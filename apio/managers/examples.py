@@ -7,6 +7,8 @@
 # -- Licence GPLv2
 
 import shutil
+import sys
+import os
 from pathlib import Path, PosixPath
 from dataclasses import dataclass
 from typing import Optional, List
@@ -20,9 +22,15 @@ from apio.apio_context import ApioContext
 class ExampleInfo:
     """Information about a single example."""
 
-    name: str
+    board_dir_name: str
+    example_dir_name: str
     path: PosixPath
     description: str
+
+    @property
+    def name(self) -> str:
+        """Returns the full id of the example."""
+        return self.board_dir_name + "/" + self.example_dir_name
 
 
 class Examples:
@@ -35,6 +43,24 @@ class Examples:
 
         # -- Folder where the example packages was installed
         self.examples_dir = apio_ctx.get_package_dir("examples")
+
+    def is_dir_empty(self, path: Path) -> bool:
+        """Return true if the given dir is empty, ignoring hidden entry.
+        That is, the dir may contain only hidden entries.
+        We use this relaxed criteria of emptyness to avoid user confusion.
+        We could use glop.glob() but in python 3.10 and eariler it doesn't
+        have the 'include_hidden' argument.
+        """
+        # -- Check prerequirement.
+        assert path.is_dir(), f"Not a dir: {path}"
+
+        # -- Iterate directory entries
+        for name in os.listdir(path):
+            # -- If not a hidden entry, answer is no.
+            if not name.startswith("."):
+                return False
+        # -- Non hidden entries not found. Directory is empty.
+        return True
 
     def get_examples_infos(self) -> Optional[List[ExampleInfo]]:
         """Scans the examples and returns a list of ExampleInfos.
@@ -70,14 +96,18 @@ class Examples:
                     description = ""
 
                 # -- Append this example to the list.
-                name = f"{board_dir.name}/{example_dir.name}"
-                example_info = ExampleInfo(name, example_dir, description)
+                # name = f"{board_dir.name}/{example_dir.name}"
+                example_info = ExampleInfo(
+                    board_dir.name, example_dir.name, example_dir, description
+                )
                 examples.append(example_info)
 
         # -- Sort in-place by ascceding example name, case insensitive.
         examples.sort(key=lambda x: x.name.lower())
 
         return examples
+
+    #     return example_dir
 
     def list_examples(self) -> None:
         """Print all the examples available. Return a process exit
@@ -126,7 +156,80 @@ class Examples:
 
         return 0
 
-    def copy_example_dir(self, example: str, project_dir: Path, sayno: bool):
+    def lookup_example_info(self, example_name) -> Optional[ExampleInfo]:
+        """Return the example info for given example or None if not found.
+        Example_name looks like 'alhambra-ii/ledon'.
+        """
+
+        example_infos = self.get_examples_infos()
+        for ex in example_infos:
+            if example_name == ex.name:
+                return ex
+        return None
+
+    def copy_example_files(self, example_name: str, dst_dir_path: Path):
+        """Copy the files from the given example to the destination dir.
+        If destination dir exists, it must be empty.
+        If it doesn't exist, it's created with any necessary parent.
+        The arg 'example_name' looks like 'alhambra-ii/ledon'.
+        """
+
+        # -- Check that the examples package is installed.
+        pkg_util.check_required_packages(self.apio_ctx, ["examples"])
+
+        # Check that the example name exists.
+        example_info: ExampleInfo = self.lookup_example_info(example_name)
+
+        if not example_info:
+            click.secho(
+                f"Error: example '{example_name}' not found.", fg="red"
+            )
+            click.secho(
+                "Run 'apio example list' for the list of examples.\n"
+                "Expecting an example name like alhambra-ii/ledon.",
+                fg="yellow",
+            )
+            sys.exit(1)
+
+        # -- Get the example dir path.
+        src_example_path = example_info.path
+
+        # -- Prepare an empty destination directory. To avoid confusion,
+        # -- we ignore hidden files and directory.
+        if dst_dir_path.is_dir():
+            if not self.is_dir_empty(dst_dir_path):
+                click.secho(
+                    f"Error: destination directory '{str(dst_dir_path)}' "
+                    "is not empty.",
+                    fg="red",
+                )
+                sys.exit(1)
+        else:
+            dst_dir_path.mkdir(parents=True, exist_ok=False)
+
+        click.secho("Copying " + example_name + " example files.")
+
+        # -- Go though all the files in the example folder.
+        for file in src_example_path.iterdir():
+            # -- Copy the file unless it's 'info' which we ignore.
+            if file.name != "info":
+                shutil.copy(file, dst_dir_path)
+
+        # -- Inform the user.
+        click.secho(
+            f"Fetched successfully the files of example '{example_name}'.",
+            fg="green",
+        )
+
+    def get_board_examples(self, board_id) -> List[ExampleInfo]:
+        """Returns the list of examples with given board id."""
+        return [
+            x
+            for x in self.get_examples_infos()
+            if x.board_dir_name == board_id
+        ]
+
+    def copy_board_examples(self, board_id: str, dst_dir: Path):
         """Copy the example creating the folder
         Ex. The example alhambra-ii/ledon --> the folder alhambra-ii/ledon
         is created
@@ -140,167 +243,54 @@ class Examples:
         pkg_util.check_required_packages(self.apio_ctx, ["examples"])
 
         # -- Get the working dir (current or given)
-        project_dir = util.get_project_dir(project_dir, create_if_missing=True)
-
-        # -- Build the destination example path
-        dst_example_path = project_dir / example
-
-        # -- Build the source example path (where the example was installed)
-        src_example_path = self.examples_dir / example
-
-        # -- If the source example path is not a folder... it is an error
-        if not src_example_path.is_dir():
-            click.secho(f"Error: example [{example}] not found.", fg="red")
-            return 1
-
-        # -- The destination path is a folder...It means that the
-        # -- example already exist! Ask the user that to do...
-        # -- Replace it or not...
-        if dst_example_path.is_dir():
-
-            # -- If sayno, do not copy anything
-            if not sayno:
-
-                # -- Warn the user
-                click.secho(
-                    "Warning: " + example + " directory already exists",
-                    fg="yellow",
-                )
-
-                # -- Ask the user what to do...
-                if click.confirm("Do you want to replace it?"):
-
-                    # -- Remove the old example
-                    shutil.rmtree(dst_example_path)
-
-                    # -- Copy the example!
-                    self._copy_dir(example, src_example_path, dst_example_path)
-
-        elif dst_example_path.is_dir():
+        # dst_dir = util.resolve_project_dir(
+        #     dst_dir, create_if_missing=True
+        # )
+        board_exaamples = self.get_board_examples(board_id)
+        if not board_exaamples:
+            click.secho(f"Error: no examples for board '{board_id}.", fg="red")
             click.secho(
-                "Warning: " + example + " is already a file",
+                "Run 'apio examples list' for the list of examples.\n"
+                "Expecting a board name such as 'alhambra-ii.",
                 fg="yellow",
             )
-        else:
-            self._copy_dir(example, src_example_path, dst_example_path)
+            sys.exit(1)
 
-        return 0
-
-    def copy_example_files(self, example: str, project_dir: Path, sayno: bool):
-        """Copy the example files (not the initial folders)
-        * INPUTS:
-            * example: Example name (Ex. 'alhambra-ii/ledon')
-            * project_dir: (optional)
-            * sayno: Automatically answer no
-        """
-
-        # -- Check that the examples package is installed.
-        pkg_util.check_required_packages(self.apio_ctx, ["examples"])
-
-        # -- Get the working dir (current or given)
-        dst_example_path = util.get_project_dir(
-            project_dir, create_if_missing=True
-        )
+        # -- Build the destination example path
+        dst_board_dir = dst_dir / board_id
 
         # -- Build the source example path (where the example was installed)
-        src_example_path = self.examples_dir / example
+        src_board_dir = self.examples_dir / board_id
 
-        # -- If the source example path is not a folder. it is an error
-        if not src_example_path.is_dir():
-            click.secho(f"Error: example [{example}] not found.", fg="red")
-            return 1
+        # -- If the source example path is not a folder... it is an error
+        if not src_board_dir.is_dir():
+            click.secho(
+                f"Error: examples for board [{board_id}] not found.", fg="red"
+            )
+            click.secho(
+                "Expecting a board name such as 'alhambra-ii'.\n"
+                "Run 'apio examples list' for the list of available examples.",
+                fg="yellow",
+            )
+            sys.exit(1)
 
-        # -- Copy the example files!!
-        # -- TODO: fix an error.
-        exit_code = self._copy_files(
-            example, src_example_path, dst_example_path, sayno
-        )
+        if dst_board_dir.is_dir():
+            # -- To avoid confusion to the user, we ignore hidden files.
+            if not self.is_dir_empty(dst_board_dir):
+                click.secho(
+                    f"Error: destination directory '{str(dst_board_dir)}' "
+                    "is not empty.",
+                    fg="red",
+                )
+                sys.exit(1)
+        else:
+            click.secho(f"Creating directory {dst_board_dir}.")
+            dst_board_dir.mkdir(parents=True, exist_ok=False)
 
-        return exit_code
+        # -- Copy the directory tree.
+        shutil.copytree(src_board_dir, dst_board_dir, dirs_exist_ok=True)
 
-    def _copy_files(
-        self, example: str, src_path: Path, dest_path: Path, sayno: bool
-    ):
-        """Copy the example files to the destination folder
-        * INPUTS:
-          * example: Name of the example (Ex. 'alhambra-ii/ledon')
-          * src_path: Source folder to copy
-          * dest_path: Destination folder
-        """
-
-        # -- Inform the user
-        click.secho("Copying " + example + " example files ...")
-
-        # -- Go though all the files in the example folder...
-        for file in src_path.iterdir():
-
-            # -- Get the filename
-            filename = file.name
-
-            # -- "info" file is not copied
-            if filename != "info":
-
-                # -- Build the destination filepath
-                dst_filename = dest_path / filename
-
-                # -- Check if the destination final exists
-                # -- It is is the case, ask the user what to do...
-                if dst_filename.is_file():
-
-                    # -- If sayno, do not copy the file. Move to the next
-                    if sayno:
-                        continue
-
-                    # -- Warn the user
-                    click.secho(
-                        f"Warning: {filename} file already exists",
-                        fg="yellow",
-                    )
-
-                    # -- Ask the user
-                    if click.confirm("Do you want to replace it?"):
-
-                        # -- copy the file
-                        shutil.copy(file, dest_path)
-
-                # -- The destination path is a folder!
-                elif dst_filename.is_dir():
-
-                    # -- Warn the user. Nothing is copied...
-                    click.secho(
-                        f"Warning: {filename} is already a directory",
-                        fg="yellow",
-                    )
-                    return 1
-
-                # -- Copy the file!
-                else:
-                    shutil.copy(file, dest_path)
-
-        # -- Inform the user!
         click.secho(
-            f"Example files '{example}' have been successfully created!",
-            fg="green",
-        )
-
-        return 0
-
-    def _copy_dir(self, example: str, src_path: Path, dest_path: Path):
-        """Copy example of the src_path on the dest_path
-        * INPUT
-          * example: Name of the example (Ex. 'alhambra-ii/ledon')
-          * src_path: Source folder to copy
-          * dest_path: Destination folder
-        """
-
-        # -- Infor for the user
-        click.secho("Creating " + example + " directory ...")
-
-        # -- Copy the src folder on to the destination path
-        shutil.copytree(src_path, dest_path)
-
-        # -- Info for the user
-        click.secho(
-            "Example '" + example + "' has been successfully created!",
+            "Board '" + board_id + "' examples has been fetched successfuly.",
             fg="green",
         )

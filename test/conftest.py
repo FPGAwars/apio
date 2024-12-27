@@ -52,10 +52,12 @@ class ApioSandbox:
     def __init__(
         self,
         apio_runner_: "ApioRunner",
+        sandbox_dir: Path,
         proj_dir: Path,
         home_dir: Path,
     ):
         self._apio_runner = apio_runner_
+        self._sandbox_dir = sandbox_dir
         self._proj_dir = proj_dir
         self._home_dir = home_dir
         self._click_runner = CliRunner()
@@ -66,6 +68,12 @@ class ApioSandbox:
         # -- This tests if this sandbox is still the active sandbox at the
         # -- apio runner that creates it.
         return self is not self._apio_runner.sandbox
+
+    @property
+    def sandbox_dir(self) -> Path:
+        """Returns the sandbox's dir."""
+        assert not self.expired, "Sanbox expired"
+        return self._sandbox_dir
 
     @property
     def proj_dir(self) -> Path:
@@ -224,11 +232,9 @@ class ApioSandbox:
         """Write in the current directory an apio.ini file with given
         values. If an apio.ini file alread exists, it is overwritten."""
 
-        path = Path("apio.ini")
+        assert isinstance(properties, dict), "Not a dict."
 
-        # -- Handle a deletion request.
-        if properties is None:
-            properties = {"board": "icezum", "top-module": "main"}
+        path = Path("apio.ini")
 
         # -- Requested to write. Construct the lines.
         lines = ["[env]"]
@@ -237,6 +243,15 @@ class ApioSandbox:
 
         # -- Write the file.
         self.write_file(path, lines, exists_ok=True)
+
+    def write_default_apio_ini(self):
+        """Write in the local directory an apio.ini file with default values
+        for testing. If the file exists, it's overwritten."""
+        default_apio_ini = {
+            "board": "alhambra-ii",
+            "top-module": "main",
+        }
+        self.write_apio_ini(default_apio_ini)
 
     @property
     def offline_flag(self):
@@ -295,6 +310,8 @@ class ApioRunner:
         and restore the system env upon exist. Shared_home indicates if the
         sandbox uses a unique apio shared home directory or shares it with
         other sandboxes in the same apio_runner scope that set it to True.
+
+        Upoon return, the current directory is proj_dir.
         """
         # -- Make sure we don't try to nest sandboxes.
         assert self._sandbox is None, "Already in a sandbox."
@@ -305,15 +322,17 @@ class ApioRunner:
         # -- Snapshot the current directory.
         original_cwd = os.getcwd()
 
-        # -- Create a temp dir that will be deleted on exit and change to it.
-        temp_dir = Path(tempfile.mkdtemp(prefix=FUNNY_MARKER + "-"))
-        os.chdir(temp_dir)
+        # -- Create a temp sandbox dir that will be deleted on exit and
+        # -- change to it.
+        sandbox_dir = Path(tempfile.mkdtemp(prefix=FUNNY_MARKER + "-"))
 
         # -- Construct the sandbox dir pathes. User will create the dirs
         # -- as needed.
         # --
         # -- We do allow spaces in the project dir.
-        proj_dir = temp_dir / " proj"
+        proj_dir = sandbox_dir / " proj"
+        proj_dir.mkdir()
+        os.chdir(proj_dir)
 
         # -- Spaces are not supported yet in the home and packges dirs.
         # -- For more details see https://github.com/FPGAwars/apio/issues/474.
@@ -329,19 +348,19 @@ class ApioRunner:
             home_dir = self._shared_apio_home
         else:
             # -- Using a home dir unique to this sandbox.
-            home_dir = temp_dir / "apio"
+            home_dir = sandbox_dir / "apio"
 
         if DEBUG:
             print()
             print("--> apio sandbox:")
-            print(f"       test dir          : {str(temp_dir)}")
+            print(f"       sandbox dir       : {str(sandbox_dir)}")
             print(f"       apio proj dir     : {str(proj_dir)}")
             print(f"       apio home dir     : {str(home_dir)}")
             print()
 
         # -- Register a sanbox objet to indicate that we are in a sandbox.
         assert self._sandbox is None
-        self._sandbox = ApioSandbox(self, proj_dir, home_dir)
+        self._sandbox = ApioSandbox(self, sandbox_dir, proj_dir, home_dir)
 
         # -- Set the system env vars to inform ApioContext what are the
         # -- home and packages dirs.
@@ -369,7 +388,7 @@ class ApioRunner:
             # -- Delete the temp directory. This also deletes the apio home
             # -- if it's not shared but doesn't touch it if we use a shared
             # -- home.
-            shutil.rmtree(temp_dir)
+            shutil.rmtree(sandbox_dir)
 
             print("\nSandbox deleted. ")
 

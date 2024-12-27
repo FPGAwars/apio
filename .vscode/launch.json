@@ -90,7 +90,7 @@
             "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "examples",
-                "--list"
+                "list"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
@@ -171,7 +171,7 @@
             "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "packages",
-                "--install",
+                "install",
                 "--force"
             ],
             "console": "integratedTerminal",
@@ -212,7 +212,7 @@
             "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "system",
-                "--info"
+                "info"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
@@ -320,7 +320,8 @@
             "module": "pytest",
             "args": [
                 "-s",
-                "test/commands/test_build.py::test_errors_without_apio_ini_1"
+                "-vv",
+                "test/commands/test_apio_system.py::test_system"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,

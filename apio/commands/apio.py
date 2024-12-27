@@ -113,11 +113,11 @@ https://github.com/FPGAwars/apio/wiki/Apio
     cls=ApioGroup,
     subgroups=SUBGROUPS,
     help=HELP,
+    short_help="Work with FPGAs with ease",
     context_settings=context_settings(),
 )
 @click.version_option()
 def cli():
-    """This function is invoked before each subcommand but there
-    is nothing to do here."""
+    """The top level command group of apio commands"""
 
-    # Nothing to do here.
+    # pass

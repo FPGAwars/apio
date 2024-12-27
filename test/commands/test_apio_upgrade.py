@@ -4,10 +4,7 @@
 
 from test.conftest import ApioRunner
 import pytest
-
-
-# -- apio upgrade entry point
-from apio.commands.apio_upgrade import cli as apio_upgrade
+from apio.commands.apio import cli as apio
 
 
 def test_upgrade(apio_runner: ApioRunner):
@@ -21,5 +18,5 @@ def test_upgrade(apio_runner: ApioRunner):
     with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio upgrade"
-        result = sb.invoke_apio_cmd(apio_upgrade)
+        result = sb.invoke_apio_cmd(apio, ["upgrade"])
         sb.assert_ok(result)

@@ -10,7 +10,7 @@
 import sys
 from pathlib import Path
 import click
-from apio.apio_context import ApioContext
+from apio.apio_context import ApioContext, ApioContextScope
 from apio import util
 from apio.commands import options
 
@@ -104,7 +104,9 @@ def cli(
 
     # -- Create the apio context. If project dir has a fpgas.json file,
     # -- it will be loaded instead of the apio's standard file.
-    apio_ctx = ApioContext(project_dir=project_dir, load_project=False)
+    apio_ctx = ApioContext(
+        scope=ApioContextScope.PROJECT_OPTIONAL, project_dir_arg=project_dir
+    )
 
     list_fpgas(apio_ctx)
     sys.exit(0)

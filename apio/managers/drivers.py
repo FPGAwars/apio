@@ -41,7 +41,7 @@ Please follow these steps:
   8. Disconnect and reconnect your FPGA board for the new driver
      to take affect.
 
-  9. Run the command `apio system --lsftdi` and verify that
+  9. Run the command `apio system lsftdi` and verify that
      your board is listed.
 """
 
@@ -85,7 +85,7 @@ Please follow these steps:
   3. Find the Serial installer window and follow the instructions.
 
   4. To verify, disconnect and reconnect the board and run the command
-      'apio system --lsserial'.
+      'apio system lsserial'.
 """
 
 SERIAL_UNINSTALL_INSTRUCTIONS_WINDOWS = """

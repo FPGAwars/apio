@@ -300,8 +300,11 @@ def print_exception_developers(e):
     click.secho(f"{e}\n", fg="yellow")
 
 
-def get_project_dir(
-    _dir: Optional[Path], create_if_missing: bool = False
+def resolve_project_dir(
+    project_dir_arg: Optional[Path],
+    *,
+    create_if_missing: bool = False,
+    must_exist: bool = False,
 ) -> Path:
     """Check if the given path is a folder. It it does not exists
     and create_if_missing is true, folder is created, otherwise a fatal error.
@@ -311,34 +314,40 @@ def get_project_dir(
       * OUTPUT:
         * The effective path (same if given)
     """
+    assert not (create_if_missing and must_exist), "Conflicting flags."
+
     # -- If no path is given, get the current working directory.
-    # -- We Path(".") instead of Path.cwd() to stay with a relative
+    # -- We use Path(".") instead of Path.cwd() to stay with a relative
     # -- (and simple to the user) path.
-    if not _dir:
-        _dir = Path(".")
+    project_dir = project_dir_arg if project_dir_arg else Path(".")
 
     # -- Make sure the folder doesn't exist as a file.
-    if _dir.is_file():
+    if project_dir.is_file():
         click.secho(
-            f"Error: project directory is already a file: {_dir}", fg="red"
+            f"Error: project directory is already a file: {project_dir}",
+            fg="red",
         )
         sys.exit(1)
 
-    # -- If the folder does not exist....
-    if not _dir.exists():
-        if create_if_missing:
-            click.secho(
-                f"Warning: The path does not exist: {_dir}", fg="yellow"
-            )
-            click.secho(f"Creating folder: {_dir}")
-            _dir.mkdir()
-        else:
-            click.secho(f"Error: the path does not exist: {_dir}", fg="red")
-            sys.exit(1)
+    # -- If the folder exists we are good
+    if project_dir.is_dir():
+        return project_dir
 
-    # -- Return the path
-    # print(f"*** get_project_dir() {_temp} -> {_dir}")
-    return _dir
+    # -- Here when dir doesn't exist. Fatal error if must exist.
+    if must_exist:
+        click.secho(
+            f"Error: project directory is missing: {str(project_dir)}",
+            fg="red",
+        )
+        sys.exit(1)
+
+    # -- Create the directory if requested.
+    if create_if_missing:
+        click.secho(f"Creating folder: {project_dir}")
+        project_dir.mkdir(parents=True)
+
+    # -- All done
+    return project_dir
 
 
 def get_serial_ports() -> list:

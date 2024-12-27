@@ -2,11 +2,8 @@
   Test for the "apio report" command
 """
 
-from os import chdir
 from test.conftest import ApioRunner
-
-# -- apio report entry point
-from apio.commands.apio_report import cli as apio_report
+from apio.commands.apio import cli as apio
 
 
 # R0801: Similar lines in 2 files
@@ -16,12 +13,8 @@ def test_report_no_apio(apio_runner: ApioRunner):
 
     with apio_runner.in_sandbox() as sb:
 
-        # -- Create and change to project dir.
-        sb.proj_dir.mkdir()
-        chdir(sb.proj_dir)
-
         # -- Run "apio report" without apio.ini
-        result = sb.invoke_apio_cmd(apio_report)
+        result = sb.invoke_apio_cmd(apio, ["report"])
         assert result.exit_code != 0, result.output
         assert "Error: missing project file apio.ini" in result.output
 
@@ -31,12 +24,8 @@ def test_report_with_apio(apio_runner: ApioRunner):
 
     with apio_runner.in_sandbox() as sb:
 
-        # -- Create and change to project dir.
-        sb.proj_dir.mkdir()
-        chdir(sb.proj_dir)
-
         # -- Run "apio report" with apio.ini
-        sb.write_apio_ini({"board": "alhambra-ii", "top-module": "main"})
-        result = sb.invoke_apio_cmd(apio_report)
+        sb.write_default_apio_ini()
+        result = sb.invoke_apio_cmd(apio, ["report"])
         assert result.exit_code != 0, result.output
         assert "package 'oss-cad-suite' is not installed" in result.output

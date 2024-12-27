@@ -10,7 +10,7 @@
 import sys
 from pathlib import Path
 import click
-from apio.apio_context import ApioContext
+from apio.apio_context import ApioContext, ApioContextScope
 from apio import util
 from apio.commands import options
 
@@ -131,9 +131,12 @@ def cli(
     """Implements the 'boards' command which lists available board
     definitions."""
 
-    # -- Create the apio context. If project dir has a boards.json file,
-    # -- it will be loaded instead of the apio's standard file.
-    apio_ctx = ApioContext(project_dir=project_dir, load_project=False)
+    # -- Create the apio context. If the project exists, it's custom
+    # -- boards.json is also loaded.
+    apio_ctx = ApioContext(
+        scope=ApioContextScope.PROJECT_OPTIONAL,
+        project_dir_arg=project_dir,
+    )
 
     list_boards(apio_ctx)
     sys.exit(0)
