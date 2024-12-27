@@ -232,7 +232,9 @@ class ApioContext:
         if strict and canonical_id is None:
             click.secho(f"Error: no such board '{board}'", fg="red")
             click.secho(
-                "\nRun 'apio boards' for the list of board ids.", fg="yellow"
+                "Run 'apio boards' for the list of board ids.\n"
+                "Expecting a board id such as 'alhambra-ii'.",
+                fg="yellow",
             )
             sys.exit(1)
 

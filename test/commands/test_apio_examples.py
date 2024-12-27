@@ -15,23 +15,25 @@ def test_examples(apio_runner: ApioRunner):
 
         # -- Execute "apio examples"
         result = sb.invoke_apio_cmd(apio_examples)
+        sb.assert_ok(result)
+        assert "Subcommands:" in result.output
+        assert "examples list" in result.output
+
+        # -- Execute "apio examples list"
+        result = sb.invoke_apio_cmd(apio_examples, ["list"])
         assert result.exit_code == 1, result.output
-        assert (
-            "specify one of --list, --fetch-dir, or --fetch-files"
-            in result.output
+        assert "package 'examples' is not installed" in result.output
+
+        # -- Execute "apio examples fetch alhambra-ii/ledon"
+        result = sb.invoke_apio_cmd(
+            apio_examples, ["fetch", "alhambra-ii/ledon"]
         )
-
-        # -- Execute "apio examples --list"
-        result = sb.invoke_apio_cmd(apio_examples, ["--list"])
         assert result.exit_code == 1, result.output
         assert "package 'examples' is not installed" in result.output
 
-        # -- Execute "apio examples --fetch-dir dir"
-        result = sb.invoke_apio_cmd(apio_examples, ["--fetch-dir", "dir"])
-        assert result.exit_code == 1, result.output
-        assert "package 'examples' is not installed" in result.output
-
-        # -- Execute "apio examples --files file"
-        result = sb.invoke_apio_cmd(apio_examples, ["--fetch-files", "file"])
+        # -- Execute "apio examples fetch-board alhambra-ii"
+        result = sb.invoke_apio_cmd(
+            apio_examples, ["fetch-board", "alhambra-ii"]
+        )
         assert result.exit_code == 1, result.output
         assert "package 'examples' is not installed" in result.output

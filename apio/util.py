@@ -333,7 +333,7 @@ def resolve_project_dir(
     if project_dir.is_dir():
         return project_dir
 
-    # -- Error if required but doesn't exist.
+    # -- Here when dir doesn't exist. Fatal error if must exist.
     if must_exist:
         click.secho(
             f"Error: project directory is missing: {str(project_dir)}",
@@ -341,10 +341,12 @@ def resolve_project_dir(
         )
         sys.exit(1)
 
-    # -- Here we need to create it.
-    assert create_if_missing, "Unexpected create_if_missing value."
-    click.secho(f"Creating folder: {project_dir}")
-    project_dir.mkdir(parents=True)
+    # -- Create the directory if requested.
+    if create_if_missing:
+        click.secho(f"Creating folder: {project_dir}")
+        project_dir.mkdir(parents=True)
+
+    # -- All done
     return project_dir
 
 

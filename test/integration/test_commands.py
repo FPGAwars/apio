@@ -83,8 +83,10 @@ def _test_project(
             os.chdir(sb.sandbox_dir)
             sb.proj_dir.rmdir()
             proj_arg = ["-p", str(sb.proj_dir)]
+            dst_arg = ["-d", str(sb.proj_dir)]
         else:
             proj_arg = []
+            dst_arg = []
 
         # -- 'apio packages install'.
         # -- Note that since we used a sandbox with a shared home, the packages
@@ -99,14 +101,14 @@ def _test_project(
         else:
             assert not os.listdir(sb.proj_dir)
 
-        # -- 'apio examples --fetch-files <example> -p <proj_dir>'
+        # -- 'apio examples fetch <example> -d <proj_dir>'
         result = sb.invoke_apio_cmd(
             apio,
-            ["examples", "--fetch-files", example] + proj_arg,
+            ["examples", "fetch", example] + dst_arg,
         )
         sb.assert_ok(result)
         assert f"Copying {example} example files" in result.output
-        assert "have been successfully created!" in result.output
+        assert "Fetched successfully" in result.output
         assert getsize(sb.proj_dir / "apio.ini")
 
         # -- Remember the original list of project files.
@@ -211,7 +213,7 @@ def test_project_ecp5_local_dir(apio_runner: ApioRunner):
     _test_project(
         apio_runner,
         remote_proj_dir=False,
-        example="ColorLight-5A-75B-V8/Ledon",
+        example="colorlight-5a-75b-v8/ledon",
         testbench="ledon_tb",
         binary="hardware.bit",
         report_item="ALU54B:",
@@ -223,7 +225,7 @@ def test_project_ecp5_remote_dir(apio_runner: ApioRunner):
     _test_project(
         apio_runner,
         remote_proj_dir=True,
-        example="ColorLight-5A-75B-V8/Ledon",
+        example="colorlight-5a-75b-v8/ledon",
         testbench="ledon_tb",
         binary="hardware.bit",
         report_item="ALU54B:",

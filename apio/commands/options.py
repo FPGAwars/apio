@@ -57,7 +57,6 @@ def list_option_gen(*, help: str):
 # pylint: disable=W0622
 def top_module_option_gen(
     *,
-    # deprecated: bool = False,
     help: str = "Set the top level module name.",
 ):
     """Generate a --top-module option with given help text."""
@@ -71,6 +70,21 @@ def top_module_option_gen(
         help=help,
         cls=cmd_util.ApioOption,
     )
+
+
+def dst_option_gen(*, help: str):
+    """Generate a --dst option with given help text."""
+    dst_option = click.option(
+        "dst",  # Var name.
+        "-d",
+        "--dst",
+        type=Path,
+        metavar="path",
+        help=help,
+        cls=cmd_util.ApioOption,
+    )
+
+    return dst_option
 
 
 # ---------------------------

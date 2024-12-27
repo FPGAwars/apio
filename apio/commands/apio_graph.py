@@ -58,8 +58,8 @@ Examples:
 """
 
 EPILOG = """
-[Hint] On windows, type 'explorer hardware.svg' to
-view the graph, and on Mac OS type 'open hardware.svg'.
+[Hint] On windows, type 'explorer _build/hardware.svg' to
+view the graph, and on Mac OS type 'open _build/hardware.svg'.
 """
 
 

@@ -90,7 +90,7 @@
             "program": "${workspaceFolder}/apio/main.py",
             "args": [
                 "examples",
-                "--list"
+                "list"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
