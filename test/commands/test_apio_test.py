@@ -3,9 +3,7 @@
 """
 
 from test.conftest import ApioRunner
-
-# -- apio test entry point
-from apio.commands.apio_sim import cli as apio_test
+from apio.commands.apio import cli as apio
 
 
 def test_test(apio_runner: ApioRunner):
@@ -17,6 +15,6 @@ def test_test(apio_runner: ApioRunner):
     with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio test"
-        result = sb.invoke_apio_cmd(apio_test)
+        result = sb.invoke_apio_cmd(apio, ["test"])
         assert result.exit_code != 0, result.output
-        # -- TODO
+        assert "Error: missing project file apio.ini" in result.output

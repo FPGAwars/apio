@@ -7,10 +7,7 @@ from os.path import isfile, exists
 from typing import Dict
 from test.conftest import ApioRunner
 from configobj import ConfigObj
-
-
-# -- apio create entry point
-from apio.commands.apio_create import cli as apio_create
+from apio.commands.apio import cli as apio
 
 
 # R0801: Similar lines in 2 files
@@ -35,19 +32,21 @@ def test_create(apio_runner: ApioRunner):
         assert not exists(apio_ini)
 
         # -- Execute "apio create"
-        result = sb.invoke_apio_cmd(apio_create)
+        result = sb.invoke_apio_cmd(apio, ["create"])
         assert result.exit_code != 0, result.output
         assert "Error: Missing option" in result.output
         assert not exists(apio_ini)
 
         # -- Execute "apio create --board missed_board"
-        result = sb.invoke_apio_cmd(apio_create, ["--board", "missed_board"])
+        result = sb.invoke_apio_cmd(
+            apio, ["create", "--board", "missed_board"]
+        )
         assert result.exit_code == 1, result.output
         assert "Error: no such board" in result.output
         assert not exists(apio_ini)
 
         # -- Execute "apio create --board icezum"
-        result = sb.invoke_apio_cmd(apio_create, ["--board", "icezum"])
+        result = sb.invoke_apio_cmd(apio, ["create", "--board", "icezum"])
         sb.assert_ok(result)
         assert "was created successfully." in result.output
         _check_ini_file(apio_ini, {"board": "icezum", "top-module": "main"})
@@ -55,8 +54,8 @@ def test_create(apio_runner: ApioRunner):
         # -- Execute "apio create --board alhambra-ii
         # --                      --top-module my_module" with 'y' input"
         result = sb.invoke_apio_cmd(
-            apio_create,
-            ["--board", "alhambra-ii", "--top-module", "my_module"],
+            apio,
+            ["create", "--board", "alhambra-ii", "--top-module", "my_module"],
         )
         assert result.exit_code != 0
         assert "the file apio.ini already exists" in result.output
@@ -64,7 +63,7 @@ def test_create(apio_runner: ApioRunner):
 
         # -- Execute "apio create --board icezum -p aa/bb"
         result = sb.invoke_apio_cmd(
-            apio_create, ["--board", "alhambra-ii", "-p", "aa/bb"]
+            apio, ["create", "--board", "alhambra-ii", "-p", "aa/bb"]
         )
         sb.assert_ok(result)
         assert "was created successfully." in result.output

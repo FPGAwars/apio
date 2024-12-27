@@ -3,7 +3,7 @@
 """
 
 from test.conftest import ApioRunner
-from apio.commands.apio_format import cli as apio_format
+from apio.commands.apio import cli as apio
 
 
 def test_format_without_apio_ini(apio_runner: ApioRunner):
@@ -12,7 +12,7 @@ def test_format_without_apio_ini(apio_runner: ApioRunner):
     with apio_runner.in_sandbox() as sb:
 
         # -- Run "apio format" with no apio.ini
-        result = sb.invoke_apio_cmd(apio_format)
+        result = sb.invoke_apio_cmd(apio, ["format"])
         assert result.exit_code != 0, result.output
         assert "Error: missing project file apio.ini" in result.output
 
@@ -26,6 +26,6 @@ def test_format_with_apio_ini(apio_runner: ApioRunner):
 
         # -- Run "apio format" with a valid apio.ini.
         sb.write_default_apio_ini()
-        result = sb.invoke_apio_cmd(apio_format)
+        result = sb.invoke_apio_cmd(apio, ["format"])
         assert result.exit_code == 1, result.output
         assert "package 'verible' is not installed" in result.output

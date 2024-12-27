@@ -3,9 +3,7 @@
 """
 
 from test.conftest import ApioRunner
-
-# -- apio boards entry point
-from apio.commands.apio_boards import cli as apio_boards
+from apio.commands.apio import cli as apio
 
 
 CUSTOM_BOARDS = """
@@ -33,7 +31,7 @@ def test_list_ok(apio_runner: ApioRunner):
 
     with apio_runner.in_sandbox() as sb:
 
-        result = sb.invoke_apio_cmd(apio_boards)
+        result = sb.invoke_apio_cmd(apio, ["boards"])
         sb.assert_ok(result)
         # -- Note: pytest sees the piped version of the command's output.
         # -- Run 'apio build' | cat' to reproduce it.
@@ -55,7 +53,7 @@ def test_custom_board(apio_runner: ApioRunner):
         sb.write_file("boards.json", CUSTOM_BOARDS)
 
         # -- Execute "apio boards"
-        result = sb.invoke_apio_cmd(apio_boards)
+        result = sb.invoke_apio_cmd(apio, ["boards"])
         sb.assert_ok(result)
         # -- Note: pytest sees the piped version of the command's output.
         assert "Loading custom 'boards.json'" in result.output

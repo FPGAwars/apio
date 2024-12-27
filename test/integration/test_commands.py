@@ -8,8 +8,6 @@ from os.path import getsize
 from pathlib import Path
 from test.conftest import ApioRunner
 import pytest
-
-# -- Entry point for the apio top command.
 from apio.commands.apio import cli as apio
 
 

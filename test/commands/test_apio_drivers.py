@@ -3,8 +3,6 @@
 """
 
 from test.conftest import ApioRunner
-
-# -- apio drivers entry point
 from apio.commands.apio import cli as apio
 
 
