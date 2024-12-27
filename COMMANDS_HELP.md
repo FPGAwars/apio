@@ -1,4 +1,4 @@
-## Apio commands
+## APIO COMMANDS
 * [apio](#apio) - Work with FPGAs with ease
   * [apio boards](#apio-boards) - List available board definitions.
   * [apio build](#apio-build) - Synthesize the bitstream.
@@ -15,6 +15,9 @@
       * [apio drivers serial list](#apio-drivers-serial-list) - List the connected serial devices.
       * [apio drivers serial uninstall](#apio-drivers-serial-uninstall) - Uninstall the serial drivers.
   * [apio examples](#apio-examples) - List and fetch apio examples.
+    * [apio examples fetch](#apio-examples-fetch) - Fetch the files of an example.
+    * [apio examples fetch-board](#apio-examples-fetch-board) - Fetch all examples of a board.
+    * [apio examples list](#apio-examples-list) - List the available apio examples.
   * [apio format](#apio-format) - Format verilog source files.
   * [apio fpgas](#apio-fpgas) - List available FPGA definitions.
   * [apio graph](#apio-graph) - Generate a visual graph of the code.
@@ -34,9 +37,9 @@
   * [apio upgrade](#apio-upgrade) - Check the latest Apio version.
   * [apio upload](#apio-upload) - Upload the bitstream to the FPGA.
 
-<br><br>
+<br>
 
-### APIO{#apio}
+### apio{#apio}
 
 ```
 Usage: apio [OPTIONS] COMMAND [ARGS]...
@@ -87,9 +90,9 @@ Utility commands:
 
 ```
 
-<br><br>
+<br>
 
-### APIO BOARDS{#apio-boards}
+### apio boards{#apio-boards}
 
 ```
 Usage: apio boards [OPTIONS]
@@ -112,9 +115,9 @@ Options:
   -h, --help              Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO BUILD{#apio-build}
+### apio build{#apio-build}
 
 ```
 Usage: apio build [OPTIONS]
@@ -139,9 +142,9 @@ Options:
   -h, --help              Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO CLEAN{#apio-clean}
+### apio clean{#apio-clean}
 
 ```
 Usage: apio clean [OPTIONS]
@@ -161,45 +164,39 @@ Options:
   -h, --help              Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO CREATE{#apio-create}
+### apio create{#apio-create}
 
 ```
 Usage: apio create [OPTIONS]
 
-  The create command creates the project file apio.ini from scratch. The
-  commands is typically used in the root directory of the project where the
-  apio.ini file is created.
+  The 'apio create' command creates a new apio.ini project file and may be use
+  when creating a new apio project.
 
   Examples:
     apio create --board icezum
     apio create --board icezum --top-module MyModule
-    apio create --board icezum --sayyes
 
   The flag --board is required. The flag --top-module is optional and has the
-  default 'main'. If the file apio.ini already exists the command asks for
-  permision to delete it. If --sayyes is specified, the file is deleted
-  automatically.
+  default 'main'. If the file apio.ini already exists the command exists with
+  an error message.
 
-  [Note] this command creates just the 'apio.ini' file rather than a full
-  buildable project. Some users use instead the examples command to copy a
-  working project for their board, and then modify it with with their design.
-
-  [Hint] Use the command 'apio examples -l' to see a list of the supported
-  boards.
+  [Note] this command creates just the 'apio.ini' file rather than a complete
+  and buildable project. Some users use instead the'apio examples' command to
+  copy a working project for their board, and then modify it with with their
+  design.
 
 Options:
   -b, --board board_id    Set the board.  [required]
   -t, --top-module name   Set the top level module name.
   -p, --project-dir path  Set the root directory for the project.
-  -y, --sayyes            Automatically answer YES to all the questions.
   -h, --help              Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO DRIVERS{#apio-drivers}
+### apio drivers{#apio-drivers}
 
 ```
 Usage: apio drivers [OPTIONS] COMMAND [ARGS]...
@@ -219,9 +216,9 @@ Subcommands:
 
 ```
 
-<br><br>
+<br>
 
-### APIO DRIVERS FTDI{#apio-drivers-ftdi}
+### apio drivers ftdi{#apio-drivers-ftdi}
 
 ```
 Usage: apio drivers ftdi [OPTIONS] COMMAND [ARGS]...
@@ -241,9 +238,9 @@ Subcommands:
 
 ```
 
-<br><br>
+<br>
 
-### APIO DRIVERS FTDI INSTALL{#apio-drivers-ftdi-install}
+### apio drivers ftdi install{#apio-drivers-ftdi-install}
 
 ```
 Usage: apio drivers ftdi install [OPTIONS]
@@ -259,9 +256,9 @@ Options:
   -h, --help  Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO DRIVERS FTDI LIST{#apio-drivers-ftdi-list}
+### apio drivers ftdi list{#apio-drivers-ftdi-list}
 
 ```
 Usage: apio drivers ftdi list [OPTIONS]
@@ -279,9 +276,9 @@ Options:
   -h, --help  Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO DRIVERS FTDI UNINSTALL{#apio-drivers-ftdi-uninstall}
+### apio drivers ftdi uninstall{#apio-drivers-ftdi-uninstall}
 
 ```
 Usage: apio drivers ftdi uninstall [OPTIONS]
@@ -297,9 +294,9 @@ Options:
   -h, --help  Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO DRIVERS LSUSB{#apio-drivers-lsusb}
+### apio drivers lsusb{#apio-drivers-lsusb}
 
 ```
 Usage: apio drivers lsusb [OPTIONS]
@@ -318,9 +315,9 @@ Options:
   -h, --help  Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO DRIVERS SERIAL{#apio-drivers-serial}
+### apio drivers serial{#apio-drivers-serial}
 
 ```
 Usage: apio drivers serial [OPTIONS] COMMAND [ARGS]...
@@ -340,9 +337,9 @@ Subcommands:
 
 ```
 
-<br><br>
+<br>
 
-### APIO DRIVERS SERIAL INSTALL{#apio-drivers-serial-install}
+### apio drivers serial install{#apio-drivers-serial-install}
 
 ```
 Usage: apio drivers serial install [OPTIONS]
@@ -358,9 +355,9 @@ Options:
   -h, --help  Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO DRIVERS SERIAL LIST{#apio-drivers-serial-list}
+### apio drivers serial list{#apio-drivers-serial-list}
 
 ```
 Usage: apio drivers serial list [OPTIONS]
@@ -378,9 +375,9 @@ Options:
   -h, --help  Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO DRIVERS SERIAL UNINSTALL{#apio-drivers-serial-uninstall}
+### apio drivers serial uninstall{#apio-drivers-serial-uninstall}
 
 ```
 Usage: apio drivers serial uninstall [OPTIONS]
@@ -396,40 +393,96 @@ Options:
   -h, --help  Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO EXAMPLES{#apio-examples}
+### apio examples{#apio-examples}
 
 ```
-Usage: apio examples [OPTIONS]
+Usage: apio examples [OPTIONS] COMMAND [ARGS]...
 
-  The examples command allows to list the project examples provided by api and
-  to copy them to a local directory. Each examples is identified by board/name
-  where board is the board id and name is the example name.
+  The 'apio examples' group provides subcommands for listing and fetching apio
+  provided examples, each is a self contain mini project that can be built and
+  uploaded to a FPGA.
 
-  Examples:
-    apio examples --list               # List all examples
-    apio examples -l | grep -i icezum  # Filter examples.
-    apio examples -f icezum/leds       # Fetch example files
-    apio examples -d icezum/leds       # Fetch example directory
-    apio examples -d icezum            # Fetch all board examples
+  The subcommands are listed below.
 
 Options:
-  -l, --list              List all available examples.
-  -d, --fetch-dir name    Fetch the selected example directory.
-  -f, --fetch-files name  Fetch the selected example files.
-  -p, --project-dir path  Set the root directory for the project.
-  -n, --sayno             Automatically answer NO to all the questions.
-  -h, --help              Show this message and exit.
+  -h, --help  Show this message and exit.
 
-  The format of 'name' is <board>[/<example>], where <board> is a board name
-  (e.g. 'icezum') and <example> is a name of an example of that board (e.g.
-  'leds').
+Subcommands:
+  apio examples list         List the available apio examples.
+  apio examples fetch        Fetch the files of an example.
+  apio examples fetch-board  Fetch all examples of a board.
+
 ```
 
-<br><br>
+<br>
 
-### APIO FORMAT{#apio-format}
+### apio examples fetch{#apio-examples-fetch}
+
+```
+Usage: apio examples fetch [OPTIONS] EXAMPLE
+
+  The 'apio examples fetch' command fetchs the files of the specified example
+  to the current directory rot to the directory specified by the --dst option.
+  The destination directory does not have to exist but if it does it must be
+  empty.
+
+  Examples:
+    apio examples fetch alhambra-ii/ledon
+    apio examples fetch alhambra-ii/ledon -d foo/bar
+
+  For a list of available examples type 'apio examples list'.
+
+Options:
+  -d, --dst path  Set a different destination directory.
+  -h, --help      Show this message and exit.
+```
+
+<br>
+
+### apio examples fetch-board{#apio-examples-fetch-board}
+
+```
+Usage: apio examples fetch-board [OPTIONS] BOARD
+
+  The 'apio examples fetch-board` is used to fetch all the apio examples of a
+  given board. The examples are copied under the current directory or the
+  destination directory if --dst is given.
+
+  Examples:
+    apio examples fetch-board alhambra-ii             # Fetch to local directory
+    apio examples fetch-board alhambra-ii -d foo/bar  # Fetch to foo/bar
+
+Options:
+  -d, --dst path  Set a different destination directory.
+  -h, --help      Show this message and exit.
+```
+
+<br>
+
+### apio examples list{#apio-examples-list}
+
+```
+Usage: apio examples list [OPTIONS]
+
+  The 'apio examples list' lists the apio project examples that are available
+  for fetching.
+
+  Examples:
+    apio examples list                     # List all examples
+    apio examples list | grep alhambra-ii  # Show examples of a specific board.
+    apio examples list | grep -i blink     # Show all blinking examples.
+
+
+
+Options:
+  -h, --help  Show this message and exit.
+```
+
+<br>
+
+### apio format{#apio-format}
 
 ```
 Usage: apio format [OPTIONS] [FILES]...
@@ -468,9 +521,9 @@ Options:
   -h, --help              Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO FPGAS{#apio-fpgas}
+### apio fpgas{#apio-fpgas}
 
 ```
 Usage: apio fpgas [OPTIONS]
@@ -490,9 +543,9 @@ Options:
   -h, --help              Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO GRAPH{#apio-graph}
+### apio graph{#apio-graph}
 
 ```
 Usage: apio graph [OPTIONS]
@@ -515,13 +568,13 @@ Options:
   -v, --verbose           Show detailed output.
   -h, --help              Show this message and exit.
 
-  [Hint] On windows, type 'explorer hardware.svg' to view the graph, and on
-  Mac OS type 'open hardware.svg'.
+  [Hint] On windows, type 'explorer _build/hardware.svg' to view the graph,
+  and on Mac OS type 'open _build/hardware.svg'.
 ```
 
-<br><br>
+<br>
 
-### APIO LINT{#apio-lint}
+### apio lint{#apio-lint}
 
 ```
 Usage: apio lint [OPTIONS]
@@ -547,9 +600,9 @@ Options:
   -h, --help              Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO PACKAGES{#apio-packages}
+### apio packages{#apio-packages}
 
 ```
 Usage: apio packages [OPTIONS] COMMAND [ARGS]...
@@ -575,9 +628,9 @@ Subcommands:
 
 ```
 
-<br><br>
+<br>
 
-### APIO PACKAGES FIX{#apio-packages-fix}
+### apio packages fix{#apio-packages-fix}
 
 ```
 Usage: apio packages fix [OPTIONS]
@@ -595,9 +648,9 @@ Options:
   -h, --help     Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO PACKAGES INSTALL{#apio-packages-install}
+### apio packages install{#apio-packages-install}
 
 ```
 Usage: apio packages install [OPTIONS] [PACKAGES]...
@@ -621,9 +674,9 @@ Options:
   -h, --help     Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO PACKAGES LIST{#apio-packages-list}
+### apio packages list{#apio-packages-list}
 
 ```
 Usage: apio packages list [OPTIONS]
@@ -639,9 +692,9 @@ Options:
   -h, --help  Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO PACKAGES UNINSTALL{#apio-packages-uninstall}
+### apio packages uninstall{#apio-packages-uninstall}
 
 ```
 Usage: apio packages uninstall [OPTIONS] [PACKAGES]...
@@ -660,9 +713,9 @@ Options:
   -h, --help     Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO RAW{#apio-raw}
+### apio raw{#apio-raw}
 
 ```
 Usage: apio raw [OPTIONS] COMMAND
@@ -694,9 +747,9 @@ Options:
   -h, --help     Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO REPORT{#apio-report}
+### apio report{#apio-report}
 
 ```
 Usage: apio report [OPTIONS]
@@ -716,9 +769,9 @@ Options:
   -h, --help              Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO SIM{#apio-sim}
+### apio sim{#apio-sim}
 
 ```
 Usage: apio sim [OPTIONS] TESTBENCH
@@ -752,9 +805,9 @@ Options:
   -h, --help              Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO SYSTEM{#apio-system}
+### apio system{#apio-system}
 
 ```
 Usage: apio system [OPTIONS] COMMAND [ARGS]...
@@ -773,9 +826,9 @@ Subcommands:
 
 ```
 
-<br><br>
+<br>
 
-### APIO SYSTEM INFO{#apio-system-info}
+### apio system info{#apio-system-info}
 
 ```
 Usage: apio system info [OPTIONS]
@@ -795,9 +848,9 @@ Options:
   -h, --help  Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO SYSTEM PLATFORMS{#apio-system-platforms}
+### apio system platforms{#apio-system-platforms}
 
 ```
 Usage: apio system platforms [OPTIONS]
@@ -815,9 +868,9 @@ Options:
   -h, --help  Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO TEST{#apio-test}
+### apio test{#apio-test}
 
 ```
 Usage: apio test [OPTIONS] [TESTBENCH_FILE]
@@ -847,9 +900,9 @@ Options:
   -h, --help              Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO UPGRADE{#apio-upgrade}
+### apio upgrade{#apio-upgrade}
 
 ```
 Usage: apio upgrade [OPTIONS]
@@ -864,9 +917,9 @@ Options:
   -h, --help  Show this message and exit.
 ```
 
-<br><br>
+<br>
 
-### APIO UPLOAD{#apio-upload}
+### apio upload{#apio-upload}
 
 ```
 Usage: apio upload [OPTIONS]
