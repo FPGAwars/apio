@@ -20,29 +20,29 @@ from apio.apio_context import ApioContext, ApioContextScope
 # ---------------------------
 
 HELP = """
-The sim command simulates a testbench file and shows
-the simulation results a GTKWave graphical window. The testbench is expected
-to have a name ending with _tb (e.g. my_module_tb.v) and the
-commands is typically used in the root directory
-of the project that contains the apio.ini file and it
-accepts the testbench file name as an argument. For example:
+The command ‘apio sim’ simulates a testbench file and displays the simulation
+results in a GTKWave graphical window. The testbench is expected to have a
+name ending with _tb (e.g., my_module_tb.v).
 
 \b
 Example:
   apio sim my_module_tb.v
   apio sim my_module_tb.v --force
 
-It is recommanded NOT to use the `$dumpfile()` function in your testbenchs as
-this may override the default name and location of the generated .vcd file.
+[Important] Avoid using the Verilog $dumpfile() function in your testbenches,
+as this may override the default name and location Apio sets for the
+generated .vcd file.
 
-The sim command defines the INTERACTIVE_SIM that can be used in the testbench
-to distinguise between 'apio test' and 'apio sim', for example to ignore error
-with 'apio sim' and view the erronous signals gtkwave. For a sample testbench
-that uses those macro see the example at
+The sim command defines the INTERACTIVE_SIM macro, which can be used in the
+testbench to distinguish between ‘apio test’ and ‘apio sim’. For example,
+you can use this macro to ignore certain errors when running with ‘apio sim’
+and view the erroneous signals in GTKWave.
+
+For a sample testbench that utilizes this macro, see the example at:
 https://github.com/FPGAwars/apio-examples/tree/master/upduino31/testbench
 
-[Hint] when you configure the signals in GTKWave, you can save the
-configuration for future invocations.
+[Hint] When configuring the signals in GTKWave, save the configuration so you
+don’t need to repeat it for each simulation.
 """
 
 

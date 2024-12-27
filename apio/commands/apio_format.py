@@ -22,11 +22,9 @@ from apio.commands import options
 # -- COMMAND
 # ---------------------------
 HELP = """
-The format command formats verilog source files for consistency and style
-but without changing their semantic.  The command accepts the names of the
-source files to format or formats all the project source files by default.
-The commands is typically used in the root directory
-of the project that contains the apio.ini file.
+The command ‘apio format’ formats Verilog source files to ensure consistency
+and style without altering their semantics. The command accepts the names of
+pecific source files to format or formats all project source files by default.
 
 \b
 Examples:
@@ -34,8 +32,8 @@ Examples:
   apio format -v                 # Same as above but with verbose output.
   apio format main.v main_tb.v   # Format the two tiven files.
 
-The format command uses the format tool of the Verible project which can be
-configured by setting its flags in the apio.ini project file.
+The format command utilizes the format tool from the Verible project, which
+can be configured by setting its flags in the apio.ini project file
 For example:
 
 \b
@@ -43,16 +41,16 @@ format-verible-options =
     --column_limit=80
     --indentation_spaces=4
 
-If you want to protect a group of source code lines from formatting, you
-can use the following verible formatter's directives:
+If needed, sections of source code can be protected from formatting using
+Verible formatter directives:
 
 \b
 // verilog_format: off
 ... untouched code ...
 // verilog_format: on
 
-For the ull list of the verible formatter flags, see its documentation page
-online or type 'apio raw -- verible-verilog-format --helpfull'.
+For a full list of Verible formatter flags, refer to the documentation page
+online or use the command 'apio raw -- verible-verilog-format --helpful'.
 """
 
 

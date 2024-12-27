@@ -19,17 +19,13 @@ from apio.apio_context import ApioContext, ApioContextScope
 # -- COMMAND
 # ---------------------------
 HELP = """
-The clean command deletes the temporary files that were generated
-in the project directory by previous apio commands.
-The commands is typically used in the root directory
-of the project that contains the apio.ini file.
+The command 'apio clean' removes temporary files generated in the project
+directory by previous Apio commands.
 
 \b
 Example:
   apio clean
 
-[Hint] If you are using a git repository, add a .gitignore file with
-the temporary apio file names.
 """
 
 

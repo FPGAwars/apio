@@ -61,10 +61,8 @@ flash_option = click.option(
 # ---------------------------
 
 HELP = """
-The uploade command builds the bitstream file (similar to the
-build command) and uploaded it to the FPGA board.
-The commands is typically used in the root directory
-of the project that contains the apio.ini file.
+The command ‘apio upload’ builds the bitstream file (similar to the apio build
+command) and uploads it to the FPGA board.
 
 \b
 Examples:

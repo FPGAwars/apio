@@ -20,19 +20,17 @@ from apio.apio_context import ApioContext, ApioContextScope
 # ---------------------------
 
 HELP = """
-The build command reads the project source files
-and generates a bitstream file that you can uploaded to your FPGA.
-The commands is typically used in the root directory
-of the project that contains the apio.ini file.
+The command 'apio build' processes the project’s source files and generates a
+bitstream file, which can then be uploaded to your FPGA.
+
+The 'apio build' command compiles all .v files (e.g., my_module.v) in the
+project directory, except those whose names end with _tb
+(e.g., my_module_tb.v), as these are assumed to be testbenches.
 
 \b
 Examples:
   apio build       # Build
   apio build -v    # Build with verbose info
-
-The build command builds all the .v files (e.g. my_module.v) in the project
-directory except for those whose name ends with _tb (e.g. my_module_tb.v) to
-indicate that they are testbenches.
 """
 
 

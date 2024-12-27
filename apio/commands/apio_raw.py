@@ -21,13 +21,13 @@ from apio.util import nameof
 # -- COMMAND
 # ---------------------------
 HELP = """
-The raw command allows to bypass  apio and run underlying
-tools directly. This is an advanced command that requires familiarity
-with the underlying tools.
+The command ‘apio raw’ allows you to bypass Apio and run underlying tools
+directly. This is an advanced command that requires familiarity with the
+underlying tools.
 
-Before running the command, apio changes temporarly
-system env vars such as $PATH to provide access to its packages. To view those
-env changes, run `apio raw --env'.
+Before running the command, Apio temporarily modifies system environment
+variables such as $PATH to provide access to its packages. To view these
+environment changes, run the command `apio raw --env`.
 
 \b
 Examples:
@@ -38,10 +38,10 @@ Examples:
   apio raw --env                        # Show apio env setting.
   apio raw -h                           # Print this help info.
 
-The '--' token is used  to seperate between apio commands and its argument
-and the executed command and its arguments. It can be ommited in some cases
-but it's a good paractice to always use it. As a rule of thumb, prepend the
-command you want to run with 'apio raw -- ' and it should work.
+The -- token is used to separate Apio commands and their arguments from the
+underlying tools and their arguments. It can be omitted in some cases, but
+it’s a good practice to always use it. As a rule of thumb, always prefix the
+raw command you want to run with 'apio raw -- '.
 """
 
 

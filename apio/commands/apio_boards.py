@@ -99,13 +99,9 @@ def list_boards(apio_ctx: ApioContext):
 # R0801: Similar lines in 2 files
 # pylint: disable = R0801
 HELP = """
-The boards commands lists the FPGA boards that are recongnized by apio.
-Custom boards can be defined by placing a custom boards.json file in the
-project directory. If such a case, the command
-lists the boards from that custom file.
-
-The commands is typically used in the root directory
-of the project that contains the apio.ini file.
+The command 'apio boards' lists the FPGA boards recognized by Apio.
+Custom boards can be defined by placing a custom 'boards.json' file in the
+project directory, which will override Apio’s default 'boards.json' file.
 
 \b
 Examples:

@@ -46,16 +46,25 @@ Usage: apio [OPTIONS] COMMAND [ARGS]...
 
   Work with FPGAs with ease.
 
-  Apio is a user friendly command-line suite that supports all the aspect of
-  FPGA firmware developement from linting, building and simulating to unit
-  testing, to progreamming the FPGA board.
+  Apio is an easy to use and open-source command-line suite designed to
+  streamline FPGA programming. It supports a wide range of tasks, including
+  linting, building, simulation, unit testing, and programming FPGA boards.
 
-  Apio commands are typically invoked in the root directory of the FPGA
-  project where the project configuration file apio.ini and the project source
-  files are stored. For help on specific commands use the -h flag (e.g. 'apio
-  build -h').
+  An Apio project consists of a directory containing a configuration file
+  named 'apio.ini', along with FPGA source files, testbenches, and pin
+  definition files.
 
-  For more information on the apio project see
+  Apio commands are intuitive and perform their intended functionalities right
+  out of the box. For example, the command apio upload automatically compiles
+  the design in the current directory and uploads it to the FPGA board.
+
+  For detailed information about any Apio command, append the -h flag to view
+  its help text. For instance:
+
+  apio build -h
+  apio drivers ftdi install -h
+
+  For more information about the Apio project, visit the official Apio Wiki
   https://github.com/FPGAwars/apio/wiki/Apio
 
 Options:
@@ -97,13 +106,9 @@ Utility commands:
 ```
 Usage: apio boards [OPTIONS]
 
-  The boards commands lists the FPGA boards that are recongnized by apio.
-  Custom boards can be defined by placing a custom boards.json file in the
-  project directory. If such a case, the command lists the boards from that
-  custom file.
-
-  The commands is typically used in the root directory of the project that
-  contains the apio.ini file.
+  The command 'apio boards' lists the FPGA boards recognized by Apio. Custom
+  boards can be defined by placing a custom 'boards.json' file in the project
+  directory, which will override Apio’s default 'boards.json' file.
 
   Examples:
     apio boards                # List all boards
@@ -122,17 +127,16 @@ Options:
 ```
 Usage: apio build [OPTIONS]
 
-  The build command reads the project source files and generates a bitstream
-  file that you can uploaded to your FPGA. The commands is typically used in
-  the root directory of the project that contains the apio.ini file.
+  The command 'apio build' processes the project’s source files and generates
+  a bitstream file, which can then be uploaded to your FPGA.
+
+  The 'apio build' command compiles all .v files (e.g., my_module.v) in the
+  project directory, except those whose names end with _tb (e.g.,
+  my_module_tb.v), as these are assumed to be testbenches.
 
   Examples:
     apio build       # Build
     apio build -v    # Build with verbose info
-
-  The build command builds all the .v files (e.g. my_module.v) in the project
-  directory except for those whose name ends with _tb (e.g. my_module_tb.v) to
-  indicate that they are testbenches.
 
 Options:
   -p, --project-dir path  Set the root directory for the project.
@@ -149,15 +153,11 @@ Options:
 ```
 Usage: apio clean [OPTIONS]
 
-  The clean command deletes the temporary files that were generated in the
-  project directory by previous apio commands. The commands is typically used
-  in the root directory of the project that contains the apio.ini file.
+  The command 'apio clean' removes temporary files generated in the project
+  directory by previous Apio commands.
 
   Example:
     apio clean
-
-  [Hint] If you are using a git repository, add a .gitignore file with the
-  temporary apio file names.
 
 Options:
   -p, --project-dir path  Set the root directory for the project.
@@ -171,21 +171,16 @@ Options:
 ```
 Usage: apio create [OPTIONS]
 
-  The 'apio create' command creates a new apio.ini project file and may be use
-  when creating a new apio project.
+  The command 'apio create' creates a new `apio.ini` project file and is
+  typically used when setting up a new Apio project.
 
   Examples:
-    apio create --board icezum
-    apio create --board icezum --top-module MyModule
+    apio create --board alhambra-ii
+    apio create --board alhambra-ii --top-module MyModule
 
-  The flag --board is required. The flag --top-module is optional and has the
-  default 'main'. If the file apio.ini already exists the command exists with
-  an error message.
-
-  [Note] this command creates just the 'apio.ini' file rather than a complete
-  and buildable project. Some users use instead the'apio examples' command to
-  copy a working project for their board, and then modify it with with their
-  design.
+  [Note] This command only creates a new 'apio.ini' file, rather than a
+  complete and buildable project. To create complete projects, refer to the
+  'apio examples' command.
 
 Options:
   -b, --board board_id    Set the board.  [required]
@@ -201,10 +196,8 @@ Options:
 ```
 Usage: apio drivers [OPTIONS] COMMAND [ARGS]...
 
-  The 'apio drivers' commands group contains subcommands that are used to
-  manage the drivers on your system.
-
-  The subcommands are listed below.
+  The command group ‘apio drivers’ contains subcommands used to manage the
+  drivers on your system.
 
 Options:
   -h, --help  Show this message and exit.
@@ -223,10 +216,8 @@ Subcommands:
 ```
 Usage: apio drivers ftdi [OPTIONS] COMMAND [ARGS]...
 
-  The 'apio drivers ftdi' commands group contains subcommands that are used to
-  manage the ftdi drivers on your system.
-
-  The subcommands are listed below.
+  The command group 'apio drivers ftdi' includes subcommands that help manage
+  the FTDI drivers on your system.
 
 Options:
   -h, --help  Show this message and exit.
@@ -245,8 +236,8 @@ Subcommands:
 ```
 Usage: apio drivers ftdi install [OPTIONS]
 
-  The command 'apio drivers ftdi install' installs the ftdi drivers on your
-  system as required by some FPGA boards.
+  The command 'apio drivers ftdi install' installs on your system the FTDI
+  drivers required by some FPGA boards.
 
   Examples:
     apio drivers fdri install      # Install the ftdi drivers.
@@ -263,14 +254,15 @@ Options:
 ```
 Usage: apio drivers ftdi list [OPTIONS]
 
-  The command 'apio drivers ftdi list' lists the ftdi devices connected to
-  your computer. It is useful for diagnosing FPGA board connectivity issues.
+  The command 'apio drivers ftdi list' displays the FTDI devices currently
+  connected to your computer. It is useful for diagnosing FPGA board
+  connectivity issues.
 
   Examples:
     apio drivers ftdi list     # List the ftdi devices.
 
-  [Hint] This command executes the utility `lsftdi` which can also be invoked
-  using the command `apio raw -- lsftdi <flags>`
+  [Hint] This command uses the lsftdi utility, which can also be invoked
+  directly with the 'apio raw -- lsftdi <flags>' command.
 
 Options:
   -h, --help  Show this message and exit.
@@ -283,8 +275,8 @@ Options:
 ```
 Usage: apio drivers ftdi uninstall [OPTIONS]
 
-  The command 'apio drivers ftdi uninstall' uninstalled the ftdi drivers that
-  you may installed eariler. .
+  The command 'apio drivers ftdi uninstall' removes the FTDI drivers that may
+  have been installed earlier.
 
   Examples:
     apio drivers ftdi install      # Install the ftdi drivers.
@@ -301,15 +293,15 @@ Options:
 ```
 Usage: apio drivers lsusb [OPTIONS]
 
-  The 'apio drivers lsusb' commands runs the lsusb utility to list the usb
-  devices connected to your computer.  It is typically used  for diagnosing
+  The command ‘apio drivers lsusb’ runs the lsusb utility to list the USB
+  devices connected to your computer. It is typically used for diagnosing
   connectivity issues with FPGA boards.
 
   Examples:
     apio drivers lsusb      # List the usb devices
 
   [Hint] You can also run the lsusb utility using the command 'apio raw --
-  lsusb <flags>'
+  lsusb <flags>'.
 
 Options:
   -h, --help  Show this message and exit.
@@ -322,10 +314,8 @@ Options:
 ```
 Usage: apio drivers serial [OPTIONS] COMMAND [ARGS]...
 
-  The 'apio drivers serial' commands group contains subcommands that are used
-  to manage the serial drivers on your system.
-
-  The subcommands are listed below.
+  The command group 'apio drivers serial' includes subcommands designed to
+  manage and configure the serial drivers on your system.
 
 Options:
   -h, --help  Show this message and exit.
@@ -344,8 +334,8 @@ Subcommands:
 ```
 Usage: apio drivers serial install [OPTIONS]
 
-  The command 'apio drivers serial install' installs the serial drivers on
-  your system as required by some FPGA boards.
+  The command ‘apio drivers serial install’ installs the necessary serial
+  drivers on your system, as required by certain FPGA boards.
 
   Examples:
     apio drivers serial install      # Install the ftdi drivers.
@@ -362,14 +352,14 @@ Options:
 ```
 Usage: apio drivers serial list [OPTIONS]
 
-  The command 'apio drivers serial list' lists the serial devices connected to
+  The command ‘apio drivers serial list’ lists the serial devices connected to
   your computer. It is useful for diagnosing FPGA board connectivity issues.
 
   Examples:
     apio drivers serial list     # List the serial devices.
 
-  [Hint] This command executes the utility `lsserial` which can also be
-  invoked using the command `apio raw -- lsserial <flags>`
+  [Hint] This command executes the utility lsserial, which can also be invoked
+  using the command 'apio raw -- lsserial <flags>'.
 
 Options:
   -h, --help  Show this message and exit.
@@ -382,8 +372,8 @@ Options:
 ```
 Usage: apio drivers serial uninstall [OPTIONS]
 
-  The command 'apio drivers serial uninstall' uninstalled the serial drivers
-  that you may installed eariler. .
+  The command ‘apio drivers serial uninstall’ removes the serial drivers that
+  you may have installed earlier.
 
   Examples:
     apio drivers serial install      # Install the serial drivers.
@@ -400,11 +390,9 @@ Options:
 ```
 Usage: apio examples [OPTIONS] COMMAND [ARGS]...
 
-  The 'apio examples' group provides subcommands for listing and fetching apio
-  provided examples, each is a self contain mini project that can be built and
-  uploaded to a FPGA.
-
-  The subcommands are listed below.
+  The command group ‘apio examples’ provides subcommands for listing and
+  fetching Apio-provided examples. Each example is a self-contained mini-
+  project that can be built and uploaded to an FPGA board.
 
 Options:
   -h, --help  Show this message and exit.
@@ -423,16 +411,16 @@ Subcommands:
 ```
 Usage: apio examples fetch [OPTIONS] EXAMPLE
 
-  The 'apio examples fetch' command fetchs the files of the specified example
-  to the current directory rot to the directory specified by the --dst option.
-  The destination directory does not have to exist but if it does it must be
+  The command ‘apio examples fetch’ fetches the files of the specified example
+  to the current directory or to the directory specified by the –dst option.
+  The destination directory does not need to exist, but if it does, it must be
   empty.
 
   Examples:
     apio examples fetch alhambra-ii/ledon
     apio examples fetch alhambra-ii/ledon -d foo/bar
 
-  For a list of available examples type 'apio examples list'.
+  [Hint] For the list of available examples, type ‘apio examples list’.
 
 Options:
   -d, --dst path  Set a different destination directory.
@@ -446,13 +434,16 @@ Options:
 ```
 Usage: apio examples fetch-board [OPTIONS] BOARD
 
-  The 'apio examples fetch-board` is used to fetch all the apio examples of a
-  given board. The examples are copied under the current directory or the
-  destination directory if --dst is given.
+  The command ‘apio examples fetch-board’ is used to fetch all the Apio
+  examples for a specific board. The examples are copied to the current
+  directory or to the specified destination directory if the –dst option is
+  provided.
 
   Examples:
     apio examples fetch-board alhambra-ii             # Fetch to local directory
     apio examples fetch-board alhambra-ii -d foo/bar  # Fetch to foo/bar
+
+  [Hint] For the list of available examples, type ‘apio examples list’.
 
 Options:
   -d, --dst path  Set a different destination directory.
@@ -466,8 +457,8 @@ Options:
 ```
 Usage: apio examples list [OPTIONS]
 
-  The 'apio examples list' lists the apio project examples that are available
-  for fetching.
+  The command ‘apio examples list’ lists the available Apio project examples
+  that you can use.
 
   Examples:
     apio examples list                     # List all examples
@@ -487,33 +478,33 @@ Options:
 ```
 Usage: apio format [OPTIONS] [FILES]...
 
-  The format command formats verilog source files for consistency and style
-  but without changing their semantic.  The command accepts the names of the
-  source files to format or formats all the project source files by default.
-  The commands is typically used in the root directory of the project that
-  contains the apio.ini file.
+  The command ‘apio format’ formats Verilog source files to ensure consistency
+  and style without altering their semantics. The command accepts the names of
+  pecific source files to format or formats all project source files by
+  default.
 
   Examples:
     apio format                    # Format all source files.
     apio format -v                 # Same as above but with verbose output.
     apio format main.v main_tb.v   # Format the two tiven files.
 
-  The format command uses the format tool of the Verible project which can be
-  configured by setting its flags in the apio.ini project file. For example:
+  The format command utilizes the format tool from the Verible project, which
+  can be configured by setting its flags in the apio.ini project file For
+  example:
 
   format-verible-options =
       --column_limit=80
       --indentation_spaces=4
 
-  If you want to protect a group of source code lines from formatting, you can
-  use the following verible formatter's directives:
+  If needed, sections of source code can be protected from formatting using
+  Verible formatter directives:
 
   // verilog_format: off
   ... untouched code ...
   // verilog_format: on
 
-  For the ull list of the verible formatter flags, see its documentation page
-  online or type 'apio raw -- verible-verilog-format --helpfull'.
+  For a full list of Verible formatter flags, refer to the documentation page
+  online or use the command 'apio raw -- verible-verilog-format --helpful'.
 
 Options:
   -p, --project-dir path  Set the root directory for the project.
@@ -528,11 +519,10 @@ Options:
 ```
 Usage: apio fpgas [OPTIONS]
 
-  The fpgas commands lists the FPGA that are recongnized by apio. Custom FPGAS
-  that are supported by the underlying Yosys tools chain can be defined by
-  placing a custom fpgas.json file in the project directory. If such a case,
-  the command lists the fpgas from that custom file. The commands is typically
-  used in the root directory of the project that contains the apio.ini file.
+  The command ‘apio fpgas’ lists the FPGAs recognized by Apio. Custom FPGAs
+  supported by the underlying Yosys toolchain can be defined by placing a
+  custom fpgas.json file in the project directory, overriding Apio’s standard
+  fpgas.json file.
 
   Examples:
     apio fpgas               # List all fpgas
@@ -550,15 +540,17 @@ Options:
 ```
 Usage: apio graph [OPTIONS]
 
-  The graph command generates a graphical representation of the verilog code
-  of the project. The commands is typically used in the root directory of the
-  project that contains the apio.ini file.
+  The command ‘apio graph’ generates a graphical representation of the Verilog
+  code in the project.
 
   Examples:
     apio graph               # Generate a svg file.
     apio graph --pdf         # Generate a pdf file.
     apio graph --png         # Generate a png file.
     apio graph -t my_module  # Graph my_module module.
+
+  [Hint] On Windows, type ‘explorer _build/hardware.svg’ to view the graph,
+  and on Mac OS type ‘open _build/hardware.svg’.
 
 Options:
   --pdf                   Generate a pdf file.
@@ -567,9 +559,6 @@ Options:
   -t, --top-module name   Set the name of the top module to graph.
   -v, --verbose           Show detailed output.
   -h, --help              Show this message and exit.
-
-  [Hint] On windows, type 'explorer _build/hardware.svg' to view the graph,
-  and on Mac OS type 'open _build/hardware.svg'.
 ```
 
 <br>
@@ -579,11 +568,9 @@ Options:
 ```
 Usage: apio lint [OPTIONS]
 
-  The lint command scans the project's verilog code and flags errors,
-  inconsistencies, and style violations, and is a useful tool for improving
-  the code quality. The command uses the verilator tool which is installed as
-  park of the apio installation. The commands is typically used in the root
-  directory of the project that contains the apio.ini file.
+  The command ‘apio lint’ scans the project’s Verilog code and reports errors,
+  inconsistencies, and style violations. The command uses the Verilator tool,
+  which is included in the standard Apio installation.
 
   Examples:
     apio lint
@@ -607,15 +594,14 @@ Options:
 ```
 Usage: apio packages [OPTIONS] COMMAND [ARGS]...
 
-  The 'apio packages' command groups provides commands to manage the the
-  instllation of the apio packages These are not python packages but apio
-  specific packages that contain various tools and data that are necessary for
-  the operation of apio. These packages are installed after the installation
-  of the apio python package using the command 'apio packages install'. Note
-  that the list of available packages depends on the operatingsystem you use
-  as some require more packages than others.
+  The command group ‘apio packages’ provides commands to manage the
+  installation of Apio packages. These are not Python packages but Apio-
+  specific packages containing various tools and data essential for the
+  operation of Apio. These packages are installed after the installation of
+  the Apio Python package itself, using the command ‘apio packages install’.
 
-  The subcommands are listed below.
+  The list of available packages depends on the operating system you are using
+  and may vary between different operating systems.
 
 Options:
   -h, --help  Show this message and exit.
@@ -635,9 +621,9 @@ Subcommands:
 ```
 Usage: apio packages fix [OPTIONS]
 
-  The 'apio packages fix' command fixes partially installed or left over apio
-  packages that are shown by the command 'apio packages list' as broken. If
-  there are no broken packages, the program does nothing and exits.
+  The command ‘apio packages fix’ resolves partially installed or leftover
+  Apio packages that are listed as broken by the command ‘apio packages list’.
+  If there are no broken packages, the command does nothing and exits.
 
   Examples:
     apio packages fix           # Fix package errors.
@@ -655,8 +641,8 @@ Options:
 ```
 Usage: apio packages install [OPTIONS] [PACKAGES]...
 
-  The command 'apio packages install' installs apio packages which are require
-  for the operation of apio on your system.
+  The command ‘apio packages install’ installs Apio packages that are required
+  for the operation of Apio on your system.
 
   Examples:
     apio packages install                   # Install all missing packages.
@@ -664,9 +650,8 @@ Usage: apio packages install [OPTIONS] [PACKAGES]...
     apio packages install oss-cad-suite     # Install just this package.
     apio packages install examples@0.0.32   # Install a specific version.
 
-  Adding the option --force to forces the reinstallation of existing packages,
-  otherwise, packages that are already installed correctly are left with no
-  change.
+  Adding the --force option forces the reinstallation of existing packages;
+  otherwise, packages that are already installed correctly remain unchanged.
 
 Options:
   -f, --force    Force installation.
@@ -681,9 +666,9 @@ Options:
 ```
 Usage: apio packages list [OPTIONS]
 
-  The 'apio packages list' command lists the available and installed apio
-  packages. Note that the list of available packages depends on the
-  operatingsystem you use as some require more packages than others.
+  The command ‘apio packages list’ lists the available and installed Apio
+  packages. The list of available packages depends on the operating system you
+  are using and may vary between operating systems.
 
   Examples:
     apio packages list
@@ -699,8 +684,8 @@ Options:
 ```
 Usage: apio packages uninstall [OPTIONS] [PACKAGES]...
 
-  The command 'apio packages uninstall' installs apio packages from your
-  system.
+  The command ‘apio packages uninstall’ removes installed Apio packages from
+  your system. The command does not uninstall the Apio tool itself.
 
   Examples:
     apio packages uninstall                 # Uninstall all packages.
@@ -720,13 +705,13 @@ Options:
 ```
 Usage: apio raw [OPTIONS] COMMAND
 
-  The raw command allows to bypass  apio and run underlying tools directly.
-  This is an advanced command that requires familiarity with the underlying
-  tools.
+  The command ‘apio raw’ allows you to bypass Apio and run underlying tools
+  directly. This is an advanced command that requires familiarity with the
+  underlying tools.
 
-  Before running the command, apio changes temporarly system env vars such as
-  $PATH to provide access to its packages. To view those env changes, run
-  `apio raw --env'.
+  Before running the command, Apio temporarily modifies system environment
+  variables such as $PATH to provide access to its packages. To view these
+  environment changes, run the command `apio raw --env`.
 
   Examples:
     apio raw -- yosys --version           # Yosys version
@@ -736,10 +721,10 @@ Usage: apio raw [OPTIONS] COMMAND
     apio raw --env                        # Show apio env setting.
     apio raw -h                           # Print this help info.
 
-  The '--' token is used  to seperate between apio commands and its argument
-  and the executed command and its arguments. It can be ommited in some cases
-  but it's a good paractice to always use it. As a rule of thumb, prepend the
-  command you want to run with 'apio raw -- ' and it should work.
+  The -- token is used to separate Apio commands and their arguments from the
+  underlying tools and their arguments. It can be omitted in some cases, but
+  it’s a good practice to always use it. As a rule of thumb, always prefix the
+  raw command you want to run with 'apio raw -- '.
 
 Options:
   -e, --env      Show the apio env changes.
@@ -754,10 +739,9 @@ Options:
 ```
 Usage: apio report [OPTIONS]
 
-  The report command reports the utilization and timing of the design. It is
-  useful to analyzer utilization bottle neck and to verify that the design can
-  run at a desired clock speed. The commands is typically used in the root
-  directory of the project that contains the apio.ini file.
+  The command ‘apio report’ provides information on the utilization and timing
+  of the design. It is useful for analyzing utilization bottlenecks and
+  verifying that the design can operate at the desired clock speed.
 
   Examples:
     apio report
@@ -776,28 +760,28 @@ Options:
 ```
 Usage: apio sim [OPTIONS] TESTBENCH
 
-  The sim command simulates a testbench file and shows the simulation results
-  a GTKWave graphical window. The testbench is expected to have a name ending
-  with _tb (e.g. my_module_tb.v) and the commands is typically used in the
-  root directory of the project that contains the apio.ini file and it accepts
-  the testbench file name as an argument. For example:
+  The command ‘apio sim’ simulates a testbench file and displays the
+  simulation results in a GTKWave graphical window. The testbench is expected
+  to have a name ending with _tb (e.g., my_module_tb.v).
 
   Example:
     apio sim my_module_tb.v
     apio sim my_module_tb.v --force
 
-  It is recommanded NOT to use the `$dumpfile()` function in your testbenchs
-  as this may override the default name and location of the generated .vcd
-  file.
+  [Important] Avoid using the Verilog $dumpfile() function in your
+  testbenches, as this may override the default name and location Apio sets
+  for the generated .vcd file.
 
-  The sim command defines the INTERACTIVE_SIM that can be used in the
-  testbench to distinguise between 'apio test' and 'apio sim', for example to
-  ignore error with 'apio sim' and view the erronous signals gtkwave. For a
-  sample testbench that uses those macro see the example at
+  The sim command defines the INTERACTIVE_SIM macro, which can be used in the
+  testbench to distinguish between ‘apio test’ and ‘apio sim’. For example,
+  you can use this macro to ignore certain errors when running with ‘apio sim’
+  and view the erroneous signals in GTKWave.
+
+  For a sample testbench that utilizes this macro, see the example at:
   https://github.com/FPGAwars/apio-examples/tree/master/upduino31/testbench
 
-  [Hint] when you configure the signals in GTKWave, you can save the
-  configuration for future invocations.
+  [Hint] When configuring the signals in GTKWave, save the configuration so
+  you don’t need to repeat it for each simulation.
 
 Options:
   -f, --force             Force simulation.
@@ -812,10 +796,8 @@ Options:
 ```
 Usage: apio system [OPTIONS] COMMAND [ARGS]...
 
-  The command group 'apio system' contains subcommans that provides
-  information about the system and apio's installation.
-
-  The subcommands are listed below.
+  The command group ‘apio system’ contains subcommands that provide
+  information about the system and Apio’s installation.
 
 Options:
   -h, --help  Show this message and exit.
@@ -833,16 +815,17 @@ Subcommands:
 ```
 Usage: apio system info [OPTIONS]
 
-  The 'apio system info' command provides general informaion about your system
-  and apio installation and is useful for diagnosing apio installation issues.
+  The command ‘apio system info’ provides general information about your
+  system and Apio installation, which is useful for diagnosing Apio
+  installation issues.
 
   Examples:
     apio system info       # Show platform id and info.
 
-  [Advanced] The default location of the apio home directory, where
+  [Advanced] The default location of the Apio home directory, where
   preferences and packages are stored, is in the .apio directory under the
-  user home directory, but can be changed using the APIO_HOME environment
-  variable.
+  user’s home directory. This location can be changed using the APIO_HOME
+  environment variable.
 
 Options:
   -h, --help  Show this message and exit.
@@ -855,14 +838,15 @@ Options:
 ```
 Usage: apio system platforms [OPTIONS]
 
-  The 'apio system platforms' command lists the platforms ids supported by
-  apio, with the effective platform id of your system highlightd.
+  The command ‘apio system platforms’ lists the platform IDs supported by
+  Apio, with the effective platform ID of your system highlighted.
 
   Examples:
     apio system platforms   # List supported platform ids.
 
-  [Advanced] The automatic platform id detection of apio can be overriden by
-  defining a different platform id using the env variable APIO_PLATFORM.
+  [Advanced] The automatic platform ID detection of Apio can be overridden by
+  defining a different platform ID using the APIO_PLATFORM environment
+  variable.
 
 Options:
   -h, --help  Show this message and exit.
@@ -875,25 +859,24 @@ Options:
 ```
 Usage: apio test [OPTIONS] [TESTBENCH_FILE]
 
-  The sim command simulates one or all the testbenches in the project and is
-  useful for automatic unit testing of the code. Testbenches are expected have
-  a name ending with _tb (e.g my_module_tb.v) and to exit with the $fatal
-  directive if any error is detected. The commands is typically used in the
-  root directory of the project that contains the apio.ini.
+  The command ‘apio test’ simulates one or all the testbenches in the project
+  and is useful for automated testing of your design. Testbenches are expected
+  to have names ending with _tb (e.g., my_module_tb.v) and should exit with
+  the $fatal directive if an error is detected.
 
   Examples
     apio test                 # Run all *_tb.v testbenches.
     apio test my_module_tb.v  # Run a single testbench
 
-  It is recommanded NOT to use the `$dumpfile()` function in your testbenchs
-  as this may override the default name and location of the generated .vcd
-  file.
+  [Important] Avoid using the Verilog $dumpfile() function in your
+  testbenches, as this may override the default name and location Apio sets
+  for the generated .vcd file.
 
-  For a sample testbench that is compatible with apio see the example at
+  For a sample testbench compatible with Apio features, see:
   https://github.com/FPGAwars/apio-examples/tree/master/upduino31/testbench
 
-  [Hint] To simulate the testbench with a graphical visualizaiton of the
-  signals see the 'apio sim' command.
+  [Hint] To simulate a testbench with a graphical visualization of the
+  signals, refer to the ‘apio sim’ command.
 
 Options:
   -p, --project-dir path  Set the root directory for the project.
@@ -907,8 +890,8 @@ Options:
 ```
 Usage: apio upgrade [OPTIONS]
 
-  The upgrade command checks the version of the latest apio release and
-  provide upgrade directions if needed.
+  The command ‘apio upgrade’ checks for the version of the latest Apio release
+  and provides upgrade directions if necessary.
 
   Examples:
     apio upgrade
@@ -924,9 +907,8 @@ Options:
 ```
 Usage: apio upload [OPTIONS]
 
-  The uploade command builds the bitstream file (similar to the build command)
-  and uploaded it to the FPGA board. The commands is typically used in the
-  root directory of the project that contains the apio.ini file.
+  The command ‘apio upload’ builds the bitstream file (similar to the apio
+  build command) and uploads it to the FPGA board.
 
   Examples:
     apio upload

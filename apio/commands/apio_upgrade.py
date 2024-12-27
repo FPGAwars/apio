@@ -18,8 +18,8 @@ from apio.util import get_pypi_latest_version
 # -- COMMAND
 # ---------------------------
 HELP = """
-The upgrade command checks the version of the latest apio release
-and provide upgrade directions if needed.
+The command ‘apio upgrade’ checks for the version of the latest Apio release
+and provides upgrade directions if necessary.
 
 \b
 Examples:

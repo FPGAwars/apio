@@ -60,12 +60,9 @@ warn_option = click.option(
 # -- COMMAND
 # ---------------------------
 HELP = """
-The lint command scans the project's
-verilog code and flags errors, inconsistencies, and style violations,
-and is a useful tool for improving the code quality. The command uses
-the verilator tool which is installed as park of the apio installation.
-The commands is typically used in the root directory
-of the project that contains the apio.ini file.
+The command ‘apio lint’ scans the project’s Verilog code and reports errors,
+inconsistencies, and style violations. The command uses the Verilator tool,
+which is included in the standard Apio installation.
 
 \b
 Examples:

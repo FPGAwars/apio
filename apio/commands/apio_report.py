@@ -19,11 +19,9 @@ from apio.apio_context import ApioContext, ApioContextScope
 # -- COMMAND
 # ---------------------------
 HELP = """
-The report command reports the utilization and timing of the design.
-It is useful to analyzer utilization bottle neck and to verify that
-the design can run at a desired clock speed.
-The commands is typically used in the root directory
-of the project that contains the apio.ini file.
+The command ‘apio report’ provides information on the utilization and timing
+of the design. It is useful for analyzing utilization bottlenecks and
+verifying that the design can operate at the desired clock speed.
 
 \b
 Examples:
