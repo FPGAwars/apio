@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Run to update COMMAND_HELP.md with the latest apio commands help text.
+# Run to update COMMANDS.md with the latest apio commands help text.
 
-output="COMMANDS_HELP.md"
+output="COMMANDS.md"
 
 rm -f $output
 
