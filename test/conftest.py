@@ -232,11 +232,9 @@ class ApioSandbox:
         """Write in the current directory an apio.ini file with given
         values. If an apio.ini file alread exists, it is overwritten."""
 
-        path = Path("apio.ini")
+        assert isinstance(properties, dict), "Not a dict."
 
-        # -- Handle a deletion request.
-        if properties is None:
-            properties = {"board": "alhambra-ii", "top-module": "main"}
+        path = Path("apio.ini")
 
         # -- Requested to write. Construct the lines.
         lines = ["[env]"]
