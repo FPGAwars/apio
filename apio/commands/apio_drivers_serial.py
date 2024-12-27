@@ -18,8 +18,8 @@ from apio.cmd_util import ApioGroup, ApioSubgroup
 # -- apio driver serial install
 
 INSTALL_HELP = """
-The command 'apio drivers serial install' installs the serial drivers on your
-system as required by some FPGA boards.
+The command ‘apio drivers serial install’ installs the necessary serial
+drivers on your system, as required by certain FPGA boards.
 
 \b
 Examples:
@@ -50,8 +50,8 @@ def _install_cli():
 # -- apio drivers serial uninstall
 
 UNINSTALL_HELP = """
-The command 'apio drivers serial uninstall' uninstalled the serial drivers that
-you may installed eariler. .
+The command ‘apio drivers serial uninstall’ removes the serial drivers that
+you may have installed earlier.
 
 \b
 Examples:
@@ -83,15 +83,15 @@ def _uninstall_cli():
 # -- apio drivers serial list
 
 LIST_HELP = """
-The command 'apio drivers serial list' lists the serial devices connected
-to your computer. It is useful for diagnosing FPGA board connectivity issues.
+The command ‘apio drivers serial list’ lists the serial devices connected to
+your computer. It is useful for diagnosing FPGA board connectivity issues.
 
 \b
 Examples:
   apio drivers serial list     # List the serial devices.
 
-[Hint] This command executes the utility `lsserial` which can also be invoked
-using the command `apio raw -- lsserial <flags>`
+[Hint] This command executes the utility lsserial, which can also be invoked
+using the command 'apio raw -- lsserial <flags>'.
 """
 
 
@@ -117,10 +117,8 @@ def _list_cli():
 # --- apio drivers serial
 
 SERIAL_HELP = """
-The 'apio drivers serial' commands group contains subcommands that are used
-to manage the serial drivers on your system.
-
-The subcommands are listed below.
+The command group 'apio drivers serial' includes subcommands designed to
+manage and configure the serial drivers on your system.
 """
 
 # -- We have only a single group with the title 'Subcommands'.

@@ -21,8 +21,8 @@ from apio.cmd_util import ApioGroup, ApioSubgroup
 
 
 LIST_HELP = """
-The 'apio examples list' lists the apio project examples that are available
-for fetching.
+The command ‘apio examples list’ lists the available Apio project examples
+that you can use.
 
 \b
 Examples:
@@ -56,17 +56,17 @@ def _list_cli():
 
 
 FETCH_HELP = """
-The 'apio examples fetch' command fetchs the files of the specified
-example to the current directory rot to the directory specified by the
---dst option. The destination directory does not have to exist but if it does
-it must be empty.
+The command ‘apio examples fetch’ fetches the files of the specified example
+to the current directory or to the directory specified by the –dst option.
+The destination directory does not need to exist, but if it does, it must be
+empty.
 
 \b
 Examples:
   apio examples fetch alhambra-ii/ledon
   apio examples fetch alhambra-ii/ledon -d foo/bar
 
-For a list of available examples type 'apio examples list'.
+[Hint] For the list of available examples, type ‘apio examples list’.
 """
 
 
@@ -101,15 +101,16 @@ def _fetch_cli(
 
 
 FETCH_BOARD_HELP = """
-The 'apio examples fetch-board` is used to fetch all the apio examples
-of a given board. The examples are copied under the current directory or
-the destination directory if --dst is given.
+The command ‘apio examples fetch-board’ is used to fetch all the Apio examples
+for a specific board. The examples are copied to the current directory or to
+the specified destination directory if the –dst option is provided.
 
 \b
 Examples:
   apio examples fetch-board alhambra-ii             # Fetch to local directory
   apio examples fetch-board alhambra-ii -d foo/bar  # Fetch to foo/bar
 
+[Hint] For the list of available examples, type ‘apio examples list’.
 """
 
 
@@ -146,12 +147,9 @@ def _fetch_board_cli(
 # ---- apio examples
 
 EXAMPLES_HELP = """
-The 'apio examples' group provides subcommands for listing and fetching
-apio provided examples, each is a self contain mini project that can be
-built and uploaded to a FPGA.
-
-The subcommands are listed below.
-
+The command group ‘apio examples’ provides subcommands for listing and
+fetching Apio-provided examples. Each example is a self-contained mini-project
+that can be built and uploaded to an FPGA board.
 """
 
 

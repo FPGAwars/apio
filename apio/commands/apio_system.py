@@ -17,16 +17,17 @@ from apio.cmd_util import ApioGroup, ApioSubgroup
 # ------ apio system info
 
 INFO_HELP = """
-The 'apio system info' command provides general informaion about your system
-and apio installation and is useful for diagnosing apio installation issues.
+The command ‘apio system info’ provides general information about your system
+and Apio installation, which is useful for diagnosing Apio installation issues.
 
 \b
 Examples:
   apio system info       # Show platform id and info.
 
-[Advanced] The default location of the apio home directory, where preferences
-and packages are stored, is in the .apio directory under the user home
-directory, but can be changed using the APIO_HOME environment variable.
+[Advanced] The default location of the Apio home directory, where preferences
+and packages are stored, is in the .apio directory under the user’s home
+directory. This location can be changed using the APIO_HOME environment
+variable.
 
 """
 
@@ -70,15 +71,15 @@ def _info_cli():
 # ------ apio system platforms
 
 PLATFORMS_HELP = """
-The 'apio system platforms' command lists the platforms ids supported by
-apio, with the effective platform id of your system highlightd.
+The command ‘apio system platforms’ lists the platform IDs supported by Apio,
+with the effective platform ID of your system highlighted.
 
 \b
 Examples:
   apio system platforms   # List supported platform ids.
 
-[Advanced] The automatic platform id detection of apio can be overriden
-by defining a different platform id using the env variable APIO_PLATFORM.
+[Advanced] The automatic platform ID detection of Apio can be overridden by
+defining a different platform ID using the APIO_PLATFORM environment variable.
 """
 
 
@@ -112,11 +113,8 @@ def _platforms_cli():
 # ------ apio system
 
 SYSTEM_HELP = """
-The command group 'apio system' contains subcommans that provides information
-about the system and apio's installation.
-
-
-The subcommands are listed below.
+The command group ‘apio system’ contains subcommands that provide information
+about the system and Apio’s installation.
 """
 
 # -- We have only a single group with the title 'Subcommands'.

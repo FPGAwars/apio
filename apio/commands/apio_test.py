@@ -19,26 +19,25 @@ from apio.apio_context import ApioContext, ApioContextScope
 # -- COMMAND
 # ---------------------------
 HELP = """
-The sim command simulates one or all the testbenches in the project
-and is useful for automatic unit testing of the code. Testbenches
-are expected have a name ending with _tb (e.g my_module_tb.v) and to exit
-with the $fatal directive if any error is detected. The commands is typically
-used in the root directory of the project that contains the apio.ini.
+The command ‘apio test’ simulates one or all the testbenches in the project
+and is useful for automated testing of your design. Testbenches are expected
+to have names ending with _tb (e.g., my_module_tb.v) and should exit with the
+$fatal directive if an error is detected.
 
 \b
 Examples
   apio test                 # Run all *_tb.v testbenches.
   apio test my_module_tb.v  # Run a single testbench
 
-It is recommanded NOT to use the `$dumpfile()` function in your testbenchs as
-this may override the default name and location of the generated .vcd file.
+[Important] Avoid using the Verilog $dumpfile() function in your testbenches,
+as this may override the default name and location Apio sets for the
+generated .vcd file.
 
-For a sample testbench that is compatible with apio see the
-example at
+For a sample testbench compatible with Apio features, see:
 https://github.com/FPGAwars/apio-examples/tree/master/upduino31/testbench
 
-[Hint] To simulate the testbench with a graphical visualizaiton of the
-signals see the 'apio sim' command.
+[Hint] To simulate a testbench with a graphical visualization of the signals,
+refer to the ‘apio sim’ command.
 """
 
 

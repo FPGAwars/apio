@@ -43,10 +43,8 @@ png_option = click.option(
 # -- COMMAND
 # ---------------------------
 HELP = """
-The graph command generates a graphical representation of
-the verilog code of the project. The commands is typically
-used in the root directory of the project that contains
-the apio.ini file.
+The command ‘apio graph’ generates a graphical representation of the Verilog
+code in the project.
 
 \b
 Examples:
@@ -55,11 +53,9 @@ Examples:
   apio graph --png         # Generate a png file.
   apio graph -t my_module  # Graph my_module module.
 
-"""
 
-EPILOG = """
-[Hint] On windows, type 'explorer _build/hardware.svg' to
-view the graph, and on Mac OS type 'open _build/hardware.svg'.
+[Hint] On Windows, type ‘explorer _build/hardware.svg’ to view the graph,
+and on Mac OS type ‘open _build/hardware.svg’.
 """
 
 
@@ -69,7 +65,6 @@ view the graph, and on Mac OS type 'open _build/hardware.svg'.
     name="graph",
     short_help="Generate a visual graph of the code.",
     help=HELP,
-    epilog=EPILOG,
 )
 @click.pass_context
 @pdf_option

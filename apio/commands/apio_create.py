@@ -11,7 +11,6 @@ from pathlib import Path
 import click
 from apio.managers.project import (
     DEFAULT_TOP_MODULE,
-    APIO_INI,
     create_project_file,
 )
 from apio import util
@@ -34,23 +33,19 @@ board_option = click.option(
 # ---------------------------
 # -- COMMAND
 # ---------------------------
-HELP = f"""
-The 'apio create' command creates a new apio.ini project file and may
-be use when creating a new apio project.
+HELP = """
+The command 'apio create' creates a new `apio.ini` project file and is
+typically used when setting up a new Apio project.
 
 \b
 Examples:
   apio create --board alhambra-ii
   apio create --board alhambra-ii --top-module MyModule
 
-The flag --board is required. The flag --top-module is optional and has
-the default '{DEFAULT_TOP_MODULE}'. If the file apio.ini already exists
-the command exists with an error message.
 
-[Note] this command creates just the '{APIO_INI}' file
-rather than a complete and buildable project.
-Some users use instead the'apio examples' command to copy a working
-project for their board, and then modify it with with their design.
+[Note] This command only creates a new 'apio.ini' file, rather than a complete
+and buildable project. To create complete projects, refer to the
+'apio examples' command.
 """
 
 

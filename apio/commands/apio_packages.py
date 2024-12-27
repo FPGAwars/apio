@@ -20,8 +20,9 @@ from apio.cmd_util import ApioGroup, ApioSubgroup
 # ------ apio packages install
 
 INSTALL_HELP = """
-The command 'apio packages install' installs apio packages which are require
-for the operation of apio on your system.
+The command ‘apio packages install’ installs Apio packages that are required
+for the operation of Apio on your system.
+
 
 \b
 Examples:
@@ -30,9 +31,8 @@ Examples:
   apio packages install oss-cad-suite     # Install just this package.
   apio packages install examples@0.0.32   # Install a specific version.
 
-Adding the option --force to forces the reinstallation of existing packages,
-otherwise, packages that are already installed correctly are left with no
-change.
+Adding the --force option forces the reinstallation of existing packages;
+otherwise, packages that are already installed correctly remain unchanged.
 """
 
 
@@ -72,7 +72,8 @@ def _install_cli(
 # ------ apio packages uninstall
 
 UNINSTALL_HELP = """
-The command 'apio packages uninstall' installs apio packages from your system.
+The command ‘apio packages uninstall’ removes installed Apio packages from
+your system. The command does not uninstall the Apio tool itself.
 
 \b
 Examples:
@@ -131,10 +132,9 @@ def _uninstall_cli(
 # ------ apio packages list
 
 LIST_HELP = """
-The 'apio packages list' command lists the available and installed apio
-packages.
-Note that the list of available packages depends on the operatingsystem you
-use as some require more packages than others.
+The command ‘apio packages list’ lists the available and installed Apio
+packages. The list of available packages depends on the operating system
+you are using and may vary between operating systems.
 
 \b
 Examples:
@@ -176,9 +176,9 @@ def _list_cli():
 # ------ apio packages fix
 
 FIX_HELP = """
-The 'apio packages fix' command fixes partially installed or left over
-apio packages that are shown by the command 'apio packages list' as broken.
-If there are no broken packages, the program does nothing and exits.
+The command ‘apio packages fix’ resolves partially installed or leftover Apio
+packages that are listed as broken by the command ‘apio packages list’.
+If there are no broken packages, the command does nothing and exits.
 
 \b
 Examples:
@@ -220,16 +220,15 @@ def _fix_cli(
 
 
 HELP = """
-The 'apio packages' command groups provides commands to manage the the
-instllation of the apio packages
-These are not python packages but apio specific packages that contain various
-tools and data that are necessary for the operation of apio.
-These packages are installed after the installation of the apio python package
-using the command 'apio packages install'.
-Note that the list of available packages depends on the operatingsystem you
-use as some require more packages than others.
+The command group ‘apio packages’ provides commands to manage the installation
+of Apio packages. These are not Python packages but Apio-specific packages
+containing various tools and data essential for the operation of Apio.
+These packages are installed after the installation of the Apio Python package
+itself, using the command ‘apio packages install’.
 
-The subcommands are listed below.
+The list of available
+packages depends on the operating system you are using and may vary between
+different operating systems.
 """
 
 

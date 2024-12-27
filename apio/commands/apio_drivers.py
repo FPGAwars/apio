@@ -17,8 +17,8 @@ from apio.managers.system import System
 # --- apio drivers lsusb
 
 LSUSB_HELP = """
-The 'apio drivers lsusb' commands runs the lsusb utility to list the usb
-devices connected to your computer.  It is typically used  for diagnosing
+The command ‘apio drivers lsusb’ runs the lsusb utility to list the USB
+devices connected to your computer. It is typically used for diagnosing
 connectivity issues with FPGA boards.
 
 \b
@@ -26,7 +26,7 @@ Examples:
   apio drivers lsusb      # List the usb devices
 
 [Hint] You can also run the lsusb utility using the command
-'apio raw -- lsusb <flags>'
+'apio raw -- lsusb <flags>'.
 """
 
 
@@ -52,10 +52,8 @@ def _lsusb_cli():
 # --- apio drivers
 
 DRIVERS_HELP = """
-The 'apio drivers' commands group contains subcommands that are used
-to manage the drivers on your system.
-
-The subcommands are listed below.
+The command group ‘apio drivers’ contains subcommands used to manage the
+drivers on your system.
 """
 
 # -- We have only a single group with the title 'Subcommands'.

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash 
 
 # Run to update COMMANDS.md with the latest apio commands help text.
 

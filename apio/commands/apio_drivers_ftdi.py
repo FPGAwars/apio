@@ -18,8 +18,8 @@ from apio.managers.system import System
 # -- apio drivers ftdi install
 
 INSTALL_HELP = """
-The command 'apio drivers ftdi install' installs the ftdi drivers on your
-system as required by some FPGA boards.
+The command 'apio drivers ftdi install' installs on your system the FTDI
+drivers required by some FPGA boards.
 
 \b
 Examples:
@@ -51,8 +51,8 @@ def _install_cli():
 # -- apio driver ftdi uninstall
 
 UNINSTALL_HELP = """
-The command 'apio drivers ftdi uninstall' uninstalled the ftdi drivers that
-you may installed eariler. .
+The command 'apio drivers ftdi uninstall' removes the FTDI drivers that may
+have been installed earlier.
 
 \b
 Examples:
@@ -85,15 +85,16 @@ def _uninstall_cli():
 
 
 LIST_HELP = """
-The command 'apio drivers ftdi list' lists the ftdi devices connected
-to your computer. It is useful for diagnosing FPGA board connectivity issues.
+The command 'apio drivers ftdi list' displays the FTDI devices currently
+connected to your computer. It is useful for diagnosing FPGA board
+connectivity issues.
 
 \b
 Examples:
   apio drivers ftdi list     # List the ftdi devices.
 
-[Hint] This command executes the utility `lsftdi` which can also be invoked
-using the command `apio raw -- lsftdi <flags>`
+[Hint] This command uses the lsftdi utility, which can also be invoked
+directly with the 'apio raw -- lsftdi <flags>' command.
 """
 
 
@@ -119,10 +120,8 @@ def _list_cli():
 # --- apio drivers ftdi
 
 FTDI_HELP = """
-The 'apio drivers ftdi' commands group contains subcommands that are used
-to manage the ftdi drivers on your system.
-
-The subcommands are listed below.
+The command group 'apio drivers ftdi' includes subcommands that help manage
+the FTDI drivers on your system.
 """
 
 # -- We have only a single group with the title 'Subcommands'.

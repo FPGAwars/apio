@@ -93,17 +93,26 @@ def context_settings():
 HELP = """
 Work with FPGAs with ease.
 
-Apio is a user friendly command-line
-suite that supports all the aspect of FPGA firmware developement
-from linting, building and simulating to unit testing, to progreamming
-the FPGA board.
+Apio is an easy to use and open-source command-line suite designed to
+streamline FPGA programming. It supports a wide range of tasks, including
+linting, building, simulation, unit testing, and programming FPGA boards.
 
-Apio commands are typically invoked in the root directory of the FPGA
-project where the project configuration file apio.ini and the project
-source files are stored. For help on specific commands use the -h
-flag (e.g. 'apio build -h').
+An Apio project consists of a directory containing a configuration file
+named 'apio.ini', along with FPGA source files, testbenches, and pin definition
+files.
 
-For more information on the apio project see
+Apio commands are intuitive and perform their intended functionalities right
+out of the box. For example, the command apio upload automatically compiles
+the design in the current directory and uploads it to the FPGA board.
+
+For detailed information about any Apio command, append the -h flag to view
+its help text. For instance:
+
+\b
+apio build -h
+apio drivers ftdi install -h
+
+For more information about the Apio project, visit the official Apio Wiki
 https://github.com/FPGAwars/apio/wiki/Apio
 """
 
