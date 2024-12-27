@@ -40,8 +40,8 @@ be use when creating a new apio project.
 
 \b
 Examples:
-  apio create --board icezum
-  apio create --board icezum --top-module MyModule
+  apio create --board alhambra-ii
+  apio create --board alhambra-ii --top-module MyModule
 
 The flag --board is required. The flag --top-module is optional and has
 the default '{DEFAULT_TOP_MODULE}'. If the file apio.ini already exists

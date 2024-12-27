@@ -236,7 +236,7 @@ class ApioSandbox:
 
         # -- Handle a deletion request.
         if properties is None:
-            properties = {"board": "icezum", "top-module": "main"}
+            properties = {"board": "alhambra-ii", "top-module": "main"}
 
         # -- Requested to write. Construct the lines.
         lines = ["[env]"]

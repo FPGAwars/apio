@@ -161,7 +161,7 @@ def process_arguments(
 
     # -- Update the FPGA items according to the current board and fpga
     # -- Raise an exception in case of a contradiction
-    # -- For example: board = icezum, and size='8k' given by arguments
+    # -- For example: board = alhambra-ii, and size='8k' given by arguments
     # -- (The board determine the fpga and the size, but the user has
     # --  specificied a different size. It is a contradiction!)
     for arg, fpga_property_name in [
