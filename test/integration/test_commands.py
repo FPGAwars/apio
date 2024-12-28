@@ -202,8 +202,8 @@ def test_project_ice40_local_dir(apio_runner: ApioRunner):
     _test_project(
         apio_runner,
         remote_proj_dir=False,
-        example="alhambra-ii/ledon",
-        testbench="ledon_tb",
+        example="alhambra-ii/bcd-counter",
+        testbench="main_tb",
         binary="hardware.bin",
         report_item="ICESTORM_LC:",
     )
@@ -215,8 +215,8 @@ def test_project_ice40_remote_dir(apio_runner: ApioRunner):
     _test_project(
         apio_runner,
         remote_proj_dir=True,
-        example="alhambra-ii/ledon",
-        testbench="ledon_tb",
+        example="alhambra-ii/bcd-counter",
+        testbench="main_tb",
         binary="hardware.bin",
         report_item="ICESTORM_LC:",
     )
