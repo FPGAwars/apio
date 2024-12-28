@@ -140,9 +140,16 @@ class ApioContext:
                 project_dir_arg is None
             ), "project_dir_arg specified for scope None"
 
-        # -- Determine apio home dir
+        # -- Determine apio home dir. Some tools get confused if the home
+        # -- dir contains spaces so we prohibit it.
         self.home_dir: Path = ApioContext._get_home_dir()
-        ApioContext._check_no_spaces_in_dir(self.home_dir, "home")
+        if re.search("\\s", str(self.home_dir)):
+            click.secho(
+                "Error: The apio home dir path should not contain spaces.",
+                fg="red",
+            )
+            click.secho(f"Home dir: '{str(self.home_dir)}'", fg="yellow")
+            sys.exit(1)
 
         # -- Profile information, from ~/.apio/profile.json
         self.profile = Profile(self.home_dir)
@@ -248,23 +255,6 @@ class ApioContext:
 
         # -- Return the canonical board id.
         return canonical_id
-
-    @staticmethod
-    def _check_no_spaces_in_dir(dir_path: Path, subject: str):
-        """Give the user an early error message if their apio setup dir
-        contains white space. See https://github.com/FPGAwars/apio/issues/474
-        """
-        # -- Match a single white space in the dir path.
-        if re.search("\\s", str(dir_path)):
-            # -- Here space found. This is a fatal error since we don't hand
-            # -- it well later in the process.
-            click.secho(
-                f"Error: The apio {subject} directory path contains white "
-                "space.",
-                fg="red",
-            )
-            click.secho(f"'{str(dir_path)}'", fg="red")
-            sys.exit(1)
 
     @property
     def packages_dir(self):
