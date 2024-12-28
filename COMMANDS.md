@@ -111,9 +111,8 @@ Usage: apio boards [OPTIONS]
   directory, which will override Apio’s default 'boards.json' file.
 
   Examples:
-    apio boards                # List all boards
-    apio boards | grep ecp5    # Filter boards results
-    apio boards --project-dir foo/bar  # Use a different
+    apio boards                   # List all boards
+    apio boards | grep ecp5       # Filter boards results
 
 Options:
   -p, --project-dir path  Set the root directory for the project.
@@ -824,7 +823,7 @@ Usage: apio system info [OPTIONS]
 
   [Advanced] The default location of the Apio home directory, where
   preferences and packages are stored, is in the .apio directory under the
-  user’s home directory. This location can be changed using the APIO_HOME
+  user’s home directory. This location can be changed using the APIO_HOME_DIR
   environment variable.
 
 Options:
