@@ -105,9 +105,8 @@ project directory, which will override Apio’s default 'boards.json' file.
 
 \b
 Examples:
-  apio boards                # List all boards
-  apio boards | grep ecp5    # Filter boards results
-  apio boards --project-dir foo/bar  # Use a different
+  apio boards                   # List all boards
+  apio boards | grep ecp5       # Filter boards results
 
 """
 
