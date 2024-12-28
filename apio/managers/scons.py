@@ -16,7 +16,6 @@ import time
 import datetime
 import shutil
 from functools import wraps
-from typing import List
 
 import importlib.metadata
 import click
@@ -88,11 +87,15 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        variables, __, arch = process_arguments(self.apio_ctx, args)
+        board, arch, variables = process_arguments(self.apio_ctx, args)
 
         # --Clean the project: run scons -c (with aditional arguments)
         return self._run(
-            "-c", arch=arch, variables=variables, required_packages_names=[]
+            "-c",
+            board=board,
+            arch=arch,
+            variables=variables,
+            required_packages_names=[],
         )
 
     @on_exception(exit_code=1)
@@ -101,14 +104,15 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        variables, _, arch = process_arguments(self.apio_ctx, args)
+        board, arch, variables = process_arguments(self.apio_ctx, args)
 
         # -- Execute scons!!!
         # -- The packages to check are passed
         return self._run(
             "graph",
-            variables=variables,
+            board=board,
             arch=arch,
+            variables=variables,
             required_packages_names=["oss-cad-suite", "graphviz"],
         )
 
@@ -117,11 +121,12 @@ class SCons:
         """Runs a scons subprocess with the 'lint' target. Returns process
         exit code, 0 if ok."""
 
-        variables, __, arch = process_arguments(self.apio_ctx, args)
+        board, arch, variables = process_arguments(self.apio_ctx, args)
         return self._run(
             "lint",
-            variables=variables,
+            board=board,
             arch=arch,
+            variables=variables,
             required_packages_names=["oss-cad-suite"],
         )
 
@@ -131,12 +136,13 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        variables, _, arch = process_arguments(self.apio_ctx, args)
+        board, arch, variables = process_arguments(self.apio_ctx, args)
 
         return self._run(
             "sim",
-            variables=variables,
+            board=board,
             arch=arch,
+            variables=variables,
             required_packages_names=["oss-cad-suite"],
         )
 
@@ -146,12 +152,13 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        variables, _, arch = process_arguments(self.apio_ctx, args)
+        board, arch, variables = process_arguments(self.apio_ctx, args)
 
         return self._run(
             "test",
-            variables=variables,
+            board=board,
             arch=arch,
+            variables=variables,
             required_packages_names=["oss-cad-suite"],
         )
 
@@ -161,15 +168,15 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        variables, board, arch = process_arguments(self.apio_ctx, args)
+        board, arch, variables = process_arguments(self.apio_ctx, args)
 
         # -- Execute scons!!!
         # -- The packages to check are passed
         return self._run(
             "build",
-            variables=variables,
             board=board,
             arch=arch,
+            variables=variables,
             required_packages_names=["oss-cad-suite"],
         )
 
@@ -178,13 +185,13 @@ class SCons:
         """Runs a scons subprocess with the 'report' target. Returns process
         exit code, 0 if ok."""
 
-        variables, board, arch = process_arguments(self.apio_ctx, args)
+        board, arch, variables = process_arguments(self.apio_ctx, args)
 
         return self._run(
             "report",
-            variables=variables,
             board=board,
             arch=arch,
+            variables=variables,
             required_packages_names=["oss-cad-suite"],
         )
 
@@ -207,7 +214,7 @@ class SCons:
 
         # -- Get important information from the configuration
         # -- It will raise an exception if it cannot be solved
-        flags, board, arch = process_arguments(self.apio_ctx, config)
+        board, arch, variables = process_arguments(self.apio_ctx, config)
 
         # -- Information about the FPGA is ok!
 
@@ -218,15 +225,15 @@ class SCons:
         programmer = self._get_programmer(board, prog)
 
         # -- Add as a flag to pass it to scons
-        flags += [f"prog={programmer}"]
+        variables += [f"prog={programmer}"]
 
         # -- Execute Scons for uploading!
         exit_code = self._run(
             "upload",
-            variables=flags,
-            required_packages_names=["oss-cad-suite"],
             board=board,
             arch=arch,
+            variables=variables,
+            required_packages_names=["oss-cad-suite"],
         )
 
         return exit_code
@@ -834,17 +841,19 @@ class SCons:
         # -- No FTDI board found
         return None
 
+    # pylint: disable=too-many-locals
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-positional-arguments
     def _run(
         self,
         command,
+        *,
+        board,
+        arch,
         variables,
         required_packages_names,
-        board=None,
-        arch=None,
     ):
-        """Executes scons"""
+        """Invoke an scons subprocess."""
 
         # -- Construct the path to the SConstruct file.
         scons_dir = util.get_path_in_apio_package("scons")
@@ -868,30 +877,6 @@ class SCons:
             click.secho(f"* variables: {variables}")
             click.secho()
 
-        # -- Execute scons
-        return self._execute_scons(command, variables, board)
-
-    # R0914: Too many local variables (19/15)
-    # pylint: disable=R0914
-    def _execute_scons(
-        self, command: str, variables: List[str], board: str
-    ) -> int:
-        """Execute the scons builder
-        * INPUTS:
-          * command: (string): Apio command. Ex. 'upload', 'build'...
-          * variables: Parameters passed to scons
-            Ex. ['fpga_arch=ice40', 'fpga_size=8k', 'fpga_type=lp',
-                 'fpga_pack=cm81', 'top_module=main',
-                 'prog=tinyprog --pyserial -c /dev/ttyACM0 --program',
-                 '-f', '/home/obijuan/Develop/FPGAwars/apio/apio/
-                        scons/ice40/SConstruct']
-          * board: (string) Board name
-
-        * OUTPUT: Exit code
-           * 0: SUCESS!!
-           * x: Error
-        """
-
         # -- Get the terminal width (typically 80)
         terminal_width, _ = shutil.get_terminal_size()
 
@@ -899,26 +884,17 @@ class SCons:
         # -- to execute the apio command)
         start_time = time.time()
 
-        # -- Only for these three commands
-        if command in ("build", "upload", "time"):
+        # -- Get the date as a string
+        date_time_str = datetime.datetime.now().strftime("%c")
 
-            # -- Get the type of board
-            if board:
-                processing_board = board
-            else:
-                processing_board = "custom board"
+        # -- Board name string in color
+        board_color = click.style(board, fg="cyan", bold=True)
 
-            # -- Get the date as a string
-            date_time_str = datetime.datetime.now().strftime("%c")
+        # -- Print information on the console
+        click.secho(f"[{date_time_str}] Processing {board_color}")
 
-            # -- Board name string in color
-            board_color = click.style(processing_board, fg="cyan", bold=True)
-
-            # -- Print information on the console
-            click.secho(f"[{date_time_str}] Processing {board_color}")
-
-            # -- Print a horizontal line
-            click.secho("-" * terminal_width, bold=True)
+        # -- Print a horizontal line
+        click.secho("-" * terminal_width, bold=True)
 
         # -- Create the scons debug options. See details at
         # -- https://scons.org/doc/2.4.1/HTML/scons-man.html
