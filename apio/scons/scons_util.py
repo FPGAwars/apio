@@ -626,7 +626,7 @@ def get_tests_configs(
     source and test file lists as returned by get_source_files()."""
     # List of testbenches to be tested.
     if testbench:
-        testbenches = testbench
+        testbenches = [testbench]
     else:
         testbenches = test_srcs
 

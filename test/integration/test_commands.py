@@ -155,6 +155,22 @@ def _test_project(
         assert getsize(sb.proj_dir / f"_build/{testbench}.out")
         assert getsize(sb.proj_dir / f"_build/{testbench}.vcd")
 
+        # -- 'apio clean'
+        result = sb.invoke_apio_cmd(apio, ["clean"] + proj_arg)
+        sb.assert_ok(result)
+        assert "SUCCESS" in result.output
+        assert not (sb.proj_dir / f"_build/{testbench}.out").exists()
+        assert not (sb.proj_dir / f"_build/{testbench}.vcd").exists()
+
+        # -- 'apio test <testbench-file>'
+        result = sb.invoke_apio_cmd(
+            apio, ["test", testbench + ".v"] + proj_arg
+        )
+        sb.assert_ok(result)
+        assert "SUCCESS" in result.output
+        assert getsize(sb.proj_dir / f"_build/{testbench}.out")
+        assert getsize(sb.proj_dir / f"_build/{testbench}.vcd")
+
         # -- 'apio report'
         result = sb.invoke_apio_cmd(apio, ["report"] + proj_arg)
         sb.assert_ok(result)

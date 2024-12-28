@@ -311,9 +311,9 @@ if "sim" in COMMAND_LINE_TARGETS:
 # -- Targets.
 # -- (modules).v -> (testbenchs).out -> (testbenchs).vcd
 if "test" in COMMAND_LINE_TARGETS:
-    sim_configs = get_tests_configs(env, TESTBENCH, synth_srcs, test_srcs)
+    tests_configs = get_tests_configs(env, TESTBENCH, synth_srcs, test_srcs)
     tests_targets = []
-    for sim_config in sim_configs:
+    for sim_config in tests_configs:
         test_out_target = env.IVerilogTestbench(
             sim_config.build_testbench_name, sim_config.srcs
         )
