@@ -2,6 +2,7 @@
   Test different "apio" commands
 """
 
+import os
 from os.path import getsize
 from test.conftest import ApioRunner
 import pytest
@@ -52,7 +53,7 @@ def test_examples(apio_runner: ApioRunner):
         )
         sb.assert_ok(result)
         assert "Creating directory alhambra-ii" in result.output
-        assert "has been fetched successfuly" in result.output
+        assert "has been fetched successfully" in result.output
         assert getsize("alhambra-ii/ledon/ledon.v")
 
         # -- 'apio examples fetch alhambra-ii/ledon -d dir1'
@@ -74,9 +75,9 @@ def test_examples(apio_runner: ApioRunner):
             ["examples", "fetch-board", "alhambra-ii", "-d", "dir2"],
         )
         sb.assert_ok(result)
-        assert "Creating directory dir2/alhambra-ii" in result.output
+        assert f"Creating directory dir2{os.sep}alhambra-ii" in result.output
         assert (
             "Board 'alhambra-ii' examples has been fetched "
-            "successfuly" in result.output
+            "successfully" in result.output
         )
         assert getsize("dir2/alhambra-ii/ledon/ledon.v")

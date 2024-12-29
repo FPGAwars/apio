@@ -3,7 +3,7 @@
 This file is intended for APIO developers.
 
 ## Pre commit tests
-Before submitting a new commit, make sure to run successfuly the following command
+Before submitting a new commit, make sure to run successfully the following command
 in the root directory of the repository.:
 
 ```shell

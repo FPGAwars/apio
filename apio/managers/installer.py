@@ -390,7 +390,7 @@ def uninstall_package(
 
         # -- Inform the user
         click.secho(
-            f"Package '{package_name}' uninstalled successfuly",
+            f"Package '{package_name}' uninstalled successfully",
             fg="green",
         )
     else:

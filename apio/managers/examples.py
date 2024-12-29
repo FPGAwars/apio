@@ -291,6 +291,6 @@ class Examples:
         shutil.copytree(src_board_dir, dst_board_dir, dirs_exist_ok=True)
 
         click.secho(
-            "Board '" + board_id + "' examples has been fetched successfuly.",
+            "Board '" + board_id + "' examples has been fetched successfully.",
             fg="green",
         )
