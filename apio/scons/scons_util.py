@@ -691,7 +691,6 @@ def make_waves_target(
 def make_iverilog_action(
     env: SConsEnvironment,
     *,
-    ivl_path: str,
     verbose: bool,
     vcd_output_name: str,
     is_interactive: bool,
@@ -701,7 +700,6 @@ def make_iverilog_action(
 ) -> str:
     """Construct an iverilog scons action string.
     * env: Rhe scons environment.
-    * lvl: Optional path to the lvl library.
     * verbose: IVerilog will show extra info.
     * vcd_output_name: Value for the macro VCD_OUTPUT.
     * is_interactive: True for apio sim, False otherwise.
@@ -711,9 +709,6 @@ def make_iverilog_action(
     *
     * Returns the scons action string for the IVerilog command.
     """
-    ivl_path_param = (
-        "" if is_windows(env) or not ivl_path else f'-B "{ivl_path}"'
-    )
 
     # Escaping for windows. '\' -> '\\'
     escaped_vcd_output_name = vcd_output_name.replace("\\", "\\\\")
@@ -722,9 +717,8 @@ def make_iverilog_action(
     # -- The -g2012 is for system-verilog support and we use it here as an
     # -- experimental feature.
     action = (
-        "iverilog -g2012 {0} {1} -o $TARGET {2} {3} {4} {5} {6} $SOURCES"
+        "iverilog -g2012 {0} -o $TARGET {1} {2} {3} {4} {5} $SOURCES"
     ).format(
-        ivl_path_param,
         "-v" if verbose else "",
         f"-DVCD_OUTPUT={escaped_vcd_output_name}",
         "-DINTERACTIVE_SIM" if is_interactive else "",

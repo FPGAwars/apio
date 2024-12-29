@@ -50,7 +50,6 @@ from apio.scons.scons_util import (
     SConstructId,
     has_testbench_name,
     basename,
-    is_windows,
     get_constraint_file,
     create_construction_env,
     arg_bool,
@@ -99,7 +98,6 @@ GRAPH_SPEC = arg_str(env, "graph_spec", "")
 
 
 # -- Resources paths
-IVL_PATH = os.environ["IVL"] if "IVL" in os.environ else ""
 YOSYS_PATH = os.environ["YOSYS_LIB"] if "YOSYS_LIB" in os.environ else ""
 YOSYS_LIB_DIR = YOSYS_PATH + "/gowin"
 
@@ -225,7 +223,6 @@ def iverilog_tb_generator(source, target, env, for_signature):
         # -- Perform the actual test or sim compilation.
         make_iverilog_action(
             env,
-            ivl_path=IVL_PATH,
             verbose=VERBOSE_ALL,
             vcd_output_name=testbench_name,
             is_interactive=("sim" in COMMAND_LINE_TARGETS),
@@ -268,9 +265,7 @@ env.Append(BUILDERS={"GRAPHVIZ": graphviz_builder})
 # -- Builder (vvp, simulator).
 # -- (testbench).out -> (testbench).vcd.
 vcd_builder = Builder(
-    action="vvp {0} $SOURCE -dumpfile=$TARGET".format(
-        "" if (is_windows(env) or not IVL_PATH) else f'-M "{IVL_PATH}"'
-    ),
+    action="vvp $SOURCE -dumpfile=$TARGET",
     suffix=".vcd",
     src_suffix=".out",
 )
