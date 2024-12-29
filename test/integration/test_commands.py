@@ -58,7 +58,7 @@ def _test_project(
     remote_proj_dir: bool,
     example: str,
     testbench: str,
-    binary: str,
+    bitstream: str,
     report_item: str,
 ):
     """A common project integration test. Invoked per each tested
@@ -116,7 +116,7 @@ def _test_project(
         result = sb.invoke_apio_cmd(apio, ["build"] + proj_arg)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
-        assert getsize(sb.proj_dir / "_build" / binary)
+        assert getsize(sb.proj_dir / "_build" / bitstream)
 
         # -- 'apio build' (no change)
         result = sb.invoke_apio_cmd(apio, ["build"] + proj_arg)
@@ -204,7 +204,7 @@ def test_project_ice40_local_dir(apio_runner: ApioRunner):
         remote_proj_dir=False,
         example="alhambra-ii/bcd-counter",
         testbench="main_tb",
-        binary="hardware.bin",
+        bitstream="hardware.bin",
         report_item="ICESTORM_LC:",
     )
 
@@ -217,7 +217,7 @@ def test_project_ice40_remote_dir(apio_runner: ApioRunner):
         remote_proj_dir=True,
         example="alhambra-ii/bcd-counter",
         testbench="main_tb",
-        binary="hardware.bin",
+        bitstream="hardware.bin",
         report_item="ICESTORM_LC:",
     )
 
@@ -229,7 +229,7 @@ def test_project_ecp5_local_dir(apio_runner: ApioRunner):
         remote_proj_dir=False,
         example="colorlight-5a-75b-v8/ledon",
         testbench="ledon_tb",
-        binary="hardware.bit",
+        bitstream="hardware.bit",
         report_item="ALU54B:",
     )
 
@@ -241,6 +241,30 @@ def test_project_ecp5_remote_dir(apio_runner: ApioRunner):
         remote_proj_dir=True,
         example="colorlight-5a-75b-v8/ledon",
         testbench="ledon_tb",
-        binary="hardware.bit",
+        bitstream="hardware.bit",
         report_item="ALU54B:",
+    )
+
+
+def test_project_gowin_local_dir(apio_runner: ApioRunner):
+    """Tests building and testing a gowin project as the current working dir"""
+    _test_project(
+        apio_runner,
+        remote_proj_dir=False,
+        example="sipeed-tang-nano-4k/blinky",
+        testbench="blinky_tb",
+        bitstream="hardware.fs",
+        report_item="ALU54D:",
+    )
+
+
+def test_project_gowin_remote_dir(apio_runner: ApioRunner):
+    """Tests building and testing a gowin project from a remote directory."""
+    _test_project(
+        apio_runner,
+        remote_proj_dir=True,
+        example="sipeed-tang-nano-4k/blinky",
+        testbench="blinky_tb",
+        bitstream="hardware.fs",
+        report_item="ALU54D:",
     )
