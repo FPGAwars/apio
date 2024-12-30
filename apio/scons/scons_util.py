@@ -30,7 +30,6 @@ from SCons.Node import NodeList
 from SCons.Node.FS import File
 from SCons.Node.Alias import Alias
 from SCons.Script.SConscript import SConsEnvironment
-from SCons.Script import DefaultEnvironment
 from SCons.Action import FunctionAction, Action
 from SCons.Builder import Builder
 import SCons.Defaults
@@ -126,9 +125,9 @@ def is_debug(env: SConsEnvironment) -> bool:
 def create_construction_env(args: Dict[str, str]) -> SConsEnvironment:
     """Creates a scons env. Should be called very early in SConstruct.py"""
 
-    # -- Make sure that the default environment doesn't exist, to make sure
-    # -- we create a fresh environment. This is important with pytest which
-    # -- can run multiple tests in the same python process.
+    # -- Since we ae not using the default environment, make sure it was not
+    # -- used unintentionally, e.v. in tests that run create multiple
+    # -- scons env in the same session.
     # --
     # pylint: disable=protected-access
     assert (
@@ -139,7 +138,7 @@ def create_construction_env(args: Dict[str, str]) -> SConsEnvironment:
     # Create the env. We don't use the DefaultEnvironment (a singleton) to
     # allow the creation in pytest multiple test environments in the same
     # tesing process.
-    env: SConsEnvironment = DefaultEnvironment(ENV=os.environ, tools=[])
+    env: SConsEnvironment = SConsEnvironment(ENV=os.environ, tools=[])
 
     # Add the args dictionary as a new ARGUMENTS var.
     assert env.get("ARGUMENTS") is None

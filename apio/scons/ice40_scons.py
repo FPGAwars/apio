@@ -144,9 +144,9 @@ def scons_handler():
     # -- Apio build/upload/report.
     # -- Targets.
     # -- (module).v -> hardware.json -> hardware.asc -> hardware.bin.
-    synth_target = env.Synth(TARGET, [synth_srcs])
-    pnr_target = env.PnR(TARGET, [synth_target, PCF])
-    bin_target = env.Bin(TARGET, pnr_target)
+    synth_target = getattr(env, "Synth")(TARGET, [synth_srcs])
+    pnr_target = getattr(env, "PnR")(TARGET, [synth_target, PCF])
+    bin_target = getattr(env, "Bin")(TARGET, pnr_target)
     build_target = env.Alias("build", bin_target)
 
     if VERBOSE_YOSYS:
@@ -240,9 +240,9 @@ def scons_handler():
     # -- Apio graph.
     # -- Targets.
     # -- (modules).v -> hardware.dot -> hardware.svg.
-    dot_target = env.DOT(TARGET, synth_srcs)
+    dot_target = getattr(env, "DOT")(TARGET, synth_srcs)
     env.AlwaysBuild(dot_target)
-    graphviz_target = env.GRAPHVIZ(TARGET, dot_target)
+    graphviz_target = getattr(env, "GRAPHVIZ")(TARGET, dot_target)
     env.AlwaysBuild(graphviz_target)
     graph_target = env.Alias("graph", graphviz_target)
     env.AlwaysBuild(graph_target)
@@ -252,12 +252,12 @@ def scons_handler():
     # -- (modules).v -> (testbench).out -> (testbench).vcd -> gtkwave
     if "sim" in COMMAND_LINE_TARGETS:
         sim_config = get_sim_config(env, TESTBENCH, synth_srcs)
-        sim_out_target = env.IVerilogTestbench(
+        sim_out_target = getattr(env, "IVerilogTestbench")(
             sim_config.build_testbench_name, sim_config.srcs
         )
         if FORCE_SIM:
             env.AlwaysBuild(sim_out_target)
-        sim_vcd_target = env.VCD(sim_out_target)
+        sim_vcd_target = getattr(env, "VCD")(sim_out_target)
         if FORCE_SIM:
             env.AlwaysBuild(sim_vcd_target)
         waves_target = make_waves_target(env, sim_vcd_target, sim_config)
@@ -272,11 +272,11 @@ def scons_handler():
         )
         tests_targets = []
         for sim_config in tests_configs:
-            test_out_target = env.IVerilogTestbench(
+            test_out_target = getattr(env, "IVerilogTestbench")(
                 sim_config.build_testbench_name, sim_config.srcs
             )
             env.AlwaysBuild(test_out_target)
-            test_vcd_target = env.VCD(test_out_target)
+            test_vcd_target = getattr(env, "VCD")(test_out_target)
             env.AlwaysBuild(test_vcd_target)
             test_target = env.Alias(
                 sim_config.build_testbench_name,
@@ -329,8 +329,8 @@ def scons_handler():
     # -- Apio lint.
     # -- Targets.
     # -- (modules).v -> lint report to stdout.
-    lint_config_target = env.VerilatorConfig(TARGET, [])
-    lint_out_target = env.Verilator(TARGET, synth_srcs + test_srcs)
+    lint_config_target = getattr(env, "VerilatorConfig")(TARGET, [])
+    lint_out_target = getattr(env, "Verilator")(TARGET, synth_srcs + test_srcs)
     env.Depends(lint_out_target, lint_config_target)
     lint_target = env.Alias("lint", lint_out_target)
     env.AlwaysBuild(lint_target)

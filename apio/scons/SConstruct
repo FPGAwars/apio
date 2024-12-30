@@ -1,4 +1,4 @@
-"""Scons script of ECP5 FPGAs."""
+"""Scons handler dispatcher."""
 
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project

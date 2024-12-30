@@ -72,12 +72,6 @@ class SconsHacks:
         # -- Clear the SCons targets
         SCons.Environment.CleanTargets = {}
 
-        # -- Reset the default scons env, if it exists.
-        #
-        # pylint: disable=protected-access
-        SCons.Defaults._default_env = None
-        # pylint: enable=protected-access
-
     @staticmethod
     def get_targets() -> Dict:
         """Get the scons {target -> dependencies} dictionary."""
