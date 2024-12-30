@@ -87,13 +87,12 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        board, arch, variables = process_arguments(self.apio_ctx, args)
+        board, variables = process_arguments(self.apio_ctx, args)
 
         # --Clean the project: run scons -c (with aditional arguments)
         return self._run(
             "-c",
             board=board,
-            arch=arch,
             variables=variables,
             required_packages_names=[],
         )
@@ -104,14 +103,13 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        board, arch, variables = process_arguments(self.apio_ctx, args)
+        board, variables = process_arguments(self.apio_ctx, args)
 
         # -- Execute scons!!!
         # -- The packages to check are passed
         return self._run(
             "graph",
             board=board,
-            arch=arch,
             variables=variables,
             required_packages_names=["oss-cad-suite", "graphviz"],
         )
@@ -121,11 +119,10 @@ class SCons:
         """Runs a scons subprocess with the 'lint' target. Returns process
         exit code, 0 if ok."""
 
-        board, arch, variables = process_arguments(self.apio_ctx, args)
+        board, variables = process_arguments(self.apio_ctx, args)
         return self._run(
             "lint",
             board=board,
-            arch=arch,
             variables=variables,
             required_packages_names=["oss-cad-suite"],
         )
@@ -136,12 +133,11 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        board, arch, variables = process_arguments(self.apio_ctx, args)
+        board, variables = process_arguments(self.apio_ctx, args)
 
         return self._run(
             "sim",
             board=board,
-            arch=arch,
             variables=variables,
             required_packages_names=["oss-cad-suite"],
         )
@@ -152,12 +148,11 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        board, arch, variables = process_arguments(self.apio_ctx, args)
+        board, variables = process_arguments(self.apio_ctx, args)
 
         return self._run(
             "test",
             board=board,
-            arch=arch,
             variables=variables,
             required_packages_names=["oss-cad-suite"],
         )
@@ -168,14 +163,13 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        board, arch, variables = process_arguments(self.apio_ctx, args)
+        board, variables = process_arguments(self.apio_ctx, args)
 
         # -- Execute scons!!!
         # -- The packages to check are passed
         return self._run(
             "build",
             board=board,
-            arch=arch,
             variables=variables,
             required_packages_names=["oss-cad-suite"],
         )
@@ -185,12 +179,11 @@ class SCons:
         """Runs a scons subprocess with the 'report' target. Returns process
         exit code, 0 if ok."""
 
-        board, arch, variables = process_arguments(self.apio_ctx, args)
+        board, variables = process_arguments(self.apio_ctx, args)
 
         return self._run(
             "report",
             board=board,
-            arch=arch,
             variables=variables,
             required_packages_names=["oss-cad-suite"],
         )
@@ -214,7 +207,7 @@ class SCons:
 
         # -- Get important information from the configuration
         # -- It will raise an exception if it cannot be solved
-        board, arch, variables = process_arguments(self.apio_ctx, config)
+        board, variables = process_arguments(self.apio_ctx, config)
 
         # -- Information about the FPGA is ok!
 
@@ -231,7 +224,6 @@ class SCons:
         exit_code = self._run(
             "upload",
             board=board,
-            arch=arch,
             variables=variables,
             required_packages_names=["oss-cad-suite"],
         )
@@ -849,7 +841,6 @@ class SCons:
         command,
         *,
         board,
-        arch,
         variables,
         required_packages_names,
     ):
@@ -857,7 +848,7 @@ class SCons:
 
         # -- Construct the path to the SConstruct file.
         scons_dir = util.get_path_in_apio_package("scons")
-        scons_file_path = scons_dir / arch / "SConstruct"
+        scons_file_path = scons_dir / "SConstruct"
 
         # -- It is passed to scons using the flag -f default_scons_file
         variables += ["-f", f"{scons_file_path}"]

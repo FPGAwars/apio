@@ -919,3 +919,8 @@ def set_up_cleanup(env: SConsEnvironment) -> None:
 
     # -- Associate all the files with the dummy target.
     env.Clean(dummy_target, files_to_clean)
+
+
+def unused(*_):
+    """Fake a use of an unused variable or argument."""
+    # pass

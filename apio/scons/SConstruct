@@ -1,0 +1,24 @@
+"""Scons script of ECP5 FPGAs."""
+
+# -*- coding: utf-8 -*-
+# -- This file is part of the Apio project
+# -- (C) 2016-2024 FPGAwars
+# -- Authors Juan Gonzáles, Jesús Arroyo
+# -- Licence GPLv2
+
+from SCons.Script import ARGUMENTS
+from apio.scons import ice40_scons, ecp5_scons, gowin_scons
+
+# -- Get the value of the scons "fpga_arch" argument. None if not
+# -- specified.
+arch = ARGUMENTS.get("fpga_arch", None)
+
+# -- Dispatch to the scons handler for this architecture.
+if arch == "ice40":
+    ice40_scons.scons_handler()
+elif arch == "ecp5":
+    ecp5_scons.scons_handler()
+elif arch == "gowin":
+    gowin_scons.scons_handler()
+else:
+    print(f"Apio SConstruct dispatch error: unknown arch [{arch}]")

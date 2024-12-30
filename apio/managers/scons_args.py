@@ -102,9 +102,8 @@ def process_arguments(
          project file loaded.
        * args: a Dictionary with the scons args.
     * OUTPUT:
-      * Return a tuple (board, arch, variables)
+      * Return a tuple (board, variables)
         - board: Board name ('alhambra-ii', 'icezum'...)
-        - arch: FPGA architecture ('ice40', 'ecp5'...)
         - variables: A list of strings scons variables. For example
           ['fpga_arch=ice40', 'fpga_size=8k', 'fpga_type=hx',
           fpga_pack='tq144:4k']...
@@ -213,7 +212,6 @@ def process_arguments(
     # -- All done.
     return (
         board,
-        args[ARG_FPGA_ARCH].value_or(None),
         variables,
     )
 
