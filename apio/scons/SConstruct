@@ -9,6 +9,16 @@
 from SCons.Script import ARGUMENTS
 from apio.scons import ice40_scons, ecp5_scons, gowin_scons
 
+# -- Uncomment for debugging of the scons subprocess using an attached
+# -- python remote debugger from visual studion code.
+# import debugpy
+# port = 5678  # -- Default debugger port
+# print(f"Apio SCons for remote debugger on port localhost:{port}.")
+# debugpy.listen(port)
+# print("Attach with the Visual Studio Code debugger.")
+# debugpy.wait_for_client()
+# print("Remote debugger is attached.")
+
 # -- Get the value of the scons "fpga_arch" argument. None if not
 # -- specified.
 arch = ARGUMENTS.get("fpga_arch", None)

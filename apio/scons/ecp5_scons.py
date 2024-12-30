@@ -52,11 +52,6 @@ from apio.scons.scons_util import (
 def scons_handler():
     """Scons handler for ecp5."""
 
-    # # -- Uncomment for debugging of the scons subprocess using a remote
-    # # -- debugger.
-    # from apio.scons import scons_util
-    # scons_util.wait_for_remote_debugger()
-
     # -- Create the environment
     env = create_construction_env(ARGUMENTS)
 
