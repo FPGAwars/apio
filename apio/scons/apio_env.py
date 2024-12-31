@@ -71,9 +71,7 @@ class SimulationConfig:
 class ApioEnv:
     """Provides abstracted scons env and other user services."""
 
-    def __init__(
-        self, sconstruct_id: SconsArch, scons_args: Dict[str, str]
-    ):
+    def __init__(self, sconstruct_id: SconsArch, scons_args: Dict[str, str]):
         self.env = SConsEnvironment(ENV=os.environ, tools=[])
         self.sconstruct_id = sconstruct_id
         self.args = scons_args

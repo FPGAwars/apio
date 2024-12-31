@@ -20,7 +20,7 @@ from SCons.Script import (
     COMMAND_LINE_TARGETS,
     ARGUMENTS,
 )
-from apio.scons.scons_util import (
+from apio.scons.apio_env import (
     ApioEnv,
     unused,
     TARGET,

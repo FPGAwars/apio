@@ -15,7 +15,7 @@ import SCons.Defaults
 import SCons.Script.Main
 from SCons.Script import SetOption
 from pytest import LogCaptureFixture
-from apio.scons.scons_util import ApioEnv, SconsArch
+from apio.scons.apio_env import ApioEnv, SconsArch
 
 
 class SconsHacks:
