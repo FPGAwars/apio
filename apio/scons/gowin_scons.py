@@ -76,6 +76,8 @@ def scons_handler():
         TOP_MODULE,
     )
 
+    # --------- Builders.
+
     # -- The synthesis builder.
     apio_env.builder(
         "SynthBuilder",
@@ -134,46 +136,6 @@ def scons_handler():
             suffix=".fs",
             src_suffix=".pnr.json",
         ),
-    )
-
-    # -- The "build" target and its dependencies.
-    synth_target = apio_env.builder_target(
-        builder_id="SynthBuilder",
-        target=TARGET,
-        sources=[synth_srcs],
-        always_build=(VERBOSE_ALL or VERBOSE_YOSYS),
-    )
-    pnr_target = apio_env.builder_target(
-        builder_id="PnrBuilder",
-        target=TARGET,
-        sources=[synth_target, constrain_file],
-        always_build=(VERBOSE_ALL or VERBOSE_PNR),
-    )
-    bin_target = apio_env.builder_target(
-        builder_id="BitstreamBuilder",
-        target=TARGET,
-        sources=pnr_target,
-    )
-    apio_env.alias(
-        "build",
-        source=bin_target,
-        allways_build=(VERBOSE_ALL or VERBOSE_YOSYS or VERBOSE_PNR),
-    )
-
-    # -- The "report" target.
-    apio_env.alias(
-        "report",
-        source=PNR_REPORT_FILE,
-        action=apio_env.report_action(VERBOSE_PNR),
-        allways_build=True,
-    )
-
-    # -- The "upload" target.
-    apio_env.alias(
-        "upload",
-        source=bin_target,
-        action=apio_env.programmer_cmd(),
-        allways_build=True,
     )
 
     def iverilog_tb_generator(source, target, env, for_signature):
@@ -236,6 +198,77 @@ def scons_handler():
             suffix=".vcd",
             src_suffix=".out",
         ),
+    )
+
+    # -- The Verilator lint builder which lints the source files(s).
+    apio_env.builder(
+        "VerilatorLintBuilder",
+        Builder(
+            action=apio_env.verilator_lint_action(
+                warnings_all=VERILATOR_ALL,
+                warnings_no_style=VERILATOR_NO_STYLE,
+                no_warns=VERILATOR_NOWARNS,
+                warns=VERILATOR_WARNS,
+                top_module=TOP_MODULE,
+                lib_dirs=[YOSYS_LIB_DIR],
+            ),
+            src_suffix=".v",
+            source_scanner=verilog_src_scanner,
+        ),
+    )
+
+    # -- A verilator lint config builder which creates the verilator lint
+    # -- rules file.
+    yosys_vlt_path = apio_env.vlt_path(YOSYS_LIB_DIR)
+    apio_env.builder(
+        "VerilatorLintConfigBuilder",
+        apio_env.make_verilator_config_builder(
+            "`verilator_config\n"
+            f'lint_off -rule COMBDLY     -file "{yosys_vlt_path}/*"\n'
+            f'lint_off -rule WIDTHEXPAND -file "{yosys_vlt_path}/*"\n'
+        ),
+    )
+
+    # --------- Targets.
+
+    # -- The "build" target and its dependencies.
+    synth_target = apio_env.builder_target(
+        builder_id="SynthBuilder",
+        target=TARGET,
+        sources=[synth_srcs],
+        always_build=(VERBOSE_ALL or VERBOSE_YOSYS),
+    )
+    pnr_target = apio_env.builder_target(
+        builder_id="PnrBuilder",
+        target=TARGET,
+        sources=[synth_target, constrain_file],
+        always_build=(VERBOSE_ALL or VERBOSE_PNR),
+    )
+    bin_target = apio_env.builder_target(
+        builder_id="BitstreamBuilder",
+        target=TARGET,
+        sources=pnr_target,
+    )
+    apio_env.alias(
+        "build",
+        source=bin_target,
+        allways_build=(VERBOSE_ALL or VERBOSE_YOSYS or VERBOSE_PNR),
+    )
+
+    # -- The "report" target.
+    apio_env.alias(
+        "report",
+        source=PNR_REPORT_FILE,
+        action=apio_env.report_action(VERBOSE_PNR),
+        allways_build=True,
+    )
+
+    # -- The "upload" target.
+    apio_env.alias(
+        "upload",
+        source=bin_target,
+        action=apio_env.programmer_cmd(),
+        allways_build=True,
     )
 
     # -- The 'graph' target and its dependencies.
@@ -309,35 +342,6 @@ def scons_handler():
 
         # -- The top 'test' target.
         apio_env.alias("test", source=tests_targets, allways_build=True)
-
-    # -- A verilator lint config builder which creates the verilator lint
-    # -- rules file.
-    yosys_vlt_path = apio_env.vlt_path(YOSYS_LIB_DIR)
-    apio_env.builder(
-        "VerilatorLintConfigBuilder",
-        apio_env.make_verilator_config_builder(
-            "`verilator_config\n"
-            f'lint_off -rule COMBDLY     -file "{yosys_vlt_path}/*"\n'
-            f'lint_off -rule WIDTHEXPAND -file "{yosys_vlt_path}/*"\n'
-        ),
-    )
-
-    # -- The Verilator lint builder which lints the source files(s).
-    apio_env.builder(
-        "VerilatorLintBuilder",
-        Builder(
-            action=apio_env.verilator_lint_action(
-                warnings_all=VERILATOR_ALL,
-                warnings_no_style=VERILATOR_NO_STYLE,
-                no_warns=VERILATOR_NOWARNS,
-                warns=VERILATOR_WARNS,
-                top_module=TOP_MODULE,
-                lib_dirs=[YOSYS_LIB_DIR],
-            ),
-            src_suffix=".v",
-            source_scanner=verilog_src_scanner,
-        ),
-    )
 
     # -- The "lint" target and its dependencies.
     lint_config_target = apio_env.builder_target(
