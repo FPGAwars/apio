@@ -917,9 +917,6 @@ Options:
   --ftdi-id ftdi-id          Set the FTDI id.
   -s, --sram                 Perform SRAM programming.
   -f, --flash                Perform FLASH programming.
-  -v, --verbose              Show detailed output.
-  --verbose-yosys            Show detailed yosys output.
-  --verbose-pnr              Show detailed pnr output.
   -p, --project-dir path     Set the root directory for the project.
   -h, --help                 Show this message and exit.
 ```

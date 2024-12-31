@@ -83,9 +83,6 @@ Examples:
 @ftdi_id_option
 @sram_option
 @flash_option
-@options.verbose_option
-@options.verbose_yosys_option
-@options.verbose_pnr_option
 @options.project_dir_option
 def cli(
     _: click.Context,
@@ -94,9 +91,6 @@ def cli(
     ftdi_id: str,
     sram: bool,
     flash: bool,
-    verbose: bool,
-    verbose_yosys: bool,
-    verbose_pnr: bool,
     project_dir: Path,
 ):
     """Implements the upload command."""
@@ -118,11 +112,7 @@ def cli(
 
     # -- Construct the configuration params to pass to SCons
     # -- from the arguments
-    config = {
-        "verbose_all": verbose,
-        "verbose_yosys": verbose_yosys,
-        "verbose_pnr": verbose_pnr,
-    }
+    config = {}
 
     # -- Construct the programming configuration
     prog = {
