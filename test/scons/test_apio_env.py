@@ -76,7 +76,12 @@ def make_test_apio_env(
         args.update(extra_args)
 
     # -- Create and return the apio env.
-    return ApioEnv(SconsArch.ICE40, args)
+    return ApioEnv(
+        scons_arch=SconsArch.ICE40,
+        scons_args=args,
+        command_line_targets=["build"],
+        is_debug=False,
+    )
 
 
 def test_dependencies(apio_runner: ApioRunner):
@@ -247,14 +252,13 @@ def test_env_platform_id():
     assert env.is_windows
 
 
-def test_set_up_cleanup_ok(apio_runner: ApioRunner):
+def test_clean_if_requested(apio_runner: ApioRunner):
     """Tests the success path of set_up_cleanup()."""
 
     with apio_runner.in_sandbox():
 
         # -- Create an env with 'clean' option set.
         apio_env = make_test_apio_env()
-        SetOption("clean", True)
 
         # -- Create files that shouldn't be cleaned up.
         Path("my_source.v")
@@ -266,10 +270,17 @@ def test_set_up_cleanup_ok(apio_runner: ApioRunner):
         Path("_build/aaa").touch()
         Path("_build/bbb").touch()
 
+        # -- Run clean_if_requested with no cleanup requested. It should
+        # -- not add any target.
+        assert len(SconsHacks.get_targets()) == 0
+        apio_env.clean_if_requested()
+        assert len(SconsHacks.get_targets()) == 0
+
         # -- Run the cleanup setup. It's expected to add a single
         # -- target with the dependencies to clean up.
         assert len(SconsHacks.get_targets()) == 0
-        apio_env.set_up_cleanup()
+        SetOption("clean", True)
+        apio_env.clean_if_requested()
         assert len(SconsHacks.get_targets()) == 1
 
         # -- Get the target and its dependencies
@@ -282,23 +293,6 @@ def test_set_up_cleanup_ok(apio_runner: ApioRunner):
         # -- Verif the dependencies. These are the files to delete.
         file_names = [x.name for x in dependencies]
         assert file_names == ["aaa", "bbb", "zadig.ini", "_build"]
-
-
-def test_set_up_cleanup_errors():
-    """Tests the error conditions of the set_up_cleanup() method."""
-
-    apio_env = make_test_apio_env()
-
-    # -- Try without the option 'clean'. It should fail.
-    with pytest.raises(AssertionError) as exp:
-        apio_env.set_up_cleanup()
-    assert "Option 'clean' is missing" in str(exp)
-
-    # -- Try with the option 'clean'=false. It should fail.
-    SetOption("clean", False)
-    with pytest.raises(AssertionError) as exp:
-        apio_env.set_up_cleanup()
-    assert "Option 'clean' is missing" in str(exp)
 
 
 def test_map_params():
@@ -316,6 +310,16 @@ def test_map_params():
     assert (
         apio_env.map_params(["a", "a", "b"], "x_{}_y") == "x_a_y x_a_y x_b_y"
     )
+
+
+def test_targeting():
+    """Test the targeting() method."""
+
+    # -- The test env targets 'build'.
+    apio_env = make_test_apio_env()
+
+    assert apio_env.targeting("build")
+    assert not apio_env.targeting("upload")
 
 
 def test_log_methods(capsys: LogCaptureFixture):

@@ -71,9 +71,21 @@ class SimulationConfig:
 class ApioEnv:
     """Provides abstracted scons env and other user services."""
 
-    def __init__(self, sconstruct_id: SconsArch, scons_args: Dict[str, str]):
+    def __init__(
+        self,
+        scons_arch: SconsArch,
+        scons_args: Dict[str, str],
+        command_line_targets: List[str],
+        is_debug: bool,
+    ):
+        # -- Save the arguments.
+        self.scons_arch = scons_arch
+        self.command_line_targets = command_line_targets
+        self.is_debug = is_debug
+
+        # -- Create the underlying scons env.
         self.env = SConsEnvironment(ENV=os.environ, tools=[])
-        self.sconstruct_id = sconstruct_id
+
         self.args = scons_args
 
         # -- Since we ae not using the default environment, make sure it was
@@ -86,10 +98,6 @@ class ApioEnv:
         ), "DefaultEnvironment already exists"
         # pylint: enable=protected-access
 
-        # -- Parse debug arg. It's optional.
-        val = self.args.get("debug", "False")
-        self.is_debug = {"True": True, "False": False}[val]
-
         # -- Determine if we run on windows. Platform_id is a required arg.
         val = self.args["platform_id"]
         self.is_windows = "windows" in val.lower()
@@ -97,6 +105,11 @@ class ApioEnv:
         # Extra info for debugging.
         if self.is_debug:
             self.dump_env_vars()
+
+    def targeting(self, target_name: str) -> bool:
+        """Returns true if the named target was specified in the command
+        line."""
+        return target_name in self.command_line_targets
 
     def builder(self, builder_id: str, builder):
         """Append to the scons env a builder with given id. The env
@@ -781,7 +794,7 @@ class ApioEnv:
                 # pylint: disable=fixme
                 # TODO: Confirm clk name extraction for Gowin.
                 # Extract clock name from the net name.
-                if self.sconstruct_id == SconsArch.ECP5:
+                if self.scons_arch == SconsArch.ECP5:
                     # E.g. '$glbnet$CLK$TRELLIS_IO_IN' -> 'CLK'
                     clk_signal = clk_net.split("$")[2]
                 else:
@@ -820,14 +833,14 @@ class ApioEnv:
 
         return Action(print_pnr_report, "Formatting pnr report.")
 
-    def set_up_cleanup(self) -> None:
+    def clean_if_requested(self) -> None:
         """Should be called only when the "clean" target is specified.
         Configures in scons env do delete all the files in the build directory.
         """
 
-        # -- Should be called only when the 'clean' target is specified.
-        # -- If this fails, this is a programming error and not a user error.
-        assert self.env.GetOption("clean"), "Option 'clean' is missing."
+        # -- We perform cleaning only when the scons 'clean' option is active.
+        if not self.env.GetOption("clean"):
+            return
 
         # -- Get the list of all files to clean. Scons adds to the list non
         # -- existing files from other targets it encountered.

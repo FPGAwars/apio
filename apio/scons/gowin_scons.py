@@ -14,12 +14,7 @@
 # pylint: disable= R0801
 
 import os
-from SCons.Script import (
-    Builder,
-    GetOption,
-    COMMAND_LINE_TARGETS,
-    ARGUMENTS,
-)
+from SCons.Script import Builder
 from apio.scons.apio_env import (
     ApioEnv,
     unused,
@@ -28,11 +23,11 @@ from apio.scons.apio_env import (
 )
 
 
-def scons_handler():
+def scons_handler(apio_env: ApioEnv):
     """Scons handler for gowin."""
 
-    # -- Create the apio environment.
-    apio_env = ApioEnv(SconsArch.GOWIN, ARGUMENTS)
+    # -- Check that the env matches.
+    assert apio_env.scons_arch == SconsArch.GOWIN
 
     # -- Parse scons arguments.
     FPGA_MODEL = apio_env.arg_str("fpga_model", "")
@@ -155,7 +150,7 @@ def scons_handler():
             apio_env.iverilog_action(
                 verbose=VERBOSE_ALL,
                 vcd_output_name=testbench_name,
-                is_interactive=("sim" in COMMAND_LINE_TARGETS),
+                is_interactive=apio_env.targeting("sim"),
                 lib_dirs=[YOSYS_LIB_DIR],
             ),
         ]
@@ -292,7 +287,7 @@ def scons_handler():
 
     # -- The 'sim' target and its dependencies, to simulate and display the
     # -- results of a single testbench.
-    if "sim" in COMMAND_LINE_TARGETS:
+    if apio_env.targeting("sim"):
         sim_config = apio_env.get_sim_config(TESTBENCH, synth_srcs)
         sim_out_target = apio_env.builder_target(
             builder_id="IVerilogTestbenchBuilder",
@@ -315,7 +310,7 @@ def scons_handler():
 
     # -- The  "test" target and its dependencies, to test one or more
     # -- testbenches.
-    if "test" in COMMAND_LINE_TARGETS:
+    if apio_env.targeting("test"):
         tests_configs = apio_env.get_tests_configs(
             TESTBENCH, synth_srcs, test_srcs
         )
@@ -362,5 +357,4 @@ def scons_handler():
     )
 
     # -- Handle the cleanu of the artifact files.
-    if GetOption("clean"):
-        apio_env.set_up_cleanup()
+    apio_env.clean_if_requested()
