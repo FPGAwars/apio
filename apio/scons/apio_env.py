@@ -90,10 +90,6 @@ class ApioEnv:
         val = self.args.get("debug", "False")
         self.is_debug = {"True": True, "False": False}[val]
 
-        # -- Parse optional force_color arg.
-        val = self.args.get("force_colors", "False")
-        self.force_colors = {"True": True, "False": False}[val]
-
         # -- Determine if we run on windows. Platform_id is a required arg.
         val = self.args["platform_id"]
         self.is_windows = "windows" in val.lower()
@@ -224,9 +220,12 @@ class ApioEnv:
 
     def msg(self, text: str, fg: str = None) -> None:
         """Print a message to the user. Similar to click.secho but with
-        proper color enforcement.
+        proper color enforcement. We force colors through the pipe to
+        the apio process. If apio itself is pipled out, it's click library
+        will strip out the color info.
         """
-        click.secho(text, fg=fg, color=self.force_colors)
+        reset = fg is not None
+        click.secho(text, fg=fg, color=True, reset=reset)
 
     def info(self, text: str) -> None:
         """Prints a short info message and continue."""

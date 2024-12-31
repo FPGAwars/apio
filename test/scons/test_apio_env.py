@@ -247,22 +247,6 @@ def test_env_platform_id():
     assert env.is_windows
 
 
-def test_env_forcing_color():
-    """Tests the color forcing functionality of the scons env."""
-
-    # -- Color forcing turned on (apio writes to a terminal)
-    env = make_test_apio_env(
-        {"force_colors": "True", "platform_id": "darwin_arm64"}
-    )
-    assert env.force_colors
-
-    # -- Color forcing turned off (apio process is pipped out)
-    env = make_test_apio_env(
-        {"force_colors": "False", "platform_id": "darwin_arm64"}
-    )
-    assert not env.force_colors
-
-
 def test_set_up_cleanup_ok(apio_runner: ApioRunner):
     """Tests the success path of set_up_cleanup()."""
 
@@ -335,7 +319,7 @@ def test_map_params():
 
 
 def test_log_methods(capsys: LogCaptureFixture):
-    """Tests the fatal_error() method."""
+    """Tests the log methods method."""
 
     # -- Create the scons env.
     apio_env = make_test_apio_env()
@@ -353,52 +337,19 @@ def test_log_methods(capsys: LogCaptureFixture):
     # -- Test warning()
     apio_env.warning("My warning")
     captured = capsys.readouterr()
-    assert "Warning: My warning\n" == captured.out
+    assert "\x1b[33mWarning: My warning\x1b[0m\n" == captured.out
 
     # -- Test error()
     apio_env.error("My error")
     captured = capsys.readouterr()
-    assert "Error: My error\n" == captured.out
+    assert "\x1b[31mError: My error\x1b[0m\n" == captured.out
 
     # -- Test fatal_error()
     with pytest.raises(SystemExit) as exp:
         apio_env.fatal_error("My fatal error")
     assert exp.value.code == 1
     captured = capsys.readouterr()
-    assert "Error: My fatal error\n" == captured.out
-
-
-def test_force_colors(capsys: LogCaptureFixture):
-    """Tests that the "force_colors" controls text coloring."""
-    # -- Creating an env without force_colors defaul to false.
-    apio_env = make_test_apio_env()
-    assert not apio_env.force_colors
-
-    # -- Output a message and verify no ansi colors.
-    capsys.readouterr()  # clear
-    apio_env.msg("xyz", fg="red")
-    captured = capsys.readouterr()
-    assert captured.out == "xyz\n"
-
-    # -- Output a message and verify no ansi colors.
-    apio_env = make_test_apio_env(extra_args={"force_colors": "False"})
-    assert not apio_env.force_colors
-
-    # -- Output a message and verify text is not colored.
-    capsys.readouterr()  # clear
-    apio_env.msg("xyz", fg="red")
-    captured = capsys.readouterr()
-    assert captured.out == "xyz\n"
-
-    # -- Creating an env without with force_colors = True
-    apio_env = make_test_apio_env(extra_args={"force_colors": "True"})
-    assert apio_env.force_colors
-
-    # -- Output a message and verify text is colored.
-    capsys.readouterr()  # clear
-    apio_env.msg("xyz", fg="red")
-    captured = capsys.readouterr()
-    assert captured.out == "\x1b[31mxyz\x1b[0m\n"
+    assert "\x1b[31mError: My fatal error\x1b[0m\n" == captured.out
 
 
 def test_get_constraint_file(

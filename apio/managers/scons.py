@@ -896,15 +896,7 @@ class SCons:
         )
 
         # -- Command to execute: scons -Q apio_cmd flags
-        # -- Without force_colors=True, click.secho() colors from the scons
-        # -- child process will be stripped out becaused they are piped out.
-        scons_command = (
-            ["scons"]
-            + ["-Q", command]
-            + debug_options
-            + variables
-            + ["force_colors=True"]
-        )
+        scons_command = ["scons"] + ["-Q", command] + debug_options + variables
 
         # For debugging. Print the scons command line in a forumat that is
         # useful for the .vscode/launch.json scons debug target.
