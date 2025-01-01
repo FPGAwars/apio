@@ -13,7 +13,6 @@
 # -- Similar lines
 # pylint: disable= R0801
 
-import os
 from SCons.Script import Builder
 from apio.scons.apio_env import (
     ApioEnv,
@@ -29,32 +28,10 @@ def scons_handler(apio_env: ApioEnv):
     # -- Check that the env matches.
     assert apio_env.scons_arch == SconsArch.GOWIN
 
-    # -- Parse scons arguments.
-    FPGA_MODEL = apio_env.arg_str("fpga_model", "")
-    FPGA_TYPE = apio_env.arg_str("fpga_type", "")
-    FPGA_PACK = apio_env.arg_str("fpga_pack", "")
-    TOP_MODULE = apio_env.arg_str("top_module", "")
-    VERBOSE_ALL = apio_env.arg_bool("verbose_all", False)
-    VERBOSE_YOSYS = apio_env.arg_bool("verbose_yosys", False)
-    VERBOSE_PNR = apio_env.arg_bool("verbose_pnr", False)
-    TESTBENCH = apio_env.arg_str("testbench", "")
-    FORCE_SIM = apio_env.arg_bool("force_sim", False)
-    VERILATOR_ALL = apio_env.arg_bool("all", False)
-    VERILATOR_NO_STYLE = apio_env.arg_bool("nostyle", False)
-    VERILATOR_NOWARNS = apio_env.arg_str("nowarn", "").split(",")
-    VERILATOR_WARNS = apio_env.arg_str("warn", "").split(",")
-    GRAPH_SPEC = apio_env.arg_str("graph_spec", "")
+    # -- Keep a shortbut to the args.
+    args = apio_env.args
 
-    # -- Resources paths
-    YOSYS_PATH = os.environ["YOSYS_LIB"]
-    TRELLIS_PATH = os.environ["TRELLIS"]
-    DATABASE_PATH = os.path.join(TRELLIS_PATH, "database")
-
-    unused(FPGA_PACK, DATABASE_PATH, TRELLIS_PATH)
-    assert YOSYS_PATH, "Missing required env variable YOSYS_LIB"
-    assert TRELLIS_PATH, "Missing required env variable TRELLIS"
-
-    YOSYS_LIB_DIR = YOSYS_PATH + "/gowin"
+    YOSYS_LIB_DIR = args.YOSYS_PATH + "/gowin"
     CONSTRAIN_FILE_EXTENSION = ".cst"
 
     # -- Create a source file scannenr that identifies references to other
@@ -68,7 +45,7 @@ def scons_handler(apio_env: ApioEnv):
     # -- Get the FPGA constrain file name.
     constrain_file: str = apio_env.get_constraint_file(
         CONSTRAIN_FILE_EXTENSION,
-        TOP_MODULE,
+        args.TOP_MODULE,
     )
 
     # --------- Builders.
@@ -80,8 +57,8 @@ def scons_handler(apio_env: ApioEnv):
             action=(
                 'yosys -p "synth_gowin {0} -json $TARGET" {1} $SOURCES'
             ).format(
-                ("-top " + TOP_MODULE) if TOP_MODULE else "",
-                "" if VERBOSE_ALL or VERBOSE_YOSYS else "-q",
+                ("-top " + args.TOP_MODULE) if args.TOP_MODULE else "",
+                "" if args.VERBOSE_ALL or args.VERBOSE_YOSYS else "-q",
             ),
             suffix=".json",
             src_suffix=".v",
@@ -109,11 +86,11 @@ def scons_handler(apio_env: ApioEnv):
                 "--write $TARGET --report {1} --vopt family={2} "
                 "--vopt cst={3} {4}"
             ).format(
-                FPGA_MODEL,
+                args.FPGA_MODEL,
                 PNR_REPORT_FILE,
-                FPGA_TYPE,
+                args.FPGA_TYPE,
                 constrain_file,
-                "" if VERBOSE_ALL or VERBOSE_PNR else "-q",
+                "" if args.VERBOSE_ALL or args.VERBOSE_PNR else "-q",
             ),
             suffix=".pnr.json",
             src_suffix=".json",
@@ -126,7 +103,7 @@ def scons_handler(apio_env: ApioEnv):
         "BitstreamBuilder",
         Builder(
             action="gowin_pack -d {0} -o $TARGET $SOURCE".format(
-                FPGA_TYPE.upper()
+                args.FPGA_TYPE.upper()
             ),
             suffix=".fs",
             src_suffix=".pnr.json",
@@ -148,7 +125,7 @@ def scons_handler(apio_env: ApioEnv):
             apio_env.source_file_issue_action(),
             # -- Perform the actual test or sim compilation.
             apio_env.iverilog_action(
-                verbose=VERBOSE_ALL,
+                verbose=args.VERBOSE_ALL,
                 vcd_output_name=testbench_name,
                 is_interactive=apio_env.targeting("sim"),
                 lib_dirs=[YOSYS_LIB_DIR],
@@ -172,16 +149,16 @@ def scons_handler(apio_env: ApioEnv):
     apio_env.builder(
         "YosysDotBuilder",
         apio_env.dot_builder(
-            top_module=TOP_MODULE,
+            top_module=args.TOP_MODULE,
             verilog_src_scanner=verilog_src_scanner,
-            verbose=VERBOSE_ALL,
+            verbose=args.VERBOSE_ALL,
         ),
     )
 
     # -- The graphviz svg/pdf/png renderer builder.
     apio_env.builder(
         "GraphvizRedererBuilder",
-        apio_env.graphviz_builder(GRAPH_SPEC),
+        apio_env.graphviz_builder(args.GRAPH_SPEC),
     )
 
     # -- The testbench vcd builder. These are the signals files that gtkwave
@@ -200,11 +177,11 @@ def scons_handler(apio_env: ApioEnv):
         "VerilatorLintBuilder",
         Builder(
             action=apio_env.verilator_lint_action(
-                warnings_all=VERILATOR_ALL,
-                warnings_no_style=VERILATOR_NO_STYLE,
-                no_warns=VERILATOR_NOWARNS,
-                warns=VERILATOR_WARNS,
-                top_module=TOP_MODULE,
+                warnings_all=args.VERILATOR_ALL,
+                warnings_no_style=args.VERILATOR_NO_STYLE,
+                no_warns=args.VERILATOR_NOWARNS,
+                warns=args.VERILATOR_WARNS,
+                top_module=args.TOP_MODULE,
                 lib_dirs=[YOSYS_LIB_DIR],
             ),
             src_suffix=".v",
@@ -231,13 +208,13 @@ def scons_handler(apio_env: ApioEnv):
         builder_id="SynthBuilder",
         target=TARGET,
         sources=[synth_srcs],
-        always_build=(VERBOSE_ALL or VERBOSE_YOSYS),
+        always_build=(args.VERBOSE_ALL or args.VERBOSE_YOSYS),
     )
     pnr_target = apio_env.builder_target(
         builder_id="PnrBuilder",
         target=TARGET,
         sources=[synth_target, constrain_file],
-        always_build=(VERBOSE_ALL or VERBOSE_PNR),
+        always_build=(args.VERBOSE_ALL or args.VERBOSE_PNR),
     )
     bin_target = apio_env.builder_target(
         builder_id="BitstreamBuilder",
@@ -247,14 +224,16 @@ def scons_handler(apio_env: ApioEnv):
     apio_env.alias(
         "build",
         source=bin_target,
-        allways_build=(VERBOSE_ALL or VERBOSE_YOSYS or VERBOSE_PNR),
+        allways_build=(
+            args.VERBOSE_ALL or args.VERBOSE_YOSYS or args.VERBOSE_PNR
+        ),
     )
 
     # -- The "report" target.
     apio_env.alias(
         "report",
         source=PNR_REPORT_FILE,
-        action=apio_env.report_action(VERBOSE_PNR),
+        action=apio_env.report_action(args.VERBOSE_PNR),
         allways_build=True,
     )
 
@@ -288,18 +267,18 @@ def scons_handler(apio_env: ApioEnv):
     # -- The 'sim' target and its dependencies, to simulate and display the
     # -- results of a single testbench.
     if apio_env.targeting("sim"):
-        sim_config = apio_env.get_sim_config(TESTBENCH, synth_srcs)
+        sim_config = apio_env.get_sim_config(args.TESTBENCH, synth_srcs)
         sim_out_target = apio_env.builder_target(
             builder_id="IVerilogTestbenchBuilder",
             target=sim_config.build_testbench_name,
             sources=sim_config.srcs,
-            always_build=FORCE_SIM,
+            always_build=args.FORCE_SIM,
         )
         sim_vcd_target = apio_env.builder_target(
             builder_id="TestbenchVcdBuilder",
             target=sim_config.build_testbench_name,
             sources=[sim_out_target],
-            always_build=FORCE_SIM,
+            always_build=args.FORCE_SIM,
         )
         apio_env.waves_target(
             "sim",
@@ -312,7 +291,7 @@ def scons_handler(apio_env: ApioEnv):
     # -- testbenches.
     if apio_env.targeting("test"):
         tests_configs = apio_env.get_tests_configs(
-            TESTBENCH, synth_srcs, test_srcs
+            args.TESTBENCH, synth_srcs, test_srcs
         )
         tests_targets = []
         for test_config in tests_configs:

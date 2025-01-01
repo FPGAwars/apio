@@ -7,8 +7,7 @@
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
 # ---- Licence Apache v2
-"""Shared utilities for the various SConstruct.py.  Functions here should
-be called only from the SConstruct.py files.
+"""A class with common services for the apio scons handlers.
 """
 
 # C0209: Formatting could be an f-string (consider-using-f-string)
@@ -34,6 +33,7 @@ from SCons.Action import FunctionAction, Action
 from SCons.Builder import Builder
 from SCons.Environment import BuilderWrapper
 import SCons.Defaults
+from apio.scons.apio_args import ApioArgs
 
 
 # -- All the build files and other artifcats are created in this this
@@ -86,7 +86,7 @@ class ApioEnv:
         # -- Create the underlying scons env.
         self.env = SConsEnvironment(ENV=os.environ, tools=[])
 
-        self.args = scons_args
+        self.args = ApioArgs.make(scons_args, is_debug)
 
         # -- Since we ae not using the default environment, make sure it was
         # -- not used unintentionally, e.v. in tests that run create multiple
@@ -98,9 +98,8 @@ class ApioEnv:
         ), "DefaultEnvironment already exists"
         # pylint: enable=protected-access
 
-        # -- Determine if we run on windows. Platform_id is a required arg.
-        val = self.args["platform_id"]
-        self.is_windows = "windows" in val.lower()
+        # -- Determine if we run on windows. Platform id is a required arg.
+        self.is_windows = "windows" in self.args.PLATFORM_ID.lower()
 
         # Extra info for debugging.
         if self.is_debug:
@@ -189,48 +188,6 @@ class ApioEnv:
         name, _ = os.path.splitext(file_name)
         return name.lower().endswith("_tb")
 
-    def _dump_parsed_arg(self, name, value, from_default: bool) -> None:
-        """Used to dump parsed scons arg. For debugging only."""
-        type_name = type(value).__name__
-        default = "(default)" if from_default else ""
-        self.msg(
-            f"Arg  {name:15} ->  {str(value):15} " f"{type_name:6} {default}"
-        )
-
-    def arg_bool(self, name: str, default: bool) -> bool:
-        """Parse and return a boolean arg."""
-        assert (
-            isinstance(default, bool) or default is None
-        ), f"{name}: {default}"
-        # args = get_args(env)
-        raw_value = self.args.get(name, None)
-        if raw_value is None:
-            value = default
-        else:
-            value = {"True": True, "False": False, True: True, False: False}[
-                raw_value
-            ]
-            if value is None:
-                self.fatal_error(
-                    f"Invalid boolean argument '{name} = '{raw_value}'."
-                )
-        # -- Dump if requested.
-        if self.is_debug:
-            self._dump_parsed_arg(name, value, from_default=raw_value is None)
-        return value
-
-    def arg_str(self, name: str, default: str) -> str:
-        """Parse and return a string arg."""
-        assert (
-            isinstance(default, str) or default is None
-        ), f"{name}: {default}"
-        # args = get_args(env)
-        raw_value = self.args.get(name, None)
-        value = default if raw_value is None else raw_value
-        if self.is_debug:
-            self._dump_parsed_arg(name, value, from_default=raw_value is None)
-        return value
-
     def msg(self, text: str, fg: str = None) -> None:
         """Print a message to the user. Similar to click.secho but with
         proper color enforcement. We force colors through the pipe to
@@ -305,7 +262,7 @@ class ApioEnv:
         arg."""
 
         # Get the programer command template arg.
-        prog_arg = self.arg_str("prog", "")
+        prog_arg = self.args.PROG
 
         # If empty then return as is. This must be an apio command that
         # doesn't use the programmer.

@@ -2,6 +2,7 @@
 Tests of the scons ApioEnv.
 """
 
+import os
 from os.path import isfile, exists
 from pathlib import Path
 from typing import Dict
@@ -74,6 +75,10 @@ def make_test_apio_env(
     # -- If specified, overite/add extra args.
     if extra_args:
         args.update(extra_args)
+
+    # -- Setup required env vars.
+    os.environ["YOSYS_LIB"] = "fake yosys lib"
+    os.environ["TRELLIS"] = "fake trelis"
 
     # -- Create and return the apio env.
     return ApioEnv(
@@ -215,29 +220,24 @@ def test_is_verilog_src():
 def test_env_args():
     """Tests the scons env args retrieval."""
 
-    args = {
-        "platform_id": "my_platform",
-        "AAA": "my_str",
-        "BBB": "False",
-        "CCC": "True",
-    }
-
-    env = make_test_apio_env(args.copy())
-    result_args = env.args
-    assert result_args == args
+    env = make_test_apio_env(
+        args={
+            "platform_id": "my_platform",
+            "verbose_all": "True",
+        }
+    )
 
     # -- String args
-    assert env.arg_str("AAA", "") == "my_str"
-    assert env.arg_str("ZZZ", "") == ""
-    assert env.arg_str("ZZZ", "abc") == "abc"
-    assert env.arg_str("ZZZ", None) is None
+    assert env.args.PLATFORM_ID == "my_platform"
+    assert env.args.GRAPH_SPEC == ""
 
-    # -- Bool args
-    assert not env.arg_bool("BBB", None)
-    assert env.arg_bool("CCC", None)
-    assert not env.arg_bool("ZZZ", False)
-    assert env.arg_bool("ZZZ", True)
-    assert env.arg_bool("ZZZ", None) is None
+    # -- Bool args.
+    assert env.args.VERBOSE_ALL
+    assert not env.args.VERBOSE_YOSYS
+
+    # -- Env var strings
+    assert env.args.YOSYS_PATH == "fake yosys lib"
+    assert env.args.TRELLIS_PATH == "fake trelis"
 
 
 def test_env_platform_id():
