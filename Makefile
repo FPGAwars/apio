@@ -54,6 +54,16 @@ lint l:
 test t:	
 	python -m tox --skip-missing-interpreters false -e py313 -- --offline
 
+# Same as 'make test' above but with the oldest supported bypon version.
+#
+# Usage:
+#     make test-oldest
+#     make to
+#
+.PHONY: test-oldest to
+test-oldest to:	
+	python -m tox --skip-missing-interpreters false -e py39 -- --offline
+
 
 # Tests and lint, single python version, all tests including online..
 # This is a thorough but slow test and sufficient for testign before 
@@ -68,8 +78,7 @@ check c:
 	python -m tox --skip-missing-interpreters false -e lint,py313
 
 
-# Same as 'make check' above but this one checks with the oldest python
-# version while 'make check' uses the newest.
+# Same as 'make check' above but with the oldest supported bypon version.
 #
 # Usage:
 #     make check-oldest
