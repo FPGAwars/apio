@@ -19,7 +19,6 @@
 import os
 from pathlib import Path
 import re
-from enum import Enum
 import json
 from typing import Dict, Tuple, List, Optional, NoReturn
 from dataclasses import dataclass
@@ -46,17 +45,6 @@ BUILD_DIR_SEP = BUILD_DIR + os.sep
 # -- Target name. This is the base file name for various build artifacts.
 TARGET = BUILD_DIR_SEP + "hardware"
 
-SUPPORTED_GRAPH_TYPES = ["svg", "pdf", "png"]
-
-
-class SconsArch(Enum):
-    """Identifies the SConstruct script that is running. Used to select
-    the desired behavior when it's script dependent."""
-
-    ICE40 = 1
-    ECP5 = 2
-    GOWIN = 3
-
 
 @dataclass(frozen=True)
 class SimulationConfig:
@@ -73,13 +61,13 @@ class ApioEnv:
 
     def __init__(
         self,
-        scons_arch: SconsArch,
+        # scons_arch: SconsArch,
         scons_args: Dict[str, str],
         command_line_targets: List[str],
         is_debug: bool,
     ):
         # -- Save the arguments.
-        self.scons_arch = scons_arch
+        # self.scons_arch = scons_arch
         self.command_line_targets = command_line_targets
         self.is_debug = is_debug
 
@@ -438,77 +426,6 @@ class ApioEnv:
             suffix=".vlt",
         )
 
-    def dot_builder(
-        self,
-        *,
-        top_module: str,
-        verilog_src_scanner,
-        verbose: bool,
-    ):
-        """Creates and returns an SCons dot builder that generates the graph
-        in .dot format.
-
-        'verilog_src_scanner' is a verilog file scanner that identify
-        additional dependencies for the build, for example, icestudio
-        propriety includes.
-        """
-
-        # -- The builder.
-        dot_builder = Builder(
-            action=(
-                'yosys -f verilog -p "show -format dot -colors 1 '
-                '-prefix {0}hardware {1}" {2} $SOURCES'
-            ).format(
-                BUILD_DIR_SEP,
-                top_module if top_module else "unknown_top",
-                "" if verbose else "-q",
-            ),
-            suffix=".dot",
-            src_suffix=".v",
-            source_scanner=verilog_src_scanner,
-        )
-
-        return dot_builder
-
-    def graphviz_builder(
-        self,
-        graph_spec: str,
-    ):
-        """Creates and returns an SCons graphviz builder that renders
-        a .dot file to one of the supported formats.
-
-        'graph_spec' contains the rendering specification and currently
-        it includes a single value which is the target file format".
-        """
-
-        # --Decode the graphic spec. Currently it's trivial since it
-        # -- contains a single value.
-        if graph_spec:
-            # -- This is the case when scons target is 'graph'.
-            graph_type = graph_spec
-            assert graph_type in SUPPORTED_GRAPH_TYPES, graph_type
-        else:
-            # -- This is the case when scons target is not 'graph'.
-            graph_type = "svg"
-
-        def completion_action(source, target, env):
-            """Action function that prints a completion message."""
-            self.msg(f"Generated {TARGET}.{graph_type}", fg="green")
-
-        actions = [
-            f"dot -T{graph_type} $SOURCES -o $TARGET",
-            Action(completion_action, "completion_action"),
-        ]
-
-        graphviz_builder = Builder(
-            # Expecting graphviz dot to be installed and in the path.
-            action=actions,
-            suffix=f".{graph_type}",
-            src_suffix=".dot",
-        )
-
-        return graphviz_builder
-
     def source_files(self) -> Tuple[List[str], List[str]]:
         """Get the list of *.v files, splitted into synth and testbench lists.
         If a .v file has the suffix _tb.v it's is classified st a testbench,
@@ -718,6 +635,7 @@ class ApioEnv:
     def _print_pnr_report(
         self,
         json_txt: str,
+        clk_name_index: int,
         verbose: bool,
     ) -> None:
         """Accepts the text of the pnr json report and prints it in
@@ -748,16 +666,10 @@ class ApioEnv:
         clocks = report["fmax"]
         if len(clocks) > 0:
             for clk_net, vals in clocks.items():
-                # pylint: disable=fixme
-                # TODO: Confirm clk name extraction for Gowin.
-                # Extract clock name from the net name.
-                if self.scons_arch == SconsArch.ECP5:
-                    # E.g. '$glbnet$CLK$TRELLIS_IO_IN' -> 'CLK'
-                    clk_signal = clk_net.split("$")[2]
-                else:
-                    # E.g. 'vclk$SB_IO_IN_$glb_clk' -> 'vclk'
-                    clk_signal = clk_net.split("$")[0]
-                # Report speed.
+                # -- Extract clock name from the net name.
+                clk_signal = clk_net.split("$")[clk_name_index]
+
+                # -- Report speed.
                 max_mhz = vals["achieved"]
                 styled_max_mhz = click.style(f"{max_mhz:7.2f}", fg="magenta")
                 self.msg(f"{clk_signal:>20}: {styled_max_mhz} Mhz max")
@@ -770,7 +682,9 @@ class ApioEnv:
                 "Use 'apio report --verbose' for more details.", fg="yellow"
             )
 
-    def report_action(self, verbose: bool) -> FunctionAction:
+    def report_action(
+        self, clk_name_index: int, verbose: bool
+    ) -> FunctionAction:
         """Returns a SCons action to format and print the PNR reort from the
         PNR json report file. Used by the 'apio report' command.
         'script_id' identifies the calling SConstruct script and 'verbose'
@@ -786,7 +700,7 @@ class ApioEnv:
             unused(target, env)
             json_file: File = source[0]
             json_txt: str = json_file.get_text_contents()
-            self._print_pnr_report(json_txt, verbose)
+            self._print_pnr_report(json_txt, clk_name_index, verbose)
 
         return Action(print_pnr_report, "Formatting pnr report.")
 

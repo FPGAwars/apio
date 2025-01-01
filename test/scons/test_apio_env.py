@@ -16,7 +16,7 @@ import SCons.Defaults
 import SCons.Script.Main
 from SCons.Script import SetOption
 from pytest import LogCaptureFixture
-from apio.scons.apio_env import ApioEnv, SconsArch
+from apio.scons.apio_env import ApioEnv
 
 
 class SconsHacks:
@@ -82,7 +82,6 @@ def make_test_apio_env(
 
     # -- Create and return the apio env.
     return ApioEnv(
-        scons_arch=SconsArch.ICE40,
         scons_args=args,
         command_line_targets=["build"],
         is_debug=False,

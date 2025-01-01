@@ -4,8 +4,17 @@ the apio process to read the output.
 
 As a result:
 * A breakpoint in this code will not stop when running the apio process.
-  The workaround is to run the scons subprocess indepedently for testing
-  (see scons_run.py in this directory)).
+  To debug code here, set the system env var below, run the apio command
+  that invoks scons and connect to it via the Visual Studio Code python
+  debugger.
+
+```
+# Linux and mac osx.
+export APIO_SCONS_DEBUGGER=
+
+# Windows
+set APIO_SCONS_DEBUGGER=
+```
 
 * Print messages with color need to be performed with 
   click.secho(...., color=True) otherwise it will be stripped automatically
