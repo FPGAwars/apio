@@ -68,6 +68,18 @@ check c:
 	python -m tox --skip-missing-interpreters false -e lint,py313
 
 
+# Same as 'make check' above but this one checks with the oldest python
+# version while 'make check' uses the newest.
+#
+# Usage:
+#     make check-oldest
+#     make co
+#
+.PHONY: check-oldest co
+check-oldest co:	
+	python -m tox --skip-missing-interpreters false -e lint,py39
+
+
 # Tests and lint, multiple python versions.
 # Should be be run automatically on github.
 #
