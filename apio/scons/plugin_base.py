@@ -11,11 +11,12 @@
 """Apio scons related utilities.."""
 
 from dataclasses import dataclass
-import click
+from click import secho
 from SCons.Builder import BuilderBase
 from SCons.Action import Action
 from SCons.Script import Builder
 from apio.scons.apio_env import ApioEnv, TARGET, BUILD_DIR_SEP
+from apio.scons import plugin_util
 
 
 # -- Supported apio graph types.
@@ -41,10 +42,11 @@ class PluginBase:
 
     def __init__(self, apio_env: ApioEnv):
         self.apio_env = apio_env
-        # self.constrain_file_ext = constrain_file_ext
 
-        # -- Place holder for the constrain file. We create it on demand and
-        # -- cache its value here.
+        # -- Scanner for verilog source files.
+        self.verilog_src_scanner = plugin_util.verilog_src_scanner(apio_env)
+
+        # -- A laceholder for the constrain file name.
         self._constrain_file: str = None
 
     def plugin_info(self) -> ArchPluginInfo:
@@ -53,11 +55,16 @@ class PluginBase:
 
     def constrain_file(self) -> str:
         """Finds and returns the constrain file path."""
+        # -- Keep short references.
+        apio_env = self.apio_env
+        args = apio_env.args
+
+        # -- On first call, determine and cache.
         if self._constrain_file is None:
-            # -- This is the first time we are asked for the constrain file.
-            self._constrain_file = self.apio_env.get_constraint_file(
+            self._constrain_file = plugin_util.get_constraint_file(
+                apio_env,
                 self.plugin_info().constrains_file_ext,
-                self.apio_env.args.TOP_MODULE,
+                args.TOP_MODULE,
             )
         return self._constrain_file
 
@@ -101,7 +108,7 @@ class PluginBase:
             ),
             suffix=".dot",
             src_suffix=".v",
-            source_scanner=apio_env.verilog_src_scanner(),
+            source_scanner=self.verilog_src_scanner,
         )
 
     def graphviz_renderer_builder(self) -> BuilderBase:
@@ -123,9 +130,7 @@ class PluginBase:
         def completion_action(source, target, env):
             """Action function that prints a completion message."""
             unused(source, target, env)
-            click.secho(
-                f"Generated {TARGET}.{graph_type}", fg="green", color=True
-            )
+            secho(f"Generated {TARGET}.{graph_type}", fg="green", color=True)
 
         actions = [
             f"dot -T{graph_type} $SOURCES -o $TARGET",

@@ -17,13 +17,12 @@
 # pylint: disable=W0613
 
 import os
-from pathlib import Path
 import re
+import sys
 import json
-from typing import Dict, Tuple, List, Optional, NoReturn
+from typing import Dict, Tuple, List, Optional
 from dataclasses import dataclass
-import click
-from SCons import Scanner
+from click import secho, style
 from SCons.Node import NodeList
 from SCons.Node.FS import File
 from SCons.Node.Alias import Alias
@@ -176,74 +175,16 @@ class ApioEnv:
         name, _ = os.path.splitext(file_name)
         return name.lower().endswith("_tb")
 
-    def msg(self, text: str, fg: str = None) -> None:
-        """Print a message to the user. Similar to click.secho but with
-        proper color enforcement. We force colors through the pipe to
-        the apio process. If apio itself is pipled out, it's click library
-        will strip out the color info.
-        """
-        reset = fg is not None
-        click.secho(text, fg=fg, color=True, reset=reset)
-
-    def info(self, text: str) -> None:
-        """Prints a short info message and continue."""
-        self.msg(f"Info: {text}")
-
-    def warning(self, text: str) -> None:
-        """Prints a short warning message and continue."""
-        self.msg(f"Warning: {text}", fg="yellow")
-
-    def error(self, text: str) -> None:
-        """Prints a short error message and continue."""
-        self.msg(f"Error: {text}", fg="red")
-
-    def fatal_error(self, text: str) -> NoReturn:
-        """Prints a short error message and exit with an error code."""
-        self.error(text)
-        self.env.Exit(1)
-
-    def get_constraint_file(self, file_ext: str, top_module: str) -> str:
-        """Returns the name of the constrain file to use.
-
-        env is the sconstrution environment.
-
-        file_ext is a string with the constrained file extension.
-        E.g. ".pcf" for ice40.
-
-        top_module is the top module name. It's is used to construct the
-        default file name.
-
-        Returns the file name if found or a default name otherwise otherwise.
-        """
-        # Files in alphabetical order.
-        files = self.env.Glob(f"*{file_ext}")
-        n = len(files)
-        # Case 1: No matching files.
-        if n == 0:
-            result = f"{top_module.lower()}{file_ext}"
-            self.warning(
-                f"No {file_ext} constraints file, assuming '{result}'."
-            )
-            return result
-        # Case 2: Exactly one file found.
-        if n == 1:
-            result = str(files[0])
-            return result
-        # Case 3: Multiple matching files.
-        self.fatal_error(
-            f"Found multiple '*{file_ext}' constrain files, expecting one."
-        )
-
     def dump_env_vars(self) -> None:
         """Prints a list of the environment variables. For debugging."""
         dictionary = self.env.Dictionary()
         keys = list(dictionary.keys())
         keys.sort()
-        click.secho()
-        self.msg(">>> Env vars BEGIN", fg="magenta")
+        secho()
+        secho(">>> Env vars BEGIN", fg="magenta", color=True)
         for key in keys:
             print(f"{key} = {self.env[key]}")
-        self.msg("<<< Env vars END\n", fg="magenta")
+        secho("<<< Env vars END\n", fg="magenta", color=True)
 
     def programmer_cmd(self) -> str:
         """Return the programmer command as derived from the scons "prog"
@@ -260,10 +201,13 @@ class ApioEnv:
         # It's an error if the programmer command doesn't have the $SOURCE
         # placeholder when scons inserts the binary file name.
         if "$SOURCE" not in prog_arg:
-            self.fatal_error(
-                "[Internal] 'prog' argument does not contain "
+            secho(
+                "Error: [Internal] 'prog' argument does not contain "
                 f"the '$SOURCE' marker. [{prog_arg}]",
+                fg="red",
+                color=True,
             )
+            sys.exit(1)
 
         return prog_arg
 
@@ -295,110 +239,14 @@ class ApioEnv:
 
                 # -- if contains $dumpfile, print a warning.
                 if testbench_dumpfile_re.findall(file_text):
-                    self.msg(
+                    secho(
                         f"Warning: [{file.name}] Using $dumpfile() in apio "
                         "testbenches is not recomanded.",
                         fg="magenta",
+                        color=True,
                     )
 
         return Action(report_source_files_issues, "Scanning for issues.")
-
-    def verilog_src_scanner(self) -> Scanner.Base:
-        """Creates and returns a scons Scanner object for scanning verilog
-        files for dependencies.
-        """
-        # A Regex to icestudio propriaetry references for *.list files.
-        # Example:
-        #   Text:      ' parameter v771499 = "v771499.list"'
-        #   Captures:  'v771499.list'
-        icestudio_list_re = re.compile(r"[\n|\s][^\/]?\"(.*\.list?)\"", re.M)
-
-        # A regex to match a verilog include.
-        # Example
-        #   Text:     `include "apio_testing.vh"
-        #   Capture:  'apio_testing.vh'
-        verilog_include_re = re.compile(
-            r'`\s*include\s+["]([a-zA-Z_./]+)["]', re.M
-        )
-
-        # A regex for inclusion via $readmemh()
-        # Example
-        #   Test:      '$readmemh("my_data.hex", State_buff);'
-        #   Capture:   'my_data.hex'
-        readmemh_reference_re = re.compile(
-            r"\$readmemh\([\'\"]([^\'\"]+)[\'\"]", re.M
-        )
-
-        # -- List of required and optional files that may require a rebuild if
-        # -- changed.
-        core_dependencies = [
-            "apio.ini",
-            "boards.json",
-            "fpgas.json",
-            "programmers.json",
-        ]
-
-        def verilog_src_scanner_func(
-            file_node: File, env: SConsEnvironment, ignored_path
-        ) -> List[str]:
-            """Given a Verilog file, scan it and return a list of references
-            to other files it depends on. It's not require to report dependency
-            on another .v file in the project since scons loads anyway
-            all the .v files in the project.
-
-            Returns a list of files. Dependencies that don't have an existing
-            file are ignored and not returned. This is to avoid references in
-            commented out code to break scons dependencies.
-            """
-            # Sanity check. Should be called only to scan verilog files. If
-            # this fails, this is a programming error rather than a user error.
-            assert self.is_verilog_src(
-                file_node.name
-            ), f"Not a src file: {file_node.name}"
-
-            # Create the initial set with the core dependencies.
-            candidates_set = set()
-            candidates_set.update(core_dependencies)
-
-            # Read the file. This returns [] if the file doesn't exist.
-            file_content = file_node.get_text_contents()
-
-            # Get verilog includes references.
-            candidates_set.update(verilog_include_re.findall(file_content))
-
-            # Get $readmemh() function references.
-            candidates_set.update(readmemh_reference_re.findall(file_content))
-
-            # Get IceStudio references.
-            candidates_set.update(icestudio_list_re.findall(file_content))
-
-            # Filter out candidates that don't have a matching files to prevert
-            # breakign the build. This handle for example the case where the
-            # file references is in a comment or non reachable code.
-            # See also https://stackoverflow.com/q/79302552/15038713
-            dependencies = []
-            for dependency in candidates_set:
-                if Path(dependency).exists():
-                    dependencies.append(dependency)
-                elif self.is_debug:
-                    self.msg(
-                        f"Dependency candidate {dependency} does not exist, "
-                        "droping.",
-                    )
-
-            # Sort the strings for determinism.
-            dependencies = sorted(list(dependencies))
-
-            # Debug info.
-            if self.is_debug:
-                self.msg(f"Dependencies of {file_node.name}:", fg="blue")
-                for dependency in dependencies:
-                    self.msg(f"  {dependency}", fg="blue")
-
-            # All done
-            return self.env.File(dependencies)
-
-        return self.env.Scanner(function=verilog_src_scanner_func)
 
     def vlt_path(self, path: str) -> str:
         """Normalize a path that is used in the verilator config file
@@ -434,10 +282,11 @@ class ApioEnv:
         # -- Get a list of all *.v and .sv files in the project dir.
         files: List[File] = self.env.Glob("*.sv")
         if files:
-            self.msg(
+            secho(
                 "Warning: project contains .sv files, system-verilog support "
                 "is experimental.",
                 fg="yellow",
+                color=True,
             )
         files = files + self.env.Glob("*.v")
 
@@ -457,10 +306,7 @@ class ApioEnv:
         """Returns a SimulationConfig for a sim command. 'testbench' is
         a required testbench file name. 'synth_srcs' is the list of all
         module sources as returned by get_source_files()."""
-        # Apio sim requires a testbench arg so ifi this missing here, it's a
-        # programming error.
-        if not testbench:
-            self.fatal_error("[Internal] Sim testbench name got lost.")
+        assert testbench, "Missing testbench name"
 
         # Construct a SimulationParams with all the synth files + the
         # testbench file.
@@ -486,9 +332,8 @@ class ApioEnv:
         else:
             testbenches = test_srcs
 
-        # If there are not testbenches, we consider the test as failed.
-        if len(testbenches) == 0:
-            self.fatal_error("No testbench files found (*_tb.v).")
+        # -- If this fails, it's a programming error.
+        assert testbenches, "No testbenches"
 
         # Construct a config for each testbench.
         configs = []
@@ -644,16 +489,18 @@ class ApioEnv:
         report: Dict[str, any] = json.loads(json_txt)
 
         # --- Report utilization
-        self.msg("")
-        self.msg("UTILIZATION:", fg="cyan")
+        secho("")
+        secho("UTILIZATION:", fg="cyan", color=True)
         utilization = report["utilization"]
         for resource, vals in utilization.items():
             available = vals["available"]
             used = vals["used"]
             percents = int(100 * used / available)
             fg = "magenta" if used > 0 else None
-            self.msg(
-                f"{resource:>20}: {used:5} {available:5} {percents:5}%", fg=fg
+            secho(
+                f"{resource:>20}: {used:5} {available:5} {percents:5}%",
+                fg=fg,
+                color=True,
             )
 
         # -- Report max clock speeds.
@@ -661,8 +508,8 @@ class ApioEnv:
         # -- NOTE: As of Oct 2024, some projects do not generate timing
         # -- information and this is being investigated.
         # -- See https://github.com/FPGAwars/icestudio/issues/774 for details.
-        self.msg("")
-        self.msg("CLOCKS:", fg="cyan")
+        secho("")
+        secho("CLOCKS:", fg="cyan", color=True)
         clocks = report["fmax"]
         if len(clocks) > 0:
             for clk_net, vals in clocks.items():
@@ -671,15 +518,17 @@ class ApioEnv:
 
                 # -- Report speed.
                 max_mhz = vals["achieved"]
-                styled_max_mhz = click.style(f"{max_mhz:7.2f}", fg="magenta")
-                self.msg(f"{clk_signal:>20}: {styled_max_mhz} Mhz max")
+                styled_max_mhz = style(f"{max_mhz:7.2f}", fg="magenta")
+                secho(f"{clk_signal:>20}: {styled_max_mhz} Mhz max")
 
         # -- For now we ignore the critical path report in the pnr report and
         # -- refer the user to the pnr verbose output.
-        self.msg("")
+        secho("")
         if not verbose:
-            self.msg(
-                "Use 'apio report --verbose' for more details.", fg="yellow"
+            secho(
+                "Use 'apio report --verbose' for more details.",
+                fg="yellow",
+                color=True,
             )
 
     def report_action(
@@ -737,9 +586,10 @@ class ApioEnv:
         )
 
         if legacy_files_to_clean:
-            self.msg(
-                "Deleting also left-over files from previous release.",
+            secho(
+                "Deleting also leftover files.",
                 fg="yellow",
+                color=True,
             )
 
             files_to_clean.extend(legacy_files_to_clean)

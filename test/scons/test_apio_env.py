@@ -18,6 +18,9 @@ from SCons.Script import SetOption
 from pytest import LogCaptureFixture
 from apio.scons.apio_env import ApioEnv
 
+# pylint: disable=fixme
+# TODO: Move SconsHacks and make_test_apio_env to a share testing file.
+
 
 class SconsHacks:
     """A collection of staticmethods that encapsulate scons access outside of
@@ -86,78 +89,6 @@ def make_test_apio_env(
         command_line_targets=["build"],
         is_debug=False,
     )
-
-
-def test_dependencies(apio_runner: ApioRunner):
-    """Test the verilog scanner which scans a verilog file and extract
-    reference of files it uses.
-    """
-
-    # -- Test file content with references. Contains duplicates and
-    # -- references out of alphabetical order.
-    file_content = """
-        // Dummy file for testing.
-
-        // Icestudio reference.
-        parameter v771499 = "v771499.list"
-
-        // System verilog include reference.
-        `include "apio_testing.vh"
-
-        // Duplicate icestudio reference.
-        parameter v771499 = "v771499.list"
-
-        // Verilog include reference.
-        `include "apio_testing.v
-
-        // $readmemh() function reference.
-        $readmemh("my_data.hex", State_buff);
-        """
-
-    with apio_runner.in_sandbox() as sb:
-
-        # -- Write a test file name in the current directory.
-        sb.write_file("test_file.v", file_content)
-
-        # -- Create a scanner
-        apio_env = make_test_apio_env()
-        scanner = apio_env.verilog_src_scanner()
-
-        # -- Run the scanner. It returns a list of File.
-        file = FS.File(FS(), "test_file.v")
-        dependency_files = scanner.function(file, apio_env, None)
-
-        # -- Files list should be empty since none of the dependency candidate
-        # has a file.
-        file_names = [f.name for f in dependency_files]
-        assert file_names == []
-
-        # -- Create file lists
-        core_dependencies = [
-            "apio.ini",
-            "boards.json",
-            "programmers.json",
-            "fpgas.json",
-        ]
-
-        file_dependencies = [
-            "apio_testing.vh",
-            "my_data.hex",
-            "v771499.list",
-        ]
-
-        # -- Create dummy files. This should cause the dependencies to be
-        # -- reported. (Candidate dependencies with no matching file are
-        # -- filtered out)
-        for f in core_dependencies + file_dependencies + ["non-related.txt"]:
-            sb.write_file(f, "dummy-file")
-
-        # -- Run the scanner again
-        dependency_files = scanner.function(file, apio_env, None)
-
-        # -- Check the dependnecies
-        file_names = [f.name for f in dependency_files]
-        assert file_names == sorted(core_dependencies + file_dependencies)
 
 
 def test_has_testbench_name():
@@ -319,74 +250,6 @@ def test_targeting():
 
     assert apio_env.targeting("build")
     assert not apio_env.targeting("upload")
-
-
-def test_log_methods(capsys: LogCaptureFixture):
-    """Tests the log methods method."""
-
-    # -- Create the scons env.
-    apio_env = make_test_apio_env()
-
-    # -- Test msg()
-    apio_env.msg("My msg")
-    captured = capsys.readouterr()
-    assert "My msg\n" == captured.out
-
-    # -- Test info()
-    apio_env.info("My info")
-    captured = capsys.readouterr()
-    assert "Info: My info\n" == captured.out
-
-    # -- Test warning()
-    apio_env.warning("My warning")
-    captured = capsys.readouterr()
-    assert "\x1b[33mWarning: My warning\x1b[0m\n" == captured.out
-
-    # -- Test error()
-    apio_env.error("My error")
-    captured = capsys.readouterr()
-    assert "\x1b[31mError: My error\x1b[0m\n" == captured.out
-
-    # -- Test fatal_error()
-    with pytest.raises(SystemExit) as exp:
-        apio_env.fatal_error("My fatal error")
-    assert exp.value.code == 1
-    captured = capsys.readouterr()
-    assert "\x1b[31mError: My fatal error\x1b[0m\n" == captured.out
-
-
-def test_get_constraint_file(
-    capsys: LogCaptureFixture, apio_runner: ApioRunner
-):
-    """Test the get_constraint_file() method."""
-
-    with apio_runner.in_sandbox():
-
-        apio_env = make_test_apio_env()
-
-        # -- If not .pcf files, should assume main name + extension and
-        # -- inform the user about it.
-        capsys.readouterr()  # Reset capture
-        result = apio_env.get_constraint_file(".pcf", "my_main")
-        captured = capsys.readouterr()
-        assert "assuming 'my_main.pcf'" in captured.out
-        assert result == "my_main.pcf"
-
-        # -- If a single .pcf file, return it.
-        Path("pinout.pcf").touch()
-        result = apio_env.get_constraint_file(".pcf", "my_main")
-        captured = capsys.readouterr()
-        assert captured.out == ""
-        assert result == "pinout.pcf"
-
-        # -- If thre is more than one, exit with an error message.
-        Path("other.pcf").touch()
-        capsys.readouterr()  # Reset capture
-        with pytest.raises(SystemExit) as e:
-            result = apio_env.get_constraint_file(".pcf", "my_main")
-        captured = capsys.readouterr()
-        assert e.value.code == 1
-        assert "Error: Found multiple '*.pcf'" in captured.out
 
 
 def test_get_programmer_cmd(capsys: LogCaptureFixture):

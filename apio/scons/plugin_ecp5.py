@@ -63,7 +63,7 @@ class PluginEcp5(PluginBase):
             ),
             suffix=".json",
             src_suffix=".v",
-            source_scanner=apio_env.verilog_src_scanner(),
+            source_scanner=self.verilog_src_scanner,
         )
 
     # @overrides
@@ -152,7 +152,7 @@ class PluginEcp5(PluginBase):
             generator=action_generator,
             suffix=".out",
             src_suffix=".v",
-            source_scanner=apio_env.verilog_src_scanner(),
+            source_scanner=self.verilog_src_scanner,
         )
 
     # @overrides
@@ -187,5 +187,5 @@ class PluginEcp5(PluginBase):
                 lib_dirs=[self.yosys_lib_dir],
             ),
             src_suffix=".v",
-            source_scanner=apio_env.verilog_src_scanner(),
+            source_scanner=self.verilog_src_scanner,
         )

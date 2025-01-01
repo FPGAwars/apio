@@ -16,7 +16,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, List
 import os
-import click
+from click import secho
 
 
 # pylint: disable=invalid-name
@@ -34,7 +34,7 @@ class ApioArgsParser:
         """Used to dump parsed scons arg. For debugging only."""
         if self.is_debug:
             type_name = type(value).__name__
-            click.secho(f"Arg  {name:15} ->  {type_name:6}  {str(value)}")
+            secho(f"Arg  {name:15} ->  {type_name:6}  {str(value)}")
 
     def arg_str(self, name: str) -> str:
         """Parse and return a string arg."""

@@ -20,7 +20,7 @@ from apio.scons.plugin_gowin import PluginGowin
 
 # -- If system env var APIO_SCONS_DEBUGGER is defined, regardless of its value,
 # -- we wait on a remote debugger to be attached, e.g. from Visual Studio Code.
-plugin_util.maybe_wait_for_remote_debugger()
+plugin_util.maybe_wait_for_remote_debugger("APIO_SCONS_DEBUGGER")
 
 
 # -- Get the debug flag. If True, the scons code will print debug information.
