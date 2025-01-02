@@ -3,7 +3,7 @@ Tests of the scons plugin_util.py functions.
 """
 
 from os.path import isfile, exists
-from test.scons.test_apio_env import make_test_apio_env, SconsHacks
+from test.scons.testing import make_test_apio_env, SconsHacks
 from test.conftest import ApioRunner
 from pathlib import Path
 import pytest
