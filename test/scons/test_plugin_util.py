@@ -133,7 +133,7 @@ def test_verilog_src_scanner(apio_runner: ApioRunner):
 def test_is_verilog_src():
     """Tests the is_verilog_src() function."""
 
-    # -- Verilog and system-verilog source names, system-verilog included.
+    # -- Verilog and system-verilog source names,
     assert is_verilog_src("aaa.v")
     assert is_verilog_src("bbb/aaa.v")
     assert is_verilog_src("bbb\\aaa.v")
@@ -143,25 +143,10 @@ def test_is_verilog_src():
     assert is_verilog_src("bbb\\aaa.sv")
     assert is_verilog_src("aaa_tb.sv")
 
-    # -- Verilog and system-verilog source names, system-verilog excluded.
-    assert is_verilog_src("aaa.v", include_sv=False)
-    assert is_verilog_src("bbb/aaa.v", include_sv=False)
-    assert is_verilog_src("bbb\\aaa.v", include_sv=False)
-    assert is_verilog_src("aaatb.v", include_sv=False)
-    assert is_verilog_src("aaa_tb.v", include_sv=False)
-    assert not is_verilog_src("aaa.sv", include_sv=False)
-    assert not is_verilog_src("bbb\\aaa.sv", include_sv=False)
-    assert not is_verilog_src("aaa_tb.sv", include_sv=False)
-
     # -- Non verilog source names, system-verilog included.
     assert not is_verilog_src("aaatb.vv")
     assert not is_verilog_src("aaatb.V")
     assert not is_verilog_src("aaa_tb.vh")
-
-    # -- Non verilog source names, system-verilog excluded.
-    assert not is_verilog_src("aaatb.vv", include_sv=False)
-    assert not is_verilog_src("aaatb.V", include_sv=False)
-    assert not is_verilog_src("aaa_tb.vh", include_sv=False)
 
 
 def test_has_testbench_name():

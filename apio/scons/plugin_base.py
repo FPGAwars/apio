@@ -102,7 +102,7 @@ class PluginBase:
                 "" if args.VERBOSE_ALL else "-q",
             ),
             suffix=".dot",
-            src_suffix=".v",
+            src_suffix=[".v", ".sv"],
             source_scanner=self.verilog_src_scanner,
         )
 

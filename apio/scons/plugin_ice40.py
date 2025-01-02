@@ -62,7 +62,7 @@ class PluginIce40(PluginBase):
                 "" if args.VERBOSE_ALL or args.VERBOSE_YOSYS else "-q",
             ),
             suffix=".json",
-            src_suffix=".v",
+            src_suffix=[".v", ".sv"],
             source_scanner=self.verilog_src_scanner,
         )
 
@@ -142,7 +142,7 @@ class PluginIce40(PluginBase):
             # -- Dynamic action string generator.
             generator=action_generator,
             suffix=".out",
-            src_suffix=".v",
+            src_suffix=[".v", ".sv"],
             source_scanner=self.verilog_src_scanner,
         )
 
@@ -175,6 +175,6 @@ class PluginIce40(PluginBase):
                 extra_params=["-DNO_ICE40_DEFAULT_ASSIGNMENTS"],
                 lib_files=[self.yosys_lib_file],
             ),
-            src_suffix=".v",
+            src_suffix=[".v", ".sv"],
             source_scanner=self.verilog_src_scanner,
         )

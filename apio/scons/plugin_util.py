@@ -365,14 +365,11 @@ def get_tests_configs(
     return configs
 
 
-def is_verilog_src(file_name: str, *, include_sv: bool = True) -> bool:
+def is_verilog_src(file_name: str) -> bool:
     """Given a file name, determine by its extension if it's a verilog
-    source file (testbenches included).  If include_sv is True, include
-    also system verilog files."""
+    source file (testbenches included)."""
     _, ext = os.path.splitext(file_name)
-    if include_sv:
-        return ext in [".v", ".sv"]
-    return ext in [".v"]
+    return ext in [".v", ".sv"]
 
 
 def has_testbench_name(file_name: str) -> bool:
