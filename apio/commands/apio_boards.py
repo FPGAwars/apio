@@ -10,6 +10,7 @@
 import sys
 from pathlib import Path
 import click
+from click import secho
 from apio.apio_context import ApioContext, ApioContextScope
 from apio import util
 from apio.commands import options
@@ -33,9 +34,9 @@ def list_boards(apio_ctx: ApioContext):
         )
         # -- Horizontal line across the terminal.
         seperator_line = "─" * config.terminal_width
-        click.secho(seperator_line)
-        click.secho(title)
-        click.secho(seperator_line)
+        secho(seperator_line)
+        secho(title)
+        secho(seperator_line)
 
     # -- Sort boards names by case insentive alphabetical order.
     board_names = list(apio_ctx.boards.keys())
@@ -74,23 +75,23 @@ def list_boards(apio_ctx: ApioContext):
 
             # -- If there is enough space, print in one line
             if len(one_line_item) <= config.terminal_width:
-                click.secho(one_line_item)
+                secho(one_line_item)
 
             # -- Not enough space: Print it in two separate lines
             else:
                 two_lines_item = f"{item_board}\n      {item_fpga}"
-                click.secho(two_lines_item)
+                secho(two_lines_item)
 
         else:
             # -- Generate the report for a pipe. Single line, no color, no
             # -- bullet points.
-            click.secho(f"{board:<{max_board_name_len}} |  {item_fpga}")
+            secho(f"{board:<{max_board_name_len}} |  {item_fpga}")
 
     # -- Print the footer.
     if config.terminal_mode():
-        click.secho(seperator_line)
+        secho(seperator_line)
 
-    click.secho(f"Total of {util.plurality(apio_ctx.boards, 'board')}")
+    secho(f"Total of {util.plurality(apio_ctx.boards, 'board')}")
 
 
 # ---------------------------
@@ -105,9 +106,8 @@ project directory, which will override Apio’s default 'boards.json' file.
 
 \b
 Examples:
-  apio boards                # List all boards
-  apio boards | grep ecp5    # Filter boards results
-  apio boards --project-dir foo/bar  # Use a different
+  apio boards                   # List all boards
+  apio boards | grep ecp5       # Filter boards results
 
 """
 

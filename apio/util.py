@@ -21,7 +21,7 @@ from typing import Optional, Any, Tuple, List
 import subprocess
 from threading import Thread
 from pathlib import Path
-import click
+from click import secho
 from varname import argname
 from serial.tools.list_ports import comports
 import requests
@@ -215,12 +215,12 @@ def exec_command(*args, **kwargs) -> CommandResult:
 
     # -- User has pressed the Ctrl-C for aborting the command
     except KeyboardInterrupt:
-        click.secho("Aborted by user", fg="red")
+        secho("Aborted by user", fg="red")
         sys.exit(1)
 
     # -- The command does not exist!
     except FileNotFoundError:
-        click.secho(f"Command not found:\n{args}", fg="red")
+        secho(f"Command not found:\n{args}", fg="red")
         sys.exit(1)
 
     # -- If stdout pipe is an AsyncPipe, extract its text.
@@ -262,7 +262,7 @@ def get_pypi_latest_version() -> str:
 
     # -- Connection error
     except requests.exceptions.ConnectionError as e:
-        click.secho(
+        secho(
             f"\n{error_msg}" "Check your internet connection and try again\n",
             fg="red",
         )
@@ -271,19 +271,19 @@ def get_pypi_latest_version() -> str:
 
     # -- HTTP Error
     except requests.exceptions.HTTPError as e:
-        click.secho(f"\nHTTP ERROR\n{error_msg}", fg="red")
+        secho(f"\nHTTP ERROR\n{error_msg}", fg="red")
         print_exception_developers(e)
         return None
 
     # -- Timeout!
     except requests.exceptions.Timeout as e:
-        click.secho(f"\nTIMEOUT!\n{error_msg}", fg="red")
+        secho(f"\nTIMEOUT!\n{error_msg}", fg="red")
         print_exception_developers(e)
         return None
 
     # -- Another error
     except requests.exceptions.RequestException as e:
-        click.secho(f"\nFATAL ERROR!\n{error_msg}", fg="red")
+        secho(f"\nFATAL ERROR!\n{error_msg}", fg="red")
         print_exception_developers(e)
         return None
 
@@ -296,8 +296,8 @@ def get_pypi_latest_version() -> str:
 def print_exception_developers(e):
     """Print a message for developers, caused by the exception e"""
 
-    click.secho("Info for developers:")
-    click.secho(f"{e}\n", fg="yellow")
+    secho("Info for developers:")
+    secho(f"{e}\n", fg="yellow")
 
 
 def resolve_project_dir(
@@ -323,7 +323,7 @@ def resolve_project_dir(
 
     # -- Make sure the folder doesn't exist as a file.
     if project_dir.is_file():
-        click.secho(
+        secho(
             f"Error: project directory is already a file: {project_dir}",
             fg="red",
         )
@@ -335,7 +335,7 @@ def resolve_project_dir(
 
     # -- Here when dir doesn't exist. Fatal error if must exist.
     if must_exist:
-        click.secho(
+        secho(
             f"Error: project directory is missing: {str(project_dir)}",
             fg="red",
         )
@@ -343,7 +343,7 @@ def resolve_project_dir(
 
     # -- Create the directory if requested.
     if create_if_missing:
-        click.secho(f"Creating folder: {project_dir}")
+        secho(f"Creating folder: {project_dir}")
         project_dir.mkdir(parents=True)
 
     # -- All done
@@ -442,8 +442,8 @@ def get_tinyprog_meta() -> list:
         meta = json.loads(result.out_text)
 
     except json.decoder.JSONDecodeError as exc:
-        click.secho(f"Invalid data provided by {_command}", fg="red")
-        click.secho(f"{exc}", fg="red")
+        secho(f"Invalid data provided by {_command}", fg="red")
+        secho(f"{exc}", fg="red")
         return []
 
     # -- Return the meta-data
@@ -550,23 +550,23 @@ def debug_decoractor(func):
 
         if debug:
             # -- Print the arguments
-            click.secho(
+            secho(
                 f"\n>>> Function {os.path.basename(func.__code__.co_filename)}"
                 f"/{func.__name__}() BEGIN",
                 fg="magenta",
             )
-            click.secho("    * Arguments:")
+            secho("    * Arguments:")
             for arg in args:
 
                 # -- Print all the key,values if it is a dictionary
                 if isinstance(arg, dict):
-                    click.secho("        * Dict:")
+                    secho("        * Dict:")
                     for key, value in arg.items():
-                        click.secho(f"          * {key}: {value}")
+                        secho(f"          * {key}: {value}")
 
                 # -- Print the plain argument if it is not a dicctionary
                 else:
-                    click.secho(f"        * {arg}")
+                    secho(f"        * {arg}")
             print()
 
         # -- Call the function, dump exceptions, if any.
@@ -574,25 +574,25 @@ def debug_decoractor(func):
             result = func(*args)
         except Exception:
             if debug:
-                click.secho(traceback.format_exc())
+                secho(traceback.format_exc())
             raise
 
         if debug:
             # -- Print its output
-            click.secho("     Returns: ")
+            secho("     Returns: ")
 
             # -- The return object always is a tuple
             if isinstance(result, tuple):
 
                 # -- Print all the values in the tuple
                 for value in result:
-                    click.secho(f"      * {value}")
+                    secho(f"      * {value}")
 
             # -- But just in case it is not a tuple (because of an error...)
             else:
-                click.secho(f"      * No tuple: {result}")
+                secho(f"      * No tuple: {result}")
 
-            click.secho(
+            secho(
                 f"<<< Function {os.path.basename(func.__code__.co_filename)}"
                 f"/{func.__name__}() END\n",
                 fg="magenta",

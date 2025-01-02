@@ -7,7 +7,7 @@
 
 
 from typing import Dict, Tuple, Optional, List, Any
-import click
+from click import secho
 from apio.apio_context import ApioContext
 from apio import util
 
@@ -102,12 +102,11 @@ def process_arguments(
          project file loaded.
        * args: a Dictionary with the scons args.
     * OUTPUT:
-      * Return a tuple (variables, board, arch)
+      * Return a tuple (board, variables)
+        - board: Board name ('alhambra-ii', 'icezum'...)
         - variables: A list of strings scons variables. For example
           ['fpga_arch=ice40', 'fpga_size=8k', 'fpga_type=hx',
           fpga_pack='tq144:4k']...
-        - board: Board name ('alhambra-ii', 'icezum'...)
-        - arch: FPGA architecture ('ice40', 'ecp5'...)
     """
 
     # -- Construct the args dictionary with all supported args. Most of the
@@ -212,20 +211,19 @@ def process_arguments(
 
     # -- All done.
     return (
-        variables,
         board,
-        args[ARG_FPGA_ARCH].value_or(None),
+        variables,
     )
 
 
 def perror_insuficient_arguments():
     """Print an error: not enough arguments given"""
 
-    click.secho(
+    secho(
         "Error: insufficient arguments: missing board",
         fg="red",
     )
-    click.secho(
+    secho(
         "You have a few options:\n"
         "  1) Change to a project directory with an apio.ini file\n"
         "  2) Specify the directory of a project with an apio.ini file\n"

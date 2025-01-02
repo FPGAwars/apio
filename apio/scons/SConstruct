@@ -1,0 +1,51 @@
+"""Apio's scons handler dispatcher."""
+
+# -*- coding: utf-8 -*-
+# -- This file is part of the Apio project
+# -- (C) 2016-2024 FPGAwars
+# -- Authors Juan Gonzáles, Jesús Arroyo
+# -- Licence GPLv2
+
+import os
+import sys
+import debugpy
+import click
+from SCons.Script import ARGUMENTS, COMMAND_LINE_TARGETS
+from apio.scons.apio_env import ApioEnv
+from apio.scons.scons_handler import SconsHandler
+from apio.scons.plugin_ice40 import PluginIce40
+from apio.scons.plugin_ecp5 import PluginEcp5
+from apio.scons.plugin_gowin import PluginGowin
+from apio.scons.plugin_util import maybe_wait_for_remote_debugger
+
+
+# -- If system env var APIO_SCONS_DEBUGGER is defined, regardless of its value,
+# -- we wait on a remote debugger to be attached, e.g. from Visual Studio Code.
+maybe_wait_for_remote_debugger("APIO_SCONS_DEBUGGER")
+
+
+# -- Get the debug flag. If True, the scons code will print debug information.
+val = ARGUMENTS.get("debug", "False")
+is_debug = {"True": True, "False": False}[val]
+
+# -- Get the arch. We use it to dispatch the scons handler.
+arch = ARGUMENTS.get("fpga_arch", None)
+
+# -- Create the apio environment.
+apio_env = ApioEnv(ARGUMENTS, COMMAND_LINE_TARGETS, is_debug)
+
+# -- Select the plugin.
+if arch == "ice40":
+    plugin = PluginIce40(apio_env)
+elif arch == "ecp5":
+    plugin = PluginEcp5(apio_env)
+elif arch == "gowin":
+    plugin = PluginGowin(apio_env)
+else:
+    print(f"Apio SConstruct dispatch error: unknown arch [{arch}]")
+    sys.exit(1)
+
+
+# -- Create and invoke the handler.
+scons = SconsHandler(apio_env, plugin)
+scons.execute()

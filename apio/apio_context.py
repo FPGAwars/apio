@@ -15,6 +15,7 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Optional, Dict
 import click
+from click import secho
 from apio import util, env_options
 from apio.profile import Profile
 from apio.managers.project import (
@@ -107,7 +108,7 @@ class ApioContext:
         # -- that modify its default behavior.
         defined_env_options = env_options.get_defined()
         if defined_env_options:
-            click.secho(
+            secho(
                 f"Active env options [{', '.join(defined_env_options)}].",
                 fg="yellow",
             )
@@ -140,9 +141,16 @@ class ApioContext:
                 project_dir_arg is None
             ), "project_dir_arg specified for scope None"
 
-        # -- Determine apio home dir
+        # -- Determine apio home dir. Some tools get confused if the home
+        # -- dir contains spaces so we prohibit it.
         self.home_dir: Path = ApioContext._get_home_dir()
-        ApioContext._check_no_spaces_in_dir(self.home_dir, "home")
+        if re.search("\\s", str(self.home_dir)):
+            secho(
+                "Error: The apio home dir path should not contain spaces.",
+                fg="red",
+            )
+            secho(f"Home dir: '{str(self.home_dir)}'", fg="yellow")
+            sys.exit(1)
 
         # -- Profile information, from ~/.apio/profile.json
         self.profile = Profile(self.home_dir)
@@ -230,8 +238,8 @@ class ApioContext:
 
         # -- Fatal error if unknown board.
         if strict and canonical_id is None:
-            click.secho(f"Error: no such board '{board}'", fg="red")
-            click.secho(
+            secho(f"Error: no such board '{board}'", fg="red")
+            secho(
                 "Run 'apio boards' for the list of board ids.\n"
                 "Expecting a board id such as 'alhambra-ii'.",
                 fg="yellow",
@@ -240,7 +248,7 @@ class ApioContext:
 
         # -- Warning if caller used a legacy board id.
         if warn and canonical_id and board != canonical_id:
-            click.secho(
+            secho(
                 f"Warning: '{board}' board name was changed. "
                 f"Please use '{canonical_id}' instead.",
                 fg="yellow",
@@ -248,23 +256,6 @@ class ApioContext:
 
         # -- Return the canonical board id.
         return canonical_id
-
-    @staticmethod
-    def _check_no_spaces_in_dir(dir_path: Path, subject: str):
-        """Give the user an early error message if their apio setup dir
-        contains white space. See https://github.com/FPGAwars/apio/issues/474
-        """
-        # -- Match a single white space in the dir path.
-        if re.search("\\s", str(dir_path)):
-            # -- Here space found. This is a fatal error since we don't hand
-            # -- it well later in the process.
-            click.secho(
-                f"Error: The apio {subject} directory path contains white "
-                "space.",
-                fg="red",
-            )
-            click.secho(f"'{str(dir_path)}'", fg="red")
-            sys.exit(1)
 
     @property
     def packages_dir(self):
@@ -314,7 +305,7 @@ class ApioContext:
             filepath = self._project_dir / name
             if filepath.exists():
                 if allow_custom:
-                    click.secho(f"Loading custom '{name}'.")
+                    secho(f"Loading custom '{name}'.")
                     return self._load_resource_file(filepath)
 
         # -- Load the stock resource file from the APIO package.
@@ -342,15 +333,15 @@ class ApioContext:
         except FileNotFoundError as exc:
 
             # -- Display Main error
-            click.secho("Apio System Error! JSON file not found", fg="red")
+            secho("Apio System Error! JSON file not found", fg="red")
 
             # -- Display the affected file (in a different color)
             apio_file_msg = click.style("Apio file: ", fg="yellow")
             filename = click.style(f"{filepath}", fg="blue")
-            click.secho(f"{apio_file_msg} {filename}")
+            secho(f"{apio_file_msg} {filename}")
 
             # -- Display the specific error message
-            click.secho(f"{exc}\n", fg="red")
+            secho(f"{exc}\n", fg="red")
 
             # -- Abort!
             sys.exit(1)
@@ -365,15 +356,15 @@ class ApioContext:
         except json.decoder.JSONDecodeError as exc:
 
             # -- Display Main error
-            click.secho("Apio System Error! Invalid JSON file", fg="red")
+            secho("Apio System Error! Invalid JSON file", fg="red")
 
             # -- Display the affected file (in a different color)
             apio_file_msg = click.style("Apio file: ", fg="yellow")
             filename = click.style(f"{filepath}", fg="blue")
-            click.secho(f"{apio_file_msg} {filename}")
+            secho(f"{apio_file_msg} {filename}")
 
             # -- Display the specific error message
-            click.secho(f"{exc}\n", fg="red")
+            secho(f"{exc}\n", fg="red")
 
             # -- Abort!
             sys.exit(1)
@@ -450,7 +441,7 @@ class ApioContext:
         """
         package_info = self.platform_packages.get(package_name, None)
         if package_info is None:
-            click.secho(f"Error: unknown package '{package_name}'", fg="red")
+            secho(f"Error: unknown package '{package_name}'", fg="red")
             sys.exit(1)
 
         return package_info
@@ -465,7 +456,7 @@ class ApioContext:
         folder_name = release.get("folder_name", None)
         if not folder_name:
             # -- This is a programming error, not a user error
-            click.secho(
+            secho(
                 f"Error: package '{package_name}' definition has an "
                 "empty or missing 'folder_name' field.",
                 fg="red",
@@ -496,8 +487,8 @@ class ApioContext:
         # -- Verify it's valid. This can be a user error if the override
         # -- is invalid.
         if platform_id not in platforms.keys():
-            click.secho(f"Error: unknown platform id: [{platform_id}]")
-            click.secho(
+            secho(f"Error: unknown platform id: [{platform_id}]")
+            secho(
                 "\n"
                 "[Hint]: For the list of supported platforms\n"
                 "type 'apio system platforms'.",
@@ -629,9 +620,7 @@ class ApioContext:
         try:
             home_dir.mkdir(parents=True, exist_ok=True)
         except PermissionError:
-            click.secho(
-                f"Error: no usable home directory {home_dir}", fg="red"
-            )
+            secho(f"Error: no usable home directory {home_dir}", fg="red")
             sys.exit(1)
 
         # Return the home_dir as a Path

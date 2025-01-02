@@ -17,7 +17,7 @@
 import re
 from enum import Enum
 from typing import List, Optional, Tuple
-import click
+from click import secho
 
 
 # -- Terminal cursor commands.
@@ -195,7 +195,7 @@ class SconsFilter:
                     (r"^error:", "red"),
                 ],
             )
-            click.secho(f"{line}", fg=line_color)
+            secho(f"{line}", fg=line_color)
             return
 
         # -- Special handling for iceprog line range.
@@ -241,7 +241,7 @@ class SconsFilter:
                     (r"^VERIFY OK", "green"),
                 ],
             )
-            click.secho(line, fg=line_color)
+            secho(line, fg=line_color)
             return
 
         # -- Special handling for Fumo lines.
@@ -258,7 +258,7 @@ class SconsFilter:
                 # -  Commit 93fc9bc4f3bfd21568e2d66f11976831467e3b97.
                 #
                 print(CURSOR_UP + ERASE_LINE, end="", flush=True)
-                click.secho(line, fg="green")
+                secho(line, fg="green")
                 return
 
         # -- Special handling for tinyprog lines.
@@ -286,7 +286,7 @@ class SconsFilter:
                 # -  Commit 93fc9bc4f3bfd21568e2d66f11976831467e3b97.
                 #
                 print(CURSOR_UP + ERASE_LINE, end="", flush=True)
-                click.secho(line)
+                secho(line)
                 return
 
         # Handling the rest of the stdout lines.
@@ -300,7 +300,7 @@ class SconsFilter:
                     (r"^error:", "red"),
                 ],
             )
-            click.secho(f"{line}", fg=line_color)
+            secho(f"{line}", fg=line_color)
             return
 
         # Handling the rest of stderr the lines.
@@ -312,4 +312,4 @@ class SconsFilter:
                 (r"^error:", "red"),
             ],
         )
-        click.secho(f"{line}", fg=line_color)
+        secho(f"{line}", fg=line_color)

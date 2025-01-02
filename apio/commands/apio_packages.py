@@ -10,6 +10,7 @@
 import sys
 from typing import Tuple
 import click
+from click import secho
 from apio.managers import installer
 from apio.apio_context import ApioContext, ApioContextScope
 from apio import pkg_util, util
@@ -55,7 +56,7 @@ def _install_cli(
 
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
-    click.secho(f"Platform id '{apio_ctx.platform_id}'")
+    secho(f"Platform id '{apio_ctx.platform_id}'")
 
     # -- If packages where specified, install all packages that are valid
     # -- for this platform.
@@ -116,11 +117,11 @@ def _uninstall_cli(
         )
         if not click.confirm(prompt):
             # -- User doesn't want to continue.
-            click.secho("User said no", fg="red")
+            secho("User said no", fg="red")
             sys.exit(1)
 
     # -- Here when going on with the uninstallation.
-    click.secho(f"Platform id '{apio_ctx.platform_id}'")
+    secho(f"Platform id '{apio_ctx.platform_id}'")
 
     # -- Uninstall the packages, one by one
     for package in packages:
@@ -160,17 +161,15 @@ def _list_cli():
 
     # -- Print an hint or summary based on the findings.
     if scan.num_errors():
-        click.secho(
-            "[Hint] run 'apio packages fix' to fix the errors.", fg="yellow"
-        )
+        secho("[Hint] run 'apio packages fix' to fix the errors.", fg="yellow")
     elif scan.uninstalled_package_ids:
-        click.secho(
+        secho(
             "[Hint] run 'apio packages install' to install all "
             "available packages.",
             fg="yellow",
         )
     else:
-        click.secho("All available messages are installed.", fg="green")
+        secho("All available messages are installed.", fg="green")
 
 
 # ------ apio packages fix
@@ -209,7 +208,7 @@ def _fix_cli(
     if scan.num_errors():
         installer.fix_packages(apio_ctx, scan, verbose)
     else:
-        click.secho("No errors to fix")
+        secho("No errors to fix")
 
     # -- Show the new state
     new_scan = pkg_util.scan_packages(apio_ctx)

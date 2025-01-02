@@ -9,6 +9,7 @@
 
 import importlib.metadata
 import click
+from click import secho
 from apio import util
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.cmd_util import ApioGroup, ApioSubgroup
@@ -26,7 +27,7 @@ Examples:
 
 [Advanced] The default location of the Apio home directory, where preferences
 and packages are stored, is in the .apio directory under the user’s home
-directory. This location can be changed using the APIO_HOME environment
+directory. This location can be changed using the APIO_HOME_DIR environment
 variable.
 
 """
@@ -44,28 +45,28 @@ def _info_cli():
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Print apio version.
-    click.secho("Apio version    ", nl=False)
-    click.secho(importlib.metadata.version("apio"), fg="cyan")
+    secho("Apio version    ", nl=False)
+    secho(importlib.metadata.version("apio"), fg="cyan")
 
     # -- Print python version.
-    click.secho("Python version  ", nl=False)
-    click.secho(util.get_python_version(), fg="cyan")
+    secho("Python version  ", nl=False)
+    secho(util.get_python_version(), fg="cyan")
 
     # -- Print platform id.
-    click.secho("Platform id     ", nl=False)
-    click.secho(apio_ctx.platform_id, fg="cyan")
+    secho("Platform id     ", nl=False)
+    secho(apio_ctx.platform_id, fg="cyan")
 
     # -- Print apio package directory.
-    click.secho("Python package  ", nl=False)
-    click.secho(util.get_path_in_apio_package(""), fg="cyan")
+    secho("Python package  ", nl=False)
+    secho(util.get_path_in_apio_package(""), fg="cyan")
 
     # -- Print apio home directory.
-    click.secho("Apio home       ", nl=False)
-    click.secho(apio_ctx.home_dir, fg="cyan")
+    secho("Apio home       ", nl=False)
+    secho(apio_ctx.home_dir, fg="cyan")
 
     # -- Print apio home directory.
-    click.secho("Apio packages   ", nl=False)
-    click.secho(apio_ctx.packages_dir, fg="cyan")
+    secho("Apio packages   ", nl=False)
+    secho(apio_ctx.packages_dir, fg="cyan")
 
 
 # ------ apio system platforms
@@ -95,7 +96,7 @@ def _platforms_cli():
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Print title line
-    click.secho(
+    secho(
         f"  {'[PLATFORM ID]':18} " f"{'[DESCRIPTION]'}",
         fg="magenta",
     )
@@ -107,7 +108,7 @@ def _platforms_cli():
         # -- Determine if it's the current platform id.
         fg = "green" if platform_id == apio_ctx.platform_id else None
         # -- Print the line.
-        click.secho(f"  {platform_id:18} {description}", fg=fg)
+        secho(f"  {platform_id:18} {description}", fg=fg)
 
 
 # ------ apio system

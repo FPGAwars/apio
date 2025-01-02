@@ -13,6 +13,7 @@ import sys
 from dataclasses import dataclass
 from typing import List, Dict, Union
 import click
+from click import secho
 from apio import util
 
 
@@ -24,13 +25,13 @@ def fatal_usage_error(cmd_ctx: click.Context, msg: str) -> None:
     """
     # Mimiking the usage error message from click/exceptions.py.
     # E.g. "Try 'apio packages -h' for help."
-    click.secho(cmd_ctx.get_usage())
-    click.secho(
+    secho(cmd_ctx.get_usage())
+    secho(
         f"Try '{cmd_ctx.command_path} {cmd_ctx.help_option_names[0]}' "
         "for help."
     )
-    click.secho()
-    click.secho(f"Error: {msg}", fg="red")
+    secho()
+    secho(f"Error: {msg}", fg="red")
     sys.exit(1)
 
 

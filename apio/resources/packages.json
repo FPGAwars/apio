@@ -36,7 +36,6 @@
       ],
       "vars": {
         "VERILATOR_ROOT": "%p/share/verilator",
-        "IVL": "%p/lib/ivl",
         "ICEBOX": "%p/share/icebox",
         "TRELLIS": "%p/share/trellis",
         "YOSYS_LIB": "%p/share/yosys"

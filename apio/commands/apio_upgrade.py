@@ -10,6 +10,7 @@
 import sys
 import importlib.metadata
 import click
+from click import secho
 from packaging import version
 from apio.util import get_pypi_latest_version
 
@@ -53,7 +54,7 @@ def cli(_: click.Context):
 
     # -- Case 1: Using an old version.
     if version.parse(current_version) < version.parse(latest_version):
-        click.secho(
+        secho(
             "You're not updated\nPlease execute "
             "`pip install -U apio` to upgrade.",
             fg="yellow",
@@ -62,7 +63,7 @@ def cli(_: click.Context):
 
     # -- Case 2: Using a dev version.
     if version.parse(current_version) > version.parse(latest_version):
-        click.secho(
+        secho(
             "You are using a development version! (Not stable)\n"
             "Use it at your own risk",
             fg="yellow",
@@ -70,7 +71,7 @@ def cli(_: click.Context):
         return
 
     # -- Case 3: Using the latest version.
-    click.secho(
+    secho(
         f"You're up-to-date!\nApio {latest_version} is currently the "
         "latest stable version available.",
         fg="green",

@@ -18,6 +18,7 @@ packages release repositorie.s
 from math import ceil
 import requests
 import click
+from click import secho
 from apio import util
 
 # -- Timeout for geting a reponse from the server when downloading
@@ -61,7 +62,7 @@ class FileDownloader:
 
         # -- Raise an exception in case of download error...
         if self._request.status_code != 200:
-            click.secho(
+            secho(
                 "Got an unexpected HTTP status code: "
                 f"{self._request.status_code}"
                 f"\nWhen downloading {url}",

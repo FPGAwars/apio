@@ -22,6 +22,7 @@ requires = [
     'click==8.1.8',
     'colorama==0.4.6',
     'configobj==5.0.9',
+    'debugpy==1.8.11',
     'packaging==24.2',
     'pyserial==3.5',
     'requests==2.32.3',

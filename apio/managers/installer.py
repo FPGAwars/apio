@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 from typing import Tuple
 import shutil
-import click
+from click import secho
 import requests
 from apio import util, pkg_util
 from apio.apio_context import ApioContext
@@ -49,9 +49,9 @@ def _get_remote_version(
 
     # -- Exit if http error.
     if resp.status_code != 200:
-        click.secho("Error downloading the version file", fg="red")
-        click.secho(f"URL {version_url}", fg="red")
-        click.secho(f"Error code {resp.status_code}", fg="red")
+        secho("Error downloading the version file", fg="red")
+        secho(f"URL {version_url}", fg="red")
+        secho(f"Error code {resp.status_code}", fg="red")
         sys.exit(1)
 
     # -- Here when download was ok.
@@ -152,16 +152,16 @@ def _download_package_file(url: str, dir_path: Path) -> str:
             filepath.unlink()
 
         # -- Inform the user
-        click.secho("User abborted download", fg="red")
+        secho("User abborted download", fg="red")
         sys.exit(1)
 
     except IOError as exc:
-        click.secho("I/O error while downloading", fg="red")
-        click.secho(str(exc), fg="red")
+        secho("I/O error while downloading", fg="red")
+        secho(str(exc), fg="red")
         sys.exit(1)
 
     except util.ApioException:
-        click.secho("Error: package not found", fg="red")
+        secho("Error: package not found", fg="red")
         sys.exit(1)
 
     # -- Return the destination path
@@ -180,9 +180,7 @@ def _unpack_package_file(package_file: Path, package_dir: Path) -> None:
 
     # -- Exit if error.
     if not ok:
-        click.secho(
-            f"Error: failed to unpack package file {package_file}", fg="red"
-        )
+        secho(f"Error: failed to unpack package file {package_file}", fg="red")
         sys.exit(1)
 
 
@@ -197,8 +195,8 @@ def _parse_package_spec(package_spec: str) -> Tuple[str, str]:
     """
     tokens = package_spec.split("@")
     if len(tokens) not in [1, 2]:
-        click.secho(f"Error: invalid package spec '{package_spec}", fg="red")
-        click.secho("Try 'my_package' or  'my_package@0.1.2'", fg="yellow")
+        secho(f"Error: invalid package spec '{package_spec}", fg="red")
+        secho("Try 'my_package' or  'my_package@0.1.2'", fg="yellow")
         sys.exit(1)
 
     package_name = tokens[0]
@@ -218,7 +216,7 @@ def _delete_package_dir(
     dir_found = package_dir.is_dir()
     if dir_found:
         if verbose:
-            click.secho(f"Deleting {str(package_dir)}")
+            secho(f"Deleting {str(package_dir)}")
 
         # -- Sanity check the path and delete.
         package_folder_name = apio_ctx.get_package_folder_name(package_id)
@@ -227,7 +225,7 @@ def _delete_package_dir(
         shutil.rmtree(package_dir)
 
     if package_dir.exists():
-        click.secho(
+        secho(
             f"Error: directory deletion failed: {str(package_dir.absolute())}",
             fg="yellow",
         )
@@ -252,7 +250,7 @@ def install_package(
     Returns normally if no error, exits the program with an error status
     and a user message if an error is detected.
     """
-    click.secho(f"Installing package '{package_spec}'")
+    secho(f"Installing package '{package_spec}'")
 
     # Parse the requested package spec.
     package_name, target_version = _parse_package_spec(package_spec)
@@ -268,7 +266,7 @@ def install_package(
     if not target_version:
         target_version = _get_remote_version(apio_ctx, package_name, verbose)
 
-    click.secho(f"Target version {target_version}")
+    secho(f"Target version {target_version}")
 
     # -- If not focring and the target version already installed nothing to do.
     if not force:
@@ -283,7 +281,7 @@ def install_package(
         # -- If the installed and the target versions are the same then
         # -- nothing to do.
         if target_version == installed_version:
-            click.secho(
+            secho(
                 f"Version {target_version} was already installed", fg="green"
             )
             return
@@ -331,7 +329,7 @@ def install_package(
         if verbose:
             print(f"Renaming {wrapper_dir} to {package_dir}")
         if not wrapper_dir.is_dir():
-            click.secho(f"Error: no unpacked dir {wrapper_dir}", fg="red")
+            secho(f"Error: no unpacked dir {wrapper_dir}", fg="red")
             sys.exit(1)
         wrapper_dir.rename(package_dir)
 
@@ -352,7 +350,7 @@ def install_package(
     apio_ctx.profile.save()
 
     # -- Inform the user!
-    click.secho(
+    secho(
         f"Package '{package_name}' installed successfully",
         fg="green",
     )
@@ -368,11 +366,11 @@ def uninstall_package(
 
     package_info = apio_ctx.platform_packages.get(package_name, None)
     if not package_info:
-        click.secho(f"Error: no such package '{package_name}'", fg="red")
+        secho(f"Error: no such package '{package_name}'", fg="red")
         sys.exit(1)
 
     # package_color = click.style(package_name, fg="cyan")
-    click.secho(f"Uninstalling package '{package_name}'")
+    secho(f"Uninstalling package '{package_name}'")
 
     # -- Remove the folder with all its content!!
     dir_existed = _delete_package_dir(apio_ctx, package_name, verbose)
@@ -389,13 +387,13 @@ def uninstall_package(
     if dir_existed or installed_version:
 
         # -- Inform the user
-        click.secho(
-            f"Package '{package_name}' uninstalled successfuly",
+        secho(
+            f"Package '{package_name}' uninstalled successfully",
             fg="green",
         )
     else:
         # -- Package not installed. We treat it as a success.
-        click.secho(f"Package '{package_name}' was not installed", fg="green")
+        secho(f"Package '{package_name}' was not installed", fg="green")
 
 
 def fix_packages(
@@ -405,9 +403,7 @@ def fix_packages(
 
     # -- If non verbose, print a summary message.
     if not verbose:
-        click.secho(
-            f"Fixing {util.plurality(scan.num_errors(), 'package error')}."
-        )
+        secho(f"Fixing {util.plurality(scan.num_errors(), 'package error')}.")
 
     # -- Fix broken packages.
     for package_id in scan.broken_package_ids:
