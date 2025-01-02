@@ -96,7 +96,7 @@ def get_constraint_file(
     Returns the file name if found or a default name otherwise otherwise.
     """
     # Files in alphabetical order.
-    files = apio_env.env.Glob(f"*{file_ext}")
+    files = apio_env.scons_env.Glob(f"*{file_ext}")
     n = len(files)
     # Case 1: No matching files.
     if n == 0:
@@ -216,9 +216,9 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
                 secho(f"  {dependency}", fg="blue", color=True)
 
         # All done
-        return apio_env.env.File(dependencies)
+        return apio_env.scons_env.File(dependencies)
 
-    return apio_env.env.Scanner(function=verilog_src_scanner_func)
+    return apio_env.scons_env.Scanner(function=verilog_src_scanner_func)
 
 
 # pylint: disable=too-many-arguments
@@ -430,7 +430,7 @@ def source_files(apio_env: ApioEnv) -> Tuple[List[str], List[str]]:
     otherwise as a synthesis file.
     """
     # -- Get a list of all *.v and .sv files in the project dir.
-    files: List[File] = apio_env.env.Glob("*.sv")
+    files: List[File] = apio_env.scons_env.Glob("*.sv")
     if files:
         secho(
             "Warning: project contains .sv files, system-verilog support "
@@ -438,7 +438,7 @@ def source_files(apio_env: ApioEnv) -> Tuple[List[str], List[str]]:
             fg="yellow",
             color=True,
         )
-    files = files + apio_env.env.Glob("*.v")
+    files = files + apio_env.scons_env.Glob("*.v")
 
     # Split file names to synth files and testbench file lists
     synth_srcs = []
@@ -638,7 +638,7 @@ def clean_if_requested(apio_env: ApioEnv) -> None:
     """
 
     # -- Get the underlying scons environment.
-    scons_env = apio_env.env
+    scons_env = apio_env.scons_env
 
     # -- We perform cleaning only when the scons 'clean' option is active.
     if not scons_env.GetOption("clean"):

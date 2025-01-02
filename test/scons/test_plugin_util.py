@@ -275,7 +275,7 @@ def test_make_verilator_config_builder(apio_runner: ApioRunner):
         target = FS.File(FS(), "hardware.vlt")
 
         # -- Invoke the builder's action to create the target.
-        builder.action(target, [], apio_env.env)
+        builder.action(target, [], apio_env.scons_env)
         assert isfile("hardware.vlt")
 
         # -- Verify that the file was created with the tiven text.

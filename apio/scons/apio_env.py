@@ -53,7 +53,7 @@ class ApioEnv:
         self.is_debug = is_debug
 
         # -- Create the underlying scons env.
-        self.env = SConsEnvironment(ENV=os.environ, tools=[])
+        self.scons_env = SConsEnvironment(ENV=os.environ, tools=[])
 
         self.args = ApioArgs.make(scons_args, is_debug)
 
@@ -83,7 +83,7 @@ class ApioEnv:
         """Append to the scons env a builder with given id. The env
         adds it to the BUILDERS dict and also adds to itself an attribute with
         that name that contains a wrapper to that builder."""
-        self.env.Append(BUILDERS={builder_id: builder})
+        self.scons_env.Append(BUILDERS={builder_id: builder})
 
     # pylint: disable=too-many-arguments
     def builder_target(
@@ -98,31 +98,31 @@ class ApioEnv:
         """Creates an return a target that uses the builder with given id."""
         # -- Scons wraps the builder with a wrapper. We use it to create the
         # -- new target.
-        builder_wrapper: BuilderWrapper = getattr(self.env, builder_id)
+        builder_wrapper: BuilderWrapper = getattr(self.scons_env, builder_id)
         target = builder_wrapper(target, sources)
         # -- Mark as 'always build' if requested.
         if always_build:
-            self.env.AlwaysBuild(target)
+            self.scons_env.AlwaysBuild(target)
         # -- Add extra dependencies, if any.
         if extra_dependecies:
             for dependency in extra_dependecies:
-                self.env.Depends(target, dependency)
+                self.scons_env.Depends(target, dependency)
         return target
 
     def alias(self, name, *, source, action=None, allways_build: bool = False):
         """Creates a target with given dependencies"""
-        target = self.env.Alias(name, source, action)
+        target = self.scons_env.Alias(name, source, action)
         if allways_build:
-            self.env.AlwaysBuild(target)
+            self.scons_env.AlwaysBuild(target)
         return target
 
     def dump_env_vars(self) -> None:
         """Prints a list of the environment variables. For debugging."""
-        dictionary = self.env.Dictionary()
+        dictionary = self.scons_env.Dictionary()
         keys = list(dictionary.keys())
         keys.sort()
         secho()
         secho(">>> Env vars BEGIN", fg="magenta", color=True)
         for key in keys:
-            print(f"{key} = {self.env[key]}")
+            print(f"{key} = {self.scons_env[key]}")
         secho("<<< Env vars END\n", fg="magenta", color=True)
