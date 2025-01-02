@@ -16,6 +16,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, List
 import os
+import sys
 from click import secho
 
 
@@ -29,6 +30,8 @@ class ApioArgsParser:
     def __init__(self, scons_args: Dict[str, str], is_debug: bool):
         self.scons_args = scons_args
         self.is_debug = is_debug
+        # -- A set to track ignored args.
+        self._parsed_args = set()
 
     def _dump_parsed_arg(self, name, value) -> None:
         """Used to dump parsed scons arg. For debugging only."""
@@ -40,6 +43,7 @@ class ApioArgsParser:
         """Parse and return a string arg."""
         value = self.scons_args.get(name, "")
         self._dump_parsed_arg(name, value)
+        self._parsed_args.add(name)
         return value
 
     def arg_bool(self, name: str) -> bool:
@@ -50,6 +54,7 @@ class ApioArgsParser:
         ]
         assert value is not None, f"Invalid bool'{name} = '{raw_value}'."
         self._dump_parsed_arg(name, value)
+        self._parsed_args.add(name)
         return value
 
     def env_str(self, name: str) -> str:
@@ -61,6 +66,17 @@ class ApioArgsParser:
         self._dump_parsed_arg(name, value)
         return value
 
+    def check_all_args_parsed(self) -> None:
+        """Check that all scons args were parsed. Fatal error if not."""
+        ignored = [x for x in self.scons_args if x not in self._parsed_args]
+        if ignored:
+            secho(
+                f"Error: Unknown scons args: {', '.join(ignored)}",
+                fg="red",
+                color=True,
+            )
+            sys.exit(1)
+
 
 @dataclass(frozen=True)
 class ApioArgs:
@@ -69,6 +85,7 @@ class ApioArgs:
     # -- Scons str args.
     PROG: str
     PLATFORM_ID: str
+    FPGA_ARCH: str
     FPGA_MODEL: str
     FPGA_SIZE: str
     FPGA_TYPE: str
@@ -108,6 +125,7 @@ class ApioArgs:
             # Scons tring args.
             PROG=parser.arg_str("prog"),
             PLATFORM_ID=parser.arg_str("platform_id"),
+            FPGA_ARCH=parser.arg_str("fpga_arch"),
             FPGA_MODEL=parser.arg_str("fpga_model"),
             FPGA_SIZE=parser.arg_str("fpga_size"),
             FPGA_TYPE=parser.arg_str("fpga_type"),
@@ -129,4 +147,8 @@ class ApioArgs:
             YOSYS_PATH=parser.env_str("YOSYS_LIB"),
             TRELLIS_PATH=parser.env_str("TRELLIS"),
         )
+
+        # -- Check that all args were parsed.
+        parser.check_all_args_parsed()
+
         return result
