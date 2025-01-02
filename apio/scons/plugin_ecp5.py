@@ -19,6 +19,7 @@ from SCons.Builder import BuilderBase
 from apio.scons.apio_env import ApioEnv, TARGET, BUILD_DIR
 from apio.scons.plugin_base import PluginBase, ArchPluginInfo
 from apio.scons.plugin_util import (
+    SRC_SUFFIXES,
     verilator_lint_action,
     has_testbench_name,
     source_file_issue_action,
@@ -66,7 +67,7 @@ class PluginEcp5(PluginBase):
                 "" if args.VERBOSE_ALL or args.VERBOSE_YOSYS else "-q",
             ),
             suffix=".json",
-            src_suffix=[".v", ".sv"],
+            src_suffix=SRC_SUFFIXES,
             source_scanner=self.verilog_src_scanner,
         )
 
@@ -153,7 +154,7 @@ class PluginEcp5(PluginBase):
             # -- Dynamic action string generator.
             generator=action_generator,
             suffix=".out",
-            src_suffix=[".v", ".sv"],
+            src_suffix=SRC_SUFFIXES,
             source_scanner=self.verilog_src_scanner,
         )
 
@@ -189,6 +190,6 @@ class PluginEcp5(PluginBase):
                 top_module=args.TOP_MODULE,
                 lib_dirs=[self.yosys_lib_dir],
             ),
-            src_suffix=[".v", ".sv"],
+            src_suffix=SRC_SUFFIXES,
             source_scanner=self.verilog_src_scanner,
         )

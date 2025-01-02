@@ -30,6 +30,9 @@ from SCons.Node.Alias import Alias
 import debugpy
 from apio.scons.apio_env import ApioEnv, TARGET, BUILD_DIR_SEP
 
+# -- A list with the file extensions of the verilog source files.
+SRC_SUFFIXES = [".v", ".sv"]
+
 
 def maybe_wait_for_remote_debugger(env_var_name: str):
     """A rendezvous point for a remote debger. If the environment variable
@@ -369,7 +372,7 @@ def is_verilog_src(file_name: str) -> bool:
     """Given a file name, determine by its extension if it's a verilog
     source file (testbenches included)."""
     _, ext = os.path.splitext(file_name)
-    return ext in [".v", ".sv"]
+    return ext in SRC_SUFFIXES
 
 
 def has_testbench_name(file_name: str) -> bool:
