@@ -264,7 +264,7 @@ def test_make_verilator_config_builder(apio_runner: ApioRunner):
         apio_env = make_test_apio_env()
 
         # -- Call the tested method to create a builder.
-        builder = make_verilator_config_builder("test-text")
+        builder = make_verilator_config_builder(["line1", " line2", "line3"])
 
         # -- Verify builder suffixes.
         assert builder.suffix == ".vlt"
@@ -281,7 +281,7 @@ def test_make_verilator_config_builder(apio_runner: ApioRunner):
         # -- Verify that the file was created with the tiven text.
         text = sb.read_file("hardware.vlt")
 
-        assert text == "test-text"
+        assert text == "line1\n line2\nline3"
 
 
 def test_clean_if_requested(apio_runner: ApioRunner):

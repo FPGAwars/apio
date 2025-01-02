@@ -33,6 +33,7 @@ class PluginGowin(PluginBase):
     """Apio scons plugin for the ice40 architecture."""
 
     def __init__(self, apio_env: ApioEnv):
+        # -- Call parent constructor.
         super().__init__(apio_env)
 
         # -- Cache values.
@@ -153,9 +154,11 @@ class PluginGowin(PluginBase):
         """Creates and returns the lint config builder."""
         yosys_vlt_path = vlt_path(self.yosys_lib_dir)
         return make_verilator_config_builder(
-            "`verilator_config\n"
-            f'lint_off -rule COMBDLY     -file "{yosys_vlt_path}/*"\n'
-            f'lint_off -rule WIDTHEXPAND -file "{yosys_vlt_path}/*"\n'
+            [
+                "`verilator_config",
+                f'lint_off -rule COMBDLY     -file "{yosys_vlt_path}/*"',
+                f'lint_off -rule WIDTHEXPAND -file "{yosys_vlt_path}/*"',
+            ]
         )
 
     # @overrides

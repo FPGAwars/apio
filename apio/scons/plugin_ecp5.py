@@ -8,7 +8,7 @@
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
 # ---- Licence Apache v2
 
-"""Apio scons plugin for the ice40 architecture."""
+"""Apio scons plugin for the ecp5 architecture."""
 
 # R0801: Similar lines
 # pylint: disable=R0801
@@ -34,7 +34,7 @@ class PluginEcp5(PluginBase):
     """Apio scons plugin for the ice40 architecture."""
 
     def __init__(self, apio_env: ApioEnv):
-        #
+        # -- Call parent constructor.
         super().__init__(apio_env)
 
         # -- Cache values.
@@ -164,13 +164,15 @@ class PluginEcp5(PluginBase):
         """Creates and returns the lint config builder."""
         yosys_vlt_path = vlt_path(self.yosys_lib_dir)
         return make_verilator_config_builder(
-            "`verilator_config\n"
-            f'lint_off -rule COMBDLY     -file "{yosys_vlt_path}/*"\n'
-            f'lint_off -rule WIDTHEXPAND -file "{yosys_vlt_path}/*"\n'
-            f'lint_off -rule PINMISSING  -file "{yosys_vlt_path}/*"\n'
-            f'lint_off -rule ASSIGNIN    -file "{yosys_vlt_path}/*"\n'
-            f'lint_off -rule WIDTHTRUNC  -file "{yosys_vlt_path}/*"\n'
-            f'lint_off -rule INITIALDLY  -file "{yosys_vlt_path}/*"\n'
+            [
+                "`verilator_config",
+                f'lint_off -rule COMBDLY     -file "{yosys_vlt_path}/*"',
+                f'lint_off -rule WIDTHEXPAND -file "{yosys_vlt_path}/*"',
+                f'lint_off -rule PINMISSING  -file "{yosys_vlt_path}/*"',
+                f'lint_off -rule ASSIGNIN    -file "{yosys_vlt_path}/*"',
+                f'lint_off -rule WIDTHTRUNC  -file "{yosys_vlt_path}/*"',
+                f'lint_off -rule INITIALDLY  -file "{yosys_vlt_path}/*"',
+            ]
         )
 
     # @overrides

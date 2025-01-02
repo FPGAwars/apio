@@ -610,9 +610,12 @@ def vlt_path(path: str) -> str:
     return path.replace("\\", "/")
 
 
-def make_verilator_config_builder(config_text: str):
+def make_verilator_config_builder(config_lines: List[str]):
     """Create a scons Builder that writes a verilator config file
     (hardware.vlt) with the given text."""
+
+    # -- Join the lines into a single string.
+    config_text = "\n".join(config_lines)
 
     def verilator_config_func(target, source, env):
         """Creates a verilator .vlt config files."""
