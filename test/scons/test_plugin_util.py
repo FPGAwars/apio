@@ -1,5 +1,5 @@
 """
-Tests of the scons plug_util.py functions.
+Tests of the scons plugin_util.py functions.
 """
 
 from os.path import isfile, exists
