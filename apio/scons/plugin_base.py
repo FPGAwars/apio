@@ -23,11 +23,6 @@ from apio.scons.plugin_util import verilog_src_scanner, get_constraint_file
 SUPPORTED_GRAPH_TYPES = ["svg", "pdf", "png"]
 
 
-def unused(*_):
-    """Fake a use of an unused variable or argument."""
-    # pass
-
-
 @dataclass(frozen=True)
 class ArchPluginInfo:
     """Provides information about the plugin."""
@@ -127,9 +122,9 @@ class PluginBase:
             # -- This is the case when scons target is not 'graph'.
             graph_type = "svg"
 
-        def completion_action(source, target, env):
+        def completion_action(source, target, env):  # noqa
             """Action function that prints a completion message."""
-            unused(source, target, env)
+            _ = (source, target, env)  # Unused
             secho(f"Generated {TARGET}.{graph_type}", fg="green", color=True)
 
         actions = [

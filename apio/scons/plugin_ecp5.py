@@ -29,11 +29,6 @@ from apio.scons.plugin_util import (
 )
 
 
-def unused(*_):
-    """Fake a use of an unused variable or argument."""
-    # pass
-
-
 # pylint: disable=consider-using-f-string
 class PluginEcp5(PluginBase):
     """Apio scons plugin for the ice40 architecture."""
@@ -84,7 +79,7 @@ class PluginEcp5(PluginBase):
 
         # -- We use an emmiter to add to the builder a second output file.
         def emitter(target, source, env):
-            unused(env)
+            _ = env  # Unused
             target.append(TARGET + ".pnr")
             return target, source
 
@@ -135,7 +130,7 @@ class PluginEcp5(PluginBase):
         # -- We use a generator because we need a different action
         # -- string for sim and test.
         def action_generator(source, target, env, for_signature):
-            unused(source, env, for_signature)
+            _ = (source, env, for_signature)  # Unused
             # Extract testbench name from target file name.
             testbench_file = str(target[0])
             assert has_testbench_name(testbench_file), testbench_file

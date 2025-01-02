@@ -31,11 +31,6 @@ import debugpy
 from apio.scons.apio_env import ApioEnv, TARGET, BUILD_DIR_SEP
 
 
-def unused(*_):
-    """Fake a use of an unused variable or argument."""
-    # pass
-
-
 def maybe_wait_for_remote_debugger(env_var_name: str):
     """A rendezvous point for a remote debger. If the environment variable
     of given name is set, the function will block until a remote
@@ -173,7 +168,7 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
         file are ignored and not returned. This is to avoid references in
         commented out code to break scons dependencies.
         """
-        unused(env)
+        _ = env  # Unused
 
         # Sanity check. Should be called only to scan verilog files. If
         # this fails, this is a programming error rather than a user error.
@@ -403,7 +398,7 @@ def source_file_issue_action() -> FunctionAction:
     ):
         """The scanner function.."""
 
-        unused(target, env)
+        _ = (target, env)  # Unused
 
         for file in source:
 
@@ -524,7 +519,7 @@ def report_action(clk_name_index: int, verbose: bool) -> FunctionAction:
     ):
         """Action function. Loads the pnr json report and print in a user
         friendly way."""
-        unused(target, env)
+        _ = (target, env)  # Unused
         json_file: File = source[0]
         json_txt: str = json_file.get_text_contents()
         _print_pnr_report(json_txt, clk_name_index, verbose)
@@ -621,7 +616,7 @@ def make_verilator_config_builder(config_text: str):
 
     def verilator_config_func(target, source, env):
         """Creates a verilator .vlt config files."""
-        unused(source, env)
+        _ = (source, env)  # Unused
         with open(target[0].get_path(), "w", encoding="utf-8") as target_file:
             target_file.write(config_text)
         return 0
