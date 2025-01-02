@@ -198,8 +198,8 @@ class SconsHandler:
             builder_id=LINT_BUILDER,
             target=TARGET,
             sources=synth_srcs + test_srcs,
+            extra_dependecies=[lint_config_target],
         )
-        apio_env.depends(lint_out_target, lint_config_target)
         apio_env.alias(
             "lint",
             source=lint_out_target,

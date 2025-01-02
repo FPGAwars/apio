@@ -17,7 +17,7 @@
 # pylint: disable=W0613
 
 import os
-from typing import Dict, List
+from typing import Dict, List, Optional
 from click import secho
 from SCons.Script.SConscript import SConsEnvironment
 from SCons.Environment import BuilderWrapper
@@ -85,19 +85,28 @@ class ApioEnv:
         that name that contains a wrapper to that builder."""
         self.env.Append(BUILDERS={builder_id: builder})
 
+    # pylint: disable=too-many-arguments
     def builder_target(
         self,
         *,
         builder_id: str,
         target,
         sources: List,
+        extra_dependecies: Optional[List] = None,
         always_build: bool = False,
     ):
         """Creates an return a target that uses the builder with given id."""
+        # -- Scons wraps the builder with a wrapper. We use it to create the
+        # -- new target.
         builder_wrapper: BuilderWrapper = getattr(self.env, builder_id)
         target = builder_wrapper(target, sources)
+        # -- Mark as 'always build' if requested.
         if always_build:
             self.env.AlwaysBuild(target)
+        # -- Add extra dependencies, if any.
+        if extra_dependecies:
+            for dependency in extra_dependecies:
+                self.env.Depends(target, dependency)
         return target
 
     def alias(self, name, *, source, action=None, allways_build: bool = False):
@@ -106,10 +115,6 @@ class ApioEnv:
         if allways_build:
             self.env.AlwaysBuild(target)
         return target
-
-    def depends(self, target, dependency):
-        """Adds a dependency of one target on another."""
-        self.env.Depends(target, dependency)
 
     def dump_env_vars(self) -> None:
         """Prints a list of the environment variables. For debugging."""
