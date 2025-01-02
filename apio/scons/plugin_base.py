@@ -16,7 +16,7 @@ from SCons.Builder import BuilderBase
 from SCons.Action import Action
 from SCons.Script import Builder
 from apio.scons.apio_env import ApioEnv, TARGET, BUILD_DIR_SEP
-from apio.scons import plugin_util
+from apio.scons.plugin_util import verilog_src_scanner, get_constraint_file
 
 
 # -- Supported apio graph types.
@@ -44,7 +44,7 @@ class PluginBase:
         self.apio_env = apio_env
 
         # -- Scanner for verilog source files.
-        self.verilog_src_scanner = plugin_util.verilog_src_scanner(apio_env)
+        self.verilog_src_scanner = verilog_src_scanner(apio_env)
 
         # -- A laceholder for the constrain file name.
         self._constrain_file: str = None
@@ -61,7 +61,7 @@ class PluginBase:
 
         # -- On first call, determine and cache.
         if self._constrain_file is None:
-            self._constrain_file = plugin_util.get_constraint_file(
+            self._constrain_file = get_constraint_file(
                 apio_env,
                 self.plugin_info().constrains_file_ext,
                 args.TOP_MODULE,

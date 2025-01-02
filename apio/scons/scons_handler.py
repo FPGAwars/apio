@@ -13,7 +13,15 @@
 
 from apio.scons.apio_env import ApioEnv, ApioArgs, TARGET
 from apio.scons.plugin_base import PluginBase
-
+from apio.scons.plugin_util import (
+    get_sim_config,
+    get_tests_configs,
+    waves_target,
+    source_files,
+    report_action,
+    programmer_cmd,
+    clean_if_requested,
+)
 
 # -- Scons builders ids.
 SYNTH_BUILDER = "SYNTH_BUILDER"
@@ -63,7 +71,7 @@ class SconsHandler:
 
         # -- Get a list of the synthesizable files (e.g. "main.v") and a list
         # -- of the testbench files (e.g. "main_tb.v")
-        synth_srcs, test_srcs = apio_env.source_files()
+        synth_srcs, test_srcs = source_files(apio_env)
 
         # -- The "build" target and its dependencies.
         synth_target = apio_env.builder_target(
@@ -95,9 +103,7 @@ class SconsHandler:
         apio_env.alias(
             "report",
             source=TARGET + ".pnr",
-            action=apio_env.report_action(
-                plugin_info.clk_name_index, args.VERBOSE_PNR
-            ),
+            action=report_action(plugin_info.clk_name_index, args.VERBOSE_PNR),
             allways_build=True,
         )
 
@@ -105,7 +111,7 @@ class SconsHandler:
         apio_env.alias(
             "upload",
             source=bin_target,
-            action=apio_env.programmer_cmd(),
+            action=programmer_cmd(apio_env),
             allways_build=True,
         )
 
@@ -131,7 +137,7 @@ class SconsHandler:
         # -- The 'sim' target and its dependencies, to simulate and display the
         # -- results of a single testbench.
         if apio_env.targeting("sim"):
-            sim_config = apio_env.get_sim_config(args.TESTBENCH, synth_srcs)
+            sim_config = get_sim_config(apio_env, args.TESTBENCH, synth_srcs)
             sim_out_target = apio_env.builder_target(
                 builder_id=TESTBENCH_COMPILE_BUILDER,
                 target=sim_config.build_testbench_name,
@@ -144,7 +150,8 @@ class SconsHandler:
                 sources=[sim_out_target],
                 always_build=args.FORCE_SIM,
             )
-            apio_env.waves_target(
+            waves_target(
+                apio_env,
                 "sim",
                 sim_vcd_target,
                 sim_config,
@@ -154,7 +161,7 @@ class SconsHandler:
         # -- The  "test" target and its dependencies, to test one or more
         # -- testbenches.
         if apio_env.targeting("test"):
-            tests_configs = apio_env.get_tests_configs(
+            tests_configs = get_tests_configs(
                 args.TESTBENCH, synth_srcs, test_srcs
             )
             tests_targets = []
@@ -200,7 +207,7 @@ class SconsHandler:
         )
 
         # -- Handle the cleanu of the artifact files.
-        apio_env.clean_if_requested()
+        clean_if_requested(apio_env)
 
     def execute(self):
         """The entry point of the scons handler."""

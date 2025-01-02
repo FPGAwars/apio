@@ -17,6 +17,15 @@ from SCons.Script import Builder
 from SCons.Builder import BuilderBase
 from apio.scons.apio_env import ApioEnv, TARGET
 from apio.scons.plugin_base import PluginBase, ArchPluginInfo
+from apio.scons.plugin_util import (
+    verilator_lint_action,
+    has_testbench_name,
+    source_file_issue_action,
+    iverilog_action,
+    basename,
+    vlt_path,
+    make_verilator_config_builder,
+)
 
 
 def unused(*_):
@@ -118,15 +127,15 @@ class PluginGowin(PluginBase):
             unused(source, env, for_signature)
             # Extract testbench name from target file name.
             testbench_file = str(target[0])
-            assert apio_env.has_testbench_name(testbench_file), testbench_file
-            testbench_name = apio_env.basename(testbench_file)
+            assert has_testbench_name(testbench_file), testbench_file
+            testbench_name = basename(testbench_file)
 
             # Construct the actions list.
             action = [
                 # -- Scan source files for issues.
-                apio_env.source_file_issue_action(),
+                source_file_issue_action(),
                 # -- Perform the actual test or sim compilation.
-                apio_env.iverilog_action(
+                iverilog_action(
                     verbose=args.VERBOSE_ALL,
                     vcd_output_name=testbench_name,
                     is_interactive=apio_env.targeting("sim"),
@@ -147,9 +156,8 @@ class PluginGowin(PluginBase):
     # @overrides
     def lint_config_builder(self) -> BuilderBase:
         """Creates and returns the lint config builder."""
-        apio_env = self.apio_env
-        yosys_vlt_path = apio_env.vlt_path(self.yosys_lib_dir)
-        return apio_env.make_verilator_config_builder(
+        yosys_vlt_path = vlt_path(self.yosys_lib_dir)
+        return make_verilator_config_builder(
             "`verilator_config\n"
             f'lint_off -rule COMBDLY     -file "{yosys_vlt_path}/*"\n'
             f'lint_off -rule WIDTHEXPAND -file "{yosys_vlt_path}/*"\n'
@@ -163,7 +171,7 @@ class PluginGowin(PluginBase):
         args = apio_env.args
 
         return Builder(
-            action=apio_env.verilator_lint_action(
+            action=verilator_lint_action(
                 warnings_all=args.VERILATOR_ALL,
                 warnings_no_style=args.VERILATOR_NO_STYLE,
                 no_warns=args.VERILATOR_NOWARNS,

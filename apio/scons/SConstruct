@@ -11,16 +11,17 @@ import sys
 import debugpy
 import click
 from SCons.Script import ARGUMENTS, COMMAND_LINE_TARGETS
-from apio.scons import plugin_util
 from apio.scons.apio_env import ApioEnv
 from apio.scons.scons_handler import SconsHandler
 from apio.scons.plugin_ice40 import PluginIce40
 from apio.scons.plugin_ecp5 import PluginEcp5
 from apio.scons.plugin_gowin import PluginGowin
+from apio.scons.plugin_util import maybe_wait_for_remote_debugger
+
 
 # -- If system env var APIO_SCONS_DEBUGGER is defined, regardless of its value,
 # -- we wait on a remote debugger to be attached, e.g. from Visual Studio Code.
-plugin_util.maybe_wait_for_remote_debugger("APIO_SCONS_DEBUGGER")
+maybe_wait_for_remote_debugger("APIO_SCONS_DEBUGGER")
 
 
 # -- Get the debug flag. If True, the scons code will print debug information.
