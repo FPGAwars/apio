@@ -13,6 +13,7 @@ from pathlib import Path
 from glob import glob
 from typing import Tuple, List
 import click
+from click import secho
 from apio.apio_context import ApioContext, ApioContextScope
 from apio import pkg_util, util
 from apio.commands import options
@@ -105,7 +106,7 @@ def cli(
 
     # -- Error if no file to format.
     if not files:
-        click.secho("Error: No '.v' or '.sv' files to format", fg="red")
+        secho("Error: No '.v' or '.sv' files to format", fg="red")
         sys.exit(1)
 
     # -- Sort files, case insensitive.
@@ -121,7 +122,7 @@ def cli(
         # -- Check the file extension.
         _, ext = os.path.splitext(path)
         if ext not in [".v", ".sv"]:
-            click.secho(
+            secho(
                 f"Error: '{f}' has an invalid extension, "
                 "should be '.v' or '.sv'",
                 fg="red",
@@ -130,12 +131,12 @@ def cli(
 
         # -- Check that the file exists and is a file.
         if not path.is_file():
-            click.secho(f"Error: '{f}' is not a file.", fg="red")
+            secho(f"Error: '{f}' is not a file.", fg="red")
             sys.exit(1)
 
         # -- Print file name.
         styled_f = click.style(f, fg="magenta")
-        click.secho(f"Formatting {styled_f}")
+        secho(f"Formatting {styled_f}")
 
         # -- Construct the formatter command line.
         command = (
@@ -143,14 +144,14 @@ def cli(
             f' {" ".join(cmd_options)} "{f}"'
         )
         if verbose:
-            click.secho(command)
+            secho(command)
 
         # -- Execute the formatter command line.
         exit_code = os.system(command)
         if exit_code != 0:
-            click.secho(f"Error: formatting of '{f}' failed", fg="red")
+            secho(f"Error: formatting of '{f}' failed", fg="red")
             return exit_code
 
     # -- All done ok.
-    click.secho(f"Formatted {util.plurality(files, 'file')}.", fg="green")
+    secho(f"Formatted {util.plurality(files, 'file')}.", fg="green")
     sys.exit(0)

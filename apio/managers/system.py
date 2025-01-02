@@ -8,7 +8,7 @@
 
 import re
 import sys
-import click
+from click import secho
 
 from apio import util
 from apio import pkg_util
@@ -26,13 +26,13 @@ class System:  # pragma: no cover
         """Handles a failure of a 'lsftdi' command. Print message and exits."""
         #
         assert result.exit_code != 0, result
-        click.secho(result.out_text)
-        click.secho(f"{result.err_text}", fg="red")
-        click.secho("Error: the 'lsftdi' command failed.", fg="red")
+        secho(result.out_text)
+        secho(f"{result.err_text}", fg="red")
+        secho("Error: the 'lsftdi' command failed.", fg="red")
 
         # -- A special hint for zadig on windows.
         if self.apio_ctx.is_windows():
-            click.secho(
+            secho(
                 "\n"
                 "[Hint]: did you install the ftdi driver using "
                 "'apio drivers --ftdi-install'?",
@@ -56,22 +56,22 @@ class System:  # pragma: no cover
             # -- Print error message and exit.
             self._lsftdi_fatal_error(result)
 
-        click.secho(result.out_text)
+        secho(result.out_text)
         return 0
 
     def lsserial(self) -> int:
         """List the serial ports. Returns exit code."""
 
         serial_ports = util.get_serial_ports()
-        click.secho(f"Number of Serial devices found: {len(serial_ports)}")
+        secho(f"Number of Serial devices found: {len(serial_ports)}")
 
         for serial_port in serial_ports:
             port = serial_port.get("port")
             description = serial_port.get("description")
             hwid = serial_port.get("hwid")
-            click.secho(port, fg="cyan")
-            click.secho(f"Description: {description}")
-            click.secho(f"Hardware info: {hwid}\n")
+            secho(port, fg="cyan")
+            secho(f"Description: {description}")
+            secho(f"Hardware info: {hwid}\n")
 
         return 0
 
@@ -93,8 +93,8 @@ class System:  # pragma: no cover
         result = self._run_command("lsusb", silent=True)
 
         if result.exit_code != 0:
-            click.secho(result.out_text)
-            click.secho(result.err_text, fg="red")
+            secho(result.out_text)
+            secho(result.err_text, fg="red")
             raise RuntimeError("Error executing lsusb")
 
         # -- Get the list of the usb devices. It is read
@@ -183,14 +183,14 @@ class System:  # pragma: no cover
         """Callback function. It is executed when the command prints
         information on the standard output
         """
-        click.secho(line)
+        secho(line)
 
     @staticmethod
     def _on_stderr(line):
         """Callback function. It is executed when the command prints
         information on the standard error
         """
-        click.secho(line, fg="red")
+        secho(line, fg="red")
 
     @staticmethod
     def _parse_usb_devices(text: str) -> list:

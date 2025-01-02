@@ -11,6 +11,7 @@ import sys
 import subprocess
 from typing import Tuple, List
 import click
+from click import secho
 from apio import pkg_util, cmd_util
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import options
@@ -102,21 +103,21 @@ def cli(
         # -- Echo the commands. The apio raw command is platform dependent
         # -- so this may help us and the user diagnosing issues.
         if verbose:
-            click.secho(f"\n---- Executing {cmd}:")
+            secho(f"\n---- Executing {cmd}:")
 
         # -- Invoke the command.
         try:
             exit_code = subprocess.call(cmd, shell=False)
         except FileNotFoundError as e:
-            click.secho(f"{e}", fg="red")
+            secho(f"{e}", fg="red")
             sys.exit(1)
 
         if verbose:
-            click.secho("----\n")
+            secho("----\n")
             if exit_code != 0:
-                click.secho(f"Exist status [{exit_code}] ERROR", fg="red")
+                secho(f"Exist status [{exit_code}] ERROR", fg="red")
             else:
-                click.secho("Exit status [0] OK", fg="green")
+                secho("Exit status [0] OK", fg="green")
 
         # -- Return the command's status code.
         sys.exit(exit_code)

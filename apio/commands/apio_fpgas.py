@@ -10,6 +10,7 @@
 import sys
 from pathlib import Path
 import click
+from click import secho
 from apio.apio_context import ApioContext, ApioContextScope
 from apio import util
 from apio.commands import options
@@ -33,9 +34,9 @@ def list_fpgas(apio_ctx: ApioContext):
         )
 
         # -- Print the table header
-        click.secho(seperator_line)
-        click.secho(title)
-        click.secho(seperator_line)
+        secho(seperator_line)
+        secho(title)
+        secho(seperator_line)
 
     # -- Print all the fpgas!
     for fpga in apio_ctx.fpgas:
@@ -52,16 +53,16 @@ def list_fpgas(apio_ctx: ApioContext):
             # -- For terminal, print the FPGA name in color.
             fpga_str = click.style(f"{fpga:32}", fg="cyan")
             item = f"{fpga_str} {data_str}"
-            click.secho(item)
+            secho(item)
         else:
             # -- For pipe, no colors and no bullet point.
-            click.secho(f"{fpga:32} {data_str}")
+            secho(f"{fpga:32} {data_str}")
 
     # -- Print the Footer
     if config.terminal_mode():
-        click.secho(seperator_line)
+        secho(seperator_line)
 
-    click.secho(f"Total of {util.plurality(apio_ctx.fpgas, 'fpga')}")
+    secho(f"Total of {util.plurality(apio_ctx.fpgas, 'fpga')}")
 
 
 # ---------------------------

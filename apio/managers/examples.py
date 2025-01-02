@@ -12,7 +12,7 @@ import os
 from pathlib import Path, PosixPath
 from dataclasses import dataclass
 from typing import Optional, List
-import click
+from click import secho
 from apio import util
 from apio import pkg_util
 from apio.apio_context import ApioContext
@@ -130,8 +130,8 @@ class Examples:
         # -- terminal.
         if output_config.terminal_mode():
             terminal_seperator_line = "─" * output_config.terminal_width
-            click.secho()
-            click.secho(terminal_seperator_line)
+            secho()
+            secho(terminal_seperator_line)
 
         # -- For a pipe, determine the max example name length.
         max_example_name_len = max(len(x.name) for x in examples)
@@ -140,19 +140,19 @@ class Examples:
         for example in examples:
             if output_config.terminal_mode():
                 # -- For a terminal. Multi lines and colors.
-                click.secho(f"{example.name}", fg="blue", bold=True)
-                click.secho(f"{example.description}")
-                click.secho(terminal_seperator_line)
+                secho(f"{example.name}", fg="blue", bold=True)
+                secho(f"{example.description}")
+                secho(terminal_seperator_line)
             else:
                 # -- For a pipe, single line, no colors.
-                click.secho(
+                secho(
                     f"{example.name:<{max_example_name_len}}  |  "
                     f"{example.description}"
                 )
 
         # -- For a terminal, emit additional summary.
         if output_config.terminal_mode():
-            click.secho(f"Total: {len(examples)}")
+            secho(f"Total: {len(examples)}")
 
         return 0
 
@@ -181,10 +181,8 @@ class Examples:
         example_info: ExampleInfo = self.lookup_example_info(example_name)
 
         if not example_info:
-            click.secho(
-                f"Error: example '{example_name}' not found.", fg="red"
-            )
-            click.secho(
+            secho(f"Error: example '{example_name}' not found.", fg="red")
+            secho(
                 "Run 'apio example list' for the list of examples.\n"
                 "Expecting an example name like alhambra-ii/ledon.",
                 fg="yellow",
@@ -198,7 +196,7 @@ class Examples:
         # -- we ignore hidden files and directory.
         if dst_dir_path.is_dir():
             if not self.is_dir_empty(dst_dir_path):
-                click.secho(
+                secho(
                     f"Error: destination directory '{str(dst_dir_path)}' "
                     "is not empty.",
                     fg="red",
@@ -207,7 +205,7 @@ class Examples:
         else:
             dst_dir_path.mkdir(parents=True, exist_ok=False)
 
-        click.secho("Copying " + example_name + " example files.")
+        secho("Copying " + example_name + " example files.")
 
         # -- Go though all the files in the example folder.
         for file in src_example_path.iterdir():
@@ -216,7 +214,7 @@ class Examples:
                 shutil.copy(file, dst_dir_path)
 
         # -- Inform the user.
-        click.secho(
+        secho(
             f"Fetched successfully the files of example '{example_name}'.",
             fg="green",
         )
@@ -248,8 +246,8 @@ class Examples:
         # )
         board_exaamples = self.get_board_examples(board_id)
         if not board_exaamples:
-            click.secho(f"Error: no examples for board '{board_id}.", fg="red")
-            click.secho(
+            secho(f"Error: no examples for board '{board_id}.", fg="red")
+            secho(
                 "Run 'apio examples list' for the list of examples.\n"
                 "Expecting a board name such as 'alhambra-ii.",
                 fg="yellow",
@@ -264,10 +262,10 @@ class Examples:
 
         # -- If the source example path is not a folder... it is an error
         if not src_board_dir.is_dir():
-            click.secho(
+            secho(
                 f"Error: examples for board [{board_id}] not found.", fg="red"
             )
-            click.secho(
+            secho(
                 "Expecting a board name such as 'alhambra-ii'.\n"
                 "Run 'apio examples list' for the list of available examples.",
                 fg="yellow",
@@ -277,20 +275,20 @@ class Examples:
         if dst_board_dir.is_dir():
             # -- To avoid confusion to the user, we ignore hidden files.
             if not self.is_dir_empty(dst_board_dir):
-                click.secho(
+                secho(
                     f"Error: destination directory '{str(dst_board_dir)}' "
                     "is not empty.",
                     fg="red",
                 )
                 sys.exit(1)
         else:
-            click.secho(f"Creating directory {dst_board_dir}.")
+            secho(f"Creating directory {dst_board_dir}.")
             dst_board_dir.mkdir(parents=True, exist_ok=False)
 
         # -- Copy the directory tree.
         shutil.copytree(src_board_dir, dst_board_dir, dirs_exist_ok=True)
 
-        click.secho(
+        secho(
             "Board '" + board_id + "' examples has been fetched successfully.",
             fg="green",
         )

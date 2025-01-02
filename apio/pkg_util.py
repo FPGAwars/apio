@@ -15,6 +15,7 @@ from dataclasses import dataclass
 import os
 import sys
 import click
+from click import secho
 import semantic_version
 from apio.apio_context import ApioContext
 from apio import util
@@ -69,24 +70,24 @@ def _dump_env_mutations(
     apio_ctx: ApioContext, mutations: EnvMutations
 ) -> None:
     """Dumps a user friendly representation of the env mutations."""
-    click.secho("Envirnment settings:", fg="magenta")
+    secho("Envirnment settings:", fg="magenta")
 
     # -- Print PATH mutations.
     windows = apio_ctx.is_windows()
     for p in reversed(mutations.paths):
         styled_name = click.style("PATH", fg="magenta")
         if windows:
-            click.secho(f"set {styled_name}={p};%PATH%")
+            secho(f"set {styled_name}={p};%PATH%")
         else:
-            click.secho(f'{styled_name}="{p}:$PATH"')
+            secho(f'{styled_name}="{p}:$PATH"')
 
     # -- Print vars mutations.
     for name, val in mutations.vars:
         styled_name = click.style(name, fg="magenta")
         if windows:
-            click.secho(f"set {styled_name}={val}")
+            secho(f"set {styled_name}={val}")
         else:
-            click.secho(f'{styled_name}="{val}"')
+            secho(f'{styled_name}="{val}"')
 
 
 def _apply_env_mutations(mutations: EnvMutations) -> None:
@@ -143,7 +144,7 @@ def set_env_for_packages(
         _apply_env_mutations(mutations)
         apio_ctx.env_was_already_set = True
         if not verbose and not quiet:
-            click.secho("Setting the envinronment.")
+            secho("Setting the envinronment.")
 
 
 def check_required_packages(
@@ -200,31 +201,29 @@ def _check_required_package(
     """
     # -- Case 1: Package is not installed.
     if current_version is None:
-        click.secho(
+        secho(
             f"Error: apio package '{package_name}' is not installed.", fg="red"
         )
-        click.secho("Please run:\n  apio packages install", fg="yellow")
+        secho("Please run:\n  apio packages install", fg="yellow")
         sys.exit(1)
 
     # -- Case 2: Version does not match requirmeents.
     if not _version_matches(current_version, spec_version):
-        click.secho(
+        secho(
             f"Error: package '{package_name}' version {current_version}"
             " does not\n"
             f"match the requirement for version {spec_version}.",
             fg="red",
         )
-        click.secho(
-            "Please run:\n  apio packages install --force", fg="yellow"
-        )
+        secho("Please run:\n  apio packages install --force", fg="yellow")
         sys.exit(1)
 
     # -- Case 3: The package's directory does not exist.
     package_dir = apio_ctx.get_package_dir(package_name)
     if package_dir and not package_dir.is_dir():
         message = f"Error: package '{package_name}' is installed but missing"
-        click.secho(message, fg="red")
-        click.secho(
+        secho(message, fg="red")
+        secho(
             "Please run:\n"
             "  apio packages fix\n"
             "  apio packages install -- force",
@@ -356,14 +355,14 @@ def _list_section(title: str, items: List[List[str]], color: str) -> None:
     dline = "═" * line_width
 
     # -- Print the section.
-    click.secho()
-    click.secho(dline, fg=color)
-    click.secho(title, fg=color, bold=True)
+    secho()
+    secho(dline, fg=color)
+    secho(title, fg=color, bold=True)
     for item in items:
-        click.secho(line)
+        secho(line)
         for sub_item in item:
-            click.secho(sub_item)
-    click.secho(dline, fg=color)
+            secho(sub_item)
+    secho(dline, fg=color)
 
 
 def list_packages(apio_ctx: ApioContext, scan: PackageScanResults) -> None:
@@ -419,7 +418,7 @@ def list_packages(apio_ctx: ApioContext, scan: PackageScanResults) -> None:
 
     # -- Print an error summary
     if scan.num_errors():
-        click.secho(f"Total of {util.plurality(scan.num_errors(), 'error')}")
+        secho(f"Total of {util.plurality(scan.num_errors(), 'error')}")
 
     # -- A line seperator. For asthetic reasons.
-    click.secho()
+    secho()

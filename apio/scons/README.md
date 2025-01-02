@@ -17,6 +17,6 @@ set APIO_SCONS_DEBUGGER=
 ```
 
 * Print messages with color need to be performed with 
-  click.secho(...., color=True) otherwise it will be stripped automatically
+  secho(...., color=True) otherwise it will be stripped automatically
   by click due to the piped output. The the info/warning/error functions
   in scons_util.py.

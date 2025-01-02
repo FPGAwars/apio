@@ -7,7 +7,7 @@
 
 
 from typing import Dict, Tuple, Optional, List, Any
-import click
+from click import secho
 from apio.apio_context import ApioContext
 from apio import util
 
@@ -219,11 +219,11 @@ def process_arguments(
 def perror_insuficient_arguments():
     """Print an error: not enough arguments given"""
 
-    click.secho(
+    secho(
         "Error: insufficient arguments: missing board",
         fg="red",
     )
-    click.secho(
+    secho(
         "You have a few options:\n"
         "  1) Change to a project directory with an apio.ini file\n"
         "  2) Specify the directory of a project with an apio.ini file\n"

@@ -19,6 +19,7 @@ from functools import wraps
 
 import importlib.metadata
 import click
+from click import secho
 import semantic_version
 
 from apio import util
@@ -62,7 +63,7 @@ def on_exception(*, exit_code: int):
                     traceback.print_tb(exc.__traceback__)
 
                 if str(exc):
-                    click.secho("Error: " + str(exc), fg="red")
+                    secho("Error: " + str(exc), fg="red")
                 return exit_code
 
         return wrapper
@@ -328,7 +329,7 @@ class SCons:
             pkg_util.set_env_for_packages(
                 self.apio_ctx,
             )
-            click.secho("Querying programmer parameters.")
+            secho("Querying programmer parameters.")
 
             # -- Check that the board is connected
             # -- If not, an exception is raised
@@ -348,7 +349,7 @@ class SCons:
             # -- We force an early env setting message to have
             # -- the programmer message closer to the error message.
             pkg_util.set_env_for_packages(self.apio_ctx)
-            click.secho("Querying serial port parameters.")
+            secho("Querying serial port parameters.")
 
             # -- Check that the board is connected
             self._check_usb(board, board_info)
@@ -436,8 +437,8 @@ class SCons:
                 pkg_version = importlib.metadata.version(pip_pkg)
 
             except importlib.metadata.PackageNotFoundError as exc:
-                click.secho(f"Error: '{pip_pkg}' is not installed", fg="red")
-                click.secho(
+                secho(f"Error: '{pip_pkg}' is not installed", fg="red")
+                secho(
                     "Please run:\n" f"   pip install -U apio[{pip_pkg}]",
                     fg="yellow",
                 )
@@ -448,13 +449,13 @@ class SCons:
 
             # -- Version does not match!
             if not spec.match(version):
-                click.secho(
+                secho(
                     f"Error: '{pip_pkg}' "
                     + f"version ({version}) "
                     + f"does not match {spec}",
                     fg="red",
                 )
-                click.secho(
+                secho(
                     "Please run:\n" f"   pip install -U apio[{pip_pkg}]",
                     fg="yellow",
                 )
@@ -593,7 +594,7 @@ class SCons:
             # -- the user has not press the reset button and the bootloader
             # -- is not active
             if "tinyprog" in board_info:
-                click.secho(
+                secho(
                     "Activate bootloader by pressing the reset button",
                     fg="yellow",
                 )
@@ -862,11 +863,11 @@ class SCons:
         pkg_util.set_env_for_packages(self.apio_ctx)
 
         if util.is_debug():
-            click.secho("\nSCONS CALL:", fg="magenta")
-            click.secho(f"* command:   {command}")
-            click.secho(f"* board:     {board}")
-            click.secho(f"* variables: {variables}")
-            click.secho()
+            secho("\nSCONS CALL:", fg="magenta")
+            secho(f"* command:   {command}")
+            secho(f"* board:     {board}")
+            secho(f"* variables: {variables}")
+            secho()
 
         # -- Get the terminal width (typically 80)
         terminal_width, _ = shutil.get_terminal_size()
@@ -882,10 +883,10 @@ class SCons:
         board_color = click.style(board, fg="cyan", bold=True)
 
         # -- Print information on the console
-        click.secho(f"[{date_time_str}] Processing {board_color}")
+        secho(f"[{date_time_str}] Processing {board_color}")
 
         # -- Print a horizontal line
-        click.secho("-" * terminal_width, bold=True)
+        secho("-" * terminal_width, bold=True)
 
         # -- Create the scons debug options. See details at
         # -- https://scons.org/doc/2.4.1/HTML/scons-man.html
@@ -934,9 +935,7 @@ class SCons:
         )
 
         # -- Print the summary line.
-        click.secho(
-            f"{half_line} [{status}]{summary_text}{half_line}", err=is_error
-        )
+        secho(f"{half_line} [{status}]{summary_text}{half_line}", err=is_error)
 
         # -- Return the exit code
         return result.exit_code

@@ -4,6 +4,7 @@ import os
 from typing import List, Self
 from dataclasses import dataclass
 import click
+from click import secho
 from apio.commands.apio import cli as root
 
 
@@ -55,24 +56,24 @@ cmds_infos = get_cmds_infos()
 cmds_infos.sort(key=lambda x: x.path)
 
 # -- Dump a command list
-click.secho("## APIO COMMANDS", fg="magenta")
+secho("## APIO COMMANDS", fg="magenta")
 for cmd in cmds_infos:
     description = cmd.cli.short_help
     indent = "  " * (len(cmd.path) - 1)
-    click.secho(f'{indent}* [{cmd.path_str}](#{cmd.anchor}) - {description}')
+    secho(f'{indent}* [{cmd.path_str}](#{cmd.anchor}) - {description}')
 
 # -- Dump the command's help text.
 for cmd in cmds_infos:
     # cmd_path = ' '.join(cmd_info.path)
-    click.secho("\n<br>\n")
-    click.secho(
+    secho("\n<br>\n")
+    secho(
         f"### {cmd.path_str}",
         fg="magenta",
     )
-    click.secho()
+    secho()
 
     help_command = f"{cmd.path_str} -h"
-    click.secho("```")
+    secho("```")
     exit_code = os.system(help_command)
     assert exit_code == 0
-    click.secho("```")
+    secho("```")

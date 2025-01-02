@@ -15,6 +15,7 @@ from pathlib import Path
 from tarfile import open as tarfile_open
 from zipfile import ZipFile
 import click
+from click import secho
 from apio import util
 
 
@@ -122,7 +123,7 @@ class FileUnpacker:
 
         # -- Archive type not known!! Raise an exception!
         if not self._unpacker:
-            click.secho(f"Can not unpack file '{archpath}'")
+            secho(f"Can not unpack file '{archpath}'")
             raise util.ApioException()
 
     def start(self) -> bool:
