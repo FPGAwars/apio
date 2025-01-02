@@ -90,9 +90,7 @@ class PluginEcp5(PluginBase):
                 "--json $SOURCE --textcfg $TARGET "
                 "--report {2} --lpf {3} {4} --timing-allow-fail --force"
             ).format(
-                # pylint: disable=fixme
-                # TODO: Explain why 12k -> 25k.
-                # TODO: 12k looks more like size than type. Why?
+                # -- See details here: https://tinyurl.com/apio-ecp5-25k-12k
                 "25k" if (args.FPGA_TYPE == "12k") else args.FPGA_TYPE,
                 args.FPGA_PACK,
                 TARGET + ".pnr",
