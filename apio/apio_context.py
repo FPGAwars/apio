@@ -8,7 +8,6 @@
 
 import sys
 import json
-import re
 import platform
 from enum import Enum
 from collections import OrderedDict
@@ -144,13 +143,26 @@ class ApioContext:
         # -- Determine apio home dir. Some tools get confused if the home
         # -- dir contains spaces so we prohibit it.
         self.home_dir: Path = ApioContext._get_home_dir()
-        if re.search("\\s", str(self.home_dir)):
-            secho(
-                "Error: The apio home dir path should not contain spaces.",
-                fg="red",
-            )
-            secho(f"Home dir: '{str(self.home_dir)}'", fg="yellow")
-            sys.exit(1)
+
+        # -- We have problem with spaces and non ascii character above value
+        # -- 127, so we prohibit them.
+        # -- See here https://github.com/FPGAwars/apio/issues/515
+        for ch in str(self.home_dir):
+            if ord(ch) < 33 or ord(ch) > 127:
+                secho(
+                    "Error: The apio home dir contains a non supported"
+                    f" character [{ch}].\n"
+                    f"Apio home dir: '{str(self.home_dir)}'",
+                    fg="red",
+                )
+                secho(
+                    "Only the ASCII cractrs from 33 to 127 are supported. "
+                    "You can use the\nsystem env var 'APIO_HOME_DIR' to set "
+                    "a different apio home dir.",
+                    fg="yellow",
+                )
+
+                sys.exit(1)
 
         # -- Profile information, from ~/.apio/profile.json
         self.profile = Profile(self.home_dir)

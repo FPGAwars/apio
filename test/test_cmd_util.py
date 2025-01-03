@@ -6,7 +6,6 @@ import sys
 import pytest
 import click
 from apio.cmd_util import (
-    # ApioCommand,
     ApioOption,
     check_at_most_one_param,
 )

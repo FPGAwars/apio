@@ -24,9 +24,8 @@ from click.testing import Result
 # -- Debug mode on/off
 DEBUG = True
 
-# -- We insert unicode to the test pathes to make sure apio handle them
-# -- properly.
-FUNNY_MARKER = "fuññy"
+# -- This is the marker we use to identify the sandbox directories.
+SANDBOX_MARKER = "apio-sandbox"
 
 
 # -- This function is called by pytest. It addes the pytest --offline flag
@@ -117,7 +116,7 @@ class ApioSandbox:
 
         # -- Since we restore the env after invoking the apio command, we
         # -- don't expect path changes by the command to survive here.
-        assert FUNNY_MARKER not in os.environ["PATH"]
+        assert SANDBOX_MARKER not in os.environ["PATH"]
 
         # -- Take a snapshot of the system env.
         original_env = os.environ.copy()
@@ -324,31 +323,30 @@ class ApioRunner:
 
         # -- Create a temp sandbox dir that will be deleted on exit and
         # -- change to it.
-        sandbox_dir = Path(tempfile.mkdtemp(prefix=FUNNY_MARKER + "-"))
+        sandbox_dir = Path(tempfile.mkdtemp(prefix=SANDBOX_MARKER + "-"))
 
-        # -- Construct the sandbox dir pathes. User will create the dirs
-        # -- as needed.
-        # --
-        # -- We do allow spaces in the project dir.
-        proj_dir = sandbox_dir / " proj"
+        # -- Make the sandbox's project directory. We intentionally use a
+        # -- directory name with a space and a non ascii characterto test
+        # -- that apio can handle it.
+        proj_dir = sandbox_dir / "apio prój"
         proj_dir.mkdir()
         os.chdir(proj_dir)
 
-        # -- Spaces are not supported yet in the home and packges dirs.
-        # -- For more details see https://github.com/FPGAwars/apio/issues/474.
+        # -- Determine if we use a shared home or a unique home for this
+        # -- sandbox.
         if shared_home:
             # -- Using a shared home. If first time, create and save the path.
             if self._shared_apio_home is None:
                 self._shared_apio_home = (
-                    Path(tempfile.mkdtemp(prefix=FUNNY_MARKER + "-"))
-                    / "shared-apio"
+                    Path(tempfile.mkdtemp(prefix=SANDBOX_MARKER + "-"))
+                    / "shared-apio-home"
                 )
             # -- Use the shared home. It's common to all the sandboxes with
             # -- this instance of ApioRunner fixture.
             home_dir = self._shared_apio_home
         else:
             # -- Using a home dir unique to this sandbox.
-            home_dir = sandbox_dir / "apio"
+            home_dir = sandbox_dir / "apio-home"
 
         if DEBUG:
             print()

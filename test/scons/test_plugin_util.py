@@ -25,7 +25,7 @@ from apio.scons.plugin_util import (
 
 
 def test_get_constraint_file(
-    capsys: LogCaptureFixture, apio_runner: ApioRunner
+    apio_runner: ApioRunner, capsys: LogCaptureFixture
 ):
     """Test the get_constraint_file() method."""
 
