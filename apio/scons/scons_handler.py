@@ -137,7 +137,7 @@ class SconsHandler:
         # -- The 'sim' target and its dependencies, to simulate and display the
         # -- results of a single testbench.
         if apio_env.targeting("sim"):
-            sim_config = get_sim_config(apio_env, args.TESTBENCH, synth_srcs)
+            sim_config = get_sim_config(args.TESTBENCH, synth_srcs, test_srcs)
             sim_out_target = apio_env.builder_target(
                 builder_id=TESTBENCH_COMPILE_BUILDER,
                 target=sim_config.build_testbench_name,

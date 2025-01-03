@@ -29,10 +29,20 @@ https://github.com/FPGAwars/apio/wiki/Project-configuration-file
 """
 
 # -- Set of options every valid project should have.
-REQUIRED_OPTIONS = {"board"}
+REQUIRED_OPTIONS = {
+    # -- The board id.
+    "board",
+}
 
 # -- Set of additional options a project may have.
-OPTIONAL_OPTIONS = {"top-module", "format-verible-options"}
+OPTIONAL_OPTIONS = {
+    # -- The top module name. Default is 'main'.
+    "top-module",
+    # -- The default testbench name for 'apio sim'.
+    "default-testbench",
+    # -- Multi line list of verible options for 'apio format'
+    "format-verible-options",
+}
 
 # -- Set of all options a project may have.
 ALL_OPTIONS = REQUIRED_OPTIONS | OPTIONAL_OPTIONS

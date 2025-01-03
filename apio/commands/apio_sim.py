@@ -20,14 +20,18 @@ from apio.apio_context import ApioContext, ApioContextScope
 # ---------------------------
 
 HELP = """
-The command ‘apio sim’ simulates a testbench file and displays the simulation
-results in a GTKWave graphical window. The testbench is expected to have a
-name ending with _tb (e.g., my_module_tb.v).
+The command ‘apio sim’ simulates the default or the specified testbench file
+and displays its simulation results in a graphical GTKWave window.
+The testbench is expected to have a name ending with _tb, such as
+main_tb.v or main_tb.sv. The default testbench file can be specified using
+the apio.ini option ‘default-testbench’. If 'default-testbench' is not
+specified and the project has exactly one testbench file, that file will be
+used as the default testbench.
 
 \b
 Example:
-  apio sim my_module_tb.v
-  apio sim my_module_tb.v --force
+  apio sim                        # Simulate the default testbench file.
+  apio sim my_module_tb.v         # Simulate the specified testbench file.
 
 [Important] Avoid using the Verilog $dumpfile() function in your testbenches,
 as this may override the default name and location Apio sets for the
@@ -42,7 +46,7 @@ For a sample testbench that utilizes this macro, see the example at:
 https://github.com/FPGAwars/apio-examples/tree/master/upduino31/testbench
 
 [Hint] When configuring the signals in GTKWave, save the configuration so you
-don’t need to repeat it for each simulation.
+don’t need to repeat it each time you run the simulation.
 """
 
 
@@ -52,7 +56,7 @@ don’t need to repeat it for each simulation.
     help=HELP,
 )
 @click.pass_context
-@click.argument("testbench", nargs=1, required=True)
+@click.argument("testbench", nargs=1, required=False)
 @options.force_option_gen(help="Force simulation.")
 @options.project_dir_option
 def cli(
@@ -72,6 +76,12 @@ def cli(
         scope=ApioContextScope.PROJECT_REQUIRED,
         project_dir_arg=project_dir,
     )
+
+    # -- If testbench not given, try to get a default from apio.ini.
+    if not testbench:
+        # -- If the option is not specified, testbench is set to None and
+        # -- we issue an error message in the scons process.
+        testbench = apio_ctx.project.get("default-testbench", None)
 
     # -- Create the scons manager.
     scons = SCons(apio_ctx)

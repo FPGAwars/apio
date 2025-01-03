@@ -33,6 +33,16 @@ from apio.scons.apio_env import ApioEnv, TARGET, BUILD_DIR_SEP
 # -- A list with the file extensions of the verilog source files.
 SRC_SUFFIXES = [".v", ".sv"]
 
+TESTBENCH_HINT = "Testbench file names must end with '_tb.v' or '_tb.sv."
+
+
+def secho_lines(colors: List[str], lines: List[str]) -> None:
+    """Secho list of lines with matching colors. If running out of colors,
+    repeat the last one.."""
+    for i, line in enumerate(lines):
+        fg = colors[i] if i < len(colors) else colors[-1]
+        secho(line, fg=fg, color=True)
+
 
 def maybe_wait_for_remote_debugger(env_var_name: str):
     """A rendezvous point for a remote debger. If the environment variable
@@ -320,18 +330,75 @@ def waves_target(
     return target
 
 
+def check_valid_testbench_name(testbench: str) -> None:
+    """Check if a testbench name is valid. If not, print an error message
+    and exit."""
+    if not is_verilog_src(testbench) or not has_testbench_name(testbench):
+        secho_lines(
+            ["red"],
+            [
+                f"Error: '{testbench}' is not a valid testbench file name.",
+                TESTBENCH_HINT,
+            ],
+        )
+        sys.exit(1)
+
+
 def get_sim_config(
-    apio_env: ApioEnv, testbench: str, synth_srcs: List[str]
+    testbench: str,
+    synth_srcs: List[str],
+    test_srcs: List[str],
 ) -> SimulationConfig:
     """Returns a SimulationConfig for a sim command. 'testbench' is
-    a required testbench file name. 'synth_srcs' is the list of all
-    module sources as returned by source_files()."""
-    assert testbench, "Missing testbench name"
+    an optional testbench file name. 'synth_srcs' and 'test_srcs' are the
+    all the project's synth and testbench files found in the project as
+    returne by source_files()."""
 
-    # Construct a SimulationParams with all the synth files + the
-    # testbench file.
+    # -- Handle the testbench file selection. The end result is a single
+    # -- testbench file name in testbench that we simulate, or a fatal error.
+    if testbench:
+        # -- Case 1 - Testbench file name is specified in the command or
+        # -- apio.ini. Fatal error if invalid.
+        check_valid_testbench_name(testbench)
+    elif len(test_srcs) == 0:
+        # -- Case 2 Testbench name was not specified and no testbench files
+        # -- were found in the project.
+        secho_lines(
+            ["red"],
+            [
+                "Error: No testbench files found in the project.",
+                TESTBENCH_HINT,
+            ],
+        )
+        sys.exit(1)
+    elif len(test_srcs) == 1:
+        # -- Case 3 Testbench name was not specified but there is exactly
+        # -- one in the project.
+        testbench = test_srcs[0]
+        secho_lines(
+            ["cyan"],
+            [f"Found testbench file [{testbench}]"],
+        )
+    else:
+        # -- Case 4 Testbench name was not specified and there are multiple
+        # -- testbench files in the project.
+        secho_lines(
+            ["red", "yellow"],
+            [
+                "Error: Multiple testbench files found in the project.",
+                "Please specify the testbench file name in the command "
+                "or in apio.ini 'default-testbench' option.",
+            ],
+        )
+        sys.exit(1)
+
+    # -- This should not happen. If it does, it's a programming error.
+    assert testbench, "get_sim_config(): Missing testbench file name"
+
+    # -- Construct a SimulationParams with all the synth files + the
+    # -- testbench file.
     testbench_name = basename(testbench)
-    build_testbench_name = apio_env.BUILD_DIR_SEP + testbench_name
+    build_testbench_name = BUILD_DIR_SEP + testbench_name
     srcs = synth_srcs + [testbench]
     return SimulationConfig(testbench_name, build_testbench_name, srcs)
 
@@ -347,13 +414,32 @@ def get_tests_configs(
     testbench in testbench will be tested. synth_srcs and test_srcs are
     source and test file lists as returned by source_files()."""
     # List of testbenches to be tested.
+
+    # -- Handle the testbench files selection. The end result is a list of one
+    # -- or more testbench file names in testbenches that we test.
     if testbench:
+        # -- Case 1 - a testbench file name is specified in the command or
+        # -- apio.ini. Fatal error if invalid.
+        check_valid_testbench_name(testbench)
         testbenches = [testbench]
+    elif len(test_srcs) == 0:
+        # -- Case 2 - Testbench file name was not specified and there are no
+        # -- testbench files in the project.
+        secho_lines(
+            ["red", "yellow"],
+            [
+                "Error: No testbench files found in the project.",
+                TESTBENCH_HINT,
+            ],
+        )
+        sys.exit(1)
     else:
+        # -- Case 3 - Testbench file name was not specified but there are one
+        # -- or more testbench files in the project.
         testbenches = test_srcs
 
     # -- If this fails, it's a programming error.
-    assert testbenches, "No testbenches"
+    assert testbenches, "get_tests_configs(): no testbenches"
 
     # Construct a config for each testbench.
     configs = []
@@ -408,6 +494,9 @@ def source_file_issue_action() -> FunctionAction:
                 file.name
             ):
                 continue
+
+            # -- Here the file is a testbench file.
+            secho(f"Testbench {file.name}", fg="cyan", color=True)
 
             # -- Read the testbench file text.
             file_text = file.get_text_contents()
