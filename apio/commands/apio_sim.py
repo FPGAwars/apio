@@ -10,6 +10,7 @@
 import sys
 from pathlib import Path
 import click
+from click import secho
 from apio.managers.scons import SCons
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
@@ -82,6 +83,10 @@ def cli(
         # -- If the option is not specified, testbench is set to None and
         # -- we issue an error message in the scons process.
         testbench = apio_ctx.project.get("default-testbench", None)
+        if testbench:
+            secho(
+                f"Using default testbench: {testbench}", fg="cyan", color=True
+            )
 
     # -- Create the scons manager.
     scons = SCons(apio_ctx)
