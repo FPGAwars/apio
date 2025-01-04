@@ -13,6 +13,7 @@ from typing import List, Callable, Tuple
 from pathlib import Path
 from dataclasses import dataclass
 import os
+import semantic_version
 import click
 from click import secho
 from apio.apio_context import ApioContext
@@ -149,8 +150,12 @@ def set_env_for_packages(
 class PackageScanResults:
     """Represents results of packages scan."""
 
-    # -- Normal. Packages in platform_packages that are instaleld properly.
+    # -- Normal and Error. Packages in platform_packages that are installed
+    # -- regardless if the versin matches or not.
     installed_package_ids: List[str]
+    # -- Error. The subset of installed_package_ids that have version
+    # -- mismatch.
+    installed_bad_version_subset: List[str]
     # -- Normal. Packages in platform_packages that are uninstaleld properly.
     uninstalled_package_ids: List[str]
     # -- Error. Packages in platform_packages with broken installation. E.g,
@@ -166,24 +171,64 @@ class PackageScanResults:
     # -- expected to contain only directories for packages.a
     orphan_file_names: List[str]
 
-    def num_errors(self) -> bool:
-        """Returns the number of errors.."""
+    def num_errors_to_fix(self) -> bool:
+        """Returns the number of errors that required , having a non installed
+        packages is not considered an error that need to be fix."""
         return (
-            len(self.broken_package_ids)
+            len(self.installed_bad_version_subset)
+            + len(self.broken_package_ids)
             + len(self.orphan_package_ids)
             + len(self.orphan_dir_names)
             + len(self.orphan_file_names)
         )
 
+    def is_all_ok(self) -> bool:
+        """Return True if all packages are installed properly with no
+        issues."""
+        return (self.num_errors_to_fix + self.uninstalled_package_ids) == 0
+
     def dump(self):
         """Dump the content of this object. For debugging."""
         print("Package scan results:")
-        print(f"  Installed    {self.installed_package_ids}")
-        print(f"  Uninstalled  {self.uninstalled_package_ids}")
-        print(f"  Broken       {self.broken_package_ids}")
-        print(f"  Orphan ids   {self.orphan_package_ids}")
-        print(f"  Orphan dirs  {self.orphan_dir_names}")
-        print(f"  Orphan files {self.orphan_file_names}")
+        print(f"  Installed     {self.installed_package_ids}")
+        print(f"  bad version   {self.installed_bad_version_subset}")
+        print(f"  Uninstalled   {self.uninstalled_package_ids}")
+        print(f"  Broken        {self.broken_package_ids}")
+        print(f"  Orphan ids    {self.orphan_package_ids}")
+        print(f"  Orphan dirs   {self.orphan_dir_names}")
+        print(f"  Orphan files  {self.orphan_file_names}")
+
+
+def packge_version_ok(apio_ctx: ApioContext, package_id: str) -> bool:
+    """Return true if the packagea is both in profile and plagrom packages
+    and its version in the provile meet the requirements in the
+    distribution.json file. Otherwise return false."""
+
+    # If this package is not applicable to this platform, return False.
+    if package_id not in apio_ctx.platform_packages:
+        return False
+
+    # -- If the current or rversion spec are not available, return False.
+    current_ver = apio_ctx.profile.get_package_installed_version(
+        package_id, None
+    )
+    ver_spec = apio_ctx.distribution.get("packages", {}).get(package_id, None)
+    if not ver_spec or not current_ver:
+        return False
+
+    # -- Parse the version spec. If this fails, it's a programming error.
+    sem_spec = semantic_version.SimpleSpec(ver_spec)
+
+    # -- Parse the current version. If it's invalid, return False, e.g.
+    # -- if the profile file is corrupt.
+    try:
+        sem_version = semantic_version.Version(current_ver)
+
+    except ValueError:
+        return False
+
+    # -- Perform the matching.
+    return sem_version in sem_spec
 
 
 def scan_packages(apio_ctx: ApioContext) -> PackageScanResults:
@@ -191,7 +236,7 @@ def scan_packages(apio_ctx: ApioContext) -> PackageScanResults:
     the findings as a PackageScanResults object."""
 
     # Initialize the result with empty data.
-    result = PackageScanResults([], [], [], [], [], [])
+    result = PackageScanResults([], [], [], [], [], [], [])
 
     # -- A helper set that we populate with the 'folder_name' values of the
     # -- all the packages for this platform.
@@ -207,8 +252,13 @@ def scan_packages(apio_ctx: ApioContext) -> PackageScanResults:
         # -- Classify the package as one of three cases.
         in_profile = package_id in apio_ctx.profile.packages
         has_dir = apio_ctx.get_package_dir(package_id).is_dir()
+        version_ok = packge_version_ok(apio_ctx, package_id)
         if in_profile and has_dir:
             result.installed_package_ids.append(package_id)
+            if not version_ok:
+                # -- The subset of installed_package_ids that has bad
+                # -- version.
+                result.installed_bad_version_subset.append(package_id)
         elif not in_profile and not has_dir:
             result.uninstalled_package_ids.append(package_id)
         else:
@@ -230,6 +280,9 @@ def scan_packages(apio_ctx: ApioContext) -> PackageScanResults:
             result.orphan_file_names.append(base_name)
 
     # -- Return results
+    if util.is_debug():
+        result.dump()
+
     return result
 
 
@@ -252,6 +305,7 @@ def _list_section(title: str, items: List[List[str]], color: str) -> None:
     secho(dline, fg=color)
 
 
+# pylint: disable=too-many-branches
 def list_packages(apio_ctx: ApioContext, scan: PackageScanResults) -> None:
     """Prints in a user friendly format the results of a packages scan."""
 
@@ -265,8 +319,12 @@ def list_packages(apio_ctx: ApioContext, scan: PackageScanResults) -> None:
         for package_id in scan.installed_package_ids:
             name = click.style(f"{package_id}", fg="cyan", bold=True)
             version = get_package_version(package_id)
+            if package_id in scan.installed_bad_version_subset:
+                note = click.style(" [Wrong version]", fg="red", bold=True)
+            else:
+                note = ""
             description = get_package_info(package_id)["description"]
-            items.append([f"{name} {version}", f"{description}"])
+            items.append([f"{name} {version}{note}", f"{description}"])
         _list_section("Installed packages:", items, "green")
 
     # -- Print the uninstalled packages, if any,
@@ -304,8 +362,8 @@ def list_packages(apio_ctx: ApioContext, scan: PackageScanResults) -> None:
         _list_section("[Error] Unknown files and directories:", items, None)
 
     # -- Print an error summary
-    if scan.num_errors():
-        secho(f"Total of {util.plurality(scan.num_errors(), 'error')}")
+    if scan.num_errors_to_fix():
+        secho(f"Total of {util.plurality(scan.num_errors_to_fix(), 'error')}")
 
     # -- A line seperator. For asthetic reasons.
     secho()

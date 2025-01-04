@@ -160,7 +160,7 @@ def _list_cli():
     pkg_util.list_packages(apio_ctx, scan)
 
     # -- Print an hint or summary based on the findings.
-    if scan.num_errors():
+    if scan.num_errors_to_fix():
         secho("[Hint] run 'apio packages fix' to fix the errors.", fg="yellow")
     elif scan.uninstalled_package_ids:
         secho(
@@ -205,7 +205,7 @@ def _fix_cli(
     scan = pkg_util.scan_packages(apio_ctx)
 
     # -- Fix any errors.
-    if scan.num_errors():
+    if scan.num_errors_to_fix():
         installer.fix_packages(apio_ctx, scan, verbose)
     else:
         secho("No errors to fix")

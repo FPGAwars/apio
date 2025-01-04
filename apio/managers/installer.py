@@ -419,9 +419,17 @@ def fix_packages(
 
     # -- If non verbose, print a summary message.
     if not verbose:
-        secho(f"Fixing {util.plurality(scan.num_errors(), 'package error')}.")
+        plurality = util.plurality(scan.num_errors_to_fix(), "package error")
+        secho(f"Fixing {plurality}.")
 
     # -- Fix broken packages.
+    for package_id in scan.installed_bad_version_subset:
+        if verbose:
+            print(f"Uninstalling versin mismatch '{package_id}'")
+        _delete_package_dir(apio_ctx, package_id, verbose=False)
+        apio_ctx.profile.remove_package(package_id)
+        apio_ctx.profile.save()
+
     for package_id in scan.broken_package_ids:
         if verbose:
             print(f"Uninstalling broken package '{package_id}'")
