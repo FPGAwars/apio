@@ -33,7 +33,7 @@ board_option = click.option(
 # ---------------------------
 # -- COMMAND
 # ---------------------------
-HELP = """
+APIO_CREATE_HELP = """
 The command 'apio create' creates a new `apio.ini` project file and is
 typically used when setting up a new Apio project.
 
@@ -54,7 +54,7 @@ and buildable project. To create complete projects, refer to the
 @click.command(
     name="create",
     short_help="Create an apio.ini project file.",
-    help=HELP,
+    help=APIO_CREATE_HELP,
 )
 @click.pass_context
 @board_option

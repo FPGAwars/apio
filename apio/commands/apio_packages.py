@@ -20,7 +20,7 @@ from apio.cmd_util import ApioGroup, ApioSubgroup
 
 # ------ apio packages install
 
-INSTALL_HELP = """
+APIO_PACKAGES_INSTALL_HELP = """
 The command ‘apio packages install’ installs Apio packages that are required
 for the operation of Apio on your system.
 
@@ -40,7 +40,7 @@ otherwise, packages that are already installed correctly remain unchanged.
 @click.command(
     name="install",
     short_help="Install apio packages.",
-    help=INSTALL_HELP,
+    help=APIO_PACKAGES_INSTALL_HELP,
 )
 @click.argument("packages", nargs=-1, required=False)
 @options.force_option_gen(help="Force installation.")
@@ -72,7 +72,7 @@ def _install_cli(
 
 # ------ apio packages uninstall
 
-UNINSTALL_HELP = """
+APIO_PACKAGES_UNINSTALL_HELP = """
 The command ‘apio packages uninstall’ removes installed Apio packages from
 your system. The command does not uninstall the Apio tool itself.
 
@@ -87,7 +87,7 @@ Examples:
 @click.command(
     name="uninstall",
     short_help="Uninstall apio packages.",
-    help=UNINSTALL_HELP,
+    help=APIO_PACKAGES_UNINSTALL_HELP,
 )
 @click.argument("packages", nargs=-1, required=False)
 @options.sayyes
@@ -132,7 +132,7 @@ def _uninstall_cli(
 
 # ------ apio packages list
 
-LIST_HELP = """
+APIO_PACKAGES_LIST_HELP = """
 The command ‘apio packages list’ lists the available and installed Apio
 packages. The list of available packages depends on the operating system
 you are using and may vary between operating systems.
@@ -146,7 +146,7 @@ Examples:
 @click.command(
     name="list",
     short_help="List apio packages.",
-    help=LIST_HELP,
+    help=APIO_PACKAGES_LIST_HELP,
 )
 def _list_cli():
     """Implements the 'apio packages list' command."""
@@ -174,7 +174,7 @@ def _list_cli():
 
 # ------ apio packages fix
 
-FIX_HELP = """
+APIO_PACKAGES_FIX_HELP = """
 The command ‘apio packages fix’ resolves partially installed or leftover Apio
 packages that are listed as broken by the command ‘apio packages list’.
 If there are no broken packages, the command does nothing and exits.
@@ -189,7 +189,7 @@ Examples:
 @click.command(
     name="fix",
     short_help="Fix broken apio packages.",
-    help=FIX_HELP,
+    help=APIO_PACKAGES_FIX_HELP,
 )
 @options.verbose_option
 def _fix_cli(
@@ -218,7 +218,7 @@ def _fix_cli(
 # ------ apio packages (group)
 
 
-HELP = """
+APIO_PACKAGES_HELP = """
 The command group ‘apio packages’ provides commands to manage the installation
 of Apio packages. These are not Python packages but Apio-specific packages
 containing various tools and data essential for the operation of Apio.
@@ -250,7 +250,7 @@ SUBGROUPS = [
     cls=ApioGroup,
     subgroups=SUBGROUPS,
     short_help="Manage the apio packages.",
-    help=HELP,
+    help=APIO_PACKAGES_HELP,
 )
 def cli():
     """Implements the 'apio packages' command group.'"""

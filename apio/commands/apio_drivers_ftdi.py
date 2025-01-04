@@ -17,7 +17,7 @@ from apio.managers.system import System
 
 # -- apio drivers ftdi install
 
-INSTALL_HELP = """
+APIO_DRIVERS_FTDI_INSTALL_HELP = """
 The command 'apio drivers ftdi install' installs on your system the FTDI
 drivers required by some FPGA boards.
 
@@ -31,7 +31,7 @@ Examples:
 @click.command(
     name="install",
     short_help="Install the ftdi drivers.",
-    help=INSTALL_HELP,
+    help=APIO_DRIVERS_FTDI_INSTALL_HELP,
 )
 def _install_cli():
     """Implements the 'apio drivers ftdi install' command."""
@@ -50,7 +50,7 @@ def _install_cli():
 
 # -- apio driver ftdi uninstall
 
-UNINSTALL_HELP = """
+APIO_DRIVERS_FTDI_UNINSTALL_HELP = """
 The command 'apio drivers ftdi uninstall' removes the FTDI drivers that may
 have been installed earlier.
 
@@ -65,7 +65,7 @@ Examples:
 @click.command(
     name="uninstall",
     short_help="Uninstall the ftdi drivers.",
-    help=UNINSTALL_HELP,
+    help=APIO_DRIVERS_FTDI_UNINSTALL_HELP,
 )
 def _uninstall_cli():
     """Implements the 'apio drivers ftdi uninstall' command."""
@@ -84,7 +84,7 @@ def _uninstall_cli():
 # -- apio drivers ftdi list
 
 
-LIST_HELP = """
+APIO_DRIVERS_FTDI_LIST_HELP = """
 The command 'apio drivers ftdi list' displays the FTDI devices currently
 connected to your computer. It is useful for diagnosing FPGA board
 connectivity issues.
@@ -101,7 +101,7 @@ directly with the 'apio raw -- lsftdi <flags>' command.
 @click.command(
     name="list",
     short_help="List the connected ftdi devices.",
-    help=LIST_HELP,
+    help=APIO_DRIVERS_FTDI_LIST_HELP,
 )
 def _list_cli():
     """Implements the 'apio drivers ftdi list' command."""
@@ -119,7 +119,7 @@ def _list_cli():
 
 # --- apio drivers ftdi
 
-FTDI_HELP = """
+APIO_DRIVERS_FTDI_HELP = """
 The command group 'apio drivers ftdi' includes subcommands that help manage
 the FTDI drivers on your system.
 """
@@ -142,7 +142,7 @@ SUBGROUPS = [
     cls=ApioGroup,
     subgroups=SUBGROUPS,
     short_help="Manage the ftdi drivers.",
-    help=FTDI_HELP,
+    help=APIO_DRIVERS_FTDI_HELP,
 )
 def cli():
     """Implements the 'apio drivers ftdi' command."""

@@ -59,7 +59,7 @@ warn_option = click.option(
 # ---------------------------
 # -- COMMAND
 # ---------------------------
-HELP = """
+APIO_LINT_HELP = """
 The command ‘apio lint’ scans the project’s Verilog code and reports errors,
 inconsistencies, and style violations. The command uses the Verilator tool,
 which is included in the standard Apio installation.
@@ -77,7 +77,7 @@ Examples:
 @click.command(
     name="lint",
     short_help="Lint the verilog code.",
-    help=HELP,
+    help=APIO_LINT_HELP,
 )
 @click.pass_context
 @options.top_module_option_gen(

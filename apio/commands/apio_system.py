@@ -17,7 +17,7 @@ from apio.cmd_util import ApioGroup, ApioSubgroup
 
 # ------ apio system info
 
-INFO_HELP = """
+APIO_SYSTEM_INFO_HELP = """
 The command ‘apio system info’ provides general information about your system
 and Apio installation, which is useful for diagnosing Apio installation issues.
 
@@ -36,7 +36,7 @@ variable.
 @click.command(
     name="info",
     short_help="Show platform id and other info.",
-    help=INFO_HELP,
+    help=APIO_SYSTEM_INFO_HELP,
 )
 def _info_cli():
     """Implements the 'apio system info' command."""
@@ -71,7 +71,7 @@ def _info_cli():
 
 # ------ apio system platforms
 
-PLATFORMS_HELP = """
+APIO_SYSTEM_PLATFORMS_HELP = """
 The command ‘apio system platforms’ lists the platform IDs supported by Apio,
 with the effective platform ID of your system highlighted.
 
@@ -87,7 +87,7 @@ defining a different platform ID using the APIO_PLATFORM environment variable.
 @click.command(
     name="platforms",
     short_help="List supported platforms ids.",
-    help=PLATFORMS_HELP,
+    help=APIO_SYSTEM_PLATFORMS_HELP,
 )
 def _platforms_cli():
     """Implements the 'apio system platforms' command."""
@@ -113,7 +113,7 @@ def _platforms_cli():
 
 # ------ apio system
 
-SYSTEM_HELP = """
+APIO_SYSTEM_HELP = """
 The command group ‘apio system’ contains subcommands that provide information
 about the system and Apio’s installation.
 """
@@ -135,7 +135,7 @@ SUBGROUPS = [
     cls=ApioGroup,
     subgroups=SUBGROUPS,
     short_help="Provides system info.",
-    help=SYSTEM_HELP,
+    help=APIO_SYSTEM_HELP,
 )
 def cli():
     """Implements the 'apio system' command group."""

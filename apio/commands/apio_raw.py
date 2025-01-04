@@ -21,7 +21,7 @@ from apio.util import nameof
 # ---------------------------
 # -- COMMAND
 # ---------------------------
-HELP = """
+APIO_RAW_HELP = """
 The command ‘apio raw’ allows you to bypass Apio and run underlying tools
 directly. This is an advanced command that requires familiarity with the
 underlying tools.
@@ -59,7 +59,7 @@ env_option = click.option(
 @click.command(
     name="raw",
     short_help="Execute commands directly from the Apio packages.",
-    help=HELP,
+    help=APIO_RAW_HELP,
     context_settings={"ignore_unknown_options": True},
 )
 @click.pass_context

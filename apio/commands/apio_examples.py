@@ -20,7 +20,7 @@ from apio.cmd_util import ApioGroup, ApioSubgroup
 # ---- apio examples list
 
 
-LIST_HELP = """
+APIO_EXAMPLES_LIST_HELP = """
 The command ‘apio examples list’ lists the available Apio project examples
 that you can use.
 
@@ -36,7 +36,7 @@ Examples:
 @click.command(
     name="list",
     short_help="List the available apio examples.",
-    help=LIST_HELP,
+    help=APIO_EXAMPLES_LIST_HELP,
 )
 def _list_cli():
     """Implements the 'apio examples list' command group."""
@@ -55,7 +55,7 @@ def _list_cli():
 # ---- apio examples fetch
 
 
-FETCH_HELP = """
+APIO_EXAMPLES_FETCH_HELP = """
 The command ‘apio examples fetch’ fetches the files of the specified example
 to the current directory or to the directory specified by the –dst option.
 The destination directory does not need to exist, but if it does, it must be
@@ -73,7 +73,7 @@ Examples:
 @click.command(
     name="fetch",
     short_help="Fetch the files of an example.",
-    help=FETCH_HELP,
+    help=APIO_EXAMPLES_FETCH_HELP,
 )
 @click.argument("example", metavar="EXAMPLE", nargs=1, required=True)
 @options.dst_option_gen(help="Set a different destination directory.")
@@ -100,7 +100,7 @@ def _fetch_cli(
 # ---- apio examples fetch-board
 
 
-FETCH_BOARD_HELP = """
+APIO_EXAMPLES_FETCH_BOARD_HELP = """
 The command ‘apio examples fetch-board’ is used to fetch all the Apio examples
 for a specific board. The examples are copied to the current directory or to
 the specified destination directory if the –dst option is provided.
@@ -117,7 +117,7 @@ Examples:
 @click.command(
     name="fetch-board",
     short_help="Fetch all examples of a board.",
-    help=FETCH_BOARD_HELP,
+    help=APIO_EXAMPLES_FETCH_BOARD_HELP,
 )
 @click.argument("board", metavar="BOARD", nargs=1, required=True)
 @options.dst_option_gen(help="Set a different destination directory.")
@@ -146,7 +146,7 @@ def _fetch_board_cli(
 
 # ---- apio examples
 
-EXAMPLES_HELP = """
+APIO_EXAMPLES_HELP = """
 The command group ‘apio examples’ provides subcommands for listing and
 fetching Apio-provided examples. Each example is a self-contained mini-project
 that can be built and uploaded to an FPGA board.
@@ -171,7 +171,7 @@ SUBGROUPS = [
     cls=ApioGroup,
     subgroups=SUBGROUPS,
     short_help="List and fetch apio examples.",
-    help=EXAMPLES_HELP,
+    help=APIO_EXAMPLES_HELP,
 )
 def cli():
     """Implements the 'apio examples' command group."""

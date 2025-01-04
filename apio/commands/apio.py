@@ -90,7 +90,7 @@ def context_settings():
 # -- Top click command node.
 # ---------------------------
 
-HELP = """
+APIO_HELP = """
 Work with FPGAs with ease.
 
 Apio is an easy to use and open-source command-line suite designed to
@@ -121,7 +121,7 @@ https://github.com/FPGAwars/apio/wiki/Apio
     name="apio",
     cls=ApioGroup,
     subgroups=SUBGROUPS,
-    help=HELP,
+    help=APIO_HELP,
     short_help="Work with FPGAs with ease",
     context_settings=context_settings(),
 )

@@ -20,7 +20,7 @@ from apio.apio_context import ApioContext, ApioContextScope
 # -- COMMAND
 # ---------------------------
 
-HELP = """
+APIO_SIM_HELP = """
 The command ‘apio sim’ simulates the default or the specified testbench file
 and displays its simulation results in a graphical GTKWave window.
 The testbench is expected to have a name ending with _tb, such as
@@ -54,7 +54,7 @@ don’t need to repeat it each time you run the simulation.
 @click.command(
     name="sim",
     short_help="Simulate a testbench with graphic results.",
-    help=HELP,
+    help=APIO_SIM_HELP,
 )
 @click.pass_context
 @click.argument("testbench", nargs=1, required=False)

@@ -18,7 +18,7 @@ from apio.apio_context import ApioContext, ApioContextScope
 # ---------------------------
 # -- COMMAND
 # ---------------------------
-HELP = """
+APIO_REPORT_HELP = """
 The command ‘apio report’ provides information on the utilization and timing
 of the design. It is useful for analyzing utilization bottlenecks and
 verifying that the design can operate at the desired clock speed.
@@ -37,7 +37,7 @@ Examples:
 @click.command(
     name="report",
     short_help="Report design utilization and timing.",
-    help=HELP,
+    help=APIO_REPORT_HELP,
 )
 @click.pass_context
 @options.project_dir_option

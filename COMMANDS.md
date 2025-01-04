@@ -760,8 +760,8 @@ Options:
 Usage: apio sim [OPTIONS] [TESTBENCH]
 
   The command ‘apio sim’ simulates the default or the specified testbench file
-  and displays its simulation results in a graphical GTKWave window.  The
-  testbench is expected to have a name ending with _tb, such as  main_tb.v or
+  and displays its simulation results in a graphical GTKWave window. The
+  testbench is expected to have a name ending with _tb, such as main_tb.v or
   main_tb.sv. The default testbench file can be specified using the apio.ini
   option ‘default-testbench’. If 'default-testbench' is not specified and the
   project has exactly one testbench file, that file will be used as the

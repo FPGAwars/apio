@@ -42,7 +42,7 @@ png_option = click.option(
 # ---------------------------
 # -- COMMAND
 # ---------------------------
-HELP = """
+APIO_GRAPH_HELP = """
 The command ‘apio graph’ generates a graphical representation of the Verilog
 code in the project.
 
@@ -64,7 +64,7 @@ and on Mac OS type ‘open _build/hardware.svg’.
 @click.command(
     name="graph",
     short_help="Generate a visual graph of the code.",
-    help=HELP,
+    help=APIO_GRAPH_HELP,
 )
 @click.pass_context
 @pdf_option

@@ -22,7 +22,7 @@ from apio.commands import options
 # ---------------------------
 # -- COMMAND
 # ---------------------------
-HELP = """
+APIO_FORMAT_HELP = """
 The command ‘apio format’ formats Verilog source files to ensure consistency
 and style without altering their semantics. The command accepts the names of
 pecific source files to format or formats all project source files by default.
@@ -58,7 +58,7 @@ online or use the command 'apio raw -- verible-verilog-format --helpful'.
 @click.command(
     name="format",
     short_help="Format verilog source files.",
-    help=HELP,
+    help=APIO_FORMAT_HELP,
 )
 @click.pass_context
 @click.argument("files", nargs=-1, required=False)

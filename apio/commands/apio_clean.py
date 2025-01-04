@@ -18,7 +18,7 @@ from apio.apio_context import ApioContext, ApioContextScope
 # ---------------------------
 # -- COMMAND
 # ---------------------------
-HELP = """
+APIO_CLEAN_HELP = """
 The command 'apio clean' removes temporary files generated in the project
 directory by previous Apio commands.
 
@@ -32,7 +32,7 @@ Example:
 @click.command(
     name="clean",
     short_help="Delete the apio generated files.",
-    help=HELP,
+    help=APIO_CLEAN_HELP,
 )
 @click.pass_context
 @options.project_dir_option

@@ -60,7 +60,7 @@ flash_option = click.option(
 # -- COMMAND
 # ---------------------------
 
-HELP = """
+APIO_UPLOAD_HELP = """
 The command ‘apio upload’ builds the bitstream file (similar to the apio build
 command) and uploads it to the FPGA board.
 
@@ -76,7 +76,7 @@ Examples:
 @click.command(
     name="upload",
     short_help="Upload the bitstream to the FPGA.",
-    help=HELP,
+    help=APIO_UPLOAD_HELP,
 )
 @click.pass_context
 @serial_port_option
