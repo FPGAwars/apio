@@ -145,6 +145,12 @@ class ApioArgs:
         """Return a ApioArgs object with the parsed args."""
         parser = ApioArgsParser(scons_args, is_debug)
 
+        # -- This is a flag we parsed eariler in the scons dispatcher but we
+        # -- parse it here again so it doen's trigger the 'ignored arg'
+        # -- error below.
+        parser.arg_bool("debug")
+
+        # -- Parse the args and populate an ApioArgs instance.
         result = ApioArgs(
             # Scons tring args.
             PROG=parser.arg_str("prog"),
