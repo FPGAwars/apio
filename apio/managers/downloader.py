@@ -23,7 +23,7 @@ from apio import util
 
 # -- Timeout for geting a reponse from the server when downloading
 # -- a file (in seconds)
-TIMEOUT = 5
+TIMEOUT_SECS = 10
 
 
 class FileDownloader:
@@ -58,7 +58,7 @@ class FileDownloader:
         self._request = None
 
         # -- Request the file
-        self._request = requests.get(url, stream=True, timeout=TIMEOUT)
+        self._request = requests.get(url, stream=True, timeout=TIMEOUT_SECS)
 
         # -- Raise an exception in case of download error...
         if self._request.status_code != 200:
