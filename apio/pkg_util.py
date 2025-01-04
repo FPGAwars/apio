@@ -336,7 +336,7 @@ def list_packages(apio_ctx: ApioContext, scan: PackageScanResults) -> None:
             name = click.style(f"{package_id}", fg="cyan", bold=True)
             description = get_package_info(package_id)["description"]
             items.append([f"{name}  {description}"])
-        _list_section("Available packages (Not installed):", items, "yellow")
+        _list_section("Uinstalled packages:", items, "yellow")
 
     # -- Print the broken packages, if any,
     if scan.broken_package_ids:
