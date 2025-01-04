@@ -620,17 +620,14 @@ Subcommands:
 ```
 Usage: apio packages fix [OPTIONS]
 
-  The command ‘apio packages fix’ resolves partially installed or leftover
-  Apio packages that are listed as broken by the command ‘apio packages list’.
-  If there are no broken packages, the command does nothing and exits.
+  The command ‘apio packages fix’ removes broken or obsolete packages that are
+  listed as broken by the command ‘apio packages list’.
 
   Examples:
-    apio packages fix           # Fix package errors.
-    apio packages fix  -v       # Same but with verbose output.
+    apio packages fix     # Fix package errors, if any.
 
 Options:
-  -v, --verbose  Show detailed output.
-  -h, --help     Show this message and exit.
+  -h, --help  Show this message and exit.
 ```
 
 <br>
@@ -710,15 +707,15 @@ Usage: apio raw [OPTIONS] COMMAND
 
   Before running the command, Apio temporarily modifies system environment
   variables such as $PATH to provide access to its packages. To view these
-  environment changes, run the command `apio raw --env`.
+  environment changes, run the command with the -v option.
 
   Examples:
     apio raw -- yosys --version           # Yosys version
     apio raw -v -- yosys --version        # Same but with verbose apio info.
     apio raw -- yosys                     # Run Yosys in interactive mode.
     apio raw -- icepll -i 12 -o 30        # Calc ICE PLL
-    apio raw --env                        # Show apio env setting.
-    apio raw -h                           # Print this help info.
+    apio raw -v                           # Show apio env setting.
+    apio raw -h                           # Show this help info.
 
   The -- token is used to separate Apio commands and their arguments from the
   underlying tools and their arguments. It can be omitted in some cases, but
@@ -726,7 +723,6 @@ Usage: apio raw [OPTIONS] COMMAND
   raw command you want to run with 'apio raw -- '.
 
 Options:
-  -e, --env      Show the apio env changes.
   -v, --verbose  Show detailed output.
   -h, --help     Show this message and exit.
 ```
