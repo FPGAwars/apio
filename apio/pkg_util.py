@@ -185,7 +185,9 @@ class PackageScanResults:
     def is_all_ok(self) -> bool:
         """Return True if all packages are installed properly with no
         issues."""
-        return (self.num_errors_to_fix + self.uninstalled_package_ids) == 0
+        return (
+            not self.num_errors_to_fix() and not self.uninstalled_package_ids
+        )
 
     def dump(self):
         """Dump the content of this object. For debugging."""

@@ -238,15 +238,41 @@ def install_missing_packages(apio_ctx: ApioContext) -> None:
     """Install on the fly any missing packages. Does not print a thing if
     all packages are already ok."""
 
-    installed_packages = apio_ctx.profile.packages
+    # -- Scan the packages for issues.
+    scan_results = pkg_util.scan_packages(apio_ctx)
 
+    # -- If all ok, we are done.
+    if scan_results.is_all_ok():
+        return
+
+    # -- Tracks if we made any change.
+    work_done = False
+
+    # -- Before we check or install, delete all issues, if any.
+    if scan_results.num_errors_to_fix():
+        fix_packages(apio_ctx, scan_results)
+        work_done = True
+
+    # -- Get lists of installed and required packages.
+    installed_packages = apio_ctx.profile.packages
     required_packages_names = apio_ctx.platform_packages.keys()
 
-    # -- Check packages
+    # -- Install any required package that is not installed.
     for package_name in required_packages_names:
         if package_name not in installed_packages:
             install_package(
                 apio_ctx, package_spec=package_name, force=False, verbose=False
+            )
+            work_done = True
+
+    # -- Here all packages should be ok but we check again just in case.
+    if work_done:
+        scan_results = pkg_util.scan_packages(apio_ctx)
+        if not scan_results.is_all_ok():
+            secho(
+                "Warning: packages issues detected. Use "
+                "'apio packages list' to investigate.",
+                fg="red",
             )
 
 
@@ -413,39 +439,30 @@ def uninstall_package(
 
 
 def fix_packages(
-    apio_ctx: ApioContext, scan: pkg_util.PackageScanResults, verbose: bool
+    apio_ctx: ApioContext, scan: pkg_util.PackageScanResults
 ) -> None:
     """If the package scan result contains errors, fix them."""
 
-    # -- If non verbose, print a summary message.
-    if not verbose:
-        plurality = util.plurality(scan.num_errors_to_fix(), "package error")
-        secho(f"Fixing {plurality}.")
-
     # -- Fix broken packages.
     for package_id in scan.installed_bad_version_subset:
-        if verbose:
-            print(f"Uninstalling versin mismatch '{package_id}'")
+        print(f"Uninstalling versin mismatch '{package_id}'")
         _delete_package_dir(apio_ctx, package_id, verbose=False)
         apio_ctx.profile.remove_package(package_id)
         apio_ctx.profile.save()
 
     for package_id in scan.broken_package_ids:
-        if verbose:
-            print(f"Uninstalling broken package '{package_id}'")
+        print(f"Uninstalling broken package '{package_id}'")
         _delete_package_dir(apio_ctx, package_id, verbose=False)
         apio_ctx.profile.remove_package(package_id)
         apio_ctx.profile.save()
 
     for package_id in scan.orphan_package_ids:
-        if verbose:
-            print(f"Uninstalling unknown package '{package_id}'")
+        print(f"Uninstalling unknown package '{package_id}'")
         apio_ctx.profile.remove_package(package_id)
         apio_ctx.profile.save()
 
     for dir_name in scan.orphan_dir_names:
-        if verbose:
-            print(f"Deleting unknown dir '{dir_name}'")
+        print(f"Deleting unknown dir '{dir_name}'")
         # -- Sanity check. Since apio_ctx.packages_dir is guarranted to include
         # -- the word packages, this can fail only due to programming error.
         dir_path = apio_ctx.packages_dir / dir_name
@@ -454,8 +471,7 @@ def fix_packages(
         shutil.rmtree(dir_path)
 
     for file_name in scan.orphan_file_names:
-        if verbose:
-            print(f"Deleting unknown file '{file_name}'")
+        print(f"Deleting unknown file '{file_name}'")
         # -- Sanity check. Since apio_ctx.packages_dir is guarranted to
         # -- include the word packages, this can fail only due to programming
         # -- error.

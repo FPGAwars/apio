@@ -175,14 +175,12 @@ def _list_cli():
 # ------ apio packages fix
 
 APIO_PACKAGES_FIX_HELP = """
-The command ‘apio packages fix’ resolves partially installed or leftover Apio
-packages that are listed as broken by the command ‘apio packages list’.
-If there are no broken packages, the command does nothing and exits.
+The command ‘apio packages fix’ removes broken or obsolete packages
+that are listed as broken by the command ‘apio packages list’.
 
 \b
 Examples:
-  apio packages fix           # Fix package errors.
-  apio packages fix  -v       # Same but with verbose output.
+  apio packages fix     # Fix package errors, if any.
 """
 
 
@@ -191,11 +189,7 @@ Examples:
     short_help="Fix broken apio packages.",
     help=APIO_PACKAGES_FIX_HELP,
 )
-@options.verbose_option
-def _fix_cli(
-    # Options
-    verbose: bool,
-):
+def _fix_cli():
     """Implements the 'apio packages fix' command."""
 
     # -- Create the apio context.
@@ -206,7 +200,7 @@ def _fix_cli(
 
     # -- Fix any errors.
     if scan.num_errors_to_fix():
-        installer.fix_packages(apio_ctx, scan, verbose)
+        installer.fix_packages(apio_ctx, scan)
     else:
         secho("No errors to fix")
 
