@@ -14,8 +14,8 @@ from dataclasses import dataclass
 from typing import Optional, List
 from click import secho
 from apio import util
-from apio import pkg_util
 from apio.apio_context import ApioContext
+from apio.managers import installer
 
 
 @dataclass
@@ -67,7 +67,7 @@ class Examples:
         Returns null if an error."""
 
         # -- Check that the example package is installed
-        pkg_util.check_required_packages(self.apio_ctx, ["examples"])
+        installer.install_missing_packages(self.apio_ctx)
 
         # -- Collect the examples home dir each board.
         boards_dirs: List[PosixPath] = []
@@ -114,7 +114,7 @@ class Examples:
         code, 0 if ok, non zero otherwise."""
 
         # -- Check that the examples package is installed.
-        pkg_util.check_required_packages(self.apio_ctx, ["examples"])
+        installer.install_missing_packages(self.apio_ctx)
 
         # -- Get list of examples.
         examples: List[ExampleInfo] = self.get_examples_infos()
@@ -175,7 +175,7 @@ class Examples:
         """
 
         # -- Check that the examples package is installed.
-        pkg_util.check_required_packages(self.apio_ctx, ["examples"])
+        installer.install_missing_packages(self.apio_ctx)
 
         # Check that the example name exists.
         example_info: ExampleInfo = self.lookup_example_info(example_name)
@@ -238,7 +238,7 @@ class Examples:
         """
 
         # -- Check that the examples package is installed.
-        pkg_util.check_required_packages(self.apio_ctx, ["examples"])
+        installer.install_missing_packages(self.apio_ctx)
 
         # -- Get the working dir (current or given)
         # dst_dir = util.resolve_project_dir(

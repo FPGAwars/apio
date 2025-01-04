@@ -234,6 +234,22 @@ def _delete_package_dir(
     return dir_found
 
 
+def install_missing_packages(apio_ctx: ApioContext) -> None:
+    """Install on the fly any missing packages. Does not print a thing if
+    all packages are already ok."""
+
+    installed_packages = apio_ctx.profile.packages
+
+    required_packages_names = apio_ctx.platform_packages.keys()
+
+    # -- Check packages
+    for package_name in required_packages_names:
+        if package_name not in installed_packages:
+            install_package(
+                apio_ctx, package_spec=package_name, force=False, verbose=False
+            )
+
+
 # pylint: disable=too-many-branches
 def install_package(
     apio_ctx: ApioContext, *, package_spec: str, force: bool, verbose: bool

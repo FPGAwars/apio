@@ -14,17 +14,14 @@ def test_raw(apio_runner: ApioRunner):
         # -- Execute "apio raw"
         result = sb.invoke_apio_cmd(apio, ["raw"])
         assert result.exit_code != 0, result.output
-        assert "Error: Missing an option or a command" in result.output
-        assert "Try 'apio raw -h' for help" in result.output
+        assert (
+            "at list one of --verbose or COMMAND must be specified"
+            in result.output
+        )
 
-        # -- Execute "apio raw --env"
-        result = sb.invoke_apio_cmd(apio, ["raw", "--env"])
+        # -- Execute "apio raw -v"
+        result = sb.invoke_apio_cmd(apio, ["raw", "-v"])
         assert result.exit_code == 0, result.output
         assert "Envirnment settings:" in result.output
         assert "PATH" in result.output
         assert "YOSYS_LIB" in result.output
-
-        # -- Execute "apio raw yosys --version"
-        result = sb.invoke_apio_cmd(apio, ["raw", "yosys", "--version"])
-        assert result.exit_code != 0, result.output
-        assert "package 'oss-cad-suite' is not installed" in result.output

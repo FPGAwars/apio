@@ -21,12 +21,6 @@ def test_examples(apio_runner: ApioRunner):
 
     with apio_runner.in_sandbox() as sb:
 
-        # -- Install the examples package.
-        result = sb.invoke_apio_cmd(apio, ["packages", "install", "examples"])
-        sb.assert_ok(result)
-        assert "Package 'examples' installed successfully" in result.output
-        assert getsize(sb.packages_dir / "examples/alhambra-ii/ledon/ledon.v")
-
         # -- 'apio examples list'
         result = sb.invoke_apio_cmd(apio, ["examples", "list"])
         sb.assert_ok(result)

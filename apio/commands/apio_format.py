@@ -17,6 +17,7 @@ from click import secho
 from apio.apio_context import ApioContext, ApioContextScope
 from apio import pkg_util, util
 from apio.commands import options
+from apio.managers import installer
 
 
 # ---------------------------
@@ -80,9 +81,6 @@ def cli(
         scope=ApioContextScope.PROJECT_REQUIRED, project_dir_arg=project_dir
     )
 
-    # -- Error if the apio verible package is not installed.
-    pkg_util.check_required_packages(apio_ctx, ["verible"])
-
     # -- Get the optional formatter options from apio.ini
     cmd_options = apio_ctx.project.get_as_lines_list(
         "format-verible-options", default=[]
@@ -92,7 +90,8 @@ def cli(
     if verbose and "--verbose" not in cmd_options:
         cmd_options.append("--verbose")
 
-    # -- Set the system envs to access the binaries in the paio packages.
+    # -- Prepare the packages for use.
+    installer.install_missing_packages(apio_ctx)
     pkg_util.set_env_for_packages(apio_ctx)
 
     # -- Convert the tuple with file names into a list.

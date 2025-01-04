@@ -9,14 +9,12 @@
 # ---- Licence Apache v2
 """Utility functions related to apio packages."""
 
-from typing import List, Callable, Tuple, Optional
+from typing import List, Callable, Tuple
 from pathlib import Path
 from dataclasses import dataclass
 import os
-import sys
 import click
 from click import secho
-import semantic_version
 from apio.apio_context import ApioContext
 from apio import util
 
@@ -145,117 +143,6 @@ def set_env_for_packages(
         apio_ctx.env_was_already_set = True
         if not verbose and not quiet:
             secho("Setting the envinronment.")
-
-
-def check_required_packages(
-    apio_ctx: ApioContext, required_packages_names: List[str]
-) -> None:
-    """Checks that the packages whose names are in 'packages_names' are
-    installed and have a version that meets the requirements. If any error,
-    it prints an error message and aborts the program with an error status
-    code.
-    """
-
-    installed_packages = apio_ctx.profile.packages
-    spec_packages = apio_ctx.distribution.get("packages")
-
-    # -- Check packages
-    for package_name in required_packages_names:
-        # -- Package name must be in all_packages. Otherwise it's a programming
-        # -- error.
-        if package_name not in apio_ctx.all_packages:
-            raise RuntimeError(f"Unknown package named [{package_name}]")
-
-        # -- Skip if packages is not applicable to this platform.
-        if package_name not in apio_ctx.platform_packages:
-            continue
-
-        # -- The package is applicable to this platform. Check installed
-        # -- version, if at all.
-        current_version = installed_packages.get(package_name, {}).get(
-            "version", None
-        )
-
-        # -- Check the installed version against the required version.
-        spec_version = spec_packages.get(package_name, "")
-        _check_required_package(
-            apio_ctx, package_name, current_version, spec_version
-        )
-
-
-def _check_required_package(
-    apio_ctx: ApioContext,
-    package_name: str,
-    current_version: Optional[str],
-    spec_version: str,
-) -> None:
-    """Checks that the package with the given packages is installed and
-    has a version that meets the requirements. If any error, it prints an
-    error message and exists with an error code.
-
-    'package_name' - the package name, e.g. 'oss-cad-suite'.
-    'current_version' - the version of the install package or None if not
-        installed.
-    'spec_version' - a specification of the required version.
-    'apio_ctx' - the apio context.
-    """
-    # -- Case 1: Package is not installed.
-    if current_version is None:
-        secho(
-            f"Error: apio package '{package_name}' is not installed.", fg="red"
-        )
-        secho("Please run:\n  apio packages install", fg="yellow")
-        sys.exit(1)
-
-    # -- Case 2: Version does not match requirmeents.
-    if not _version_matches(current_version, spec_version):
-        secho(
-            f"Error: package '{package_name}' version {current_version}"
-            " does not\n"
-            f"match the requirement for version {spec_version}.",
-            fg="red",
-        )
-        secho("Please run:\n  apio packages install --force", fg="yellow")
-        sys.exit(1)
-
-    # -- Case 3: The package's directory does not exist.
-    package_dir = apio_ctx.get_package_dir(package_name)
-    if package_dir and not package_dir.is_dir():
-        message = f"Error: package '{package_name}' is installed but missing"
-        secho(message, fg="red")
-        secho(
-            "Please run:\n"
-            "  apio packages fix\n"
-            "  apio packages install -- force",
-            fg="yellow",
-        )
-
-        sys.exit(1)
-
-
-def _version_matches(current_version: str, spec_version: str) -> bool:
-    """Tests if a given version satisfy the semantic version constraints
-    * INPUTS:
-      - version: Package version (Ex. '0.0.9')
-      - spec_version: semantic version constraint (Ex. '>=0.0.1')
-    * OUTPUT:
-      - True: Version ok!
-      - False: Version not ok! or incorrect version number
-    """
-
-    # -- Build a semantic version object
-    spec = semantic_version.SimpleSpec(spec_version)
-
-    # -- Check it!
-    try:
-        semver = semantic_version.Version(current_version)
-
-    # -- Incorrect version number
-    except ValueError:
-        return False
-
-    # -- Check the version (True if the semantic version is satisfied)
-    return semver in spec
 
 
 @dataclass
