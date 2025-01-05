@@ -684,12 +684,11 @@ Usage: apio packages uninstall [OPTIONS] [PACKAGES]...
   your system. The command does not uninstall the Apio tool itself.
 
   Examples:
-    apio packages uninstall                 # Uninstall all packages.
-    apio packages uninstall --sayyes        # Same but does not ask yes/no.
-    apio packages uninstall oss-cad-suite   # Uninstall only given package(s).
+    apio packages uninstall                          # Uninstall all packages
+    apio packages uninstall oss-cad-suite            # Uninstall a package
+    apio packages uninstall oss-cad-suite examples   # Uninstall two packages
 
 Options:
-  -y, --sayyes   Automatically answer YES to all the questions.
   -v, --verbose  Show detailed output.
   -h, --help     Show this message and exit.
 ```
