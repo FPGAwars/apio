@@ -292,7 +292,7 @@ def install_package(
     Returns normally if no error, exits the program with an error status
     and a user message if an error is detected.
     """
-    secho(f"Installing package '{package_spec}'", fg="magenta")
+    secho(f"Installing package '{package_spec}'", fg="magenta", bold=True)
 
     # Parse the requested package spec.
     package_name, target_version = _parse_package_spec(package_spec)
