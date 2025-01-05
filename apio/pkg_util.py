@@ -248,8 +248,7 @@ def scan_packages(apio_ctx: ApioContext) -> PackageScanResults:
     # -- the installed/uninstall/broken packages lists.
     for package_id in apio_ctx.platform_packages.keys():
         # -- Collect package's folder names in a set. For a later use.
-        package_folder_name = apio_ctx.get_package_folder_name(package_id)
-        platform_folder_names.add(package_folder_name)
+        platform_folder_names.add(package_id)
 
         # -- Classify the package as one of three cases.
         in_profile = package_id in apio_ctx.profile.packages

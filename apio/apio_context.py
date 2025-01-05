@@ -420,12 +420,10 @@ class ApioContext:
         given packages dictionary. For example, %p is replaced with
         the package's absolute path."""
 
-        for _, package_config in packages.items():
+        for package_name, package_config in packages.items():
 
             # -- Get the package root dir.
-            package_path = (
-                packages_dir / package_config["release"]["folder_name"]
-            )
+            package_path = packages_dir / package_name
 
             # -- Get the json 'env' section. We require it, even if empty,
             # -- for clarity reasons.
@@ -458,32 +456,10 @@ class ApioContext:
 
         return package_info
 
-    def get_package_folder_name(self, package_name: str) -> str:
-        """Returns name of the package folder, within the packages dir.
-        Exits with an error message if not found."""
-
-        package_info = self.get_package_info(package_name)
-
-        release = package_info.get("release", {})
-        folder_name = release.get("folder_name", None)
-        if not folder_name:
-            # -- This is a programming error, not a user error
-            secho(
-                f"Error: package '{package_name}' definition has an "
-                "empty or missing 'folder_name' field.",
-                fg="red",
-            )
-            sys.exit(1)
-
-        return folder_name
-
     def get_package_dir(self, package_name: str) -> Path:
         """Returns the root path of a package with given name."""
 
-        package_folder = self.get_package_folder_name(package_name)
-        package_dir = self.packages_dir / package_folder
-
-        return package_dir
+        return self.packages_dir / package_name
 
     @staticmethod
     def _determine_platform_id(platforms: Dict[str, Dict]) -> str:

@@ -219,9 +219,7 @@ def _delete_package_dir(
             secho(f"Deleting {str(package_dir)}")
 
         # -- Sanity check the path and delete.
-        package_folder_name = apio_ctx.get_package_folder_name(package_id)
         assert "packages" in str(package_dir).lower(), package_dir
-        assert package_folder_name in str(package_dir), package_dir
         shutil.rmtree(package_dir)
 
     if package_dir.exists():
