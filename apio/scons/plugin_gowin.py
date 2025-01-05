@@ -89,7 +89,7 @@ class PluginGowin(PluginBase):
             ).format(
                 args.FPGA_MODEL,
                 TARGET + ".pnr",
-                args.FPGA_TYPE,
+                args.FPGA_TYPE.upper(),
                 self.constrain_file(),
                 "" if args.VERBOSE_ALL or args.VERBOSE_PNR else "-q",
             ),
