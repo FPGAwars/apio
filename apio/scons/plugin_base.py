@@ -16,7 +16,11 @@ from SCons.Builder import BuilderBase
 from SCons.Action import Action
 from SCons.Script import Builder
 from apio.scons.apio_env import ApioEnv, TARGET, BUILD_DIR_SEP
-from apio.scons.plugin_util import verilog_src_scanner, get_constraint_file
+from apio.scons.plugin_util import (
+    SRC_SUFFIXES,
+    verilog_src_scanner,
+    get_constraint_file,
+)
 
 
 # -- Supported apio graph types.
@@ -102,7 +106,7 @@ class PluginBase:
                 "" if args.VERBOSE_ALL else "-q",
             ),
             suffix=".dot",
-            src_suffix=[".v", ".sv"],
+            src_suffix=SRC_SUFFIXES,
             source_scanner=self.verilog_src_scanner,
         )
 

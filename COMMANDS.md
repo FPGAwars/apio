@@ -620,17 +620,14 @@ Subcommands:
 ```
 Usage: apio packages fix [OPTIONS]
 
-  The command ‘apio packages fix’ resolves partially installed or leftover
-  Apio packages that are listed as broken by the command ‘apio packages list’.
-  If there are no broken packages, the command does nothing and exits.
+  The command ‘apio packages fix’ removes broken or obsolete packages that are
+  listed as broken by the command ‘apio packages list’.
 
   Examples:
-    apio packages fix           # Fix package errors.
-    apio packages fix  -v       # Same but with verbose output.
+    apio packages fix     # Fix package errors, if any.
 
 Options:
-  -v, --verbose  Show detailed output.
-  -h, --help     Show this message and exit.
+  -h, --help  Show this message and exit.
 ```
 
 <br>
@@ -687,12 +684,11 @@ Usage: apio packages uninstall [OPTIONS] [PACKAGES]...
   your system. The command does not uninstall the Apio tool itself.
 
   Examples:
-    apio packages uninstall                 # Uninstall all packages.
-    apio packages uninstall --sayyes        # Same but does not ask yes/no.
-    apio packages uninstall oss-cad-suite   # Uninstall only given package(s).
+    apio packages uninstall                          # Uninstall all packages
+    apio packages uninstall oss-cad-suite            # Uninstall a package
+    apio packages uninstall oss-cad-suite examples   # Uninstall two packages
 
 Options:
-  -y, --sayyes   Automatically answer YES to all the questions.
   -v, --verbose  Show detailed output.
   -h, --help     Show this message and exit.
 ```
@@ -710,15 +706,15 @@ Usage: apio raw [OPTIONS] COMMAND
 
   Before running the command, Apio temporarily modifies system environment
   variables such as $PATH to provide access to its packages. To view these
-  environment changes, run the command `apio raw --env`.
+  environment changes, run the command with the -v option.
 
   Examples:
     apio raw -- yosys --version           # Yosys version
     apio raw -v -- yosys --version        # Same but with verbose apio info.
     apio raw -- yosys                     # Run Yosys in interactive mode.
     apio raw -- icepll -i 12 -o 30        # Calc ICE PLL
-    apio raw --env                        # Show apio env setting.
-    apio raw -h                           # Print this help info.
+    apio raw -v                           # Show apio env setting.
+    apio raw -h                           # Show this help info.
 
   The -- token is used to separate Apio commands and their arguments from the
   underlying tools and their arguments. It can be omitted in some cases, but
@@ -726,7 +722,6 @@ Usage: apio raw [OPTIONS] COMMAND
   raw command you want to run with 'apio raw -- '.
 
 Options:
-  -e, --env      Show the apio env changes.
   -v, --verbose  Show detailed output.
   -h, --help     Show this message and exit.
 ```
@@ -757,15 +752,19 @@ Options:
 ### apio sim
 
 ```
-Usage: apio sim [OPTIONS] TESTBENCH
+Usage: apio sim [OPTIONS] [TESTBENCH]
 
-  The command ‘apio sim’ simulates a testbench file and displays the
-  simulation results in a GTKWave graphical window. The testbench is expected
-  to have a name ending with _tb (e.g., my_module_tb.v).
+  The command ‘apio sim’ simulates the default or the specified testbench file
+  and displays its simulation results in a graphical GTKWave window. The
+  testbench is expected to have a name ending with _tb, such as main_tb.v or
+  main_tb.sv. The default testbench file can be specified using the apio.ini
+  option ‘default-testbench’. If 'default-testbench' is not specified and the
+  project has exactly one testbench file, that file will be used as the
+  default testbench.
 
   Example:
-    apio sim my_module_tb.v
-    apio sim my_module_tb.v --force
+    apio sim                        # Simulate the default testbench file.
+    apio sim my_module_tb.v         # Simulate the specified testbench file.
 
   [Important] Avoid using the Verilog $dumpfile() function in your
   testbenches, as this may override the default name and location Apio sets
@@ -780,7 +779,7 @@ Usage: apio sim [OPTIONS] TESTBENCH
   https://github.com/FPGAwars/apio-examples/tree/master/upduino31/testbench
 
   [Hint] When configuring the signals in GTKWave, save the configuration so
-  you don’t need to repeat it for each simulation.
+  you don’t need to repeat it each time you run the simulation.
 
 Options:
   -f, --force             Force simulation.

@@ -19,7 +19,7 @@ from apio.apio_context import ApioContext, ApioContextScope
 # -- COMMAND
 # ---------------------------
 
-HELP = """
+APIO_BUILD_HELP = """
 The command 'apio build' processes the project’s source files and generates a
 bitstream file, which can then be uploaded to your FPGA.
 
@@ -39,7 +39,7 @@ Examples:
 @click.command(
     name="build",
     short_help="Synthesize the bitstream.",
-    help=HELP,
+    help=APIO_BUILD_HELP,
 )
 @click.pass_context
 @options.project_dir_option

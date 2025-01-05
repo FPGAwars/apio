@@ -219,9 +219,7 @@ def _delete_package_dir(
             secho(f"Deleting {str(package_dir)}")
 
         # -- Sanity check the path and delete.
-        package_folder_name = apio_ctx.get_package_folder_name(package_id)
         assert "packages" in str(package_dir).lower(), package_dir
-        assert package_folder_name in str(package_dir), package_dir
         shutil.rmtree(package_dir)
 
     if package_dir.exists():
@@ -232,6 +230,48 @@ def _delete_package_dir(
         sys.exit(1)
 
     return dir_found
+
+
+def install_missing_packages(apio_ctx: ApioContext) -> None:
+    """Install on the fly any missing packages. Does not print a thing if
+    all packages are already ok."""
+
+    # -- Scan the packages for issues.
+    scan_results = pkg_util.scan_packages(apio_ctx)
+
+    # -- If all ok, we are done.
+    if scan_results.is_all_ok():
+        return
+
+    # -- Tracks if we made any change.
+    work_done = False
+
+    # -- Before we check or install, delete all issues, if any.
+    if scan_results.num_errors_to_fix():
+        fix_packages(apio_ctx, scan_results)
+        work_done = True
+
+    # -- Get lists of installed and required packages.
+    installed_packages = apio_ctx.profile.packages
+    required_packages_names = apio_ctx.platform_packages.keys()
+
+    # -- Install any required package that is not installed.
+    for package_name in required_packages_names:
+        if package_name not in installed_packages:
+            install_package(
+                apio_ctx, package_spec=package_name, force=False, verbose=False
+            )
+            work_done = True
+
+    # -- Here all packages should be ok but we check again just in case.
+    if work_done:
+        scan_results = pkg_util.scan_packages(apio_ctx)
+        if not scan_results.is_all_ok():
+            secho(
+                "Warning: packages issues detected. Use "
+                "'apio packages list' to investigate.",
+                fg="red",
+            )
 
 
 # pylint: disable=too-many-branches
@@ -250,7 +290,7 @@ def install_package(
     Returns normally if no error, exits the program with an error status
     and a user message if an error is detected.
     """
-    secho(f"Installing package '{package_spec}'")
+    secho(f"Installing package '{package_spec}'", fg="magenta", bold=True)
 
     # Parse the requested package spec.
     package_name, target_version = _parse_package_spec(package_spec)
@@ -298,11 +338,14 @@ def install_package(
 
     # -- Prepare the package directory.
     package_dir = apio_ctx.get_package_dir(package_name)
+    print(f"Package dir: {package_dir}")
 
     # -- Downlod the package file from the remote server.
-    local_file = _download_package_file(download_url, apio_ctx.packages_dir)
+    local_package_file = _download_package_file(
+        download_url, apio_ctx.packages_dir
+    )
     if verbose:
-        print(f"Local file: {local_file}")
+        print(f"Local package file: {local_package_file}")
 
     # -- Get optional package internal wrapper dir name.
     uncompressed_name = package_info["release"].get("uncompressed_name", "")
@@ -316,7 +359,7 @@ def install_package(
         # -- Case 1: The package include a top level wrapper directory.
         #
         # -- Unpack the package one level up, in the packages directory.
-        _unpack_package_file(local_file, apio_ctx.packages_dir)
+        _unpack_package_file(local_package_file, apio_ctx.packages_dir)
 
         # -- The uncompressed name may contain a %V placeholder, Replace it
         # -- with target version.
@@ -338,12 +381,12 @@ def install_package(
         # -- unpack as the package dir.
 
         # -- Unpack the package. This creates a new package dir.
-        _unpack_package_file(local_file, package_dir)
+        _unpack_package_file(local_package_file, package_dir)
 
     # -- Remove the package file. We don't need it anymore.
     if verbose:
-        print(f"Deleting package file {local_file}")
-    local_file.unlink()
+        print(f"Deleting package file {local_package_file}")
+    local_package_file.unlink()
 
     # -- Add package to profile and save.
     apio_ctx.profile.add_package(package_name, target_version)
@@ -397,31 +440,30 @@ def uninstall_package(
 
 
 def fix_packages(
-    apio_ctx: ApioContext, scan: pkg_util.PackageScanResults, verbose: bool
+    apio_ctx: ApioContext, scan: pkg_util.PackageScanResults
 ) -> None:
     """If the package scan result contains errors, fix them."""
 
-    # -- If non verbose, print a summary message.
-    if not verbose:
-        secho(f"Fixing {util.plurality(scan.num_errors(), 'package error')}.")
-
     # -- Fix broken packages.
+    for package_id in scan.installed_bad_version_subset:
+        print(f"Uninstalling versin mismatch '{package_id}'")
+        _delete_package_dir(apio_ctx, package_id, verbose=False)
+        apio_ctx.profile.remove_package(package_id)
+        apio_ctx.profile.save()
+
     for package_id in scan.broken_package_ids:
-        if verbose:
-            print(f"Uninstalling broken package '{package_id}'")
+        print(f"Uninstalling broken package '{package_id}'")
         _delete_package_dir(apio_ctx, package_id, verbose=False)
         apio_ctx.profile.remove_package(package_id)
         apio_ctx.profile.save()
 
     for package_id in scan.orphan_package_ids:
-        if verbose:
-            print(f"Uninstalling unknown package '{package_id}'")
+        print(f"Uninstalling unknown package '{package_id}'")
         apio_ctx.profile.remove_package(package_id)
         apio_ctx.profile.save()
 
     for dir_name in scan.orphan_dir_names:
-        if verbose:
-            print(f"Deleting unknown dir '{dir_name}'")
+        print(f"Deleting unknown dir '{dir_name}'")
         # -- Sanity check. Since apio_ctx.packages_dir is guarranted to include
         # -- the word packages, this can fail only due to programming error.
         dir_path = apio_ctx.packages_dir / dir_name
@@ -430,8 +472,7 @@ def fix_packages(
         shutil.rmtree(dir_path)
 
     for file_name in scan.orphan_file_names:
-        if verbose:
-            print(f"Deleting unknown file '{file_name}'")
+        print(f"Deleting unknown file '{file_name}'")
         # -- Sanity check. Since apio_ctx.packages_dir is guarranted to
         # -- include the word packages, this can fail only due to programming
         # -- error.

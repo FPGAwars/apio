@@ -9,14 +9,13 @@
 # ---- Licence Apache v2
 """Utility functions related to apio packages."""
 
-from typing import List, Callable, Tuple, Optional
+from typing import List, Callable, Tuple
 from pathlib import Path
 from dataclasses import dataclass
 import os
-import sys
+import semantic_version
 import click
 from click import secho
-import semantic_version
 from apio.apio_context import ApioContext
 from apio import util
 
@@ -147,123 +146,16 @@ def set_env_for_packages(
             secho("Setting the envinronment.")
 
 
-def check_required_packages(
-    apio_ctx: ApioContext, required_packages_names: List[str]
-) -> None:
-    """Checks that the packages whose names are in 'packages_names' are
-    installed and have a version that meets the requirements. If any error,
-    it prints an error message and aborts the program with an error status
-    code.
-    """
-
-    installed_packages = apio_ctx.profile.packages
-    spec_packages = apio_ctx.distribution.get("packages")
-
-    # -- Check packages
-    for package_name in required_packages_names:
-        # -- Package name must be in all_packages. Otherwise it's a programming
-        # -- error.
-        if package_name not in apio_ctx.all_packages:
-            raise RuntimeError(f"Unknown package named [{package_name}]")
-
-        # -- Skip if packages is not applicable to this platform.
-        if package_name not in apio_ctx.platform_packages:
-            continue
-
-        # -- The package is applicable to this platform. Check installed
-        # -- version, if at all.
-        current_version = installed_packages.get(package_name, {}).get(
-            "version", None
-        )
-
-        # -- Check the installed version against the required version.
-        spec_version = spec_packages.get(package_name, "")
-        _check_required_package(
-            apio_ctx, package_name, current_version, spec_version
-        )
-
-
-def _check_required_package(
-    apio_ctx: ApioContext,
-    package_name: str,
-    current_version: Optional[str],
-    spec_version: str,
-) -> None:
-    """Checks that the package with the given packages is installed and
-    has a version that meets the requirements. If any error, it prints an
-    error message and exists with an error code.
-
-    'package_name' - the package name, e.g. 'oss-cad-suite'.
-    'current_version' - the version of the install package or None if not
-        installed.
-    'spec_version' - a specification of the required version.
-    'apio_ctx' - the apio context.
-    """
-    # -- Case 1: Package is not installed.
-    if current_version is None:
-        secho(
-            f"Error: apio package '{package_name}' is not installed.", fg="red"
-        )
-        secho("Please run:\n  apio packages install", fg="yellow")
-        sys.exit(1)
-
-    # -- Case 2: Version does not match requirmeents.
-    if not _version_matches(current_version, spec_version):
-        secho(
-            f"Error: package '{package_name}' version {current_version}"
-            " does not\n"
-            f"match the requirement for version {spec_version}.",
-            fg="red",
-        )
-        secho("Please run:\n  apio packages install --force", fg="yellow")
-        sys.exit(1)
-
-    # -- Case 3: The package's directory does not exist.
-    package_dir = apio_ctx.get_package_dir(package_name)
-    if package_dir and not package_dir.is_dir():
-        message = f"Error: package '{package_name}' is installed but missing"
-        secho(message, fg="red")
-        secho(
-            "Please run:\n"
-            "  apio packages fix\n"
-            "  apio packages install -- force",
-            fg="yellow",
-        )
-
-        sys.exit(1)
-
-
-def _version_matches(current_version: str, spec_version: str) -> bool:
-    """Tests if a given version satisfy the semantic version constraints
-    * INPUTS:
-      - version: Package version (Ex. '0.0.9')
-      - spec_version: semantic version constraint (Ex. '>=0.0.1')
-    * OUTPUT:
-      - True: Version ok!
-      - False: Version not ok! or incorrect version number
-    """
-
-    # -- Build a semantic version object
-    spec = semantic_version.SimpleSpec(spec_version)
-
-    # -- Check it!
-    try:
-        semver = semantic_version.Version(current_version)
-
-    # -- Incorrect version number
-    except ValueError:
-        return False
-
-    # -- Check the version (True if the semantic version is satisfied)
-    return semver in spec
-
-
 @dataclass
 class PackageScanResults:
     """Represents results of packages scan."""
 
-    # -- Normal. Packages in platform_packages that are instaleld properly.
+    # -- Normal and Error. Packages in platform_packages that are installed
+    # -- regardless if the versin matches or not.
     installed_package_ids: List[str]
+    # -- Error. The subset of installed_package_ids that have version
+    # -- mismatch.
+    installed_bad_version_subset: List[str]
     # -- Normal. Packages in platform_packages that are uninstaleld properly.
     uninstalled_package_ids: List[str]
     # -- Error. Packages in platform_packages with broken installation. E.g,
@@ -279,24 +171,66 @@ class PackageScanResults:
     # -- expected to contain only directories for packages.a
     orphan_file_names: List[str]
 
-    def num_errors(self) -> bool:
-        """Returns the number of errors.."""
+    def num_errors_to_fix(self) -> bool:
+        """Returns the number of errors that required , having a non installed
+        packages is not considered an error that need to be fix."""
         return (
-            len(self.broken_package_ids)
+            len(self.installed_bad_version_subset)
+            + len(self.broken_package_ids)
             + len(self.orphan_package_ids)
             + len(self.orphan_dir_names)
             + len(self.orphan_file_names)
         )
 
+    def is_all_ok(self) -> bool:
+        """Return True if all packages are installed properly with no
+        issues."""
+        return (
+            not self.num_errors_to_fix() and not self.uninstalled_package_ids
+        )
+
     def dump(self):
         """Dump the content of this object. For debugging."""
         print("Package scan results:")
-        print(f"  Installed    {self.installed_package_ids}")
-        print(f"  Uninstalled  {self.uninstalled_package_ids}")
-        print(f"  Broken       {self.broken_package_ids}")
-        print(f"  Orphan ids   {self.orphan_package_ids}")
-        print(f"  Orphan dirs  {self.orphan_dir_names}")
-        print(f"  Orphan files {self.orphan_file_names}")
+        print(f"  Installed     {self.installed_package_ids}")
+        print(f"  bad version   {self.installed_bad_version_subset}")
+        print(f"  Uninstalled   {self.uninstalled_package_ids}")
+        print(f"  Broken        {self.broken_package_ids}")
+        print(f"  Orphan ids    {self.orphan_package_ids}")
+        print(f"  Orphan dirs   {self.orphan_dir_names}")
+        print(f"  Orphan files  {self.orphan_file_names}")
+
+
+def packge_version_ok(apio_ctx: ApioContext, package_id: str) -> bool:
+    """Return true if the packagea is both in profile and plagrom packages
+    and its version in the provile meet the requirements in the
+    distribution.json file. Otherwise return false."""
+
+    # If this package is not applicable to this platform, return False.
+    if package_id not in apio_ctx.platform_packages:
+        return False
+
+    # -- If the current or rversion spec are not available, return False.
+    current_ver = apio_ctx.profile.get_package_installed_version(
+        package_id, None
+    )
+    ver_spec = apio_ctx.distribution.get("packages", {}).get(package_id, None)
+    if not ver_spec or not current_ver:
+        return False
+
+    # -- Parse the version spec. If this fails, it's a programming error.
+    sem_spec = semantic_version.SimpleSpec(ver_spec)
+
+    # -- Parse the current version. If it's invalid, return False, e.g.
+    # -- if the profile file is corrupt.
+    try:
+        sem_version = semantic_version.Version(current_ver)
+
+    except ValueError:
+        return False
+
+    # -- Perform the matching.
+    return sem_version in sem_spec
 
 
 def scan_packages(apio_ctx: ApioContext) -> PackageScanResults:
@@ -304,7 +238,7 @@ def scan_packages(apio_ctx: ApioContext) -> PackageScanResults:
     the findings as a PackageScanResults object."""
 
     # Initialize the result with empty data.
-    result = PackageScanResults([], [], [], [], [], [])
+    result = PackageScanResults([], [], [], [], [], [], [])
 
     # -- A helper set that we populate with the 'folder_name' values of the
     # -- all the packages for this platform.
@@ -314,14 +248,18 @@ def scan_packages(apio_ctx: ApioContext) -> PackageScanResults:
     # -- the installed/uninstall/broken packages lists.
     for package_id in apio_ctx.platform_packages.keys():
         # -- Collect package's folder names in a set. For a later use.
-        package_folder_name = apio_ctx.get_package_folder_name(package_id)
-        platform_folder_names.add(package_folder_name)
+        platform_folder_names.add(package_id)
 
         # -- Classify the package as one of three cases.
         in_profile = package_id in apio_ctx.profile.packages
         has_dir = apio_ctx.get_package_dir(package_id).is_dir()
+        version_ok = packge_version_ok(apio_ctx, package_id)
         if in_profile and has_dir:
             result.installed_package_ids.append(package_id)
+            if not version_ok:
+                # -- The subset of installed_package_ids that has bad
+                # -- version.
+                result.installed_bad_version_subset.append(package_id)
         elif not in_profile and not has_dir:
             result.uninstalled_package_ids.append(package_id)
         else:
@@ -343,6 +281,9 @@ def scan_packages(apio_ctx: ApioContext) -> PackageScanResults:
             result.orphan_file_names.append(base_name)
 
     # -- Return results
+    if util.is_debug():
+        result.dump()
+
     return result
 
 
@@ -365,6 +306,7 @@ def _list_section(title: str, items: List[List[str]], color: str) -> None:
     secho(dline, fg=color)
 
 
+# pylint: disable=too-many-branches
 def list_packages(apio_ctx: ApioContext, scan: PackageScanResults) -> None:
     """Prints in a user friendly format the results of a packages scan."""
 
@@ -378,8 +320,12 @@ def list_packages(apio_ctx: ApioContext, scan: PackageScanResults) -> None:
         for package_id in scan.installed_package_ids:
             name = click.style(f"{package_id}", fg="cyan", bold=True)
             version = get_package_version(package_id)
+            if package_id in scan.installed_bad_version_subset:
+                note = click.style(" [Wrong version]", fg="red", bold=True)
+            else:
+                note = ""
             description = get_package_info(package_id)["description"]
-            items.append([f"{name} {version}", f"{description}"])
+            items.append([f"{name} {version}{note}", f"{description}"])
         _list_section("Installed packages:", items, "green")
 
     # -- Print the uninstalled packages, if any,
@@ -389,7 +335,7 @@ def list_packages(apio_ctx: ApioContext, scan: PackageScanResults) -> None:
             name = click.style(f"{package_id}", fg="cyan", bold=True)
             description = get_package_info(package_id)["description"]
             items.append([f"{name}  {description}"])
-        _list_section("Available packages (Not installed):", items, "yellow")
+        _list_section("Uinstalled packages:", items, "yellow")
 
     # -- Print the broken packages, if any,
     if scan.broken_package_ids:
@@ -417,8 +363,8 @@ def list_packages(apio_ctx: ApioContext, scan: PackageScanResults) -> None:
         _list_section("[Error] Unknown files and directories:", items, None)
 
     # -- Print an error summary
-    if scan.num_errors():
-        secho(f"Total of {util.plurality(scan.num_errors(), 'error')}")
+    if scan.num_errors_to_fix():
+        secho(f"Total of {util.plurality(scan.num_errors_to_fix(), 'error')}")
 
     # -- A line seperator. For asthetic reasons.
     secho()

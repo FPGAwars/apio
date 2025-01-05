@@ -8,7 +8,6 @@
       "tag_name": "%V",
       "compressed_name": "apio-examples-%V",
       "uncompressed_name": "apio-examples-%V",
-      "folder_name": "examples",
       "extension": "zip",
       "url_version": "https://github.com/FPGAwars/apio-examples/raw/master/VERSION_DEV"
     },
@@ -24,7 +23,6 @@
       "tag_name": "v%V",
       "compressed_name": "tools-oss-cad-suite-%P-%V",
       "uncompressed_name": "",
-      "folder_name": "tools-oss-cad-suite",
       "extension": "tar.gz",
       "url_version": "https://github.com/FPGAwars/tools-oss-cad-suite/raw/main/VERSION_DEV"
     },
@@ -51,7 +49,6 @@
       "tag_name": "v%V",
       "compressed_name": "tools-graphviz-%P-%V",
       "uncompressed_name": "",
-      "folder_name": "tools-graphviz",
       "extension": "tar.gz",
       "url_version": "https://github.com/FPGAwars/tools-graphviz/raw/main/VERSION",
       "available_platforms": [
@@ -74,7 +71,6 @@
       "tag_name": "v%V",
       "compressed_name": "tools-verible-%P-%V",
       "uncompressed_name": "",
-      "folder_name": "tools-verible",
       "extension": "tar.gz",
       "url_version": "https://github.com/FPGAwars/tools-verible/raw/main/VERSION_DEV"
     },
@@ -94,7 +90,6 @@
       "tag_name": "v%V",
       "compressed_name": "tools-drivers-%P-%V",
       "uncompressed_name": "",
-      "folder_name": "tools-drivers",
       "extension": "tar.gz",
       "url_version": "https://github.com/FPGAwars/tools-drivers/raw/master/VERSION",
       "available_platforms": [
@@ -117,7 +112,6 @@
       "tag_name": "v%V",
       "compressed_name": "tools-system-%P-%V",
       "uncompressed_name": "",
-      "folder_name": "tools-system",
       "extension": "tar.gz",
       "url_version": "https://github.com/FPGAwars/tools-system/raw/master/VERSION",
       "available_platforms": [

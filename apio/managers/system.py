@@ -13,6 +13,7 @@ from click import secho
 from apio import util
 from apio import pkg_util
 from apio.apio_context import ApioContext
+from apio.managers import installer
 
 
 class System:  # pragma: no cover
@@ -152,9 +153,10 @@ class System:  # pragma: no cover
         """
 
         # -- Check that the required package exists.
-        pkg_util.check_required_packages(self.apio_ctx, ["oss-cad-suite"])
+        # pkg_util.check_required_packages(self.apio_ctx, ["oss-cad-suite"])
 
         # -- Set system env for using the packages.
+        installer.install_missing_packages(self.apio_ctx)
         pkg_util.set_env_for_packages(self.apio_ctx, quiet=True)
 
         # pylint: disable=fixme

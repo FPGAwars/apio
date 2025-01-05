@@ -17,7 +17,7 @@ from apio.cmd_util import ApioGroup, ApioSubgroup
 
 # -- apio driver serial install
 
-INSTALL_HELP = """
+APIO_DRIVERS_SERIAL_INSTALL_HELP = """
 The command ‘apio drivers serial install’ installs the necessary serial
 drivers on your system, as required by certain FPGA boards.
 
@@ -31,7 +31,7 @@ Examples:
 @click.command(
     name="install",
     short_help="Install the serial drivers.",
-    help=INSTALL_HELP,
+    help=APIO_DRIVERS_SERIAL_INSTALL_HELP,
 )
 def _install_cli():
     """Implements the 'apio drivers serial install' command."""
@@ -49,7 +49,7 @@ def _install_cli():
 
 # -- apio drivers serial uninstall
 
-UNINSTALL_HELP = """
+APIO_DRIVERS_SERIAL_UNINSTALL_HELP = """
 The command ‘apio drivers serial uninstall’ removes the serial drivers that
 you may have installed earlier.
 
@@ -64,7 +64,7 @@ Examples:
 @click.command(
     name="uninstall",
     short_help="Uninstall the serial drivers.",
-    help=UNINSTALL_HELP,
+    help=APIO_DRIVERS_SERIAL_UNINSTALL_HELP,
 )
 def _uninstall_cli():
     """Implements the 'apio drivers serial uninstall' command."""
@@ -82,7 +82,7 @@ def _uninstall_cli():
 
 # -- apio drivers serial list
 
-LIST_HELP = """
+APIO_DRIVERS_SERIAL_LIST_HELP = """
 The command ‘apio drivers serial list’ lists the serial devices connected to
 your computer. It is useful for diagnosing FPGA board connectivity issues.
 
@@ -98,7 +98,7 @@ using the command 'apio raw -- lsserial <flags>'.
 @click.command(
     name="list",
     short_help="List the connected serial devices.",
-    help=LIST_HELP,
+    help=APIO_DRIVERS_SERIAL_LIST_HELP,
 )
 def _list_cli():
     """Implements the 'apio drivers serial list' command."""
@@ -116,7 +116,7 @@ def _list_cli():
 
 # --- apio drivers serial
 
-SERIAL_HELP = """
+APIO_DRIVERS_SERIAL_HELP = """
 The command group 'apio drivers serial' includes subcommands designed to
 manage and configure the serial drivers on your system.
 """
@@ -139,7 +139,7 @@ SUBGROUPS = [
     cls=ApioGroup,
     subgroups=SUBGROUPS,
     short_help="Manage the serial drivers.",
-    help=SERIAL_HELP,
+    help=APIO_DRIVERS_SERIAL_HELP,
 )
 def cli():
     """Implements the 'apio drivers serial' command."""

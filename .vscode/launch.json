@@ -25,7 +25,7 @@
             "justMyCode": false,
         },
         {
-            "name": "Run an apio test",
+            "name": "Apio test",
             "type": "debugpy",
             "request": "launch",
             "module": "pytest",

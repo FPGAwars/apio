@@ -7,20 +7,19 @@
 # -- Licence GPLv2
 """Implementation of 'apio packages' command"""
 
-import sys
 from typing import Tuple
 import click
 from click import secho
 from apio.managers import installer
 from apio.apio_context import ApioContext, ApioContextScope
-from apio import pkg_util, util
+from apio import pkg_util
 from apio.commands import options
 from apio.cmd_util import ApioGroup, ApioSubgroup
 
 
 # ------ apio packages install
 
-INSTALL_HELP = """
+APIO_PACKAGES_INSTALL_HELP = """
 The command ‘apio packages install’ installs Apio packages that are required
 for the operation of Apio on your system.
 
@@ -40,7 +39,7 @@ otherwise, packages that are already installed correctly remain unchanged.
 @click.command(
     name="install",
     short_help="Install apio packages.",
-    help=INSTALL_HELP,
+    help=APIO_PACKAGES_INSTALL_HELP,
 )
 @click.argument("packages", nargs=-1, required=False)
 @options.force_option_gen(help="Force installation.")
@@ -72,31 +71,29 @@ def _install_cli(
 
 # ------ apio packages uninstall
 
-UNINSTALL_HELP = """
+APIO_PACKAGES_UNINSTALL_HELP = """
 The command ‘apio packages uninstall’ removes installed Apio packages from
 your system. The command does not uninstall the Apio tool itself.
 
 \b
 Examples:
-  apio packages uninstall                 # Uninstall all packages.
-  apio packages uninstall --sayyes        # Same but does not ask yes/no.
-  apio packages uninstall oss-cad-suite   # Uninstall only given package(s).
+  apio packages uninstall                          # Uninstall all packages
+  apio packages uninstall oss-cad-suite            # Uninstall a package
+  apio packages uninstall oss-cad-suite examples   # Uninstall two packages
 """
 
 
 @click.command(
     name="uninstall",
     short_help="Uninstall apio packages.",
-    help=UNINSTALL_HELP,
+    help=APIO_PACKAGES_UNINSTALL_HELP,
 )
 @click.argument("packages", nargs=-1, required=False)
-@options.sayyes
 @options.verbose_option
 def _uninstall_cli(
     # Arguments
     packages: Tuple[str],
     # Options
-    sayyes: bool,
     verbose: bool,
 ):
     """Implements the 'apio packages uninstall' command."""
@@ -108,22 +105,7 @@ def _uninstall_cli(
     if not packages:
         packages = apio_ctx.platform_packages.keys()
 
-    # -- Ask the user for confirmation
-    if not sayyes:
-        prompt = click.style(
-            "Do you want to uninstall "
-            f"{util.plurality(packages, 'apio package')}?",
-            fg="magenta",
-        )
-        if not click.confirm(prompt):
-            # -- User doesn't want to continue.
-            secho("User said no", fg="red")
-            sys.exit(1)
-
-    # -- Here when going on with the uninstallation.
-    secho(f"Platform id '{apio_ctx.platform_id}'")
-
-    # -- Uninstall the packages, one by one
+    # -- Uninstall the packages.
     for package in packages:
         installer.uninstall_package(
             apio_ctx, package_spec=package, verbose=verbose
@@ -132,7 +114,7 @@ def _uninstall_cli(
 
 # ------ apio packages list
 
-LIST_HELP = """
+APIO_PACKAGES_LIST_HELP = """
 The command ‘apio packages list’ lists the available and installed Apio
 packages. The list of available packages depends on the operating system
 you are using and may vary between operating systems.
@@ -146,7 +128,7 @@ Examples:
 @click.command(
     name="list",
     short_help="List apio packages.",
-    help=LIST_HELP,
+    help=APIO_PACKAGES_LIST_HELP,
 )
 def _list_cli():
     """Implements the 'apio packages list' command."""
@@ -160,7 +142,7 @@ def _list_cli():
     pkg_util.list_packages(apio_ctx, scan)
 
     # -- Print an hint or summary based on the findings.
-    if scan.num_errors():
+    if scan.num_errors_to_fix():
         secho("[Hint] run 'apio packages fix' to fix the errors.", fg="yellow")
     elif scan.uninstalled_package_ids:
         secho(
@@ -169,33 +151,27 @@ def _list_cli():
             fg="yellow",
         )
     else:
-        secho("All available messages are installed.", fg="green")
+        secho("All packages are installed.", fg="green")
 
 
 # ------ apio packages fix
 
-FIX_HELP = """
-The command ‘apio packages fix’ resolves partially installed or leftover Apio
-packages that are listed as broken by the command ‘apio packages list’.
-If there are no broken packages, the command does nothing and exits.
+APIO_PACKAGES_FIX_HELP = """
+The command ‘apio packages fix’ removes broken or obsolete packages
+that are listed as broken by the command ‘apio packages list’.
 
 \b
 Examples:
-  apio packages fix           # Fix package errors.
-  apio packages fix  -v       # Same but with verbose output.
+  apio packages fix     # Fix package errors, if any.
 """
 
 
 @click.command(
     name="fix",
     short_help="Fix broken apio packages.",
-    help=FIX_HELP,
+    help=APIO_PACKAGES_FIX_HELP,
 )
-@options.verbose_option
-def _fix_cli(
-    # Options
-    verbose: bool,
-):
+def _fix_cli():
     """Implements the 'apio packages fix' command."""
 
     # -- Create the apio context.
@@ -205,8 +181,8 @@ def _fix_cli(
     scan = pkg_util.scan_packages(apio_ctx)
 
     # -- Fix any errors.
-    if scan.num_errors():
-        installer.fix_packages(apio_ctx, scan, verbose)
+    if scan.num_errors_to_fix():
+        installer.fix_packages(apio_ctx, scan)
     else:
         secho("No errors to fix")
 
@@ -218,7 +194,7 @@ def _fix_cli(
 # ------ apio packages (group)
 
 
-HELP = """
+APIO_PACKAGES_HELP = """
 The command group ‘apio packages’ provides commands to manage the installation
 of Apio packages. These are not Python packages but Apio-specific packages
 containing various tools and data essential for the operation of Apio.
@@ -250,7 +226,7 @@ SUBGROUPS = [
     cls=ApioGroup,
     subgroups=SUBGROUPS,
     short_help="Manage the apio packages.",
-    help=HELP,
+    help=APIO_PACKAGES_HELP,
 )
 def cli():
     """Implements the 'apio packages' command group.'"""

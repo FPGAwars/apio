@@ -18,7 +18,7 @@ from apio.apio_context import ApioContext, ApioContextScope
 # ---------------------------
 # -- COMMAND
 # ---------------------------
-HELP = """
+APIO_TEST_HELP = """
 The command ‘apio test’ simulates one or all the testbenches in the project
 and is useful for automated testing of your design. Testbenches are expected
 to have names ending with _tb (e.g., my_module_tb.v) and should exit with the
@@ -44,7 +44,7 @@ refer to the ‘apio sim’ command.
 @click.command(
     name="test",
     short_help="Test all or a single verilog testbench module.",
-    help=HELP,
+    help=APIO_TEST_HELP,
 )
 @click.pass_context
 @click.argument("testbench_file", nargs=1, required=False)

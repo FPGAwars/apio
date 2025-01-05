@@ -70,7 +70,7 @@ def list_fpgas(apio_ctx: ApioContext):
 # ---------------------------
 # R0801: Similar lines in 2 files
 # pylint: disable = R0801
-HELP = """
+APIO_FPGAS_HELP = """
 The command ‘apio fpgas’ lists the FPGAs recognized by Apio. Custom FPGAs
 supported by the underlying Yosys toolchain can be defined by placing a
 custom fpgas.json file in the project directory, overriding Apio’s standard
@@ -87,7 +87,7 @@ Examples:
 @click.command(
     name="fpgas",
     short_help="List available FPGA definitions.",
-    help=HELP,
+    help=APIO_FPGAS_HELP,
 )
 @click.pass_context
 @options.project_dir_option

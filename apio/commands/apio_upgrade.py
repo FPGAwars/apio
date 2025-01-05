@@ -18,7 +18,7 @@ from apio.util import get_pypi_latest_version
 # ---------------------------
 # -- COMMAND
 # ---------------------------
-HELP = """
+APIO_UPGRADE_HELP = """
 The command ‘apio upgrade’ checks for the version of the latest Apio release
 and provides upgrade directions if necessary.
 
@@ -31,7 +31,7 @@ Examples:
 @click.command(
     name="upgrade",
     short_help="Check the latest Apio version.",
-    help=HELP,
+    help=APIO_UPGRADE_HELP,
 )
 @click.pass_context
 def cli(_: click.Context):

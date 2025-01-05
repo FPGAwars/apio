@@ -93,7 +93,7 @@ class Arg:
 @util.debug_decoractor
 def process_arguments(
     apio_ctx: ApioContext, seed_args: Dict
-) -> Tuple[List[str], str, Optional[str]]:
+) -> Tuple[str, List[str]]:
     """Construct the scons variables list from an ApioContext and user
     provided scons args.  The list of the valid entires in the args ditct,
     see ARG_XX definitions above.

@@ -17,12 +17,13 @@ from click import secho
 from apio.apio_context import ApioContext, ApioContextScope
 from apio import pkg_util, util
 from apio.commands import options
+from apio.managers import installer
 
 
 # ---------------------------
 # -- COMMAND
 # ---------------------------
-HELP = """
+APIO_FORMAT_HELP = """
 The command ‘apio format’ formats Verilog source files to ensure consistency
 and style without altering their semantics. The command accepts the names of
 pecific source files to format or formats all project source files by default.
@@ -58,7 +59,7 @@ online or use the command 'apio raw -- verible-verilog-format --helpful'.
 @click.command(
     name="format",
     short_help="Format verilog source files.",
-    help=HELP,
+    help=APIO_FORMAT_HELP,
 )
 @click.pass_context
 @click.argument("files", nargs=-1, required=False)
@@ -80,9 +81,6 @@ def cli(
         scope=ApioContextScope.PROJECT_REQUIRED, project_dir_arg=project_dir
     )
 
-    # -- Error if the apio verible package is not installed.
-    pkg_util.check_required_packages(apio_ctx, ["verible"])
-
     # -- Get the optional formatter options from apio.ini
     cmd_options = apio_ctx.project.get_as_lines_list(
         "format-verible-options", default=[]
@@ -92,7 +90,8 @@ def cli(
     if verbose and "--verbose" not in cmd_options:
         cmd_options.append("--verbose")
 
-    # -- Set the system envs to access the binaries in the paio packages.
+    # -- Prepare the packages for use.
+    installer.install_missing_packages(apio_ctx)
     pkg_util.set_env_for_packages(apio_ctx)
 
     # -- Convert the tuple with file names into a list.

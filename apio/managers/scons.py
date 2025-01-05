@@ -15,6 +15,7 @@ import re
 import time
 import datetime
 import shutil
+from typing import List
 from functools import wraps
 
 import importlib.metadata
@@ -28,6 +29,7 @@ from apio.managers.scons_args import process_arguments
 from apio.managers.system import System
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
+from apio.managers import installer
 
 # -- Constant for the dictionary PROG, which contains
 # -- the programming configuration
@@ -95,7 +97,7 @@ class SCons:
             "-c",
             board=board,
             variables=variables,
-            required_packages_names=[],
+            uses_packages=False,
         )
 
     @on_exception(exit_code=1)
@@ -112,7 +114,7 @@ class SCons:
             "graph",
             board=board,
             variables=variables,
-            required_packages_names=["oss-cad-suite", "graphviz"],
+            uses_packages=True,
         )
 
     @on_exception(exit_code=1)
@@ -125,7 +127,7 @@ class SCons:
             "lint",
             board=board,
             variables=variables,
-            required_packages_names=["oss-cad-suite"],
+            uses_packages=True,
         )
 
     @on_exception(exit_code=1)
@@ -140,7 +142,7 @@ class SCons:
             "sim",
             board=board,
             variables=variables,
-            required_packages_names=["oss-cad-suite"],
+            uses_packages=True,
         )
 
     @on_exception(exit_code=1)
@@ -155,7 +157,7 @@ class SCons:
             "test",
             board=board,
             variables=variables,
-            required_packages_names=["oss-cad-suite"],
+            uses_packages=True,
         )
 
     @on_exception(exit_code=1)
@@ -172,7 +174,7 @@ class SCons:
             "build",
             board=board,
             variables=variables,
-            required_packages_names=["oss-cad-suite"],
+            uses_packages=True,
         )
 
     @on_exception(exit_code=1)
@@ -186,7 +188,7 @@ class SCons:
             "report",
             board=board,
             variables=variables,
-            required_packages_names=["oss-cad-suite"],
+            uses_packages=True,
         )
 
     @on_exception(exit_code=1)
@@ -226,7 +228,7 @@ class SCons:
             "upload",
             board=board,
             variables=variables,
-            required_packages_names=["oss-cad-suite"],
+            uses_packages=True,
         )
 
         return exit_code
@@ -839,11 +841,11 @@ class SCons:
     # pylint: disable=too-many-positional-arguments
     def _run(
         self,
-        command,
+        scond_command: str,
         *,
-        board,
-        variables,
-        required_packages_names,
+        board: str,
+        variables: List[str],
+        uses_packages: bool,
     ):
         """Invoke an scons subprocess."""
 
@@ -854,19 +856,20 @@ class SCons:
         # -- It is passed to scons using the flag -f default_scons_file
         variables += ["-f", f"{scons_file_path}"]
 
-        # -- Check that the required packages are installed
-        pkg_util.check_required_packages(
-            self.apio_ctx, required_packages_names
-        )
+        if uses_packages:
+            installer.install_missing_packages(self.apio_ctx)
 
-        # -- Set env path and vars to use the packages.
+        # -- We set the env variables also for a command such as 'clean'
+        # -- which doesn't use the packages, to satisfy the required env
+        # -- variables of the scons arg parser.
         pkg_util.set_env_for_packages(self.apio_ctx)
 
         if util.is_debug():
             secho("\nSCONS CALL:", fg="magenta")
-            secho(f"* command:   {command}")
-            secho(f"* board:     {board}")
-            secho(f"* variables: {variables}")
+            secho(f"* command:       {scond_command}")
+            secho(f"* board:         {board}")
+            secho(f"* variables:     {variables}")
+            secho(f"* uses packages: {uses_packages}")
             secho()
 
         # -- Get the terminal width (typically 80)
@@ -897,7 +900,9 @@ class SCons:
         )
 
         # -- Command to execute: scons -Q apio_cmd flags
-        scons_command = ["scons"] + ["-Q", command] + debug_options + variables
+        scons_command = (
+            ["scons"] + ["-Q", scond_command] + debug_options + variables
+        )
 
         # For debugging. Print the scons command line in a forumat that is
         # useful for the .vscode/launch.json scons debug target.

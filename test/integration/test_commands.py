@@ -23,11 +23,6 @@ def test_utilities(apio_runner: ApioRunner):
 
     with apio_runner.in_sandbox(shared_home=True) as sb:
 
-        # -- Install all packages. Not that since we run in a shared apio home,
-        # -- the packages can be already installed by a previous test.
-        result = sb.invoke_apio_cmd(apio, ["packages", "install"])
-        sb.assert_ok(result)
-
         # -- Run 'apio upgrade'
         result = sb.invoke_apio_cmd(apio, ["upgrade"])
         sb.assert_ok(result)
@@ -39,8 +34,8 @@ def test_utilities(apio_runner: ApioRunner):
         )
         sb.assert_ok(result)
 
-        # -- Run 'apio raw --env'
-        result = sb.invoke_apio_cmd(apio, ["raw", "--env"])
+        # -- Run 'apio raw -v'
+        result = sb.invoke_apio_cmd(apio, ["raw", "-v"])
         sb.assert_ok(result)
         assert "Envirnment settings:" in result.output
         assert "YOSYS_LIB" in result.output
@@ -85,12 +80,6 @@ def _test_project(
         else:
             proj_arg = []
             dst_arg = []
-
-        # -- 'apio packages install'.
-        # -- Note that since we used a sandbox with a shared home, the packages
-        # -- may already been installed from a previous test in this file.
-        result = sb.invoke_apio_cmd(apio, ["packages", "install"])
-        sb.assert_ok(result)
 
         # -- If testing from a remote dir, the proj dir should not exist yet,
         # -- else, the project dir should be empty.

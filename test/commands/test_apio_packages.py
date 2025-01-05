@@ -28,9 +28,9 @@ def test_packages(apio_runner: ApioRunner):
         assert result.exit_code == 1, result.output
         assert "Error: unknown package 'no-such-package'" in result.output
 
-        # -- Execute "apio packages uninstall --sayyes no-such-package"
+        # -- Execute "apio packages uninstall no-such-package"
         result = sb.invoke_apio_cmd(
-            apio, ["packages", "uninstall", "--sayyes", "no-such-package"]
+            apio, ["packages", "uninstall", "no-such-package"]
         )
         assert result.exit_code == 1, result.output
         assert "Error: no such package 'no-such-package'" in result.output
