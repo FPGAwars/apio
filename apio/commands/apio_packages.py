@@ -7,13 +7,12 @@
 # -- Licence GPLv2
 """Implementation of 'apio packages' command"""
 
-import sys
 from typing import Tuple
 import click
 from click import secho
 from apio.managers import installer
 from apio.apio_context import ApioContext, ApioContextScope
-from apio import pkg_util, util
+from apio import pkg_util
 from apio.commands import options
 from apio.cmd_util import ApioGroup, ApioSubgroup
 
@@ -78,9 +77,9 @@ your system. The command does not uninstall the Apio tool itself.
 
 \b
 Examples:
-  apio packages uninstall                 # Uninstall all packages.
-  apio packages uninstall --sayyes        # Same but does not ask yes/no.
-  apio packages uninstall oss-cad-suite   # Uninstall only given package(s).
+  apio packages uninstall                          # Uninstall all packages
+  apio packages uninstall oss-cad-suite            # Uninstall a package
+  apio packages uninstall oss-cad-suite examples   # Uninstall two packages
 """
 
 
@@ -90,13 +89,11 @@ Examples:
     help=APIO_PACKAGES_UNINSTALL_HELP,
 )
 @click.argument("packages", nargs=-1, required=False)
-@options.sayyes
 @options.verbose_option
 def _uninstall_cli(
     # Arguments
     packages: Tuple[str],
     # Options
-    sayyes: bool,
     verbose: bool,
 ):
     """Implements the 'apio packages uninstall' command."""
@@ -108,22 +105,7 @@ def _uninstall_cli(
     if not packages:
         packages = apio_ctx.platform_packages.keys()
 
-    # -- Ask the user for confirmation
-    if not sayyes:
-        prompt = click.style(
-            "Do you want to uninstall "
-            f"{util.plurality(packages, 'apio package')}?",
-            fg="magenta",
-        )
-        if not click.confirm(prompt):
-            # -- User doesn't want to continue.
-            secho("User said no", fg="red")
-            sys.exit(1)
-
-    # -- Here when going on with the uninstallation.
-    secho(f"Platform id '{apio_ctx.platform_id}'")
-
-    # -- Uninstall the packages, one by one
+    # -- Uninstall the packages.
     for package in packages:
         installer.uninstall_package(
             apio_ctx, package_spec=package, verbose=verbose

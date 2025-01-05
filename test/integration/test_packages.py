@@ -75,22 +75,11 @@ def test_packages(apio_runner: ApioRunner):
         assert "Package 'examples' installed" in result.output
         assert marker_file.is_file()
 
-        # -- Try to uninstall the 'examples' package without user approval.
-        # -- should exit with an error message.
-        assert "examples" in listdir(sb.packages_dir)
-        result = sb.invoke_apio_cmd(
-            apio, ["packages", "uninstall", "examples"], input="n"
-        )
-        assert result.exit_code == 1
-        assert "User said no" in result.output
-        assert "examples" in listdir(sb.packages_dir)
-        assert "tools-oss-cad-suite" in listdir(sb.packages_dir)
-
         # -- Uninstall the examples package. It should delete the exemples
-        # -- package and will live the rest.
+        # -- package and will leave the rest.
         assert "examples" in listdir(sb.packages_dir)
         result = sb.invoke_apio_cmd(
-            apio, ["packages", "uninstall", "examples"], input="y"
+            apio, ["packages", "uninstall", "examples"]
         )
         sb.assert_ok(result)
         assert "examples" not in listdir(sb.packages_dir)
@@ -98,9 +87,7 @@ def test_packages(apio_runner: ApioRunner):
 
         # -- Uninstall all packages. This should uninstall also the
         # -- oss-cad-suite package.
-        result = sb.invoke_apio_cmd(
-            apio, ["packages", "uninstall", "--sayyes"]
-        )
+        result = sb.invoke_apio_cmd(apio, ["packages", "uninstall"])
         sb.assert_ok(result)
         assert "examples" not in listdir(sb.packages_dir)
         assert "tools-oss-cad-suite" not in listdir(sb.packages_dir)
