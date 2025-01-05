@@ -7,6 +7,7 @@
 # -- Licence GPLv2
 
 import sys
+import os.path
 import json
 import platform
 from enum import Enum
@@ -140,29 +141,8 @@ class ApioContext:
                 project_dir_arg is None
             ), "project_dir_arg specified for scope None"
 
-        # -- Determine apio home dir. Some tools get confused if the home
-        # -- dir contains spaces so we prohibit it.
+        # -- Determine apio home dir.
         self.home_dir: Path = ApioContext._get_home_dir()
-
-        # -- We have problem with spaces and non ascii character above value
-        # -- 127, so we prohibit them.
-        # -- See here https://github.com/FPGAwars/apio/issues/515
-        for ch in str(self.home_dir):
-            if ord(ch) < 33 or ord(ch) > 127:
-                secho(
-                    "Error: The apio home dir contains a non supported"
-                    f" character [{ch}].\n"
-                    f"Apio home dir: '{str(self.home_dir)}'",
-                    fg="red",
-                )
-                secho(
-                    "Only the ASCII cractrs from 33 to 127 are supported. "
-                    "You can use the\nsystem env var 'APIO_HOME_DIR' to set "
-                    "a different apio home dir.",
-                    fg="yellow",
-                )
-
-                sys.exit(1)
 
         # -- Profile information, from ~/.apio/profile.json
         self.profile = Profile(self.home_dir)
@@ -578,6 +558,51 @@ class ApioContext:
         return "windows" in self.platform_id
 
     @staticmethod
+    def _check_home_dir(home_dir: Path):
+        """Check the path that was specified in APIO_HOME_DIR. Exit with an
+        error message if it doesn't comply with apio's requirements.
+        """
+
+        # Sanity check. If this fails, it's a programming error.
+        assert isinstance(
+            home_dir, Path
+        ), f"Error: home_dir is no a Path: {type(home_dir)}, {home_dir}"
+
+        # -- The path should be abosolute, see discussion here:
+        # -- https://github.com/FPGAwars/apio/issues/522
+        if not home_dir.is_absolute():
+            secho(
+                "Error: apio home dir should be an absolute path "
+                f"[{str(home_dir)}].",
+                fg="red",
+            )
+            secho(
+                "You can use the system env var APIO_HOME_DIR to set "
+                "a different apio home dir.",
+                fg="yellow",
+            )
+            sys.exit(1)
+
+        # -- We have problem with spaces and non ascii character above value
+        # -- 127, so we allow only ascii characters in the range [33, 127].
+        # -- See here https://github.com/FPGAwars/apio/issues/515
+        for ch in str(home_dir):
+            if ord(ch) < 33 or ord(ch) > 127:
+                secho(
+                    f"Error: Unsupported character [{ch}] in apio home dir: "
+                    f"[{str(home_dir)}].",
+                    fg="red",
+                )
+                secho(
+                    "Only the ASCII characters in the range 33 to 127 are "
+                    "allowed. You can use the\n"
+                    "system env var 'APIO_HOME_DIR' to set a different apio"
+                    "home dir.",
+                    fg="yellow",
+                )
+                sys.exit(1)
+
+    @staticmethod
     def _get_home_dir() -> Path:
         """Get the absolute apio home dir. This is the apio folder where the
         profle is located and the packages are installed.
@@ -597,12 +622,17 @@ class ApioContext:
         # -- Get the home dir. It is what the APIO_HOME_DIR env variable
         # -- says, or the default folder if None
         if apio_home_dir_env:
+            # -- Expand user home '~' marker, if exists.
+            apio_home_dir_env = os.path.expanduser(apio_home_dir_env)
+            # -- Expand varas such as $HOME or %HOME% on windows.
+            apio_home_dir_env = os.path.expandvars(apio_home_dir_env)
+            # -- Convert string to path.
             home_dir = Path(apio_home_dir_env)
         else:
             home_dir = Path.home() / ".apio"
 
-        # -- Make it absolute
-        home_dir = home_dir.absolute()
+        # -- Verify that the home dir meets apio's requirments.
+        ApioContext._check_home_dir(home_dir)
 
         # -- Create the folder if it does not exist
         try:

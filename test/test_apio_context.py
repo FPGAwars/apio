@@ -35,7 +35,7 @@ def test_init(apio_runner: ApioRunner):
         assert apio_ctx.packages_dir == sb.packages_dir
 
 
-def _test_invalid_home_dir(
+def _test_home_dir_with_a_bad_character(
     invalid_char: str, apio_runner: ApioRunner, capsys: LogCaptureFixture
 ):
     """A helper function to test the initialization of the apio context with an
@@ -52,13 +52,36 @@ def _test_invalid_home_dir(
             ApioContext(scope=ApioContextScope.NO_PROJECT)
         assert e.value.code == 1
         assert (
-            f"non supported character [{invalid_char}]"
+            f"Unsupported character [{invalid_char}]"
             in capsys.readouterr().out
         )
 
 
-def test_invalid_home_dir(apio_runner: ApioRunner, capsys: LogCaptureFixture):
+def test_home_dir_with_a_bad_character(
+    apio_runner: ApioRunner, capsys: LogCaptureFixture
+):
     """Tests the initialization of the apio context with home dirs that
     contain invalid chars."""
     for invalid_char in ["ó", "ñ", " ", "😼"]:
-        _test_invalid_home_dir(invalid_char, apio_runner, capsys)
+        _test_home_dir_with_a_bad_character(invalid_char, apio_runner, capsys)
+
+
+def test_home_dir_with_relative_path(
+    apio_runner: ApioRunner, capsys: LogCaptureFixture
+):
+    """Apio context should fail if the apio home dir is a relative path"""
+
+    with apio_runner.in_sandbox():
+
+        # -- Make up a home dir path with the invalid char.
+        invalid_home_dir = Path("./aa/bb")
+        os.environ["APIO_HOME_DIR"] = str(invalid_home_dir)
+
+        # -- Initialize an apio context. It shoudl exit with an error.
+        with raises(SystemExit) as e:
+            ApioContext(scope=ApioContextScope.NO_PROJECT)
+        assert e.value.code == 1
+        assert (
+            "Error: apio home dir should be an absolute path"
+            in capsys.readouterr().out
+        )
