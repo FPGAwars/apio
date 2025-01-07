@@ -1,4 +1,3 @@
-// Remote configuration for apio 0.9.6.
 {
   "packages": {
     "system": "1.1.2",
