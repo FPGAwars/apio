@@ -1,0 +1,11 @@
+// Remote configuration for apio 0.9.6.
+{
+  "packages": {
+    "system": "1.1.2",
+    "drivers": "1.2.0",
+    "examples": "0.1.3",
+    "graphviz": "12.1.2",
+    "verible": "0.0.1",
+    "oss-cad-suite": "0.2.1"
+  }
+}
