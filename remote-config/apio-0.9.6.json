@@ -1,5 +1,5 @@
 {
-  "packages": {
+  "package-versions": {
     "system": "1.1.2",
     "drivers": "1.2.0",
     "examples": "0.1.3",
