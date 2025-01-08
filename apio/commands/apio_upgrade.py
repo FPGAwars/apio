@@ -8,11 +8,10 @@
 """Implementation of 'apio upgrade' command"""
 
 import sys
-import importlib.metadata
 import click
 from click import secho
 from packaging import version
-from apio.util import get_pypi_latest_version
+from apio import util
 
 
 # ---------------------------
@@ -39,10 +38,10 @@ def cli(_: click.Context):
 
     # -- Get the current apio version from the python package installed
     # -- on the system
-    current_version = importlib.metadata.version("apio")
+    current_version = util.get_apio_version()
 
     # -- Get the latest stable version published at Pypi
-    latest_version = get_pypi_latest_version()
+    latest_version = util.get_pypi_latest_version()
 
     # -- There was an error getting the version from pypi
     if latest_version is None:

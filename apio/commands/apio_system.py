@@ -7,7 +7,6 @@
 # -- Licence GPLv2
 """Implementation of 'apio system' command"""
 
-import importlib.metadata
 import click
 from click import secho
 from apio import util
@@ -46,7 +45,7 @@ def _info_cli():
 
     # -- Print apio version.
     secho("Apio version    ", nl=False)
-    secho(importlib.metadata.version("apio"), fg="cyan")
+    secho(util.get_apio_version(), fg="cyan")
 
     # -- Print python version.
     secho("Python version  ", nl=False)
