@@ -7,7 +7,7 @@
     "release": {
       "tag_name": "%V",
       "compressed_name": "apio-examples-%V",
-      "uncompressed_name": "apio-examples-%V",
+      "uncompressed_name": "",
       "extension": "zip"
     },
     "description": "Apio's project examples",
