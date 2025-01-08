@@ -150,7 +150,7 @@ def process_arguments(
 
     board = project["board"]
     assert board is not None, "Scons got a None board."
-    assert board in apio_ctx.boards, f"Unknown board id [{board}]"
+    assert board in apio_ctx.boards, f"Unknown board name [{board}]"
 
     # -- Read the FPGA name for the current board
     fpga = apio_ctx.boards.get(board).get("fpga")

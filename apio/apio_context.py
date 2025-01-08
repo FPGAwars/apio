@@ -206,13 +206,13 @@ class ApioContext:
         else:
             assert not self.has_project, "init(): project loaded"
 
-    def lookup_board_id(
+    def lookup_board_name(
         self, board: str, *, warn: bool = True, strict: bool = True
     ) -> str:
-        """Lookup and return the board's canonical board id which is its key
-        in boards.json().  'board' can be the canonical id itself or a
+        """Lookup and return the board's canonical board name which is its key
+        in boards.json().  'board' can be the canonical name itself or a
         legacy id of the board as defined in boards.json.  The method prints
-        a warning if 'board' is a legacy board id that is mapped to its
+        a warning if 'board' is a legacy board name that is mapped to its
         canonical name and 'warn' is True. If the  board is not found, the
         method returns None if 'strict' is False or exit the program with a
         message if 'strict' is True."""
@@ -220,38 +220,38 @@ class ApioContext:
         assert board is not None
 
         # -- The result. The board's key in boards.json.
-        canonical_id = None
+        canonical_name = None
 
         if board in self.boards:
-            # -- Here when board is already the canonical id.
-            canonical_id = board
+            # -- Here when board is already the canonical name.
+            canonical_name = board
         else:
-            # -- Look up for a board with 'board' as its legacy id.
-            for board_key, board_val in self.boards.items():
-                if board == board_val.get("legacy_id", None):
-                    canonical_id = board_key
+            # -- Look up for a board with 'board' as its legacy name.
+            for board_name, board_info in self.boards.items():
+                if board == board_info.get("legacy_name", None):
+                    canonical_name = board_name
                     break
 
         # -- Fatal error if unknown board.
-        if strict and canonical_id is None:
+        if strict and canonical_name is None:
             secho(f"Error: no such board '{board}'", fg="red")
             secho(
-                "Run 'apio boards' for the list of board ids.\n"
-                "Expecting a board id such as 'alhambra-ii'.",
+                "Run 'apio boards' for the list of board names.\n"
+                "Expecting a board name such as 'alhambra-ii'.",
                 fg="yellow",
             )
             sys.exit(1)
 
-        # -- Warning if caller used a legacy board id.
-        if warn and canonical_id and board != canonical_id:
+        # -- Warning if caller used a legacy board name.
+        if warn and canonical_name and board != canonical_name:
             secho(
                 f"Warning: '{board}' board name was changed. "
-                f"Please use '{canonical_id}' instead.",
+                f"Please use '{canonical_name}' instead.",
                 fg="yellow",
             )
 
-        # -- Return the canonical board id.
-        return canonical_id
+        # -- Return the canonical board name.
+        return canonical_name
 
     @property
     def packages_dir(self):
@@ -657,6 +657,6 @@ class _ProjectResolverImpl(ProjectResolver):
         self._apio_context = apio_context
 
     # @override
-    def lookup_board_id(self, board: str) -> str:
-        """Implementation of lookup_board_id."""
-        return self._apio_context.lookup_board_id(board)
+    def lookup_board_name(self, board: str) -> str:
+        """Implementation of lookup_board_name."""
+        return self._apio_context.lookup_board_name(board)

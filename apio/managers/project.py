@@ -30,7 +30,7 @@ https://github.com/FPGAwars/apio/wiki/Project-configuration-file
 
 # -- Set of options every valid project should have.
 REQUIRED_OPTIONS = {
-    # -- The board id.
+    # -- The board name.
     "board",
 }
 
@@ -56,7 +56,7 @@ class ProjectResolver(ABC):
     """
 
     @abstractmethod
-    def lookup_board_id(self, board: str) -> str:
+    def lookup_board_name(self, board: str) -> str:
         """Similar to ApioContext.lookup_board()"""
 
 
@@ -80,8 +80,8 @@ class Project:
 
     def _validate(self, resolver: ProjectResolver):
         """Validates the options. Exists with an error message on any problem.
-        'resolver' is an object that allows to validate the board id and
-        to set the board option to a new board id if a legacy one was
+        'resolver' is an object that allows to validate the board name and
+        to set the board option to a new board name if a legacy one was
         specified.
         """
 
@@ -101,9 +101,9 @@ class Project:
                 secho(f"Error: unknown project option '{option}'", fg="red")
                 sys.exit(1)
 
-        # -- Force 'board' to have the canonical id of the board.
+        # -- Force 'board' to have the canonical name of the board.
         # -- This exists with an error message if the board is unknown.
-        self._options["board"] = resolver.lookup_board_id(
+        self._options["board"] = resolver.lookup_board_name(
             self._options["board"]
         )
 
@@ -198,7 +198,7 @@ def load_project_from_file(
 
 def create_project_file(
     project_dir: Path,
-    board_id: str,
+    board_name: str,
     top_module: str,
 ):
     """Creates a new apio project file. Exits on any error."""
@@ -218,7 +218,7 @@ def create_project_file(
     config = ConfigObj(str(ini_path))
     config.initial_comment = TOP_COMMENT.split("\n")
     config["env"] = {}
-    config["env"]["board"] = board_id
+    config["env"]["board"] = board_name
     config["env"]["top-module"] = top_module
 
     config.write()
