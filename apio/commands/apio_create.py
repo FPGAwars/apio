@@ -25,7 +25,7 @@ board_option = click.option(
     "--board",
     type=str,
     required=True,
-    metavar="board-name",
+    metavar="BOARD",
     help="Set the board.",
     cls=cmd_util.ApioOption,
 )

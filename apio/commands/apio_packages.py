@@ -41,7 +41,7 @@ otherwise, packages that are already installed correctly remain unchanged.
     short_help="Install apio packages.",
     help=APIO_PACKAGES_INSTALL_HELP,
 )
-@click.argument("packages", metavar="package-spec", nargs=-1, required=False)
+@click.argument("packages", metavar="PACKAGE", nargs=-1, required=False)
 @options.force_option_gen(help="Force installation.")
 @options.verbose_option
 def _install_cli(
@@ -92,7 +92,7 @@ Examples:
     short_help="Uninstall apio packages.",
     help=APIO_PACKAGES_UNINSTALL_HELP,
 )
-@click.argument("packages", metavar="package-spec", nargs=-1, required=False)
+@click.argument("packages", metavar="PACKAGE", nargs=-1, required=False)
 @options.verbose_option
 def _uninstall_cli(
     # Arguments
