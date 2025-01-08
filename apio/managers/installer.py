@@ -156,12 +156,12 @@ def _parse_package_spec(package_spec: str) -> Tuple[str, str]:
 
 
 def _delete_package_dir(
-    apio_ctx: ApioContext, package_id: str, verbose: bool
+    apio_ctx: ApioContext, package_name: str, verbose: bool
 ) -> bool:
     """Delete the directory of the package with given name.  Returns
     True if the packages existed. Exits with an error message on error."""
 
-    package_dir = apio_ctx.get_package_dir(package_id)
+    package_dir = apio_ctx.get_package_dir(package_name)
 
     dir_found = package_dir.is_dir()
     if dir_found:
@@ -384,22 +384,19 @@ def fix_packages(
     """If the package scan result contains errors, fix them."""
 
     # -- Fix broken packages.
-    for package_id in scan.installed_bad_version_subset:
-        print(f"Uninstalling versin mismatch '{package_id}'")
-        _delete_package_dir(apio_ctx, package_id, verbose=False)
-        apio_ctx.profile.remove_package(package_id)
-        # apio_ctx.profile.save()
+    for package_name in scan.bad_version_package_names_subset:
+        print(f"Uninstalling versin mismatch '{package_name}'")
+        _delete_package_dir(apio_ctx, package_name, verbose=False)
+        apio_ctx.profile.remove_package(package_name)
 
-    for package_id in scan.broken_package_ids:
-        print(f"Uninstalling broken package '{package_id}'")
-        _delete_package_dir(apio_ctx, package_id, verbose=False)
-        apio_ctx.profile.remove_package(package_id)
-        # apio_ctx.profile.save()
+    for package_name in scan.broken_package_names:
+        print(f"Uninstalling broken package '{package_name}'")
+        _delete_package_dir(apio_ctx, package_name, verbose=False)
+        apio_ctx.profile.remove_package(package_name)
 
-    for package_id in scan.orphan_package_ids:
-        print(f"Uninstalling unknown package '{package_id}'")
-        apio_ctx.profile.remove_package(package_id)
-        # apio_ctx.profile.save()
+    for package_name in scan.orphan_package_names:
+        print(f"Uninstalling unknown package '{package_name}'")
+        apio_ctx.profile.remove_package(package_name)
 
     for dir_name in scan.orphan_dir_names:
         print(f"Deleting unknown dir '{dir_name}'")

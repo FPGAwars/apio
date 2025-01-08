@@ -41,7 +41,7 @@ otherwise, packages that are already installed correctly remain unchanged.
     short_help="Install apio packages.",
     help=APIO_PACKAGES_INSTALL_HELP,
 )
-@click.argument("packages", nargs=-1, required=False)
+@click.argument("packages", metavar="package-spec", nargs=-1, required=False)
 @options.force_option_gen(help="Force installation.")
 @options.verbose_option
 def _install_cli(
@@ -92,7 +92,7 @@ Examples:
     short_help="Uninstall apio packages.",
     help=APIO_PACKAGES_UNINSTALL_HELP,
 )
-@click.argument("packages", nargs=-1, required=False)
+@click.argument("packages", metavar="package-spec", nargs=-1, required=False)
 @options.verbose_option
 def _uninstall_cli(
     # Arguments
@@ -150,7 +150,7 @@ def _list_cli():
     # -- Print an hint or summary based on the findings.
     if scan.num_errors_to_fix():
         secho("[Hint] run 'apio packages fix' to fix the errors.", fg="yellow")
-    elif scan.uninstalled_package_ids:
+    elif scan.uninstalled_package_names:
         secho(
             "[Hint] run 'apio packages install' to install all "
             "available packages.",

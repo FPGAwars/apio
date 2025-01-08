@@ -151,18 +151,18 @@ class PackageScanResults:
 
     # -- Normal and Error. Packages in platform_packages that are installed
     # -- regardless if the versin matches or not.
-    installed_package_ids: List[str]
-    # -- Error. The subset of installed_package_ids that have version
+    installed_package_names: List[str]
+    # -- Error. The subset of installed_package_names that have version
     # -- mismatch.
-    installed_bad_version_subset: List[str]
+    bad_version_package_names_subset: List[str]
     # -- Normal. Packages in platform_packages that are uninstaleld properly.
-    uninstalled_package_ids: List[str]
+    uninstalled_package_names: List[str]
     # -- Error. Packages in platform_packages with broken installation. E.g,
     # -- registered in profile but package directory is missing.
-    broken_package_ids: List[str]
+    broken_package_names: List[str]
     # -- Error. Packages that are marked in profile as registered but are not
     # -- in platform_packages.
-    orphan_package_ids: List[str]
+    orphan_package_names: List[str]
     # -- Error. Basenames of directories in packages dir that don't match
     # -- folder_name of packages in platform_packates.
     orphan_dir_names: List[str]
@@ -174,9 +174,9 @@ class PackageScanResults:
         """Returns the number of errors that required , having a non installed
         packages is not considered an error that need to be fix."""
         return (
-            len(self.installed_bad_version_subset)
-            + len(self.broken_package_ids)
-            + len(self.orphan_package_ids)
+            len(self.bad_version_package_names_subset)
+            + len(self.broken_package_names)
+            + len(self.orphan_package_names)
             + len(self.orphan_dir_names)
             + len(self.orphan_file_names)
         )
@@ -185,24 +185,24 @@ class PackageScanResults:
         """Return True if all packages are installed properly with no
         issues."""
         return (
-            not self.num_errors_to_fix() and not self.uninstalled_package_ids
+            not self.num_errors_to_fix() and not self.uninstalled_package_names
         )
 
     def dump(self):
         """Dump the content of this object. For debugging."""
         print("Package scan results:")
-        print(f"  Installed     {self.installed_package_ids}")
-        print(f"  bad version   {self.installed_bad_version_subset}")
-        print(f"  Uninstalled   {self.uninstalled_package_ids}")
-        print(f"  Broken        {self.broken_package_ids}")
-        print(f"  Orphan ids    {self.orphan_package_ids}")
+        print(f"  Installed     {self.installed_package_names}")
+        print(f"  bad version   {self.bad_version_package_names_subset}")
+        print(f"  Uninstalled   {self.uninstalled_package_names}")
+        print(f"  Broken        {self.broken_package_names}")
+        print(f"  Orphan ids    {self.orphan_package_names}")
         print(f"  Orphan dirs   {self.orphan_dir_names}")
         print(f"  Orphan files  {self.orphan_file_names}")
 
 
 def package_version_ok(
     apio_ctx: ApioContext,
-    package_id: str,
+    package_name: str,
     *,
     cached_config_ok: bool,
     verbose: bool,
@@ -212,19 +212,19 @@ def package_version_ok(
     distribution.json file. Otherwise return false."""
 
     # If this package is not applicable to this platform, return False.
-    if package_id not in apio_ctx.platform_packages:
+    if package_name not in apio_ctx.platform_packages:
         return False
 
     # -- If the current version is not available, the package is not installed.
     current_ver = apio_ctx.profile.get_package_installed_version(
-        package_id, None
+        package_name, None
     )
     if not current_ver:
         return False
 
     # -- Get the required version from the remote config.
     remote_ver = apio_ctx.profile.get_package_required_version(
-        package_id, cached_config_ok=cached_config_ok, verbose=verbose
+        package_name, cached_config_ok=cached_config_ok, verbose=verbose
     )
 
     # -- Compare. We expect the two version to be nomalized and ths a string
@@ -247,35 +247,35 @@ def scan_packages(
 
     # -- Scan packages ids in platform_packages and populate
     # -- the installed/uninstall/broken packages lists.
-    for package_id in apio_ctx.platform_packages.keys():
+    for package_name in apio_ctx.platform_packages.keys():
         # -- Collect package's folder names in a set. For a later use.
-        platform_folder_names.add(package_id)
+        platform_folder_names.add(package_name)
 
         # -- Classify the package as one of three cases.
-        in_profile = package_id in apio_ctx.profile.packages
-        has_dir = apio_ctx.get_package_dir(package_id).is_dir()
+        in_profile = package_name in apio_ctx.profile.packages
+        has_dir = apio_ctx.get_package_dir(package_name).is_dir()
         version_ok = package_version_ok(
             apio_ctx,
-            package_id,
+            package_name,
             cached_config_ok=cached_config_ok,
             verbose=verbose,
         )
         if in_profile and has_dir:
-            result.installed_package_ids.append(package_id)
+            result.installed_package_names.append(package_name)
             if not version_ok:
-                # -- The subset of installed_package_ids that has bad
+                # -- The subset of installed_package_namess that has bad
                 # -- version.
-                result.installed_bad_version_subset.append(package_id)
+                result.bad_version_package_names_subset.append(package_name)
         elif not in_profile and not has_dir:
-            result.uninstalled_package_ids.append(package_id)
+            result.uninstalled_package_names.append(package_name)
         else:
-            result.broken_package_ids.append(package_id)
+            result.broken_package_names.append(package_name)
 
     # -- Scan the packagtes ids that are registered in profile as installed
     # -- the ones that are not platform_packages as orphans.
-    for package_id in apio_ctx.profile.packages:
-        if package_id not in apio_ctx.platform_packages:
-            result.orphan_package_ids.append(package_id)
+    for package_name in apio_ctx.profile.packages:
+        if package_name not in apio_ctx.platform_packages:
+            result.orphan_package_names.append(package_name)
 
     # -- Scan the packages directory and identify orphan dirs and files.
     for path in apio_ctx.packages_dir.glob("*"):
@@ -321,42 +321,42 @@ def list_packages(apio_ctx: ApioContext, scan: PackageScanResults) -> None:
     get_package_info = apio_ctx.get_package_info
 
     # --Print the installed packages, if any.
-    if scan.installed_package_ids:
+    if scan.installed_package_names:
         items = []
-        for package_id in scan.installed_package_ids:
-            name = click.style(f"{package_id}", fg="cyan", bold=True)
-            version = get_package_version(package_id)
-            if package_id in scan.installed_bad_version_subset:
+        for package_name in scan.installed_package_names:
+            name = click.style(f"{package_name}", fg="cyan", bold=True)
+            version = get_package_version(package_name)
+            if package_name in scan.bad_version_package_names_subset:
                 note = click.style(" [Wrong version]", fg="red", bold=True)
             else:
                 note = ""
-            description = get_package_info(package_id)["description"]
+            description = get_package_info(package_name)["description"]
             items.append([f"{name} {version}{note}", f"{description}"])
         _list_section("Installed packages:", items, "green")
 
     # -- Print the uninstalled packages, if any,
-    if scan.uninstalled_package_ids:
+    if scan.uninstalled_package_names:
         items = []
-        for package_id in scan.uninstalled_package_ids:
-            name = click.style(f"{package_id}", fg="cyan", bold=True)
-            description = get_package_info(package_id)["description"]
+        for package_name in scan.uninstalled_package_names:
+            name = click.style(f"{package_name}", fg="cyan", bold=True)
+            description = get_package_info(package_name)["description"]
             items.append([f"{name}  {description}"])
         _list_section("Uinstalled packages:", items, "yellow")
 
     # -- Print the broken packages, if any,
-    if scan.broken_package_ids:
+    if scan.broken_package_names:
         items = []
-        for package_id in scan.broken_package_ids:
-            name = click.style(f"{package_id}", fg="red", bold=True)
-            description = get_package_info(package_id)["description"]
+        for package_name in scan.broken_package_names:
+            name = click.style(f"{package_name}", fg="red", bold=True)
+            description = get_package_info(package_name)["description"]
             items.append([f"{name}  {description}"])
         _list_section("[Error] Broken packages:", items, None)
 
     # -- Print the orphan packages, if any,
-    if scan.orphan_package_ids:
+    if scan.orphan_package_names:
         items = []
-        for package_id in scan.orphan_package_ids:
-            name = click.style(f"{package_id}", fg="red", bold=True)
+        for package_name in scan.orphan_package_names:
+            name = click.style(f"{package_name}", fg="red", bold=True)
             items.append([name])
         _list_section("[Error] Unknown packages:", items, None)
 
