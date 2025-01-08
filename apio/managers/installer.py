@@ -314,41 +314,12 @@ def install_package(
     if verbose:
         print(f"Local package file: {local_package_file}")
 
-    # -- Get optional package internal wrapper dir name.
-    uncompressed_name = package_info["release"].get("uncompressed_name", "")
-
     # -- Delete the old package dir, if exists, to avoid name conflicts and
     # -- left over files.
     _delete_package_dir(apio_ctx, package_name, verbose)
 
-    if uncompressed_name:
-
-        # -- Case 1: The package include a top level wrapper directory.
-        #
-        # -- Unpack the package one level up, in the packages directory.
-        _unpack_package_file(local_package_file, apio_ctx.packages_dir)
-
-        # -- The uncompressed name may contain a %V placeholder, Replace it
-        # -- with target version.
-        uncompressed_name = uncompressed_name.replace("%V", target_version)
-
-        # -- Construct the local path of the wrapper dir.
-        wrapper_dir = apio_ctx.packages_dir / uncompressed_name
-
-        # -- Rename the wrapper dir to the package dir.
-        if verbose:
-            print(f"Renaming {wrapper_dir} to {package_dir}")
-        if not wrapper_dir.is_dir():
-            secho(f"Error: no unpacked dir {wrapper_dir}", fg="red")
-            sys.exit(1)
-        wrapper_dir.rename(package_dir)
-
-    else:
-        # -- Case 2: package does not include a wrapper dir and we can simply
-        # -- unpack as the package dir.
-
-        # -- Unpack the package. This creates a new package dir.
-        _unpack_package_file(local_package_file, package_dir)
+    # -- Unpack the package. This creates a new package dir.
+    _unpack_package_file(local_package_file, package_dir)
 
     # -- Remove the package file. We don't need it anymore.
     if verbose:
