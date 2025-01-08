@@ -41,6 +41,42 @@ def test_utilities(apio_runner: ApioRunner):
         assert "YOSYS_LIB" in result.output
 
 
+def test_project_with_legacy_board_name(apio_runner: ApioRunner):
+    """Test a project that uses a legacy board name."""
+
+    # -- If the option 'offline' is passed, the test is skip
+    # -- (This test is slow and requires internet connectivity)
+    if apio_runner.offline_flag:
+        pytest.skip("requires internet connection")
+
+    # -- We shared the apio home with the other tests in this file to speed
+    # -- up apio package installation. Tests should not mutate the shared home
+    # -- to avoid cross-interferance between tests in this file.
+    with apio_runner.in_sandbox(shared_home=True) as sb:
+
+        # -- Fetch an example of a board that has a legacy name.
+        result = sb.invoke_apio_cmd(
+            apio,
+            ["examples", "fetch", "ice40-hx8k/leds"],
+        )
+        sb.assert_ok(result)
+
+        # -- Run 'apio build'
+        result = sb.invoke_apio_cmd(apio, ["build"])
+        sb.assert_ok(result)
+
+        # -- Modify the apio.ini to have the legacy board name
+        sb.write_apio_ini({"board": "iCE40-HX8K", "top-module": "leds"})
+
+        # -- Run 'apio clean'
+        result = sb.invoke_apio_cmd(apio, ["clean"])
+        sb.assert_ok(result)
+
+        # -- Run 'apio build' again. It should also succeeed.
+        result = sb.invoke_apio_cmd(apio, ["build"])
+        sb.assert_ok(result)
+
+
 # Too many statements (60/50) (too-many-statements)
 # pylint: disable=too-many-statements
 # R0801: Similar lines in 2 files
