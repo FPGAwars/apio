@@ -257,18 +257,20 @@ def install_package(
     Returns normally if no error, exits the program with an error status
     and a user message if an error is detected.
     """
-    secho(f"Installing package '{package_spec}'", fg="magenta", bold=True)
 
-    # Parse the requested package spec.
+    # -- Parse the requested package spec.
     package_name, target_version = _parse_package_spec(package_spec)
 
-    # -- Get package information (originated from packages.json)
-    package_info = apio_ctx.get_package_info(package_name)
+    # -- Exit if no such package for this platform.
+    if package_name not in apio_ctx.platform_packages:
+        secho(f"Error: no such package '{package_name}'", fg="red")
+        sys.exit(1)
+
+    secho(f"Installing package '{package_spec}'", fg="magenta", bold=True)
 
     # -- If the user didn't specify a target version we use the one specified
     # -- in the remote config.
     if not target_version:
-
         target_version = apio_ctx.profile.get_package_required_version(
             package_name, cached_config_ok=cached_config_ok, verbose=verbose
         )
@@ -350,7 +352,6 @@ def uninstall_package(
         secho(f"Error: no such package '{package_name}'", fg="red")
         sys.exit(1)
 
-    # package_color = click.style(package_name, fg="cyan")
     secho(f"Uninstalling package '{package_name}'")
 
     # -- Remove the folder with all its content!!

@@ -23,13 +23,17 @@ class Profile:
     """
 
     def __init__(self, home_dir: Path, remote_config_url_template: str):
-        """remote_config_url_template is a url string with a {0} place
-        holder for the apio version such as "0.9.6."""
+        """remote_config_url_template is a url string with a "%V"
+        placeholder for the apio version such as "0.9.6."""
 
-        # -- Resolve and cache the remote config url.
-        self.remote_config_url = remote_config_url_template.format(
-            util.get_apio_version()
+        # -- Resolve and cache the remote config url. We replace any %V with
+        # -- the apio version such as "0.9.6".
+        self.remote_config_url = remote_config_url_template.replace(
+            "%V", util.get_apio_version()
         )
+
+        # -- Verify that we resolved all the placeholders.
+        assert "%" not in self.remote_config_url, self.remote_config_url
 
         if util.is_debug():
             print(f"Remote config url: {self.remote_config_url}")
