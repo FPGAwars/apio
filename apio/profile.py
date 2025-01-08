@@ -15,10 +15,6 @@ from apio import util
 
 # -- Template for remote config file url. The placeholder is for the
 # -- apio verison such as "0.9.6".
-APIO_REMOTE_CONFIG_URL_TEMPLATE = (
-    "https://raw.githubusercontent.com/zapta/apio_dev/master/"
-    "remote-config/apio-{0}.json"
-)
 
 
 class Profile:
@@ -26,9 +22,20 @@ class Profile:
     ex. ~/.apio/profile.json
     """
 
-    def __init__(self, home_dir: Path):
+    def __init__(self, home_dir: Path, remote_config_url_template: str):
+        """remote_config_url_template is a url string with a {0} place
+        holder for the apio version such as "0.9.6."""
+
+        # -- Resolve and cache the remote config url.
+        self.remote_config_url = remote_config_url_template.format(
+            util.get_apio_version()
+        )
+
+        if util.is_debug():
+            print(f"Remote config url: {self.remote_config_url}")
 
         # ---- Set the default parameters
+
         # Apio settings
         self.settings = {}
 
@@ -169,18 +176,23 @@ class Profile:
 
         # -- Here we need to fetch the remote config from the remote server.
         # -- Construct remote config file url.
-        apio_version = util.get_apio_version()
-        config_url = APIO_REMOTE_CONFIG_URL_TEMPLATE.format(apio_version)
+        # apio_version = util.get_apio_version()
+        # config_url = APIO_REMOTE_CONFIG_URL_TEMPLATE.format(apio_version)
         if verbose or util.is_debug():
-            secho(f"Fetching remote config from '{config_url}'", fg="magenta")
+            secho(
+                f"Fetching remote config from '{self.remote_config_url}'",
+                fg="magenta",
+            )
 
         # -- Fetch the version info.
-        resp: requests.Response = requests.get(config_url, timeout=5)
+        resp: requests.Response = requests.get(
+            self.remote_config_url, timeout=5
+        )
 
         # -- Exit if http error.
         if resp.status_code != 200:
             secho("Error downloading the remote config file", fg="red")
-            secho(f"URL {config_url}", fg="red")
+            secho(f"URL {self.remote_config_url}", fg="red")
             secho(f"Error code {resp.status_code}", fg="red")
             sys.exit(1)
 

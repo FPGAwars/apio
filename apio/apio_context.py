@@ -144,8 +144,15 @@ class ApioContext:
         # -- Determine apio home dir.
         self.home_dir: Path = ApioContext._get_home_dir()
 
-        # -- Profile information, from ~/.apio/profile.json
-        self.profile = Profile(self.home_dir)
+        # -- Read the distribution information
+        self.distribution = self._load_resource(DISTRIBUTION_JSON)
+
+        # -- Profile information, from ~/.apio/profile.json. We provide it with
+        # -- the remote config url template from disribution.json such that
+        # -- can it fetch the remote config on demand.
+        self.profile = Profile(
+            self.home_dir, self.distribution["remote-config"]
+        )
 
         # -- Read the platforms information.
         self.platforms = self._load_resource(PLATFORMS_JSON)
@@ -175,9 +182,6 @@ class ApioContext:
         self.programmers = self._load_resource(
             PROGRAMMERS_JSON, allow_custom=True
         )
-
-        # -- Read the distribution information
-        self.distribution = self._load_resource(DISTRIBUTION_JSON)
 
         # -- Sort resources for consistency and intunitiveness.
         # --

@@ -1,4 +1,6 @@
 {
+  "remote-config": "https://github.com/zapta/apio_dev/raw/develop/remote-config/apio-{0}.json",
+
   "pip_packages": {
     "blackiceprog": ">=2.0.0,<3.0.0",
     "litterbox": ">=0.2.1,<0.3.0",
