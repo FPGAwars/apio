@@ -13,7 +13,6 @@ from typing import List, Callable, Tuple
 from pathlib import Path
 from dataclasses import dataclass
 import os
-import semantic_version
 import click
 from click import secho
 from apio.apio_context import ApioContext
@@ -201,7 +200,13 @@ class PackageScanResults:
         print(f"  Orphan files  {self.orphan_file_names}")
 
 
-def packge_version_ok(apio_ctx: ApioContext, package_id: str) -> bool:
+def package_version_ok(
+    apio_ctx: ApioContext,
+    package_id: str,
+    *,
+    cached_config_ok: bool,
+    verbose: bool,
+) -> bool:
     """Return true if the packagea is both in profile and plagrom packages
     and its version in the provile meet the requirements in the
     distribution.json file. Otherwise return false."""
@@ -210,30 +215,26 @@ def packge_version_ok(apio_ctx: ApioContext, package_id: str) -> bool:
     if package_id not in apio_ctx.platform_packages:
         return False
 
-    # -- If the current or rversion spec are not available, return False.
+    # -- If the current version is not available, the package is not installed.
     current_ver = apio_ctx.profile.get_package_installed_version(
         package_id, None
     )
-    ver_spec = apio_ctx.distribution.get("packages", {}).get(package_id, None)
-    if not ver_spec or not current_ver:
+    if not current_ver:
         return False
 
-    # -- Parse the version spec. If this fails, it's a programming error.
-    sem_spec = semantic_version.SimpleSpec(ver_spec)
+    # -- Get the required version from the remote config.
+    remote_ver = apio_ctx.profile.get_package_required_version(
+        package_id, cached_config_ok=cached_config_ok, verbose=verbose
+    )
 
-    # -- Parse the current version. If it's invalid, return False, e.g.
-    # -- if the profile file is corrupt.
-    try:
-        sem_version = semantic_version.Version(current_ver)
-
-    except ValueError:
-        return False
-
-    # -- Perform the matching.
-    return sem_version in sem_spec
+    # -- Compare. We expect the two version to be nomalized and ths a string
+    # -- comparison is sufficient.
+    return current_ver == remote_ver
 
 
-def scan_packages(apio_ctx: ApioContext) -> PackageScanResults:
+def scan_packages(
+    apio_ctx: ApioContext, *, cached_config_ok: bool, verbose: bool
+) -> PackageScanResults:
     """Scans the available and installed packages and returns
     the findings as a PackageScanResults object."""
 
@@ -253,7 +254,12 @@ def scan_packages(apio_ctx: ApioContext) -> PackageScanResults:
         # -- Classify the package as one of three cases.
         in_profile = package_id in apio_ctx.profile.packages
         has_dir = apio_ctx.get_package_dir(package_id).is_dir()
-        version_ok = packge_version_ok(apio_ctx, package_id)
+        version_ok = package_version_ok(
+            apio_ctx,
+            package_id,
+            cached_config_ok=cached_config_ok,
+            verbose=verbose,
+        )
         if in_profile and has_dir:
             result.installed_package_ids.append(package_id)
             if not version_ok:

@@ -65,7 +65,11 @@ def _install_cli(
     # -- Install the packages, one by one.
     for package in packages:
         installer.install_package(
-            apio_ctx, package_spec=package, force=force, verbose=verbose
+            apio_ctx,
+            package_spec=package,
+            force_reinstall=force,
+            cached_config_ok=False,
+            verbose=verbose,
         )
 
 
@@ -136,7 +140,9 @@ def _list_cli():
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Scan the available and installed packages.
-    scan = pkg_util.scan_packages(apio_ctx)
+    scan = pkg_util.scan_packages(
+        apio_ctx, cached_config_ok=False, verbose=False
+    )
 
     # -- List the findings.
     pkg_util.list_packages(apio_ctx, scan)
@@ -178,7 +184,9 @@ def _fix_cli():
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Scan the availeable and installed packages.
-    scan = pkg_util.scan_packages(apio_ctx)
+    scan = pkg_util.scan_packages(
+        apio_ctx, cached_config_ok=False, verbose=False
+    )
 
     # -- Fix any errors.
     if scan.num_errors_to_fix():
@@ -187,7 +195,9 @@ def _fix_cli():
         secho("No errors to fix")
 
     # -- Show the new state
-    new_scan = pkg_util.scan_packages(apio_ctx)
+    new_scan = pkg_util.scan_packages(
+        apio_ctx, cached_config_ok=True, verbose=False
+    )
     pkg_util.list_packages(apio_ctx, new_scan)
 
 

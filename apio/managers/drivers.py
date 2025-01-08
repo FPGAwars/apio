@@ -367,7 +367,6 @@ class Drivers:
         self._brew_install_darwin("libffi")
         self._brew_install_darwin("libftdi")
         self.apio_ctx.profile.add_setting("macos_ftdi_drivers", True)
-        self.apio_ctx.profile.save()
         secho("FTDI drivers installed", fg="green")
         return 0
 
@@ -375,7 +374,6 @@ class Drivers:
         """Uninstalls FTDI driver on darwin. Returns process status code."""
         secho("Uninstall FTDI drivers configuration")
         self.apio_ctx.profile.add_setting("macos_ftdi_drivers", False)
-        self.apio_ctx.profile.save()
         secho("FTDI drivers uninstalled", fg="green")
         return 0
 
@@ -444,7 +442,7 @@ class Drivers:
     # pylint: disable=W0703
     def _ftdi_install_windows(self) -> int:
         # -- Check that the required packages are installed.
-        installer.install_missing_packages(self.apio_ctx)
+        installer.install_missing_packages_on_the_fly(self.apio_ctx)
 
         # -- Get the drivers apio package base folder
         drivers_base_dir = self.apio_ctx.get_package_dir("drivers")
@@ -481,7 +479,7 @@ class Drivers:
 
     def _ftdi_uninstall_windows(self) -> int:
         # -- Check that the required packages exist.
-        installer.install_missing_packages(self.apio_ctx)
+        installer.install_missing_packages_on_the_fly(self.apio_ctx)
 
         secho("\nStarting the interactive Device Manager.", fg="green")
         secho(FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS, fg="yellow")
@@ -496,7 +494,7 @@ class Drivers:
     # pylint: disable=W0703
     def _serial_install_windows(self) -> int:
         # -- Check that the required packages exist.
-        installer.install_missing_packages(self.apio_ctx)
+        installer.install_missing_packages_on_the_fly(self.apio_ctx)
 
         drivers_base_dir = self.apio_ctx.get_package_dir("drivers")
         drivers_bin_dir = drivers_base_dir / "bin"
@@ -515,7 +513,7 @@ class Drivers:
 
     def _serial_uninstall_windows(self) -> int:
         # -- Check that the required packages exist.
-        installer.install_missing_packages(self.apio_ctx)
+        installer.install_missing_packages_on_the_fly(self.apio_ctx)
 
         secho("\nStarting the interactive Device Manager.", fg="green")
         secho(SERIAL_UNINSTALL_INSTRUCTIONS_WINDOWS, fg="yellow")

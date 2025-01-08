@@ -857,7 +857,7 @@ class SCons:
         variables += ["-f", f"{scons_file_path}"]
 
         if uses_packages:
-            installer.install_missing_packages(self.apio_ctx)
+            installer.install_missing_packages_on_the_fly(self.apio_ctx)
 
         # -- We set the env variables also for a command such as 'clean'
         # -- which doesn't use the packages, to satisfy the required env

@@ -13,6 +13,7 @@ import sys
 import os
 import json
 import traceback
+import importlib.metadata
 from functools import wraps
 import shutil
 from enum import Enum
@@ -601,3 +602,8 @@ def debug_decoractor(func):
         return result
 
     return outer
+
+
+def get_apio_version() -> str:
+    """Returns the version of the apio packge."""
+    return importlib.metadata.version("apio")

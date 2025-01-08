@@ -6,7 +6,19 @@
 """Manage the apio profile file"""
 
 import json
+import sys
 from pathlib import Path
+from typing import Dict
+from click import secho
+import requests
+from apio import util
+
+# -- Template for remote config file url. The placeholder is for the
+# -- apio verison such as "0.9.6".
+APIO_REMOTE_CONFIG_URL_TEMPLATE = (
+    "https://raw.githubusercontent.com/zapta/apio_dev/master/"
+    "remote-config/apio-{0}.json"
+)
 
 
 class Profile:
@@ -23,6 +35,14 @@ class Profile:
         # -- Installed package versions
         self.packages = {}
 
+        # -- A copy of remote config.
+        self.remote_config = {}
+
+        # -- We use this flag to make sure we fetch the config from the
+        # -- remote server no more than once, since it's not expected to change
+        # -- that often.
+        self.remote_config_fetched = False
+
         # -- Get the profile path
         # -- Ex. '/home/obijuan/.apio'
         self._profile_path = home_dir / "profile.json"
@@ -34,17 +54,20 @@ class Profile:
         """Add a package to the profile class"""
 
         self.packages[name] = {"version": version}
+        self._save()
 
     def add_setting(self, key: str, value: str):
         """Add one key,value pair in the settings"""
 
         self.settings[key] = value
+        self._save()
 
     def remove_package(self, name: str):
         """Remove a package from the profile file"""
 
         if name in self.packages.keys():
             del self.packages[name]
+            self._save()
 
     def get_package_installed_version(
         self, package_name: str, default="0.0.0"
@@ -58,6 +81,23 @@ class Profile:
 
         # -- Else, return the default value.
         return default
+
+    def get_package_required_version(
+        self,
+        package_name: str,
+        *,
+        cached_config_ok=True,
+        verbose: bool = False,
+    ):
+        """Get from the required version of the package with given name.
+        If cached_config_ok is False, we make sure to use a fresh remote config
+        from this invocation of apio.
+        """
+        config = self._get_remote_config(
+            cached_config_ok=cached_config_ok, verbose=verbose
+        )
+        required_version = config["packages"][package_name]["version"]
+        return required_version
 
     def load(self):
         """Load the profile from the file"""
@@ -79,18 +119,15 @@ class Profile:
         # -- Process the json file
         data = json.load(profile)
 
-        # -- Add the settings object
-        if "settings" in data.keys():
-            self.settings = data["settings"]
+        # -- Extract the fields
+        self.settings = data.get("settings", {})
+        self.packages = data.get("installed-packages", {})
+        self.remote_config = data.get("remote-config", {})
 
-        # -- Add the packages version object
-        if "packages" in data.keys():
-            self.packages = data["packages"]
+        # -- Indicate that the current remote config may be old.
+        self.remote_config_fetched = False
 
-        else:
-            self.packages = data  # Backward compatibility
-
-    def save(self):
+    def _save(self):
         """Save the profile file"""
 
         # -- Create the profile folder, if it does not exist yet
@@ -98,9 +135,82 @@ class Profile:
         if not path.exists():
             path.mkdir()
 
-        with open(self._profile_path, "w", encoding="utf8") as profile:
-            data = {
-                "settings": self.settings,
-                "packages": self.packages,
-            }
-            json.dump(data, profile, indent=4, sort_keys=True)
+        # -- Construct the json dict.
+        data = {}
+        if self.settings:
+            data["settings"] = self.settings
+        if self.packages:
+            data["installed-packages"] = self.packages
+        if self.remote_config:
+            data["remote-config"] = self.remote_config
+
+        # -- Write to profile file.
+        with open(self._profile_path, "w", encoding="utf8") as f:
+            json.dump(data, f, indent=4, sort_keys=True)
+
+        # -- Dump for debugging.
+        if util.is_debug():
+            secho("Saved profile:", fg="magenta")
+            secho(json.dumps(data))
+
+    def _get_remote_config(
+        self, *, cached_config_ok: bool, verbose: bool
+    ) -> Dict:
+        """Returns the apio remote config JSON dict. If the value is cached
+        in the profile and force_cache = False, then it's returned as is,
+        otherwise, it's fetched remotly and also saved in the profile.
+        """
+        # -- If a remote config is already available and fetch is not force
+        # -- use it.
+        if self.remote_config_fetched or (
+            cached_config_ok and self.remote_config
+        ):
+            return self.remote_config
+
+        # -- Here we need to fetch the remote config from the remote server.
+        # -- Construct remote config file url.
+        apio_version = util.get_apio_version()
+        config_url = APIO_REMOTE_CONFIG_URL_TEMPLATE.format(apio_version)
+        if verbose or util.is_debug():
+            secho(f"Fetching remote config from '{config_url}'", fg="magenta")
+
+        # -- Fetch the version info.
+        resp: requests.Response = requests.get(config_url, timeout=5)
+
+        # -- Exit if http error.
+        if resp.status_code != 200:
+            secho("Error downloading the remote config file", fg="red")
+            secho(f"URL {config_url}", fg="red")
+            secho(f"Error code {resp.status_code}", fg="red")
+            sys.exit(1)
+
+        # -- Here when download was ok.
+        if verbose or util.is_debug():
+            secho("Remote config file downloaded ok:\n")
+
+        if util.is_debug():
+            secho(resp.text, fg="cyan")
+            secho("\n")
+
+        # -- Parse the remote JSON config file into adict.
+        try:
+            remote_config = json.loads(resp.text)
+
+        # -- Handle parsing error.
+        except json.decoder.JSONDecodeError as exc:
+
+            # -- Show the error and abort.
+            secho("Apio System Error! Invalid remote cofing file", fg="red")
+            secho(f"{exc}\n", fg="red")
+            sys.exit(1)
+
+        # -- Update the profile and save
+        if remote_config != self.remote_config:
+            self.remote_config = remote_config
+            self._save()
+
+        # -- Mark that we have the altest config.
+        self.remote_config_fetched = True
+
+        # -- Return the object for the resource
+        return remote_config

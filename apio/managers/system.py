@@ -156,7 +156,7 @@ class System:  # pragma: no cover
         # pkg_util.check_required_packages(self.apio_ctx, ["oss-cad-suite"])
 
         # -- Set system env for using the packages.
-        installer.install_missing_packages(self.apio_ctx)
+        installer.install_missing_packages_on_the_fly(self.apio_ctx)
         pkg_util.set_env_for_packages(self.apio_ctx, quiet=True)
 
         # pylint: disable=fixme
