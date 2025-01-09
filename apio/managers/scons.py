@@ -30,6 +30,7 @@ from apio.managers.system import System
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
 from apio.managers import installer
+from apio.profile import Profile
 
 # -- Constant for the dictionary PROG, which contains
 # -- the programming configuration
@@ -911,7 +912,8 @@ class SCons:
 
         # -- An output filter that manupulates the scons stdout/err lines as
         # -- needed and write them to stdout.
-        scons_filter = SconsFilter()
+        colors_enabled = Profile.read_color_prefernces(default=False)
+        scons_filter = SconsFilter(colors_enabled)
 
         # -- Execute the scons builder!
         result = util.exec_command(

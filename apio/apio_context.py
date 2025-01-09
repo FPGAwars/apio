@@ -7,7 +7,6 @@
 # -- Licence GPLv2
 
 import sys
-import os.path
 import json
 import platform
 from enum import Enum
@@ -142,7 +141,7 @@ class ApioContext:
             ), "project_dir_arg specified for scope None"
 
         # -- Determine apio home dir.
-        self.home_dir: Path = ApioContext._get_home_dir()
+        self.home_dir: Path = util.resolve_home_dir()
 
         # -- Read the distribution information
         self.distribution = self._load_resource(DISTRIBUTION_JSON)
@@ -562,93 +561,6 @@ class ApioContext:
     def is_windows(self) -> bool:
         """Returns True iff platform_id indicates windows."""
         return "windows" in self.platform_id
-
-    @staticmethod
-    def _check_home_dir(home_dir: Path):
-        """Check the path that was specified in APIO_HOME_DIR. Exit with an
-        error message if it doesn't comply with apio's requirements.
-        """
-
-        # Sanity check. If this fails, it's a programming error.
-        assert isinstance(
-            home_dir, Path
-        ), f"Error: home_dir is no a Path: {type(home_dir)}, {home_dir}"
-
-        # -- The path should be abosolute, see discussion here:
-        # -- https://github.com/FPGAwars/apio/issues/522
-        if not home_dir.is_absolute():
-            secho(
-                "Error: apio home dir should be an absolute path "
-                f"[{str(home_dir)}].",
-                fg="red",
-            )
-            secho(
-                "You can use the system env var APIO_HOME_DIR to set "
-                "a different apio home dir.",
-                fg="yellow",
-            )
-            sys.exit(1)
-
-        # -- We have problem with spaces and non ascii character above value
-        # -- 127, so we allow only ascii characters in the range [33, 127].
-        # -- See here https://github.com/FPGAwars/apio/issues/515
-        for ch in str(home_dir):
-            if ord(ch) < 33 or ord(ch) > 127:
-                secho(
-                    f"Error: Unsupported character [{ch}] in apio home dir: "
-                    f"[{str(home_dir)}].",
-                    fg="red",
-                )
-                secho(
-                    "Only the ASCII characters in the range 33 to 127 are "
-                    "allowed. You can use the\n"
-                    "system env var 'APIO_HOME_DIR' to set a different apio"
-                    "home dir.",
-                    fg="yellow",
-                )
-                sys.exit(1)
-
-    @staticmethod
-    def _get_home_dir() -> Path:
-        """Get the absolute apio home dir. This is the apio folder where the
-        profle is located and the packages are installed.
-        The apio home dir can be overridden using the APIO_HOME_DIR environment
-        varible or in the /etc/apio.json file (in
-        Debian). If not set, the user_home/.apio folder is used by default:
-        Ej. Linux:  /home/obijuan/.apio
-        If the folders does not exist, they are created
-        """
-
-        # -- Get the APIO_HOME_DIR env variable
-        # -- It returns None if it was not defined
-        apio_home_dir_env = env_options.get(
-            env_options.APIO_HOME_DIR, default=None
-        )
-
-        # -- Get the home dir. It is what the APIO_HOME_DIR env variable
-        # -- says, or the default folder if None
-        if apio_home_dir_env:
-            # -- Expand user home '~' marker, if exists.
-            apio_home_dir_env = os.path.expanduser(apio_home_dir_env)
-            # -- Expand varas such as $HOME or %HOME% on windows.
-            apio_home_dir_env = os.path.expandvars(apio_home_dir_env)
-            # -- Convert string to path.
-            home_dir = Path(apio_home_dir_env)
-        else:
-            home_dir = Path.home() / ".apio"
-
-        # -- Verify that the home dir meets apio's requirments.
-        ApioContext._check_home_dir(home_dir)
-
-        # -- Create the folder if it does not exist
-        try:
-            home_dir.mkdir(parents=True, exist_ok=True)
-        except PermissionError:
-            secho(f"Error: no usable home directory {home_dir}", fg="red")
-            sys.exit(1)
-
-        # Return the home_dir as a Path
-        return home_dir
 
 
 # pylint: disable=too-few-public-methods

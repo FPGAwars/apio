@@ -7,8 +7,8 @@
 
 import json
 import sys
+from typing import Union, Any, Dict
 from pathlib import Path
-from typing import Dict
 import click
 from click import secho
 import requests
@@ -79,8 +79,10 @@ class Profile:
 
     def set_preferences_colors(self, value: str):
         """Set the colors prefernes to on or off."""
+        assert value in ["on", "off"], f"Invalid value [{value}]"
         self.preferences["colors"] = value
         self._save()
+        self.apply_color_preferences()
 
     def remove_package(self, name: str):
         """Remove a package from the profile file"""
@@ -89,25 +91,42 @@ class Profile:
             del self.packages[name]
             self._save()
 
-    def apply_color_preferences(self):
-        """Apply the current user colors preferences to the current click
-        command context. Ignored silently if running in a unit test without
-        a click context."""
-        # -- Get the click command context. If not running in a command (e.g.
-        # -- just a unit test), then nothing to do.
+    @staticmethod
+    def apply_color_preferences():
+        """If an colors are disabled and a click context exist, set it up to
+        disable colors.
+        """
+
+        colors: bool = Profile.read_color_prefernces(default=True)
         click_context = click.get_current_context(silent=True)
-        if not click_context:
-            return
+        if click_context:
+            click_context.color = colors
 
-        colors = self.preferences.get("colors", "on")
+    @staticmethod
+    def read_color_prefernces(*, default) -> Union[bool, Any]:
+        """Returns the value of the colors preferences or default if not
+        specified. This is a static method because we may need this value
+        before creating  the profile object, for example when printing command
+        help.
+        """
 
+        profile_path = util.resolve_home_dir() / "profile.json"
+
+        if not profile_path.exists():
+            return default
+
+        with open(profile_path, "r", encoding="utf8") as f:
+            # -- Get the colors preferenes value, if exists.
+            data = json.load(f)
+            preferences = data.get("preferences", {})
+            colors = preferences.get("colors", None)
+
+        # -- Get the click context, if exists.
         if colors == "on":
-            click_context.color = True
-        elif colors == "off":
-            click_context.color = False
-        else:
-            if util.is_debug():
-                print(f"ERROR: Unknown colors preference [{colors}]")
+            return True
+        if colors == "off":
+            return False
+        return default
 
     def get_package_installed_version(
         self, package_name: str, default="0.0.0"

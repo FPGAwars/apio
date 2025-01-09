@@ -8,6 +8,7 @@ from os.path import getsize
 from pathlib import Path
 from test.conftest import ApioRunner
 import pytest
+from click.termui import unstyle
 from apio.commands.apio import cli as apio
 
 
@@ -75,6 +76,79 @@ def test_project_with_legacy_board_name(apio_runner: ApioRunner):
         # -- Run 'apio build' again. It should also succeeed.
         result = sb.invoke_apio_cmd(apio, ["build"])
         sb.assert_ok(result)
+
+
+def test_with_colors_on_and_off(apio_runner: ApioRunner):
+    """Test a project with colors turned on and off.."""
+
+    # -- If the option 'offline' is passed, the test is skip
+    # -- (This test is slow and requires internet connectivity)
+    if apio_runner.offline_flag:
+        pytest.skip("requires internet connection")
+
+    # -- We shared the apio home with the other tests in this file to speed
+    # -- up apio package installation. Tests should not mutate the shared home
+    # -- to avoid cross-interferance between tests in this file.
+    with apio_runner.in_sandbox(shared_home=True) as sb:
+
+        # -- Fetch an example of a board that has a legacy name.
+        result = sb.invoke_apio_cmd(
+            apio,
+            ["examples", "fetch", "alhambra-ii/bcd-counter"],
+        )
+        sb.assert_ok(result)
+
+        # -- Run 'apio -h'. We expect output to have colors.
+        result = sb.invoke_apio_cmd(apio, ["-h"])
+        sb.assert_ok(result)
+        assert result.output != unstyle(result.output)
+
+        # -- Run 'apio build'. We expect output to have colors.
+        result = sb.invoke_apio_cmd(apio, ["build"])
+        sb.assert_ok(result)
+        assert result.output != unstyle(result.output)
+
+        # -- Run 'apio report'. We expect output to have colors.
+        result = sb.invoke_apio_cmd(apio, ["report"])
+        sb.assert_ok(result)
+        # -- Compare the output to output with colors removed.
+        assert result.output != unstyle(result.output)
+
+        # -- Run 'apio preferences set --colors off'. We expect output to
+        # -- have colors.
+        result = sb.invoke_apio_cmd(
+            apio, ["preferences", "set", "--colors", "off"]
+        )
+        sb.assert_ok(result)
+
+        # -- Run 'apio -h'. We expect output to not have colors.
+        result = sb.invoke_apio_cmd(apio, ["-h"])
+        sb.assert_ok(result)
+        assert result.output == unstyle(result.output)
+
+        # -- Run 'apio build'. We expect output not to have colors.
+        result = sb.invoke_apio_cmd(apio, ["build"])
+        sb.assert_ok(result)
+        assert result.output == unstyle(result.output)
+
+        # -- Run 'apio report'. We expect output not to have colors.
+        result = sb.invoke_apio_cmd(apio, ["report"])
+        sb.assert_ok(result)
+        # -- Compare the output to output with colors removed.
+        assert result.output == unstyle(result.output)
+
+        # -- Run 'apio preferences set --colors on'. We expect output to
+        # -- have colors.
+        result = sb.invoke_apio_cmd(
+            apio, ["preferences", "set", "--colors", "on"]
+        )
+        sb.assert_ok(result)
+
+        # -- Run 'apio report'. We expect output to have colors again.
+        result = sb.invoke_apio_cmd(apio, ["report"])
+        sb.assert_ok(result)
+        # -- Compare the output to output with colors removed.
+        assert result.output != unstyle(result.output)
 
 
 # Too many statements (60/50) (too-many-statements)

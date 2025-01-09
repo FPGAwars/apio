@@ -83,9 +83,10 @@ def _set_cli(colors: str):
     # -- Create the apio context.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
+    # -- Set the colors preference value.
     apio_ctx.profile.set_preferences_colors(colors)
-    apio_ctx.profile.apply_color_preferences()
 
+    # -- Show the result. The new colors preference is already in effect.
     color = apio_ctx.profile.preferences["colors"]
     secho(f"Colors set to [{color}]", fg="green")
 

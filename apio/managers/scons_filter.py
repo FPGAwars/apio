@@ -18,6 +18,7 @@ import re
 from enum import Enum
 from typing import List, Optional, Tuple
 from click import secho, echo
+from click.termui import unstyle
 
 
 # -- Terminal cursor commands.
@@ -40,18 +41,6 @@ class RangeEvents(Enum):
     START_AFTER = 2  # Range starts after the current line.
     END_BEFORE = 3  # Range ends before the current line.
     END_AFTER = 4  # Range ends, after the current line.
-
-
-def emit_line(line: str, fg: str = None) -> None:
-    """Emit a line from the scons filter. We use scecho only when thre
-    is an explicit color, to avoid interfering with color from the scons
-    job output, for example for color that spans lines as in
-    'secho("line1\nline2", fg="red", color=True)'.
-    """
-    if fg:
-        secho(line, fg=fg)
-    else:
-        echo(line)
 
 
 class RangeDetector:
@@ -150,7 +139,8 @@ class SconsFilter:
     intereset, mutates and colors the lines where applicable, and print to
     stdout."""
 
-    def __init__(self):
+    def __init__(self, colors_enabled: bool):
+        self.colors_enabled = colors_enabled
         self._pnr_detector = PnrRangeDetector()
         self._iceprog_detector = IceProgRangeDetector()
 
@@ -161,6 +151,28 @@ class SconsFilter:
     def on_stderr_line(self, line: str) -> None:
         """Stderr pipe calls this on each line."""
         self.on_line(PipeId.STDERR, line)
+
+    def emit_line(self, line: str, fg: str = None) -> None:
+        """Emit a line from the scons filter. We use scecho only when thre
+        is an explicit color, to avoid interfering with color from the scons
+        job output, for example for color that spans lines as in
+        'secho("line1\nline2", fg="red", color=True)'.
+        """
+        # -- If we run with colors turned of, remove any ansi colors that can
+        # -- come from the scons process.
+        if not self.colors_enabled:
+            fg = None
+            line = unstyle(line)
+
+        # -- Echo the line.
+        if fg:
+            secho(line, fg=fg)
+        else:
+            # -- In this case we use echo to preserve ansi colors from the
+            # -- scons job which can span multiple ines. Using secho would
+            # -- interfere with those colors, preserving only the color of the
+            # -- first line.
+            echo(line)
 
     @staticmethod
     def _assign_line_color(
@@ -207,7 +219,7 @@ class SconsFilter:
                     (r"^error:", "red"),
                 ],
             )
-            emit_line(line, fg=line_color)
+            self.emit_line(line, fg=line_color)
             return
 
         # -- Special handling for iceprog line range.
@@ -253,7 +265,7 @@ class SconsFilter:
                     (r"^VERIFY OK", "green"),
                 ],
             )
-            emit_line(line, fg=line_color)
+            self.emit_line(line, fg=line_color)
             return
 
         # -- Special handling for Fumo lines.
@@ -270,7 +282,7 @@ class SconsFilter:
                 # -  Commit 93fc9bc4f3bfd21568e2d66f11976831467e3b97.
                 #
                 print(CURSOR_UP + ERASE_LINE, end="", flush=True)
-                emit_line(line, fg="green")
+                self.emit_line(line, fg="green")
                 return
 
         # -- Special handling for tinyprog lines.
@@ -298,7 +310,7 @@ class SconsFilter:
                 # -  Commit 93fc9bc4f3bfd21568e2d66f11976831467e3b97.
                 #
                 print(CURSOR_UP + ERASE_LINE, end="", flush=True)
-                emit_line(line)
+                self.emit_line(line)
                 return
 
         # Handling the rest of the stdout lines.
@@ -312,7 +324,7 @@ class SconsFilter:
                     (r"^error:", "red"),
                 ],
             )
-            emit_line(line, fg=line_color)
+            self.emit_line(line, fg=line_color)
             return
 
         # Handling the rest of stderr the lines.
@@ -324,4 +336,4 @@ class SconsFilter:
                 (r"^error:", "red"),
             ],
         )
-        emit_line(line, fg=line_color)
+        self.emit_line(line, fg=line_color)
