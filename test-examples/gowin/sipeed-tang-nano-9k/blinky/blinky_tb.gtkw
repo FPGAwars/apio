@@ -1,0 +1,41 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Sun Jan  5 07:47:26 2025
+[*]
+[dumpfile] "/Volumes/projects/apio-examples/repo/examples/sipeed-tang-nano-9k/blinky/_build/blinky_tb.vcd"
+[dumpfile_mtime] "Sun Jan  5 07:45:31 2025"
+[dumpfile_size] 1557
+[savefile] "/Volumes/projects/apio-examples/repo/examples/sipeed-tang-nano-9k/blinky/blinky_tb.gtkw"
+[timestart] 0
+[size] 1296 600
+[pos] -1 -1
+*-10.521719 1900 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] blinky_tb.
+[sst_width] 253
+[signals_width] 185
+[sst_expanded] 1
+[sst_vpaned_height] 158
+@420
+blinky_tb.clk_num
+@28
+blinky_tb.clk
+@200
+-
+-Reset Generator
+@22
+blinky_tb.ticker.reset_counter[3:0]
+@28
+blinky_tb.ticker.sys_reset
+@200
+-
+-
+-LED Blinker
+@22
+blinky_tb.ticker.blink_counter[31:0]
+@29
+[color] 3
+blinky_tb.led
+@200
+-
+[pattern_trace] 1
+[pattern_trace] 0
