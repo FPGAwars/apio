@@ -70,7 +70,7 @@ class System:  # pragma: no cover
             port = serial_port.get("port")
             description = serial_port.get("description")
             hwid = serial_port.get("hwid")
-            secho(port, fg="cyan")
+            secho(port, fg="cyan", bold=True)
             secho(f"Description: {description}")
             secho(f"Hardware info: {hwid}\n")
 

@@ -334,7 +334,7 @@ class ApioContext:
 
             # -- Display the affected file (in a different color)
             apio_file_msg = click.style("Apio file: ", fg="yellow")
-            filename = click.style(f"{filepath}", fg="cyan")
+            filename = click.style(f"{filepath}", fg="cyan", bold=True)
             secho(f"{apio_file_msg} {filename}")
 
             # -- Display the specific error message
@@ -357,7 +357,7 @@ class ApioContext:
 
             # -- Display the affected file (in a different color)
             apio_file_msg = click.style("Apio file: ", fg="yellow")
-            filename = click.style(f"{filepath}", fg="cyan")
+            filename = click.style(f"{filepath}", fg="cyan", bold=True)
             secho(f"{apio_file_msg} {filename}")
 
             # -- Display the specific error message

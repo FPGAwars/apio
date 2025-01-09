@@ -256,7 +256,7 @@ class Profile:
             secho("Remote config file downloaded ok:\n")
 
         if util.is_debug():
-            secho(resp.text, fg="cyan")
+            secho(resp.text, fg="cyan", bold=True)
             secho("\n")
 
         # -- Parse the remote JSON config file into adict.

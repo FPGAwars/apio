@@ -129,7 +129,12 @@ class PluginBase:
         def completion_action(source, target, env):  # noqa
             """Action function that prints a completion message."""
             _ = (source, target, env)  # Unused
-            secho(f"Generated {TARGET}.{graph_type}", fg="green", color=True)
+            secho(
+                f"Generated {TARGET}.{graph_type}",
+                fg="green",
+                bold=True,
+                color=True,
+            )
 
         actions = [
             f"dot -T{graph_type} $SOURCES -o $TARGET",

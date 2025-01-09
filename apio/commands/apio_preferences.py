@@ -42,7 +42,7 @@ def _list_cli():
 
     # -- Show colors preference.
     value = apio_ctx.profile.preferences.get("colors", "on")
-    styled_value = style(value, fg="cyan")
+    styled_value = style(value, fg="cyan", bold=True)
     echo(f"Colors:   {styled_value}")
 
 

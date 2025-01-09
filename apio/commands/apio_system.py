@@ -45,27 +45,27 @@ def _info_cli():
 
     # -- Print apio version.
     secho("Apio version:     ", nl=False)
-    secho(util.get_apio_version(), fg="cyan")
+    secho(util.get_apio_version(), fg="cyan", bold=True)
 
     # -- Print python version.
     secho("Python version:   ", nl=False)
-    secho(util.get_python_version(), fg="cyan")
+    secho(util.get_python_version(), fg="cyan", bold=True)
 
     # -- Print platform id.
     secho("Platform id:      ", nl=False)
-    secho(apio_ctx.platform_id, fg="cyan")
+    secho(apio_ctx.platform_id, fg="cyan", bold=True)
 
     # -- Print apio package directory.
     secho("Python package:   ", nl=False)
-    secho(util.get_path_in_apio_package(""), fg="cyan")
+    secho(util.get_path_in_apio_package(""), fg="cyan", bold=True)
 
     # -- Print apio home directory.
     secho("Apio home:        ", nl=False)
-    secho(apio_ctx.home_dir, fg="cyan")
+    secho(apio_ctx.home_dir, fg="cyan", bold=True)
 
     # -- Print apio home directory.
     secho("Apio packages:    ", nl=False)
-    secho(apio_ctx.packages_dir, fg="cyan")
+    secho(apio_ctx.packages_dir, fg="cyan", bold=True)
 
 
 # ------ apio system platforms
