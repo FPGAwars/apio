@@ -6,7 +6,7 @@
     },
     "release": {
       "release_tag": "%V",
-      "compressed_name": "apio-examples-%V",
+      "file_name": "apio-examples-%V",
       "extension": "zip"
     },
     "description": "Apio's project examples",
@@ -19,7 +19,7 @@
     },
     "release": {
       "release_tag": "v%V",
-      "compressed_name": "tools-oss-cad-suite-%P-%V",
+      "file_name": "tools-oss-cad-suite-%P-%V",
       "extension": "tar.gz"
     },
     "description": "YosysHQ's oss-cad-suite",
@@ -43,7 +43,7 @@
     },
     "release": {
       "release_tag": "v%V",
-      "compressed_name": "tools-graphviz-%P-%V",
+      "file_name": "tools-graphviz-%P-%V",
       "extension": "tar.gz",
       "available_platforms": [
         "windows_amd64"
@@ -63,7 +63,7 @@
     },
     "release": {
       "release_tag": "v%V",
-      "compressed_name": "tools-verible-%P-%V",
+      "file_name": "tools-verible-%P-%V",
       "extension": "tar.gz"
     },
     "description": "Chips Aliance's Verible toolset",
@@ -80,7 +80,7 @@
     },
     "release": {
       "release_tag": "v%V",
-      "compressed_name": "tools-drivers-%P-%V",
+      "file_name": "tools-drivers-%P-%V",
       "extension": "tar.gz",
       "available_platforms": [
         "windows_amd64"
@@ -100,7 +100,7 @@
     },
     "release": {
       "release_tag": "v%V",
-      "compressed_name": "tools-system-%P-%V",
+      "file_name": "tools-system-%P-%V",
       "extension": "tar.gz",
       "available_platforms": [
         "windows_amd64"

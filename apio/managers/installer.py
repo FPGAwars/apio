@@ -38,20 +38,20 @@ def _construct_package_download_url(
 
     # -- Get the compressed name of the package. This is base name of the
     # -- downloaded file. E.g. "tools-oss-cad-suite-%P-%V"
-    compressed_name = package_info["release"]["compressed_name"]
+    file_name = package_info["release"]["file_name"]
 
     # -- Replace %P, if any, with package selector.
-    compressed_name = compressed_name.replace("%P", package_selector)
+    file_name = file_name.replace("%P", package_selector)
 
     # -- Replace %V, if any,  with the package version
-    compressed_name = compressed_name.replace("%V", target_version)
+    file_name = file_name.replace("%V", target_version)
 
     # -- Get the package file name extension. e.g. 'tar.gz'.
     extension = package_info["release"]["extension"]
 
     # -- Construct the package file name.
     # -- E.g. 'atools-oss-cad-suite-darwin_arm64-0.0.9.tar.gz'
-    file_name = f"{compressed_name}.{extension}"
+    file_name = f"{file_name}.{extension}"
 
     # -- Get the github user name. E.g. 'FGPAWars'.
     organization = package_info["repository"]["organization"]
