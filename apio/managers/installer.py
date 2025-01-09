@@ -60,14 +60,14 @@ def _construct_package_download_url(
     repo_name = package_info["repository"]["name"]
 
     # -- Construct the release tag name. E.g 'v0.0.9'.
-    version_tag = package_info["release"]["tag_name"].replace(
+    release_tag = package_info["release"]["release_tag"].replace(
         "%V", target_version
     )
 
     # -- Construct the full url.
     download_url = (
         f"https://github.com/{organization}/{repo_name}/releases/"
-        f"download/{version_tag}/{file_name}"
+        f"download/{release_tag}/{file_name}"
     )
 
     return download_url

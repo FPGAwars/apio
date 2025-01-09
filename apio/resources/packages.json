@@ -5,7 +5,7 @@
       "organization": "FPGAwars"
     },
     "release": {
-      "tag_name": "%V",
+      "release_tag": "%V",
       "compressed_name": "apio-examples-%V",
       "extension": "zip"
     },
@@ -18,7 +18,7 @@
       "organization": "FPGAwars"
     },
     "release": {
-      "tag_name": "v%V",
+      "release_tag": "v%V",
       "compressed_name": "tools-oss-cad-suite-%P-%V",
       "extension": "tar.gz"
     },
@@ -42,7 +42,7 @@
       "organization": "FPGAwars"
     },
     "release": {
-      "tag_name": "v%V",
+      "release_tag": "v%V",
       "compressed_name": "tools-graphviz-%P-%V",
       "extension": "tar.gz",
       "available_platforms": [
@@ -62,7 +62,7 @@
       "organization": "FPGAwars"
     },
     "release": {
-      "tag_name": "v%V",
+      "release_tag": "v%V",
       "compressed_name": "tools-verible-%P-%V",
       "extension": "tar.gz"
     },
@@ -79,7 +79,7 @@
       "organization": "FPGAwars"
     },
     "release": {
-      "tag_name": "v%V",
+      "release_tag": "v%V",
       "compressed_name": "tools-drivers-%P-%V",
       "extension": "tar.gz",
       "available_platforms": [
@@ -99,7 +99,7 @@
       "organization": "FPGAwars"
     },
     "release": {
-      "tag_name": "v%V",
+      "release_tag": "v%V",
       "compressed_name": "tools-system-%P-%V",
       "extension": "tar.gz",
       "available_platforms": [
