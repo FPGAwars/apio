@@ -102,7 +102,7 @@ def cli(
     if verbose:
         secho("----\n")
         if exit_code == 0:
-            secho("Exit status [0] OK", fg="green")
+            secho("Exit status [0] OK", fg="green", bold=True)
 
         else:
             secho(f"Exist status [{exit_code}] ERROR", fg="red")

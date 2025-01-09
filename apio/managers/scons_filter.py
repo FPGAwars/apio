@@ -152,7 +152,9 @@ class SconsFilter:
         """Stderr pipe calls this on each line."""
         self.on_line(PipeId.STDERR, line)
 
-    def emit_line(self, line: str, fg: str = None) -> None:
+    def emit_line(
+        self, line: str, *, fg: str = None, bold: bool = None
+    ) -> None:
         """Emit a line from the scons filter. We use scecho only when thre
         is an explicit color, to avoid interfering with color from the scons
         job output, for example for color that spans lines as in
@@ -162,11 +164,12 @@ class SconsFilter:
         # -- come from the scons process.
         if not self.colors_enabled:
             fg = None
+            bold = None
             line = unstyle(line)
 
         # -- Echo the line.
-        if fg:
-            secho(line, fg=fg)
+        if fg or bold:
+            secho(line, fg=fg, bold=bold)
         else:
             # -- In this case we use echo to preserve ansi colors from the
             # -- scons job which can span multiple ines. Using secho would
@@ -282,7 +285,7 @@ class SconsFilter:
                 # -  Commit 93fc9bc4f3bfd21568e2d66f11976831467e3b97.
                 #
                 print(CURSOR_UP + ERASE_LINE, end="", flush=True)
-                self.emit_line(line, fg="green")
+                self.emit_line(line, fg="green", bold=True)
                 return
 
         # -- Special handling for tinyprog lines.

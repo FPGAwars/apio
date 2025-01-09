@@ -140,7 +140,7 @@ class Examples:
         for example in examples:
             if output_config.terminal_mode():
                 # -- For a terminal. Multi lines and colors.
-                secho(f"{example.name}", fg="blue", bold=True)
+                secho(f"{example.name}", fg="cyan", bold=True)
                 secho(f"{example.description}")
                 secho(terminal_seperator_line)
             else:
@@ -217,6 +217,7 @@ class Examples:
         secho(
             f"Fetched successfully the files of example '{example_name}'.",
             fg="green",
+            bold=True,
         )
 
     def get_board_examples(self, board_name) -> List[ExampleInfo]:
@@ -294,4 +295,5 @@ class Examples:
             + board_name
             + "' examples has been fetched successfully.",
             fg="green",
+            bold=True,
         )

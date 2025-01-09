@@ -243,7 +243,7 @@ class Drivers:
             # -- Execute the commands for reloading the udev system
             self._reload_rules_linux()
 
-            secho("FTDI drivers installed", fg="green")
+            secho("FTDI drivers installed", fg="green", bold=True)
             secho("Unplug and reconnect your board", fg="yellow")
         else:
             secho("Already installed", fg="yellow")
@@ -266,7 +266,7 @@ class Drivers:
             # -- # -- Execute the commands for reloading the udev system
             self._reload_rules_linux()
 
-            secho("FTDI drivers uninstalled", fg="green")
+            secho("FTDI drivers uninstalled", fg="green", bold=True)
             secho("Unplug and reconnect your board", fg="yellow")
         else:
             secho("Already uninstalled", fg="yellow")
@@ -298,7 +298,7 @@ class Drivers:
             # -- Execute the commands for reloading the udev system
             self._reload_rules_linux()
 
-            secho("Serial drivers installed", fg="green")
+            secho("Serial drivers installed", fg="green", bold=True)
             secho("Unplug and reconnect your board", fg="yellow")
             if group_added:
                 secho(
@@ -323,7 +323,7 @@ class Drivers:
 
             # -- Execute the commands for reloading the udev system
             self._reload_rules_linux()
-            secho("Serial drivers uninstalled", fg="green")
+            secho("Serial drivers uninstalled", fg="green", bold=True)
             secho("Unplug and reconnect your board", fg="yellow")
         else:
             secho("Already uninstalled", fg="yellow")
@@ -367,14 +367,14 @@ class Drivers:
         self._brew_install_darwin("libffi")
         self._brew_install_darwin("libftdi")
         self.apio_ctx.profile.add_setting("macos_ftdi_drivers", True)
-        secho("FTDI drivers installed", fg="green")
+        secho("FTDI drivers installed", fg="green", bold=True)
         return 0
 
     def _ftdi_uninstall_darwin(self):
         """Uninstalls FTDI driver on darwin. Returns process status code."""
         secho("Uninstall FTDI drivers configuration")
         self.apio_ctx.profile.add_setting("macos_ftdi_drivers", False)
-        secho("FTDI drivers uninstalled", fg="green")
+        secho("FTDI drivers uninstalled", fg="green", bold=True)
         return 0
 
     def _serial_install_darwin(self):
@@ -390,13 +390,13 @@ class Drivers:
         self._brew_install_darwin("libffi")
         self._brew_install_darwin("libusb")
         # self._brew_install_serial_drivers_darwin()
-        secho("Serial drivers installed", fg="green")
+        secho("Serial drivers installed", fg="green", bold=True)
         return 0
 
     def _serial_uninstall_darwin(self):
         """Uninstalls serial driver on darwin. Returns process status code."""
         secho("Uninstall Serial drivers configuration")
-        secho("Serial drivers uninstalled", fg="green")
+        secho("Serial drivers uninstalled", fg="green", bold=True)
         return 0
 
     def _brew_install_darwin(self, brew_package):
@@ -460,7 +460,11 @@ class Drivers:
         zadig_exe = drivers_base_dir / "bin" / "zadig.exe"
 
         # -- Show messages for the user
-        secho("\nStarting the interactive config tool zadig.exe.", fg="green")
+        secho(
+            "\nStarting the interactive config tool zadig.exe.",
+            fg="green",
+            bold=True,
+        )
         secho(FTDI_INSTALL_INSTRUCTIONS_WINDOWS, fg="yellow")
 
         # -- Execute zadig!
@@ -468,7 +472,7 @@ class Drivers:
         # -- util.exec_command() because zadig required permissions
         # -- elevation.
         exit_code = os.system(str(zadig_exe))
-        secho("FTDI drivers configuration finished", fg="green")
+        secho("FTDI drivers configuration finished", fg="green", bold=True)
 
         # -- Remove zadig.ini from the current folder. It is no longer
         # -- needed
@@ -481,7 +485,9 @@ class Drivers:
         # -- Check that the required packages exist.
         installer.install_missing_packages_on_the_fly(self.apio_ctx)
 
-        secho("\nStarting the interactive Device Manager.", fg="green")
+        secho(
+            "\nStarting the interactive Device Manager.", fg="green", bold=True
+        )
         secho(FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS, fg="yellow")
 
         # -- We launch the device manager using os.system() rather than with
@@ -499,7 +505,11 @@ class Drivers:
         drivers_base_dir = self.apio_ctx.get_package_dir("drivers")
         drivers_bin_dir = drivers_base_dir / "bin"
 
-        secho("\nStarting the interactive Serial Installer.", fg="green")
+        secho(
+            "\nStarting the interactive Serial Installer.",
+            fg="green",
+            bold=True,
+        )
         secho(SERIAL_INSTALL_INSTRUCTIONS_WINDOWS, fg="yellow")
 
         # -- We launch the device manager using os.system() rather than with
@@ -515,7 +525,9 @@ class Drivers:
         # -- Check that the required packages exist.
         installer.install_missing_packages_on_the_fly(self.apio_ctx)
 
-        secho("\nStarting the interactive Device Manager.", fg="green")
+        secho(
+            "\nStarting the interactive Device Manager.", fg="green", bold=True
+        )
         secho(SERIAL_UNINSTALL_INSTRUCTIONS_WINDOWS, fg="yellow")
 
         # -- We launch the device manager using os.system() rather than with

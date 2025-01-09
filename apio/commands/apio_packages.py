@@ -157,7 +157,7 @@ def _list_cli():
             fg="yellow",
         )
     else:
-        secho("All packages are installed.", fg="green")
+        secho("All packages are installed.", fg="green", bold=True)
 
 
 # ------ apio packages fix

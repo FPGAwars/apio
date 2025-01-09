@@ -291,7 +291,9 @@ def install_package(
         # -- nothing to do.
         if target_version == installed_version:
             secho(
-                f"Version {target_version} was already installed", fg="green"
+                f"Version {target_version} was already installed",
+                fg="green",
+                bold=True,
             )
             return
 
@@ -336,6 +338,7 @@ def install_package(
     secho(
         f"Package '{package_name}' installed successfully",
         fg="green",
+        bold=True,
     )
 
 
@@ -372,6 +375,7 @@ def uninstall_package(
         secho(
             f"Package '{package_name}' uninstalled successfully",
             fg="green",
+            bold=True,
         )
     else:
         # -- Package not installed. We treat it as a success.

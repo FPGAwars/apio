@@ -222,4 +222,8 @@ def create_project_file(
     config["env"]["top-module"] = top_module
 
     config.write()
-    secho(f"The file '{ini_path}' was created successfully.", fg="green")
+    secho(
+        f"The file '{ini_path}' was created successfully.",
+        fg="green",
+        bold=True,
+    )

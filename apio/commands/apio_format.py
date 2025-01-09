@@ -152,5 +152,5 @@ def cli(
             return exit_code
 
     # -- All done ok.
-    secho(f"Formatted {util.plurality(files, 'file')}.", fg="green")
+    secho(f"Formatted {util.plurality(files, 'file')}.", fg="green", bold=True)
     sys.exit(0)

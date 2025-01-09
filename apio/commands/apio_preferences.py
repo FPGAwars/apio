@@ -89,7 +89,7 @@ def _set_cli(colors: str):
 
     # -- Show the result. The new colors preference is already in effect.
     color = apio_ctx.profile.preferences["colors"]
-    secho(f"Colors set to [{color}]", fg="green")
+    secho(f"Colors set to [{color}]", fg="green", bold=True)
 
 
 # --- apio preferences

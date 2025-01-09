@@ -74,4 +74,5 @@ def cli(_: click.Context):
         f"You're up-to-date!\nApio {latest_version} is currently the "
         "latest stable version available.",
         fg="green",
+        bold=True,
     )

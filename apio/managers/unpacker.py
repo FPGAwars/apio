@@ -137,8 +137,8 @@ class FileUnpacker:
             items,
             length=len(items),
             label=click.style("Unpacking..", fg="yellow"),
-            fill_char=click.style("█", fg="blue"),
-            empty_char=click.style("░", fg="blue"),
+            fill_char=click.style("█", fg="cyan"),
+            empty_char=click.style("░", fg="cyan"),
         ) as pbar:
 
             # -- Go though all the files in the archive...
