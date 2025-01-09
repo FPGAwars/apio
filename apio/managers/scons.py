@@ -912,7 +912,7 @@ class SCons:
 
         # -- An output filter that manupulates the scons stdout/err lines as
         # -- needed and write them to stdout.
-        colors_enabled = Profile.read_color_prefernces(default=False)
+        colors_enabled = Profile.read_color_prefernces()
         scons_filter = SconsFilter(colors_enabled)
 
         # -- Execute the scons builder!

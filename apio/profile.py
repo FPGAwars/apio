@@ -97,13 +97,13 @@ class Profile:
         disable colors.
         """
 
-        colors: bool = Profile.read_color_prefernces(default=True)
+        colors: bool = Profile.read_color_prefernces()
         click_context = click.get_current_context(silent=True)
         if click_context:
             click_context.color = colors
 
     @staticmethod
-    def read_color_prefernces(*, default) -> Union[bool, Any]:
+    def read_color_prefernces(*, default=True) -> Union[bool, Any]:
         """Returns the value of the colors preferences or default if not
         specified. This is a static method because we may need this value
         before creating  the profile object, for example when printing command
