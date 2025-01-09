@@ -84,9 +84,7 @@ def cli(
         # -- we issue an error message in the scons process.
         testbench = apio_ctx.project.get("default-testbench", None)
         if testbench:
-            secho(
-                f"Using default testbench: {testbench}", fg="cyan", color=True
-            )
+            secho(f"Using default testbench: {testbench}", fg="cyan")
 
     # -- Create the scons manager.
     scons = SCons(apio_ctx)
