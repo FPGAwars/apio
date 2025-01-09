@@ -9,6 +9,7 @@ import json
 import sys
 from pathlib import Path
 from typing import Dict
+import click
 from click import secho
 import requests
 from apio import util
@@ -39,6 +40,9 @@ class Profile:
             print(f"Remote config url: {self.remote_config_url}")
 
         # ---- Set the default parameters
+
+        # User preferences
+        self.preferences = {}
 
         # Apio settings
         self.settings = {}
@@ -73,12 +77,37 @@ class Profile:
         self.settings[key] = value
         self._save()
 
+    def set_preferences_colors(self, value: str):
+        """Set the colors prefernes to on or off."""
+        self.preferences["colors"] = value
+        self._save()
+
     def remove_package(self, name: str):
         """Remove a package from the profile file"""
 
         if name in self.packages.keys():
             del self.packages[name]
             self._save()
+
+    def apply_color_preferences(self):
+        """Apply the current user colors preferences to the current click
+        command context. Ignored silently if running in a unit test without
+        a click context."""
+        # -- Get the click command context. If not running in a command (e.g.
+        # -- just a unit test), then nothing to do.
+        click_context = click.get_current_context(silent=True)
+        if not click_context:
+            return
+
+        colors = self.preferences.get("colors", "on")
+
+        if colors == "on":
+            click_context.color = True
+        elif colors == "off":
+            click_context.color = False
+        else:
+            if util.is_debug():
+                print(f"ERROR: Unknown colors preference [{colors}]")
 
     def get_package_installed_version(
         self, package_name: str, default="0.0.0"
@@ -131,6 +160,7 @@ class Profile:
         data = json.load(profile)
 
         # -- Extract the fields
+        self.preferences = data.get("preferences", {})
         self.settings = data.get("settings", {})
         self.packages = data.get("installed-packages", {})
         self.remote_config = data.get("remote-config", {})
@@ -148,6 +178,8 @@ class Profile:
 
         # -- Construct the json dict.
         data = {}
+        if self.preferences:
+            data["preferences"] = self.preferences
         if self.settings:
             data["settings"] = self.settings
         if self.packages:

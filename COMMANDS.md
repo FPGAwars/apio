@@ -27,6 +27,9 @@
     * [apio packages install](#apio-packages-install) - Install apio packages.
     * [apio packages list](#apio-packages-list) - List apio packages.
     * [apio packages uninstall](#apio-packages-uninstall) - Uninstall apio packages.
+  * [apio preferences](#apio-preferences) - Manage the apio user preferences.
+    * [apio preferences list](#apio-preferences-list) - List the apio user preferences.
+    * [apio preferences set](#apio-preferences-set) - Set the apio user preferences.
   * [apio raw](#apio-raw) - Execute commands directly from the Apio packages.
   * [apio report](#apio-report) - Report design utilization and timing.
   * [apio sim](#apio-sim) - Simulate a testbench with graphic results.
@@ -72,30 +75,31 @@ Options:
   -h, --help  Show this message and exit.
 
 Build commands:
-  apio build     Synthesize the bitstream.
-  apio upload    Upload the bitstream to the FPGA.
-  apio clean     Delete the apio generated files.
+  apio build        Synthesize the bitstream.
+  apio upload       Upload the bitstream to the FPGA.
+  apio clean        Delete the apio generated files.
 
 Verification commands:
-  apio lint      Lint the verilog code.
-  apio format    Format verilog source files.
-  apio sim       Simulate a testbench with graphic results.
-  apio test      Test all or a single verilog testbench module.
-  apio report    Report design utilization and timing.
-  apio graph     Generate a visual graph of the code.
+  apio lint         Lint the verilog code.
+  apio format       Format verilog source files.
+  apio sim          Simulate a testbench with graphic results.
+  apio test         Test all or a single verilog testbench module.
+  apio report       Report design utilization and timing.
+  apio graph        Generate a visual graph of the code.
 
 Setup commands:
-  apio create    Create an apio.ini project file.
-  apio packages  Manage the apio packages.
-  apio drivers   Manage the operating system drivers.
+  apio create       Create an apio.ini project file.
+  apio preferences  Manage the apio user preferences.
+  apio packages     Manage the apio packages.
+  apio drivers      Manage the operating system drivers.
 
 Utility commands:
-  apio boards    List available board definitions.
-  apio fpgas     List available FPGA definitions.
-  apio examples  List and fetch apio examples.
-  apio system    Provides system info.
-  apio raw       Execute commands directly from the Apio packages.
-  apio upgrade   Check the latest Apio version.
+  apio boards       List available board definitions.
+  apio fpgas        List available FPGA definitions.
+  apio examples     List and fetch apio examples.
+  apio system       Provides system info.
+  apio raw          Execute commands directly from the Apio packages.
+  apio upgrade      Check the latest Apio version.
 
 ```
 
@@ -182,7 +186,7 @@ Usage: apio create [OPTIONS]
   'apio examples' command.
 
 Options:
-  -b, --board board_id    Set the board.  [required]
+  -b, --board BOARD       Set the board.  [required]
   -t, --top-module name   Set the top level module name.
   -p, --project-dir path  Set the root directory for the project.
   -h, --help              Show this message and exit.
@@ -195,8 +199,8 @@ Options:
 ```
 Usage: apio drivers [OPTIONS] COMMAND [ARGS]...
 
-  The command group ‘apio drivers’ contains subcommands used to manage the
-  drivers on your system.
+  The command group ‘apio drivers’ contains subcommands to manage the drivers
+  on your system.
 
 Options:
   -h, --help  Show this message and exit.
@@ -635,7 +639,7 @@ Options:
 ### apio packages install
 
 ```
-Usage: apio packages install [OPTIONS] [PACKAGES]...
+Usage: apio packages install [OPTIONS] PACKAGE
 
   The command ‘apio packages install’ installs Apio packages that are required
   for the operation of Apio on your system.
@@ -678,7 +682,7 @@ Options:
 ### apio packages uninstall
 
 ```
-Usage: apio packages uninstall [OPTIONS] [PACKAGES]...
+Usage: apio packages uninstall [OPTIONS] PACKAGE
 
   The command ‘apio packages uninstall’ removes installed Apio packages from
   your system. The command does not uninstall the Apio tool itself.
@@ -691,6 +695,68 @@ Usage: apio packages uninstall [OPTIONS] [PACKAGES]...
 Options:
   -v, --verbose  Show detailed output.
   -h, --help     Show this message and exit.
+```
+
+<br>
+
+### apio preferences
+
+```
+Usage: apio preferences [OPTIONS] COMMAND [ARGS]...
+
+  The command group ‘apio preferences' contains subcommands to manage the apio
+  user preferences. These are user configurations that affect all the apio
+  project on the same computer.
+
+  The user preference is not part of any apio project and typically are not
+  shared when multiple user colaborate on the same project.
+
+Options:
+  -h, --help  Show this message and exit.
+
+Subcommands:
+  apio preferences list  List the apio user preferences.
+  apio preferences set   Set the apio user preferences.
+
+```
+
+<br>
+
+### apio preferences list
+
+```
+Usage: apio preferences list [OPTIONS]
+
+  The command ‘apio preferences list’ lists the current user preferences.
+
+  Examples:
+    apio preferences list         # List the user preferences.
+
+
+
+Options:
+  -h, --help  Show this message and exit.
+```
+
+<br>
+
+### apio preferences set
+
+```
+Usage: apio preferences set [OPTIONS]
+
+  The command ‘apio preferences set' allows to set the supported user
+  preferences.
+
+  Examples:
+    apio preferences set --colors yes   # Select multi-color output.
+    apio preferences set --colors no    # Select monochrome output.
+
+
+
+Options:
+  -c, --colors [on|off]  Set/reset colors mode.  [required]
+  -h, --help             Show this message and exit.
 ```
 
 <br>

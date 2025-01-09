@@ -52,7 +52,7 @@ def _lsusb_cli():
 # --- apio drivers
 
 APIO_DRIVERS_HELP = """
-The command group ‘apio drivers’ contains subcommands used to manage the
+The command group ‘apio drivers’ contains subcommands to manage the
 drivers on your system.
 """
 

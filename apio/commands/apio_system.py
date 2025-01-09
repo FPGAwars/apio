@@ -44,27 +44,27 @@ def _info_cli():
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Print apio version.
-    secho("Apio version    ", nl=False)
+    secho("Apio version:     ", nl=False)
     secho(util.get_apio_version(), fg="cyan")
 
     # -- Print python version.
-    secho("Python version  ", nl=False)
+    secho("Python version:   ", nl=False)
     secho(util.get_python_version(), fg="cyan")
 
     # -- Print platform id.
-    secho("Platform id     ", nl=False)
+    secho("Platform id:      ", nl=False)
     secho(apio_ctx.platform_id, fg="cyan")
 
     # -- Print apio package directory.
-    secho("Python package  ", nl=False)
+    secho("Python package:   ", nl=False)
     secho(util.get_path_in_apio_package(""), fg="cyan")
 
     # -- Print apio home directory.
-    secho("Apio home       ", nl=False)
+    secho("Apio home:        ", nl=False)
     secho(apio_ctx.home_dir, fg="cyan")
 
     # -- Print apio home directory.
-    secho("Apio packages   ", nl=False)
+    secho("Apio packages:    ", nl=False)
     secho(apio_ctx.packages_dir, fg="cyan")
 
 

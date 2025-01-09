@@ -154,6 +154,8 @@ class ApioContext:
             self.home_dir, self.distribution["remote-config"]
         )
 
+        self.profile.apply_color_preferences()
+
         # -- Read the platforms information.
         self.platforms = self._load_resource(PLATFORMS_JSON)
 
