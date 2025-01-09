@@ -58,7 +58,8 @@ Examples:
   apio preferences set --colors yes   # Select multi-color output.
   apio preferences set --colors no    # Select monochrome output.
 
-  """
+The apio colors are optimized for a terminal windows with a white background.
+"""
 
 colors_options = click.option(
     "colors",  # Var name
@@ -93,7 +94,7 @@ def _set_cli(colors: str):
 
 # --- apio preferences
 
-APIO_PREF_HELP = """
+APIO_PREFERENCES_HELP = """
 The command group ‘apio preferences' contains subcommands to manage
 the apio user preferences. These are user configurations that affect all the
 apio project on the same computer.
@@ -119,7 +120,7 @@ SUBGROUPS = [
     cls=ApioGroup,
     subgroups=SUBGROUPS,
     short_help="Manage the apio user preferences.",
-    help=APIO_PREF_HELP,
+    help=APIO_PREFERENCES_HELP,
 )
 def cli():
     """Implements the apio preferences command."""
