@@ -74,7 +74,7 @@ def cli(
 
     # -- If needed, install missing packages.
     if cmd:
-        installer.install_missing_packages(apio_ctx)
+        installer.install_missing_packages_on_the_fly(apio_ctx)
 
     # -- Set the env for packages. If verbose, also dumping the env changes
     # -- in a user friendly way.
@@ -102,7 +102,7 @@ def cli(
     if verbose:
         secho("----\n")
         if exit_code == 0:
-            secho("Exit status [0] OK", fg="green")
+            secho("Exit status [0] OK", fg="green", bold=True)
 
         else:
             secho(f"Exist status [{exit_code}] ERROR", fg="red")

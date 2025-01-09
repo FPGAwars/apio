@@ -91,8 +91,8 @@ class FileDownloader:
             with click.progressbar(
                 length=chunks,
                 label=click.style("Downloading", fg="yellow"),
-                fill_char=click.style("█", fg="blue"),
-                empty_char=click.style("░", fg="blue"),
+                fill_char=click.style("█", fg="cyan", bold=True),
+                empty_char=click.style("░", fg="cyan", bold=True),
             ) as pbar:
                 for _ in pbar:
 

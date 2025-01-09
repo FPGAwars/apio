@@ -67,7 +67,7 @@ class Examples:
         Returns null if an error."""
 
         # -- Check that the example package is installed
-        installer.install_missing_packages(self.apio_ctx)
+        installer.install_missing_packages_on_the_fly(self.apio_ctx)
 
         # -- Collect the examples home dir each board.
         boards_dirs: List[PosixPath] = []
@@ -114,7 +114,7 @@ class Examples:
         code, 0 if ok, non zero otherwise."""
 
         # -- Check that the examples package is installed.
-        installer.install_missing_packages(self.apio_ctx)
+        installer.install_missing_packages_on_the_fly(self.apio_ctx)
 
         # -- Get list of examples.
         examples: List[ExampleInfo] = self.get_examples_infos()
@@ -140,7 +140,7 @@ class Examples:
         for example in examples:
             if output_config.terminal_mode():
                 # -- For a terminal. Multi lines and colors.
-                secho(f"{example.name}", fg="blue", bold=True)
+                secho(f"{example.name}", fg="cyan", bold=True)
                 secho(f"{example.description}")
                 secho(terminal_seperator_line)
             else:
@@ -175,7 +175,7 @@ class Examples:
         """
 
         # -- Check that the examples package is installed.
-        installer.install_missing_packages(self.apio_ctx)
+        installer.install_missing_packages_on_the_fly(self.apio_ctx)
 
         # Check that the example name exists.
         example_info: ExampleInfo = self.lookup_example_info(example_name)
@@ -217,17 +217,18 @@ class Examples:
         secho(
             f"Fetched successfully the files of example '{example_name}'.",
             fg="green",
+            bold=True,
         )
 
-    def get_board_examples(self, board_id) -> List[ExampleInfo]:
-        """Returns the list of examples with given board id."""
+    def get_board_examples(self, board_name) -> List[ExampleInfo]:
+        """Returns the list of examples with given board name."""
         return [
             x
             for x in self.get_examples_infos()
-            if x.board_dir_name == board_id
+            if x.board_dir_name == board_name
         ]
 
-    def copy_board_examples(self, board_id: str, dst_dir: Path):
+    def copy_board_examples(self, board_name: str, dst_dir: Path):
         """Copy the example creating the folder
         Ex. The example alhambra-ii/ledon --> the folder alhambra-ii/ledon
         is created
@@ -238,15 +239,15 @@ class Examples:
         """
 
         # -- Check that the examples package is installed.
-        installer.install_missing_packages(self.apio_ctx)
+        installer.install_missing_packages_on_the_fly(self.apio_ctx)
 
         # -- Get the working dir (current or given)
         # dst_dir = util.resolve_project_dir(
         #     dst_dir, create_if_missing=True
         # )
-        board_exaamples = self.get_board_examples(board_id)
+        board_exaamples = self.get_board_examples(board_name)
         if not board_exaamples:
-            secho(f"Error: no examples for board '{board_id}.", fg="red")
+            secho(f"Error: no examples for board '{board_name}.", fg="red")
             secho(
                 "Run 'apio examples list' for the list of examples.\n"
                 "Expecting a board name such as 'alhambra-ii.",
@@ -255,15 +256,16 @@ class Examples:
             sys.exit(1)
 
         # -- Build the destination example path
-        dst_board_dir = dst_dir / board_id
+        dst_board_dir = dst_dir / board_name
 
         # -- Build the source example path (where the example was installed)
-        src_board_dir = self.examples_dir / board_id
+        src_board_dir = self.examples_dir / board_name
 
         # -- If the source example path is not a folder... it is an error
         if not src_board_dir.is_dir():
             secho(
-                f"Error: examples for board [{board_id}] not found.", fg="red"
+                f"Error: examples for board [{board_name}] not found.",
+                fg="red",
             )
             secho(
                 "Expecting a board name such as 'alhambra-ii'.\n"
@@ -289,6 +291,9 @@ class Examples:
         shutil.copytree(src_board_dir, dst_board_dir, dirs_exist_ok=True)
 
         secho(
-            "Board '" + board_id + "' examples has been fetched successfully.",
+            "Board '"
+            + board_name
+            + "' examples has been fetched successfully.",
             fg="green",
+            bold=True,
         )

@@ -1,0 +1,22 @@
+{
+  "packages": {
+    "system": {
+      "version": "1.1.2"
+    },
+    "drivers": {
+      "version": "1.2.0"
+    },
+    "examples": {
+      "version": "0.1.4"
+    },
+    "graphviz": {
+      "version": "12.1.2"
+    },
+    "verible": {
+      "version": "0.0.1"
+    },
+    "oss-cad-suite": {
+      "version": "0.2.1"
+    }
+  }
+}

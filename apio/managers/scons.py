@@ -30,6 +30,7 @@ from apio.managers.system import System
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
 from apio.managers import installer
+from apio.profile import Profile
 
 # -- Constant for the dictionary PROG, which contains
 # -- the programming configuration
@@ -285,7 +286,7 @@ class SCons:
             # In this case the serial check is ignored
             # This is the command line to execute for uploading the
             # circuit
-            return "tinyprog --libusb --program"
+            return "tinyprog --libusb --program $SOURCE"
 
         # -- Serialize programmer command
         # -- Get a string with the command line to execute
@@ -857,7 +858,7 @@ class SCons:
         variables += ["-f", f"{scons_file_path}"]
 
         if uses_packages:
-            installer.install_missing_packages(self.apio_ctx)
+            installer.install_missing_packages_on_the_fly(self.apio_ctx)
 
         # -- We set the env variables also for a command such as 'clean'
         # -- which doesn't use the packages, to satisfy the required env
@@ -911,7 +912,8 @@ class SCons:
 
         # -- An output filter that manupulates the scons stdout/err lines as
         # -- needed and write them to stdout.
-        scons_filter = SconsFilter()
+        colors_enabled = Profile.read_color_prefernces()
+        scons_filter = SconsFilter(colors_enabled)
 
         # -- Execute the scons builder!
         result = util.exec_command(

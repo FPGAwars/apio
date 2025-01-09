@@ -28,7 +28,7 @@ def list_fpgas(apio_ctx: ApioContext):
         seperator_line = "─" * config.terminal_width
 
         # -- Table title
-        fpga_header = click.style(f"{'  FPGA':34}", fg="cyan")
+        fpga_header = click.style(f"{'  FPGA':34}", fg="cyan", bold=True)
         title = (
             f"{fpga_header} {'Arch':<10} {'Type':<13}" f" {'Size':<8} {'Pack'}"
         )
@@ -51,7 +51,7 @@ def list_fpgas(apio_ctx: ApioContext):
         data_str = f"{arch:<10} {_type:<13} {size:<8} {pack}"
         if config.terminal_mode():
             # -- For terminal, print the FPGA name in color.
-            fpga_str = click.style(f"{fpga:32}", fg="cyan")
+            fpga_str = click.style(f"{fpga:32}", fg="cyan", bold=True)
             item = f"{fpga_str} {data_str}"
             secho(item)
         else:

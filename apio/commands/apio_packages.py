@@ -41,7 +41,7 @@ otherwise, packages that are already installed correctly remain unchanged.
     short_help="Install apio packages.",
     help=APIO_PACKAGES_INSTALL_HELP,
 )
-@click.argument("packages", nargs=-1, required=False)
+@click.argument("packages", metavar="PACKAGE", nargs=-1, required=False)
 @options.force_option_gen(help="Force installation.")
 @options.verbose_option
 def _install_cli(
@@ -65,7 +65,11 @@ def _install_cli(
     # -- Install the packages, one by one.
     for package in packages:
         installer.install_package(
-            apio_ctx, package_spec=package, force=force, verbose=verbose
+            apio_ctx,
+            package_spec=package,
+            force_reinstall=force,
+            cached_config_ok=False,
+            verbose=verbose,
         )
 
 
@@ -88,7 +92,7 @@ Examples:
     short_help="Uninstall apio packages.",
     help=APIO_PACKAGES_UNINSTALL_HELP,
 )
-@click.argument("packages", nargs=-1, required=False)
+@click.argument("packages", metavar="PACKAGE", nargs=-1, required=False)
 @options.verbose_option
 def _uninstall_cli(
     # Arguments
@@ -136,7 +140,9 @@ def _list_cli():
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Scan the available and installed packages.
-    scan = pkg_util.scan_packages(apio_ctx)
+    scan = pkg_util.scan_packages(
+        apio_ctx, cached_config_ok=False, verbose=False
+    )
 
     # -- List the findings.
     pkg_util.list_packages(apio_ctx, scan)
@@ -144,14 +150,14 @@ def _list_cli():
     # -- Print an hint or summary based on the findings.
     if scan.num_errors_to_fix():
         secho("[Hint] run 'apio packages fix' to fix the errors.", fg="yellow")
-    elif scan.uninstalled_package_ids:
+    elif scan.uninstalled_package_names:
         secho(
             "[Hint] run 'apio packages install' to install all "
             "available packages.",
             fg="yellow",
         )
     else:
-        secho("All packages are installed.", fg="green")
+        secho("All packages are installed.", fg="green", bold=True)
 
 
 # ------ apio packages fix
@@ -178,7 +184,9 @@ def _fix_cli():
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Scan the availeable and installed packages.
-    scan = pkg_util.scan_packages(apio_ctx)
+    scan = pkg_util.scan_packages(
+        apio_ctx, cached_config_ok=False, verbose=False
+    )
 
     # -- Fix any errors.
     if scan.num_errors_to_fix():
@@ -187,7 +195,9 @@ def _fix_cli():
         secho("No errors to fix")
 
     # -- Show the new state
-    new_scan = pkg_util.scan_packages(apio_ctx)
+    new_scan = pkg_util.scan_packages(
+        apio_ctx, cached_config_ok=True, verbose=False
+    )
     pkg_util.list_packages(apio_ctx, new_scan)
 
 

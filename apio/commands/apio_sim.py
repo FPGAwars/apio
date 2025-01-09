@@ -85,7 +85,7 @@ def cli(
         testbench = apio_ctx.project.get("default-testbench", None)
         if testbench:
             secho(
-                f"Using default testbench: {testbench}", fg="cyan", color=True
+                f"Using default testbench: {testbench}", fg="cyan", bold=True
             )
 
     # -- Create the scons manager.

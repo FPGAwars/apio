@@ -91,7 +91,7 @@ def cli(
         cmd_options.append("--verbose")
 
     # -- Prepare the packages for use.
-    installer.install_missing_packages(apio_ctx)
+    installer.install_missing_packages_on_the_fly(apio_ctx)
     pkg_util.set_env_for_packages(apio_ctx)
 
     # -- Convert the tuple with file names into a list.
@@ -152,5 +152,5 @@ def cli(
             return exit_code
 
     # -- All done ok.
-    secho(f"Formatted {util.plurality(files, 'file')}.", fg="green")
+    secho(f"Formatted {util.plurality(files, 'file')}.", fg="green", bold=True)
     sys.exit(0)

@@ -25,12 +25,16 @@ def list_boards(apio_ctx: ApioContext):
     config: util.TerminalConfig = util.get_terminal_config()
 
     # -- Table title
-    title = click.style("Board", fg="cyan") + " (FPGA, Arch, Type, Size, Pack)"
+    title = (
+        click.style("Board", fg="cyan", bold=True)
+        + " (FPGA, Arch, Type, Size, Pack)"
+    )
 
     # -- Print the table header for terminal mode.
     if config.terminal_mode():
         title = (
-            click.style("Board", fg="cyan") + " (FPGA, Arch, Type, Size, Pack)"
+            click.style("Board", fg="cyan", bold=True)
+            + " (FPGA, Arch, Type, Size, Pack)"
         )
         # -- Horizontal line across the terminal.
         seperator_line = "─" * config.terminal_width
@@ -67,7 +71,7 @@ def list_boards(apio_ctx: ApioContext):
 
         if config.terminal_mode():
             # -- Board name with a bullet point and color
-            board_str = click.style(board, fg="cyan")
+            board_str = click.style(board, fg="cyan", bold=True)
             item_board = f"{board_str}"
 
             # -- Item in one line

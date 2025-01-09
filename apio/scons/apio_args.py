@@ -97,7 +97,6 @@ class ApioArgsParser:
             secho(
                 f"Error: Unknown scons args: {ignored}",
                 fg="red",
-                color=True,
             )
             sys.exit(1)
 

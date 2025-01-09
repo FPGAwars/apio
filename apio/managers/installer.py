@@ -12,60 +12,10 @@ from pathlib import Path
 from typing import Tuple
 import shutil
 from click import secho
-import requests
 from apio import util, pkg_util
 from apio.apio_context import ApioContext
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
-
-
-def _get_remote_version(
-    apio_ctx: ApioContext, package_name: str, verbose: bool
-) -> str:
-    """Get the recommanded package version from the remote release server.
-    This version is not necessarily the latest one on the server.
-
-    - INPUTS:
-      'apio_ctx' the context object of this apio session.
-      'package_name' the package name, e.g. 'oss-cad-suite'.
-      'verbose' indicates if to print detailed info.
-
-    - OUTPUT:
-      A string with the package version (E.g. '0.0.35'). Exits with a user
-      error message and error status code on any error.
-    """
-
-    # -- Get package inforation (originated from packages.json)
-    package_info = apio_ctx.get_package_info(package_name)
-
-    # -- Get the version file URL. This is a text file with the recomanded
-    # -- version for this package.
-    version_url = package_info["release"]["url_version"]
-    if verbose:
-        print(f"Remote version url '{version_url}'")
-
-    # -- Fetch the version info.
-    resp: requests.Response = requests.get(version_url, timeout=5)
-
-    # -- Exit if http error.
-    if resp.status_code != 200:
-        secho("Error downloading the version file", fg="red")
-        secho(f"URL {version_url}", fg="red")
-        secho(f"Error code {resp.status_code}", fg="red")
-        sys.exit(1)
-
-    # -- Here when download was ok.
-    if verbose:
-        print("Remote version file downloaded")
-
-    # -- Extract the version without the ending \n
-    version = resp.text.rstrip("\n")
-
-    if verbose:
-        print(f"Remote version {version}")
-
-    # -- Return the version
-    return version
 
 
 def _construct_package_download_url(
@@ -88,20 +38,20 @@ def _construct_package_download_url(
 
     # -- Get the compressed name of the package. This is base name of the
     # -- downloaded file. E.g. "tools-oss-cad-suite-%P-%V"
-    compressed_name = package_info["release"]["compressed_name"]
+    file_name = package_info["release"]["file_name"]
 
     # -- Replace %P, if any, with package selector.
-    compressed_name = compressed_name.replace("%P", package_selector)
+    file_name = file_name.replace("%P", package_selector)
 
     # -- Replace %V, if any,  with the package version
-    compressed_name = compressed_name.replace("%V", target_version)
+    file_name = file_name.replace("%V", target_version)
 
     # -- Get the package file name extension. e.g. 'tar.gz'.
     extension = package_info["release"]["extension"]
 
     # -- Construct the package file name.
     # -- E.g. 'atools-oss-cad-suite-darwin_arm64-0.0.9.tar.gz'
-    file_name = f"{compressed_name}.{extension}"
+    file_name = f"{file_name}.{extension}"
 
     # -- Get the github user name. E.g. 'FGPAWars'.
     organization = package_info["repository"]["organization"]
@@ -110,14 +60,14 @@ def _construct_package_download_url(
     repo_name = package_info["repository"]["name"]
 
     # -- Construct the release tag name. E.g 'v0.0.9'.
-    version_tag = package_info["release"]["tag_name"].replace(
+    release_tag = package_info["release"]["release_tag"].replace(
         "%V", target_version
     )
 
     # -- Construct the full url.
     download_url = (
         f"https://github.com/{organization}/{repo_name}/releases/"
-        f"download/{version_tag}/{file_name}"
+        f"download/{release_tag}/{file_name}"
     )
 
     return download_url
@@ -206,12 +156,12 @@ def _parse_package_spec(package_spec: str) -> Tuple[str, str]:
 
 
 def _delete_package_dir(
-    apio_ctx: ApioContext, package_id: str, verbose: bool
+    apio_ctx: ApioContext, package_name: str, verbose: bool
 ) -> bool:
     """Delete the directory of the package with given name.  Returns
     True if the packages existed. Exits with an error message on error."""
 
-    package_dir = apio_ctx.get_package_dir(package_id)
+    package_dir = apio_ctx.get_package_dir(package_name)
 
     dir_found = package_dir.is_dir()
     if dir_found:
@@ -232,12 +182,18 @@ def _delete_package_dir(
     return dir_found
 
 
-def install_missing_packages(apio_ctx: ApioContext) -> None:
+def install_missing_packages_on_the_fly(apio_ctx: ApioContext) -> None:
     """Install on the fly any missing packages. Does not print a thing if
-    all packages are already ok."""
+    all packages are already ok. This function is intended for on demand
+    package fetching by commands such as apio build, and thus is allowed
+    to use fetched remote config instead of fetching a fresh one."""
 
-    # -- Scan the packages for issues.
-    scan_results = pkg_util.scan_packages(apio_ctx)
+    # -- Scan the packages for issues. Since it's an 'on the fly' installation,
+    # -- We want to reduce its footprint and the connectivity requirements nad
+    # -- let it use a cached remote config, if available.
+    scan_results = pkg_util.scan_packages(
+        apio_ctx, cached_config_ok=True, verbose=False
+    )
 
     # -- If all ok, we are done.
     if scan_results.is_all_ok():
@@ -259,13 +215,19 @@ def install_missing_packages(apio_ctx: ApioContext) -> None:
     for package_name in required_packages_names:
         if package_name not in installed_packages:
             install_package(
-                apio_ctx, package_spec=package_name, force=False, verbose=False
+                apio_ctx,
+                package_spec=package_name,
+                force_reinstall=False,
+                cached_config_ok=False,
+                verbose=False,
             )
             work_done = True
 
     # -- Here all packages should be ok but we check again just in case.
     if work_done:
-        scan_results = pkg_util.scan_packages(apio_ctx)
+        scan_results = pkg_util.scan_packages(
+            apio_ctx, cached_config_ok=False, verbose=False
+        )
         if not scan_results.is_all_ok():
             secho(
                 "Warning: packages issues detected. Use "
@@ -276,7 +238,12 @@ def install_missing_packages(apio_ctx: ApioContext) -> None:
 
 # pylint: disable=too-many-branches
 def install_package(
-    apio_ctx: ApioContext, *, package_spec: str, force: bool, verbose: bool
+    apio_ctx: ApioContext,
+    *,
+    package_spec: str,
+    force_reinstall: bool,
+    cached_config_ok,
+    verbose: bool,
 ) -> None:
     """Install a given package.
 
@@ -290,26 +257,28 @@ def install_package(
     Returns normally if no error, exits the program with an error status
     and a user message if an error is detected.
     """
-    secho(f"Installing package '{package_spec}'", fg="magenta", bold=True)
 
-    # Parse the requested package spec.
+    # -- Parse the requested package spec.
     package_name, target_version = _parse_package_spec(package_spec)
 
-    # -- Get package information (originated from packages.json)
-    package_info = apio_ctx.get_package_info(package_name)
+    # -- Exit if no such package for this platform.
+    if package_name not in apio_ctx.platform_packages:
+        secho(f"Error: no such package '{package_name}'", fg="red")
+        sys.exit(1)
 
-    # -- If the user didn't specify a target version we use the one recomanded
-    # -- by the release server.
-    # --
-    # -- Note that we use the remote version even if the current installed
-    # -- version is ok by the version spec in distribution.json.
+    secho(f"Installing package '{package_spec}'", fg="magenta", bold=True)
+
+    # -- If the user didn't specify a target version we use the one specified
+    # -- in the remote config.
     if not target_version:
-        target_version = _get_remote_version(apio_ctx, package_name, verbose)
+        target_version = apio_ctx.profile.get_package_required_version(
+            package_name, cached_config_ok=cached_config_ok, verbose=verbose
+        )
 
     secho(f"Target version {target_version}")
 
     # -- If not focring and the target version already installed nothing to do.
-    if not force:
+    if not force_reinstall:
         # -- Get the version of the installed package, None otherwise.
         installed_version = apio_ctx.profile.get_package_installed_version(
             package_name, default=None
@@ -322,7 +291,9 @@ def install_package(
         # -- nothing to do.
         if target_version == installed_version:
             secho(
-                f"Version {target_version} was already installed", fg="green"
+                f"Version {target_version} was already installed",
+                fg="green",
+                bold=True,
             )
             return
 
@@ -347,41 +318,12 @@ def install_package(
     if verbose:
         print(f"Local package file: {local_package_file}")
 
-    # -- Get optional package internal wrapper dir name.
-    uncompressed_name = package_info["release"].get("uncompressed_name", "")
-
     # -- Delete the old package dir, if exists, to avoid name conflicts and
     # -- left over files.
     _delete_package_dir(apio_ctx, package_name, verbose)
 
-    if uncompressed_name:
-
-        # -- Case 1: The package include a top level wrapper directory.
-        #
-        # -- Unpack the package one level up, in the packages directory.
-        _unpack_package_file(local_package_file, apio_ctx.packages_dir)
-
-        # -- The uncompressed name may contain a %V placeholder, Replace it
-        # -- with target version.
-        uncompressed_name = uncompressed_name.replace("%V", target_version)
-
-        # -- Construct the local path of the wrapper dir.
-        wrapper_dir = apio_ctx.packages_dir / uncompressed_name
-
-        # -- Rename the wrapper dir to the package dir.
-        if verbose:
-            print(f"Renaming {wrapper_dir} to {package_dir}")
-        if not wrapper_dir.is_dir():
-            secho(f"Error: no unpacked dir {wrapper_dir}", fg="red")
-            sys.exit(1)
-        wrapper_dir.rename(package_dir)
-
-    else:
-        # -- Case 2: package does not include a wrapper dir and we can simply
-        # -- unpack as the package dir.
-
-        # -- Unpack the package. This creates a new package dir.
-        _unpack_package_file(local_package_file, package_dir)
+    # -- Unpack the package. This creates a new package dir.
+    _unpack_package_file(local_package_file, package_dir)
 
     # -- Remove the package file. We don't need it anymore.
     if verbose:
@@ -390,12 +332,13 @@ def install_package(
 
     # -- Add package to profile and save.
     apio_ctx.profile.add_package(package_name, target_version)
-    apio_ctx.profile.save()
+    # apio_ctx.profile.save()
 
     # -- Inform the user!
     secho(
         f"Package '{package_name}' installed successfully",
         fg="green",
+        bold=True,
     )
 
 
@@ -412,7 +355,6 @@ def uninstall_package(
         secho(f"Error: no such package '{package_name}'", fg="red")
         sys.exit(1)
 
-    # package_color = click.style(package_name, fg="cyan")
     secho(f"Uninstalling package '{package_name}'")
 
     # -- Remove the folder with all its content!!
@@ -424,7 +366,7 @@ def uninstall_package(
 
     # -- Remove the package from the profile file
     apio_ctx.profile.remove_package(package_name)
-    apio_ctx.profile.save()
+    # apio_ctx.profile.save()
 
     # -- Check that it is a folder...
     if dir_existed or installed_version:
@@ -433,6 +375,7 @@ def uninstall_package(
         secho(
             f"Package '{package_name}' uninstalled successfully",
             fg="green",
+            bold=True,
         )
     else:
         # -- Package not installed. We treat it as a success.
@@ -445,22 +388,19 @@ def fix_packages(
     """If the package scan result contains errors, fix them."""
 
     # -- Fix broken packages.
-    for package_id in scan.installed_bad_version_subset:
-        print(f"Uninstalling versin mismatch '{package_id}'")
-        _delete_package_dir(apio_ctx, package_id, verbose=False)
-        apio_ctx.profile.remove_package(package_id)
-        apio_ctx.profile.save()
+    for package_name in scan.bad_version_package_names_subset:
+        print(f"Uninstalling versin mismatch '{package_name}'")
+        _delete_package_dir(apio_ctx, package_name, verbose=False)
+        apio_ctx.profile.remove_package(package_name)
 
-    for package_id in scan.broken_package_ids:
-        print(f"Uninstalling broken package '{package_id}'")
-        _delete_package_dir(apio_ctx, package_id, verbose=False)
-        apio_ctx.profile.remove_package(package_id)
-        apio_ctx.profile.save()
+    for package_name in scan.broken_package_names:
+        print(f"Uninstalling broken package '{package_name}'")
+        _delete_package_dir(apio_ctx, package_name, verbose=False)
+        apio_ctx.profile.remove_package(package_name)
 
-    for package_id in scan.orphan_package_ids:
-        print(f"Uninstalling unknown package '{package_id}'")
-        apio_ctx.profile.remove_package(package_id)
-        apio_ctx.profile.save()
+    for package_name in scan.orphan_package_names:
+        print(f"Uninstalling unknown package '{package_name}'")
+        apio_ctx.profile.remove_package(package_name)
 
     for dir_name in scan.orphan_dir_names:
         print(f"Deleting unknown dir '{dir_name}'")

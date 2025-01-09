@@ -70,7 +70,7 @@ class System:  # pragma: no cover
             port = serial_port.get("port")
             description = serial_port.get("description")
             hwid = serial_port.get("hwid")
-            secho(port, fg="cyan")
+            secho(port, fg="cyan", bold=True)
             secho(f"Description: {description}")
             secho(f"Hardware info: {hwid}\n")
 
@@ -156,7 +156,7 @@ class System:  # pragma: no cover
         # pkg_util.check_required_packages(self.apio_ctx, ["oss-cad-suite"])
 
         # -- Set system env for using the packages.
-        installer.install_missing_packages(self.apio_ctx)
+        installer.install_missing_packages_on_the_fly(self.apio_ctx)
         pkg_util.set_env_for_packages(self.apio_ctx, quiet=True)
 
         # pylint: disable=fixme

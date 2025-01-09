@@ -25,7 +25,7 @@ board_option = click.option(
     "--board",
     type=str,
     required=True,
-    metavar="board_id",
+    metavar="BOARD",
     help="Set the board.",
     cls=cmd_util.ApioOption,
 )
@@ -78,8 +78,8 @@ def cli(
     # -- Create the apio context.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
-    # -- Map to canonical board id. This fails if the board is unknown.
-    board_id = apio_ctx.lookup_board_id(board)
+    # -- Map to canonical board name. This fails if the board is unknown.
+    board_name = apio_ctx.lookup_board_name(board)
 
     # -- Map the optional project dir argument to an actual project dir.
     project_dir = util.resolve_project_dir(project_dir, create_if_missing=True)
@@ -87,6 +87,6 @@ def cli(
     # Create the apio.ini file. It exists with an error status if any error.
     create_project_file(
         project_dir,
-        board_id,
+        board_name,
         top_module,
     )

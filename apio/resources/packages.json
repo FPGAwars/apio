@@ -5,11 +5,9 @@
       "organization": "FPGAwars"
     },
     "release": {
-      "tag_name": "%V",
-      "compressed_name": "apio-examples-%V",
-      "uncompressed_name": "apio-examples-%V",
-      "extension": "zip",
-      "url_version": "https://github.com/FPGAwars/apio-examples/raw/master/VERSION_DEV"
+      "release_tag": "%V",
+      "file_name": "apio-examples-%V",
+      "extension": "zip"
     },
     "description": "Apio's project examples",
     "env": {}
@@ -20,11 +18,9 @@
       "organization": "FPGAwars"
     },
     "release": {
-      "tag_name": "v%V",
-      "compressed_name": "tools-oss-cad-suite-%P-%V",
-      "uncompressed_name": "",
-      "extension": "tar.gz",
-      "url_version": "https://github.com/FPGAwars/tools-oss-cad-suite/raw/main/VERSION_DEV"
+      "release_tag": "v%V",
+      "file_name": "tools-oss-cad-suite-%P-%V",
+      "extension": "tar.gz"
     },
     "description": "YosysHQ's oss-cad-suite",
     "env": {
@@ -46,11 +42,9 @@
       "organization": "FPGAwars"
     },
     "release": {
-      "tag_name": "v%V",
-      "compressed_name": "tools-graphviz-%P-%V",
-      "uncompressed_name": "",
+      "release_tag": "v%V",
+      "file_name": "tools-graphviz-%P-%V",
       "extension": "tar.gz",
-      "url_version": "https://github.com/FPGAwars/tools-graphviz/raw/main/VERSION",
       "available_platforms": [
         "windows_amd64"
       ]
@@ -68,11 +62,9 @@
       "organization": "FPGAwars"
     },
     "release": {
-      "tag_name": "v%V",
-      "compressed_name": "tools-verible-%P-%V",
-      "uncompressed_name": "",
-      "extension": "tar.gz",
-      "url_version": "https://github.com/FPGAwars/tools-verible/raw/main/VERSION_DEV"
+      "release_tag": "v%V",
+      "file_name": "tools-verible-%P-%V",
+      "extension": "tar.gz"
     },
     "description": "Chips Aliance's Verible toolset",
     "env": {
@@ -87,11 +79,9 @@
       "organization": "FPGAwars"
     },
     "release": {
-      "tag_name": "v%V",
-      "compressed_name": "tools-drivers-%P-%V",
-      "uncompressed_name": "",
+      "release_tag": "v%V",
+      "file_name": "tools-drivers-%P-%V",
       "extension": "tar.gz",
-      "url_version": "https://github.com/FPGAwars/tools-drivers/raw/master/VERSION",
       "available_platforms": [
         "windows_amd64"
       ]
@@ -109,11 +99,9 @@
       "organization": "FPGAwars"
     },
     "release": {
-      "tag_name": "v%V",
-      "compressed_name": "tools-system-%P-%V",
-      "uncompressed_name": "",
+      "release_tag": "v%V",
+      "file_name": "tools-system-%P-%V",
       "extension": "tar.gz",
-      "url_version": "https://github.com/FPGAwars/tools-system/raw/master/VERSION",
       "available_platforms": [
         "windows_amd64"
       ]

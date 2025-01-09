@@ -7,7 +7,6 @@
 # -- Licence GPLv2
 
 import sys
-import os.path
 import json
 import platform
 from enum import Enum
@@ -142,10 +141,19 @@ class ApioContext:
             ), "project_dir_arg specified for scope None"
 
         # -- Determine apio home dir.
-        self.home_dir: Path = ApioContext._get_home_dir()
+        self.home_dir: Path = util.resolve_home_dir()
 
-        # -- Profile information, from ~/.apio/profile.json
-        self.profile = Profile(self.home_dir)
+        # -- Read the distribution information
+        self.distribution = self._load_resource(DISTRIBUTION_JSON)
+
+        # -- Profile information, from ~/.apio/profile.json. We provide it with
+        # -- the remote config url template from disribution.json such that
+        # -- can it fetch the remote config on demand.
+        self.profile = Profile(
+            self.home_dir, self.distribution["remote-config"]
+        )
+
+        self.profile.apply_color_preferences()
 
         # -- Read the platforms information.
         self.platforms = self._load_resource(PLATFORMS_JSON)
@@ -176,9 +184,6 @@ class ApioContext:
             PROGRAMMERS_JSON, allow_custom=True
         )
 
-        # -- Read the distribution information
-        self.distribution = self._load_resource(DISTRIBUTION_JSON)
-
         # -- Sort resources for consistency and intunitiveness.
         # --
         # -- We don't sort the all_packages and platform_packages dictionaries
@@ -202,13 +207,13 @@ class ApioContext:
         else:
             assert not self.has_project, "init(): project loaded"
 
-    def lookup_board_id(
+    def lookup_board_name(
         self, board: str, *, warn: bool = True, strict: bool = True
     ) -> str:
-        """Lookup and return the board's canonical board id which is its key
-        in boards.json().  'board' can be the canonical id itself or a
+        """Lookup and return the board's canonical board name which is its key
+        in boards.json().  'board' can be the canonical name itself or a
         legacy id of the board as defined in boards.json.  The method prints
-        a warning if 'board' is a legacy board id that is mapped to its
+        a warning if 'board' is a legacy board name that is mapped to its
         canonical name and 'warn' is True. If the  board is not found, the
         method returns None if 'strict' is False or exit the program with a
         message if 'strict' is True."""
@@ -216,38 +221,38 @@ class ApioContext:
         assert board is not None
 
         # -- The result. The board's key in boards.json.
-        canonical_id = None
+        canonical_name = None
 
         if board in self.boards:
-            # -- Here when board is already the canonical id.
-            canonical_id = board
+            # -- Here when board is already the canonical name.
+            canonical_name = board
         else:
-            # -- Look up for a board with 'board' as its legacy id.
-            for board_key, board_val in self.boards.items():
-                if board == board_val.get("legacy_id", None):
-                    canonical_id = board_key
+            # -- Look up for a board with 'board' as its legacy name.
+            for board_name, board_info in self.boards.items():
+                if board == board_info.get("legacy_name", None):
+                    canonical_name = board_name
                     break
 
         # -- Fatal error if unknown board.
-        if strict and canonical_id is None:
+        if strict and canonical_name is None:
             secho(f"Error: no such board '{board}'", fg="red")
             secho(
-                "Run 'apio boards' for the list of board ids.\n"
-                "Expecting a board id such as 'alhambra-ii'.",
+                "Run 'apio boards' for the list of board names.\n"
+                "Expecting a board name such as 'alhambra-ii'.",
                 fg="yellow",
             )
             sys.exit(1)
 
-        # -- Warning if caller used a legacy board id.
-        if warn and canonical_id and board != canonical_id:
+        # -- Warning if caller used a legacy board name.
+        if warn and canonical_name and board != canonical_name:
             secho(
                 f"Warning: '{board}' board name was changed. "
-                f"Please use '{canonical_id}' instead.",
+                f"Please use '{canonical_name}' instead.",
                 fg="yellow",
             )
 
-        # -- Return the canonical board id.
-        return canonical_id
+        # -- Return the canonical board name.
+        return canonical_name
 
     @property
     def packages_dir(self):
@@ -329,7 +334,7 @@ class ApioContext:
 
             # -- Display the affected file (in a different color)
             apio_file_msg = click.style("Apio file: ", fg="yellow")
-            filename = click.style(f"{filepath}", fg="blue")
+            filename = click.style(f"{filepath}", fg="cyan", bold=True)
             secho(f"{apio_file_msg} {filename}")
 
             # -- Display the specific error message
@@ -352,7 +357,7 @@ class ApioContext:
 
             # -- Display the affected file (in a different color)
             apio_file_msg = click.style("Apio file: ", fg="yellow")
-            filename = click.style(f"{filepath}", fg="blue")
+            filename = click.style(f"{filepath}", fg="cyan", bold=True)
             secho(f"{apio_file_msg} {filename}")
 
             # -- Display the specific error message
@@ -557,93 +562,6 @@ class ApioContext:
         """Returns True iff platform_id indicates windows."""
         return "windows" in self.platform_id
 
-    @staticmethod
-    def _check_home_dir(home_dir: Path):
-        """Check the path that was specified in APIO_HOME_DIR. Exit with an
-        error message if it doesn't comply with apio's requirements.
-        """
-
-        # Sanity check. If this fails, it's a programming error.
-        assert isinstance(
-            home_dir, Path
-        ), f"Error: home_dir is no a Path: {type(home_dir)}, {home_dir}"
-
-        # -- The path should be abosolute, see discussion here:
-        # -- https://github.com/FPGAwars/apio/issues/522
-        if not home_dir.is_absolute():
-            secho(
-                "Error: apio home dir should be an absolute path "
-                f"[{str(home_dir)}].",
-                fg="red",
-            )
-            secho(
-                "You can use the system env var APIO_HOME_DIR to set "
-                "a different apio home dir.",
-                fg="yellow",
-            )
-            sys.exit(1)
-
-        # -- We have problem with spaces and non ascii character above value
-        # -- 127, so we allow only ascii characters in the range [33, 127].
-        # -- See here https://github.com/FPGAwars/apio/issues/515
-        for ch in str(home_dir):
-            if ord(ch) < 33 or ord(ch) > 127:
-                secho(
-                    f"Error: Unsupported character [{ch}] in apio home dir: "
-                    f"[{str(home_dir)}].",
-                    fg="red",
-                )
-                secho(
-                    "Only the ASCII characters in the range 33 to 127 are "
-                    "allowed. You can use the\n"
-                    "system env var 'APIO_HOME_DIR' to set a different apio"
-                    "home dir.",
-                    fg="yellow",
-                )
-                sys.exit(1)
-
-    @staticmethod
-    def _get_home_dir() -> Path:
-        """Get the absolute apio home dir. This is the apio folder where the
-        profle is located and the packages are installed.
-        The apio home dir can be overridden using the APIO_HOME_DIR environment
-        varible or in the /etc/apio.json file (in
-        Debian). If not set, the user_home/.apio folder is used by default:
-        Ej. Linux:  /home/obijuan/.apio
-        If the folders does not exist, they are created
-        """
-
-        # -- Get the APIO_HOME_DIR env variable
-        # -- It returns None if it was not defined
-        apio_home_dir_env = env_options.get(
-            env_options.APIO_HOME_DIR, default=None
-        )
-
-        # -- Get the home dir. It is what the APIO_HOME_DIR env variable
-        # -- says, or the default folder if None
-        if apio_home_dir_env:
-            # -- Expand user home '~' marker, if exists.
-            apio_home_dir_env = os.path.expanduser(apio_home_dir_env)
-            # -- Expand varas such as $HOME or %HOME% on windows.
-            apio_home_dir_env = os.path.expandvars(apio_home_dir_env)
-            # -- Convert string to path.
-            home_dir = Path(apio_home_dir_env)
-        else:
-            home_dir = Path.home() / ".apio"
-
-        # -- Verify that the home dir meets apio's requirments.
-        ApioContext._check_home_dir(home_dir)
-
-        # -- Create the folder if it does not exist
-        try:
-            home_dir.mkdir(parents=True, exist_ok=True)
-        except PermissionError:
-            secho(f"Error: no usable home directory {home_dir}", fg="red")
-            sys.exit(1)
-
-        # Return the home_dir as a Path
-        return home_dir
-
 
 # pylint: disable=too-few-public-methods
 class _ProjectResolverImpl(ProjectResolver):
@@ -653,6 +571,6 @@ class _ProjectResolverImpl(ProjectResolver):
         self._apio_context = apio_context
 
     # @override
-    def lookup_board_id(self, board: str) -> str:
-        """Implementation of lookup_board_id."""
-        return self._apio_context.lookup_board_id(board)
+    def lookup_board_name(self, board: str) -> str:
+        """Implementation of lookup_board_name."""
+        return self._apio_context.lookup_board_name(board)

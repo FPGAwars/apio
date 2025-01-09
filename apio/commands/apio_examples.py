@@ -132,8 +132,8 @@ def _fetch_board_cli(
     # -- Create the apio context.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
-    # -- Valdiate board id.
-    # board_id = apio_ctx.lookup_board_id(board)
+    # -- This fails with an error message if there is no such board.
+    apio_ctx.lookup_board_name(board)
 
     # -- Create the examples manager.
     examples = Examples(apio_ctx)

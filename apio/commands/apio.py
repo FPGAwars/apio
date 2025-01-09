@@ -23,6 +23,7 @@ from apio.commands import (
     apio_graph,
     apio_lint,
     apio_packages,
+    apio_preferences,
     apio_raw,
     apio_report,
     apio_sim,
@@ -58,6 +59,7 @@ SUBGROUPS = [
         "Setup commands",
         [
             apio_create.cli,
+            apio_preferences.cli,
             apio_packages.cli,
             apio_drivers.cli,
         ],

@@ -15,6 +15,7 @@ from typing import List, Dict, Union
 import click
 from click import secho
 from apio import util
+from apio.profile import Profile
 
 
 def fatal_usage_error(cmd_ctx: click.Context, msg: str) -> None:
@@ -245,6 +246,11 @@ class ApioGroup(click.Group):
         """Formats the help into a string and returns it. We override the
         base class method to list the subcommands by categories.
         """
+
+        # -- Apply the color prefernece. This is required because the -h
+        # -- options bypasses the command handler so we don't get to create
+        # -- an apio context.
+        Profile.apply_color_preferences()
 
         # -- Get the default help text for this command.
         original_help = super().get_help(ctx)

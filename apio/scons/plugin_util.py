@@ -41,7 +41,7 @@ def secho_lines(colors: List[str], lines: List[str]) -> None:
     repeat the last one.."""
     for i, line in enumerate(lines):
         fg = colors[i] if i < len(colors) else colors[-1]
-        secho(line, fg=fg, color=True)
+        secho(line, fg=fg, bold=True, color=True)
 
 
 def maybe_wait_for_remote_debugger(env_var_name: str):
@@ -496,7 +496,7 @@ def source_file_issue_action() -> FunctionAction:
                 continue
 
             # -- Here the file is a testbench file.
-            secho(f"Testbench {file.name}", fg="cyan", color=True)
+            secho(f"Testbench {file.name}", fg="cyan", bold=True, color=True)
 
             # -- Read the testbench file text.
             file_text = file.get_text_contents()
@@ -553,7 +553,7 @@ def _print_pnr_report(
 
     # --- Report utilization
     secho("")
-    secho("UTILIZATION:", fg="cyan", color=True)
+    secho("UTILIZATION:", fg="cyan", bold=True, color=True)
     utilization = report["utilization"]
     for resource, vals in utilization.items():
         available = vals["available"]
@@ -572,7 +572,7 @@ def _print_pnr_report(
     # -- information and this is being investigated.
     # -- See https://github.com/FPGAwars/icestudio/issues/774 for details.
     secho("")
-    secho("CLOCKS:", fg="cyan", color=True)
+    secho("CLOCKS:", fg="cyan", bold=True, color=True)
     clocks = report["fmax"]
     if len(clocks) > 0:
         for clk_net, vals in clocks.items():
