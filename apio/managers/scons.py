@@ -286,7 +286,7 @@ class SCons:
             # In this case the serial check is ignored
             # This is the command line to execute for uploading the
             # circuit
-            return "tinyprog --libusb --program"
+            return "tinyprog --libusb --program $SOURCE"
 
         # -- Serialize programmer command
         # -- Get a string with the command line to execute
