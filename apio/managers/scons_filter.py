@@ -110,6 +110,21 @@ class PnrRangeDetector(RangeDetector):
         return None
 
 
+class IVerilogRangeDetector(RangeDetector):
+    """Implements a RangeDetector for the iverolog command output."""
+
+    def classify_line(self, pipe_id: PipeId, line: str) -> RangeEvents:
+        # -- Range start: an iverolog command on stdout.
+        if pipe_id == PipeId.STDOUT and line.startswith("iverilog"):
+            return RangeEvents.START_AFTER
+
+        # Range end: The end message of nextnpr.
+        if pipe_id == PipeId.STDOUT and line.startswith("gtkwave"):
+            return RangeEvents.END_BEFORE
+
+        return None
+
+
 class IceProgRangeDetector(RangeDetector):
     """Implements a RangeDetector for the iceprog command output."""
 
@@ -142,6 +157,7 @@ class SconsFilter:
     def __init__(self, colors_enabled: bool):
         self.colors_enabled = colors_enabled
         self._pnr_detector = PnrRangeDetector()
+        self._iverilog_detector = IVerilogRangeDetector()
         self._iceprog_detector = IceProgRangeDetector()
 
     def on_stdout_line(self, line: str) -> None:
@@ -190,6 +206,7 @@ class SconsFilter:
                 return color
         return default_color
 
+    # pylint: disable=too-many-return-statements
     def on_line(self, pipe_id: PipeId, line: str) -> None:
         """A shared handler for stdout/err lines from the scons sub process.
         The handler writes both stdout and stderr lines to stdout, possibly
@@ -204,6 +221,7 @@ class SconsFilter:
 
         # -- Update the range detectors.
         in_pnr_verbose_range = self._pnr_detector.update(pipe_id, line)
+        in_iverolog_range = self._iverilog_detector.update(pipe_id, line)
         in_iceprog_range = self._iceprog_detector.update(pipe_id, line)
 
         # -- Handle the line while in the nextpnr verbose log range.
@@ -223,6 +241,17 @@ class SconsFilter:
                 ],
             )
             self.emit_line(line, fg=line_color)
+            return
+
+        # -- Special handling of iverilog lines. We drop warning line spam
+        # -- per Per https://github.com/FPGAwars/apio/issues/530
+        if (
+            in_iverolog_range
+            and pipe_id == PipeId.STDERR
+            and "cells_sim.v" in line
+            and "Timing checks are not supported" in line
+        ):
+            # -- Drop the line.
             return
 
         # -- Special handling for iceprog line range.

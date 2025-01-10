@@ -216,7 +216,7 @@ def test_get_programmer_cmd(capsys: LogCaptureFixture):
         programmer_cmd(apio_env)
     captured = capsys.readouterr()
     assert e.value.code == 1
-    assert "does not contain the '$SOURCE'" in captured.out
+    assert "$SOURCE is missing" in captured.out
 
 
 def test_map_params():

@@ -43,7 +43,7 @@ class PluginEcp5(PluginBase):
             apio_env.args.TRELLIS_PATH, "database"
         )
         self.yosys_lib_dir = apio_env.args.YOSYS_PATH + "/ecp5"
-        self.constrain_file_extension = ".lpf"
+        self.yosys_lib_file = self.yosys_lib_dir + "/cells_sim.v"
 
     def plugin_info(self) -> ArchPluginInfo:
         """Return plugin specific parameters."""
@@ -145,6 +145,7 @@ class PluginEcp5(PluginBase):
                     vcd_output_name=testbench_name,
                     is_interactive=apio_env.targeting("sim"),
                     lib_dirs=[self.yosys_lib_dir],
+                    lib_files=[self.yosys_lib_file],
                 ),
             ]
             return action
@@ -189,6 +190,7 @@ class PluginEcp5(PluginBase):
                 warns=args.VERILATOR_WARNS,
                 top_module=args.TOP_MODULE,
                 lib_dirs=[self.yosys_lib_dir],
+                lib_files=[self.yosys_lib_file],
             ),
             src_suffix=SRC_SUFFIXES,
             source_scanner=self.verilog_src_scanner,
