@@ -42,8 +42,7 @@
   },
   "tinyprog": {
     "command": "tinyprog",
-    "args": "--pyserial -c ${SERIAL_PORT} --program",
-    "pip_packages": [ "tinyprog" ]
+    "args": "--pyserial -c ${SERIAL_PORT} --program"
   },
   "ujprog": {
     "command": "ujprog",
