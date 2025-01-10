@@ -133,6 +133,7 @@ class PluginIce40(PluginBase):
                     vcd_output_name=testbench_name,
                     is_interactive=apio_env.targeting("sim"),
                     extra_params=["-DNO_ICE40_DEFAULT_ASSIGNMENTS"],
+                    lib_dirs=[self.yosys_lib_dir],
                     lib_files=[self.yosys_lib_file],
                 ),
             ]
@@ -174,6 +175,7 @@ class PluginIce40(PluginBase):
                 warns=args.VERILATOR_WARNS,
                 top_module=args.TOP_MODULE,
                 extra_params=["-DNO_ICE40_DEFAULT_ASSIGNMENTS"],
+                lib_dirs=[self.yosys_lib_dir],
                 lib_files=[self.yosys_lib_file],
             ),
             src_suffix=SRC_SUFFIXES,
