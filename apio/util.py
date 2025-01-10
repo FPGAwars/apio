@@ -418,32 +418,33 @@ def get_tinyprog_meta() -> list:
      ]'
     """
 
-    # -- Get the Apio executable folder
-    apio_bin_dir = get_bin_dir()
-
-    # -- Construct the command to execute
-    _command = apio_bin_dir / "tinyprog"
-
-    # -- Check if the executable exist
-    # -- In it does not exist, try with just the
-    # -- name: "tinyprog"
-    if not _command.exists():
-        _command = "tinyprog"
+    # -- Construct the command to execute. Since we exectute tinyprog from
+    # -- the apio packages which add to the path, we can use a simple name.
+    command = ["tinyprog", "--pyserial", "--meta"]
+    command_str = " ".join(command)
 
     # -- Execute the command!
-    # -- It will return the meta information as a json string
-    result = exec_command([_command, "--pyserial", "--meta"])
+    # -- It should return the meta information as a json string
+    secho(command_str)
+    result = exec_command(command)
 
-    # pylint: disable=fixme
-    # TODO: Exit with an error if result.exit_code is not zero.
+    if result.exit_code != 0:
+        secho(
+            f"Warning: the command `{command_str}`failed with exit code "
+            f"{result.exit_code}",
+            color="yellow",
+        )
+        return []
 
     # -- Convert the json string to an object (list)
-
     try:
         meta = json.loads(result.out_text)
 
     except json.decoder.JSONDecodeError as exc:
-        secho(f"Invalid data provided by {_command}", fg="red")
+        secho(
+            f"Warning: invalid json dnvalid data provided by `{command_str}`",
+            fg="yellow",
+        )
         secho(f"{exc}", fg="red")
         return []
 
