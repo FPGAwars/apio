@@ -621,25 +621,25 @@ def programmer_cmd(apio_env: ApioEnv) -> str:
     arg."""
 
     # Get the programer command template arg.
-    prog_arg = apio_env.args.PROG
+    command = apio_env.args.PROG
 
     # If empty then return as is. This must be an apio command that
     # doesn't use the programmer.
-    if not prog_arg:
-        return prog_arg
+    if not command:
+        return command
 
     # It's an error if the programmer command doesn't have the $SOURCE
     # placeholder when scons inserts the binary file name.
-    if "$SOURCE" not in prog_arg:
+    if "$SOURCE" not in command:
         secho(
-            "Error: [Internal] 'prog' argument does not contain "
-            f"the '$SOURCE' marker. [{prog_arg}]",
+            "Error: [Internal] $SOURCE is missing in programmer command: "
+            f"{command}",
             fg="red",
             color=True,
         )
         sys.exit(1)
 
-    return prog_arg
+    return command
 
 
 # pylint: disable=too-many-arguments
