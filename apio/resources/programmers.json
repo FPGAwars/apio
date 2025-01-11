@@ -3,7 +3,7 @@
     "command": "iceprog",
     "args": "-d i:0x${VID}:0x${PID}:${FTDI_ID}"
   },
- "pi-sicle_loader": {
+ "pi-sicle-loader": {
     "command": "pi-sicle-loader",
     "args": "--flash"
   },
@@ -24,7 +24,7 @@
     "command": "tinyfpgab",
     "args": "-c ${SERIAL_PORT} --program"
   },
-  "iCEburn": {
+  "iceburn": {
     "command": "iCEburn",
     "args": "-ew"
   },
@@ -52,35 +52,35 @@
     "command": "openFPGALoader",
     "args": ""
   },
- "openfpgaloader_ft2232": {
+ "openfpgaloader-ft2232": {
     "command": "openFPGALoader",
     "args": "-c ft2232 -v --file-type bin"
   },
-  "openfpgaloader_ft232": {
+  "openfpgaloader-ft232": {
     "command": "openFPGALoader",
     "args": "-c ft232 -v --file-type bin"
   },
-  "openfpgaloader_usb-blaster": {
+  "openfpgaloader-usb-blaster": {
     "command": "openFPGALoader",
     "args": "-c usb-blaster -v --file-type bin"
   },
-  "openfpgaloader_tangnano": {
+  "openfpgaloader-tang-nano": {
     "command": "openFPGALoader",
     "args": "-b tangnano"
   },
-  "openfpgaloader_tangnano1k": {
+  "openfpgaloader-tang-nano-1k": {
     "command": "openFPGALoader",
     "args": "-b tangnano1k -f"
   },
-  "openfpgaloader_tangnano4k": {
+  "openfpgaloader-tang-nano-4k": {
     "command": "openFPGALoader",
     "args": "-b tangnano4k -f"
   },
-  "openfpgaloader_tangnano9k": {
+  "openfpgaloader-tang-nano-9k": {
     "command": "openFPGALoader",
     "args": "-b tangnano9k -f"
   },
-  "openfpgaloader_tangnano20k": {
+  "openfpgaloader-tang-nano-20k": {
     "command": "openFPGALoader",
     "args": "-b tangnano20k -f"
   },

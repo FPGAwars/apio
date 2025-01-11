@@ -3,7 +3,7 @@
     "description": "pi-sicle",
     "fpga": "iCE40-HX4K-TQ144",
     "programmer": {
-      "type": "pi-sicle_loader"
+      "type": "pi-sicle-loader"
     }
   },
   "icezum": {
@@ -38,7 +38,7 @@
     "description": "iCEblink40-HX1K",
     "fpga": "iCE40-HX1K-VQ100",
     "programmer": {
-      "type": "iCEburn"
+      "type": "iceburn"
     },
     "usb": {
       "vid": "1443",
@@ -492,7 +492,7 @@
     "description": "butterstick r1.0",
     "fpga": "ECP5-LFE5UM5G-85F-CABGA381",
     "programmer": {
-      "type": "openfpgaloader_ft2232"
+      "type": "openfpgaloader-ft2232"
     }
   },
   "butterstick-r10-2g-85k-ft232h": {
@@ -500,7 +500,7 @@
     "description": "butterstick r1.0",
     "fpga": "ECP5-LFE5UM5G-85F-CABGA381",
     "programmer": {
-      "type": "openfpgaloader_ft232"
+      "type": "openfpgaloader-ft232"
     }
   },
   "versa": {
@@ -653,7 +653,7 @@
     "description": "ColorLight-5A-75B-V61",
     "fpga": "ECP5-LFE5U-25F-CABGA381",
     "programmer": {
-      "type": "openfpgaloader_ft2232"
+      "type": "openfpgaloader-ft2232"
     }
   },
   "colorlight-5a-75b-v7": {
@@ -661,7 +661,7 @@
     "description": "ColorLight-5A-75B-V7",
     "fpga": "ECP5-LFE5U-25F-CABGA256",
     "programmer": {
-      "type": "openfpgaloader_ft2232"
+      "type": "openfpgaloader-ft2232"
     }
   },
   "colorlight-5a-75b-v8": {
@@ -669,7 +669,7 @@
     "description": "ColorLight-5A-75B-V8",
     "fpga": "ECP5-LFE5U-25F-CABGA256",
     "programmer": {
-      "type": "openfpgaloader_ft2232"
+      "type": "openfpgaloader-ft2232"
     }
   },
   "colorlight-5a-75e-v6": {
@@ -677,7 +677,7 @@
     "description": "ColorLight-5A-75E-V6",
     "fpga": "ECP5-LFE5U-25F-CABGA256",
     "programmer": {
-      "type": "openfpgaloader_ft2232"
+      "type": "openfpgaloader-ft2232"
     }
   },
   "colorlight-5a-75e-v71-ft2232h": {
@@ -685,7 +685,7 @@
     "description": "ColorLight-5A-75E-V71",
     "fpga": "ECP5-LFE5U-25F-CABGA256",
     "programmer": {
-      "type": "openfpgaloader_ft2232"
+      "type": "openfpgaloader-ft2232"
     }
   },
   "colorlight-5a-75e-v71-ft232h": {
@@ -693,7 +693,7 @@
     "description": "ColorLight-5A-75E-V71",
     "fpga": "ECP5-LFE5U-25F-CABGA256",
     "programmer": {
-      "type": "openfpgaloader_ft232"
+      "type": "openfpgaloader-ft232"
     }
   },
   "colorlight-5a-75e-v71-usb-blaster": {
@@ -701,7 +701,7 @@
     "description": "ColorLight-5A-75E-V71",
     "fpga": "ECP5-LFE5U-25F-CABGA256",
     "programmer": {
-      "type": "openfpgaloader_usb-blaster"
+      "type": "openfpgaloader-usb-blaster"
     }
   },
   "colorlight-i5-v7-0-ft2232h": {
@@ -709,7 +709,7 @@
     "description": "ColorLight-i5",
     "fpga": "ECP5-LFE5U-25F-CABGA381",
     "programmer": {
-      "type": "openfpgaloader_ft2232"
+      "type": "openfpgaloader-ft2232"
     }
   },
   "colorlight-i5-v7-0-ft232h": {
@@ -717,7 +717,7 @@
     "description": "ColorLight-i5",
     "fpga": "ECP5-LFE5U-25F-CABGA381",
     "programmer": {
-      "type": "openfpgaloader_ft232"
+      "type": "openfpgaloader-ft232"
     }
   },
   "colorlight-i5-v7-0-usb-blaster": {
@@ -725,7 +725,7 @@
     "description": "ColorLight-i5",
     "fpga": "ECP5-LFE5U-25F-CABGA381",
     "programmer": {
-      "type": "openfpgaloader_usb-blaster"
+      "type": "openfpgaloader-usb-blaster"
     }
   },
   "icesugar-pro-ft2232h": {
@@ -733,7 +733,7 @@
     "description": "ColorLight-i5",
     "fpga": "ECP5-LFE5U-25F-CABGA256",
     "programmer": {
-      "type": "openfpgaloader_ft2232"
+      "type": "openfpgaloader-ft2232"
     }
   },
   "icesugar-pro-ft232h": {
@@ -741,7 +741,7 @@
     "description": "ColorLight-i5",
     "fpga": "ECP5-LFE5U-25F-CABGA256",
     "programmer": {
-      "type": "openfpgaloader_ft232"
+      "type": "openfpgaloader-ft232"
     }
   },
   "icesugar-pro-usb-blaster": {
@@ -749,7 +749,7 @@
     "description": "ColorLight-i5",
     "fpga": "ECP5-LFE5U-25F-CABGA256",
     "programmer": {
-      "type": "openfpgaloader_usb-blaster"
+      "type": "openfpgaloader-usb-blaster"
     }
   },
   "fleafpga-ohm-ft2232h": {
@@ -757,7 +757,7 @@
     "description": "FleaFPGA-Ohm_(FT2232H)",
     "fpga": "ECP5-LFE5U-25F-CABGA381",
     "programmer": {
-      "type": "openfpgaloader_ft2232"
+      "type": "openfpgaloader-ft2232"
     }
   },
   "fleafpga-ohm-ft232h": {
@@ -765,7 +765,7 @@
     "description": "FleaFPGA-Ohm_(FT232H)",
     "fpga": "ECP5-LFE5U-25F-CABGA381",
     "programmer": {
-      "type": "openfpgaloader_ft232"
+      "type": "openfpgaloader-ft232"
     }
   },
   "fleafpga-ohm-usb-blaster": {
@@ -773,7 +773,7 @@
     "description": "FleaFPGA-Ohm_(USB-Blaster)",
     "fpga": "ECP5-LFE5U-25F-CABGA381",
     "programmer": {
-      "type": "openfpgaloader_usb-blaster"
+      "type": "openfpgaloader-usb-blaster"
     }
   },
   "ecp5-mini-12": {
@@ -781,7 +781,7 @@
     "description": "ECP5-Mini-12",
     "fpga": "ECP5-LFE5U-12F-CABGA256",
     "programmer": {
-      "type": "openfpgaloader_ft2232"
+      "type": "openfpgaloader-ft2232"
     }
   },
   "ecp5-mini-25": {
@@ -789,7 +789,7 @@
     "description": "ECP5-Mini-12",
     "fpga": "ECP5-LFE5U-25F-CABGA256",
     "programmer": {
-      "type": "openfpgaloader_ft2232"
+      "type": "openfpgaloader-ft2232"
     }
   },
   "ecp5-evaluation-board": {
@@ -797,7 +797,7 @@
     "description": "ECP5-Evaluation-Board",
     "fpga": "ECP5-LFE5UM5G-85F-CABGA381",
     "programmer": {
-      "type": "openfpgaloader_ft2232"
+      "type": "openfpgaloader-ft2232"
     }
   },
   "colorlight-i9-v7-2-ft2232h": {
@@ -805,7 +805,7 @@
     "description": "ColorLight-i9",
     "fpga": "ECP5-LFE5U-45F-CABGA381",
     "programmer": {
-      "type": "openfpgaloader_ft2232"
+      "type": "openfpgaloader-ft2232"
     }
   },
   "colorlight-i9-v7-2-ft232h": {
@@ -813,7 +813,7 @@
     "description": "ColorLight-i9",
     "fpga": "ECP5-LFE5U-45F-CABGA381",
     "programmer": {
-      "type": "openfpgaloader_ft232"
+      "type": "openfpgaloader-ft232"
     }
   },
   "colorlight-i9-v7-2-usb-blaster": {
@@ -821,7 +821,7 @@
     "description": "ColorLight-i9",
     "fpga": "ECP5-LFE5U-45F-CABGA381",
     "programmer": {
-      "type": "openfpgaloader_usb-blaster"
+      "type": "openfpgaloader-usb-blaster"
     }
   },
   "thetamachines-eth4k": {
@@ -844,7 +844,7 @@
     "description": "Sipeed Tang Nano",
     "fpga": "GW1N-LV1QN48C6/I5",
     "programmer": {
-      "type": "openfpgaloader_tangnano"
+      "type": "openfpgaloader-tang-nano"
     },
     "usb": {
       "vid": "0403",
@@ -856,7 +856,7 @@
     "description": "Sipeed Tang Nano 1k",
     "fpga": "GW1NZ-LV1QN48C6/I5",
     "programmer": {
-      "type": "openfpgaloader_tangnano1k"
+      "type": "openfpgaloader-tang-nano-1k"
     },
     "usb": {
       "vid": "0403",
@@ -868,7 +868,7 @@
     "description": "Sipeed Tang Nano 4k",
     "fpga": "GW1NSR-LV4CQN48PC7/I6",
     "programmer": {
-      "type": "openfpgaloader_tangnano4k"
+      "type": "openfpgaloader-tang-nano-4k"
     },
     "usb": {
       "vid": "0403",
@@ -880,7 +880,7 @@
     "description": "Sipeed Tang Nano 9k",
     "fpga": "GW1NR-LV9QN88PC6/I5",
     "programmer": {
-      "type": "openfpgaloader_tangnano9k"
+      "type": "openfpgaloader-tang-nano-9k"
     },
     "usb": {
       "vid": "0403",
@@ -892,7 +892,7 @@
     "description": "Sipeed Tang Nano 20k",
     "fpga": "GW2AR-LV18QN88C8/I7",
     "programmer": {
-      "type": "openfpgaloader_tangnano20k"
+      "type": "openfpgaloader-tang-nano-20k"
     },
     "usb": {
       "vid": "0403",
@@ -911,7 +911,7 @@
     "description": "Mimas ECP5 Mini",
     "fpga": "ECP5-LFE5U-45F-CABGA256",
     "programmer": {
-      "type": "openfpgaloader_ft2232"
+      "type": "openfpgaloader-ft2232"
     }
   }
 }
