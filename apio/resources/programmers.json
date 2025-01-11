@@ -11,14 +11,6 @@
     "command": "iceprogduino",
     "args": ""
   },
-  "icoprog": {
-    "command": "export WIRINGPI_GPIOMEM=1; icoprog",
-    "args": "-p <"
-  },
-  "litterbox": {
-    "command": "sudo litterbox",
-    "args": "-c"
-  },
   "blackiceprog": {
     "command": "black-iceprog",
     "args": "${SERIAL_PORT}"

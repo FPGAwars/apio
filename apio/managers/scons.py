@@ -266,14 +266,6 @@ class SCons:
         # -- USB id  (vid, pid)
         board_info = self.apio_ctx.boards[board]
 
-        # -- Check platform. If the platform is not compatible
-        # -- with the board an exception is raised
-        self._check_platform(board_info, self.apio_ctx.platform_id)
-
-        # # -- Check pip packages. If the corresponding pip_packages
-        # # -- is not installed, an exception is raised
-        # self._check_pip_packages(board_info)
-
         # -- pylint: disable=fixme
         # -- TODO: abstract this better in boards.json. For example, add a
         # -- property "darwin-no-detection".
@@ -369,33 +361,33 @@ class SCons:
         assert "$SOURCE" in programmer, programmer
         return programmer
 
-    @staticmethod
-    def _check_platform(board_info: dict, actual_platform_id: str) -> None:
-        """Check if the current board is compatible with the
-        current platform. There are some boards, like icoboard,
-        that only runs in the platform linux/arm7
-        * INPUT:
-          * board_info: Dictionary with board info from boards.json.
+    # @staticmethod
+    # def _check_platform(board_info: dict, actual_platform_id: str) -> None:
+    #     """Check if the current board is compatible with the
+    #     current platform. There are some boards, like icoboard,
+    #     that only runs in the platform linux/arm7
+    #     * INPUT:
+    #       * board_info: Dictionary with board info from boards.json.
 
-        Only in case the platform is not compatible with the board,
-        and exception is raised
-        """
+    #     Only in case the platform is not compatible with the board,
+    #     and exception is raised
+    #     """
 
-        # -- Normal case: the board does not have a special platform
-        # -- (it can be used in many platforms)
-        if "platform" not in board_info:
-            return
+    #     # -- Normal case: the board does not have a special platform
+    #     # -- (it can be used in many platforms)
+    #     if "platform" not in board_info:
+    #         return
 
-        # -- Get the platform were the board should be used
-        required_platform_id = board_info["platform"]
+    #     # -- Get the platform were the board should be used
+    #     required_platform_id = board_info["platform"]
 
-        # -- Check if they are not compatible!
-        if actual_platform_id != required_platform_id:
+    #     # -- Check if they are not compatible!
+    #     if actual_platform_id != required_platform_id:
 
-            raise ValueError(
-                "Board is restricted to platform "
-                f"'{required_platform_id}' but '{actual_platform_id}' found."
-            )
+    #         raise ValueError(
+    #             "Board is restricted to platform "
+    #             f"'{required_platform_id}' but '{actual_platform_id}' found."
+    #         )
 
     def _serialize_programmer(
         self, board_info: dict, sram: bool, flash: bool

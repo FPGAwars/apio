@@ -98,23 +98,6 @@
       "pid": "8036"
     }
   },
-  "icoboard": {
-    "description": "icoBOARD 1.0",
-    "fpga": "iCE40-HX8K-CT256",
-    "programmer": {
-      "type": "icoprog"
-    },
-    "platform": "linux_armv7l"
-  },
-  "cat-board": {
-    "legacy_name": "Cat-board",
-    "description": "CAT Board",
-    "fpga": "iCE40-HX8K-CT256",
-    "programmer": {
-      "type": "litterbox"
-    },
-    "platform": "linux_armv7l"
-  },
   "kefir": {
     "description": "K\u00e9fir I iCE40-HX4K",
     "fpga": "iCE40-HX4K-TQ144",
