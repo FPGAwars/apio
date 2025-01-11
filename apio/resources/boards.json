@@ -1,14 +1,14 @@
 {
   "pi-sicle": {
     "description": "pi-sicle",
-    "fpga": "iCE40-HX4K-TQ144",
+    "fpga": "ice40-hx4k-tq144",
     "programmer": {
       "type": "pi-sicle-loader"
     }
   },
   "icezum": {
     "description": "IceZUM Alhambra",
-    "fpga": "iCE40-HX1K-TQ144",
+    "fpga": "ice40-hx1k-tq144",
     "programmer": {
       "type": "iceprog"
     },
@@ -22,7 +22,7 @@
   },
   "icestick": {
     "description": "iCEstick Evaluation Kit",
-    "fpga": "iCE40-HX1K-TQ144",
+    "fpga": "ice40-hx1k-tq144",
     "programmer": {
       "type": "iceprog"
     },
@@ -36,7 +36,7 @@
   },
   "iceblink40-hx1k": {
     "description": "iCEblink40-HX1K",
-    "fpga": "iCE40-HX1K-VQ100",
+    "fpga": "ice40-hx1k-vq100",
     "programmer": {
       "type": "iceburn"
     },
@@ -47,7 +47,7 @@
   },
   "go-board": {
     "description": "Nandland Go board",
-    "fpga": "iCE40-HX1K-VQ100",
+    "fpga": "ice40-hx1k-vq100",
     "programmer": {
       "type": "iceprog"
     },
@@ -62,7 +62,7 @@
   "ice40-hx8k": {
     "legacy_name": "iCE40-HX8K",
     "description": "iCE40-HX8K Breakout Board",
-    "fpga": "iCE40-HX8K-CT256",
+    "fpga": "ice40-hx8k-ct256",
     "programmer": {
       "type": "iceprog"
     },
@@ -77,7 +77,7 @@
   "ice40-hx8k-evb": {
     "legacy_name": "iCE40-HX8K-EVB",
     "description": "iCE40-HX8K-EVB Olimex",
-    "fpga": "iCE40-HX8K-CT256",
+    "fpga": "ice40-hx8k-ct256",
     "programmer": {
       "type": "iceprogduino"
     },
@@ -89,7 +89,7 @@
   "ice40-hx1k-evb": {
     "legacy_name": "iCE40-HX1K-EVB",
     "description": "iCE40-HX1K-EVB Olimex",
-    "fpga": "iCE40-HX1K-VQ100",
+    "fpga": "ice40-hx1k-vq100",
     "programmer": {
       "type": "iceprogduino"
     },
@@ -100,7 +100,7 @@
   },
   "kefir": {
     "description": "K\u00e9fir I iCE40-HX4K",
-    "fpga": "iCE40-HX4K-TQ144",
+    "fpga": "ice40-hx4k-tq144",
     "programmer": {
       "type": "iceprog",
       "extra_args": "-I B"
@@ -115,7 +115,7 @@
   },
   "blackice": {
     "description": "BlackIce",
-    "fpga": "iCE40-HX4K-TQ144",
+    "fpga": "ice40-hx4k-tq144",
     "programmer": {
       "type": "blackiceprog"
     },
@@ -126,7 +126,7 @@
   },
   "blackice-ii": {
     "description": "BlackIce II",
-    "fpga": "iCE40-HX4K-TQ144",
+    "fpga": "ice40-hx4k-tq144",
     "programmer": {
       "type": "blackiceprog"
     },
@@ -137,7 +137,7 @@
   },
   "blackice-mx": {
     "description": "BlackIce MX",
-    "fpga": "iCE40-HX4K-TQ144",
+    "fpga": "ice40-hx4k-tq144",
     "programmer": {
       "type": "blackiceprog"
     },
@@ -148,7 +148,7 @@
   },
   "icefun": {
     "description": "iceFUN",
-    "fpga": "iCE40-HX8K-CB132",
+    "fpga": "ice40-hx8k-cb132",
     "programmer": {
       "type": "icefunprog"
     },
@@ -160,7 +160,7 @@
   "icewerx": {
     "legacy_name": "iceWerx",
     "description": "iceWerx",
-    "fpga": "iCE40-HX8K-CB132",
+    "fpga": "ice40-hx8k-cb132",
     "programmer": {
       "type": "icefunprog"
     },
@@ -172,7 +172,7 @@
   "tinyfpga-b2": {
     "legacy_name": "TinyFPGA-B2",
     "description": "TinyFPGA B2",
-    "fpga": "iCE40-LP8K-CM81",
+    "fpga": "ice40-lp8k-cm81",
     "programmer": {
       "type": "tinyfpgab"
     },
@@ -184,7 +184,7 @@
   "tinyfpga-bx": {
     "legacy_name": "TinyFPGA-BX",
     "description": "TinyFPGA BX",
-    "fpga": "iCE40-LP8K-CM81",
+    "fpga": "ice40-lp8k-cm81",
     "programmer": {
       "type": "tinyprog"
     },
@@ -198,7 +198,7 @@
   },
   "alhambra-ii": {
     "description": "Alhambra II",
-    "fpga": "iCE40-HX4K-TQ144",
+    "fpga": "ice40-hx4k-tq144",
     "programmer": {
       "type": "iceprog"
     },
@@ -212,7 +212,7 @@
   },
   "upduino": {
     "description": "UPDuino v1.0",
-    "fpga": "iCE40-UP5K-SG48",
+    "fpga": "ice40-up5k-sg48",
     "programmer": {
       "type": "iceprog"
     },
@@ -226,7 +226,7 @@
   },
   "upduino2": {
     "description": "UPDuino v2.0",
-    "fpga": "iCE40-UP5K-SG48",
+    "fpga": "ice40-up5k-sg48",
     "programmer": {
       "type": "iceprog"
     },
@@ -240,7 +240,7 @@
   },
   "upduino21": {
     "description": "UPduino v2.1",
-    "fpga": "iCE40-UP5K-SG48",
+    "fpga": "ice40-up5k-sg48",
     "programmer": {
       "type": "iceprog"
     },
@@ -254,7 +254,7 @@
   },
   "upduino3": {
     "description": "UPduino v3.0",
-    "fpga": "iCE40-UP5K-SG48",
+    "fpga": "ice40-up5k-sg48",
     "programmer": {
       "type": "iceprog"
     },
@@ -268,7 +268,7 @@
   },
   "upduino31": {
     "description": "UPduino v3.1",
-    "fpga": "iCE40-UP5K-SG48",
+    "fpga": "ice40-up5k-sg48",
     "programmer": {
       "type": "iceprog"
     },
@@ -283,7 +283,7 @@
   "icebreaker": {
     "legacy_name": "iCEBreaker",
     "description": "iCEBreaker",
-    "fpga": "iCE40-UP5K-SG48",
+    "fpga": "ice40-up5k-sg48",
     "programmer": {
       "type": "iceprog"
     },
@@ -298,7 +298,7 @@
   "icebreaker-bitsy0": {
     "legacy_name": "iCEBreaker-bitsy0",
     "description": "iCEBreaker bitsy",
-    "fpga": "iCE40-UP5K-SG48",
+    "fpga": "ice40-up5k-sg48",
     "programmer": {
       "type": "dfu"
     },
@@ -313,7 +313,7 @@
   "icebreaker-bitsy1": {
     "legacy_name": "iCEBreaker-bitsy1",
     "description": "iCEBreaker bitsy",
-    "fpga": "iCE40-UP5K-SG48",
+    "fpga": "ice40-up5k-sg48",
     "programmer": {
       "type": "dfu"
     },
@@ -327,7 +327,7 @@
   },
   "fpga101": {
     "description": "FPGA 101 - Workshop Badge",
-    "fpga": "iCE40-UP5K-SG48",
+    "fpga": "ice40-up5k-sg48",
     "programmer": {
       "type": "iceprog"
     },
@@ -342,7 +342,7 @@
   "ice40-up5k": {
     "legacy_name": "iCE40-UP5K",
     "description": "iCE40 UltraPlus Breakout Board",
-    "fpga": "iCE40-UP5K-SG48",
+    "fpga": "ice40-up5k-sg48",
     "programmer": {
       "type": "iceprog"
     },
@@ -357,7 +357,7 @@
   "ice40-ul1k-breakout": {
     "legacy_name": "iCE40-UL1K-Breakout",
     "description": "iCE40-UL1K UltraLite Breakout Board",
-    "fpga": "iCE40-UL1K-CM36A",
+    "fpga": "ice40-ul1k-cm36a",
     "programmer": {
       "type": "iceprog"
     },
@@ -372,7 +372,7 @@
   "tinyfpga-ex-rev1": {
     "legacy_name": "TinyFPGA-EX-rev1",
     "description": "TinyFPGA EX rev 1",
-    "fpga": "ECP5-LFE5U-85F-CSFBGA285",
+    "fpga": "ecp5-lfe5u-85f-csfbga285",
     "programmer": {
       "type": "tinyprog"
     },
@@ -387,7 +387,7 @@
   "tinyfpga-ex-rev2": {
     "legacy_name": "TinyFPGA-EX-rev2",
     "description": "TinyFPGA EX rev 2",
-    "fpga": "ECP5-LFE5UM5G-85F-CSFBGA285",
+    "fpga": "ecp5-lfe5um5g-85f-csfbga285",
     "programmer": {
       "type": "tinyprog"
     },
@@ -401,7 +401,7 @@
   },
   "ulx3s-12f": {
     "description": "ULX3S",
-    "fpga": "ECP5-LFE5U-12F-CABGA381",
+    "fpga": "ecp5-lfe5u-12f-cabga381",
     "programmer": {
       "type": "fujprog"
     },
@@ -412,7 +412,7 @@
   },
   "ulx3s-25f": {
     "description": "ULX3S",
-    "fpga": "ECP5-LFE5U-25F-CABGA381",
+    "fpga": "ecp5-lfe5u-25f-cabga381",
     "programmer": {
       "type": "fujprog"
     },
@@ -423,7 +423,7 @@
   },
   "ulx3s-45f": {
     "description": "ULX3S",
-    "fpga": "ECP5-LFE5U-45F-CABGA381",
+    "fpga": "ecp5-lfe5u-45f-cabga381",
     "programmer": {
       "type": "fujprog"
     },
@@ -434,7 +434,7 @@
   },
   "ulx3s-85f": {
     "description": "ULX3S",
-    "fpga": "ECP5-LFE5U-85F-CABGA381",
+    "fpga": "ecp5-lfe5u-85f-cabga381",
     "programmer": {
       "type": "fujprog"
     },
@@ -445,7 +445,7 @@
   },
   "orangecrab-r02-25f": {
     "description": "OrangeCrab r0.2",
-    "fpga": "ECP5-LFE5U-25F-CSFBGA285",
+    "fpga": "ecp5-lfe5u-25f-csfbga285",
     "programmer": {
       "type": "dfu"
     },
@@ -459,7 +459,7 @@
   },
   "orangecrab-r02-85f": {
     "description": "OrangeCrab r0.2",
-    "fpga": "ECP5-LFE5U-85F-CSFBGA285",
+    "fpga": "ecp5-lfe5u-85f-csfbga285",
     "programmer": {
       "type": "dfu"
     },
@@ -474,7 +474,7 @@
   "butterstick-r10-2g-85k": {
     "legacy_name": "Butterstick-r10-2g-85k",
     "description": "butterstick r1.0",
-    "fpga": "ECP5-LFE5UM5G-85F-CABGA381",
+    "fpga": "ecp5-lfe5um5g-85f-cabga381",
     "programmer": {
       "type": "dfu",
       "extra_args": "--reset"
@@ -490,7 +490,7 @@
   "butterstick-r10-2g-85k-ft2232h": {
     "legacy_name": "Butterstick-r10-2g-85k_(FT2232H)",
     "description": "butterstick r1.0",
-    "fpga": "ECP5-LFE5UM5G-85F-CABGA381",
+    "fpga": "ecp5-lfe5um5g-85f-cabga381",
     "programmer": {
       "type": "openfpgaloader-ft2232"
     }
@@ -498,14 +498,14 @@
   "butterstick-r10-2g-85k-ft232h": {
     "legacy_name": "Butterstick-r10-2g-85k_(FT232H)",
     "description": "butterstick r1.0",
-    "fpga": "ECP5-LFE5UM5G-85F-CABGA381",
+    "fpga": "ecp5-lfe5um5g-85f-cabga381",
     "programmer": {
       "type": "openfpgaloader-ft232"
     }
   },
   "versa": {
     "description": "ECP5 Versa",
-    "fpga": "ECP5-LFE5UM-45F-CABGA381",
+    "fpga": "ecp5-lfe5um-45f-cabga381",
     "programmer": {
       "type": "iceprog"
     },
@@ -520,7 +520,7 @@
   "alchitry-cu": {
     "legacy_name": "Alchitry-Cu",
     "description": "Alchitry Cu Development Board",
-    "fpga": "iCE40-HX8K-CB132",
+    "fpga": "ice40-hx8k-cb132",
     "programmer": {
       "type": "iceprog"
     },
@@ -534,7 +534,7 @@
   },
   "fomu": {
     "description": "Fomu",
-    "fpga": "iCE40-UP5K-UWG30",
+    "fpga": "ice40-up5k-uwg30",
     "programmer": {
       "type": "dfu"
     },
@@ -548,7 +548,7 @@
   },
   "arice1": {
     "description": "ARiCE v1",
-    "fpga": "iCE40-UP5K-SG48",
+    "fpga": "ice40-up5k-sg48",
     "programmer": {
       "type": "iceprog"
     },
@@ -562,7 +562,7 @@
   },
   "edu-ciaa-fpga": {
     "description": "EDU-CIAA-FPGA",
-    "fpga": "iCE40-HX4K-TQ144",
+    "fpga": "ice40-hx4k-tq144",
     "programmer": {
       "type": "iceprog"
     },
@@ -577,7 +577,7 @@
   "icesugar-nano": {
     "legacy_name": "iCESugar-nano",
     "description": "iCESugar-nano",
-    "fpga": "iCE40-LP1K-CM36",
+    "fpga": "ice40-lp1k-cm36",
     "programmer": {
       "type": "icesprog"
     },
@@ -589,7 +589,7 @@
   "ok-ice40pro": {
     "legacy_name": "OK-iCE40Pro",
     "description": "OK-iCE40Pro",
-    "fpga": "iCE40-UP5K-SG48",
+    "fpga": "ice40-up5k-sg48",
     "programmer": {
       "type": "iceprog"
     },
@@ -603,7 +603,7 @@
   },
   "pico-ice": {
     "description": "pico-ice",
-    "fpga": "iCE40-UP5K-SG48",
+    "fpga": "ice40-up5k-sg48",
     "programmer": {
       "type": "dfu",
       "extra_args": "--reset"
@@ -619,7 +619,7 @@
   "icesugar-1-5": {
     "legacy_name": "iCESugar_1_5",
     "description": "iCESugar v1.5",
-    "fpga": "iCE40-UP5K-SG48",
+    "fpga": "ice40-up5k-sg48",
     "programmer": {
       "type": "icesprog"
     },
@@ -631,7 +631,7 @@
   "odt-icyblue-feather": {
     "legacy_name": "ODT_IcyBlue_Feather",
     "description": "ODT_IcyBlue_Feather",
-    "fpga": "iCE40-U4K-SG48",
+    "fpga": "ice40-u4k-sg48",
     "programmer": {
       "type": "icesprog"
     },
@@ -643,7 +643,7 @@
   "odt-rpga-feather": {
     "legacy_name": "ODT_RPGA_Feather",
     "description": "ODT_RPGA_Feather",
-    "fpga": "iCE40-U4K-SG48",
+    "fpga": "ice40-u4k-sg48",
     "programmer": {
       "type": "mcu"
     }
@@ -651,7 +651,7 @@
   "colorlight-5a-75b-v61": {
     "legacy_name": "ColorLight-5A-75B-V61",
     "description": "ColorLight-5A-75B-V61",
-    "fpga": "ECP5-LFE5U-25F-CABGA381",
+    "fpga": "ecp5-lfe5u-25f-cabga381",
     "programmer": {
       "type": "openfpgaloader-ft2232"
     }
@@ -659,7 +659,7 @@
   "colorlight-5a-75b-v7": {
     "legacy_name": "ColorLight-5A-75B-V7",
     "description": "ColorLight-5A-75B-V7",
-    "fpga": "ECP5-LFE5U-25F-CABGA256",
+    "fpga": "ecp5-lfe5u-25f-cabga256",
     "programmer": {
       "type": "openfpgaloader-ft2232"
     }
@@ -667,7 +667,7 @@
   "colorlight-5a-75b-v8": {
     "legacy_name": "ColorLight-5A-75B-V8",
     "description": "ColorLight-5A-75B-V8",
-    "fpga": "ECP5-LFE5U-25F-CABGA256",
+    "fpga": "ecp5-lfe5u-25f-cabga256",
     "programmer": {
       "type": "openfpgaloader-ft2232"
     }
@@ -675,7 +675,7 @@
   "colorlight-5a-75e-v6": {
     "legacy_name": "ColorLight-5A-75E-V6",
     "description": "ColorLight-5A-75E-V6",
-    "fpga": "ECP5-LFE5U-25F-CABGA256",
+    "fpga": "ecp5-lfe5u-25f-cabga256",
     "programmer": {
       "type": "openfpgaloader-ft2232"
     }
@@ -683,7 +683,7 @@
   "colorlight-5a-75e-v71-ft2232h": {
     "legacy_name": "ColorLight-5A-75E-V71_(FT2232H)",
     "description": "ColorLight-5A-75E-V71",
-    "fpga": "ECP5-LFE5U-25F-CABGA256",
+    "fpga": "ecp5-lfe5u-25f-cabga256",
     "programmer": {
       "type": "openfpgaloader-ft2232"
     }
@@ -691,7 +691,7 @@
   "colorlight-5a-75e-v71-ft232h": {
     "legacy_name": "ColorLight-5A-75E-V71_(FT232H)",
     "description": "ColorLight-5A-75E-V71",
-    "fpga": "ECP5-LFE5U-25F-CABGA256",
+    "fpga": "ecp5-lfe5u-25f-cabga256",
     "programmer": {
       "type": "openfpgaloader-ft232"
     }
@@ -699,7 +699,7 @@
   "colorlight-5a-75e-v71-usb-blaster": {
     "legacy_name": "ColorLight-5A-75E-V71_(USB-Blaster)",
     "description": "ColorLight-5A-75E-V71",
-    "fpga": "ECP5-LFE5U-25F-CABGA256",
+    "fpga": "ecp5-lfe5u-25f-cabga256",
     "programmer": {
       "type": "openfpgaloader-usb-blaster"
     }
@@ -707,7 +707,7 @@
   "colorlight-i5-v7-0-ft2232h": {
     "legacy_name": "ColorLight-i5-v7.0_(FT2232H)",
     "description": "ColorLight-i5",
-    "fpga": "ECP5-LFE5U-25F-CABGA381",
+    "fpga": "ecp5-lfe5u-25f-cabga381",
     "programmer": {
       "type": "openfpgaloader-ft2232"
     }
@@ -715,7 +715,7 @@
   "colorlight-i5-v7-0-ft232h": {
     "legacy_name": "ColorLight-i5-v7.0_(FT232H)",
     "description": "ColorLight-i5",
-    "fpga": "ECP5-LFE5U-25F-CABGA381",
+    "fpga": "ecp5-lfe5u-25f-cabga381",
     "programmer": {
       "type": "openfpgaloader-ft232"
     }
@@ -723,7 +723,7 @@
   "colorlight-i5-v7-0-usb-blaster": {
     "legacy_name": "ColorLight-i5-v7.0_(USB-Blaster)",
     "description": "ColorLight-i5",
-    "fpga": "ECP5-LFE5U-25F-CABGA381",
+    "fpga": "ecp5-lfe5u-25f-cabga381",
     "programmer": {
       "type": "openfpgaloader-usb-blaster"
     }
@@ -731,7 +731,7 @@
   "icesugar-pro-ft2232h": {
     "legacy_name": "iCESugar-Pro_(FT2232H)",
     "description": "ColorLight-i5",
-    "fpga": "ECP5-LFE5U-25F-CABGA256",
+    "fpga": "ecp5-lfe5u-25f-cabga256",
     "programmer": {
       "type": "openfpgaloader-ft2232"
     }
@@ -739,7 +739,7 @@
   "icesugar-pro-ft232h": {
     "legacy_name": "iCESugar-Pro_(FT232H)",
     "description": "ColorLight-i5",
-    "fpga": "ECP5-LFE5U-25F-CABGA256",
+    "fpga": "ecp5-lfe5u-25f-cabga256",
     "programmer": {
       "type": "openfpgaloader-ft232"
     }
@@ -747,7 +747,7 @@
   "icesugar-pro-usb-blaster": {
     "legacy_name": "iCESugar-Pro_(USB-Blaster)",
     "description": "ColorLight-i5",
-    "fpga": "ECP5-LFE5U-25F-CABGA256",
+    "fpga": "ecp5-lfe5u-25f-cabga256",
     "programmer": {
       "type": "openfpgaloader-usb-blaster"
     }
@@ -755,7 +755,7 @@
   "fleafpga-ohm-ft2232h": {
     "legacy_name": "FleaFPGA-Ohm_(FT2232H)",
     "description": "FleaFPGA-Ohm_(FT2232H)",
-    "fpga": "ECP5-LFE5U-25F-CABGA381",
+    "fpga": "ecp5-lfe5u-25f-cabga381",
     "programmer": {
       "type": "openfpgaloader-ft2232"
     }
@@ -763,7 +763,7 @@
   "fleafpga-ohm-ft232h": {
     "legacy_name": "FleaFPGA-Ohm_(FT232H)",
     "description": "FleaFPGA-Ohm_(FT232H)",
-    "fpga": "ECP5-LFE5U-25F-CABGA381",
+    "fpga": "ecp5-lfe5u-25f-cabga381",
     "programmer": {
       "type": "openfpgaloader-ft232"
     }
@@ -771,7 +771,7 @@
   "fleafpga-ohm-usb-blaster": {
     "legacy_name": "FleaFPGA-Ohm_(USB-Blaster)",
     "description": "FleaFPGA-Ohm_(USB-Blaster)",
-    "fpga": "ECP5-LFE5U-25F-CABGA381",
+    "fpga": "ecp5-lfe5u-25f-cabga381",
     "programmer": {
       "type": "openfpgaloader-usb-blaster"
     }
@@ -779,7 +779,7 @@
   "ecp5-mini-12": {
     "legacy_name": "ECP5-Mini-12",
     "description": "ECP5-Mini-12",
-    "fpga": "ECP5-LFE5U-12F-CABGA256",
+    "fpga": "ecp5-lfe5u-12f-cabga256",
     "programmer": {
       "type": "openfpgaloader-ft2232"
     }
@@ -787,7 +787,7 @@
   "ecp5-mini-25": {
     "legacy_name": "ECP5-Mini-25",
     "description": "ECP5-Mini-12",
-    "fpga": "ECP5-LFE5U-25F-CABGA256",
+    "fpga": "ecp5-lfe5u-25f-cabga256",
     "programmer": {
       "type": "openfpgaloader-ft2232"
     }
@@ -795,7 +795,7 @@
   "ecp5-evaluation-board": {
     "legacy_name": "ECP5-Evaluation-Board",
     "description": "ECP5-Evaluation-Board",
-    "fpga": "ECP5-LFE5UM5G-85F-CABGA381",
+    "fpga": "ecp5-lfe5um5g-85f-cabga381",
     "programmer": {
       "type": "openfpgaloader-ft2232"
     }
@@ -803,7 +803,7 @@
   "colorlight-i9-v7-2-ft2232h": {
     "legacy_name": "ColorLight-i9-v7.2_(FT2232H)",
     "description": "ColorLight-i9",
-    "fpga": "ECP5-LFE5U-45F-CABGA381",
+    "fpga": "ecp5-lfe5u-45f-cabga381",
     "programmer": {
       "type": "openfpgaloader-ft2232"
     }
@@ -811,7 +811,7 @@
   "colorlight-i9-v7-2-ft232h": {
     "legacy_name": "ColorLight-i9-v7.2_(FT232H)",
     "description": "ColorLight-i9",
-    "fpga": "ECP5-LFE5U-45F-CABGA381",
+    "fpga": "ecp5-lfe5u-45f-cabga381",
     "programmer": {
       "type": "openfpgaloader-ft232"
     }
@@ -819,7 +819,7 @@
   "colorlight-i9-v7-2-usb-blaster": {
     "legacy_name": "ColorLight-i9-v7.2_(USB-Blaster)",
     "description": "ColorLight-i9",
-    "fpga": "ECP5-LFE5U-45F-CABGA381",
+    "fpga": "ecp5-lfe5u-45f-cabga381",
     "programmer": {
       "type": "openfpgaloader-usb-blaster"
     }
@@ -827,7 +827,7 @@
   "thetamachines-eth4k": {
     "legacy_name": "ThetaMachines-ETH4K",
     "description": "Theta Machines ETH4K",
-    "fpga": "iCE40-HX4K-TQ144",
+    "fpga": "ice40-hx4k-tq144",
     "programmer": {
       "type": "iceprog"
     },
@@ -842,7 +842,7 @@
   "sipeed-tang-nano": {
     "legacy_name": "Sipeed-Tang-Nano",
     "description": "Sipeed Tang Nano",
-    "fpga": "GW1N-LV1QN48C6/I5",
+    "fpga": "gw1n-lv1qn48c6-i5",
     "programmer": {
       "type": "openfpgaloader-tang-nano"
     },
@@ -854,7 +854,7 @@
   "sipeed-tang-nano-1k": {
     "legacy_name": "Sipeed-Tang-Nano-1k",
     "description": "Sipeed Tang Nano 1k",
-    "fpga": "GW1NZ-LV1QN48C6/I5",
+    "fpga": "gw1nz-lv1qn48c6-i5",
     "programmer": {
       "type": "openfpgaloader-tang-nano-1k"
     },
@@ -866,7 +866,7 @@
   "sipeed-tang-nano-4k": {
     "legacy_name": "Sipeed-Tang-Nano-4k",
     "description": "Sipeed Tang Nano 4k",
-    "fpga": "GW1NSR-LV4CQN48PC7/I6",
+    "fpga": "gw1nsr-lv4cqn48pc7-i6",
     "programmer": {
       "type": "openfpgaloader-tang-nano-4k"
     },
@@ -878,7 +878,7 @@
   "sipeed-tang-nano-9k": {
     "legacy_name": "Sipeed-Tang-Nano-9k",
     "description": "Sipeed Tang Nano 9k",
-    "fpga": "GW1NR-LV9QN88PC6/I5",
+    "fpga": "gw1nr-lv9qn88pc6-i5",
     "programmer": {
       "type": "openfpgaloader-tang-nano-9k"
     },
@@ -890,7 +890,7 @@
   "sipeed-tang-nano-20k": {
     "legacy_name": "Sipeed-Tang-Nano-20k",
     "description": "Sipeed Tang Nano 20k",
-    "fpga": "GW2AR-LV18QN88C8/I7",
+    "fpga": "gw2ar-lv18qn88c8-i7",
     "programmer": {
       "type": "openfpgaloader-tang-nano-20k"
     },
@@ -902,14 +902,14 @@
   "cynthion-r1-4": {
     "legacy_name": "Cynthion-r1.4",
     "description": "Cynthion r1.4",
-    "fpga": "ECP5-LFE5U-12F-CABGA256",
+    "fpga": "ecp5-lfe5u-12f-cabga256",
     "programmer": {
       "type": "apollo"
     }
   },
   "mimas-ecp5-mini": {
     "description": "Mimas ECP5 Mini",
-    "fpga": "ECP5-LFE5U-45F-CABGA256",
+    "fpga": "ecp5-lfe5u-45f-cabga256",
     "programmer": {
       "type": "openfpgaloader-ft2232"
     }

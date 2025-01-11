@@ -149,7 +149,7 @@ def test_resources_names(apio_runner: ApioRunner):
     board_name_regex = re.compile(r"^[a-z][a-z0-9-]*$")
 
     # -- For fpga names we allow lower-case-0-9.
-    # fpga_name_regex = re.compile(r"^[A-Z][A-Z0-9-/]*$")
+    fpga_name_regex = re.compile(r"^[a-z][a-z0-9-/]*$")
 
     # -- For programmer names we allow lower-case-0-9.
     programmer_name_regex = re.compile(r"^[a-z][a-z0-9-]*$")
@@ -162,8 +162,8 @@ def test_resources_names(apio_runner: ApioRunner):
         for board in apio_ctx.boards.keys():
             assert board_name_regex.match(board), f"{board=}"
 
-        # for fpga in apio_ctx.fpgas.keys():
-        #     assert fpga_name_regex.match(fpga), f"{fpga=}"
+        for fpga in apio_ctx.fpgas.keys():
+            assert fpga_name_regex.match(fpga), f"{fpga=}"
 
         for programmer in apio_ctx.programmers.keys():
             assert programmer_name_regex.match(programmer), f"{programmer=}"

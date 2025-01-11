@@ -1,440 +1,513 @@
 {
-  "iCE40-LP1K-SWG16TR": {
+  "ice40-lp1k-swg16tr": {
+    "model": "iCE40-LP1K-SWG16TR",
     "arch": "ice40",
     "type": "lp",
     "size": "1k",
     "pack": "swg16tr"
   },
-  "iCE40-LP384-CM36": {
+  "ice40-lp384-cm36": {
+    "model": "iCE40-LP384-CM36",
     "arch": "ice40",
     "type": "lp",
     "size": "384",
     "pack": "cm36"
   },
-  "iCE40-LP1K-CM36": {
+  "ice40-lp1k-cm36": {
+    "model": "iCE40-LP1K-CM36",
     "arch": "ice40",
     "type": "lp",
     "size": "1k",
     "pack": "cm36"
   },
-  "iCE40-UL1K-CM36A": {
+  "ice40-ul1k-cm36a": {
+    "model": "iCE40-UL1K-CM36A",
     "arch": "ice40",
     "type": "ul",
     "size": "1k",
     "pack": "cm36a"
   },
-  "iCE40-LP384-CM49": {
+  "ice40-lp384-cm49": {
+    "model": "iCE40-LP384-CM49",
     "arch": "ice40",
     "type": "lp",
     "size": "384",
     "pack": "cm49"
   },
-  "iCE40-LP1K-CM49": {
+  "ice40-lp1k-cm49": {
+    "model": "iCE40-LP1K-CM49",
     "arch": "ice40",
     "type": "lp",
     "size": "1k",
     "pack": "cm49"
   },
-  "iCE40-LP1K-CM81": {
+  "ice40-lp1k-cm81": {
+    "model": "iCE40-LP1K-CM81",
     "arch": "ice40",
     "type": "lp",
     "size": "1k",
     "pack": "cm81"
   },
-  "iCE40-LP4K-CM81": {
+  "ice40-lp4k-cm81": {
+    "model": "iCE40-LP4K-CM81",
     "arch": "ice40",
     "type": "lp",
     "size": "8k",
     "pack": "cm81:4k"
   },
-  "iCE40-LP8K-CM81": {
+  "ice40-lp8k-cm81": {
+    "model": "iCE40-LP8K-CM81",
     "arch": "ice40",
     "type": "lp",
     "size": "8k",
     "pack": "cm81"
   },
-  "iCE40-LP1K-CM121": {
+  "ice40-lp1k-cm121": {
+    "model": "iCE40-LP1K-CM121",
     "arch": "ice40",
     "type": "lp",
     "size": "1k",
     "pack": "cm121"
   },
-  "iCE40-LP4K-CM121": {
+  "ice40-lp4k-cm121": {
+    "model": "iCE40-LP4K-CM121",
     "arch": "ice40",
     "type": "lp",
     "size": "8k",
     "pack": "cm121:4k"
   },
-  "iCE40-LP8K-CM121": {
+  "ice40-lp8k-cm121": {
+    "model": "iCE40-LP8K-CM121",
     "arch": "ice40",
     "type": "lp",
     "size": "8k",
     "pack": "cm121"
   },
-  "iCE40-LP4K-CM225": {
+  "ice40-lp4k-cm225": {
+    "model": "iCE40-LP4K-CM225",
     "arch": "ice40",
     "type": "lp",
     "size": "8k",
     "pack": "cm225:4k"
   },
-  "iCE40-LP8K-CM225": {
+  "ice40-lp8k-cm225": {
+    "model": "iCE40-LP8K-CM225",
     "arch": "ice40",
     "type": "lp",
     "size": "8k",
     "pack": "cm225"
   },
-  "iCE40-HX8K-CM225": {
+  "ice40-hx8k-cm225": {
+    "model": "iCE40-HX8K-CM225",
     "arch": "ice40",
     "type": "hx",
     "size": "8k",
     "pack": "cm225"
   },
-  "iCE40-LP384-QN32": {
+  "ice40-lp384-qn32": {
+    "model": "iCE40-LP384-QN32",
     "arch": "ice40",
     "type": "lp",
     "size": "384",
     "pack": "qn32"
   },
-  "iCE40-LP1K-QN84": {
+  "ice40-lp1k-qn84": {
+    "model": "iCE40-LP1K-QN84",
     "arch": "ice40",
     "type": "lp",
     "size": "1k",
     "pack": "qn84"
   },
-  "iCE40-LP1K-CB81": {
+  "ice40-lp1k-cb81": {
+    "model": "iCE40-LP1K-CB81",
     "arch": "ice40",
     "type": "lp",
     "size": "1k",
     "pack": "cb81"
   },
-  "iCE40-LP1K-CB121": {
+  "ice40-lp1k-cb121": {
+    "model": "iCE40-LP1K-CB121",
     "arch": "ice40",
     "type": "lp",
     "size": "1k",
     "pack": "cb121"
   },
-  "iCE40-HX1K-CB132": {
+  "ice40-hx1k-cb132": {
+    "model": "iCE40-HX1K-CB132",
     "arch": "ice40",
     "type": "hx",
     "size": "1k",
     "pack": "cb132"
   },
-  "iCE40-HX4K-CB132": {
+  "ice40-hx4k-cb132": {
+    "model": "iCE40-HX4K-CB132",
     "arch": "ice40",
     "type": "hx",
     "size": "8k",
     "pack": "cb132:4k"
   },
-  "iCE40-HX8K-CB132": {
+  "ice40-hx8k-cb132": {
+    "model": "iCE40-HX8K-CB132",
     "arch": "ice40",
     "type": "hx",
     "size": "8k",
     "pack": "cb132"
   },
-  "iCE40-HX1K-VQ100": {
+  "ice40-hx1k-vq100": {
+    "model": "iCE40-HX1K-VQ100",
     "arch": "ice40",
     "type": "hx",
     "size": "1k",
     "pack": "vq100"
   },
-  "iCE40-HX1K-TQ144": {
+  "ice40-hx1k-tq144": {
+    "model": "iCE40-HX1K-TQ144",
     "arch": "ice40",
     "type": "hx",
     "size": "1k",
     "pack": "tq144"
   },
-  "iCE40-HX4K-TQ144": {
+  "ice40-hx4k-tq144": {
+    "model": "iCE40-HX4K-TQ144",
     "arch": "ice40",
     "type": "hx",
     "size": "8k",
     "pack": "tq144:4k"
   },
-  "iCE40-HX4K-BG121": {
+  "ice40-hx4k-bg121": {
+    "model": "iCE40-HX4K-BG121",
     "arch": "ice40",
     "type": "hx",
     "size": "8k",
     "pack": "bg121:4k"
   },
-  "iCE40-HX8K-CT256": {
+  "ice40-hx8k-ct256": {
+    "model": "iCE40-HX8K-CT256",
     "arch": "ice40",
     "type": "hx",
     "size": "8k",
     "pack": "ct256"
   },
-  "iCE40-HX8K-BG121": {
+  "ice40-hx8k-bg121": {
+    "model": "iCE40-HX8K-BG121",
     "arch": "ice40",
     "type": "hx",
     "size": "8k",
     "pack": "bg121"
   },
-  "iCE40-UP5K-SG48": {
+  "ice40-up5k-sg48": {
+    "model": "iCE40-UP5K-SG48",
     "arch": "ice40",
     "type": "up",
     "size": "5k",
     "pack": "sg48"
   },
-  "iCE40-UP5K-UWG30": {
+  "ice40-up5k-uwg30": {
+    "model": "iCE40-UP5K-UWG30",
     "arch": "ice40",
     "type": "up",
     "size": "5k",
     "pack": "uwg30"
   },
-  "iCE40-U4K-UWG30": {
+  "ice40-u4k-uwg30": {
+    "model": "iCE40-U4K-UWG30",
     "arch": "ice40",
     "type": "u",
     "size": "4k",
     "pack": "uwg30"
   },
-  "iCE40-U4K-SG48": {
+  "ice40-u4k-sg48": {
+    "model": "iCE40-U4K-SG48",
     "arch": "ice40",
     "type": "u",
     "size": "4k",
     "pack": "sg48"
   },
-  "ECP5-LFE5U-12F-CABGA256": {
+  "ecp5-lfe5u-12f-cabga256": {
+    "model": "ECP5-LFE5U-12F-CABGA256",
     "arch": "ecp5",
     "type": "12k",
     "size": "12k",
     "pack": "CABGA256",
     "idcode": "0x21111043"
   },
-  "ECP5-LFE5U-12F-CABGA381": {
+  "ecp5-lfe5u-12f-cabga381": {
+    "model": "ECP5-LFE5U-12F-CABGA381",
     "arch": "ecp5",
     "type": "12k",
     "size": "12k",
     "pack": "CABGA381",
     "idcode": "0x21111043"
   },
-  "ECP5-LFE5U-12F-CSFBGA285": {
+  "ecp5-lfe5u-12f-csfbga285": {
+    "model": "ECP5-LFE5U-12F-CSFBGA285",
     "arch": "ecp5",
     "type": "12k",
     "size": "12k",
     "pack": "CSFBGA285",
     "idcode": "0x21111043"
   },
-  "ECP5-LFE5U-25F-CABGA256": {
+  "ecp5-lfe5u-25f-cabga256": {
+    "model": "ECP5-LFE5U-25F-CABGA256",
     "arch": "ecp5",
     "type": "25k",
     "size": "25k",
     "pack": "CABGA256"
   },
-  "ECP5-LFE5U-25F-CABGA381": {
+  "ecp5-lfe5u-25f-cabga381": {
+    "model": "ECP5-LFE5U-25F-CABGA381",
     "arch": "ecp5",
     "type": "25k",
     "size": "25k",
     "pack": "CABGA381"
   },
-  "ECP5-LFE5U-25F-CSFBGA285": {
+  "ecp5-lfe5u-25f-csfbga285": {
+    "model": "ECP5-LFE5U-25F-CSFBGA285",
     "arch": "ecp5",
     "type": "25k",
     "size": "25k",
     "pack": "CSFBGA285"
   },
-  "ECP5-LFE5U-45F-CABGA256": {
+  "ecp5-lfe5u-45f-cabga256": {
+    "model": "ECP5-LFE5U-45F-CABGA256",
     "arch": "ecp5",
     "type": "45k",
     "size": "45k",
     "pack": "CABGA256"
   },
-  "ECP5-LFE5U-45F-CABGA381": {
+  "ecp5-lfe5u-45f-cabga381": {
+    "model": "ECP5-LFE5U-45F-CABGA381",
     "arch": "ecp5",
     "type": "45k",
     "size": "45k",
     "pack": "CABGA381"
   },
-  "ECP5-LFE5U-45F-CABGA554": {
+  "ecp5-lfe5u-45f-cabga554": {
+    "model": "ECP5-LFE5U-45F-CABGA554",
     "arch": "ecp5",
     "type": "45k",
     "size": "45k",
     "pack": "CABGA554"
   },
-  "ECP5-LFE5U-45F-CSFBGA285": {
+  "ecp5-lfe5u-45f-csfbga285": {
+    "model": "ECP5-LFE5U-45F-CSFBGA285",
     "arch": "ecp5",
     "type": "45k",
     "size": "45k",
     "pack": "CSFBGA285"
   },
-  "ECP5-LFE5U-85F-CABGA381": {
+  "ecp5-lfe5u-85f-cabga381": {
+    "model": "ECP5-LFE5U-85F-CABGA381",
     "arch": "ecp5",
     "type": "85k",
     "size": "85k",
     "pack": "CABGA381"
   },
-  "ECP5-LFE5U-85F-CABGA554": {
+  "ecp5-lfe5u-85f-cabga554": {
+    "model": "ECP5-LFE5U-85F-CABGA554",
     "arch": "ecp5",
     "type": "85k",
     "size": "85k",
     "pack": "CABGA554"
   },
-  "ECP5-LFE5U-85F-CABGA756": {
+  "ecp5-lfe5u-85f-cabga756": {
+    "model": "ECP5-LFE5U-85F-CABGA756",
     "arch": "ecp5",
     "type": "85k",
     "size": "85k",
     "pack": "CABGA756"
   },
-  "ECP5-LFE5U-85F-CSFBGA285": {
+  "ecp5-lfe5u-85f-csfbga285": {
+    "model": "ECP5-LFE5U-85F-CSFBGA285",
     "arch": "ecp5",
     "type": "85k",
     "size": "85k",
     "pack": "CSFBGA285"
   },
-  "ECP5-LFE5UM-25F-CABGA256": {
+  "ecp5-lfe5um-25f-cabga256": {
+    "model": "ECP5-LFE5UM-25F-CABGA256",
     "arch": "ecp5",
     "type": "um-25k",
     "size": "25k",
     "pack": "CABGA256"
   },
-  "ECP5-LFE5UM-25F-CABGA381": {
+  "ecp5-lfe5um-25f-cabga381": {
+    "model": "ECP5-LFE5UM-25F-CABGA381",
     "arch": "ecp5",
     "type": "um-25k",
     "size": "25k",
     "pack": "CABGA381"
   },
-  "ECP5-LFE5UM-25F-CSFBGA285": {
+  "ecp5-lfe5um-25f-csfbga285": {
+    "model": "ECP5-LFE5UM-25F-CSFBGA285",
     "arch": "ecp5",
     "type": "um-25k",
     "size": "25k",
     "pack": "CSFBGA285"
   },
-  "ECP5-LFE5UM-45F-CABGA256": {
+  "ecp5-lfe5um-45f-cabga256": {
+    "model": "ECP5-LFE5UM-45F-CABGA256",
     "arch": "ecp5",
     "type": "um-45k",
     "size": "45k",
     "pack": "CABGA256"
   },
-  "ECP5-LFE5UM-45F-CABGA381": {
+  "ecp5-lfe5um-45f-cabga381": {
+    "model": "ECP5-LFE5UM-45F-CABGA381",
     "arch": "ecp5",
     "type": "um-45k",
     "size": "45k",
     "pack": "CABGA381"
   },
-  "ECP5-LFE5UM-45F-CABGA554": {
+  "ecp5-lfe5um-45f-cabga554": {
+    "model": "ECP5-LFE5UM-45F-CABGA554",
     "arch": "ecp5",
     "type": "um-45k",
     "size": "45k",
     "pack": "CABGA554"
   },
-  "ECP5-LFE5UM-45F-CSFBGA285": {
+  "ecp5-lfe5um-45f-csfbga285": {
+    "model": "ECP5-LFE5UM-45F-CSFBGA285",
     "arch": "ecp5",
     "type": "um-45k",
     "size": "45k",
     "pack": "CSFBGA285"
   },
-  "ECP5-LFE5UM-85F-CABGA381": {
+  "ecp5-lfe5um-85f-cabga381": {
+    "model": "ECP5-LFE5UM-85F-CABGA381",
     "arch": "ecp5",
     "type": "um-85k",
     "size": "85k",
     "pack": "CABGA381"
   },
-  "ECP5-LFE5UM-85F-CABGA554": {
+  "ecp5-lfe5um-85f-cabga554": {
+    "model": "ECP5-LFE5UM-85F-CABGA554",
     "arch": "ecp5",
     "type": "um-85k",
     "size": "85k",
     "pack": "CABGA554"
   },
-  "ECP5-LFE5UM-85F-CABGA756": {
+  "ecp5-lfe5um-85f-cabga756": {
+    "model": "ECP5-LFE5UM-85F-CABGA756",
     "arch": "ecp5",
     "type": "um-85k",
     "size": "85k",
     "pack": "CABGA756"
   },
-  "ECP5-LFE5UM-85F-CSFBGA285": {
+  "ecp5-lfe5um-85f-csfbga285": {
+    "model": "ECP5-LFE5UM-85F-CSFBGA285",
     "arch": "ecp5",
     "type": "um-85k",
     "size": "85k",
     "pack": "CSFBGA285"
   },
-  "ECP5-LFE5UM5G-25F-CABGA256": {
+  "ecp5-lfe5um5g-25f-cabga256": {
+    "model": "ECP5-LFE5UM5G-25F-CABGA256",
     "arch": "ecp5",
     "type": "um5g-25k",
     "size": "25k",
     "pack": "CABGA256"
   },
-  "ECP5-LFE5UM5G-25F-CABGA381": {
+  "ecp5-lfe5um5g-25f-cabga381": {
+    "model": "ECP5-LFE5UM5G-25F-CABGA381",
     "arch": "ecp5",
     "type": "um5g-25k",
     "size": "25k",
     "pack": "CABGA381"
   },
-  "ECP5-LFE5UM5G-25F-CSFBGA285": {
+  "ecp5-lfe5um5g-25f-csfbga285": {
+    "model": "ECP5-LFE5UM5G-25F-CSFBGA285",
     "arch": "ecp5",
     "type": "um5g-25k",
     "size": "25k",
     "pack": "CSFBGA285"
   },
-  "ECP5-LFE5UM5G-45F-CABGA256": {
+  "ecp5-lfe5um5g-45f-cabga256": {
+    "model": "ECP5-LFE5UM5G-45F-CABGA256",
     "arch": "ecp5",
     "type": "um5g-45k",
     "size": "45k",
     "pack": "CABGA256"
   },
-  "ECP5-LFE5UM5G-45F-CABGA381": {
+  "ecp5-lfe5um5g-45f-cabga381": {
+    "model": "ECP5-LFE5UM5G-45F-CABGA381",
     "arch": "ecp5",
     "type": "um5g-45k",
     "size": "45k",
     "pack": "CABGA381"
   },
-  "ECP5-LFE5UM5G-45F-CABGA554": {
+  "ecp5-lfe5um5g-45f-cabga554": {
+    "model": "ECP5-LFE5UM5G-45F-CABGA554",
     "arch": "ecp5",
     "type": "um5g-45k",
     "size": "45k",
     "pack": "CABGA554"
   },
-  "ECP5-LFE5UM5G-45F-CSFBGA285": {
+  "ecp5-lfe5um5g-45f-csfbga285": {
+    "model": "ECP5-LFE5UM5G-45F-CSFBGA285",
     "arch": "ecp5",
     "type": "um5g-45k",
     "size": "45k",
     "pack": "CSFBGA285"
   },
-  "ECP5-LFE5UM5G-85F-CABGA381": {
+  "ecp5-lfe5um5g-85f-cabga381": {
+    "model": "ECP5-LFE5UM5G-85F-CABGA381",
     "arch": "ecp5",
     "type": "um5g-85k",
     "size": "85k",
     "pack": "CABGA381"
   },
-  "ECP5-LFE5UM5G-85F-CABGA554": {
+  "ecp5-lfe5um5g-85f-cabga554": {
+    "model": "ECP5-LFE5UM5G-85F-CABGA554",
     "arch": "ecp5",
     "type": "um5g-85k",
     "size": "85k",
     "pack": "CABGA554"
   },
-  "ECP5-LFE5UM5G-85F-CABGA756": {
+  "ecp5-lfe5um5g-85f-cabga756": {
+    "model": "ECP5-LFE5UM5G-85F-CABGA756",
     "arch": "ecp5",
     "type": "um5g-85k",
     "size": "85k",
     "pack": "CABGA756"
   },
-  "ECP5-LFE5UM5G-85F-CSFBGA285": {
+  "ecp5-lfe5um5g-85f-csfbga285": {
+    "model": "ECP5-LFE5UM5G-85F-CSFBGA285",
     "arch": "ecp5",
     "type": "um5g-85k",
     "size": "85k",
     "pack": "CSFBGA285"
   },
-  "GW1N-LV1QN48C6/I5": {
+  "gw1n-lv1qn48c6-i5": {
+    "model": "GW1N-LV1QN48C6/I5",
     "arch": "gowin",
     "type": "gw1n-1",
     "size": "1k",
     "pack": "QN48"
   },
-  "GW1NZ-LV1QN48C6/I5": {
+  "gw1nz-lv1qn48c6-i5": {
+    "model": "GW1NZ-LV1QN48C6/I5",
     "arch": "gowin",
     "type": "gw1nz-1",
     "size": "1k",
     "pack": "QN48"
   },
-  "GW1NSR-LV4CQN48PC7/I6": {
+  "gw1nsr-lv4cqn48pc7-i6": {
+    "model": "GW1NSR-LV4CQN48PC7/I6",
     "arch": "gowin",
     "type": "gw1ns-4",
     "size": "4k",
     "pack": "QN48P"
   },
-  "GW1NR-LV9QN88PC6/I5": {
+  "gw1nr-lv9qn88pc6-i5": {
+    "model": "GW1NR-LV9QN88PC6/I5",
     "arch": "gowin",
     "type": "gw1n-9c",
     "size": "9k",
     "pack": "QN88P"
   },
-  "GW2AR-LV18QN88C8/I7": {
+  "gw2ar-lv18qn88c8-i7": {
+    "model": "GW2AR-LV18QN88C8/I7",
     "arch": "gowin",
     "type": "gw2a-18c",
     "size": "20k",

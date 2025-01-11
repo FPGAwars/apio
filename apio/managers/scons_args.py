@@ -15,7 +15,7 @@ from apio import util
 # -- Names of supported args. Unless specified otherwise, all args are optional
 # -- and have a string value. Values such as None, "", or False, which
 # -- evaluate to a boolean False are considered 'no value' and are ignored.
-ARG_FPGA_ID = "fpga"
+ARG_FPGA_MODEL = "model"
 ARG_FPGA_ARCH = "arch"
 ARG_FPGA_TYPE = "type"
 ARG_FPGA_SIZE = "size"
@@ -112,7 +112,7 @@ def process_arguments(
     # -- Construct the args dictionary with all supported args. Most of the
     # -- args also have the name of their exported scons variable.
     args: Dict[str, Arg] = {
-        ARG_FPGA_ID: Arg(ARG_FPGA_ID, "fpga_model"),
+        ARG_FPGA_MODEL: Arg(ARG_FPGA_MODEL, "fpga_model"),
         ARG_FPGA_ARCH: Arg(ARG_FPGA_ARCH, "fpga_arch"),
         ARG_FPGA_TYPE: Arg(ARG_FPGA_TYPE, "fpga_type"),
         ARG_FPGA_SIZE: Arg(ARG_FPGA_SIZE, "fpga_size"),
@@ -147,16 +147,16 @@ def process_arguments(
 
     # -- Get project's board. It should be prevalidated when loading the
     # -- project, but we sanity check it again just in case.
-
     board = project["board"]
     assert board is not None, "Scons got a None board."
     assert board in apio_ctx.boards, f"Unknown board name [{board}]"
 
-    # -- Read the FPGA name for the current board
-    fpga = apio_ctx.boards.get(board).get("fpga")
-    assert fpga, "process_arguments(): fpga assertion failed."
-    assert fpga in apio_ctx.fpgas, f"process_arguments(): unknown fpga {fpga} "
-    args[ARG_FPGA_ID].set(fpga)
+    # -- Get the fpga id from the board. This is a required field.
+    fpga_id = apio_ctx.boards.get(board).get("fpga")
+    assert fpga_id, "process_arguments(): fpga assertion failed."
+    assert (
+        fpga_id in apio_ctx.fpgas
+    ), f"process_arguments(): unknown fpga {fpga_id} "
 
     # -- Update the FPGA items according to the current board and fpga
     # -- Raise an exception in case of a contradiction
@@ -164,6 +164,7 @@ def process_arguments(
     # -- (The board determine the fpga and the size, but the user has
     # --  specificied a different size. It is a contradiction!)
     for arg, fpga_property_name in [
+        [args[ARG_FPGA_MODEL], "model"],
         [args[ARG_FPGA_ARCH], "arch"],
         [args[ARG_FPGA_TYPE], "type"],
         [args[ARG_FPGA_SIZE], "size"],
@@ -171,7 +172,7 @@ def process_arguments(
         [args[ARG_FPGA_IDCODE], "idcode"],
     ]:
         # -- Get the fpga property, if exits.
-        fpga_config = apio_ctx.fpgas.get(args[ARG_FPGA_ID].value)
+        fpga_config = apio_ctx.fpgas.get(fpga_id)
         fpga_property = fpga_config.get(fpga_property_name, None)
 
         if fpga_property:
