@@ -32,7 +32,13 @@ requires = [
     'scons==4.8.1',
     'semantic_version==2.10.0',
     'varname==0.13.5',
-    'wheel==0.45.1'
+    'wheel==0.45.1',
+    'blackiceprog==2.0.0',
+    'tinyfpgab==1.1.0',
+    'tinyprog==1.0.21',
+    'icefunprog==2.0.3',
+    'apycula==0.15',
+    'apollo_fpga==1.1.1'
 ]
 
 [tool.flit.sdist]

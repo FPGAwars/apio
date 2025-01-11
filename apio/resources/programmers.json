@@ -17,24 +17,20 @@
   },
   "litterbox": {
     "command": "sudo litterbox",
-    "args": "-c",
-    "pip_packages": [ "litterbox" ]
+    "args": "-c"
   },
   "blackiceprog": {
     "command": "black-iceprog",
-    "args": "${SERIAL_PORT}",
-    "pip_packages": [ "blackiceprog" ]
+    "args": "${SERIAL_PORT}"
   },
   "icefunprog": {
     "command": "icefunprog",
-    "args": "${SERIAL_PORT}",
-    "pip_packages": [ "icefunprog" ]
+    "args": "${SERIAL_PORT}"
   },
 
   "tinyfpgab": {
     "command": "tinyfpgab",
-    "args": "-c ${SERIAL_PORT} --program",
-    "pip_packages": [ "tinyfpgab" ]
+    "args": "-c ${SERIAL_PORT} --program"
   },
   "iCEburn": {
     "command": "iCEburn",
@@ -98,7 +94,6 @@
   },
   "apollo": {
     "command": "apollo",
-    "args": "configure",
-    "pip_packages": [ "apollo_fpga" ]
+    "args": "configure"
   }
 }

@@ -1,12 +1,3 @@
 {
-  "remote-config": "https://github.com/FPGAwars/apio/raw/develop/remote-config/apio-%V.json",
-
-  "pip_packages": {
-    "blackiceprog": ">=2.0.0,<3.0.0",
-    "litterbox": ">=0.2.1,<0.3.0",
-    "tinyfpgab": ">=1.1.0,<1.2.0",
-    "icefunprog": ">=2.0.3,<3.0.0",
-    "apycula": ">=0.12",
-    "apollo_fpga": ">=1.1.0"
-  }
+  "remote-config": "https://github.com/FPGAwars/apio/raw/develop/remote-config/apio-%V.json"
 }
