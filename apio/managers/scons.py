@@ -946,3 +946,4 @@ class SCons:
 
         # -- Return the exit code
         return result.exit_code
+
