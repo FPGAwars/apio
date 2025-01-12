@@ -12,7 +12,7 @@ import click
 from click import secho
 from apio.managers import installer
 from apio.apio_context import ApioContext, ApioContextScope
-from apio import pkg_util
+from apio.utils import pkg_util
 from apio.commands import options
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup
 

@@ -10,8 +10,7 @@ import re
 import sys
 from click import secho
 
-from apio.utils import util
-from apio import pkg_util
+from apio.utils import util, pkg_util
 from apio.apio_context import ApioContext
 from apio.managers import installer
 

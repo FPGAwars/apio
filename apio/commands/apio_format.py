@@ -15,10 +15,9 @@ from typing import Tuple, List
 import click
 from click import secho
 from apio.apio_context import ApioContext, ApioContextScope
-from apio import pkg_util
 from apio.commands import options
 from apio.managers import installer
-from apio.utils import util
+from apio.utils import util, pkg_util
 
 
 # ---------------------------

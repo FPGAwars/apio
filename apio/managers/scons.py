@@ -21,8 +21,7 @@ from functools import wraps
 import click
 from click import secho
 
-from apio.utils import util
-from apio import pkg_util
+from apio.utils import util, pkg_util
 from apio.managers.scons_args import process_arguments
 from apio.managers.system import System
 from apio.apio_context import ApioContext
