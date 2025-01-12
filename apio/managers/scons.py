@@ -812,11 +812,6 @@ class SCons:
             ["scons"] + ["-Q", scond_command] + debug_options + variables
         )
 
-        # For debugging. Print the scons command line in a forumat that is
-        # useful for the .vscode/launch.json scons debug target.
-        # import json
-        # print(json.dumps(scons_command))
-
         # -- An output filter that manupulates the scons stdout/err lines as
         # -- needed and write them to stdout.
         colors_enabled = Profile.read_color_prefernces()
