@@ -840,7 +840,6 @@
     }
   },
   "sipeed-tang-nano": {
-    "legacy_name": "Sipeed-Tang-Nano",
     "description": "Sipeed Tang Nano",
     "fpga": "gw1n-lv1qn48c6-i5",
     "programmer": {
@@ -853,7 +852,6 @@
     }
   },
   "sipeed-tang-nano-1k": {
-    "legacy_name": "Sipeed-Tang-Nano-1k",
     "description": "Sipeed Tang Nano 1k",
     "fpga": "gw1nz-lv1qn48c6-i5",
     "programmer": {
@@ -866,7 +864,6 @@
     }
   },
   "sipeed-tang-nano-4k": {
-    "legacy_name": "Sipeed-Tang-Nano-4k",
     "description": "Sipeed Tang Nano 4k",
     "fpga": "gw1nsr-lv4cqn48pc7-i6",
     "programmer": {
@@ -879,7 +876,6 @@
     }
   },
   "sipeed-tang-nano-9k": {
-    "legacy_name": "Sipeed-Tang-Nano-9k",
     "description": "Sipeed Tang Nano 9k",
     "fpga": "gw1nr-lv9qn88pc6-i5",
     "programmer": {
@@ -892,7 +888,6 @@
     }
   },
   "sipeed-tang-nano-20k": {
-    "legacy_name": "Sipeed-Tang-Nano-20k",
     "description": "Sipeed Tang Nano 20k",
     "fpga": "gw2ar-lv18qn88c8-i7",
     "programmer": {
