@@ -14,7 +14,7 @@ from typing import List
 import click
 from click import secho, style, echo
 from apio.apio_context import ApioContext, ApioContextScope
-from apio import util
+from apio.utils import util
 from apio.commands import options
 
 

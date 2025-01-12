@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from typing import List, Dict, Union
 import click
 from click import secho
-from apio import util
+from apio.utils import util
 from apio.profile import Profile
 
 

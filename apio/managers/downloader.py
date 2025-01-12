@@ -19,7 +19,7 @@ from math import ceil
 import requests
 import click
 from click import secho
-from apio import util
+from apio.utils import util
 
 # -- Timeout for geting a reponse from the server when downloading
 # -- a file (in seconds)

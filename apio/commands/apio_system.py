@@ -9,7 +9,7 @@
 
 import click
 from click import secho
-from apio import util
+from apio.utils import util
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.cmd_util import ApioGroup, ApioSubgroup
 

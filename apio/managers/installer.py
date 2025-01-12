@@ -12,10 +12,11 @@ from pathlib import Path
 from typing import Tuple
 import shutil
 from click import secho
-from apio import util, pkg_util
+from apio import pkg_util
 from apio.apio_context import ApioContext
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
+from apio.utils import util
 
 
 def _construct_package_download_url(

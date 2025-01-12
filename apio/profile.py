@@ -12,7 +12,7 @@ from pathlib import Path
 import click
 from click import secho
 import requests
-from apio import util
+from apio.utils import util
 
 # -- Template for remote config file url. The placeholder is for the
 # -- apio verison such as "0.9.6".

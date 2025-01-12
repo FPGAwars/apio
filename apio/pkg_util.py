@@ -16,7 +16,7 @@ import os
 import click
 from click import secho
 from apio.apio_context import ApioContext
-from apio import util
+from apio.utils import util
 
 
 @dataclass(frozen=True)

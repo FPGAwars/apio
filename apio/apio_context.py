@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Optional, Dict
 import click
 from click import secho
-from apio import util, env_options
+from apio import env_options
 from apio.profile import Profile
 from apio import jsonc
 from apio.managers.project import (
@@ -24,6 +24,7 @@ from apio.managers.project import (
     load_project_from_file,
     APIO_INI,
 )
+from apio.utils import util
 
 
 # ---------- RESOURCES

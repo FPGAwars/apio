@@ -16,7 +16,7 @@ from tarfile import open as tarfile_open
 from zipfile import ZipFile
 import click
 from click import secho
-from apio import util
+from apio.utils import util
 
 
 class ArchiveBase:

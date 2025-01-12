@@ -13,7 +13,7 @@ from pathlib import Path, PosixPath
 from dataclasses import dataclass
 from typing import Optional, List
 from click import secho
-from apio import util
+from apio.utils import util
 from apio.apio_context import ApioContext
 from apio.managers import installer
 
