@@ -26,6 +26,7 @@ class Entry:
     """Holds the values of a single board report line."""
 
     board: str
+    board_description: str
     fpga: str
     programmer: str
     fpga_arch: str
@@ -57,6 +58,7 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
     # -- Collect the boards info into a list of entires, one per board.
     entries: List[Entry] = []
     for board, board_info in apio_ctx.boards.items():
+        board_description = board_info.get("description", "")
         programmer = board_info.get("programmer", {}).get("type", "")
         fpga = board_info.get("fpga", "")
         fpga_info = apio_ctx.fpgas.get(fpga, {})
@@ -68,6 +70,7 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
         entries.append(
             Entry(
                 board,
+                board_description,
                 fpga,
                 programmer,
                 fpga_arch,
@@ -84,6 +87,9 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
     # -- Compute the columns widths.
     margin = 4
     board_len = max(len(x.board) for x in entries) + margin
+    board_description_len = (
+        max(len(x.board_description) for x in entries) + margin
+    )
     fpga_len = max(len(x.fpga) for x in entries) + margin
     programmer_len = max(len(x.programmer) for x in entries) + margin
     fpga_arch_len = max(len(x.fpga_arch) for x in entries) + margin
@@ -95,6 +101,8 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
     # -- Construct the title fields.
     parts = []
     parts.append(f"{'BOARD':<{board_len}}")
+    if verbose:
+        parts.append(f"{'DESCRIPTION':<{board_description_len}}")
     parts.append(f"{'ARCH':<{fpga_arch_len}}")
     if verbose:
         parts.append(f"{'FPGA':<{fpga_len}}")
@@ -115,6 +123,8 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
         # -- Construct the line fields.
         parts = []
         parts.append(style(f"{x.board:<{board_len}}", fg="cyan"))
+        if verbose:
+            parts.append(f"{x.board_description:<{board_description_len}}")
         parts.append(f"{x.fpga_arch:<{fpga_arch_len}}")
         if verbose:
             parts.append(f"{x.fpga:<{fpga_len}}")
