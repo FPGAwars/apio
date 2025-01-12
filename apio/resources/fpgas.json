@@ -1,3 +1,9 @@
+// Apio boards definitions.
+// These FPGAs are referred to from bords.json.
+//
+// Visual Studio Code note: set language model to 'jsonc' to avoid flagging 
+// comments as errors.
+
 {
   "ice40-lp1k-swg16tr": {
     "part_num": "ICE40LP1K-SWG16TR",

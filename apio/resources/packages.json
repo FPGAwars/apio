@@ -1,3 +1,9 @@
+// Definition of apio software packages. These are packages with various
+// data and utilities that are installed by apio. 
+//
+// Visual Studio Code note: set language model to 'jsonc' to avoid flagging 
+// comments as errors.
+
 {
   "examples": {
     "repository": {

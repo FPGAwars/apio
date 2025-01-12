@@ -1,3 +1,10 @@
+// List of FPGA boards programmers definition that are used by apio. 
+// The programmers are reffers to by the boards in boards.json which can
+// add additional arguments to the programmers' command lines.
+//
+// Visual Studio Code note: set language model to 'jsonc' to avoid flagging
+// comments as errors.
+
 {
   "iceprog": {
     "command": "iceprog",

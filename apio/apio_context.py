@@ -17,6 +17,7 @@ import click
 from click import secho
 from apio import util, env_options
 from apio.profile import Profile
+from apio import jsonc
 from apio.managers.project import (
     Project,
     ProjectResolver,
@@ -321,8 +322,8 @@ class ApioContext:
         try:
             with filepath.open(encoding="utf8") as file:
 
-                # -- Read the json file
-                data_json = file.read()
+                # -- Read the json with comments file
+                data_jsonc = file.read()
 
         # -- json file NOT FOUND! This is an apio system error
         # -- It should never ocurr unless there is a bug in the
@@ -343,6 +344,9 @@ class ApioContext:
 
             # -- Abort!
             sys.exit(1)
+
+        # -- Convert the jsonc to json by removing '//' comments.
+        data_json = jsonc.to_json(data_jsonc)
 
         # -- Parse the json format!
         try:

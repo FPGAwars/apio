@@ -1,3 +1,8 @@
+// Apio boards definitions.
+//
+// Visual Studio Code note: set language model to 'jsonc' to avoid flagging 
+// comments as errors.
+
 {
   "pi-sicle": {
     "description": "pi-sicle",
