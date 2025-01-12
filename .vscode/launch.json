@@ -7,12 +7,12 @@
             "request": "launch",
             "program": "${workspaceFolder}/apio/main.py",
             "args": [
-                "test",
-                "ledon_tb.v"
+                "system",
+                "info"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/test-examples/TB/alhambra-ii/icestudio/ledon"
+            "cwd": "${workspaceFolder}/test-examples/ice40/alhambra-ii/icestudio-ledon"
         },
         {
             "name": "Attach remote debugger",

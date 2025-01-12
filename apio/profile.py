@@ -99,8 +99,10 @@ class Profile:
 
         colors: bool = Profile.read_color_prefernces()
         click_context = click.get_current_context(silent=True)
+        # If colors are on, we don't write True but None, to use the default
+        # policy of emitting colors only if not piped out.
         if click_context:
-            click_context.color = colors
+            click_context.color = None if colors else False
 
     @staticmethod
     def read_color_prefernces(*, default=True) -> Union[bool, Any]:
