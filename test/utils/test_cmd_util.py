@@ -5,7 +5,7 @@ Tests of cmd_util.py
 import sys
 import pytest
 import click
-from apio.cmd_util import (
+from apio.utils.cmd_util import (
     ApioOption,
     check_at_most_one_param,
 )

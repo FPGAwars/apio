@@ -9,7 +9,7 @@
 
 from pathlib import Path
 import click
-from apio import cmd_util
+from apio.utils import cmd_util
 
 
 # The design is based on the idea here https://stackoverflow.com/a/77732441.

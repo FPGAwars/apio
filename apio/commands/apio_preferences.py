@@ -9,9 +9,9 @@
 
 import click
 from click import secho, echo, style
-from apio import cmd_util
+from apio.utils import cmd_util
 from apio.apio_context import ApioContext, ApioContextScope
-from apio.cmd_util import ApioGroup, ApioSubgroup
+from apio.utils.cmd_util import ApioGroup, ApioSubgroup
 
 # ---- apio preferences list
 

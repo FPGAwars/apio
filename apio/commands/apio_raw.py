@@ -12,9 +12,10 @@ import subprocess
 from typing import Tuple, List
 import click
 from click import secho
-from apio import pkg_util, cmd_util
+from apio import pkg_util
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import options
+from apio.utils import cmd_util
 from apio.utils.util import nameof
 from apio.managers import installer
 

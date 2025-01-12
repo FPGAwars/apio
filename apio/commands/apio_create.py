@@ -13,8 +13,7 @@ from apio.managers.project import (
     DEFAULT_TOP_MODULE,
     create_project_file,
 )
-from apio.utils import util
-from apio import cmd_util
+from apio.utils import util, cmd_util
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
 
