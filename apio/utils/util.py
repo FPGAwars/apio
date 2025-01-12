@@ -26,7 +26,7 @@ from click import secho
 from varname import argname
 from serial.tools.list_ports import comports
 import requests
-from apio import env_options
+from apio.utils import env_options
 
 # ----------------------------------------
 # -- Constants
