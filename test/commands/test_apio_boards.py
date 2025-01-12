@@ -10,7 +10,7 @@ CUSTOM_BOARDS = """
 {
   "my_custom_board": {
     "name": "My Custom Board v3.1c",
-    "fpga": "iCE40-UP5K-SG48",
+    "fpga": "ice40-up5k-sg48",
     "programmer": {
       "type": "iceprog"
     },

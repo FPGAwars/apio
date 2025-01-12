@@ -3,7 +3,7 @@
     "command": "iceprog",
     "args": "-d i:0x${VID}:0x${PID}:${FTDI_ID}"
   },
- "pi-sicle_loader": {
+  "pi-sicle-loader": {
     "command": "pi-sicle-loader",
     "args": "--flash"
   },
@@ -11,32 +11,19 @@
     "command": "iceprogduino",
     "args": ""
   },
-  "icoprog": {
-    "command": "export WIRINGPI_GPIOMEM=1; icoprog",
-    "args": "-p <"
-  },
-  "litterbox": {
-    "command": "sudo litterbox",
-    "args": "-c",
-    "pip_packages": [ "litterbox" ]
-  },
   "blackiceprog": {
     "command": "black-iceprog",
-    "args": "${SERIAL_PORT}",
-    "pip_packages": [ "blackiceprog" ]
+    "args": "${SERIAL_PORT}"
   },
   "icefunprog": {
     "command": "icefunprog",
-    "args": "${SERIAL_PORT}",
-    "pip_packages": [ "icefunprog" ]
+    "args": "${SERIAL_PORT}"
   },
-
   "tinyfpgab": {
     "command": "tinyfpgab",
-    "args": "-c ${SERIAL_PORT} --program",
-    "pip_packages": [ "tinyfpgab" ]
+    "args": "-c ${SERIAL_PORT} --program"
   },
-  "iCEburn": {
+  "iceburn": {
     "command": "iCEburn",
     "args": "-ew"
   },
@@ -64,41 +51,20 @@
     "command": "openFPGALoader",
     "args": ""
   },
- "openfpgaloader_ft2232": {
+  "openfpgaloader-ft2232": {
     "command": "openFPGALoader",
     "args": "-c ft2232 -v --file-type bin"
   },
-  "openfpgaloader_ft232": {
+  "openfpgaloader-ft232": {
     "command": "openFPGALoader",
     "args": "-c ft232 -v --file-type bin"
   },
-  "openfpgaloader_usb-blaster": {
+  "openfpgaloader-usb-blaster": {
     "command": "openFPGALoader",
     "args": "-c usb-blaster -v --file-type bin"
   },
-  "openfpgaloader_tangnano": {
-    "command": "openFPGALoader",
-    "args": "-b tangnano"
-  },
-  "openfpgaloader_tangnano1k": {
-    "command": "openFPGALoader",
-    "args": "-b tangnano1k -f"
-  },
-  "openfpgaloader_tangnano4k": {
-    "command": "openFPGALoader",
-    "args": "-b tangnano4k -f"
-  },
-  "openfpgaloader_tangnano9k": {
-    "command": "openFPGALoader",
-    "args": "-b tangnano9k -f"
-  },
-  "openfpgaloader_tangnano20k": {
-    "command": "openFPGALoader",
-    "args": "-b tangnano20k -f"
-  },
   "apollo": {
     "command": "apollo",
-    "args": "configure",
-    "pip_packages": [ "apollo_fpga" ]
+    "args": "configure"
   }
 }

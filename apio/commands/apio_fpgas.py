@@ -9,60 +9,113 @@
 
 import sys
 from pathlib import Path
+from dataclasses import dataclass
+from typing import List
 import click
-from click import secho
+from click import secho, style, echo
 from apio.apio_context import ApioContext, ApioContextScope
 from apio import util
 from apio.commands import options
 
 
-def list_fpgas(apio_ctx: ApioContext):
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
+@dataclass(frozen=True)
+class Entry:
+    """A class to hold the field of a single line of the report."""
+
+    fpga: str
+    fpga_arch: str
+    fpga_part_num: str
+    fpga_size: str
+    fpga_type: str
+    fpga_pack: str
+
+    def sort_key(self):
+        """A kery for sorting entries. Primary key is architecture, by
+        our prefer order, and secondary is fpga id."""
+        # -- Prefer arch order
+        archs = ["ice40", "ecp5", "gowin"]
+        # -- Primary key
+        primary_key = (
+            archs.index(self.fpga_arch)
+            if self.fpga_arch in archs
+            else len(archs)
+        )
+        # -- Secondary key is board name.
+        return (primary_key, self.fpga.lower())
+
+
+# pylint: disable=too-many-locals
+def list_fpgas(apio_ctx: ApioContext, verbose: bool):
     """Prints all the available FPGA definitions."""
 
-    # Get terminal configuration. It will help us to adapt the format
-    # to a terminal vs a pipe.
-    config: util.TerminalConfig = util.get_terminal_config()
-
-    if config.terminal_mode():
-        # -- Horizontal line across the terminal,
-        seperator_line = "─" * config.terminal_width
-
-        # -- Table title
-        fpga_header = click.style(f"{'  FPGA':34}", fg="cyan", bold=True)
-        title = (
-            f"{fpga_header} {'Arch':<10} {'Type':<13}" f" {'Size':<8} {'Pack'}"
+    # -- Collect all entries.
+    entries: List[Entry] = []
+    for fpga, fpga_info in apio_ctx.fpgas.items():
+        # -- Construct the Entry for this fpga.
+        fpga_arch = fpga_info.get("arch", "")
+        fpga_part_num = fpga_info.get("part_num", "")
+        fpga_size = fpga_info.get("size", "")
+        fpga_type = fpga_info.get("type", "")
+        fpga_pack = fpga_info.get("pack", "")
+        # -- Append to the list
+        entries.append(
+            Entry(
+                fpga,
+                fpga_arch,
+                fpga_part_num,
+                fpga_size,
+                fpga_type,
+                fpga_pack,
+            )
         )
 
-        # -- Print the table header
-        secho(seperator_line)
-        secho(title)
-        secho(seperator_line)
+    # -- Sort boards by case insensitive board namd.
+    entries.sort(key=lambda x: x.sort_key())
 
-    # -- Print all the fpgas!
-    for fpga in apio_ctx.fpgas:
+    # -- Compute field lengths
+    margin = 4
+    fpga_len = max(len(x.fpga) for x in entries) + margin
+    fpga_arch_len = max(len(x.fpga_arch) for x in entries) + margin
+    fpga_part_num_len = max(len(x.fpga_part_num) for x in entries) + margin
+    fpga_size_len = max(len(x.fpga_size) for x in entries) + margin
+    fpga_type_len = max(len(x.fpga_type) for x in entries) + margin
+    fpga_pack_len = max(len(x.fpga_pack) for x in entries) + margin
 
-        # -- Get information about the FPGA
-        arch = apio_ctx.fpgas[fpga]["arch"]
-        _type = apio_ctx.fpgas[fpga]["type"]
-        size = apio_ctx.fpgas[fpga]["size"]
-        pack = apio_ctx.fpgas[fpga]["pack"]
+    # -- Construct the title fields.
+    parts = []
+    parts.append(f"{'FPGA ID':<{fpga_len}}")
+    parts.append(f"{'AECH':<{fpga_arch_len}}")
+    parts.append(f"{'PART NUMBER':<{fpga_part_num_len}}")
+    parts.append(f"{'SIZE':<{fpga_size_len}}")
+    if verbose:
+        parts.append(f"{'TYPE':<{fpga_type_len}}")
+        parts.append(f"{'PACKAGE':<{fpga_pack_len}}")
 
-        # -- Print the item with information
-        data_str = f"{arch:<10} {_type:<13} {size:<8} {pack}"
-        if config.terminal_mode():
-            # -- For terminal, print the FPGA name in color.
-            fpga_str = click.style(f"{fpga:32}", fg="cyan", bold=True)
-            item = f"{fpga_str} {data_str}"
-            secho(item)
-        else:
-            # -- For pipe, no colors and no bullet point.
-            secho(f"{fpga:32} {data_str}")
+    # -- Print the title
+    secho("".join(parts), fg="cyan", bold="True")
 
-    # -- Print the Footer
-    if config.terminal_mode():
-        secho(seperator_line)
+    # -- Iterate and print the fpga entries in the list.
+    for x in entries:
 
+        # -- Construct the fpga fields.
+        parts = []
+        parts.append(style(f"{x.fpga:<{fpga_len}}", fg="cyan"))
+        parts.append(f"{x.fpga_arch:<{fpga_arch_len}}")
+        parts.append(f"{x.fpga_part_num:<{fpga_part_num_len}}")
+        parts.append(f"{x.fpga_size:<{fpga_size_len}}")
+        if verbose:
+            parts.append(f"{x.fpga_type:<{fpga_type_len}}")
+            parts.append(f"{x.fpga_pack:<{fpga_pack_len}}")
+
+        # -- Print the fpga line.
+        echo("".join(parts))
+
+    # -- Show summary.
     secho(f"Total of {util.plurality(apio_ctx.fpgas, 'fpga')}")
+    if not verbose:
+        secho("Run 'apio fpgas -v' for additional columns.", fg="yellow")
 
 
 # ---------------------------
@@ -78,7 +131,8 @@ fpgas.json file.
 
 \b
 Examples:
-  apio fpgas               # List all fpgas
+  apio fpgas               # List all fpgas.
+  apio fpgas -v            # List with extra columns.
   apio fpgas | grep gowin  # Filter FPGA results.
 
 """
@@ -89,11 +143,11 @@ Examples:
     short_help="List available FPGA definitions.",
     help=APIO_FPGAS_HELP,
 )
-@click.pass_context
+@options.verbose_option
 @options.project_dir_option
 def cli(
-    _: click.Context,
     # Options
+    verbose: bool,
     project_dir: Path,
 ):
     """Implements the 'fpgas' command which lists available fpga
@@ -106,5 +160,5 @@ def cli(
         scope=ApioContextScope.PROJECT_OPTIONAL, project_dir_arg=project_dir
     )
 
-    list_fpgas(apio_ctx)
+    list_fpgas(apio_ctx, verbose)
     sys.exit(0)

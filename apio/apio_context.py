@@ -103,6 +103,9 @@ class ApioContext:
 
         """
 
+        # -- Set color on/off based on the option profile.json.
+        Profile.apply_color_preferences()
+
         # -- Inform as soon as possible about the list of apio env options
         # -- that modify its default behavior.
         defined_env_options = env_options.get_defined()
@@ -152,8 +155,6 @@ class ApioContext:
         self.profile = Profile(
             self.home_dir, self.distribution["remote-config"]
         )
-
-        self.profile.apply_color_preferences()
 
         # -- Read the platforms information.
         self.platforms = self._load_resource(PLATFORMS_JSON)

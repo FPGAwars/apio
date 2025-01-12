@@ -28,7 +28,7 @@ def test_fpgas_ok(apio_runner: ApioRunner):
         # -- Note: pytest sees the piped version of the command's output.
         # -- Run 'apio fpgas' | cat' to reproduce it.
         assert "Loading custom 'fpgas.json'" not in result.output
-        assert "iCE40-HX4K-TQ144" in result.output
+        assert "ice40-hx4k-tq144" in result.output
         assert "my_custom_fpga" not in result.output
 
 
@@ -50,6 +50,6 @@ def test_custom_fpga(apio_runner: ApioRunner):
         # -- Note: pytest sees the piped version of the command's output.
         # -- Run 'apio build' | cat' to reproduce it.
         assert "Loading custom 'fpgas.json'" in result.output
-        assert "iCE40-HX4K-TQ144" not in result.output
+        assert "ice40-hx4k-tq144" not in result.output
         assert "my_custom_fpga" in result.output
         assert "Total of 1 fpga" in result.output

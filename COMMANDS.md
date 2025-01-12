@@ -115,10 +115,12 @@ Usage: apio boards [OPTIONS]
   directory, which will override Apio’s default 'boards.json' file.
 
   Examples:
-    apio boards                   # List all boards
-    apio boards | grep ecp5       # Filter boards results
+    apio boards                   # List all boards.
+    apio boards -v                # List with extra columns..
+    apio boards | grep ecp5       # Filter boards results.
 
 Options:
+  -v, --verbose           Show detailed output.
   -p, --project-dir path  Set the root directory for the project.
   -h, --help              Show this message and exit.
 ```
@@ -528,10 +530,12 @@ Usage: apio fpgas [OPTIONS]
   fpgas.json file.
 
   Examples:
-    apio fpgas               # List all fpgas
+    apio fpgas               # List all fpgas.
+    apio fpgas -v            # List with extra columns.
     apio fpgas | grep gowin  # Filter FPGA results.
 
 Options:
+  -v, --verbose           Show detailed output.
   -p, --project-dir path  Set the root directory for the project.
   -h, --help              Show this message and exit.
 ```

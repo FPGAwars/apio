@@ -9,93 +9,141 @@
 
 import sys
 from pathlib import Path
+from dataclasses import dataclass
+from typing import List
 import click
-from click import secho
+from click import secho, style
 from apio.apio_context import ApioContext, ApioContextScope
 from apio import util
 from apio.commands import options
 
 
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
+# pylint: disable=too-many-instance-attributes
+@dataclass(frozen=True)
+class Entry:
+    """Holds the values of a single board report line."""
+
+    board: str
+    board_description: str
+    fpga: str
+    programmer: str
+    fpga_arch: str
+    fpga_part_num: str
+    fpga_size: str
+    fpga_type: str
+    fpga_pack: str
+
+    def sort_key(self):
+        """Returns a key for sorting entiries. Primary key is the architecture
+        by our prefered order, secondary key is board id."""
+        # -- Prefer arch order
+        archs = ["ice40", "ecp5", "gowin"]
+        # -- Primary key
+        primary_key = (
+            archs.index(self.fpga_arch)
+            if self.fpga_arch in archs
+            else len(archs)
+        )
+        # -- Secondary key is board name.
+        return (primary_key, self.board.lower())
+
+
 # R0914: Too many local variables (17/15)
 # pylint: disable=R0914
-def list_boards(apio_ctx: ApioContext):
+def list_boards(apio_ctx: ApioContext, verbose: bool):
     """Prints all the available board definitions."""
-    # Get terminal configuration. It will help us to adapt the format
-    # to a terminal vs a pipe.
-    config: util.TerminalConfig = util.get_terminal_config()
 
-    # -- Table title
-    title = (
-        click.style("Board", fg="cyan", bold=True)
-        + " (FPGA, Arch, Type, Size, Pack)"
-    )
-
-    # -- Print the table header for terminal mode.
-    if config.terminal_mode():
-        title = (
-            click.style("Board", fg="cyan", bold=True)
-            + " (FPGA, Arch, Type, Size, Pack)"
+    # -- Collect the boards info into a list of entires, one per board.
+    entries: List[Entry] = []
+    for board, board_info in apio_ctx.boards.items():
+        board_description = board_info.get("description", "")
+        programmer = board_info.get("programmer", {}).get("type", "")
+        fpga = board_info.get("fpga", "")
+        fpga_info = apio_ctx.fpgas.get(fpga, {})
+        fpga_arch = fpga_info.get("arch", "")
+        fpga_part_num = fpga_info.get("part_num", "")
+        fpga_size = fpga_info.get("size", "")
+        fpga_type = fpga_info.get("type", "")
+        fpga_pack = fpga_info.get("pack", "")
+        entries.append(
+            Entry(
+                board,
+                board_description,
+                fpga,
+                programmer,
+                fpga_arch,
+                fpga_part_num,
+                fpga_size,
+                fpga_type,
+                fpga_pack,
+            )
         )
-        # -- Horizontal line across the terminal.
-        seperator_line = "─" * config.terminal_width
-        secho(seperator_line)
-        secho(title)
-        secho(seperator_line)
 
-    # -- Sort boards names by case insentive alphabetical order.
-    board_names = list(apio_ctx.boards.keys())
-    board_names.sort(key=lambda x: x.lower())
+    # -- Sort boards by case insensitive board namd.
+    entries.sort(key=lambda x: x.sort_key())
 
-    # -- For a pipe, determine the max example name length.
-    max_board_name_len = max(len(x) for x in board_names)
+    # -- Compute the columns widths.
+    margin = 4
+    board_len = max(len(x.board) for x in entries) + margin
+    board_description_len = (
+        max(len(x.board_description) for x in entries) + margin
+    )
+    fpga_len = max(len(x.fpga) for x in entries) + margin
+    programmer_len = max(len(x.programmer) for x in entries) + margin
+    fpga_arch_len = max(len(x.fpga_arch) for x in entries) + margin
+    fpga_part_num_len = max(len(x.fpga_part_num) for x in entries) + margin
+    fpga_type_len = max(len(x.fpga_type) for x in entries) + margin
+    fpga_size_len = max(len(x.fpga_size) for x in entries) + margin
+    fpga_pack_len = max(len(x.fpga_pack) for x in entries) + margin
+
+    # -- Construct the title fields.
+    parts = []
+    parts.append(f"{'BOARD':<{board_len}}")
+    if verbose:
+        parts.append(f"{'DESCRIPTION':<{board_description_len}}")
+    parts.append(f"{'ARCH':<{fpga_arch_len}}")
+    if verbose:
+        parts.append(f"{'FPGA':<{fpga_len}}")
+    parts.append(f"{'PART NUMBER':<{fpga_part_num_len}}")
+    if verbose:
+        parts.append(f"{'TYPE':<{fpga_type_len}}")
+    parts.append(f"{'SIZE':<{fpga_size_len}}")
+    if verbose:
+        parts.append(f"{'PACK':<{fpga_pack_len}}")
+    parts.append(f"{'PROGRAMMER':<{programmer_len}}")
+
+    # -- Show the title line.
+    secho("".join(parts), fg="cyan", bold=True)
 
     # -- Print all the boards!
-    for board in board_names:
+    for x in entries:
 
-        # -- Generate the report for a terminal. Color and multi lines
-        # -- are ok.
+        # -- Construct the line fields.
+        parts = []
+        parts.append(style(f"{x.board:<{board_len}}", fg="cyan"))
+        if verbose:
+            parts.append(f"{x.board_description:<{board_description_len}}")
+        parts.append(f"{x.fpga_arch:<{fpga_arch_len}}")
+        if verbose:
+            parts.append(f"{x.fpga:<{fpga_len}}")
+        parts.append(f"{x.fpga_part_num:<{fpga_part_num_len}}")
+        if verbose:
+            parts.append(f"{x.fpga_type:<{fpga_type_len}}")
+        parts.append(f"{x.fpga_size:<{fpga_size_len}}")
+        if verbose:
+            parts.append(f"{x.fpga_pack:<{fpga_pack_len}}")
+        parts.append(f"{x.programmer:<{programmer_len}}")
 
-        # -- Get board FPGA long name
-        fpga = apio_ctx.boards[board]["fpga"]
+        # -- Print the line
+        secho("".join(parts))
 
-        # -- Get information about the FPGA
-        arch = apio_ctx.fpgas[fpga]["arch"]
-        type_ = apio_ctx.fpgas[fpga]["type"]
-        size = apio_ctx.fpgas[fpga]["size"]
-        pack = apio_ctx.fpgas[fpga]["pack"]
+    # -- Show the summary.
 
-        # -- Print the item with information
-        # -- Print the Board in a differnt color
-
-        item_fpga = f"(FPGA:{fpga}, {arch}, {type_}, {size}, {pack})"
-
-        if config.terminal_mode():
-            # -- Board name with a bullet point and color
-            board_str = click.style(board, fg="cyan", bold=True)
-            item_board = f"{board_str}"
-
-            # -- Item in one line
-            one_line_item = f"{item_board}  {item_fpga}"
-
-            # -- If there is enough space, print in one line
-            if len(one_line_item) <= config.terminal_width:
-                secho(one_line_item)
-
-            # -- Not enough space: Print it in two separate lines
-            else:
-                two_lines_item = f"{item_board}\n      {item_fpga}"
-                secho(two_lines_item)
-
-        else:
-            # -- Generate the report for a pipe. Single line, no color, no
-            # -- bullet points.
-            secho(f"{board:<{max_board_name_len}} |  {item_fpga}")
-
-    # -- Print the footer.
-    if config.terminal_mode():
-        secho(seperator_line)
-
-    secho(f"Total of {util.plurality(apio_ctx.boards, 'board')}")
+    secho(f"Total of {util.plurality(entries, 'board')}")
+    if not verbose:
+        secho("Run 'apio boards -v' for additional columns.", fg="yellow")
 
 
 # ---------------------------
@@ -110,8 +158,9 @@ project directory, which will override Apio’s default 'boards.json' file.
 
 \b
 Examples:
-  apio boards                   # List all boards
-  apio boards | grep ecp5       # Filter boards results
+  apio boards                   # List all boards.
+  apio boards -v                # List with extra columns..
+  apio boards | grep ecp5       # Filter boards results.
 
 """
 
@@ -121,11 +170,11 @@ Examples:
     short_help="List available board definitions.",
     help=APIO_BOARDS_HELP,
 )
-@click.pass_context
+@options.verbose_option
 @options.project_dir_option
 def cli(
-    _: click.Context,
     # Options
+    verbose: bool,
     project_dir: Path,
 ):
     """Implements the 'boards' command which lists available board
@@ -138,5 +187,5 @@ def cli(
         project_dir_arg=project_dir,
     )
 
-    list_boards(apio_ctx)
+    list_boards(apio_ctx, verbose)
     sys.exit(0)

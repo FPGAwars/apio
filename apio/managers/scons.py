@@ -18,10 +18,8 @@ import shutil
 from typing import List
 from functools import wraps
 
-import importlib.metadata
 import click
 from click import secho
-import semantic_version
 
 from apio import util
 from apio import pkg_util
@@ -268,14 +266,6 @@ class SCons:
         # -- USB id  (vid, pid)
         board_info = self.apio_ctx.boards[board]
 
-        # -- Check platform. If the platform is not compatible
-        # -- with the board an exception is raised
-        self._check_platform(board_info, self.apio_ctx.platform_id)
-
-        # -- Check pip packages. If the corresponding pip_packages
-        # -- is not installed, an exception is raised
-        self._check_pip_packages(board_info)
-
         # -- pylint: disable=fixme
         # -- TODO: abstract this better in boards.json. For example, add a
         # -- property "darwin-no-detection".
@@ -371,116 +361,33 @@ class SCons:
         assert "$SOURCE" in programmer, programmer
         return programmer
 
-    @staticmethod
-    def _check_platform(board_info: dict, actual_platform_id: str) -> None:
-        """Check if the current board is compatible with the
-        current platform. There are some boards, like icoboard,
-        that only runs in the platform linux/arm7
-        * INPUT:
-          * board_info: Dictionary with board info from boards.json.
+    # @staticmethod
+    # def _check_platform(board_info: dict, actual_platform_id: str) -> None:
+    #     """Check if the current board is compatible with the
+    #     current platform. There are some boards, like icoboard,
+    #     that only runs in the platform linux/arm7
+    #     * INPUT:
+    #       * board_info: Dictionary with board info from boards.json.
 
-        Only in case the platform is not compatible with the board,
-        and exception is raised
-        """
+    #     Only in case the platform is not compatible with the board,
+    #     and exception is raised
+    #     """
 
-        # -- Normal case: the board does not have a special platform
-        # -- (it can be used in many platforms)
-        if "platform" not in board_info:
-            return
+    #     # -- Normal case: the board does not have a special platform
+    #     # -- (it can be used in many platforms)
+    #     if "platform" not in board_info:
+    #         return
 
-        # -- Get the platform were the board should be used
-        required_platform_id = board_info["platform"]
+    #     # -- Get the platform were the board should be used
+    #     required_platform_id = board_info["platform"]
 
-        # -- Check if they are not compatible!
-        if actual_platform_id != required_platform_id:
+    #     # -- Check if they are not compatible!
+    #     if actual_platform_id != required_platform_id:
 
-            raise ValueError(
-                "Board is restricted to platform "
-                f"'{required_platform_id}' but '{actual_platform_id}' found."
-            )
-
-    def _check_pip_packages(self, board_info):
-        """Check if the corresponding pip package with the programmer
-        has already been installed. In the case of an apio package
-        it is just ignored
-
-        * INPUT:
-          * board_info: Dictionary with board info from boards.json.
-        """
-
-        # -- Get the programmer object for the given board
-        prog_info = board_info["programmer"]
-
-        # -- Get the programmer type
-        prog_type = prog_info["type"]
-
-        # -- Get the programmer information
-        # -- Command, arguments, pip package, etc...
-        prog_data = self.apio_ctx.programmers[prog_type]
-
-        # -- Get all the pip packages from the distribution
-        all_pip_packages = self.apio_ctx.distribution["pip_packages"]
-
-        # -- Get the name of the pip package of the current programmer,
-        # -- if any (The programmer maybe in a pip package or an apio package)
-        pip_packages = prog_data.get("pip_packages") or []
-
-        # -- Check if pip package was installed
-        # -- In case of an apio package it is just ignored
-        for pip_pkg in pip_packages:
-
-            # -- Get legacy string (Ex. ">=1.0.21,<1.1.0")
-            legacy_str = all_pip_packages[pip_pkg]
-
-            # -- Convert it into a legacy object
-            spec = semantic_version.Spec(legacy_str)
-
-            # -- Get package version
-            try:
-                pkg_version = importlib.metadata.version(pip_pkg)
-
-            except importlib.metadata.PackageNotFoundError as exc:
-                secho(f"Error: '{pip_pkg}' is not installed", fg="red")
-                secho(
-                    "Please run:\n" f"   pip install -U apio[{pip_pkg}]",
-                    fg="yellow",
-                )
-                raise ValueError("Package not installed") from exc
-
-            # -- Check pip_package version
-            version = semantic_version.Version(pkg_version)
-
-            # -- Version does not match!
-            if not spec.match(version):
-                secho(
-                    f"Error: '{pip_pkg}' "
-                    + f"version ({version}) "
-                    + f"does not match {spec}",
-                    fg="red",
-                )
-                secho(
-                    "Please run:\n" f"   pip install -U apio[{pip_pkg}]",
-                    fg="yellow",
-                )
-                raise ValueError("Incorrect version number")
-
-            # -- Check pip_package itself
-            try:
-                __import__(pip_pkg)
-
-            # -- Exit if a package is not working
-            except ModuleNotFoundError as exc:
-
-                # -- Get a string with the python version
-                python_version = util.get_python_version()
-
-                # -- Construct the error message
-                message = f"'{pip_pkg}' not compatible with "
-                message += f"Python {python_version}"
-                message += f"\n       {exc}"
-
-                # -- Raise an exception
-                raise ValueError(message) from exc
+    #         raise ValueError(
+    #             "Board is restricted to platform "
+    #             f"'{required_platform_id}' but '{actual_platform_id}' found."
+    #         )
 
     def _serialize_programmer(
         self, board_info: dict, sram: bool, flash: bool
