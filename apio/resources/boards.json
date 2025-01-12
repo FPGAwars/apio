@@ -844,7 +844,8 @@
     "description": "Sipeed Tang Nano",
     "fpga": "gw1n-lv1qn48c6-i5",
     "programmer": {
-      "type": "openfpgaloader-tang-nano"
+      "type": "openfpgaloader",
+      "extra_args": "-b tangnano"
     },
     "usb": {
       "vid": "0403",
@@ -856,7 +857,8 @@
     "description": "Sipeed Tang Nano 1k",
     "fpga": "gw1nz-lv1qn48c6-i5",
     "programmer": {
-      "type": "openfpgaloader-tang-nano-1k"
+      "type": "openfpgaloader",
+      "extra_args": "-b tangnano1k -f"
     },
     "usb": {
       "vid": "0403",
@@ -868,7 +870,8 @@
     "description": "Sipeed Tang Nano 4k",
     "fpga": "gw1nsr-lv4cqn48pc7-i6",
     "programmer": {
-      "type": "openfpgaloader-tang-nano-4k"
+      "type": "openfpgaloader",
+      "extra_args": "-b tangnano4k -f"
     },
     "usb": {
       "vid": "0403",
@@ -880,7 +883,8 @@
     "description": "Sipeed Tang Nano 9k",
     "fpga": "gw1nr-lv9qn88pc6-i5",
     "programmer": {
-      "type": "openfpgaloader-tang-nano-9k"
+      "type": "openfpgaloader",
+      "extra_args": "-b tangnano9k -f"
     },
     "usb": {
       "vid": "0403",
@@ -892,7 +896,8 @@
     "description": "Sipeed Tang Nano 20k",
     "fpga": "gw2ar-lv18qn88c8-i7",
     "programmer": {
-      "type": "openfpgaloader-tang-nano-20k"
+      "type": "openfpgaloader",
+      "extra_args": "-b tangnano20k -f"
     },
     "usb": {
       "vid": "0403",
