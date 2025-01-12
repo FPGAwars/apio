@@ -102,12 +102,25 @@
             "format": 10
           },
           "position": {
-            "x": 920,
-            "y": 112
+            "x": 840,
+            "y": 56
           },
           "size": {
             "width": 264,
             "height": 128
+          }
+        },
+        {
+          "id": "7da5a2ae-df78-4cd3-b0f6-ca4e1ecc7866",
+          "type": "basic.constant",
+          "data": {
+            "name": "LoadROM",
+            "value": "1",
+            "local": false
+          },
+          "position": {
+            "x": 1144,
+            "y": 184
           }
         },
         {
@@ -284,6 +297,16 @@
             "port": "59095723-3090-4699-b192-76cc465ab5b1"
           },
           "size": 8
+        },
+        {
+          "source": {
+            "block": "7da5a2ae-df78-4cd3-b0f6-ca4e1ecc7866",
+            "port": "constant-out"
+          },
+          "target": {
+            "block": "0af214eb-b035-424a-990b-6c5abf7fc06e",
+            "port": "373e2da9-a042-42e7-80dc-eb5970bc5787"
+          }
         }
       ]
     }
@@ -2577,6 +2600,19 @@
               }
             },
             {
+              "id": "373e2da9-a042-42e7-80dc-eb5970bc5787",
+              "type": "basic.constant",
+              "data": {
+                "name": "LoadROM",
+                "value": "1",
+                "local": false
+              },
+              "position": {
+                "x": 1672,
+                "y": 600
+              }
+            },
+            {
               "id": "7b4dbf66-5445-4e07-8a85-d2a39503c588",
               "type": "f1cffe0819474c7b4c36893b94dfd3817e260223",
               "position": {
@@ -3388,6 +3424,22 @@
                 "port": "8783fd57-b5ab-4d9f-9ac5-42695f31426f"
               },
               "vertices": []
+            },
+            {
+              "source": {
+                "block": "373e2da9-a042-42e7-80dc-eb5970bc5787",
+                "port": "constant-out"
+              },
+              "target": {
+                "block": "41705626-0707-409a-8299-5183fdae5498",
+                "port": "619ce266-7179-4c61-824d-a1280aa6118a"
+              },
+              "vertices": [
+                {
+                  "x": 1672,
+                  "y": 704
+                }
+              ]
             }
           ]
         }
@@ -5437,12 +5489,25 @@
                 "format": 10
               },
               "position": {
-                "x": 1192,
-                "y": -24
+                "x": 1168,
+                "y": -80
               },
               "size": {
                 "width": 128,
                 "height": 96
+              }
+            },
+            {
+              "id": "619ce266-7179-4c61-824d-a1280aa6118a",
+              "type": "basic.constant",
+              "data": {
+                "name": "",
+                "value": "0",
+                "local": false
+              },
+              "position": {
+                "x": 1360,
+                "y": -40
               }
             },
             {
@@ -5613,7 +5678,8 @@
               },
               "target": {
                 "block": "244d243e-2efb-453b-a899-d664746bdc63",
-                "port": "8b0a8a99-fd6c-41b8-826a-52f35e572df2"
+                "port": "8b0a8a99-fd6c-41b8-826a-52f35e572df2",
+                "size": 32
               },
               "vertices": [],
               "size": 32
@@ -5621,7 +5687,8 @@
             {
               "source": {
                 "block": "ef1919e6-115c-4414-b8ae-4e23bd8761b6",
-                "port": "8f148bce-756b-4117-84c1-67526a839881"
+                "port": "8f148bce-756b-4117-84c1-67526a839881",
+                "size": 32
               },
               "target": {
                 "block": "9c25b52c-7567-45da-86ae-5e3562e1b829",
@@ -5649,7 +5716,8 @@
             {
               "source": {
                 "block": "a7510180-8076-417f-85df-c28637f785c4",
-                "port": "out"
+                "port": "out",
+                "size": 32
               },
               "target": {
                 "block": "94c6ef30-66d0-4e91-9533-228c16567ea0",
@@ -5664,7 +5732,8 @@
               },
               "target": {
                 "block": "314ee589-5dc1-4846-bf48-26139fa23881",
-                "port": "in"
+                "port": "in",
+                "size": 32
               },
               "size": 32
             },
@@ -5756,6 +5825,16 @@
               "target": {
                 "block": "ef1919e6-115c-4414-b8ae-4e23bd8761b6",
                 "port": "d80bfd80-1f6d-46af-b5de-5cd121ebe630"
+              }
+            },
+            {
+              "source": {
+                "block": "619ce266-7179-4c61-824d-a1280aa6118a",
+                "port": "constant-out"
+              },
+              "target": {
+                "block": "ef1919e6-115c-4414-b8ae-4e23bd8761b6",
+                "port": "4a62fe00-9706-4d42-bea6-ea6bc8f0ebfb"
               }
             }
           ]
@@ -6018,8 +6097,8 @@
                 "format": 10
               },
               "position": {
-                "x": 464,
-                "y": 56
+                "x": 336,
+                "y": 40
               },
               "size": {
                 "width": 200,
@@ -6027,15 +6106,22 @@
               }
             },
             {
+              "id": "4a62fe00-9706-4d42-bea6-ea6bc8f0ebfb",
+              "type": "basic.constant",
+              "data": {
+                "name": "",
+                "value": "0",
+                "local": false
+              },
+              "position": {
+                "x": 640,
+                "y": 48
+              }
+            },
+            {
               "id": "f5619044-1e4b-4218-bfc2-44eced6cb16a",
               "type": "basic.code",
               "data": {
-                "code": "//-- Address with\nlocalparam ADDR_WIDTH = 10;\n//-- Data with\nlocalparam DATA_WIDTH = 32;\n\n//-- Size of the memory\nlocalparam SIZE = 1 << ADDR_WIDTH;\n\n//-- Memory itself\nreg [DATA_WIDTH-1:0] mem[0:SIZE-1];\n\n//-- The data_out is a registered output (not a wire)\nreg data_out;\n\n//-- Reading port: Synchronous\nalways @(posedge clk)\nbegin\n  data_out <= mem[addr];\nend\n\n//-- Writing port: Synchronous\nalways @(posedge clk)\nbegin\n    if (wr) mem[addr] <= data_in;\nend\n\n\n//-- Init the memory\ninitial begin\n  \n  if (ROMF)\n    $readmemh(ROMF, mem, 0, SIZE-1);\n  \nend\n",
-                "params": [
-                  {
-                    "name": "ROMF"
-                  }
-                ],
                 "ports": {
                   "in": [
                     {
@@ -6062,7 +6148,16 @@
                       "size": 32
                     }
                   ]
-                }
+                },
+                "params": [
+                  {
+                    "name": "ROMF"
+                  },
+                  {
+                    "name": "loadROMF"
+                  }
+                ],
+                "code": "//-- Address with\nlocalparam ADDR_WIDTH = 10;\n//-- Data with\nlocalparam DATA_WIDTH = 32;\n\n//-- Size of the memory\nlocalparam SIZE = 1 << ADDR_WIDTH;\n\n//-- Memory itself\nreg [DATA_WIDTH-1:0] mem[0:SIZE-1];\n\n//-- The data_out is a registered output (not a wire)\nreg [31:0]data_out_v;\nassign data_out=data_out_v;\n//-- Reading port: Synchronous\nalways @(posedge clk)\nbegin\n  data_out_v <= mem[addr];\nend\n\n//-- Writing port: Synchronous\nalways @(posedge clk)\nbegin\n    if (wr) mem[addr] <= data_in;\nend\n\n\n//-- Init the memory\ninitial begin\n  \n  if (loadROMF)\n    $readmemh(ROMF, mem, 0, SIZE-1);\n  \nend\n"
               },
               "position": {
                 "x": 312,
@@ -6137,6 +6232,16 @@
                 "port": "data_in"
               },
               "size": 32
+            },
+            {
+              "source": {
+                "block": "4a62fe00-9706-4d42-bea6-ea6bc8f0ebfb",
+                "port": "constant-out"
+              },
+              "target": {
+                "block": "f5619044-1e4b-4218-bfc2-44eced6cb16a",
+                "port": "loadROMF"
+              }
             }
           ]
         }
@@ -12390,7 +12495,7 @@
               "id": "16e78204-213e-4833-9096-89d735307ec2",
               "type": "basic.code",
               "data": {
-                "code": "assign o3 = i[32:24];\nassign o2 = i[23:16];\nassign o1 = i[15:8];\nassign o0 = i[7:0];",
+                "code": "assign o3 = i[31:24];\nassign o2 = i[23:16];\nassign o1 = i[15:8];\nassign o0 = i[7:0];",
                 "params": [],
                 "ports": {
                   "in": [
@@ -14557,7 +14662,7 @@
               "id": "bdc170f0-4468-4137-bd79-4624c9cadf2b",
               "type": "basic.code",
               "data": {
-                "code": "//-- Initial value\nreg q = INI;\n\n//-- Capture the input data  \n//-- on the rising edge of  \n//-- the system clock\nalways @(posedge clk)\n  q <= d;",
+                "code": "//-- Initial value\nreg qi = INI;\nassign qi = q;\n//-- Capture the input data  \n//-- on the rising edge of  \n//-- the system clock\nalways @(posedge clk)\n  qi <= d;",
                 "params": [
                   {
                     "name": "INI"
@@ -26266,7 +26371,7 @@
               "id": "2b245a71-2d80-466b-955f-e3d61839fe25",
               "type": "basic.code",
               "data": {
-                "code": "// 1-Pull up\n\n//-- Place the IO block, configured as  \n//-- input with pull-up\nSB_IO\n  #(\n    .PIN_TYPE(6'b 1010_01),\n    \n    //-- The pull-up is activated or not\n    //-- depeding on the ON parameter\n    .PULLUP(ON)\n    \n  ) input_pin (\n\n    //--- Input pin\n    .PACKAGE_PIN(i),\n    \n    //-- Block output\n    .D_IN_0(o),\n    \n    //-- Configured as input\n    .OUTPUT_ENABLE(1'b0),\n    \n    //-- Not used\n    .D_OUT_0(1'b0)\n  );",
+                "code": "// 1-Pull up\nwire pin_i;\nassign pin_i = i;\n//-- Place the IO block, configured as  \n//-- input with pull-up\nSB_IO\n  #(\n    .PIN_TYPE(6'b 1010_01),\n    \n    //-- The pull-up is activated or not\n    //-- depeding on the ON parameter\n    .PULLUP(ON)\n    \n  ) input_pin (\n\n    //--- Input pin\n    .PACKAGE_PIN(pin_i),\n    \n    //-- Block output\n    .D_IN_0(o),\n    \n    //-- Configured as input\n    .OUTPUT_ENABLE(1'b0),\n    \n    //-- Not used\n    .D_OUT_0(1'b0)\n  );",
                 "params": [
                   {
                     "name": "ON"
@@ -26621,7 +26726,7 @@
               "id": "bdc170f0-4468-4137-bd79-4624c9cadf2b",
               "type": "basic.code",
               "data": {
-                "code": "//-- Initial value\nreg q = INI;\n\n//-- Capture the input data  \n//-- on the rising edge of  \n//-- the system clock\nalways @(posedge clk)\n  q <= d;",
+                "code": "//-- Initial value\nreg qi = INI;\nassign qi = q;\n//-- Capture the input data  \n//-- on the rising edge of  \n//-- the system clock\nalways @(posedge clk)\n  qi <= d;",
                 "params": [
                   {
                     "name": "INI"
@@ -27676,7 +27781,7 @@
               "id": "bdc170f0-4468-4137-bd79-4624c9cadf2b",
               "type": "basic.code",
               "data": {
-                "code": "reg q = INI;\n\nalways @(posedge clk)\n  if (load)\n    q <= d;",
+                "code": "reg qi = INI;\nassign q=qi;\nalways @(posedge clk)\n  if (load)\n    qi <= d;",
                 "params": [
                   {
                     "name": "INI"
@@ -27886,7 +27991,7 @@
               "id": "e5d5eb54-41fb-40de-908c-b1fe9b2ec085",
               "type": "basic.code",
               "data": {
-                "code": "//-- Numero de bits del contador\nlocalparam N = 16; \n\n//-- En contadores de N bits:\n//-- M = 2 ** N\n\n//-- Internamente usamos un bit mas\n//-- (N+1) bits\nreg [N:0] qi = 0;\n\nalways @(posedge clk)\n  if (rst | ov)\n    qi <= 0;\n  else\n    if (cnt)\n      qi <= qi + 1;\n      \nassign q = qi;\n\n//-- Comprobar overflow\nassign ov = (qi == M);\n    ",
+                "code": "//-- Numero de bits del contador\nlocalparam N = 16; \n\n//-- En contadores de N bits:\n//-- M = 2 ** N\n\n//-- Internamente usamos un bit mas\n//-- (N+1) bits\nreg [N:0] qi = 0;\n\nalways @(posedge clk)\n  if (rst | ov)\n    qi <= 0;\n  else\n    if (cnt)\n      qi <= qi + 1;\n      \nassign q = qi[15:0];\n\n//-- Comprobar overflow\nassign ov = (qi == M);\n    ",
                 "params": [
                   {
                     "name": "M"
@@ -28299,7 +28404,7 @@
               "id": "bdc170f0-4468-4137-bd79-4624c9cadf2b",
               "type": "basic.code",
               "data": {
-                "code": "reg q = INI;\nalways @(posedge clk)\n  q <= d;",
+                "code": "reg qi = INI;\nassign q=qi;\nalways @(posedge clk)\n  qi <= d;",
                 "params": [
                   {
                     "name": "INI"

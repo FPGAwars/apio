@@ -3052,7 +3052,7 @@
               "id": "bdc170f0-4468-4137-bd79-4624c9cadf2b",
               "type": "basic.code",
               "data": {
-                "code": "//-- Initial value\nreg q = INI;\n\n//-- Capture the input data  \n//-- on the rising edge of  \n//-- the system clock\nalways @(posedge clk)\n  q <= d;",
+                "code": "//-- Initial value\nreg qi = INI;\nassign q = qi;\n//-- Capture the input data  \n//-- on the rising edge of  \n//-- the system clock\nalways @(posedge clk)\n  qi <= d;",
                 "params": [
                   {
                     "name": "INI"
@@ -3800,8 +3800,8 @@
                 "clock": false
               },
               "position": {
-                "x": 72,
-                "y": 256
+                "x": -16,
+                "y": 360
               }
             },
             {
@@ -3811,8 +3811,8 @@
                 "name": ""
               },
               "position": {
-                "x": 704,
-                "y": 256
+                "x": 912,
+                "y": 360
               }
             },
             {
@@ -3824,15 +3824,15 @@
                 "local": false
               },
               "position": {
-                "x": 408,
-                "y": -8
+                "x": 448,
+                "y": -88
               }
             },
             {
               "id": "2b245a71-2d80-466b-955f-e3d61839fe25",
               "type": "basic.code",
               "data": {
-                "code": "// 1-Pull up\n\n//-- Place the IO block, configured as  \n//-- input with pull-up\nSB_IO\n  #(\n    .PIN_TYPE(6'b 1010_01),\n    \n    //-- The pull-up is activated or not\n    //-- depeding on the ON parameter\n    .PULLUP(ON)\n    \n  ) input_pin (\n\n    //--- Input pin\n    .PACKAGE_PIN(i),\n    \n    //-- Block output\n    .D_IN_0(o),\n    \n    //-- Configured as input\n    .OUTPUT_ENABLE(1'b0),\n    \n    //-- Not used\n    .D_OUT_0(1'b0)\n  );",
+                "code": "// 1-Pull up\n\nwire pin_i;\nassign pin_i=i;\nwire unused_d_in_1;\n\n//-- Place the IO block, configured as  \n//-- input with pull-up\nSB_IO\n  #(\n    .PIN_TYPE(6'b1010_01),\n    \n    //-- The pull-up is activated or not\n    //-- depeding on the ON parameter\n    .PULLUP(ON)\n    \n  ) input_pin (\n\n    //--- Input pin\n    .PACKAGE_PIN(pin_i),\n    \n    //-- Block output\n    .D_IN_0(o),\n    \n    //-- Configured as input\n    .OUTPUT_ENABLE(1'b0),\n    \n    //-- Not used\n  .D_IN_1(unused_d_in_1),\n    .D_OUT_0(1'b0),\n    .D_OUT_1(1'b0),\n    .OUTPUT_CLK(1'b0),\n    .INPUT_CLK(1'b0),\n    .LATCH_INPUT_VALUE(1'b0),  \n    .CLOCK_ENABLE(1'b0)   \n  );",
                 "params": [
                   {
                     "name": "ON"
@@ -3856,8 +3856,8 @@
                 "y": 104
               },
               "size": {
-                "width": 392,
-                "height": 368
+                "width": 480,
+                "height": 576
               }
             },
             {
@@ -4468,7 +4468,7 @@
               "id": "bdc170f0-4468-4137-bd79-4624c9cadf2b",
               "type": "basic.code",
               "data": {
-                "code": "reg q = INI;\n\nalways @(posedge clk)\n  if (load)\n    q <= d;",
+                "code": "reg qi = INI;\nassign q = qi;\nalways @(posedge clk)\n  if (load)\n    qi <= d;",
                 "params": [
                   {
                     "name": "INI"
@@ -20223,7 +20223,7 @@
               "id": "32106310-bfdc-41db-9a7c-2dadd5016c3f",
               "type": "basic.code",
               "data": {
-                "code": "localparam N = 8;\n\nreg [N-1:0] q = INI;\n\nalways @(posedge clk)\n  if (load)\n    q <= d;",
+                "code": "localparam N = 8;\n\nreg [N-1:0] qi = INI;\n\nalways @(posedge clk)\n  if (load)\n    qi <= d;\n    \nassign q = qi;",
                 "params": [
                   {
                     "name": "INI"
