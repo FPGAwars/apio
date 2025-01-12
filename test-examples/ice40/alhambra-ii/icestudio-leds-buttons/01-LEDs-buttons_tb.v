@@ -9,7 +9,6 @@
 // Testbench template
 
 `default_nettype none
-`define DUMPSTR(x) `"x.vcd`"
 `timescale 10 ns / 1 ns
 
 
@@ -21,42 +20,40 @@ module main_tb
  
  // TODO: edit the module parameters here
  // e.g. localparam constant_value = 1;
- localparam constant_Constant = 4'hA;
- localparam constant_Constant = 4'h5;
+ localparam constant_Constant_0 = 4'hA;
+ localparam constant_Constant_1 = 4'h5;
  
  // Input/Output
- reg Button;
- reg Button;
- wire LED;
- wire LED;
+ reg Button_0;
+ reg Button_1;
+ wire LED0;
+ wire LED1;
  wire [3:0] LEDs;
- wire LED;
- wire LED;
+ wire LED2;
+ wire LED3;
  
  // Module instance
  main #(
-  .v2af3e8(constant_Constant),
-  .v98e11a(constant_Constant)
+  .v2af3e8(constant_Constant_0),
+  .v98e11a(constant_Constant_1)
  ) MAIN (
   .v17b894(Button),
   .vf8383a(Button),
-  .v7b511e(LED),
-  .v6ef206(LED),
+  .v7b511e(LED0),
+  .v6ef206(LED1),
   .v1469d9(LEDs),
-  .v6898ff(LED),
-  .v1e39f8(LED)
+  .v6898ff(LED2),
+  .v1e39f8(LED3)
  );
  
  initial begin
-  // File were to store the simulation results
-  $dumpfile(`DUMPSTR(`VCD_OUTPUT));
   $dumpvars(0, main_tb);
  
   // TODO: initialize the registers here
   // e.g. value = 1;
   // e.g. #2 value = 0;
-  Button = 0;
-  Button = 0;
+  Button_0 = 0;
+  Button_1 = 0;
  
   #(DURATION) $display("End of simulation");
   $finish;

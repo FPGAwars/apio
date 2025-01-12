@@ -16,6 +16,9 @@
 .venv/
 build/
 dist/
+ice-build
+ice-build/
+ice-build/*
 _build/
 _dist/
 htmlcov/

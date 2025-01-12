@@ -9,7 +9,6 @@
 // Testbench template
 
 `default_nettype none
-`define DUMPSTR(x) `"x.vcd`"
 `timescale 10 ns / 1 ns
 
 
@@ -26,7 +25,7 @@ module main_tb
  localparam constant_acel_ini = -2;
  
  // Input/Output
- reg Botón;
+ reg Boton;
  wire [7:0] LED;
  
  // Module instance
@@ -35,19 +34,18 @@ module main_tb
   .v315560(constant_vel_ini),
   .v0f02ae(constant_acel_ini)
  ) MAIN (
-  .v68e749(Botón),
+  .v68e749(Boton),
   .vb5f8d6(LED)
  );
  
  initial begin
   // File were to store the simulation results
-  $dumpfile(`DUMPSTR(`VCD_OUTPUT));
   $dumpvars(0, main_tb);
  
   // TODO: initialize the registers here
   // e.g. value = 1;
   // e.g. #2 value = 0;
-  Botón = 0;
+  Boton = 0;
  
   #(DURATION) $display("End of simulation");
   $finish;
