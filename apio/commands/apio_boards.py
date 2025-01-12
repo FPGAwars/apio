@@ -61,7 +61,7 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
         fpga = board_info.get("fpga", "")
         fpga_info = apio_ctx.fpgas.get(fpga, {})
         fpga_arch = fpga_info.get("arch", "")
-        fpga_part_no = fpga_info.get("model", "")
+        fpga_part_num = fpga_info.get("part_num", "")
         fpga_size = fpga_info.get("size", "")
         fpga_type = fpga_info.get("type", "")
         fpga_pack = fpga_info.get("pack", "")
@@ -71,7 +71,7 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
                 fpga,
                 programmer,
                 fpga_arch,
-                fpga_part_no,
+                fpga_part_num,
                 fpga_size,
                 fpga_type,
                 fpga_pack,

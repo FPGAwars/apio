@@ -21,7 +21,7 @@ def test_apio_args_with_values(apio_runner: ApioRunner):
             "prog": "programmer",
             "platform_id": "platform123",
             "fpga_arch": "arch1",
-            "fpga_model": "model1",
+            "fpga_part_num": "part_num_0001",
             "fpga_size": "size1",
             "fpga_type": "type1",
             "fpga_pack": "pack1",
@@ -47,7 +47,7 @@ def test_apio_args_with_values(apio_runner: ApioRunner):
         assert apio_args.PLATFORM_ID == "platform123"
         assert apio_args.PROG == "programmer"
         assert apio_args.FPGA_ARCH == "arch1"
-        assert apio_args.FPGA_MODEL == "model1"
+        assert apio_args.FPGA_PART_NUM == "part_num_0001"
         assert apio_args.FPGA_SIZE == "size1"
         assert apio_args.FPGA_TYPE == "type1"
         assert apio_args.FPGA_PACK == "pack1"
@@ -85,7 +85,7 @@ def test_apio_args_no_values(apio_runner: ApioRunner):
         assert apio_args.PLATFORM_ID == "platform123"
         assert apio_args.PROG == ""
         assert apio_args.FPGA_ARCH == ""
-        assert apio_args.FPGA_MODEL == ""
+        assert apio_args.FPGA_PART_NUM == ""
         assert apio_args.FPGA_SIZE == ""
         assert apio_args.FPGA_TYPE == ""
         assert apio_args.FPGA_PACK == ""
@@ -136,7 +136,7 @@ def test_missing_required_arg(apio_runner: ApioRunner):
         scons_args = {
             "prog": "programmer",
             "fpga_arch": "arch1",
-            "fpga_model": "model1",
+            "fpga_part_num": "part_num_0001",
         }
 
         # -- Required env vars.

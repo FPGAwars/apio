@@ -15,7 +15,7 @@ from apio import util
 # -- Names of supported args. Unless specified otherwise, all args are optional
 # -- and have a string value. Values such as None, "", or False, which
 # -- evaluate to a boolean False are considered 'no value' and are ignored.
-ARG_FPGA_MODEL = "model"
+ARG_FPGA_PART_NUM = "part_num"
 ARG_FPGA_ARCH = "arch"
 ARG_FPGA_TYPE = "type"
 ARG_FPGA_SIZE = "size"
@@ -112,7 +112,7 @@ def process_arguments(
     # -- Construct the args dictionary with all supported args. Most of the
     # -- args also have the name of their exported scons variable.
     args: Dict[str, Arg] = {
-        ARG_FPGA_MODEL: Arg(ARG_FPGA_MODEL, "fpga_model"),
+        ARG_FPGA_PART_NUM: Arg(ARG_FPGA_PART_NUM, "fpga_part_num"),
         ARG_FPGA_ARCH: Arg(ARG_FPGA_ARCH, "fpga_arch"),
         ARG_FPGA_TYPE: Arg(ARG_FPGA_TYPE, "fpga_type"),
         ARG_FPGA_SIZE: Arg(ARG_FPGA_SIZE, "fpga_size"),
@@ -164,7 +164,7 @@ def process_arguments(
     # -- (The board determine the fpga and the size, but the user has
     # --  specificied a different size. It is a contradiction!)
     for arg, fpga_property_name in [
-        [args[ARG_FPGA_MODEL], "model"],
+        [args[ARG_FPGA_PART_NUM], "part_num"],
         [args[ARG_FPGA_ARCH], "arch"],
         [args[ARG_FPGA_TYPE], "type"],
         [args[ARG_FPGA_SIZE], "size"],

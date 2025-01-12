@@ -32,7 +32,7 @@
             "args": [
                 "-s",
                 "-vv",
-                "test/commands/test_apio_system.py::test_system"
+                "test/integration/test_commands.py::test_with_colors_on_and_off"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,

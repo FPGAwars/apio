@@ -88,7 +88,7 @@ class PluginGowin(PluginBase):
                 "--write $TARGET --report {1} --vopt family={2} "
                 "--vopt cst={3} {4}"
             ).format(
-                args.FPGA_MODEL,
+                args.FPGA_PART_NUM,
                 TARGET + ".pnr",
                 args.FPGA_TYPE.upper(),
                 self.constrain_file(),
