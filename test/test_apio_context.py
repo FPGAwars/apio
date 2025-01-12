@@ -94,7 +94,7 @@ KNOWN_BAD_BOARDS = ["odt-rpga-feather"]
 
 # -- These programmers are known to be unused.
 # -- https://github.com/FPGAwars/apio/issues/536
-KNOWN_UNUSED_PROGRAMMERS = ["openfpgaloader", "ujprog"]
+KNOWN_UNUSED_PROGRAMMERS = ["ujprog"]
 
 
 def test_resources_references(apio_runner: ApioRunner):
