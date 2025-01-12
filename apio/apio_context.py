@@ -17,14 +17,13 @@ import click
 from click import secho
 from apio import env_options
 from apio.profile import Profile
-from apio import jsonc
+from apio.utils import jsonc, util
 from apio.managers.project import (
     Project,
     ProjectResolver,
     load_project_from_file,
     APIO_INI,
 )
-from apio.utils import util
 
 
 # ---------- RESOURCES
