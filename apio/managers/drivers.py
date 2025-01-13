@@ -11,7 +11,7 @@ import shutil
 import subprocess
 from pathlib import Path
 from click import secho
-from apio import util
+from apio.utils import util
 from apio.apio_context import ApioContext
 from apio.managers import installer
 

@@ -1,3 +1,8 @@
+// List of computer plaforms that are supported by apio.
+//
+// Visual Studio Code note: set language model to 'jsonc' to avoid flagging 
+// comments as errors.
+
 {
   "darwin": {
     "description": "Mac OSX, x86 64 bit",

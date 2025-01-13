@@ -11,7 +11,7 @@ import sys
 import click
 from click import secho
 from packaging import version
-from apio import util
+from apio.utils import util
 
 
 # ---------------------------

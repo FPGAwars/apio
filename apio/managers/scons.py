@@ -21,8 +21,7 @@ from functools import wraps
 import click
 from click import secho
 
-from apio import util
-from apio import pkg_util
+from apio.utils import util, pkg_util
 from apio.managers.scons_args import process_arguments
 from apio.managers.system import System
 from apio.apio_context import ApioContext
@@ -811,11 +810,6 @@ class SCons:
         scons_command = (
             ["scons"] + ["-Q", scond_command] + debug_options + variables
         )
-
-        # For debugging. Print the scons command line in a forumat that is
-        # useful for the .vscode/launch.json scons debug target.
-        # import json
-        # print(json.dumps(scons_command))
 
         # -- An output filter that manupulates the scons stdout/err lines as
         # -- needed and write them to stdout.

@@ -12,7 +12,7 @@ import click
 from apio.managers.drivers import Drivers
 from apio.managers.system import System
 from apio.apio_context import ApioContext, ApioContextScope
-from apio.cmd_util import ApioGroup, ApioSubgroup
+from apio.utils.cmd_util import ApioGroup, ApioSubgroup
 
 
 # -- apio driver serial install

@@ -9,7 +9,7 @@
 from typing import Dict, Tuple, Optional, List, Any
 from click import secho
 from apio.apio_context import ApioContext
-from apio import util
+from apio.utils import util
 
 
 # -- Names of supported args. Unless specified otherwise, all args are optional

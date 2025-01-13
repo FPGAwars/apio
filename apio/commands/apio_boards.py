@@ -10,12 +10,13 @@
 import sys
 from pathlib import Path
 from dataclasses import dataclass
-from typing import List
+from typing import List, Dict
 import click
 from click import secho, style
 from apio.apio_context import ApioContext, ApioContextScope
-from apio import util
+from apio.utils import util
 from apio.commands import options
+from apio.managers.examples import Examples
 
 
 # R0801: Similar lines in 2 files
@@ -27,6 +28,7 @@ class Entry:
 
     board: str
     board_description: str
+    examples_count: str
     fpga: str
     programmer: str
     fpga_arch: str
@@ -52,13 +54,19 @@ class Entry:
 
 # R0914: Too many local variables (17/15)
 # pylint: disable=R0914
+# pylint: disable=too-many-statements
 def list_boards(apio_ctx: ApioContext, verbose: bool):
     """Prints all the available board definitions."""
+
+    # -- Get examples counts by board. This is a sparse dictionary.
+    examples = Examples(apio_ctx)
+    examples_counts: Dict[str, int] = examples.count_examples_by_board()
 
     # -- Collect the boards info into a list of entires, one per board.
     entries: List[Entry] = []
     for board, board_info in apio_ctx.boards.items():
         board_description = board_info.get("description", "")
+        examples_count = "   " + str(examples_counts.get(board, ""))
         programmer = board_info.get("programmer", {}).get("type", "")
         fpga = board_info.get("fpga", "")
         fpga_info = apio_ctx.fpgas.get(fpga, {})
@@ -71,6 +79,7 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
             Entry(
                 board,
                 board_description,
+                examples_count,
                 fpga,
                 programmer,
                 fpga_arch,
@@ -85,11 +94,12 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
     entries.sort(key=lambda x: x.sort_key())
 
     # -- Compute the columns widths.
-    margin = 4
-    board_len = max(len(x.board) for x in entries) + margin
+    margin = 2 if verbose else 4
+    board_len = max(len(x.board) for x in entries) + margin - 2
     board_description_len = (
         max(len(x.board_description) for x in entries) + margin
     )
+    examples_count_len = 7 + margin
     fpga_len = max(len(x.fpga) for x in entries) + margin
     programmer_len = max(len(x.programmer) for x in entries) + margin
     fpga_arch_len = max(len(x.fpga_arch) for x in entries) + margin
@@ -101,6 +111,7 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
     # -- Construct the title fields.
     parts = []
     parts.append(f"{'BOARD':<{board_len}}")
+    parts.append(f"{'EXAMPLES':<{examples_count_len}}")
     if verbose:
         parts.append(f"{'DESCRIPTION':<{board_description_len}}")
     parts.append(f"{'ARCH':<{fpga_arch_len}}")
@@ -123,6 +134,7 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
         # -- Construct the line fields.
         parts = []
         parts.append(style(f"{x.board:<{board_len}}", fg="cyan"))
+        parts.append(f"{x.examples_count:<{examples_count_len}}")
         if verbose:
             parts.append(f"{x.board_description:<{board_description_len}}")
         parts.append(f"{x.fpga_arch:<{fpga_arch_len}}")

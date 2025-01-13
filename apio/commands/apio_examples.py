@@ -13,8 +13,8 @@ import click
 from apio.managers.examples import Examples
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
-from apio import util
-from apio.cmd_util import ApioGroup, ApioSubgroup
+from apio.utils import util
+from apio.utils.cmd_util import ApioGroup, ApioSubgroup
 
 
 # ---- apio examples list

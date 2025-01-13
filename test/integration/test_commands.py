@@ -10,6 +10,80 @@ from test.conftest import ApioRunner
 import pytest
 from apio.commands.apio import cli as apio
 
+CUSTOM_BOARDS = """
+{
+  "my_custom_board": {
+    "name": "My Custom Board v3.1c",
+    "fpga": "ice40-up5k-sg48",
+    "programmer": {
+      "type": "iceprog"
+    },
+    "usb": {
+      "vid": "0403",
+      "pid": "6010"
+    },
+    "ftdi": {
+      "desc": "My Custom Board"
+    }
+  }
+}
+"""
+
+
+def test_boards_custom_board(apio_runner: ApioRunner):
+    """Test boards listing with a custom boards.json file."""
+
+    # -- If the option 'offline' is passed, the test is skip
+    # -- (This test is slow and requires internet connectivity)
+    if apio_runner.offline_flag:
+        pytest.skip("requires internet connection")
+
+    with apio_runner.in_sandbox(shared_home=True) as sb:
+
+        # -- Write an apio.ini file.
+        sb.write_apio_ini({"board": "my_custom_board", "top-module": "main"})
+
+        # -- Write a custom boards.json file in the project's directory.
+        sb.write_file("boards.json", CUSTOM_BOARDS)
+
+        # -- Execute "apio boards"
+        result = sb.invoke_apio_cmd(apio, ["boards"])
+        sb.assert_ok(result)
+        # -- Note: pytest sees the piped version of the command's output.
+        assert "Loading custom 'boards.json'" in result.output
+        assert "alhambra-ii" not in result.output
+        assert "my_custom_board" in result.output
+        assert "Total of 1 board" in result.output
+
+
+def test_boards_list_ok(apio_runner: ApioRunner):
+    """Test normal board listing with the apio's boards.json."""
+
+    # -- If the option 'offline' is passed, the test is skip
+    # -- (This test is slow and requires internet connectivity)
+    if apio_runner.offline_flag:
+        pytest.skip("requires internet connection")
+
+    with apio_runner.in_sandbox(shared_home=True) as sb:
+
+        # -- Run 'apio boards'
+        result = sb.invoke_apio_cmd(apio, ["boards"])
+        sb.assert_ok(result)
+        assert "Loading custom 'boards.json'" not in result.output
+        assert "PACK" not in result.output
+        assert "alhambra-ii" in result.output
+        assert "my_custom_board" not in result.output
+        assert "Total of 1 board" not in result.output
+
+        # -- Run 'apio boards -v'
+        result = sb.invoke_apio_cmd(apio, ["boards", "-v"])
+        sb.assert_ok(result)
+        assert "Loading custom 'boards.json'" not in result.output
+        assert "PACK" in result.output
+        assert "alhambra-ii" in result.output
+        assert "my_custom_board" not in result.output
+        assert "Total of 1 board" not in result.output
+
 
 # R0801: Similar lines in 2 files
 # pylint: disable=R0801

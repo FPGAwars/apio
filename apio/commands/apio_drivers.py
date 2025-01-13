@@ -9,7 +9,7 @@
 
 import sys
 import click
-from apio.cmd_util import ApioGroup, ApioSubgroup
+from apio.utils.cmd_util import ApioGroup, ApioSubgroup
 from apio.commands import apio_drivers_ftdi, apio_drivers_serial
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.managers.system import System

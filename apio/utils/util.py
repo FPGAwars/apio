@@ -26,7 +26,7 @@ from click import secho
 from varname import argname
 from serial.tools.list_ports import comports
 import requests
-from apio import env_options
+from apio.utils import env_options
 
 # ----------------------------------------
 # -- Constants
@@ -145,7 +145,7 @@ def get_path_in_apio_package(subpath: str) -> Path:
 
     # -- The parent folder is the apio root folder
     # -- Ex: /home/obijuan/.../site-packages/apio
-    path = current_python_file.parent
+    path = current_python_file.parent.parent
 
     # -- Add the given folder to the path. If subpath = "" this
     # -- does nothing, but fails if subpath is None.

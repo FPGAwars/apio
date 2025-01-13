@@ -8,7 +8,7 @@
 
 
 import click
-from apio.cmd_util import ApioSubgroup, ApioGroup
+from apio.utils.cmd_util import ApioSubgroup, ApioGroup
 
 # -- Import sub commands.
 from apio.commands import (

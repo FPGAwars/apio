@@ -4,7 +4,7 @@ Tests of scons_util.py
 
 import os
 import pytest
-from apio.util import plurality, list_plurality, is_debug, nameof
+from apio.utils.util import plurality, list_plurality, is_debug, nameof
 
 # pylint: disable=fixme
 # TODO: Add more tests.
