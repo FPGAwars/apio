@@ -11,7 +11,7 @@ import sys
 import os
 from pathlib import Path, PosixPath
 from dataclasses import dataclass
-from typing import Optional, List
+from typing import Optional, List, Dict
 from click import secho
 from apio.utils import util
 from apio.apio_context import ApioContext
@@ -62,7 +62,7 @@ class Examples:
         # -- Non hidden entries not found. Directory is empty.
         return True
 
-    def get_examples_infos(self) -> Optional[List[ExampleInfo]]:
+    def get_examples_infos(self) -> List[ExampleInfo]:
         """Scans the examples and returns a list of ExampleInfos.
         Returns null if an error."""
 
@@ -107,20 +107,15 @@ class Examples:
 
         return examples
 
-    #     return example_dir
-
     def list_examples(self) -> None:
         """Print all the examples available. Return a process exit
         code, 0 if ok, non zero otherwise."""
 
-        # -- Check that the examples package is installed.
+        # -- Make sure that the examples package is installed.
         installer.install_missing_packages_on_the_fly(self.apio_ctx)
 
         # -- Get list of examples.
         examples: List[ExampleInfo] = self.get_examples_infos()
-        if examples is None:
-            # -- Error message is aleady printed.
-            return 1
 
         # -- Get terminal configuration. We format the report differently for
         # -- a terminal and for a pipe.
@@ -155,6 +150,26 @@ class Examples:
             secho(f"Total: {len(examples)}")
 
         return 0
+
+    def count_examples_by_board(self) -> Dict[str, int]:
+        """Returns a dictionary with example count per board. Boards
+        that have no examples are not included in the dictionary."""
+
+        # -- Make sure that the examples package is installed.
+        installer.install_missing_packages_on_the_fly(self.apio_ctx)
+
+        # -- Get list of examples.
+        examples: List[ExampleInfo] = self.get_examples_infos()
+
+        # -- Count examples by board
+        counts: Dict[str, int] = {}
+        for example in examples:
+            board = example.board_dir_name
+            old_count = counts.get(board, 0)
+            counts[board] = old_count + 1
+
+        # -- All done
+        return counts
 
     def lookup_example_info(self, example_name) -> Optional[ExampleInfo]:
         """Return the example info for given example or None if not found.
