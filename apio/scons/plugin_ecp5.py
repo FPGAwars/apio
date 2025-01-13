@@ -91,8 +91,7 @@ class PluginEcp5(PluginBase):
                 "--json $SOURCE --textcfg $TARGET "
                 "--report {2} --lpf {3} {4} --timing-allow-fail --force"
             ).format(
-                # -- See details here: https://tinyurl.com/apio-ecp5-25k-12k
-                "25k" if (args.FPGA_TYPE == "12k") else args.FPGA_TYPE,
+                args.FPGA_TYPE,
                 args.FPGA_PACK,
                 TARGET + ".pnr",
                 self.constrain_file(),
