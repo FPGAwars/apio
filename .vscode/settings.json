@@ -3,5 +3,11 @@
         "test"
     ],
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+    "python.testing.pytestEnabled": true,
+    "editor.rulers": [
+        79
+    ],
+    "black-formatter.args": [
+        "--line-length=79"
+    ]
 }
