@@ -2,17 +2,18 @@
 //
 // Visual Studio Code note: set language model to 'jsonc' to avoid flagging 
 // comments as errors.
-
 {
+  // https://embedded-tek.com/?product=development-fpga-board-pi-sicle
   "pi-sicle": {
-    "description": "pi-sicle",
+    "description": "Pi-sicle",
     "fpga": "ice40-hx4k-tq144",
     "programmer": {
       "type": "pi-sicle-loader"
     }
   },
+  // https://github.com/FPGAwars/icezum/wiki
   "icezum": {
-    "description": "IceZUM Alhambra",
+    "description": "Icezum Alhambra",
     "fpga": "ice40-hx1k-tq144",
     "programmer": {
       "type": "iceprog"
@@ -25,8 +26,9 @@
       "desc": "IceZUM Alhambra.*"
     }
   },
+  // https://www.latticesemi.com/icestick
   "icestick": {
-    "description": "iCEstick Evaluation Kit",
+    "description": "iCEstick Eval Kit",
     "fpga": "ice40-hx1k-tq144",
     "programmer": {
       "type": "iceprog"
@@ -39,8 +41,9 @@
       "desc": "(?:Dual RS232-HS)|(?:Lattice FTUSB Interface Cable)"
     }
   },
+  // https://www.latticesemi.com/iCEblink40-HX1K
   "iceblink40-hx1k": {
-    "description": "iCEblink40-HX1K",
+    "description": "iCEblink40-HX1K Eval Kit",
     "fpga": "ice40-hx1k-vq100",
     "programmer": {
       "type": "iceburn"
@@ -50,8 +53,9 @@
       "pid": "0007"
     }
   },
+  // https://nandland.com/the-go-board/
   "go-board": {
-    "description": "Nandland Go board",
+    "description": "The Go Board",
     "fpga": "ice40-hx1k-vq100",
     "programmer": {
       "type": "iceprog"
@@ -64,6 +68,7 @@
       "desc": "Dual RS232-HS"
     }
   },
+  // https://www.latticesemi.com/Products/DevelopmentBoardsAndKits/iCE40HX8KBreakoutBoard.aspx
   "ice40-hx8k": {
     "legacy_name": "iCE40-HX8K",
     "description": "iCE40-HX8K Breakout Board",
@@ -79,9 +84,10 @@
       "desc": "(?:Dual RS232-HS)|(?:Lattice FTUSB Interface Cable)"
     }
   },
+  // https://www.olimex.com/Products/FPGA/iCE40/iCE40HX8K-EVB/open-source-hardware
   "ice40-hx8k-evb": {
     "legacy_name": "iCE40-HX8K-EVB",
-    "description": "iCE40-HX8K-EVB Olimex",
+    "description": "iCE40HX8K-EVB",
     "fpga": "ice40-hx8k-ct256",
     "programmer": {
       "type": "iceprogduino"
@@ -91,9 +97,10 @@
       "pid": "8036"
     }
   },
+  // https://www.olimex.com/wiki/ICE40HX1K-EVB
   "ice40-hx1k-evb": {
     "legacy_name": "iCE40-HX1K-EVB",
-    "description": "iCE40-HX1K-EVB Olimex",
+    "description": "ICE40HX1K-EVB",
     "fpga": "ice40-hx1k-vq100",
     "programmer": {
       "type": "iceprogduino"
@@ -103,8 +110,9 @@
       "pid": "8036"
     }
   },
+  // https://fpgalibre.sourceforge.net/Kefir/
   "kefir": {
-    "description": "K\u00e9fir I iCE40-HX4K",
+    "description": "Kéfir I iCE40-HX4K",
     "fpga": "ice40-hx4k-tq144",
     "programmer": {
       "type": "iceprog",
@@ -118,6 +126,7 @@
       "desc": "Milk JTAG:u"
     }
   },
+  // URL: TBD
   "blackice": {
     "description": "BlackIce",
     "fpga": "ice40-hx4k-tq144",
@@ -201,6 +210,7 @@
       "desc": "TinyFPGA BX"
     }
   },
+  // https://github.com/FPGAwars/Alhambra-II-FPGA
   "alhambra-ii": {
     "description": "Alhambra II",
     "fpga": "ice40-hx4k-tq144",
