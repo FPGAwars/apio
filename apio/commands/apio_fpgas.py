@@ -10,7 +10,7 @@
 import sys
 from pathlib import Path
 from dataclasses import dataclass
-from typing import List
+from typing import List, Dict
 import click
 from click import secho, style, echo
 from apio.apio_context import ApioContext, ApioContextScope
@@ -25,6 +25,7 @@ class Entry:
     """A class to hold the field of a single line of the report."""
 
     fpga: str
+    board_count: int
     fpga_arch: str
     fpga_part_num: str
     fpga_size: str
@@ -50,10 +51,19 @@ class Entry:
 def list_fpgas(apio_ctx: ApioContext, verbose: bool):
     """Prints all the available FPGA definitions."""
 
+    # -- Collect a sparse dict with fpga ids to board count.
+    boards_counts: Dict[str, int] = {}
+    for board_info in apio_ctx.boards.values():
+        fpga = board_info.get("fpga", None)
+        if fpga:
+            old_count = boards_counts.get(fpga, 0)
+            boards_counts[fpga] = old_count + 1
+
     # -- Collect all entries.
     entries: List[Entry] = []
     for fpga, fpga_info in apio_ctx.fpgas.items():
         # -- Construct the Entry for this fpga.
+        board_count = boards_counts.get(fpga, 0)
         fpga_arch = fpga_info.get("arch", "")
         fpga_part_num = fpga_info.get("part_num", "")
         fpga_size = fpga_info.get("size", "")
@@ -63,6 +73,7 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
         entries.append(
             Entry(
                 fpga,
+                board_count,
                 fpga_arch,
                 fpga_part_num,
                 fpga_size,
@@ -75,8 +86,9 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
     entries.sort(key=lambda x: x.sort_key())
 
     # -- Compute field lengths
-    margin = 4
+    margin = 3
     fpga_len = max(len(x.fpga) for x in entries) + margin
+    board_count_len = 6 + margin
     fpga_arch_len = max(len(x.fpga_arch) for x in entries) + margin
     fpga_part_num_len = max(len(x.fpga_part_num) for x in entries) + margin
     fpga_size_len = max(len(x.fpga_size) for x in entries) + margin
@@ -86,6 +98,7 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
     # -- Construct the title fields.
     parts = []
     parts.append(f"{'FPGA ID':<{fpga_len}}")
+    parts.append(f"{'BOARDS':<{board_count_len}}")
     parts.append(f"{'AECH':<{fpga_arch_len}}")
     parts.append(f"{'PART NUMBER':<{fpga_part_num_len}}")
     parts.append(f"{'SIZE':<{fpga_size_len}}")
@@ -102,6 +115,8 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
         # -- Construct the fpga fields.
         parts = []
         parts.append(style(f"{x.fpga:<{fpga_len}}", fg="cyan"))
+        board_count = f"{x.board_count:>3}" if x.board_count else ""
+        parts.append(f"{board_count:<{board_count_len}}")
         parts.append(f"{x.fpga_arch:<{fpga_arch_len}}")
         parts.append(f"{x.fpga_part_num:<{fpga_part_num_len}}")
         parts.append(f"{x.fpga_size:<{fpga_size_len}}")
