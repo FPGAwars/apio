@@ -105,9 +105,9 @@ def test_verilog_src_scanner(apio_runner: ApioRunner):
         # -- Create file lists
         core_dependencies = [
             "apio.ini",
-            "boards.json",
-            "programmers.json",
-            "fpgas.json",
+            "boards.jsonc",
+            "programmers.jsonc",
+            "fpgas.jsonc",
         ]
 
         file_dependencies = [

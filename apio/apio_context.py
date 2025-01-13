@@ -29,45 +29,45 @@ from apio.managers.project import (
 RESOURCES_DIR = "resources"
 
 # ---------------------------------------
-# ---- File: resources/platforms.json
+# ---- File: resources/platforms.jsonc
 # --------------------------------------
 # -- This file contains  the information regarding the supported platforms
 # -- and their attributes.
-PLATFORMS_JSON = "platforms.json"
+PLATFORMS_JSONC = "platforms.jsonc"
 
 # ---------------------------------------
-# ---- File: resources/packages.json
+# ---- File: resources/packages.jsonc
 # --------------------------------------
 # -- This file contains all the information regarding the available apio
 # -- packages: Repository, version, name...
-PACKAGES_JSON = "packages.json"
+PACKAGES_JSONC = "packages.jsonc"
 
 # -----------------------------------------
-# ---- File: resources/boads.json
+# ---- File: resources/boads.jsonc
 # -----------------------------------------
 # -- Information about all the supported boards
 # -- names, fpga family, programmer, ftdi description, vendor id, product id
-BOARDS_JSON = "boards.json"
+BOARDS_JSONC = "boards.jsonc"
 
 # -----------------------------------------
-# ---- File: resources/fpgas.json
+# ---- File: resources/fpgas.jsonc
 # -----------------------------------------
 # -- Information about all the supported fpgas
 # -- arch, type, size, packaging
-FPGAS_JSON = "fpgas.json"
+FPGAS_JSONC = "fpgas.jsonc"
 
 # -----------------------------------------
-# ---- File: resources/programmers.json
+# ---- File: resources/programmers.jsonc
 # -----------------------------------------
 # -- Information about all the supported programmers
 # -- name, command to execute, arguments...
-PROGRAMMERS_JSON = "programmers.json"
+PROGRAMMERS_JSONC = "programmers.jsonc"
 
 # -----------------------------------------
-# ---- File: resources/distribution.json
+# ---- File: resources/distribution.jsonc
 # -----------------------------------------
 # -- Information about all the supported apio and pip packages
-DISTRIBUTION_JSON = "distribution.json"
+DISTRIBUTION_JSONC = "distribution.jsonc"
 
 
 class ApioContextScope(Enum):
@@ -147,23 +147,23 @@ class ApioContext:
         self.home_dir: Path = util.resolve_home_dir()
 
         # -- Read the distribution information
-        self.distribution = self._load_resource(DISTRIBUTION_JSON)
+        self.distribution = self._load_resource(DISTRIBUTION_JSONC)
 
         # -- Profile information, from ~/.apio/profile.json. We provide it with
-        # -- the remote config url template from disribution.json such that
+        # -- the remote config url template from disribution.jsonc such that
         # -- can it fetch the remote config on demand.
         self.profile = Profile(
             self.home_dir, self.distribution["remote-config"]
         )
 
         # -- Read the platforms information.
-        self.platforms = self._load_resource(PLATFORMS_JSON)
+        self.platforms = self._load_resource(PLATFORMS_JSONC)
 
         # -- Determine the platform_id for this APIO session.
         self.platform_id = self._determine_platform_id(self.platforms)
 
         # -- Read the apio packages information
-        self.all_packages = self._load_resource(PACKAGES_JSON)
+        self.all_packages = self._load_resource(PACKAGES_JSONC)
 
         # -- Expand in place the env templates in all_packages.
         ApioContext._resolve_package_envs(self.all_packages, self.packages_dir)
@@ -174,22 +174,22 @@ class ApioContext:
         )
 
         # -- Read the boards information. Allow override files in project dir.
-        self.boards = self._load_resource(BOARDS_JSON, allow_custom=True)
+        self.boards = self._load_resource(BOARDS_JSONC, allow_custom=True)
 
         # -- Read the FPGAs information. Allow override files in project dir.
-        self.fpgas = self._load_resource(FPGAS_JSON, allow_custom=True)
+        self.fpgas = self._load_resource(FPGAS_JSONC, allow_custom=True)
 
         # -- Read the programmers information. Allow override files in project
         # -- dir.
         self.programmers = self._load_resource(
-            PROGRAMMERS_JSON, allow_custom=True
+            PROGRAMMERS_JSONC, allow_custom=True
         )
 
         # -- Sort resources for consistency and intunitiveness.
         # --
         # -- We don't sort the all_packages and platform_packages dictionaries
         # -- because that will affect the order of the env path items.
-        # -- Instead we preserve the order from the packages.json file.
+        # -- Instead we preserve the order from the packages.jsonc file.
 
         self.boards = OrderedDict(
             sorted(self.boards.items(), key=lambda t: t[0])
@@ -212,8 +212,8 @@ class ApioContext:
         self, board: str, *, warn: bool = True, strict: bool = True
     ) -> str:
         """Lookup and return the board's canonical board name which is its key
-        in boards.json().  'board' can be the canonical name itself or a
-        legacy id of the board as defined in boards.json.  The method prints
+        in boards.jsonc.  'board' can be the canonical name itself or a
+        legacy id of the board as defined in boards.jsonc.  The method prints
         a warning if 'board' is a legacy board name that is mapped to its
         canonical name and 'warn' is True. If the  board is not found, the
         method returns None if 'strict' is False or exit the program with a
@@ -221,7 +221,7 @@ class ApioContext:
         # -- If this fails, it's a programming error.
         assert board is not None
 
-        # -- The result. The board's key in boards.json.
+        # -- The result. The board's key in boards.jsonc.
         canonical_name = None
 
         if board in self.boards:
@@ -282,18 +282,18 @@ class ApioContext:
         return self._project
 
     def _load_resource(self, name: str, allow_custom: bool = False) -> dict:
-        """Load the resources from a given json file
+        """Load the resources from a given jsonc file
         * INPUTS:
-          * Name: Name of the json file
+          * Name: Name of the jsonc file
             Use the following constants:
-              * PACKAGES_JSON
-              * BOARD_JSON
-              * FPGAS_JSON
-              * PROGRAMMERS_JSON
-              * DISTRIBUTION_JSON
+              * PACKAGES_JSONC
+              * BOARD_JSONC
+              * FPGAS_JSONC
+              * PROGRAMMERS_JSONC
+              * DISTRIBUTION_JSONC
             * Allow_custom: if true, look first in the project dir for
               a project specific resource file of same name.
-        * OUTPUT: A dictionary with the json file data
+        * OUTPUT: A dictionary with the jsonc file data
           In case of error it raises an exception and finish
         """
         # -- Try loading a custom resource file from the project directory.
@@ -312,26 +312,26 @@ class ApioContext:
 
     @staticmethod
     def _load_resource_file(filepath: Path) -> dict:
-        """Load the resources from a given json file path
-        * OUTPUT: A dictionary with the json file data
+        """Load the resources from a given jsonc file path
+        * OUTPUT: A dictionary with the jsons file data
           In case of error it raises an exception and finish
         """
 
-        # -- Read the json file
+        # -- Read the jsonc file
         try:
             with filepath.open(encoding="utf8") as file:
 
                 # -- Read the json with comments file
                 data_jsonc = file.read()
 
-        # -- json file NOT FOUND! This is an apio system error
+        # -- The jsonc file NOT FOUND! This is an apio system error
         # -- It should never ocurr unless there is a bug in the
         # -- apio system files, or a bug when calling this function
         # -- passing a wrong file
         except FileNotFoundError as exc:
 
             # -- Display Main error
-            secho("Apio System Error! JSON file not found", fg="red")
+            secho("Apio System Error! JSONC file not found", fg="red")
 
             # -- Display the affected file (in a different color)
             apio_file_msg = click.style("Apio file: ", fg="yellow")
@@ -357,7 +357,7 @@ class ApioContext:
         except json.decoder.JSONDecodeError as exc:
 
             # -- Display Main error
-            secho("Apio System Error! Invalid JSON file", fg="red")
+            secho("Apio System Error! Invalid JSONC file", fg="red")
 
             # -- Display the affected file (in a different color)
             apio_file_msg = click.style("Apio file: ", fg="yellow")
@@ -375,10 +375,10 @@ class ApioContext:
 
     @staticmethod
     def _expand_env_template(template: str, package_path: Path) -> str:
-        """Fills a packages env value template as they appear in packages.json.
-        Currently it recognizes only a single place holder '%p' representing
-        the package absolute path. The '%p" can appear only at the begigning
-        of the template.
+        """Fills a packages env value template as they appear in
+        packages.jsonc. Currently it recognizes only a single place holder
+        '%p' representing the package absolute path. The '%p" can appear only
+        at the begigning of the template.
 
         E.g. '%p/bin' -> '/users/user/.apio/packages/drivers/bin'
 
@@ -482,7 +482,7 @@ class ApioContext:
         platform_id: str,
         platforms: Dict[str, Dict],
     ):
-        """Given a dictionary with the packages.json packages configurations,
+        """Given a dictionary with the packages.jsonc packages configurations,
         returns subset dictionary with packages that are applicable to the
         this platform.
         """

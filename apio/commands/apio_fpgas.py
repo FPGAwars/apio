@@ -141,8 +141,8 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
 APIO_FPGAS_HELP = """
 The command ‘apio fpgas’ lists the FPGAs recognized by Apio. Custom FPGAs
 supported by the underlying Yosys toolchain can be defined by placing a
-custom fpgas.json file in the project directory, overriding Apio’s standard
-fpgas.json file.
+custom fpgas.jsonc file in the project directory, overriding Apio’s standard
+fpgas.jsonc file.
 
 \b
 Examples:
@@ -169,7 +169,7 @@ def cli(
     definitions.
     """
 
-    # -- Create the apio context. If project dir has a fpgas.json file,
+    # -- Create the apio context. If project dir has a fpgas.jsonc file,
     # -- it will be loaded instead of the apio's standard file.
     apio_ctx = ApioContext(
         scope=ApioContextScope.PROJECT_OPTIONAL, project_dir_arg=project_dir

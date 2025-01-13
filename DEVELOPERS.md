@@ -78,12 +78,12 @@ python apio/main.py build --project_dir test-examples/alhambra-ii/01-LEDs-button
 
 ## Running apio in the Visual Studio Code debugger.
 
-The ``apio`` repository contains at its root the file ``.vscode/launch.json`` with debug
+The ``apio`` repository contains at its root the file ``.vscode/launch.jsonc`` with debug
 target for most of the ``apio`` commands. Make sure to open the root folder of the repository for VSC to recognize the targets file. To select the debug target, click on the debug icon on the left sidebar and this will display above a pull down menu with the available debug target and a start icon.
 
 [NOTE] This method doesn't not work for debugging the SConstruct scripts since they are run as subprocesses of the apio process. For debugging SConstruct scripts see the next section.
 
-The debug target can be viewed here https://github.com/FPGAwars/apio/blob/develop/.vscode/launch.json
+The debug target can be viewed here https://github.com/FPGAwars/apio/blob/develop/.vscode/launch.jsonc
 
 
 ## Debugging SConstruct scripts (subprocesses) with Visual Studio Code.

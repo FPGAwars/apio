@@ -165,8 +165,8 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
 # pylint: disable = R0801
 APIO_BOARDS_HELP = """
 The command 'apio boards' lists the FPGA boards recognized by Apio.
-Custom boards can be defined by placing a custom 'boards.json' file in the
-project directory, which will override Apio’s default 'boards.json' file.
+Custom boards can be defined by placing a custom 'boards.jsonc' file in the
+project directory, which will override Apio’s default 'boards.jsonc' file.
 
 \b
 Examples:
@@ -193,7 +193,7 @@ def cli(
     definitions."""
 
     # -- Create the apio context. If the project exists, it's custom
-    # -- boards.json is also loaded.
+    # -- boards.jsonc is also loaded.
     apio_ctx = ApioContext(
         scope=ApioContextScope.PROJECT_OPTIONAL,
         project_dir_arg=project_dir,

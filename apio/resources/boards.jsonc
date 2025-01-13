@@ -1,7 +1,5 @@
 // Apio boards definitions.
 //
-// Visual Studio Code note: set language model to 'jsonc' to avoid flagging 
-// comments as errors.
 {
   // https://embedded-tek.com/?product=development-fpga-board-pi-sicle
   "pi-sicle": {

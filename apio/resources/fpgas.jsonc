@@ -1,8 +1,5 @@
 // Apio boards definitions.
-// These FPGAs are referred to from bords.json.
-//
-// Visual Studio Code note: set language model to 'jsonc' to avoid flagging 
-// comments as errors.
+// These FPGAs are referred to from bords.jsonc.
 //
 // FIELDS
 // part_num: The exact and complete part number, but without the delivery

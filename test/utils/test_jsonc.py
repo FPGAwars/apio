@@ -2,15 +2,14 @@
 Tests of jsonc.py
 """
 
-import os
-import pytest
-from apio.utils import jsonc 
+from apio.utils import jsonc
 
-# -- The jsonc input. Notice the '//' inside the string. It should 
-# -- not be classified as comment start.
+# -- The converstion input and expected output strings. Notice the '//' within
+# -- the string, it should not be classified as a comment. The '_' characters
+# -- are place holders for trailing white space.
 BEFORE = """
     // Comment 1.
-    "image": { 
+    "image": {__
         // Comment 2.
         "src": "Images//Sun.png", // Comment 3
         "name": "aaa\n",
@@ -18,13 +17,11 @@ BEFORE = """
     }
 """
 
-# -- The expected json output. Some of the lines below have trailing
-# -- spaces after the comments removal.
 AFTER = """
-    
-    "image": { 
-        
-        "src": "Images//Sun.png", 
+____
+    "image": {__
+________
+        "src": "Images//Sun.png",_
         "name": "aaa\n",
         "hOffset": 250
     }
@@ -33,6 +30,4 @@ AFTER = """
 
 def test_to_json():
     """Test the comments removal."""
-    assert jsonc.to_json(BEFORE) == AFTER
-
-
+    assert jsonc.to_json(BEFORE.replace("_", " ")) == AFTER.replace("_", " ")

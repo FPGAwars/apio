@@ -1,5 +1,6 @@
-// Visual Studio Code note: set language model to 'jsonc' to avoid flagging 
-// comments as errors.
+// General definitions regarding remote config.
+//
+// TODO: Find a better place or file name for this data.
 
 {
   // URL of the apio remote config file. The placeholder %v is replaced with

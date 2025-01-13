@@ -209,7 +209,7 @@ def package_version_ok(
 ) -> bool:
     """Return true if the packagea is both in profile and plagrom packages
     and its version in the provile meet the requirements in the
-    distribution.json file. Otherwise return false."""
+    distribution.jsonc file. Otherwise return false."""
 
     # If this package is not applicable to this platform, return False.
     if package_name not in apio_ctx.platform_packages:

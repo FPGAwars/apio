@@ -31,7 +31,7 @@ CUSTOM_BOARDS = """
 
 
 def test_boards_custom_board(apio_runner: ApioRunner):
-    """Test boards listing with a custom boards.json file."""
+    """Test boards listing with a custom boards.jsonc file."""
 
     # -- If the option 'offline' is passed, the test is skip
     # -- (This test is slow and requires internet connectivity)
@@ -43,21 +43,21 @@ def test_boards_custom_board(apio_runner: ApioRunner):
         # -- Write an apio.ini file.
         sb.write_apio_ini({"board": "my_custom_board", "top-module": "main"})
 
-        # -- Write a custom boards.json file in the project's directory.
-        sb.write_file("boards.json", CUSTOM_BOARDS)
+        # -- Write a custom boards.jsonc file in the project's directory.
+        sb.write_file("boards.jsonc", CUSTOM_BOARDS)
 
         # -- Execute "apio boards"
         result = sb.invoke_apio_cmd(apio, ["boards"])
         sb.assert_ok(result)
         # -- Note: pytest sees the piped version of the command's output.
-        assert "Loading custom 'boards.json'" in result.output
+        assert "Loading custom 'boards.jsonc'" in result.output
         assert "alhambra-ii" not in result.output
         assert "my_custom_board" in result.output
         assert "Total of 1 board" in result.output
 
 
 def test_boards_list_ok(apio_runner: ApioRunner):
-    """Test normal board listing with the apio's boards.json."""
+    """Test normal board listing with the apio's boards.jsonc."""
 
     # -- If the option 'offline' is passed, the test is skip
     # -- (This test is slow and requires internet connectivity)
@@ -69,7 +69,7 @@ def test_boards_list_ok(apio_runner: ApioRunner):
         # -- Run 'apio boards'
         result = sb.invoke_apio_cmd(apio, ["boards"])
         sb.assert_ok(result)
-        assert "Loading custom 'boards.json'" not in result.output
+        assert "Loading custom 'boards.jsonc'" not in result.output
         assert "PACK" not in result.output
         assert "alhambra-ii" in result.output
         assert "my_custom_board" not in result.output
@@ -78,7 +78,7 @@ def test_boards_list_ok(apio_runner: ApioRunner):
         # -- Run 'apio boards -v'
         result = sb.invoke_apio_cmd(apio, ["boards", "-v"])
         sb.assert_ok(result)
-        assert "Loading custom 'boards.json'" not in result.output
+        assert "Loading custom 'boards.jsonc'" not in result.output
         assert "PACK" in result.output
         assert "alhambra-ii" in result.output
         assert "my_custom_board" not in result.output

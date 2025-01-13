@@ -28,11 +28,11 @@ def _construct_package_download_url(
                        v0.0.9/tools-oss-cad-suite-darwin_arm64-0.0.9.tar.gz'
     """
 
-    # -- Get the package info (originated from packages.json)
+    # -- Get the package info (originated from packages.jsonc)
     package_info = apio_ctx.get_package_info(package_name)
 
     # -- Get the package selector of this platform (the package selectors
-    # -- are specified in platforms.json). E.g. 'darwin_arm64'
+    # -- are specified in platforms.jsonc). E.g. 'darwin_arm64'
     platform_id = apio_ctx.platform_id
     package_selector = apio_ctx.platforms[platform_id]["package_selector"]
 
