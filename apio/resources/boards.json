@@ -138,6 +138,7 @@
       "pid": "5740"
     }
   },
+  // https://github.com/mystorm-org/BlackIce-II/wiki/BlackIce-II-Overview
   "blackice-ii": {
     "description": "BlackIce II",
     "fpga": "ice40-hx4k-tq144",
@@ -149,6 +150,7 @@
       "pid": "5740"
     }
   },
+  // https://github.com/folknology/BlackIceMx
   "blackice-mx": {
     "description": "BlackIce MX",
     "fpga": "ice40-hx4k-tq144",
@@ -160,6 +162,7 @@
       "pid": "5740"
     }
   },
+  // https://www.robot-electronics.co.uk/products/fpga/icefun.html
   "icefun": {
     "description": "iceFUN",
     "fpga": "ice40-hx8k-cb132",
@@ -171,6 +174,7 @@
       "pid": "ffee"
     }
   },
+  // https://www.robotshop.com/products/devantech-icewerx-kit-ice40-hx8k-fpga-module
   "icewerx": {
     "legacy_name": "iceWerx",
     "description": "iceWerx",
@@ -183,6 +187,7 @@
       "pid": "ffee"
     }
   },
+  // https://github.com/tinyfpga/TinyFPGA-B-Series
   "tinyfpga-b2": {
     "legacy_name": "TinyFPGA-B2",
     "description": "TinyFPGA B2",
@@ -195,6 +200,7 @@
       "pid": "2100"
     }
   },
+  // https://github.com/tinyfpga/TinyFPGA-BX
   "tinyfpga-bx": {
     "legacy_name": "TinyFPGA-BX",
     "description": "TinyFPGA BX",
@@ -225,6 +231,7 @@
       "desc": "Alhambra II.*"
     }
   },
+  // TBD
   "upduino": {
     "description": "UPDuino v1.0",
     "fpga": "ice40-up5k-sg48",
@@ -239,6 +246,7 @@
       "desc": "Single RS232-HS"
     }
   },
+  // TBD
   "upduino2": {
     "description": "UPDuino v2.0",
     "fpga": "ice40-up5k-sg48",
@@ -253,6 +261,7 @@
       "desc": "Single RS232-HS"
     }
   },
+  // https://github.com/tinyvision-ai-inc/UPduino-v2.1
   "upduino21": {
     "description": "UPduino v2.1",
     "fpga": "ice40-up5k-sg48",
@@ -267,6 +276,7 @@
       "desc": "(?:Single RS232-HS)|(?:UPduino v2.*)"
     }
   },
+  // https://github.com/tinyvision-ai-inc/UPduino-v3.0
   "upduino3": {
     "description": "UPduino v3.0",
     "fpga": "ice40-up5k-sg48",
@@ -281,6 +291,7 @@
       "desc": "UPduino v3\\.0"
     }
   },
+  // https://github.com/tinyvision-ai-inc/UPduino-v3.0
   "upduino31": {
     "description": "UPduino v3.1",
     "fpga": "ice40-up5k-sg48",
