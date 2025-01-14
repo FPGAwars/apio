@@ -20,13 +20,21 @@ for proj in $projects;  do
     # -- Go to the project's dir.
     pushd $proj
 
+    # -- Test if the project has testbenches.
+    set +e
+    ls *_tb.v
+    TB_STATUS=$?
+    set -e
+
+
     # -- Exceute apio commands in the project. They should succeeed.
     set -x
       apio clean
       apio build
       apio lint
-      # TODO: test only if there is a testbench
-      # apio test
+      if [ $TB_STATUS -eq 0 ]; then
+        apio test
+      fi   
       apio graph
       apio report
       apio clean
