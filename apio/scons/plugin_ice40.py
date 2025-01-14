@@ -83,11 +83,10 @@ class PluginIce40(PluginBase):
         # -- Create the builder.
         return Builder(
             action=(
-                "nextpnr-ice40 --{0}{1} --package {2} --json $SOURCE "
-                "--asc $TARGET --report {3} --pcf {4} {5}"
+                "nextpnr-ice40 --{0} --package {1} --json $SOURCE "
+                "--asc $TARGET --report {2} --pcf {3} {4}"
             ).format(
                 args.FPGA_TYPE,
-                args.FPGA_SIZE,
                 args.FPGA_PACK,
                 TARGET + ".pnr",
                 self.constrain_file(),

@@ -9,7 +9,7 @@ CUSTOM_FPGAS = """
 {
   "my_custom_fpga": {
     "arch": "ice40",
-    "type": "lp",
+    "type": "lp1k",
     "size": "1k",
     "pack": "swg16tr"
   }
