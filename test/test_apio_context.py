@@ -88,10 +88,6 @@ def test_home_dir_with_relative_path(
         )
 
 
-# -- This board is known to be problematic so we skip it.
-# -- See https://github.com/FPGAwars/apio/issues/535
-KNOWN_BAD_BOARDS = ["odt-rpga-feather"]
-
 # -- These programmers are known to be unused.
 # -- https://github.com/FPGAwars/apio/issues/536
 KNOWN_UNUSED_PROGRAMMERS = ["ujprog"]
@@ -109,10 +105,6 @@ def test_resources_references(apio_runner: ApioRunner):
         unused_programmers = set(apio_ctx.programmers.keys())
 
         for board_name, board_info in apio_ctx.boards.items():
-            # -- Skip boards that are known to be problematic.
-            if board_name in KNOWN_BAD_BOARDS:
-                continue
-
             # -- Prepare a context message for failing assertions.
             board_msg = f"While testing board {board_name}"
 

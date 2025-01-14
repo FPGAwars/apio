@@ -239,7 +239,7 @@
     "pack": "uwg30"
   },
   // TODO: Should the part numbrer and type should have 'up' instead of just 'u'?
-  // This fpga is used by the boards 'odt-icyblue-feather' and 'odt-rpga-feather'.
+  // This fpga is used by the boards 'odt-icyblue-feather'.
   // See https://github.com/FPGAwars/apio/issues/545
   // See https://github.com/FPGAwars/apio/issues/535 
   "ice40-u4k-sg48": {
