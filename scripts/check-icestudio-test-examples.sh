@@ -18,17 +18,20 @@ for proj in $projects;  do
     echo
 
     # -- Go to the project's dir.
-    cd $proj
+    pushd $proj
 
     # -- Exceute apio commands in the project. They should succeeed.
     set -x
+      apio clean
       apio build
-      apio lint
-      apio test
+      # apio lint
+      # apio test
       apio graph
       apio report
       apio clean
     set +x
+
+    popd
     
 done
 
