@@ -655,6 +655,8 @@
   // FPGA part number need to be resolved.
   // See https://github.com/FPGAwars/apio/issues/545
   // See https://github.com/FPGAwars/apio/issues/535 
+  //
+  // https://github.com/Oak-Development-Technologies/IcyBlue
   "odt-icyblue-feather": {
     "legacy_name": "ODT_IcyBlue_Feather",
     "description": "ODT_IcyBlue_Feather",
