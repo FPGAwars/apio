@@ -229,6 +229,9 @@
     "pack": "uwg30"
   },
   // TODO: Should the part numbrer and type should have 'up' instead of just 'u'?
+  // This fpga is currently not used.
+  // See https://github.com/FPGAwars/apio/issues/545
+  // See https://github.com/FPGAwars/apio/issues/535 
   "ice40-u4k-uwg30": {
     "part_num": "ICE40U4K-UWG30",
     "arch": "ice40",
@@ -237,6 +240,9 @@
     "pack": "uwg30"
   },
   // TODO: Should the part numbrer and type should have 'up' instead of just 'u'?
+  // This fpga is used by the boards 'odt-icyblue-feather' and 'odt-rpga-feather'.
+  // See https://github.com/FPGAwars/apio/issues/545
+  // See https://github.com/FPGAwars/apio/issues/535 
   "ice40-u4k-sg48": {
     "part_num": "ICE40U4K-SG48",
     "arch": "ice40",

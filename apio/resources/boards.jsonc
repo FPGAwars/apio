@@ -652,6 +652,9 @@
       "pid": "602b"
     }
   },
+  // FPGA part number need to be resolved.
+  // See https://github.com/FPGAwars/apio/issues/545
+  // See https://github.com/FPGAwars/apio/issues/535 
   "odt-icyblue-feather": {
     "legacy_name": "ODT_IcyBlue_Feather",
     "description": "ODT_IcyBlue_Feather",
@@ -664,6 +667,9 @@
       "pid": "6014"
     }
   },
+  // Candidate for removal.
+  // See https://github.com/FPGAwars/apio/issues/545
+  // See https://github.com/FPGAwars/apio/issues/535 
   "odt-rpga-feather": {
     "legacy_name": "ODT_RPGA_Feather",
     "description": "ODT_RPGA_Feather",
