@@ -24,13 +24,15 @@ for proj in $projects;  do
     set -x
       apio clean
       apio build
-      # apio lint
+      apio lint
+      # TODO: test only if there is a testbench
       # apio test
       apio graph
       apio report
       apio clean
     set +x
 
+    # -- Go back to the repo's root.
     popd
     
 done
