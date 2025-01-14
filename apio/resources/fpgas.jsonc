@@ -14,6 +14,9 @@
 // pack:     TBD
 // idcode:   TBD
 //
+//
+// ============= ICE40
+//
 {
   "ice40-lp1k-swg16tr": {
     "part_num": "ICE40LP1K-SWG16TR",
@@ -239,6 +242,10 @@
     "size": "4k",
     "pack": "sg48"
   },
+  //
+  //
+  // ============= ECP5
+  //
   "ecp5-lfe5u-12f-cabga256": {
     "part_num": "LFE5U-12F-6BG256C",
     "arch": "ecp5",
@@ -494,38 +501,45 @@
     "size": "85k",
     "pack": "CSFBGA285"
   },
+  //
+  //
+  // ============= GOWIN
+  //
+  // arch: "gowin"
+  // type: 
+  //
   "gw1n-lv1qn48c6-i5": {
     "part_num": "GW1N-LV1QN48C6/I5",
     "arch": "gowin",
-    "type": "gw1n-1",
+    "type": "GW1N-1",
     "size": "1k",
     "pack": "QN48"
   },
   "gw1nz-lv1qn48c6-i5": {
     "part_num": "GW1NZ-LV1QN48C6/I5",
     "arch": "gowin",
-    "type": "gw1nz-1",
+    "type": "GW1NZ-1",
     "size": "1k",
     "pack": "QN48"
   },
   "gw1nsr-lv4cqn48pc7-i6": {
     "part_num": "GW1NSR-LV4CQN48PC7/I6",
     "arch": "gowin",
-    "type": "gw1ns-4",
+    "type": "GW1NS-4",
     "size": "4k",
     "pack": "QN48P"
   },
   "gw1nr-lv9qn88pc6-i5": {
     "part_num": "GW1NR-LV9QN88PC6/I5",
     "arch": "gowin",
-    "type": "gw1n-9c",
+    "type": "GW1N-9C",
     "size": "9k",
     "pack": "QN88P"
   },
   "gw2ar-lv18qn88c8-i7": {
     "part_num": "GW2AR-LV18QN88C8/I7",
     "arch": "gowin",
-    "type": "gw2a-18c",
+    "type": "GW2A-18C",
     "size": "20k",
     "pack": "QN88"
   }

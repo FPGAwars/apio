@@ -90,7 +90,7 @@ class PluginGowin(PluginBase):
             ).format(
                 args.FPGA_PART_NUM,
                 TARGET + ".pnr",
-                args.FPGA_TYPE.upper(),
+                args.FPGA_TYPE,
                 self.constrain_file(),
                 "" if args.VERBOSE_ALL or args.VERBOSE_PNR else "-q",
             ),
@@ -106,7 +106,7 @@ class PluginGowin(PluginBase):
         args = apio_env.args
         return Builder(
             action="gowin_pack -d {0} -o $TARGET $SOURCE".format(
-                args.FPGA_TYPE.upper()
+                args.FPGA_TYPE
             ),
             suffix=".fs",
             src_suffix=".pnr.json",
