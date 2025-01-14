@@ -12,7 +12,6 @@
 // size:     TBD
 // type:     TBD
 // pack:     TBD
-// idcode:   TBD
 //
 //
 // ============= ICE40
@@ -259,24 +258,21 @@
     "arch": "ecp5",
     "size": "12k",
     "type": "12k",
-    "pack": "CABGA256",
-    "idcode": "0x21111043"
+    "pack": "CABGA256"
   },
   "ecp5-lfe5u-12f-cabga381": {
     "part_num": "LFE5U-12F-6BG381C",
     "arch": "ecp5",
     "size": "12k",
     "type": "12k",
-    "pack": "CABGA381",
-    "idcode": "0x21111043"
+    "pack": "CABGA381"
   },
   "ecp5-lfe5u-12f-csfbga285": {
     "part_num": "LFE5U-12F-6MG285C",
     "arch": "ecp5",
     "size": "12k",
     "type": "12k",
-    "pack": "CSFBGA285",
-    "idcode": "0x21111043"
+    "pack": "CSFBGA285"
   },
   "ecp5-lfe5u-25f-cabga256": {
     "part_num": "LFE5U-25F-6BG256C",

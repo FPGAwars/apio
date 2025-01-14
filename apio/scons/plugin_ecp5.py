@@ -105,13 +105,10 @@ class PluginEcp5(PluginBase):
     # @overrides
     def bitstream_builder(self) -> BuilderBase:
         """Creates and returns the bitstream builder."""
-        apio_env = self.apio_env
-        args = apio_env.args
         return Builder(
-            action="ecppack --compress --db {0} {1} $SOURCE "
-            "{2}/hardware.bit".format(
+            action="ecppack --compress --db {0} $SOURCE "
+            "{1}/hardware.bit".format(
                 self.database_path,
-                "" if not args.FPGA_IDCODE else f"--idcode {args.FPGA_IDCODE}",
                 BUILD_DIR,
             ),
             suffix=".bit",
