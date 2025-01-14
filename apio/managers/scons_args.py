@@ -18,7 +18,6 @@ from apio.utils import util
 ARG_FPGA_PART_NUM = "part_num"
 ARG_FPGA_ARCH = "arch"
 ARG_FPGA_TYPE = "type"
-ARG_FPGA_SIZE = "size"
 ARG_FPGA_PACK = "pack"
 ARG_VERBOSE_ALL = "verbose_all"  # Bool.
 ARG_VERBOSE_YOSYS = "verbose_yosys"  # Bool
@@ -104,7 +103,7 @@ def process_arguments(
       * Return a tuple (board, variables)
         - board: Board name ('alhambra-ii', 'icezum'...)
         - variables: A list of strings scons variables. For example
-          ['fpga_arch=ice40', 'fpga_size=8k', 'fpga_type=hx',
+          ['fpga_arch=ice40', 'fpga_type=hx',
           fpga_pack='tq144:4k']...
     """
 
@@ -114,7 +113,6 @@ def process_arguments(
         ARG_FPGA_PART_NUM: Arg(ARG_FPGA_PART_NUM, "fpga_part_num"),
         ARG_FPGA_ARCH: Arg(ARG_FPGA_ARCH, "fpga_arch"),
         ARG_FPGA_TYPE: Arg(ARG_FPGA_TYPE, "fpga_type"),
-        ARG_FPGA_SIZE: Arg(ARG_FPGA_SIZE, "fpga_size"),
         ARG_FPGA_PACK: Arg(ARG_FPGA_PACK, "fpga_pack"),
         ARG_VERBOSE_ALL: Arg(ARG_VERBOSE_ALL, "verbose_all"),
         ARG_VERBOSE_YOSYS: Arg(ARG_VERBOSE_YOSYS, "verbose_yosys"),
@@ -165,7 +163,6 @@ def process_arguments(
         [args[ARG_FPGA_PART_NUM], "part_num"],
         [args[ARG_FPGA_ARCH], "arch"],
         [args[ARG_FPGA_TYPE], "type"],
-        [args[ARG_FPGA_SIZE], "size"],
         [args[ARG_FPGA_PACK], "pack"],
     ]:
         # -- Get the fpga property, if exits.
@@ -175,13 +172,9 @@ def process_arguments(
         if fpga_property:
             arg.set(fpga_property)
 
-    # -- We already have a final configuration
-    # -- Check that this configuration is ok
-    # -- At least it should have fpga, type, size and pack
-    # -- Exit if it is not correct
-    for arg in [args[ARG_FPGA_TYPE], args[ARG_FPGA_SIZE], args[ARG_FPGA_PACK]]:
-
-        # -- Config item not defined!! it is mandatory!
+    # -- Check that the required fpga args exists.
+    for arg_name in [ARG_FPGA_PART_NUM, ARG_FPGA_TYPE, ARG_FPGA_PACK]:
+        arg = args[arg_name]
         if not arg.has_value:
             perror_insuficient_arguments()
             raise ValueError(f"Missing FPGA {arg.arg_name.upper()}")

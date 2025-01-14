@@ -110,7 +110,6 @@ class ApioArgs:
     PLATFORM_ID: str
     FPGA_ARCH: str
     FPGA_PART_NUM: str
-    FPGA_SIZE: str
     FPGA_TYPE: str
     FPGA_PACK: str
     TOP_MODULE: str
@@ -155,7 +154,6 @@ class ApioArgs:
             PLATFORM_ID=parser.arg_str("platform_id"),
             FPGA_ARCH=parser.arg_str("fpga_arch"),
             FPGA_PART_NUM=parser.arg_str("fpga_part_num"),
-            FPGA_SIZE=parser.arg_str("fpga_size"),
             FPGA_TYPE=parser.arg_str("fpga_type"),
             FPGA_PACK=parser.arg_str("fpga_pack"),
             TOP_MODULE=parser.arg_str("top_module"),
