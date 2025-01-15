@@ -1,20 +1,32 @@
 // Apio boards definitions.
 // These FPGAs are referred to from bords.jsonc.
 //
-// FIELDS
-// part_num: The exact and complete part number, but without the delivery
-//           information such as tape vs tray. If an variant is unknown,
-//           err on the safe side and select the least demanding option (e.g.
-//           if multiple speeds are available and the actual speed option is
-//           unknown, use the slowest option.) 
-// arch:     The architecture, in term of apio's impelemntation which has
-//           per architecture plugin implementation.
-// size:     TBD
-// type:     TBD
-// pack:     TBD
+// COMMON-FIELDS:
+//    'part_num': The exact and complete part number, but without the delivery
+//        information such as tape vs tray. If an variant is unknown,
+//        err on the safe side and select the least demanding option (e.g.
+//        if multiple speeds are available and the actual speed option is
+//        unknown, use the slowest option.) 
+//
+//    'arch': The architecture group of the FPGA, This determines the saemantic
+//        of its fields and the toolchain commands that are used to process it.
+//
+//    'size': The device size class. As of Jan 2024, this field is for
+//        information only and doesn't affect the oeration of the 
+//        toochain. 
+//
+// ARCHITECTURE-SPECIFIC-FIELDS: 
+//    'type':
+//    'pack': 
+//        These fields are documented at the begining of each architecture
+//        group below.
 //
 //
 // ============= ICE40
+//
+// ARCHITECTURE-SPECIFIC-FIELDS: 
+//    'type': TBD
+//    'pack': TBD
 //
 {
   "ice40-lp1k-swg16tr": {
@@ -252,6 +264,10 @@
   //
   //
   // ============= ECP5
+  //
+  // ARCHITECTURE-SPECIFIC-FIELDS: 
+  //    'type': TBD
+  //    'pack': TBD
   //
   "ecp5-lfe5u-12f-cabga256": {
     "part_num": "LFE5U-12F-6BG256C",
@@ -509,8 +525,11 @@
   //
   // ============= GOWIN
   //
-  // arch: "gowin"
-  // type: 
+  // ARCHITECTURE-SPECIFIC-FIELDS: 
+  //    'type': TBD
+  //
+  //    'pack': As of Jan 2024, this fields is used for information only
+  //        and doesn't not affect the toolchain commands. We set it to the 
   //
   "gw1n-lv1qn48c6-i5": {
     "part_num": "GW1N-LV1QN48C6/I5",
