@@ -57,6 +57,10 @@ class ApioEnv:
 
         self.args = ApioArgs.make(scons_args, is_debug)
 
+        # -- Check that the required args for this class exist.
+        args = self.args
+        args.check_required_str_args(args.PLATFORM_ID)
+
         # -- Since we ae not using the default environment, make sure it was
         # -- not used unintentionally, e.v. in tests that run create multiple
         # -- scons env in the same session.

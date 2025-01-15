@@ -99,12 +99,12 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
     parts = []
     parts.append(f"{'FPGA ID':<{fpga_len}}")
     parts.append(f"{'BOARDS':<{board_count_len}}")
-    parts.append(f"{'AECH':<{fpga_arch_len}}")
+    parts.append(f"{'ARCH':<{fpga_arch_len}}")
     parts.append(f"{'PART NUMBER':<{fpga_part_num_len}}")
     parts.append(f"{'SIZE':<{fpga_size_len}}")
     if verbose:
         parts.append(f"{'TYPE':<{fpga_type_len}}")
-        parts.append(f"{'PACKAGE':<{fpga_pack_len}}")
+        parts.append(f"{'PACK':<{fpga_pack_len}}")
 
     # -- Print the title
     secho("".join(parts), fg="cyan", bold="True")

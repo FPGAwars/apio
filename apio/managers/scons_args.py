@@ -7,7 +7,6 @@
 
 
 from typing import Dict, Tuple, Optional, List, Any
-from click import secho
 from apio.apio_context import ApioContext
 from apio.utils import util
 
@@ -154,11 +153,9 @@ def process_arguments(
         fpga_id in apio_ctx.fpgas
     ), f"process_arguments(): unknown fpga {fpga_id} "
 
-    # -- Update the FPGA items according to the current board and fpga
-    # -- Raise an exception in case of a contradiction
-    # -- For example: board = alhambra-ii, and size='8k' given by arguments
-    # -- (The board determine the fpga and the size, but the user has
-    # --  specificied a different size. It is a contradiction!)
+    # -- Populate the fpga args from the fpga config. We check later, at
+    # -- the architecture plugin level that the required values for that
+    # -- plugin exit.
     for arg, fpga_property_name in [
         [args[ARG_FPGA_PART_NUM], "part_num"],
         [args[ARG_FPGA_ARCH], "arch"],
@@ -169,15 +166,9 @@ def process_arguments(
         fpga_config = apio_ctx.fpgas.get(fpga_id)
         fpga_property = fpga_config.get(fpga_property_name, None)
 
+        # -- Populate the arg if the field has a non default value.
         if fpga_property:
             arg.set(fpga_property)
-
-    # -- Check that the required fpga args exists.
-    for arg_name in [ARG_FPGA_PART_NUM, ARG_FPGA_TYPE, ARG_FPGA_PACK]:
-        arg = args[arg_name]
-        if not arg.has_value:
-            perror_insuficient_arguments()
-            raise ValueError(f"Missing FPGA {arg.arg_name.upper()}")
 
     # -- If top-module not specified by the user (e.g. for apio graph command),
     # -- use the top module from the project file.
@@ -204,24 +195,4 @@ def process_arguments(
     return (
         board,
         variables,
-    )
-
-
-def perror_insuficient_arguments():
-    """Print an error: not enough arguments given"""
-
-    secho(
-        "Error: insufficient arguments: missing board",
-        fg="red",
-    )
-    secho(
-        "You have a few options:\n"
-        "  1) Change to a project directory with an apio.ini file\n"
-        "  2) Specify the directory of a project with an apio.ini file\n"
-        "       `--project-dir <projectdir>\n"
-        "  3) Create a project file apio.ini manually or using\n"
-        "       `apio create --board <boardname>`\n"
-        "  4) Execute your command with the flag\n"
-        "       `--board <boardname>`",
-        fg="yellow",
     )

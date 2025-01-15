@@ -37,6 +37,12 @@ class PluginIce40(PluginBase):
         # -- Call parent constructor.
         super().__init__(apio_env)
 
+        # -- Make sure the require args we expect are indeed there.
+        args = apio_env.args
+        args.check_required_str_args(
+            args.YOSYS_PATH, args.FPGA_PART_NUM, args.FPGA_TYPE, args.FPGA_PACK
+        )
+
         # -- Cache values.
         self.yosys_lib_dir = apio_env.args.YOSYS_PATH + "/ice40"
         self.yosys_lib_file = self.yosys_lib_dir + "/cells_sim.v"

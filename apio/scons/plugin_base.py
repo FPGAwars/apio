@@ -114,7 +114,6 @@ class PluginBase:
         """Creates and returns the graphviz renderer builder."""
         apio_env = self.apio_env
         args = apio_env.args
-        # return apio_env.graphviz_builder(args.GRAPH_SPEC)
 
         # --Decode the graphic spec. Currently it's trivial since it
         # -- contains a single value.

@@ -38,6 +38,16 @@ class PluginEcp5(PluginBase):
         # -- Call parent constructor.
         super().__init__(apio_env)
 
+        # -- Make sure the require args we expect are indeed there.
+        args = apio_env.args
+        args.check_required_str_args(
+            args.YOSYS_PATH,
+            args.TRELLIS_PATH,
+            args.FPGA_PART_NUM,
+            args.FPGA_TYPE,
+            args.FPGA_PACK,
+        )
+
         # -- Cache values.
         self.database_path = os.path.join(
             apio_env.args.TRELLIS_PATH, "database"

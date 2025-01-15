@@ -530,41 +530,34 @@
   //        FPGA_TYPE arg that is passed to nextpnr-himbaechel and to 
   //        gowin_pack. See plugin_gowin.py for details.
   //
-  //    'pack': Unused.
-  //
   "gw1n-lv1qn48c6-i5": {
     "part_num": "GW1N-LV1QN48C6/I5",
     "arch": "gowin",
     "size": "1k",
-    "type": "GW1N-1",
-    "pack": "QN48"
+    "type": "GW1N-1"
   },
   "gw1nz-lv1qn48c6-i5": {
     "part_num": "GW1NZ-LV1QN48C6/I5",
     "arch": "gowin",
     "size": "1k",
-    "type": "GW1NZ-1",
-    "pack": "QN48"
+    "type": "GW1NZ-1"
   },
   "gw1nsr-lv4cqn48pc7-i6": {
     "part_num": "GW1NSR-LV4CQN48PC7/I6",
     "arch": "gowin",
     "size": "4k",
-    "type": "GW1NS-4",
-    "pack": "QN48P"
+    "type": "GW1NS-4"
   },
   "gw1nr-lv9qn88pc6-i5": {
     "part_num": "GW1NR-LV9QN88PC6/I5",
     "arch": "gowin",
     "size": "9k",
-    "type": "GW1N-9C",
-    "pack": "QN88P"
+    "type": "GW1N-9C"
   },
   "gw2ar-lv18qn88c8-i7": {
     "part_num": "GW2AR-LV18QN88C8/I7",
     "arch": "gowin",
     "size": "20k",
-    "type": "GW2A-18C",
-    "pack": "QN88"
+    "type": "GW2A-18C"
   }
 }

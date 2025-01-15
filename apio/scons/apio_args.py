@@ -17,6 +17,7 @@ from dataclasses import dataclass
 from typing import Dict, List
 import os
 import sys
+from varname import argname
 from click import secho
 
 
@@ -105,6 +106,8 @@ class ApioArgsParser:
 class ApioArgs:
     """Apio scons args values. Contains values from scons args and os env."""
 
+    is_debug: bool
+
     # -- Scons str args.
     PROG: str
     PLATFORM_ID: str
@@ -137,6 +140,35 @@ class ApioArgs:
         assert self.YOSYS_PATH, "YOSYS_PATH env var is required."
         assert self.TRELLIS_PATH, "TRELLIS_PATH env var is required."
 
+    def check_required_str_args(self, *_args):
+        """Check that the specified required str args has a non default/empty
+        value and exit with an error if not. The args are in the forma
+        args.FPGA_ARCH, args.FPGA_TYPE, and so on.
+        """
+
+        # -- Use the magic of argname to get the name of the arg names
+        # -- that the caller want to check.
+        args_names = argname(
+            "self", "*_args", func=ApioArgs.check_required_str_args
+        )
+
+        for arg_name in args_names:
+            # -- Get the arg value.
+            arg_val = getattr(self, arg_name)
+            if self.is_debug:
+                print(f"Checking required scons arg: {arg_name} [{arg_val}]")
+
+            # -- We restrict this check to string args.
+            assert isinstance(
+                arg_val, str
+            ), f"Arg: {arg_name}, type: {type(arg_val)}"
+
+            # -- If the value is empty, print an error message and dexit.
+            if not arg_val:
+                # -- Arg is empty
+                secho(f"Error: missing required value: {arg_name}.")
+                sys.exit(1)
+
     @classmethod
     def make(cls, scons_args: Dict[str, str], is_debug: bool) -> ApioArgs:
         """Return a ApioArgs object with the parsed args."""
@@ -149,6 +181,7 @@ class ApioArgs:
 
         # -- Parse the args and populate an ApioArgs instance.
         result = ApioArgs(
+            is_debug=is_debug,
             # Scons tring args.
             PROG=parser.arg_str("prog"),
             PLATFORM_ID=parser.arg_str("platform_id"),
