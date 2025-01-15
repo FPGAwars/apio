@@ -27,15 +27,16 @@ class Entry:
     """Holds the values of a single board report line."""
 
     board: str
-    board_description: str
     examples_count: str
-    fpga: str
-    programmer: str
+    board_description: str
     fpga_arch: str
-    fpga_part_num: str
     fpga_size: str
+    fpga: str
+    fpga_part_num: str
     fpga_type: str
     fpga_pack: str
+    fpga_speed: str
+    programmer: str
 
     def sort_key(self):
         """Returns a key for sorting entiries. Primary key is the architecture
@@ -65,28 +66,32 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
     # -- Collect the boards info into a list of entires, one per board.
     entries: List[Entry] = []
     for board, board_info in apio_ctx.boards.items():
-        board_description = board_info.get("description", "")
-        examples_count = "   " + str(examples_counts.get(board, ""))
-        programmer = board_info.get("programmer", {}).get("type", "")
         fpga = board_info.get("fpga", "")
         fpga_info = apio_ctx.fpgas.get(fpga, {})
+
+        examples_count = "   " + str(examples_counts.get(board, ""))
+        board_description = board_info.get("description", "")
         fpga_arch = fpga_info.get("arch", "")
-        fpga_part_num = fpga_info.get("part_num", "")
         fpga_size = fpga_info.get("size", "")
+        fpga_part_num = fpga_info.get("part_num", "")
         fpga_type = fpga_info.get("type", "")
         fpga_pack = fpga_info.get("pack", "")
+        fpga_speed = fpga_info.get("speed", "")
+        programmer = board_info.get("programmer", {}).get("type", "")
+
         entries.append(
             Entry(
-                board,
-                board_description,
-                examples_count,
-                fpga,
-                programmer,
-                fpga_arch,
-                fpga_part_num,
-                fpga_size,
-                fpga_type,
-                fpga_pack,
+                board=board,
+                examples_count=examples_count,
+                board_description=board_description,
+                fpga_arch=fpga_arch,
+                fpga_size=fpga_size,
+                fpga=fpga,
+                fpga_part_num=fpga_part_num,
+                fpga_type=fpga_type,
+                fpga_pack=fpga_pack,
+                fpga_speed=fpga_speed,
+                programmer=programmer,
             )
         )
 
@@ -94,19 +99,21 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
     entries.sort(key=lambda x: x.sort_key())
 
     # -- Compute the columns widths.
+
     margin = 2 if verbose else 4
     board_len = max(len(x.board) for x in entries) + margin - 2
+    examples_count_len = 7 + margin
     board_description_len = (
         max(len(x.board_description) for x in entries) + margin
     )
-    examples_count_len = 7 + margin
-    fpga_len = max(len(x.fpga) for x in entries) + margin
-    programmer_len = max(len(x.programmer) for x in entries) + margin
     fpga_arch_len = max(len(x.fpga_arch) for x in entries) + margin
+    fpga_size_len = max(len(x.fpga_size) for x in entries) + margin
+    fpga_len = max(len(x.fpga) for x in entries) + margin
     fpga_part_num_len = max(len(x.fpga_part_num) for x in entries) + margin
     fpga_type_len = max(len(x.fpga_type) for x in entries) + margin
-    fpga_size_len = max(len(x.fpga_size) for x in entries) + margin
     fpga_pack_len = max(len(x.fpga_pack) for x in entries) + margin
+    fpga_speed_len = 5 + margin
+    programmer_len = max(len(x.programmer) for x in entries) + margin
 
     # -- Construct the title fields.
     parts = []
@@ -115,14 +122,14 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
     if verbose:
         parts.append(f"{'DESCRIPTION':<{board_description_len}}")
     parts.append(f"{'ARCH':<{fpga_arch_len}}")
-    if verbose:
-        parts.append(f"{'FPGA':<{fpga_len}}")
-    parts.append(f"{'PART NUMBER':<{fpga_part_num_len}}")
-    if verbose:
-        parts.append(f"{'TYPE':<{fpga_type_len}}")
     parts.append(f"{'SIZE':<{fpga_size_len}}")
     if verbose:
+        parts.append(f"{'FPGA':<{fpga_len}}")
+    parts.append(f"{'PART-NUMBER':<{fpga_part_num_len}}")
+    if verbose:
+        parts.append(f"{'TYPE':<{fpga_type_len}}")
         parts.append(f"{'PACK':<{fpga_pack_len}}")
+        parts.append(f"{'SPEED':<{fpga_speed_len}}")
     parts.append(f"{'PROGRAMMER':<{programmer_len}}")
 
     # -- Show the title line.
@@ -138,14 +145,14 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
         if verbose:
             parts.append(f"{x.board_description:<{board_description_len}}")
         parts.append(f"{x.fpga_arch:<{fpga_arch_len}}")
+        parts.append(f"{x.fpga_size:<{fpga_size_len}}")
         if verbose:
             parts.append(f"{x.fpga:<{fpga_len}}")
         parts.append(f"{x.fpga_part_num:<{fpga_part_num_len}}")
         if verbose:
             parts.append(f"{x.fpga_type:<{fpga_type_len}}")
-        parts.append(f"{x.fpga_size:<{fpga_size_len}}")
-        if verbose:
             parts.append(f"{x.fpga_pack:<{fpga_pack_len}}")
+            parts.append(f"{x.fpga_speed:<{fpga_speed_len}}")
         parts.append(f"{x.programmer:<{programmer_len}}")
 
         # -- Print the line

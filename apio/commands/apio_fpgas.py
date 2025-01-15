@@ -20,6 +20,7 @@ from apio.commands import options
 
 # R0801: Similar lines in 2 files
 # pylint: disable=R0801
+# pylint: disable=too-many-instance-attributes
 @dataclass(frozen=True)
 class Entry:
     """A class to hold the field of a single line of the report."""
@@ -31,6 +32,7 @@ class Entry:
     fpga_size: str
     fpga_type: str
     fpga_pack: str
+    fpga_speed: str
 
     def sort_key(self):
         """A kery for sorting entries. Primary key is architecture, by
@@ -48,6 +50,7 @@ class Entry:
 
 
 # pylint: disable=too-many-locals
+# pylint: disable=too-many-statements
 def list_fpgas(apio_ctx: ApioContext, verbose: bool):
     """Prints all the available FPGA definitions."""
 
@@ -69,16 +72,18 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
         fpga_size = fpga_info.get("size", "")
         fpga_type = fpga_info.get("type", "")
         fpga_pack = fpga_info.get("pack", "")
+        fpga_speed = fpga_info.get("speed", "")
         # -- Append to the list
         entries.append(
             Entry(
-                fpga,
-                board_count,
-                fpga_arch,
-                fpga_part_num,
-                fpga_size,
-                fpga_type,
-                fpga_pack,
+                fpga=fpga,
+                board_count=board_count,
+                fpga_arch=fpga_arch,
+                fpga_part_num=fpga_part_num,
+                fpga_size=fpga_size,
+                fpga_type=fpga_type,
+                fpga_pack=fpga_pack,
+                fpga_speed=fpga_speed,
             )
         )
 
@@ -94,17 +99,19 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
     fpga_size_len = max(len(x.fpga_size) for x in entries) + margin
     fpga_type_len = max(len(x.fpga_type) for x in entries) + margin
     fpga_pack_len = max(len(x.fpga_pack) for x in entries) + margin
+    fpga_speed_len = 5 + margin
 
     # -- Construct the title fields.
     parts = []
     parts.append(f"{'FPGA ID':<{fpga_len}}")
     parts.append(f"{'BOARDS':<{board_count_len}}")
     parts.append(f"{'ARCH':<{fpga_arch_len}}")
-    parts.append(f"{'PART NUMBER':<{fpga_part_num_len}}")
+    parts.append(f"{'PART-NUMBER':<{fpga_part_num_len}}")
     parts.append(f"{'SIZE':<{fpga_size_len}}")
     if verbose:
         parts.append(f"{'TYPE':<{fpga_type_len}}")
         parts.append(f"{'PACK':<{fpga_pack_len}}")
+        parts.append(f"{'SPEED':<{fpga_speed_len}}")
 
     # -- Print the title
     secho("".join(parts), fg="cyan", bold="True")
@@ -123,6 +130,7 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
         if verbose:
             parts.append(f"{x.fpga_type:<{fpga_type_len}}")
             parts.append(f"{x.fpga_pack:<{fpga_pack_len}}")
+            parts.append(f"{x.fpga_speed:<{fpga_speed_len}}")
 
         # -- Print the fpga line.
         echo("".join(parts))
