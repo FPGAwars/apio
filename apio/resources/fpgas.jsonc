@@ -526,10 +526,11 @@
   // ============= GOWIN
   //
   // ARCHITECTURE-SPECIFIC-FIELDS: 
-  //    'type': TBD
+  //    'type': Represents the device family, This is the scons arg 
+  //        FPGA_TYPE arg that is passed to nextpnr-himbaechel and to 
+  //        gowin_pack. See plugin_gowin.py for details.
   //
-  //    'pack': As of Jan 2024, this fields is used for information only
-  //        and doesn't not affect the toolchain commands. We set it to the 
+  //    'pack': Unused.
   //
   "gw1n-lv1qn48c6-i5": {
     "part_num": "GW1N-LV1QN48C6/I5",
