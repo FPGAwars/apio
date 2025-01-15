@@ -46,6 +46,7 @@ class PluginEcp5(PluginBase):
             args.FPGA_PART_NUM,
             args.FPGA_TYPE,
             args.FPGA_PACK,
+            args.FPGA_SPEED,
         )
 
         # -- Cache values.
@@ -97,12 +98,13 @@ class PluginEcp5(PluginBase):
         # -- Create the builder.
         return Builder(
             action=(
-                "nextpnr-ecp5 --{0} --package {1} "
+                "nextpnr-ecp5 --{0} --package {1} --speed {2} "
                 "--json $SOURCE --textcfg $TARGET "
-                "--report {2} --lpf {3} {4} --timing-allow-fail --force"
+                "--report {3} --lpf {4} {5} --timing-allow-fail --force"
             ).format(
                 args.FPGA_TYPE,
                 args.FPGA_PACK,
+                args.FPGA_SPEED,
                 TARGET + ".pnr",
                 self.constrain_file(),
                 "" if args.VERBOSE_ALL or args.VERBOSE_PNR else "-q",

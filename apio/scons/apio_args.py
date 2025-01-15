@@ -115,6 +115,7 @@ class ApioArgs:
     FPGA_PART_NUM: str
     FPGA_TYPE: str
     FPGA_PACK: str
+    FPGA_SPEED: str
     TOP_MODULE: str
     TESTBENCH: str
     VERILATOR_NOWARNS: List[str]
@@ -189,6 +190,7 @@ class ApioArgs:
             FPGA_PART_NUM=parser.arg_str("fpga_part_num"),
             FPGA_TYPE=parser.arg_str("fpga_type"),
             FPGA_PACK=parser.arg_str("fpga_pack"),
+            FPGA_SPEED=parser.arg_str("fpga_speed"),
             TOP_MODULE=parser.arg_str("top_module"),
             TESTBENCH=parser.arg_str("testbench"),
             VERILATOR_NOWARNS=parser.env_str_list(

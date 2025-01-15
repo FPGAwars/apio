@@ -266,260 +266,297 @@
   // ============= ECP5
   //
   // ARCHITECTURE-SPECIFIC-FIELDS: 
-  //    'type': TBD
-  //    'pack': TBD
+  //    'type':  TBD
+  //    'pack':  TBD
+  //    'speed': TBD
   //
   "ecp5-lfe5u-12f-cabga256": {
     "part_num": "LFE5U-12F-6BG256C",
     "arch": "ecp5",
     "size": "12k",
     "type": "12k",
-    "pack": "CABGA256"
+    "pack": "CABGA256",
+    "speed": "6"
   },
   "ecp5-lfe5u-12f-cabga381": {
     "part_num": "LFE5U-12F-6BG381C",
     "arch": "ecp5",
     "size": "12k",
     "type": "12k",
-    "pack": "CABGA381"
+    "pack": "CABGA381",
+    "speed": "6"
   },
   "ecp5-lfe5u-12f-csfbga285": {
     "part_num": "LFE5U-12F-6MG285C",
     "arch": "ecp5",
     "size": "12k",
     "type": "12k",
-    "pack": "CSFBGA285"
+    "pack": "CSFBGA285",
+    "speed": "6"
   },
   "ecp5-lfe5u-25f-cabga256": {
     "part_num": "LFE5U-25F-6BG256C",
     "arch": "ecp5",
     "size": "25k",
     "type": "25k",
-    "pack": "CABGA256"
+    "pack": "CABGA256",
+    "speed": "6"
   },
   "ecp5-lfe5u-25f-cabga381": {
     "part_num": "LFE5U-25F-6BG381C",
     "arch": "ecp5",
     "size": "25k",
     "type": "25k",
-    "pack": "CABGA381"
+    "pack": "CABGA381",
+    "speed": "6"
   },
   "ecp5-lfe5u-25f-csfbga285": {
     "part_num": "LFE5U-25F-6MG285C",
     "arch": "ecp5",
     "size": "25k",
     "type": "25k",
-    "pack": "CSFBGA285"
+    "pack": "CSFBGA285",
+    "speed": "6"
   },
   "ecp5-lfe5u-45f-cabga256": {
     "part_num": "LFE5U-45F-6BG256C",
     "arch": "ecp5",
     "size": "45k",
     "type": "45k",
-    "pack": "CABGA256"
+    "pack": "CABGA256",
+    "speed": "6"
   },
   "ecp5-lfe5u-45f-cabga381": {
     "part_num": "LFE5U-45F-6BG381C",
     "arch": "ecp5",
     "size": "45k",
     "type": "45k",
-    "pack": "CABGA381"
+    "pack": "CABGA381",
+    "speed": "6"
   },
   "ecp5-lfe5u-45f-cabga554": {
     "part_num": "LFE5U-45F-6BG554C",
     "arch": "ecp5",
     "size": "45k",
     "type": "45k",
-    "pack": "CABGA554"
+    "pack": "CABGA554",
+    "speed": "6"
   },
   "ecp5-lfe5u-45f-csfbga285": {
     "part_num": "LFE5U-45F-6MG285C",
     "arch": "ecp5",
     "size": "45k",
     "type": "45k",
-    "pack": "CSFBGA285"
+    "pack": "CSFBGA285",
+    "speed": "6"
   },
   "ecp5-lfe5u-85f-cabga381": {
     "part_num": "LFE5U-85F-6BG381C",
     "arch": "ecp5",
     "size": "85k",
     "type": "85k",
-    "pack": "CABGA381"
+    "pack": "CABGA381",
+    "speed": "6"
   },
   "ecp5-lfe5u-85f-cabga554": {
     "part_num": "LFE5U-85F-6BG554C",
     "arch": "ecp5",
     "size": "85k",
     "type": "85k",
-    "pack": "CABGA554"
+    "pack": "CABGA554",
+    "speed": "6"
   },
   "ecp5-lfe5u-85f-cabga756": {
     "part_num": "LFE5U-85F-6BG756C",
     "arch": "ecp5",
     "size": "85k",
     "type": "85k",
-    "pack": "CABGA756"
+    "pack": "CABGA756",
+    "speed": "6"
   },
   "ecp5-lfe5u-85f-csfbga285": {
     "part_num": "LFE5U-85F-6MG285C",
     "arch": "ecp5",
     "size": "85k",
     "type": "85k",
-    "pack": "CSFBGA285"
+    "pack": "CSFBGA285",
+    "speed": "6"
   },
   "ecp5-lfe5um-25f-cabga256": {
     "part_num": "LFE5UM-25F-6BG256C",
     "arch": "ecp5",
     "size": "25k",
     "type": "um-25k",
-    "pack": "CABGA256"
+    "pack": "CABGA256",
+    "speed": "6"
   },
   "ecp5-lfe5um-25f-cabga381": {
     "part_num": "LFE5UM-25F-6BG381C",
     "arch": "ecp5",
     "size": "25k",
     "type": "um-25k",
-    "pack": "CABGA381"
+    "pack": "CABGA381",
+    "speed": "6"
   },
   "ecp5-lfe5um-25f-csfbga285": {
     "part_num": "LFE5UM-25F-6MG285C",
     "arch": "ecp5",
     "size": "25k",
     "type": "um-25k",
-    "pack": "CSFBGA285"
+    "pack": "CSFBGA285",
+    "speed": "6"
   },
   "ecp5-lfe5um-45f-cabga256": {
     "part_num": "LFE5UM-45F-6BG256C",
     "arch": "ecp5",
     "size": "45k",
     "type": "um-45k",
-    "pack": "CABGA256"
+    "pack": "CABGA256",
+    "speed": "6"
   },
   "ecp5-lfe5um-45f-cabga381": {
     "part_num": "LFE5UM-45F-6BG381C",
     "arch": "ecp5",
     "size": "45k",
     "type": "um-45k",
-    "pack": "CABGA381"
+    "pack": "CABGA381",
+    "speed": "6"
   },
   "ecp5-lfe5um-45f-cabga554": {
     "part_num": "LFE5UM-45F-6BG554C",
     "arch": "ecp5",
     "size": "45k",
     "type": "um-45k",
-    "pack": "CABGA554"
+    "pack": "CABGA554",
+    "speed": "6"
   },
   "ecp5-lfe5um-45f-csfbga285": {
     "part_num": "LFE5UM-45F-6MG285C",
     "arch": "ecp5",
     "size": "45k",
     "type": "um-45k",
-    "pack": "CSFBGA285"
+    "pack": "CSFBGA285",
+    "speed": "6"
   },
   "ecp5-lfe5um-85f-cabga381": {
     "part_num": "LFE5UM-85F-6BG381C",
     "arch": "ecp5",
     "size": "85k",
     "type": "um-85k",
-    "pack": "CABGA381"
+    "pack": "CABGA381",
+    "speed": "6"
   },
   "ecp5-lfe5um-85f-cabga554": {
     "part_num": "LFE5UM-85F-6BG554C",
     "arch": "ecp5",
     "size": "85k",
     "type": "um-85k",
-    "pack": "CABGA554"
+    "pack": "CABGA554",
+    "speed": "6"
   },
   "ecp5-lfe5um-85f-cabga756": {
     "part_num": "LFE5UM-85F-6BG756C",
     "arch": "ecp5",
     "size": "85k",
     "type": "um-85k",
-    "pack": "CABGA756"
+    "pack": "CABGA756",
+    "speed": "6"
   },
   "ecp5-lfe5um-85f-csfbga285": {
     "part_num": "LFE5UM-85F-6MG285C",
     "arch": "ecp5",
     "size": "85k",
     "type": "um-85k",
-    "pack": "CSFBGA285"
+    "pack": "CSFBGA285",
+    "speed": "6"
   },
   "ecp5-lfe5um5g-25f-cabga256": {
     "part_num": "LFE5UM5G-25F-8BG256C",
     "arch": "ecp5",
     "size": "25k",
     "type": "um5g-25k",
-    "pack": "CABGA256"
+    "pack": "CABGA256",
+    "speed": "8"
   },
   "ecp5-lfe5um5g-25f-cabga381": {
     "part_num": "LFE5UM5G-25F-8BG381C",
     "arch": "ecp5",
     "size": "25k",
     "type": "um5g-25k",
-    "pack": "CABGA381"
+    "pack": "CABGA381",
+    "speed": "8"
   },
   "ecp5-lfe5um5g-25f-csfbga285": {
     "part_num": "LFE5UM5G-25F-8MG285C",
     "arch": "ecp5",
     "size": "25k",
     "type": "um5g-25k",
-    "pack": "CSFBGA285"
+    "pack": "CSFBGA285",
+    "speed": "8"
   },
   "ecp5-lfe5um5g-45f-cabga256": {
     "part_num": "LFE5UM5G-45F-8BG256C",
     "arch": "ecp5",
     "size": "45k",
     "type": "um5g-45k",
-    "pack": "CABGA256"
+    "pack": "CABGA256",
+    "speed": "8"
   },
   "ecp5-lfe5um5g-45f-cabga381": {
     "part_num": "LFE5UM5G-45F-8BG381C",
     "arch": "ecp5",
     "size": "45k",
     "type": "um5g-45k",
-    "pack": "CABGA381"
+    "pack": "CABGA381",
+    "speed": "8"
   },
   "ecp5-lfe5um5g-45f-cabga554": {
     "part_num": "LFE5UM5G-45F-8BG554C",
     "arch": "ecp5",
     "size": "45k",
     "type": "um5g-45k",
-    "pack": "CABGA554"
+    "pack": "CABGA554",
+    "speed": "8"
   },
   "ecp5-lfe5um5g-45f-csfbga285": {
     "part_num": "LFE5UM5G-45F-8MG285C",
     "arch": "ecp5",
     "size": "45k",
     "type": "um5g-45k",
-    "pack": "CSFBGA285"
+    "pack": "CSFBGA285",
+    "speed": "8"
   },
   "ecp5-lfe5um5g-85f-cabga381": {
     "part_num": "LFE5UM5G-85F-8BG381C",
     "arch": "ecp5",
     "size": "85k",
     "type": "um5g-85k",
-    "pack": "CABGA381"
+    "pack": "CABGA381",
+    "speed": "8"
   },
   "ecp5-lfe5um5g-85f-cabga554": {
     "part_num": "LFE5UM5G-85F-8BG554C",
     "arch": "ecp5",
     "size": "85k",
     "type": "um5g-85k",
-    "pack": "CABGA554"
+    "pack": "CABGA554",
+    "speed": "8"
   },
   "ecp5-lfe5um5g-85f-cabga756": {
     "part_num": "LFE5UM5G-85F-8BG756C",
     "arch": "ecp5",
     "size": "85k",
     "type": "um5g-85k",
-    "pack": "CABGA756"
+    "pack": "CABGA756",
+    "speed": "8"
   },
   "ecp5-lfe5um5g-85f-csfbga285": {
     "part_num": "LFE5UM5G-85F-8MG285C",
     "arch": "ecp5",
     "size": "85k",
     "type": "um5g-85k",
-    "pack": "CSFBGA285"
+    "pack": "CSFBGA285",
+    "speed": "8"
   },
   //
   //

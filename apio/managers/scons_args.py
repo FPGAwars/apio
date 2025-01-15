@@ -18,6 +18,7 @@ ARG_FPGA_PART_NUM = "part_num"
 ARG_FPGA_ARCH = "arch"
 ARG_FPGA_TYPE = "type"
 ARG_FPGA_PACK = "pack"
+ARG_FPGA_SPEED = "speed"
 ARG_VERBOSE_ALL = "verbose_all"  # Bool.
 ARG_VERBOSE_YOSYS = "verbose_yosys"  # Bool
 ARG_VERBOSE_PNR = "verbose_pnr"  # Bool
@@ -113,6 +114,7 @@ def process_arguments(
         ARG_FPGA_ARCH: Arg(ARG_FPGA_ARCH, "fpga_arch"),
         ARG_FPGA_TYPE: Arg(ARG_FPGA_TYPE, "fpga_type"),
         ARG_FPGA_PACK: Arg(ARG_FPGA_PACK, "fpga_pack"),
+        ARG_FPGA_SPEED: Arg(ARG_FPGA_SPEED, "fpga_speed"),
         ARG_VERBOSE_ALL: Arg(ARG_VERBOSE_ALL, "verbose_all"),
         ARG_VERBOSE_YOSYS: Arg(ARG_VERBOSE_YOSYS, "verbose_yosys"),
         ARG_VERBOSE_PNR: Arg(ARG_VERBOSE_PNR, "verbose_pnr"),
@@ -161,6 +163,7 @@ def process_arguments(
         [args[ARG_FPGA_ARCH], "arch"],
         [args[ARG_FPGA_TYPE], "type"],
         [args[ARG_FPGA_PACK], "pack"],
+        [args[ARG_FPGA_SPEED], "speed"],
     ]:
         # -- Get the fpga property, if exits.
         fpga_config = apio_ctx.fpgas.get(fpga_id)

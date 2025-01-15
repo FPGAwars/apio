@@ -24,6 +24,7 @@ def test_apio_args_with_values(apio_runner: ApioRunner):
             "fpga_part_num": "part_num_0001",
             "fpga_type": "type1",
             "fpga_pack": "pack1",
+            "fpga_speed": "7",
             "top_module": "top1",
             "testbench": "testbench1",
             "nowarn": "warn1,warn2",
@@ -48,6 +49,7 @@ def test_apio_args_with_values(apio_runner: ApioRunner):
         assert apio_args.FPGA_PART_NUM == "part_num_0001"
         assert apio_args.FPGA_TYPE == "type1"
         assert apio_args.FPGA_PACK == "pack1"
+        assert apio_args.FPGA_SPEED == "7"
         assert apio_args.TOP_MODULE == "top1"
         assert apio_args.TESTBENCH == "testbench1"
         assert apio_args.VERILATOR_NOWARNS == ["warn1", "warn2"]
@@ -84,6 +86,7 @@ def test_apio_args_no_values(apio_runner: ApioRunner):
         assert apio_args.FPGA_PART_NUM == ""
         assert apio_args.FPGA_TYPE == ""
         assert apio_args.FPGA_PACK == ""
+        assert apio_args.FPGA_SPEED == ""
         assert apio_args.TOP_MODULE == ""
         assert apio_args.TESTBENCH == ""
         assert apio_args.VERILATOR_NOWARNS == []

@@ -96,8 +96,8 @@ def test_fpga_definitions(apio_runner: ApioRunner):
             assert "arch" in fpga_info, context
             arch = fpga_info["arch"]
 
-            # -- Lattice
-            if arch in ["ice40", "ecp5"]:
+            # -- Ice40
+            if arch == "ice40":
                 assert fpga_info.keys() == {
                     "part_num",
                     "arch",
@@ -110,6 +110,24 @@ def test_fpga_definitions(apio_runner: ApioRunner):
                 assert fpga_info["size"], context
                 assert fpga_info["type"], context
                 assert fpga_info["pack"], context
+                continue
+
+            # -- Ecp5
+            if arch == "ecp5":
+                assert set(fpga_info.keys()) == {
+                    "part_num",
+                    "arch",
+                    "size",
+                    "type",
+                    "pack",
+                    "speed",
+                }, context
+                assert fpga_info["part_num"], context
+                assert fpga_info["arch"], context
+                assert fpga_info["size"], context
+                assert fpga_info["type"], context
+                assert fpga_info["pack"], context
+                assert fpga_info["speed"], context
                 continue
 
             # -- Gowin
