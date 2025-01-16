@@ -287,12 +287,10 @@
     "type": "up5k",
     "pack": "uwg30"
   },
-  // TODO: Should the part numbrer and type should have 'up' instead of just 'u'?
-  // This fpga is used by the boards 'odt-icyblue-feather'.
-  // See https://github.com/FPGAwars/apio/issues/545
-  // See https://github.com/FPGAwars/apio/issues/535 
-  "ice40u4k-sg48": {
-    "part_num": "ICE40U4K-SG48",
+  // TODO: The part number of this fpga definition changed from ICE40U4K-SG48
+  // to ICE5LP4K-SG48. Verify that the type and pack are correct.
+  "ice5lp4k-sg48": {
+    "part_num": "ICE5LP4K-SG48",
     "arch": "ice40",
     "size": "4k",
     "type": "u4k",
