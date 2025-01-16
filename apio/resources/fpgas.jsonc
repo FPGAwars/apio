@@ -287,8 +287,6 @@
     "type": "up5k",
     "pack": "uwg30"
   },
-  // TODO: The part number of this fpga definition changed from ICE40U4K-SG48
-  // to ICE5LP4K-SG48. Verify that the type and pack are correct.
   "ice5lp4k-sg48": {
     "part_num": "ICE5LP4K-SG48",
     "arch": "ice40",
