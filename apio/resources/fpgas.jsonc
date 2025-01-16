@@ -2,11 +2,13 @@
 // These FPGAs are referred to from bords.jsonc.
 //
 // COMMON-FIELDS:
-//    'part_num': The exact and complete part number, but without the delivery
-//        information such as tape vs tray. If an variant is unknown,
-//        err on the safe side and select the least demanding option (e.g.
-//        if multiple speeds are available and the actual speed option is
-//        unknown, use the slowest option.) 
+//    'fpga_id': These are the entries keys. They equal to the part number
+//        converted to lower-case-0-9 with an optional suffix denoting a
+//        variant, e.g. '-8k' when oversizing a 4k device to act as a 8k 
+//        device.
+//
+//    'part_num': The exact and complete part number, without the delivery
+//        information such as tape vs tray. 
 //
 //    'arch': The architecture group of the FPGA, This determines the saemantic
 //        of its fields and the toolchain commands that are used to process it.
@@ -15,224 +17,270 @@
 //        information only and doesn't affect the oeration of the 
 //        toochain. 
 //
-// ARCHITECTURE-SPECIFIC-FIELDS: 
-//    'type':
-//    'pack': 
-//        These fields are documented at the begining of each architecture
-//        group below.
+// The reset of the fields are architecture specific and are described in each
+// architecture section below.
+//    
 //
 //
-// ============= ICE40
+// ============= ICE40 ARCHITECTURE
 //
 // ARCHITECTURE-SPECIFIC-FIELDS: 
 //    'type': TBD
 //    'pack': TBD
 //
 {
-  "ice40-lp1k-swg16tr": {
+  "ice40lp1k-swg16tr": {
     "part_num": "ICE40LP1K-SWG16TR",
     "arch": "ice40",
     "size": "1k",
     "type": "lp1k",
     "pack": "swg16tr"
   },
-  "ice40-lp384-cm36": {
+  "ice40lp384-cm36": {
     "part_num": "ICE40LP384-CM36",
     "arch": "ice40",
     "size": "384",
     "type": "lp384",
     "pack": "cm36"
   },
-  "ice40-lp1k-cm36": {
+  "ice40lp1k-cm36": {
     "part_num": "ICE40LP1K-CM36",
     "arch": "ice40",
     "size": "1k",
     "type": "lp1k",
     "pack": "cm36"
   },
-  "ice40-ul1k-cm36a": {
+  "ice40ul1k-cm36a": {
     "part_num": "ICE40UL1K-CM36A",
     "arch": "ice40",
     "size": "1k",
     "type": "ul1k",
     "pack": "cm36a"
   },
-  "ice40-lp384-cm49": {
+  "ice40lp384-cm49": {
     "part_num": "ICE40LP384-CM49",
     "arch": "ice40",
     "size": "384",
     "type": "lp384",
     "pack": "cm49"
   },
-  "ice40-lp1k-cm49": {
+  "ice40lp1k-cm49": {
     "part_num": "ICE40LP1K-CM49",
     "arch": "ice40",
     "size": "1k",
     "type": "lp1k",
     "pack": "cm49"
   },
-  "ice40-lp1k-cm81": {
+  "ice40lp1k-cm81": {
     "part_num": "ICE40LP1K-CM81",
     "arch": "ice40",
     "size": "1k",
     "type": "lp1k",
     "pack": "cm81"
   },
-  "ice40-lp4k-cm81": {
+  "ice40lp4k-cm81": {
+    "part_num": "ICE40LP4K-CM81",
+    "arch": "ice40",
+    "size": "4k",
+    "type": "lp4k",
+    "pack": "cm81"
+  },
+  // This is a 4k fpga that is oversized to 8k.
+  "ice40lp4k-cm81-8k": {
     "part_num": "ICE40LP4K-CM81",
     "arch": "ice40",
     "size": "8k",
     "type": "lp8k",
     "pack": "cm81:4k"
   },
-  "ice40-lp8k-cm81": {
+  "ice40lp8k-cm81": {
     "part_num": "ICE40LP8K-CM81",
     "arch": "ice40",
     "size": "8k",
     "type": "lp8k",
     "pack": "cm81"
   },
-  "ice40-lp1k-cm121": {
+  "ice40lp1k-cm121": {
     "part_num": "ICE40LP1K-CM121",
     "arch": "ice40",
     "size": "1k",
     "type": "lp1k",
     "pack": "cm121"
   },
-  "ice40-lp4k-cm121": {
+  "ice40lp4k-cm121": {
+    "part_num": "ICE40LP4K-CM121",
+    "arch": "ice40",
+    "size": "4k",
+    "type": "lp4k",
+    "pack": "cm121"
+  },
+  // This is a 4k fpga that is oversized to 8k.
+  "ice40lp4k-cm121-8k": {
     "part_num": "ICE40LP4K-CM121",
     "arch": "ice40",
     "size": "8k",
     "type": "lp8k",
     "pack": "cm121:4k"
   },
-  "ice40-lp8k-cm121": {
+  "ice40lp8k-cm121": {
     "part_num": "ICE40LP8K-CM121",
     "arch": "ice40",
     "size": "8k",
     "type": "lp8k",
     "pack": "cm121"
   },
-  "ice40-lp4k-cm225": {
+  "ice40lp4k-cm225": {
+    "part_num": "ICE40LP4K-CM225",
+    "arch": "ice40",
+    "size": "4k",
+    "type": "lp4k",
+    "pack": "cm225"
+  },
+  // This is a 4k fpga that is oversized to 8k.
+  "ice40lp4k-cm225-8k": {
     "part_num": "ICE40LP4K-CM225",
     "arch": "ice40",
     "size": "8k",
     "type": "lp8k",
     "pack": "cm225:4k"
   },
-  "ice40-lp8k-cm225": {
+  "ice40lp8k-cm225": {
     "part_num": "ICE40LP8K-CM225",
     "arch": "ice40",
     "size": "8k",
     "type": "lp8k",
     "pack": "cm225"
   },
-  "ice40-hx8k-cm225": {
+  "ice40hx8k-cm225": {
     "part_num": "ICE40HX8K-CM225",
     "arch": "ice40",
     "size": "8k",
     "type": "hx8k",
     "pack": "cm225"
   },
-  "ice40-lp384-qn32": {
+  "ice40lp384-qn32": {
     "part_num": "ICE40LP384-QN32",
     "arch": "ice40",
     "size": "384",
     "type": "lp384",
     "pack": "qn32"
   },
-  "ice40-lp1k-qn84": {
+  "ice40lp1k-qn84": {
     "part_num": "ICE40LP1K-QN84",
     "arch": "ice40",
     "size": "1k",
     "type": "lp1k",
     "pack": "qn84"
   },
-  "ice40-lp1k-cb81": {
+  "ice40lp1k-cb81": {
     "part_num": "ICE40LP1K-CB81",
     "arch": "ice40",
     "size": "1k",
     "type": "lp1k",
     "pack": "cb81"
   },
-  "ice40-lp1k-cb121": {
+  "ice40lp1k-cb121": {
     "part_num": "ICE40LP1K-CB121",
     "arch": "ice40",
     "size": "1k",
     "type": "lp1k",
     "pack": "cb121"
   },
-  "ice40-hx1k-cb132": {
+  "ice40hx1k-cb132": {
     "part_num": "ICE40HX1K-CB132",
     "arch": "ice40",
     "size": "1k",
     "type": "hx1k",
     "pack": "cb132"
   },
-  "ice40-hx4k-cb132": {
+  "ice40hx4k-cb132": {
+    "part_num": "ICE40HX4K-CB132",
+    "arch": "ice40",
+    "size": "4k",
+    "type": "hx4k",
+    "pack": "cb132"
+  },
+  // This is a 4k fpga that is oversized to 8k.
+  "ice40hx4k-cb132-8k": {
     "part_num": "ICE40HX4K-CB132",
     "arch": "ice40",
     "size": "8k",
     "type": "hx8k",
     "pack": "cb132:4k"
   },
-  "ice40-hx8k-cb132": {
+  "ice40hx8k-cb132": {
     "part_num": "ICE40HX8K-CB132",
     "arch": "ice40",
     "size": "8k",
     "type": "hx8k",
     "pack": "cb132"
   },
-  "ice40-hx1k-vq100": {
+  "ice40hx1k-vq100": {
     "part_num": "ICE40HX1K-VQ100",
     "arch": "ice40",
     "size": "1k",
     "type": "hx1k",
     "pack": "vq100"
   },
-  "ice40-hx1k-tq144": {
+  "ice40hx1k-tq144": {
     "part_num": "ICE40HX1K-TQ144",
     "arch": "ice40",
     "size": "1k",
     "type": "hx1k",
     "pack": "tq144"
   },
-  "ice40-hx4k-tq144": {
+  "ice40hx4k-tq144": {
+    "part_num": "ICE40HX4K-TQ144",
+    "arch": "ice40",
+    "size": "4k",
+    "type": "hx4k",
+    "pack": "tq144"
+  },
+  // This is a 4k fpga that is oversized to 8k.
+  "ice40hx4k-tq144-8k": {
     "part_num": "ICE40HX4K-TQ144",
     "arch": "ice40",
     "size": "8k",
     "type": "hx8k",
     "pack": "tq144:4k"
   },
-  "ice40-hx4k-bg121": {
+  "ice40hx4k-bg121": {
+    "part_num": "ICE40HX4K-BG121",
+    "arch": "ice40",
+    "size": "4k",
+    "type": "hx4k",
+    "pack": "bg121"
+  },
+  // This is a 4k fpga that is oversized to 8k.
+  "ice40hx4k-bg121-8k": {
     "part_num": "ICE40HX4K-BG121",
     "arch": "ice40",
     "size": "8k",
     "type": "hx8k",
     "pack": "bg121:4k"
   },
-  "ice40-hx8k-ct256": {
+  "ice40hx8k-ct256": {
     "part_num": "ICE40HX8K-CT256",
     "arch": "ice40",
     "size": "8k",
     "type": "hx8k",
     "pack": "ct256"
   },
-  "ice40-hx8k-bg121": {
+  "ice40hx8k-bg121": {
     "part_num": "ICE40HX8K-BG121",
     "arch": "ice40",
     "size": "8k",
     "type": "hx8k",
     "pack": "bg121"
   },
-  "ice40-up5k-sg48": {
+  "ice40up5k-sg48": {
     "part_num": "ICE40UP5K-SG48",
     "arch": "ice40",
     "size": "5k",
     "type": "up5k",
     "pack": "sg48"
   },
-  "ice40-up5k-uwg30": {
+  "ice40up5k-uwg30": {
     "part_num": "ICE40UP5K-UWG30",
     "arch": "ice40",
     "size": "5k",
@@ -243,7 +291,7 @@
   // This fpga is currently not used.
   // See https://github.com/FPGAwars/apio/issues/545
   // See https://github.com/FPGAwars/apio/issues/535 
-  "ice40-u4k-uwg30": {
+  "ice40u4k-uwg30": {
     "part_num": "ICE40U4K-UWG30",
     "arch": "ice40",
     "size": "4k",
@@ -254,7 +302,7 @@
   // This fpga is used by the boards 'odt-icyblue-feather'.
   // See https://github.com/FPGAwars/apio/issues/545
   // See https://github.com/FPGAwars/apio/issues/535 
-  "ice40-u4k-sg48": {
+  "ice40u4k-sg48": {
     "part_num": "ICE40U4K-SG48",
     "arch": "ice40",
     "size": "4k",
@@ -263,14 +311,14 @@
   },
   //
   //
-  // ============= ECP5
+  // ============= ECP5 ARCHITECTURE
   //
   // ARCHITECTURE-SPECIFIC-FIELDS: 
   //    'type':  TBD
   //    'pack':  TBD
   //    'speed': TBD
   //
-  "ecp5-lfe5u-12f-cabga256": {
+  "lfe5u-12f-6bg256c": {
     "part_num": "LFE5U-12F-6BG256C",
     "arch": "ecp5",
     "size": "12k",
@@ -278,7 +326,7 @@
     "pack": "CABGA256",
     "speed": "6"
   },
-  "ecp5-lfe5u-12f-cabga381": {
+  "lfe5u-12f-6bg381c": {
     "part_num": "LFE5U-12F-6BG381C",
     "arch": "ecp5",
     "size": "12k",
@@ -286,7 +334,7 @@
     "pack": "CABGA381",
     "speed": "6"
   },
-  "ecp5-lfe5u-12f-csfbga285": {
+  "lfe5u-12f-6mg285c": {
     "part_num": "LFE5U-12F-6MG285C",
     "arch": "ecp5",
     "size": "12k",
@@ -294,7 +342,7 @@
     "pack": "CSFBGA285",
     "speed": "6"
   },
-  "ecp5-lfe5u-25f-cabga256": {
+  "lfe5u-25f-6bg256c": {
     "part_num": "LFE5U-25F-6BG256C",
     "arch": "ecp5",
     "size": "25k",
@@ -302,7 +350,7 @@
     "pack": "CABGA256",
     "speed": "6"
   },
-  "ecp5-lfe5u-25f-cabga381": {
+  "lfe5u-25f-6bg381c": {
     "part_num": "LFE5U-25F-6BG381C",
     "arch": "ecp5",
     "size": "25k",
@@ -310,7 +358,7 @@
     "pack": "CABGA381",
     "speed": "6"
   },
-  "ecp5-lfe5u-25f-csfbga285": {
+  "lfe5u-25f-6mg285c": {
     "part_num": "LFE5U-25F-6MG285C",
     "arch": "ecp5",
     "size": "25k",
@@ -318,7 +366,7 @@
     "pack": "CSFBGA285",
     "speed": "6"
   },
-  "ecp5-lfe5u-45f-cabga256": {
+  "lfe5u-45f-6bg256c": {
     "part_num": "LFE5U-45F-6BG256C",
     "arch": "ecp5",
     "size": "45k",
@@ -326,7 +374,7 @@
     "pack": "CABGA256",
     "speed": "6"
   },
-  "ecp5-lfe5u-45f-cabga381": {
+  "lfe5u-45f-6bg381c": {
     "part_num": "LFE5U-45F-6BG381C",
     "arch": "ecp5",
     "size": "45k",
@@ -334,7 +382,7 @@
     "pack": "CABGA381",
     "speed": "6"
   },
-  "ecp5-lfe5u-45f-cabga554": {
+  "lfe5u-45f-6bg554c": {
     "part_num": "LFE5U-45F-6BG554C",
     "arch": "ecp5",
     "size": "45k",
@@ -342,7 +390,7 @@
     "pack": "CABGA554",
     "speed": "6"
   },
-  "ecp5-lfe5u-45f-csfbga285": {
+  "lfe5u-45f-6mg285c": {
     "part_num": "LFE5U-45F-6MG285C",
     "arch": "ecp5",
     "size": "45k",
@@ -350,7 +398,7 @@
     "pack": "CSFBGA285",
     "speed": "6"
   },
-  "ecp5-lfe5u-85f-cabga381": {
+  "lfe5u-85f-6bg381c": {
     "part_num": "LFE5U-85F-6BG381C",
     "arch": "ecp5",
     "size": "85k",
@@ -358,7 +406,7 @@
     "pack": "CABGA381",
     "speed": "6"
   },
-  "ecp5-lfe5u-85f-cabga554": {
+  "lfe5u-85f-6bg554c": {
     "part_num": "LFE5U-85F-6BG554C",
     "arch": "ecp5",
     "size": "85k",
@@ -366,7 +414,7 @@
     "pack": "CABGA554",
     "speed": "6"
   },
-  "ecp5-lfe5u-85f-cabga756": {
+  "lfe5u-85f-6bg756c": {
     "part_num": "LFE5U-85F-6BG756C",
     "arch": "ecp5",
     "size": "85k",
@@ -374,7 +422,7 @@
     "pack": "CABGA756",
     "speed": "6"
   },
-  "ecp5-lfe5u-85f-csfbga285": {
+  "lfe5u-85f-6mg285c": {
     "part_num": "LFE5U-85F-6MG285C",
     "arch": "ecp5",
     "size": "85k",
@@ -382,7 +430,7 @@
     "pack": "CSFBGA285",
     "speed": "6"
   },
-  "ecp5-lfe5um-25f-cabga256": {
+  "lfe5um-25f-6bg256c": {
     "part_num": "LFE5UM-25F-6BG256C",
     "arch": "ecp5",
     "size": "25k",
@@ -390,7 +438,7 @@
     "pack": "CABGA256",
     "speed": "6"
   },
-  "ecp5-lfe5um-25f-cabga381": {
+  "lfe5um-25f-6bg381c": {
     "part_num": "LFE5UM-25F-6BG381C",
     "arch": "ecp5",
     "size": "25k",
@@ -398,7 +446,7 @@
     "pack": "CABGA381",
     "speed": "6"
   },
-  "ecp5-lfe5um-25f-csfbga285": {
+  "lfe5um-25f-6mg285c": {
     "part_num": "LFE5UM-25F-6MG285C",
     "arch": "ecp5",
     "size": "25k",
@@ -406,7 +454,7 @@
     "pack": "CSFBGA285",
     "speed": "6"
   },
-  "ecp5-lfe5um-45f-cabga256": {
+  "lfe5um-45f-6bg256c": {
     "part_num": "LFE5UM-45F-6BG256C",
     "arch": "ecp5",
     "size": "45k",
@@ -414,7 +462,7 @@
     "pack": "CABGA256",
     "speed": "6"
   },
-  "ecp5-lfe5um-45f-cabga381": {
+  "lfe5um-45f-6bg381c": {
     "part_num": "LFE5UM-45F-6BG381C",
     "arch": "ecp5",
     "size": "45k",
@@ -422,7 +470,7 @@
     "pack": "CABGA381",
     "speed": "6"
   },
-  "ecp5-lfe5um-45f-cabga554": {
+  "lfe5um-45f-6bg554c": {
     "part_num": "LFE5UM-45F-6BG554C",
     "arch": "ecp5",
     "size": "45k",
@@ -430,7 +478,7 @@
     "pack": "CABGA554",
     "speed": "6"
   },
-  "ecp5-lfe5um-45f-csfbga285": {
+  "lfe5um-45f-6mg285c": {
     "part_num": "LFE5UM-45F-6MG285C",
     "arch": "ecp5",
     "size": "45k",
@@ -438,7 +486,7 @@
     "pack": "CSFBGA285",
     "speed": "6"
   },
-  "ecp5-lfe5um-85f-cabga381": {
+  "lfe5um-85f-6bg381c": {
     "part_num": "LFE5UM-85F-6BG381C",
     "arch": "ecp5",
     "size": "85k",
@@ -446,7 +494,7 @@
     "pack": "CABGA381",
     "speed": "6"
   },
-  "ecp5-lfe5um-85f-cabga554": {
+  "lfe5um-85f-6bg554c": {
     "part_num": "LFE5UM-85F-6BG554C",
     "arch": "ecp5",
     "size": "85k",
@@ -454,7 +502,7 @@
     "pack": "CABGA554",
     "speed": "6"
   },
-  "ecp5-lfe5um-85f-cabga756": {
+  "lfe5um-85f-6bg756c": {
     "part_num": "LFE5UM-85F-6BG756C",
     "arch": "ecp5",
     "size": "85k",
@@ -462,7 +510,7 @@
     "pack": "CABGA756",
     "speed": "6"
   },
-  "ecp5-lfe5um-85f-csfbga285": {
+  "lfe5um-85f-6mg285c": {
     "part_num": "LFE5UM-85F-6MG285C",
     "arch": "ecp5",
     "size": "85k",
@@ -470,7 +518,7 @@
     "pack": "CSFBGA285",
     "speed": "6"
   },
-  "ecp5-lfe5um5g-25f-cabga256": {
+  "lfe5um5g-25f-8bg256c": {
     "part_num": "LFE5UM5G-25F-8BG256C",
     "arch": "ecp5",
     "size": "25k",
@@ -478,7 +526,7 @@
     "pack": "CABGA256",
     "speed": "8"
   },
-  "ecp5-lfe5um5g-25f-cabga381": {
+  "lfe5um5g-25f-8bg381c": {
     "part_num": "LFE5UM5G-25F-8BG381C",
     "arch": "ecp5",
     "size": "25k",
@@ -486,7 +534,7 @@
     "pack": "CABGA381",
     "speed": "8"
   },
-  "ecp5-lfe5um5g-25f-csfbga285": {
+  "lfe5um5g-25f-8mg285c": {
     "part_num": "LFE5UM5G-25F-8MG285C",
     "arch": "ecp5",
     "size": "25k",
@@ -494,7 +542,7 @@
     "pack": "CSFBGA285",
     "speed": "8"
   },
-  "ecp5-lfe5um5g-45f-cabga256": {
+  "lfe5um5g-45f-8bg256c": {
     "part_num": "LFE5UM5G-45F-8BG256C",
     "arch": "ecp5",
     "size": "45k",
@@ -502,7 +550,7 @@
     "pack": "CABGA256",
     "speed": "8"
   },
-  "ecp5-lfe5um5g-45f-cabga381": {
+  "lfe5um5g-45f-8bg381c": {
     "part_num": "LFE5UM5G-45F-8BG381C",
     "arch": "ecp5",
     "size": "45k",
@@ -510,7 +558,7 @@
     "pack": "CABGA381",
     "speed": "8"
   },
-  "ecp5-lfe5um5g-45f-cabga554": {
+  "lfe5um5g-45f-8bg554c": {
     "part_num": "LFE5UM5G-45F-8BG554C",
     "arch": "ecp5",
     "size": "45k",
@@ -518,7 +566,7 @@
     "pack": "CABGA554",
     "speed": "8"
   },
-  "ecp5-lfe5um5g-45f-csfbga285": {
+  "lfe5um5g-45f-8mg285c": {
     "part_num": "LFE5UM5G-45F-8MG285C",
     "arch": "ecp5",
     "size": "45k",
@@ -526,7 +574,7 @@
     "pack": "CSFBGA285",
     "speed": "8"
   },
-  "ecp5-lfe5um5g-85f-cabga381": {
+  "lfe5um5g-85f-8bg381c": {
     "part_num": "LFE5UM5G-85F-8BG381C",
     "arch": "ecp5",
     "size": "85k",
@@ -534,7 +582,7 @@
     "pack": "CABGA381",
     "speed": "8"
   },
-  "ecp5-lfe5um5g-85f-cabga554": {
+  "lfe5um5g-85f-8bg554c": {
     "part_num": "LFE5UM5G-85F-8BG554C",
     "arch": "ecp5",
     "size": "85k",
@@ -542,7 +590,7 @@
     "pack": "CABGA554",
     "speed": "8"
   },
-  "ecp5-lfe5um5g-85f-cabga756": {
+  "lfe5um5g-85f-8bg756c": {
     "part_num": "LFE5UM5G-85F-8BG756C",
     "arch": "ecp5",
     "size": "85k",
@@ -550,7 +598,7 @@
     "pack": "CABGA756",
     "speed": "8"
   },
-  "ecp5-lfe5um5g-85f-csfbga285": {
+  "lfe5um5g-85f-8mg285c": {
     "part_num": "LFE5UM5G-85F-8MG285C",
     "arch": "ecp5",
     "size": "85k",
@@ -560,7 +608,7 @@
   },
   //
   //
-  // ============= GOWIN
+  // ============= GOWIN ARCHITECTURE
   //
   // ARCHITECTURE-SPECIFIC-FIELDS: 
   //    'type': Represents the device family, This is the scons arg 

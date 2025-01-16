@@ -12,6 +12,11 @@ from apio.apio_context import ApioContext, ApioContextScope
 KNOWN_UNUSED_PROGRAMMERS = ["ujprog"]
 
 
+def lc_part_num(part_num: str) -> str:
+    """Convert an fpga part number to a lower-case id."""
+    return part_num.lower().replace("/", "-")
+
+
 def test_resources_references(apio_runner: ApioRunner):
     """Tests the consistency of the board references to fpgas and
     programmers."""
@@ -73,8 +78,16 @@ def test_resources_names(apio_runner: ApioRunner):
         for board in apio_ctx.boards.keys():
             assert board_name_regex.match(board), f"{board=}"
 
-        for fpga in apio_ctx.fpgas.keys():
-            assert fpga_name_regex.match(fpga), f"{fpga=}"
+        for fpga_id, fgpa_info in apio_ctx.fpgas.items():
+            assert fpga_name_regex.match(fpga_id), f"{fpga_id=}"
+            # Fpga id is either the fpga part num converted to lower-case
+            # or its the lower-case part num with a suffix that starts with
+            # '-'. E.g, for part num 'PART-NUM', the fpga id can be 'part-num'
+            # or 'part-num-somethings'
+            lc_part = lc_part_num(fgpa_info["part_num"])
+            assert fpga_id == lc_part or fpga_id.startswith(
+                lc_part + "-"
+            ), f"{fpga_id=}"
 
         for programmer in apio_ctx.programmers.keys():
             assert programmer_name_regex.match(programmer), f"{programmer=}"
