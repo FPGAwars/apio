@@ -12,7 +12,7 @@ from pathlib import Path
 from dataclasses import dataclass
 from typing import List, Dict
 import click
-from click import secho, style
+from click import secho, style, echo
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import util
 from apio.commands import options
@@ -58,6 +58,9 @@ class Entry:
 # pylint: disable=too-many-statements
 def list_boards(apio_ctx: ApioContext, verbose: bool):
     """Prints all the available board definitions."""
+
+    # -- Get the output info (terminal vs pipe).
+    output_config = util.get_terminal_config()
 
     # -- Get examples counts by board. This is a sparse dictionary.
     examples = Examples(apio_ctx)
@@ -135,34 +138,41 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
     # -- Show the title line.
     secho("".join(parts), fg="cyan", bold=True)
 
-    # -- Print all the boards!
-    for x in entries:
+    # -- Print all the boards.
+    last_arch = None
+    for entry in entries:
+        # -- If not piping, add architecture groups seperations.
+        if last_arch != entry.fpga_arch and output_config.terminal_mode():
+            echo("")
+            secho(f"{entry.fpga_arch.upper()}", fg="magenta", bold=True)
+        last_arch = entry.fpga_arch
 
         # -- Construct the line fields.
         parts = []
-        parts.append(style(f"{x.board:<{board_len}}", fg="cyan"))
-        parts.append(f"{x.examples_count:<{examples_count_len}}")
+        parts.append(style(f"{entry.board:<{board_len}}", fg="cyan"))
+        parts.append(f"{entry.examples_count:<{examples_count_len}}")
         if verbose:
-            parts.append(f"{x.board_description:<{board_description_len}}")
-        parts.append(f"{x.fpga_arch:<{fpga_arch_len}}")
-        parts.append(f"{x.fpga_size:<{fpga_size_len}}")
+            parts.append(f"{entry.board_description:<{board_description_len}}")
+        parts.append(f"{entry.fpga_arch:<{fpga_arch_len}}")
+        parts.append(f"{entry.fpga_size:<{fpga_size_len}}")
         if verbose:
-            parts.append(f"{x.fpga:<{fpga_len}}")
-        parts.append(f"{x.fpga_part_num:<{fpga_part_num_len}}")
+            parts.append(f"{entry.fpga:<{fpga_len}}")
+        parts.append(f"{entry.fpga_part_num:<{fpga_part_num_len}}")
         if verbose:
-            parts.append(f"{x.fpga_type:<{fpga_type_len}}")
-            parts.append(f"{x.fpga_pack:<{fpga_pack_len}}")
-            parts.append(f"{x.fpga_speed:<{fpga_speed_len}}")
-        parts.append(f"{x.programmer:<{programmer_len}}")
+            parts.append(f"{entry.fpga_type:<{fpga_type_len}}")
+            parts.append(f"{entry.fpga_pack:<{fpga_pack_len}}")
+            parts.append(f"{entry.fpga_speed:<{fpga_speed_len}}")
+        parts.append(f"{entry.programmer:<{programmer_len}}")
 
         # -- Print the line
         secho("".join(parts))
 
     # -- Show the summary.
 
-    secho(f"Total of {util.plurality(entries, 'board')}")
-    if not verbose:
-        secho("Run 'apio boards -v' for additional columns.", fg="yellow")
+    if output_config.terminal_mode():
+        secho(f"Total of {util.plurality(entries, 'board')}")
+        if not verbose:
+            secho("Run 'apio boards -v' for additional columns.", fg="yellow")
 
 
 # ---------------------------

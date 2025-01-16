@@ -54,6 +54,9 @@ class Entry:
 def list_fpgas(apio_ctx: ApioContext, verbose: bool):
     """Prints all the available FPGA definitions."""
 
+    # -- Get the output info (terminal vs pipe).
+    output_config = util.get_terminal_config()
+
     # -- Collect a sparse dict with fpga ids to board count.
     boards_counts: Dict[str, int] = {}
     for board_info in apio_ctx.boards.values():
@@ -117,28 +120,37 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
     secho("".join(parts), fg="cyan", bold="True")
 
     # -- Iterate and print the fpga entries in the list.
-    for x in entries:
+    last_arch = None
+    for entries in entries:
+        # -- Seperation before each archictecture group, unless piped out.
+        if last_arch != entries.fpga_arch and output_config.terminal_mode():
+            echo("")
+            secho(f"{entries.fpga_arch.upper()}", fg="magenta", bold=True)
+        last_arch = entries.fpga_arch
 
         # -- Construct the fpga fields.
         parts = []
-        parts.append(style(f"{x.fpga:<{fpga_len}}", fg="cyan"))
-        board_count = f"{x.board_count:>3}" if x.board_count else ""
+        parts.append(style(f"{entries.fpga:<{fpga_len}}", fg="cyan"))
+        board_count = (
+            f"{entries.board_count:>3}" if entries.board_count else ""
+        )
         parts.append(f"{board_count:<{board_count_len}}")
-        parts.append(f"{x.fpga_arch:<{fpga_arch_len}}")
-        parts.append(f"{x.fpga_part_num:<{fpga_part_num_len}}")
-        parts.append(f"{x.fpga_size:<{fpga_size_len}}")
+        parts.append(f"{entries.fpga_arch:<{fpga_arch_len}}")
+        parts.append(f"{entries.fpga_part_num:<{fpga_part_num_len}}")
+        parts.append(f"{entries.fpga_size:<{fpga_size_len}}")
         if verbose:
-            parts.append(f"{x.fpga_type:<{fpga_type_len}}")
-            parts.append(f"{x.fpga_pack:<{fpga_pack_len}}")
-            parts.append(f"{x.fpga_speed:<{fpga_speed_len}}")
+            parts.append(f"{entries.fpga_type:<{fpga_type_len}}")
+            parts.append(f"{entries.fpga_pack:<{fpga_pack_len}}")
+            parts.append(f"{entries.fpga_speed:<{fpga_speed_len}}")
 
         # -- Print the fpga line.
         echo("".join(parts))
 
     # -- Show summary.
-    secho(f"Total of {util.plurality(apio_ctx.fpgas, 'fpga')}")
-    if not verbose:
-        secho("Run 'apio fpgas -v' for additional columns.", fg="yellow")
+    if output_config.terminal_mode():
+        secho(f"Total of {util.plurality(apio_ctx.fpgas, 'fpga')}")
+        if not verbose:
+            secho("Run 'apio fpgas -v' for additional columns.", fg="yellow")
 
 
 # ---------------------------
