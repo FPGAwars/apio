@@ -106,7 +106,7 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
 
     # -- Construct the title fields.
     parts = []
-    parts.append(f"{'FPGA ID':<{fpga_len}}")
+    parts.append(f"{'FPGA-ID':<{fpga_len}}")
     parts.append(f"{'BOARDS':<{board_count_len}}")
     parts.append(f"{'ARCH':<{fpga_arch_len}}")
     parts.append(f"{'PART-NUMBER':<{fpga_part_num_len}}")
@@ -123,7 +123,7 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
     last_arch = None
     for entries in entries:
         # -- Seperation before each archictecture group, unless piped out.
-        if last_arch != entries.fpga_arch and output_config.terminal_mode():
+        if last_arch != entries.fpga_arch and output_config.terminal_mode:
             echo("")
             secho(f"{entries.fpga_arch.upper()}", fg="magenta", bold=True)
         last_arch = entries.fpga_arch
@@ -147,7 +147,7 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
         echo("".join(parts))
 
     # -- Show summary.
-    if output_config.terminal_mode():
+    if output_config.terminal_mode:
         secho(f"Total of {util.plurality(apio_ctx.fpgas, 'fpga')}")
         if not verbose:
             secho("Run 'apio fpgas -v' for additional columns.", fg="yellow")

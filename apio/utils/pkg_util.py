@@ -297,7 +297,7 @@ def _list_section(title: str, items: List[List[str]], color: str) -> None:
     """A helper function for printing one serction of list_packages()."""
     # -- Construct horizontal lines at terminal width.
     config = util.get_terminal_config()
-    line_width = config.terminal_width if config.terminal_mode() else 80
+    line_width = config.terminal_width if config.terminal_mode else 80
     line = "─" * line_width
     dline = "═" * line_width
 

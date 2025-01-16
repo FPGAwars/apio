@@ -127,7 +127,7 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
     parts.append(f"{'ARCH':<{fpga_arch_len}}")
     parts.append(f"{'SIZE':<{fpga_size_len}}")
     if verbose:
-        parts.append(f"{'FPGA':<{fpga_len}}")
+        parts.append(f"{'FPGA-ID':<{fpga_len}}")
     parts.append(f"{'PART-NUMBER':<{fpga_part_num_len}}")
     if verbose:
         parts.append(f"{'TYPE':<{fpga_type_len}}")
@@ -142,7 +142,7 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
     last_arch = None
     for entry in entries:
         # -- If not piping, add architecture groups seperations.
-        if last_arch != entry.fpga_arch and output_config.terminal_mode():
+        if last_arch != entry.fpga_arch and output_config.terminal_mode:
             echo("")
             secho(f"{entry.fpga_arch.upper()}", fg="magenta", bold=True)
         last_arch = entry.fpga_arch
@@ -169,7 +169,7 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
 
     # -- Show the summary.
 
-    if output_config.terminal_mode():
+    if output_config.terminal_mode:
         secho(f"Total of {util.plurality(entries, 'board')}")
         if not verbose:
             secho("Run 'apio boards -v' for additional columns.", fg="yellow")

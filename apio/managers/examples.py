@@ -123,7 +123,7 @@ class Examples:
 
         # -- For terminal, print a header with an horizontal line across the
         # -- terminal.
-        if output_config.terminal_mode():
+        if output_config.terminal_mode:
             terminal_seperator_line = "─" * output_config.terminal_width
             secho()
             secho(terminal_seperator_line)
@@ -133,7 +133,7 @@ class Examples:
 
         # -- Emit the examples
         for example in examples:
-            if output_config.terminal_mode():
+            if output_config.terminal_mode:
                 # -- For a terminal. Multi lines and colors.
                 secho(f"{example.name}", fg="cyan", bold=True)
                 secho(f"{example.description}")
@@ -146,7 +146,7 @@ class Examples:
                 )
 
         # -- For a terminal, emit additional summary.
-        if output_config.terminal_mode():
+        if output_config.terminal_mode:
             secho(f"Total: {len(examples)}")
 
         return 0
