@@ -304,6 +304,7 @@
       "desc": "UPduino v3\\.1"
     }
   },
+  // https://github.com/icebreaker-fpga/icebreaker
   "icebreaker": {
     "legacy_name": "iCEBreaker",
     "description": "iCEBreaker",
@@ -319,6 +320,7 @@
       "desc": "(?:Dual RS232-HS)|(?:iCEBreaker.*)"
     }
   },
+  // https://github.com/icebreaker-fpga/icebreaker
   "icebreaker-bitsy0": {
     "legacy_name": "iCEBreaker-bitsy0",
     "description": "iCEBreaker bitsy",
@@ -334,6 +336,7 @@
       "desc": "iCEBreaker bitsy v0.*"
     }
   },
+  // https://github.com/icebreaker-fpga/icebreaker
   "icebreaker-bitsy1": {
     "legacy_name": "iCEBreaker-bitsy1",
     "description": "iCEBreaker bitsy",
@@ -349,6 +352,7 @@
       "desc": "iCEBreaker bitsy1.*"
     }
   },
+  // TBD
   "fpga101": {
     "description": "FPGA 101 - Workshop Badge",
     "fpga": "ice40up5k-sg48",
@@ -363,6 +367,7 @@
       "desc": "Single RS232-HS"
     }
   },
+  // https://www.latticesemi.com/Products/DevelopmentBoardsAndKits/iCE40UltraPlusBreakoutBoard
   "ice40-up5k": {
     "legacy_name": "iCE40-UP5K",
     "description": "iCE40 UltraPlus Breakout Board",
@@ -378,6 +383,7 @@
       "desc": "(?:USB <-> Serial Converter)|(?:Lattice iCE40UP5K Breakout)"
     }
   },
+  // https://www.latticesemi.com/products/developmentboardsandkits/ice40ultralitebreakoutboard
   "ice40-ul1k-breakout": {
     "legacy_name": "iCE40-UL1K-Breakout",
     "description": "iCE40-UL1K UltraLite Breakout Board",
