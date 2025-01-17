@@ -12,7 +12,7 @@ import os
 from pathlib import Path, PosixPath
 from dataclasses import dataclass
 from typing import Optional, List, Dict
-from click import secho
+from click import secho, style, echo
 from apio.utils import util
 from apio.apio_context import ApioContext
 from apio.managers import installer
@@ -227,13 +227,13 @@ class Examples:
             # -- Copy the file unless it's 'info' which we ignore.
             if file.name != "info":
                 shutil.copy(file, dst_dir_path)
+                styled_name = style(
+                    os.path.basename(file), fg="cyan", bold=True
+                )
+                echo(f"Fetched file {styled_name}")
 
         # -- Inform the user.
-        secho(
-            f"Fetched successfully the files of example '{example_name}'.",
-            fg="green",
-            bold=True,
-        )
+        secho("Example fetched successfully.", fg="green", bold=True)
 
     def get_board_examples(self, board_name) -> List[ExampleInfo]:
         """Returns the list of examples with given board name."""
@@ -305,10 +305,10 @@ class Examples:
         # -- Copy the directory tree.
         shutil.copytree(src_board_dir, dst_board_dir, dirs_exist_ok=True)
 
-        secho(
-            "Board '"
-            + board_name
-            + "' examples has been fetched successfully.",
-            fg="green",
-            bold=True,
-        )
+        for example_name in os.listdir(dst_board_dir):
+            styled_name = style(
+                f"{board_name}/{example_name}", fg="cyan", bold=True
+            )
+            echo(f"Fetched example {styled_name}")
+
+        secho("Board examples fetched successfully.", fg="green", bold=True)

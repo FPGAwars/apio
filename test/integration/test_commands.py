@@ -205,7 +205,7 @@ def _test_project(
         )
         sb.assert_ok(result)
         assert f"Copying {example} example files" in result.output
-        assert "Fetched successfully" in result.output
+        assert "fetched successfully" in result.output
         assert getsize(sb.proj_dir / "apio.ini")
 
         # -- Remember the original list of project files.
