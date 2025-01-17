@@ -522,7 +522,8 @@
     "description": "butterstick r1.0",
     "fpga": "lfe5um5g-85f-8bg381c",
     "programmer": {
-      "type": "openfpgaloader-ft2232"
+      "type": "openfpgaloader",
+      "extra_args": "-c ft2232 -v --file-type bin"
     }
   },
   "butterstick-r10-2g-85k-ft232h": {
@@ -530,7 +531,8 @@
     "description": "butterstick r1.0",
     "fpga": "lfe5um5g-85f-8bg381c",
     "programmer": {
-      "type": "openfpgaloader-ft232"
+      "type": "openfpgaloader",
+      "extra_args": "-c ft232 -v --file-type bin"
     }
   },
   "versa": {
@@ -676,7 +678,8 @@
     "description": "ColorLight-5A-75B-V61",
     "fpga": "lfe5u-25f-6bg381c",
     "programmer": {
-      "type": "openfpgaloader-ft2232"
+      "type": "openfpgaloader",
+      "extra_args": "-c ft2232 -v --file-type bin"
     }
   },
   "colorlight-5a-75b-v7": {
@@ -684,7 +687,8 @@
     "description": "ColorLight-5A-75B-V7",
     "fpga": "lfe5u-25f-6bg256c",
     "programmer": {
-      "type": "openfpgaloader-ft2232"
+      "type": "openfpgaloader",
+      "extra_args": "-c ft2232 -v --file-type bin"
     }
   },
   "colorlight-5a-75b-v8": {
@@ -692,7 +696,8 @@
     "description": "ColorLight-5A-75B-V8",
     "fpga": "lfe5u-25f-6bg256c",
     "programmer": {
-      "type": "openfpgaloader-ft2232"
+      "type": "openfpgaloader",
+      "extra_args": "-c ft2232 -v --file-type bin"
     }
   },
   "colorlight-5a-75e-v6": {
@@ -700,7 +705,8 @@
     "description": "ColorLight-5A-75E-V6",
     "fpga": "lfe5u-25f-6bg256c",
     "programmer": {
-      "type": "openfpgaloader-ft2232"
+      "type": "openfpgaloader",
+      "extra_args": "-c ft2232 -v --file-type bin"
     }
   },
   "colorlight-5a-75e-v71-ft2232h": {
@@ -708,7 +714,8 @@
     "description": "ColorLight-5A-75E-V71",
     "fpga": "lfe5u-25f-6bg256c",
     "programmer": {
-      "type": "openfpgaloader-ft2232"
+      "type": "openfpgaloader",
+      "extra_args": "-c ft2232 -v --file-type bin"
     }
   },
   "colorlight-5a-75e-v71-ft232h": {
@@ -716,7 +723,8 @@
     "description": "ColorLight-5A-75E-V71",
     "fpga": "lfe5u-25f-6bg256c",
     "programmer": {
-      "type": "openfpgaloader-ft232"
+      "type": "openfpgaloader",
+      "extra_args": "-c ft232 -v --file-type bin"
     }
   },
   "colorlight-5a-75e-v71-usb-blaster": {
@@ -724,7 +732,8 @@
     "description": "ColorLight-5A-75E-V71",
     "fpga": "lfe5u-25f-6bg256c",
     "programmer": {
-      "type": "openfpgaloader-usb-blaster"
+      "type": "openfpgaloader",
+      "args": "-c usb-blaster -v --file-type bin"
     }
   },
   "colorlight-i5-v7-0-ft2232h": {
@@ -732,7 +741,8 @@
     "description": "ColorLight-i5",
     "fpga": "lfe5u-25f-6bg381c",
     "programmer": {
-      "type": "openfpgaloader-ft2232"
+      "type": "openfpgaloader",
+      "extra_args": "-c ft2232 -v --file-type bin"
     }
   },
   "colorlight-i5-v7-0-ft232h": {
@@ -740,7 +750,8 @@
     "description": "ColorLight-i5",
     "fpga": "lfe5u-25f-6bg381c",
     "programmer": {
-      "type": "openfpgaloader-ft232"
+      "type": "openfpgaloader",
+      "extra_args": "-c ft232 -v --file-type bin"
     }
   },
   "colorlight-i5-v7-0-usb-blaster": {
@@ -748,7 +759,8 @@
     "description": "ColorLight-i5",
     "fpga": "lfe5u-25f-6bg381c",
     "programmer": {
-      "type": "openfpgaloader-usb-blaster"
+      "type": "openfpgaloader",
+      "args": "-c usb-blaster -v --file-type bin"
     }
   },
   "icesugar-pro-ft2232h": {
@@ -756,7 +768,8 @@
     "description": "ColorLight-i5",
     "fpga": "lfe5u-25f-6bg256c",
     "programmer": {
-      "type": "openfpgaloader-ft2232"
+      "type": "openfpgaloader",
+      "extra_args": "-c ft2232 -v --file-type bin"
     }
   },
   "icesugar-pro-ft232h": {
@@ -764,7 +777,8 @@
     "description": "ColorLight-i5",
     "fpga": "lfe5u-25f-6bg256c",
     "programmer": {
-      "type": "openfpgaloader-ft232"
+      "type": "openfpgaloader",
+      "extra_args": "-c ft232 -v --file-type bin"
     }
   },
   "icesugar-pro-usb-blaster": {
@@ -772,7 +786,8 @@
     "description": "ColorLight-i5",
     "fpga": "lfe5u-25f-6bg256c",
     "programmer": {
-      "type": "openfpgaloader-usb-blaster"
+      "type": "openfpgaloader",
+      "args": "-c usb-blaster -v --file-type bin"
     }
   },
   "fleafpga-ohm-ft2232h": {
@@ -780,7 +795,8 @@
     "description": "FleaFPGA-Ohm_(FT2232H)",
     "fpga": "lfe5u-25f-6bg381c",
     "programmer": {
-      "type": "openfpgaloader-ft2232"
+      "type": "openfpgaloader",
+      "extra_args": "-c ft2232 -v --file-type bin"
     }
   },
   "fleafpga-ohm-ft232h": {
@@ -788,7 +804,8 @@
     "description": "FleaFPGA-Ohm_(FT232H)",
     "fpga": "lfe5u-25f-6bg381c",
     "programmer": {
-      "type": "openfpgaloader-ft232"
+      "type": "openfpgaloader",
+      "extra_args": "-c ft232 -v --file-type bin"
     }
   },
   "fleafpga-ohm-usb-blaster": {
@@ -796,7 +813,8 @@
     "description": "FleaFPGA-Ohm_(USB-Blaster)",
     "fpga": "lfe5u-25f-6bg381c",
     "programmer": {
-      "type": "openfpgaloader-usb-blaster"
+      "type": "openfpgaloader",
+      "args": "-c usb-blaster -v --file-type bin"
     }
   },
   "ecp5-mini-12": {
@@ -804,7 +822,8 @@
     "description": "ECP5-Mini-12",
     "fpga": "lfe5u-12f-6bg256c",
     "programmer": {
-      "type": "openfpgaloader-ft2232"
+      "type": "openfpgaloader",
+      "extra_args": "-c ft2232 -v --file-type bin"
     }
   },
   "ecp5-mini-25": {
@@ -812,7 +831,8 @@
     "description": "ECP5-Mini-12",
     "fpga": "lfe5u-25f-6bg256c",
     "programmer": {
-      "type": "openfpgaloader-ft2232"
+      "type": "openfpgaloader",
+      "extra_args": "-c ft2232 -v --file-type bin"
     }
   },
   "ecp5-evaluation-board": {
@@ -820,7 +840,8 @@
     "description": "ECP5-Evaluation-Board",
     "fpga": "lfe5um5g-85f-8bg381c",
     "programmer": {
-      "type": "openfpgaloader-ft2232"
+      "type": "openfpgaloader",
+      "extra_args": "-c ft2232 -v --file-type bin"
     }
   },
   "colorlight-i9-v7-2-ft2232h": {
@@ -828,7 +849,8 @@
     "description": "ColorLight-i9",
     "fpga": "lfe5u-45f-6bg381c",
     "programmer": {
-      "type": "openfpgaloader-ft2232"
+      "type": "openfpgaloader",
+      "extra_args": "-c ft2232 -v --file-type bin"
     }
   },
   "colorlight-i9-v7-2-ft232h": {
@@ -836,7 +858,8 @@
     "description": "ColorLight-i9",
     "fpga": "lfe5u-45f-6bg381c",
     "programmer": {
-      "type": "openfpgaloader-ft232"
+      "type": "openfpgaloader",
+      "extra_args": "-c ft232 -v --file-type bin"
     }
   },
   "colorlight-i9-v7-2-usb-blaster": {
@@ -844,7 +867,8 @@
     "description": "ColorLight-i9",
     "fpga": "lfe5u-45f-6bg381c",
     "programmer": {
-      "type": "openfpgaloader-usb-blaster"
+      "type": "openfpgaloader",
+      "args": "-c usb-blaster -v --file-type bin"
     }
   },
   "thetamachines-eth4k": {
@@ -934,7 +958,8 @@
     "description": "Mimas ECP5 Mini",
     "fpga": "lfe5u-45f-6bg256c",
     "programmer": {
-      "type": "openfpgaloader-ft2232"
+      "type": "openfpgaloader",
+      "extra_args": "-c ft2232 -v --file-type bin"
     }
   }
 }
