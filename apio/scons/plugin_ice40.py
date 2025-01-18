@@ -37,6 +37,12 @@ class PluginIce40(PluginBase):
         # -- Call parent constructor.
         super().__init__(apio_env)
 
+        # -- Make sure the require args we expect are indeed there.
+        args = apio_env.args
+        args.check_required_str_args(
+            args.YOSYS_PATH, args.FPGA_PART_NUM, args.FPGA_TYPE, args.FPGA_PACK
+        )
+
         # -- Cache values.
         self.yosys_lib_dir = apio_env.args.YOSYS_PATH + "/ice40"
         self.yosys_lib_file = self.yosys_lib_dir + "/cells_sim.v"
@@ -83,11 +89,10 @@ class PluginIce40(PluginBase):
         # -- Create the builder.
         return Builder(
             action=(
-                "nextpnr-ice40 --{0}{1} --package {2} --json $SOURCE "
-                "--asc $TARGET --report {3} --pcf {4} {5}"
+                "nextpnr-ice40 --{0} --package {1} --json $SOURCE "
+                "--asc $TARGET --report {2} --pcf {3} {4}"
             ).format(
                 args.FPGA_TYPE,
-                args.FPGA_SIZE,
                 args.FPGA_PACK,
                 TARGET + ".pnr",
                 self.constrain_file(),

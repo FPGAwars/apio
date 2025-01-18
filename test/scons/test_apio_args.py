@@ -22,11 +22,10 @@ def test_apio_args_with_values(apio_runner: ApioRunner):
             "platform_id": "platform123",
             "fpga_arch": "arch1",
             "fpga_part_num": "part_num_0001",
-            "fpga_size": "size1",
             "fpga_type": "type1",
             "fpga_pack": "pack1",
+            "fpga_speed": "7",
             "top_module": "top1",
-            "fpga_idcode": "idcode1",
             "testbench": "testbench1",
             "nowarn": "warn1,warn2",
             "warn": "warn3,warn4",
@@ -48,11 +47,10 @@ def test_apio_args_with_values(apio_runner: ApioRunner):
         assert apio_args.PROG == "programmer"
         assert apio_args.FPGA_ARCH == "arch1"
         assert apio_args.FPGA_PART_NUM == "part_num_0001"
-        assert apio_args.FPGA_SIZE == "size1"
         assert apio_args.FPGA_TYPE == "type1"
         assert apio_args.FPGA_PACK == "pack1"
+        assert apio_args.FPGA_SPEED == "7"
         assert apio_args.TOP_MODULE == "top1"
-        assert apio_args.FPGA_IDCODE == "idcode1"
         assert apio_args.TESTBENCH == "testbench1"
         assert apio_args.VERILATOR_NOWARNS == ["warn1", "warn2"]
         assert apio_args.VERILATOR_WARNS == ["warn3", "warn4"]
@@ -86,11 +84,10 @@ def test_apio_args_no_values(apio_runner: ApioRunner):
         assert apio_args.PROG == ""
         assert apio_args.FPGA_ARCH == ""
         assert apio_args.FPGA_PART_NUM == ""
-        assert apio_args.FPGA_SIZE == ""
         assert apio_args.FPGA_TYPE == ""
         assert apio_args.FPGA_PACK == ""
+        assert apio_args.FPGA_SPEED == ""
         assert apio_args.TOP_MODULE == ""
-        assert apio_args.FPGA_IDCODE == ""
         assert apio_args.TESTBENCH == ""
         assert apio_args.VERILATOR_NOWARNS == []
         assert apio_args.VERILATOR_WARNS == []

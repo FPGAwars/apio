@@ -99,12 +99,14 @@ class TerminalConfig:
     def __post_init__(self):
         """Validates initialization."""
         assert isinstance(self.mode, TerminalMode), self
-        assert (self.terminal_width is not None) == self.terminal_mode(), self
+        assert (self.terminal_width is not None) == self.terminal_mode, self
 
+    @property
     def terminal_mode(self) -> bool:
         """True iff in terminal mode."""
         return self.mode == TerminalMode.TERMINAL
 
+    @property
     def pipe_mode(self) -> bool:
         """True iff in pipe mode."""
         return self.mode == TerminalMode.PIPE

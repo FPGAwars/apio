@@ -164,9 +164,9 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
     # -- changed.
     core_dependencies = [
         "apio.ini",
-        "boards.json",
-        "fpgas.json",
-        "programmers.json",
+        "boards.jsonc",
+        "fpgas.jsonc",
+        "programmers.jsonc",
     ]
 
     def verilog_src_scanner_func(

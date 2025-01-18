@@ -1,9 +1,9 @@
 // List of FPGA boards programmers definition that are used by apio. 
-// The programmers are reffers to by the boards in boards.json which can
+// The programmers are reffers to by the boards in boards.jsonc which can
 // add additional arguments to the programmers' command lines.
 //
-// Visual Studio Code note: set language model to 'jsonc' to avoid flagging
-// comments as errors.
+// The programmer command is constructed as follows:
+// <programmer.args> $SOURCE <board.extra_args>
 
 {
   "iceprog": {
@@ -57,18 +57,6 @@
   "openfpgaloader": {
     "command": "openFPGALoader",
     "args": ""
-  },
-  "openfpgaloader-ft2232": {
-    "command": "openFPGALoader",
-    "args": "-c ft2232 -v --file-type bin"
-  },
-  "openfpgaloader-ft232": {
-    "command": "openFPGALoader",
-    "args": "-c ft232 -v --file-type bin"
-  },
-  "openfpgaloader-usb-blaster": {
-    "command": "openFPGALoader",
-    "args": "-c usb-blaster -v --file-type bin"
   },
   "apollo": {
     "command": "apollo",

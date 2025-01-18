@@ -18,17 +18,30 @@ for proj in $projects;  do
     echo
 
     # -- Go to the project's dir.
-    cd $proj
+    pushd $proj
+
+    # -- Test if the project has testbenches.
+    set +e
+    ls *_tb.v
+    TB_STATUS=$?
+    set -e
+
 
     # -- Exceute apio commands in the project. They should succeeed.
     set -x
+      apio clean
       apio build
       apio lint
-      apio test
+      if [ $TB_STATUS -eq 0 ]; then
+        apio test
+      fi   
       apio graph
       apio report
       apio clean
     set +x
+
+    # -- Go back to the repo's root.
+    popd
     
 done
 

@@ -12,7 +12,7 @@ from pathlib import Path
 from dataclasses import dataclass
 from typing import List, Dict
 import click
-from click import secho, style
+from click import secho, style, echo
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import util
 from apio.commands import options
@@ -27,15 +27,16 @@ class Entry:
     """Holds the values of a single board report line."""
 
     board: str
-    board_description: str
     examples_count: str
-    fpga: str
-    programmer: str
+    board_description: str
     fpga_arch: str
-    fpga_part_num: str
     fpga_size: str
+    fpga: str
+    fpga_part_num: str
     fpga_type: str
     fpga_pack: str
+    fpga_speed: str
+    programmer: str
 
     def sort_key(self):
         """Returns a key for sorting entiries. Primary key is the architecture
@@ -58,6 +59,9 @@ class Entry:
 def list_boards(apio_ctx: ApioContext, verbose: bool):
     """Prints all the available board definitions."""
 
+    # -- Get the output info (terminal vs pipe).
+    output_config = util.get_terminal_config()
+
     # -- Get examples counts by board. This is a sparse dictionary.
     examples = Examples(apio_ctx)
     examples_counts: Dict[str, int] = examples.count_examples_by_board()
@@ -65,28 +69,32 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
     # -- Collect the boards info into a list of entires, one per board.
     entries: List[Entry] = []
     for board, board_info in apio_ctx.boards.items():
-        board_description = board_info.get("description", "")
-        examples_count = "   " + str(examples_counts.get(board, ""))
-        programmer = board_info.get("programmer", {}).get("type", "")
         fpga = board_info.get("fpga", "")
         fpga_info = apio_ctx.fpgas.get(fpga, {})
+
+        examples_count = "   " + str(examples_counts.get(board, ""))
+        board_description = board_info.get("description", "")
         fpga_arch = fpga_info.get("arch", "")
-        fpga_part_num = fpga_info.get("part_num", "")
         fpga_size = fpga_info.get("size", "")
+        fpga_part_num = fpga_info.get("part_num", "")
         fpga_type = fpga_info.get("type", "")
         fpga_pack = fpga_info.get("pack", "")
+        fpga_speed = fpga_info.get("speed", "")
+        programmer = board_info.get("programmer", {}).get("type", "")
+
         entries.append(
             Entry(
-                board,
-                board_description,
-                examples_count,
-                fpga,
-                programmer,
-                fpga_arch,
-                fpga_part_num,
-                fpga_size,
-                fpga_type,
-                fpga_pack,
+                board=board,
+                examples_count=examples_count,
+                board_description=board_description,
+                fpga_arch=fpga_arch,
+                fpga_size=fpga_size,
+                fpga=fpga,
+                fpga_part_num=fpga_part_num,
+                fpga_type=fpga_type,
+                fpga_pack=fpga_pack,
+                fpga_speed=fpga_speed,
+                programmer=programmer,
             )
         )
 
@@ -94,19 +102,21 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
     entries.sort(key=lambda x: x.sort_key())
 
     # -- Compute the columns widths.
+
     margin = 2 if verbose else 4
     board_len = max(len(x.board) for x in entries) + margin - 2
+    examples_count_len = 7 + margin
     board_description_len = (
         max(len(x.board_description) for x in entries) + margin
     )
-    examples_count_len = 7 + margin
-    fpga_len = max(len(x.fpga) for x in entries) + margin
-    programmer_len = max(len(x.programmer) for x in entries) + margin
     fpga_arch_len = max(len(x.fpga_arch) for x in entries) + margin
+    fpga_size_len = max(len(x.fpga_size) for x in entries) + margin
+    fpga_len = max(len(x.fpga) for x in entries) + margin
     fpga_part_num_len = max(len(x.fpga_part_num) for x in entries) + margin
     fpga_type_len = max(len(x.fpga_type) for x in entries) + margin
-    fpga_size_len = max(len(x.fpga_size) for x in entries) + margin
     fpga_pack_len = max(len(x.fpga_pack) for x in entries) + margin
+    fpga_speed_len = 5 + margin
+    programmer_len = max(len(x.programmer) for x in entries) + margin
 
     # -- Construct the title fields.
     parts = []
@@ -115,47 +125,54 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
     if verbose:
         parts.append(f"{'DESCRIPTION':<{board_description_len}}")
     parts.append(f"{'ARCH':<{fpga_arch_len}}")
-    if verbose:
-        parts.append(f"{'FPGA':<{fpga_len}}")
-    parts.append(f"{'PART NUMBER':<{fpga_part_num_len}}")
-    if verbose:
-        parts.append(f"{'TYPE':<{fpga_type_len}}")
     parts.append(f"{'SIZE':<{fpga_size_len}}")
     if verbose:
+        parts.append(f"{'FPGA-ID':<{fpga_len}}")
+    parts.append(f"{'PART-NUMBER':<{fpga_part_num_len}}")
+    if verbose:
+        parts.append(f"{'TYPE':<{fpga_type_len}}")
         parts.append(f"{'PACK':<{fpga_pack_len}}")
+        parts.append(f"{'SPEED':<{fpga_speed_len}}")
     parts.append(f"{'PROGRAMMER':<{programmer_len}}")
 
     # -- Show the title line.
     secho("".join(parts), fg="cyan", bold=True)
 
-    # -- Print all the boards!
-    for x in entries:
+    # -- Print all the boards.
+    last_arch = None
+    for entry in entries:
+        # -- If not piping, add architecture groups seperations.
+        if last_arch != entry.fpga_arch and output_config.terminal_mode:
+            echo("")
+            secho(f"{entry.fpga_arch.upper()}", fg="magenta", bold=True)
+        last_arch = entry.fpga_arch
 
         # -- Construct the line fields.
         parts = []
-        parts.append(style(f"{x.board:<{board_len}}", fg="cyan"))
-        parts.append(f"{x.examples_count:<{examples_count_len}}")
+        parts.append(style(f"{entry.board:<{board_len}}", fg="cyan"))
+        parts.append(f"{entry.examples_count:<{examples_count_len}}")
         if verbose:
-            parts.append(f"{x.board_description:<{board_description_len}}")
-        parts.append(f"{x.fpga_arch:<{fpga_arch_len}}")
+            parts.append(f"{entry.board_description:<{board_description_len}}")
+        parts.append(f"{entry.fpga_arch:<{fpga_arch_len}}")
+        parts.append(f"{entry.fpga_size:<{fpga_size_len}}")
         if verbose:
-            parts.append(f"{x.fpga:<{fpga_len}}")
-        parts.append(f"{x.fpga_part_num:<{fpga_part_num_len}}")
+            parts.append(f"{entry.fpga:<{fpga_len}}")
+        parts.append(f"{entry.fpga_part_num:<{fpga_part_num_len}}")
         if verbose:
-            parts.append(f"{x.fpga_type:<{fpga_type_len}}")
-        parts.append(f"{x.fpga_size:<{fpga_size_len}}")
-        if verbose:
-            parts.append(f"{x.fpga_pack:<{fpga_pack_len}}")
-        parts.append(f"{x.programmer:<{programmer_len}}")
+            parts.append(f"{entry.fpga_type:<{fpga_type_len}}")
+            parts.append(f"{entry.fpga_pack:<{fpga_pack_len}}")
+            parts.append(f"{entry.fpga_speed:<{fpga_speed_len}}")
+        parts.append(f"{entry.programmer:<{programmer_len}}")
 
         # -- Print the line
         secho("".join(parts))
 
     # -- Show the summary.
 
-    secho(f"Total of {util.plurality(entries, 'board')}")
-    if not verbose:
-        secho("Run 'apio boards -v' for additional columns.", fg="yellow")
+    if output_config.terminal_mode:
+        secho(f"Total of {util.plurality(entries, 'board')}")
+        if not verbose:
+            secho("Run 'apio boards -v' for additional columns.", fg="yellow")
 
 
 # ---------------------------
@@ -165,8 +182,8 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
 # pylint: disable = R0801
 APIO_BOARDS_HELP = """
 The command 'apio boards' lists the FPGA boards recognized by Apio.
-Custom boards can be defined by placing a custom 'boards.json' file in the
-project directory, which will override Apio’s default 'boards.json' file.
+Custom boards can be defined by placing a custom 'boards.jsonc' file in the
+project directory, which will override Apio’s default 'boards.jsonc' file.
 
 \b
 Examples:
@@ -193,7 +210,7 @@ def cli(
     definitions."""
 
     # -- Create the apio context. If the project exists, it's custom
-    # -- boards.json is also loaded.
+    # -- boards.jsonc is also loaded.
     apio_ctx = ApioContext(
         scope=ApioContextScope.PROJECT_OPTIONAL,
         project_dir_arg=project_dir,

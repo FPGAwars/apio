@@ -266,7 +266,7 @@ class SCons:
         board_info = self.apio_ctx.boards[board]
 
         # -- pylint: disable=fixme
-        # -- TODO: abstract this better in boards.json. For example, add a
+        # -- TODO: abstract this better in boards.jsonc. For example, add a
         # -- property "darwin-no-detection".
         # --
         # -- Special case for the TinyFPGA on MACOS platforms
@@ -366,7 +366,7 @@ class SCons:
     #     current platform. There are some boards, like icoboard,
     #     that only runs in the platform linux/arm7
     #     * INPUT:
-    #       * board_info: Dictionary with board info from boards.json.
+    #       * board_info: Dictionary with board info from boards.jsonc.
 
     #     Only in case the platform is not compatible with the board,
     #     and exception is raised
@@ -393,7 +393,7 @@ class SCons:
     ) -> str:
         """
         * INPUT:
-          * board_info: Dictionary with board info from boards.json.
+          * board_info: Dictionary with board info from boards.jsonc.
         * OUTPUT: It returns a template string with the command line
            to execute for uploading the circuit. It has the following
            parameters (in the string):
@@ -463,7 +463,7 @@ class SCons:
 
         * INPUT:
           * board: Board name (string)
-          * board_info: Dictionary with board info from boards.json.
+          * board_info: Dictionary with board info from boards.jsonc.
         """
 
         # -- The board is connected by USB
@@ -517,7 +517,7 @@ class SCons:
         """Get the serial port of the connected board
         * INPUT:
           * board: Board name (string)
-          * board_info: Dictionary with board info from boards.json.
+          * board_info: Dictionary with board info from boards.jsonc.
           * ext_serial_port: serial port name given by the user (optional)
 
         * OUTPUT: (string) The serial port name
@@ -543,7 +543,7 @@ class SCons:
 
         * INPUT:
           * board: Board name (string)
-          * board_info: Dictionary with board info from boards.json.
+          * board_info: Dictionary with board info from boards.jsonc.
           * ext_serial_port: serial port name given by the user (optional)
 
         * OUTPUT: (string) The serial port name
@@ -606,7 +606,7 @@ class SCons:
     def _check_tinyprog(board_info: dict, port: str) -> bool:
         """Check if the correct TinyFPGA board is connected
         * INPUT:
-          * board_info: Dictionary with board info from boards.json.
+          * board_info: Dictionary with board info from boards.jsonc.
           * port: Serial port name
 
         * OUTPUT:
@@ -657,7 +657,7 @@ class SCons:
 
         * INPUT:
           * board: Board name (string)
-          * board_info: Dictionary with board info from boards.json.
+          * board_info: Dictionary with board info from boards.jsonc.
           * ext_ftdi_id: FTDI index given by the user (optional)
 
         * OUTPUT: It return the FTDI index (as a string)
@@ -685,7 +685,7 @@ class SCons:
 
         * INPUT:
           * board: Board name (string)
-          * board_info: Dictionary with board info from boards.json.
+          * board_info: Dictionary with board info from boards.jsonc.
           * ext_ftdi_id: FTDI index given by the user (optional)
 
         * OUTPUT: It return the FTDI index (as a string)

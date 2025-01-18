@@ -7,7 +7,6 @@
 
 
 from typing import Dict, Tuple, Optional, List, Any
-from click import secho
 from apio.apio_context import ApioContext
 from apio.utils import util
 
@@ -18,9 +17,8 @@ from apio.utils import util
 ARG_FPGA_PART_NUM = "part_num"
 ARG_FPGA_ARCH = "arch"
 ARG_FPGA_TYPE = "type"
-ARG_FPGA_SIZE = "size"
 ARG_FPGA_PACK = "pack"
-ARG_FPGA_IDCODE = "idcode"
+ARG_FPGA_SPEED = "speed"
 ARG_VERBOSE_ALL = "verbose_all"  # Bool.
 ARG_VERBOSE_YOSYS = "verbose_yosys"  # Bool
 ARG_VERBOSE_PNR = "verbose_pnr"  # Bool
@@ -105,7 +103,7 @@ def process_arguments(
       * Return a tuple (board, variables)
         - board: Board name ('alhambra-ii', 'icezum'...)
         - variables: A list of strings scons variables. For example
-          ['fpga_arch=ice40', 'fpga_size=8k', 'fpga_type=hx',
+          ['fpga_arch=ice40', 'fpga_type=hx',
           fpga_pack='tq144:4k']...
     """
 
@@ -115,9 +113,8 @@ def process_arguments(
         ARG_FPGA_PART_NUM: Arg(ARG_FPGA_PART_NUM, "fpga_part_num"),
         ARG_FPGA_ARCH: Arg(ARG_FPGA_ARCH, "fpga_arch"),
         ARG_FPGA_TYPE: Arg(ARG_FPGA_TYPE, "fpga_type"),
-        ARG_FPGA_SIZE: Arg(ARG_FPGA_SIZE, "fpga_size"),
         ARG_FPGA_PACK: Arg(ARG_FPGA_PACK, "fpga_pack"),
-        ARG_FPGA_IDCODE: Arg(ARG_FPGA_IDCODE, "fpga_idcode"),
+        ARG_FPGA_SPEED: Arg(ARG_FPGA_SPEED, "fpga_speed"),
         ARG_VERBOSE_ALL: Arg(ARG_VERBOSE_ALL, "verbose_all"),
         ARG_VERBOSE_YOSYS: Arg(ARG_VERBOSE_YOSYS, "verbose_yosys"),
         ARG_VERBOSE_PNR: Arg(ARG_VERBOSE_PNR, "verbose_pnr"),
@@ -158,36 +155,23 @@ def process_arguments(
         fpga_id in apio_ctx.fpgas
     ), f"process_arguments(): unknown fpga {fpga_id} "
 
-    # -- Update the FPGA items according to the current board and fpga
-    # -- Raise an exception in case of a contradiction
-    # -- For example: board = alhambra-ii, and size='8k' given by arguments
-    # -- (The board determine the fpga and the size, but the user has
-    # --  specificied a different size. It is a contradiction!)
+    # -- Populate the fpga args from the fpga config. We check later, at
+    # -- the architecture plugin level that the required values for that
+    # -- plugin exit.
     for arg, fpga_property_name in [
         [args[ARG_FPGA_PART_NUM], "part_num"],
         [args[ARG_FPGA_ARCH], "arch"],
         [args[ARG_FPGA_TYPE], "type"],
-        [args[ARG_FPGA_SIZE], "size"],
         [args[ARG_FPGA_PACK], "pack"],
-        [args[ARG_FPGA_IDCODE], "idcode"],
+        [args[ARG_FPGA_SPEED], "speed"],
     ]:
         # -- Get the fpga property, if exits.
         fpga_config = apio_ctx.fpgas.get(fpga_id)
         fpga_property = fpga_config.get(fpga_property_name, None)
 
+        # -- Populate the arg if the field has a non default value.
         if fpga_property:
             arg.set(fpga_property)
-
-    # -- We already have a final configuration
-    # -- Check that this configuration is ok
-    # -- At least it should have fpga, type, size and pack
-    # -- Exit if it is not correct
-    for arg in [args[ARG_FPGA_TYPE], args[ARG_FPGA_SIZE], args[ARG_FPGA_PACK]]:
-
-        # -- Config item not defined!! it is mandatory!
-        if not arg.has_value:
-            perror_insuficient_arguments()
-            raise ValueError(f"Missing FPGA {arg.arg_name.upper()}")
 
     # -- If top-module not specified by the user (e.g. for apio graph command),
     # -- use the top module from the project file.
@@ -214,24 +198,4 @@ def process_arguments(
     return (
         board,
         variables,
-    )
-
-
-def perror_insuficient_arguments():
-    """Print an error: not enough arguments given"""
-
-    secho(
-        "Error: insufficient arguments: missing board",
-        fg="red",
-    )
-    secho(
-        "You have a few options:\n"
-        "  1) Change to a project directory with an apio.ini file\n"
-        "  2) Specify the directory of a project with an apio.ini file\n"
-        "       `--project-dir <projectdir>\n"
-        "  3) Create a project file apio.ini manually or using\n"
-        "       `apio create --board <boardname>`\n"
-        "  4) Execute your command with the flag\n"
-        "       `--board <boardname>`",
-        fg="yellow",
     )

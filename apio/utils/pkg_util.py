@@ -209,7 +209,7 @@ def package_version_ok(
 ) -> bool:
     """Return true if the packagea is both in profile and plagrom packages
     and its version in the provile meet the requirements in the
-    distribution.json file. Otherwise return false."""
+    config.jsonc file. Otherwise return false."""
 
     # If this package is not applicable to this platform, return False.
     if package_name not in apio_ctx.platform_packages:
@@ -297,7 +297,7 @@ def _list_section(title: str, items: List[List[str]], color: str) -> None:
     """A helper function for printing one serction of list_packages()."""
     # -- Construct horizontal lines at terminal width.
     config = util.get_terminal_config()
-    line_width = config.terminal_width if config.terminal_mode() else 80
+    line_width = config.terminal_width if config.terminal_mode else 80
     line = "─" * line_width
     dline = "═" * line_width
 

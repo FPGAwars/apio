@@ -75,31 +75,31 @@ Options:
   -h, --help  Show this message and exit.
 
 Build commands:
-  apio [35mbuild      [0m  Synthesize the bitstream.
-  apio [35mupload     [0m  Upload the bitstream to the FPGA.
-  apio [35mclean      [0m  Delete the apio generated files.
+  apio build        Synthesize the bitstream.
+  apio upload       Upload the bitstream to the FPGA.
+  apio clean        Delete the apio generated files.
 
 Verification commands:
-  apio [35mlint       [0m  Lint the verilog code.
-  apio [35mformat     [0m  Format verilog source files.
-  apio [35msim        [0m  Simulate a testbench with graphic results.
-  apio [35mtest       [0m  Test all or a single verilog testbench module.
-  apio [35mreport     [0m  Report design utilization and timing.
-  apio [35mgraph      [0m  Generate a visual graph of the code.
+  apio lint         Lint the verilog code.
+  apio format       Format verilog source files.
+  apio sim          Simulate a testbench with graphic results.
+  apio test         Test all or a single verilog testbench module.
+  apio report       Report design utilization and timing.
+  apio graph        Generate a visual graph of the code.
 
 Setup commands:
-  apio [35mcreate     [0m  Create an apio.ini project file.
-  apio [35mpreferences[0m  Manage the apio user preferences.
-  apio [35mpackages   [0m  Manage the apio packages.
-  apio [35mdrivers    [0m  Manage the operating system drivers.
+  apio create       Create an apio.ini project file.
+  apio preferences  Manage the apio user preferences.
+  apio packages     Manage the apio packages.
+  apio drivers      Manage the operating system drivers.
 
 Utility commands:
-  apio [35mboards     [0m  List available board definitions.
-  apio [35mfpgas      [0m  List available FPGA definitions.
-  apio [35mexamples   [0m  List and fetch apio examples.
-  apio [35msystem     [0m  Provides system info.
-  apio [35mraw        [0m  Execute commands directly from the Apio packages.
-  apio [35mupgrade    [0m  Check the latest Apio version.
+  apio boards       List available board definitions.
+  apio fpgas        List available FPGA definitions.
+  apio examples     List and fetch apio examples.
+  apio system       Provides system info.
+  apio raw          Execute commands directly from the Apio packages.
+  apio upgrade      Check the latest Apio version.
 
 ```
 
@@ -111,8 +111,8 @@ Utility commands:
 Usage: apio boards [OPTIONS]
 
   The command 'apio boards' lists the FPGA boards recognized by Apio. Custom
-  boards can be defined by placing a custom 'boards.json' file in the project
-  directory, which will override Apio’s default 'boards.json' file.
+  boards can be defined by placing a custom 'boards.jsonc' file in the project
+  directory, which will override Apio’s default 'boards.jsonc' file.
 
   Examples:
     apio boards                   # List all boards.
@@ -208,9 +208,9 @@ Options:
   -h, --help  Show this message and exit.
 
 Subcommands:
-  apio drivers [35mftdi  [0m  Manage the ftdi drivers.
-  apio drivers [35mserial[0m  Manage the serial drivers.
-  apio drivers [35mlsusb [0m  List connected USB devices.
+  apio drivers ftdi    Manage the ftdi drivers.
+  apio drivers serial  Manage the serial drivers.
+  apio drivers lsusb   List connected USB devices.
 
 ```
 
@@ -228,9 +228,9 @@ Options:
   -h, --help  Show this message and exit.
 
 Subcommands:
-  apio drivers ftdi [35minstall  [0m  Install the ftdi drivers.
-  apio drivers ftdi [35muninstall[0m  Uninstall the ftdi drivers.
-  apio drivers ftdi [35mlist     [0m  List the connected ftdi devices.
+  apio drivers ftdi install    Install the ftdi drivers.
+  apio drivers ftdi uninstall  Uninstall the ftdi drivers.
+  apio drivers ftdi list       List the connected ftdi devices.
 
 ```
 
@@ -326,9 +326,9 @@ Options:
   -h, --help  Show this message and exit.
 
 Subcommands:
-  apio drivers serial [35minstall  [0m  Install the serial drivers.
-  apio drivers serial [35muninstall[0m  Uninstall the serial drivers.
-  apio drivers serial [35mlist     [0m  List the connected serial devices.
+  apio drivers serial install    Install the serial drivers.
+  apio drivers serial uninstall  Uninstall the serial drivers.
+  apio drivers serial list       List the connected serial devices.
 
 ```
 
@@ -403,9 +403,9 @@ Options:
   -h, --help  Show this message and exit.
 
 Subcommands:
-  apio examples [35mlist       [0m  List the available apio examples.
-  apio examples [35mfetch      [0m  Fetch the files of an example.
-  apio examples [35mfetch-board[0m  Fetch all examples of a board.
+  apio examples list         List the available apio examples.
+  apio examples fetch        Fetch the files of an example.
+  apio examples fetch-board  Fetch all examples of a board.
 
 ```
 
@@ -526,8 +526,8 @@ Usage: apio fpgas [OPTIONS]
 
   The command ‘apio fpgas’ lists the FPGAs recognized by Apio. Custom FPGAs
   supported by the underlying Yosys toolchain can be defined by placing a
-  custom fpgas.json file in the project directory, overriding Apio’s standard
-  fpgas.json file.
+  custom fpgas.jsonc file in the project directory, overriding Apio’s standard
+  fpgas.jsonc file.
 
   Examples:
     apio fpgas               # List all fpgas.
@@ -614,10 +614,10 @@ Options:
   -h, --help  Show this message and exit.
 
 Subcommands:
-  apio packages [35minstall  [0m  Install apio packages.
-  apio packages [35muninstall[0m  Uninstall apio packages.
-  apio packages [35mlist     [0m  List apio packages.
-  apio packages [35mfix      [0m  Fix broken apio packages.
+  apio packages install    Install apio packages.
+  apio packages uninstall  Uninstall apio packages.
+  apio packages list       List apio packages.
+  apio packages fix        Fix broken apio packages.
 
 ```
 
@@ -719,8 +719,8 @@ Options:
   -h, --help  Show this message and exit.
 
 Subcommands:
-  apio preferences [35mlist[0m  List the apio user preferences.
-  apio preferences [35mset [0m  Set the apio user preferences.
+  apio preferences list  List the apio user preferences.
+  apio preferences set   Set the apio user preferences.
 
 ```
 
@@ -872,8 +872,8 @@ Options:
   -h, --help  Show this message and exit.
 
 Subcommands:
-  apio system [35mplatforms[0m  List supported platforms ids.
-  apio system [35minfo     [0m  Show platform id and other info.
+  apio system platforms  List supported platforms ids.
+  apio system info       Show platform id and other info.
 
 ```
 

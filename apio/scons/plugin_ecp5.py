@@ -38,6 +38,17 @@ class PluginEcp5(PluginBase):
         # -- Call parent constructor.
         super().__init__(apio_env)
 
+        # -- Make sure the require args we expect are indeed there.
+        args = apio_env.args
+        args.check_required_str_args(
+            args.YOSYS_PATH,
+            args.TRELLIS_PATH,
+            args.FPGA_PART_NUM,
+            args.FPGA_TYPE,
+            args.FPGA_PACK,
+            args.FPGA_SPEED,
+        )
+
         # -- Cache values.
         self.database_path = os.path.join(
             apio_env.args.TRELLIS_PATH, "database"
@@ -87,13 +98,13 @@ class PluginEcp5(PluginBase):
         # -- Create the builder.
         return Builder(
             action=(
-                "nextpnr-ecp5 --{0} --package {1} "
+                "nextpnr-ecp5 --{0} --package {1} --speed {2} "
                 "--json $SOURCE --textcfg $TARGET "
-                "--report {2} --lpf {3} {4} --timing-allow-fail --force"
+                "--report {3} --lpf {4} {5} --timing-allow-fail --force"
             ).format(
-                # -- See details here: https://tinyurl.com/apio-ecp5-25k-12k
-                "25k" if (args.FPGA_TYPE == "12k") else args.FPGA_TYPE,
+                args.FPGA_TYPE,
                 args.FPGA_PACK,
+                args.FPGA_SPEED,
                 TARGET + ".pnr",
                 self.constrain_file(),
                 "" if args.VERBOSE_ALL or args.VERBOSE_PNR else "-q",
@@ -106,13 +117,10 @@ class PluginEcp5(PluginBase):
     # @overrides
     def bitstream_builder(self) -> BuilderBase:
         """Creates and returns the bitstream builder."""
-        apio_env = self.apio_env
-        args = apio_env.args
         return Builder(
-            action="ecppack --compress --db {0} {1} $SOURCE "
-            "{2}/hardware.bit".format(
+            action="ecppack --compress --db {0} $SOURCE "
+            "{1}/hardware.bit".format(
                 self.database_path,
-                "" if not args.FPGA_IDCODE else f"--idcode {args.FPGA_IDCODE}",
                 BUILD_DIR,
             ),
             suffix=".bit",
