@@ -403,7 +403,7 @@ def fix_packages(
         apio_ctx.profile.remove_package(package_name)
 
     for dir_name in scan.orphan_dir_names:
-        print(f"Deleting unknown dir '{dir_name}'")
+        print(f"Deleting unknown package dir '{dir_name}'")
         # -- Sanity check. Since apio_ctx.packages_dir is guarranted to include
         # -- the word packages, this can fail only due to programming error.
         dir_path = apio_ctx.packages_dir / dir_name
@@ -412,7 +412,7 @@ def fix_packages(
         shutil.rmtree(dir_path)
 
     for file_name in scan.orphan_file_names:
-        print(f"Deleting unknown file '{file_name}'")
+        print(f"Deleting unknown package file '{file_name}'")
         # -- Sanity check. Since apio_ctx.packages_dir is guarranted to
         # -- include the word packages, this can fail only due to programming
         # -- error.
