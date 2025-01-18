@@ -1,0 +1,10 @@
+// Board details at
+// https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-9K/Nano-9K.html
+
+// See examples here https://github.com/sipeed/TangNano-9K-example/tree/main
+
+IO_LOC "sys_clk"   52;
+IO_PORT "sys_clk" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+
+IO_LOC "led"       10; // Active low
+
