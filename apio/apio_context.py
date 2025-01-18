@@ -64,10 +64,10 @@ FPGAS_JSONC = "fpgas.jsonc"
 PROGRAMMERS_JSONC = "programmers.jsonc"
 
 # -----------------------------------------
-# ---- File: resources/distribution.jsonc
+# ---- File: resources/config.jsonc
 # -----------------------------------------
-# -- Information about all the supported apio and pip packages
-DISTRIBUTION_JSONC = "distribution.jsonc"
+# -- General config information.
+CONFIG_JSONC = "config.jsonc"
 
 
 class ApioContextScope(Enum):
@@ -146,15 +146,13 @@ class ApioContext:
         # -- Determine apio home dir.
         self.home_dir: Path = util.resolve_home_dir()
 
-        # -- Read the distribution information
-        self.distribution = self._load_resource(DISTRIBUTION_JSONC)
+        # -- Read the config information
+        self.config = self._load_resource(CONFIG_JSONC)
 
         # -- Profile information, from ~/.apio/profile.json. We provide it with
         # -- the remote config url template from disribution.jsonc such that
         # -- can it fetch the remote config on demand.
-        self.profile = Profile(
-            self.home_dir, self.distribution["remote-config"]
-        )
+        self.profile = Profile(self.home_dir, self.config["remote-config"])
 
         # -- Read the platforms information.
         self.platforms = self._load_resource(PLATFORMS_JSONC)
@@ -290,7 +288,7 @@ class ApioContext:
               * BOARD_JSONC
               * FPGAS_JSONC
               * PROGRAMMERS_JSONC
-              * DISTRIBUTION_JSONC
+              * CONFIG_JSONC
             * Allow_custom: if true, look first in the project dir for
               a project specific resource file of same name.
         * OUTPUT: A dictionary with the jsonc file data

@@ -1,7 +1,5 @@
-// General definitions regarding remote config.
+// General config parameters.
 //
-// TODO: Find a better place or file name for this data.
-
 {
   // URL of the apio remote config file. The placeholder %v is replaced with
   // apio's version.
