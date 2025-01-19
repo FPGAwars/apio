@@ -1,0 +1,136 @@
+// Protocol buffers definitions used by apio.  Currently we use them just
+// for passing parameters from the apio process to the scons process.
+
+
+// Online proto formatter at https://formatter.org/protobuf-formatter
+
+// NOTE: Since we use the the serialized proto data within a single invocation
+// of apio, protocol buffers text mode and binary mode backeard compatibility
+// considerations do not apply.
+
+// Using proto2 for features such as 'has' and 'required'. 
+syntax = "proto2";
+
+
+package apio.proto;
+
+// The supported FPGA architectures, each with its own handler.
+enum ApioArch {
+  UNSPECIFIED = 0;
+  ICE40 = 1;
+  ECP5 = 2;
+  GOWIN = 3;
+}
+
+// Ice40 specific fpga attributes.
+message Ice40FpgaInfo {
+  required string fpga_id = 1;
+  required string type = 4;
+  required string pack = 5;
+}
+
+// Ecp5 specific fpga attributes.
+message Ecp5FpgaInfo {
+  required string type = 4;
+  required string pack = 5;
+  required uint32 speed = 6;
+}
+
+// Gowin specific fpga attributes.
+message GowinFpgaInfo {
+  required string family = 4;
+}
+
+// General fpga info.
+message FpgaInfo {
+  // Common fpga attributes.
+  required string fpga_id = 1;
+  required string part_num = 2;
+  required string size = 3;
+  // Architecture specific fpga attributes.
+  oneof arch {
+    Ice40FpgaInfo ice40 = 10;
+    Ecp5FpgaInfo ecp5 = 11;
+    GowinFpgaInfo gowin = 12;
+  }
+}
+
+// Verbosity levels.
+message Verbosity {
+  // If true, enable general verbosity.
+  optional bool all = 1 [default = false];
+  // If true, enable synthesis verbosiry.
+  optional bool synth = 2 [default = false];
+  // If true, enable place-and-route verbosity.
+  optional bool pnr = 3 [default = false];
+}
+
+// Information about the environment.
+message Envrionment {
+  // The underlying platform id as it appears in platforms.jsonc.
+  required string platform_id = 1;
+
+  // True if apio debug is enabled.
+  optional bool debug = 2 [default = false];
+
+  // Paths to tools.
+  required string yosys_path = 3;
+  required string trellis_path = 4;
+}
+
+// Information about the project.
+message Project {
+  required string board_id = 1;
+  required string top_module = 2;
+}
+
+// Lint command specific info.
+message CmdLintInfo {
+  optional bool verilator_all = 1 [default = false];
+  optional bool verilator_no_style = 2 [default = false];
+  repeated string verilator_no_warn = 3;
+  repeated string verilator_warn = 4;
+}
+
+// Graph command specific info.
+message CmdGraphInfo {
+  required string graph_spec = 1;
+}
+
+// Sim command specific info.
+message CmdSimInfo {
+  optional string test_bench = 1;
+}
+
+// Test command specific info.
+message CmdTestInfo {
+  optional string test_bench = 1;
+}
+
+// The top level messages that is passed from the apio process to
+// the scons process.
+message SconsParams {
+  // The apio architecture of this project. Used to select the scons
+  // architecture plugin.
+  required ApioArch arch = 1;
+
+  // Information about the FPGA used in the project. From fpgas.jsonc.
+  required FpgaInfo fpga_info = 3;
+
+  // Verbosity flags.
+  optional Verbosity verbosity = 4;
+
+  // General information about the environment.
+  required Envrionment envrionment = 5;
+
+  // General information about the project
+  required Project project = 6;
+
+  // Some commands require additional command-specific information.
+  oneof cmd {
+    CmdLintInfo cmd_lint = 10;
+    CmdGraphInfo cmd_graph = 11;
+    CmdSimInfo cmd_sim = 12;
+    CmdTestInfo cmd_test = 13;
+  }
+}
