@@ -31,7 +31,7 @@ def test_apio_args_with_values(apio_runner: ApioRunner):
             "warn": "warn3,warn4",
             "graph_spec": "spec1",
             "verbose_all": "True",
-            "verbose_yosys": "True",
+            "verbose_synth": "True",
             "verbose_pnr": "True",
             "force_sim": "True",
             "all": "True",
@@ -56,7 +56,7 @@ def test_apio_args_with_values(apio_runner: ApioRunner):
         assert apio_args.VERILATOR_WARNS == ["warn3", "warn4"]
         assert apio_args.GRAPH_SPEC == "spec1"
         assert apio_args.VERBOSE_ALL is True
-        assert apio_args.VERBOSE_YOSYS is True
+        assert apio_args.VERBOSE_SYNTH is True
         assert apio_args.VERBOSE_PNR is True
         assert apio_args.FORCE_SIM is True
         assert apio_args.VERILATOR_ALL is True
@@ -93,7 +93,7 @@ def test_apio_args_no_values(apio_runner: ApioRunner):
         assert apio_args.VERILATOR_WARNS == []
         assert apio_args.GRAPH_SPEC == ""
         assert apio_args.VERBOSE_ALL is False
-        assert apio_args.VERBOSE_YOSYS is False
+        assert apio_args.VERBOSE_SYNTH is False
         assert apio_args.VERBOSE_PNR is False
         assert apio_args.FORCE_SIM is False
         assert apio_args.VERILATOR_ALL is False

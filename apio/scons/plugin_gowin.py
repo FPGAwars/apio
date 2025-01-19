@@ -67,7 +67,7 @@ class PluginGowin(PluginBase):
                 'yosys -p "synth_gowin {0} -json $TARGET" {1} $SOURCES'
             ).format(
                 ("-top " + args.TOP_MODULE) if args.TOP_MODULE else "",
-                "" if args.VERBOSE_ALL or args.VERBOSE_YOSYS else "-q",
+                "" if args.VERBOSE_ALL or args.VERBOSE_SYNTH else "-q",
             ),
             suffix=".json",
             src_suffix=SRC_SUFFIXES,

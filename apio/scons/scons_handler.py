@@ -78,7 +78,7 @@ class SconsHandler:
             builder_id=SYNTH_BUILDER,
             target=TARGET,
             sources=[synth_srcs],
-            always_build=(args.VERBOSE_ALL or args.VERBOSE_YOSYS),
+            always_build=(args.VERBOSE_ALL or args.VERBOSE_SYNTH),
         )
         pnr_target = apio_env.builder_target(
             builder_id=PNR_BUILDER,
@@ -95,7 +95,7 @@ class SconsHandler:
             "build",
             source=bin_target,
             allways_build=(
-                args.VERBOSE_ALL or args.VERBOSE_YOSYS or args.VERBOSE_PNR
+                args.VERBOSE_ALL or args.VERBOSE_SYNTH or args.VERBOSE_PNR
             ),
         )
 

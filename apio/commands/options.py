@@ -136,15 +136,15 @@ verbose_pnr_option = click.option(
     "verbose_pnr",  # Var name.
     "--verbose-pnr",
     is_flag=True,
-    help="Show detailed pnr output.",
+    help="Show detailed pnr stage output.",
     cls=cmd_util.ApioOption,
 )
 
 
-verbose_yosys_option = click.option(
-    "verbose_yosys",  # Var name.
-    "--verbose-yosys",
+verbose_synth_option = click.option(
+    "verbose_synth",  # Var name.
+    "--verbose-synth",
     is_flag=True,
-    help="Show detailed yosys output.",
+    help="Show detailed synth stage output.",
     cls=cmd_util.ApioOption,
 )

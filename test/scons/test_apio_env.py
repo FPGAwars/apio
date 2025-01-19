@@ -21,7 +21,7 @@ def test_env_args():
 
     # -- Bool args.
     assert env.args.VERBOSE_ALL
-    assert not env.args.VERBOSE_YOSYS
+    assert not env.args.VERBOSE_SYNTH
 
     # -- Env var strings
     assert env.args.YOSYS_PATH == "fake yosys lib"

@@ -146,8 +146,8 @@ Usage: apio build [OPTIONS]
 Options:
   -p, --project-dir path  Set the root directory for the project.
   -v, --verbose           Show detailed output.
-  --verbose-yosys         Show detailed yosys output.
-  --verbose-pnr           Show detailed pnr output.
+  --verbose-synth         Show detailed synth stage output.
+  --verbose-pnr           Show detailed pnr stage output.
   -h, --help              Show this message and exit.
 ```
 

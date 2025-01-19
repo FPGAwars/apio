@@ -20,7 +20,7 @@ ARG_FPGA_TYPE = "type"
 ARG_FPGA_PACK = "pack"
 ARG_FPGA_SPEED = "speed"
 ARG_VERBOSE_ALL = "verbose_all"  # Bool.
-ARG_VERBOSE_YOSYS = "verbose_yosys"  # Bool
+ARG_VERBOSE_SYNTH = "verbose_synth"  # Bool
 ARG_VERBOSE_PNR = "verbose_pnr"  # Bool
 ARG_TOP_MODULE = "top-module"
 ARG_TESTBENCH = "testbench"
@@ -116,7 +116,7 @@ def process_arguments(
         ARG_FPGA_PACK: Arg(ARG_FPGA_PACK, "fpga_pack"),
         ARG_FPGA_SPEED: Arg(ARG_FPGA_SPEED, "fpga_speed"),
         ARG_VERBOSE_ALL: Arg(ARG_VERBOSE_ALL, "verbose_all"),
-        ARG_VERBOSE_YOSYS: Arg(ARG_VERBOSE_YOSYS, "verbose_yosys"),
+        ARG_VERBOSE_SYNTH: Arg(ARG_VERBOSE_SYNTH, "verbose_synth"),
         ARG_VERBOSE_PNR: Arg(ARG_VERBOSE_PNR, "verbose_pnr"),
         ARG_TOP_MODULE: Arg(ARG_TOP_MODULE, "top_module"),
         ARG_TESTBENCH: Arg(ARG_TESTBENCH, "testbench"),

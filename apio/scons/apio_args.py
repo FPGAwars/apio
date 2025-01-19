@@ -124,7 +124,7 @@ class ApioArgs:
 
     # -- Scons bool args.
     VERBOSE_ALL: bool
-    VERBOSE_YOSYS: bool
+    VERBOSE_SYNTH: bool
     VERBOSE_PNR: bool
     FORCE_SIM: bool
     VERILATOR_ALL: bool
@@ -202,7 +202,7 @@ class ApioArgs:
             GRAPH_SPEC=parser.arg_str("graph_spec"),
             # Scons bool args
             VERBOSE_ALL=parser.arg_bool("verbose_all"),
-            VERBOSE_YOSYS=parser.arg_bool("verbose_yosys"),
+            VERBOSE_SYNTH=parser.arg_bool("verbose_synth"),
             VERBOSE_PNR=parser.arg_bool("verbose_pnr"),
             FORCE_SIM=parser.arg_bool("force_sim"),
             VERILATOR_ALL=parser.arg_bool("all"),
