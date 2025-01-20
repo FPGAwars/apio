@@ -14,14 +14,25 @@ DESCRIPTOR: _descriptor.FileDescriptor
 
 class ApioArch(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
-    UNSPECIFIED: _ClassVar[ApioArch]
+    ARCH_UNSPECIFIED: _ClassVar[ApioArch]
     ICE40: _ClassVar[ApioArch]
     ECP5: _ClassVar[ApioArch]
     GOWIN: _ClassVar[ApioArch]
-UNSPECIFIED: ApioArch
+
+class GraphOutputType(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    TYPE_UNSPECIFIED: _ClassVar[GraphOutputType]
+    SVG: _ClassVar[GraphOutputType]
+    PNG: _ClassVar[GraphOutputType]
+    PDF: _ClassVar[GraphOutputType]
+ARCH_UNSPECIFIED: ApioArch
 ICE40: ApioArch
 ECP5: ApioArch
 GOWIN: ApioArch
+TYPE_UNSPECIFIED: GraphOutputType
+SVG: GraphOutputType
+PNG: GraphOutputType
+PDF: GraphOutputType
 
 class Ice40FpgaInfo(_message.Message):
     __slots__ = ("type", "pack")
@@ -108,12 +119,12 @@ class CmdLintInfo(_message.Message):
     def __init__(self, top_module: _Optional[str] = ..., verilator_all: bool = ..., verilator_no_style: bool = ..., verilator_no_warns: _Optional[_Iterable[str]] = ..., verilator_warns: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class CmdGraphInfo(_message.Message):
-    __slots__ = ("top_module", "graph_spec")
+    __slots__ = ("output_type", "top_module")
+    OUTPUT_TYPE_FIELD_NUMBER: _ClassVar[int]
     TOP_MODULE_FIELD_NUMBER: _ClassVar[int]
-    GRAPH_SPEC_FIELD_NUMBER: _ClassVar[int]
+    output_type: GraphOutputType
     top_module: str
-    graph_spec: str
-    def __init__(self, top_module: _Optional[str] = ..., graph_spec: _Optional[str] = ...) -> None: ...
+    def __init__(self, output_type: _Optional[_Union[GraphOutputType, str]] = ..., top_module: _Optional[str] = ...) -> None: ...
 
 class CmdSimInfo(_message.Message):
     __slots__ = ("testbench", "force_sim")

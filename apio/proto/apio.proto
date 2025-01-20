@@ -16,7 +16,7 @@ package apio.proto;
 
 // The supported FPGA architectures, each with its own handler.
 enum ApioArch {
-  UNSPECIFIED = 0;
+  ARCH_UNSPECIFIED = 0;
   ICE40 = 1;
   ECP5 = 2;
   GOWIN = 3;
@@ -93,9 +93,17 @@ message CmdLintInfo {
 }
 
 // Graph command specific info.
+
+enum GraphOutputType {
+  TYPE_UNSPECIFIED = 0;
+  SVG = 1;
+  PNG = 2;
+  PDF = 3;
+}
+
 message CmdGraphInfo {
-  optional string top_module = 1;
-  required string graph_spec = 2;
+  required GraphOutputType output_type = 1;
+  optional string top_module = 2;
 }
 
 // Sim command specific info.
