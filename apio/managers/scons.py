@@ -44,6 +44,7 @@ from apio.proto.apio_pb2 import (
     ApioArch,
     GraphParams,
     LintParams,
+    SimParams,
 )
 
 # -- Constant for the dictionary PROG, which contains
@@ -120,7 +121,7 @@ class SCons:
             verbosity=verbosity,
         )
 
-        # -- Invoke the scons process.
+        # -- Run the scons process.
         return self._run(
             "graph",
             scons_params=scons_params,
@@ -137,23 +138,25 @@ class SCons:
             target_params=TargetParams(lint=lint_params)
         )
 
-        # board, variables = process_arguments(self.apio_ctx, args)
+        # -- Run the scons process.
         return self._run("lint", scons_params=scons_params, uses_packages=True)
 
     @on_exception(exit_code=1)
-    def sim(self, args) -> int:
+    def sim(self, sim_params: SimParams) -> int:
         """Runs a scons subprocess with the 'sim' target. Returns process
         exit code, 0 if ok."""
 
-        # -- Split the arguments
-        # board, variables = process_arguments(self.apio_ctx, args)
+        # -- Construct scons params with graph command info.
+        scons_params = self.construct_scons_params(
+            target_params=TargetParams(sim=sim_params)
+        )
 
-        # return self._run(
-        #     "sim",
-        #     board=board,
-        #     variables=variables,
-        #     uses_packages=True,
-        # )
+        # -- Run the scons process.
+        return self._run(
+            "sim",
+            scons_params=scons_params,
+            uses_packages=True,
+        )
 
     @on_exception(exit_code=1)
     def test(self, args) -> int:
@@ -830,12 +833,12 @@ class SCons:
             sys.exit(1)
 
         # -- We are done populating The FpgaInfo params..
-        assert result.fpga_info.IsInitialized()
+        assert result.fpga_info.IsInitialized(), result
 
         # -- Populate the optional Verbosity params.
         if verbosity:
             result.verbosity.MergeFrom(verbosity)
-            assert result.verbosity.IsInitialized()
+            assert result.verbosity.IsInitialized(), result
 
         # -- Populate the Environment params.
         assert apio_ctx.platform_id, "Missing platform_id in apio context"
@@ -849,7 +852,7 @@ class SCons:
                 trellis_path=oss_vars["TRELLIS"],
             )
         )
-        assert result.envrionment.IsInitialized()
+        assert result.envrionment.IsInitialized(), result
 
         # -- Populate the Project params.
         result.project.MergeFrom(
@@ -857,15 +860,15 @@ class SCons:
                 board_id=project["board"], top_module=project["top-module"]
             )
         )
-        assert result.project.IsInitialized()
+        assert result.project.IsInitialized(), result
 
         # -- Populate the optinal command specific params.
         if target_params:
             result.target.MergeFrom(target_params)
-            assert result.target.IsInitialized()
+            assert result.target.IsInitialized(), result
 
         # -- All done.
-        assert result.IsInitialized()
+        assert result.IsInitialized(), result
         return result
 
     # pylint: disable=too-many-locals

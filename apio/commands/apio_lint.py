@@ -112,10 +112,8 @@ def cli(
     scons = SCons(apio_ctx)
 
     # -- Convert the comma seperated args values to python lists
-    no_warns_list=util.split(
-            nowarn, ",", strip=True, keep_empty=False
-        )
-    warns_list=util.split(warn, ",", strip=True, keep_empty=False)
+    no_warns_list = util.split(nowarn, ",", strip=True, keep_empty=False)
+    warns_list = util.split(warn, ",", strip=True, keep_empty=False)
 
     # -- Create the lint params
     lint_params = LintParams(
@@ -126,7 +124,7 @@ def cli(
         verilator_warns=warns_list,
     )
 
-    assert lint_params.IsInitialized()
+    assert lint_params.IsInitialized(), lint_params
 
     # -- Lint the project with the given parameters
     exit_code = scons.lint(lint_params)

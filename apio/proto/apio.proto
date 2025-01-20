@@ -110,8 +110,13 @@ message GraphParams {
 
 // Sim target specific params.
 message SimParams {
-  required string testbench = 1;
-  optional bool force_sim = 2 [default = false];
+  // If not specified, scons will run if it finds a single testbench
+  // file or exit with error if none or more than one.
+  optional string testbench = 1 [default = ""];
+ 
+  // Force rerun of simulation, even if not change from previous
+  // run.
+  required bool force_sim = 2;
 }
 
 // Test target specific params.

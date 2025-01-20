@@ -159,22 +159,33 @@ class SconsHandler:
         # -- The 'sim' target and its dependencies, to simulate and display the
         # -- results of a single testbench.
         if apio_env.targeting("sim"):
+            # -- Sanity check
+            assert params.target.HasField("sim")
+
+            # -- Get values.
             sim_params = params.target.sim
-            testbench = sim_params.testbench
-            assert testbench, "Missing sim testbench"
+            testbench = sim_params.testbench  # Optional.
+
+            # -- Collect information for sim.
             sim_config = get_sim_config(testbench, synth_srcs, test_srcs)
+
+            # -- Create the compilation target.
             sim_out_target = apio_env.builder_target(
                 builder_id=TESTBENCH_COMPILE_BUILDER,
                 target=sim_config.build_testbench_name,
                 sources=sim_config.srcs,
                 always_build=sim_params.force_sim,
             )
+
+            # -- Create the simulation target.
             sim_vcd_target = apio_env.builder_target(
                 builder_id=TESTBENCH_RUN_BUILDER,
                 target=sim_config.build_testbench_name,
                 sources=[sim_out_target],
                 always_build=sim_params,
             )
+
+            # -- Create the graphic viewer target.
             waves_target(
                 apio_env,
                 "sim",

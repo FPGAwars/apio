@@ -86,6 +86,13 @@ class PluginBase:
 
     def testbench_run_builder(self) -> BuilderBase:
         """Creates and returns the testbench run builder."""
+
+        # -- Sanity checks
+        assert self.apio_env.targeting("sim", "test")
+        assert self.apio_env.params.target.HasField(
+            "sim"
+        ) or self.apio_env.params.target.HasField("test")
+
         return Builder(
             action="vvp $SOURCE -dumpfile=$TARGET",
             suffix=".vcd",

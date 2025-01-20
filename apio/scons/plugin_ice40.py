@@ -109,9 +109,14 @@ class PluginIce40(PluginBase):
     # @overrides
     def testbench_compile_builder(self) -> BuilderBase:
         """Creates and returns the testbench compile builder."""
+
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params
+
+        # -- Sanity checks
+        assert apio_env.targeting("sim", "test")
+        assert params.target.HasField("sim") or params.target.HasField("test")
 
         # -- We use a generator because we need a different action
         # -- string for sim and test.
