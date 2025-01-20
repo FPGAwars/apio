@@ -134,7 +134,7 @@ class SimParams(_message.Message):
     force_sim: bool
     def __init__(self, testbench: _Optional[str] = ..., force_sim: bool = ...) -> None: ...
 
-class TestParams(_message.Message):
+class ApioTestParams(_message.Message):
     __slots__ = ("testbench",)
     TESTBENCH_FIELD_NUMBER: _ClassVar[int]
     testbench: str
@@ -156,9 +156,9 @@ class TargetParams(_message.Message):
     lint: LintParams
     graph: GraphParams
     sim: SimParams
-    test: TestParams
+    test: ApioTestParams
     upload: UploadParams
-    def __init__(self, lint: _Optional[_Union[LintParams, _Mapping]] = ..., graph: _Optional[_Union[GraphParams, _Mapping]] = ..., sim: _Optional[_Union[SimParams, _Mapping]] = ..., test: _Optional[_Union[TestParams, _Mapping]] = ..., upload: _Optional[_Union[UploadParams, _Mapping]] = ...) -> None: ...
+    def __init__(self, lint: _Optional[_Union[LintParams, _Mapping]] = ..., graph: _Optional[_Union[GraphParams, _Mapping]] = ..., sim: _Optional[_Union[SimParams, _Mapping]] = ..., test: _Optional[_Union[ApioTestParams, _Mapping]] = ..., upload: _Optional[_Union[UploadParams, _Mapping]] = ...) -> None: ...
 
 class SconsParams(_message.Message):
     __slots__ = ("timestamp", "arch", "fpga_info", "verbosity", "envrionment", "project", "target")

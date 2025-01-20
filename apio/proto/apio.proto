@@ -119,8 +119,9 @@ message SimParams {
   required bool force_sim = 2;
 }
 
-// Test target specific params.
-message TestParams {
+// Test target specific params. Originally called TestParams but this
+// confused pytest.
+message ApioTestParams {
   // If not specified, all the testbenches in the project are tested.
   optional string testbench = 1 [ default = ""];
 }
@@ -136,7 +137,7 @@ message TargetParams {
     LintParams lint = 10;
     GraphParams graph = 11;
     SimParams sim = 12;
-    TestParams test = 13;
+    ApioTestParams test = 13;
     UploadParams upload = 14;
   }
 }

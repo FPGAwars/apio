@@ -39,7 +39,7 @@ from apio.proto.apio_pb2 import (
     GraphParams,
     LintParams,
     SimParams,
-    TestParams,
+    ApioTestParams,
     UploadParams,
 )
 
@@ -155,7 +155,7 @@ class SCons:
         )
 
     @on_exception(exit_code=1)
-    def test(self, test_params: TestParams) -> int:
+    def test(self, test_params: ApioTestParams) -> int:
         """Runs a scons subprocess with the 'test' target. Returns process
         exit code, 0 if ok."""
 

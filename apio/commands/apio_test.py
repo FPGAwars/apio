@@ -13,7 +13,7 @@ import click
 from apio.managers.scons import SCons
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
-from apio.proto.apio_pb2 import TestParams
+from apio.proto.apio_pb2 import ApioTestParams
 
 
 # ---------------------------
@@ -69,7 +69,7 @@ def cli(
     scons = SCons(apio_ctx)
 
     # -- Construct the test params
-    test_params = TestParams(
+    test_params = ApioTestParams(
         testbench=testbench_file if testbench_file else None
     )
 
