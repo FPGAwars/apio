@@ -10,9 +10,11 @@ import sys
 from pathlib import Path
 import click
 from apio.managers.scons import SCons
+from apio.utils import util
 from apio.utils import cmd_util
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
+from apio.proto.apio_pb2 import LintParams
 
 
 # ---------------------------
@@ -109,14 +111,23 @@ def cli(
     # -- Create the scons manager.
     scons = SCons(apio_ctx)
 
-    # -- Lint the project with the given parameters
-    exit_code = scons.lint(
-        {
-            "all": all_,
-            "top-module": top_module,
-            "nostyle": nostyle,
-            "nowarn": nowarn,
-            "warn": warn,
-        }
+    # -- Convert the comma seperated args values to python lists
+    no_warns_list=util.split(
+            nowarn, ",", strip=True, keep_empty=False
+        )
+    warns_list=util.split(warn, ",", strip=True, keep_empty=False)
+
+    # -- Create the lint params
+    lint_params = LintParams(
+        top_module=top_module if top_module else None,
+        verilator_all=all_,
+        verilator_no_style=nostyle,
+        verilator_no_warns=no_warns_list,
+        verilator_warns=warns_list,
     )
+
+    assert lint_params.IsInitialized()
+
+    # -- Lint the project with the given parameters
+    exit_code = scons.lint(lint_params)
     sys.exit(exit_code)

@@ -697,3 +697,25 @@ def resolve_home_dir() -> Path:
 
     # Return the home_dir as a Path
     return home_dir
+
+
+def split(
+    s: str,
+    seperator: str,
+    strip: bool = False,
+    keep_empty: bool = True,
+) -> str:
+    """Split a string into parts."""
+    # -- A workaround for python's "".split(",") returning [''].
+    s = s.split(seperator) if s else []
+
+    # -- Strip the elements if requested.
+    if strip:
+        s = [x.strip() for x in s]
+
+    # -- Remove empty elements if requested.
+    if not keep_empty:
+        s = [x for x in s if x]
+
+    # --All done.
+    return s

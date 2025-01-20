@@ -150,6 +150,12 @@ class PluginIce40(PluginBase):
     # @overrides
     def lint_config_builder(self) -> BuilderBase:
         """Creates and returns the lint config builder."""
+
+        # -- Sanity checks
+        assert self.apio_env.targeting("lint")
+        assert self.apio_env.params.target.HasField("lint")
+
+        # -- Make the builder.
         yosys_vlt_path = vlt_path(self.yosys_lib_dir)
         return make_verilator_config_builder(
             [
@@ -162,6 +168,11 @@ class PluginIce40(PluginBase):
     # @overrides
     def lint_builder(self) -> BuilderBase:
         """Creates and returns the lint builder."""
+
+        # -- Sanity checks
+        assert self.apio_env.targeting("lint")
+        assert self.apio_env.params.target.HasField("lint")
+
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params

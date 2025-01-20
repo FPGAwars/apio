@@ -43,6 +43,7 @@ from apio.proto.apio_pb2 import (
     GowinFpgaInfo,
     ApioArch,
     GraphParams,
+    LintParams,
 )
 
 # -- Constant for the dictionary PROG, which contains
@@ -109,13 +110,13 @@ class SCons:
         return self._run("-c", scons_params=scons_params, uses_packages=False)
 
     @on_exception(exit_code=1)
-    def graph(self, graph_cmd_info: GraphParams, verbosity: Verbosity) -> int:
+    def graph(self, graph_params: GraphParams, verbosity: Verbosity) -> int:
         """Runs a scons subprocess with the 'graph' target. Returns process
         exit code, 0 if ok."""
 
         # -- Construct scons params with graph command info.
         scons_params = self.construct_scons_params(
-            target_params=TargetParams(graph=graph_cmd_info),
+            target_params=TargetParams(graph=graph_params),
             verbosity=verbosity,
         )
 
@@ -127,17 +128,17 @@ class SCons:
         )
 
     @on_exception(exit_code=1)
-    def lint(self, args) -> int:
+    def lint(self, lint_params: LintParams) -> int:
         """Runs a scons subprocess with the 'lint' target. Returns process
         exit code, 0 if ok."""
 
+        # -- Construct scons params with graph command info.
+        scons_params = self.construct_scons_params(
+            target_params=TargetParams(lint=lint_params)
+        )
+
         # board, variables = process_arguments(self.apio_ctx, args)
-        # return self._run(
-        #     "lint",
-        #     board=board,
-        #     variables=variables,
-        #     uses_packages=True,
-        # )
+        return self._run("lint", scons_params=scons_params, uses_packages=True)
 
     @on_exception(exit_code=1)
     def sim(self, args) -> int:
