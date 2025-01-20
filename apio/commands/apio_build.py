@@ -13,6 +13,7 @@ import click
 from apio.managers.scons import SCons
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
+from apio.proto.apio_pb2 import Verbosity
 
 
 # ---------------------------
@@ -75,11 +76,7 @@ def cli(
     # pylint: disable=R0801
     # -- Build the project with the given parameters
     exit_code = scons.build(
-        {
-            "verbose_all": verbose,
-            "verbose_synth": verbose_synth,
-            "verbose_pnr": verbose_pnr,
-        }
+        verbosity=Verbosity(all=verbose, synth=verbose_synth, pnr=verbose_pnr)
     )
 
     # -- Done!

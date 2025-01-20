@@ -37,14 +37,8 @@ class PluginIce40(PluginBase):
         # -- Call parent constructor.
         super().__init__(apio_env)
 
-        # -- Make sure the require args we expect are indeed there.
-        args = apio_env.args
-        args.check_required_str_args(
-            args.YOSYS_PATH, args.FPGA_PART_NUM, args.FPGA_TYPE, args.FPGA_PACK
-        )
-
         # -- Cache values.
-        self.yosys_lib_dir = apio_env.args.YOSYS_PATH + "/ice40"
+        self.yosys_lib_dir = apio_env.params.envrionment.yosys_path + "/ice40"
         self.yosys_lib_file = self.yosys_lib_dir + "/cells_sim.v"
 
     def plugin_info(self) -> ArchPluginInfo:
@@ -59,14 +53,14 @@ class PluginIce40(PluginBase):
         """Creates and returns the synth builder."""
         # -- Keep short references.
         apio_env = self.apio_env
-        args = apio_env.args
+        params = apio_env.params
 
         # -- The yosys synth builder.
         return Builder(
-            action='yosys -p "synth_ice40 {0} -json $TARGET" {1} '
+            action='yosys -p "synth_ice40 -top {0} -json $TARGET" {1} '
             "$SOURCES".format(
-                ("-top " + args.TOP_MODULE) if args.TOP_MODULE else "",
-                "" if args.VERBOSE_ALL or args.VERBOSE_SYNTH else "-q",
+                params.project.top_module,
+                "" if params.verbosity.all or params.verbosity.synth else "-q",
             ),
             suffix=".json",
             src_suffix=SRC_SUFFIXES,
@@ -78,7 +72,7 @@ class PluginIce40(PluginBase):
         """Creates and returns the pnr builder."""
         # -- Keep short references.
         apio_env = self.apio_env
-        args = apio_env.args
+        params = apio_env.params
 
         # -- We use an emmiter to add to the builder a second output file.
         def emitter(target, source, env):
@@ -92,11 +86,11 @@ class PluginIce40(PluginBase):
                 "nextpnr-ice40 --{0} --package {1} --json $SOURCE "
                 "--asc $TARGET --report {2} --pcf {3} {4}"
             ).format(
-                args.FPGA_TYPE,
-                args.FPGA_PACK,
+                params.fpga_info.ice40.type,
+                params.fpga_info.ice40.pack,
                 TARGET + ".pnr",
                 self.constrain_file(),
-                "" if args.VERBOSE_ALL or args.VERBOSE_PNR else "-q",
+                "" if params.verbosity.all or params.verbosity.pnr else "-q",
             ),
             suffix=".asc",
             src_suffix=".json",
@@ -117,7 +111,7 @@ class PluginIce40(PluginBase):
         """Creates and returns the testbench compile builder."""
         # -- Keep short references.
         apio_env = self.apio_env
-        args = apio_env.args
+        params = apio_env.params
 
         # -- We use a generator because we need a different action
         # -- string for sim and test.
@@ -134,7 +128,7 @@ class PluginIce40(PluginBase):
                 source_file_issue_action(),
                 # -- Perform the actual test or sim compilation.
                 iverilog_action(
-                    verbose=args.VERBOSE_ALL,
+                    verbose=params.verbosity.all,
                     vcd_output_name=testbench_name,
                     is_interactive=apio_env.targeting("sim"),
                     extra_params=["-DNO_ICE40_DEFAULT_ASSIGNMENTS"],
@@ -170,15 +164,22 @@ class PluginIce40(PluginBase):
         """Creates and returns the lint builder."""
         # -- Keep short references.
         apio_env = self.apio_env
-        args = apio_env.args
+        params = apio_env.params
+        lint_params = params.cmds.lint
+
+        top_module = (
+            lint_params.top_module
+            if lint_params.top_module
+            else params.project.top_module
+        )
 
         return Builder(
             action=verilator_lint_action(
-                warnings_all=args.VERILATOR_ALL,
-                warnings_no_style=args.VERILATOR_NO_STYLE,
-                no_warns=args.VERILATOR_NOWARNS,
-                warns=args.VERILATOR_WARNS,
-                top_module=args.TOP_MODULE,
+                warnings_all=lint_params.verilator_all,
+                warnings_no_style=lint_params.verilator_no_style,
+                no_warns=lint_params.verilator_no_warns,
+                warns=lint_params.verilator_warns,
+                top_module=top_module,
                 extra_params=["-DNO_ICE40_DEFAULT_ASSIGNMENTS"],
                 lib_dirs=[self.yosys_lib_dir],
                 lib_files=[self.yosys_lib_file],

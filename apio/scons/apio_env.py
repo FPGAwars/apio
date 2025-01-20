@@ -17,12 +17,14 @@
 # pylint: disable=W0613
 
 import os
-from typing import Dict, List, Optional
+from typing import List, Optional
 from click import secho
 from SCons.Script.SConscript import SConsEnvironment
 from SCons.Environment import BuilderWrapper
 import SCons.Defaults
-from apio.scons.apio_args import ApioArgs
+
+# from apio.scons.apio_args import ApioArgs
+from apio.proto.apio_pb2 import SconsParams
 
 
 # -- All the build files and other artifcats are created in this this
@@ -42,24 +44,15 @@ class ApioEnv:
 
     def __init__(
         self,
-        # scons_arch: SconsArch,
-        scons_args: Dict[str, str],
         command_line_targets: List[str],
-        is_debug: bool,
+        scons_params: SconsParams,
     ):
         # -- Save the arguments.
-        # self.scons_arch = scons_arch
         self.command_line_targets = command_line_targets
-        self.is_debug = is_debug
+        self.params = scons_params
 
         # -- Create the underlying scons env.
         self.scons_env = SConsEnvironment(ENV=os.environ, tools=[])
-
-        self.args = ApioArgs.make(scons_args, is_debug)
-
-        # -- Check that the required args for this class exist.
-        args = self.args
-        args.check_required_str_args(args.PLATFORM_ID)
 
         # -- Since we ae not using the default environment, make sure it was
         # -- not used unintentionally, e.v. in tests that run create multiple
@@ -72,11 +65,18 @@ class ApioEnv:
         # pylint: enable=protected-access
 
         # -- Determine if we run on windows. Platform id is a required arg.
-        self.is_windows = "windows" in self.args.PLATFORM_ID.lower()
+        self.is_windows = (
+            "windows" in self.params.envrionment.platform_id.lower()
+        )
 
         # Extra info for debugging.
         if self.is_debug:
             self.dump_env_vars()
+
+    @property
+    def is_debug(self):
+        """Returns true if we run in debug mode."""
+        return self.params.envrionment.is_debug
 
     def targeting(self, target_name: str) -> bool:
         """Returns true if the named target was specified in the command

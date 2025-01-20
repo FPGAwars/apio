@@ -11,23 +11,37 @@
 
 import traceback
 import os
+import sys
 import re
 import time
-import datetime
 import shutil
-from typing import List
 from functools import wraps
+from datetime import datetime
+
 
 import click
 from click import secho
+from google.protobuf import text_format
+
 
 from apio.utils import util, pkg_util
-from apio.managers.scons_args import process_arguments
 from apio.managers.system import System
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
 from apio.managers import installer
 from apio.profile import Profile
+from apio.proto.apio_pb2 import (
+    Verbosity,
+    Envrionment,
+    SconsParams,
+    CommandInfo,
+    FpgaInfo,
+    Project,
+    Ice40FpgaInfo,
+    Ecp5FpgaInfo,
+    GowinFpgaInfo,
+    ApioArch,
+)
 
 # -- Constant for the dictionary PROG, which contains
 # -- the programming configuration
@@ -83,50 +97,44 @@ class SCons:
         os.chdir(apio_ctx.project_dir)
 
     @on_exception(exit_code=1)
-    def clean(self, args) -> int:
+    def clean(self) -> int:
         """Runs a scons subprocess with the 'clean' target. Returns process
         exit code, 0 if ok."""
 
-        # -- Split the arguments
-        board, variables = process_arguments(self.apio_ctx, args)
+        scons_params = self.construct_scons_params()
 
         # --Clean the project: run scons -c (with aditional arguments)
-        return self._run(
-            "-c",
-            board=board,
-            variables=variables,
-            uses_packages=False,
-        )
+        return self._run("-c", scons_params=scons_params, uses_packages=False)
 
     @on_exception(exit_code=1)
     def graph(self, args) -> int:
         """Runs a scons subprocess with the 'graph' target. Returns process
         exit code, 0 if ok."""
 
-        # -- Split the arguments
-        board, variables = process_arguments(self.apio_ctx, args)
+        # # -- Split the arguments
+        # board, variables = process_arguments(self.apio_ctx, args)
 
-        # -- Execute scons!!!
-        # -- The packages to check are passed
-        return self._run(
-            "graph",
-            board=board,
-            variables=variables,
-            uses_packages=True,
-        )
+        # # -- Execute scons!!!
+        # # -- The packages to check are passed
+        # return self._run(
+        #     "graph",
+        #     board=board,
+        #     variables=variables,
+        #     uses_packages=True,
+        # )
 
     @on_exception(exit_code=1)
     def lint(self, args) -> int:
         """Runs a scons subprocess with the 'lint' target. Returns process
         exit code, 0 if ok."""
 
-        board, variables = process_arguments(self.apio_ctx, args)
-        return self._run(
-            "lint",
-            board=board,
-            variables=variables,
-            uses_packages=True,
-        )
+        # board, variables = process_arguments(self.apio_ctx, args)
+        # return self._run(
+        #     "lint",
+        #     board=board,
+        #     variables=variables,
+        #     uses_packages=True,
+        # )
 
     @on_exception(exit_code=1)
     def sim(self, args) -> int:
@@ -134,44 +142,40 @@ class SCons:
         exit code, 0 if ok."""
 
         # -- Split the arguments
-        board, variables = process_arguments(self.apio_ctx, args)
+        # board, variables = process_arguments(self.apio_ctx, args)
 
-        return self._run(
-            "sim",
-            board=board,
-            variables=variables,
-            uses_packages=True,
-        )
+        # return self._run(
+        #     "sim",
+        #     board=board,
+        #     variables=variables,
+        #     uses_packages=True,
+        # )
 
     @on_exception(exit_code=1)
     def test(self, args) -> int:
         """Runs a scons subprocess with the 'test' target. Returns process
         exit code, 0 if ok."""
 
-        # -- Split the arguments
-        board, variables = process_arguments(self.apio_ctx, args)
+        # # -- Split the arguments
+        # board, variables = process_arguments(self.apio_ctx, args)
 
-        return self._run(
-            "test",
-            board=board,
-            variables=variables,
-            uses_packages=True,
-        )
+        # return self._run(
+        #     "test",
+        #     board=board,
+        #     variables=variables,
+        #     uses_packages=True,
+        # )
 
     @on_exception(exit_code=1)
-    def build(self, args) -> int:
+    def build(self, verbosity: Verbosity) -> int:
         """Runs a scons subprocess with the 'build' target. Returns process
         exit code, 0 if ok."""
 
-        # -- Split the arguments
-        board, variables = process_arguments(self.apio_ctx, args)
-
-        # -- Execute scons!!!
-        # -- The packages to check are passed
+        # -- Construct the scons params object.
+        scons_params = self.construct_scons_params(verbosity=verbosity)
         return self._run(
             "build",
-            board=board,
-            variables=variables,
+            scons_params=scons_params,
             uses_packages=True,
         )
 
@@ -180,14 +184,14 @@ class SCons:
         """Runs a scons subprocess with the 'report' target. Returns process
         exit code, 0 if ok."""
 
-        board, variables = process_arguments(self.apio_ctx, args)
+        # board, variables = process_arguments(self.apio_ctx, args)
 
-        return self._run(
-            "report",
-            board=board,
-            variables=variables,
-            uses_packages=True,
-        )
+        # return self._run(
+        #     "report",
+        #     board=board,
+        #     variables=variables,
+        #     uses_packages=True,
+        # )
 
     @on_exception(exit_code=1)
     def upload(self, config: dict, prog: dict) -> int:
@@ -206,30 +210,30 @@ class SCons:
             * flash: Perform Flash programming
         """
 
-        # -- Get important information from the configuration
-        # -- It will raise an exception if it cannot be solved
-        board, variables = process_arguments(self.apio_ctx, config)
+        # # -- Get important information from the configuration
+        # # -- It will raise an exception if it cannot be solved
+        # board, variables = process_arguments(self.apio_ctx, config)
 
-        # -- Information about the FPGA is ok!
+        # # -- Information about the FPGA is ok!
 
-        # -- Get the command line to execute for programming
-        # -- the FPGA (programmer executable + arguments)
-        # -- Ex: 'tinyprog --pyserial -c /dev/ttyACM0 --program'
-        # -- Ex: 'iceprog -d i:0x0403:0x6010:0'
-        programmer = self._get_programmer(board, prog)
+        # # -- Get the command line to execute for programming
+        # # -- the FPGA (programmer executable + arguments)
+        # # -- Ex: 'tinyprog --pyserial -c /dev/ttyACM0 --program'
+        # # -- Ex: 'iceprog -d i:0x0403:0x6010:0'
+        # programmer = self._get_programmer(board, prog)
 
-        # -- Add as a flag to pass it to scons
-        variables += [f"prog={programmer}"]
+        # # -- Add as a flag to pass it to scons
+        # variables += [f"prog={programmer}"]
 
-        # -- Execute Scons for uploading!
-        exit_code = self._run(
-            "upload",
-            board=board,
-            variables=variables,
-            uses_packages=True,
-        )
+        # # -- Execute Scons for uploading!
+        # exit_code = self._run(
+        #     "upload",
+        #     board=board,
+        #     variables=variables,
+        #     uses_packages=True,
+        # )
 
-        return exit_code
+        # return exit_code
 
     def _get_programmer(self, board: str, prog: dict) -> str:
         """Get the command line (string) to execute for programming
@@ -743,6 +747,123 @@ class SCons:
         # -- No FTDI board found
         return None
 
+    def construct_scons_params(
+        self,
+        *,
+        command_info: CommandInfo = None,
+        verbosity: Verbosity = None,
+    ) -> SconsParams:
+        """Populate and return the SconsParam proto to pass to the scons
+        process."""
+
+        # -- Create a shortcut.
+        apio_ctx = self.apio_ctx
+
+        # -- Create an empty proto object that will be populated.
+        result = SconsParams()
+
+        # -- Populate the timestamp. We use to to make sure scons reads the
+        # -- correct version of the scons.params file.
+        ts = datetime.now()
+        result.timestamp = ts.strftime("%d%H%M%S%f")[:-3]
+
+        # -- Get the project data. All commands that invoke scons are expected
+        # -- to be in a project context.
+        assert apio_ctx.has_project, "Scons encountered a missing project."
+        project = apio_ctx.project
+
+        # -- Get the project's board. It should be prevalidated when loading
+        # -- the project, but we sanity check it again just in case.
+        board = project["board"]
+        assert board is not None, "Scons got a None board."
+        assert board in apio_ctx.boards, f"Unknown board name [{board}]"
+
+        # -- Get the project fpga id from the board info.
+        fpga_id = apio_ctx.boards.get(board).get("fpga")
+        assert fpga_id, "construct_scons_params(): fpga assertion failed."
+        assert (
+            fpga_id in apio_ctx.fpgas
+        ), f"construct_scons_params(): unknown fpga {fpga_id} "
+        fpga_config = apio_ctx.fpgas.get(fpga_id)
+        fpga_arch = fpga_config["arch"]
+
+        # -- Populate the common values of FpgaInfo.
+        result.fpga_info.MergeFrom(
+            FpgaInfo(
+                fpga_id=fpga_id,
+                part_num=fpga_config["part_num"],
+                size=fpga_config["size"],
+            )
+        )
+
+        # - Populate the architecture specific values of result.fpga_info.
+        if fpga_arch == "ice40":
+            result.arch = ApioArch.ICE40
+            result.fpga_info.ice40.MergeFrom(
+                Ice40FpgaInfo(
+                    type=fpga_config["type"], pack=fpga_config["pack"]
+                )
+            )
+        elif fpga_arch == "ecp5":
+            result.arch = ApioArch.ECP5
+            result.fpga_info.ecp5.MergeFrom(
+                Ecp5FpgaInfo(
+                    type=fpga_config["type"],
+                    pack=fpga_config["pack"],
+                    speed=fpga_config["speed"],
+                )
+            )
+        elif fpga_arch == "gowin":
+            result.arch = ApioArch.GOWIN
+            result.fpga_info.gowin.MergeFrom(
+                GowinFpgaInfo(family=fpga_config["type"])
+            )
+        else:
+            secho(
+                f"Internal error: unexpected fpga_arch value {fpga_arch}",
+                fg="red",
+            )
+            sys.exit(1)
+
+        # -- We are done populating The FpgaInfo params..
+        assert result.fpga_info.IsInitialized()
+
+        # -- Populate the optional Verbosity params.
+        if verbosity:
+            result.verbosity.MergeFrom(verbosity)
+            assert result.verbosity.IsInitialized()
+
+        # -- Populate the Environment params.
+        assert apio_ctx.platform_id, "Missing platform_id in apio context"
+        oss_vars = apio_ctx.all_packages["oss-cad-suite"]["env"]["vars"]
+
+        result.envrionment.MergeFrom(
+            Envrionment(
+                platform_id=apio_ctx.platform_id,
+                is_debug=util.is_debug(),
+                yosys_path=oss_vars["YOSYS_LIB"],
+                trellis_path=oss_vars["TRELLIS"],
+            )
+        )
+        assert result.envrionment.IsInitialized()
+
+        # -- Populate the Project params.
+        result.project.MergeFrom(
+            Project(
+                board_id=project["board"], top_module=project["top-module"]
+            )
+        )
+        assert result.project.IsInitialized()
+
+        # -- Populate the optinal command specific params.
+        if command_info:
+            result.cmds.MergeFrom(command_info)
+            assert result.cmds.IsInitialized()
+
+        # -- All done.
+        assert result.IsInitialized()
+        return result
+
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-positional-arguments
@@ -750,19 +871,23 @@ class SCons:
         self,
         scond_command: str,
         *,
-        board: str,
-        variables: List[str],
+        scons_params: SconsParams = None,
         uses_packages: bool,
     ):
         """Invoke an scons subprocess."""
 
-        # -- Construct the path to the SConstruct file.
+        # -- Pass to the scons process the name of the sconstruct file it
+        # -- should use.
         scons_dir = util.get_path_in_apio_package("scons")
         scons_file_path = scons_dir / "SConstruct"
+        variables = ["-f", f"{scons_file_path}"]
 
-        # -- It is passed to scons using the flag -f default_scons_file
-        variables += ["-f", f"{scons_file_path}"]
+        # -- Pass to the wscons process the timestamp of the scons params we
+        # -- pass via a file. This is for verification purposes only.
+        variables += [f"timestamp={scons_params.timestamp}"]
 
+        # -- If the apio packages are required for this command, install them
+        # -- if needed.
         if uses_packages:
             installer.install_missing_packages_on_the_fly(self.apio_ctx)
 
@@ -774,9 +899,9 @@ class SCons:
         if util.is_debug():
             secho("\nSCONS CALL:", fg="magenta")
             secho(f"* command:       {scond_command}")
-            secho(f"* board:         {board}")
             secho(f"* variables:     {variables}")
             secho(f"* uses packages: {uses_packages}")
+            secho(f"* scons params: \n{scons_params}")
             secho()
 
         # -- Get the terminal width (typically 80)
@@ -787,10 +912,12 @@ class SCons:
         start_time = time.time()
 
         # -- Get the date as a string
-        date_time_str = datetime.datetime.now().strftime("%c")
+        date_time_str = datetime.now().strftime("%c")
 
         # -- Board name string in color
-        board_color = click.style(board, fg="cyan", bold=True)
+        board_color = click.style(
+            scons_params.project.board_id, fg="cyan", bold=True
+        )
 
         # -- Print information on the console
         secho(f"[{date_time_str}] Processing {board_color}")
@@ -815,6 +942,13 @@ class SCons:
         # -- needed and write them to stdout.
         colors_enabled = Profile.read_color_prefernces()
         scons_filter = SconsFilter(colors_enabled)
+
+        # -- Write the scons parameters to a temp file in the build
+        # -- directory. It will be cleaned up as part of 'apio cleanup'.
+        build_dir = self.apio_ctx.project_dir / "_build"
+        os.makedirs(build_dir, exist_ok=True)
+        with open(build_dir / "scons.params", "w", encoding="utf8") as f:
+            f.write(text_format.MessageToString(scons_params))
 
         # -- Execute the scons builder!
         result = util.exec_command(

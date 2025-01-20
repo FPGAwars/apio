@@ -11,8 +11,9 @@
 """Apio scons related utilities.."""
 
 
-from apio.scons.apio_env import ApioEnv, ApioArgs, TARGET
+from apio.scons.apio_env import ApioEnv, TARGET
 from apio.scons.plugin_base import PluginBase
+from apio.proto.apio_pb2 import SconsParams
 from apio.scons.plugin_util import (
     get_sim_config,
     get_tests_configs,
@@ -66,7 +67,7 @@ class SconsHandler:
         """Register the targers. This is architecture independent."""
 
         apio_env = self.apio_env
-        args: ApioArgs = apio_env.args
+        params: SconsParams = apio_env.params
         plugin_info = self.arch_plugin.plugin_info()
 
         # -- Get a list of the synthesizable files (e.g. "main.v") and a list
@@ -78,13 +79,13 @@ class SconsHandler:
             builder_id=SYNTH_BUILDER,
             target=TARGET,
             sources=[synth_srcs],
-            always_build=(args.VERBOSE_ALL or args.VERBOSE_SYNTH),
+            always_build=(params.verbosity.all or params.verbosity.synth),
         )
         pnr_target = apio_env.builder_target(
             builder_id=PNR_BUILDER,
             target=TARGET,
             sources=[synth_target, self.arch_plugin.constrain_file()],
-            always_build=(args.VERBOSE_ALL or args.VERBOSE_PNR),
+            always_build=(params.verbosity.all or params.verbosity.pnr),
         )
         bin_target = apio_env.builder_target(
             builder_id=BITSTREAM_BUILDER,
@@ -95,7 +96,9 @@ class SconsHandler:
             "build",
             source=bin_target,
             allways_build=(
-                args.VERBOSE_ALL or args.VERBOSE_SYNTH or args.VERBOSE_PNR
+                params.verbosity.all
+                or params.verbosity.synth
+                or params.verbosity.pnr
             ),
         )
 
@@ -103,7 +106,9 @@ class SconsHandler:
         apio_env.alias(
             "report",
             source=TARGET + ".pnr",
-            action=report_action(plugin_info.clk_name_index, args.VERBOSE_PNR),
+            action=report_action(
+                plugin_info.clk_name_index, params.verbosity.pnr
+            ),
             allways_build=True,
         )
 
@@ -137,18 +142,21 @@ class SconsHandler:
         # -- The 'sim' target and its dependencies, to simulate and display the
         # -- results of a single testbench.
         if apio_env.targeting("sim"):
-            sim_config = get_sim_config(args.TESTBENCH, synth_srcs, test_srcs)
+            sim_params = params.cmds.sim
+            testbench = sim_params.testbench
+            assert testbench, "Missing sim testbench"
+            sim_config = get_sim_config(testbench, synth_srcs, test_srcs)
             sim_out_target = apio_env.builder_target(
                 builder_id=TESTBENCH_COMPILE_BUILDER,
                 target=sim_config.build_testbench_name,
                 sources=sim_config.srcs,
-                always_build=args.FORCE_SIM,
+                always_build=sim_params.force_sim,
             )
             sim_vcd_target = apio_env.builder_target(
                 builder_id=TESTBENCH_RUN_BUILDER,
                 target=sim_config.build_testbench_name,
                 sources=[sim_out_target],
-                always_build=args.FORCE_SIM,
+                always_build=sim_params,
             )
             waves_target(
                 apio_env,
@@ -161,8 +169,9 @@ class SconsHandler:
         # -- The  "test" target and its dependencies, to test one or more
         # -- testbenches.
         if apio_env.targeting("test"):
+            test_params = params.cmds.test
             tests_configs = get_tests_configs(
-                args.TESTBENCH, synth_srcs, test_srcs
+                test_params.testbench, synth_srcs, test_srcs
             )
             tests_targets = []
             for test_config in tests_configs:

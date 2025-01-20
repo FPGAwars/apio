@@ -56,14 +56,14 @@ class PluginBase:
         """Finds and returns the constrain file path."""
         # -- Keep short references.
         apio_env = self.apio_env
-        args = apio_env.args
+        params = apio_env.params
 
         # -- On first call, determine and cache.
         if self._constrain_file is None:
             self._constrain_file = get_constraint_file(
                 apio_env,
                 self.plugin_info().constrains_file_ext,
-                args.TOP_MODULE,
+                params.project.top_module,
             )
         return self._constrain_file
 
@@ -94,7 +94,16 @@ class PluginBase:
     def yosys_dot_builder(self) -> BuilderBase:
         """Creates and returns the yosys dot builder."""
         apio_env = self.apio_env
-        args = apio_env.args
+        params = apio_env.params
+        graph_params = params.cmds.graph
+
+        # -- Determine top module value. First priority is to the
+        # -- graph cmd param.
+        top_module = (
+            graph_params.top_module
+            if graph_params.top_module
+            else params.project.top_module
+        )
 
         return Builder(
             action=(
@@ -102,8 +111,8 @@ class PluginBase:
                 '-prefix {0}hardware {1}" {2} $SOURCES'
             ).format(
                 BUILD_DIR_SEP,
-                args.TOP_MODULE if args.TOP_MODULE else "unknown_top",
-                "" if args.VERBOSE_ALL else "-q",
+                top_module,
+                "" if params.verbosity.all else "-q",
             ),
             suffix=".dot",
             src_suffix=SRC_SUFFIXES,
@@ -113,13 +122,14 @@ class PluginBase:
     def graphviz_renderer_builder(self) -> BuilderBase:
         """Creates and returns the graphviz renderer builder."""
         apio_env = self.apio_env
-        args = apio_env.args
+        params = apio_env.params
+        graph_params = params.cmds.graph
 
         # --Decode the graphic spec. Currently it's trivial since it
         # -- contains a single value.
-        if args.GRAPH_SPEC:
+        if graph_params.graph_spec:
             # -- This is the case when scons target is 'graph'.
-            graph_type = args.GRAPH_SPEC
+            graph_type = graph_params.graph_spec
             assert graph_type in SUPPORTED_GRAPH_TYPES, graph_type
         else:
             # -- This is the case when scons target is not 'graph'.

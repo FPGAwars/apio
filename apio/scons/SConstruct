@@ -10,6 +10,7 @@ import os
 import sys
 import debugpy
 import click
+from google.protobuf import text_format
 from SCons.Script import ARGUMENTS, COMMAND_LINE_TARGETS
 from apio.scons.apio_env import ApioEnv
 from apio.scons.scons_handler import SconsHandler
@@ -17,32 +18,37 @@ from apio.scons.plugin_ice40 import PluginIce40
 from apio.scons.plugin_ecp5 import PluginEcp5
 from apio.scons.plugin_gowin import PluginGowin
 from apio.scons.plugin_util import maybe_wait_for_remote_debugger
+from apio.proto.apio_pb2 import SconsParams, ICE40, ECP5, GOWIN
 
 
 # -- If system env var APIO_SCONS_DEBUGGER is defined, regardless of its value,
 # -- we wait on a remote debugger to be attached, e.g. from Visual Studio Code.
 maybe_wait_for_remote_debugger("APIO_SCONS_DEBUGGER")
 
+# -- Read the text of the scons params file.
+with open("_build/scons.params", "r", encoding="utf8") as f:
+    proto_text = f.read()
 
-# -- Get the debug flag. If True, the scons code will print debug information.
-val = ARGUMENTS.get("debug", "False")
-is_debug = {"True": True, "False": False}[val]
+# -- Parse the text into SconsParams object.
+params:SconsParams = text_format.Parse(proto_text, SconsParams())
 
-# -- Get the arch. We use it to dispatch the scons handler.
-arch = ARGUMENTS.get("fpga_arch", None)
+# -- Compare the params timestamp to the timestamp in the command.
+timestamp = ARGUMENTS["timestamp"]
+assert params.timestamp == timestamp
+
 
 # -- Create the apio environment.
-apio_env = ApioEnv(ARGUMENTS, COMMAND_LINE_TARGETS, is_debug)
+apio_env = ApioEnv(COMMAND_LINE_TARGETS, params)
 
 # -- Select the plugin.
-if arch == "ice40":
+if params.arch == ICE40:
     plugin = PluginIce40(apio_env)
-elif arch == "ecp5":
+elif params.arch == ECP5:
     plugin = PluginEcp5(apio_env)
-elif arch == "gowin":
+elif params.arch == GOWIN:
     plugin = PluginGowin(apio_env)
 else:
-    print(f"Apio SConstruct dispatch error: unknown arch [{arch}]")
+    print(f"Apio SConstruct dispatch error: unknown arch [{params.arch}]")
     sys.exit(1)
 
 
