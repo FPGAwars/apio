@@ -621,7 +621,7 @@ def programmer_cmd(apio_env: ApioEnv) -> str:
     arg."""
 
     # Get the programer command template arg.
-    command = apio_env.params.cmds.upload.programmer_cmd
+    command = apio_env.params.target.upload.programmer_cmd
 
     # If empty then return as is. This must be an apio command that
     # doesn't use the programmer.

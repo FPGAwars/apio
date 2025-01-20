@@ -165,7 +165,7 @@ class PluginIce40(PluginBase):
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params
-        lint_params = params.cmds.lint
+        lint_params = params.target.lint
 
         top_module = (
             lint_params.top_module

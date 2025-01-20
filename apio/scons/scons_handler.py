@@ -159,7 +159,7 @@ class SconsHandler:
         # -- The 'sim' target and its dependencies, to simulate and display the
         # -- results of a single testbench.
         if apio_env.targeting("sim"):
-            sim_params = params.cmds.sim
+            sim_params = params.target.sim
             testbench = sim_params.testbench
             assert testbench, "Missing sim testbench"
             sim_config = get_sim_config(testbench, synth_srcs, test_srcs)
@@ -186,7 +186,7 @@ class SconsHandler:
         # -- The  "test" target and its dependencies, to test one or more
         # -- testbenches.
         if apio_env.targeting("test"):
-            test_params = params.cmds.test
+            test_params = params.target.test
             tests_configs = get_tests_configs(
                 test_params.testbench, synth_srcs, test_srcs
             )

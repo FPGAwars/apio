@@ -98,12 +98,12 @@ class PluginBase:
 
         # -- Sanity checks
         assert self.apio_env.targeting("graph")
-        assert self.apio_env.params.cmds.HasField("graph")
+        assert self.apio_env.params.target.HasField("graph")
 
         # -- Shortcuts.
         apio_env = self.apio_env
         params = apio_env.params
-        graph_params = params.cmds.graph
+        graph_params = params.target.graph
 
         # -- Determine top module value. First priority is to the
         # -- graph cmd param.
@@ -133,12 +133,12 @@ class PluginBase:
 
         # -- Sanity checks.
         assert self.apio_env.targeting("graph")
-        assert self.apio_env.params.cmds.HasField("graph")
+        assert self.apio_env.params.target.HasField("graph")
 
         # -- Shortcuts.
         apio_env = self.apio_env
         params = apio_env.params
-        graph_params = params.cmds.graph
+        graph_params = params.target.graph
 
         # -- Determine the output type string.
         type_map = {

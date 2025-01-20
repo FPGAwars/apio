@@ -15,7 +15,7 @@ from apio.utils import cmd_util
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.util import nameof
-from apio.proto.apio_pb2 import GraphOutputType, CmdGraphInfo, Verbosity
+from apio.proto.apio_pb2 import GraphOutputType, GraphInfo, Verbosity
 
 
 # ---------------------------
@@ -113,7 +113,7 @@ def cli(
         output_type = GraphOutputType.SVG
 
     # -- Construct the command info.
-    graph_cmd_info = CmdGraphInfo(output_type=output_type)
+    graph_cmd_info = GraphInfo(output_type=output_type)
     if top_module:
         graph_cmd_info.top_module = top_module
 
