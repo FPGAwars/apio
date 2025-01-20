@@ -37,14 +37,8 @@ class PluginGowin(PluginBase):
         # -- Call parent constructor.
         super().__init__(apio_env)
 
-        # -- Make sure the require args we expect are indeed there.
-        args = apio_env.args
-        args.check_required_str_args(
-            args.YOSYS_PATH, args.FPGA_PART_NUM, args.FPGA_TYPE
-        )
-
         # -- Cache values.
-        self.yosys_lib_dir = apio_env.args.YOSYS_PATH + "/gowin"
+        self.yosys_lib_dir = apio_env.params.envrionment.yosys_path + "/gowin"
         self.yosys_lib_file = self.yosys_lib_dir + "/cells_sim.v"
 
     def plugin_info(self) -> ArchPluginInfo:
@@ -59,15 +53,15 @@ class PluginGowin(PluginBase):
         """Creates and returns the synth builder."""
         # -- Keep short references.
         apio_env = self.apio_env
-        args = apio_env.args
+        params = apio_env.params
 
         # -- The yosys synth builder.
         return Builder(
             action=(
-                'yosys -p "synth_gowin {0} -json $TARGET" {1} $SOURCES'
+                'yosys -p "synth_gowin -top {0} -json $TARGET" {1} $SOURCES'
             ).format(
-                ("-top " + args.TOP_MODULE) if args.TOP_MODULE else "",
-                "" if args.VERBOSE_ALL or args.VERBOSE_SYNTH else "-q",
+                params.project.top_module,
+                "" if params.verbosity.all or params.verbosity.synth else "-q",
             ),
             suffix=".json",
             src_suffix=SRC_SUFFIXES,
@@ -79,7 +73,7 @@ class PluginGowin(PluginBase):
         """Creates and returns the pnr builder."""
         # -- Keep short references.
         apio_env = self.apio_env
-        args = apio_env.args
+        params = apio_env.params
 
         # -- We use an emmiter to add to the builder a second output file.
         def emitter(target, source, env):
@@ -94,11 +88,11 @@ class PluginGowin(PluginBase):
                 "--write $TARGET --report {1} --vopt family={2} "
                 "--vopt cst={3} {4}"
             ).format(
-                args.FPGA_PART_NUM,
+                params.fpga_info.part_num,
                 TARGET + ".pnr",
-                args.FPGA_TYPE,
+                params.fpga_info.gowin.family,
                 self.constrain_file(),
-                "" if args.VERBOSE_ALL or args.VERBOSE_PNR else "-q",
+                "" if params.verbosity.all or params.verbosity.pnr else "-q",
             ),
             suffix=".pnr.json",
             src_suffix=".json",
@@ -108,11 +102,9 @@ class PluginGowin(PluginBase):
     # @overrides
     def bitstream_builder(self) -> BuilderBase:
         """Creates and returns the bitstream builder."""
-        apio_env = self.apio_env
-        args = apio_env.args
         return Builder(
             action="gowin_pack -d {0} -o $TARGET $SOURCE".format(
-                args.FPGA_TYPE
+                self.apio_env.params.fpga_info.gowin.family
             ),
             suffix=".fs",
             src_suffix=".pnr.json",
@@ -121,9 +113,14 @@ class PluginGowin(PluginBase):
     # @overrides
     def testbench_compile_builder(self) -> BuilderBase:
         """Creates and returns the testbench compile builder."""
+
         # -- Keep short references.
         apio_env = self.apio_env
-        args = apio_env.args
+        params = apio_env.params
+
+        # -- Sanity checks
+        assert apio_env.targeting("sim", "test")
+        assert params.target.HasField("sim") or params.target.HasField("test")
 
         # -- We use a generator because we need a different action
         # -- string for sim and test.
@@ -140,7 +137,7 @@ class PluginGowin(PluginBase):
                 source_file_issue_action(),
                 # -- Perform the actual test or sim compilation.
                 iverilog_action(
-                    verbose=args.VERBOSE_ALL,
+                    verbose=params.verbosity.all,
                     vcd_output_name=testbench_name,
                     is_interactive=apio_env.targeting("sim"),
                     lib_dirs=[self.yosys_lib_dir],
@@ -161,6 +158,12 @@ class PluginGowin(PluginBase):
     # @overrides
     def lint_config_builder(self) -> BuilderBase:
         """Creates and returns the lint config builder."""
+
+        # -- Sanity checks
+        assert self.apio_env.targeting("lint")
+        assert self.apio_env.params.target.HasField("lint")
+
+        # -- Make the builder.
         yosys_vlt_path = vlt_path(self.yosys_lib_dir)
         return make_verilator_config_builder(
             [
@@ -173,17 +176,29 @@ class PluginGowin(PluginBase):
     # @overrides
     def lint_builder(self) -> BuilderBase:
         """Creates and returns the lint builder."""
+
+        # -- Sanity checks
+        assert self.apio_env.targeting("lint")
+        assert self.apio_env.params.target.HasField("lint")
+
         # -- Keep short references.
         apio_env = self.apio_env
-        args = apio_env.args
+        params = apio_env.params
+        lint_params = params.target.lint
+
+        top_module = (
+            lint_params.top_module
+            if lint_params.top_module
+            else params.project.top_module
+        )
 
         return Builder(
             action=verilator_lint_action(
-                warnings_all=args.VERILATOR_ALL,
-                warnings_no_style=args.VERILATOR_NO_STYLE,
-                no_warns=args.VERILATOR_NOWARNS,
-                warns=args.VERILATOR_WARNS,
-                top_module=args.TOP_MODULE,
+                warnings_all=lint_params.verilator_all,
+                warnings_no_style=lint_params.verilator_no_style,
+                no_warns=lint_params.verilator_no_warns,
+                warns=lint_params.verilator_warns,
+                top_module=top_module,
                 lib_dirs=[self.yosys_lib_dir],
                 lib_files=[self.yosys_lib_file],
             ),

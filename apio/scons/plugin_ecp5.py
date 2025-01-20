@@ -119,7 +119,6 @@ class PluginEcp5(PluginBase):
     # @overrides
     def testbench_compile_builder(self) -> BuilderBase:
         """Creates and returns the testbench compile builder."""
-
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params
