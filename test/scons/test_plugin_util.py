@@ -16,7 +16,7 @@ from apio.scons.plugin_util import (
     is_verilog_src,
     has_testbench_name,
     source_files,
-    programmer_cmd,
+    get_programmer_cmd,
     map_params,
     vlt_path,
     make_verilator_config_builder,
@@ -202,18 +202,18 @@ def test_get_programmer_cmd(capsys: LogCaptureFixture):
     # -- Without a "prog" arg, expected to return "". This is the case
     # -- when scons handles a command that doesn't use the programmer.
     apio_env = make_test_apio_env()
-    assert programmer_cmd(apio_env) == ""
+    assert get_programmer_cmd(apio_env) == ""
 
     # -- If prog is specified, expected to return it.
     apio_env = make_test_apio_env(extra_args={"prog": "my_prog aa $SOURCE bb"})
-    assert programmer_cmd(apio_env) == "my_prog aa $SOURCE bb"
+    assert get_programmer_cmd(apio_env) == "my_prog aa $SOURCE bb"
 
     # -- If prog string doesn't contains $SOURCE, expected to exit with an
     # -- error message.
     apio_env = make_test_apio_env(extra_args={"prog": "my_prog aa SOURCE bb"})
     with pytest.raises(SystemExit) as e:
         capsys.readouterr()  # Reset capturing.
-        programmer_cmd(apio_env)
+        get_programmer_cmd(apio_env)
     captured = capsys.readouterr()
     assert e.value.code == 1
     assert "$SOURCE is missing" in captured.out

@@ -616,30 +616,30 @@ def report_action(clk_name_index: int, verbose: bool) -> FunctionAction:
     return Action(print_pnr_report, "Formatting pnr report.")
 
 
-def programmer_cmd(apio_env: ApioEnv) -> str:
+def get_programmer_cmd(apio_env: ApioEnv) -> str:
     """Return the programmer command as derived from the scons "prog"
     arg."""
 
-    # Get the programer command template arg.
-    command = apio_env.params.target.upload.programmer_cmd
+    # Should be called only if scons paramsm has 'upload' target parmas.
+    params = apio_env.params
+    assert params.target.HasField("upload"), params
 
-    # If empty then return as is. This must be an apio command that
-    # doesn't use the programmer.
-    if not command:
-        return command
+    # Get the programer command template arg.
+    programmer_cmd = params.target.upload.programmer_cmd
+    assert programmer_cmd, params
 
     # It's an error if the programmer command doesn't have the $SOURCE
     # placeholder when scons inserts the binary file name.
-    if "$SOURCE" not in command:
+    if "$SOURCE" not in programmer_cmd:
         secho(
             "Error: [Internal] $SOURCE is missing in programmer command: "
-            f"{command}",
+            f"{programmer_cmd}",
             fg="red",
             color=True,
         )
         sys.exit(1)
 
-    return command
+    return programmer_cmd
 
 
 # pylint: disable=too-many-arguments

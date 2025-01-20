@@ -20,7 +20,7 @@ from apio.scons.plugin_util import (
     waves_target,
     source_files,
     report_action,
-    programmer_cmd,
+    get_programmer_cmd,
     configure_cleanup,
 )
 
@@ -132,7 +132,7 @@ class SconsHandler:
             apio_env.alias(
                 "upload",
                 source=bin_target,
-                action=programmer_cmd(apio_env),
+                action=get_programmer_cmd(apio_env),
                 allways_build=True,
             )
 
