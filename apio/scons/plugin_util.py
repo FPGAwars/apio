@@ -237,38 +237,44 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-positional-arguments
 def verilator_lint_action(
+    apio_env: ApioEnv,
     *,
-    warnings_all: bool = False,
-    warnings_no_style: bool = False,
-    no_warns: List[str] = None,
-    warns: List[str] = None,
-    top_module: str = "",
     extra_params: List[str] = None,
     lib_dirs: List[str] = None,
     lib_files: List[str] = None,
 ) -> str:
     """Construct an verilator scons action string.
-    * env: Rhe scons environment.
-    * warnings_all: If True, use -Wall.
-    * warnings_no_style: If True, use -Wno-style.
-    * no_warns: Optional list with verilator warning codes to disble.
-    * warns: Optional list with verilator warning codes to enable.
-    * top_module: If not empty, use --top-module <top_module>.
     * extra_params: Optional additional arguments.
     * libs_dirs: Optional directories for include search.
     * lib_files: Optional additional files to include.
     """
 
+    # -- Sanity checks
+    assert apio_env.targeting("lint")
+    assert apio_env.params.target.HasField("lint")
+
+    # -- Keep short references.
+    params = apio_env.params
+    lint_params = params.target.lint
+
+    # -- Determine top module.
+    top_module = (
+        lint_params.top_module
+        if lint_params.top_module
+        else params.project.top_module
+    )
+
+    # -- Construct the action
     action = (
         "verilator_bin --lint-only --quiet --bbox-unsup --timing "
         "-Wno-TIMESCALEMOD -Wno-MULTITOP "
         "{0} {1} {2} {3} {4} {5} {6} {7} {8} $SOURCES"
     ).format(
-        "-Wall" if warnings_all else "",
-        "-Wno-style" if warnings_no_style else "",
-        map_params(no_warns, "-Wno-{}"),
-        map_params(warns, "-Wwarn-{}"),
-        f"--top-module {top_module}" if top_module else "",
+        "-Wall" if lint_params.verilator_all else "",
+        "-Wno-style" if lint_params.verilator_no_style else "",
+        map_params(lint_params.verilator_no_warns, "-Wno-{}"),
+        map_params(lint_params.verilator_warns, "-Wwarn-{}"),
+        f"--top-module {top_module}",
         map_params(extra_params, "{}"),
         map_params(lib_dirs, '-I"{}"'),
         TARGET + ".vlt",

@@ -174,28 +174,9 @@ class PluginIce40(PluginBase):
     def lint_builder(self) -> BuilderBase:
         """Creates and returns the lint builder."""
 
-        # -- Sanity checks
-        assert self.apio_env.targeting("lint")
-        assert self.apio_env.params.target.HasField("lint")
-
-        # -- Keep short references.
-        apio_env = self.apio_env
-        params = apio_env.params
-        lint_params = params.target.lint
-
-        top_module = (
-            lint_params.top_module
-            if lint_params.top_module
-            else params.project.top_module
-        )
-
         return Builder(
             action=verilator_lint_action(
-                warnings_all=lint_params.verilator_all,
-                warnings_no_style=lint_params.verilator_no_style,
-                no_warns=lint_params.verilator_no_warns,
-                warns=lint_params.verilator_warns,
-                top_module=top_module,
+                self.apio_env,
                 extra_params=["-DNO_ICE40_DEFAULT_ASSIGNMENTS"],
                 lib_dirs=[self.yosys_lib_dir],
                 lib_files=[self.yosys_lib_file],
