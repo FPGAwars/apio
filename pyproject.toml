@@ -38,7 +38,8 @@ requires = [
     'tinyprog==1.0.21',
     'icefunprog==2.0.3',
     'apycula==0.15',
-    'apollo_fpga==1.1.1'
+    'apollo_fpga==1.1.1',
+    'protobuf==5.29.3'
 ]
 
 [tool.flit.sdist]
