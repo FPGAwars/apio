@@ -10,6 +10,7 @@ import pytest
 from SCons.Node.FS import FS
 from SCons.Script import SetOption
 from pytest import LogCaptureFixture
+from apio.proto.apio_pb2 import TargetParams, UploadParams
 from apio.scons.plugin_util import (
     get_constraint_file,
     verilog_src_scanner,
@@ -199,18 +200,23 @@ def test_get_source_files(apio_runner):
 def test_get_programmer_cmd(capsys: LogCaptureFixture):
     """Tests the function programmer_cmd()."""
 
-    # -- Without a "prog" arg, expected to return "". This is the case
-    # -- when scons handles a command that doesn't use the programmer.
-    apio_env = make_test_apio_env()
-    assert get_programmer_cmd(apio_env) == ""
-
-    # -- If prog is specified, expected to return it.
-    apio_env = make_test_apio_env(extra_args={"prog": "my_prog aa $SOURCE bb"})
+    # -- Test a valid programmer command.
+    apio_env = make_test_apio_env(
+        targets=["upload"],
+        target_params=TargetParams(
+            upload=UploadParams(programmer_cmd="my_prog aa $SOURCE bb")
+        ),
+    )
     assert get_programmer_cmd(apio_env) == "my_prog aa $SOURCE bb"
 
     # -- If prog string doesn't contains $SOURCE, expected to exit with an
     # -- error message.
-    apio_env = make_test_apio_env(extra_args={"prog": "my_prog aa SOURCE bb"})
+    apio_env = make_test_apio_env(
+        targets=["upload"],
+        target_params=TargetParams(
+            upload=UploadParams(programmer_cmd="my_prog aa SOURCE bb")
+        ),
+    )
     with pytest.raises(SystemExit) as e:
         capsys.readouterr()  # Reset capturing.
         get_programmer_cmd(apio_env)
@@ -278,8 +284,8 @@ def test_clean_if_requested(apio_runner: ApioRunner):
         apio_env = make_test_apio_env()
 
         # -- Create files that shouldn't be cleaned up.
-        Path("my_source.v")
-        Path("apio.ini")
+        Path("my_source.v").touch()
+        Path("apio.ini").touch()
 
         # -- Create files that should be cleaned up.
         Path("zadig.ini").touch()
@@ -287,11 +293,10 @@ def test_clean_if_requested(apio_runner: ApioRunner):
         Path("_build/aaa").touch()
         Path("_build/bbb").touch()
 
-        # -- Run clean_if_requested with no cleanup requested. It should
-        # -- not add any target.
+        # -- Run clean_if_requested with no cleanup requested. It assert.
         assert len(SconsHacks.get_targets()) == 0
-        configure_cleanup(apio_env)
-        assert len(SconsHacks.get_targets()) == 0
+        with pytest.raises(AssertionError):
+            configure_cleanup(apio_env)
 
         # -- Run the cleanup setup. It's expected to add a single
         # -- target with the dependencies to clean up.
