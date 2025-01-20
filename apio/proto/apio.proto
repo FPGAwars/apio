@@ -11,7 +11,7 @@
 // Using proto2 for features such as 'has' and 'required'. 
 syntax = "proto2";
 
-
+ 
 package apio.proto;
 
 // The supported FPGA architectures, each with its own handler.
@@ -24,9 +24,8 @@ enum ApioArch {
 
 // Ice40 specific fpga attributes.
 message Ice40FpgaInfo {
-  required string fpga_id = 1;
-  required string type = 4;
-  required string pack = 5;
+  required string type = 1;
+  required string pack = 2;
 }
 
 // Ecp5 specific fpga attributes.
@@ -71,9 +70,9 @@ message Envrionment {
   required string platform_id = 1;
 
   // True if apio debug is enabled.
-  optional bool debug = 2 [default = false];
+  optional bool is_debug = 2 [default = false];
 
-  // Paths to tools.
+  // Pathes to oss-cad-suite libraries.
   required string yosys_path = 3;
   required string trellis_path = 4;
 }
@@ -86,15 +85,17 @@ message Project {
 
 // Lint command specific info.
 message CmdLintInfo {
-  optional bool verilator_all = 1 [default = false];
-  optional bool verilator_no_style = 2 [default = false];
-  repeated string verilator_no_warn = 3;
-  repeated string verilator_warn = 4;
+  optional string top_module = 1 [default = ""];
+  optional bool verilator_all = 2 [default = false];
+  optional bool verilator_no_style = 3 [default = false];
+  repeated string verilator_no_warns = 4;
+  repeated string verilator_warns = 5;
 }
 
 // Graph command specific info.
 message CmdGraphInfo {
-  required string graph_spec = 1;
+  optional string top_module = 1;
+  required string graph_spec = 2;
 }
 
 // Sim command specific info.
@@ -107,12 +108,32 @@ message CmdTestInfo {
   optional string test_bench = 1;
 }
 
+// Upload command specific info.
+message CmdUploadInfo {
+  optional string programmer_cmd = 1;
+}
+
+// Some commands requires additional information.
+message CommandInfo {
+  oneof cmd {
+    CmdLintInfo lint = 10;
+    CmdGraphInfo graph = 11;
+    CmdSimInfo sim = 12;
+    CmdTestInfo test = 13;
+    CmdUploadInfo upload = 14;
+  }
+}
+
 // The top level messages that is passed from the apio process to
 // the scons process.
 message SconsParams {
+  // An arbitrary timesamp string that we pass also as an scons argument
+  // to verify that scons reads the correct versions of the params file.
+  required string timestamp = 1;
+
   // The apio architecture of this project. Used to select the scons
   // architecture plugin.
-  required ApioArch arch = 1;
+  required ApioArch arch = 2;
 
   // Information about the FPGA used in the project. From fpgas.jsonc.
   required FpgaInfo fpga_info = 3;
@@ -126,11 +147,6 @@ message SconsParams {
   // General information about the project
   required Project project = 6;
 
-  // Some commands require additional command-specific information.
-  oneof cmd {
-    CmdLintInfo cmd_lint = 10;
-    CmdGraphInfo cmd_graph = 11;
-    CmdSimInfo cmd_sim = 12;
-    CmdTestInfo cmd_test = 13;
-  }
+  // Additional info for some commands.
+  optional CommandInfo cmds = 7;
 }
