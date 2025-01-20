@@ -50,10 +50,6 @@ FTDI_ID = "ftdi_id"
 SRAM = "sram"
 FLASH = "flash"
 
-# -- ANSI Constants
-# CURSOR_UP = "\033[F"
-# ERASE_LINE = "\033[K"
-
 
 # W0703: Catching too general exception Exception (broad-except)
 # pylint: disable=W0703
@@ -98,7 +94,7 @@ class SCons:
 
     @on_exception(exit_code=1)
     def clean(self) -> int:
-        """Runs a scons subprocess with the 'clean' target. Returns process
+        """Runs a scons subprocess with the 'clean' option. Returns process
         exit code, 0 if ok."""
 
         scons_params = self.construct_scons_params()

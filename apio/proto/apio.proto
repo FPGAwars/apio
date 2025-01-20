@@ -34,7 +34,7 @@ message Ice40FpgaInfo {
 message Ecp5FpgaInfo {
   required string type = 4;
   required string pack = 5;
-  required uint32 speed = 6;
+  required string speed = 6;
 }
 
 // Gowin specific fpga attributes.

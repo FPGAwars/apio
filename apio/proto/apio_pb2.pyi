@@ -49,8 +49,8 @@ class Ecp5FpgaInfo(_message.Message):
     SPEED_FIELD_NUMBER: _ClassVar[int]
     type: str
     pack: str
-    speed: int
-    def __init__(self, type: _Optional[str] = ..., pack: _Optional[str] = ..., speed: _Optional[int] = ...) -> None: ...
+    speed: str
+    def __init__(self, type: _Optional[str] = ..., pack: _Optional[str] = ..., speed: _Optional[str] = ...) -> None: ...
 
 class GowinFpgaInfo(_message.Message):
     __slots__ = ("family",)
