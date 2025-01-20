@@ -15,7 +15,7 @@ from apio.utils import cmd_util
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.util import nameof
-from apio.proto.apio_pb2 import GraphOutputType, GraphInfo, Verbosity
+from apio.proto.apio_pb2 import GraphOutputType, GraphParams, Verbosity
 
 
 # ---------------------------
@@ -113,16 +113,16 @@ def cli(
         output_type = GraphOutputType.SVG
 
     # -- Construct the command info.
-    graph_cmd_info = GraphInfo(output_type=output_type)
+    graph_params = GraphParams(output_type=output_type)
     if top_module:
-        graph_cmd_info.top_module = top_module
+        graph_params.top_module = top_module
 
     # -- Construct the verbosity
     verbosity = Verbosity(all=verbose)
 
     # -- Graph the project with the given parameters
     exit_code = scons.graph(
-        graph_cmd_info,
+        graph_params,
         verbosity,
     )
 

@@ -104,7 +104,7 @@ class Project(_message.Message):
     top_module: str
     def __init__(self, board_id: _Optional[str] = ..., top_module: _Optional[str] = ...) -> None: ...
 
-class LintInfo(_message.Message):
+class LintParams(_message.Message):
     __slots__ = ("top_module", "verilator_all", "verilator_no_style", "verilator_no_warns", "verilator_warns")
     TOP_MODULE_FIELD_NUMBER: _ClassVar[int]
     VERILATOR_ALL_FIELD_NUMBER: _ClassVar[int]
@@ -118,7 +118,7 @@ class LintInfo(_message.Message):
     verilator_warns: _containers.RepeatedScalarFieldContainer[str]
     def __init__(self, top_module: _Optional[str] = ..., verilator_all: bool = ..., verilator_no_style: bool = ..., verilator_no_warns: _Optional[_Iterable[str]] = ..., verilator_warns: _Optional[_Iterable[str]] = ...) -> None: ...
 
-class GraphInfo(_message.Message):
+class GraphParams(_message.Message):
     __slots__ = ("output_type", "top_module")
     OUTPUT_TYPE_FIELD_NUMBER: _ClassVar[int]
     TOP_MODULE_FIELD_NUMBER: _ClassVar[int]
@@ -126,7 +126,7 @@ class GraphInfo(_message.Message):
     top_module: str
     def __init__(self, output_type: _Optional[_Union[GraphOutputType, str]] = ..., top_module: _Optional[str] = ...) -> None: ...
 
-class SimInfo(_message.Message):
+class SimParams(_message.Message):
     __slots__ = ("testbench", "force_sim")
     TESTBENCH_FIELD_NUMBER: _ClassVar[int]
     FORCE_SIM_FIELD_NUMBER: _ClassVar[int]
@@ -134,31 +134,31 @@ class SimInfo(_message.Message):
     force_sim: bool
     def __init__(self, testbench: _Optional[str] = ..., force_sim: bool = ...) -> None: ...
 
-class TestInfo(_message.Message):
+class TestParams(_message.Message):
     __slots__ = ("testbench",)
     TESTBENCH_FIELD_NUMBER: _ClassVar[int]
     testbench: str
     def __init__(self, testbench: _Optional[str] = ...) -> None: ...
 
-class UploadInfo(_message.Message):
+class UploadParams(_message.Message):
     __slots__ = ("programmer_cmd",)
     PROGRAMMER_CMD_FIELD_NUMBER: _ClassVar[int]
     programmer_cmd: str
     def __init__(self, programmer_cmd: _Optional[str] = ...) -> None: ...
 
-class TargetInfo(_message.Message):
+class TargetParams(_message.Message):
     __slots__ = ("lint", "graph", "sim", "test", "upload")
     LINT_FIELD_NUMBER: _ClassVar[int]
     GRAPH_FIELD_NUMBER: _ClassVar[int]
     SIM_FIELD_NUMBER: _ClassVar[int]
     TEST_FIELD_NUMBER: _ClassVar[int]
     UPLOAD_FIELD_NUMBER: _ClassVar[int]
-    lint: LintInfo
-    graph: GraphInfo
-    sim: SimInfo
-    test: TestInfo
-    upload: UploadInfo
-    def __init__(self, lint: _Optional[_Union[LintInfo, _Mapping]] = ..., graph: _Optional[_Union[GraphInfo, _Mapping]] = ..., sim: _Optional[_Union[SimInfo, _Mapping]] = ..., test: _Optional[_Union[TestInfo, _Mapping]] = ..., upload: _Optional[_Union[UploadInfo, _Mapping]] = ...) -> None: ...
+    lint: LintParams
+    graph: GraphParams
+    sim: SimParams
+    test: TestParams
+    upload: UploadParams
+    def __init__(self, lint: _Optional[_Union[LintParams, _Mapping]] = ..., graph: _Optional[_Union[GraphParams, _Mapping]] = ..., sim: _Optional[_Union[SimParams, _Mapping]] = ..., test: _Optional[_Union[TestParams, _Mapping]] = ..., upload: _Optional[_Union[UploadParams, _Mapping]] = ...) -> None: ...
 
 class SconsParams(_message.Message):
     __slots__ = ("timestamp", "arch", "fpga_info", "verbosity", "envrionment", "project", "target")
@@ -175,5 +175,5 @@ class SconsParams(_message.Message):
     verbosity: Verbosity
     envrionment: Envrionment
     project: Project
-    target: TargetInfo
-    def __init__(self, timestamp: _Optional[str] = ..., arch: _Optional[_Union[ApioArch, str]] = ..., fpga_info: _Optional[_Union[FpgaInfo, _Mapping]] = ..., verbosity: _Optional[_Union[Verbosity, _Mapping]] = ..., envrionment: _Optional[_Union[Envrionment, _Mapping]] = ..., project: _Optional[_Union[Project, _Mapping]] = ..., target: _Optional[_Union[TargetInfo, _Mapping]] = ...) -> None: ...
+    target: TargetParams
+    def __init__(self, timestamp: _Optional[str] = ..., arch: _Optional[_Union[ApioArch, str]] = ..., fpga_info: _Optional[_Union[FpgaInfo, _Mapping]] = ..., verbosity: _Optional[_Union[Verbosity, _Mapping]] = ..., envrionment: _Optional[_Union[Envrionment, _Mapping]] = ..., project: _Optional[_Union[Project, _Mapping]] = ..., target: _Optional[_Union[TargetParams, _Mapping]] = ...) -> None: ...

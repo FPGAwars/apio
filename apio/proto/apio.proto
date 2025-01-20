@@ -85,8 +85,8 @@ message Project {
   required string top_module = 2;
 }
 
-// Lint target specific info.
-message LintInfo {
+// Lint target specific params.
+message LintParams {
   optional string top_module = 1 [default = ""];
   optional bool verilator_all = 2 [default = false];
   optional bool verilator_no_style = 3 [default = false];
@@ -94,7 +94,7 @@ message LintInfo {
   repeated string verilator_warns = 5;
 }
 
-// Graph target specific info.
+// Graph target specific params.
 
 enum GraphOutputType {
   TYPE_UNSPECIFIED = 0;
@@ -103,35 +103,35 @@ enum GraphOutputType {
   PDF = 3;
 }
 
-message GraphInfo {
+message GraphParams {
   required GraphOutputType output_type = 1;
   optional string top_module = 2;
 }
 
-// Sim target specific info.
-message SimInfo {
+// Sim target specific params.
+message SimParams {
   required string testbench = 1;
   optional bool force_sim = 2 [default = false];
 }
 
-// Test target specific info.
-message TestInfo {
+// Test target specific params.
+message TestParams {
   optional string testbench = 1 [ default = ""];
 }
 
-// Upload target specific info.
-message UploadInfo {
+// Upload target specific iparams.
+message UploadParams {
   optional string programmer_cmd = 1;
 }
 
-// Some scons targets requires additional information.
-message TargetInfo {
+// Some scons targets requires additional params.
+message TargetParams {
   oneof target {
-    LintInfo lint = 10;
-    GraphInfo graph = 11;
-    SimInfo sim = 12;
-    TestInfo test = 13;
-    UploadInfo upload = 14;
+    LintParams lint = 10;
+    GraphParams graph = 11;
+    SimParams sim = 12;
+    TestParams test = 13;
+    UploadParams upload = 14;
   }
 }
 
@@ -158,6 +158,6 @@ message SconsParams {
   // General information about the project
   required Project project = 6;
 
-  // Additional info for some targets.
-  optional TargetInfo target = 7;
+  // Additional params for for scons targets that need it..
+  optional TargetParams target = 7;
 }

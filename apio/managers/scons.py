@@ -35,14 +35,14 @@ from apio.proto.apio_pb2 import (
     Verbosity,
     Envrionment,
     SconsParams,
-    TargetInfo,
+    TargetParams,
     FpgaInfo,
     Project,
     Ice40FpgaInfo,
     Ecp5FpgaInfo,
     GowinFpgaInfo,
     ApioArch,
-    GraphInfo,
+    GraphParams,
 )
 
 # -- Constant for the dictionary PROG, which contains
@@ -109,13 +109,13 @@ class SCons:
         return self._run("-c", scons_params=scons_params, uses_packages=False)
 
     @on_exception(exit_code=1)
-    def graph(self, graph_cmd_info: GraphInfo, verbosity: Verbosity) -> int:
+    def graph(self, graph_cmd_info: GraphParams, verbosity: Verbosity) -> int:
         """Runs a scons subprocess with the 'graph' target. Returns process
         exit code, 0 if ok."""
 
         # -- Construct scons params with graph command info.
         scons_params = self.construct_scons_params(
-            target_info=TargetInfo(graph=graph_cmd_info),
+            target_params=TargetParams(graph=graph_cmd_info),
             verbosity=verbosity,
         )
 
@@ -753,7 +753,7 @@ class SCons:
     def construct_scons_params(
         self,
         *,
-        target_info: TargetInfo = None,
+        target_params: TargetParams = None,
         verbosity: Verbosity = None,
     ) -> SconsParams:
         """Populate and return the SconsParam proto to pass to the scons
@@ -859,8 +859,8 @@ class SCons:
         assert result.project.IsInitialized()
 
         # -- Populate the optinal command specific params.
-        if target_info:
-            result.target.MergeFrom(target_info)
+        if target_params:
+            result.target.MergeFrom(target_params)
             assert result.target.IsInitialized()
 
         # -- All done.
