@@ -197,12 +197,20 @@ class SconsHandler:
         # -- The  "test" target and its dependencies, to test one or more
         # -- testbenches.
         if apio_env.targeting("test"):
+            # -- Sanity check
+            assert params.target.HasField("test")
+
+            # -- Collect the test related values.
             test_params = params.target.test
             tests_configs = get_tests_configs(
                 test_params.testbench, synth_srcs, test_srcs
             )
+
+            # -- Create targes for each testbench we are testing.
             tests_targets = []
             for test_config in tests_configs:
+
+                # -- Create the compilation target.
                 test_out_target = apio_env.builder_target(
                     builder_id=TESTBENCH_COMPILE_BUILDER,
                     target=test_config.build_testbench_name,
@@ -210,34 +218,36 @@ class SconsHandler:
                     always_build=True,
                 )
 
+                # -- Create the simulation target.
                 test_vcd_target = apio_env.builder_target(
                     builder_id=TESTBENCH_RUN_BUILDER,
                     target=test_config.build_testbench_name,
                     sources=[test_out_target],
                     always_build=True,
                 )
-                test_target = apio_env.alias(
-                    test_config.build_testbench_name,
-                    source=[test_vcd_target],
-                )
-                tests_targets.append(test_target)
+
+                # -- Append to the list of targets we need to execute.
+                tests_targets.append(test_vcd_target)
 
             # -- The top 'test' target.
             apio_env.alias("test", source=tests_targets, allways_build=True)
 
         # -- Targets for the "lint" command.
         if apio_env.targeting("lint"):
+            # -- Create the target that creates the lint config file.
             lint_config_target = apio_env.builder_target(
                 builder_id=LINT_CONFIG_BUILDER,
                 target=TARGET,
                 sources=[],
             )
+            # -- Create the target that actually lints.
             lint_out_target = apio_env.builder_target(
                 builder_id=LINT_BUILDER,
                 target=TARGET,
                 sources=synth_srcs + test_srcs,
                 extra_dependecies=[lint_config_target],
             )
+            # -- Create the top target.
             apio_env.alias(
                 "lint",
                 source=lint_out_target,

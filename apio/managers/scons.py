@@ -45,6 +45,7 @@ from apio.proto.apio_pb2 import (
     GraphParams,
     LintParams,
     SimParams,
+    TestParams,
 )
 
 # -- Constant for the dictionary PROG, which contains
@@ -159,19 +160,21 @@ class SCons:
         )
 
     @on_exception(exit_code=1)
-    def test(self, args) -> int:
+    def test(self, test_params: TestParams) -> int:
         """Runs a scons subprocess with the 'test' target. Returns process
         exit code, 0 if ok."""
 
-        # # -- Split the arguments
-        # board, variables = process_arguments(self.apio_ctx, args)
+        # -- Construct scons params with graph command info.
+        scons_params = self.construct_scons_params(
+            target_params=TargetParams(test=test_params)
+        )
 
-        # return self._run(
-        #     "test",
-        #     board=board,
-        #     variables=variables,
-        #     uses_packages=True,
-        # )
+        # -- Run the scons process.
+        return self._run(
+            "test",
+            scons_params=scons_params,
+            uses_packages=True,
+        )
 
     @on_exception(exit_code=1)
     def build(self, verbosity: Verbosity) -> int:

@@ -13,6 +13,7 @@ import click
 from apio.managers.scons import SCons
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
+from apio.proto.apio_pb2 import TestParams
 
 
 # ---------------------------
@@ -67,5 +68,10 @@ def cli(
     # -- Create the scons manager.
     scons = SCons(apio_ctx)
 
-    exit_code = scons.test({"testbench": testbench_file})
+    # -- Construct the test params
+    test_params = TestParams(
+        testbench=testbench_file if testbench_file else None
+    )
+
+    exit_code = scons.test(test_params)
     sys.exit(exit_code)

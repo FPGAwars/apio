@@ -121,6 +121,7 @@ message SimParams {
 
 // Test target specific params.
 message TestParams {
+  // If not specified, all the testbenches in the project are tested.
   optional string testbench = 1 [ default = ""];
 }
 
