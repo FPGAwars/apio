@@ -78,10 +78,13 @@ class ApioEnv:
         """Returns true if we run in debug mode."""
         return self.params.envrionment.is_debug
 
-    def targeting(self, target_name: str) -> bool:
-        """Returns true if the named target was specified in the command
-        line."""
-        return target_name in self.command_line_targets
+    def targeting(self, *target_names) -> bool:
+        """Returns true if the any of the named target was specified in the
+        scons command line."""
+        for target_name in target_names:
+            if target_name in self.command_line_targets:
+                return True
+        return False
 
     def builder(self, builder_id: str, builder):
         """Append to the scons env a builder with given id. The env

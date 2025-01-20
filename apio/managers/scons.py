@@ -14,6 +14,7 @@ import os
 import sys
 import re
 import time
+from pathlib import Path
 import shutil
 from functools import wraps
 from datetime import datetime
@@ -41,6 +42,7 @@ from apio.proto.apio_pb2 import (
     Ecp5FpgaInfo,
     GowinFpgaInfo,
     ApioArch,
+    CmdGraphInfo,
 )
 
 # -- Constant for the dictionary PROG, which contains
@@ -107,21 +109,22 @@ class SCons:
         return self._run("-c", scons_params=scons_params, uses_packages=False)
 
     @on_exception(exit_code=1)
-    def graph(self, args) -> int:
+    def graph(self, graph_cmd_info: CmdGraphInfo, verbosity: Verbosity) -> int:
         """Runs a scons subprocess with the 'graph' target. Returns process
         exit code, 0 if ok."""
 
-        # # -- Split the arguments
-        # board, variables = process_arguments(self.apio_ctx, args)
+        # -- Construct scons params with graph command info.
+        scons_params = self.construct_scons_params(
+            command_info=CommandInfo(graph=graph_cmd_info),
+            verbosity=verbosity,
+        )
 
-        # # -- Execute scons!!!
-        # # -- The packages to check are passed
-        # return self._run(
-        #     "graph",
-        #     board=board,
-        #     variables=variables,
-        #     uses_packages=True,
-        # )
+        # -- Invoke the scons process.
+        return self._run(
+            "graph",
+            scons_params=scons_params,
+            uses_packages=True,
+        )
 
     @on_exception(exit_code=1)
     def lint(self, args) -> int:
@@ -945,7 +948,9 @@ class SCons:
 
         # -- Write the scons parameters to a temp file in the build
         # -- directory. It will be cleaned up as part of 'apio cleanup'.
-        build_dir = self.apio_ctx.project_dir / "_build"
+        # -- At this point, the project is the current directory, even if
+        # -- the command used the --project-dir option.
+        build_dir = Path("_build")
         os.makedirs(build_dir, exist_ok=True)
         with open(build_dir / "scons.params", "w", encoding="utf8") as f:
             f.write(text_format.MessageToString(scons_params))

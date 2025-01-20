@@ -76,7 +76,7 @@ def cli(
     # pylint: disable=R0801
     # -- Build the project with the given parameters
     exit_code = scons.build(
-        verbosity=Verbosity(all=verbose, synth=verbose_synth, pnr=verbose_pnr)
+        Verbosity(all=verbose, synth=verbose_synth, pnr=verbose_pnr)
     )
 
     # -- Done!

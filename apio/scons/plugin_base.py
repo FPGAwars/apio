@@ -16,6 +16,7 @@ from SCons.Builder import BuilderBase
 from SCons.Action import Action
 from SCons.Script import Builder
 from apio.scons.apio_env import ApioEnv, TARGET, BUILD_DIR_SEP
+from apio.proto.apio_pb2 import GraphOutputType
 from apio.scons.plugin_util import (
     SRC_SUFFIXES,
     verilog_src_scanner,
@@ -92,7 +93,14 @@ class PluginBase:
         )
 
     def yosys_dot_builder(self) -> BuilderBase:
-        """Creates and returns the yosys dot builder."""
+        """Creates and returns the yosys dot builder. Should be called
+        only when serving the graph command."""
+
+        # -- Sanity checks
+        assert self.apio_env.targeting("graph")
+        assert self.apio_env.params.cmds.HasField("graph")
+
+        # -- Shortcuts.
         apio_env = self.apio_env
         params = apio_env.params
         graph_params = params.cmds.graph
@@ -120,40 +128,46 @@ class PluginBase:
         )
 
     def graphviz_renderer_builder(self) -> BuilderBase:
-        """Creates and returns the graphviz renderer builder."""
+        """Creates and returns the graphviz renderer builder. Should
+        be called only when serving the graph command."""
+
+        # -- Sanity checks.
+        assert self.apio_env.targeting("graph")
+        assert self.apio_env.params.cmds.HasField("graph")
+
+        # -- Shortcuts.
         apio_env = self.apio_env
         params = apio_env.params
         graph_params = params.cmds.graph
 
-        # --Decode the graphic spec. Currently it's trivial since it
-        # -- contains a single value.
-        if graph_params.graph_spec:
-            # -- This is the case when scons target is 'graph'.
-            graph_type = graph_params.graph_spec
-            assert graph_type in SUPPORTED_GRAPH_TYPES, graph_type
-        else:
-            # -- This is the case when scons target is not 'graph'.
-            graph_type = "svg"
+        # -- Determine the output type string.
+        type_map = {
+            GraphOutputType.PDF: "pdf",
+            GraphOutputType.PNG: "png",
+            GraphOutputType.SVG: "svg",
+        }
+        type_str = type_map[graph_params.output_type]
+        assert type_str, f"Unexpected graph type {graph_params.output_type}"
 
         def completion_action(source, target, env):  # noqa
             """Action function that prints a completion message."""
             _ = (source, target, env)  # Unused
             secho(
-                f"Generated {TARGET}.{graph_type}",
+                f"Generated {TARGET}.{type_str}",
                 fg="green",
                 bold=True,
                 color=True,
             )
 
         actions = [
-            f"dot -T{graph_type} $SOURCES -o $TARGET",
+            f"dot -T{type_str} $SOURCES -o $TARGET",
             Action(completion_action, "completion_action"),
         ]
 
         graphviz_builder = Builder(
             # Expecting graphviz dot to be installed and in the path.
             action=actions,
-            suffix=f".{graph_type}",
+            suffix=f".{type_str}",
             src_suffix=".dot",
         )
 

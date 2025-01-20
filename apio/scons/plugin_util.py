@@ -721,17 +721,18 @@ def make_verilator_config_builder(config_lines: List[str]):
     )
 
 
-def clean_if_requested(apio_env: ApioEnv) -> None:
+def configure_cleanup(apio_env: ApioEnv) -> None:
     """Should be called only when the "clean" target is specified.
     Configures in scons env do delete all the files in the build directory.
     """
 
+    # -- Sanity check.
+    assert apio_env.scons_env.GetOption(
+        "clean"
+    ), "Error, cleaning not requested."
+
     # -- Get the underlying scons environment.
     scons_env = apio_env.scons_env
-
-    # -- We perform cleaning only when the scons 'clean' option is active.
-    if not scons_env.GetOption("clean"):
-        return
 
     # -- Get the list of all files to clean. Scons adds to the list non
     # -- existing files from other targets it encountered.

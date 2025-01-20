@@ -20,7 +20,7 @@ from apio.scons.plugin_util import (
     map_params,
     vlt_path,
     make_verilator_config_builder,
-    clean_if_requested,
+    configure_cleanup,
 )
 
 
@@ -290,14 +290,14 @@ def test_clean_if_requested(apio_runner: ApioRunner):
         # -- Run clean_if_requested with no cleanup requested. It should
         # -- not add any target.
         assert len(SconsHacks.get_targets()) == 0
-        clean_if_requested(apio_env)
+        configure_cleanup(apio_env)
         assert len(SconsHacks.get_targets()) == 0
 
         # -- Run the cleanup setup. It's expected to add a single
         # -- target with the dependencies to clean up.
         assert len(SconsHacks.get_targets()) == 0
         SetOption("clean", True)
-        clean_if_requested(apio_env)
+        configure_cleanup(apio_env)
         assert len(SconsHacks.get_targets()) == 1
 
         # -- Get the target and its dependencies
