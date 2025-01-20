@@ -100,12 +100,13 @@ message CmdGraphInfo {
 
 // Sim command specific info.
 message CmdSimInfo {
-  optional string test_bench = 1;
+  required string testbench = 1;
+  optional bool force_sim = 2 [default = false];
 }
 
 // Test command specific info.
 message CmdTestInfo {
-  optional string test_bench = 1;
+  optional string testbench = 1 [ default = ""];
 }
 
 // Upload command specific info.

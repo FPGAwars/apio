@@ -1,3 +1,9 @@
+
+# pylint: disable=C0114, C0115, C0301, C0303, C0411
+# pylint: disable=E0245, E0602, E1139
+# pylint: disable=R0913, R0917
+# pylint: disable=W0212, W0223, W0311, W0613, W0622
+
 from google.protobuf.internal import containers as _containers
 from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
@@ -110,16 +116,18 @@ class CmdGraphInfo(_message.Message):
     def __init__(self, top_module: _Optional[str] = ..., graph_spec: _Optional[str] = ...) -> None: ...
 
 class CmdSimInfo(_message.Message):
-    __slots__ = ("test_bench",)
-    TEST_BENCH_FIELD_NUMBER: _ClassVar[int]
-    test_bench: str
-    def __init__(self, test_bench: _Optional[str] = ...) -> None: ...
+    __slots__ = ("testbench", "force_sim")
+    TESTBENCH_FIELD_NUMBER: _ClassVar[int]
+    FORCE_SIM_FIELD_NUMBER: _ClassVar[int]
+    testbench: str
+    force_sim: bool
+    def __init__(self, testbench: _Optional[str] = ..., force_sim: bool = ...) -> None: ...
 
 class CmdTestInfo(_message.Message):
-    __slots__ = ("test_bench",)
-    TEST_BENCH_FIELD_NUMBER: _ClassVar[int]
-    test_bench: str
-    def __init__(self, test_bench: _Optional[str] = ...) -> None: ...
+    __slots__ = ("testbench",)
+    TESTBENCH_FIELD_NUMBER: _ClassVar[int]
+    testbench: str
+    def __init__(self, testbench: _Optional[str] = ...) -> None: ...
 
 class CmdUploadInfo(_message.Message):
     __slots__ = ("programmer_cmd",)
