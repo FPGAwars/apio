@@ -183,6 +183,8 @@ class SCons:
 
         # -- Construct the scons params object.
         scons_params = self.construct_scons_params(verbosity=verbosity)
+
+        # -- Run the scons process.
         return self._run(
             "build",
             scons_params=scons_params,
@@ -190,18 +192,17 @@ class SCons:
         )
 
     @on_exception(exit_code=1)
-    def report(self, args) -> int:
+    def report(self, verbosity: Verbosity) -> int:
         """Runs a scons subprocess with the 'report' target. Returns process
         exit code, 0 if ok."""
 
-        # board, variables = process_arguments(self.apio_ctx, args)
+        # -- Construct the scons params object.
+        scons_params = self.construct_scons_params(verbosity=verbosity)
 
-        # return self._run(
-        #     "report",
-        #     board=board,
-        #     variables=variables,
-        #     uses_packages=True,
-        # )
+        # -- Run the scons process.
+        return self._run(
+            "report", scons_params=scons_params, uses_packages=True
+        )
 
     @on_exception(exit_code=1)
     def upload(self, config: dict, prog: dict) -> int:
