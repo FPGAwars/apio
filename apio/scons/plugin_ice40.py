@@ -25,7 +25,6 @@ from apio.scons.plugin_util import (
     source_file_issue_action,
     iverilog_action,
     basename,
-    vlt_path,
     make_verilator_config_builder,
 )
 
@@ -160,17 +159,9 @@ class PluginIce40(PluginBase):
 
         # -- Sanity checks
         assert self.apio_env.targeting("lint")
-        assert self.apio_env.params.target.HasField("lint")
 
         # -- Make the builder.
-        yosys_vlt_path = vlt_path(self.yosys_lib_dir)
-        return make_verilator_config_builder(
-            [
-                "`verilator_config",
-                f'lint_off -rule COMBDLY     -file "{yosys_vlt_path}/*"',
-                f'lint_off -rule WIDTHEXPAND -file "{yosys_vlt_path}/*"',
-            ]
-        )
+        return make_verilator_config_builder(self.yosys_lib_dir)
 
     # @overrides
     def lint_builder(self) -> BuilderBase:

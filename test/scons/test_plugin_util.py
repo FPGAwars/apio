@@ -19,7 +19,6 @@ from apio.scons.plugin_util import (
     source_files,
     get_programmer_cmd,
     map_params,
-    vlt_path,
     make_verilator_config_builder,
     configure_cleanup,
 )
@@ -238,14 +237,6 @@ def test_map_params():
     assert map_params(["a", "a", "b"], "x_{}_y") == "x_a_y x_a_y x_b_y"
 
 
-def test_vlt_path():
-    """Tests the vlt_path() function."""
-
-    assert vlt_path("") == ""
-    assert vlt_path("/aa/bb/cc.xyz") == "/aa/bb/cc.xyz"
-    assert vlt_path("C:\\aa\\bb/cc.xyz") == "C:/aa/bb/cc.xyz"
-
-
 def test_make_verilator_config_builder(apio_runner: ApioRunner):
     """Tests the make_verilator_config_builder() function."""
 
@@ -255,7 +246,7 @@ def test_make_verilator_config_builder(apio_runner: ApioRunner):
         apio_env = make_test_apio_env()
 
         # -- Call the tested method to create a builder.
-        builder = make_verilator_config_builder(["line1", " line2", "line3"])
+        builder = make_verilator_config_builder(sb.packages_dir)
 
         # -- Verify builder suffixes.
         assert builder.suffix == ".vlt"
@@ -271,8 +262,8 @@ def test_make_verilator_config_builder(apio_runner: ApioRunner):
 
         # -- Verify that the file was created with the tiven text.
         text = sb.read_file("hardware.vlt")
-
-        assert text == "line1\n line2\nline3"
+        assert "verilator_config" in text, text
+        assert "lint_off -rule COMBDLY" in text, text
 
 
 def test_clean_if_requested(apio_runner: ApioRunner):

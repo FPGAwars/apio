@@ -700,27 +700,37 @@ def basename(file_name: str) -> str:
     return result
 
 
-def vlt_path(path: Path) -> str:
-    """Normalize a path that is used in the verilator config file
-    hardware.vlt. On windows it replaces "\" with "/". Otherwise it
-    leaves the path as is.
-    """
-    assert isinstance(path, (str, Path))
-    return str(path).replace("\\", "/")
-
-
-def make_verilator_config_builder(config_lines: List[str]):
+def make_verilator_config_builder(lib_path: Path):
     """Create a scons Builder that writes a verilator config file
-    (hardware.vlt) with the given text."""
+    (hardware.vlt) that supresses warnings in the lib directory."""
+    assert isinstance(lib_path, Path), lib_path
 
-    # -- Join the lines into a single string.
-    config_text = "\n".join(config_lines)
+    # -- Construct a glob of all library files.
+    glob_path = str(lib_path / "*")
+
+    # -- Escape for windows. A single backslash is converted into two.
+    glob_str = str(glob_path).replace("\\", "\\\\")
+
+    # -- File lines. We supress a union of all the errors we encountered in
+    # -- all the architectures.
+    lines = [
+        "`verilator_config",
+        f'lint_off -rule COMBDLY     -file "{glob_str}"',
+        f'lint_off -rule WIDTHEXPAND -file "{glob_str}"',
+        f'lint_off -rule PINMISSING  -file "{glob_str}"',
+        f'lint_off -rule ASSIGNIN    -file "{glob_str}"',
+        f'lint_off -rule WIDTHTRUNC  -file "{glob_str}"',
+        f'lint_off -rule INITIALDLY  -file "{glob_str}"',
+    ]
+
+    # -- Join the lines into text.
+    text = "\n".join(lines) + "\n"
 
     def verilator_config_func(target, source, env):
         """Creates a verilator .vlt config files."""
         _ = (source, env)  # Unused
         with open(target[0].get_path(), "w", encoding="utf-8") as target_file:
-            target_file.write(config_text)
+            target_file.write(text)
         return 0
 
     return Builder(
