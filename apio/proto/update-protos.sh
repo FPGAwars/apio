@@ -18,7 +18,7 @@ set -e
 patch="
 # pylint: disable=C0114, C0115, C0301, C0303, C0411
 # pylint: disable=E0245, E0602, E1139
-# pylint: disable=R0913, R0917
+# pylint: disable=R0913, R0801, R0917
 # pylint: disable=W0212, W0223, W0311, W0613, W0622
 "
 
