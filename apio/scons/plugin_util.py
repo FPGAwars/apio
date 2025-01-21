@@ -711,17 +711,18 @@ def make_verilator_config_builder(lib_path: Path):
     # -- Escape for windows. A single backslash is converted into two.
     glob_str = str(glob_path).replace("\\", "\\\\")
 
-    # -- File lines. We supress a union of all the errors we encountered in
-    # -- all the architectures.
-    lines = [
-        "`verilator_config",
-        f'lint_off -rule COMBDLY     -file "{glob_str}"',
-        f'lint_off -rule WIDTHEXPAND -file "{glob_str}"',
-        f'lint_off -rule PINMISSING  -file "{glob_str}"',
-        f'lint_off -rule ASSIGNIN    -file "{glob_str}"',
-        f'lint_off -rule WIDTHTRUNC  -file "{glob_str}"',
-        f'lint_off -rule INITIALDLY  -file "{glob_str}"',
-    ]
+    # -- Generate the files lines.  We supress a union of all the errors we
+    # -- encountered in all the architectures.
+    lines = ["`verilator_config"]
+    for rule in [
+        "COMBDLY",
+        "WIDTHEXPAND",
+        "PINMISSING",
+        "ASSIGNIN",
+        "WIDTHTRUNC",
+        "INITIALDLY",
+    ]:
+        lines.append(f'lint_off -rule {rule}  -file "{glob_str}"')
 
     # -- Join the lines into text.
     text = "\n".join(lines) + "\n"
