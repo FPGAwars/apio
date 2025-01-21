@@ -55,7 +55,7 @@ def cli(
     scons = SCons(apio_ctx)
 
     # -- Build the project with the given parameters
-    exit_code = scons.clean(args={})
+    exit_code = scons.clean()
 
     # -- Done!
     sys.exit(exit_code)

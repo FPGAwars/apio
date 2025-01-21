@@ -13,6 +13,7 @@ import click
 from apio.managers.scons import SCons
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
+from apio.proto.apio_pb2 import Verbosity
 
 
 # ---------------------------
@@ -59,12 +60,11 @@ def cli(
     # -- Create the scons manager.
     scons = SCons(apio_ctx)
 
+    # -- Create the verbosity params.
+    verbosity = Verbosity(pnr=verbose)
+
     # Run scons
-    exit_code = scons.report(
-        {
-            "verbose_pnr": verbose,
-        }
-    )
+    exit_code = scons.report(verbosity)
 
     # -- Done!
     sys.exit(exit_code)

@@ -15,6 +15,8 @@ from apio.managers.drivers import Drivers
 from apio.utils import cmd_util
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
+from apio.managers.programmers import construct_programmer_cmd
+from apio.proto.apio_pb2 import UploadParams
 
 
 # ---------------------------
@@ -110,20 +112,20 @@ def cli(
     # -- Create the scons manager
     scons = SCons(apio_ctx)
 
-    # -- Construct the configuration params to pass to SCons
-    # -- from the arguments
-    config = {}
+    # -- Get the programmer command.
+    programmer_cmd = construct_programmer_cmd(
+        apio_ctx,
+        serial_port=serial_port,
+        ftdi_id=ftdi_id,
+        sram=sram,
+        flash=flash,
+    )
 
-    # -- Construct the programming configuration
-    prog = {
-        "serial_port": serial_port,
-        "ftdi_id": ftdi_id,
-        "sram": sram,
-        "flash": flash,
-    }
+    # Construct the scons upload params.
+    upload_params = UploadParams(programmer_cmd=programmer_cmd)
 
     # Run scons: upload command
-    exit_code = scons.upload(config, prog)
+    exit_code = scons.upload(upload_params)
 
     # -- Only for MAC
     # -- Operation to do after uploading a design in MAC

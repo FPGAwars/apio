@@ -13,6 +13,7 @@ import click
 from apio.managers.scons import SCons
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
+from apio.proto.apio_pb2 import Verbosity
 
 
 # ---------------------------
@@ -44,14 +45,14 @@ Examples:
 @click.pass_context
 @options.project_dir_option
 @options.verbose_option
-@options.verbose_yosys_option
+@options.verbose_synth_option
 @options.verbose_pnr_option
 def cli(
     _: click.Context,
     # Options
     project_dir: Path,
     verbose: bool,
-    verbose_yosys: bool,
+    verbose_synth: bool,
     verbose_pnr: bool,
 ):
     """Implements the apio build command. It invokes the toolchain
@@ -75,11 +76,7 @@ def cli(
     # pylint: disable=R0801
     # -- Build the project with the given parameters
     exit_code = scons.build(
-        {
-            "verbose_all": verbose,
-            "verbose_yosys": verbose_yosys,
-            "verbose_pnr": verbose_pnr,
-        }
+        Verbosity(all=verbose, synth=verbose_synth, pnr=verbose_pnr)
     )
 
     # -- Done!

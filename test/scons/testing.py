@@ -1,14 +1,44 @@
 """
 Helpers for apio's scons testing."""
 
-import os
-from typing import Dict
+from typing import Dict, Optional, List
 import SCons.Script.SConsOptions
 import SCons.Node.FS
 import SCons.Environment
 import SCons.Defaults
 import SCons.Script.Main
+from google.protobuf import text_format
 from apio.scons.apio_env import ApioEnv
+from apio.proto.apio_pb2 import SconsParams, TargetParams
+
+TEST_PARAMS = """
+timestamp: "20123412052"
+arch: ICE40
+fpga_info {
+  fpga_id: "ice40hx4k-tq144-8k"
+  part_num: "ICE40HX4K-TQ144"
+  size: "8k"
+  ice40 {
+    type: "hx8k"
+    pack: "tq144:4k"
+  }
+}
+verbosity {
+  all: false
+  synth: false
+  pnr: false
+}
+envrionment {
+  platform_id: "darwin_arm64"
+  is_debug: true
+  yosys_path: "/Users/user/.apio/packages/oss-cad-suite/share/yosys"
+  trellis_path: "/Users/user/.apio/packages/oss-cad-suite/share/trellis"
+}
+project {
+  board_id: "alhambra-ii"
+  top_module: "main"
+}
+"""
 
 
 class SconsHacks:
@@ -48,33 +78,43 @@ class SconsHacks:
         return SCons.Environment.CleanTargets
 
 
+def make_test_scons_params() -> SconsParams:
+    """Create a frake scons params for testing."""
+    return text_format.Parse(TEST_PARAMS, SconsParams())
+
+
 def make_test_apio_env(
-    args: Dict[str, str] = None, extra_args: Dict[str, str] = None
+    *,
+    targets: Optional[List[str]] = None,
+    platform_id: str = None,
+    is_debug: bool = None,
+    target_params: TargetParams = None,
 ) -> ApioEnv:
-    """Creates a fresh apio env with given args. The env is created
+    """Creates a fresh apio env for testing. The env is created
     with the current directory as the root dir.
     """
 
     # -- Bring scons to a starting state.
     SconsHacks.reset_scons_state()
 
-    # -- Default, when we don't really care about the content.
-    if args is None:
-        args = {
-            "platform_id": "darwin_arm64",
-        }
+    # -- Create default params.
+    scons_params = make_test_scons_params()
 
-    # -- If specified, overite/add extra args.
-    if extra_args:
-        args.update(extra_args)
+    # -- Apply user overrides.
+    if platform_id is not None:
+        scons_params.envrionment.platform_id = platform_id
+    if is_debug is not None:
+        scons_params.envrionment.is_debug = is_debug
+    if target_params is not None:
+        scons_params.target.MergeFrom(target_params)
 
-    # -- Setup required env vars.
-    os.environ["YOSYS_LIB"] = "fake yosys lib"
-    os.environ["TRELLIS"] = "fake trelis"
+    # -- Determine scons target.
+    if targets is not None:
+        command_line_targets = targets
+    else:
+        command_line_targets = ["build"]
 
     # -- Create and return the apio env.
     return ApioEnv(
-        scons_args=args,
-        command_line_targets=["build"],
-        is_debug=False,
+        command_line_targets=command_line_targets, scons_params=scons_params
     )

@@ -146,8 +146,8 @@ Usage: apio build [OPTIONS]
 Options:
   -p, --project-dir path  Set the root directory for the project.
   -v, --verbose           Show detailed output.
-  --verbose-yosys         Show detailed yosys output.
-  --verbose-pnr           Show detailed pnr output.
+  --verbose-synth         Show detailed synth stage output.
+  --verbose-pnr           Show detailed pnr stage output.
   -h, --help              Show this message and exit.
 ```
 
@@ -552,6 +552,7 @@ Usage: apio graph [OPTIONS]
 
   Examples:
     apio graph               # Generate a svg file.
+    apio graph --svg         # Generate a svg file.
     apio graph --pdf         # Generate a pdf file.
     apio graph --png         # Generate a png file.
     apio graph -t my_module  # Graph my_module module.
@@ -560,8 +561,9 @@ Usage: apio graph [OPTIONS]
   and on Mac OS type ‘open _build/hardware.svg’.
 
 Options:
-  --pdf                   Generate a pdf file.
+  --svg                   Generate a svg file (default).
   --png                   Generate a png file.
+  --pdf                   Generate a pdf file.
   -p, --project-dir path  Set the root directory for the project.
   -t, --top-module name   Set the name of the top module to graph.
   -v, --verbose           Show detailed output.

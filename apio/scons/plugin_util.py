@@ -18,7 +18,7 @@ import re
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Tuple, Dict, Optional
+from typing import List, Tuple, Dict, Optional, Union
 from click import secho, style
 from SCons import Scanner
 from SCons.Builder import Builder
@@ -70,7 +70,7 @@ def maybe_wait_for_remote_debugger(env_var_name: str):
         )
 
 
-def map_params(params: Optional[List[str]], fmt: str) -> str:
+def map_params(params: Optional[List[Union[str, Path]]], fmt: str) -> str:
     """A common function construct a command string snippet from a list
     of arguments. The functon does the following:
     1. If params arg is None replace it with []
@@ -86,8 +86,11 @@ def map_params(params: Optional[List[str]], fmt: str) -> str:
     if params is None:
         params = []
 
-    # Drop empty params and map the rest using the format string.
-    mapped_params = [fmt.format(x.strip()) for x in params if x.strip()]
+    # Convert parmas to stripped strings.
+    params = [str(x).strip() for x in params]
+
+    # Drop the empty params and map the rest.
+    mapped_params = [fmt.format(x) for x in params if x]
 
     # Join using a single space.
     return " ".join(mapped_params)
@@ -237,38 +240,44 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-positional-arguments
 def verilator_lint_action(
+    apio_env: ApioEnv,
     *,
-    warnings_all: bool = False,
-    warnings_no_style: bool = False,
-    no_warns: List[str] = None,
-    warns: List[str] = None,
-    top_module: str = "",
     extra_params: List[str] = None,
-    lib_dirs: List[str] = None,
-    lib_files: List[str] = None,
+    lib_dirs: List[Path] = None,
+    lib_files: List[Path] = None,
 ) -> str:
     """Construct an verilator scons action string.
-    * env: Rhe scons environment.
-    * warnings_all: If True, use -Wall.
-    * warnings_no_style: If True, use -Wno-style.
-    * no_warns: Optional list with verilator warning codes to disble.
-    * warns: Optional list with verilator warning codes to enable.
-    * top_module: If not empty, use --top-module <top_module>.
     * extra_params: Optional additional arguments.
     * libs_dirs: Optional directories for include search.
     * lib_files: Optional additional files to include.
     """
 
+    # -- Sanity checks
+    assert apio_env.targeting("lint")
+    assert apio_env.params.target.HasField("lint")
+
+    # -- Keep short references.
+    params = apio_env.params
+    lint_params = params.target.lint
+
+    # -- Determine top module.
+    top_module = (
+        lint_params.top_module
+        if lint_params.top_module
+        else params.project.top_module
+    )
+
+    # -- Construct the action
     action = (
         "verilator_bin --lint-only --quiet --bbox-unsup --timing "
         "-Wno-TIMESCALEMOD -Wno-MULTITOP "
         "{0} {1} {2} {3} {4} {5} {6} {7} {8} $SOURCES"
     ).format(
-        "-Wall" if warnings_all else "",
-        "-Wno-style" if warnings_no_style else "",
-        map_params(no_warns, "-Wno-{}"),
-        map_params(warns, "-Wwarn-{}"),
-        f"--top-module {top_module}" if top_module else "",
+        "-Wall" if lint_params.verilator_all else "",
+        "-Wno-style" if lint_params.verilator_no_style else "",
+        map_params(lint_params.verilator_no_warns, "-Wno-{}"),
+        map_params(lint_params.verilator_warns, "-Wwarn-{}"),
+        f"--top-module {top_module}",
         map_params(extra_params, "{}"),
         map_params(lib_dirs, '-I"{}"'),
         TARGET + ".vlt",
@@ -616,30 +625,30 @@ def report_action(clk_name_index: int, verbose: bool) -> FunctionAction:
     return Action(print_pnr_report, "Formatting pnr report.")
 
 
-def programmer_cmd(apio_env: ApioEnv) -> str:
+def get_programmer_cmd(apio_env: ApioEnv) -> str:
     """Return the programmer command as derived from the scons "prog"
     arg."""
 
-    # Get the programer command template arg.
-    command = apio_env.args.PROG
+    # Should be called only if scons paramsm has 'upload' target parmas.
+    params = apio_env.params
+    assert params.target.HasField("upload"), params
 
-    # If empty then return as is. This must be an apio command that
-    # doesn't use the programmer.
-    if not command:
-        return command
+    # Get the programer command template arg.
+    programmer_cmd = params.target.upload.programmer_cmd
+    assert programmer_cmd, params
 
     # It's an error if the programmer command doesn't have the $SOURCE
     # placeholder when scons inserts the binary file name.
-    if "$SOURCE" not in command:
+    if "$SOURCE" not in programmer_cmd:
         secho(
             "Error: [Internal] $SOURCE is missing in programmer command: "
-            f"{command}",
+            f"{programmer_cmd}",
             fg="red",
             color=True,
         )
         sys.exit(1)
 
-    return command
+    return programmer_cmd
 
 
 # pylint: disable=too-many-arguments
@@ -650,8 +659,8 @@ def iverilog_action(
     vcd_output_name: str,
     is_interactive: bool,
     extra_params: List[str] = None,
-    lib_dirs: List[str] = None,
-    lib_files: List[str] = None,
+    lib_dirs: List[Path] = None,
+    lib_files: List[Path] = None,
 ) -> str:
     """Construct an iverilog scons action string.
     * env: Rhe scons environment.
@@ -691,26 +700,38 @@ def basename(file_name: str) -> str:
     return result
 
 
-def vlt_path(path: str) -> str:
-    """Normalize a path that is used in the verilator config file
-    hardware.vlt. On windows it replaces "\" with "/". Otherwise it
-    leaves the path as is.
-    """
-    return path.replace("\\", "/")
-
-
-def make_verilator_config_builder(config_lines: List[str]):
+def make_verilator_config_builder(lib_path: Path):
     """Create a scons Builder that writes a verilator config file
-    (hardware.vlt) with the given text."""
+    (hardware.vlt) that supresses warnings in the lib directory."""
+    assert isinstance(lib_path, Path), lib_path
 
-    # -- Join the lines into a single string.
-    config_text = "\n".join(config_lines)
+    # -- Construct a glob of all library files.
+    glob_path = str(lib_path / "*")
+
+    # -- Escape for windows. A single backslash is converted into two.
+    glob_str = str(glob_path).replace("\\", "\\\\")
+
+    # -- Generate the files lines.  We supress a union of all the errors we
+    # -- encountered in all the architectures.
+    lines = ["`verilator_config"]
+    for rule in [
+        "COMBDLY",
+        "WIDTHEXPAND",
+        "PINMISSING",
+        "ASSIGNIN",
+        "WIDTHTRUNC",
+        "INITIALDLY",
+    ]:
+        lines.append(f'lint_off -rule {rule}  -file "{glob_str}"')
+
+    # -- Join the lines into text.
+    text = "\n".join(lines) + "\n"
 
     def verilator_config_func(target, source, env):
         """Creates a verilator .vlt config files."""
         _ = (source, env)  # Unused
         with open(target[0].get_path(), "w", encoding="utf-8") as target_file:
-            target_file.write(config_text)
+            target_file.write(text)
         return 0
 
     return Builder(
@@ -721,17 +742,18 @@ def make_verilator_config_builder(config_lines: List[str]):
     )
 
 
-def clean_if_requested(apio_env: ApioEnv) -> None:
+def configure_cleanup(apio_env: ApioEnv) -> None:
     """Should be called only when the "clean" target is specified.
     Configures in scons env do delete all the files in the build directory.
     """
 
+    # -- Sanity check.
+    assert apio_env.scons_env.GetOption(
+        "clean"
+    ), "Error, cleaning not requested."
+
     # -- Get the underlying scons environment.
     scons_env = apio_env.scons_env
-
-    # -- We perform cleaning only when the scons 'clean' option is active.
-    if not scons_env.GetOption("clean"):
-        return
 
     # -- Get the list of all files to clean. Scons adds to the list non
     # -- existing files from other targets it encountered.

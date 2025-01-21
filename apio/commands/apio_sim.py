@@ -14,6 +14,7 @@ from click import secho
 from apio.managers.scons import SCons
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
+from apio.proto.apio_pb2 import SimParams
 
 
 # ---------------------------
@@ -78,6 +79,9 @@ def cli(
         project_dir_arg=project_dir,
     )
 
+    # -- Create the scons manager.
+    scons = SCons(apio_ctx)
+
     # -- If testbench not given, try to get a default from apio.ini.
     if not testbench:
         # -- If the option is not specified, testbench is set to None and
@@ -88,11 +92,11 @@ def cli(
                 f"Using default testbench: {testbench}", fg="cyan", bold=True
             )
 
-    # -- Create the scons manager.
-    scons = SCons(apio_ctx)
+    # -- Construct the scons sim params.
+    sim_params = SimParams(testbench=testbench, force_sim=force)
 
     # -- Simulate the project with the given parameters
-    exit_code = scons.sim({"testbench": testbench, "force_sim": force})
+    exit_code = scons.sim(sim_params)
 
     # -- Done!
     sys.exit(exit_code)
