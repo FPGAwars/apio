@@ -13,7 +13,7 @@
 # R0801: Similar lines
 # pylint: disable=R0801
 
-import os
+from pathlib import Path
 from SCons.Script import Builder
 from SCons.Builder import BuilderBase
 from apio.scons.apio_env import ApioEnv, TARGET, BUILD_DIR
@@ -39,11 +39,12 @@ class PluginEcp5(PluginBase):
         super().__init__(apio_env)
 
         # -- Cache values.
-        self.database_path = os.path.join(
-            apio_env.params.envrionment.trellis_path, "database"
-        )
-        self.yosys_lib_dir = apio_env.params.envrionment.yosys_path + "/ecp5"
-        self.yosys_lib_file = self.yosys_lib_dir + "/cells_sim.v"
+        trellis_path = Path(apio_env.params.envrionment.trellis_path)
+        yosys_path = Path(apio_env.params.envrionment.yosys_path)
+
+        self.database_path = trellis_path / "database"
+        self.yosys_lib_dir = yosys_path / "ecp5"
+        self.yosys_lib_file = yosys_path / "ecp5" / "cells_sim.v"
 
     def plugin_info(self) -> ArchPluginInfo:
         """Return plugin specific parameters."""

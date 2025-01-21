@@ -115,12 +115,10 @@ def cli(
     # -- Get the programmer command.
     programmer_cmd = construct_programmer_cmd(
         apio_ctx,
-        {
-            "serial_port": serial_port,
-            "ftdi_id": ftdi_id,
-            "sram": sram,
-            "flash": flash,
-        },
+        serial_port=serial_port,
+        ftdi_id=ftdi_id,
+        sram=sram,
+        flash=flash,
     )
 
     # Construct the scons upload params.

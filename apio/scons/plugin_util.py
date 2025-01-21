@@ -70,7 +70,7 @@ def maybe_wait_for_remote_debugger(env_var_name: str):
         )
 
 
-def map_params(params: Optional[List[str]], fmt: str) -> str:
+def map_params(params: Optional[List[str | Path]], fmt: str) -> str:
     """A common function construct a command string snippet from a list
     of arguments. The functon does the following:
     1. If params arg is None replace it with []
@@ -86,8 +86,11 @@ def map_params(params: Optional[List[str]], fmt: str) -> str:
     if params is None:
         params = []
 
-    # Drop empty params and map the rest using the format string.
-    mapped_params = [fmt.format(x.strip()) for x in params if x.strip()]
+    # Convert parmas to stripped strings.
+    params = [str(x).strip() for x in params]
+
+    # Drop the empty params and map the rest.
+    mapped_params = [fmt.format(x) for x in params if x]
 
     # Join using a single space.
     return " ".join(mapped_params)
@@ -240,8 +243,8 @@ def verilator_lint_action(
     apio_env: ApioEnv,
     *,
     extra_params: List[str] = None,
-    lib_dirs: List[str] = None,
-    lib_files: List[str] = None,
+    lib_dirs: List[Path] = None,
+    lib_files: List[Path] = None,
 ) -> str:
     """Construct an verilator scons action string.
     * extra_params: Optional additional arguments.
@@ -656,8 +659,8 @@ def iverilog_action(
     vcd_output_name: str,
     is_interactive: bool,
     extra_params: List[str] = None,
-    lib_dirs: List[str] = None,
-    lib_files: List[str] = None,
+    lib_dirs: List[Path] = None,
+    lib_files: List[Path] = None,
 ) -> str:
     """Construct an iverilog scons action string.
     * env: Rhe scons environment.
@@ -697,12 +700,13 @@ def basename(file_name: str) -> str:
     return result
 
 
-def vlt_path(path: str) -> str:
+def vlt_path(path: Path) -> str:
     """Normalize a path that is used in the verilator config file
     hardware.vlt. On windows it replaces "\" with "/". Otherwise it
     leaves the path as is.
     """
-    return path.replace("\\", "/")
+    assert isinstance(path, (str, Path))
+    return str(path).replace("\\", "/")
 
 
 def make_verilator_config_builder(config_lines: List[str]):

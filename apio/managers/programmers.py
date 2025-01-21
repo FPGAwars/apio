@@ -24,12 +24,18 @@ SRAM = "sram"
 FLASH = "flash"
 
 
-def construct_programmer_cmd(apio_ctx: ApioContext, prog: dict) -> str:
+def construct_programmer_cmd(
+    apio_ctx: ApioContext,
+    serial_port: str,
+    ftdi_id: str,
+    sram: bool,
+    flash: bool,
+) -> str:
     """Get the command line (string) to execute for programming
     the FPGA (programmer executable + arguments)
 
     * INPUT
-        * prog: Programming configuration params
+        * apio_ctx: ApioContext of this apio invocation.
         * serial_port: Serial port name
         * ftdi_id: ftdi identificator
         * sram: Perform SRAM programming
@@ -64,9 +70,7 @@ def construct_programmer_cmd(apio_ctx: ApioContext, prog: dict) -> str:
     # --   * "${PID}" (optional): USB Product id
     # --   * "${FTDI_ID}" (optional): FTDI id
     # --   * "${SERIAL_PORT}" (optional): Serial port name
-    programmer = _serialize_programmer(
-        apio_ctx, board_info, prog[SRAM], prog[FLASH]
-    )
+    programmer = _construct_programmer_cmd_template(apio_ctx, board_info, sram, flash)
     # -- The placeholder for the bitstream file name should always exist.
     assert "$SOURCE" in programmer, programmer
 
@@ -105,7 +109,7 @@ def construct_programmer_cmd(apio_ctx: ApioContext, prog: dict) -> str:
         _check_usb(apio_ctx, board, board_info)
 
         # -- Get the FTDI index of the connected board
-        ftdi_id = _get_ftdi_id(apio_ctx, board, board_info, prog[FTDI_ID])
+        ftdi_id = _get_ftdi_id(apio_ctx, board, board_info, ftdi_id)
 
         # -- Place the value in the command string
         programmer = programmer.replace("${FTDI_ID}", ftdi_id)
@@ -124,7 +128,7 @@ def construct_programmer_cmd(apio_ctx: ApioContext, prog: dict) -> str:
         _check_usb(apio_ctx, board, board_info)
 
         # -- Get the serial port
-        device = _get_serial_port(board, board_info, prog[SERIAL_PORT])
+        device = _get_serial_port(board, board_info, serial_port)
 
         # -- Place the value in the command string
         programmer = programmer.replace("${SERIAL_PORT}", device)
@@ -136,7 +140,7 @@ def construct_programmer_cmd(apio_ctx: ApioContext, prog: dict) -> str:
     return programmer
 
 
-def _serialize_programmer(
+def _construct_programmer_cmd_template(
     apio_ctx: ApioContext, board_info: dict, sram: bool, flash: bool
 ) -> str:
     """
@@ -165,27 +169,27 @@ def _serialize_programmer(
     # -- * command
     # -- * arguments
     # -- * pip package
-    content = apio_ctx.programmers[prog_type]
+    programmer_info = apio_ctx.programmers[prog_type]
 
     # -- Get the command (without arguments) to execute
     # -- for programming the current board
     # -- Ex. "tinyprog"
     # -- Ex. "iceprog"
-    programmer = content["command"]
+    programmer_cmd = programmer_info["command"]
 
     # -- Let's add the arguments for executing the programmer
-    if content.get("args"):
-        programmer += f" {content['args']}"
+    if programmer_info.get("args"):
+        programmer_cmd += f" {programmer_info['args']}"
 
     # -- Mark the expected location of the bitstream file name, before
     # -- we appened any arg to the command. Some programmers such as
     # -- dfu-util require it immediatly after the "args" string.
-    programmer += " $SOURCE"
+    programmer_cmd += " $SOURCE"
 
     # -- Some tools need extra arguments
     # -- (like dfu-util for example)
     if prog_info.get("extra_args"):
-        programmer += f" {prog_info['extra_args']}"
+        programmer_cmd += f" {prog_info['extra_args']}"
 
     # -- Special cases for different programmers
 
@@ -193,17 +197,17 @@ def _serialize_programmer(
     if sram:
 
         # Only for iceprog programmer
-        if programmer.startswith("iceprog"):
-            programmer += " -S"
+        if programmer_cmd.startswith("iceprog"):
+            programmer_cmd += " -S"
 
     # -- Enable FLASH programming
     if flash:
 
         # Only for ujprog programmer
-        if programmer.startswith("ujprog"):
-            programmer = programmer.replace("SRAM", "FLASH")
+        if programmer_cmd.startswith("ujprog"):
+            programmer_cmd = programmer_cmd.replace("SRAM", "FLASH")
 
-    return programmer
+    return programmer_cmd
 
 
 def _check_usb(apio_ctx: ApioContext, board: str, board_info: dict) -> None:

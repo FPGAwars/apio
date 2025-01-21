@@ -13,6 +13,7 @@
 # R0801: Similar lines
 # pylint: disable=R0801
 
+from pathlib import Path
 from SCons.Script import Builder
 from SCons.Builder import BuilderBase
 from apio.scons.apio_env import ApioEnv, TARGET
@@ -38,8 +39,9 @@ class PluginIce40(PluginBase):
         super().__init__(apio_env)
 
         # -- Cache values.
-        self.yosys_lib_dir = apio_env.params.envrionment.yosys_path + "/ice40"
-        self.yosys_lib_file = self.yosys_lib_dir + "/cells_sim.v"
+        yosys_path = Path(apio_env.params.envrionment.yosys_path)
+        self.yosys_lib_dir = yosys_path / "ice40"
+        self.yosys_lib_file = yosys_path / "ice40" / "cells_sim.v"
 
     def plugin_info(self) -> ArchPluginInfo:
         """Return plugin specific parameters."""
