@@ -18,7 +18,7 @@ import re
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Tuple, Dict, Optional
+from typing import List, Tuple, Dict, Optional, Union
 from click import secho, style
 from SCons import Scanner
 from SCons.Builder import Builder
@@ -70,7 +70,7 @@ def maybe_wait_for_remote_debugger(env_var_name: str):
         )
 
 
-def map_params(params: Optional[List[str | Path]], fmt: str) -> str:
+def map_params(params: Optional[List[Union[str, Path]]], fmt: str) -> str:
     """A common function construct a command string snippet from a list
     of arguments. The functon does the following:
     1. If params arg is None replace it with []

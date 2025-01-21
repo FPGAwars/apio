@@ -10,6 +10,7 @@
 # -- Licence GPLv2
 
 import re
+import sys
 from click import secho
 from apio.utils import util, pkg_util
 from apio.managers.system import System
@@ -60,6 +61,8 @@ def construct_programmer_cmd(
         # In this case the serial check is ignored
         # This is the command line to execute for uploading the
         # circuit
+        if util.is_debug():
+            print("Applying a special case for tinyprog on darwin.")
         return "tinyprog --libusb --program $SOURCE"
 
     # -- Serialize programmer command
@@ -70,7 +73,11 @@ def construct_programmer_cmd(
     # --   * "${PID}" (optional): USB Product id
     # --   * "${FTDI_ID}" (optional): FTDI id
     # --   * "${SERIAL_PORT}" (optional): Serial port name
-    programmer = _construct_programmer_cmd_template(apio_ctx, board_info, sram, flash)
+    programmer = _construct_programmer_cmd_template(
+        apio_ctx, board_info, sram, flash
+    )
+    if util.is_debug():
+        print(f"Programmer template: [{programmer}]")
     # -- The placeholder for the bitstream file name should always exist.
     assert "$SOURCE" in programmer, programmer
 
@@ -223,7 +230,8 @@ def _check_usb(apio_ctx: ApioContext, board: str, board_info: dict) -> None:
     # -- If it does not have the "usb" property, it means
     # -- the board configuration is wrong...Raise an exception
     if "usb" not in board_info:
-        raise AttributeError("Missing board configuration: usb")
+        secho("Missing board configuration: usb", fg="red")
+        sys.exit(1)
 
     # -- Get the vid and pid from the configuration
     # -- Ex. {'vid': '0403', 'pid':'6010'}
@@ -236,6 +244,9 @@ def _check_usb(apio_ctx: ApioContext, board: str, board_info: dict) -> None:
     # -- (execute the command "lsusb" from the apio System module)
     system = System(apio_ctx)
     connected_devices = system.get_usb_devices()
+
+    if util.is_debug():
+        print(f"usb devices: {connected_devices}")
 
     # -- Check if the given device (vid:pid) is connected!
     # -- Not connected by default
@@ -260,9 +271,8 @@ def _check_usb(apio_ctx: ApioContext, board: str, board_info: dict) -> None:
                 "Activate bootloader by pressing the reset button",
                 fg="yellow",
             )
-
-        # -- Raise an exception
-        raise ConnectionError("board " + board + " not connected")
+        secho("board " + board + " not connected", fg="red")
+        sys.exit(1)
 
 
 def _get_serial_port(
@@ -284,7 +294,8 @@ def _get_serial_port(
 
     # -- Board not connected
     if not device:
-        raise ConnectionError("board " + board + " not connected")
+        secho("board " + board + " not connected", fg="red")
+        sys.exit(1)
 
     # -- Board connected. Return the serial port detected
     return device
@@ -306,7 +317,8 @@ def _check_serial(board: str, board_info: dict, ext_serial_port: str) -> str:
     # -- If it does not have the "usb" property, it means
     # -- the board configuration is wrong...Raise an exception
     if "usb" not in board_info:
-        raise AttributeError("Missing board configuration: usb")
+        secho("Missing board configuration: usb", fg="red")
+        sys.exit(1)
 
     # -- Get the vid and pid from the configuration
     # -- Ex. {'vid': '0403', 'pid':'6010'}
@@ -321,11 +333,13 @@ def _check_serial(board: str, board_info: dict, ext_serial_port: str) -> str:
     #          'hwid': 'USB VID:PID=1D50:6130 LOCATION=1-5:1.0'}]
     serial_ports = util.get_serial_ports()
 
-    # -- If no serial ports detected: raise an Error!
-    if not serial_ports:
+    if util.is_debug():
+        print(f"serial ports: {serial_ports}")
 
-        # Board not available
-        raise AttributeError("board " + board + " not available")
+    # -- If no serial ports detected, exit with an error.
+    if not serial_ports:
+        secho("board " + board + " not available", fg="red")
+        sys.exit(1)
 
     # -- Match the discovered serial ports
     for serial_port_data in serial_ports:
@@ -426,7 +440,8 @@ def _get_ftdi_id(apio_ctx: ApioContext, board, board_info, ext_ftdi_id) -> str:
 
     # -- No FTDI board connected
     if ftdi_id is None:
-        raise AttributeError("board " + board + " not connected")
+        secho("board " + board + " not connected", fg="red")
+        sys.exit(1)
 
     # -- Return the FTDI index
     # -- Ex: '0'
@@ -452,7 +467,8 @@ def _check_ftdi(
     # -- Check that the given board has the property "ftdi"
     # -- If not, it is an error. Raise an exception
     if "ftdi" not in board_info:
-        raise AttributeError("Missing board configuration: ftdi")
+        secho("Missing board configuration: ftdi", fg="red")
+        sys.exit(1)
 
     # -- Get the board description from the the apio database
     board_desc = board_info["ftdi"]["desc"]
@@ -474,9 +490,8 @@ def _check_ftdi(
 
     # -- No FTDI devices detected --> Error!
     if not connected_devices:
-
-        # -- Board not available
-        raise AttributeError("board " + board + " not available")
+        secho("board " + board + " not available", fg="red")
+        sys.exit(1)
 
     # -- Check if the given board is connected
     # -- and if so, return its FTDI index
