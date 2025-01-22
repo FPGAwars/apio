@@ -61,9 +61,12 @@ class PluginEcp5(PluginBase):
 
         # -- The yosys synth builder.
         return Builder(
-            action='yosys -p "synth_ecp5 -top {0} -json $TARGET" {1} '
-            "$SOURCES".format(
+            action=(
+                'yosys -p "synth_ecp5 -top {0} {1} -json $TARGET" {2} '
+                "$SOURCES"
+            ).format(
                 params.project.top_module,
+                params.project.yosys_synth_extra_options,
                 "" if params.verbosity.all or params.verbosity.synth else "-q",
             ),
             suffix=".json",

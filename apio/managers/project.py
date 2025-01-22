@@ -42,6 +42,8 @@ OPTIONAL_OPTIONS = {
     "default-testbench",
     # -- Multi line list of verible options for 'apio format'
     "format-verible-options",
+    # -- Additional option for the yosys synth command (inside the -p arg).
+    "yosys-synth-extra-options",
 }
 
 # -- Set of all options a project may have.

@@ -83,6 +83,8 @@ message Envrionment {
 message Project {
   required string board_id = 1;
   required string top_module = 2;
+  // The value of 'yosys-synth-extra-options' from apio.ini.
+  optional string yosys_synth_extra_options = 3 [default = ""];
 }
 
 // Lint target specific params.

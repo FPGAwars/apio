@@ -59,9 +59,11 @@ class PluginGowin(PluginBase):
         # -- The yosys synth builder.
         return Builder(
             action=(
-                'yosys -p "synth_gowin -top {0} -json $TARGET" {1} $SOURCES'
+                'yosys -p "synth_gowin -top {0} {1} -json $TARGET" {2} '
+                "$SOURCES"
             ).format(
                 params.project.top_module,
+                params.project.yosys_synth_extra_options,
                 "" if params.verbosity.all or params.verbosity.synth else "-q",
             ),
             suffix=".json",
