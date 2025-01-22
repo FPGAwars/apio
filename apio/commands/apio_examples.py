@@ -7,10 +7,12 @@
 # -- Licence GPLv2
 """Implementation of 'apio examples' command"""
 
-import sys
 from pathlib import Path
+from typing import List
 import click
-from apio.managers.examples import Examples
+from click import secho
+from apio.managers import installer
+from apio.managers.examples import Examples, ExampleInfo
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import util
@@ -33,6 +35,49 @@ Examples:
   """
 
 
+def list_examples(apio_ctx: ApioContext) -> None:
+    """Print all the examples available. Return a process exit
+    code, 0 if ok, non zero otherwise."""
+
+    # -- Make sure that the examples package is installed.
+    installer.install_missing_packages_on_the_fly(apio_ctx)
+
+    # -- Get list of examples.
+    examples: List[ExampleInfo] = Examples(apio_ctx).get_examples_infos()
+
+    # -- Get terminal configuration. We format the report differently for
+    # -- a terminal and for a pipe.
+    output_config = util.get_terminal_config()
+
+    # -- For terminal, print a header with an horizontal line across the
+    # -- terminal.
+    if output_config.terminal_mode:
+        terminal_seperator_line = "─" * output_config.terminal_width
+        secho()
+        secho(terminal_seperator_line)
+
+    # -- For a pipe, determine the max example name length.
+    max_example_name_len = max(len(x.name) for x in examples)
+
+    # -- Emit the examples
+    for example in examples:
+        if output_config.terminal_mode:
+            # -- For a terminal. Multi lines and colors.
+            secho(f"{example.name}", fg="cyan", bold=True)
+            secho(f"{example.description}")
+            secho(terminal_seperator_line)
+        else:
+            # -- For a pipe, single line, no colors.
+            secho(
+                f"{example.name:<{max_example_name_len}}  |  "
+                f"{example.description}"
+            )
+
+    # -- For a terminal, emit additional summary.
+    if output_config.terminal_mode:
+        secho(f"Total: {len(examples)}")
+
+
 @click.command(
     name="list",
     short_help="List the available apio examples.",
@@ -44,12 +89,8 @@ def _list_cli():
     # -- Create the apio context.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
-    # -- Create the examples manager.
-    examples = Examples(apio_ctx)
-
     # --List all available examples.
-    exit_code = examples.list_examples()
-    sys.exit(exit_code)
+    list_examples(apio_ctx)
 
 
 # ---- apio examples fetch

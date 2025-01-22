@@ -13,7 +13,6 @@ from pathlib import Path, PosixPath
 from dataclasses import dataclass
 from typing import Optional, List, Dict
 from click import secho, style, echo
-from apio.utils import util
 from apio.apio_context import ApioContext
 from apio.managers import installer
 
@@ -106,50 +105,6 @@ class Examples:
         examples.sort(key=lambda x: x.name.lower())
 
         return examples
-
-    def list_examples(self) -> None:
-        """Print all the examples available. Return a process exit
-        code, 0 if ok, non zero otherwise."""
-
-        # -- Make sure that the examples package is installed.
-        installer.install_missing_packages_on_the_fly(self.apio_ctx)
-
-        # -- Get list of examples.
-        examples: List[ExampleInfo] = self.get_examples_infos()
-
-        # -- Get terminal configuration. We format the report differently for
-        # -- a terminal and for a pipe.
-        output_config = util.get_terminal_config()
-
-        # -- For terminal, print a header with an horizontal line across the
-        # -- terminal.
-        if output_config.terminal_mode:
-            terminal_seperator_line = "─" * output_config.terminal_width
-            secho()
-            secho(terminal_seperator_line)
-
-        # -- For a pipe, determine the max example name length.
-        max_example_name_len = max(len(x.name) for x in examples)
-
-        # -- Emit the examples
-        for example in examples:
-            if output_config.terminal_mode:
-                # -- For a terminal. Multi lines and colors.
-                secho(f"{example.name}", fg="cyan", bold=True)
-                secho(f"{example.description}")
-                secho(terminal_seperator_line)
-            else:
-                # -- For a pipe, single line, no colors.
-                secho(
-                    f"{example.name:<{max_example_name_len}}  |  "
-                    f"{example.description}"
-                )
-
-        # -- For a terminal, emit additional summary.
-        if output_config.terminal_mode:
-            secho(f"Total: {len(examples)}")
-
-        return 0
 
     def count_examples_by_board(self) -> Dict[str, int]:
         """Returns a dictionary with example count per board. Boards
