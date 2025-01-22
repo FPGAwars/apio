@@ -61,13 +61,15 @@ def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
     name_len = max(len(x.name) for x in entries) + margin
     fpga_arch_len = max(len(x.fpga_arch) for x in entries) + margin
     fpga_part_num_len = max(len(x.fpga_part_num) for x in entries) + margin
+    fpga_size_len = max(len(x.fpga_size) for x in entries) + margin + 1
 
     # -- Construct the title fields.
     parts = []
-    parts.append(f"{'EXAMPLE':<{name_len}}")
+    parts.append(f"{'BOARD/EXAMPLE':<{name_len}}")
     if verbose:
         parts.append(f"{'ARCH':<{fpga_arch_len}}")
         parts.append(f"{'PART-NUM':<{fpga_part_num_len}}")
+        parts.append(f"{'SIZE':<{fpga_size_len}}")
     parts.append("DESCRIPTION")
 
     # -- Print the title
@@ -88,6 +90,7 @@ def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
         if verbose:
             parts.append(f"{entry.fpga_arch:<{fpga_arch_len}}")
             parts.append(f"{entry.fpga_part_num:<{fpga_part_num_len}}")
+            parts.append(f"{entry.fpga_size:<{fpga_size_len}}")
         parts.append(f"{entry.description}")
 
         # -- Print the fpga line.

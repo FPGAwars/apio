@@ -27,6 +27,7 @@ class ExampleInfo:
     description: str
     fpga_arch: str
     fpga_part_num: str
+    fpga_size: str
 
     @property
     def name(self) -> str:
@@ -103,6 +104,7 @@ class Examples:
                 fpga_info = self.apio_ctx.fpgas.get(fpga_id, {})
                 fpga_arch = fpga_info.get("arch", "")
                 fpga_part_num = fpga_info.get("part_num", "")
+                fpga_size = fpga_info.get("size", "")
 
                 # -- Append this example to the list.
                 example_info = ExampleInfo(
@@ -112,6 +114,7 @@ class Examples:
                     description=description,
                     fpga_arch=fpga_arch,
                     fpga_part_num=fpga_part_num,
+                    fpga_size=fpga_size,
                 )
                 examples.append(example_info)
 
