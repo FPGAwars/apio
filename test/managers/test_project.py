@@ -17,8 +17,10 @@ def test_required_and_optionals(apio_runner: ApioRunner):
         # -- Create an apio.ini.
         sb.write_apio_ini(
             {
+                # -- Requied.
                 "board": "alhambra-ii",
-                "top-module": "main",
+                # -- Optional.
+                "top-module": "my_module",
                 "format-verible-options": "\n  --aaa bbb\n  --ccc ddd",
                 "yosys-synth-extra-options": "-dsp -xyz",
             }
@@ -33,9 +35,9 @@ def test_required_and_optionals(apio_runner: ApioRunner):
 
         # -- Verify the required args.
         assert project.get("board") == "alhambra-ii"
-        assert project.get("top-module") == "main"
 
         # -- Verify the optional args.
+        assert project.get("top-module") == "my_module"
         assert project.get_as_lines_list("format-verible-options") == [
             "--aaa bbb",
             "--ccc ddd",
@@ -44,7 +46,7 @@ def test_required_and_optionals(apio_runner: ApioRunner):
 
         # -- Try a few as dict lookup.
         assert project["board"] == "alhambra-ii"
-        assert project["top-module"] == "main"
+        assert project["top-module"] == "my_module"
 
 
 def test_required_only(apio_runner: ApioRunner):
@@ -56,7 +58,6 @@ def test_required_only(apio_runner: ApioRunner):
         sb.write_apio_ini(
             {
                 "board": "alhambra-ii",
-                "top-module": "main",
             }
         )
 
@@ -69,9 +70,9 @@ def test_required_only(apio_runner: ApioRunner):
 
         # -- Verify the required args.
         assert project.get("board") == "alhambra-ii"
-        assert project.get("top-module") == "main"
 
         # -- Verify the optional args
+        assert project.get("top-module") == "main"
         assert project.get_as_lines_list("format-verible-options") is None
         assert project.get("yosys-synth-extra-options") is None
 
