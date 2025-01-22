@@ -10,10 +10,15 @@
 
 """Apio scons related utilities.."""
 
-
+import sys
+from SCons.Script import ARGUMENTS, COMMAND_LINE_TARGETS
+from google.protobuf import text_format
+from apio.scons.plugin_ice40 import PluginIce40
+from apio.scons.plugin_ecp5 import PluginEcp5
+from apio.scons.plugin_gowin import PluginGowin
+from apio.proto.apio_pb2 import SconsParams, ICE40, ECP5, GOWIN
 from apio.scons.apio_env import ApioEnv, TARGET
 from apio.scons.plugin_base import PluginBase
-from apio.proto.apio_pb2 import SconsParams
 from apio.scons.plugin_util import (
     get_sim_config,
     get_tests_configs,
@@ -40,8 +45,47 @@ class SconsHandler:
     """Base apio scons handler"""
 
     def __init__(self, apio_env: ApioEnv, arch_plugin: PluginBase):
+        """Do not call directly, use SconsHandler.start()."""
         self.apio_env = apio_env
         self.arch_plugin = arch_plugin
+
+    @staticmethod
+    def start() -> None:
+        """This static method is called from SConstruct to create and
+        execute an SconsHandler."""
+
+        # -- Read the text of the scons params file.
+        with open("_build/scons.params", "r", encoding="utf8") as f:
+            proto_text = f.read()
+
+        # -- Parse the text into SconsParams object.
+        params: SconsParams = text_format.Parse(proto_text, SconsParams())
+
+        # -- Compare the params timestamp to the timestamp in the command.
+        timestamp = ARGUMENTS["timestamp"]
+        assert params.timestamp == timestamp
+
+        # -- Create the apio environment.
+        apio_env = ApioEnv(COMMAND_LINE_TARGETS, params)
+
+        # -- Select the plugin.
+        if params.arch == ICE40:
+            plugin = PluginIce40(apio_env)
+        elif params.arch == ECP5:
+            plugin = PluginEcp5(apio_env)
+        elif params.arch == GOWIN:
+            plugin = PluginGowin(apio_env)
+        else:
+            print(
+                f"Apio SConstruct dispatch error: unknown arch [{params.arch}]"
+            )
+            sys.exit(1)
+
+        # -- Create the handler.
+        scons_handler = SconsHandler(apio_env, plugin)
+
+        # -- Invoke the handler. This services the scons request.
+        scons_handler.execute()
 
     def register_builders(self):
         """Register the builders created by the arch plugin."""
