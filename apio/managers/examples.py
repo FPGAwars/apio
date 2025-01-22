@@ -25,6 +25,8 @@ class ExampleInfo:
     example_dir_name: str
     path: PosixPath
     description: str
+    fpga_arch: str
+    fpga_part_num: str
 
     @property
     def name(self) -> str:
@@ -94,10 +96,22 @@ class Examples:
                 else:
                     description = ""
 
+                # -- Extract the fpga arch and part number, with "" as
+                # -- default value if not found.
+                board_info = self.apio_ctx.boards.get(board_dir.name, {})
+                fpga_id = board_info.get("fpga", "")
+                fpga_info = self.apio_ctx.fpgas.get(fpga_id, {})
+                fpga_arch = fpga_info.get("arch", "")
+                fpga_part_num = fpga_info.get("part_num", "")
+
                 # -- Append this example to the list.
-                # name = f"{board_dir.name}/{example_dir.name}"
                 example_info = ExampleInfo(
-                    board_dir.name, example_dir.name, example_dir, description
+                    board_dir_name=board_dir.name,
+                    example_dir_name=example_dir.name,
+                    path=example_dir,
+                    description=description,
+                    fpga_arch=fpga_arch,
+                    fpga_part_num=fpga_part_num,
                 )
                 examples.append(example_info)
 

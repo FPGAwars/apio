@@ -719,3 +719,21 @@ def split(
 
     # --All done.
     return s
+
+
+def fpga_arch_sort_key(fpga_arch: str) -> Any:
+    """Given an fpga arch name such as 'ice40', return a sort key
+    got force our prefered order of sorthing by architecutre. Used in
+    reports such as examples, fpgas, and boards."""
+
+    # -- The prefered order of architectures, Add more if adding new
+    # -- architectures.
+    archs = ["ice40", "ecp5", "gowin"]
+
+    # -- Primary key with prefered architecuted first and  in the
+    # -- prefered order.
+    primary_key = archs.index(fpga_arch) if fpga_arch in archs else len(archs)
+
+    # -- Construct the key, unknown architectures list at the end by
+    # -- lexicographic order.
+    return (primary_key, fpga_arch)

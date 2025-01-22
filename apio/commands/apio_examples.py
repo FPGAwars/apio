@@ -8,9 +8,9 @@
 """Implementation of 'apio examples' command"""
 
 from pathlib import Path
-from typing import List
+from typing import List, Any
 import click
-from click import secho
+from click import secho, style, echo
 from apio.managers import installer
 from apio.managers.examples import Examples, ExampleInfo
 from apio.commands import options
@@ -29,53 +29,77 @@ that you can use.
 \b
 Examples:
   apio examples list                     # List all examples
+  apio examples list  -v                 # List with extra information.
   apio examples list | grep alhambra-ii  # Show examples of a specific board.
   apio examples list | grep -i blink     # Show all blinking examples.
 
   """
 
 
-def list_examples(apio_ctx: ApioContext) -> None:
+def examples_sort_key(entry: ExampleInfo) -> Any:
+    """A key for sorting the fpga entries in our prefered order."""
+    return (util.fpga_arch_sort_key(entry.fpga_arch), entry.name)
+
+
+def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
     """Print all the examples available. Return a process exit
     code, 0 if ok, non zero otherwise."""
+    # -- Get the output info (terminal vs pipe).
+    output_config = util.get_terminal_config()
 
     # -- Make sure that the examples package is installed.
     installer.install_missing_packages_on_the_fly(apio_ctx)
 
     # -- Get list of examples.
-    examples: List[ExampleInfo] = Examples(apio_ctx).get_examples_infos()
+    entries: List[ExampleInfo] = Examples(apio_ctx).get_examples_infos()
 
-    # -- Get terminal configuration. We format the report differently for
-    # -- a terminal and for a pipe.
-    output_config = util.get_terminal_config()
+    # -- Sort boards by case insensitive board namd.
+    entries.sort(key=examples_sort_key)
 
-    # -- For terminal, print a header with an horizontal line across the
-    # -- terminal.
-    if output_config.terminal_mode:
-        terminal_seperator_line = "─" * output_config.terminal_width
-        secho()
-        secho(terminal_seperator_line)
+    # Compute field lengths
+    margin = 2
+    name_len = max(len(x.name) for x in entries) + margin
+    fpga_arch_len = max(len(x.fpga_arch) for x in entries) + margin
+    fpga_part_num_len = max(len(x.fpga_part_num) for x in entries) + margin
 
-    # -- For a pipe, determine the max example name length.
-    max_example_name_len = max(len(x.name) for x in examples)
+    # -- Construct the title fields.
+    parts = []
+    parts.append(f"{'EXAMPLE':<{name_len}}")
+    if verbose:
+        parts.append(f"{'ARCH':<{fpga_arch_len}}")
+        parts.append(f"{'PART-NUM':<{fpga_part_num_len}}")
+    parts.append("DESCRIPTION")
+
+    # -- Print the title
+    secho("".join(parts), fg="cyan", bold="True")
 
     # -- Emit the examples
-    for example in examples:
-        if output_config.terminal_mode:
-            # -- For a terminal. Multi lines and colors.
-            secho(f"{example.name}", fg="cyan", bold=True)
-            secho(f"{example.description}")
-            secho(terminal_seperator_line)
-        else:
-            # -- For a pipe, single line, no colors.
-            secho(
-                f"{example.name:<{max_example_name_len}}  |  "
-                f"{example.description}"
-            )
+    last_arch = None
+    for entry in entries:
+        # -- Seperation before each archictecture group, unless piped out.
+        if last_arch != entry.fpga_arch and output_config.terminal_mode:
+            echo("")
+            secho(f"{entry.fpga_arch.upper()}", fg="magenta", bold=True)
+        last_arch = entry.fpga_arch
 
-    # -- For a terminal, emit additional summary.
+        # -- Construct the fpga fields.
+        parts = []
+        parts.append(style(f"{entry.name:<{name_len}}", fg="cyan"))
+        if verbose:
+            parts.append(f"{entry.fpga_arch:<{fpga_arch_len}}")
+            parts.append(f"{entry.fpga_part_num:<{fpga_part_num_len}}")
+        parts.append(f"{entry.description}")
+
+        # -- Print the fpga line.
+        echo("".join(parts))
+
+    # -- Show summary.
     if output_config.terminal_mode:
-        secho(f"Total: {len(examples)}")
+        secho(f"Total of {util.plurality(entries, 'example')}")
+        if not verbose:
+            secho(
+                "Run 'apio examples -v' for additional columns.", fg="yellow"
+            )
 
 
 @click.command(
@@ -83,14 +107,15 @@ def list_examples(apio_ctx: ApioContext) -> None:
     short_help="List the available apio examples.",
     help=APIO_EXAMPLES_LIST_HELP,
 )
-def _list_cli():
+@options.verbose_option
+def _list_cli(verbose: bool):
     """Implements the 'apio examples list' command group."""
 
     # -- Create the apio context.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # --List all available examples.
-    list_examples(apio_ctx)
+    list_examples(apio_ctx, verbose)
 
 
 # ---- apio examples fetch

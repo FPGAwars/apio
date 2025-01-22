@@ -35,18 +35,8 @@ class Entry:
     fpga_speed: str
 
     def sort_key(self):
-        """A kery for sorting entries. Primary key is architecture, by
-        our prefer order, and secondary is fpga id."""
-        # -- Prefer arch order
-        archs = ["ice40", "ecp5", "gowin"]
-        # -- Primary key
-        primary_key = (
-            archs.index(self.fpga_arch)
-            if self.fpga_arch in archs
-            else len(archs)
-        )
-        # -- Secondary key is board name.
-        return (primary_key, self.fpga.lower())
+        """A key for sorting the fpga entries in our prefered order."""
+        return (util.fpga_arch_sort_key(self.fpga_arch), self.fpga.lower())
 
 
 # pylint: disable=too-many-locals
@@ -90,7 +80,7 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
             )
         )
 
-    # -- Sort boards by case insensitive board namd.
+    # -- Sort boards by our prefered order.
     entries.sort(key=lambda x: x.sort_key())
 
     # -- Compute field lengths
@@ -121,34 +111,32 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
 
     # -- Iterate and print the fpga entries in the list.
     last_arch = None
-    for entries in entries:
+    for entry in entries:
         # -- Seperation before each archictecture group, unless piped out.
-        if last_arch != entries.fpga_arch and output_config.terminal_mode:
+        if last_arch != entry.fpga_arch and output_config.terminal_mode:
             echo("")
-            secho(f"{entries.fpga_arch.upper()}", fg="magenta", bold=True)
-        last_arch = entries.fpga_arch
+            secho(f"{entry.fpga_arch.upper()}", fg="magenta", bold=True)
+        last_arch = entry.fpga_arch
 
         # -- Construct the fpga fields.
         parts = []
-        parts.append(style(f"{entries.fpga:<{fpga_len}}", fg="cyan"))
-        board_count = (
-            f"{entries.board_count:>3}" if entries.board_count else ""
-        )
+        parts.append(style(f"{entry.fpga:<{fpga_len}}", fg="cyan"))
+        board_count = f"{entry.board_count:>3}" if entry.board_count else ""
         parts.append(f"{board_count:<{board_count_len}}")
-        parts.append(f"{entries.fpga_arch:<{fpga_arch_len}}")
-        parts.append(f"{entries.fpga_part_num:<{fpga_part_num_len}}")
-        parts.append(f"{entries.fpga_size:<{fpga_size_len}}")
+        parts.append(f"{entry.fpga_arch:<{fpga_arch_len}}")
+        parts.append(f"{entry.fpga_part_num:<{fpga_part_num_len}}")
+        parts.append(f"{entry.fpga_size:<{fpga_size_len}}")
         if verbose:
-            parts.append(f"{entries.fpga_type:<{fpga_type_len}}")
-            parts.append(f"{entries.fpga_pack:<{fpga_pack_len}}")
-            parts.append(f"{entries.fpga_speed:<{fpga_speed_len}}")
+            parts.append(f"{entry.fpga_type:<{fpga_type_len}}")
+            parts.append(f"{entry.fpga_pack:<{fpga_pack_len}}")
+            parts.append(f"{entry.fpga_speed:<{fpga_speed_len}}")
 
         # -- Print the fpga line.
         echo("".join(parts))
 
     # -- Show summary.
     if output_config.terminal_mode:
-        secho(f"Total of {util.plurality(apio_ctx.fpgas, 'fpga')}")
+        secho(f"Total of {util.plurality(entries, 'fpga')}")
         if not verbose:
             secho("Run 'apio fpgas -v' for additional columns.", fg="yellow")
 
