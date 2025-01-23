@@ -33,6 +33,7 @@ class ArchPluginInfo:
     """Provides information about the plugin."""
 
     constrains_file_ext: str
+    bin_file_suffix: str
     clk_name_index: int
 
 

@@ -1,4 +1,4 @@
-"""Apio's scons handler dispatcher."""
+"""Apio's scons handler entry point."""
 
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
@@ -6,52 +6,13 @@
 # -- Authors Juan Gonzáles, Jesús Arroyo
 # -- Licence GPLv2
 
-import os
-import sys
-import debugpy
-import click
-from google.protobuf import text_format
-from SCons.Script import ARGUMENTS, COMMAND_LINE_TARGETS
-from apio.scons.apio_env import ApioEnv
-from apio.scons.scons_handler import SconsHandler
-from apio.scons.plugin_ice40 import PluginIce40
-from apio.scons.plugin_ecp5 import PluginEcp5
-from apio.scons.plugin_gowin import PluginGowin
-from apio.scons.plugin_util import maybe_wait_for_remote_debugger
-from apio.proto.apio_pb2 import SconsParams, ICE40, ECP5, GOWIN
 
+from apio.scons.plugin_util import maybe_wait_for_remote_debugger
+from apio.scons.scons_handler import SconsHandler
 
 # -- If system env var APIO_SCONS_DEBUGGER is defined, regardless of its value,
 # -- we wait on a remote debugger to be attached, e.g. from Visual Studio Code.
 maybe_wait_for_remote_debugger("APIO_SCONS_DEBUGGER")
 
-# -- Read the text of the scons params file.
-with open("_build/scons.params", "r", encoding="utf8") as f:
-    proto_text = f.read()
-
-# -- Parse the text into SconsParams object.
-params:SconsParams = text_format.Parse(proto_text, SconsParams())
-
-# -- Compare the params timestamp to the timestamp in the command.
-timestamp = ARGUMENTS["timestamp"]
-assert params.timestamp == timestamp
-
-
-# -- Create the apio environment.
-apio_env = ApioEnv(COMMAND_LINE_TARGETS, params)
-
-# -- Select the plugin.
-if params.arch == ICE40:
-    plugin = PluginIce40(apio_env)
-elif params.arch == ECP5:
-    plugin = PluginEcp5(apio_env)
-elif params.arch == GOWIN:
-    plugin = PluginGowin(apio_env)
-else:
-    print(f"Apio SConstruct dispatch error: unknown arch [{params.arch}]")
-    sys.exit(1)
-
-
-# -- Create and invoke the handler.
-scons = SconsHandler(apio_env, plugin)
-scons.execute()
+# -- Service this scons request.
+SconsHandler.start()

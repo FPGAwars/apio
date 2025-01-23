@@ -11,6 +11,9 @@ from google.protobuf import text_format
 from apio.scons.apio_env import ApioEnv
 from apio.proto.apio_pb2 import SconsParams, TargetParams
 
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
+
 TEST_PARAMS = """
 timestamp: "20123412052"
 arch: ICE40

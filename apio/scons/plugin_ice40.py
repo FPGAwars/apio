@@ -46,6 +46,7 @@ class PluginIce40(PluginBase):
         """Return plugin specific parameters."""
         return ArchPluginInfo(
             constrains_file_ext=".pcf",
+            bin_file_suffix=".bin",
             clk_name_index=0,
         )
 
@@ -58,9 +59,12 @@ class PluginIce40(PluginBase):
 
         # -- The yosys synth builder.
         return Builder(
-            action='yosys -p "synth_ice40 -top {0} -json $TARGET" {1} '
-            "$SOURCES".format(
+            action=(
+                'yosys -p "synth_ice40 -top {0} {1} -json $TARGET" {2} '
+                "$SOURCES"
+            ).format(
                 params.project.top_module,
+                params.project.yosys_synth_extra_options,
                 "" if params.verbosity.all or params.verbosity.synth else "-q",
             ),
             suffix=".json",

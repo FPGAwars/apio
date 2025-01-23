@@ -7,46 +7,13 @@
 # -- Licence GPLv2
 """Implementation of 'apio drivers' command group."""
 
-import sys
 import click
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup
-from apio.commands import apio_drivers_ftdi, apio_drivers_serial
-from apio.apio_context import ApioContext, ApioContextScope
-from apio.managers.system import System
-
-# --- apio drivers lsusb
-
-APIO_DRIVERS_LSUSB_HELP = """
-The command ‘apio drivers lsusb’ runs the lsusb utility to list the USB
-devices connected to your computer. It is typically used for diagnosing
-connectivity issues with FPGA boards.
-
-\b
-Examples:
-  apio drivers lsusb      # List the usb devices
-
-[Hint] You can also run the lsusb utility using the command
-'apio raw -- lsusb <flags>'.
-"""
-
-
-@click.command(
-    name="lsusb",
-    short_help="List connected USB devices.",
-    help=APIO_DRIVERS_LSUSB_HELP,
+from apio.commands import (
+    apio_drivers_list,
+    apio_drivers_install,
+    apio_drivers_uninstall,
 )
-def _lsusb_cli():
-    """Implements the 'apio driverss lsusb' command."""
-
-    # Create the apio context.
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
-
-    # -- Create the system object
-    system = System(apio_ctx)
-
-    # -- List the USB device.
-    exit_code = system.lsusb()
-    sys.exit(exit_code)
 
 
 # --- apio drivers
@@ -61,9 +28,9 @@ SUBGROUPS = [
     ApioSubgroup(
         "Subcommands",
         [
-            apio_drivers_ftdi.cli,
-            apio_drivers_serial.cli,
-            _lsusb_cli,
+            apio_drivers_list.cli,
+            apio_drivers_install.cli,
+            apio_drivers_uninstall.cli,
         ],
     )
 ]

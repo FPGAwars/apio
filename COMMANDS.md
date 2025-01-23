@@ -5,15 +5,16 @@
   * [apio clean](#apio-clean) - Delete the apio generated files.
   * [apio create](#apio-create) - Create an apio.ini project file.
   * [apio drivers](#apio-drivers) - Manage the operating system drivers.
-    * [apio drivers ftdi](#apio-drivers-ftdi) - Manage the ftdi drivers.
-      * [apio drivers ftdi install](#apio-drivers-ftdi-install) - Install the ftdi drivers.
-      * [apio drivers ftdi list](#apio-drivers-ftdi-list) - List the connected ftdi devices.
-      * [apio drivers ftdi uninstall](#apio-drivers-ftdi-uninstall) - Uninstall the ftdi drivers.
-    * [apio drivers lsusb](#apio-drivers-lsusb) - List connected USB devices.
-    * [apio drivers serial](#apio-drivers-serial) - Manage the serial drivers.
-      * [apio drivers serial install](#apio-drivers-serial-install) - Install the serial drivers.
-      * [apio drivers serial list](#apio-drivers-serial-list) - List the connected serial devices.
-      * [apio drivers serial uninstall](#apio-drivers-serial-uninstall) - Uninstall the serial drivers.
+    * [apio drivers install](#apio-drivers-install) - Install drivers.
+      * [apio drivers install ftdi](#apio-drivers-install-ftdi) - Install the ftdi drivers.
+      * [apio drivers install serial](#apio-drivers-install-serial) - Install the serial drivers.
+    * [apio drivers list](#apio-drivers-list) - List system drivers.
+      * [apio drivers list ftdi](#apio-drivers-list-ftdi) - List the connected ftdi devices.
+      * [apio drivers list serial](#apio-drivers-list-serial) - List the connected serial devices.
+      * [apio drivers list usb](#apio-drivers-list-usb) - List connected USB devices.
+    * [apio drivers uninstall](#apio-drivers-uninstall) - Uninstall drivers.
+      * [apio drivers uninstall ftdi](#apio-drivers-uninstall-ftdi) - Uninstall the ftdi drivers.
+      * [apio drivers uninstall serial](#apio-drivers-uninstall-serial) - Uninstall the serial drivers.
   * [apio examples](#apio-examples) - List and fetch apio examples.
     * [apio examples fetch](#apio-examples-fetch) - Fetch the files of an example.
     * [apio examples fetch-board](#apio-examples-fetch-board) - Fetch all examples of a board.
@@ -208,45 +209,43 @@ Options:
   -h, --help  Show this message and exit.
 
 Subcommands:
-  apio drivers ftdi    Manage the ftdi drivers.
-  apio drivers serial  Manage the serial drivers.
-  apio drivers lsusb   List connected USB devices.
+  apio drivers list       List system drivers.
+  apio drivers install    Install drivers.
+  apio drivers uninstall  Uninstall drivers.
 
 ```
 
 <br>
 
-### apio drivers ftdi
+### apio drivers install
 
 ```
-Usage: apio drivers ftdi [OPTIONS] COMMAND [ARGS]...
+Usage: apio drivers install [OPTIONS] COMMAND [ARGS]...
 
-  The command group 'apio drivers ftdi' includes subcommands that help manage
-  the FTDI drivers on your system.
+  The command group 'apio drivers install' includes subcommands that that
+  install system drivers that are used to upload designs to FPGA boards.
 
 Options:
   -h, --help  Show this message and exit.
 
 Subcommands:
-  apio drivers ftdi install    Install the ftdi drivers.
-  apio drivers ftdi uninstall  Uninstall the ftdi drivers.
-  apio drivers ftdi list       List the connected ftdi devices.
+  apio drivers install ftdi    Install the ftdi drivers.
+  apio drivers install serial  Install the serial drivers.
 
 ```
 
 <br>
 
-### apio drivers ftdi install
+### apio drivers install ftdi
 
 ```
-Usage: apio drivers ftdi install [OPTIONS]
+Usage: apio drivers install ftdi [OPTIONS]
 
-  The command 'apio drivers ftdi install' installs on your system the FTDI
+  The command 'apio drivers install ftdi' installs on your system the FTDI
   drivers required by some FPGA boards.
 
   Examples:
-    apio drivers ftdi install      # Install the ftdi drivers.
-    apio drivers ftdi uinstall     # Uinstall the ftdi drivers.
+    apio drivers install ftdi     # Install the ftdi drivers.
 
 Options:
   -h, --help  Show this message and exit.
@@ -254,17 +253,54 @@ Options:
 
 <br>
 
-### apio drivers ftdi list
+### apio drivers install serial
 
 ```
-Usage: apio drivers ftdi list [OPTIONS]
+Usage: apio drivers install serial [OPTIONS]
 
-  The command 'apio drivers ftdi list' displays the FTDI devices currently
+  The command ‘apio drivers install serial’ installs the necessary serial
+  drivers on your system, as required by certain FPGA boards.
+
+  Examples:
+    apio drivers install serial    # Install the serial drivers.
+
+Options:
+  -h, --help  Show this message and exit.
+```
+
+<br>
+
+### apio drivers list
+
+```
+Usage: apio drivers list [OPTIONS] COMMAND [ARGS]...
+
+  The command group 'apio drivers list' includes subcommands that that lists
+  system drivers that are used with FPGA boards.
+
+Options:
+  -h, --help  Show this message and exit.
+
+Subcommands:
+  apio drivers list ftdi    List the connected ftdi devices.
+  apio drivers list serial  List the connected serial devices.
+  apio drivers list usb     List connected USB devices.
+
+```
+
+<br>
+
+### apio drivers list ftdi
+
+```
+Usage: apio drivers list ftdi [OPTIONS]
+
+  The command 'apio drivers list ftdi' displays the FTDI devices currently
   connected to your computer. It is useful for diagnosing FPGA board
   connectivity issues.
 
   Examples:
-    apio drivers ftdi list     # List the ftdi devices.
+    apio drivers list ftdi     # List the ftdi devices.
 
   [Hint] This command uses the lsftdi utility, which can also be invoked
   directly with the 'apio raw -- lsftdi <flags>' command.
@@ -275,93 +311,16 @@ Options:
 
 <br>
 
-### apio drivers ftdi uninstall
+### apio drivers list serial
 
 ```
-Usage: apio drivers ftdi uninstall [OPTIONS]
+Usage: apio drivers list serial [OPTIONS]
 
-  The command 'apio drivers ftdi uninstall' removes the FTDI drivers that may
-  have been installed earlier.
-
-  Examples:
-    apio drivers ftdi install      # Install the ftdi drivers.
-    apio drivers ftdi uinstall     # Uinstall the ftdi drivers.
-
-Options:
-  -h, --help  Show this message and exit.
-```
-
-<br>
-
-### apio drivers lsusb
-
-```
-Usage: apio drivers lsusb [OPTIONS]
-
-  The command ‘apio drivers lsusb’ runs the lsusb utility to list the USB
-  devices connected to your computer. It is typically used for diagnosing
-  connectivity issues with FPGA boards.
-
-  Examples:
-    apio drivers lsusb      # List the usb devices
-
-  [Hint] You can also run the lsusb utility using the command 'apio raw --
-  lsusb <flags>'.
-
-Options:
-  -h, --help  Show this message and exit.
-```
-
-<br>
-
-### apio drivers serial
-
-```
-Usage: apio drivers serial [OPTIONS] COMMAND [ARGS]...
-
-  The command group 'apio drivers serial' includes subcommands designed to
-  manage and configure the serial drivers on your system.
-
-Options:
-  -h, --help  Show this message and exit.
-
-Subcommands:
-  apio drivers serial install    Install the serial drivers.
-  apio drivers serial uninstall  Uninstall the serial drivers.
-  apio drivers serial list       List the connected serial devices.
-
-```
-
-<br>
-
-### apio drivers serial install
-
-```
-Usage: apio drivers serial install [OPTIONS]
-
-  The command ‘apio drivers serial install’ installs the necessary serial
-  drivers on your system, as required by certain FPGA boards.
-
-  Examples:
-    apio drivers serial install      # Install the ftdi drivers.
-    apio drivers serial uinstall     # Uinstall the ftdi drivers.
-
-Options:
-  -h, --help  Show this message and exit.
-```
-
-<br>
-
-### apio drivers serial list
-
-```
-Usage: apio drivers serial list [OPTIONS]
-
-  The command ‘apio drivers serial list’ lists the serial devices connected to
+  The command ‘apio drivers list serial’ lists the serial devices connected to
   your computer. It is useful for diagnosing FPGA board connectivity issues.
 
   Examples:
-    apio drivers serial list     # List the serial devices.
+    apio drivers list serial    # List the serial devices.
 
   [Hint] This command executes the utility lsserial, which can also be invoked
   using the command 'apio raw -- lsserial <flags>'.
@@ -372,17 +331,73 @@ Options:
 
 <br>
 
-### apio drivers serial uninstall
+### apio drivers list usb
 
 ```
-Usage: apio drivers serial uninstall [OPTIONS]
+Usage: apio drivers list usb [OPTIONS]
 
-  The command ‘apio drivers serial uninstall’ removes the serial drivers that
+  The command ‘apio drivers list usb runs the lsusb utility to list the USB
+  devices connected to your computer. It is typically used for diagnosing
+  connectivity issues with FPGA boards.
+
+  Examples:
+    apio drivers list usb      # List the usb devices
+
+  [Hint] You can also run the lsusb utility using the command 'apio raw --
+  lsusb <flags>'.
+
+Options:
+  -h, --help  Show this message and exit.
+```
+
+<br>
+
+### apio drivers uninstall
+
+```
+Usage: apio drivers uninstall [OPTIONS] COMMAND [ARGS]...
+
+  The command group 'apio drivers uninstall' includes subcommands that that
+  uninstall system drivers that are used to upload designs to FPGA boards.
+
+Options:
+  -h, --help  Show this message and exit.
+
+Subcommands:
+  apio drivers uninstall ftdi    Uninstall the ftdi drivers.
+  apio drivers uninstall serial  Uninstall the serial drivers.
+
+```
+
+<br>
+
+### apio drivers uninstall ftdi
+
+```
+Usage: apio drivers uninstall ftdi [OPTIONS]
+
+  The command 'apio drivers uninstall ftdi' removes the FTDI drivers that may
+  have been installed earlier.
+
+  Examples:
+    apio drivers uninstall ftdi     # Uninstall the ftdi drivers.
+
+Options:
+  -h, --help  Show this message and exit.
+```
+
+<br>
+
+### apio drivers uninstall serial
+
+```
+Usage: apio drivers uninstall serial [OPTIONS]
+
+  The command ‘apio drivers uninstall serial’ removes the serial drivers that
   you may have installed earlier.
 
   Examples:
-    apio drivers serial install      # Install the serial drivers.
-    apio drivers serial uinstall     # Uinstall the serial drivers.
+    apio drivers uinstall serial    # Uinstall the serial drivers.
 
 Options:
   -h, --help  Show this message and exit.
@@ -467,13 +482,15 @@ Usage: apio examples list [OPTIONS]
 
   Examples:
     apio examples list                     # List all examples
+    apio examples list  -v                 # List with extra information.
     apio examples list | grep alhambra-ii  # Show examples of a specific board.
     apio examples list | grep -i blink     # Show all blinking examples.
 
 
 
 Options:
-  -h, --help  Show this message and exit.
+  -v, --verbose  Show detailed output.
+  -h, --help     Show this message and exit.
 ```
 
 <br>

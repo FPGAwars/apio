@@ -15,6 +15,6 @@ def test_drivers(apio_runner: ApioRunner):
         # -- Execute "apio drivers"
         result = sb.invoke_apio_cmd(apio, "drivers")
         sb.assert_ok(result)
-        assert "apio drivers ftdi" in unstyle(result.output)
-        assert "apio drivers serial" in unstyle(result.output)
-        assert "apio drivers lsusb" in unstyle(result.output)
+        assert "apio drivers list" in unstyle(result.output)
+        assert "apio drivers install" in unstyle(result.output)
+        assert "apio drivers uninstall" in unstyle(result.output)

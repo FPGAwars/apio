@@ -318,7 +318,11 @@ class SCons:
         # -- Populate the Project params.
         result.project.MergeFrom(
             Project(
-                board_id=project["board"], top_module=project["top-module"]
+                board_id=project["board"],
+                top_module=project["top-module"],
+                yosys_synth_extra_options=apio_ctx.project.get(
+                    "yosys-synth-extra-options", None
+                ),
             )
         )
         assert result.project.IsInitialized(), result

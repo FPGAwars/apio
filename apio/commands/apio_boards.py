@@ -39,18 +39,8 @@ class Entry:
     programmer: str
 
     def sort_key(self):
-        """Returns a key for sorting entiries. Primary key is the architecture
-        by our prefered order, secondary key is board id."""
-        # -- Prefer arch order
-        archs = ["ice40", "ecp5", "gowin"]
-        # -- Primary key
-        primary_key = (
-            archs.index(self.fpga_arch)
-            if self.fpga_arch in archs
-            else len(archs)
-        )
-        # -- Secondary key is board name.
-        return (primary_key, self.board.lower())
+        """A key for sorting the fpga entries in our prefered order."""
+        return (util.fpga_arch_sort_key(self.fpga_arch), self.board.lower())
 
 
 # R0914: Too many local variables (17/15)
@@ -98,7 +88,7 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
             )
         )
 
-    # -- Sort boards by case insensitive board namd.
+    # -- Sort boards by our prefered order.
     entries.sort(key=lambda x: x.sort_key())
 
     # -- Compute the columns widths.
@@ -135,7 +125,7 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
         parts.append(f"{'SPEED':<{fpga_speed_len}}")
     parts.append(f"{'PROGRAMMER':<{programmer_len}}")
 
-    # -- Show the title line.
+    # -- Print the title line.
     secho("".join(parts), fg="cyan", bold=True)
 
     # -- Print all the boards.

@@ -7,10 +7,12 @@
 # -- Licence GPLv2
 """Implementation of 'apio examples' command"""
 
-import sys
 from pathlib import Path
+from typing import List, Any
 import click
-from apio.managers.examples import Examples
+from click import secho, style, echo
+from apio.managers import installer
+from apio.managers.examples import Examples, ExampleInfo
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import util
@@ -27,10 +29,80 @@ that you can use.
 \b
 Examples:
   apio examples list                     # List all examples
+  apio examples list  -v                 # List with extra information.
   apio examples list | grep alhambra-ii  # Show examples of a specific board.
   apio examples list | grep -i blink     # Show all blinking examples.
 
   """
+
+
+def examples_sort_key(entry: ExampleInfo) -> Any:
+    """A key for sorting the fpga entries in our prefered order."""
+    return (util.fpga_arch_sort_key(entry.fpga_arch), entry.name)
+
+
+def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
+    """Print all the examples available. Return a process exit
+    code, 0 if ok, non zero otherwise."""
+    # -- Get the output info (terminal vs pipe).
+    output_config = util.get_terminal_config()
+
+    # -- Make sure that the examples package is installed.
+    installer.install_missing_packages_on_the_fly(apio_ctx)
+
+    # -- Get list of examples.
+    entries: List[ExampleInfo] = Examples(apio_ctx).get_examples_infos()
+
+    # -- Sort boards by case insensitive board namd.
+    entries.sort(key=examples_sort_key)
+
+    # Compute field lengths
+    margin = 2
+    name_len = max(len(x.name) for x in entries) + margin
+    fpga_arch_len = max(len(x.fpga_arch) for x in entries) + margin
+    fpga_part_num_len = max(len(x.fpga_part_num) for x in entries) + margin
+    fpga_size_len = max(len(x.fpga_size) for x in entries) + margin + 1
+
+    # -- Construct the title fields.
+    parts = []
+    parts.append(f"{'BOARD/EXAMPLE':<{name_len}}")
+    if verbose:
+        parts.append(f"{'ARCH':<{fpga_arch_len}}")
+        parts.append(f"{'PART-NUM':<{fpga_part_num_len}}")
+        parts.append(f"{'SIZE':<{fpga_size_len}}")
+    parts.append("DESCRIPTION")
+
+    # -- Print the title
+    secho("".join(parts), fg="cyan", bold="True")
+
+    # -- Emit the examples
+    last_arch = None
+    for entry in entries:
+        # -- Seperation before each archictecture group, unless piped out.
+        if last_arch != entry.fpga_arch and output_config.terminal_mode:
+            echo("")
+            secho(f"{entry.fpga_arch.upper()}", fg="magenta", bold=True)
+        last_arch = entry.fpga_arch
+
+        # -- Construct the fpga fields.
+        parts = []
+        parts.append(style(f"{entry.name:<{name_len}}", fg="cyan"))
+        if verbose:
+            parts.append(f"{entry.fpga_arch:<{fpga_arch_len}}")
+            parts.append(f"{entry.fpga_part_num:<{fpga_part_num_len}}")
+            parts.append(f"{entry.fpga_size:<{fpga_size_len}}")
+        parts.append(f"{entry.description}")
+
+        # -- Print the fpga line.
+        echo("".join(parts))
+
+    # -- Show summary.
+    if output_config.terminal_mode:
+        secho(f"Total of {util.plurality(entries, 'example')}")
+        if not verbose:
+            secho(
+                "Run 'apio examples -v' for additional columns.", fg="yellow"
+            )
 
 
 @click.command(
@@ -38,18 +110,15 @@ Examples:
     short_help="List the available apio examples.",
     help=APIO_EXAMPLES_LIST_HELP,
 )
-def _list_cli():
+@options.verbose_option
+def _list_cli(verbose: bool):
     """Implements the 'apio examples list' command group."""
 
     # -- Create the apio context.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
-    # -- Create the examples manager.
-    examples = Examples(apio_ctx)
-
     # --List all available examples.
-    exit_code = examples.list_examples()
-    sys.exit(exit_code)
+    list_examples(apio_ctx, verbose)
 
 
 # ---- apio examples fetch

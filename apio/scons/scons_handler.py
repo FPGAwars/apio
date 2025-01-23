@@ -10,10 +10,16 @@
 
 """Apio scons related utilities.."""
 
-
+import sys
+from click import secho
+from SCons.Script import ARGUMENTS, COMMAND_LINE_TARGETS
+from google.protobuf import text_format
+from apio.scons.plugin_ice40 import PluginIce40
+from apio.scons.plugin_ecp5 import PluginEcp5
+from apio.scons.plugin_gowin import PluginGowin
+from apio.proto.apio_pb2 import SconsParams, ICE40, ECP5, GOWIN
 from apio.scons.apio_env import ApioEnv, TARGET
 from apio.scons.plugin_base import PluginBase
-from apio.proto.apio_pb2 import SconsParams
 from apio.scons.plugin_util import (
     get_sim_config,
     get_tests_configs,
@@ -40,225 +46,391 @@ class SconsHandler:
     """Base apio scons handler"""
 
     def __init__(self, apio_env: ApioEnv, arch_plugin: PluginBase):
+        """Do not call directly, use SconsHandler.start()."""
         self.apio_env = apio_env
         self.arch_plugin = arch_plugin
 
-    def register_builders(self):
-        """Register the builders created by the arch plugin."""
+    @staticmethod
+    def start() -> None:
+        """This static method is called from SConstruct to create and
+        execute an SconsHandler."""
+
+        # -- Read the text of the scons params file.
+        with open("_build/scons.params", "r", encoding="utf8") as f:
+            proto_text = f.read()
+
+        # -- Parse the text into SconsParams object.
+        params: SconsParams = text_format.Parse(proto_text, SconsParams())
+
+        # -- Compare the params timestamp to the timestamp in the command.
+        timestamp = ARGUMENTS["timestamp"]
+        assert params.timestamp == timestamp
+
+        # -- Create the apio environment.
+        apio_env = ApioEnv(COMMAND_LINE_TARGETS, params)
+
+        # -- Select the plugin.
+        if params.arch == ICE40:
+            plugin = PluginIce40(apio_env)
+        elif params.arch == ECP5:
+            plugin = PluginEcp5(apio_env)
+        elif params.arch == GOWIN:
+            plugin = PluginGowin(apio_env)
+        else:
+            print(
+                f"Apio SConstruct dispatch error: unknown arch [{params.arch}]"
+            )
+            sys.exit(1)
+
+        # -- Create the handler.
+        scons_handler = SconsHandler(apio_env, plugin)
+
+        # -- Invoke the handler. This services the scons request.
+        scons_handler.execute()
+
+    def _register_common_targets(self, synth_srcs):
+        """Register the common synth, pnr, and bitstream operations which
+        are used by a few top level targets.
+        """
+
         apio_env = self.apio_env
+        params = apio_env.params
         plugin = self.arch_plugin
 
-        # -- Builders for project building.
-        if apio_env.targeting("build", "upload", "report"):
-            apio_env.builder(SYNTH_BUILDER, plugin.synth_builder())
-            apio_env.builder(PNR_BUILDER, plugin.pnr_builder())
-            apio_env.builder(BITSTREAM_BUILDER, plugin.bitstream_builder())
+        # -- Sanity check
+        assert apio_env.targeting("build", "upload", "report")
 
-        # -- Builders for simulations.
-        if apio_env.targeting("sim", "test"):
-            apio_env.builder(
-                TESTBENCH_COMPILE_BUILDER, plugin.testbench_compile_builder()
-            )
-            apio_env.builder(
-                TESTBENCH_RUN_BUILDER, plugin.testbench_run_builder()
-            )
+        # -- Synth builder and target.
+        apio_env.builder(SYNTH_BUILDER, plugin.synth_builder())
 
-        # -- Builders for graph command.
-        if apio_env.targeting("graph"):
-            apio_env.builder(YOSYS_DOT_BUILDER, plugin.yosys_dot_builder())
-            apio_env.builder(
-                GRAPHVIZ_RENDERER_BUILDER, plugin.graphviz_renderer_builder()
-            )
+        synth_target = apio_env.builder_target(
+            builder_id=SYNTH_BUILDER,
+            target=TARGET,
+            sources=[synth_srcs],
+            always_build=(params.verbosity.all or params.verbosity.synth),
+        )
 
-        # -- Builders for linting.
-        if apio_env.targeting("lint"):
-            apio_env.builder(LINT_CONFIG_BUILDER, plugin.lint_config_builder())
-            apio_env.builder(LINT_BUILDER, plugin.lint_builder())
+        # -- Place-and -oute builder and target
+        apio_env.builder(PNR_BUILDER, plugin.pnr_builder())
 
-    # pylint: disable=too-many-locals
-    def register_targets(self):
-        """Register the targers. This is architecture independent."""
+        pnr_target = apio_env.builder_target(
+            builder_id=PNR_BUILDER,
+            target=TARGET,
+            sources=[synth_target, self.arch_plugin.constrain_file()],
+            always_build=(params.verbosity.all or params.verbosity.pnr),
+        )
+
+        # -- Bitstream builder builder and target
+        apio_env.builder(BITSTREAM_BUILDER, plugin.bitstream_builder())
+
+        apio_env.builder_target(
+            builder_id=BITSTREAM_BUILDER,
+            target=TARGET,
+            sources=pnr_target,
+        )
+
+    def _register_build_target(self, synth_srcs):
+        """Register the 'build' target which creates the binary bitstream."""
+        apio_env = self.apio_env
+        params = apio_env.params
+        plugin = self.arch_plugin
+
+        # -- Sanity check
+        assert apio_env.targeting("build")
+
+        # -- Register the common targets for synth, pnr, and bitstream.
+        self._register_common_targets(synth_srcs)
+
+        # -- Top level "build" target.
+        apio_env.alias(
+            "build",
+            source=TARGET + plugin.plugin_info().bin_file_suffix,
+            allways_build=(
+                params.verbosity.all
+                or params.verbosity.synth
+                or params.verbosity.pnr
+            ),
+        )
+
+    def _register_upload_target(self, synth_srcs):
+        """Register the 'upload' target which upload the binary file
+        generated by the bitstream generator."""
 
         apio_env = self.apio_env
-        params: SconsParams = apio_env.params
         plugin_info = self.arch_plugin.plugin_info()
 
-        # -- Get a list of the synthesizable files (e.g. "main.v") and a list
-        # -- of the testbench files (e.g. "main_tb.v")
-        synth_srcs, test_srcs = source_files(apio_env)
+        # -- Sanity check
+        assert apio_env.targeting("upload")
 
-        # -- Targets for project building.
-        if apio_env.targeting("build", "upload", "report"):
-            synth_target = apio_env.builder_target(
-                builder_id=SYNTH_BUILDER,
-                target=TARGET,
-                sources=[synth_srcs],
-                always_build=(params.verbosity.all or params.verbosity.synth),
-            )
-            pnr_target = apio_env.builder_target(
-                builder_id=PNR_BUILDER,
-                target=TARGET,
-                sources=[synth_target, self.arch_plugin.constrain_file()],
-                always_build=(params.verbosity.all or params.verbosity.pnr),
-            )
-            bin_target = apio_env.builder_target(
-                builder_id=BITSTREAM_BUILDER,
-                target=TARGET,
-                sources=pnr_target,
-            )
-            apio_env.alias(
-                "build",
-                source=bin_target,
-                allways_build=(
-                    params.verbosity.all
-                    or params.verbosity.synth
-                    or params.verbosity.pnr
-                ),
-            )
+        # -- Register the common targets for synth, pnr, and bitstream.
+        self._register_common_targets(synth_srcs)
 
-        # -- Target for the "report" command.
-        if apio_env.targeting("report"):
-            apio_env.alias(
-                "report",
-                source=TARGET + ".pnr",
-                action=report_action(
-                    plugin_info.clk_name_index, params.verbosity.pnr
-                ),
-                allways_build=True,
-            )
+        # -- Create the top level 'upload' target.
+        apio_env.alias(
+            "upload",
+            source=TARGET + plugin_info.bin_file_suffix,
+            action=get_programmer_cmd(apio_env),
+            allways_build=True,
+        )
 
-        # -- Target for the "upload" command.
-        if apio_env.targeting("upload"):
-            apio_env.alias(
-                "upload",
-                source=bin_target,
-                action=get_programmer_cmd(apio_env),
-                allways_build=True,
-            )
+    def _register_report_target(self, synth_srcs):
+        """Registers the 'report' target which a report file from the
+        PNR generated .pnr file."""
+        apio_env = self.apio_env
+        params = apio_env.params
+        plugin_info = self.arch_plugin.plugin_info()
 
-        # -- Targets for the "graph" command.
-        if apio_env.targeting("graph"):
-            dot_target = apio_env.builder_target(
-                builder_id=YOSYS_DOT_BUILDER,
-                target=TARGET,
-                sources=synth_srcs,
-                always_build=True,
-            )
-            graphviz_target = apio_env.builder_target(
-                builder_id=GRAPHVIZ_RENDERER_BUILDER,
-                target=TARGET,
-                sources=dot_target,
-                always_build=True,
-            )
-            apio_env.alias(
-                "graph",
-                source=graphviz_target,
-                allways_build=True,
-            )
+        # -- Sanity check
+        assert apio_env.targeting("report")
 
-        # -- The 'sim' target and its dependencies, to simulate and display the
-        # -- results of a single testbench.
-        if apio_env.targeting("sim"):
-            # -- Sanity check
-            assert params.target.HasField("sim")
+        # -- Register the common targets for synth, pnr, and bitstream.
+        self._register_common_targets(synth_srcs)
 
-            # -- Get values.
-            sim_params = params.target.sim
-            testbench = sim_params.testbench  # Optional.
+        # -- Register the top level 'report' target.
+        apio_env.alias(
+            "report",
+            source=TARGET + ".pnr",
+            action=report_action(
+                plugin_info.clk_name_index, params.verbosity.pnr
+            ),
+            allways_build=True,
+        )
 
-            # -- Collect information for sim.
-            sim_config = get_sim_config(testbench, synth_srcs, test_srcs)
+    def _register_graph_target(
+        self,
+        synth_srcs,
+    ):
+        """Registers the 'graph' target which generates a .dot file using
+        yosys and renders it using graphviz."""
+        apio_env = self.apio_env
+        params = apio_env.params
+        plugin = self.arch_plugin
+
+        # -- Sanity check
+        assert apio_env.targeting("graph")
+        assert params.target.HasField("graph")
+
+        # -- Create the .dot generation builder and target.
+        apio_env.builder(YOSYS_DOT_BUILDER, plugin.yosys_dot_builder())
+
+        dot_target = apio_env.builder_target(
+            builder_id=YOSYS_DOT_BUILDER,
+            target=TARGET,
+            sources=synth_srcs,
+            always_build=True,
+        )
+
+        # -- Create the rendering builder and target.
+        apio_env.builder(
+            GRAPHVIZ_RENDERER_BUILDER, plugin.graphviz_renderer_builder()
+        )
+        graphviz_target = apio_env.builder_target(
+            builder_id=GRAPHVIZ_RENDERER_BUILDER,
+            target=TARGET,
+            sources=dot_target,
+            always_build=True,
+        )
+
+        # -- Create the top level "graph" target.
+        apio_env.alias(
+            "graph",
+            source=graphviz_target,
+            allways_build=True,
+        )
+
+    def _register_lint_target(self, synth_srcs, test_srcs):
+        """Registers the 'lint' target which creates a lint configuration file
+        and runs the linter."""
+
+        apio_env = self.apio_env
+        params = apio_env.params
+        plugin = self.arch_plugin
+
+        # -- Sanity check
+        assert apio_env.targeting("lint")
+        assert params.target.HasField("lint")
+
+        # -- Create the builder and target of the config file creation.
+        apio_env.builder(LINT_CONFIG_BUILDER, plugin.lint_config_builder())
+
+        lint_config_target = apio_env.builder_target(
+            builder_id=LINT_CONFIG_BUILDER,
+            target=TARGET,
+            sources=[],
+        )
+
+        # -- Create the builder and target the lint operation.
+        apio_env.builder(LINT_BUILDER, plugin.lint_builder())
+
+        lint_out_target = apio_env.builder_target(
+            builder_id=LINT_BUILDER,
+            target=TARGET,
+            sources=synth_srcs + test_srcs,
+            extra_dependecies=[lint_config_target],
+        )
+
+        # -- Create the top level "lint" target.
+        apio_env.alias(
+            "lint",
+            source=lint_out_target,
+            allways_build=True,
+        )
+
+    def _register_sim_target(self, synth_srcs, test_srcs):
+        """Registers the 'sim' targets which compiles and runs the
+        simulation of a testbench."""
+
+        apio_env = self.apio_env
+        params = apio_env.params
+        plugin = self.arch_plugin
+
+        # -- Sanity check
+        assert apio_env.targeting("sim")
+        assert params.target.HasField("sim")
+
+        # -- Get values.
+        sim_params = params.target.sim
+        testbench = sim_params.testbench  # Optional.
+
+        # -- Collect information for sim.
+        sim_config = get_sim_config(testbench, synth_srcs, test_srcs)
+
+        # -- Compilation builder and target
+
+        apio_env.builder(
+            TESTBENCH_COMPILE_BUILDER, plugin.testbench_compile_builder()
+        )
+
+        sim_out_target = apio_env.builder_target(
+            builder_id=TESTBENCH_COMPILE_BUILDER,
+            target=sim_config.build_testbench_name,
+            sources=sim_config.srcs,
+            always_build=sim_params.force_sim,
+        )
+
+        # -- Simulation builder and target..
+
+        apio_env.builder(TESTBENCH_RUN_BUILDER, plugin.testbench_run_builder())
+
+        sim_vcd_target = apio_env.builder_target(
+            builder_id=TESTBENCH_RUN_BUILDER,
+            target=sim_config.build_testbench_name,
+            sources=[sim_out_target],
+            always_build=sim_params,
+        )
+
+        # -- The top level "sim" target.
+        waves_target(
+            apio_env,
+            "sim",
+            sim_vcd_target,
+            sim_config,
+            allways_build=True,
+        )
+
+    def _register_test_target(self, synth_srcs, test_srcs):
+        """Registers 'test' target and its dependencies. Each testbench
+        is tested independently with its own set of sub-targets."""
+
+        apio_env = self.apio_env
+        params = apio_env.params
+        plugin = self.arch_plugin
+
+        # -- Sanity check
+        assert apio_env.targeting("test")
+        assert params.target.HasField("test")
+
+        # -- Collect the test related values.
+        test_params = params.target.test
+        tests_configs = get_tests_configs(
+            test_params.testbench, synth_srcs, test_srcs
+        )
+
+        # -- Create compilation and simulation targets.
+        apio_env.builder(
+            TESTBENCH_COMPILE_BUILDER, plugin.testbench_compile_builder()
+        )
+        apio_env.builder(TESTBENCH_RUN_BUILDER, plugin.testbench_run_builder())
+
+        # -- Create targes for each testbench we are testing.
+        tests_targets = []
+        for test_config in tests_configs:
 
             # -- Create the compilation target.
-            sim_out_target = apio_env.builder_target(
+            test_out_target = apio_env.builder_target(
                 builder_id=TESTBENCH_COMPILE_BUILDER,
-                target=sim_config.build_testbench_name,
-                sources=sim_config.srcs,
-                always_build=sim_params.force_sim,
+                target=test_config.build_testbench_name,
+                sources=test_config.srcs,
+                always_build=True,
             )
 
             # -- Create the simulation target.
-            sim_vcd_target = apio_env.builder_target(
+            test_vcd_target = apio_env.builder_target(
                 builder_id=TESTBENCH_RUN_BUILDER,
-                target=sim_config.build_testbench_name,
-                sources=[sim_out_target],
-                always_build=sim_params,
+                target=test_config.build_testbench_name,
+                sources=[test_out_target],
+                always_build=True,
             )
 
-            # -- Create the graphic viewer target.
-            waves_target(
-                apio_env,
-                "sim",
-                sim_vcd_target,
-                sim_config,
-                allways_build=True,
-            )
+            # -- Append to the list of targets we need to execute.
+            tests_targets.append(test_vcd_target)
 
-        # -- The  "test" target and its dependencies, to test one or more
-        # -- testbenches.
-        if apio_env.targeting("test"):
-            # -- Sanity check
-            assert params.target.HasField("test")
-
-            # -- Collect the test related values.
-            test_params = params.target.test
-            tests_configs = get_tests_configs(
-                test_params.testbench, synth_srcs, test_srcs
-            )
-
-            # -- Create targes for each testbench we are testing.
-            tests_targets = []
-            for test_config in tests_configs:
-
-                # -- Create the compilation target.
-                test_out_target = apio_env.builder_target(
-                    builder_id=TESTBENCH_COMPILE_BUILDER,
-                    target=test_config.build_testbench_name,
-                    sources=test_config.srcs,
-                    always_build=True,
-                )
-
-                # -- Create the simulation target.
-                test_vcd_target = apio_env.builder_target(
-                    builder_id=TESTBENCH_RUN_BUILDER,
-                    target=test_config.build_testbench_name,
-                    sources=[test_out_target],
-                    always_build=True,
-                )
-
-                # -- Append to the list of targets we need to execute.
-                tests_targets.append(test_vcd_target)
-
-            # -- The top 'test' target.
-            apio_env.alias("test", source=tests_targets, allways_build=True)
-
-        # -- Targets for the "lint" command.
-        if apio_env.targeting("lint"):
-            # -- Create the target that creates the lint config file.
-            lint_config_target = apio_env.builder_target(
-                builder_id=LINT_CONFIG_BUILDER,
-                target=TARGET,
-                sources=[],
-            )
-            # -- Create the target that actually lints.
-            lint_out_target = apio_env.builder_target(
-                builder_id=LINT_BUILDER,
-                target=TARGET,
-                sources=synth_srcs + test_srcs,
-                extra_dependecies=[lint_config_target],
-            )
-            # -- Create the top target.
-            apio_env.alias(
-                "lint",
-                source=lint_out_target,
-                allways_build=True,
-            )
-
-        # -- Handle the cleanu of the artifact files.
-        if apio_env.scons_env.GetOption("clean"):
-            configure_cleanup(apio_env)
+        # -- The top level 'test' target.
+        apio_env.alias("test", source=tests_targets, allways_build=True)
 
     def execute(self):
-        """The entry point of the scons handler."""
-        self.register_builders()
-        self.register_targets()
+        """The entry point of the scons handler. It registers the builders
+        and targets for the selected command and scons executes in upon
+        return."""
+
+        apio_env = self.apio_env
+
+        # -- Collect a list of the synthesizable files (e.g. "main.v") and a
+        # -- list of the testbench files (e.g. "main_tb.v")
+        synth_srcs, test_srcs = source_files(apio_env)
+
+        # -- A cleanup request is passed as scons -c option rather than as
+        # -- a target.
+        targets = apio_env.command_line_targets
+        if not targets:
+            assert apio_env.scons_env.GetOption("clean")
+            configure_cleanup(apio_env)
+            return
+
+        # -- Get the target, we expect exactly one.
+        assert len(targets) == 1, targets
+        target = targets[0]
+
+        # -- Dispatch by target.
+        # -- Not using python 'match' statement for  compatibility with
+        # -- python 3.9.
+        if target == "build":
+            self._register_build_target(synth_srcs)
+
+        elif target == "upload":
+            self._register_upload_target(synth_srcs)
+
+        elif target == "report":
+            self._register_report_target(synth_srcs)
+
+        elif target == "graph":
+            self._register_graph_target(synth_srcs)
+
+        elif target == "sim":
+            self._register_sim_target(synth_srcs, test_srcs)
+
+        elif target == "test":
+            self._register_test_target(synth_srcs, test_srcs)
+
+        elif target == "lint":
+            self._register_lint_target(synth_srcs, test_srcs)
+
+        else:
+            secho(
+                f"Error: scons handler got unexpected target [{target}]",
+                fg="red",
+            )
+            sys.exit(1)
+
+        # -- Note that we just registered builders and target. The actual
+        # -- execution is done by scons once this method returns.
