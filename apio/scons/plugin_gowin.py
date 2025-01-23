@@ -46,6 +46,7 @@ class PluginGowin(PluginBase):
         """Return plugin specific parameters."""
         return ArchPluginInfo(
             constrains_file_ext=".cst",
+            bin_file_suffix=".fs",
             clk_name_index=0,
         )
 

@@ -49,6 +49,7 @@ class PluginEcp5(PluginBase):
         """Return plugin specific parameters."""
         return ArchPluginInfo(
             constrains_file_ext=".lpf",
+            bin_file_suffix=".bit",
             clk_name_index=2,
         )
 

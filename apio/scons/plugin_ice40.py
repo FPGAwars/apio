@@ -46,6 +46,7 @@ class PluginIce40(PluginBase):
         """Return plugin specific parameters."""
         return ArchPluginInfo(
             constrains_file_ext=".pcf",
+            bin_file_suffix=".bin",
             clk_name_index=0,
         )
 
