@@ -44,6 +44,6 @@ SUBGROUPS = [
     help=APIO_DRIVERS_HELP,
 )
 def cli():
-    """Implements the drivers command."""
+    """Implements the apio drivers command."""
 
     # pass

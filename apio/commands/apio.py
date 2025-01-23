@@ -31,6 +31,7 @@ from apio.commands import (
     apio_test,
     apio_upgrade,
     apio_upload,
+    apio_docs,
 )
 
 
@@ -67,6 +68,7 @@ SUBGROUPS = [
     ApioSubgroup(
         "Utility commands",
         [
+            apio_docs.cli,
             apio_boards.cli,
             apio_fpgas.cli,
             apio_examples.cli,

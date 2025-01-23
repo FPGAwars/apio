@@ -28,26 +28,57 @@ APIO project configuration file. For details see
 https://github.com/FPGAwars/apio/wiki/Project-configuration-file
 """
 
+BOARD_OPTION_HELP = """
+The option 'board' specifies the board definition that is used for \
+the project. The board id must be one of the boards ids, such as \
+'alhambra-ii', that is listed by the command 'apio boards'.
+
+Apio uses the board id to \
+determine information such the part number of the target FPGA or the \
+programmer command to use to upload the design to the board.
+
+Example:
+  [cyan]\\[env]
+  board = alhambra-ii[/]
+
+Apio has resource files with definition of boards, FPGAs and programmers. If \
+the project requires a custom definitions, you can add custom \
+'boards.jsonc', 'fgpas.jsonc', and 'programmers.jsonc' files in the  \
+project directory and apio will use them instead.
+"""
+
+TOP_MODULE_OPTION_HELP = """
+The option 'top-module' specifies the name of \
+the top module of the design.
+
+If 'top-module' not specified, apio assumes the default name 'main', however, \
+it is a good practice to always specify the top module name for better \
+code readability.
+
+Example:
+  [cyan]\\[env]
+  board = alhambra-ii
+  top-module = my_main[/]
+"""
+
+OPTIONS = {
+    # -- The board name.
+    "board": BOARD_OPTION_HELP,
+    # -- The top module name. Default is 'main'.
+    "top-module": TOP_MODULE_OPTION_HELP,
+    # -- The default testbench name for 'apio sim'.
+    "default-testbench": "",
+    # -- Multi line list of verible options for 'apio format'
+    "format-verible-options": "",
+    # -- Additional option for the yosys synth command (inside the -p arg).
+    "yosys-synth-extra-options": "",
+}
+
 # -- Set of options every valid project should have.
 REQUIRED_OPTIONS = {
     # -- The board name.
     "board",
 }
-
-# -- Set of additional options a project may have.
-OPTIONAL_OPTIONS = {
-    # -- The top module name. Default is 'main'.
-    "top-module",
-    # -- The default testbench name for 'apio sim'.
-    "default-testbench",
-    # -- Multi line list of verible options for 'apio format'
-    "format-verible-options",
-    # -- Additional option for the yosys synth command (inside the -p arg).
-    "yosys-synth-extra-options",
-}
-
-# -- Set of all options a project may have.
-ALL_OPTIONS = REQUIRED_OPTIONS | OPTIONAL_OPTIONS
 
 
 # pylint: disable=too-few-public-methods
@@ -97,9 +128,8 @@ class Project:
                 sys.exit(1)
 
         # -- Check that there are no unknown options.
-        supported_options = ALL_OPTIONS
         for option in self._options:
-            if option not in supported_options:
+            if option not in OPTIONS:
                 secho(f"Error: unknown project option '{option}'", fg="red")
                 sys.exit(1)
 
@@ -121,7 +151,7 @@ class Project:
     def get(self, option: str, default: Any = None) -> Union[str, Any]:
         """Lookup an option value by name. Returns default if not found."""
         # -- If this fails, this is a programming error.
-        assert option in ALL_OPTIONS, f"Invalid project option: [{option}]"
+        assert option in OPTIONS, f"Invalid project option: [{option}]"
 
         # -- Lookup with default
         return self._options.get(option, default)
@@ -136,7 +166,7 @@ class Project:
     ) -> Union[List[str], Any]:
         """Lookup an option value that has a line list format. Returns
         the list of non empty lines or default if no value. Option
-        must be in ALL_OPTIONS."""
+        must be in OPTIONS."""
 
         # -- Get the raw value.
         values = self.get(option, None)
