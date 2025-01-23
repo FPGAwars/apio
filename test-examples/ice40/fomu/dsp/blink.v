@@ -7,16 +7,13 @@ module top (
 
     input  clki,
     input  user_1,  // serial data in.
-    output user_2,  // serial data out
+    output reg    user_2,  // serial data out
 
     // USB Pins (which should be statically driven if not being used).
     output usb_dp,
     output usb_dn,
     output usb_dp_pu
 );
-
-  wire din = user_1;
-  wire dout = user_2;
 
   // Prevent the host from trying to connect to this design.
   assign usb_dp = 1'b0;
@@ -32,12 +29,11 @@ module top (
   reg [N-1:0] reg2;
 
   always @(posedge clki) begin
-    reg1 <= {reg1[N-2:0], din};
-    reg2 <= {reg1[N-2:0], reg1[N-1]};
+    // Shift din into 2 x N words 
+    reg1   <= {reg1[N-2:0], user_1};
+    reg2   <= {reg1[N-2:0], reg1[N-1]};
+    // Multiply the words, and output the parity of the result.
+    user_2 <= ~^(reg1 * reg2);
   end
-
-  // We multiple and output the parity of the results
-  // to make sure the multiplication is not optimized out.
-  assign dout = ^(reg1 * reg2);
 
 endmodule
