@@ -28,7 +28,10 @@ APIO project configuration file. For details see
 https://github.com/FPGAwars/apio/wiki/Project-configuration-file
 """
 
-BOARD_OPTION_HELP = """
+# -- The options docs here are formatted in the markdown format of the
+# -- python rich library. See apio_docs_apio_ini.py to see how they are
+# -- used.
+BOARD_OPTION_DOC = """
 The option 'board' specifies the board definition that is used for \
 the project. The board id must be one of the boards ids, such as \
 'alhambra-ii', that is listed by the command 'apio boards'.
@@ -37,8 +40,8 @@ Apio uses the board id to \
 determine information such the part number of the target FPGA or the \
 programmer command to use to upload the design to the board.
 
-Example:
-  [cyan]\\[env]
+Example:[code]
+  \\[env]
   board = alhambra-ii[/]
 
 Apio has resource files with definition of boards, FPGAs and programmers. If \
@@ -47,7 +50,7 @@ the project requires a custom definitions, you can add custom \
 project directory and apio will use them instead.
 """
 
-TOP_MODULE_OPTION_HELP = """
+TOP_MODULE_OPTION_DOC = """
 The option 'top-module' specifies the name of \
 the top module of the design.
 
@@ -55,28 +58,72 @@ If 'top-module' not specified, apio assumes the default name 'main', however, \
 it is a good practice to always specify the top module name for better \
 code readability.
 
-Example:
-  [cyan]\\[env]
+Example:[code]
+  \\[env]
   board = alhambra-ii
   top-module = my_main[/]
 """
 
+DEFAULT_TESTBENCH_DOC = """
+The option 'default-testbench' is useful in projects that have more than \
+one testbench file. It allows to specifie the default testbench that will \
+be simulated when the command 'apio sim' ir run without a testbench \
+argument.
+
+Without this option, apio will exit with an error message if the project \
+contains more than one testbench file and a testbench was not specified in \
+in the 'apio sim' command.
+
+Example:[code]
+  \\[env]
+  board = alhambra-ii
+  top-module = my_main
+  default-testbench = my_module_tb.v[/]
+"""
+
+FORMAT_VERIBLE_OPTIONS_DOC = """
+The option 'format-verible-options' allows to control the operation of the \
+`apio format` command by specifying additional options to the underlying \
+'verible' formatter.
+
+Example:[code]
+  \\[env]
+  ...
+  format-verible-options =
+      --column_limit=80
+      --indentation_spaces=4[/]
+
+For the list of the verible formatter options run the command
+'apio raw -- verible-verilog-format --helpfull'
+"""
+
+YOSYS_SYNTH_EXTRA_OPTIONS_DOC = """
+The option 'yosys-synth-extra-options' allows to add options to the \
+yosys synth command. In the example below, it adds the option '-dsp'
+which enables for some FPGAs the use of DSP cells to implement multiply \
+operations. This is an advanced and esoteric option that is rarly needed.
+
+Example:[code]
+  \\[env]
+  ...
+  yosys-synth-extra-options = -dsp[/]
+"""
+
 OPTIONS = {
     # -- The board name.
-    "board": BOARD_OPTION_HELP,
+    "board": BOARD_OPTION_DOC,
     # -- The top module name. Default is 'main'.
-    "top-module": TOP_MODULE_OPTION_HELP,
+    "top-module": TOP_MODULE_OPTION_DOC,
     # -- The default testbench name for 'apio sim'.
-    "default-testbench": "",
+    "default-testbench": DEFAULT_TESTBENCH_DOC,
     # -- Multi line list of verible options for 'apio format'
-    "format-verible-options": "",
+    "format-verible-options": FORMAT_VERIBLE_OPTIONS_DOC,
     # -- Additional option for the yosys synth command (inside the -p arg).
-    "yosys-synth-extra-options": "",
+    "yosys-synth-extra-options": YOSYS_SYNTH_EXTRA_OPTIONS_DOC,
 }
 
-# -- Set of options every valid project should have.
+# -- The subset of the options in OPTIONS that are required.
 REQUIRED_OPTIONS = {
-    # -- The board name.
     "board",
 }
 
