@@ -18,10 +18,10 @@
 
 import os
 from typing import List, Optional
-from click import secho
 from SCons.Script.SConscript import SConsEnvironment
 from SCons.Environment import BuilderWrapper
 import SCons.Defaults
+from apio.scons.scons_console import cout
 
 # from apio.scons.apio_args import ApioArgs
 from apio.proto.apio_pb2 import SconsParams
@@ -128,8 +128,8 @@ class ApioEnv:
         dictionary = self.scons_env.Dictionary()
         keys = list(dictionary.keys())
         keys.sort()
-        secho()
-        secho(">>> Env vars BEGIN", fg="magenta", color=True)
+        cout("")
+        cout(">>> Env vars BEGIN", style="magenta")
         for key in keys:
             print(f"{key} = {self.scons_env[key]}")
-        secho("<<< Env vars END\n", fg="magenta", color=True)
+        cout("<<< Env vars END\n", style="magenta")

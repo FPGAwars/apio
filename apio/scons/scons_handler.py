@@ -11,7 +11,6 @@
 """Apio scons related utilities.."""
 
 import sys
-from click import secho
 from SCons.Script import ARGUMENTS, COMMAND_LINE_TARGETS
 from google.protobuf import text_format
 from apio.scons.plugin_ice40 import PluginIce40
@@ -20,6 +19,7 @@ from apio.scons.plugin_gowin import PluginGowin
 from apio.proto.apio_pb2 import SconsParams, ICE40, ECP5, GOWIN
 from apio.scons.apio_env import ApioEnv, TARGET
 from apio.scons.plugin_base import PluginBase
+from apio.scons.scons_console import error
 from apio.scons.plugin_util import (
     get_sim_config,
     get_tests_configs,
@@ -426,11 +426,8 @@ class SconsHandler:
             self._register_lint_target(synth_srcs, test_srcs)
 
         else:
-            secho(
-                f"Error: scons handler got unexpected target [{target}]",
-                fg="red",
-            )
+            error(f"Unexpected scons target: {target}")
             sys.exit(1)
 
-        # -- Note that we just registered builders and target. The actual
-        # -- execution is done by scons once this method returns.
+        # -- Note that so far we just registered builders and target.
+        # -- The actual execution is done by scons once this method returns.

@@ -11,12 +11,12 @@
 """Apio scons related utilities.."""
 
 from dataclasses import dataclass
-from click import secho
 from SCons.Builder import BuilderBase
 from SCons.Action import Action
 from SCons.Script import Builder
 from apio.scons.apio_env import ApioEnv, TARGET, BUILD_DIR_SEP
 from apio.proto.apio_pb2 import GraphOutputType
+from apio.scons.scons_console import cout
 from apio.scons.plugin_util import (
     SRC_SUFFIXES,
     verilog_src_scanner,
@@ -160,12 +160,7 @@ class PluginBase:
         def completion_action(source, target, env):  # noqa
             """Action function that prints a completion message."""
             _ = (source, target, env)  # Unused
-            secho(
-                f"Generated {TARGET}.{type_str}",
-                fg="green",
-                bold=True,
-                color=True,
-            )
+            cout(f"Generated {TARGET}.{type_str}", style="green bold")
 
         actions = [
             f"dot -T{type_str} $SOURCES -o $TARGET",

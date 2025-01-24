@@ -7,6 +7,7 @@ from test.scons.testing import make_test_apio_env, SconsHacks
 from test.conftest import ApioRunner
 from pathlib import Path
 import pytest
+from click import unstyle
 from SCons.Node.FS import FS
 from SCons.Script import SetOption
 from pytest import LogCaptureFixture
@@ -38,7 +39,7 @@ def test_get_constraint_file(
         capsys.readouterr()  # Reset capture
         result = get_constraint_file(apio_env, ".pcf", "my_main")
         captured = capsys.readouterr()
-        assert "assuming 'my_main.pcf'" in captured.out
+        assert "assuming 'my_main.pcf'" in unstyle(captured.out)
         assert result == "my_main.pcf"
 
         # -- If a single .pcf file, return it.
@@ -55,7 +56,7 @@ def test_get_constraint_file(
             result = get_constraint_file(apio_env, ".pcf", "my_main")
         captured = capsys.readouterr()
         assert e.value.code == 1
-        assert "Error: Found multiple '*.pcf'" in captured.out
+        assert "Error: Found multiple '*.pcf'" in unstyle(captured.out)
 
 
 def test_verilog_src_scanner(apio_runner: ApioRunner):
