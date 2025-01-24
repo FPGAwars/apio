@@ -28,7 +28,7 @@ from SCons.Node import NodeList
 from SCons.Node.Alias import Alias
 import debugpy
 from apio.scons.apio_env import ApioEnv, TARGET, BUILD_DIR_SEP
-from apio.scons.scons_console import cout, error, warning
+from apio.scons.scons_console import cprint, cerror, cwarning
 
 # -- A list with the file extensions of the verilog source files.
 SRC_SUFFIXES = [".v", ".sv"]
@@ -42,11 +42,11 @@ def maybe_wait_for_remote_debugger(env_var_name: str):
     debugger (e.g. from Visual Studio Code) is attached.
     """
     if os.getenv(env_var_name) is not None:
-        cout(f"Env var '{env_var_name}' was detected.")
+        cprint(f"Env var '{env_var_name}' was detected.")
         port = 5678
-        cout(f"Apio SCons for remote debugger on port localhost:{port}.")
+        cprint(f"Apio SCons for remote debugger on port localhost:{port}.")
         debugpy.listen(port)
-        cout(
+        cprint(
             "Attach Visual Studio Code python remote python debugger "
             f"to port {port}.",
             style="magenta",
@@ -54,7 +54,7 @@ def maybe_wait_for_remote_debugger(env_var_name: str):
         # -- Block until the debugger connetcs.
         debugpy.wait_for_client()
         # -- Here the remote debugger is attached and the program continues.
-        cout(
+        cprint(
             "Remote debugger is attached, program continues...",
             style="green",
         )
@@ -107,14 +107,14 @@ def get_constraint_file(
     # Case 1: No matching files.
     if n == 0:
         result = f"{top_module.lower()}{file_ext}"
-        warning(f"No {file_ext} constraints file, assuming '{result}'.")
+        cwarning(f"No {file_ext} constraints file, assuming '{result}'.")
         return result
     # Case 2: Exactly one file found.
     if n == 1:
         result = str(files[0])
         return result
     # Case 3: Multiple matching files.
-    error(
+    cerror(
         f"Found multiple '*{file_ext}' "
         "constrain files, expecting exactly one."
     )
@@ -201,7 +201,7 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
             if Path(dependency).exists():
                 dependencies.append(dependency)
             elif apio_env.is_debug:
-                cout(
+                cprint(
                     f"Dependency candidate {dependency} does not exist, "
                     "dropping."
                 )
@@ -211,9 +211,9 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
 
         # Debug info.
         if apio_env.is_debug:
-            cout(f"Dependencies of {file_node.name}:", style="blue")
+            cprint(f"Dependencies of {file_node.name}:", style="blue")
             for dependency in dependencies:
-                cout(f"  {dependency}", style="blue")
+                cprint(f"  {dependency}", style="blue")
 
         # All done
         return apio_env.scons_env.File(dependencies)
@@ -327,8 +327,8 @@ def check_valid_testbench_name(testbench: str) -> None:
     """Check if a testbench name is valid. If not, print an error message
     and exit."""
     if not is_verilog_src(testbench) or not has_testbench_name(testbench):
-        error(f"'{testbench}' is not a valid testbench file name.")
-        cout(TESTBENCH_HINT, style="yellow")
+        cerror(f"'{testbench}' is not a valid testbench file name.")
+        cprint(TESTBENCH_HINT, style="yellow")
         sys.exit(1)
 
 
@@ -351,20 +351,20 @@ def get_sim_config(
     elif len(test_srcs) == 0:
         # -- Case 2 Testbench name was not specified and no testbench files
         # -- were found in the project.
-        error("No testbench files found in the project.")
-        cout(TESTBENCH_HINT, style="yellow")
+        cerror("No testbench files found in the project.")
+        cprint(TESTBENCH_HINT, style="yellow")
 
         sys.exit(1)
     elif len(test_srcs) == 1:
         # -- Case 3 Testbench name was not specified but there is exactly
         # -- one in the project.
         testbench = test_srcs[0]
-        cout(f"Found testbench file {testbench}", style="cyan bold")
+        cprint(f"Found testbench file {testbench}", style="cyan bold")
     else:
         # -- Case 4 Testbench name was not specified and there are multiple
         # -- testbench files in the project.
-        error("Multiple testbench files found in the project.")
-        cout(
+        cerror("Multiple testbench files found in the project.")
+        cprint(
             "Please specify the testbench file name in the command "
             "or in apio.ini 'default-testbench' option.",
             style="yellow",
@@ -404,8 +404,8 @@ def get_tests_configs(
     elif len(test_srcs) == 0:
         # -- Case 2 - Testbench file name was not specified and there are no
         # -- testbench files in the project.
-        error("No testbench files found in the project.")
-        cout(TESTBENCH_HINT, style="yellow")
+        cerror("No testbench files found in the project.")
+        cprint(TESTBENCH_HINT, style="yellow")
         sys.exit(1)
     else:
         # -- Case 3 - Testbench file name was not specified but there are one
@@ -470,14 +470,14 @@ def source_file_issue_action() -> FunctionAction:
                 continue
 
             # -- Here the file is a testbench file.
-            cout(f"Testbench {file.name}", style="cyan bold")
+            cprint(f"Testbench {file.name}", style="cyan bold")
 
             # -- Read the testbench file text.
             file_text = file.get_text_contents()
 
             # -- if contains $dumpfile, print a warning.
             if testbench_dumpfile_re.findall(file_text):
-                warning(
+                cwarning(
                     "Using $dumpfile() in apio "
                     "testbenches is not recomanded."
                 )
@@ -493,7 +493,7 @@ def source_files(apio_env: ApioEnv) -> Tuple[List[str], List[str]]:
     # -- Get a list of all *.v and .sv files in the project dir.
     files: List[File] = apio_env.scons_env.Glob("*.sv")
     if files:
-        warning(
+        cwarning(
             "Project contains .sv files, system-verilog support "
             "is experimental."
         )
@@ -522,15 +522,15 @@ def _print_pnr_report(
     report: Dict[str, any] = json.loads(json_txt)
 
     # --- Report utilization
-    cout("")
-    cout("UTILIZATION:", style="cyan bold")
+    cprint("")
+    cprint("UTILIZATION:", style="cyan bold")
     utilization = report["utilization"]
     for resource, vals in utilization.items():
         available = vals["available"]
         used = vals["used"]
         percents = int(100 * used / available)
         style = "magenta" if used > 0 else None
-        cout(
+        cprint(
             f"{resource:>20}: {used:5} {available:5} {percents:5}%",
             style=style,
         )
@@ -540,8 +540,8 @@ def _print_pnr_report(
     # -- NOTE: As of Oct 2024, some projects do not generate timing
     # -- information and this is being investigated.
     # -- See https://github.com/FPGAwars/icestudio/issues/774 for details.
-    cout("")
-    cout("CLOCKS:", style="cyan bold")
+    cprint("")
+    cprint("CLOCKS:", style="cyan bold")
     clocks = report["fmax"]
     if len(clocks) > 0:
         for clk_net, vals in clocks.items():
@@ -550,16 +550,16 @@ def _print_pnr_report(
 
             # -- Report speed.
             max_mhz = vals["achieved"]
-            cout(
+            cprint(
                 f"{clk_signal:>20}: "
                 f"[magenta]{max_mhz:7.2f}[/magenta] Mhz max"
             )
 
     # -- For now we ignore the critical path report in the pnr report and
     # -- refer the user to the pnr verbose output.
-    cout("")
+    cprint("")
     if not verbose:
-        cout(
+        cprint(
             "Use 'apio report --verbose' for more details.",
             style="yellow",
         )
@@ -601,7 +601,7 @@ def get_programmer_cmd(apio_env: ApioEnv) -> str:
     # It's an error if the programmer command doesn't have the $SOURCE
     # placeholder when scons inserts the binary file name.
     if "$SOURCE" not in programmer_cmd:
-        error(
+        cerror(
             "[Internal] $SOURCE is missing in programmer command: "
             f"{programmer_cmd}"
         )
@@ -738,7 +738,7 @@ def configure_cleanup(apio_env: ApioEnv) -> None:
     )
 
     if legacy_files_to_clean:
-        warning("Deleting also leftover files.")
+        cwarning("Deleting also leftover files.")
 
         files_to_clean.extend(legacy_files_to_clean)
 

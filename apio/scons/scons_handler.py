@@ -19,7 +19,7 @@ from apio.scons.plugin_gowin import PluginGowin
 from apio.proto.apio_pb2 import SconsParams, ICE40, ECP5, GOWIN
 from apio.scons.apio_env import ApioEnv, TARGET
 from apio.scons.plugin_base import PluginBase
-from apio.scons.scons_console import error
+from apio.scons.scons_console import cerror
 from apio.scons.plugin_util import (
     get_sim_config,
     get_tests_configs,
@@ -426,7 +426,7 @@ class SconsHandler:
             self._register_lint_target(synth_srcs, test_srcs)
 
         else:
-            error(f"Unexpected scons target: {target}")
+            cerror(f"Unexpected scons target: {target}")
             sys.exit(1)
 
         # -- Note that so far we just registered builders and target.
