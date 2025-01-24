@@ -12,7 +12,7 @@ from pathlib import Path
 import click
 from click import secho
 import requests
-from apio.utils import util
+from apio.utils import util, apio_console
 
 # -- Template for remote config file url. The placeholder is for the
 # -- apio verison such as "0.9.6".
@@ -96,13 +96,18 @@ class Profile:
         """If an colors are disabled and a click context exist, set it up to
         disable colors.
         """
-
+        # -- Determine if colors should be on or off.
         colors: bool = Profile.read_color_prefernces()
+
+        # -- Apply to the click library.
+        # -- If colors are on, we don't write True but None, to use the default
+        # -- policy of emitting colors only if not piped out.
         click_context = click.get_current_context(silent=True)
-        # If colors are on, we don't write True but None, to use the default
-        # policy of emitting colors only if not piped out.
         if click_context:
             click_context.color = None if colors else False
+
+        # -- Apply to the Rich library
+        apio_console.apply_color_preference(colors)
 
     @staticmethod
     def read_color_prefernces(*, default=True) -> Union[bool, Any]:

@@ -17,8 +17,7 @@
 import re
 from enum import Enum
 from typing import List, Optional, Tuple
-from click import secho, echo
-from click.termui import unstyle
+from apio.utils.apio_console import cout
 
 
 # -- Terminal cursor commands.
@@ -168,31 +167,6 @@ class SconsFilter:
         """Stderr pipe calls this on each line."""
         self.on_line(PipeId.STDERR, line)
 
-    def emit_line(
-        self, line: str, *, fg: str = None, bold: bool = None
-    ) -> None:
-        """Emit a line from the scons filter. We use scecho only when thre
-        is an explicit color, to avoid interfering with color from the scons
-        job output, for example for color that spans lines as in
-        'secho("line1\nline2", fg="red", color=True)'.
-        """
-        # -- If we run with colors turned of, remove any ansi colors that can
-        # -- come from the scons process.
-        if not self.colors_enabled:
-            fg = None
-            bold = None
-            line = unstyle(line)
-
-        # -- Echo the line.
-        if fg or bold:
-            secho(line, fg=fg, bold=bold)
-        else:
-            # -- In this case we use echo to preserve ansi colors from the
-            # -- scons job which can span multiple ines. Using secho would
-            # -- interfere with those colors, preserving only the color of the
-            # -- first line.
-            echo(line)
-
     @staticmethod
     def _assign_line_color(
         line: str, patterns: List[Tuple[str, str]], default_color: str = None
@@ -224,6 +198,14 @@ class SconsFilter:
         in_iverolog_range = self._iverilog_detector.update(pipe_id, line)
         in_iceprog_range = self._iceprog_detector.update(pipe_id, line)
 
+        # -- For debugging.
+        # print(
+        #     f"{'P' if in_pnr_verbose_range else '-'}"
+        #     f"{'V' if in_iverolog_range else '-'}"
+        #     f"{'I' if in_iverolog_range else '-'}"
+        #     f" {pipe_id} : {line}"
+        # )
+
         # -- Handle the line while in the nextpnr verbose log range.
         if pipe_id == PipeId.STDERR and in_pnr_verbose_range:
 
@@ -238,9 +220,10 @@ class SconsFilter:
                 [
                     (r"^warning:", "yellow"),
                     (r"^error:", "red"),
+                    (r"^fatal error:", "red"),
                 ],
             )
-            self.emit_line(line, fg=line_color)
+            cout(line, style=line_color)
             return
 
         # -- Special handling of iverilog lines. We drop warning line spam
@@ -297,7 +280,7 @@ class SconsFilter:
                     (r"^VERIFY OK", "green"),
                 ],
             )
-            self.emit_line(line, fg=line_color)
+            cout(line, style=line_color)
             return
 
         # -- Special handling for Fumo lines.
@@ -314,7 +297,7 @@ class SconsFilter:
                 # -  Commit 93fc9bc4f3bfd21568e2d66f11976831467e3b97.
                 #
                 print(CURSOR_UP + ERASE_LINE, end="", flush=True)
-                self.emit_line(line, fg="green", bold=True)
+                cout(line, style="green bold")
                 return
 
         # -- Special handling for tinyprog lines.
@@ -342,7 +325,7 @@ class SconsFilter:
                 # -  Commit 93fc9bc4f3bfd21568e2d66f11976831467e3b97.
                 #
                 print(CURSOR_UP + ERASE_LINE, end="", flush=True)
-                self.emit_line(line)
+                cout(line)
                 return
 
         # Handling the rest of the stdout lines.
@@ -356,7 +339,7 @@ class SconsFilter:
                     (r"^error:", "red"),
                 ],
             )
-            self.emit_line(line, fg=line_color)
+            cout(line, style=line_color)
             return
 
         # Handling the rest of stderr the lines.
@@ -368,4 +351,4 @@ class SconsFilter:
                 (r"^error:", "red"),
             ],
         )
-        self.emit_line(line, fg=line_color)
+        cout(line, style=line_color)

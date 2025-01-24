@@ -25,6 +25,8 @@ def _make_console() -> Console:
 _console: Console = _make_console()
 
 
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
 def cprint(markdown_text: str, *, style: str = None) -> None:
     """Prints markdown text to the console, using the optional style."""
     _console.print(markdown_text, style=style, highlight=False)
