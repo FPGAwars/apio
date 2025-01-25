@@ -35,9 +35,7 @@ def cprint(markdown_text: str, *, style: str = None) -> None:
 def cerror(markdown_text: str) -> None:
     """Prints an error markdown message to the console The message is printed
     in red and with the prefix 'Error: '."""
-    _console.print(
-        f"Error: {markdown_text}", style="red bold", highlight=False
-    )
+    _console.print(f"Error: {markdown_text}", style="red", highlight=False)
 
 
 def cwarning(markdown_text: str) -> None:

@@ -255,8 +255,9 @@ class Examples:
                 fg="red",
             )
             secho(
-                "Expecting a board name such as 'alhambra-ii'.\n"
-                "Run 'apio examples list' for the list of available examples.",
+                "Run 'apio examples list' for the list of available "
+                "examples.\n"
+                "Expecting a board name such as 'alhambra-ii'.",
                 fg="yellow",
             )
             sys.exit(1)

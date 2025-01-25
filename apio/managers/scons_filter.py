@@ -297,7 +297,7 @@ class SconsFilter:
                 # -  Commit 93fc9bc4f3bfd21568e2d66f11976831467e3b97.
                 #
                 print(CURSOR_UP + ERASE_LINE, end="", flush=True)
-                cout(line, style="green bold")
+                cout(line, style="green")
                 return
 
         # -- Special handling for tinyprog lines.

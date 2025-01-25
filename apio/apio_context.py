@@ -13,8 +13,7 @@ from enum import Enum
 from collections import OrderedDict
 from pathlib import Path
 from typing import Optional, Dict
-import click
-from click import secho
+from apio.utils.apio_console import cout, cerror, cwarning
 from apio.profile import Profile
 from apio.utils import jsonc, util, env_options
 from apio.managers.project import (
@@ -110,9 +109,9 @@ class ApioContext:
         # -- that modify its default behavior.
         defined_env_options = env_options.get_defined()
         if defined_env_options:
-            secho(
+            cout(
                 f"Active env options [{', '.join(defined_env_options)}].",
-                fg="yellow",
+                style="yellow",
             )
 
         # -- Store the scope
@@ -234,20 +233,18 @@ class ApioContext:
 
         # -- Fatal error if unknown board.
         if strict and canonical_name is None:
-            secho(f"Error: no such board '{board}'", fg="red")
-            secho(
-                "Run 'apio boards' for the list of board names.\n"
-                "Expecting a board name such as 'alhambra-ii'.",
-                fg="yellow",
+            cerror(f"No such board '{board}'")
+            cout(
+                "Run 'apio boards' for the list of board names.",
+                style="yellow",
             )
             sys.exit(1)
 
         # -- Warning if caller used a legacy board name.
         if warn and canonical_name and board != canonical_name:
-            secho(
-                f"Warning: '{board}' board name was changed. "
-                f"Please use '{canonical_name}' instead.",
-                fg="yellow",
+            cwarning(
+                f"'{board}' board name was changed. "
+                f"Please use '{canonical_name}' instead."
             )
 
         # -- Return the canonical board name.
@@ -301,7 +298,7 @@ class ApioContext:
             filepath = self._project_dir / name
             if filepath.exists():
                 if allow_custom:
-                    secho(f"Loading custom '{name}'.")
+                    cout(f"Loading custom '{name}'.")
                     return self._load_resource_file(filepath)
 
         # -- Load the stock resource file from the APIO package.
@@ -328,16 +325,8 @@ class ApioContext:
         # -- passing a wrong file
         except FileNotFoundError as exc:
 
-            # -- Display Main error
-            secho("Apio System Error! JSONC file not found", fg="red")
-
-            # -- Display the affected file (in a different color)
-            apio_file_msg = click.style("Apio file: ", fg="yellow")
-            filename = click.style(f"{filepath}", fg="cyan", bold=True)
-            secho(f"{apio_file_msg} {filename}")
-
-            # -- Display the specific error message
-            secho(f"{exc}\n", fg="red")
+            # -- Display error information
+            cerror("[Internal] .jsonc file not found", f"{exc}")
 
             # -- Abort!
             sys.exit(1)
@@ -355,15 +344,8 @@ class ApioContext:
         except json.decoder.JSONDecodeError as exc:
 
             # -- Display Main error
-            secho("Apio System Error! Invalid JSONC file", fg="red")
-
-            # -- Display the affected file (in a different color)
-            apio_file_msg = click.style("Apio file: ", fg="yellow")
-            filename = click.style(f"{filepath}", fg="cyan", bold=True)
-            secho(f"{apio_file_msg} {filename}")
-
-            # -- Display the specific error message
-            secho(f"{exc}\n", fg="red")
+            cerror("Invalid .jsonc file", f"{exc}")
+            cout(f"File: {filepath}", style="yellow")
 
             # -- Abort!
             sys.exit(1)
@@ -438,7 +420,7 @@ class ApioContext:
         """
         package_info = self.platform_packages.get(package_name, None)
         if package_info is None:
-            secho(f"Error: unknown package '{package_name}'", fg="red")
+            cerror(f"Unknown package '{package_name}'")
             sys.exit(1)
 
         return package_info
@@ -462,12 +444,11 @@ class ApioContext:
         # -- Verify it's valid. This can be a user error if the override
         # -- is invalid.
         if platform_id not in platforms.keys():
-            secho(f"Error: unknown platform id: [{platform_id}]")
-            secho(
-                "\n"
-                "[Hint]: For the list of supported platforms\n"
+            cerror(f"Unknown platform id: [{platform_id}]")
+            cout(
+                "For the list of supported platforms "
                 "type 'apio system platforms'.",
-                fg="yellow",
+                style="yellow",
             )
             sys.exit(1)
 

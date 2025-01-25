@@ -160,7 +160,7 @@ class PluginBase:
         def completion_action(source, target, env):  # noqa
             """Action function that prints a completion message."""
             _ = (source, target, env)  # Unused
-            cprint(f"Generated {TARGET}.{type_str}", style="green bold")
+            cprint(f"Generated {TARGET}.{type_str}", style="green")
 
         actions = [
             f"dot -T{type_str} $SOURCES -o $TARGET",

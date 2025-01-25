@@ -42,7 +42,7 @@ def test_create(apio_runner: ApioRunner):
             apio, ["create", "--board", "missed_board"]
         )
         assert result.exit_code == 1, result.output
-        assert "Error: no such board" in result.output
+        assert "Error: No such board" in result.output
         assert not exists(apio_ini)
 
         # -- Execute "apio create --board alhambra-ii"
