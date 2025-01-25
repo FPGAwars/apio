@@ -26,14 +26,14 @@ def test_packages(apio_runner: ApioRunner):
             apio, ["packages", "install", "no-such-package"]
         )
         assert result.exit_code == 1, result.output
-        assert "Error: no such package 'no-such-package'" in result.output
+        assert "Error: No such package 'no-such-package'" in result.output
 
         # -- Execute "apio packages uninstall no-such-package"
         result = sb.invoke_apio_cmd(
             apio, ["packages", "uninstall", "no-such-package"]
         )
         assert result.exit_code == 1, result.output
-        assert "Error: no such package 'no-such-package'" in result.output
+        assert "Error: No such package 'no-such-package'" in result.output
 
         # -- Execute "apio packages fix"
         result = sb.invoke_apio_cmd(apio, ["packages", "fix"])

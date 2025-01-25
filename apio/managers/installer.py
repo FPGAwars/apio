@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 from typing import Tuple
 import shutil
-from click import secho
+from apio.utils.apio_console import cout, cerror
 from apio.apio_context import ApioContext
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
@@ -102,16 +102,16 @@ def _download_package_file(url: str, dir_path: Path) -> str:
             filepath.unlink()
 
         # -- Inform the user
-        secho("User abborted download", fg="red")
+        cout("User abborted download", style="red")
         sys.exit(1)
 
     except IOError as exc:
-        secho("I/O error while downloading", fg="red")
-        secho(str(exc), fg="red")
+        cout("I/O error while downloading", style="red")
+        cout(str(exc), style="red")
         sys.exit(1)
 
     except util.ApioException:
-        secho("Error: package not found", fg="red")
+        cerror("Package not found")
         sys.exit(1)
 
     # -- Return the destination path
@@ -130,7 +130,7 @@ def _unpack_package_file(package_file: Path, package_dir: Path) -> None:
 
     # -- Exit if error.
     if not ok:
-        secho(f"Error: failed to unpack package file {package_file}", fg="red")
+        cerror(f"Failed to unpack package file {package_file}")
         sys.exit(1)
 
 
@@ -145,8 +145,8 @@ def _parse_package_spec(package_spec: str) -> Tuple[str, str]:
     """
     tokens = package_spec.split("@")
     if len(tokens) not in [1, 2]:
-        secho(f"Error: invalid package spec '{package_spec}", fg="red")
-        secho("Try 'my_package' or  'my_package@0.1.2'", fg="yellow")
+        cerror(f"Invalid package spec '{package_spec}")
+        cout("Try 'my_package' or  'my_package@0.1.2'", style="yellow")
         sys.exit(1)
 
     package_name = tokens[0]
@@ -166,17 +166,14 @@ def _delete_package_dir(
     dir_found = package_dir.is_dir()
     if dir_found:
         if verbose:
-            secho(f"Deleting {str(package_dir)}")
+            cout(f"Deleting {str(package_dir)}")
 
         # -- Sanity check the path and delete.
         assert "packages" in str(package_dir).lower(), package_dir
         shutil.rmtree(package_dir)
 
     if package_dir.exists():
-        secho(
-            f"Error: directory deletion failed: {str(package_dir.absolute())}",
-            fg="yellow",
-        )
+        cerror(f"Directory deletion failed: {str(package_dir.absolute())}")
         sys.exit(1)
 
     return dir_found
@@ -229,10 +226,10 @@ def install_missing_packages_on_the_fly(apio_ctx: ApioContext) -> None:
             apio_ctx, cached_config_ok=False, verbose=False
         )
         if not scan_results.is_all_ok():
-            secho(
+            cout(
                 "Warning: packages issues detected. Use "
                 "'apio packages list' to investigate.",
-                fg="red",
+                style="red",
             )
 
 
@@ -263,10 +260,10 @@ def install_package(
 
     # -- Exit if no such package for this platform.
     if package_name not in apio_ctx.platform_packages:
-        secho(f"Error: no such package '{package_name}'", fg="red")
+        cerror(f"No such package '{package_name}'")
         sys.exit(1)
 
-    secho(f"Installing package '{package_spec}'", fg="magenta", bold=True)
+    cout(f"Installing package '{package_spec}'", style="magenta")
 
     # -- If the user didn't specify a target version we use the one specified
     # -- in the remote config.
@@ -275,7 +272,7 @@ def install_package(
             package_name, cached_config_ok=cached_config_ok, verbose=verbose
         )
 
-    secho(f"Target version {target_version}")
+    cout(f"Target version {target_version}")
 
     # -- If not focring and the target version already installed nothing to do.
     if not force_reinstall:
@@ -290,10 +287,9 @@ def install_package(
         # -- If the installed and the target versions are the same then
         # -- nothing to do.
         if target_version == installed_version:
-            secho(
+            cout(
                 f"Version {target_version} was already installed",
-                fg="green",
-                bold=True,
+                style="green",
             )
             return
 
@@ -335,11 +331,7 @@ def install_package(
     # apio_ctx.profile.save()
 
     # -- Inform the user!
-    secho(
-        f"Package '{package_name}' installed successfully",
-        fg="green",
-        bold=True,
-    )
+    cout(f"Package '{package_name}' installed successfully", style="green")
 
 
 def uninstall_package(
@@ -352,10 +344,10 @@ def uninstall_package(
 
     package_info = apio_ctx.platform_packages.get(package_name, None)
     if not package_info:
-        secho(f"Error: no such package '{package_name}'", fg="red")
+        cerror(f"No such package '{package_name}'")
         sys.exit(1)
 
-    secho(f"Uninstalling package '{package_name}'")
+    cout(f"Uninstalling package '{package_name}'")
 
     # -- Remove the folder with all its content!!
     dir_existed = _delete_package_dir(apio_ctx, package_name, verbose)
@@ -372,14 +364,14 @@ def uninstall_package(
     if dir_existed or installed_version:
 
         # -- Inform the user
-        secho(
-            f"Package '{package_name}' uninstalled successfully",
-            fg="green",
-            bold=True,
+        cout(
+            f"Package '{package_name}' uninstalled successfully", style="green"
         )
     else:
         # -- Package not installed. We treat it as a success.
-        secho(f"Package '{package_name}' was not installed", fg="green")
+        cout(
+            f"Package '{package_name}' was already uninstalled", style="green"
+        )
 
 
 def fix_packages(

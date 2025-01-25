@@ -10,8 +10,8 @@ import os
 import shutil
 import subprocess
 from pathlib import Path
-from click import secho
 from apio.utils import util
+from apio.utils.apio_console import cout, cerror
 from apio.apio_context import ApioContext
 from apio.managers import installer
 
@@ -154,7 +154,7 @@ class Drivers:
         if self.apio_ctx.is_windows():
             return self._ftdi_install_windows()
 
-        secho(f"Error: unknown platform type '{self.apio_ctx.platform_id}'.")
+        cerror(f"Unknown platform type '{self.apio_ctx.platform_id}'.")
         return 1
 
     def ftdi_uninstall(self) -> int:
@@ -170,7 +170,7 @@ class Drivers:
         if self.apio_ctx.is_windows():
             return self._ftdi_uninstall_windows()
 
-        secho(f"Error: unknown platform '{self.apio_ctx.platform_id}'.")
+        cerror(f"Unknown platform '{self.apio_ctx.platform_id}'.")
         return 1
 
     def serial_install(self) -> int:
@@ -187,7 +187,7 @@ class Drivers:
         if self.apio_ctx.is_windows():
             return self._serial_install_windows()
 
-        secho(f"Error: unknown platform '{self.apio_ctx.platform_id}'.")
+        cerror(f"Unknown platform '{self.apio_ctx.platform_id}'.")
         return 1
 
     def serial_uninstall(self) -> int:
@@ -203,7 +203,7 @@ class Drivers:
         if self.apio_ctx.is_windows():
             return self._serial_uninstall_windows()
 
-        secho(f"Error: unknown platform '{self.apio_ctx.platform_id}'.")
+        cerror(f"Unknown platform '{self.apio_ctx.platform_id}'.")
         return 1
 
     def pre_upload(self):
@@ -224,7 +224,7 @@ class Drivers:
         """Drivers install on Linux. It copies the .rules file into
         the corresponding folder. Return process exit code."""
 
-        secho("Configure FTDI drivers for FPGA")
+        cout("Configure FTDI drivers for FPGA")
 
         # -- Check if the target rules file already exists
         if not self.ftdi_rules_system_path.exists():
@@ -243,10 +243,10 @@ class Drivers:
             # -- Execute the commands for reloading the udev system
             self._reload_rules_linux()
 
-            secho("FTDI drivers installed", fg="green", bold=True)
-            secho("Unplug and reconnect your board", fg="yellow")
+            cout("FTDI drivers installed", style="green")
+            cout("Unplug and reconnect your board", style="yellow")
         else:
-            secho("Already installed", fg="yellow")
+            cout("Already installed", style="yellow")
 
         return 0
 
@@ -258,7 +258,7 @@ class Drivers:
 
         # -- Remove the .rules file, if it exists
         if self.ftdi_rules_system_path.exists():
-            secho("Revert FTDI drivers configuration")
+            cout("Revert FTDI drivers configuration")
 
             # -- Execute the sudo rm rules_file command
             subprocess.call(["sudo", "rm", str(self.ftdi_rules_system_path)])
@@ -266,17 +266,17 @@ class Drivers:
             # -- # -- Execute the commands for reloading the udev system
             self._reload_rules_linux()
 
-            secho("FTDI drivers uninstalled", fg="green", bold=True)
-            secho("Unplug and reconnect your board", fg="yellow")
+            cout("FTDI drivers uninstalled", style="green")
+            cout("Unplug and reconnect your board", style="yellow")
         else:
-            secho("Already uninstalled", fg="yellow")
+            cout("Already uninstalled", style="yellow")
 
         return 0
 
     def _serial_install_linux(self):
         """Serial drivers install on Linux. Returns process exit code."""
 
-        secho("Configure Serial drivers for FPGA")
+        cout("Configure Serial drivers for FPGA")
 
         # -- Check if the target rules file already exists
         if not self.serial_rules_system_path.exists():
@@ -298,15 +298,15 @@ class Drivers:
             # -- Execute the commands for reloading the udev system
             self._reload_rules_linux()
 
-            secho("Serial drivers installed", fg="green", bold=True)
-            secho("Unplug and reconnect your board", fg="yellow")
+            cout("Serial drivers installed", style="green")
+            cout("Unplug and reconnect your board", style="yellow")
             if group_added:
-                secho(
+                cout(
                     "Restart your machine to install the dialout group",
-                    fg="yellow",
+                    style="yellow",
                 )
         else:
-            secho("Already installed", fg="yellow")
+            cout("Already installed", style="yellow")
 
         return 0
 
@@ -316,17 +316,17 @@ class Drivers:
         # -- For disabling the serial driver the corresponding .rules file
         # -- should be removed, it it exists
         if self.serial_rules_system_path.exists():
-            secho("Revert Serial drivers configuration")
+            cout("Revert Serial drivers configuration")
 
             # -- Execute the sudo rm rule_file cmd
             subprocess.call(["sudo", "rm", str(self.serial_rules_system_path)])
 
             # -- Execute the commands for reloading the udev system
             self._reload_rules_linux()
-            secho("Serial drivers uninstalled", fg="green", bold=True)
-            secho("Unplug and reconnect your board", fg="yellow")
+            cout("Serial drivers uninstalled", style="green")
+            cout("Unplug and reconnect your board", style="yellow")
         else:
-            secho("Already uninstalled", fg="yellow")
+            cout("Already uninstalled", style="yellow")
 
         return 0
 
@@ -359,22 +359,22 @@ class Drivers:
         # Check homebrew
         brew = subprocess.call("which brew > /dev/null", shell=True)
         if brew != 0:
-            secho("Error: homebrew is required", fg="red")
+            cerror("Homebrew is required")
             return 1
 
-        secho("Install FTDI drivers for FPGA")
+        cout("Install FTDI drivers for FPGA")
         subprocess.call(["brew", "update"])
         self._brew_install_darwin("libffi")
         self._brew_install_darwin("libftdi")
         self.apio_ctx.profile.add_setting("macos_ftdi_drivers", True)
-        secho("FTDI drivers installed", fg="green", bold=True)
+        cout("FTDI drivers installed", style="green")
         return 0
 
     def _ftdi_uninstall_darwin(self):
         """Uninstalls FTDI driver on darwin. Returns process status code."""
-        secho("Uninstall FTDI drivers configuration")
+        cout("Uninstall FTDI drivers configuration")
         self.apio_ctx.profile.add_setting("macos_ftdi_drivers", False)
-        secho("FTDI drivers uninstalled", fg="green", bold=True)
+        cout("FTDI drivers uninstalled", style="green")
         return 0
 
     def _serial_install_darwin(self):
@@ -382,21 +382,21 @@ class Drivers:
         # Check homebrew
         brew = subprocess.call("which brew > /dev/null", shell=True)
         if brew != 0:
-            secho("Error: homebrew is required", fg="red")
+            cerror("Homebrew is required")
             return 1
 
-        secho("Install Serial drivers for FPGA")
+        cout("Install Serial drivers for FPGA")
         subprocess.call(["brew", "update"])
         self._brew_install_darwin("libffi")
         self._brew_install_darwin("libusb")
         # self._brew_install_serial_drivers_darwin()
-        secho("Serial drivers installed", fg="green", bold=True)
+        cout("Serial drivers installed", style="green")
         return 0
 
     def _serial_uninstall_darwin(self):
         """Uninstalls serial driver on darwin. Returns process status code."""
-        secho("Uninstall Serial drivers configuration")
-        secho("Serial drivers uninstalled", fg="green", bold=True)
+        cout("Uninstall Serial drivers configuration")
+        cout("Serial drivers uninstalled", style="green")
         return 0
 
     def _brew_install_darwin(self, brew_package):
@@ -460,19 +460,17 @@ class Drivers:
         zadig_exe = drivers_base_dir / "bin" / "zadig.exe"
 
         # -- Show messages for the user
-        secho(
-            "\nStarting the interactive config tool zadig.exe.",
-            fg="green",
-            bold=True,
+        cout(
+            "\nStarting the interactive config tool zadig.exe.", style="green"
         )
-        secho(FTDI_INSTALL_INSTRUCTIONS_WINDOWS, fg="yellow")
+        cout(FTDI_INSTALL_INSTRUCTIONS_WINDOWS, style="yellow")
 
         # -- Execute zadig!
         # -- We execute it using os.system() rather than by
         # -- util.exec_command() because zadig required permissions
         # -- elevation.
         exit_code = os.system(str(zadig_exe))
-        secho("FTDI drivers configuration finished", fg="green", bold=True)
+        cout("FTDI drivers configuration finished", style="green")
 
         # -- Remove zadig.ini from the current folder. It is no longer
         # -- needed
@@ -485,10 +483,8 @@ class Drivers:
         # -- Check that the required packages exist.
         installer.install_missing_packages_on_the_fly(self.apio_ctx)
 
-        secho(
-            "\nStarting the interactive Device Manager.", fg="green", bold=True
-        )
-        secho(FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS, fg="yellow")
+        cout("\nStarting the interactive Device Manager.", style="green")
+        cout(FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS, style="yellow")
 
         # -- We launch the device manager using os.system() rather than with
         # -- util.exec_command() because util.exec_command() does not support
@@ -505,12 +501,8 @@ class Drivers:
         drivers_base_dir = self.apio_ctx.get_package_dir("drivers")
         drivers_bin_dir = drivers_base_dir / "bin"
 
-        secho(
-            "\nStarting the interactive Serial Installer.",
-            fg="green",
-            bold=True,
-        )
-        secho(SERIAL_INSTALL_INSTRUCTIONS_WINDOWS, fg="yellow")
+        cout("\nStarting the interactive Serial Installer.", style="green")
+        cout(SERIAL_INSTALL_INSTRUCTIONS_WINDOWS, style="yellow")
 
         # -- We launch the device manager using os.system() rather than with
         # -- util.exec_command() because util.exec_command() does not support
@@ -525,10 +517,8 @@ class Drivers:
         # -- Check that the required packages exist.
         installer.install_missing_packages_on_the_fly(self.apio_ctx)
 
-        secho(
-            "\nStarting the interactive Device Manager.", fg="green", bold=True
-        )
-        secho(SERIAL_UNINSTALL_INSTRUCTIONS_WINDOWS, fg="yellow")
+        cout("\nStarting the interactive Device Manager.", style="green")
+        cout(SERIAL_UNINSTALL_INSTRUCTIONS_WINDOWS, style="yellow")
 
         # -- We launch the device manager using os.system() rather than with
         # -- util.exec_command() because util.exec_command() does not support

@@ -35,7 +35,7 @@ def configure(*, colors: bool = None, force_terminal: bool = None) -> None:
 
     # -- Update force terminal if specified.
     if force_terminal is not None:
-        _force_terminal = force_terminal
+        _force_terminal = True if force_terminal else None
 
     # -- Construct the new console.
     _console = Console(
@@ -53,18 +53,28 @@ def reset():
     configure(colors=True, force_terminal=False)
 
 
-def cout(*text_lines: str, style: Optional[str] = None) -> None:
+def cout(
+    *text_lines: str,
+    style: Optional[str] = None,
+    nl: bool = True,
+) -> None:
     """Prints lines of text to the console, using the optional style."""
 
     for text_line in text_lines:
+        # -- User is reponsible to conversion to strings.
+        assert isinstance(text_line, str)
+
         # -- If colors are off, strip potential coloring in the text.
         # -- This may be coloring that we recieved from the scons process.
         if not _console.color_system:
             text_objs: Text = _decoder.decode_line(text_line)
             text_line = text_objs.plain
 
+        # -- Determine end of line
+        end = "\n" if nl else ""
+
         # -- Write it out using the given style.
-        _console.out(text_line, style=style, highlight=False)
+        _console.out(text_line, style=style, highlight=False, end=end)
 
 
 def cerror(*text_lines: str) -> None:

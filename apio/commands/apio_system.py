@@ -8,7 +8,7 @@
 """Implementation of 'apio system' command"""
 
 import click
-from click import secho
+from apio.utils.apio_console import cout
 from apio.utils import util
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup
@@ -44,28 +44,28 @@ def _info_cli():
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Print apio version.
-    secho("Apio version:     ", nl=False)
-    secho(util.get_apio_version(), fg="cyan", bold=True)
+    cout("Apio version:     ", nl=False)
+    cout(util.get_apio_version(), style="cyan")
 
     # -- Print python version.
-    secho("Python version:   ", nl=False)
-    secho(util.get_python_version(), fg="cyan", bold=True)
+    cout("Python version:   ", nl=False)
+    cout(util.get_python_version(), style="cyan")
 
     # -- Print platform id.
-    secho("Platform id:      ", nl=False)
-    secho(apio_ctx.platform_id, fg="cyan", bold=True)
+    cout("Platform id:      ", nl=False)
+    cout(apio_ctx.platform_id, style="cyan")
 
     # -- Print apio package directory.
-    secho("Python package:   ", nl=False)
-    secho(util.get_path_in_apio_package(""), fg="cyan", bold=True)
+    cout("Python package:   ", nl=False)
+    cout(str(util.get_path_in_apio_package("")), style="cyan")
 
     # -- Print apio home directory.
-    secho("Apio home:        ", nl=False)
-    secho(apio_ctx.home_dir, fg="cyan", bold=True)
+    cout("Apio home:        ", nl=False)
+    cout(str(apio_ctx.home_dir), style="cyan")
 
     # -- Print apio home directory.
-    secho("Apio packages:    ", nl=False)
-    secho(apio_ctx.packages_dir, fg="cyan", bold=True)
+    cout("Apio packages:    ", nl=False)
+    cout(str(apio_ctx.packages_dir), style="cyan")
 
 
 # ------ apio system platforms
@@ -95,19 +95,16 @@ def _platforms_cli():
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Print title line
-    secho(
-        f"  {'[PLATFORM ID]':18} " f"{'[DESCRIPTION]'}",
-        fg="magenta",
-    )
+    cout(f"  {'[PLATFORM ID]':18} " f"{'[DESCRIPTION]'}", style="magenta")
 
     # -- Print a line for each platform id.
     for platform_id, platform_info in apio_ctx.platforms.items():
         # -- Get next platform's info.
         description = platform_info.get("description")
         # -- Determine if it's the current platform id.
-        fg = "green" if platform_id == apio_ctx.platform_id else None
+        style = "green" if platform_id == apio_ctx.platform_id else None
         # -- Print the line.
-        secho(f"  {platform_id:18} {description}", fg=fg)
+        cout(f"  {platform_id:18} {description}", style=style)
 
 
 # ------ apio system

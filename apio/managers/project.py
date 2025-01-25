@@ -16,7 +16,7 @@ from configparser import ConfigParser
 from pathlib import Path
 from typing import Dict, Optional, Union, Any, List
 from configobj import ConfigObj
-from click import secho
+from apio.utils.apio_console import cout, cerror
 
 # -- Apio projecto filename
 APIO_INI = "apio.ini"
@@ -168,16 +168,13 @@ class Project:
         # -- Check that all the required options are present.
         for option in REQUIRED_OPTIONS:
             if option not in self._options:
-                secho(
-                    f"Error: missing option '{option}' in {APIO_INI}.",
-                    fg="red",
-                )
+                cerror(f"Missing option '{option}' in {APIO_INI}.")
                 sys.exit(1)
 
         # -- Check that there are no unknown options.
         for option in self._options:
             if option not in OPTIONS:
-                secho(f"Error: unknown project option '{option}'", fg="red")
+                cerror(f"Unknown project option '{option}'")
                 sys.exit(1)
 
         # -- Force 'board' to have the canonical name of the board.
@@ -189,10 +186,10 @@ class Project:
         # -- If top-module was not specified, fill in the default value.
         if "top-module" not in self._options:
             self._options["top-module"] = DEFAULT_TOP_MODULE
-            secho(
+            cout(
                 "Project file has no 'top-module', "
                 f"assuming '{DEFAULT_TOP_MODULE}'.",
-                fg="yellow",
+                style="yellow",
             )
 
     def get(self, option: str, default: Any = None) -> Union[str, Any]:
@@ -246,7 +243,7 @@ def load_project_from_file(
 
     # -- Currently, apio.ini is still optional so we just warn.
     if not file_path.exists():
-        secho(f"Error: missing project file {APIO_INI}.", fg="red")
+        cerror(f"Missing project file {APIO_INI}.")
         sys.exit(1)
 
     # -- Read and parse the file.
@@ -255,15 +252,12 @@ def load_project_from_file(
 
     # -- Should contain an [env] section.
     if "env" not in parser.sections():
-        secho(f"Error: {APIO_INI} has no [env] section.", fg="red")
+        cerror(f"The file {APIO_INI} has no [env] section.")
         sys.exit(1)
 
     # -- Should not contain any other section.
     if len(parser.sections()) > 1:
-        secho(
-            f"Error: {APIO_INI} should contain only an [env] section.",
-            fg="red",
-        )
+        cerror(f"The file {APIO_INI} should contain only an [env] section.")
         sys.exit(1)
 
     # -- Collect the name/value pairs.
@@ -287,12 +281,11 @@ def create_project_file(
 
     # -- Error if apio.ini already exists.
     if ini_path.exists():
-
-        secho(f"Error: the file {APIO_INI} already exists.", fg="red")
+        cerror(f"The file {APIO_INI} already exists.")
         sys.exit(1)
 
     # -- Construct and write the apio.ini file..
-    secho(f"Creating {ini_path} file ...")
+    cout(f"Creating {ini_path} file ...")
 
     config = ConfigObj(str(ini_path))
     config.initial_comment = TOP_COMMENT.split("\n")
@@ -301,8 +294,4 @@ def create_project_file(
     config["env"]["top-module"] = top_module
 
     config.write()
-    secho(
-        f"The file '{ini_path}' was created successfully.",
-        fg="green",
-        bold=True,
-    )
+    cout(f"The file '{ini_path}' was created successfully.", style="green")

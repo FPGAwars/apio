@@ -12,7 +12,7 @@ import os
 from pathlib import Path, PosixPath
 from dataclasses import dataclass
 from typing import Optional, List, Dict
-from click import secho, style, echo
+from apio.utils.apio_console import cout, cstyle, cerror
 from apio.apio_context import ApioContext
 from apio.managers import installer
 
@@ -168,11 +168,11 @@ class Examples:
         example_info: ExampleInfo = self.lookup_example_info(example_name)
 
         if not example_info:
-            secho(f"Error: example '{example_name}' not found.", fg="red")
-            secho(
-                "Run 'apio example list' for the list of examples.\n"
+            cerror(f"Example '{example_name}' not found.")
+            cout(
+                "Run 'apio example list' for the list of examples.",
                 "Expecting an example name like alhambra-ii/ledon.",
-                fg="yellow",
+                style="yellow",
             )
             sys.exit(1)
 
@@ -183,29 +183,26 @@ class Examples:
         # -- we ignore hidden files and directory.
         if dst_dir_path.is_dir():
             if not self.is_dir_empty(dst_dir_path):
-                secho(
-                    f"Error: destination directory '{str(dst_dir_path)}' "
-                    "is not empty.",
-                    fg="red",
+                cerror(
+                    f"Destination directory '{str(dst_dir_path)}' "
+                    "is not empty."
                 )
                 sys.exit(1)
         else:
             dst_dir_path.mkdir(parents=True, exist_ok=False)
 
-        secho("Copying " + example_name + " example files.")
+        cout("Copying " + example_name + " example files.")
 
         # -- Go though all the files in the example folder.
         for file in src_example_path.iterdir():
             # -- Copy the file unless it's 'info' which we ignore.
             if file.name != "info":
                 shutil.copy(file, dst_dir_path)
-                styled_name = style(
-                    os.path.basename(file), fg="cyan", bold=True
-                )
-                echo(f"Fetched file {styled_name}")
+                styled_name = cstyle(os.path.basename(file), style="cyan")
+                cout(f"Fetched file {styled_name}")
 
         # -- Inform the user.
-        secho("Example fetched successfully.", fg="green", bold=True)
+        cout("Example fetched successfully.", style="green")
 
     def get_board_examples(self, board_name) -> List[ExampleInfo]:
         """Returns the list of examples with given board name."""
@@ -234,11 +231,11 @@ class Examples:
         # )
         board_exaamples = self.get_board_examples(board_name)
         if not board_exaamples:
-            secho(f"Error: no examples for board '{board_name}.", fg="red")
-            secho(
-                "Run 'apio examples list' for the list of examples.\n"
+            cerror(f"No examples for board '{board_name}.")
+            cout(
+                "Run 'apio examples list' for the list of examples.",
                 "Expecting a board name such as 'alhambra-ii.",
-                fg="yellow",
+                style="yellow",
             )
             sys.exit(1)
 
@@ -250,38 +247,32 @@ class Examples:
 
         # -- If the source example path is not a folder... it is an error
         if not src_board_dir.is_dir():
-            secho(
-                f"Error: examples for board [{board_name}] not found.",
-                fg="red",
-            )
-            secho(
+            cerror(f"Examples for board [{board_name}] not found.")
+            cout(
                 "Run 'apio examples list' for the list of available "
-                "examples.\n"
+                "examples.",
                 "Expecting a board name such as 'alhambra-ii'.",
-                fg="yellow",
+                style="yellow",
             )
             sys.exit(1)
 
         if dst_board_dir.is_dir():
             # -- To avoid confusion to the user, we ignore hidden files.
             if not self.is_dir_empty(dst_board_dir):
-                secho(
-                    f"Error: destination directory '{str(dst_board_dir)}' "
-                    "is not empty.",
-                    fg="red",
+                cerror(
+                    f"Destination directory '{str(dst_board_dir)}' "
+                    "is not empty."
                 )
                 sys.exit(1)
         else:
-            secho(f"Creating directory {dst_board_dir}.")
+            cout(f"Creating directory {dst_board_dir}.")
             dst_board_dir.mkdir(parents=True, exist_ok=False)
 
         # -- Copy the directory tree.
         shutil.copytree(src_board_dir, dst_board_dir, dirs_exist_ok=True)
 
         for example_name in os.listdir(dst_board_dir):
-            styled_name = style(
-                f"{board_name}/{example_name}", fg="cyan", bold=True
-            )
-            echo(f"Fetched example {styled_name}")
+            styled_name = cstyle(f"{board_name}/{example_name}", style="cyan")
+            cout(f"Fetched example {styled_name}")
 
-        secho("Board examples fetched successfully.", fg="green", bold=True)
+        cout("Board examples fetched successfully.", style="green")

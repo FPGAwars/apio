@@ -18,8 +18,8 @@ packages release repositorie.s
 from math import ceil
 import requests
 import click
-from click import secho
 from apio.utils import util
+from apio.utils.apio_console import cout
 
 # -- Timeout for geting a reponse from the server when downloading
 # -- a file (in seconds)
@@ -62,11 +62,11 @@ class FileDownloader:
 
         # -- Raise an exception in case of download error...
         if self._request.status_code != 200:
-            secho(
+            cout(
                 "Got an unexpected HTTP status code: "
-                f"{self._request.status_code}"
-                f"\nWhen downloading {url}",
-                fg="red",
+                f"{self._request.status_code}",
+                f"When downloading {url}",
+                style="red",
             )
             raise util.ApioException()
 

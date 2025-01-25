@@ -21,4 +21,4 @@ def test_upload_without_apio_ini(apio_runner: ApioRunner):
 
         # -- Check the result
         assert result.exit_code == 1, result.output
-        assert "Error: missing project file apio.ini" in result.output
+        assert "Error: Missing project file apio.ini" in result.output

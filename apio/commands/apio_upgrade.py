@@ -9,9 +9,9 @@
 
 import sys
 import click
-from click import secho
 from packaging import version
 from apio.utils import util
+from apio.utils.apio_console import cout
 
 
 # ---------------------------
@@ -48,31 +48,32 @@ def cli(_: click.Context):
         sys.exit(1)
 
     # -- Print information about apio.
-    print(f"Local Apio version: {current_version}")
-    print(f"Lastest Apio stable version (Pypi): {latest_version}")
+    cout(
+        f"Local Apio version: {current_version}",
+        f"Lastest Apio stable version (Pypi): {latest_version}",
+        style="cyan",
+    )
 
     # -- Case 1: Using an old version.
     if version.parse(current_version) < version.parse(latest_version):
-        secho(
+        cout(
             "You're not updated\nPlease execute "
             "`pip install -U apio` to upgrade.",
-            fg="yellow",
+            style="yellow",
         )
         return
 
     # -- Case 2: Using a dev version.
     if version.parse(current_version) > version.parse(latest_version):
-        secho(
-            "You are using a development version! (Not stable)\n"
-            "Use it at your own risk",
-            fg="yellow",
+        cout(
+            "You are using a development version. Use it at your own risk.",
+            style="magenta",
         )
         return
 
     # -- Case 3: Using the latest version.
-    secho(
+    cout(
         f"You're up-to-date!\nApio {latest_version} is currently the "
         "latest stable version available.",
-        fg="green",
-        bold=True,
+        style="green",
     )

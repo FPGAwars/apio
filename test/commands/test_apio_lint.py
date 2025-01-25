@@ -14,4 +14,4 @@ def test_lint_apio_init(apio_runner: ApioRunner):
         # -- Execute "apio lint"
         result = sb.invoke_apio_cmd(apio, ["lint"])
         assert result.exit_code == 1, result.output
-        assert "missing project file apio.ini" in result.output
+        assert "Error: Missing project file apio.ini" in result.output
