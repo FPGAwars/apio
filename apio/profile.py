@@ -10,12 +10,9 @@ import sys
 from typing import Union, Any, Dict
 from pathlib import Path
 import click
-from click import secho
 import requests
+from apio.utils.apio_console import cout, cerror, crender
 from apio.utils import util, apio_console
-
-# -- Template for remote config file url. The placeholder is for the
-# -- apio verison such as "0.9.6".
 
 
 class Profile:
@@ -219,8 +216,8 @@ class Profile:
 
         # -- Dump for debugging.
         if util.is_debug():
-            secho("Saved profile:", fg="magenta")
-            secho(json.dumps(data))
+            cout("Saved profile:", style="magenta")
+            crender(json.dumps(data, indent=2))
 
     def _get_remote_config(
         self, *, cached_config_ok: bool, verbose: bool
@@ -241,10 +238,7 @@ class Profile:
         # apio_version = util.get_apio_version()
         # config_url = APIO_REMOTE_CONFIG_URL_TEMPLATE.format(apio_version)
         if verbose or util.is_debug():
-            secho(
-                f"Fetching remote config from '{self.remote_config_url}'",
-                fg="magenta",
-            )
+            cout(f"Fetching remote config from '{self.remote_config_url}'")
 
         # -- Fetch the version info.
         resp: requests.Response = requests.get(
@@ -253,18 +247,20 @@ class Profile:
 
         # -- Exit if http error.
         if resp.status_code != 200:
-            secho("Error downloading the remote config file", fg="red")
-            secho(f"URL {self.remote_config_url}", fg="red")
-            secho(f"Error code {resp.status_code}", fg="red")
+            cerror(
+                "Downloading apio remote config file failed, "
+                f"error code {resp.status_code}",
+            )
+            cout(f"URL {self.remote_config_url}", style="yellow")
             sys.exit(1)
 
         # -- Here when download was ok.
         if verbose or util.is_debug():
-            secho("Remote config file downloaded ok:\n")
+            cout("Remote config file downloaded ok.")
 
+        # -- Print the file's content.
         if util.is_debug():
-            secho(resp.text, fg="cyan", bold=True)
-            secho("\n")
+            cout(resp.text)
 
         # -- Parse the remote JSON config file into adict.
         try:
@@ -274,8 +270,7 @@ class Profile:
         except json.decoder.JSONDecodeError as exc:
 
             # -- Show the error and abort.
-            secho("Apio System Error! Invalid remote cofing file", fg="red")
-            secho(f"{exc}\n", fg="red")
+            cerror("Invalid remote cofing file", f"{exc}")
             sys.exit(1)
 
         # -- Update the profile and save
