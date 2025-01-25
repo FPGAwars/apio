@@ -9,10 +9,14 @@
 # ---- Licence Apache v2
 """A class that manages the console output of the apio process."""
 
+from io import StringIO
 from typing import Optional
 from rich.console import Console
 from rich.ansi import AnsiDecoder
 from rich.text import Text
+
+# Suppress earning about access to the global variables.
+# pylint: disable=global-statement
 
 
 _console: Console = None
@@ -28,7 +32,6 @@ def _make_console(colors: bool = True) -> Console:
 
 def apply_color_preference(colors: bool) -> None:
     """Turn the color support on or off."""
-    # pylint: disable=global-statement
     global _console
     # pylint: enable=global-statement
 
@@ -84,6 +87,22 @@ def crender(
         highlight=highlight,
         style=style,
     )
+
+
+def cstyle(text: str, style: Optional[str] = None) -> str:
+    """Render the text to a string using an optional style."""
+    # -- Save the old output.
+    file_save = _console.file
+    # -- Set output to a buffer.
+    _console.file = StringIO()
+    # -- Output to buffer.
+    _console.out(text, style=style, highlight=False, end="")
+    # -- Get captured string.
+    result = _console.file.getvalue()
+    # -- Restore old output.
+    _console.file = file_save
+    # -- Return the capture value.
+    return result
 
 
 # -- Init

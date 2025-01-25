@@ -12,7 +12,7 @@ from pathlib import Path
 from dataclasses import dataclass
 from typing import List, Dict
 import click
-from click import secho, style, echo
+from apio.utils.apio_console import cout, cstyle
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import util
 from apio.commands import options
@@ -126,20 +126,20 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
     parts.append(f"{'PROGRAMMER':<{programmer_len}}")
 
     # -- Print the title line.
-    secho("".join(parts), fg="cyan", bold=True)
+    cout("".join(parts), style="cyan bold")
 
     # -- Print all the boards.
     last_arch = None
     for entry in entries:
         # -- If not piping, add architecture groups seperations.
         if last_arch != entry.fpga_arch and output_config.terminal_mode:
-            echo("")
-            secho(f"{entry.fpga_arch.upper()}", fg="magenta", bold=True)
+            cout("")
+            cout(f"{entry.fpga_arch.upper()}", style="magenta bold")
         last_arch = entry.fpga_arch
 
         # -- Construct the line fields.
         parts = []
-        parts.append(style(f"{entry.board:<{board_len}}", fg="cyan"))
+        parts.append(cstyle(f"{entry.board:<{board_len}}", style="cyan"))
         parts.append(f"{entry.examples_count:<{examples_count_len}}")
         if verbose:
             parts.append(f"{entry.board_description:<{board_description_len}}")
@@ -155,14 +155,16 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
         parts.append(f"{entry.programmer:<{programmer_len}}")
 
         # -- Print the line
-        secho("".join(parts))
+        cout("".join(parts))
 
     # -- Show the summary.
 
     if output_config.terminal_mode:
-        secho(f"Total of {util.plurality(entries, 'board')}")
+        cout(f"Total of {util.plurality(entries, 'board')}")
         if not verbose:
-            secho("Run 'apio boards -v' for additional columns.", fg="yellow")
+            cout(
+                "Run 'apio boards -v' for additional columns.", style="yellow"
+            )
 
 
 # ---------------------------

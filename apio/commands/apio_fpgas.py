@@ -12,7 +12,7 @@ from pathlib import Path
 from dataclasses import dataclass
 from typing import List, Dict
 import click
-from click import secho, style, echo
+from apio.utils.apio_console import cout, cstyle
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import util
 from apio.commands import options
@@ -107,20 +107,20 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
         parts.append(f"{'SPEED':<{fpga_speed_len}}")
 
     # -- Print the title
-    secho("".join(parts), fg="cyan", bold="True")
+    cout("".join(parts), style="cyan bold")
 
     # -- Iterate and print the fpga entries in the list.
     last_arch = None
     for entry in entries:
         # -- Seperation before each archictecture group, unless piped out.
         if last_arch != entry.fpga_arch and output_config.terminal_mode:
-            echo("")
-            secho(f"{entry.fpga_arch.upper()}", fg="magenta", bold=True)
+            cout("")
+            cout(f"{entry.fpga_arch.upper()}", style="magenta bold")
         last_arch = entry.fpga_arch
 
         # -- Construct the fpga fields.
         parts = []
-        parts.append(style(f"{entry.fpga:<{fpga_len}}", fg="cyan"))
+        parts.append(cstyle(f"{entry.fpga:<{fpga_len}}", style="cyan"))
         board_count = f"{entry.board_count:>3}" if entry.board_count else ""
         parts.append(f"{board_count:<{board_count_len}}")
         parts.append(f"{entry.fpga_arch:<{fpga_arch_len}}")
@@ -132,13 +132,13 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
             parts.append(f"{entry.fpga_speed:<{fpga_speed_len}}")
 
         # -- Print the fpga line.
-        echo("".join(parts))
+        cout("".join(parts))
 
     # -- Show summary.
     if output_config.terminal_mode:
-        secho(f"Total of {util.plurality(entries, 'fpga')}")
+        cout(f"Total of {util.plurality(entries, 'fpga')}")
         if not verbose:
-            secho("Run 'apio fpgas -v' for additional columns.", fg="yellow")
+            cout("Run 'apio fpgas -v' for additional columns.", style="yellow")
 
 
 # ---------------------------

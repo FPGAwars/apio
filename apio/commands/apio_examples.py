@@ -10,7 +10,7 @@
 from pathlib import Path
 from typing import List, Any
 import click
-from click import secho, style, echo
+from apio.utils.apio_console import cout, cstyle
 from apio.managers import installer
 from apio.managers.examples import Examples, ExampleInfo
 from apio.commands import options
@@ -73,20 +73,20 @@ def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
     parts.append("DESCRIPTION")
 
     # -- Print the title
-    secho("".join(parts), fg="cyan", bold="True")
+    cout("".join(parts), style="cyan bold")
 
     # -- Emit the examples
     last_arch = None
     for entry in entries:
         # -- Seperation before each archictecture group, unless piped out.
         if last_arch != entry.fpga_arch and output_config.terminal_mode:
-            echo("")
-            secho(f"{entry.fpga_arch.upper()}", fg="magenta", bold=True)
+            cout("")
+            cout(f"{entry.fpga_arch.upper()}", style="magenta bold")
         last_arch = entry.fpga_arch
 
         # -- Construct the fpga fields.
         parts = []
-        parts.append(style(f"{entry.name:<{name_len}}", fg="cyan"))
+        parts.append(cstyle(f"{entry.name:<{name_len}}", style="cyan"))
         if verbose:
             parts.append(f"{entry.fpga_arch:<{fpga_arch_len}}")
             parts.append(f"{entry.fpga_part_num:<{fpga_part_num_len}}")
@@ -94,14 +94,15 @@ def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
         parts.append(f"{entry.description}")
 
         # -- Print the fpga line.
-        echo("".join(parts))
+        cout("".join(parts))
 
     # -- Show summary.
     if output_config.terminal_mode:
-        secho(f"Total of {util.plurality(entries, 'example')}")
+        cout(f"Total of {util.plurality(entries, 'example')}")
         if not verbose:
-            secho(
-                "Run 'apio examples -v' for additional columns.", fg="yellow"
+            cout(
+                "Run 'apio examples -v' for additional columns.",
+                style="yellow",
             )
 
 
