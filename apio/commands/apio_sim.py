@@ -10,7 +10,7 @@
 import sys
 from pathlib import Path
 import click
-from click import secho
+from apio.utils.apio_console import cout
 from apio.managers.scons import SCons
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
@@ -88,9 +88,7 @@ def cli(
         # -- we issue an error message in the scons process.
         testbench = apio_ctx.project.get("default-testbench", None)
         if testbench:
-            secho(
-                f"Using default testbench: {testbench}", fg="cyan", bold=True
-            )
+            cout(f"Using default testbench: {testbench}", style="cyan")
 
     # -- Construct the scons sim params.
     sim_params = SimParams(testbench=testbench, force_sim=force)

@@ -10,16 +10,10 @@ from pathlib import Path
 from typing import List, Union, cast, Optional
 from typing import Dict
 import os
-
 import pytest
+from click.testing import CliRunner, Result
+from apio.utils import apio_console
 
-# -- Class for executing click commands
-# https://click.palletsprojects.com/en/8.1.x/api/#click.testing.CliRunner
-from click.testing import CliRunner
-
-# -- Class for storing the results of executing a click command
-# https://click.palletsprojects.com/en/8.1.x/api/#click.testing.Result
-from click.testing import Result
 
 # -- Debug mode on/off
 DEBUG = True
@@ -124,6 +118,10 @@ class ApioSandbox:
         # -- These two env vars are set when creating the context. Let's
         # -- check that the test didn't corrupt them.
         assert os.environ["APIO_HOME_DIR"] == str(self.home_dir)
+
+        # -- If requested, force terminal mode such that the apio code
+        # -- genertes color information even though pytest pipes it.
+        apio_console.configure(force_terminal=color)
 
         # -- Invoke the command. Get back the collected results.
         result = self._click_runner.invoke(
@@ -363,6 +361,10 @@ class ApioRunner:
         # -- Set the system env vars to inform ApioContext what are the
         # -- home and packages dirs.
         os.environ["APIO_HOME_DIR"] = str(home_dir)
+
+        # -- Reset the apio console, since we run multiple sandboxes in the
+        # -- same process.
+        apio_console.reset()
 
         try:
             # -- This is the end of the context manager _entry part. The

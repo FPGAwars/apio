@@ -104,7 +104,7 @@ class Profile:
             click_context.color = None if colors else False
 
         # -- Apply to the Rich library
-        apio_console.apply_color_preference(colors)
+        apio_console.configure(colors=colors)
 
     @staticmethod
     def read_color_prefernces(*, default=True) -> Union[bool, Any]:

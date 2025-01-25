@@ -8,7 +8,7 @@
 """Implementation of 'apio preferences' command"""
 
 import click
-from click import secho, echo, style
+from apio.utils.apio_console import cout, cstyle
 from apio.utils import cmd_util
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup
@@ -38,12 +38,12 @@ def _list_cli():
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Print title.
-    secho("Apio user preferences:", fg="magenta")
+    cout("Apio user preferences", style="magenta")
 
     # -- Show colors preference.
     value = apio_ctx.profile.preferences.get("colors", "on")
-    styled_value = style(value, fg="cyan", bold=True)
-    echo(f"Colors:   {styled_value}")
+    styled_value = cstyle(value, style="cyan")
+    cout(f"Colors:   {styled_value}")
 
 
 # ---- apio preferences set
@@ -89,7 +89,7 @@ def _set_cli(colors: str):
 
     # -- Show the result. The new colors preference is already in effect.
     color = apio_ctx.profile.preferences["colors"]
-    secho(f"Colors set to [{color}]", fg="green", bold=True)
+    cout(f"Colors set to [{color}]", style="green")
 
 
 # --- apio preferences

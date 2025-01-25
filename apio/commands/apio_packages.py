@@ -9,7 +9,7 @@
 
 from typing import Tuple
 import click
-from click import secho
+from apio.utils.apio_console import cout
 from apio.managers import installer
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import pkg_util
@@ -55,7 +55,7 @@ def _install_cli(
 
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
-    secho(f"Platform id '{apio_ctx.platform_id}'")
+    cout(f"Platform id '{apio_ctx.platform_id}'")
 
     # -- If packages where specified, install all packages that are valid
     # -- for this platform.
@@ -149,15 +149,17 @@ def _list_cli():
 
     # -- Print an hint or summary based on the findings.
     if scan.num_errors_to_fix():
-        secho("[Hint] run 'apio packages fix' to fix the errors.", fg="yellow")
+        cout(
+            "[Hint] run 'apio packages fix' to fix the errors.", style="yellow"
+        )
     elif scan.uninstalled_package_names:
-        secho(
+        cout(
             "[Hint] run 'apio packages install' to install all "
             "available packages.",
-            fg="yellow",
+            style="yellow",
         )
     else:
-        secho("All packages are installed.", fg="green", bold=True)
+        cout("All packages are installed.", style="green")
 
 
 # ------ apio packages fix
@@ -192,7 +194,7 @@ def _fix_cli():
     if scan.num_errors_to_fix():
         installer.fix_packages(apio_ctx, scan)
     else:
-        secho("No errors to fix")
+        cout("No errors to fix")
 
     # -- Show the new state
     new_scan = pkg_util.scan_packages(

@@ -19,28 +19,38 @@ from rich.text import Text
 # pylint: disable=global-statement
 
 
+# This console state is initialized at the end of this file.
+_color_system: Optional[str] = None
+_force_terminal: bool = None
 _console: Console = None
 _decoder: AnsiDecoder = None
 
 
-def _make_console(colors: bool = True) -> Console:
-    """Create a fresh Console object."""
-    color_system = "auto" if colors else None
-    console = Console(width=100, color_system=color_system)
-    return console
-
-
-def apply_color_preference(colors: bool) -> None:
+def configure(*, colors: bool = None, force_terminal: bool = None) -> None:
     """Turn the color support on or off."""
-    global _console
-    # pylint: enable=global-statement
+    global _console, _decoder, _color_system, _force_terminal
+    # -- Update color system if specified.
+    if colors is not None:
+        _color_system = "auto" if colors else None
 
-    # -- Get current color setting.
-    has_colors = bool(_console.color_system)
+    # -- Update force terminal if specified.
+    if force_terminal is not None:
+        _force_terminal = force_terminal
 
-    # -- If the new value is different, create a new console.
-    if colors != has_colors:
-        _console = _make_console(colors=colors)
+    # -- Construct the new console.
+    _console = Console(
+        width=100,
+        color_system=_color_system,
+        force_terminal=_force_terminal,
+    )
+
+    # -- Construct the helper decoder.
+    _decoder = AnsiDecoder()
+
+
+def reset():
+    """Reset to initial configuration."""
+    configure(colors=True, force_terminal=False)
 
 
 def cout(*text_lines: str, style: Optional[str] = None) -> None:
@@ -105,6 +115,5 @@ def cstyle(text: str, style: Optional[str] = None) -> str:
     return result
 
 
-# -- Init
-_console = _make_console()
-_decoder = AnsiDecoder()
+# -- Initialize the module.
+reset()

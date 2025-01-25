@@ -13,7 +13,7 @@ from pathlib import Path
 from glob import glob
 from typing import Tuple, List
 import click
-from click import secho
+from apio.utils.apio_console import cout, cerror
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import options
 from apio.managers import installer
@@ -105,7 +105,7 @@ def cli(
 
     # -- Error if no file to format.
     if not files:
-        secho("Error: No '.v' or '.sv' files to format", fg="red")
+        cerror("No '.v' or '.sv' files to format")
         sys.exit(1)
 
     # -- Sort files, case insensitive.
@@ -121,21 +121,19 @@ def cli(
         # -- Check the file extension.
         _, ext = os.path.splitext(path)
         if ext not in [".v", ".sv"]:
-            secho(
-                f"Error: '{f}' has an invalid extension, "
-                "should be '.v' or '.sv'",
-                fg="red",
+            cerror(
+                f"'{f}' has an invalid extension, " "should be '.v' or '.sv'"
             )
             sys.exit(1)
 
         # -- Check that the file exists and is a file.
         if not path.is_file():
-            secho(f"Error: '{f}' is not a file.", fg="red")
+            cerror(f"'{f}' is not a file.")
             sys.exit(1)
 
         # -- Print file name.
         styled_f = click.style(f, fg="magenta")
-        secho(f"Formatting {styled_f}")
+        cout(f"Formatting {styled_f}")
 
         # -- Construct the formatter command line.
         command = (
@@ -143,14 +141,14 @@ def cli(
             f' {" ".join(cmd_options)} "{f}"'
         )
         if verbose:
-            secho(command)
+            cout(command)
 
         # -- Execute the formatter command line.
         exit_code = os.system(command)
         if exit_code != 0:
-            secho(f"Error: formatting of '{f}' failed", fg="red")
+            cerror(f"Formatting of '{f}' failed")
             return exit_code
 
     # -- All done ok.
-    secho(f"Formatted {util.plurality(files, 'file')}.", fg="green", bold=True)
+    cout(f"Formatted {util.plurality(files, 'file')}.", style="green")
     sys.exit(0)
