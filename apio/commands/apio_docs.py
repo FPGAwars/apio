@@ -8,10 +8,11 @@
 """Implementation of 'apio docs' command group."""
 
 import click
+from rich.table import Table
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import apio_docs_apio_ini
-from apio.common.apio_console import cout
+from apio.common.apio_console import cprint, docs_text, cout
 
 
 # -- apio docs resources
@@ -23,6 +24,14 @@ related online resources.
 \b
 Examples:
   apio docs resources     # Provides resources information
+"""
+
+APIO_DOCS_RESOURCES_SUMMARY = """
+The following table provide a few Apio and FPGA design related resources. \
+For additional information about specific FPGA boards, consult their \
+respective online documentations and forums. For additional information \
+about specific tools such as 'yosys' or 'verible', consult their respective \
+documentations.
 """
 
 
@@ -38,7 +47,30 @@ def _resources_cli():
     # -- reads the user preferences and configure the console's colors.
     ApioContext(scope=ApioContextScope.NO_PROJECT)
 
-    cout("TBD", style="cyan")
+    docs_text(APIO_DOCS_RESOURCES_SUMMARY, width=73)
+
+    # -- Define the table.
+    table = Table(show_header=False, show_lines=True)
+    table.add_column(no_wrap=True)
+    table.add_column(no_wrap=True, style="cyan")
+
+    # -- Add rows
+    table.add_row(
+        "Apio documentation", "https://github.com/FPGAwars/apio/wiki"
+    )
+    table.add_row("Apio repository", "https://github.com/FPGAwars/apio")
+    table.add_row(
+        "Apio requests and bugs", "https://github.com/FPGAwars/apio/issues"
+    )
+    table.add_row("Apio Pypi package", "https://pypi.org/project/apio")
+    table.add_row("IceStudio (Apio with GUI)", "https://icestudio.io")
+    table.add_row("FPGAwars (FPGA resources)", "https://fpgawars.github.io")
+    table.add_row(
+        "Alhambra-ii FPGA board.", "https://alhambrabits.com/alhambra"
+    )
+
+    # -- Render the table.
+    cprint(table)
 
 
 # --- apio docs

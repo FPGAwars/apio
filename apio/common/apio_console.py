@@ -146,15 +146,15 @@ def cstyle(text: str, style: Optional[str] = None) -> str:
     return result
 
 
-def docs_text(markdown_text: str) -> None:
+def docs_text(markdown_text: str, width: int = DOCS_WIDTH) -> None:
     """A wrapper around Console.print that is specialized for redenring
     help and docs."""
-    _console.print(markdown_text, highlight=True, width=DOCS_WIDTH)
+    _console.print(markdown_text, highlight=True, width=width)
 
 
-def docs_rule():
+def docs_rule(width: int = DOCS_WIDTH):
     """Print a docs horizontal seperator."""
-    cout("─" * DOCS_WIDTH, style="dim")
+    cout("─" * width, style="dim")
 
 
 def is_terminal():
@@ -162,7 +162,7 @@ def is_terminal():
     return _console.is_terminal
 
 
-def width():
+def cwidth():
     """Return the console width."""
     return _console.width
 

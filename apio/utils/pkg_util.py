@@ -296,7 +296,7 @@ def scan_packages(
 def _list_section(title: str, items: List[List[str]], style: str) -> None:
     """A helper function for printing one serction of list_packages()."""
     # -- Construct horizontal lines at terminal width.
-    line_width = apio_console.width() if apio_console.is_terminal() else 80
+    line_width = apio_console.cwidth() if apio_console.is_terminal() else 80
     line = "─" * line_width
     dline = "═" * line_width
 

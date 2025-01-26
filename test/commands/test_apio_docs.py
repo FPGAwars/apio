@@ -34,4 +34,6 @@ def test_apio_docs(apio_runner: ApioRunner):
 
         # # -- Execute "apio docs resources"
         result = sb.invoke_apio_cmd(apio, ["docs", "resources"])
-        sb.assert_ok(result)
+        assert result.exit_code == 0
+        assert "Apio documentation" in result.output
+        assert result.output != cunstyle(result.output)  # Colored.
