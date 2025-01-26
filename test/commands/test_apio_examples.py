@@ -3,7 +3,7 @@
 """
 
 from test.conftest import ApioRunner
-from click.termui import unstyle
+from apio.common.apio_console import cunstyle
 from apio.commands.apio import cli as apio
 
 
@@ -15,5 +15,5 @@ def test_examples(apio_runner: ApioRunner):
         # -- Execute "apio examples"
         result = sb.invoke_apio_cmd(apio, ["examples"])
         sb.assert_ok(result)
-        assert "Subcommands:" in unstyle(result.output)
-        assert "examples list" in unstyle(result.output)
+        assert "Subcommands:" in cunstyle(result.output)
+        assert "examples list" in cunstyle(result.output)

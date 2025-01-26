@@ -3,7 +3,7 @@
 """
 
 from test.conftest import ApioRunner
-from click import unstyle
+from apio.common.apio_console import cunstyle
 from apio.commands.apio import cli as apio
 
 
@@ -14,14 +14,14 @@ def test_apio_docs(apio_runner: ApioRunner):
         # -- Execute "apio docs"
         result = sb.invoke_apio_cmd(apio, ["docs"])
         sb.assert_ok(result)
-        assert "apio docs apio.ini" in unstyle(result.output)
-        assert result.output != unstyle(result.output)  # Colored.
+        assert "apio docs apio.ini" in cunstyle(result.output)
+        assert result.output != cunstyle(result.output)  # Colored.
 
         # -- Execute "apio docs"  (pipe mode)
         result = sb.invoke_apio_cmd(apio, ["docs"], terminal_mode=False)
         sb.assert_ok(result)
-        assert "apio docs apio.ini" in unstyle(result.output)
-        assert result.output == unstyle(result.output)  # Colored.
+        assert "apio docs apio.ini" in cunstyle(result.output)
+        assert result.output == cunstyle(result.output)  # Colored.
 
         # -- Execute "apio docs apio.ini"
         result = sb.invoke_apio_cmd(apio, ["docs", "apio.ini"])

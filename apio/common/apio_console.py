@@ -52,6 +52,13 @@ def reset():
     configure(colors=True, force_terminal=False)
 
 
+def cunstyle(text: str) -> str:
+    """A replacement for click unstype(). This function removes ansi colors
+    from a string."""
+    text_obj: Text = _decoder.decode_line(text)
+    return text_obj.plain
+
+
 def cout(
     *text_lines: str,
     style: Optional[str] = None,
@@ -66,8 +73,7 @@ def cout(
         # -- If colors are off, strip potential coloring in the text.
         # -- This may be coloring that we recieved from the scons process.
         if not _console.color_system:
-            text_objs: Text = _decoder.decode_line(text_line)
-            text_line = text_objs.plain
+            text_line = cunstyle(text_line)
 
         # -- Determine end of line
         end = "\n" if nl else ""
