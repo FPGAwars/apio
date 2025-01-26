@@ -269,6 +269,8 @@ def _test_project(
         assert "SUCCESS" in result.output
         assert getsize(sb.proj_dir / f"_build/{testbench}.out")
         assert getsize(sb.proj_dir / f"_build/{testbench}.vcd")
+        # -- For issue https://github.com/FPGAwars/apio/issues/557
+        assert "warning: Timing checks are not supported" not in result.output
 
         # -- 'apio report'
         result = sb.invoke_apio_cmd(apio, ["report"] + proj_arg)

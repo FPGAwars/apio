@@ -24,6 +24,13 @@ from apio.common.apio_console import cout
 CURSOR_UP = "\033[F"
 ERASE_LINE = "\033[K"
 
+# -- A regex to detect iverilog warnings we want to filter out, per
+# -- https://github.com/FPGAwars/apio/issues/557
+IVERILOG_TIMING_WARNING_REGEX = re.compile(
+    r"oss-cad-suite/share/yosys.*warning.*Timing checks are not supported",
+    re.IGNORECASE,
+)
+
 
 class PipeId(Enum):
     """Represent the two output streams from the scons subprocess."""
@@ -328,9 +335,15 @@ class SconsFilter:
                 cout(line)
                 return
 
-        # Handling the rest of the stdout lines.
+        # -- Special filter for https://github.com/FPGAwars/apio/issues/557
+        if IVERILOG_TIMING_WARNING_REGEX.search(line):
+            # -- Ignore this line.
+            # cout(line, style="magenta")
+            return
+
+        # -- Handling the rest of the stdout lines.
         if pipe_id == PipeId.STDOUT:
-            # Default stdout line coloring.
+            # -- Default stdout line coloring.
             line_color = self._assign_line_color(
                 line.lower(),
                 [
