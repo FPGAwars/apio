@@ -27,11 +27,14 @@ Examples:
 """
 
 APIO_DOCS_RESOURCES_SUMMARY = """
-The following table provide a few Apio and FPGA design related resources. \
-For additional information about specific FPGA boards, consult their \
-respective online documentations and forums. For additional information \
-about specific tools such as 'yosys' or 'verible', consult their respective \
-documentations.
+The table below provide a few Apio and FPGA design related resources.
+
+For additional information about specific boards, FPGAs, or tools such as \
+[b]yosys[/] and [b]verible[/], consult their respective documentation.
+
+[b]Shawn Hymel's[/] excellent video series on youtube is based on an older \
+version of Apio with slightly different commands set that achieve the \
+same functionality.
 """
 
 
@@ -57,6 +60,10 @@ def _resources_cli():
     # -- Add rows
     table.add_row(
         "Apio documentation", "https://github.com/FPGAwars/apio/wiki"
+    )
+
+    table.add_row(
+        "Shwan Hymel series", "https://www.youtube.com/watch?v=lLg1AgA2Xoo"
     )
     table.add_row("Apio repository", "https://github.com/FPGAwars/apio")
     table.add_row(
