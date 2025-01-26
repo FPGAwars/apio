@@ -12,7 +12,7 @@ from pathlib import Path
 import click
 import requests
 from apio.common import apio_console
-from apio.common.apio_console import cout, cerror, crender
+from apio.common.apio_console import cout, cerror, cprint
 from apio.utils import util
 
 
@@ -218,7 +218,7 @@ class Profile:
         # -- Dump for debugging.
         if util.is_debug():
             cout("Saved profile:", style="magenta")
-            crender(json.dumps(data, indent=2))
+            cprint(json.dumps(data, indent=2))
 
     def _get_remote_config(
         self, *, cached_config_ok: bool, verbose: bool

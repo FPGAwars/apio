@@ -8,7 +8,8 @@
 """Implementation of 'apio system' command"""
 
 import click
-from apio.common.apio_console import cout
+from rich.table import Table
+from apio.common.apio_console import cprint
 from apio.utils import util
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup
@@ -43,29 +44,23 @@ def _info_cli():
     # Create the apio context.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
-    # -- Print apio version.
-    cout("Apio version:     ", nl=False)
-    cout(util.get_apio_version(), style="cyan")
+    # -- Define the table.
+    table = Table(show_header=False, show_lines=True)
+    table.add_column(no_wrap=True)
+    table.add_column(no_wrap=True, style="cyan")
 
-    # -- Print python version.
-    cout("Python version:   ", nl=False)
-    cout(util.get_python_version(), style="cyan")
+    # -- Add rows
+    table.add_row("Apio version", util.get_apio_version() + "  ")
+    table.add_row("Python version ", util.get_python_version() + "  ")
+    table.add_row("Platform id ", apio_ctx.platform_id + "  ")
+    table.add_row(
+        "Python package ", str(util.get_path_in_apio_package("")) + "  "
+    )
+    table.add_row("Apio home ", str(apio_ctx.home_dir) + "  ")
+    table.add_row("Apio packages ", str(apio_ctx.packages_dir) + "  ")
 
-    # -- Print platform id.
-    cout("Platform id:      ", nl=False)
-    cout(apio_ctx.platform_id, style="cyan")
-
-    # -- Print apio package directory.
-    cout("Python package:   ", nl=False)
-    cout(str(util.get_path_in_apio_package("")), style="cyan")
-
-    # -- Print apio home directory.
-    cout("Apio home:        ", nl=False)
-    cout(str(apio_ctx.home_dir), style="cyan")
-
-    # -- Print apio home directory.
-    cout("Apio packages:    ", nl=False)
-    cout(str(apio_ctx.packages_dir), style="cyan")
+    # -- Render the table.
+    cprint(table)
 
 
 # ------ apio system platforms
@@ -94,17 +89,29 @@ def _platforms_cli():
     # Create the apio context.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
-    # -- Print title line
-    cout(f"  {'[PLATFORM ID]':18} " f"{'[DESCRIPTION]'}", style="magenta")
+    # -- Define the table.
+    table = Table(show_header=False, show_lines=True)
+    table.add_column(no_wrap=True)
+    table.add_column(no_wrap=True)
 
-    # -- Print a line for each platform id.
+    # -- Add rows.
     for platform_id, platform_info in apio_ctx.platforms.items():
-        # -- Get next platform's info.
         description = platform_info.get("description")
-        # -- Determine if it's the current platform id.
-        style = "green" if platform_id == apio_ctx.platform_id else None
-        # -- Print the line.
-        cout(f"  {platform_id:18} {description}", style=style)
+
+        # -- Mark the current platform.
+        if platform_id == apio_ctx.platform_id:
+            style = "green bold"
+            marker = "* "
+        else:
+            style = None
+            marker = "  "
+
+        table.add_row(
+            f"{marker}{platform_id} ", f" {description} ", style=style
+        )
+
+    # -- Render the table.
+    cprint(table)
 
 
 # ------ apio system

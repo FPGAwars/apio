@@ -96,7 +96,7 @@ def cwarning(*text_lines: str) -> None:
         _console.out(text_line, highlight=False, style="yellow")
 
 
-def crender(
+def cprint(
     markdown_text: str, *, style: Optional[str] = None, highlight: bool = False
 ) -> None:
     """Render the given markdown text. Applying optional style and if enabled,
