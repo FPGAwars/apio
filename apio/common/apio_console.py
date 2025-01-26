@@ -13,13 +13,17 @@ from io import StringIO
 from typing import Optional
 from rich.console import Console
 from rich.ansi import AnsiDecoder
+from rich.theme import Theme
 from rich.text import Text
 
 # Suppress earning about access to the global variables.
 # pylint: disable=global-statement
 
+# -- Line width when rendering help and docs.
+DOCS_WIDTH = 70
 
-# This console state is initialized at the end of this file.
+
+# -- This console state is initialized at the end of this file.
 _color_system: Optional[str] = None
 _force_terminal: bool = None
 _console: Console = None
@@ -37,10 +41,18 @@ def configure(*, colors: bool = None, force_terminal: bool = None) -> None:
     if force_terminal is not None:
         _force_terminal = True if force_terminal else None
 
-    # -- Construct the new console.
+    # -- Construct the new console. The highlighting colors are optimized
+    # -- for 'apio docs'.
     _console = Console(
         color_system=_color_system,
         force_terminal=_force_terminal,
+        theme=Theme(
+            {
+                "repr.str": "cyan",
+                "code": "cyan",
+                "repr.number": "",
+            }
+        ),
     )
 
     # -- Construct the helper decoder.
@@ -65,6 +77,10 @@ def cout(
     nl: bool = True,
 ) -> None:
     """Prints lines of text to the console, using the optional style."""
+
+    # -- If no args, just do an empty println.
+    if not text_lines:
+        text_lines = [""]
 
     for text_line in text_lines:
         # -- User is reponsible to conversion to strings.
@@ -128,6 +144,17 @@ def cstyle(text: str, style: Optional[str] = None) -> str:
     _console.file = file_save
     # -- Return the capture value.
     return result
+
+
+def docs_text(markdown_text: str) -> None:
+    """A wrapper around Console.print that is specialized for redenring
+    help and docs."""
+    _console.print(markdown_text, highlight=True, width=DOCS_WIDTH)
+
+
+def docs_rule():
+    """Print a docs horizontal seperator."""
+    cout("─" * DOCS_WIDTH, style="dim")
 
 
 def is_terminal():

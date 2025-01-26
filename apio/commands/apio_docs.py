@@ -9,7 +9,9 @@
 
 import click
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup
+from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import apio_docs_apio_ini
+from apio.common.apio_console import cout
 
 
 # -- apio docs resources
@@ -32,7 +34,11 @@ Examples:
 def _resources_cli():
     """Implements the 'apio docs resources' command."""
 
-    # pass
+    # -- Create the apio context. We don't really need it here but it also
+    # -- reads the user preferences and configure the console's colors.
+    ApioContext(scope=ApioContextScope.NO_PROJECT)
+
+    cout("TBD", style="cyan")
 
 
 # --- apio docs

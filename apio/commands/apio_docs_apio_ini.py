@@ -8,9 +8,9 @@
 """Implementation of 'apio docs apio-ini'."""
 
 import click
-from rich.theme import Theme
-from rich.console import Console
 from apio.managers import project
+from apio.apio_context import ApioContext, ApioContextScope
+from apio.common.apio_console import docs_text, docs_rule, cout, cstyle
 
 
 # -- apio docs apio-ini
@@ -49,26 +49,23 @@ Following is a list of the valid 'apio.ini' options and their descriptions.
 def cli():
     """Implements the 'apio docs apio-ini' command."""
 
-    console = Console(
-        width=70,
-        theme=Theme(
-            {
-                "repr.str": "cyan",
-                "code": "cyan",
-            }
-        ),
-    )
+    # -- Create the apio context. We don't really need it here but it also
+    # -- reads the user preferences and configure the console's colors.
+    ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Print the overview test.
-    console.print(APIO_INI_DOC)
+    docs_text(APIO_INI_DOC)
 
     # -- Print the initial seperator line.
-    console.rule(style="blue")
+    docs_rule()
     for option, text in project.OPTIONS.items():
-        # -- Print the next option.
+        # -- Print option's title.
         is_required = option in project.REQUIRED_OPTIONS
         req = "REQUIRED" if is_required else "OPTIONAL"
-        console.print(f"\n[magenta bold]{option.upper()}[/] ({req})")
-        # -- Print a seperator line.
-        console.print(text)
-        console.rule(style="blue")
+        styled_option = cstyle(option.upper(), style="magenta")
+        cout()
+        cout(f"{styled_option} ({req})")
+
+        # -- Print the option's text.
+        docs_text(text)
+        docs_rule()

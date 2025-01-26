@@ -4,6 +4,9 @@
   * [apio build](#apio-build) - Synthesize the bitstream.
   * [apio clean](#apio-clean) - Delete the apio generated files.
   * [apio create](#apio-create) - Create an apio.ini project file.
+  * [apio docs](#apio-docs) - Read apio documentations.
+    * [apio docs apio.ini](#apio-docs-apio.ini) - Project file apio.ini documentation.
+    * [apio docs resources](#apio-docs-resources) - Information about online resources.
   * [apio drivers](#apio-drivers) - Manage the operating system drivers.
     * [apio drivers install](#apio-drivers-install) - Install drivers.
       * [apio drivers install ftdi](#apio-drivers-install-ftdi) - Install the ftdi drivers.
@@ -95,6 +98,7 @@ Setup commands:
   apio drivers      Manage the operating system drivers.
 
 Utility commands:
+  apio docs         Read apio documentations.
   apio boards       List available board definitions.
   apio fpgas        List available FPGA definitions.
   apio examples     List and fetch apio examples.
@@ -193,6 +197,60 @@ Options:
   -t, --top-module name   Set the top level module name.
   -p, --project-dir path  Set the root directory for the project.
   -h, --help              Show this message and exit.
+```
+
+<br>
+
+### apio docs
+
+```
+Usage: apio docs [OPTIONS] COMMAND [ARGS]...
+
+  The command group ‘apio docs contains subcommands that provides various apio
+  documentation and references to online resources.
+
+Options:
+  -h, --help  Show this message and exit.
+
+Subcommands:
+  apio docs apio.ini   Project file apio.ini documentation.
+  apio docs resources  Information about online resources.
+
+```
+
+<br>
+
+### apio docs apio.ini
+
+```
+Usage: apio docs apio.ini [OPTIONS]
+
+  The command 'apio docs apio-ini' provides information about the required
+  apio.ini project file.
+
+  Examples:
+    apio docs apio-ini           # Provide information about apio.ini
+    apio docs apio-ini  | less   # Same but with paging.
+
+Options:
+  -h, --help  Show this message and exit.
+```
+
+<br>
+
+### apio docs resources
+
+```
+Usage: apio docs resources [OPTIONS]
+
+  The command 'apio docs resources' provides information about apio related
+  online resources.
+
+  Examples:
+    apio docs resources     # Provides resources information
+
+Options:
+  -h, --help  Show this message and exit.
 ```
 
 <br>
