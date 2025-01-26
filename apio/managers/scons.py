@@ -379,14 +379,11 @@ class SCons:
         # -- to execute the apio command)
         start_time = time.time()
 
-        # -- Get the date as a string
-        date_time_str = datetime.now().strftime("%c")
-
         # -- Board name string in color
-        board_color = cstyle(scons_params.project.board_id, style="cyan")
+        styled_coard_id = cstyle(scons_params.project.board_id, style="cyan")
 
         # -- Print information on the console
-        cout(f"[{date_time_str}] Processing {board_color}")
+        cout(f"Processing board {styled_coard_id}")
 
         # -- Print a horizontal line
         cout("-" * terminal_width)

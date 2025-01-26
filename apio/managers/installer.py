@@ -179,30 +179,48 @@ def _delete_package_dir(
     return dir_found
 
 
+def scan_and_fix_packages(
+    apio_ctx: ApioContext, cached_config_ok: bool, verbose=False
+) -> Tuple[pkg_util.PackageScanResults, bool]:
+    """Scan the packages and fix if there are errors. Return a tuple with
+    the scan resultes upon return (post fix if fixed) and a flag that
+    indicates if a fix was necessary.."""
+
+    # -- Perform the first scan
+    scan_results = pkg_util.scan_packages(
+        apio_ctx, cached_config_ok=cached_config_ok, verbose=verbose
+    )
+
+    # -- Return if no errors to fix.
+    if scan_results.num_errors_to_fix() == 0:
+        return (scan_results, False)
+
+    # -- Errors detected, fix them.
+    _fix_packages(apio_ctx, scan_results)
+
+    # -- Perform the second scan and return
+    scan_results = pkg_util.scan_packages(
+        apio_ctx, cached_config_ok=cached_config_ok, verbose=verbose
+    )
+    return (scan_results, True)
+
+
 def install_missing_packages_on_the_fly(apio_ctx: ApioContext) -> None:
     """Install on the fly any missing packages. Does not print a thing if
     all packages are already ok. This function is intended for on demand
     package fetching by commands such as apio build, and thus is allowed
     to use fetched remote config instead of fetching a fresh one."""
 
-    # -- Scan the packages for issues. Since it's an 'on the fly' installation,
-    # -- We want to reduce its footprint and the connectivity requirements nad
-    # -- let it use a cached remote config, if available.
-    scan_results = pkg_util.scan_packages(
+    # -- Scan and fix broken package.
+    # -- Sicne this is a on-the-fly operation, we don't require a fresh
+    # -- remote config file for required packages versions.
+    scan_results, _ = scan_and_fix_packages(
         apio_ctx, cached_config_ok=True, verbose=False
     )
 
-    # -- If all ok, we are done.
+    # -- If all the required packages are installed, we are done.
     if scan_results.is_all_ok():
         return
-
-    # -- Tracks if we made any change.
-    work_done = False
-
-    # -- Before we check or install, delete all issues, if any.
-    if scan_results.num_errors_to_fix():
-        fix_packages(apio_ctx, scan_results)
-        work_done = True
 
     # -- Get lists of installed and required packages.
     installed_packages = apio_ctx.profile.packages
@@ -218,19 +236,17 @@ def install_missing_packages_on_the_fly(apio_ctx: ApioContext) -> None:
                 cached_config_ok=False,
                 verbose=False,
             )
-            work_done = True
 
     # -- Here all packages should be ok but we check again just in case.
-    if work_done:
-        scan_results = pkg_util.scan_packages(
-            apio_ctx, cached_config_ok=False, verbose=False
+    scan_results = pkg_util.scan_packages(
+        apio_ctx, cached_config_ok=False, verbose=False
+    )
+    if not scan_results.is_all_ok():
+        cout(
+            "Warning: packages issues detected. Use "
+            "'apio packages list' to investigate.",
+            style="red",
         )
-        if not scan_results.is_all_ok():
-            cout(
-                "Warning: packages issues detected. Use "
-                "'apio packages list' to investigate.",
-                style="red",
-            )
 
 
 # pylint: disable=too-many-branches
@@ -282,7 +298,7 @@ def install_package(
         )
 
         if verbose:
-            print(f"Installed version {installed_version}")
+            cout(f"Installed version {installed_version}", style="green")
 
         # -- If the installed and the target versions are the same then
         # -- nothing to do.
@@ -298,21 +314,21 @@ def install_package(
         apio_ctx, package_name, target_version
     )
     if verbose:
-        print(f"Download URL: {download_url}")
+        cout(f"Download URL: {download_url}")
 
     # -- Prepare the packages directory.
     apio_ctx.packages_dir.mkdir(exist_ok=True)
 
     # -- Prepare the package directory.
     package_dir = apio_ctx.get_package_dir(package_name)
-    print(f"Package dir: {package_dir}")
+    cout(f"Package dir: {package_dir}")
 
     # -- Downlod the package file from the remote server.
     local_package_file = _download_package_file(
         download_url, apio_ctx.packages_dir
     )
     if verbose:
-        print(f"Local package file: {local_package_file}")
+        cout(f"Local package file: {local_package_file}")
 
     # -- Delete the old package dir, if exists, to avoid name conflicts and
     # -- left over files.
@@ -323,7 +339,7 @@ def install_package(
 
     # -- Remove the package file. We don't need it anymore.
     if verbose:
-        print(f"Deleting package file {local_package_file}")
+        cout(f"Deleting package file {local_package_file}")
     local_package_file.unlink()
 
     # -- Add package to profile and save.
@@ -374,28 +390,28 @@ def uninstall_package(
         )
 
 
-def fix_packages(
+def _fix_packages(
     apio_ctx: ApioContext, scan: pkg_util.PackageScanResults
 ) -> None:
     """If the package scan result contains errors, fix them."""
 
     # -- Fix broken packages.
     for package_name in scan.bad_version_package_names_subset:
-        print(f"Uninstalling versin mismatch '{package_name}'")
+        cout(f"Uninstalling versin mismatch '{package_name}'", style="magenta")
         _delete_package_dir(apio_ctx, package_name, verbose=False)
         apio_ctx.profile.remove_package(package_name)
 
     for package_name in scan.broken_package_names:
-        print(f"Uninstalling broken package '{package_name}'")
+        cout(f"Uninstalling broken package '{package_name}'", style="magenta")
         _delete_package_dir(apio_ctx, package_name, verbose=False)
         apio_ctx.profile.remove_package(package_name)
 
     for package_name in scan.orphan_package_names:
-        print(f"Uninstalling unknown package '{package_name}'")
+        cout(f"Uninstalling unknown package '{package_name}'", style="magenta")
         apio_ctx.profile.remove_package(package_name)
 
     for dir_name in scan.orphan_dir_names:
-        print(f"Deleting unknown package dir '{dir_name}'")
+        cout(f"Deleting unknown package dir '{dir_name}'", style="magenta")
         # -- Sanity check. Since apio_ctx.packages_dir is guarranted to include
         # -- the word packages, this can fail only due to programming error.
         dir_path = apio_ctx.packages_dir / dir_name
@@ -404,7 +420,7 @@ def fix_packages(
         shutil.rmtree(dir_path)
 
     for file_name in scan.orphan_file_names:
-        print(f"Deleting unknown package file '{file_name}'")
+        cout(f"Deleting unknown package file '{file_name}'", style="magenta")
         # -- Sanity check. Since apio_ctx.packages_dir is guarranted to
         # -- include the word packages, this can fail only due to programming
         # -- error.

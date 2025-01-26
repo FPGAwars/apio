@@ -57,6 +57,11 @@ def _install_cli(
 
     cout(f"Platform id '{apio_ctx.platform_id}'")
 
+    # -- First thing, fix broken packages, if any.
+    installer.scan_and_fix_packages(
+        apio_ctx, cached_config_ok=False, verbose=verbose
+    )
+
     # -- If packages where specified, install all packages that are valid
     # -- for this platform.
     if not packages:
@@ -103,6 +108,11 @@ def _uninstall_cli(
     """Implements the 'apio packages uninstall' command."""
 
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+
+    # -- First thing, fix broken packages, if any.
+    installer.scan_and_fix_packages(
+        apio_ctx, cached_config_ok=False, verbose=verbose
+    )
 
     # -- If packages where specified, uninstall all packages that are valid
     # -- for this platform.
@@ -185,22 +195,14 @@ def _fix_cli():
     # -- Create the apio context.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
-    # -- Scan the availeable and installed packages.
-    scan = pkg_util.scan_packages(
+    # -- First thing, fix broken packages, if any.
+    _, fix_needed = installer.scan_and_fix_packages(
         apio_ctx, cached_config_ok=False, verbose=False
     )
 
-    # -- Fix any errors.
-    if scan.num_errors_to_fix():
-        installer.fix_packages(apio_ctx, scan)
-    else:
-        cout("No errors to fix")
-
-    # -- Show the new state
-    new_scan = pkg_util.scan_packages(
-        apio_ctx, cached_config_ok=True, verbose=False
-    )
-    pkg_util.list_packages(apio_ctx, new_scan)
+    #  If fixed not needed, say so.
+    if not fix_needed:
+        cout("No errors to fix", style="green")
 
 
 # ------ apio packages (group)
