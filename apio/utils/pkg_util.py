@@ -13,7 +13,7 @@ from typing import List, Callable, Tuple
 from pathlib import Path
 from dataclasses import dataclass
 import os
-from apio.utils.apio_console import cout, cstyle
+from apio.common.apio_console import cout, cstyle
 from apio.apio_context import ApioContext
 from apio.utils import util
 

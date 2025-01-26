@@ -47,11 +47,6 @@ def configure(*, colors: bool = None, force_terminal: bool = None) -> None:
     _decoder = AnsiDecoder()
 
 
-def console():
-    """Returns the underlying console"""
-    return _console
-
-
 def reset():
     """Reset to initial configuration."""
     configure(colors=True, force_terminal=False)

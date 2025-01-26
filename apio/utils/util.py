@@ -26,7 +26,7 @@ from varname import argname
 from serial.tools.list_ports import comports
 import requests
 from apio.utils import env_options
-from apio.utils.apio_console import cout, cerror
+from apio.common.apio_console import cout, cerror
 
 # ----------------------------------------
 # -- Constants

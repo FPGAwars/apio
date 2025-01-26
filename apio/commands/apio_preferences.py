@@ -8,7 +8,7 @@
 """Implementation of 'apio preferences' command"""
 
 import click
-from apio.utils.apio_console import cout, cstyle
+from apio.common.apio_console import cout, cstyle
 from apio.utils import cmd_util
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup

@@ -9,7 +9,7 @@
 
 from typing import Tuple
 import click
-from apio.utils.apio_console import cout
+from apio.common.apio_console import cout
 from apio.managers import installer
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import pkg_util

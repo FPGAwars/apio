@@ -17,7 +17,7 @@
 import re
 from enum import Enum
 from typing import List, Optional, Tuple
-from apio.utils.apio_console import cout
+from apio.common.apio_console import cout
 
 
 # -- Terminal cursor commands.

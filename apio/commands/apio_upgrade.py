@@ -11,7 +11,7 @@ import sys
 import click
 from packaging import version
 from apio.utils import util
-from apio.utils.apio_console import cout
+from apio.common.apio_console import cout
 
 
 # ---------------------------

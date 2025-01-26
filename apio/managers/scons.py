@@ -18,7 +18,7 @@ import shutil
 from functools import wraps
 from datetime import datetime
 from google.protobuf import text_format
-from apio.utils.apio_console import cout, cerror, cstyle
+from apio.common.apio_console import cout, cerror, cstyle
 from apio.utils import util, pkg_util
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter

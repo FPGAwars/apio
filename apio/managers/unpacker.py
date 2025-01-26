@@ -15,7 +15,7 @@ from pathlib import Path
 from tarfile import open as tarfile_open
 from zipfile import ZipFile
 import click
-from apio.utils.apio_console import cout, cstyle
+from apio.common.apio_console import cout, cstyle
 from apio.utils import util
 
 

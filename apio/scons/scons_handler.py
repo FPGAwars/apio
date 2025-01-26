@@ -19,7 +19,6 @@ from apio.scons.plugin_gowin import PluginGowin
 from apio.proto.apio_pb2 import SconsParams, ICE40, ECP5, GOWIN
 from apio.scons.apio_env import ApioEnv, TARGET
 from apio.scons.plugin_base import PluginBase
-from apio.scons.scons_console import cerror
 from apio.scons.plugin_util import (
     get_sim_config,
     get_tests_configs,
@@ -29,6 +28,7 @@ from apio.scons.plugin_util import (
     get_programmer_cmd,
     configure_cleanup,
 )
+from apio.common.apio_console import cerror
 
 # -- Scons builders ids.
 SYNTH_BUILDER = "SYNTH_BUILDER"

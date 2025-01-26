@@ -13,7 +13,7 @@ from pathlib import Path
 from glob import glob
 from typing import Tuple, List
 import click
-from apio.utils.apio_console import cout, cerror, cstyle
+from apio.common.apio_console import cout, cerror, cstyle
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import options
 from apio.managers import installer

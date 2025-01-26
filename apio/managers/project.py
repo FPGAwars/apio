@@ -16,7 +16,7 @@ from configparser import ConfigParser
 from pathlib import Path
 from typing import Dict, Optional, Union, Any, List
 from configobj import ConfigObj
-from apio.utils.apio_console import cout, cerror
+from apio.common.apio_console import cout, cerror
 
 # -- Apio projecto filename
 APIO_INI = "apio.ini"

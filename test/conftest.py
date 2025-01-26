@@ -12,7 +12,7 @@ from typing import Dict
 import os
 import pytest
 from click.testing import CliRunner, Result
-from apio.utils import apio_console
+from apio.common import apio_console
 
 
 # -- Debug mode on/off

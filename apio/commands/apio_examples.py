@@ -10,7 +10,7 @@
 from pathlib import Path
 from typing import List, Any
 import click
-from apio.utils.apio_console import cout, cstyle
+from apio.common.apio_console import cout, cstyle
 from apio.managers import installer
 from apio.managers.examples import Examples, ExampleInfo
 from apio.commands import options

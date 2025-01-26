@@ -13,7 +13,7 @@ import sys
 from dataclasses import dataclass
 from typing import List, Dict, Union
 import click
-from apio.utils.apio_console import cout, cerror, cstyle
+from apio.common.apio_console import cout, cerror, cstyle
 from apio.utils import util
 from apio.profile import Profile
 

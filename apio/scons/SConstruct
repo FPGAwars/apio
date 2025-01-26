@@ -7,12 +7,18 @@
 # -- Licence GPLv2
 
 
-from apio.scons.plugin_util import maybe_wait_for_remote_debugger
 from apio.scons.scons_handler import SconsHandler
+from apio.scons.plugin_util import maybe_wait_for_remote_debugger
+from apio.common import apio_console
 
 # -- If system env var APIO_SCONS_DEBUGGER is defined, regardless of its value,
 # -- we wait on a remote debugger to be attached, e.g. from Visual Studio Code.
 maybe_wait_for_remote_debugger("APIO_SCONS_DEBUGGER")
+
+# -- We force terminal mode to cause the scons process to emit colors even
+# -- though it outputs to a pipe to the parent apio process. The apio process
+# -- will strip the colors if it itself is outputing to a pipe.
+apio_console.configure(force_terminal=True)
 
 # -- Service this scons request.
 SconsHandler.start()

@@ -13,7 +13,7 @@ from enum import Enum
 from collections import OrderedDict
 from pathlib import Path
 from typing import Optional, Dict
-from apio.utils.apio_console import cout, cerror, cwarning
+from apio.common.apio_console import cout, cerror, cwarning
 from apio.profile import Profile
 from apio.utils import jsonc, util, env_options
 from apio.managers.project import (

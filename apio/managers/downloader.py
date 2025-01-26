@@ -19,7 +19,7 @@ from math import ceil
 import requests
 import click
 from apio.utils import util
-from apio.utils.apio_console import cout, cstyle
+from apio.common.apio_console import cout, cstyle
 
 # -- Timeout for geting a reponse from the server when downloading
 # -- a file (in seconds)

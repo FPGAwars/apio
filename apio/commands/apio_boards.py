@@ -12,7 +12,7 @@ from pathlib import Path
 from dataclasses import dataclass
 from typing import List, Dict
 import click
-from apio.utils.apio_console import cout, cstyle
+from apio.common.apio_console import cout, cstyle
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import util
 from apio.commands import options

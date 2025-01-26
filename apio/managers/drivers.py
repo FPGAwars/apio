@@ -11,7 +11,7 @@ import shutil
 import subprocess
 from pathlib import Path
 from apio.utils import util
-from apio.utils.apio_console import cout, cerror
+from apio.common.apio_console import cout, cerror
 from apio.apio_context import ApioContext
 from apio.managers import installer
 

@@ -8,7 +8,7 @@
 """Implementation of 'apio system' command"""
 
 import click
-from apio.utils.apio_console import cout
+from apio.common.apio_console import cout
 from apio.utils import util
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup

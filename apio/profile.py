@@ -11,8 +11,9 @@ from typing import Union, Any, Dict
 from pathlib import Path
 import click
 import requests
-from apio.utils.apio_console import cout, cerror, crender
-from apio.utils import util, apio_console
+from apio.common import apio_console
+from apio.common.apio_console import cout, cerror, crender
+from apio.utils import util
 
 
 class Profile:

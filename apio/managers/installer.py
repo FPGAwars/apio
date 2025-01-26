@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 from typing import Tuple
 import shutil
-from apio.utils.apio_console import cout, cerror
+from apio.common.apio_console import cout, cerror
 from apio.apio_context import ApioContext
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
@@ -263,7 +263,7 @@ def install_package(
         cerror(f"No such package '{package_name}'")
         sys.exit(1)
 
-    cout(f"Installing package '{package_spec}'", style="magenta")
+    cout(f"Installing apio package '{package_spec}'", style="magenta")
 
     # -- If the user didn't specify a target version we use the one specified
     # -- in the remote config.
@@ -347,7 +347,7 @@ def uninstall_package(
         cerror(f"No such package '{package_name}'")
         sys.exit(1)
 
-    cout(f"Uninstalling package '{package_name}'")
+    cout(f"Uninstalling apio package '{package_name}'", style="magenta")
 
     # -- Remove the folder with all its content!!
     dir_existed = _delete_package_dir(apio_ctx, package_name, verbose)

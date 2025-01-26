@@ -21,7 +21,7 @@ from typing import List, Optional
 from SCons.Script.SConscript import SConsEnvironment
 from SCons.Environment import BuilderWrapper
 import SCons.Defaults
-from apio.scons.scons_console import cprint
+from apio.common.apio_console import cout
 
 # from apio.scons.apio_args import ApioArgs
 from apio.proto.apio_pb2 import SconsParams
@@ -128,8 +128,8 @@ class ApioEnv:
         dictionary = self.scons_env.Dictionary()
         keys = list(dictionary.keys())
         keys.sort()
-        cprint("")
-        cprint(">>> Env vars BEGIN", style="magenta")
+        cout("")
+        cout(">>> Env vars BEGIN", style="magenta")
         for key in keys:
             print(f"{key} = {self.scons_env[key]}")
-        cprint("<<< Env vars END\n", style="magenta")
+        cout("<<< Env vars END\n", style="magenta")
