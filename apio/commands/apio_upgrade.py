@@ -9,9 +9,55 @@
 
 import sys
 import click
+import requests
 from packaging import version
 from apio.utils import util
-from apio.common.apio_console import cout
+from apio.common.apio_console import cout, cerror
+
+
+def get_pypi_latest_version() -> str:
+    """Get the latest stable version of apio from Pypi
+    Internet connection is required
+    Returns: A string with the version (Ex: "0.9.0")
+    Exits on an error.
+    """
+
+    # -- Read the latest apio version from pypi
+    # -- More information: https://warehouse.pypa.io/api-reference/json.html
+    try:
+        req = requests.get(
+            "https://pypi.python.org/pypi/apio/json", timeout=10
+        )
+        req.raise_for_status()
+
+    # -- Connection error
+    except requests.exceptions.ConnectionError as e:
+        cout(str(e), style="yellow")
+        cerror("Connection error while accessing Pypi.")
+        sys.exit(1)
+
+    # -- HTTP Error
+    except requests.exceptions.HTTPError as e:
+        cout(str(e), style="yellow")
+        cerror("HTTP error while accessing Pypi.")
+        sys.exit(1)
+
+    # -- Timeout!
+    except requests.exceptions.Timeout as e:
+        cout(str(e), style="yellow")
+        cerror("HTTP timeout while accessing Pypi.")
+        sys.exit(1)
+
+    # -- Another error
+    except requests.exceptions.RequestException as e:
+        cout(str(e), style="yellow")
+        cerror("HTTP exception while accessing Pypi.")
+        sys.exit(1)
+
+    # -- Get the version field from the json response
+    ver = req.json()["info"]["version"]
+
+    return ver
 
 
 # ---------------------------
@@ -41,7 +87,7 @@ def cli(_: click.Context):
     current_version = util.get_apio_version()
 
     # -- Get the latest stable version published at Pypi
-    latest_version = util.get_pypi_latest_version()
+    latest_version = get_pypi_latest_version()
 
     # -- There was an error getting the version from pypi
     if latest_version is None:
