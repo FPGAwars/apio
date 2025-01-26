@@ -13,8 +13,7 @@ from typing import List, Callable, Tuple
 from pathlib import Path
 from dataclasses import dataclass
 import os
-import click
-from click import secho
+from apio.utils.apio_console import cout, cstyle
 from apio.apio_context import ApioContext
 from apio.utils import util
 
@@ -68,24 +67,24 @@ def _dump_env_mutations(
     apio_ctx: ApioContext, mutations: EnvMutations
 ) -> None:
     """Dumps a user friendly representation of the env mutations."""
-    secho("Envirnment settings:", fg="magenta")
+    cout("Envirnment settings:", style="magenta")
 
     # -- Print PATH mutations.
     windows = apio_ctx.is_windows()
     for p in reversed(mutations.paths):
-        styled_name = click.style("PATH", fg="magenta")
+        styled_name = cstyle("PATH", style="magenta")
         if windows:
-            secho(f"set {styled_name}={p};%PATH%")
+            cout(f"set {styled_name}={p};%PATH%")
         else:
-            secho(f'{styled_name}="{p}:$PATH"')
+            cout(f'{styled_name}="{p}:$PATH"')
 
     # -- Print vars mutations.
     for name, val in mutations.vars:
-        styled_name = click.style(name, fg="magenta")
+        styled_name = cstyle(name, style="magenta")
         if windows:
-            secho(f"set {styled_name}={val}")
+            cout(f"set {styled_name}={val}")
         else:
-            secho(f'{styled_name}="{val}"')
+            cout(f'{styled_name}="{val}"')
 
 
 def _apply_env_mutations(mutations: EnvMutations) -> None:
@@ -142,7 +141,7 @@ def set_env_for_packages(
         _apply_env_mutations(mutations)
         apio_ctx.env_was_already_set = True
         if not verbose and not quiet:
-            secho("Setting the envinronment.")
+            cout("Setting the envinronment.")
 
 
 @dataclass
@@ -293,7 +292,7 @@ def scan_packages(
     return result
 
 
-def _list_section(title: str, items: List[List[str]], color: str) -> None:
+def _list_section(title: str, items: List[List[str]], style: str) -> None:
     """A helper function for printing one serction of list_packages()."""
     # -- Construct horizontal lines at terminal width.
     config = util.get_terminal_config()
@@ -302,14 +301,14 @@ def _list_section(title: str, items: List[List[str]], color: str) -> None:
     dline = "═" * line_width
 
     # -- Print the section.
-    secho()
-    secho(dline, fg=color)
-    secho(title, fg=color, bold=True)
+    cout("")
+    cout(dline, style=style)
+    cout(title, style=style)
     for item in items:
-        secho(line)
+        cout(line)
         for sub_item in item:
-            secho(sub_item)
-    secho(dline, fg=color)
+            cout(sub_item)
+    cout(dline, style=style)
 
 
 # pylint: disable=too-many-branches
@@ -324,10 +323,10 @@ def list_packages(apio_ctx: ApioContext, scan: PackageScanResults) -> None:
     if scan.installed_package_names:
         items = []
         for package_name in scan.installed_package_names:
-            name = click.style(f"{package_name}", fg="cyan", bold=True)
+            name = cstyle(f"{package_name}", style="cyan")
             version = get_package_version(package_name)
             if package_name in scan.bad_version_package_names_subset:
-                note = click.style(" [Wrong version]", fg="red", bold=True)
+                note = cstyle(" [Wrong version]", style="red")
             else:
                 note = ""
             description = get_package_info(package_name)["description"]
@@ -338,7 +337,7 @@ def list_packages(apio_ctx: ApioContext, scan: PackageScanResults) -> None:
     if scan.uninstalled_package_names:
         items = []
         for package_name in scan.uninstalled_package_names:
-            name = click.style(f"{package_name}", fg="cyan", bold=True)
+            name = cstyle(f"{package_name}", style="cyan")
             description = get_package_info(package_name)["description"]
             items.append([f"{name}  {description}"])
         _list_section("Uinstalled packages:", items, "yellow")
@@ -347,7 +346,7 @@ def list_packages(apio_ctx: ApioContext, scan: PackageScanResults) -> None:
     if scan.broken_package_names:
         items = []
         for package_name in scan.broken_package_names:
-            name = click.style(f"{package_name}", fg="red", bold=True)
+            name = cstyle(f"{package_name}", style="red")
             description = get_package_info(package_name)["description"]
             items.append([f"{name}  {description}"])
         _list_section("[Error] Broken packages:", items, None)
@@ -356,7 +355,7 @@ def list_packages(apio_ctx: ApioContext, scan: PackageScanResults) -> None:
     if scan.orphan_package_names:
         items = []
         for package_name in scan.orphan_package_names:
-            name = click.style(f"{package_name}", fg="red", bold=True)
+            name = cstyle(f"{package_name}", style="red")
             items.append([name])
         _list_section("[Error] Unknown packages:", items, None)
 
@@ -364,13 +363,13 @@ def list_packages(apio_ctx: ApioContext, scan: PackageScanResults) -> None:
     if scan.orphan_dir_names or scan.orphan_file_names:
         items = []
         for name in sorted(scan.orphan_dir_names + scan.orphan_file_names):
-            name = click.style(f"{name}", fg="red", bold=True)
+            name = cstyle(f"{name}", style="red")
             items.append([name])
         _list_section("[Error] Unknown files and directories:", items, None)
 
     # -- Print an error summary
     if scan.num_errors_to_fix():
-        secho(f"Total of {util.plurality(scan.num_errors_to_fix(), 'error')}")
+        cout(f"Total of {util.plurality(scan.num_errors_to_fix(), 'error')}")
 
     # -- A line seperator. For asthetic reasons.
-    secho()
+    cout("")

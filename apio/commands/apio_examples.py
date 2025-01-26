@@ -73,7 +73,7 @@ def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
     parts.append("DESCRIPTION")
 
     # -- Print the title
-    cout("".join(parts), style="cyan bold")
+    cout("".join(parts), style="cyan")
 
     # -- Emit the examples
     last_arch = None
@@ -81,7 +81,7 @@ def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
         # -- Seperation before each archictecture group, unless piped out.
         if last_arch != entry.fpga_arch and output_config.terminal_mode:
             cout("")
-            cout(f"{entry.fpga_arch.upper()}", style="magenta bold")
+            cout(f"{entry.fpga_arch.upper()}", style="magenta")
         last_arch = entry.fpga_arch
 
         # -- Construct the fpga fields.

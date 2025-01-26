@@ -15,7 +15,7 @@ from pathlib import Path
 from tarfile import open as tarfile_open
 from zipfile import ZipFile
 import click
-from click import secho
+from apio.utils.apio_console import cout, cstyle
 from apio.utils import util
 
 
@@ -123,7 +123,7 @@ class FileUnpacker:
 
         # -- Archive type not known!! Raise an exception!
         if not self._unpacker:
-            secho(f"Can not unpack file '{archpath}'")
+            cout(f"Can not unpack file '{archpath}'")
             raise util.ApioException()
 
     def start(self) -> bool:
@@ -136,9 +136,9 @@ class FileUnpacker:
         with click.progressbar(
             items,
             length=len(items),
-            label=click.style("Unpacking..", fg="yellow"),
-            fill_char=click.style("█", fg="cyan", bold=True),
-            empty_char=click.style("░", fg="cyan", bold=True),
+            label=cstyle("Unpacking..", style="yellow"),
+            fill_char=cstyle("█", style="cyan"),
+            empty_char=cstyle("░", style="cyan"),
         ) as pbar:
 
             # -- Go though all the files in the archive...

@@ -126,7 +126,7 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
     parts.append(f"{'PROGRAMMER':<{programmer_len}}")
 
     # -- Print the title line.
-    cout("".join(parts), style="cyan bold")
+    cout("".join(parts), style="cyan")
 
     # -- Print all the boards.
     last_arch = None
@@ -134,7 +134,7 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
         # -- If not piping, add architecture groups seperations.
         if last_arch != entry.fpga_arch and output_config.terminal_mode:
             cout("")
-            cout(f"{entry.fpga_arch.upper()}", style="magenta bold")
+            cout(f"{entry.fpga_arch.upper()}", style="magenta")
         last_arch = entry.fpga_arch
 
         # -- Construct the line fields.

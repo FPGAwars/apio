@@ -13,7 +13,7 @@ from pathlib import Path
 from glob import glob
 from typing import Tuple, List
 import click
-from apio.utils.apio_console import cout, cerror
+from apio.utils.apio_console import cout, cerror, cstyle
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import options
 from apio.managers import installer
@@ -132,7 +132,7 @@ def cli(
             sys.exit(1)
 
         # -- Print file name.
-        styled_f = click.style(f, fg="magenta")
+        styled_f = cstyle(f, style="magenta")
         cout(f"Formatting {styled_f}")
 
         # -- Construct the formatter command line.

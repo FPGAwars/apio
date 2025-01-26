@@ -13,7 +13,7 @@ import sys
 from dataclasses import dataclass
 from typing import List, Dict, Union
 import click
-from click import secho
+from apio.utils.apio_console import cout, cerror, cstyle
 from apio.utils import util
 from apio.profile import Profile
 
@@ -26,13 +26,13 @@ def fatal_usage_error(cmd_ctx: click.Context, msg: str) -> None:
     """
     # Mimiking the usage error message from click/exceptions.py.
     # E.g. "Try 'apio packages -h' for help."
-    secho(cmd_ctx.get_usage())
-    secho(
+    cout(cmd_ctx.get_usage())
+    cout(
         f"Try '{cmd_ctx.command_path} {cmd_ctx.help_option_names[0]}' "
         "for help."
     )
-    secho()
-    secho(f"Error: {msg}", fg="red")
+    cout("")
+    cerror(f"{msg}")
     sys.exit(1)
 
 
@@ -278,8 +278,8 @@ class ApioGroup(click.Group):
             result_lines.append(f"{subgroup.title}:")
             for cmd in subgroup.commands:
                 # -- We pad for field width and then apply color.
-                styled_name = click.style(
-                    f"{cmd.name:{max_name_len}}", fg="magenta"
+                styled_name = cstyle(
+                    f"{cmd.name:{max_name_len}}", style="magenta"
                 )
                 result_lines.append(
                     f"  {ctx.command_path} {styled_name}  {cmd.short_help}"

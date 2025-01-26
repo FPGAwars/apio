@@ -19,7 +19,7 @@ from math import ceil
 import requests
 import click
 from apio.utils import util
-from apio.utils.apio_console import cout
+from apio.utils.apio_console import cout, cstyle
 
 # -- Timeout for geting a reponse from the server when downloading
 # -- a file (in seconds)
@@ -90,9 +90,9 @@ class FileDownloader:
             # -- Download the file. Show a progress bar
             with click.progressbar(
                 length=chunks,
-                label=click.style("Downloading", fg="yellow"),
-                fill_char=click.style("█", fg="cyan", bold=True),
-                empty_char=click.style("░", fg="cyan", bold=True),
+                label=cstyle("Downloading", style="yellow"),
+                fill_char=cstyle("█", style="cyan"),
+                empty_char=cstyle("░", style="cyan"),
             ) as pbar:
                 for _ in pbar:
 

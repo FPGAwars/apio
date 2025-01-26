@@ -39,13 +39,17 @@ def configure(*, colors: bool = None, force_terminal: bool = None) -> None:
 
     # -- Construct the new console.
     _console = Console(
-        width=100,
         color_system=_color_system,
         force_terminal=_force_terminal,
     )
 
     # -- Construct the helper decoder.
     _decoder = AnsiDecoder()
+
+
+def console():
+    """Returns the underlying console"""
+    return _console
 
 
 def reset():

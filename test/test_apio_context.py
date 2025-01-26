@@ -79,6 +79,6 @@ def test_home_dir_with_relative_path(
             ApioContext(scope=ApioContextScope.NO_PROJECT)
         assert e.value.code == 1
         assert (
-            "Error: apio home dir should be an absolute path"
+            "Error: Apio home dir should be an absolute path"
             in capsys.readouterr().out
         )

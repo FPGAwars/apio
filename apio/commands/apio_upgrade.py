@@ -66,7 +66,7 @@ def cli(_: click.Context):
     # -- Case 2: Using a dev version.
     if version.parse(current_version) > version.parse(latest_version):
         cout(
-            "You are using a development version. Use it at your own risk.",
+            "You are using a development version. Enjoy it at your own risk.",
             style="magenta",
         )
         return

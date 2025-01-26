@@ -8,8 +8,7 @@
 
 import re
 import sys
-from click import secho
-
+from apio.utils.apio_console import cout, cerror
 from apio.utils import util, pkg_util
 from apio.apio_context import ApioContext
 from apio.managers import installer
@@ -26,17 +25,15 @@ class System:  # pragma: no cover
         """Handles a failure of a 'lsftdi' command. Print message and exits."""
         #
         assert result.exit_code != 0, result
-        secho(result.out_text)
-        secho(f"{result.err_text}", fg="red")
-        secho("Error: the 'lsftdi' command failed.", fg="red")
+        cout(result.out_text)
+        cerror("The 'lsftdi' command failed.", result.err_text)
 
         # -- A special hint for zadig on windows.
         if self.apio_ctx.is_windows():
-            secho(
-                "\n"
+            cout(
                 "[Hint]: did you install the ftdi driver using "
                 "'apio drivers --ftdi-install'?",
-                fg="yellow",
+                style="yellow",
             )
             sys.exit(1)
 
@@ -56,22 +53,22 @@ class System:  # pragma: no cover
             # -- Print error message and exit.
             self._lsftdi_fatal_error(result)
 
-        secho(result.out_text)
+        cout(result.out_text)
         return 0
 
     def lsserial(self) -> int:
         """List the serial ports. Returns exit code."""
 
         serial_ports = util.get_serial_ports()
-        secho(f"Number of Serial devices found: {len(serial_ports)}")
+        cout(f"Number of Serial devices found: {len(serial_ports)}")
 
         for serial_port in serial_ports:
             port = serial_port.get("port")
             description = serial_port.get("description")
             hwid = serial_port.get("hwid")
-            secho(port, fg="cyan", bold=True)
-            secho(f"Description: {description}")
-            secho(f"Hardware info: {hwid}\n")
+            cout(port, style="cyan")
+            cout(f"Description: {description}")
+            cout(f"Hardware info: {hwid}\n")
 
         return 0
 
@@ -93,8 +90,8 @@ class System:  # pragma: no cover
         result = self._run_command("lsusb", silent=True)
 
         if result.exit_code != 0:
-            secho(result.out_text)
-            secho(result.err_text, fg="red")
+            cout(result.out_text)
+            cout(result.err_text, style="red")
             raise RuntimeError("Error executing lsusb")
 
         # -- Get the list of the usb devices. It is read
@@ -184,14 +181,14 @@ class System:  # pragma: no cover
         """Callback function. It is executed when the command prints
         information on the standard output
         """
-        secho(line)
+        cout(line)
 
     @staticmethod
     def _on_stderr(line):
         """Callback function. It is executed when the command prints
         information on the standard error
         """
-        secho(line, fg="red")
+        cout(line, style="red")
 
     @staticmethod
     def _parse_usb_devices(text: str) -> list:

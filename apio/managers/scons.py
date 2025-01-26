@@ -17,9 +17,8 @@ from pathlib import Path
 import shutil
 from functools import wraps
 from datetime import datetime
-import click
-from click import secho
 from google.protobuf import text_format
+from apio.utils.apio_console import cout, cerror, cstyle
 from apio.utils import util, pkg_util
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
@@ -73,7 +72,7 @@ def on_exception(*, exit_code: int):
                     traceback.print_tb(exc.__traceback__)
 
                 if str(exc):
-                    secho("Error: " + str(exc), fg="red")
+                    cerror(str(exc))
                 return exit_code
 
         return wrapper
@@ -287,10 +286,7 @@ class SCons:
                 GowinFpgaInfo(family=fpga_config["type"])
             )
         else:
-            secho(
-                f"Internal error: unexpected fpga_arch value {fpga_arch}",
-                fg="red",
-            )
+            cerror(f"Unexpected fpga_arch value {fpga_arch}")
             sys.exit(1)
 
         # -- We are done populating The FpgaInfo params..
@@ -369,12 +365,12 @@ class SCons:
         pkg_util.set_env_for_packages(self.apio_ctx)
 
         if util.is_debug():
-            secho("\nSCONS CALL:", fg="magenta")
-            secho(f"* command:       {scond_command}")
-            secho(f"* variables:     {variables}")
-            secho(f"* uses packages: {uses_packages}")
-            secho(f"* scons params: \n{scons_params}")
-            secho()
+            cout("\nSCONS CALL:", style="magenta")
+            cout(f"* command:       {scond_command}")
+            cout(f"* variables:     {variables}")
+            cout(f"* uses packages: {uses_packages}")
+            cout(f"* scons params: \n{scons_params}")
+            cout()
 
         # -- Get the terminal width (typically 80)
         terminal_width, _ = shutil.get_terminal_size()
@@ -387,15 +383,13 @@ class SCons:
         date_time_str = datetime.now().strftime("%c")
 
         # -- Board name string in color
-        board_color = click.style(
-            scons_params.project.board_id, fg="cyan", bold=True
-        )
+        board_color = cstyle(scons_params.project.board_id, style="cyan")
 
         # -- Print information on the console
-        secho(f"[{date_time_str}] Processing {board_color}")
+        cout(f"[{date_time_str}] Processing {board_color}")
 
         # -- Print a horizontal line
-        secho("-" * terminal_width, bold=True)
+        cout("-" * terminal_width)
 
         # -- Create the scons debug options. See details at
         # -- https://scons.org/doc/2.4.1/HTML/scons-man.html
@@ -445,13 +439,13 @@ class SCons:
 
         # -- Status message
         status = (
-            click.style(" ERROR ", fg="red", bold=True)
+            cstyle(" ERROR ", style="red")
             if is_error
-            else click.style("SUCCESS", fg="green", bold=True)
+            else cstyle("SUCCESS", style="green")
         )
 
         # -- Print the summary line.
-        secho(f"{half_line} [{status}]{summary_text}{half_line}", err=is_error)
+        cout(f"{half_line} [{status}]{summary_text}{half_line}")
 
         # -- Return the exit code
         return result.exit_code

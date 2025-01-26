@@ -53,8 +53,8 @@ def cli():
         width=70,
         theme=Theme(
             {
-                "repr.str": "cyan bold",
-                "code": "cyan bold",
+                "repr.str": "cyan",
+                "code": "cyan",
             }
         ),
     )
