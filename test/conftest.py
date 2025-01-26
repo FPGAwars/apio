@@ -95,10 +95,11 @@ class ApioSandbox:
         self,
         cli,
         args=None,
+        *,
         input=None,
         env=None,
         catch_exceptions=True,
-        color=False,
+        terminal_mode=True,
         **extra,
     ):
         """Invoke an apio command."""
@@ -119,9 +120,9 @@ class ApioSandbox:
         # -- check that the test didn't corrupt them.
         assert os.environ["APIO_HOME_DIR"] == str(self.home_dir)
 
-        # -- If requested, force terminal mode such that the apio code
-        # -- genertes color information even though pytest pipes it.
-        apio_console.configure(force_terminal=color)
+        # -- If True, force terminal mode, if False, forces pipe mode,
+        # -- otherwise auto which is pipe mode under pytest.
+        apio_console.configure(force_terminal=terminal_mode)
 
         # -- Invoke the command. Get back the collected results.
         result = self._click_runner.invoke(
@@ -130,7 +131,7 @@ class ApioSandbox:
             input=input,
             env=env,
             catch_exceptions=catch_exceptions,
-            color=color,
+            color=terminal_mode,
             **extra,
         )
 

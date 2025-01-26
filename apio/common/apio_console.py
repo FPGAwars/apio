@@ -124,5 +124,15 @@ def cstyle(text: str, style: Optional[str] = None) -> str:
     return result
 
 
+def is_terminal():
+    """Returns True if the console writes to a terminal (vs a pipe)."""
+    return _console.is_terminal
+
+
+def width():
+    """Return the console width."""
+    return _console.width
+
+
 # -- Initialize the module.
 reset()

@@ -10,7 +10,7 @@
 # TODO: Implement range detectors for Fumo, Tinyprog, and Iceprog, similar to
 # the pnr detector. This will avoid matching of output from other programs.
 
-# TODO: Use util.get_terminal_config() to determine if the output goes to a
+# TODO: Use apio_console.is_terminal() to determine if the output goes to a
 # terminal or a pipe and have an alternative handling for the cursor commands
 # when writing to a pipe.
 
@@ -188,6 +188,7 @@ class SconsFilter:
         return default_color
 
     # pylint: disable=too-many-return-statements
+    # pylint: disable=too-many-branches
     def on_line(self, pipe_id: PipeId, line: str) -> None:
         """A shared handler for stdout/err lines from the scons sub process.
         The handler writes both stdout and stderr lines to stdout, possibly

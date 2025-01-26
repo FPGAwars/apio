@@ -10,6 +10,7 @@
 from pathlib import Path
 from typing import List, Any
 import click
+from apio.common import apio_console
 from apio.common.apio_console import cout, cstyle
 from apio.managers import installer
 from apio.managers.examples import Examples, ExampleInfo
@@ -44,8 +45,6 @@ def examples_sort_key(entry: ExampleInfo) -> Any:
 def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
     """Print all the examples available. Return a process exit
     code, 0 if ok, non zero otherwise."""
-    # -- Get the output info (terminal vs pipe).
-    output_config = util.get_terminal_config()
 
     # -- Make sure that the examples package is installed.
     installer.install_missing_packages_on_the_fly(apio_ctx)
@@ -79,7 +78,7 @@ def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
     last_arch = None
     for entry in entries:
         # -- Seperation before each archictecture group, unless piped out.
-        if last_arch != entry.fpga_arch and output_config.terminal_mode:
+        if last_arch != entry.fpga_arch and apio_console.is_terminal():
             cout("")
             cout(f"{entry.fpga_arch.upper()}", style="magenta")
         last_arch = entry.fpga_arch
@@ -97,7 +96,7 @@ def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
         cout("".join(parts))
 
     # -- Show summary.
-    if output_config.terminal_mode:
+    if apio_console.is_terminal():
         cout(f"Total of {util.plurality(entries, 'example')}")
         if not verbose:
             cout(

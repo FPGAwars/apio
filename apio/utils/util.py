@@ -15,7 +15,6 @@ import json
 import traceback
 import importlib.metadata
 from functools import wraps
-import shutil
 from enum import Enum
 from dataclasses import dataclass
 from typing import Optional, Any, Tuple, List
@@ -87,45 +86,6 @@ class TerminalMode(Enum):
     # Output is sent to a filter or a file. No width and ansi colors should
     # be avoided.
     PIPE = 2
-
-
-@dataclass(frozen=True)
-class TerminalConfig:
-    """Contains the stdout/err terminal/pipe configuration."""
-
-    mode: TerminalMode  # TERMINAL or PIPE.
-    terminal_width: Optional[int]  # Terminal width. None in PIPE mode.
-
-    def __post_init__(self):
-        """Validates initialization."""
-        assert isinstance(self.mode, TerminalMode), self
-        assert (self.terminal_width is not None) == self.terminal_mode, self
-
-    @property
-    def terminal_mode(self) -> bool:
-        """True iff in terminal mode."""
-        return self.mode == TerminalMode.TERMINAL
-
-    @property
-    def pipe_mode(self) -> bool:
-        """True iff in pipe mode."""
-        return self.mode == TerminalMode.PIPE
-
-
-def get_terminal_config() -> TerminalConfig:
-    """Return the terminal configuration of of the current process."""
-
-    # Try to get terminal width, with a fallback default if not a terminal.
-    terminal_width, _ = shutil.get_terminal_size(fallback=(999, 999))
-
-    # We got the fallback width so assuming a pipe.
-    if terminal_width == 999:
-        return TerminalConfig(mode=TerminalMode.PIPE, terminal_width=None)
-
-    # We got an actual terminal width so assuming a terminal.
-    return TerminalConfig(
-        mode=TerminalMode.TERMINAL, terminal_width=terminal_width
-    )
 
 
 def get_path_in_apio_package(subpath: str) -> Path:

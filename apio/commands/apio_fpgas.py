@@ -12,6 +12,7 @@ from pathlib import Path
 from dataclasses import dataclass
 from typing import List, Dict
 import click
+from apio.common import apio_console
 from apio.common.apio_console import cout, cstyle
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import util
@@ -43,9 +44,6 @@ class Entry:
 # pylint: disable=too-many-statements
 def list_fpgas(apio_ctx: ApioContext, verbose: bool):
     """Prints all the available FPGA definitions."""
-
-    # -- Get the output info (terminal vs pipe).
-    output_config = util.get_terminal_config()
 
     # -- Collect a sparse dict with fpga ids to board count.
     boards_counts: Dict[str, int] = {}
@@ -113,7 +111,7 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
     last_arch = None
     for entry in entries:
         # -- Seperation before each archictecture group, unless piped out.
-        if last_arch != entry.fpga_arch and output_config.terminal_mode:
+        if last_arch != entry.fpga_arch and apio_console.is_terminal():
             cout("")
             cout(f"{entry.fpga_arch.upper()}", style="magenta")
         last_arch = entry.fpga_arch
@@ -135,7 +133,7 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
         cout("".join(parts))
 
     # -- Show summary.
-    if output_config.terminal_mode:
+    if apio_console.is_terminal():
         cout(f"Total of {util.plurality(entries, 'fpga')}")
         if not verbose:
             cout("Run 'apio fpgas -v' for additional columns.", style="yellow")

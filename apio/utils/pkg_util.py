@@ -13,6 +13,7 @@ from typing import List, Callable, Tuple
 from pathlib import Path
 from dataclasses import dataclass
 import os
+from apio.common import apio_console
 from apio.common.apio_console import cout, cstyle
 from apio.apio_context import ApioContext
 from apio.utils import util
@@ -295,8 +296,7 @@ def scan_packages(
 def _list_section(title: str, items: List[List[str]], style: str) -> None:
     """A helper function for printing one serction of list_packages()."""
     # -- Construct horizontal lines at terminal width.
-    config = util.get_terminal_config()
-    line_width = config.terminal_width if config.terminal_mode else 80
+    line_width = apio_console.width() if apio_console.is_terminal() else 80
     line = "─" * line_width
     dline = "═" * line_width
 

@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from typing import List, Dict
 import click
 from apio.common.apio_console import cout, cstyle
+from apio.common import apio_console
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import util
 from apio.commands import options
@@ -48,9 +49,6 @@ class Entry:
 # pylint: disable=too-many-statements
 def list_boards(apio_ctx: ApioContext, verbose: bool):
     """Prints all the available board definitions."""
-
-    # -- Get the output info (terminal vs pipe).
-    output_config = util.get_terminal_config()
 
     # -- Get examples counts by board. This is a sparse dictionary.
     examples = Examples(apio_ctx)
@@ -132,7 +130,7 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
     last_arch = None
     for entry in entries:
         # -- If not piping, add architecture groups seperations.
-        if last_arch != entry.fpga_arch and output_config.terminal_mode:
+        if last_arch != entry.fpga_arch and apio_console.is_terminal():
             cout("")
             cout(f"{entry.fpga_arch.upper()}", style="magenta")
         last_arch = entry.fpga_arch
@@ -159,7 +157,7 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
 
     # -- Show the summary.
 
-    if output_config.terminal_mode:
+    if apio_console.is_terminal():
         cout(f"Total of {util.plurality(entries, 'board')}")
         if not verbose:
             cout(
