@@ -24,7 +24,7 @@ import SCons.Defaults
 from apio.common.apio_console import cout
 
 # from apio.scons.apio_args import ApioArgs
-from apio.proto.apio_pb2 import SconsParams
+from apio.common.proto.apio_pb2 import SconsParams
 
 
 # -- All the build files and other artifcats are created in this this

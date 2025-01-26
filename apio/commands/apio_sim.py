@@ -14,7 +14,7 @@ from apio.common.apio_console import cout
 from apio.managers.scons import SCons
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
-from apio.proto.apio_pb2 import SimParams
+from apio.common.proto.apio_pb2 import SimParams
 
 
 # ---------------------------

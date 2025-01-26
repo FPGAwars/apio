@@ -16,7 +16,7 @@ from google.protobuf import text_format
 from apio.scons.plugin_ice40 import PluginIce40
 from apio.scons.plugin_ecp5 import PluginEcp5
 from apio.scons.plugin_gowin import PluginGowin
-from apio.proto.apio_pb2 import SconsParams, ICE40, ECP5, GOWIN
+from apio.common.proto.apio_pb2 import SconsParams, ICE40, ECP5, GOWIN
 from apio.scons.apio_env import ApioEnv, TARGET
 from apio.scons.plugin_base import PluginBase
 from apio.scons.plugin_util import (

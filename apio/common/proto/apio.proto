@@ -14,7 +14,7 @@
 syntax = "proto2";
 
  
-package apio.proto;
+package apio.common.proto;
 
 // The supported FPGA architectures, each with its own handler.
 enum ApioArch {

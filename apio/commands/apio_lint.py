@@ -14,7 +14,7 @@ from apio.utils import util
 from apio.utils import cmd_util
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
-from apio.proto.apio_pb2 import LintParams
+from apio.common.proto.apio_pb2 import LintParams
 
 
 # ---------------------------

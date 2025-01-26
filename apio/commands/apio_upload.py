@@ -16,7 +16,7 @@ from apio.utils import cmd_util
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.managers.programmers import construct_programmer_cmd
-from apio.proto.apio_pb2 import UploadParams
+from apio.common.proto.apio_pb2 import UploadParams
 
 
 # ---------------------------

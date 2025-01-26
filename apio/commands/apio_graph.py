@@ -15,7 +15,7 @@ from apio.utils import cmd_util
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.util import nameof
-from apio.proto.apio_pb2 import GraphOutputType, GraphParams, Verbosity
+from apio.common.proto.apio_pb2 import GraphOutputType, GraphParams, Verbosity
 
 
 # ---------------------------

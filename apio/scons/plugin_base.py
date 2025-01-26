@@ -16,7 +16,7 @@ from SCons.Action import Action
 from SCons.Script import Builder
 from apio.common.apio_console import cout
 from apio.scons.apio_env import ApioEnv, TARGET, BUILD_DIR_SEP
-from apio.proto.apio_pb2 import GraphOutputType
+from apio.common.proto.apio_pb2 import GraphOutputType
 from apio.scons.plugin_util import (
     SRC_SUFFIXES,
     verilog_src_scanner,

@@ -11,7 +11,7 @@ from click import unstyle
 from SCons.Node.FS import FS
 from SCons.Script import SetOption
 from pytest import LogCaptureFixture
-from apio.proto.apio_pb2 import TargetParams, UploadParams
+from apio.common.proto.apio_pb2 import TargetParams, UploadParams
 from apio.scons.plugin_util import (
     get_constraint_file,
     verilog_src_scanner,

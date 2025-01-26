@@ -24,7 +24,7 @@ from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
 from apio.managers import installer
 from apio.profile import Profile
-from apio.proto.apio_pb2 import (
+from apio.common.proto.apio_pb2 import (
     Verbosity,
     Envrionment,
     SconsParams,
