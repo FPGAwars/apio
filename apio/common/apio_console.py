@@ -70,6 +70,12 @@ def configure(*, colors: bool = None, force_terminal: bool = None) -> None:
     _decoder = AnsiDecoder()
 
 
+def console():
+    """Returns the underlying console. This value should not be cached as
+    the console object changes when the configure() or reset() are called."""
+    return _console
+
+
 def reset():
     """Reset to initial configuration."""
     configure(colors=True, force_terminal=False)

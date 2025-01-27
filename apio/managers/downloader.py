@@ -17,9 +17,9 @@ packages release repositorie.s
 
 from math import ceil
 import requests
-import click
+from rich.progress import track
 from apio.utils import util
-from apio.common.apio_console import cout, cstyle
+from apio.common.apio_console import cout, console
 
 # -- Timeout for geting a reponse from the server when downloading
 # -- a file (in seconds)
@@ -54,9 +54,6 @@ class FileDownloader:
             # -- Add the path
             self.destination = dest_dir / self.fname
 
-        self._progressbar = None
-        self._request = None
-
         # -- Request the file
         self._request = requests.get(url, stream=True, timeout=TIMEOUT_SECS)
 
@@ -85,19 +82,20 @@ class FileDownloader:
         with open(self.destination, "wb") as file:
 
             # -- Get the file length in Kbytes
-            chunks = int(ceil(self.get_size() / float(self.CHUNK_SIZE)))
+            num_chunks = int(ceil(self.get_size() / float(self.CHUNK_SIZE)))
 
-            # -- Download the file. Show a progress bar
-            with click.progressbar(
-                length=chunks,
-                label=cstyle("Downloading", style="yellow"),
-                fill_char=cstyle("█", style="cyan"),
-                empty_char=cstyle("░", style="cyan"),
-            ) as pbar:
-                for _ in pbar:
+            # -- Download and write the chunks, while displaying the progress.
+            for _ in track(
+                range(num_chunks),
+                description="Downloading",
+                console=console(),
+            ):
 
-                    # -- Receive next block of bytes
-                    file.write(next(itercontent))
+                file.write(next(itercontent))
+
+            # -- Check that the iterator reached its end. When the end is
+            # -- reached, next() returns the default value None.
+            assert next(itercontent, None) is None
 
         # -- Download done!
         self._request.close()

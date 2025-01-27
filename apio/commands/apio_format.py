@@ -61,12 +61,10 @@ online or use the command 'apio raw -- verible-verilog-format --helpful'.
     short_help="Format verilog source files.",
     help=APIO_FORMAT_HELP,
 )
-@click.pass_context
 @click.argument("files", nargs=-1, required=False)
 @options.project_dir_option
 @options.verbose_option
 def cli(
-    _cmd_ctx: click.Context,
     # Arguments
     files: Tuple[str],
     project_dir: Path,

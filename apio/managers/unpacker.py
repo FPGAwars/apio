@@ -14,8 +14,8 @@ from os import chmod
 from pathlib import Path
 from tarfile import open as tarfile_open
 from zipfile import ZipFile
-import click
-from apio.common.apio_console import cout, cstyle
+from rich.progress import track
+from apio.common.apio_console import cout, console
 from apio.utils import util
 
 
@@ -132,19 +132,12 @@ class FileUnpacker:
         # -- Build an array with all the files inside the tarball
         items = self._unpacker.get_items()
 
-        # -- Progress bar...
-        with click.progressbar(
-            items,
-            length=len(items),
-            label=cstyle("Unpacking..", style="yellow"),
-            fill_char=cstyle("█", style="cyan"),
-            empty_char=cstyle("░", style="cyan"),
-        ) as pbar:
-
-            # -- Go though all the files in the archive...
-            for item in pbar:
-
-                # -- Extract the file!
-                self._unpacker.extract_item(item, self._dest_dir)
+        # -- Unpack while displaying a progress bar.
+        for i in track(
+            range(len(items)),
+            description="Unpacking  ",
+            console=console(),
+        ):
+            self._unpacker.extract_item(items[i], self._dest_dir)
 
         return True
