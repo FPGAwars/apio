@@ -43,6 +43,7 @@ class ConsoleState:
     console: Console = None
     decoder: AnsiDecoder = None
 
+
 _state: ConsoleState = ConsoleState()
 
 
@@ -156,11 +157,14 @@ def cprint(
 class ConsoleCapture:
     """A context manager to output into a string."""
 
+    def __init__(self):
+        self._saved_file = None
+        self._buffer = None
+
     def __enter__(self):
-        console = _state.console
-        self._saved_file = console.file
+        self._saved_file = _state.console.file
         self._buffer = StringIO()
-        console.file = self._buffer
+        _state.console.file = self._buffer
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -168,6 +172,7 @@ class ConsoleCapture:
 
     @property
     def value(self):
+        """Returns the captured text."""
         return self._buffer.getvalue()
 
 
