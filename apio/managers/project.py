@@ -36,13 +36,12 @@ The option 'board' specifies the board definition that is used for \
 the project. The board id must be one of the boards ids, such as \
 'alhambra-ii', that is listed by the command 'apio boards'.
 
-Apio uses the board id to \
-determine information such the part number of the target FPGA or the \
-programmer command to use to upload the design to the board.
-
 Example:[code]
-  \\[env]
-  board = alhambra-ii[/]
+  board = alhambra-ii[/code]
+
+Apio uses the board id to \
+determine information such the FPGA part number the \
+programmer command to use to upload the design to the board.
 
 Apio has resource files with definition of boards, FPGAs and programmers. If \
 the project requires a custom definitions, you can add custom \
@@ -52,22 +51,18 @@ project directory and apio will use them instead.
 
 TOP_MODULE_OPTION_DOC = """
 The option 'top-module' specifies the name of \
-the top module of the design.
-
-If 'top-module' not specified, apio assumes the default name 'main', however, \
-it is a good practice to always specify the top module name for better \
-code readability.
+the top module of the design. If 'top-module' not specified, apio assumes \
+the default name 'main', however, it is a good practice to always specify \
+explicitly the top module.
 
 Example:[code]
-  \\[env]
-  board = alhambra-ii
-  top-module = my_main[/]
+  top-module = my_main[/code]
 """
 
 DEFAULT_TESTBENCH_DOC = """
 The option 'default-testbench' is useful in projects that have more than \
-one testbench file. It allows to specifie the default testbench that will \
-be simulated when the command 'apio sim' ir run without a testbench \
+a single testbench file, because it allows to specifiy the default testbench \
+that will be simulated when the command 'apio sim' ir run without a testbench \
 argument.
 
 Without this option, apio will exit with an error message if the project \
@@ -75,10 +70,7 @@ contains more than one testbench file and a testbench was not specified in \
 in the 'apio sim' command.
 
 Example:[code]
-  \\[env]
-  board = alhambra-ii
-  top-module = my_main
-  default-testbench = my_module_tb.v[/]
+  default-testbench = my_module_tb.v[/code]
 """
 
 FORMAT_VERIBLE_OPTIONS_DOC = """
@@ -87,11 +79,9 @@ The option 'format-verible-options' allows to control the operation of the \
 'verible' formatter.
 
 Example:[code]
-  \\[env]
-  ...
   format-verible-options =
       --column_limit=80
-      --indentation_spaces=4[/]
+      --indentation_spaces=4[/code]
 
 For the list of the verible formatter options run the command
 'apio raw -- verible-verilog-format --helpfull'
@@ -104,9 +94,7 @@ which enables for some FPGAs the use of DSP cells to implement multiply \
 operations. This is an advanced and esoteric option that is rarly needed.
 
 Example:[code]
-  \\[env]
-  ...
-  yosys-synth-extra-options = -dsp[/]
+  yosys-synth-extra-options = -dsp[/code]
 """
 
 OPTIONS = {

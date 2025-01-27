@@ -10,7 +10,13 @@
 import click
 from apio.managers import project
 from apio.apio_context import ApioContext, ApioContextScope
-from apio.common.apio_console import docs_text, docs_rule, cout, cstyle
+from apio.common.apio_console import (
+    docs_text,
+    docs_rule,
+    cout,
+    cstyle,
+    DOCS_TITLE,
+)
 
 
 # -- apio docs apio-ini
@@ -26,18 +32,17 @@ Examples:
 """
 
 APIO_INI_DOC = """
-Every apio project is required to have an 'apio.ini' project configuration \
-file. These are properties text files with \
-'#' comments, and a single section called '[env]' that contains the required \
-an optional options for this project.
+Every Apio project is required to have an 'apio.ini' project configuration \
+file. These are properties text files with '#' comments and a single section \
+called '\\[env]' that contains the required and optional options for this \
+project.
 
 Example:[code]
-  # -- My FPGA project.
   \\[env]
-  board = alhambra-ii
-  top-module = my_main[/]
+  board = alhambra-ii   # Board id
+  top-module = my_main  # Top module name[/code]
 
-Following is a list of the valid 'apio.ini' options and their descriptions.
+Following is a list of the apio.ini options and their descriptions.
 """
 
 
@@ -62,7 +67,7 @@ def cli():
         # -- Print option's title.
         is_required = option in project.REQUIRED_OPTIONS
         req = "REQUIRED" if is_required else "OPTIONAL"
-        styled_option = cstyle(option.upper(), style="magenta")
+        styled_option = cstyle(option.upper(), style=DOCS_TITLE)
         cout()
         cout(f"{styled_option} ({req})")
 

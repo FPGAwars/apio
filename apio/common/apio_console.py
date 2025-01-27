@@ -16,6 +16,14 @@ from rich.ansi import AnsiDecoder
 from rich.theme import Theme
 from rich.text import Text
 
+# -- The names of the Rich library color names is available at:
+# -- https://rich.readthedocs.io/en/stable/appendix/colors.html
+
+DOCS_TITLE = "dark_red bold"
+DOCS_EMPHASIZE = "green4 bold"
+
+TEXT_EMPHASIZE = "cyan"
+
 # Suppress earning about access to the global variables.
 # pylint: disable=global-statement
 
@@ -48,8 +56,8 @@ def configure(*, colors: bool = None, force_terminal: bool = None) -> None:
         force_terminal=_force_terminal,
         theme=Theme(
             {
-                "repr.str": "cyan",
-                "code": "cyan",
+                "repr.str": DOCS_EMPHASIZE,
+                "code": DOCS_EMPHASIZE,
                 "repr.number": "",
             }
         ),

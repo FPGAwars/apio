@@ -12,7 +12,7 @@ from rich.table import Table
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import apio_docs_apio_ini
-from apio.common.apio_console import cprint, docs_text, cout
+from apio.common.apio_console import cprint, docs_text
 
 
 # -- apio docs resources
@@ -27,13 +27,13 @@ Examples:
 """
 
 APIO_DOCS_RESOURCES_SUMMARY = """
-The table below provide a few Apio and FPGA design related resources.
+The table below provides a few Apio and FPGA design-related resources.
 
 For additional information about specific boards, FPGAs, or tools such as \
 [b]yosys[/] and [b]verible[/], consult their respective documentation.
 
-[b]Shawn Hymel's[/] excellent video series on youtube is based on an older \
-version of Apio with slightly different commands set that achieve the \
+[b]Shawn Hymel's[/] excellent video series on YouTube is based on an older \
+version of Apio with a slightly different command set that achieves the \
 same functionality.
 """
 
