@@ -78,8 +78,9 @@ def _serial_cli():
 
 # --- apio drivers install
 
+# -- Text in the markdown format of the python rich library.
 APIO_DRIVERS_INSTALL_HELP = """
-The command group 'apio drivers install' includes subcommands that that
+The command group 'apio drivers install' includes subcommands that that \
 install system drivers that are used to upload designs to FPGA boards.
 """
 

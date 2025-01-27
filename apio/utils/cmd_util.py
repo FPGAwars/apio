@@ -13,9 +13,15 @@ import sys
 from dataclasses import dataclass
 from typing import List, Dict, Union
 import click
-from apio.common.apio_console import cout, cerror, cstyle
+from click.formatting import HelpFormatter
+from apio.common.apio_console import (
+    ConsoleCapture,
+    cout,
+    cerror,
+    cstyle,
+    docs_text,
+)
 from apio.utils import util
-from apio.profile import Profile
 
 
 def fatal_usage_error(cmd_ctx: click.Context, msg: str) -> None:
@@ -242,26 +248,39 @@ class ApioGroup(click.Group):
                 self.add_command(cmd=cmd, name=cmd.name)
 
     # @override
-    def get_help(self, ctx: click.Context) -> str:
-        """Formats the help into a string and returns it. We override the
-        base class method to list the subcommands by categories.
-        """
+    def format_help_text(
+        self, ctx: click.Context, formatter: HelpFormatter
+    ) -> None:
+        """Overrides the parent method that formats the command's help text."""
 
-        # -- Apply the color prefernece. This is required because the -h
-        # -- options bypasses the command handler so we don't get to create
-        # -- an apio context.
-        Profile.apply_color_preferences()
+        # -- The command should have help metadata defined.
+        text = self.help
+        assert text, ctx.command_path
 
-        # -- Get the default help text for this command.
-        original_help = super().get_help(ctx)
+        # -- Style the metadata text.
+        with ConsoleCapture() as capture:
+            docs_text(text.rstrip("\n"), end="")
+            text = capture.value
 
-        # -- The auto generated click help lines (apio --help)
-        help_lines = original_help.split("\n")
+        # -- Raw write to the outupt, with indent.
+        lines = text.split("\n")
+        for line in lines:
+            formatter.write(("  " + line).rstrip(" ") + "\n")
 
-        # -- Extract the header of the text help. We will generate ourselves
-        # -- and append the command list.
-        index = help_lines.index("Commands:")
-        result_lines = help_lines[:index]
+    # @override
+    def format_options(
+        self, ctx: click.Context, formatter: HelpFormatter
+    ) -> None:
+        """Overides the parent method which formats the opitons and sub
+        commands."""
+
+        # -- Call the grandparent method which formats the options without
+        # -- the subcommands.
+        click.Command.format_options(self, ctx, formatter)
+
+        # -- Format the subcommands, grouped by the apio defined subgroups
+        # -- in self._subgroups.
+        formatter.write("\n")
 
         # -- Get a flat list of all subcommand names.
         cmd_names = [
@@ -275,15 +294,21 @@ class ApioGroup(click.Group):
 
         # -- Generate the subcommands short help, grouped by subgroup.
         for subgroup in self._subgroups:
-            result_lines.append(f"{subgroup.title}:")
+            assert isinstance(subgroup, ApioSubgroup), subgroup
+            formatter.write(f"{subgroup.title}:\n")
+            # -- Print the commands that are in this subgroup.
             for cmd in subgroup.commands:
                 # -- We pad for field width and then apply color.
                 styled_name = cstyle(
                     f"{cmd.name:{max_name_len}}", style="magenta"
                 )
-                result_lines.append(
-                    f"  {ctx.command_path} {styled_name}  {cmd.short_help}"
+                formatter.write(
+                    f"  {ctx.command_path} {styled_name}  {cmd.short_help}\n"
                 )
-            result_lines.append("")
+            formatter.write("\n")
 
-        return "\n".join(result_lines)
+    # @override
+    def get_help(self, ctx: click.Context) -> str:
+        """Overrides a super method to add blank line at the end of the help
+        text."""
+        return super().get_help(ctx) + "\n"

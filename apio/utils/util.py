@@ -327,7 +327,7 @@ def get_tinyprog_meta() -> list:
 
     if result.exit_code != 0:
         cout(
-            f"Warning: the command `{command_str}`failed with exit code "
+            f"Warning: the command '{command_str}' failed with exit code "
             f"{result.exit_code}",
             style="yellow",
         )

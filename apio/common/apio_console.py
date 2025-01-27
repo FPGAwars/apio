@@ -21,8 +21,7 @@ from rich.text import Text
 # -- https://rich.readthedocs.io/en/stable/appendix/colors.html
 
 DOCS_TITLE = "dark_red bold"
-DOCS_EMPHASIZE = "green4 bold"
-
+DOCS_EMPHASIZE = "magenta"
 TEXT_EMPHASIZE = "cyan"
 
 
@@ -66,6 +65,7 @@ def configure(*, colors: bool = None, force_terminal: bool = None) -> None:
             {
                 "repr.str": DOCS_EMPHASIZE,
                 "code": DOCS_EMPHASIZE,
+                "repr.url": DOCS_EMPHASIZE,
                 "repr.number": "",
             }
         ),
@@ -183,10 +183,12 @@ def cstyle(text: str, style: Optional[str] = None) -> str:
         return capture.value
 
 
-def docs_text(markdown_text: str, width: int = DOCS_WIDTH) -> None:
+def docs_text(
+    markdown_text: str, width: int = DOCS_WIDTH, end: str = "\n"
+) -> None:
     """A wrapper around Console.print that is specialized for redenring
     help and docs."""
-    _state.console.print(markdown_text, highlight=True, width=width)
+    _state.console.print(markdown_text, highlight=True, width=width, end=end)
 
 
 def docs_rule(width: int = DOCS_WIDTH):

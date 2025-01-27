@@ -94,12 +94,13 @@ def _set_cli(colors: str):
 
 # --- apio preferences
 
+# -- Text in the markdown format of the python rich library.
 APIO_PREFERENCES_HELP = """
-The command group ‘apio preferences' contains subcommands to manage
-the apio user preferences. These are user configurations that affect all the
+The command group 'apio preferences' contains subcommands to manage \
+the apio user preferences. These are user configurations that affect all the \
 apio project on the same computer.
 
-The user preference is not part of any apio project and typically are not
+The user preference is not part of any apio project and typically are not \
 shared when multiple user colaborate on the same project.
 """
 

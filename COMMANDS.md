@@ -54,25 +54,27 @@ Usage: apio [OPTIONS] COMMAND [ARGS]...
   Work with FPGAs with ease.
 
   Apio is an easy to use and open-source command-line suite designed to
-  streamline FPGA programming. It supports a wide range of tasks, including
-  linting, building, simulation, unit testing, and programming FPGA boards.
+  streamline FPGA programming. It supports a wide range of tasks,
+  including linting, building, simulation, unit testing, and programming
+  FPGA boards.
 
-  An Apio project consists of a directory containing a configuration file
-  named 'apio.ini', along with FPGA source files, testbenches, and pin
-  definition files.
+  An Apio project consists of a directory containing a configuration
+  file named 'apio.ini', along with FPGA source files, testbenches, and
+  pin definition files.
 
-  Apio commands are intuitive and perform their intended functionalities right
-  out of the box. For example, the command apio upload automatically compiles
-  the design in the current directory and uploads it to the FPGA board.
+  Apio commands are intuitive and perform their intended functionalities
+  right out of the box. For example, the command apio upload
+  automatically compiles the design in the current directory and uploads
+  it to the FPGA board.
 
-  For detailed information about any Apio command, append the -h flag to view
-  its help text. For instance:
+  For detailed information about any Apio command, append the -h flag to
+  view its help text. For example:
 
   apio build -h
   apio drivers ftdi install -h
 
-  For more information about the Apio project, visit the official Apio Wiki
-  https://github.com/FPGAwars/apio/wiki/Apio
+  For more information about the Apio project, visit the official Apio
+  Wiki https://github.com/FPGAwars/apio/wiki/Apio
 
 Options:
   --version   Show the version and exit.
@@ -181,7 +183,7 @@ Options:
 ```
 Usage: apio create [OPTIONS]
 
-  The command 'apio create' creates a new `apio.ini` project file and is
+  The command 'apio create' creates a new 'apio.ini' project file and is
   typically used when setting up a new Apio project.
 
   Examples:
@@ -206,8 +208,8 @@ Options:
 ```
 Usage: apio docs [OPTIONS] COMMAND [ARGS]...
 
-  The command group ‘apio docs contains subcommands that provides various apio
-  documentation and references to online resources.
+  The command group 'apio docs' contains subcommands that provides
+  various apio documentation and references to online resources.
 
 Options:
   -h, --help  Show this message and exit.
@@ -260,8 +262,8 @@ Options:
 ```
 Usage: apio drivers [OPTIONS] COMMAND [ARGS]...
 
-  The command group ‘apio drivers’ contains subcommands to manage the drivers
-  on your system.
+  The command group 'apio drivers' contains subcommands to manage the
+  drivers on your system.
 
 Options:
   -h, --help  Show this message and exit.
@@ -280,8 +282,9 @@ Subcommands:
 ```
 Usage: apio drivers install [OPTIONS] COMMAND [ARGS]...
 
-  The command group 'apio drivers install' includes subcommands that that
-  install system drivers that are used to upload designs to FPGA boards.
+  The command group 'apio drivers install' includes subcommands that
+  that install system drivers that are used to upload designs to FPGA
+  boards.
 
 Options:
   -h, --help  Show this message and exit.
@@ -333,8 +336,8 @@ Options:
 ```
 Usage: apio drivers list [OPTIONS] COMMAND [ARGS]...
 
-  The command group 'apio drivers list' includes subcommands that that lists
-  system drivers that are used with FPGA boards.
+  The command group 'apio drivers list' includes subcommands that that
+  lists system drivers that are used with FPGA boards.
 
 Options:
   -h, --help  Show this message and exit.
@@ -415,8 +418,9 @@ Options:
 ```
 Usage: apio drivers uninstall [OPTIONS] COMMAND [ARGS]...
 
-  The command group 'apio drivers uninstall' includes subcommands that that
-  uninstall system drivers that are used to upload designs to FPGA boards.
+  The command group 'apio drivers uninstall' includes subcommands that
+  that uninstall system drivers that are used to upload designs to FPGA
+  boards.
 
 Options:
   -h, --help  Show this message and exit.
@@ -468,9 +472,9 @@ Options:
 ```
 Usage: apio examples [OPTIONS] COMMAND [ARGS]...
 
-  The command group ‘apio examples’ provides subcommands for listing and
-  fetching Apio-provided examples. Each example is a self-contained mini-
-  project that can be built and uploaded to an FPGA board.
+  The command group 'apio examples' provides subcommands for listing and
+  fetching Apio-provided examples. Each example is a self-contained
+  mini-project that can be built and uploaded to an FPGA board.
 
 Options:
   -h, --help  Show this message and exit.
@@ -679,13 +683,18 @@ Options:
 Usage: apio packages [OPTIONS] COMMAND [ARGS]...
 
   The command group ‘apio packages’ provides commands to manage the
-  installation of Apio packages. These are not Python packages but Apio-
-  specific packages containing various tools and data essential for the
-  operation of Apio. These packages are installed after the installation of
-  the Apio Python package itself, using the command ‘apio packages install’.
+  installation
+  of Apio packages. These are not Python packages but Apio-specific
+  packages
+  containing various tools and data essential for the operation of Apio.
+  These packages are installed after the installation of the Apio Python
+  package
+  itself, using the command ‘apio packages install’.
 
-  The list of available packages depends on the operating system you are using
-  and may vary between different operating systems.
+  The list of available
+  packages depends on the operating system you are using and may vary
+  between
+  different operating systems.
 
 Options:
   -h, --help  Show this message and exit.
@@ -785,12 +794,12 @@ Options:
 ```
 Usage: apio preferences [OPTIONS] COMMAND [ARGS]...
 
-  The command group ‘apio preferences' contains subcommands to manage the apio
-  user preferences. These are user configurations that affect all the apio
-  project on the same computer.
+  The command group 'apio preferences' contains subcommands to manage
+  the apio user preferences. These are user configurations that affect
+  all the apio project on the same computer.
 
-  The user preference is not part of any apio project and typically are not
-  shared when multiple user colaborate on the same project.
+  The user preference is not part of any apio project and typically are
+  not shared when multiple user colaborate on the same project.
 
 Options:
   -h, --help  Show this message and exit.
@@ -942,7 +951,7 @@ Options:
 ```
 Usage: apio system [OPTIONS] COMMAND [ARGS]...
 
-  The command group ‘apio system’ contains subcommands that provide
+  The command group 'apio system' contains subcommands that provide
   information about the system and Apio’s installation.
 
 Options:

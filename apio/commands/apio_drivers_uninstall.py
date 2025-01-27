@@ -79,8 +79,9 @@ def _serial_cli():
 
 # --- apio drivers uninstall
 
+# -- Text in the markdown format of the python rich library.
 APIO_DRIVERS_UNINSTALL_HELP = """
-The command group 'apio drivers uninstall' includes subcommands that that
+The command group 'apio drivers uninstall' includes subcommands that that \
 uninstall system drivers that are used to upload designs to FPGA boards.
 """
 

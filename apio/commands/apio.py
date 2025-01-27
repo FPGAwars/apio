@@ -94,29 +94,29 @@ def context_settings():
 # -- Top click command node.
 # ---------------------------
 
+# -- Text in the markdown format of the python rich library.
 APIO_HELP = """
-Work with FPGAs with ease.
+[b]Work with FPGAs with ease.[/b]
 
-Apio is an easy to use and open-source command-line suite designed to
-streamline FPGA programming. It supports a wide range of tasks, including
+Apio is an easy to use and open-source command-line suite designed to \
+streamline FPGA programming. It supports a wide range of tasks, including \
 linting, building, simulation, unit testing, and programming FPGA boards.
 
-An Apio project consists of a directory containing a configuration file
-named 'apio.ini', along with FPGA source files, testbenches, and pin definition
-files.
+An Apio project consists of a directory containing a configuration file \
+named 'apio.ini', along with FPGA source files, testbenches, and pin \
+definition files.
 
-Apio commands are intuitive and perform their intended functionalities right
-out of the box. For example, the command apio upload automatically compiles
+Apio commands are intuitive and perform their intended functionalities right \
+out of the box. For example, the command apio upload automatically compiles \
 the design in the current directory and uploads it to the FPGA board.
 
-For detailed information about any Apio command, append the -h flag to view
-its help text. For instance:
+For detailed information about any Apio command, append the -h flag to view \
+its help text. For example:
 
-\b
-apio build -h
-apio drivers ftdi install -h
+[code]apio build -h
+apio drivers ftdi install -h[/code]
 
-For more information about the Apio project, visit the official Apio Wiki
+For more information about the Apio project, visit the official Apio Wiki \
 https://github.com/FPGAwars/apio/wiki/Apio
 """
 

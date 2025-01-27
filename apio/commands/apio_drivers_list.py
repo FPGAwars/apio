@@ -121,8 +121,9 @@ def _usb_cli():
 
 # --- apio drivers list
 
+# -- Text in the markdown format of the python rich library.
 APIO_DRIVERS_LIST_HELP = """
-The command group 'apio drivers list' includes subcommands that that lists
+The command group 'apio drivers list' includes subcommands that that lists \
 system drivers that are used with FPGA boards.
 """
 

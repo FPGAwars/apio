@@ -116,9 +116,10 @@ def _platforms_cli():
 
 # ------ apio system
 
+# -- Text in the markdown format of the python rich library.
 APIO_SYSTEM_HELP = """
-The command group ‘apio system’ contains subcommands that provide information
-about the system and Apio’s installation.
+The command group 'apio system' contains subcommands that provide \
+information about the system and Apio’s installation.
 """
 
 # -- We have only a single group with the title 'Subcommands'.

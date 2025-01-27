@@ -103,8 +103,8 @@ def cli(_: click.Context):
     # -- Case 1: Using an old version.
     if version.parse(current_version) < version.parse(latest_version):
         cout(
-            "You're not updated\nPlease execute "
-            "`pip install -U apio` to upgrade.",
+            "You're not up to date.",
+            "Please execute 'pip install -U apio' to upgrade.",
             style="yellow",
         )
         return

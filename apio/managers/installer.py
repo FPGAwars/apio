@@ -265,7 +265,7 @@ def install_package(
         e.b. 'drivers', 'drivers@1.2.0'.
     'force' indicates if to perform the installation even if a matching
         package is already installed.
-    `verbose` indicates if to print extra information.
+    'verbose' indicates if to print extra information.
 
     Returns normally if no error, exits the program with an error status
     and a user message if an error is detected.

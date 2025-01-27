@@ -14,7 +14,6 @@ from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import apio_docs_apio_ini
 from apio.common.apio_console import cprint, docs_text, PADDING
 
-
 # -- apio docs resources
 
 APIO_DOCS_RESOURCES_HELP = """
@@ -26,6 +25,7 @@ Examples:
   apio docs resources     # Provides resources information
 """
 
+# -- Text in markdown in rich library format.
 APIO_DOCS_RESOURCES_SUMMARY = """
 The table below provides a few Apio and FPGA design-related resources.
 
@@ -82,8 +82,9 @@ def _resources_cli():
 
 # --- apio docs
 
+# -- Text in the markdown format of the python rich library.
 APIO_DOCS_HELP = """
-The command group ‘apio docs contains subcommands that provides various
+The command group 'apio docs' contains subcommands that provides various \
 apio documentation and references to online resources.
 """
 
