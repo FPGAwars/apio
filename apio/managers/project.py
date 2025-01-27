@@ -32,28 +32,26 @@ https://github.com/FPGAwars/apio/wiki/Project-configuration-file
 # -- python rich library. See apio_docs_apio_ini.py to see how they are
 # -- used.
 BOARD_OPTION_DOC = """
-The option 'board' specifies the board definition that is used by \
-the project. The board id must be one of the boards ids, such as \
-'alhambra-ii', that is listed by the command 'apio boards'.
+The option 'board' specifies the board definition that is used by the \
+project. The board ID must be one of the board IDs, such as 'alhambra-ii', \
+that is listed by the command 'apio boards'.
 
 Example:[code]
   board = alhambra-ii[/code]
 
-Apio uses the board id to \
-determine information such the FPGA part number the \
-programmer command to use to upload the design to the board.
+Apio uses the board ID to determine information such as the FPGA part number \
+and the programmer command to use to upload the design to the board.
 
-Apio has resource files with definition of boards, FPGAs and programmers. If \
-the project requires a custom definitions, you can add custom \
-'boards.jsonc', 'fgpas.jsonc', and 'programmers.jsonc' files in the  \
-project directory and apio will use them instead.
+Apio has resource files with definitions of boards, FPGAs, and programmers. \
+If the project requires custom definitions, you can add custom \
+'boards.jsonc', 'fpgas.jsonc', and 'programmers.jsonc' files in the project \
+directory, and Apio will use them instead.
 """
 
 TOP_MODULE_OPTION_DOC = """
-The option 'top-module' specifies the name of \
-the top module of the design. If 'top-module' not specified, apio assumes \
-the default name 'main', however, it is a good practice to always specify \
-explicitly the top module.
+The option 'top-module' specifies the name of the top module of the design. \
+If 'top-module' is not specified, Apio assumes the default name 'main'; \
+however, it is a good practice to always explicitly specify the top module.
 
 Example:[code]
   top-module = my_main[/code]
@@ -61,21 +59,21 @@ Example:[code]
 
 DEFAULT_TESTBENCH_DOC = """
 The option 'default-testbench' is useful in projects that have more than \
-a single testbench file, because it allows to specifiy the default testbench \
-that will be simulated when the command 'apio sim' ir run without a testbench \
+a single testbench file, because it allows specifying the default testbench \
+that will be simulated when the command 'apio sim' is run without a testbench \
 argument.
 
-Without this option, apio will exit with an error message if the project \
+Without this option, Apio will exit with an error message if the project \
 contains more than one testbench file and a testbench was not specified in \
-in the 'apio sim' command.
+the 'apio sim' command.
 
 Example:[code]
   default-testbench = my_module_tb.v[/code]
 """
 
 FORMAT_VERIBLE_OPTIONS_DOC = """
-The option 'format-verible-options' allows to control the operation of the \
-`apio format` command by specifying additional options to the underlying \
+The option 'format-verible-options' allows controlling the operation of the \
+'apio format' command by specifying additional options to the underlying \
 'verible' formatter.
 
 Example:[code]
@@ -83,15 +81,16 @@ Example:[code]
       --column_limit=80
       --indentation_spaces=4[/code]
 
-For the list of the verible formatter options run the command
+For the list of the Verible formatter options, run the command \
 'apio raw -- verible-verilog-format --helpfull'
 """
 
 YOSYS_SYNTH_EXTRA_OPTIONS_DOC = """
-The option 'yosys-synth-extra-options' allows to add options to the \
-yosys synth command. In the example below, it adds the option '-dsp'
+The option 'yosys-synth-extra-options' allows adding options to the \
+yosys synth command. In the example below, it adds the option '-dsp', \
 which enables for some FPGAs the use of DSP cells to implement multiply \
-operations. This is an advanced and esoteric option that is rarly needed.
+operations. This is an advanced and esoteric option that is typically \
+not needed.
 
 Example:[code]
   yosys-synth-extra-options = -dsp[/code]
