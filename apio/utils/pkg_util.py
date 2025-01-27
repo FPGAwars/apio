@@ -190,14 +190,14 @@ class PackageScanResults:
 
     def dump(self):
         """Dump the content of this object. For debugging."""
-        print("Package scan results:")
-        print(f"  Installed     {self.installed_package_names}")
-        print(f"  bad version   {self.bad_version_package_names_subset}")
-        print(f"  Uninstalled   {self.uninstalled_package_names}")
-        print(f"  Broken        {self.broken_package_names}")
-        print(f"  Orphan ids    {self.orphan_package_names}")
-        print(f"  Orphan dirs   {self.orphan_dir_names}")
-        print(f"  Orphan files  {self.orphan_file_names}")
+        cout("Package scan results:")
+        cout(f"  Installed     {self.installed_package_names}")
+        cout(f"  bad version   {self.bad_version_package_names_subset}")
+        cout(f"  Uninstalled   {self.uninstalled_package_names}")
+        cout(f"  Broken        {self.broken_package_names}")
+        cout(f"  Orphan ids    {self.orphan_package_names}")
+        cout(f"  Orphan dirs   {self.orphan_dir_names}")
+        cout(f"  Orphan files  {self.orphan_file_names}")
 
 
 def package_version_ok(

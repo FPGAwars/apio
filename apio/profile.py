@@ -35,7 +35,7 @@ class Profile:
         assert "%" not in self.remote_config_url, self.remote_config_url
 
         if util.is_debug():
-            print(f"Remote config url: {self.remote_config_url}")
+            cout(f"Remote config url: {self.remote_config_url}")
 
         # ---- Set the default parameters
 

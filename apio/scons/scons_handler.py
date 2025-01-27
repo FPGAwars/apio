@@ -28,7 +28,7 @@ from apio.scons.plugin_util import (
     get_programmer_cmd,
     configure_cleanup,
 )
-from apio.common.apio_console import cerror
+from apio.common.apio_console import cerror, cout
 
 # -- Scons builders ids.
 SYNTH_BUILDER = "SYNTH_BUILDER"
@@ -77,7 +77,7 @@ class SconsHandler:
         elif params.arch == GOWIN:
             plugin = PluginGowin(apio_env)
         else:
-            print(
+            cout(
                 f"Apio SConstruct dispatch error: unknown arch [{params.arch}]"
             )
             sys.exit(1)

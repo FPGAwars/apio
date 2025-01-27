@@ -466,7 +466,7 @@ def debug_decoractor(func):
                 # -- Print the plain argument if it is not a dicctionary
                 else:
                     cout(f"        * {arg}")
-            print()
+            cout()
 
         # -- Call the function, dump exceptions, if any.
         try:

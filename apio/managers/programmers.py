@@ -62,7 +62,7 @@ def construct_programmer_cmd(
         # This is the command line to execute for uploading the
         # circuit
         if util.is_debug():
-            print("Applying a special case for tinyprog on darwin.")
+            cout("Applying a special case for tinyprog on darwin.")
         return "tinyprog --libusb --program $SOURCE"
 
     # -- Serialize programmer command
@@ -77,7 +77,7 @@ def construct_programmer_cmd(
         apio_ctx, board_info, sram, flash
     )
     if util.is_debug():
-        print(f"Programmer template: [{programmer}]")
+        cout(f"Programmer template: [{programmer}]")
     # -- The placeholder for the bitstream file name should always exist.
     assert "$SOURCE" in programmer, programmer
 
@@ -246,7 +246,7 @@ def _check_usb(apio_ctx: ApioContext, board: str, board_info: dict) -> None:
     connected_devices = system.get_usb_devices()
 
     if util.is_debug():
-        print(f"usb devices: {connected_devices}")
+        cout(f"usb devices: {connected_devices}")
 
     # -- Check if the given device (vid:pid) is connected!
     # -- Not connected by default
@@ -334,7 +334,7 @@ def _check_serial(board: str, board_info: dict, ext_serial_port: str) -> str:
     serial_ports = util.get_serial_ports()
 
     if util.is_debug():
-        print(f"serial ports: {serial_ports}")
+        cout(f"serial ports: {serial_ports}")
 
     # -- If no serial ports detected, exit with an error.
     if not serial_ports:

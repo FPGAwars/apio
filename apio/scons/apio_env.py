@@ -131,5 +131,5 @@ class ApioEnv:
         cout("")
         cout(">>> Env vars BEGIN", style="magenta")
         for key in keys:
-            print(f"{key} = {self.scons_env[key]}")
+            cout(f"{key} = {self.scons_env[key]}")
         cout("<<< Env vars END\n", style="magenta")

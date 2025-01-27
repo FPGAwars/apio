@@ -207,7 +207,7 @@ class SconsFilter:
         in_iceprog_range = self._iceprog_detector.update(pipe_id, line)
 
         # -- For debugging.
-        # print(
+        # cout(
         #     f"{'P' if in_pnr_verbose_range else '-'}"
         #     f"{'V' if in_iverolog_range else '-'}"
         #     f"{'I' if in_iverolog_range else '-'}"
