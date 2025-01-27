@@ -228,9 +228,27 @@ class ApioSubgroup:
     commands: List[click.Command]
 
 
+def _format_apio_markdown_help_text(
+    markdown_text: str, formatter: HelpFormatter
+) -> None:
+    """Format command's or group's help markdown text into a given
+    click formatter."""
+
+    # -- Style the metadata text.
+    styled_text = None
+    with ConsoleCapture() as capture:
+        docs_text(markdown_text.rstrip("\n"), end="")
+        styled_text = capture.value
+
+    # -- Raw write to the outupt, with indent.
+    lines = styled_text.split("\n")
+    for line in lines:
+        formatter.write(("  " + line).rstrip(" ") + "\n")
+
+
 class ApioGroup(click.Group):
-    """A customized click.Group class that allow to group subcommand by
-    categories."""
+    """A customized click.Group class that allows apio customized help
+    format."""
 
     def __init__(self, *args, **kwargs):
         # -- Consume the 'subgroups' arg.
@@ -252,20 +270,7 @@ class ApioGroup(click.Group):
         self, ctx: click.Context, formatter: HelpFormatter
     ) -> None:
         """Overrides the parent method that formats the command's help text."""
-
-        # -- The command should have help metadata defined.
-        text = self.help
-        assert text, ctx.command_path
-
-        # -- Style the metadata text.
-        with ConsoleCapture() as capture:
-            docs_text(text.rstrip("\n"), end="")
-            text = capture.value
-
-        # -- Raw write to the outupt, with indent.
-        lines = text.split("\n")
-        for line in lines:
-            formatter.write(("  " + line).rstrip(" ") + "\n")
+        _format_apio_markdown_help_text(self.help, formatter)
 
     # @override
     def format_options(
@@ -306,6 +311,24 @@ class ApioGroup(click.Group):
                     f"  {ctx.command_path} {styled_name}  {cmd.short_help}\n"
                 )
             formatter.write("\n")
+
+    # @override
+    def get_help(self, ctx: click.Context) -> str:
+        """Overrides a super method to add blank line at the end of the help
+        text."""
+        return super().get_help(ctx) + "\n"
+
+
+class ApioCommand(click.Command):
+    """A customized click.Command class that allows apio customized help
+    format."""
+
+    # @override
+    def format_help_text(
+        self, ctx: click.Context, formatter: HelpFormatter
+    ) -> None:
+        """Overrides the parent method that formats the command's help text."""
+        _format_apio_markdown_help_text(self.help, formatter)
 
     # @override
     def get_help(self, ctx: click.Context) -> str:

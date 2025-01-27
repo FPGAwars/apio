@@ -15,40 +15,40 @@ from apio.common.apio_console import cout
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import options
 from apio.utils import cmd_util, pkg_util
+from apio.utils.cmd_util import ApioCommand
 from apio.utils.util import nameof
 from apio.managers import installer
 
 
-# ---------------------------
-# -- COMMAND
-# ---------------------------
+# ----------- apio raw
+
+# -- Text in the markdown format of the python rich library.
 APIO_RAW_HELP = """
-The command ‘apio raw’ allows you to bypass Apio and run underlying tools
-directly. This is an advanced command that requires familiarity with the
+The command 'apio raw' allows you to bypass Apio and run underlying tools \
+directly. This is an advanced command that requires familiarity with the \
 underlying tools.
 
-Before running the command, Apio temporarily modifies system environment
-variables such as $PATH to provide access to its packages. To view these
-environment changes, run the command with the -v option.
+Before running the command, Apio temporarily modifies system environment \
+variables such as '$PATH' to provide access to its packages. To view these \
+environment changes, run the command with the '-v' option.
 
-\b
-Examples:
-  apio raw -- yosys --version           # Yosys version
-  apio raw -v -- yosys --version        # Same but with verbose apio info.
-  apio raw -- yosys                     # Run Yosys in interactive mode.
-  apio raw -- icepll -i 12 -o 30        # Calc ICE PLL
-  apio raw -v                           # Show apio env setting.
-  apio raw -h                           # Show this help info.
+Examples:[code]
+  apio raw    -- yosys --version      # Yosys version
+  apio raw -v -- yosys --version      # Verbose apio info.
+  apio raw    -- yosys                # Yosys interactive mode.
+  apio raw    -- icepll -i 12 -o 30   # Calc ICE PLL.
+  apio raw    -- which yosys          # Lookup a command.
+  apio raw -v                         # Show apio env setting.
+  apio raw -h                         # Show this help info.[/code]
 
-The -- token is used to separate Apio commands and their arguments from the
-underlying tools and their arguments. It can be omitted in some cases, but
-it’s a good practice to always use it. As a rule of thumb, always prefix the
-raw command you want to run with 'apio raw -- '.
+The '--' marker is used to seperate between the arguments of the apio \
+command itself and those of the executed command.
 """
 
 
 @click.command(
     name="raw",
+    cls=ApioCommand,
     short_help="Execute commands directly from the Apio packages.",
     help=APIO_RAW_HELP,
     context_settings={"ignore_unknown_options": True},
