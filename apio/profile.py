@@ -9,7 +9,6 @@ import json
 import sys
 from typing import Union, Any, Dict
 from pathlib import Path
-import click
 import requests
 from apio.common import apio_console
 from apio.common.apio_console import cout, cerror, cprint
@@ -97,14 +96,7 @@ class Profile:
         # -- Determine if colors should be on or off.
         colors: bool = Profile.read_color_prefernces()
 
-        # -- Apply to the click library.
-        # -- If colors are on, we don't write True but None, to use the default
-        # -- policy of emitting colors only if not piped out.
-        click_context = click.get_current_context(silent=True)
-        if click_context:
-            click_context.color = None if colors else False
-
-        # -- Apply to the Rich library
+        # -- Apply to apio console which controls all output and coloring.
         apio_console.configure(colors=colors)
 
     @staticmethod
