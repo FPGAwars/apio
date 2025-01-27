@@ -9,7 +9,7 @@
 
 import click
 from rich.table import Table
-from apio.common.apio_console import cprint
+from apio.common.apio_console import cprint, PADDING
 from apio.utils import util
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup
@@ -45,19 +45,17 @@ def _info_cli():
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Define the table.
-    table = Table(show_header=False, show_lines=True)
+    table = Table(show_header=False, show_lines=True, padding=PADDING)
     table.add_column(no_wrap=True)
     table.add_column(no_wrap=True, style="cyan")
 
     # -- Add rows
-    table.add_row("Apio version", util.get_apio_version() + "  ")
-    table.add_row("Python version ", util.get_python_version() + "  ")
-    table.add_row("Platform id ", apio_ctx.platform_id + "  ")
-    table.add_row(
-        "Python package ", str(util.get_path_in_apio_package("")) + "  "
-    )
-    table.add_row("Apio home ", str(apio_ctx.home_dir) + "  ")
-    table.add_row("Apio packages ", str(apio_ctx.packages_dir) + "  ")
+    table.add_row("Apio version", util.get_apio_version())
+    table.add_row("Python version ", util.get_python_version())
+    table.add_row("Platform id ", apio_ctx.platform_id)
+    table.add_row("Python package ", str(util.get_path_in_apio_package("")))
+    table.add_row("Apio home ", str(apio_ctx.home_dir))
+    table.add_row("Apio packages ", str(apio_ctx.packages_dir))
 
     # -- Render the table.
     cprint(table)
@@ -90,7 +88,7 @@ def _platforms_cli():
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Define the table.
-    table = Table(show_header=False, show_lines=True)
+    table = Table(show_header=False, show_lines=True, padding=PADDING)
     table.add_column(no_wrap=True)
     table.add_column(no_wrap=True)
 
@@ -106,9 +104,7 @@ def _platforms_cli():
             style = None
             marker = "  "
 
-        table.add_row(
-            f"{marker}{platform_id} ", f" {description} ", style=style
-        )
+        table.add_row(f"{marker}{platform_id}", f"{description}", style=style)
 
     # -- Render the table.
     cprint(table)

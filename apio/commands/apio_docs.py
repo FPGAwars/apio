@@ -12,7 +12,7 @@ from rich.table import Table
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import apio_docs_apio_ini
-from apio.common.apio_console import cprint, docs_text
+from apio.common.apio_console import cprint, docs_text, PADDING
 
 
 # -- apio docs resources
@@ -53,7 +53,7 @@ def _resources_cli():
     docs_text(APIO_DOCS_RESOURCES_SUMMARY, width=73)
 
     # -- Define the table.
-    table = Table(show_header=False, show_lines=True)
+    table = Table(show_header=False, show_lines=True, padding=PADDING)
     table.add_column(no_wrap=True)
     table.add_column(no_wrap=True, style="cyan")
 

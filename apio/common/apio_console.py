@@ -27,6 +27,9 @@ TEXT_EMPHASIZE = "cyan"
 # Suppress earning about access to the global variables.
 # pylint: disable=global-statement
 
+# -- Recomanded table cell padding. 1 space on the left and 3 on the right.
+PADDING = padding = (0, 3, 0, 1)
+
 # -- Line width when rendering help and docs.
 DOCS_WIDTH = 70
 

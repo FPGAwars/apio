@@ -32,7 +32,7 @@ https://github.com/FPGAwars/apio/wiki/Project-configuration-file
 # -- python rich library. See apio_docs_apio_ini.py to see how they are
 # -- used.
 BOARD_OPTION_DOC = """
-The option 'board' specifies the board definition that is used for \
+The option 'board' specifies the board definition that is used by \
 the project. The board id must be one of the boards ids, such as \
 'alhambra-ii', that is listed by the command 'apio boards'.
 
