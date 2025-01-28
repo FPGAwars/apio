@@ -12,8 +12,10 @@ from pathlib import Path
 from dataclasses import dataclass
 from typing import List, Dict
 import click
+from rich.table import Table
+from rich import box
 from apio.common import apio_console
-from apio.common.apio_console import cout, cstyle
+from apio.common.apio_console import cout, cprint
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import util, cmd_util
 from apio.commands import options
@@ -81,56 +83,45 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
     # -- Sort boards by our prefered order.
     entries.sort(key=lambda x: x.sort_key())
 
-    # -- Compute field lengths
-    margin = 3
-    fpga_len = max(len(x.fpga) for x in entries) + margin
-    board_count_len = 6 + margin
-    fpga_arch_len = max(len(x.fpga_arch) for x in entries) + margin
-    fpga_part_num_len = max(len(x.fpga_part_num) for x in entries) + margin
-    fpga_size_len = max(len(x.fpga_size) for x in entries) + margin
-    fpga_type_len = max(len(x.fpga_type) for x in entries) + margin
-    fpga_pack_len = max(len(x.fpga_pack) for x in entries) + margin
-    fpga_speed_len = 5 + margin
+    # -- Define the table.
+    table = Table(
+        show_header=True, show_lines=False, box=box.SQUARE, border_style="dim"
+    )
 
-    # -- Construct the title fields.
-    parts = []
-    parts.append(f"{'FPGA-ID':<{fpga_len}}")
-    parts.append(f"{'BOARDS':<{board_count_len}}")
-    parts.append(f"{'ARCH':<{fpga_arch_len}}")
-    parts.append(f"{'PART-NUMBER':<{fpga_part_num_len}}")
-    parts.append(f"{'SIZE':<{fpga_size_len}}")
+    # -- Add columnes
+    table.add_column("FPGA-ID", no_wrap=True)
+    table.add_column("BOARDS", no_wrap=True, justify="center")
+    table.add_column("ARCH", no_wrap=True)
+    table.add_column("PART-NUMBER", no_wrap=True)
+    table.add_column("SIZE", no_wrap=True, justify="right")
     if verbose:
-        parts.append(f"{'TYPE':<{fpga_type_len}}")
-        parts.append(f"{'PACK':<{fpga_pack_len}}")
-        parts.append(f"{'SPEED':<{fpga_speed_len}}")
+        table.add_column("TYPE", no_wrap=True)
+        table.add_column("PACK", no_wrap=True)
+        table.add_column("SPEED", no_wrap=True, justify="center")
 
-    # -- Print the title
-    cout("".join(parts), style="cyan")
-
-    # -- Iterate and print the fpga entries in the list.
+    # -- Add rows.
     last_arch = None
     for entry in entries:
-        # -- Seperation before each archictecture group, unless piped out.
+        # -- If switching architecture, add an horizontal seperation line.
         if last_arch != entry.fpga_arch and apio_console.is_terminal():
-            cout("")
-            cout(f"{entry.fpga_arch.upper()}", style="magenta")
+            table.add_section()
         last_arch = entry.fpga_arch
 
-        # -- Construct the fpga fields.
-        parts = []
-        parts.append(cstyle(f"{entry.fpga:<{fpga_len}}", style="cyan"))
-        board_count = f"{entry.board_count:>3}" if entry.board_count else ""
-        parts.append(f"{board_count:<{board_count_len}}")
-        parts.append(f"{entry.fpga_arch:<{fpga_arch_len}}")
-        parts.append(f"{entry.fpga_part_num:<{fpga_part_num_len}}")
-        parts.append(f"{entry.fpga_size:<{fpga_size_len}}")
+        # -- Add row.
+        values = []
+        values.append(entry.fpga)
+        values.append(f"{entry.board_count:>2}" if entry.board_count else "")
+        values.append(entry.fpga_arch)
+        values.append(entry.fpga_part_num)
+        values.append(entry.fpga_size)
         if verbose:
-            parts.append(f"{entry.fpga_type:<{fpga_type_len}}")
-            parts.append(f"{entry.fpga_pack:<{fpga_pack_len}}")
-            parts.append(f"{entry.fpga_speed:<{fpga_speed_len}}")
+            values.append(entry.fpga_type)
+            values.append(entry.fpga_pack)
+            values.append(entry.fpga_speed)
+        table.add_row(*values)
 
-        # -- Print the fpga line.
-        cout("".join(parts))
+    # -- Render the table.
+    cprint(table)
 
     # -- Show summary.
     if apio_console.is_terminal():
