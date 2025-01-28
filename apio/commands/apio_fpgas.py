@@ -89,7 +89,7 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
     )
 
     # -- Add columnes
-    table.add_column("FPGA-ID", no_wrap=True)
+    table.add_column("FPGA-ID", no_wrap=True, style="cyan")
     table.add_column("BOARDS", no_wrap=True, justify="center")
     table.add_column("ARCH", no_wrap=True)
     table.add_column("PART-NUMBER", no_wrap=True)
@@ -107,7 +107,7 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
             table.add_section()
         last_arch = entry.fpga_arch
 
-        # -- Add row.
+        # -- Collect row values.
         values = []
         values.append(entry.fpga)
         values.append(f"{entry.board_count:>2}" if entry.board_count else "")
@@ -118,6 +118,8 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
             values.append(entry.fpga_type)
             values.append(entry.fpga_pack)
             values.append(entry.fpga_speed)
+
+        # -- Add row.
         table.add_row(*values)
 
     # -- Render the table.

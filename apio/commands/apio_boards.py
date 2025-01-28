@@ -12,7 +12,9 @@ from pathlib import Path
 from dataclasses import dataclass
 from typing import List, Dict
 import click
-from apio.common.apio_console import cout, cstyle
+from rich.table import Table
+from rich import box
+from apio.common.apio_console import cout, cprint
 from apio.common import apio_console
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import util, cmd_util
@@ -89,71 +91,49 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
     # -- Sort boards by our prefered order.
     entries.sort(key=lambda x: x.sort_key())
 
-    # -- Compute the columns widths.
-
-    margin = 2 if verbose else 4
-    board_len = max(len(x.board) for x in entries) + margin - 2
-    examples_count_len = 7 + margin
-    board_description_len = (
-        max(len(x.board_description) for x in entries) + margin
+    # -- Define the table.
+    table = Table(
+        show_header=True, show_lines=False, box=box.SQUARE, border_style="dim"
     )
-    fpga_arch_len = max(len(x.fpga_arch) for x in entries) + margin
-    fpga_size_len = max(len(x.fpga_size) for x in entries) + margin
-    fpga_len = max(len(x.fpga) for x in entries) + margin
-    fpga_part_num_len = max(len(x.fpga_part_num) for x in entries) + margin
-    fpga_type_len = max(len(x.fpga_type) for x in entries) + margin
-    fpga_pack_len = max(len(x.fpga_pack) for x in entries) + margin
-    fpga_speed_len = 5 + margin
-    programmer_len = max(len(x.programmer) for x in entries) + margin
 
-    # -- Construct the title fields.
-    parts = []
-    parts.append(f"{'BOARD':<{board_len}}")
-    parts.append(f"{'EXAMPLES':<{examples_count_len}}")
+    # -- Add columnes.
+    table.add_column("BOARD-ID", no_wrap=True, style="cyan")
+    table.add_column("EXMPLS", no_wrap=True)
     if verbose:
-        parts.append(f"{'DESCRIPTION':<{board_description_len}}")
-    parts.append(f"{'ARCH':<{fpga_arch_len}}")
-    parts.append(f"{'SIZE':<{fpga_size_len}}")
+        table.add_column("DESCRIPTION", no_wrap=True, max_width=25)
+    table.add_column("ARCH", no_wrap=True)
+    table.add_column("SIZE", no_wrap=True)
     if verbose:
-        parts.append(f"{'FPGA-ID':<{fpga_len}}")
-    parts.append(f"{'PART-NUMBER':<{fpga_part_num_len}}")
-    if verbose:
-        parts.append(f"{'TYPE':<{fpga_type_len}}")
-        parts.append(f"{'PACK':<{fpga_pack_len}}")
-        parts.append(f"{'SPEED':<{fpga_speed_len}}")
-    parts.append(f"{'PROGRAMMER':<{programmer_len}}")
+        table.add_column("FPGA-ID", no_wrap=True)
+    table.add_column("PART-NUMBER", no_wrap=True)
+    table.add_column("PROGRAMMER", no_wrap=True)
 
-    # -- Print the title line.
-    cout("".join(parts), style="cyan")
-
-    # -- Print all the boards.
+    # -- Add rows, with seperation line between architecture groups.
     last_arch = None
     for entry in entries:
-        # -- If not piping, add architecture groups seperations.
+        # -- If switching architecture, add an horizontal seperation line.
         if last_arch != entry.fpga_arch and apio_console.is_terminal():
-            cout("")
-            cout(f"{entry.fpga_arch.upper()}", style="magenta")
+            table.add_section()
         last_arch = entry.fpga_arch
 
-        # -- Construct the line fields.
-        parts = []
-        parts.append(cstyle(f"{entry.board:<{board_len}}", style="cyan"))
-        parts.append(f"{entry.examples_count:<{examples_count_len}}")
+        # -- Collect row values.
+        values = []
+        values.append(entry.board)
+        values.append(str(entry.examples_count))
         if verbose:
-            parts.append(f"{entry.board_description:<{board_description_len}}")
-        parts.append(f"{entry.fpga_arch:<{fpga_arch_len}}")
-        parts.append(f"{entry.fpga_size:<{fpga_size_len}}")
+            values.append(entry.board_description)
+        values.append(entry.fpga_arch)
+        values.append(str(entry.fpga_size))
         if verbose:
-            parts.append(f"{entry.fpga:<{fpga_len}}")
-        parts.append(f"{entry.fpga_part_num:<{fpga_part_num_len}}")
-        if verbose:
-            parts.append(f"{entry.fpga_type:<{fpga_type_len}}")
-            parts.append(f"{entry.fpga_pack:<{fpga_pack_len}}")
-            parts.append(f"{entry.fpga_speed:<{fpga_speed_len}}")
-        parts.append(f"{entry.programmer:<{programmer_len}}")
+            values.append(entry.fpga)
+        values.append(entry.fpga_part_num)
+        values.append(entry.programmer)
 
-        # -- Print the line
-        cout("".join(parts))
+        # -- Add row.
+        table.add_row(*values)
+
+    # -- Render the table.
+    cprint(table)
 
     # -- Show the summary.
 
