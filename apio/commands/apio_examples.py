@@ -10,8 +10,10 @@
 from pathlib import Path
 from typing import List, Any
 import click
+from rich.table import Table
+from rich import box
 from apio.common import apio_console
-from apio.common.apio_console import cout, cstyle
+from apio.common.apio_console import cout, cprint
 from apio.managers import installer
 from apio.managers.examples import Examples, ExampleInfo
 from apio.commands import options
@@ -41,6 +43,8 @@ def examples_sort_key(entry: ExampleInfo) -> Any:
     return (util.fpga_arch_sort_key(entry.fpga_arch), entry.name)
 
 
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
 def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
     """Print all the examples available. Return a process exit
     code, 0 if ok, non zero otherwise."""
@@ -54,52 +58,57 @@ def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
     # -- Sort boards by case insensitive board namd.
     entries.sort(key=examples_sort_key)
 
-    # Compute field lengths
-    margin = 2
-    name_len = max(len(x.name) for x in entries) + margin
-    fpga_arch_len = max(len(x.fpga_arch) for x in entries) + margin
-    fpga_part_num_len = max(len(x.fpga_part_num) for x in entries) + margin
-    fpga_size_len = max(len(x.fpga_size) for x in entries) + margin + 1
+    # -- Define the table.
+    table = Table(
+        show_header=True,
+        show_lines=False,
+        box=box.SQUARE,
+        border_style="dim",
+        title="Apio Examples",
+    )
 
-    # -- Construct the title fields.
-    parts = []
-    parts.append(f"{'BOARD/EXAMPLE':<{name_len}}")
+    # -- Add columns.
+    table.add_column("BOARD/EXAMPLE", no_wrap=True, style="cyan")
+    table.add_column("ARCH", no_wrap=True)
     if verbose:
-        parts.append(f"{'ARCH':<{fpga_arch_len}}")
-        parts.append(f"{'PART-NUM':<{fpga_part_num_len}}")
-        parts.append(f"{'SIZE':<{fpga_size_len}}")
-    parts.append("DESCRIPTION")
+        table.add_column("PART-NUM", no_wrap=True)
+        table.add_column("SIZE", no_wrap=True)
+    table.add_column(
+        "DESCRIPTION",
+        no_wrap=True,
+        max_width=40 if verbose else 70,  # Limit in verbose mode.
+    )
 
-    # -- Print the title
-    cout("".join(parts), style="cyan")
-
-    # -- Emit the examples
+    # -- Add rows.
     last_arch = None
     for entry in entries:
         # -- Seperation before each archictecture group, unless piped out.
         if last_arch != entry.fpga_arch and apio_console.is_terminal():
-            cout("")
-            cout(f"{entry.fpga_arch.upper()}", style="magenta")
+            table.add_section()
         last_arch = entry.fpga_arch
 
-        # -- Construct the fpga fields.
-        parts = []
-        parts.append(cstyle(f"{entry.name:<{name_len}}", style="cyan"))
+        # -- Collect row's values.
+        values = []
+        values.append(entry.name)
+        values.append(entry.fpga_arch)
         if verbose:
-            parts.append(f"{entry.fpga_arch:<{fpga_arch_len}}")
-            parts.append(f"{entry.fpga_part_num:<{fpga_part_num_len}}")
-            parts.append(f"{entry.fpga_size:<{fpga_size_len}}")
-        parts.append(f"{entry.description}")
+            values.append(entry.fpga_part_num)
+            values.append(entry.fpga_size)
+        values.append(entry.description)
 
-        # -- Print the fpga line.
-        cout("".join(parts))
+        # -- Append the row
+        table.add_row(*values)
 
-    # -- Show summary.
+    # -- Render the table.
+    cout()
+    cprint(table)
+
+    # -- Print summary.
     if apio_console.is_terminal():
         cout(f"Total of {util.plurality(entries, 'example')}")
         if not verbose:
             cout(
-                "Run 'apio examples -v' for additional columns.",
+                "Run 'apio examples list -v' for additional columns.",
                 style="yellow",
             )
 
