@@ -15,6 +15,7 @@ from typing import List, Dict, Union
 import click
 from click.formatting import HelpFormatter
 from apio.common.apio_console import (
+    HELP_SUBCOMMANDS,
     ConsoleCapture,
     cout,
     cerror,
@@ -305,7 +306,7 @@ class ApioGroup(click.Group):
             for cmd in subgroup.commands:
                 # -- We pad for field width and then apply color.
                 styled_name = cstyle(
-                    f"{cmd.name:{max_name_len}}", style="magenta"
+                    f"{cmd.name:{max_name_len}}", style=HELP_SUBCOMMANDS
                 )
                 formatter.write(
                     f"  {ctx.command_path} {styled_name}  {cmd.short_help}\n"

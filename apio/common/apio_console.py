@@ -22,7 +22,7 @@ from rich.text import Text
 
 DOCS_TITLE = "dark_red bold"
 DOCS_EMPHASIZE = "deep_sky_blue4 bold"
-TEXT_EMPHASIZE = "cyan"
+HELP_SUBCOMMANDS = "dark_red bold"
 
 
 # -- Recomanded table cell padding. 1 space on the left and 3 on the right.
