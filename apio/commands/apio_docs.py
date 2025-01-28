@@ -11,7 +11,7 @@ import click
 from rich.table import Table
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 from apio.apio_context import ApioContext, ApioContextScope
-from apio.commands import apio_docs_apio_ini
+from apio.commands import apio_docs_options
 from apio.common.apio_console import cprint, docs_text, PADDING
 
 # -- apio docs resources
@@ -93,7 +93,7 @@ apio documentation and references to online resources.
 SUBGROUPS = [
     ApioSubgroup(
         "Subcommands",
-        [apio_docs_apio_ini.cli, _resources_cli],
+        [apio_docs_options.cli, _resources_cli],
     )
 ]
 

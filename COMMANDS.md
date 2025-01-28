@@ -5,7 +5,7 @@
   * [apio clean](#apio-clean) - Delete the apio generated files.
   * [apio create](#apio-create) - Create an apio.ini project file.
   * [apio docs](#apio-docs) - Read apio documentations.
-    * [apio docs apio.ini](#apio-docs-apio.ini) - Project file apio.ini documentation.
+    * [apio docs options](#apio-docs-options) - Apio.ini options documentation.
     * [apio docs resources](#apio-docs-resources) - Information about online resources.
   * [apio drivers](#apio-drivers) - Manage the operating system drivers.
     * [apio drivers install](#apio-drivers-install) - Install drivers.
@@ -220,24 +220,24 @@ Options:
   -h, --help  Show this message and exit.
 
 Subcommands:
-  apio docs apio.ini   Project file apio.ini documentation.
+  apio docs options    Apio.ini options documentation.
   apio docs resources  Information about online resources.
 
 ```
 
 <br>
 
-### apio docs apio.ini
+### apio docs options
 
 ```
-Usage: apio docs apio.ini [OPTIONS]
+Usage: apio docs options [OPTIONS] [OPTION]
 
-  The command 'apio docs apio-ini' provides information about the
+  The command 'apio docs options' provides information about the
   required project file 'apio.ini'.
 
   Examples:
-    apio docs apio-ini           # Provide information about apio.ini
-    apio docs apio-ini  | less   # Same but with paging.
+    apio docs options              # List an overview and all options.
+    apio docs options top-module   # List a single option.
 
 Options:
   -h, --help  Show this message and exit.

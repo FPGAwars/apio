@@ -5,7 +5,7 @@
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- Licence GPLv2
-"""Implementation of 'apio docs apio-ini'."""
+"""Implementation of 'apio docs options'."""
 
 import sys
 import click
@@ -22,16 +22,16 @@ from apio.common.apio_console import (
 )
 
 
-# -- apio docs apio-ini
+# -- apio docs options
 
 # -- Text in the markdown format of the python rich library.
-APIO_DOCS_APIO_INI_HELP = """
-The command 'apio docs apio-ini' provides information about the required \
+APIO_DOCS_OPTIONS_HELP = """
+The command 'apio docs options' provides information about the required \
 project file 'apio.ini'.
 
 Examples:[code]
-  apio docs apio.ini              # List an overview and all options.
-  apio docs apio.ini top-module   # List a single option.[/code]
+  apio docs options              # List an overview and all options.
+  apio docs options top-module   # List a single option.[/code]
 """
 
 # -- Text in the markdown format of the python rich library.
@@ -51,17 +51,17 @@ Following is a list of the apio.ini options and their descriptions.
 
 
 @click.command(
-    name="apio.ini",
+    name="options",
     cls=cmd_util.ApioCommand,
-    short_help="Project file apio.ini documentation.",
-    help=APIO_DOCS_APIO_INI_HELP,
+    short_help="Apio.ini options documentation.",
+    help=APIO_DOCS_OPTIONS_HELP,
 )
 @click.argument("option", nargs=1, required=False)
 def cli(
     # Argument
     option: str,
 ):
-    """Implements the 'apio docs apio-ini' command."""
+    """Implements the 'apio docs options' command."""
 
     # -- Create the apio context. We don't really need it here but it also
     # -- reads the user preferences and configure the console's colors.
@@ -73,7 +73,7 @@ def cli(
             cerror(f"No such api.ini option: '{option}'")
             cout(
                 "For the list of all apio.ini options, type "
-                "'apio docs apio.ini'.",
+                "'apio docs options'.",
                 style="yellow",
             )
             sys.exit(1)
