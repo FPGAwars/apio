@@ -326,7 +326,7 @@ def print_packages_report(
             style = "red"
         else:
             status = "OK"
-            style = "green"
+            style = None
         description = get_package_info(package_name)["description"]
         table.add_row(package_name, version, description, status, style=style)
 
