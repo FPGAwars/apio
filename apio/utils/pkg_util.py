@@ -13,8 +13,9 @@ from typing import List, Callable, Tuple
 from pathlib import Path
 from dataclasses import dataclass
 import os
-from apio.common import apio_console
-from apio.common.apio_console import cout, cstyle
+from rich.table import Table
+from rich import box
+from apio.common.apio_console import cout, cstyle, cprint
 from apio.apio_context import ApioContext
 from apio.utils import util
 
@@ -293,83 +294,82 @@ def scan_packages(
     return result
 
 
-def _list_section(title: str, items: List[List[str]], style: str) -> None:
-    """A helper function for printing one serction of list_packages()."""
-    # -- Construct horizontal lines at terminal width.
-    line_width = apio_console.cwidth() if apio_console.is_terminal() else 80
-    line = "─" * line_width
-    dline = "═" * line_width
-
-    # -- Print the section.
-    cout("")
-    cout(dline, style=style)
-    cout(title, style=style)
-    for item in items:
-        cout(line)
-        for sub_item in item:
-            cout(sub_item)
-    cout(dline, style=style)
-
-
-# pylint: disable=too-many-branches
-def list_packages(apio_ctx: ApioContext, scan: PackageScanResults) -> None:
-    """Prints in a user friendly format the results of a packages scan."""
+def print_packages_report(
+    apio_ctx: ApioContext, scan: PackageScanResults
+) -> None:
+    """Print the full packages report, based on the data in scan."""
 
     # -- Shortcuts to reduce clutter.
     get_package_version = apio_ctx.profile.get_package_installed_version
     get_package_info = apio_ctx.get_package_info
 
-    # --Print the installed packages, if any.
-    if scan.installed_package_names:
-        items = []
-        for package_name in scan.installed_package_names:
-            name = cstyle(f"{package_name}", style="cyan")
-            version = get_package_version(package_name)
-            if package_name in scan.bad_version_package_names_subset:
-                note = cstyle(" [Wrong version]", style="red")
-            else:
-                note = ""
-            description = get_package_info(package_name)["description"]
-            items.append([f"{name} {version}{note}", f"{description}"])
-        _list_section("Installed packages:", items, "green")
+    table = Table(
+        show_header=True,
+        show_lines=True,
+        box=box.SQUARE,
+        border_style="dim",
+        title="Apio Packages Status",
+        padding=(0, 2),
+        header_style="cyan",
+    )
 
-    # -- Print the uninstalled packages, if any,
-    if scan.uninstalled_package_names:
-        items = []
-        for package_name in scan.uninstalled_package_names:
-            name = cstyle(f"{package_name}", style="cyan")
-            description = get_package_info(package_name)["description"]
-            items.append([f"{name}  {description}"])
-        _list_section("Uinstalled packages:", items, "yellow")
+    table.add_column("PACKAGE NAME", no_wrap=True)
+    table.add_column("VERSION", no_wrap=True)
+    table.add_column("DESCRPITION", no_wrap=True)
+    table.add_column("STATUS", no_wrap=True)
 
-    # -- Print the broken packages, if any,
-    if scan.broken_package_names:
-        items = []
-        for package_name in scan.broken_package_names:
-            name = cstyle(f"{package_name}", style="red")
-            description = get_package_info(package_name)["description"]
-            items.append([f"{name}  {description}"])
-        _list_section("[Error] Broken packages:", items, None)
+    # -- Add raws for installed packages.
+    for package_name in scan.installed_package_names:
+        version = get_package_version(package_name)
+        if package_name in scan.bad_version_package_names_subset:
+            status = "Wrong version"
+            style = "red"
+        else:
+            status = "OK"
+            style = "green"
+        description = get_package_info(package_name)["description"]
+        table.add_row(package_name, version, description, status, style=style)
 
-    # -- Print the orphan packages, if any,
-    if scan.orphan_package_names:
-        items = []
-        for package_name in scan.orphan_package_names:
-            name = cstyle(f"{package_name}", style="red")
-            items.append([name])
-        _list_section("[Error] Unknown packages:", items, None)
+    # -- Add rows for uninstalled packages.
+    for package_name in scan.uninstalled_package_names:
+        description = get_package_info(package_name)["description"]
+        table.add_row(
+            package_name, None, description, "Uninstalled", style="yellow"
+        )
+    for package_name in scan.broken_package_names:
+        description = get_package_info(package_name)["description"]
+        table.add_row(package_name, None, description, "Broken", style="red")
 
-    # -- Print orphan directories and files, if any,
-    if scan.orphan_dir_names or scan.orphan_file_names:
-        items = []
-        for name in sorted(scan.orphan_dir_names + scan.orphan_file_names):
-            name = cstyle(f"{name}", style="red")
-            items.append([name])
-        _list_section("[Error] Unknown files and directories:", items, None)
+    # -- Render table.
+    cout()
+    cprint(table)
 
-    # -- Print an error summary
-    if scan.num_errors_to_fix():
-        cout(f"Total of {util.plurality(scan.num_errors_to_fix(), 'error')}")
+    # -- Define errors table.
+    table = Table(
+        show_header=True,
+        show_lines=True,
+        box=box.SQUARE,
+        border_style="dim",
+        title="Apio Packages Errors",
+        padding=(0, 2),
+        header_style="cyan",
+    )
 
-    # -- A line seperator. For asthetic reasons.
-    cout("")
+    # -- Add columns.
+    table.add_column("ERROR TYPE", no_wrap=True, min_width=15, style="red")
+    table.add_column("NAME", no_wrap=True, min_width=15)
+
+    # -- Add rows.
+    for package_name in scan.orphan_package_names:
+        table.add_row("Orphan package", package_name)
+
+    for name in sorted(scan.orphan_dir_names):
+        table.add_row("Orphan dir", name)
+
+    for name in sorted(scan.orphan_file_names):
+        table.add_row("Orphan file", name)
+
+    # -- Render the table, unless empty.
+    if table.row_count:
+        cout()
+        cprint(table)

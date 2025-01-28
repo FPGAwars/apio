@@ -58,9 +58,6 @@ def _list_cli():
     value = apio_ctx.profile.preferences.get("colors", "on")
     table.add_row("Colors", value)
 
-    # -- Print title.
-    cout("Apio user preferences", style="magenta")
-
     # -- Render table.
     cout()
     cprint(table)

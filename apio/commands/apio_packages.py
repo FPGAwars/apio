@@ -157,21 +157,25 @@ def _list_cli():
     )
 
     # -- List the findings.
-    pkg_util.list_packages(apio_ctx, scan)
+    # pkg_util.list_packages(apio_ctx, scan)
+    pkg_util.print_packages_report(apio_ctx, scan)
 
     # -- Print an hint or summary based on the findings.
     if scan.num_errors_to_fix():
         cout(
-            "[Hint] run 'apio packages fix' to fix the errors.", style="yellow"
+            "",
+            "Run 'apio packages fix' to fix the errors.",
+            style="yellow",
         )
     elif scan.uninstalled_package_names:
         cout(
-            "[Hint] run 'apio packages install' to install all "
+            "",
+            "Run 'apio packages install' to install all "
             "available packages.",
             style="yellow",
         )
     else:
-        cout("All packages are installed.", style="green")
+        cout("", "All packages are installed OK.", style="green")
 
 
 # ------ apio packages fix
