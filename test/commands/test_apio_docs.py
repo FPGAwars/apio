@@ -32,6 +32,15 @@ def test_apio_docs(apio_runner: ApioRunner):
         )
         assert result.output != cunstyle(result.output)  # Colored.
 
+        # -- Execute "apio docs apio.ini board"
+        result = sb.invoke_apio_cmd(apio, ["docs", "apio.ini", "board"])
+        assert result.exit_code == 0
+        assert "BOARD (REQUIRED)" in cunstyle(result.output)
+        assert "YOSYS-SYNTH-EXTRA-OPTIONS (OPTIONAL)" not in cunstyle(
+            result.output
+        )
+        assert result.output != cunstyle(result.output)  # Colored.
+
         # # -- Execute "apio docs resources"
         result = sb.invoke_apio_cmd(apio, ["docs", "resources"])
         assert result.exit_code == 0
