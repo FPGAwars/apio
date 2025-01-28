@@ -2,6 +2,7 @@
   Test for the "apio preferences" command
 """
 
+import re
 from test.conftest import ApioRunner
 from apio.common.apio_console import cunstyle
 from apio.commands.apio import cli as apio
@@ -42,7 +43,7 @@ def test_colors_on_off(apio_runner: ApioRunner):
         # -- without colors.
         result = sb.invoke_apio_cmd(apio, ["preferences", "list"])
         sb.assert_ok(result)
-        assert "\nColors:   off\n" in result.output
+        assert re.search(r"Colors.*off", result.output), result.output
         assert result.output == cunstyle(result.output)  # Non colored..
 
         # -- Execute "apio system info". It should not emit colors.

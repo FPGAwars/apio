@@ -8,7 +8,9 @@
 """Implementation of 'apio preferences' command"""
 
 import click
-from apio.common.apio_console import cout, cstyle
+from rich.table import Table
+from rich import box
+from apio.common.apio_console import cout, cprint
 from apio.utils import cmd_util
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
@@ -24,6 +26,8 @@ Examples:[code]
 """
 
 
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
 @click.command(
     name="list",
     cls=ApioCommand,
@@ -36,13 +40,30 @@ def _list_cli():
     # -- Create the apio context.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
+    table = Table(
+        show_header=True,
+        show_lines=True,
+        box=box.SQUARE,
+        border_style="dim",
+        title="Apio User Preferences",
+        padding=(0, 2),
+        header_style="cyan",
+    )
+
+    # -- Add columnes.
+    table.add_column("ITEM", no_wrap=True)
+    table.add_column("VALUE", no_wrap=True, min_width=30)
+
+    # -- Add rows.
+    value = apio_ctx.profile.preferences.get("colors", "on")
+    table.add_row("Colors", value)
+
     # -- Print title.
     cout("Apio user preferences", style="magenta")
 
-    # -- Show colors preference.
-    value = apio_ctx.profile.preferences.get("colors", "on")
-    styled_value = cstyle(value, style="cyan")
-    cout(f"Colors:   {styled_value}")
+    # -- Render table.
+    cout()
+    cprint(table)
 
 
 # ---- apio preferences set

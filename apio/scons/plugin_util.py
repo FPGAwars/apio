@@ -548,6 +548,8 @@ def _print_pnr_utilization_report(report: Dict[str, any]):
     cprint(table)
 
 
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
 def _maybe_print_pnr_clocks_report(
     report: Dict[str, any], clk_name_index: int
 ) -> bool:
