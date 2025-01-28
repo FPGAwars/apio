@@ -11,23 +11,22 @@ import click
 from apio.common.apio_console import cout, cstyle
 from apio.utils import cmd_util
 from apio.apio_context import ApioContext, ApioContextScope
-from apio.utils.cmd_util import ApioGroup, ApioSubgroup
+from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
 # ---- apio preferences list
 
-
+# -- Text in the markdown format of the python rich library.
 APIO_PREFERENCES_LIST_HELP = """
-The command ‘apio preferences list’ lists the current user preferences.
+The command 'apio preferences list' lists the current user preferences.
 
-\b
-Examples:
-  apio preferences list         # List the user preferences.
-
-  """
+Examples:[code]
+  apio preferences list  # List the user preferences.[/code]
+"""
 
 
 @click.command(
     name="list",
+    cls=ApioCommand,
     short_help="List the apio user preferences.",
     help=APIO_PREFERENCES_LIST_HELP,
 )
@@ -48,15 +47,14 @@ def _list_cli():
 
 # ---- apio preferences set
 
-
+# -- Text in the markdown format of the python rich library.
 APIO_PREF_SET_HELP = """
-The command ‘apio preferences set' allows to set the supported user
+The command 'apio preferences set' allows to set the supported user \
 preferences.
 
-\b
-Examples:
-  apio preferences set --colors yes   # Select multi-color output.
-  apio preferences set --colors no    # Select monochrome output.
+Examples:[code]
+  apio preferences set --colors on    # Enable colors.
+  apio preferences set --colors off   # Disable colors.[/code]
 
 The apio colors are optimized for a terminal windows with a white background.
 """
@@ -74,6 +72,7 @@ colors_options = click.option(
 
 @click.command(
     name="set",
+    cls=ApioCommand,
     short_help="Set the apio user preferences.",
     help=APIO_PREF_SET_HELP,
 )
@@ -98,7 +97,7 @@ def _set_cli(colors: str):
 APIO_PREFERENCES_HELP = """
 The command group 'apio preferences' contains subcommands to manage \
 the apio user preferences. These are user configurations that affect all the \
-apio project on the same computer.
+apio projects that use the same apio home directory (e.g. '~/.apio').
 
 The user preference is not part of any apio project and typically are not \
 shared when multiple user colaborate on the same project.

@@ -11,23 +11,24 @@ import sys
 import click
 from apio.managers.drivers import Drivers
 from apio.apio_context import ApioContext, ApioContextScope
-from apio.utils.cmd_util import ApioGroup, ApioSubgroup
+from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
 
 # -- apio drivers install ftdi
 
+# -- Text in the markdown format of the python rich library.
 APIO_DRIVERS_INSTALL_FTDI_HELP = """
-The command 'apio drivers install ftdi' installs on your system the FTDI
+The command 'apio drivers install ftdi' installs on your system the FTDI \
 drivers required by some FPGA boards.
 
-\b
-Examples:
-  apio drivers install ftdi     # Install the ftdi drivers.
+Examples:[code]
+  apio drivers install ftdi   # Install the ftdi drivers.[/code]
 """
 
 
 @click.command(
     name="ftdi",
+    cls=ApioCommand,
     short_help="Install the ftdi drivers.",
     help=APIO_DRIVERS_INSTALL_FTDI_HELP,
 )
@@ -47,18 +48,19 @@ def _ftdi_cli():
 
 # -- apio driver install serial
 
+# -- Text in the markdown format of the python rich library.
 APIO_DRIVERS_INSTALL_SERIAL_HELP = """
-The command ‘apio drivers install serial’ installs the necessary serial
+The command 'apio drivers install serial' installs the necessary serial \
 drivers on your system, as required by certain FPGA boards.
 
-\b
-Examples:
-  apio drivers install serial    # Install the serial drivers.
+Examples:[code]
+  apio drivers install serial  # Install the serial drivers.[/code]
 """
 
 
 @click.command(
     name="serial",
+    cls=ApioCommand,
     short_help="Install the serial drivers.",
     help=APIO_DRIVERS_INSTALL_SERIAL_HELP,
 )

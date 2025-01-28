@@ -17,47 +17,46 @@ from apio.common.apio_console import cout, cerror, cstyle
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import options
 from apio.managers import installer
-from apio.utils import util, pkg_util
+from apio.utils import util, pkg_util, cmd_util
 
 
-# ---------------------------
-# -- COMMAND
-# ---------------------------
+# -------------- apio format
+
+# -- Text in the markdown format of the python rich library.
 APIO_FORMAT_HELP = """
-The command ‘apio format’ formats Verilog source files to ensure consistency
-and style without altering their semantics. The command accepts the names of
+The command 'apio format' formats Verilog source files to ensure consistency \
+and style without altering their semantics. The command accepts the names of \
 pecific source files to format or formats all project source files by default.
 
-\b
-Examples:
+Examples:[code]
   apio format                    # Format all source files.
-  apio format -v                 # Same as above but with verbose output.
-  apio format main.v main_tb.v   # Format the two tiven files.
+  apio format -v                 # Same but with verbose output.
+  apio format main.v main_tb.v   # Format the two tiven files.[/code]
 
-The format command utilizes the format tool from the Verible project, which
-can be configured by setting its flags in the apio.ini project file
+The format command utilizes the format tool from the Verible project, which \
+can be configured by setting its flags in the apio.ini project file \
 For example:
 
-\b
-format-verible-options =
-    --column_limit=80
-    --indentation_spaces=4
 
-If needed, sections of source code can be protected from formatting using
+[code]format-verible-options =
+    --column_limit=80
+    --indentation_spaces=4[/code]
+
+If needed, sections of source code can be protected from formatting using \
 Verible formatter directives:
 
-\b
-// verilog_format: off
+[code]// verilog_format: off
 ... untouched code ...
-// verilog_format: on
+// verilog_format: on[/code]
 
-For a full list of Verible formatter flags, refer to the documentation page
+For a full list of Verible formatter flags, refer to the documentation page \
 online or use the command 'apio raw -- verible-verilog-format --helpful'.
 """
 
 
 @click.command(
     name="format",
+    cls=cmd_util.ApioCommand,
     short_help="Format verilog source files.",
     help=APIO_FORMAT_HELP,
 )

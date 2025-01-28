@@ -21,7 +21,7 @@ from rich.text import Text
 # -- https://rich.readthedocs.io/en/stable/appendix/colors.html
 
 DOCS_TITLE = "dark_red bold"
-DOCS_EMPHASIZE = "magenta"
+DOCS_EMPHASIZE = "deep_sky_blue4 bold"
 TEXT_EMPHASIZE = "cyan"
 
 

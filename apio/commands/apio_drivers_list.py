@@ -10,29 +10,29 @@
 import sys
 import click
 from apio.apio_context import ApioContext, ApioContextScope
-from apio.utils.cmd_util import ApioGroup, ApioSubgroup
+from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 from apio.managers.system import System
 
 
 # -- apio drivers list ftdi
 
-
+# -- Text in the markdown format of the python rich library.
 APIO_DRIVERS_LIST_FTDI_HELP = """
-The command 'apio drivers list ftdi' displays the FTDI devices currently
-connected to your computer. It is useful for diagnosing FPGA board
+The command 'apio drivers list ftdi' displays the FTDI devices currently \
+connected to your computer. It is useful for diagnosing FPGA board \
 connectivity issues.
 
-\b
-Examples:
-  apio drivers list ftdi     # List the ftdi devices.
+Examples:[code]
+  apio drivers list ftdi    # List the ftdi devices.[/code]
 
-[Hint] This command uses the lsftdi utility, which can also be invoked
-directly with the 'apio raw -- lsftdi <flags>' command.
+[Hint] This command uses the lsftdi utility, which can also be invoked \
+directly with the 'apio raw -- lsftdi ...' command.
 """
 
 
 @click.command(
     name="ftdi",
+    cls=ApioCommand,
     short_help="List the connected ftdi devices.",
     help=APIO_DRIVERS_LIST_FTDI_HELP,
 )
@@ -52,21 +52,22 @@ def _ftdi_cli():
 
 # -- apio drivers list serial
 
+# -- Text in the markdown format of the python rich library.
 APIO_DRIVERS_LIST_SERIAL_HELP = """
-The command ‘apio drivers list serial’ lists the serial devices connected to
+The command 'apio drivers list serial' lists the serial devices connected to \
 your computer. It is useful for diagnosing FPGA board connectivity issues.
 
-\b
-Examples:
-  apio drivers list serial    # List the serial devices.
+Examples:[code]
+  apio drivers list serial   # List the serial devices.[/code]
 
-[Hint] This command executes the utility lsserial, which can also be invoked
-using the command 'apio raw -- lsserial <flags>'.
+[b][Hint][/b] This command executes the utility lsserial, which can also be \
+invoked using the command 'apio raw -- lsserial ...'.
 """
 
 
 @click.command(
     name="serial",
+    cls=ApioCommand,
     short_help="List the connected serial devices.",
     help=APIO_DRIVERS_LIST_SERIAL_HELP,
 )
@@ -86,22 +87,23 @@ def _serial_cli():
 
 # --- apio drivers list usb
 
+# -- Text in the markdown format of the python rich library.
 APIO_DRIVERS_LIST_USB_HELP = """
-The command ‘apio drivers list usb runs the lsusb utility to list the USB
-devices connected to your computer. It is typically used for diagnosing
+The command 'apio drivers list usb' runs the lsusb utility to list the USB \
+devices connected to your computer. It is typically used for diagnosing  \
 connectivity issues with FPGA boards.
 
-\b
-Examples:
-  apio drivers list usb      # List the usb devices
+Examples:[code]
+  apio drivers list usb    # List the usb devices[/code]
 
-[Hint] You can also run the lsusb utility using the command
-'apio raw -- lsusb <flags>'.
+[b][Hint][/b] You can also run the lsusb utility using the command \
+'apio raw -- lsusb ...'.
 """
 
 
 @click.command(
     name="usb",
+    cls=ApioCommand,
     short_help="List connected USB devices.",
     help=APIO_DRIVERS_LIST_USB_HELP,
 )

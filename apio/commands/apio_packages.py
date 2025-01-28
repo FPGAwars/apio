@@ -14,30 +14,30 @@ from apio.managers import installer
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import pkg_util
 from apio.commands import options
-from apio.utils.cmd_util import ApioGroup, ApioSubgroup
+from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
 
 # ------ apio packages install
 
+# -- Text in the markdown format of the python rich library.
 APIO_PACKAGES_INSTALL_HELP = """
-The command ‘apio packages install’ installs Apio packages that are required
+The command 'apio packages install' installs Apio packages that are required \
 for the operation of Apio on your system.
 
+Examples:[code]
+  apio packages install                   # Install missing packages.
+  apio packages install --force           # Reinstall all packages.
+  apio packages install oss-cad-suite     # Install package.
+  apio packages install examples@0.0.32   # Install a specific version.[/code]
 
-\b
-Examples:
-  apio packages install                   # Install all missing packages.
-  apio packages install --force           # Re/install all missing packages.
-  apio packages install oss-cad-suite     # Install just this package.
-  apio packages install examples@0.0.32   # Install a specific version.
-
-Adding the --force option forces the reinstallation of existing packages;
+Adding the '--force' option forces the reinstallation of existing packages; \
 otherwise, packages that are already installed correctly remain unchanged.
 """
 
 
 @click.command(
     name="install",
+    cls=ApioCommand,
     short_help="Install apio packages.",
     help=APIO_PACKAGES_INSTALL_HELP,
 )
@@ -80,20 +80,21 @@ def _install_cli(
 
 # ------ apio packages uninstall
 
+# -- Text in the markdown format of the python rich library.
 APIO_PACKAGES_UNINSTALL_HELP = """
-The command ‘apio packages uninstall’ removes installed Apio packages from
+The command 'apio packages uninstall' removes installed Apio packages from \
 your system. The command does not uninstall the Apio tool itself.
 
-\b
-Examples:
-  apio packages uninstall                          # Uninstall all packages
-  apio packages uninstall oss-cad-suite            # Uninstall a package
-  apio packages uninstall oss-cad-suite examples   # Uninstall two packages
+Examples:[code]
+  apio packages uninstall                    # Uninstall all packages
+  apio packages uninstall oss-cad-suite      # Uninstall a package
+  apio packages uninstall verible examples   # Uninstall two packages[/code]
 """
 
 
 @click.command(
     name="uninstall",
+    cls=ApioCommand,
     short_help="Uninstall apio packages.",
     help=APIO_PACKAGES_UNINSTALL_HELP,
 )
@@ -128,19 +129,20 @@ def _uninstall_cli(
 
 # ------ apio packages list
 
+# -- Text in the markdown format of the python rich library.
 APIO_PACKAGES_LIST_HELP = """
-The command ‘apio packages list’ lists the available and installed Apio
-packages. The list of available packages depends on the operating system
+The command 'apio packages list' lists the available and installed Apio \
+packages. The list of available packages depends on the operating system \
 you are using and may vary between operating systems.
 
-\b
-Examples:
-  apio packages list
+Examples:[code]
+  apio packages list[/code]
 """
 
 
 @click.command(
     name="list",
+    cls=ApioCommand,
     short_help="List apio packages.",
     help=APIO_PACKAGES_LIST_HELP,
 )
@@ -174,18 +176,19 @@ def _list_cli():
 
 # ------ apio packages fix
 
+# -- Text in the markdown format of the python rich library.
 APIO_PACKAGES_FIX_HELP = """
-The command ‘apio packages fix’ removes broken or obsolete packages
-that are listed as broken by the command ‘apio packages list’.
+The command 'apio packages fix' removes broken or obsolete packages \
+that are listed as broken by the command 'apio packages list'.
 
-\b
-Examples:
-  apio packages fix     # Fix package errors, if any.
+Examples:[code]
+  apio packages fix     # Fix package errors, if any.[/code]
 """
 
 
 @click.command(
     name="fix",
+    cls=ApioCommand,
     short_help="Fix broken apio packages.",
     help=APIO_PACKAGES_FIX_HELP,
 )
@@ -207,17 +210,15 @@ def _fix_cli():
 
 # ------ apio packages (group)
 
-
+# -- Text in the markdown format of the python rich library.
 APIO_PACKAGES_HELP = """
-The command group ‘apio packages’ provides commands to manage the installation
-of Apio packages. These are not Python packages but Apio-specific packages
-containing various tools and data essential for the operation of Apio.
-These packages are installed after the installation of the Apio Python package
-itself, using the command ‘apio packages install’.
+The command group 'apio packages' provides commands to manage the \
+installation of Apio packages. These are not Python packages but \
+Apio-specific packages containing various tools and data essential for the \
+operation of Apio.
 
-The list of available
-packages depends on the operating system you are using and may vary between
-different operating systems.
+The list of available packages depends on the operating system you are \
+using and may vary between different operating systems.
 """
 
 

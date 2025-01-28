@@ -14,36 +14,37 @@ from apio.managers.scons import SCons
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.common.proto.apio_pb2 import ApioTestParams
+from apio.utils import cmd_util
 
 
-# ---------------------------
-# -- COMMAND
-# ---------------------------
+# --------- apio test
+
+# -- Text in the markdown format of the python rich library.
 APIO_TEST_HELP = """
-The command ‘apio test’ simulates one or all the testbenches in the project
-and is useful for automated testing of your design. Testbenches are expected
-to have names ending with _tb (e.g., my_module_tb.v) and should exit with the
-$fatal directive if an error is detected.
+The command 'apio test' simulates one or all the testbenches in the project \
+and is useful for automated testing of your design. Testbenches are expected \
+to have names ending with _tb (e.g., my_module_tb.v) and should exit with the \
+'$fatal' directive if an error is detected.
 
-\b
-Examples
+Examples:[code]
   apio test                 # Run all *_tb.v testbenches.
-  apio test my_module_tb.v  # Run a single testbench
+  apio test my_module_tb.v  # Run a single testbench.[/code]
 
-[Important] Avoid using the Verilog $dumpfile() function in your testbenches,
-as this may override the default name and location Apio sets for the
-generated .vcd file.
+[b][Important][/b] Avoid using the Verilog '$dumpfile()' function in your \
+testbenches, as this may override the default name and location Apio sets \
+for the generated .vcd file.
 
-For a sample testbench compatible with Apio features, see:
+For a sample testbench compatible with Apio features, see: \
 https://github.com/FPGAwars/apio-examples/tree/master/upduino31/testbench
 
-[Hint] To simulate a testbench with a graphical visualization of the signals,
-refer to the ‘apio sim’ command.
+[b][Hint][/b] To simulate a testbench with a graphical visualization \
+of the signals, refer to the 'apio sim' command.
 """
 
 
 @click.command(
     name="test",
+    cls=cmd_util.ApioCommand,
     short_help="Test all or a single verilog testbench module.",
     help=APIO_TEST_HELP,
 )

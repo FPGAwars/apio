@@ -11,7 +11,7 @@ import sys
 import click
 import requests
 from packaging import version
-from apio.utils import util
+from apio.utils import util, cmd_util
 from apio.common.apio_console import cout, cerror
 
 
@@ -60,21 +60,21 @@ def get_pypi_latest_version() -> str:
     return ver
 
 
-# ---------------------------
-# -- COMMAND
-# ---------------------------
+# ---------- apio upgrade
+
+# -- Text in the markdown format of the python rich library.
 APIO_UPGRADE_HELP = """
-The command ‘apio upgrade’ checks for the version of the latest Apio release
+The command 'apio upgrade' checks for the version of the latest Apio release \
 and provides upgrade directions if necessary.
 
-\b
-Examples:
-  apio upgrade
+Examples:[code]
+  apio upgrade[/code]
 """
 
 
 @click.command(
     name="upgrade",
+    cls=cmd_util.ApioCommand,
     short_help="Check the latest Apio version.",
     help=APIO_UPGRADE_HELP,
 )

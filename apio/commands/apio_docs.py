@@ -9,20 +9,20 @@
 
 import click
 from rich.table import Table
-from apio.utils.cmd_util import ApioGroup, ApioSubgroup
+from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import apio_docs_apio_ini
 from apio.common.apio_console import cprint, docs_text, PADDING
 
 # -- apio docs resources
 
+# -- Text in the markdown format of the python rich library.
 APIO_DOCS_RESOURCES_HELP = """
-The command 'apio docs resources' provides information about apio
+The command 'apio docs resources' provides information about apio \
 related online resources.
 
-\b
-Examples:
-  apio docs resources     # Provides resources information
+Examples:[code]
+  apio docs resources   # Provides resources information[/code]
 """
 
 # -- Text in markdown in rich library format.
@@ -40,6 +40,7 @@ same functionality.
 
 @click.command(
     name="resources",
+    cls=ApioCommand,
     short_help="Information about online resources.",
     help=APIO_DOCS_RESOURCES_HELP,
 )

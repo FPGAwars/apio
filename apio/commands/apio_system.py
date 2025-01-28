@@ -12,29 +12,30 @@ from rich.table import Table
 from apio.common.apio_console import cprint, PADDING
 from apio.utils import util
 from apio.apio_context import ApioContext, ApioContextScope
-from apio.utils.cmd_util import ApioGroup, ApioSubgroup
+from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
 
 # ------ apio system info
 
+# -- Text in the markdown format of the python rich library.
 APIO_SYSTEM_INFO_HELP = """
-The command ‘apio system info’ provides general information about your system
-and Apio installation, which is useful for diagnosing Apio installation issues.
+The command 'apio system info' provides general information about your \
+system and Apio installation, which is useful for diagnosing Apio \
+installation issues.
 
-\b
-Examples:
-  apio system info       # Show platform id and info.
+Examples:[code]
+  apio system info   # Show general info.[/code]
 
-[Advanced] The default location of the Apio home directory, where preferences
-and packages are stored, is in the .apio directory under the user’s home
-directory. This location can be changed using the APIO_HOME_DIR environment
-variable.
-
+[b][Advanced][/b] The default location of the Apio home directory, \
+where apio saves preferences and packages, is in the '.apio' directory \
+under the user home directory but can be changed using the system \
+environment variable 'APIO_HOME_DIR'.
 """
 
 
 @click.command(
     name="info",
+    cls=ApioCommand,
     short_help="Show platform id and other info.",
     help=APIO_SYSTEM_INFO_HELP,
 )

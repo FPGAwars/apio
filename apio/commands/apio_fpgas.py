@@ -15,7 +15,7 @@ import click
 from apio.common import apio_console
 from apio.common.apio_console import cout, cstyle
 from apio.apio_context import ApioContext, ApioContextScope
-from apio.utils import util
+from apio.utils import util, cmd_util
 from apio.commands import options
 
 
@@ -139,28 +139,28 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
             cout("Run 'apio fpgas -v' for additional columns.", style="yellow")
 
 
-# ---------------------------
-# -- COMMAND
-# ---------------------------
+# -------- apio fpgas
+
 # R0801: Similar lines in 2 files
 # pylint: disable = R0801
-APIO_FPGAS_HELP = """
-The command ‘apio fpgas’ lists the FPGAs recognized by Apio. Custom FPGAs
-supported by the underlying Yosys toolchain can be defined by placing a
-custom fpgas.jsonc file in the project directory, overriding Apio’s standard
-fpgas.jsonc file.
 
-\b
-Examples:
+# -- Text in the markdown format of the python rich library.
+APIO_FPGAS_HELP = """
+The command 'apio fpgas' lists the FPGAs recognized by Apio. Custom FPGAs \
+supported by the underlying Yosys toolchain can be defined by placing a \
+custom 'fpgas.jsonc' file in the project directory, overriding Apio’s \
+standard 'fpgas.jsonc' file.
+
+Examples:[code]
   apio fpgas               # List all fpgas.
   apio fpgas -v            # List with extra columns.
-  apio fpgas | grep gowin  # Filter FPGA results.
-
+  apio fpgas | grep gowin  # Filter FPGA results.[/code]
 """
 
 
 @click.command(
     name="fpgas",
+    cls=cmd_util.ApioCommand,
     short_help="List available FPGA definitions.",
     help=APIO_FPGAS_HELP,
 )

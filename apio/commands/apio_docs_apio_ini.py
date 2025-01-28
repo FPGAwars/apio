@@ -10,6 +10,7 @@
 import click
 from apio.managers import project
 from apio.apio_context import ApioContext, ApioContextScope
+from apio.utils import cmd_util
 from apio.common.apio_console import (
     docs_text,
     docs_rule,
@@ -21,16 +22,17 @@ from apio.common.apio_console import (
 
 # -- apio docs apio-ini
 
+# -- Text in the markdown format of the python rich library.
 APIO_DOCS_APIO_INI_HELP = """
-The command 'apio docs apio-ini' provides information about the required
-apio.ini project file.
+The command 'apio docs apio-ini' provides information about the required \
+project file 'apio.ini'.
 
-\b
-Examples:
+Examples:[code]
   apio docs apio-ini           # Provide information about apio.ini
-  apio docs apio-ini  | less   # Same but with paging.
+  apio docs apio-ini  | less   # Same but with paging.[/code]
 """
 
+# -- Text in the markdown format of the python rich library.
 APIO_INI_DOC = """
 Every Apio project is required to have an 'apio.ini' project configuration \
 file. These are properties text files with '#' comments and a single section \
@@ -48,6 +50,7 @@ Following is a list of the apio.ini options and their descriptions.
 
 @click.command(
     name="apio.ini",
+    cls=cmd_util.ApioCommand,
     short_help="Project file apio.ini documentation.",
     help=APIO_DOCS_APIO_INI_HELP,
 )

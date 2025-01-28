@@ -11,16 +11,14 @@ import sys
 from pathlib import Path
 import click
 from apio.managers.scons import SCons
-from apio.utils import cmd_util
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.util import nameof
+from apio.utils import cmd_util
 from apio.common.proto.apio_pb2 import GraphOutputType, GraphParams, Verbosity
 
 
-# ---------------------------
-# -- COMMAND SPECIFIC OPTIONS
-# ---------------------------
+# ---------- apio graph
 
 svg_option = click.option(
     "svg",  # Var name.
@@ -46,25 +44,21 @@ pdf_option = click.option(
     cls=cmd_util.ApioOption,
 )
 
-
-# ---------------------------
-# -- COMMAND
-# ---------------------------
+# -- Text in the markdown format of the python rich library.
 APIO_GRAPH_HELP = """
-The command ‘apio graph’ generates a graphical representation of the Verilog
+The command 'apio graph' generates a graphical representation of the Verilog \
 code in the project.
 
-\b
-Examples:
+Examples:[code]
   apio graph               # Generate a svg file.
   apio graph --svg         # Generate a svg file.
   apio graph --pdf         # Generate a pdf file.
   apio graph --png         # Generate a png file.
-  apio graph -t my_module  # Graph my_module module.
+  apio graph -t my_module  # Graph my_module module.[/code]
 
 
-[Hint] On Windows, type ‘explorer _build/hardware.svg’ to view the graph,
-and on Mac OS type ‘open _build/hardware.svg’.
+[b][Hint][/b] On Windows, type 'explorer _build/hardware.svg' to view the \
+graph, and on Mac OS type 'open _build/hardware.svg'.
 """
 
 
@@ -72,6 +66,7 @@ and on Mac OS type ‘open _build/hardware.svg’.
 # pylint: disable=too-many-positional-arguments
 @click.command(
     name="graph",
+    cls=cmd_util.ApioCommand,
     short_help="Generate a visual graph of the code.",
     help=APIO_GRAPH_HELP,
 )

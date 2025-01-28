@@ -11,24 +11,24 @@ import sys
 import click
 from apio.managers.drivers import Drivers
 from apio.apio_context import ApioContext, ApioContextScope
-from apio.utils.cmd_util import ApioGroup, ApioSubgroup
+from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
 
 # -- apio driver uninstall ftdi
 
+# -- Text in the markdown format of the python rich library.
 APIO_DRIVERS_UNINSTALL_FTDI_HELP = """
-The command 'apio drivers uninstall ftdi' removes the FTDI drivers that may
+The command 'apio drivers uninstall ftdi' removes the FTDI drivers that may \
 have been installed earlier.
 
-\b
-Examples:
-  apio drivers uninstall ftdi     # Uninstall the ftdi drivers.
-
+Examples:[code]
+  apio drivers uninstall ftdi   # Uninstall the ftdi drivers.[/code]
 """
 
 
 @click.command(
     name="ftdi",
+    cls=ApioCommand,
     short_help="Uninstall the ftdi drivers.",
     help=APIO_DRIVERS_UNINSTALL_FTDI_HELP,
 )
@@ -48,18 +48,19 @@ def _ftdi_cli():
 
 # -- apio drivers uninstall serial
 
+# -- Text in the markdown format of the python rich library.
 APIO_DRIVERS_UNINSTALL_SERIAL_HELP = """
-The command ‘apio drivers uninstall serial’ removes the serial drivers that
+The command 'apio drivers uninstall serial' removes the serial drivers that \
 you may have installed earlier.
 
-\b
-Examples:
-  apio drivers uinstall serial    # Uinstall the serial drivers.
+Examples:[code]
+  apio drivers uinstall serial    # Uinstall the serial drivers.[/code]
 """
 
 
 @click.command(
     name="serial",
+    cls=ApioCommand,
     short_help="Uninstall the serial drivers.",
     help=APIO_DRIVERS_UNINSTALL_SERIAL_HELP,
 )

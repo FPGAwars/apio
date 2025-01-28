@@ -15,7 +15,7 @@ import click
 from apio.common.apio_console import cout, cstyle
 from apio.common import apio_console
 from apio.apio_context import ApioContext, ApioContextScope
-from apio.utils import util
+from apio.utils import util, cmd_util
 from apio.commands import options
 from apio.managers.examples import Examples
 
@@ -165,27 +165,28 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
             )
 
 
-# ---------------------------
-# -- COMMAND
-# ---------------------------
+# ------------- apio boards
+
 # R0801: Similar lines in 2 files
 # pylint: disable = R0801
+
+# -- Text in the markdown format of the python rich library.
 APIO_BOARDS_HELP = """
-The command 'apio boards' lists the FPGA boards recognized by Apio.
-Custom boards can be defined by placing a custom 'boards.jsonc' file in the
+The command 'apio boards' lists the FPGA boards recognized by Apio. \
+Custom boards can be defined by placing a custom 'boards.jsonc' file in the \
 project directory, which will override Apio’s default 'boards.jsonc' file.
 
-\b
-Examples:
+Examples:[code]
   apio boards                   # List all boards.
   apio boards -v                # List with extra columns..
-  apio boards | grep ecp5       # Filter boards results.
+  apio boards | grep ecp5       # Filter boards results.[/code]
 
 """
 
 
 @click.command(
     name="boards",
+    cls=cmd_util.ApioCommand,
     short_help="List available board definitions.",
     help=APIO_BOARDS_HELP,
 )

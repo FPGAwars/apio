@@ -17,24 +17,23 @@ from apio.managers.examples import Examples, ExampleInfo
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import util
-from apio.utils.cmd_util import ApioGroup, ApioSubgroup
+from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
 
 # ---- apio examples list
 
 
+# -- Text in the markdown format of the python rich library.
 APIO_EXAMPLES_LIST_HELP = """
-The command ‘apio examples list’ lists the available Apio project examples
+The command 'apio examples list' lists the available Apio project examples \
 that you can use.
 
-\b
-Examples:
+Examples:[code]
   apio examples list                     # List all examples
-  apio examples list  -v                 # List with extra information.
-  apio examples list | grep alhambra-ii  # Show examples of a specific board.
-  apio examples list | grep -i blink     # Show all blinking examples.
-
-  """
+  apio examples list  -v                 # More verbose output.
+  apio examples list | grep alhambra-ii  # Show alhambra-ii examples.
+  apio examples list | grep -i blink     # Show blikining examples.[/code]
+"""
 
 
 def examples_sort_key(entry: ExampleInfo) -> Any:
@@ -107,6 +106,7 @@ def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
 
 @click.command(
     name="list",
+    cls=ApioCommand,
     short_help="List the available apio examples.",
     help=APIO_EXAMPLES_LIST_HELP,
 )
@@ -123,24 +123,22 @@ def _list_cli(verbose: bool):
 
 # ---- apio examples fetch
 
-
+# -- Text in the markdown format of the python rich library.
 APIO_EXAMPLES_FETCH_HELP = """
-The command ‘apio examples fetch’ fetches the files of the specified example
-to the current directory or to the directory specified by the –dst option.
-The destination directory does not need to exist, but if it does, it must be
+The command 'apio examples fetch' fetches the files of the specified example \
+to the current directory or to the directory specified by the '-dst' option. \
+The destination directory does not need to exist, but if it does, it must be \
 empty.
 
-\b
-Examples:
+Examples:[code]
   apio examples fetch alhambra-ii/ledon
-  apio examples fetch alhambra-ii/ledon -d foo/bar
-
-[Hint] For the list of available examples, type ‘apio examples list’.
+  apio examples fetch alhambra-ii/ledon -d foo/bar[/code]
 """
 
 
 @click.command(
     name="fetch",
+    cls=ApioCommand,
     short_help="Fetch the files of an example.",
     help=APIO_EXAMPLES_FETCH_HELP,
 )
@@ -168,23 +166,22 @@ def _fetch_cli(
 
 # ---- apio examples fetch-board
 
-
+# -- Text in the markdown format of the python rich library.
 APIO_EXAMPLES_FETCH_BOARD_HELP = """
-The command ‘apio examples fetch-board’ is used to fetch all the Apio examples
-for a specific board. The examples are copied to the current directory or to
-the specified destination directory if the –dst option is provided.
+The command 'apio examples fetch-board' is used to fetch all the Apio \
+examples for a specific board. The examples are copied to the current \
+directory or to the specified destination directory if the '–-dst' \
+option is provided.
 
-\b
-Examples:
-  apio examples fetch-board alhambra-ii             # Fetch to local directory
-  apio examples fetch-board alhambra-ii -d foo/bar  # Fetch to foo/bar
+Examples:[code]
+  apio examples fetch-board alhambra-ii  # Fetch board examples.
 
-[Hint] For the list of available examples, type ‘apio examples list’.
 """
 
 
 @click.command(
     name="fetch-board",
+    cls=ApioCommand,
     short_help="Fetch all examples of a board.",
     help=APIO_EXAMPLES_FETCH_BOARD_HELP,
 )
