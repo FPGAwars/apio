@@ -19,6 +19,8 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Tuple, Dict, Optional, Union
+from rich.table import Table
+from rich import box
 from SCons import Scanner
 from SCons.Builder import Builder
 from SCons.Action import FunctionAction, Action
@@ -28,7 +30,7 @@ from SCons.Node import NodeList
 from SCons.Node.Alias import Alias
 import debugpy
 from apio.scons.apio_env import ApioEnv, TARGET, BUILD_DIR_SEP
-from apio.common.apio_console import cout, cerror, cwarning
+from apio.common.apio_console import cout, cerror, cwarning, cprint
 
 # -- A list with the file extensions of the verilog source files.
 SRC_SUFFIXES = [".v", ".sv"]
@@ -510,7 +512,79 @@ def source_files(apio_env: ApioEnv) -> Tuple[List[str], List[str]]:
     return (synth_srcs, test_srcs)
 
 
-# pylint: disable=too-many-locals
+def _print_pnr_utilization_report(report: Dict[str, any]):
+    table = Table(
+        show_header=True,
+        show_lines=False,
+        box=box.SQUARE,
+        border_style="dim",
+        title="FPGA Resource Utilization",
+        padding=(0, 2),
+        header_style="cyan",
+    )
+
+    # -- Add columnes.
+    table.add_column("RESOURCE", no_wrap=True)
+    table.add_column("USED", no_wrap=True, justify="right")
+    table.add_column("TOTAL", no_wrap=True, justify="right")
+    table.add_column("UTIL.", no_wrap=True, justify="right")
+
+    # -- Add rows
+    utilization = report["utilization"]
+    for resource, vals in utilization.items():
+        used = vals["used"]
+        used_str = f"{used}  " if used else ""
+        available = vals["available"]
+        available_str = f"{available}  "
+        percents = int(100 * used / available)
+        percents_str = f"{percents}%  " if used else ""
+        style = "magenta" if used > 0 else None
+        table.add_row(
+            resource, used_str, available_str, percents_str, style=style
+        )
+
+    # -- Render the table
+    cout()
+    cprint(table)
+
+
+def _maybe_print_pnr_clocks_report(
+    report: Dict[str, any], clk_name_index: int
+) -> bool:
+    clocks = report["fmax"]
+    if len(clocks) == 0:
+        return False
+
+    table = Table(
+        show_header=True,
+        show_lines=True,
+        box=box.SQUARE,
+        border_style="dim",
+        title="Clock information",
+        padding=(0, 2),
+        header_style="cyan",
+    )
+
+    # -- Add columns
+    table.add_column("CLOCK", no_wrap=True)
+    table.add_column("MAX SPEED [Mhz]", no_wrap=True, justify="right")
+
+    # -- Add rows.
+    clocks = report["fmax"]
+    for clk_net, vals in clocks.items():
+        # -- Extract clock name from the net name.
+        clk_signal = clk_net.split("$")[clk_name_index]
+        # -- Extract speed
+        max_mhz = vals["achieved"]
+        # -- Add row.
+        table.add_row(clk_signal, f"{max_mhz:.2f}")
+
+    # -- Render the table
+    cout()
+    cprint(table)
+    return True
+
+
 def _print_pnr_report(
     json_txt: str,
     clk_name_index: int,
@@ -518,49 +592,25 @@ def _print_pnr_report(
 ) -> None:
     """Accepts the text of the pnr json report and prints it in
     a user friendly way. Used by the 'apio report' command."""
-    # -- Json text to tree of Dicts.
+    # -- Parse the json text into a tree of dicts.
     report: Dict[str, any] = json.loads(json_txt)
 
-    # --- Report utilization
-    cout("")
-    cout("UTILIZATION:", style="cyan")
-    utilization = report["utilization"]
-    for resource, vals in utilization.items():
-        available = vals["available"]
-        used = vals["used"]
-        percents = int(100 * used / available)
-        style = "magenta" if used > 0 else None
-        cout(
-            f"{resource:>20}: {used:5} {available:5} {percents:5}%",
-            style=style,
-        )
+    # -- Print the utilization table.
+    _print_pnr_utilization_report(report)
 
-    # -- Report max clock speeds.
-    # --
-    # -- NOTE: As of Oct 2024, some projects do not generate timing
-    # -- information and this is being investigated.
-    # -- See https://github.com/FPGAwars/icestudio/issues/774 for details.
-    cout("")
-    cout("CLOCKS:", style="cyan")
-    clocks = report["fmax"]
-    if len(clocks) > 0:
-        for clk_net, vals in clocks.items():
-            # -- Extract clock name from the net name.
-            clk_signal = clk_net.split("$")[clk_name_index]
+    # -- Print the optional clocks table.
+    clock_report_printed = _maybe_print_pnr_clocks_report(
+        report, clk_name_index
+    )
 
-            # -- Report speed.
-            max_mhz = vals["achieved"]
-            cout(
-                f"{clk_signal:>20}: "
-                f"[magenta]{max_mhz:7.2f}[/magenta] Mhz max"
-            )
-
-    # -- For now we ignore the critical path report in the pnr report and
-    # -- refer the user to the pnr verbose output.
+    # -- Print summary.
     cout("")
+    if not clock_report_printed:
+        cout("No clocks were found in the design.", style="yellow")
     if not verbose:
         cout(
-            "Use 'apio report --verbose' for more details.",
+            "Run 'apio report --verbose' for more details.",
+            nl=False,
             style="yellow",
         )
 

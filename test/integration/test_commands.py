@@ -306,7 +306,7 @@ def test_project_ice40_local_dir(apio_runner: ApioRunner):
         example="alhambra-ii/bcd-counter",
         testbench="main_tb",
         bitstream="hardware.bin",
-        report_item="ICESTORM_LC:",
+        report_item="ICESTORM_LC",
     )
 
 
@@ -319,7 +319,7 @@ def test_project_ice40_remote_dir(apio_runner: ApioRunner):
         example="alhambra-ii/bcd-counter",
         testbench="main_tb",
         bitstream="hardware.bin",
-        report_item="ICESTORM_LC:",
+        report_item="ICESTORM_LC",
     )
 
 
@@ -331,7 +331,7 @@ def test_project_ecp5_local_dir(apio_runner: ApioRunner):
         example="colorlight-5a-75b-v8/ledon",
         testbench="ledon_tb",
         bitstream="hardware.bit",
-        report_item="ALU54B:",
+        report_item="ALU54B",
     )
 
 
@@ -343,7 +343,7 @@ def test_project_ecp5_remote_dir(apio_runner: ApioRunner):
         example="colorlight-5a-75b-v8/ledon",
         testbench="ledon_tb",
         bitstream="hardware.bit",
-        report_item="ALU54B:",
+        report_item="ALU54B",
     )
 
 
@@ -355,7 +355,7 @@ def test_project_gowin_local_dir(apio_runner: ApioRunner):
         example="sipeed-tang-nano-4k/blinky",
         testbench="blinky_tb",
         bitstream="hardware.fs",
-        report_item="ALU54D:",
+        report_item="ALU54D",
     )
 
 
@@ -367,5 +367,5 @@ def test_project_gowin_remote_dir(apio_runner: ApioRunner):
         example="sipeed-tang-nano-4k/blinky",
         testbench="blinky_tb",
         bitstream="hardware.fs",
-        report_item="ALU54D:",
+        report_item="ALU54D",
     )
