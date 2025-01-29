@@ -46,13 +46,13 @@ def _list_cli():
         box=box.SQUARE,
         border_style="dim",
         title="Apio User Preferences",
+        title_justify="left",
         padding=(0, 2),
-        header_style="cyan",
     )
 
     # -- Add columnes.
     table.add_column("ITEM", no_wrap=True)
-    table.add_column("VALUE", no_wrap=True, min_width=30)
+    table.add_column("VALUE", no_wrap=True, style="cyan", min_width=30)
 
     # -- Add rows.
     value = apio_ctx.profile.preferences.get("colors", "on")

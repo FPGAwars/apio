@@ -12,7 +12,7 @@ from rich.table import Table
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import apio_docs_options
-from apio.common.apio_console import cprint, docs_text, PADDING
+from apio.common.apio_console import cprint, cout, docs_text, PADDING
 
 # -- apio docs resources
 
@@ -38,6 +38,8 @@ same functionality.
 """
 
 
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
 @click.command(
     name="resources",
     cls=ApioCommand,
@@ -54,9 +56,17 @@ def _resources_cli():
     docs_text(APIO_DOCS_RESOURCES_SUMMARY, width=73)
 
     # -- Define the table.
-    table = Table(show_header=False, show_lines=True, padding=PADDING)
-    table.add_column(no_wrap=True)
-    table.add_column(no_wrap=True, style="cyan")
+    table = Table(
+        show_header=True,
+        show_lines=True,
+        padding=PADDING,
+        border_style="dim",
+        title="Apio Related Resources",
+        title_justify="left",
+    )
+
+    table.add_column("RESOURCE", no_wrap=True)
+    table.add_column("RESOURCE LOCATION", no_wrap=True, style="cyan")
 
     # -- Add rows
     table.add_row(
@@ -78,6 +88,7 @@ def _resources_cli():
     )
 
     # -- Render the table.
+    cout()
     cprint(table)
 
 

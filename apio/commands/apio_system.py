@@ -9,7 +9,7 @@
 
 import click
 from rich.table import Table
-from apio.common.apio_console import cprint, PADDING
+from apio.common.apio_console import cprint, PADDING, cout
 from apio.utils import util
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
@@ -33,6 +33,8 @@ environment variable 'APIO_HOME_DIR'.
 """
 
 
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
 @click.command(
     name="info",
     cls=ApioCommand,
@@ -46,9 +48,17 @@ def _info_cli():
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Define the table.
-    table = Table(show_header=False, show_lines=True, padding=PADDING)
-    table.add_column(no_wrap=True)
-    table.add_column(no_wrap=True, style="cyan")
+    table = Table(
+        show_header=True,
+        show_lines=True,
+        padding=PADDING,
+        border_style="dim",
+        title="Apio System Information",
+        title_justify="left",
+    )
+
+    table.add_column("ITEM", no_wrap=True)
+    table.add_column("VALUE", no_wrap=True, style="cyan")
 
     # -- Add rows
     table.add_row("Apio version", util.get_apio_version())
@@ -63,6 +73,7 @@ def _info_cli():
     )
 
     # -- Render the table.
+    cout()
     cprint(table)
 
 
@@ -93,9 +104,17 @@ def _platforms_cli():
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Define the table.
-    table = Table(show_header=False, show_lines=True, padding=PADDING)
-    table.add_column(no_wrap=True)
-    table.add_column(no_wrap=True)
+    table = Table(
+        show_header=True,
+        show_lines=True,
+        padding=PADDING,
+        style="dim",
+        title="Apio Supported Platforms",
+        title_justify="left",
+    )
+
+    table.add_column("PLATFORM ID", min_width=20, no_wrap=True)
+    table.add_column("DESCRIPTION", min_width=30, no_wrap=True)
 
     # -- Add rows.
     for platform_id, platform_info in apio_ctx.platforms.items():
@@ -103,7 +122,7 @@ def _platforms_cli():
 
         # -- Mark the current platform.
         if platform_id == apio_ctx.platform_id:
-            style = "green bold"
+            style = "cyan bold"
             marker = "* "
         else:
             style = None
@@ -112,6 +131,7 @@ def _platforms_cli():
         table.add_row(f"{marker}{platform_id}", f"{description}", style=style)
 
     # -- Render the table.
+    cout()
     cprint(table)
 
 

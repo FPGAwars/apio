@@ -85,7 +85,12 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
 
     # -- Define the table.
     table = Table(
-        show_header=True, show_lines=False, box=box.SQUARE, border_style="dim"
+        show_header=True,
+        show_lines=False,
+        box=box.SQUARE,
+        border_style="dim",
+        title="Apio Supported FPGAs",
+        title_justify="left",
     )
 
     # -- Add columnes
@@ -123,6 +128,7 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
         table.add_row(*values)
 
     # -- Render the table.
+    cout()
     cprint(table)
 
     # -- Show summary.

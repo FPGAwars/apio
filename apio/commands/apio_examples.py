@@ -65,6 +65,7 @@ def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
         box=box.SQUARE,
         border_style="dim",
         title="Apio Examples",
+        title_justify="left",
     )
 
     # -- Add columns.

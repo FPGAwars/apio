@@ -309,8 +309,8 @@ def print_packages_report(
         box=box.SQUARE,
         border_style="dim",
         title="Apio Packages Status",
+        title_justify="left",
         padding=(0, 2),
-        header_style="cyan",
     )
 
     table.add_column("PACKAGE NAME", no_wrap=True)
@@ -351,8 +351,8 @@ def print_packages_report(
         box=box.SQUARE,
         border_style="dim",
         title="Apio Packages Errors",
+        title_justify="left",
         padding=(0, 2),
-        header_style="cyan",
     )
 
     # -- Add columns.

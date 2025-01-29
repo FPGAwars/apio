@@ -521,8 +521,8 @@ def _print_pnr_utilization_report(report: Dict[str, any]):
         box=box.SQUARE,
         border_style="dim",
         title="FPGA Resource Utilization",
+        title_justify="left",
         padding=(0, 2),
-        header_style="cyan",
     )
 
     # -- Add columnes.
@@ -562,14 +562,16 @@ def _maybe_print_pnr_clocks_report(
         show_lines=True,
         box=box.SQUARE,
         border_style="dim",
-        title="Clock information",
+        title="Clock Information",
+        title_justify="left",
         padding=(0, 2),
-        header_style="cyan",
     )
 
     # -- Add columns
     table.add_column("CLOCK", no_wrap=True)
-    table.add_column("MAX SPEED [Mhz]", no_wrap=True, justify="right")
+    table.add_column(
+        "MAX SPEED [Mhz]", no_wrap=True, justify="right", style="magenta"
+    )
 
     # -- Add rows.
     clocks = report["fmax"]

@@ -175,7 +175,7 @@ def _list_cli():
             style="yellow",
         )
     else:
-        cout("", "All packages are installed OK.", style="green")
+        cout("", "All Apio packages are installed OK.", style="green")
 
 
 # ------ apio packages fix
