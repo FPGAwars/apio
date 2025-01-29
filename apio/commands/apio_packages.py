@@ -9,12 +9,117 @@
 
 from typing import Tuple
 import click
-from apio.common.apio_console import cout
+from rich.table import Table
+from rich import box
+from apio.common.apio_console import cout, cprint
 from apio.managers import installer
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import pkg_util
 from apio.commands import options
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
+
+
+def print_packages_report(apio_ctx: ApioContext) -> None:
+    """A common function to print the state of the packges."""
+
+    # -- Scan the packages
+    scan = pkg_util.scan_packages(
+        apio_ctx, cached_config_ok=False, verbose=False
+    )
+
+    # -- Shortcuts to reduce clutter.
+    get_package_version = apio_ctx.profile.get_package_installed_version
+    get_package_info = apio_ctx.get_package_info
+
+    table = Table(
+        show_header=True,
+        show_lines=True,
+        box=box.SQUARE,
+        border_style="dim",
+        title="Apio Packages Status",
+        title_justify="left",
+        padding=(0, 2),
+    )
+
+    table.add_column("PACKAGE NAME", no_wrap=True)
+    table.add_column("VERSION", no_wrap=True)
+    table.add_column("DESCRPITION", no_wrap=True)
+    table.add_column("STATUS", no_wrap=True)
+
+    # -- Add raws for installed ok packages.
+    for package_name in scan.installed_ok_package_names:
+        version = get_package_version(package_name)
+        description = get_package_info(package_name)["description"]
+        table.add_row(package_name, version, description, "OK")
+
+    # -- Add rows for uninstalled packages.
+    for package_name in scan.uninstalled_package_names:
+        description = get_package_info(package_name)["description"]
+        table.add_row(
+            package_name, None, description, "Uninstalled", style="yellow"
+        )
+
+    # -- Add raws for installed with version mismatch packges.
+    for package_name in scan.bad_version_package_names:
+        version = get_package_version(package_name)
+        description = get_package_info(package_name)["description"]
+        table.add_row(
+            package_name, version, description, "Wrong version", style="red"
+        )
+
+    # -- Add rows for broken packge.s
+    for package_name in scan.broken_package_names:
+        description = get_package_info(package_name)["description"]
+        table.add_row(package_name, None, description, "Broken", style="red")
+
+    # -- Render table.
+    cout()
+    cprint(table)
+
+    # -- Define errors table.
+    table = Table(
+        show_header=True,
+        show_lines=True,
+        box=box.SQUARE,
+        border_style="dim",
+        title="Apio Packages Errors",
+        title_justify="left",
+        padding=(0, 2),
+    )
+
+    # -- Add columns.
+    table.add_column("ERROR TYPE", no_wrap=True, min_width=15, style="red")
+    table.add_column("NAME", no_wrap=True, min_width=15)
+
+    # -- Add rows.
+    for package_name in scan.orphan_package_names:
+        table.add_row("Orphan package", package_name)
+
+    for name in sorted(scan.orphan_dir_names):
+        table.add_row("Orphan dir", name)
+
+    for name in sorted(scan.orphan_file_names):
+        table.add_row("Orphan file", name)
+
+    # -- Render the table, unless empty.
+    if table.row_count:
+        cout()
+        cprint(table)
+
+    # -- Print summary.
+    cout()
+    if not scan.packages_installed_ok():
+        cout(
+            "Run 'apio packages install' to install all packages.",
+            style="yellow",
+        )
+    elif scan.num_errors_to_fix():
+        cout(
+            "Run 'apio packages fix' to fix the errors.",
+            style="yellow",
+        )
+    else:
+        cout("All Apio packages are installed OK.", style="green")
 
 
 # ------ apio packages install
@@ -62,20 +167,26 @@ def _install_cli(
         apio_ctx, cached_config_ok=False, verbose=verbose
     )
 
-    # -- If packages where specified, install all packages that are valid
-    # -- for this platform.
+    # -- If packages where specified, install all the missing ones, if any.
+    scan = pkg_util.scan_packages(
+        apio_ctx, cached_config_ok=False, verbose=False
+    )
     if not packages:
         packages = apio_ctx.platform_packages.keys()
 
     # -- Install the packages, one by one.
     for package in packages:
-        installer.install_package(
-            apio_ctx,
-            package_spec=package,
-            force_reinstall=force,
-            cached_config_ok=False,
-            verbose=verbose,
-        )
+        if force or package not in scan.installed_ok_package_names:
+            installer.install_package(
+                apio_ctx,
+                package_spec=package,
+                force_reinstall=force,
+                cached_config_ok=False,
+                verbose=verbose,
+            )
+
+    # -- Scan the available and installed packages.
+    print_packages_report(apio_ctx)
 
 
 # ------ apio packages uninstall
@@ -115,16 +226,25 @@ def _uninstall_cli(
         apio_ctx, cached_config_ok=False, verbose=verbose
     )
 
-    # -- If packages where specified, uninstall all packages that are valid
-    # -- for this platform.
+    # -- Scan the packages.
+    scan = pkg_util.scan_packages(
+        apio_ctx, cached_config_ok=False, verbose=False
+    )
+
+    # -- If packages where specified, uninstall all packages.
     if not packages:
         packages = apio_ctx.platform_packages.keys()
 
     # -- Uninstall the packages.
     for package in packages:
-        installer.uninstall_package(
-            apio_ctx, package_spec=package, verbose=verbose
-        )
+        # -- Skip packages that are alredy uninstalled.
+        if package not in scan.uninstalled_package_names:
+            installer.uninstall_package(
+                apio_ctx, package_spec=package, verbose=verbose
+            )
+
+    # -- Print updated packge report.
+    print_packages_report(apio_ctx)
 
 
 # ------ apio packages list
@@ -151,31 +271,8 @@ def _list_cli():
 
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
-    # -- Scan the available and installed packages.
-    scan = pkg_util.scan_packages(
-        apio_ctx, cached_config_ok=False, verbose=False
-    )
-
-    # -- List the findings.
-    # pkg_util.list_packages(apio_ctx, scan)
-    pkg_util.print_packages_report(apio_ctx, scan)
-
-    # -- Print an hint or summary based on the findings.
-    if scan.num_errors_to_fix():
-        cout(
-            "",
-            "Run 'apio packages fix' to fix the errors.",
-            style="yellow",
-        )
-    elif scan.uninstalled_package_names:
-        cout(
-            "",
-            "Run 'apio packages install' to install all "
-            "available packages.",
-            style="yellow",
-        )
-    else:
-        cout("", "All Apio packages are installed OK.", style="green")
+    # -- Print packges report.
+    print_packages_report(apio_ctx)
 
 
 # ------ apio packages fix
@@ -203,13 +300,12 @@ def _fix_cli():
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- First thing, fix broken packages, if any.
-    _, fix_needed = installer.scan_and_fix_packages(
+    installer.scan_and_fix_packages(
         apio_ctx, cached_config_ok=False, verbose=False
     )
 
-    #  If fixed not needed, say so.
-    if not fix_needed:
-        cout("No errors to fix", style="green")
+    # -- Print updated packges report.
+    print_packages_report(apio_ctx)
 
 
 # ------ apio packages (group)

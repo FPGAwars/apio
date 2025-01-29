@@ -13,9 +13,7 @@ from typing import List, Callable, Tuple
 from pathlib import Path
 from dataclasses import dataclass
 import os
-from rich.table import Table
-from rich import box
-from apio.common.apio_console import cout, cstyle, cprint
+from apio.common.apio_console import cout, cstyle
 from apio.apio_context import ApioContext
 from apio.utils import util
 
@@ -152,10 +150,10 @@ class PackageScanResults:
 
     # -- Normal and Error. Packages in platform_packages that are installed
     # -- regardless if the versin matches or not.
-    installed_package_names: List[str]
-    # -- Error. The subset of installed_package_names that have version
-    # -- mismatch.
-    bad_version_package_names_subset: List[str]
+    installed_ok_package_names: List[str]
+    # -- Error. Packages in platform_packages that are installed but with
+    # -- version mismatch.
+    bad_version_package_names: List[str]
     # -- Normal. Packages in platform_packages that are uninstaleld properly.
     uninstalled_package_names: List[str]
     # -- Error. Packages in platform_packages with broken installation. E.g,
@@ -171,11 +169,20 @@ class PackageScanResults:
     # -- expected to contain only directories for packages.a
     orphan_file_names: List[str]
 
+    def packages_installed_ok(self) -> bool:
+        """Returns true if all packages are installed ok, regardless of
+        other fixable errors."""
+        return (
+            len(self.bad_version_package_names) == 0
+            and len(self.uninstalled_package_names) == 0
+            and len(self.broken_package_names) == 0
+        )
+
     def num_errors_to_fix(self) -> bool:
         """Returns the number of errors that required , having a non installed
         packages is not considered an error that need to be fix."""
         return (
-            len(self.bad_version_package_names_subset)
+            len(self.bad_version_package_names)
             + len(self.broken_package_names)
             + len(self.orphan_package_names)
             + len(self.orphan_dir_names)
@@ -192,8 +199,8 @@ class PackageScanResults:
     def dump(self):
         """Dump the content of this object. For debugging."""
         cout("Package scan results:")
-        cout(f"  Installed     {self.installed_package_names}")
-        cout(f"  bad version   {self.bad_version_package_names_subset}")
+        cout(f"  Installed     {self.installed_ok_package_names}")
+        cout(f"  bad version   {self.bad_version_package_names}")
         cout(f"  Uninstalled   {self.uninstalled_package_names}")
         cout(f"  Broken        {self.broken_package_names}")
         cout(f"  Orphan ids    {self.orphan_package_names}")
@@ -233,6 +240,7 @@ def package_version_ok(
     return current_ver == remote_ver
 
 
+# pylint: disable=too-many-branches
 def scan_packages(
     apio_ctx: ApioContext, *, cached_config_ok: bool, verbose: bool
 ) -> PackageScanResults:
@@ -252,7 +260,7 @@ def scan_packages(
         # -- Collect package's folder names in a set. For a later use.
         platform_folder_names.add(package_name)
 
-        # -- Classify the package as one of three cases.
+        # -- Classify the package as one of four cases.
         in_profile = package_name in apio_ctx.profile.packages
         has_dir = apio_ctx.get_package_dir(package_name).is_dir()
         version_ok = package_version_ok(
@@ -262,14 +270,17 @@ def scan_packages(
             verbose=verbose,
         )
         if in_profile and has_dir:
-            result.installed_package_names.append(package_name)
-            if not version_ok:
-                # -- The subset of installed_package_namess that has bad
-                # -- version.
-                result.bad_version_package_names_subset.append(package_name)
+            if version_ok:
+                # Case 1: Package installed ok.
+                result.installed_ok_package_names.append(package_name)
+            else:
+                # -- Case 2: Package installed but version mismatch.
+                result.bad_version_package_names.append(package_name)
         elif not in_profile and not has_dir:
+            # -- Case 3: Package not installed.
             result.uninstalled_package_names.append(package_name)
         else:
+            # -- Case 4: Package is broken.
             result.broken_package_names.append(package_name)
 
     # -- Scan the packagtes ids that are registered in profile as installed
@@ -292,84 +303,3 @@ def scan_packages(
         result.dump()
 
     return result
-
-
-def print_packages_report(
-    apio_ctx: ApioContext, scan: PackageScanResults
-) -> None:
-    """Print the full packages report, based on the data in scan."""
-
-    # -- Shortcuts to reduce clutter.
-    get_package_version = apio_ctx.profile.get_package_installed_version
-    get_package_info = apio_ctx.get_package_info
-
-    table = Table(
-        show_header=True,
-        show_lines=True,
-        box=box.SQUARE,
-        border_style="dim",
-        title="Apio Packages Status",
-        title_justify="left",
-        padding=(0, 2),
-    )
-
-    table.add_column("PACKAGE NAME", no_wrap=True)
-    table.add_column("VERSION", no_wrap=True)
-    table.add_column("DESCRPITION", no_wrap=True)
-    table.add_column("STATUS", no_wrap=True)
-
-    # -- Add raws for installed packages.
-    for package_name in scan.installed_package_names:
-        version = get_package_version(package_name)
-        if package_name in scan.bad_version_package_names_subset:
-            status = "Wrong version"
-            style = "red"
-        else:
-            status = "OK"
-            style = None
-        description = get_package_info(package_name)["description"]
-        table.add_row(package_name, version, description, status, style=style)
-
-    # -- Add rows for uninstalled packages.
-    for package_name in scan.uninstalled_package_names:
-        description = get_package_info(package_name)["description"]
-        table.add_row(
-            package_name, None, description, "Uninstalled", style="yellow"
-        )
-    for package_name in scan.broken_package_names:
-        description = get_package_info(package_name)["description"]
-        table.add_row(package_name, None, description, "Broken", style="red")
-
-    # -- Render table.
-    cout()
-    cprint(table)
-
-    # -- Define errors table.
-    table = Table(
-        show_header=True,
-        show_lines=True,
-        box=box.SQUARE,
-        border_style="dim",
-        title="Apio Packages Errors",
-        title_justify="left",
-        padding=(0, 2),
-    )
-
-    # -- Add columns.
-    table.add_column("ERROR TYPE", no_wrap=True, min_width=15, style="red")
-    table.add_column("NAME", no_wrap=True, min_width=15)
-
-    # -- Add rows.
-    for package_name in scan.orphan_package_names:
-        table.add_row("Orphan package", package_name)
-
-    for name in sorted(scan.orphan_dir_names):
-        table.add_row("Orphan dir", name)
-
-    for name in sorted(scan.orphan_file_names):
-        table.add_row("Orphan file", name)
-
-    # -- Render the table, unless empty.
-    if table.row_count:
-        cout()
-        cprint(table)

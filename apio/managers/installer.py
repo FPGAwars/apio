@@ -181,28 +181,23 @@ def _delete_package_dir(
 
 def scan_and_fix_packages(
     apio_ctx: ApioContext, cached_config_ok: bool, verbose=False
-) -> Tuple[pkg_util.PackageScanResults, bool]:
-    """Scan the packages and fix if there are errors. Return a tuple with
-    the scan resultes upon return (post fix if fixed) and a flag that
-    indicates if a fix was necessary.."""
+) -> bool:
+    """Scan the packages and fix if there are errors. Returns true
+    if the packages are installed ok."""
 
-    # -- Perform the first scan
-    scan_results = pkg_util.scan_packages(
+    # -- Scan the packages.
+    scan = pkg_util.scan_packages(
         apio_ctx, cached_config_ok=cached_config_ok, verbose=verbose
     )
 
-    # -- Return if no errors to fix.
-    if scan_results.num_errors_to_fix() == 0:
-        return (scan_results, False)
+    # -- If there are fixable errors, fix them.
+    if scan.num_errors_to_fix() > 0:
+        _fix_packages(apio_ctx, scan)
 
-    # -- Errors detected, fix them.
-    _fix_packages(apio_ctx, scan_results)
-
-    # -- Perform the second scan and return
-    scan_results = pkg_util.scan_packages(
-        apio_ctx, cached_config_ok=cached_config_ok, verbose=verbose
-    )
-    return (scan_results, True)
+    # -- Return a flag that indicates if all packges are installed ok. We
+    # -- use a scan from before the fixing but the fixing does not touch
+    # -- installed ok packages.
+    return scan.packages_installed_ok()
 
 
 def install_missing_packages_on_the_fly(apio_ctx: ApioContext) -> None:
@@ -214,14 +209,18 @@ def install_missing_packages_on_the_fly(apio_ctx: ApioContext) -> None:
     # -- Scan and fix broken package.
     # -- Sicne this is a on-the-fly operation, we don't require a fresh
     # -- remote config file for required packages versions.
-    scan_results, _ = scan_and_fix_packages(
+    installed_ok = scan_and_fix_packages(
         apio_ctx, cached_config_ok=True, verbose=False
     )
 
-    # -- If all the required packages are installed, we are done.
-    if scan_results.is_all_ok():
+    # -- If all the packages are installed, we are done.
+    if installed_ok:
         return
 
+    # -- Here when we need to install some packages. Since we just fixed
+    # -- we can't have broken or packages with version mismatch, just
+    # -- instlled ok, and not installed.
+    # --
     # -- Get lists of installed and required packages.
     installed_packages = apio_ctx.profile.packages
     required_packages_names = apio_ctx.platform_packages.keys()
@@ -395,9 +394,8 @@ def _fix_packages(
 ) -> None:
     """If the package scan result contains errors, fix them."""
 
-    # -- Fix broken packages.
-    for package_name in scan.bad_version_package_names_subset:
-        cout(f"Uninstalling versin mismatch '{package_name}'", style="magenta")
+    for package_name in scan.bad_version_package_names:
+        cout(f"Uninstalling bad version of '{package_name}'", style="magenta")
         _delete_package_dir(apio_ctx, package_name, verbose=False)
         apio_ctx.profile.remove_package(package_name)
 

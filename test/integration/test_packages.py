@@ -62,7 +62,6 @@ def test_packages(apio_runner: ApioRunner):
         # -- This should not do anything since it's considered to be installed.
         result = sb.invoke_apio_cmd(apio, ["packages", "install", "examples"])
         sb.assert_ok(result)
-        assert "was already install" in result.output
         assert "Package 'examples' installed" not in result.output
         assert not marker_file.exists()
 
