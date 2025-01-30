@@ -24,6 +24,7 @@ from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
 from apio.managers import installer
 from apio.profile import Profile
+from apio.common import rich_lib_windows
 from apio.common.proto.apio_pb2 import (
     Verbosity,
     Envrionment,
@@ -304,6 +305,7 @@ class SCons:
         result.envrionment.MergeFrom(
             Envrionment(
                 platform_id=apio_ctx.platform_id,
+                is_windows=apio_ctx.is_windows(),
                 is_debug=util.is_debug(),
                 yosys_path=oss_vars["YOSYS_LIB"],
                 trellis_path=oss_vars["TRELLIS"],
@@ -327,6 +329,12 @@ class SCons:
         if target_params:
             result.target.MergeFrom(target_params)
             assert result.target.IsInitialized(), result
+
+        # -- If windows, populate the rich library workaround parameters.
+        if apio_ctx.is_windows():
+            result.rich_lib_windows_params.MergeFrom(
+                rich_lib_windows.get_workaround_parametes()
+            )
 
         # -- All done.
         assert result.IsInitialized(), result

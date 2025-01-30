@@ -17,8 +17,10 @@ from apio.scons.plugin_ice40 import PluginIce40
 from apio.scons.plugin_ecp5 import PluginEcp5
 from apio.scons.plugin_gowin import PluginGowin
 from apio.common.proto.apio_pb2 import SconsParams, ICE40, ECP5, GOWIN
+from apio.common import apio_console
 from apio.scons.apio_env import ApioEnv, TARGET
 from apio.scons.plugin_base import PluginBase
+from apio.common import rich_lib_windows
 from apio.scons.plugin_util import (
     get_sim_config,
     get_tests_configs,
@@ -65,6 +67,16 @@ class SconsHandler:
         # -- Compare the params timestamp to the timestamp in the command.
         timestamp = ARGUMENTS["timestamp"]
         assert params.timestamp == timestamp
+
+        # -- If running on windows, apply the lib library workaround
+        if params.envrionment.is_windows:
+            assert params.HasField("rich_lib_windows_params"), params
+            rich_lib_windows.apply_workaround(params.rich_lib_windows_params)
+        else:
+            assert not params.HasField("rich_lib_windows_params"), params
+
+        # -- Force colors even though we are piped out.
+        apio_console.configure(force_terminal=True)
 
         # -- Create the apio environment.
         apio_env = ApioEnv(COMMAND_LINE_TARGETS, params)

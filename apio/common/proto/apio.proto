@@ -70,13 +70,14 @@ message Verbosity {
 message Envrionment {
   // The underlying platform id as it appears in platforms.jsonc.
   required string platform_id = 1;
+  required bool is_windows = 2;
 
   // True if apio debug is enabled.
-  optional bool is_debug = 2 [default = false];
+  optional bool is_debug = 3 [default = false];
 
   // Pathes to oss-cad-suite libraries.
-  required string yosys_path = 3;
-  required string trellis_path = 4;
+  required string yosys_path = 4;
+  required string trellis_path = 5;
 }
 
 // Information about the project.
@@ -115,7 +116,7 @@ message SimParams {
   // If not specified, scons will run if it finds a single testbench
   // file or exit with error if none or more than one.
   optional string testbench = 1 [default = ""];
- 
+
   // Force rerun of simulation, even if not change from previous
   // run.
   required bool force_sim = 2;
@@ -144,6 +145,20 @@ message TargetParams {
   }
 }
 
+// Contains parameters for working around the rich library bugs when
+// using piped output on windows.
+// See:
+// https://github.com/Textualize/rich/issues/3082
+// https://github.com/Textualize/rich/issues/3625
+message RichLibWindowsParams {
+  // The encoding of strdout, e.g. 'utf-8'.
+  required string stdout_encoding = 1;
+  // Copy of WindowsConsoleFeatures.vt.
+  required bool vt = 2;
+  // Copy of WindowsConsoleFeatures.truecolor.
+  required bool truecolor = 3;
+}
+
 // The top level messages that is passed from the apio process to
 // the scons process.
 message SconsParams {
@@ -169,4 +184,7 @@ message SconsParams {
 
   // Additional params for for scons targets that need it..
   optional TargetParams target = 7;
+
+  // Should be populated if an only if environment.is_windows is true.
+  optional RichLibWindowsParams rich_lib_windows_params = 8;
 }

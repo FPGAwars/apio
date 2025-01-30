@@ -64,14 +64,15 @@ class ApioEnv:
         ), "DefaultEnvironment already exists"
         # pylint: enable=protected-access
 
-        # -- Determine if we run on windows. Platform id is a required arg.
-        self.is_windows = (
-            "windows" in self.params.envrionment.platform_id.lower()
-        )
 
         # Extra info for debugging.
         if self.is_debug:
             self.dump_env_vars()
+
+    @property
+    def is_windows(self):
+        """Returns True if we run on windows."""
+        return self.params.envrionment.is_windows
 
     @property
     def is_debug(self):

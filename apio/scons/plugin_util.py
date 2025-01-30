@@ -28,7 +28,6 @@ from SCons.Node.FS import File
 from SCons.Script.SConscript import SConsEnvironment
 from SCons.Node import NodeList
 from SCons.Node.Alias import Alias
-import debugpy
 from apio.scons.apio_env import ApioEnv, TARGET, BUILD_DIR_SEP
 from apio.common.apio_console import cout, cerror, cwarning, cprint
 
@@ -36,30 +35,6 @@ from apio.common.apio_console import cout, cerror, cwarning, cprint
 SRC_SUFFIXES = [".v", ".sv"]
 
 TESTBENCH_HINT = "Testbench file names must end with '_tb.v' or '_tb.sv'."
-
-
-def maybe_wait_for_remote_debugger(env_var_name: str):
-    """A rendezvous point for a remote debger. If the environment variable
-    of given name is set, the function will block until a remote
-    debugger (e.g. from Visual Studio Code) is attached.
-    """
-    if os.getenv(env_var_name) is not None:
-        cout(f"Env var '{env_var_name}' was detected.")
-        port = 5678
-        cout(f"Apio SCons for remote debugger on port localhost:{port}.")
-        debugpy.listen(port)
-        cout(
-            "Attach Visual Studio Code python remote python debugger "
-            f"to port {port}.",
-            style="magenta",
-        )
-        # -- Block until the debugger connetcs.
-        debugpy.wait_for_client()
-        # -- Here the remote debugger is attached and the program continues.
-        cout(
-            "Remote debugger is attached, program continues...",
-            style="green",
-        )
 
 
 def map_params(params: Optional[List[Union[str, Path]]], fmt: str) -> str:
