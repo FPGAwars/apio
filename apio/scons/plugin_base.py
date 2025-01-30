@@ -122,11 +122,12 @@ class PluginBase:
         )
 
         return Builder(
+            # See https://tinyurl.com/yosys-sv-graph
             action=(
-                'yosys -f verilog -p "show -format dot -colors 1 '
-                '-prefix {0}hardware {1}" {2} $SOURCES'
+                'yosys -p "read_verilog -sv $SOURCES; show -format dot'
+                ' -colors 1 -prefix {0}hardware {1}" {2}'
             ).format(
-                BUILD_DIR_SEP,
+                BUILD_DIR_SEP,  # _build/
                 top_module,
                 "" if params.verbosity.all else "-q",
             ),
