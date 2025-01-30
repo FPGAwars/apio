@@ -64,7 +64,6 @@ class ApioEnv:
         ), "DefaultEnvironment already exists"
         # pylint: enable=protected-access
 
-
         # Extra info for debugging.
         if self.is_debug:
             self.dump_env_vars()

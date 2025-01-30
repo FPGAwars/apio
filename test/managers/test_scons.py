@@ -41,6 +41,7 @@ fpga_info {
 }
 envrionment {
   platform_id: "TBD"
+  is_windows: true  # TBD
   is_debug: false
   yosys_path: "TBD"
   trellis_path: "TBD"
@@ -50,6 +51,7 @@ project {
   top_module: "my_module"
   yosys_synth_extra_options: "-dsp -xyz"
 }
+# rich_lib_windows_params is TBD
 """
 
 EXPECTED2 = """
@@ -71,6 +73,7 @@ verbosity {
 }
 envrionment {
   platform_id: "TBD"
+  is_windows: true  # TBD
   is_debug: false
   yosys_path: "TBD"
   trellis_path: "TBD"
@@ -91,6 +94,7 @@ target {
     verilator_warns: "dd"
   }
 }
+# rich_lib_windows_params is TBD
 """
 
 
@@ -117,6 +121,7 @@ def test_default_params(apio_runner: ApioRunner):
             sb.packages_dir / "oss-cad-suite/share/trellis"
         )
         expected.envrionment.platform_id = apio_ctx.platform_id
+        expected.envrionment.is_windows = apio_ctx.is_windows()
 
         # -- Compare actual to expected values.
         assert str(scons_params) == str(expected)
@@ -157,6 +162,19 @@ def test_explicit_params(apio_runner: ApioRunner):
             sb.packages_dir / "oss-cad-suite/share/trellis"
         )
         expected.envrionment.platform_id = apio_ctx.platform_id
+        expected.envrionment.is_windows = apio_ctx.is_windows()
+
+        # The field rich_lib_windows_params is too dynamic so we just assret
+        # for its existance and remove it from the comparison.
+        if apio_ctx.is_windows():
+            assert scons_params.HasField(
+                "rich_lib_windows_params"
+            ), scons_params
+        else:
+            assert not scons_params.HasField(
+                "rich_lib_windows_params"
+            ), scons_params
+        scons_params.ClearField("rich_lib_windows_params")
 
         # -- Compare actual to expected values.
         assert str(scons_params) == str(expected)
