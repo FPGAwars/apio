@@ -70,7 +70,7 @@ def _dump_env_mutations(
     cout("Environment settings:", style="magenta")
 
     # -- Print PATH mutations.
-    windows = apio_ctx.is_windows()
+    windows = apio_ctx.is_windows
     for p in reversed(mutations.paths):
         styled_name = cstyle("PATH", style="magenta")
         if windows:

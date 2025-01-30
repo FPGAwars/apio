@@ -533,14 +533,17 @@ class ApioContext:
         # -- Return the full platform
         return platform_str
 
+    @property
     def is_linux(self) -> bool:
         """Returns True iff platform_id indicates linux."""
         return "linux" in self.platform_id
 
+    @property
     def is_darwin(self) -> bool:
         """Returns True iff platform_id indicates Mac OSX."""
         return "darwin" in self.platform_id
 
+    @property
     def is_windows(self) -> bool:
         """Returns True iff platform_id indicates windows."""
         return "windows" in self.platform_id

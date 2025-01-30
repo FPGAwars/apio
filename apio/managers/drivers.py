@@ -145,13 +145,13 @@ class Drivers:
         Returns a process exit code.
         """
 
-        if self.apio_ctx.is_linux():
+        if self.apio_ctx.is_linux:
             return self._ftdi_install_linux()
 
-        if self.apio_ctx.is_darwin():
+        if self.apio_ctx.is_darwin:
             return self._ftdi_install_darwin()
 
-        if self.apio_ctx.is_windows():
+        if self.apio_ctx.is_windows:
             return self._ftdi_install_windows()
 
         cerror(f"Unknown platform type '{self.apio_ctx.platform_id}'.")
@@ -161,13 +161,13 @@ class Drivers:
         """Uninstalls the FTDI driver. Function is platform dependent.
         Returns a process exit code.
         """
-        if self.apio_ctx.is_linux():
+        if self.apio_ctx.is_linux:
             return self._ftdi_uninstall_linux()
 
-        if self.apio_ctx.is_darwin():
+        if self.apio_ctx.is_darwin:
             return self._ftdi_uninstall_darwin()
 
-        if self.apio_ctx.is_windows():
+        if self.apio_ctx.is_windows:
             return self._ftdi_uninstall_windows()
 
         cerror(f"Unknown platform '{self.apio_ctx.platform_id}'.")
@@ -178,13 +178,13 @@ class Drivers:
         Returns a process exit code.
         """
 
-        if self.apio_ctx.is_linux():
+        if self.apio_ctx.is_linux:
             return self._serial_install_linux()
 
-        if self.apio_ctx.is_darwin():
+        if self.apio_ctx.is_darwin:
             return self._serial_install_darwin()
 
-        if self.apio_ctx.is_windows():
+        if self.apio_ctx.is_windows:
             return self._serial_install_windows()
 
         cerror(f"Unknown platform '{self.apio_ctx.platform_id}'.")
@@ -194,13 +194,13 @@ class Drivers:
         """Uninstalls the serial driver. Function is platform dependent.
         Returns a process exit code.
         """
-        if self.apio_ctx.is_linux():
+        if self.apio_ctx.is_linux:
             return self._serial_uninstall_linux()
 
-        if self.apio_ctx.is_darwin():
+        if self.apio_ctx.is_darwin:
             return self._serial_uninstall_darwin()
 
-        if self.apio_ctx.is_windows():
+        if self.apio_ctx.is_windows:
             return self._serial_uninstall_windows()
 
         cerror(f"Unknown platform '{self.apio_ctx.platform_id}'.")
@@ -210,14 +210,14 @@ class Drivers:
         """Operations to do before uploading a design
         Only for mac platforms"""
 
-        if self.apio_ctx.is_darwin():
+        if self.apio_ctx.is_darwin:
             self._pre_upload_darwin()
 
     def post_upload(self):
         """Operations to do after uploading a design
         Only for mac platforms"""
 
-        if self.apio_ctx.is_darwin():
+        if self.apio_ctx.is_darwin:
             self._post_upload_darwin()
 
     def _ftdi_install_linux(self) -> int:

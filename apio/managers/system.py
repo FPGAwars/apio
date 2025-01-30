@@ -29,7 +29,7 @@ class System:  # pragma: no cover
         cerror("The 'lsftdi' command failed.", result.err_text)
 
         # -- A special hint for zadig on windows.
-        if self.apio_ctx.is_windows():
+        if self.apio_ctx.is_windows:
             cout(
                 "[Hint]: did you install the ftdi driver using "
                 "'apio drivers --ftdi-install'?",
@@ -158,7 +158,7 @@ class System:  # pragma: no cover
         # pylint: disable=fixme
         # TODO: Is this necessary or does windows accepts commands without
         # the '.exe' extension?
-        if self.apio_ctx.is_windows():
+        if self.apio_ctx.is_windows:
             command = command + ".exe"
 
         # -- Set the stdout and stderr callbacks, when executing the command

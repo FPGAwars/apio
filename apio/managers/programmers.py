@@ -57,7 +57,7 @@ def construct_programmer_cmd(
     # --
     # -- Special case for the TinyFPGA on MACOS platforms
     # -- TinyFPGA BX board is not detected in MacOS HighSierra
-    if "tinyprog" in board_info and apio_ctx.is_darwin():
+    if "tinyprog" in board_info and apio_ctx.is_darwin:
         # In this case the serial check is ignored
         # This is the command line to execute for uploading the
         # circuit

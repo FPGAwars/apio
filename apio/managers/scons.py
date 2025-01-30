@@ -305,7 +305,7 @@ class SCons:
         result.environment.MergeFrom(
             Environment(
                 platform_id=apio_ctx.platform_id,
-                is_windows=apio_ctx.is_windows(),
+                is_windows=apio_ctx.is_windows,
                 is_debug=util.is_debug(),
                 yosys_path=oss_vars["YOSYS_LIB"],
                 trellis_path=oss_vars["TRELLIS"],
@@ -331,7 +331,7 @@ class SCons:
             assert result.target.IsInitialized(), result
 
         # -- If windows, populate the rich library workaround parameters.
-        if apio_ctx.is_windows():
+        if apio_ctx.is_windows:
             result.rich_lib_windows_params.MergeFrom(
                 rich_lib_windows.get_workaround_params()
             )
