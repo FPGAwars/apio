@@ -40,7 +40,7 @@ fpga_info {
   }
 }
 envrionment {
-  platform_id: "darwin_arm64"
+  platform_id: "TBD"
   is_debug: false
   yosys_path: "TBD"
   trellis_path: "TBD"
@@ -70,7 +70,7 @@ verbosity {
   pnr: true
 }
 envrionment {
-  platform_id: "darwin_arm64"
+  platform_id: "TBD"
   is_debug: false
   yosys_path: "TBD"
   trellis_path: "TBD"
@@ -116,6 +116,7 @@ def test_default_params(apio_runner: ApioRunner):
         expected.envrionment.trellis_path = str(
             sb.packages_dir / "oss-cad-suite/share/trellis"
         )
+        expected.envrionment.platform_id = apio_ctx.platform_id
 
         # -- Compare actual to expected values.
         assert str(scons_params) == str(expected)
@@ -155,6 +156,7 @@ def test_explicit_params(apio_runner: ApioRunner):
         expected.envrionment.trellis_path = str(
             sb.packages_dir / "oss-cad-suite/share/trellis"
         )
+        expected.envrionment.platform_id = apio_ctx.platform_id
 
         # -- Compare actual to expected values.
         assert str(scons_params) == str(expected)
