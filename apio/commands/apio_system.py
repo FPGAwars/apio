@@ -9,6 +9,7 @@
 
 import click
 from rich.table import Table
+from rich import box
 from apio.common.apio_console import cprint, PADDING, cout
 from apio.utils import util
 from apio.apio_context import ApioContext, ApioContextScope
@@ -52,6 +53,7 @@ def _info_cli():
         show_header=True,
         show_lines=True,
         padding=PADDING,
+        box=box.SQUARE,
         border_style="dim",
         title="Apio System Information",
         title_justify="left",
@@ -108,6 +110,7 @@ def _platforms_cli():
         show_header=True,
         show_lines=True,
         padding=PADDING,
+        box=box.SQUARE,
         style="dim",
         title="Apio Supported Platforms",
         title_justify="left",

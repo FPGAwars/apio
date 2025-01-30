@@ -9,6 +9,7 @@
 
 import click
 from rich.table import Table
+from rich import box
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import apio_docs_options
@@ -60,6 +61,7 @@ def _resources_cli():
         show_header=True,
         show_lines=True,
         padding=PADDING,
+        box=box.SQUARE,
         border_style="dim",
         title="Apio Related Resources",
         title_justify="left",
