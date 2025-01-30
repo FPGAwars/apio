@@ -6,10 +6,16 @@
 # -- Authors Juan Gonzáles, Jesús Arroyo
 # -- Licence GPLv2
 
-
+import sys
+import platform
 from apio.scons.scons_handler import SconsHandler
 from apio.scons.plugin_util import maybe_wait_for_remote_debugger
 from apio.common import apio_console
+
+# -- A workaround for windows. Force stdout pipe to "utf-8" encoding.
+# -- see https://github.com/Textualize/rich/issues/3625
+if "win" in platform.system().lower() and sys.stdout.encoding != "utf-8":
+    sys.stdout.reconfigure(encoding="utf-8")
 
 # -- We force terminal mode to cause the scons process to emit colors even
 # -- though it outputs to a pipe to the parent apio process. The apio process
