@@ -2,11 +2,11 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2024 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 # -- Derived from:
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
-# ---- Licence Apache v2
+# ---- License Apache v2
 
 
 """A simple utility to string '//' comments from a json file.
@@ -80,11 +80,11 @@ STATES_TRANSITIONS = {
 def to_json(text: str) -> str:
     """Convert jasonc input to json by removing '//' comments. Line and
     number and characters position are preserved to any later json parsing
-    errors meanigful to the user.
+    errors meaningful to the user.
     """
     output = []
 
-    # -- Indicates the input position that is aleardy covered by the content
+    # -- Indicates the input position that is already covered by the content
     # -- in output. It can be larger than the size of the text in output since
     # -- we drop comment text.
     output_pos = 0
@@ -137,5 +137,5 @@ def to_json(text: str) -> str:
     if state != _State.IN_COMMENT:
         output.append(text[output_pos:])
 
-    # -- Concatanate the text pieces into a string.
+    # -- Concatenates the text pieces into a string.
     return "".join(output)

@@ -4,7 +4,7 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio graph' command"""
 
 import sys

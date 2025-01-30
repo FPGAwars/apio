@@ -473,7 +473,7 @@ Usage: apio drivers uninstall serial [OPTIONS]
   that you may have installed earlier.
 
   Examples:
-    apio drivers uinstall serial    # Uinstall the serial drivers.
+    apio drivers uninstall serial    # Uninstall the serial drivers.
 
 Options:
   -h, --help  Show this message and exit.
@@ -558,7 +558,7 @@ Usage: apio examples list [OPTIONS]
     apio examples list                     # List all examples
     apio examples list  -v                 # More verbose output.
     apio examples list | grep alhambra-ii  # Show alhambra-ii examples.
-    apio examples list | grep -i blink     # Show blikining examples.
+    apio examples list | grep -i blink     # Show blinking examples.
 
 Options:
   -v, --verbose  Show detailed output.
@@ -575,13 +575,13 @@ Usage: apio format [OPTIONS] [FILES]...
 
   The command 'apio format' formats Verilog source files to ensure
   consistency and style without altering their semantics. The command
-  accepts the names of pecific source files to format or formats all
+  accepts the names of specific source files to format or formats all
   project source files by default.
 
   Examples:
     apio format                    # Format all source files.
     apio format -v                 # Same but with verbose output.
-    apio format main.v main_tb.v   # Format the two tiven files.
+    apio format main.v main_tb.v   # Format the two files.
 
   The format command utilizes the format tool from the Verible project,
   which can be configured by setting its flags in the apio.ini project
@@ -687,7 +687,8 @@ Options:
   --nowarn nowarn         Disable specific warning(s).
   --warn warn             Enable specific warning(s).
   -a, --all               Enable all warnings, including code style warnings.
-  -t, --top-module name   Restrict linting to this module and its depedencies.
+  -t, --top-module name   Restrict linting to this module and its
+                          dependencies.
   -p, --project-dir path  Set the root directory for the project.
   -h, --help              Show this message and exit.
 
@@ -818,7 +819,7 @@ Usage: apio preferences [OPTIONS] COMMAND [ARGS]...
   '~/.apio').
 
   The user preference is not part of any apio project and typically are
-  not shared when multiple user colaborate on the same project.
+  not shared when multiple user collaborate on the same project.
 
 Options:
   -h, --help  Show this message and exit.
@@ -895,7 +896,7 @@ Usage: apio raw [OPTIONS] COMMAND
     apio raw -v                         # Show apio env setting.
     apio raw -h                         # Show this help info.
 
-  The '--' marker is used to seperate between the arguments of the apio
+  The '--' marker is used to separate between the arguments of the apio
   command itself and those of the executed command.
 
 Options:
@@ -918,7 +919,7 @@ Usage: apio report [OPTIONS]
 
   Examples:
     apio report            # Print report.
-    epio report --verbose  # Print extra information.
+    apio report --verbose  # Print extra information.
 
 Options:
   -p, --project-dir path  Set the root directory for the project.

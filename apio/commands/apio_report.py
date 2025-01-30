@@ -4,7 +4,7 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio' report' command"""
 
 import sys
@@ -27,7 +27,7 @@ verifying that the design can operate at the desired clock speed.
 
 Examples:[code]
   apio report            # Print report.
-  epio report --verbose  # Print extra information.[/code]
+  apio report --verbose  # Print extra information.[/code]
 """
 
 

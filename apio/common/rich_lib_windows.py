@@ -2,11 +2,11 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 # -- Derived from:
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
-# ---- Licence Apache v2
+# ---- License Apache v2
 """Functions to workaround the rich library bugs when stdout is piped out
 on windows."""
 
@@ -18,7 +18,7 @@ from apio.common.proto.apio_pb2 import RichLibWindowsParams
 # pylint: disable=protected-access
 
 
-def get_workaround_parametes() -> RichLibWindowsParams:
+def get_workaround_params() -> RichLibWindowsParams:
     """Called on the apio (parent) process side, when running on windows,
     to collect the parameters for the rich library workaround."""
     result = RichLibWindowsParams(

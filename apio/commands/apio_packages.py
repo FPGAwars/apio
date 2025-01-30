@@ -4,7 +4,7 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio packages' command"""
 
 from typing import Tuple
@@ -20,7 +20,7 @@ from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
 
 def print_packages_report(apio_ctx: ApioContext) -> None:
-    """A common function to print the state of the packges."""
+    """A common function to print the state of the packages."""
 
     # -- Scan the packages
     scan = pkg_util.scan_packages(
@@ -43,7 +43,7 @@ def print_packages_report(apio_ctx: ApioContext) -> None:
 
     table.add_column("PACKAGE NAME", no_wrap=True)
     table.add_column("VERSION", no_wrap=True)
-    table.add_column("DESCRPITION", no_wrap=True)
+    table.add_column("DESCRIPTION", no_wrap=True)
     table.add_column("STATUS", no_wrap=True)
 
     # -- Add raws for installed ok packages.
@@ -59,7 +59,7 @@ def print_packages_report(apio_ctx: ApioContext) -> None:
             package_name, None, description, "Uninstalled", style="yellow"
         )
 
-    # -- Add raws for installed with version mismatch packges.
+    # -- Add raws for installed with version mismatch packages.
     for package_name in scan.bad_version_package_names:
         version = get_package_version(package_name)
         description = get_package_info(package_name)["description"]
@@ -67,7 +67,7 @@ def print_packages_report(apio_ctx: ApioContext) -> None:
             package_name, version, description, "Wrong version", style="red"
         )
 
-    # -- Add rows for broken packge.s
+    # -- Add rows for broken packages.
     for package_name in scan.broken_package_names:
         description = get_package_info(package_name)["description"]
         table.add_row(package_name, None, description, "Broken", style="red")
@@ -243,7 +243,7 @@ def _uninstall_cli(
                 apio_ctx, package_spec=package, verbose=verbose
             )
 
-    # -- Print updated packge report.
+    # -- Print updated package report.
     print_packages_report(apio_ctx)
 
 
@@ -271,7 +271,7 @@ def _list_cli():
 
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
-    # -- Print packges report.
+    # -- Print packages report.
     print_packages_report(apio_ctx)
 
 
@@ -304,7 +304,7 @@ def _fix_cli():
         apio_ctx, cached_config_ok=False, verbose=False
     )
 
-    # -- Print updated packges report.
+    # -- Print updated packages report.
     print_packages_report(apio_ctx)
 
 

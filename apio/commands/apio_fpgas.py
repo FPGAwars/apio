@@ -4,7 +4,7 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio fpgas' command"""
 
 import sys
@@ -38,7 +38,7 @@ class Entry:
     fpga_speed: str
 
     def sort_key(self):
-        """A key for sorting the fpga entries in our prefered order."""
+        """A key for sorting the fpga entries in our preferred order."""
         return (util.fpga_arch_sort_key(self.fpga_arch), self.fpga.lower())
 
 
@@ -80,7 +80,7 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
             )
         )
 
-    # -- Sort boards by our prefered order.
+    # -- Sort boards by our preferred order.
     entries.sort(key=lambda x: x.sort_key())
 
     # -- Define the table.
@@ -93,7 +93,7 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
         title_justify="left",
     )
 
-    # -- Add columnes
+    # -- Add columns
     table.add_column("FPGA-ID", no_wrap=True, style="cyan")
     table.add_column("BOARDS", no_wrap=True, justify="center")
     table.add_column("ARCH", no_wrap=True)
@@ -107,7 +107,7 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
     # -- Add rows.
     last_arch = None
     for entry in entries:
-        # -- If switching architecture, add an horizontal seperation line.
+        # -- If switching architecture, add an horizontal separation line.
         if last_arch != entry.fpga_arch and apio_console.is_terminal():
             table.add_section()
         last_arch = entry.fpga_arch

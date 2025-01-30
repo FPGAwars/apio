@@ -4,7 +4,7 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
 # -- Author Jesús Arroyo, Juan González
-# -- Licence GPLv2
+# -- License GPLv2
 
 import shutil
 import sys
@@ -49,11 +49,11 @@ class Examples:
     def is_dir_empty(self, path: Path) -> bool:
         """Return true if the given dir is empty, ignoring hidden entry.
         That is, the dir may contain only hidden entries.
-        We use this relaxed criteria of emptyness to avoid user confusion.
-        We could use glop.glob() but in python 3.10 and eariler it doesn't
+        We use this relaxed criteria of emptiness to avoid user confusion.
+        We could use glop.glob() but in python 3.10 and earlier it doesn't
         have the 'include_hidden' argument.
         """
-        # -- Check prerequirement.
+        # -- Check prerequisites.
         assert path.is_dir(), f"Not a dir: {path}"
 
         # -- Iterate directory entries
@@ -118,7 +118,7 @@ class Examples:
                 )
                 examples.append(example_info)
 
-        # -- Sort in-place by ascceding example name, case insensitive.
+        # -- Sort in-place by acceding example name, case insensitive.
         examples.sort(key=lambda x: x.name.lower())
 
         return examples
@@ -229,8 +229,8 @@ class Examples:
         # dst_dir = util.resolve_project_dir(
         #     dst_dir, create_if_missing=True
         # )
-        board_exaamples = self.get_board_examples(board_name)
-        if not board_exaamples:
+        board_examples = self.get_board_examples(board_name)
+        if not board_examples:
             cerror(f"No examples for board '{board_name}.")
             cout(
                 "Run 'apio examples list' for the list of examples.",

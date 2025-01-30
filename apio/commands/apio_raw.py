@@ -4,7 +4,7 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio raw' command"""
 
 import sys
@@ -41,7 +41,7 @@ Examples:[code]
   apio raw -v                         # Show apio env setting.
   apio raw -h                         # Show this help info.[/code]
 
-The '--' marker is used to seperate between the arguments of the apio \
+The '--' marker is used to separate between the arguments of the apio \
 command itself and those of the executed command.
 """
 

@@ -4,7 +4,7 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio boards' command"""
 
 import sys
@@ -42,7 +42,7 @@ class Entry:
     programmer: str
 
     def sort_key(self):
-        """A key for sorting the fpga entries in our prefered order."""
+        """A key for sorting the fpga entries in our preferred order."""
         return (util.fpga_arch_sort_key(self.fpga_arch), self.board.lower())
 
 
@@ -88,7 +88,7 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
             )
         )
 
-    # -- Sort boards by our prefered order.
+    # -- Sort boards by our preferred order.
     entries.sort(key=lambda x: x.sort_key())
 
     # -- Define the table.
@@ -101,7 +101,7 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
         title="Apio Supported Boards",
     )
 
-    # -- Add columnes.
+    # -- Add columns.
     table.add_column("BOARD-ID", no_wrap=True, style="cyan")
     table.add_column("EXMPLS", no_wrap=True)
     if verbose:
@@ -113,10 +113,10 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
     table.add_column("PART-NUMBER", no_wrap=True)
     table.add_column("PROGRAMMER", no_wrap=True)
 
-    # -- Add rows, with seperation line between architecture groups.
+    # -- Add rows, with separation line between architecture groups.
     last_arch = None
     for entry in entries:
-        # -- If switching architecture, add an horizontal seperation line.
+        # -- If switching architecture, add an horizontal separation line.
         if last_arch != entry.fpga_arch and apio_console.is_terminal():
             table.add_section()
         last_arch = entry.fpga_arch

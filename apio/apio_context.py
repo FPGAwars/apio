@@ -4,7 +4,7 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 
 import sys
 import json
@@ -42,7 +42,7 @@ PLATFORMS_JSONC = "platforms.jsonc"
 PACKAGES_JSONC = "packages.jsonc"
 
 # -----------------------------------------
-# ---- File: resources/boads.jsonc
+# ---- File: resources/boards.jsonc
 # -----------------------------------------
 # -- Information about all the supported boards
 # -- names, fpga family, programmer, ftdi description, vendor id, product id
@@ -84,7 +84,7 @@ class ApioContextScope(Enum):
 
 # pylint: disable=too-many-instance-attributes
 class ApioContext:
-    """Apio context. Class for accesing apio resources and configurations."""
+    """Apio context. Class for accessing apio resources and configurations."""
 
     def __init__(
         self,
@@ -149,7 +149,7 @@ class ApioContext:
         self.config = self._load_resource(CONFIG_JSONC)
 
         # -- Profile information, from ~/.apio/profile.json. We provide it with
-        # -- the remote config url template from disribution.jsonc such that
+        # -- the remote config url template from distribution.jsonc such that
         # -- can it fetch the remote config on demand.
         self.profile = Profile(self.home_dir, self.config["remote-config"])
 
@@ -182,7 +182,7 @@ class ApioContext:
             PROGRAMMERS_JSONC, allow_custom=True
         )
 
-        # -- Sort resources for consistency and intunitiveness.
+        # -- Sort resources for consistency and intuitiveness.
         # --
         # -- We don't sort the all_packages and platform_packages dictionaries
         # -- because that will affect the order of the env path items.
@@ -308,7 +308,7 @@ class ApioContext:
     @staticmethod
     def _load_resource_file(filepath: Path) -> dict:
         """Load the resources from a given jsonc file path
-        * OUTPUT: A dictionary with the jsons file data
+        * OUTPUT: A dictionary with the jsonc file data
           In case of error it raises an exception and finish
         """
 
@@ -320,7 +320,7 @@ class ApioContext:
                 data_jsonc = file.read()
 
         # -- The jsonc file NOT FOUND! This is an apio system error
-        # -- It should never ocurr unless there is a bug in the
+        # -- It should never occur unless there is a bug in the
         # -- apio system files, or a bug when calling this function
         # -- passing a wrong file
         except FileNotFoundError as exc:
@@ -339,8 +339,8 @@ class ApioContext:
             resource = json.loads(data_json)
 
         # -- Invalid json format! This is an apio system error
-        # -- It should never ocurr unless some develeper has
-        # -- made a mistake when changing the json file
+        # -- It should never occur unless a developer has
+        # -- made a mistake when changing the jsonc file
         except json.decoder.JSONDecodeError as exc:
 
             # -- Display Main error
@@ -358,7 +358,7 @@ class ApioContext:
         """Fills a packages env value template as they appear in
         packages.jsonc. Currently it recognizes only a single place holder
         '%p' representing the package absolute path. The '%p" can appear only
-        at the begigning of the template.
+        at the beginning of the template.
 
         E.g. '%p/bin' -> '/users/user/.apio/packages/drivers/bin'
 
@@ -415,7 +415,7 @@ class ApioContext:
 
     def get_package_info(self, package_name: str) -> str:
         """Returns the information of the package with given name.
-        The information is a JSON dict originated at packages.jsnon().
+        The information is a JSON dict originated at packages.json().
         Exits with an error message if the package is not defined.
         """
         package_info = self.platform_packages.get(package_name, None)
@@ -549,7 +549,7 @@ class ApioContext:
 # pylint: disable=too-few-public-methods
 class _ProjectResolverImpl(ProjectResolver):
     def __init__(self, apio_context: ApioContext):
-        """When ApioContext instanciates this object, ApioContext is fully
+        """When ApioContext instances this object, ApioContext is fully
         constructed, except for the project field."""
         self._apio_context = apio_context
 

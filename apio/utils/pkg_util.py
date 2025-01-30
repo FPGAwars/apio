@@ -2,11 +2,11 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 # -- Derived from:
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
-# ---- Licence Apache v2
+# ---- License Apache v2
 """Utility functions related to apio packages."""
 
 from typing import List, Callable, Tuple
@@ -67,7 +67,7 @@ def _dump_env_mutations(
     apio_ctx: ApioContext, mutations: EnvMutations
 ) -> None:
     """Dumps a user friendly representation of the env mutations."""
-    cout("Envirnment settings:", style="magenta")
+    cout("Environment settings:", style="magenta")
 
     # -- Print PATH mutations.
     windows = apio_ctx.is_windows()
@@ -119,7 +119,7 @@ def set_env_for_packages(
     If quite is set, no output is printed. When verbose is set, additional
     output such as the env vars mutations are printed, otherwise, a minimal
     information is printed to make the user aware that they commands they
-    see are exectuted in a modified env settings.
+    see are executed in a modified env settings.
     """
 
     # -- If this fails, this is a programming error. Quiet and verbose
@@ -135,13 +135,13 @@ def set_env_for_packages(
     # -- If this is the first call in this apio invocation, apply the
     # -- mutations. These mutations are temporary for the lifetime of this
     # -- process and does not affect the user's shell environment.
-    # -- The mutations are also inheritated by child processes such as the
+    # -- The mutations are also inherited by child processes such as the
     # -- scons processes.
     if not apio_ctx.env_was_already_set:
         _apply_env_mutations(mutations)
         apio_ctx.env_was_already_set = True
         if not verbose and not quiet:
-            cout("Setting the envinronment.")
+            cout("Setting the environment.")
 
 
 @dataclass
@@ -149,12 +149,12 @@ class PackageScanResults:
     """Represents results of packages scan."""
 
     # -- Normal and Error. Packages in platform_packages that are installed
-    # -- regardless if the versin matches or not.
+    # -- regardless if the version matches or not.
     installed_ok_package_names: List[str]
     # -- Error. Packages in platform_packages that are installed but with
     # -- version mismatch.
     bad_version_package_names: List[str]
-    # -- Normal. Packages in platform_packages that are uninstaleld properly.
+    # -- Normal. Packages in platform_packages that are uninstalled properly.
     uninstalled_package_names: List[str]
     # -- Error. Packages in platform_packages with broken installation. E.g,
     # -- registered in profile but package directory is missing.
@@ -163,7 +163,7 @@ class PackageScanResults:
     # -- in platform_packages.
     orphan_package_names: List[str]
     # -- Error. Basenames of directories in packages dir that don't match
-    # -- folder_name of packages in platform_packates.
+    # -- folder_name of packages in platform_packages.
     orphan_dir_names: List[str]
     # -- Error. Basenames of all files in packages directory. That directory is
     # -- expected to contain only directories for packages.a
@@ -215,8 +215,8 @@ def package_version_ok(
     cached_config_ok: bool,
     verbose: bool,
 ) -> bool:
-    """Return true if the packagea is both in profile and plagrom packages
-    and its version in the provile meet the requirements in the
+    """Return true if the package is both in profile and platform packages
+    and its version in the profile meet the requirements in the
     config.jsonc file. Otherwise return false."""
 
     # If this package is not applicable to this platform, return False.
@@ -235,7 +235,7 @@ def package_version_ok(
         package_name, cached_config_ok=cached_config_ok, verbose=verbose
     )
 
-    # -- Compare. We expect the two version to be nomalized and ths a string
+    # -- Compare. We expect the two version to be normalized and ths a string
     # -- comparison is sufficient.
     return current_ver == remote_ver
 
@@ -283,7 +283,7 @@ def scan_packages(
             # -- Case 4: Package is broken.
             result.broken_package_names.append(package_name)
 
-    # -- Scan the packagtes ids that are registered in profile as installed
+    # -- Scan the packages ids that are registered in profile as installed
     # -- the ones that are not platform_packages as orphans.
     for package_name in apio_ctx.profile.packages:
         if package_name not in apio_ctx.platform_packages:

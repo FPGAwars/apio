@@ -4,7 +4,7 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio preferences' command"""
 
 import click
@@ -50,7 +50,7 @@ def _list_cli():
         padding=(0, 2),
     )
 
-    # -- Add columnes.
+    # -- Add columns.
     table.add_column("ITEM", no_wrap=True)
     table.add_column("VALUE", no_wrap=True, style="cyan", min_width=30)
 
@@ -118,7 +118,7 @@ the apio user preferences. These are user configurations that affect all the \
 apio projects that use the same apio home directory (e.g. '~/.apio').
 
 The user preference is not part of any apio project and typically are not \
-shared when multiple user colaborate on the same project.
+shared when multiple user collaborate on the same project.
 """
 
 # -- We have only a single group with the title 'Subcommands'.

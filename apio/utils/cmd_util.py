@@ -2,11 +2,11 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 # -- Derived from:
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
-# ---- Licence Apache v2
+# ---- License Apache v2
 """Utility functionality for apio click commands. """
 
 import sys
@@ -31,7 +31,7 @@ def fatal_usage_error(cmd_ctx: click.Context, msg: str) -> None:
     cmd_ctx: The context that was passed to the command.
     msg: A single line short error message.
     """
-    # Mimiking the usage error message from click/exceptions.py.
+    # Mimicking the usage error message from click/exceptions.py.
     # E.g. "Try 'apio packages -h' for help."
     cout(cmd_ctx.get_usage())
     cout(
@@ -61,7 +61,7 @@ def _params_ids_to_aliases(
     cmd_ctx: click.Context, params_ids: List[str]
 ) -> List[str]:
     """Maps param ids to their respective user facing canonical aliases.
-    The order of the params is in the inptut list is preserved.
+    The order of the params is in the input list is preserved.
 
     For the definition of param ids see check_exclusive_params().
 
@@ -241,7 +241,7 @@ def _format_apio_markdown_help_text(
         docs_text(markdown_text.rstrip("\n"), end="")
         styled_text = capture.value
 
-    # -- Raw write to the outupt, with indent.
+    # -- Raw write to the output, with indent.
     lines = styled_text.split("\n")
     for line in lines:
         formatter.write(("  " + line).rstrip(" ") + "\n")
@@ -277,7 +277,7 @@ class ApioGroup(click.Group):
     def format_options(
         self, ctx: click.Context, formatter: HelpFormatter
     ) -> None:
-        """Overides the parent method which formats the opitons and sub
+        """Overrides the parent method which formats the options and sub
         commands."""
 
         # -- Call the grandparent method which formats the options without
@@ -295,7 +295,7 @@ class ApioGroup(click.Group):
             for cmd in subgroup.commands
         ]
 
-        # -- Find the length of the longerst name.
+        # -- Find the length of the longest name.
         max_name_len = max(len(name) for name in cmd_names)
 
         # -- Generate the subcommands short help, grouped by subgroup.

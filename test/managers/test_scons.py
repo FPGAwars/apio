@@ -17,7 +17,7 @@ from apio.managers.scons import SCons
 # pylint: disable=R0801
 
 TEST_APIO_INI_DICT = {
-    # -- Requied.
+    # -- Required.
     "board": "alhambra-ii",
     # -- Optional.
     "top-module": "my_module",
@@ -39,7 +39,7 @@ fpga_info {
     pack: "tq144:4k"
   }
 }
-envrionment {
+environment {
   platform_id: "TBD"
   is_windows: true  # TBD
   is_debug: false
@@ -71,7 +71,7 @@ verbosity {
   synth: true
   pnr: true
 }
-envrionment {
+environment {
   platform_id: "TBD"
   is_windows: true  # TBD
   is_debug: false
@@ -114,17 +114,17 @@ def test_default_params(apio_runner: ApioRunner):
         # -- Construct the expected value. We fill in non deterministic values.
         expected = text_format.Parse(EXPECTED1, SconsParams())
         expected.timestamp = scons_params.timestamp
-        expected.envrionment.yosys_path = str(
+        expected.environment.yosys_path = str(
             sb.packages_dir / "oss-cad-suite/share/yosys"
         )
-        expected.envrionment.trellis_path = str(
+        expected.environment.trellis_path = str(
             sb.packages_dir / "oss-cad-suite/share/trellis"
         )
-        expected.envrionment.platform_id = apio_ctx.platform_id
-        expected.envrionment.is_windows = apio_ctx.is_windows()
+        expected.environment.platform_id = apio_ctx.platform_id
+        expected.environment.is_windows = apio_ctx.is_windows()
 
-        # The field rich_lib_windows_params is too dynamic so we just assret
-        # for its existance and remove it from the comparison.
+        # The field rich_lib_windows_params is too dynamic so we just assert
+        # for its existence and remove it from the comparison.
         if apio_ctx.is_windows():
             assert scons_params.HasField(
                 "rich_lib_windows_params"
@@ -167,17 +167,17 @@ def test_explicit_params(apio_runner: ApioRunner):
         # -- Construct the expected value. We fill in non deterministic values.
         expected = text_format.Parse(EXPECTED2, SconsParams())
         expected.timestamp = scons_params.timestamp
-        expected.envrionment.yosys_path = str(
+        expected.environment.yosys_path = str(
             sb.packages_dir / "oss-cad-suite/share/yosys"
         )
-        expected.envrionment.trellis_path = str(
+        expected.environment.trellis_path = str(
             sb.packages_dir / "oss-cad-suite/share/trellis"
         )
-        expected.envrionment.platform_id = apio_ctx.platform_id
-        expected.envrionment.is_windows = apio_ctx.is_windows()
+        expected.environment.platform_id = apio_ctx.platform_id
+        expected.environment.is_windows = apio_ctx.is_windows()
 
-        # The field rich_lib_windows_params is too dynamic so we just assret
-        # for its existance and remove it from the comparison.
+        # The field rich_lib_windows_params is too dynamic so we just assert
+        # for its existence and remove it from the comparison.
         if apio_ctx.is_windows():
             assert scons_params.HasField(
                 "rich_lib_windows_params"

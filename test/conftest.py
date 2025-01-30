@@ -22,7 +22,7 @@ DEBUG = True
 SANDBOX_MARKER = "apio-sandbox"
 
 
-# -- This function is called by pytest. It addes the pytest --offline flag
+# -- This function is called by pytest. It adds the pytest --offline flag
 # -- which is is passed to tests that ask for it using the fixture
 # -- 'offline_flag' below.
 # --
@@ -31,8 +31,8 @@ def pytest_addoption(parser: pytest.Parser):
     """Register the --offline command line option when invoking pytest"""
 
     # -- Option: --offline
-    # -- It is used by the function test that requieres
-    # -- internet connnection for testing
+    # -- It is used by the function test that requires
+    # -- internet connection for testing
     parser.addoption(
         "--offline", action="store_true", help="Run tests in offline mode"
     )
@@ -65,19 +65,19 @@ class ApioSandbox:
     @property
     def sandbox_dir(self) -> Path:
         """Returns the sandbox's dir."""
-        assert not self.expired, "Sanbox expired"
+        assert not self.expired, "Sandbox expired"
         return self._sandbox_dir
 
     @property
     def proj_dir(self) -> Path:
         """Returns the sandbox's apio project dir."""
-        assert not self.expired, "Sanbox expired"
+        assert not self.expired, "Sandbox expired"
         return self._proj_dir
 
     @property
     def home_dir(self) -> Path:
         """Returns the sandbox's apio home dir."""
-        assert not self.expired, "Sanbox expired"
+        assert not self.expired, "Sandbox expired"
         return self._home_dir
 
     @property
@@ -154,15 +154,15 @@ class ApioSandbox:
         assert "error" not in result.output.lower()
 
     def set_system_env(self, new_vars: Dict[str, str]) -> None:
-        """Overwirte the existing sys.environ with the given dirct. Vars
+        """Overwrites the existing sys.environ with the given dict. Vars
         that are not in the dict are deleted and vars that have a different
         value in the dict is updated.  Can be called only within a
         an apio sandbox."""
 
-        # -- Check that the sandox not expired.
-        assert not self.expired, "Sandox expired"
+        # -- Check that the sandbox not expired.
+        assert not self.expired, "Sandbox expired"
 
-        # -- NOTE: naivly assining the dict to os.environ will break
+        # -- NOTE: naively assigning the dict to os.environ will break
         # -- os.environ since a simple dict doesn't update the underlying
         # -- system env when it's mutated.
 
@@ -228,7 +228,7 @@ class ApioSandbox:
 
     def write_apio_ini(self, properties: Dict[str, str]):
         """Write in the current directory an apio.ini file with given
-        values. If an apio.ini file alread exists, it is overwritten."""
+        values. If an apio.ini file already exists, it is overwritten."""
 
         assert isinstance(properties, dict), "Not a dict."
 
@@ -309,12 +309,12 @@ class ApioRunner:
         sandbox uses a unique apio shared home directory or shares it with
         other sandboxes in the same apio_runner scope that set it to True.
 
-        Upoon return, the current directory is proj_dir.
+        Upon return, the current directory is proj_dir.
         """
         # -- Make sure we don't try to nest sandboxes.
         assert self._sandbox is None, "Already in a sandbox."
 
-        # -- Snatpshot the system env.
+        # -- Snapshot the system env.
         original_env: Dict[str, str] = os.environ.copy()
 
         # -- Snapshot the current directory.
@@ -325,7 +325,7 @@ class ApioRunner:
         sandbox_dir = Path(tempfile.mkdtemp(prefix=SANDBOX_MARKER + "-"))
 
         # -- Make the sandbox's project directory. We intentionally use a
-        # -- directory name with a space and a non ascii characterto test
+        # -- directory name with a space and a non ascii character to test
         # -- that apio can handle it.
         proj_dir = sandbox_dir / "apio prój"
         proj_dir.mkdir()
@@ -355,7 +355,7 @@ class ApioRunner:
             print(f"       apio home dir     : {str(home_dir)}")
             print()
 
-        # -- Register a sanbox objet to indicate that we are in a sandbox.
+        # -- Register a sandbox objet to indicate that we are in a sandbox.
         assert self._sandbox is None
         self._sandbox = ApioSandbox(self, sandbox_dir, proj_dir, home_dir)
 
@@ -369,8 +369,8 @@ class ApioRunner:
 
         try:
             # -- This is the end of the context manager _entry part. The
-            # -- call to _exit will continue execution after the yeield.
-            # -- Value is the sandox object we pass to the user.
+            # -- call to _exit will continue execution after the yield.
+            # -- Value is the sandbox object we pass to the user.
             yield cast(ApioSandbox, self._sandbox)
 
         finally:
@@ -380,7 +380,7 @@ class ApioRunner:
             # -- Restore the original system env.
             self._sandbox.set_system_env(original_env)
 
-            # -- Mark that we exited the sanbox. This expires the sandbox.
+            # -- Mark that we exited the sandbox. This expires the sandbox.
             self._sandbox = None
 
             # -- Change back to the original directory.

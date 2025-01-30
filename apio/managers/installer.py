@@ -2,7 +2,7 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2021 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 """Package install/uninstall functionality.
 Used by the 'apio packages' command.
 """
@@ -102,7 +102,7 @@ def _download_package_file(url: str, dir_path: Path) -> str:
             filepath.unlink()
 
         # -- Inform the user
-        cout("User abborted download", style="red")
+        cout("User aborted download", style="red")
         sys.exit(1)
 
     except IOError as exc:
@@ -194,7 +194,7 @@ def scan_and_fix_packages(
     if scan.num_errors_to_fix() > 0:
         _fix_packages(apio_ctx, scan)
 
-    # -- Return a flag that indicates if all packges are installed ok. We
+    # -- Return a flag that indicates if all packages are installed ok. We
     # -- use a scan from before the fixing but the fixing does not touch
     # -- installed ok packages.
     return scan.packages_installed_ok()
@@ -207,7 +207,7 @@ def install_missing_packages_on_the_fly(apio_ctx: ApioContext) -> None:
     to use fetched remote config instead of fetching a fresh one."""
 
     # -- Scan and fix broken package.
-    # -- Sicne this is a on-the-fly operation, we don't require a fresh
+    # -- Since this is a on-the-fly operation, we don't require a fresh
     # -- remote config file for required packages versions.
     installed_ok = scan_and_fix_packages(
         apio_ctx, cached_config_ok=True, verbose=False
@@ -219,7 +219,7 @@ def install_missing_packages_on_the_fly(apio_ctx: ApioContext) -> None:
 
     # -- Here when we need to install some packages. Since we just fixed
     # -- we can't have broken or packages with version mismatch, just
-    # -- instlled ok, and not installed.
+    # -- installed ok, and not installed.
     # --
     # -- Get lists of installed and required packages.
     installed_packages = apio_ctx.profile.packages
@@ -289,7 +289,7 @@ def install_package(
 
     cout(f"Target version {target_version}")
 
-    # -- If not focring and the target version already installed nothing to do.
+    # -- If not forcing and the target version already installed nothing to do.
     if not force_reinstall:
         # -- Get the version of the installed package, None otherwise.
         installed_version = apio_ctx.profile.get_package_installed_version(
@@ -322,7 +322,7 @@ def install_package(
     package_dir = apio_ctx.get_package_dir(package_name)
     cout(f"Package dir: {package_dir}")
 
-    # -- Downlod the package file from the remote server.
+    # -- Download the package file from the remote server.
     local_package_file = _download_package_file(
         download_url, apio_ctx.packages_dir
     )
@@ -410,7 +410,7 @@ def _fix_packages(
 
     for dir_name in scan.orphan_dir_names:
         cout(f"Deleting unknown package dir '{dir_name}'", style="magenta")
-        # -- Sanity check. Since apio_ctx.packages_dir is guarranted to include
+        # -- Sanity check. Since apio_ctx.packages_dir is guaranteed to include
         # -- the word packages, this can fail only due to programming error.
         dir_path = apio_ctx.packages_dir / dir_name
         assert "packages" in str(dir_path).lower(), dir_path
@@ -419,7 +419,7 @@ def _fix_packages(
 
     for file_name in scan.orphan_file_names:
         cout(f"Deleting unknown package file '{file_name}'", style="magenta")
-        # -- Sanity check. Since apio_ctx.packages_dir is guarranted to
+        # -- Sanity check. Since apio_ctx.packages_dir is guaranteed to
         # -- include the word packages, this can fail only due to programming
         # -- error.
         file_path = apio_ctx.packages_dir / file_name

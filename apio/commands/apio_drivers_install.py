@@ -4,7 +4,7 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio drivers install' command"""
 
 import sys
@@ -73,7 +73,7 @@ def _serial_cli():
     # -- Create the drivers manager.
     drivers = Drivers(apio_ctx)
 
-    # Insall
+    # Install
     exit_code = drivers.serial_install()
     sys.exit(exit_code)
 

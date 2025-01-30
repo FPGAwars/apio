@@ -2,11 +2,11 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 # -- Derived from:
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
-# ---- Licence Apache v2
+# ---- License Apache v2
 
 """Apio scons related utilities.."""
 
@@ -69,7 +69,7 @@ class SconsHandler:
         assert params.timestamp == timestamp
 
         # -- If running on windows, apply the lib library workaround
-        if params.envrionment.is_windows:
+        if params.environment.is_windows:
             assert params.HasField("rich_lib_windows_params"), params
             rich_lib_windows.apply_workaround(params.rich_lib_windows_params)
         else:

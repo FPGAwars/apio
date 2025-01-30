@@ -4,7 +4,7 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio docs options'."""
 
 import sys
@@ -85,7 +85,7 @@ def cli(
     # -- Determine options to print
     options = [option] if option else project.OPTIONS.keys()
 
-    # -- Print the initial seperator line.
+    # -- Print the initial separator line.
     docs_rule()
     for opt in options:
         # -- Print option's title.

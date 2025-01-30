@@ -49,7 +49,7 @@ def test_get_constraint_file(
         assert captured.out == ""
         assert result == "pinout.pcf"
 
-        # -- If thre is more than one, exit with an error message.
+        # -- If there is more than one, exit with an error message.
         sb.write_file("other.pcf", "content")
         capsys.readouterr()  # Reset capture
         with pytest.raises(SystemExit) as e:
@@ -126,7 +126,7 @@ def test_verilog_src_scanner(apio_runner: ApioRunner):
         # -- Run the scanner again
         dependency_files = scanner.function(file, apio_env, None)
 
-        # -- Check the dependnecies
+        # -- Check the dependencies
         file_names = [f.name for f in dependency_files]
         assert file_names == sorted(core_dependencies + file_dependencies)
 
@@ -261,7 +261,7 @@ def test_make_verilator_config_builder(apio_runner: ApioRunner):
         builder.action(target, [], apio_env.scons_env)
         assert isfile("hardware.vlt")
 
-        # -- Verify that the file was created with the tiven text.
+        # -- Verify that the file was created with the given text.
         text = sb.read_file("hardware.vlt")
         assert "verilator_config" in text, text
         assert "lint_off -rule COMBDLY" in text, text
@@ -301,9 +301,9 @@ def test_clean_if_requested(apio_runner: ApioRunner):
         items_list = list(SconsHacks.get_targets().items())
         target, dependencies = items_list[0]
 
-        # -- Verify the tartget name, hard coded in set_up_cleanup()
+        # -- Verify the target name, hard coded in set_up_cleanup()
         assert target.name == "cleanup-target"
 
-        # -- Verif the dependencies. These are the files to delete.
+        # -- Verify the dependencies. These are the files to delete.
         file_names = [x.name for x in dependencies]
         assert file_names == ["aaa", "bbb", "zadig.ini", "_build"]

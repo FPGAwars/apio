@@ -2,11 +2,11 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 # -- Derived from:
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
-# ---- Licence Apache v2
+# ---- License Apache v2
 """Functions for reading the APIO env options. This are system env
 variables that are used to modify the default behavior of APIO.
 """
@@ -28,8 +28,8 @@ APIO_PLATFORM = "APIO_PLATFORM"
 # -- Env variable to enable printout of additional information for debugging.
 # -- It is not intended to change the logic of apio but just to provide
 # -- additional information about its internal behavior. Currently
-# -- it's used as a binary flag with existance indicating True and non
-# -- existance indicating False.
+# -- it's used as a binary flag with existence indicating True and non
+# -- existence indicating False.
 # --
 # -- Do not access it directly. For the apio process use util.is_debug() and
 # -- for the scons process use scons_util.is_debug().
@@ -59,7 +59,7 @@ def get(var_name: str, default: str = None):
     var_value = os.getenv(var_name)
 
     if var_value is None:
-        # -- Var is undefied. Use default
+        # -- Var is undefined. Use default
         var_value = default
     else:
         # -- Var is defined. For windows benefit, remove optional quotes.

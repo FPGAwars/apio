@@ -4,7 +4,7 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio drivers uninstall' command"""
 
 import sys
@@ -54,7 +54,7 @@ The command 'apio drivers uninstall serial' removes the serial drivers that \
 you may have installed earlier.
 
 Examples:[code]
-  apio drivers uinstall serial    # Uinstall the serial drivers.[/code]
+  apio drivers uninstall serial    # Uninstall the serial drivers.[/code]
 """
 
 

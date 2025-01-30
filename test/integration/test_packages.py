@@ -74,7 +74,7 @@ def test_packages(apio_runner: ApioRunner):
         assert "Package 'examples' installed" in result.output
         assert marker_file.is_file()
 
-        # -- Uninstall the examples package. It should delete the exemples
+        # -- Uninstall the examples package. It should delete the examples
         # -- package and will leave the rest.
         assert "examples" in listdir(sb.packages_dir)
         result = sb.invoke_apio_cmd(

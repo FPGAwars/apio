@@ -2,13 +2,13 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 # -- Derived from:
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
-# ---- Licence Apache v2
+# ---- License Apache v2
 """Implement a remote file downloader. Used to fetch packages from github
-packages release repositorie.s
+packages release repositories.
 """
 
 # pylint: disable=fixme
@@ -21,7 +21,7 @@ from rich.progress import track
 from apio.utils import util
 from apio.common.apio_console import cout, console
 
-# -- Timeout for geting a reponse from the server when downloading
+# -- Timeout for getting a response from the server when downloading
 # -- a file (in seconds)
 TIMEOUT_SECS = 10
 

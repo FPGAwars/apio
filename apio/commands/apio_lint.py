@@ -4,7 +4,7 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio lint' command"""
 import sys
 from pathlib import Path
@@ -83,7 +83,7 @@ Examples:[code]
 @warn_option
 @all_option
 @options.top_module_option_gen(
-    help="Restrict linting to this module and its depedencies."
+    help="Restrict linting to this module and its dependencies."
 )
 @options.project_dir_option
 def cli(
@@ -107,7 +107,7 @@ def cli(
     # -- Create the scons manager.
     scons = SCons(apio_ctx)
 
-    # -- Convert the comma seperated args values to python lists
+    # -- Convert the comma separated args values to python lists
     no_warns_list = util.split(nowarn, ",", strip=True, keep_empty=False)
     warns_list = util.split(warn, ",", strip=True, keep_empty=False)
 

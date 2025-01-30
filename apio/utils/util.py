@@ -2,11 +2,11 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 # -- Derived from:
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
-# ---- Licence Apache v2
+# ---- License Apache v2
 """Misc utility functions and classes."""
 
 import sys
@@ -315,7 +315,7 @@ def get_tinyprog_meta() -> list:
      ]'
     """
 
-    # -- Construct the command to execute. Since we exectute tinyprog from
+    # -- Construct the command to execute. Since we execute tinyprog from
     # -- the apio packages which add to the path, we can use a simple name.
     command = ["tinyprog", "--pyserial", "--meta"]
     command_str = " ".join(command)
@@ -339,7 +339,7 @@ def get_tinyprog_meta() -> list:
 
     except json.decoder.JSONDecodeError as exc:
         cout(
-            f"Warning: invalid json dnvalid data provided by `{command_str}`",
+            f"Warning: invalid json data provided by `{command_str}`",
             style="yellow",
         )
         cout(f"{exc}", style="red")
@@ -392,7 +392,7 @@ def plurality(obj: Any, singular: str, plural: str = None) -> str:
     else:
         n = len(obj)
 
-    # -- For value of 1 return the signgular form.
+    # -- For value of 1 return the singular form.
     if n == 1:
         return f"{n} {singular}"
 
@@ -405,7 +405,7 @@ def plurality(obj: Any, singular: str, plural: str = None) -> str:
 def list_plurality(str_list: List[str], conjunction: str) -> str:
     """Format a list as a human friendly string."""
     # -- This is a programming error. Not a user error.
-    assert str_list, "list_plurarlity expect len() >= 1."
+    assert str_list, "list_plurality expect len() >= 1."
 
     # -- Handle the case of a single item.
     if len(str_list) == 1:
@@ -435,7 +435,7 @@ def nameof(*_args) -> List[str]:
     return list(argname("*_args"))
 
 
-def debug_decoractor(func):
+def debug_decorator(func):
     """A decorator for dumping the input and output of a function when
     APIO_DEBUG is defined.  Add it to functions and methods that you want
     to examine with APIO_DEBUG.
@@ -463,7 +463,7 @@ def debug_decoractor(func):
                     for key, value in arg.items():
                         cout(f"          * {key}: {value}")
 
-                # -- Print the plain argument if it is not a dicctionary
+                # -- Print the plain argument if it is not a dictionary
                 else:
                     cout(f"        * {arg}")
             cout()
@@ -503,7 +503,7 @@ def debug_decoractor(func):
 
 
 def get_apio_version() -> str:
-    """Returns the version of the apio packge."""
+    """Returns the version of the apio package."""
     return importlib.metadata.version("apio")
 
 
@@ -517,7 +517,7 @@ def _check_home_dir(home_dir: Path):
         home_dir, Path
     ), f"Error: home_dir is no a Path: {type(home_dir)}, {home_dir}"
 
-    # -- The path should be abosolute, see discussion here:
+    # -- The path should be absolute, see discussion here:
     # -- https://github.com/FPGAwars/apio/issues/522
     if not home_dir.is_absolute():
         cerror(
@@ -551,9 +551,9 @@ def _check_home_dir(home_dir: Path):
 
 def resolve_home_dir() -> Path:
     """Get the absolute apio home dir. This is the apio folder where the
-    profle is located and the packages are installed.
+    profile is located and the packages are installed.
     The apio home dir can be overridden using the APIO_HOME_DIR environment
-    varible or in the /etc/apio.json file (in
+    variable or in the /etc/apio.json file (in
     Debian). If not set, the user_home/.apio folder is used by default:
     Ej. Linux:  /home/obijuan/.apio
     If the folders does not exist, they are created
@@ -577,7 +577,7 @@ def resolve_home_dir() -> Path:
     else:
         home_dir = Path.home() / ".apio"
 
-    # -- Verify that the home dir meets apio's requirments.
+    # -- Verify that the home dir meets apio's requirements.
     _check_home_dir(home_dir)
 
     # -- Create the folder if it does not exist
@@ -593,13 +593,13 @@ def resolve_home_dir() -> Path:
 
 def split(
     s: str,
-    seperator: str,
+    separator: str,
     strip: bool = False,
     keep_empty: bool = True,
 ) -> str:
     """Split a string into parts."""
     # -- A workaround for python's "".split(",") returning [''].
-    s = s.split(seperator) if s else []
+    s = s.split(separator) if s else []
 
     # -- Strip the elements if requested.
     if strip:
@@ -615,15 +615,15 @@ def split(
 
 def fpga_arch_sort_key(fpga_arch: str) -> Any:
     """Given an fpga arch name such as 'ice40', return a sort key
-    got force our prefered order of sorthing by architecutre. Used in
+    got force our preferred order of sorting by architecture. Used in
     reports such as examples, fpgas, and boards."""
 
-    # -- The prefered order of architectures, Add more if adding new
+    # -- The preferred order of architectures, Add more if adding new
     # -- architectures.
     archs = ["ice40", "ecp5", "gowin"]
 
-    # -- Primary key with prefered architecuted first and  in the
-    # -- prefered order.
+    # -- Primary key with preferred architecture first and  in the
+    # -- preferred order.
     primary_key = archs.index(fpga_arch) if fpga_arch in archs else len(archs)
 
     # -- Construct the key, unknown architectures list at the end by

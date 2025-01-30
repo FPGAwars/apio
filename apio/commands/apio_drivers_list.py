@@ -4,7 +4,7 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio drivers list' command"""
 
 import sys
@@ -108,7 +108,7 @@ Examples:[code]
     help=APIO_DRIVERS_LIST_USB_HELP,
 )
 def _usb_cli():
-    """Implements the 'apio driverss list usb' command."""
+    """Implements the 'apio drivers list usb' command."""
 
     # Create the apio context.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)

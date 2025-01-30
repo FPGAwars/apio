@@ -100,7 +100,7 @@ def test_utilities(apio_runner: ApioRunner):
         # -- Run 'apio upgrade'
         result = sb.invoke_apio_cmd(apio, ["upgrade"])
         sb.assert_ok(result)
-        assert "Lastest Apio stable version" in result.output
+        assert "Latest Apio stable version" in result.output
 
         # -- Run 'apio raw  "nextpnr-ice40 --help"'
         result = sb.invoke_apio_cmd(
@@ -111,7 +111,7 @@ def test_utilities(apio_runner: ApioRunner):
         # -- Run 'apio raw -v'
         result = sb.invoke_apio_cmd(apio, ["raw", "-v"])
         sb.assert_ok(result)
-        assert "Envirnment settings:" in result.output
+        assert "Environment settings:" in result.output
         assert "YOSYS_LIB" in result.output
 
 
@@ -125,7 +125,7 @@ def test_project_with_legacy_board_name(apio_runner: ApioRunner):
 
     # -- We shared the apio home with the other tests in this file to speed
     # -- up apio package installation. Tests should not mutate the shared home
-    # -- to avoid cross-interferance between tests in this file.
+    # -- to avoid cross-interference between tests in this file.
     with apio_runner.in_sandbox(shared_home=True) as sb:
 
         # -- Fetch an example of a board that has a legacy name.
@@ -146,7 +146,7 @@ def test_project_with_legacy_board_name(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(apio, ["clean"])
         sb.assert_ok(result)
 
-        # -- Run 'apio build' again. It should also succeeed.
+        # -- Run 'apio build' again. It should also succeed.
         result = sb.invoke_apio_cmd(apio, ["build"])
         sb.assert_ok(result)
 
@@ -177,7 +177,7 @@ def _test_project(
 
     # -- We shared the apio home with the other tests in this file to speed
     # -- up apio package installation. Tests should not mutate the shared home
-    # -- to avoid cross-interferance between tests in this file.
+    # -- to avoid cross-interference between tests in this file.
     with apio_runner.in_sandbox(shared_home=True) as sb:
 
         # -- If testing from a remote dir, step out of the proj dir, and

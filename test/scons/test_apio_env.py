@@ -16,7 +16,7 @@ def test_env_is_debug():
 
 
 def test_env_platform_id():
-    """Tests the env handling of the paltform_id param."""
+    """Tests the env handling of the platform_id param."""
 
     # -- Test with a non windows platform id.
     env = make_test_apio_env(platform_id="darwin_arm64", is_windows=False)

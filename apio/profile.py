@@ -2,7 +2,7 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 """Manage the apio profile file"""
 
 import json
@@ -75,7 +75,7 @@ class Profile:
         self._save()
 
     def set_preferences_colors(self, value: str):
-        """Set the colors prefernes to on or off."""
+        """Set the colors preferences to on or off."""
         assert value in ["on", "off"], f"Invalid value [{value}]"
         self.preferences["colors"] = value
         self._save()
@@ -94,13 +94,13 @@ class Profile:
         disable colors.
         """
         # -- Determine if colors should be on or off.
-        colors: bool = Profile.read_color_prefernces()
+        colors: bool = Profile.read_color_preferences()
 
         # -- Apply to apio console which controls all output and coloring.
         apio_console.configure(colors=colors)
 
     @staticmethod
-    def read_color_prefernces(*, default=True) -> Union[bool, Any]:
+    def read_color_preferences(*, default=True) -> Union[bool, Any]:
         """Returns the value of the colors preferences or default if not
         specified. This is a static method because we may need this value
         before creating  the profile object, for example when printing command
@@ -113,7 +113,7 @@ class Profile:
             return default
 
         with open(profile_path, "r", encoding="utf8") as f:
-            # -- Get the colors preferenes value, if exists.
+            # -- Get the colors preferences value, if exists.
             data = json.load(f)
             preferences = data.get("preferences", {})
             colors = preferences.get("colors", None)
@@ -217,7 +217,7 @@ class Profile:
     ) -> Dict:
         """Returns the apio remote config JSON dict. If the value is cached
         in the profile and force_cache = False, then it's returned as is,
-        otherwise, it's fetched remotly and also saved in the profile.
+        otherwise, it's fetched remotely and also saved in the profile.
         """
         # -- If a remote config is already available and fetch is not force
         # -- use it.
@@ -255,7 +255,7 @@ class Profile:
         if util.is_debug():
             cout(resp.text)
 
-        # -- Parse the remote JSON config file into adict.
+        # -- Parse the remote JSON config file into a dict.
         try:
             remote_config = json.loads(resp.text)
 
@@ -263,7 +263,7 @@ class Profile:
         except json.decoder.JSONDecodeError as exc:
 
             # -- Show the error and abort.
-            cerror("Invalid remote cofing file", f"{exc}")
+            cerror("Invalid remote config file", f"{exc}")
             sys.exit(1)
 
         # -- Update the profile and save
@@ -271,7 +271,7 @@ class Profile:
             self.remote_config = remote_config
             self._save()
 
-        # -- Mark that we have the altest config.
+        # -- Mark that we have the last config.
         self.remote_config_fetched = True
 
         # -- Return the object for the resource

@@ -4,7 +4,7 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio examples' command"""
 
 from pathlib import Path
@@ -34,12 +34,12 @@ Examples:[code]
   apio examples list                     # List all examples
   apio examples list  -v                 # More verbose output.
   apio examples list | grep alhambra-ii  # Show alhambra-ii examples.
-  apio examples list | grep -i blink     # Show blikining examples.[/code]
+  apio examples list | grep -i blink     # Show blinking examples.[/code]
 """
 
 
 def examples_sort_key(entry: ExampleInfo) -> Any:
-    """A key for sorting the fpga entries in our prefered order."""
+    """A key for sorting the fpga entries in our preferred order."""
     return (util.fpga_arch_sort_key(entry.fpga_arch), entry.name)
 
 
@@ -55,7 +55,7 @@ def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
     # -- Get list of examples.
     entries: List[ExampleInfo] = Examples(apio_ctx).get_examples_infos()
 
-    # -- Sort boards by case insensitive board namd.
+    # -- Sort boards by case insensitive board name.
     entries.sort(key=examples_sort_key)
 
     # -- Define the table.
@@ -83,7 +83,7 @@ def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
     # -- Add rows.
     last_arch = None
     for entry in entries:
-        # -- Seperation before each archictecture group, unless piped out.
+        # -- Separation before each architecture group, unless piped out.
         if last_arch != entry.fpga_arch and apio_console.is_terminal():
             table.add_section()
         last_arch = entry.fpga_arch

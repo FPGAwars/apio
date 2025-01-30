@@ -4,7 +4,7 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio build' command"""
 
 import sys
@@ -55,7 +55,7 @@ def cli(
     verbose_pnr: bool,
 ):
     """Implements the apio build command. It invokes the toolchain
-    to syntesize the source files into a bitstream file.
+    to synthesize the source files into a bitstream file.
     """
 
     # The bitstream is generated from the source files (verilog)

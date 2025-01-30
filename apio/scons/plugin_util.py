@@ -2,11 +2,11 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 # -- Derived from:
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
-# ---- Licence Apache v2
+# ---- License Apache v2
 """Helper functions for apio scons plugins.
 """
 
@@ -500,7 +500,7 @@ def _print_pnr_utilization_report(report: Dict[str, any]):
         padding=(0, 2),
     )
 
-    # -- Add columnes.
+    # -- Add columns.
     table.add_column("RESOURCE", no_wrap=True)
     table.add_column("USED", no_wrap=True, justify="right")
     table.add_column("TOTAL", no_wrap=True, justify="right")

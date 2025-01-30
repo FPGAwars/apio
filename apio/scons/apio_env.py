@@ -2,11 +2,11 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 # -- Derived from:
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
-# ---- Licence Apache v2
+# ---- License Apache v2
 """A class with common services for the apio scons handlers.
 """
 
@@ -71,12 +71,12 @@ class ApioEnv:
     @property
     def is_windows(self):
         """Returns True if we run on windows."""
-        return self.params.envrionment.is_windows
+        return self.params.environment.is_windows
 
     @property
     def is_debug(self):
         """Returns true if we run in debug mode."""
-        return self.params.envrionment.is_debug
+        return self.params.environment.is_debug
 
     def targeting(self, *target_names) -> bool:
         """Returns true if the any of the named target was specified in the

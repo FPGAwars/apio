@@ -4,7 +4,7 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio format' command"""
 
 import sys
@@ -26,12 +26,12 @@ from apio.utils import util, pkg_util, cmd_util
 APIO_FORMAT_HELP = """
 The command 'apio format' formats Verilog source files to ensure consistency \
 and style without altering their semantics. The command accepts the names of \
-pecific source files to format or formats all project source files by default.
+specific source files to format or formats all project source files by default.
 
 Examples:[code]
   apio format                    # Format all source files.
   apio format -v                 # Same but with verbose output.
-  apio format main.v main_tb.v   # Format the two tiven files.[/code]
+  apio format main.v main_tb.v   # Format the two files.[/code]
 
 The format command utilizes the format tool from the Verible project, which \
 can be configured by setting its flags in the apio.ini project file \
@@ -94,7 +94,7 @@ def cli(
     # -- Convert the tuple with file names into a list.
     files: List[str] = list(files)
 
-    # -- If user didn't specify files to firmat, all all source files to
+    # -- If user didn't specify files to format, all all source files to
     # -- the list.
     if not files:
         files.extend(glob(str(apio_ctx.project_dir / "*.v")))

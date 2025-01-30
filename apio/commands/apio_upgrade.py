@@ -4,7 +4,7 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio upgrade' command"""
 
 import sys
@@ -96,7 +96,7 @@ def cli(_: click.Context):
     # -- Print information about apio.
     cout(
         f"Local Apio version: {current_version}",
-        f"Lastest Apio stable version (Pypi): {latest_version}",
+        f"Latest Apio stable version (Pypi): {latest_version}",
         style="cyan",
     )
 

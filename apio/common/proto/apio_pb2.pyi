@@ -84,7 +84,7 @@ class Verbosity(_message.Message):
     pnr: bool
     def __init__(self, all: bool = ..., synth: bool = ..., pnr: bool = ...) -> None: ...
 
-class Envrionment(_message.Message):
+class Environment(_message.Message):
     __slots__ = ("platform_id", "is_windows", "is_debug", "yosys_path", "trellis_path")
     PLATFORM_ID_FIELD_NUMBER: _ClassVar[int]
     IS_WINDOWS_FIELD_NUMBER: _ClassVar[int]
@@ -175,12 +175,12 @@ class RichLibWindowsParams(_message.Message):
     def __init__(self, stdout_encoding: _Optional[str] = ..., vt: bool = ..., truecolor: bool = ...) -> None: ...
 
 class SconsParams(_message.Message):
-    __slots__ = ("timestamp", "arch", "fpga_info", "verbosity", "envrionment", "project", "target", "rich_lib_windows_params")
+    __slots__ = ("timestamp", "arch", "fpga_info", "verbosity", "environment", "project", "target", "rich_lib_windows_params")
     TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
     ARCH_FIELD_NUMBER: _ClassVar[int]
     FPGA_INFO_FIELD_NUMBER: _ClassVar[int]
     VERBOSITY_FIELD_NUMBER: _ClassVar[int]
-    ENVRIONMENT_FIELD_NUMBER: _ClassVar[int]
+    ENVIRONMENT_FIELD_NUMBER: _ClassVar[int]
     PROJECT_FIELD_NUMBER: _ClassVar[int]
     TARGET_FIELD_NUMBER: _ClassVar[int]
     RICH_LIB_WINDOWS_PARAMS_FIELD_NUMBER: _ClassVar[int]
@@ -188,8 +188,8 @@ class SconsParams(_message.Message):
     arch: ApioArch
     fpga_info: FpgaInfo
     verbosity: Verbosity
-    envrionment: Envrionment
+    environment: Environment
     project: Project
     target: TargetParams
     rich_lib_windows_params: RichLibWindowsParams
-    def __init__(self, timestamp: _Optional[str] = ..., arch: _Optional[_Union[ApioArch, str]] = ..., fpga_info: _Optional[_Union[FpgaInfo, _Mapping]] = ..., verbosity: _Optional[_Union[Verbosity, _Mapping]] = ..., envrionment: _Optional[_Union[Envrionment, _Mapping]] = ..., project: _Optional[_Union[Project, _Mapping]] = ..., target: _Optional[_Union[TargetParams, _Mapping]] = ..., rich_lib_windows_params: _Optional[_Union[RichLibWindowsParams, _Mapping]] = ...) -> None: ...
+    def __init__(self, timestamp: _Optional[str] = ..., arch: _Optional[_Union[ApioArch, str]] = ..., fpga_info: _Optional[_Union[FpgaInfo, _Mapping]] = ..., verbosity: _Optional[_Union[Verbosity, _Mapping]] = ..., environment: _Optional[_Union[Environment, _Mapping]] = ..., project: _Optional[_Union[Project, _Mapping]] = ..., target: _Optional[_Union[TargetParams, _Mapping]] = ..., rich_lib_windows_params: _Optional[_Union[RichLibWindowsParams, _Mapping]] = ...) -> None: ...

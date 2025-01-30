@@ -4,7 +4,7 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2024 FPGAwars
 # -- Authors Juan Gonzáles, Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 
 from apio.scons.scons_handler import SconsHandler
 from apio.common.common_util import maybe_wait_for_remote_debugger

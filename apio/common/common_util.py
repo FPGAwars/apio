@@ -2,11 +2,11 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 # -- Derived from:
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
-# ---- Licence Apache v2
+# ---- License Apache v2
 """Utilities that are available for both the apio (parent) process and the
 scons (child) process."""
 
@@ -15,7 +15,7 @@ import debugpy
 
 
 def maybe_wait_for_remote_debugger(env_var_name: str):
-    """A rendezvous point for a remote debger. If the environment variable
+    """A rendezvous point for a remote debugger. If the environment variable
     of given name is set, the function will block until a remote
     debugger (e.g. from Visual Studio Code) is attached.
     """
@@ -31,7 +31,7 @@ def maybe_wait_for_remote_debugger(env_var_name: str):
             f"to port {port}.",
             style="magenta",
         )
-        # -- Block until the debugger connetcs.
+        # -- Block until the debugger connects.
         debugpy.wait_for_client()
         # -- Here the remote debugger is attached and the program continues.
         print(

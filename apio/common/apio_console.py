@@ -2,11 +2,11 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 # -- Derived from:
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
-# ---- Licence Apache v2
+# ---- License Apache v2
 """A class that manages the console output of the apio process."""
 
 from io import StringIO
@@ -25,7 +25,7 @@ DOCS_EMPHASIZE = "deep_sky_blue4 bold"
 HELP_SUBCOMMANDS = "dark_red bold"
 
 
-# -- Recomanded table cell padding. 1 space on the left and 3 on the right.
+# -- Redemanded table cell padding. 1 space on the left and 3 on the right.
 PADDING = padding = (0, 3, 0, 1)
 
 # -- Line width when rendering help and docs.
@@ -35,7 +35,7 @@ DOCS_WIDTH = 70
 # -- This console state is initialized at the end of this file.
 @dataclass
 class ConsoleState:
-    """Contaisns the state of the apio console."""
+    """Contains the state of the apio console."""
 
     color_system: Optional[str] = None
     force_terminal: bool = None
@@ -87,7 +87,7 @@ def reset():
 
 
 def cunstyle(text: str) -> str:
-    """A replacement for click unstype(). This function removes ansi colors
+    """A replacement for click unstyle(). This function removes ansi colors
     from a string."""
     text_obj: Text = _state.decoder.decode_line(text)
     return text_obj.plain
@@ -105,11 +105,11 @@ def cout(
         text_lines = [""]
 
     for text_line in text_lines:
-        # -- User is reponsible to conversion to strings.
+        # -- User is responsible to conversion to strings.
         assert isinstance(text_line, str)
 
         # -- If colors are off, strip potential coloring in the text.
-        # -- This may be coloring that we recieved from the scons process.
+        # -- This may be coloring that we received from the scons process.
         if not _state.console.color_system:
             text_line = cunstyle(text_line)
 
@@ -122,7 +122,7 @@ def cout(
 
 def cerror(*text_lines: str) -> None:
     """Prints one or more text lines, adding to the first one the prefix
-    'Error: ' and aplying to all of them the red color."""
+    'Error: ' and applying to all of them the red color."""
     # -- Output the first line.
     _state.console.out(f"Error: {text_lines[0]}", style="red", highlight=False)
     # -- Output the rest of the lines.
@@ -132,7 +132,7 @@ def cerror(*text_lines: str) -> None:
 
 def cwarning(*text_lines: str) -> None:
     """Prints one or more text lines, adding to the first one the prefix
-    'Warning: ' and aplying to all of them the yellow color."""
+    'Warning: ' and applying to all of them the yellow color."""
     # -- Emit first line.
     _state.console.out(
         f"Warning: {text_lines[0]}", style="yellow", highlight=False
@@ -186,13 +186,13 @@ def cstyle(text: str, style: Optional[str] = None) -> str:
 def docs_text(
     markdown_text: str, width: int = DOCS_WIDTH, end: str = "\n"
 ) -> None:
-    """A wrapper around Console.print that is specialized for redenring
+    """A wrapper around Console.print that is specialized for rendering
     help and docs."""
     _state.console.print(markdown_text, highlight=True, width=width, end=end)
 
 
 def docs_rule(width: int = DOCS_WIDTH):
-    """Print a docs horizontal seperator."""
+    """Print a docs horizontal separator."""
     cout("─" * width, style="dim")
 
 
