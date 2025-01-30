@@ -123,6 +123,18 @@ def test_default_params(apio_runner: ApioRunner):
         expected.envrionment.platform_id = apio_ctx.platform_id
         expected.envrionment.is_windows = apio_ctx.is_windows()
 
+        # The field rich_lib_windows_params is too dynamic so we just assret
+        # for its existance and remove it from the comparison.
+        if apio_ctx.is_windows():
+            assert scons_params.HasField(
+                "rich_lib_windows_params"
+            ), scons_params
+        else:
+            assert not scons_params.HasField(
+                "rich_lib_windows_params"
+            ), scons_params
+        scons_params.ClearField("rich_lib_windows_params")
+
         # -- Compare actual to expected values.
         assert str(scons_params) == str(expected)
 
