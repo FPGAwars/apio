@@ -21,7 +21,6 @@ from apio.common.proto.apio_pb2 import RichLibWindowsParams
 def get_workaround_parametes() -> RichLibWindowsParams:
     """Called on the apio (parent) process side, when running on windows,
     to collect the parameters for the rich library workaround."""
-    print("*** get_workaround_parametes()")
     result = RichLibWindowsParams(
         stdout_encoding=sys.stdout.encoding,
         vt=rich.console._windows_console_features.vt,
@@ -34,7 +33,6 @@ def get_workaround_parametes() -> RichLibWindowsParams:
 def apply_workaround(params: RichLibWindowsParams):
     """Called on the scons (child) process side, when running on windows,
     to apply the the workaround for the rich library."""
-    print("*** apply_workaround()")
     assert params.IsInitialized, params
 
     # This takes care of the table graphic box.
