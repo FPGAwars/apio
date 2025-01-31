@@ -15,7 +15,8 @@ from SCons.Builder import BuilderBase
 from SCons.Action import Action
 from SCons.Script import Builder
 from apio.common.apio_console import cout
-from apio.scons.apio_env import ApioEnv, TARGET, BUILD_DIR
+from apio.scons.apio_env import ApioEnv
+from apio.common.apio_consts import TARGET
 from apio.common.proto.apio_pb2 import GraphOutputType
 from apio.scons.plugin_util import (
     SRC_SUFFIXES,
@@ -127,7 +128,7 @@ class PluginBase:
                 'yosys -p "read_verilog -sv $SOURCES; show -format dot'
                 ' -colors 1 -prefix {0} {1}" {2}'
             ).format(
-                str(BUILD_DIR / "hardware"),
+                TARGET,
                 top_module,
                 "" if params.verbosity.all else "-q",
             ),

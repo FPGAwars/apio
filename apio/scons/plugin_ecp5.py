@@ -16,7 +16,8 @@
 from pathlib import Path
 from SCons.Script import Builder
 from SCons.Builder import BuilderBase
-from apio.scons.apio_env import ApioEnv, TARGET, BUILD_DIR
+from apio.scons.apio_env import ApioEnv
+from apio.common.apio_consts import TARGET
 from apio.scons.plugin_base import PluginBase, ArchPluginInfo
 from apio.scons.plugin_util import (
     SRC_SUFFIXES,
@@ -111,10 +112,8 @@ class PluginEcp5(PluginBase):
     def bitstream_builder(self) -> BuilderBase:
         """Creates and returns the bitstream builder."""
         return Builder(
-            action="ecppack --compress --db {0} $SOURCE "
-            "{1}/hardware.bit".format(
+            action="ecppack --compress --db {0} $SOURCE $TARGET".format(
                 self.database_path,
-                str(BUILD_DIR),
             ),
             suffix=".bit",
             src_suffix=".config",

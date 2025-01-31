@@ -13,13 +13,13 @@ import traceback
 import os
 import sys
 import time
-from pathlib import Path
 import shutil
 from functools import wraps
 from datetime import datetime
 from google.protobuf import text_format
 from apio.common.apio_console import cout, cerror, cstyle
 from apio.utils import util, pkg_util
+from apio.common.apio_consts import BUILD_DIR
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
 from apio.managers import installer
@@ -418,9 +418,8 @@ class SCons:
         # -- directory. It will be cleaned up as part of 'apio cleanup'.
         # -- At this point, the project is the current directory, even if
         # -- the command used the --project-dir option.
-        build_dir = Path("_build")
-        os.makedirs(build_dir, exist_ok=True)
-        with open(build_dir / "scons.params", "w", encoding="utf8") as f:
+        os.makedirs(BUILD_DIR, exist_ok=True)
+        with open(BUILD_DIR / "scons.params", "w", encoding="utf8") as f:
             f.write(text_format.MessageToString(scons_params))
 
         # -- Execute the scons builder!

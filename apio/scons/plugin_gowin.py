@@ -16,7 +16,8 @@
 from pathlib import Path
 from SCons.Script import Builder
 from SCons.Builder import BuilderBase
-from apio.scons.apio_env import ApioEnv, TARGET
+from apio.scons.apio_env import ApioEnv
+from apio.common.apio_consts import TARGET
 from apio.scons.plugin_base import PluginBase, ArchPluginInfo
 from apio.scons.plugin_util import (
     SRC_SUFFIXES,

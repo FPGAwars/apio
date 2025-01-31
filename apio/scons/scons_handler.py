@@ -18,7 +18,9 @@ from apio.scons.plugin_ecp5 import PluginEcp5
 from apio.scons.plugin_gowin import PluginGowin
 from apio.common.proto.apio_pb2 import SconsParams, ICE40, ECP5, GOWIN
 from apio.common import apio_console
-from apio.scons.apio_env import ApioEnv, TARGET
+from apio.common.apio_consts import BUILD_DIR
+from apio.scons.apio_env import ApioEnv
+from apio.common.apio_consts import TARGET
 from apio.scons.plugin_base import PluginBase
 from apio.common import rich_lib_windows
 from apio.scons.plugin_util import (
@@ -58,7 +60,7 @@ class SconsHandler:
         execute an SconsHandler."""
 
         # -- Read the text of the scons params file.
-        with open("_build/scons.params", "r", encoding="utf8") as f:
+        with open(BUILD_DIR / "scons.params", "r", encoding="utf8") as f:
             proto_text = f.read()
 
         # -- Parse the text into SconsParams object.

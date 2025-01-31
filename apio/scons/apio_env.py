@@ -17,22 +17,12 @@
 # pylint: disable=W0613
 
 import os
-from pathlib import Path
 from typing import List, Optional
 from SCons.Script.SConscript import SConsEnvironment
 from SCons.Environment import BuilderWrapper
 import SCons.Defaults
 from apio.common.apio_console import cout
-
-# from apio.scons.apio_args import ApioArgs
 from apio.common.proto.apio_pb2 import SconsParams
-
-
-# -- The build directory. This is a relative path from the project directory.
-BUILD_DIR = Path("_build")
-
-# -- Target name. This is the base file name for various build artifacts.
-TARGET = str(BUILD_DIR / "hardware")
 
 
 # pylint: disable=too-many-public-methods

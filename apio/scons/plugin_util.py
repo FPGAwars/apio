@@ -28,7 +28,8 @@ from SCons.Node.FS import File
 from SCons.Script.SConscript import SConsEnvironment
 from SCons.Node import NodeList
 from SCons.Node.Alias import Alias
-from apio.scons.apio_env import ApioEnv, TARGET, BUILD_DIR
+from apio.scons.apio_env import ApioEnv
+from apio.common.apio_consts import TARGET, BUILD_DIR
 from apio.common.apio_console import cout, cerror, cwarning, cprint
 
 # -- A list with the file extensions of the verilog source files.
@@ -749,7 +750,7 @@ def configure_cleanup(apio_env: ApioEnv) -> None:
         scons_env.Glob(str(BUILD_DIR / "*"))
         + scons_env.Glob("zadig.ini")
         + scons_env.Glob(".sconsign.dblite")
-        + scons_env.Glob("_build")
+        + scons_env.Glob(str(BUILD_DIR))
     )
 
     # pylint: disable=fixme
