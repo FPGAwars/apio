@@ -28,7 +28,7 @@ from SCons.Node.FS import File
 from SCons.Script.SConscript import SConsEnvironment
 from SCons.Node import NodeList
 from SCons.Node.Alias import Alias
-from apio.scons.apio_env import ApioEnv, TARGET, BUILD_DIR_SEP
+from apio.scons.apio_env import ApioEnv, TARGET, BUILD_DIR
 from apio.common.apio_console import cout, cerror, cwarning, cprint
 
 # -- A list with the file extensions of the verilog source files.
@@ -354,7 +354,7 @@ def get_sim_config(
     # -- Construct a SimulationParams with all the synth files + the
     # -- testbench file.
     testbench_name = basename(testbench)
-    build_testbench_name = BUILD_DIR_SEP + testbench_name
+    build_testbench_name = str(BUILD_DIR / testbench_name)
     srcs = synth_srcs + [testbench]
     return SimulationConfig(testbench_name, build_testbench_name, srcs)
 
@@ -396,7 +396,7 @@ def get_tests_configs(
     configs = []
     for tb in testbenches:
         testbench_name = basename(tb)
-        build_testbench_name = BUILD_DIR_SEP + testbench_name
+        build_testbench_name = str(BUILD_DIR / testbench_name)
         srcs = synth_srcs + [tb]
         configs.append(
             SimulationConfig(testbench_name, build_testbench_name, srcs)
@@ -746,7 +746,7 @@ def configure_cleanup(apio_env: ApioEnv) -> None:
     # -- Get the list of all files to clean. Scons adds to the list non
     # -- existing files from other targets it encountered.
     files_to_clean = (
-        scons_env.Glob(f"{BUILD_DIR_SEP}*")
+        scons_env.Glob(str(BUILD_DIR / "*"))
         + scons_env.Glob("zadig.ini")
         + scons_env.Glob(".sconsign.dblite")
         + scons_env.Glob("_build")

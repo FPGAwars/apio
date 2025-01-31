@@ -114,7 +114,7 @@ class PluginEcp5(PluginBase):
             action="ecppack --compress --db {0} $SOURCE "
             "{1}/hardware.bit".format(
                 self.database_path,
-                BUILD_DIR,
+                str(BUILD_DIR),
             ),
             suffix=".bit",
             src_suffix=".config",

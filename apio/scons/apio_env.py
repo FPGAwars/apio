@@ -17,6 +17,7 @@
 # pylint: disable=W0613
 
 import os
+from pathlib import Path
 from typing import List, Optional
 from SCons.Script.SConscript import SConsEnvironment
 from SCons.Environment import BuilderWrapper
@@ -27,15 +28,11 @@ from apio.common.apio_console import cout
 from apio.common.proto.apio_pb2 import SconsParams
 
 
-# -- All the build files and other artifcats are created in this this
-# -- subdirectory.
-BUILD_DIR = "_build"
-
-# -- A shortcut with '/' or '\' appended to the build dir name.
-BUILD_DIR_SEP = BUILD_DIR + os.sep
+# -- The build directory. This is a relative path from the project directory.
+BUILD_DIR = Path("_build")
 
 # -- Target name. This is the base file name for various build artifacts.
-TARGET = BUILD_DIR_SEP + "hardware"
+TARGET = str(BUILD_DIR / "hardware")
 
 
 # pylint: disable=too-many-public-methods
