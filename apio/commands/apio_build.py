@@ -4,34 +4,32 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio build' command"""
 
 import sys
 from pathlib import Path
 import click
+from apio.utils import cmd_util
 from apio.managers.scons import SCons
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
-from apio.proto.apio_pb2 import Verbosity
+from apio.common.proto.apio_pb2 import Verbosity
 
+# ------------ apio build
 
-# ---------------------------
-# -- COMMAND
-# ---------------------------
-
+# -- Text in the markdown format of the python rich library.
 APIO_BUILD_HELP = """
-The command 'apio build' processes the project’s source files and generates a
-bitstream file, which can then be uploaded to your FPGA.
+The command 'apio build' processes the project’s source files and generates \
+a bitstream file, which can then be uploaded to your FPGA.
 
-The 'apio build' command compiles all .v files (e.g., my_module.v) in the
-project directory, except those whose names end with _tb
-(e.g., my_module_tb.v), as these are assumed to be testbenches.
+The 'apio build' command compiles all .v files (e.g., my_module.v) in the \
+project directory, except those whose names end with '_tb' \
+(e.g., my_module_tb.v) which are assumed to be testbenches.
 
-\b
-Examples:
+Examples:[code]
   apio build       # Build
-  apio build -v    # Build with verbose info
+  apio build -v    # Build with verbose info[/code]
 """
 
 
@@ -39,6 +37,7 @@ Examples:
 # pylint: disable=too-many-positional-arguments
 @click.command(
     name="build",
+    cls=cmd_util.ApioCommand,
     short_help="Synthesize the bitstream.",
     help=APIO_BUILD_HELP,
 )
@@ -56,7 +55,7 @@ def cli(
     verbose_pnr: bool,
 ):
     """Implements the apio build command. It invokes the toolchain
-    to syntesize the source files into a bitstream file.
+    to synthesize the source files into a bitstream file.
     """
 
     # The bitstream is generated from the source files (verilog)

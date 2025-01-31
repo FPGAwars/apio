@@ -4,7 +4,7 @@ Tests of the scons manager scons.py
 
 from test.conftest import ApioRunner
 from google.protobuf import text_format
-from apio.proto.apio_pb2 import (
+from apio.common.proto.apio_pb2 import (
     SconsParams,
     Verbosity,
     TargetParams,
@@ -17,7 +17,7 @@ from apio.managers.scons import SCons
 # pylint: disable=R0801
 
 TEST_APIO_INI_DICT = {
-    # -- Requied.
+    # -- Required.
     "board": "alhambra-ii",
     # -- Optional.
     "top-module": "my_module",
@@ -39,8 +39,9 @@ fpga_info {
     pack: "tq144:4k"
   }
 }
-envrionment {
-  platform_id: "darwin_arm64"
+environment {
+  platform_id: "TBD"
+  is_windows: true  # TBD
   is_debug: false
   yosys_path: "TBD"
   trellis_path: "TBD"
@@ -50,6 +51,7 @@ project {
   top_module: "my_module"
   yosys_synth_extra_options: "-dsp -xyz"
 }
+# rich_lib_windows_params is TBD
 """
 
 EXPECTED2 = """
@@ -69,8 +71,9 @@ verbosity {
   synth: true
   pnr: true
 }
-envrionment {
-  platform_id: "darwin_arm64"
+environment {
+  platform_id: "TBD"
+  is_windows: true  # TBD
   is_debug: false
   yosys_path: "TBD"
   trellis_path: "TBD"
@@ -91,6 +94,7 @@ target {
     verilator_warns: "dd"
   }
 }
+# rich_lib_windows_params is TBD
 """
 
 
@@ -110,12 +114,26 @@ def test_default_params(apio_runner: ApioRunner):
         # -- Construct the expected value. We fill in non deterministic values.
         expected = text_format.Parse(EXPECTED1, SconsParams())
         expected.timestamp = scons_params.timestamp
-        expected.envrionment.yosys_path = str(
+        expected.environment.yosys_path = str(
             sb.packages_dir / "oss-cad-suite/share/yosys"
         )
-        expected.envrionment.trellis_path = str(
+        expected.environment.trellis_path = str(
             sb.packages_dir / "oss-cad-suite/share/trellis"
         )
+        expected.environment.platform_id = apio_ctx.platform_id
+        expected.environment.is_windows = apio_ctx.is_windows
+
+        # The field rich_lib_windows_params is too dynamic so we just assert
+        # for its existence and remove it from the comparison.
+        if apio_ctx.is_windows:
+            assert scons_params.HasField(
+                "rich_lib_windows_params"
+            ), scons_params
+        else:
+            assert not scons_params.HasField(
+                "rich_lib_windows_params"
+            ), scons_params
+        scons_params.ClearField("rich_lib_windows_params")
 
         # -- Compare actual to expected values.
         assert str(scons_params) == str(expected)
@@ -149,12 +167,26 @@ def test_explicit_params(apio_runner: ApioRunner):
         # -- Construct the expected value. We fill in non deterministic values.
         expected = text_format.Parse(EXPECTED2, SconsParams())
         expected.timestamp = scons_params.timestamp
-        expected.envrionment.yosys_path = str(
+        expected.environment.yosys_path = str(
             sb.packages_dir / "oss-cad-suite/share/yosys"
         )
-        expected.envrionment.trellis_path = str(
+        expected.environment.trellis_path = str(
             sb.packages_dir / "oss-cad-suite/share/trellis"
         )
+        expected.environment.platform_id = apio_ctx.platform_id
+        expected.environment.is_windows = apio_ctx.is_windows
+
+        # The field rich_lib_windows_params is too dynamic so we just assert
+        # for its existence and remove it from the comparison.
+        if apio_ctx.is_windows:
+            assert scons_params.HasField(
+                "rich_lib_windows_params"
+            ), scons_params
+        else:
+            assert not scons_params.HasField(
+                "rich_lib_windows_params"
+            ), scons_params
+        scons_params.ClearField("rich_lib_windows_params")
 
         # -- Compare actual to expected values.
         assert str(scons_params) == str(expected)

@@ -17,7 +17,7 @@ def test_required_and_optionals(apio_runner: ApioRunner):
         # -- Create an apio.ini.
         sb.write_apio_ini(
             {
-                # -- Requied.
+                # -- Required.
                 "board": "alhambra-ii",
                 # -- Optional.
                 "top-module": "my_module",

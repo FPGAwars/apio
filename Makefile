@@ -1,5 +1,5 @@
 # NOTE: Some targets have a shortcuts or alias names that are listed on the same line.
-#       The are provided for convinience or for backward competibility. For example
+#       The are provided for convenience or for backward compatibility. For example
 #       'check-all' has the aliases 'check_all' and 'ca'.
 
 # Install dependencies for apio development
@@ -54,7 +54,7 @@ lint l:
 test t:	
 	python -m tox --skip-missing-interpreters false -e py313 -- --offline
 
-# Same as 'make test' above but with the oldest supported bypon version.
+# Same as 'make test' above but with the oldest supported python version.
 #
 # Usage:
 #     make test-oldest
@@ -66,8 +66,8 @@ test-oldest to:
 
 
 # Tests and lint, single python version, all tests including online..
-# This is a thorough but slow test and sufficient for testign before 
-# commiting changes run this before submitting code.
+# This is a thorough but slow test and sufficient for testing before 
+# committing changes run this before submitting code.
 #
 # Usage:
 #     make check
@@ -78,7 +78,7 @@ check c:
 	python -m tox --skip-missing-interpreters false -e lint,py313
 
 
-# Same as 'make check' above but with the oldest supported bypon version.
+# Same as 'make check' above but with the oldest supported python version.
 #
 # Usage:
 #     make check-oldest
@@ -106,7 +106,7 @@ check-all check_all ca:
 #
 # Usage:
 #     make publish-test
-#     make publish_test  // deprecated, to be deleted. 
+#     make publish_test  // deprecated, to be deleted.
 #
 .PHONY: publish-test publish_test
 publish-test publish_test:
@@ -125,7 +125,7 @@ publish:
 ## Install the tool locally
 #
 # Usage:
-#     make instll
+#     make install
 #
 .PHONY: install
 install:

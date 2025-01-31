@@ -2,13 +2,13 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 # -- Derived from:
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
-# ---- Licence Apache v2
+# ---- License Apache v2
 """Implement a remote file downloader. Used to fetch packages from github
-packages release repositorie.s
+packages release repositories.
 """
 
 # pylint: disable=fixme
@@ -17,11 +17,11 @@ packages release repositorie.s
 
 from math import ceil
 import requests
-import click
-from click import secho
+from rich.progress import track
 from apio.utils import util
+from apio.common.apio_console import cout, console
 
-# -- Timeout for geting a reponse from the server when downloading
+# -- Timeout for getting a response from the server when downloading
 # -- a file (in seconds)
 TIMEOUT_SECS = 10
 
@@ -54,19 +54,16 @@ class FileDownloader:
             # -- Add the path
             self.destination = dest_dir / self.fname
 
-        self._progressbar = None
-        self._request = None
-
         # -- Request the file
         self._request = requests.get(url, stream=True, timeout=TIMEOUT_SECS)
 
         # -- Raise an exception in case of download error...
         if self._request.status_code != 200:
-            secho(
+            cout(
                 "Got an unexpected HTTP status code: "
-                f"{self._request.status_code}"
-                f"\nWhen downloading {url}",
-                fg="red",
+                f"{self._request.status_code}",
+                f"When downloading {url}",
+                style="red",
             )
             raise util.ApioException()
 
@@ -85,19 +82,20 @@ class FileDownloader:
         with open(self.destination, "wb") as file:
 
             # -- Get the file length in Kbytes
-            chunks = int(ceil(self.get_size() / float(self.CHUNK_SIZE)))
+            num_chunks = int(ceil(self.get_size() / float(self.CHUNK_SIZE)))
 
-            # -- Download the file. Show a progress bar
-            with click.progressbar(
-                length=chunks,
-                label=click.style("Downloading", fg="yellow"),
-                fill_char=click.style("█", fg="cyan", bold=True),
-                empty_char=click.style("░", fg="cyan", bold=True),
-            ) as pbar:
-                for _ in pbar:
+            # -- Download and write the chunks, while displaying the progress.
+            for _ in track(
+                range(num_chunks),
+                description="Downloading",
+                console=console(),
+            ):
 
-                    # -- Receive next block of bytes
-                    file.write(next(itercontent))
+                file.write(next(itercontent))
+
+            # -- Check that the iterator reached its end. When the end is
+            # -- reached, next() returns the default value None.
+            assert next(itercontent, None) is None
 
         # -- Download done!
         self._request.close()

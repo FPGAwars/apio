@@ -44,7 +44,7 @@ def _test_home_dir_with_a_bad_character(
         invalid_home_dir = sb.sandbox_dir / f"apio-{invalid_char}-home"
         os.environ["APIO_HOME_DIR"] = str(invalid_home_dir)
 
-        # -- Initialize an apio context. It shoudl exit with an error.
+        # -- Initialize an apio context. It should exit with an error.
         with raises(SystemExit) as e:
             ApioContext(scope=ApioContextScope.NO_PROJECT)
         assert e.value.code == 1
@@ -74,11 +74,11 @@ def test_home_dir_with_relative_path(
         invalid_home_dir = Path("./aa/bb")
         os.environ["APIO_HOME_DIR"] = str(invalid_home_dir)
 
-        # -- Initialize an apio context. It shoudl exit with an error.
+        # -- Initialize an apio context. It should exit with an error.
         with raises(SystemExit) as e:
             ApioContext(scope=ApioContextScope.NO_PROJECT)
         assert e.value.code == 1
         assert (
-            "Error: apio home dir should be an absolute path"
+            "Error: Apio home dir should be an absolute path"
             in capsys.readouterr().out
         )

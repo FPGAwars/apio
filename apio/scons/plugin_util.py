@@ -2,11 +2,11 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 # -- Derived from:
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
-# ---- Licence Apache v2
+# ---- License Apache v2
 """Helper functions for apio scons plugins.
 """
 
@@ -19,7 +19,8 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Tuple, Dict, Optional, Union
-from click import secho, style
+from rich.table import Table
+from rich import box
 from SCons import Scanner
 from SCons.Builder import Builder
 from SCons.Action import FunctionAction, Action
@@ -27,47 +28,14 @@ from SCons.Node.FS import File
 from SCons.Script.SConscript import SConsEnvironment
 from SCons.Node import NodeList
 from SCons.Node.Alias import Alias
-import debugpy
-from apio.scons.apio_env import ApioEnv, TARGET, BUILD_DIR_SEP
+from apio.scons.apio_env import ApioEnv
+from apio.common.apio_consts import TARGET, BUILD_DIR
+from apio.common.apio_console import cout, cerror, cwarning, cprint
 
 # -- A list with the file extensions of the verilog source files.
 SRC_SUFFIXES = [".v", ".sv"]
 
-TESTBENCH_HINT = "Testbench file names must end with '_tb.v' or '_tb.sv."
-
-
-def secho_lines(colors: List[str], lines: List[str]) -> None:
-    """Secho list of lines with matching colors. If running out of colors,
-    repeat the last one.."""
-    for i, line in enumerate(lines):
-        fg = colors[i] if i < len(colors) else colors[-1]
-        secho(line, fg=fg, bold=True, color=True)
-
-
-def maybe_wait_for_remote_debugger(env_var_name: str):
-    """A rendezvous point for a remote debger. If the environment variable
-    of given name is set, the function will block until a remote
-    debugger (e.g. from Visual Studio Code) is attached.
-    """
-    if os.getenv(env_var_name) is not None:
-        secho(f"Env var '{env_var_name}' was detected.")
-        port = 5678
-        secho(f"Apio SCons for remote debugger on port localhost:{port}.")
-        debugpy.listen(port)
-        secho(
-            "Attach Visual Studio Code python remote python debugger "
-            f"to port {port}.",
-            fg="magenta",
-            color=True,
-        )
-        # -- Block until the debugger connetcs.
-        debugpy.wait_for_client()
-        # -- Here the remote debugger is attached and the program continues.
-        secho(
-            "Remote debugger is attached, program continues...",
-            fg="green",
-            color=True,
-        )
+TESTBENCH_HINT = "Testbench file names must end with '_tb.v' or '_tb.sv'."
 
 
 def map_params(params: Optional[List[Union[str, Path]]], fmt: str) -> str:
@@ -117,22 +85,16 @@ def get_constraint_file(
     # Case 1: No matching files.
     if n == 0:
         result = f"{top_module.lower()}{file_ext}"
-        secho(
-            f"Warning: No {file_ext} constraints file, assuming '{result}'.",
-            fg="yellow",
-            color=True,
-        )
+        cwarning(f"No {file_ext} constraints file, assuming '{result}'.")
         return result
     # Case 2: Exactly one file found.
     if n == 1:
         result = str(files[0])
         return result
     # Case 3: Multiple matching files.
-    secho(
-        f"Error: Found multiple '*{file_ext}' "
-        "constrain files, expecting exactly one.",
-        fg="red",
-        color=True,
+    cerror(
+        f"Found multiple '*{file_ext}' "
+        "constrain files, expecting exactly one."
     )
     sys.exit(1)
 
@@ -217,9 +179,9 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
             if Path(dependency).exists():
                 dependencies.append(dependency)
             elif apio_env.is_debug:
-                secho(
+                cout(
                     f"Dependency candidate {dependency} does not exist, "
-                    "droping."
+                    "dropping."
                 )
 
         # Sort the strings for determinism.
@@ -227,9 +189,9 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
 
         # Debug info.
         if apio_env.is_debug:
-            secho(f"Dependencies of {file_node.name}:", fg="blue", color=True)
+            cout(f"Dependencies of {file_node.name}:", style="blue")
             for dependency in dependencies:
-                secho(f"  {dependency}", fg="blue", color=True)
+                cout(f"  {dependency}", style="blue")
 
         # All done
         return apio_env.scons_env.File(dependencies)
@@ -343,13 +305,8 @@ def check_valid_testbench_name(testbench: str) -> None:
     """Check if a testbench name is valid. If not, print an error message
     and exit."""
     if not is_verilog_src(testbench) or not has_testbench_name(testbench):
-        secho_lines(
-            ["red"],
-            [
-                f"Error: '{testbench}' is not a valid testbench file name.",
-                TESTBENCH_HINT,
-            ],
-        )
+        cerror(f"'{testbench}' is not a valid testbench file name.")
+        cout(TESTBENCH_HINT, style="yellow")
         sys.exit(1)
 
 
@@ -372,32 +329,23 @@ def get_sim_config(
     elif len(test_srcs) == 0:
         # -- Case 2 Testbench name was not specified and no testbench files
         # -- were found in the project.
-        secho_lines(
-            ["red"],
-            [
-                "Error: No testbench files found in the project.",
-                TESTBENCH_HINT,
-            ],
-        )
+        cerror("No testbench files found in the project.")
+        cout(TESTBENCH_HINT, style="yellow")
+
         sys.exit(1)
     elif len(test_srcs) == 1:
         # -- Case 3 Testbench name was not specified but there is exactly
         # -- one in the project.
         testbench = test_srcs[0]
-        secho_lines(
-            ["cyan"],
-            [f"Found testbench file [{testbench}]"],
-        )
+        cout(f"Found testbench file {testbench}", style="cyan")
     else:
         # -- Case 4 Testbench name was not specified and there are multiple
         # -- testbench files in the project.
-        secho_lines(
-            ["red", "yellow"],
-            [
-                "Error: Multiple testbench files found in the project.",
-                "Please specify the testbench file name in the command "
-                "or in apio.ini 'default-testbench' option.",
-            ],
+        cerror("Multiple testbench files found in the project.")
+        cout(
+            "Please specify the testbench file name in the command "
+            "or in apio.ini 'default-testbench' option.",
+            style="yellow",
         )
         sys.exit(1)
 
@@ -407,7 +355,7 @@ def get_sim_config(
     # -- Construct a SimulationParams with all the synth files + the
     # -- testbench file.
     testbench_name = basename(testbench)
-    build_testbench_name = BUILD_DIR_SEP + testbench_name
+    build_testbench_name = str(BUILD_DIR / testbench_name)
     srcs = synth_srcs + [testbench]
     return SimulationConfig(testbench_name, build_testbench_name, srcs)
 
@@ -434,13 +382,8 @@ def get_tests_configs(
     elif len(test_srcs) == 0:
         # -- Case 2 - Testbench file name was not specified and there are no
         # -- testbench files in the project.
-        secho_lines(
-            ["red", "yellow"],
-            [
-                "Error: No testbench files found in the project.",
-                TESTBENCH_HINT,
-            ],
-        )
+        cerror("No testbench files found in the project.")
+        cout(TESTBENCH_HINT, style="yellow")
         sys.exit(1)
     else:
         # -- Case 3 - Testbench file name was not specified but there are one
@@ -454,7 +397,7 @@ def get_tests_configs(
     configs = []
     for tb in testbenches:
         testbench_name = basename(tb)
-        build_testbench_name = BUILD_DIR_SEP + testbench_name
+        build_testbench_name = str(BUILD_DIR / testbench_name)
         srcs = synth_srcs + [tb]
         configs.append(
             SimulationConfig(testbench_name, build_testbench_name, srcs)
@@ -505,18 +448,16 @@ def source_file_issue_action() -> FunctionAction:
                 continue
 
             # -- Here the file is a testbench file.
-            secho(f"Testbench {file.name}", fg="cyan", bold=True, color=True)
+            cout(f"Testbench {file.name}", style="cyan")
 
             # -- Read the testbench file text.
             file_text = file.get_text_contents()
 
             # -- if contains $dumpfile, print a warning.
             if testbench_dumpfile_re.findall(file_text):
-                secho(
-                    f"Warning: [{file.name}] Using $dumpfile() in apio "
-                    "testbenches is not recomanded.",
-                    fg="magenta",
-                    color=True,
+                cwarning(
+                    "Using $dumpfile() in apio "
+                    "testbenches is not recomanded."
                 )
 
     return Action(report_source_files_issues, "Scanning for issues.")
@@ -530,11 +471,9 @@ def source_files(apio_env: ApioEnv) -> Tuple[List[str], List[str]]:
     # -- Get a list of all *.v and .sv files in the project dir.
     files: List[File] = apio_env.scons_env.Glob("*.sv")
     if files:
-        secho(
-            "Warning: project contains .sv files, system-verilog support "
-            "is experimental.",
-            fg="yellow",
-            color=True,
+        cwarning(
+            "Project contains .sv files, system-verilog support "
+            "is experimental."
         )
     files = files + apio_env.scons_env.Glob("*.v")
 
@@ -549,7 +488,83 @@ def source_files(apio_env: ApioEnv) -> Tuple[List[str], List[str]]:
     return (synth_srcs, test_srcs)
 
 
-# pylint: disable=too-many-locals
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
+def _print_pnr_utilization_report(report: Dict[str, any]):
+    table = Table(
+        show_header=True,
+        show_lines=False,
+        box=box.SQUARE,
+        border_style="dim",
+        title="FPGA Resource Utilization",
+        title_justify="left",
+        padding=(0, 2),
+    )
+
+    # -- Add columns.
+    table.add_column("RESOURCE", no_wrap=True)
+    table.add_column("USED", no_wrap=True, justify="right")
+    table.add_column("TOTAL", no_wrap=True, justify="right")
+    table.add_column("UTIL.", no_wrap=True, justify="right")
+
+    # -- Add rows
+    utilization = report["utilization"]
+    for resource, vals in utilization.items():
+        used = vals["used"]
+        used_str = f"{used}  " if used else ""
+        available = vals["available"]
+        available_str = f"{available}  "
+        percents = int(100 * used / available)
+        percents_str = f"{percents}%  " if used else ""
+        style = "magenta" if used > 0 else None
+        table.add_row(
+            resource, used_str, available_str, percents_str, style=style
+        )
+
+    # -- Render the table
+    cout()
+    cprint(table)
+
+
+def _maybe_print_pnr_clocks_report(
+    report: Dict[str, any], clk_name_index: int
+) -> bool:
+    clocks = report["fmax"]
+    if len(clocks) == 0:
+        return False
+
+    table = Table(
+        show_header=True,
+        show_lines=True,
+        box=box.SQUARE,
+        border_style="dim",
+        title="Clock Information",
+        title_justify="left",
+        padding=(0, 2),
+    )
+
+    # -- Add columns
+    table.add_column("CLOCK", no_wrap=True)
+    table.add_column(
+        "MAX SPEED [Mhz]", no_wrap=True, justify="right", style="magenta"
+    )
+
+    # -- Add rows.
+    clocks = report["fmax"]
+    for clk_net, vals in clocks.items():
+        # -- Extract clock name from the net name.
+        clk_signal = clk_net.split("$")[clk_name_index]
+        # -- Extract speed
+        max_mhz = vals["achieved"]
+        # -- Add row.
+        table.add_row(clk_signal, f"{max_mhz:.2f}")
+
+    # -- Render the table
+    cout()
+    cprint(table)
+    return True
+
+
 def _print_pnr_report(
     json_txt: str,
     clk_name_index: int,
@@ -557,50 +572,26 @@ def _print_pnr_report(
 ) -> None:
     """Accepts the text of the pnr json report and prints it in
     a user friendly way. Used by the 'apio report' command."""
-    # -- Json text to tree of Dicts.
+    # -- Parse the json text into a tree of dicts.
     report: Dict[str, any] = json.loads(json_txt)
 
-    # --- Report utilization
-    secho("")
-    secho("UTILIZATION:", fg="cyan", bold=True, color=True)
-    utilization = report["utilization"]
-    for resource, vals in utilization.items():
-        available = vals["available"]
-        used = vals["used"]
-        percents = int(100 * used / available)
-        fg = "magenta" if used > 0 else None
-        secho(
-            f"{resource:>20}: {used:5} {available:5} {percents:5}%",
-            fg=fg,
-            color=True,
-        )
+    # -- Print the utilization table.
+    _print_pnr_utilization_report(report)
 
-    # -- Report max clock speeds.
-    # --
-    # -- NOTE: As of Oct 2024, some projects do not generate timing
-    # -- information and this is being investigated.
-    # -- See https://github.com/FPGAwars/icestudio/issues/774 for details.
-    secho("")
-    secho("CLOCKS:", fg="cyan", bold=True, color=True)
-    clocks = report["fmax"]
-    if len(clocks) > 0:
-        for clk_net, vals in clocks.items():
-            # -- Extract clock name from the net name.
-            clk_signal = clk_net.split("$")[clk_name_index]
+    # -- Print the optional clocks table.
+    clock_report_printed = _maybe_print_pnr_clocks_report(
+        report, clk_name_index
+    )
 
-            # -- Report speed.
-            max_mhz = vals["achieved"]
-            styled_max_mhz = style(f"{max_mhz:7.2f}", fg="magenta")
-            secho(f"{clk_signal:>20}: {styled_max_mhz} Mhz max")
-
-    # -- For now we ignore the critical path report in the pnr report and
-    # -- refer the user to the pnr verbose output.
-    secho("")
+    # -- Print summary.
+    cout("")
+    if not clock_report_printed:
+        cout("No clocks were found in the design.", style="yellow")
     if not verbose:
-        secho(
-            "Use 'apio report --verbose' for more details.",
-            fg="yellow",
-            color=True,
+        cout(
+            "Run 'apio report --verbose' for more details.",
+            nl=False,
+            style="yellow",
         )
 
 
@@ -640,11 +631,9 @@ def get_programmer_cmd(apio_env: ApioEnv) -> str:
     # It's an error if the programmer command doesn't have the $SOURCE
     # placeholder when scons inserts the binary file name.
     if "$SOURCE" not in programmer_cmd:
-        secho(
-            "Error: [Internal] $SOURCE is missing in programmer command: "
-            f"{programmer_cmd}",
-            fg="red",
-            color=True,
+        cerror(
+            "[Internal] $SOURCE is missing in programmer command: "
+            f"{programmer_cmd}"
         )
         sys.exit(1)
 
@@ -758,10 +747,10 @@ def configure_cleanup(apio_env: ApioEnv) -> None:
     # -- Get the list of all files to clean. Scons adds to the list non
     # -- existing files from other targets it encountered.
     files_to_clean = (
-        scons_env.Glob(f"{BUILD_DIR_SEP}*")
+        scons_env.Glob(str(BUILD_DIR / "*"))
         + scons_env.Glob("zadig.ini")
         + scons_env.Glob(".sconsign.dblite")
-        + scons_env.Glob("_build")
+        + scons_env.Glob(str(BUILD_DIR))
     )
 
     # pylint: disable=fixme
@@ -779,11 +768,7 @@ def configure_cleanup(apio_env: ApioEnv) -> None:
     )
 
     if legacy_files_to_clean:
-        secho(
-            "Deleting also leftover files.",
-            fg="yellow",
-            color=True,
-        )
+        cwarning("Deleting also leftover files.")
 
         files_to_clean.extend(legacy_files_to_clean)
 

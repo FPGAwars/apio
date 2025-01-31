@@ -4,36 +4,41 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio system' command"""
 
 import click
-from click import secho
+from rich.table import Table
+from rich import box
+from apio.common.apio_console import cprint, PADDING, cout
 from apio.utils import util
 from apio.apio_context import ApioContext, ApioContextScope
-from apio.utils.cmd_util import ApioGroup, ApioSubgroup
+from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
 
 # ------ apio system info
 
+# -- Text in the markdown format of the python rich library.
 APIO_SYSTEM_INFO_HELP = """
-The command ‘apio system info’ provides general information about your system
-and Apio installation, which is useful for diagnosing Apio installation issues.
+The command 'apio system info' provides general information about your \
+system and Apio installation, which is useful for diagnosing Apio \
+installation issues.
 
-\b
-Examples:
-  apio system info       # Show platform id and info.
+Examples:[code]
+  apio system info   # Show general info.[/code]
 
-[Advanced] The default location of the Apio home directory, where preferences
-and packages are stored, is in the .apio directory under the user’s home
-directory. This location can be changed using the APIO_HOME_DIR environment
-variable.
-
+[b][Advanced][/b] The default location of the Apio home directory, \
+where apio saves preferences and packages, is in the '.apio' directory \
+under the user home directory but can be changed using the system \
+environment variable 'APIO_HOME_DIR'.
 """
 
 
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
 @click.command(
     name="info",
+    cls=ApioCommand,
     short_help="Show platform id and other info.",
     help=APIO_SYSTEM_INFO_HELP,
 )
@@ -43,29 +48,35 @@ def _info_cli():
     # Create the apio context.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
-    # -- Print apio version.
-    secho("Apio version:     ", nl=False)
-    secho(util.get_apio_version(), fg="cyan", bold=True)
+    # -- Define the table.
+    table = Table(
+        show_header=True,
+        show_lines=True,
+        padding=PADDING,
+        box=box.SQUARE,
+        border_style="dim",
+        title="Apio System Information",
+        title_justify="left",
+    )
 
-    # -- Print python version.
-    secho("Python version:   ", nl=False)
-    secho(util.get_python_version(), fg="cyan", bold=True)
+    table.add_column("ITEM", no_wrap=True)
+    table.add_column("VALUE", no_wrap=True, style="cyan")
 
-    # -- Print platform id.
-    secho("Platform id:      ", nl=False)
-    secho(apio_ctx.platform_id, fg="cyan", bold=True)
+    # -- Add rows
+    table.add_row("Apio version", util.get_apio_version())
+    table.add_row("Python version ", util.get_python_version())
+    table.add_row("Platform id ", apio_ctx.platform_id)
+    table.add_row("Python package ", str(util.get_path_in_apio_package("")))
+    table.add_row("Apio home ", str(apio_ctx.home_dir))
+    table.add_row("Apio packages ", str(apio_ctx.packages_dir))
+    table.add_row(
+        "Veriable language server ",
+        str(apio_ctx.packages_dir / "verible/bin/verible-verilog-ls"),
+    )
 
-    # -- Print apio package directory.
-    secho("Python package:   ", nl=False)
-    secho(util.get_path_in_apio_package(""), fg="cyan", bold=True)
-
-    # -- Print apio home directory.
-    secho("Apio home:        ", nl=False)
-    secho(apio_ctx.home_dir, fg="cyan", bold=True)
-
-    # -- Print apio home directory.
-    secho("Apio packages:    ", nl=False)
-    secho(apio_ctx.packages_dir, fg="cyan", bold=True)
+    # -- Render the table.
+    cout()
+    cprint(table)
 
 
 # ------ apio system platforms
@@ -94,27 +105,45 @@ def _platforms_cli():
     # Create the apio context.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
-    # -- Print title line
-    secho(
-        f"  {'[PLATFORM ID]':18} " f"{'[DESCRIPTION]'}",
-        fg="magenta",
+    # -- Define the table.
+    table = Table(
+        show_header=True,
+        show_lines=True,
+        padding=PADDING,
+        box=box.SQUARE,
+        style="dim",
+        title="Apio Supported Platforms",
+        title_justify="left",
     )
 
-    # -- Print a line for each platform id.
+    table.add_column("PLATFORM ID", min_width=20, no_wrap=True)
+    table.add_column("DESCRIPTION", min_width=30, no_wrap=True)
+
+    # -- Add rows.
     for platform_id, platform_info in apio_ctx.platforms.items():
-        # -- Get next platform's info.
         description = platform_info.get("description")
-        # -- Determine if it's the current platform id.
-        fg = "green" if platform_id == apio_ctx.platform_id else None
-        # -- Print the line.
-        secho(f"  {platform_id:18} {description}", fg=fg)
+
+        # -- Mark the current platform.
+        if platform_id == apio_ctx.platform_id:
+            style = "cyan bold"
+            marker = "* "
+        else:
+            style = None
+            marker = "  "
+
+        table.add_row(f"{marker}{platform_id}", f"{description}", style=style)
+
+    # -- Render the table.
+    cout()
+    cprint(table)
 
 
 # ------ apio system
 
+# -- Text in the markdown format of the python rich library.
 APIO_SYSTEM_HELP = """
-The command group ‘apio system’ contains subcommands that provide information
-about the system and Apio’s installation.
+The command group 'apio system' contains subcommands that provide \
+information about the system and Apio’s installation.
 """
 
 # -- We have only a single group with the title 'Subcommands'.

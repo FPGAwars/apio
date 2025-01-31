@@ -42,7 +42,7 @@ def test_create(apio_runner: ApioRunner):
             apio, ["create", "--board", "missed_board"]
         )
         assert result.exit_code == 1, result.output
-        assert "Error: no such board" in result.output
+        assert "Error: No such board" in result.output
         assert not exists(apio_ini)
 
         # -- Execute "apio create --board alhambra-ii"
@@ -60,7 +60,7 @@ def test_create(apio_runner: ApioRunner):
             ["create", "--board", "alhambra-ii", "--top-module", "my_module"],
         )
         assert result.exit_code != 0
-        assert "the file apio.ini already exists" in result.output
+        assert "Error: The file apio.ini already exists." in result.output
         _check_ini_file(
             apio_ini, {"board": "alhambra-ii", "top-module": "main"}
         )

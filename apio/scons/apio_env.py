@@ -2,11 +2,11 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 # -- Derived from:
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
-# ---- Licence Apache v2
+# ---- License Apache v2
 """A class with common services for the apio scons handlers.
 """
 
@@ -18,24 +18,11 @@
 
 import os
 from typing import List, Optional
-from click import secho
 from SCons.Script.SConscript import SConsEnvironment
 from SCons.Environment import BuilderWrapper
 import SCons.Defaults
-
-# from apio.scons.apio_args import ApioArgs
-from apio.proto.apio_pb2 import SconsParams
-
-
-# -- All the build files and other artifcats are created in this this
-# -- subdirectory.
-BUILD_DIR = "_build"
-
-# -- A shortcut with '/' or '\' appended to the build dir name.
-BUILD_DIR_SEP = BUILD_DIR + os.sep
-
-# -- Target name. This is the base file name for various build artifacts.
-TARGET = BUILD_DIR_SEP + "hardware"
+from apio.common.apio_console import cout
+from apio.common.proto.apio_pb2 import SconsParams
 
 
 # pylint: disable=too-many-public-methods
@@ -64,19 +51,19 @@ class ApioEnv:
         ), "DefaultEnvironment already exists"
         # pylint: enable=protected-access
 
-        # -- Determine if we run on windows. Platform id is a required arg.
-        self.is_windows = (
-            "windows" in self.params.envrionment.platform_id.lower()
-        )
-
         # Extra info for debugging.
         if self.is_debug:
             self.dump_env_vars()
 
     @property
+    def is_windows(self):
+        """Returns True if we run on windows."""
+        return self.params.environment.is_windows
+
+    @property
     def is_debug(self):
         """Returns true if we run in debug mode."""
-        return self.params.envrionment.is_debug
+        return self.params.environment.is_debug
 
     def targeting(self, *target_names) -> bool:
         """Returns true if the any of the named target was specified in the
@@ -128,8 +115,8 @@ class ApioEnv:
         dictionary = self.scons_env.Dictionary()
         keys = list(dictionary.keys())
         keys.sort()
-        secho()
-        secho(">>> Env vars BEGIN", fg="magenta", color=True)
+        cout("")
+        cout(">>> Env vars BEGIN", style="magenta")
         for key in keys:
-            print(f"{key} = {self.scons_env[key]}")
-        secho("<<< Env vars END\n", fg="magenta", color=True)
+            cout(f"{key} = {self.scons_env[key]}")
+        cout("<<< Env vars END\n", style="magenta")

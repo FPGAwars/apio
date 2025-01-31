@@ -4,7 +4,7 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio lint' command"""
 import sys
 from pathlib import Path
@@ -14,12 +14,10 @@ from apio.utils import util
 from apio.utils import cmd_util
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
-from apio.proto.apio_pb2 import LintParams
+from apio.common.proto.apio_pb2 import LintParams
 
 
-# ---------------------------
-# -- COMMAND SPECIFIC OPTIONS
-# ---------------------------
+# ------- apio lint
 
 all_option = click.option(
     "all_",  # Var name. Deconflicting from Python'g builtin 'all'.
@@ -58,19 +56,16 @@ warn_option = click.option(
 )
 
 
-# ---------------------------
-# -- COMMAND
-# ---------------------------
+# -- Text in the markdown format of the python rich library.
 APIO_LINT_HELP = """
-The command ‘apio lint’ scans the project’s Verilog code and reports errors,
-inconsistencies, and style violations. The command uses the Verilator tool,
+The command 'apio lint' scans the project's Verilog code and reports errors, \
+inconsistencies, and style violations. The command uses the Verilator tool, \
 which is included in the standard Apio installation.
 
-\b
-Examples:
+Examples:[code]
   apio lint
   apio lint -t my_module
-  apio lint --all
+  apio lint --all[/code]
 """
 
 
@@ -78,26 +73,27 @@ Examples:
 # pylint: disable=too-many-positional-arguments
 @click.command(
     name="lint",
+    cls=cmd_util.ApioCommand,
     short_help="Lint the verilog code.",
     help=APIO_LINT_HELP,
 )
 @click.pass_context
-@options.top_module_option_gen(
-    help="Restrict linting to this module and its depedencies."
-)
-@all_option
 @nostyle_option
 @nowarn_option
 @warn_option
+@all_option
+@options.top_module_option_gen(
+    help="Restrict linting to this module and its dependencies."
+)
 @options.project_dir_option
 def cli(
     _: click.Context,
     # Options
-    top_module: str,
-    all_: bool,
     nostyle: bool,
     nowarn: str,
     warn: str,
+    all_: bool,
+    top_module: str,
     project_dir: Path,
 ):
     """Lint the verilog code."""
@@ -111,7 +107,7 @@ def cli(
     # -- Create the scons manager.
     scons = SCons(apio_ctx)
 
-    # -- Convert the comma seperated args values to python lists
+    # -- Convert the comma separated args values to python lists
     no_warns_list = util.split(nowarn, ",", strip=True, keep_empty=False)
     warns_list = util.split(warn, ",", strip=True, keep_empty=False)
 

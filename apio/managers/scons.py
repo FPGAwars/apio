@@ -7,27 +7,27 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 
 import traceback
 import os
 import sys
 import time
-from pathlib import Path
 import shutil
 from functools import wraps
 from datetime import datetime
-import click
-from click import secho
 from google.protobuf import text_format
+from apio.common.apio_console import cout, cerror, cstyle
 from apio.utils import util, pkg_util
+from apio.common.apio_consts import BUILD_DIR
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
 from apio.managers import installer
 from apio.profile import Profile
-from apio.proto.apio_pb2 import (
+from apio.common import rich_lib_windows
+from apio.common.proto.apio_pb2 import (
     Verbosity,
-    Envrionment,
+    Environment,
     SconsParams,
     TargetParams,
     FpgaInfo,
@@ -58,7 +58,7 @@ FLASH = "flash"
 # -- Based on
 # -- https://stackoverflow.com/questions/5929107/decorators-with-parameters
 def on_exception(*, exit_code: int):
-    """Decoractor for functions that return int exit code. If the function
+    """Decorator for functions that return int exit code. If the function
     throws an exception, the error message is printed, and the caller see the
     returned value exit_code instead of the exception.
     """
@@ -73,7 +73,7 @@ def on_exception(*, exit_code: int):
                     traceback.print_tb(exc.__traceback__)
 
                 if str(exc):
-                    secho("Error: " + str(exc), fg="red")
+                    cerror(str(exc))
                 return exit_code
 
         return wrapper
@@ -99,7 +99,7 @@ class SCons:
 
         scons_params = self.construct_scons_params()
 
-        # --Clean the project: run scons -c (with aditional arguments)
+        # --Clean the project: run scons -c (with additional arguments)
         return self._run("-c", scons_params=scons_params, uses_packages=False)
 
     @on_exception(exit_code=1)
@@ -287,10 +287,7 @@ class SCons:
                 GowinFpgaInfo(family=fpga_config["type"])
             )
         else:
-            secho(
-                f"Internal error: unexpected fpga_arch value {fpga_arch}",
-                fg="red",
-            )
+            cerror(f"Unexpected fpga_arch value {fpga_arch}")
             sys.exit(1)
 
         # -- We are done populating The FpgaInfo params..
@@ -305,15 +302,16 @@ class SCons:
         assert apio_ctx.platform_id, "Missing platform_id in apio context"
         oss_vars = apio_ctx.all_packages["oss-cad-suite"]["env"]["vars"]
 
-        result.envrionment.MergeFrom(
-            Envrionment(
+        result.environment.MergeFrom(
+            Environment(
                 platform_id=apio_ctx.platform_id,
+                is_windows=apio_ctx.is_windows,
                 is_debug=util.is_debug(),
                 yosys_path=oss_vars["YOSYS_LIB"],
                 trellis_path=oss_vars["TRELLIS"],
             )
         )
-        assert result.envrionment.IsInitialized(), result
+        assert result.environment.IsInitialized(), result
 
         # -- Populate the Project params.
         result.project.MergeFrom(
@@ -327,10 +325,16 @@ class SCons:
         )
         assert result.project.IsInitialized(), result
 
-        # -- Populate the optinal command specific params.
+        # -- Populate the optional command specific params.
         if target_params:
             result.target.MergeFrom(target_params)
             assert result.target.IsInitialized(), result
+
+        # -- If windows, populate the rich library workaround parameters.
+        if apio_ctx.is_windows:
+            result.rich_lib_windows_params.MergeFrom(
+                rich_lib_windows.get_workaround_params()
+            )
 
         # -- All done.
         assert result.IsInitialized(), result
@@ -341,7 +345,7 @@ class SCons:
     # pylint: disable=too-many-positional-arguments
     def _run(
         self,
-        scond_command: str,
+        scons_command: str,
         *,
         scons_params: SconsParams = None,
         uses_packages: bool,
@@ -354,7 +358,7 @@ class SCons:
         scons_file_path = scons_dir / "SConstruct"
         variables = ["-f", f"{scons_file_path}"]
 
-        # -- Pass to the wscons process the timestamp of the scons params we
+        # -- Pass to the scons process the timestamp of the scons params we
         # -- pass via a file. This is for verification purposes only.
         variables += [f"timestamp={scons_params.timestamp}"]
 
@@ -369,12 +373,12 @@ class SCons:
         pkg_util.set_env_for_packages(self.apio_ctx)
 
         if util.is_debug():
-            secho("\nSCONS CALL:", fg="magenta")
-            secho(f"* command:       {scond_command}")
-            secho(f"* variables:     {variables}")
-            secho(f"* uses packages: {uses_packages}")
-            secho(f"* scons params: \n{scons_params}")
-            secho()
+            cout("\nSCONS CALL:", style="magenta")
+            cout(f"* command:       {scons_command}")
+            cout(f"* variables:     {variables}")
+            cout(f"* uses packages: {uses_packages}")
+            cout(f"* scons params: \n{scons_params}")
+            cout()
 
         # -- Get the terminal width (typically 80)
         terminal_width, _ = shutil.get_terminal_size()
@@ -383,19 +387,14 @@ class SCons:
         # -- to execute the apio command)
         start_time = time.time()
 
-        # -- Get the date as a string
-        date_time_str = datetime.now().strftime("%c")
-
         # -- Board name string in color
-        board_color = click.style(
-            scons_params.project.board_id, fg="cyan", bold=True
-        )
+        styled_board_id = cstyle(scons_params.project.board_id, style="cyan")
 
         # -- Print information on the console
-        secho(f"[{date_time_str}] Processing {board_color}")
+        cout(f"Processing board {styled_board_id}")
 
         # -- Print a horizontal line
-        secho("-" * terminal_width, bold=True)
+        cout("-" * terminal_width)
 
         # -- Create the scons debug options. See details at
         # -- https://scons.org/doc/2.4.1/HTML/scons-man.html
@@ -407,21 +406,20 @@ class SCons:
 
         # -- Command to execute: scons -Q apio_cmd flags
         scons_command = (
-            ["scons"] + ["-Q", scond_command] + debug_options + variables
+            ["scons"] + ["-Q", scons_command] + debug_options + variables
         )
 
-        # -- An output filter that manupulates the scons stdout/err lines as
+        # -- An output filter that manipulates the scons stdout/err lines as
         # -- needed and write them to stdout.
-        colors_enabled = Profile.read_color_prefernces()
+        colors_enabled = Profile.read_color_preferences()
         scons_filter = SconsFilter(colors_enabled)
 
         # -- Write the scons parameters to a temp file in the build
         # -- directory. It will be cleaned up as part of 'apio cleanup'.
         # -- At this point, the project is the current directory, even if
         # -- the command used the --project-dir option.
-        build_dir = Path("_build")
-        os.makedirs(build_dir, exist_ok=True)
-        with open(build_dir / "scons.params", "w", encoding="utf8") as f:
+        os.makedirs(BUILD_DIR, exist_ok=True)
+        with open(BUILD_DIR / "scons.params", "w", encoding="utf8") as f:
             f.write(text_format.MessageToString(scons_params))
 
         # -- Execute the scons builder!
@@ -445,13 +443,13 @@ class SCons:
 
         # -- Status message
         status = (
-            click.style(" ERROR ", fg="red", bold=True)
+            cstyle(" ERROR ", style="red")
             if is_error
-            else click.style("SUCCESS", fg="green", bold=True)
+            else cstyle("SUCCESS", style="green")
         )
 
         # -- Print the summary line.
-        secho(f"{half_line} [{status}]{summary_text}{half_line}", err=is_error)
+        cout(f"{half_line} [{status}]{summary_text}{half_line}")
 
         # -- Return the exit code
         return result.exit_code

@@ -62,7 +62,6 @@ def test_packages(apio_runner: ApioRunner):
         # -- This should not do anything since it's considered to be installed.
         result = sb.invoke_apio_cmd(apio, ["packages", "install", "examples"])
         sb.assert_ok(result)
-        assert "was already install" in result.output
         assert "Package 'examples' installed" not in result.output
         assert not marker_file.exists()
 
@@ -75,7 +74,7 @@ def test_packages(apio_runner: ApioRunner):
         assert "Package 'examples' installed" in result.output
         assert marker_file.is_file()
 
-        # -- Uninstall the examples package. It should delete the exemples
+        # -- Uninstall the examples package. It should delete the examples
         # -- package and will leave the rest.
         assert "examples" in listdir(sb.packages_dir)
         result = sb.invoke_apio_cmd(

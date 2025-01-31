@@ -2,11 +2,11 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 # -- Derived from:
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
-# ---- Licence Apache v2
+# ---- License Apache v2
 
 """Apio scons plugin for the ice40 architecture."""
 
@@ -16,7 +16,8 @@
 from pathlib import Path
 from SCons.Script import Builder
 from SCons.Builder import BuilderBase
-from apio.scons.apio_env import ApioEnv, TARGET
+from apio.scons.apio_env import ApioEnv
+from apio.common.apio_consts import TARGET
 from apio.scons.plugin_base import PluginBase, ArchPluginInfo
 from apio.scons.plugin_util import (
     SRC_SUFFIXES,
@@ -38,7 +39,7 @@ class PluginIce40(PluginBase):
         super().__init__(apio_env)
 
         # -- Cache values.
-        yosys_path = Path(apio_env.params.envrionment.yosys_path)
+        yosys_path = Path(apio_env.params.environment.yosys_path)
         self.yosys_lib_dir = yosys_path / "ice40"
         self.yosys_lib_file = yosys_path / "ice40" / "cells_sim.v"
 

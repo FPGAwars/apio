@@ -4,7 +4,7 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio drivers' command group."""
 
 import click
@@ -18,8 +18,9 @@ from apio.commands import (
 
 # --- apio drivers
 
+# -- Text in the markdown format of the python rich library.
 APIO_DRIVERS_HELP = """
-The command group ‘apio drivers’ contains subcommands to manage the
+The command group 'apio drivers' contains subcommands to manage the \
 drivers on your system.
 """
 
@@ -44,6 +45,6 @@ SUBGROUPS = [
     help=APIO_DRIVERS_HELP,
 )
 def cli():
-    """Implements the drivers command."""
+    """Implements the apio drivers command."""
 
     # pass

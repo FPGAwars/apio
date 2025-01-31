@@ -2,11 +2,11 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 # -- Derived from:
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
-# ---- Licence Apache v2
+# ---- License Apache v2
 """Utility functionality for apio click commands. """
 
 import sys
@@ -16,10 +16,8 @@ from configparser import ConfigParser
 from pathlib import Path
 from typing import Dict, Optional, Union, Any, List
 from configobj import ConfigObj
-from click import secho
+from apio.common.apio_console import cout, cerror
 
-# -- Apio projecto filename
-APIO_INI = "apio.ini"
 
 DEFAULT_TOP_MODULE = "main"
 
@@ -28,26 +26,91 @@ APIO project configuration file. For details see
 https://github.com/FPGAwars/apio/wiki/Project-configuration-file
 """
 
-# -- Set of options every valid project should have.
-REQUIRED_OPTIONS = {
+# -- The options docs here are formatted in the markdown format of the
+# -- python rich library. See apio_docs_apio_ini.py to see how they are
+# -- used.
+BOARD_OPTION_DOC = """
+The option 'board' specifies the board definition that is used by the \
+project. The board ID must be one of the board IDs, such as 'alhambra-ii', \
+that is listed by the command 'apio boards'.
+
+Example:[code]
+  board = alhambra-ii[/code]
+
+Apio uses the board ID to determine information such as the FPGA part number \
+and the programmer command to use to upload the design to the board.
+
+Apio has resource files with definitions of boards, FPGAs, and programmers. \
+If the project requires custom definitions, you can add custom \
+'boards.jsonc', 'fpgas.jsonc', and 'programmers.jsonc' files in the project \
+directory, and Apio will use them instead.
+"""
+
+TOP_MODULE_OPTION_DOC = """
+The option 'top-module' specifies the name of the top module of the design. \
+If 'top-module' is not specified, Apio assumes the default name 'main'; \
+however, it is a good practice to always explicitly specify the top module.
+
+Example:[code]
+  top-module = my_main[/code]
+"""
+
+DEFAULT_TESTBENCH_DOC = """
+The option 'default-testbench' is useful in projects that have more than \
+a single testbench file, because it allows specifying the default testbench \
+that will be simulated when the command 'apio sim' is run without a testbench \
+argument.
+
+Without this option, Apio will exit with an error message if the project \
+contains more than one testbench file and a testbench was not specified in \
+the 'apio sim' command.
+
+Example:[code]
+  default-testbench = my_module_tb.v[/code]
+"""
+
+FORMAT_VERIBLE_OPTIONS_DOC = """
+The option 'format-verible-options' allows controlling the operation of the \
+'apio format' command by specifying additional options to the underlying \
+'verible' formatter.
+
+Example:[code]
+  format-verible-options =
+      --column_limit=80
+      --indentation_spaces=4[/code]
+
+For the list of the Verible formatter options, run the command \
+'apio raw -- verible-verilog-format --helpfull'
+"""
+
+YOSYS_SYNTH_EXTRA_OPTIONS_DOC = """
+The option 'yosys-synth-extra-options' allows adding options to the \
+yosys synth command. In the example below, it adds the option '-dsp', \
+which enables for some FPGAs the use of DSP cells to implement multiply \
+operations. This is an advanced and esoteric option that is typically \
+not needed.
+
+Example:[code]
+  yosys-synth-extra-options = -dsp[/code]
+"""
+
+OPTIONS = {
     # -- The board name.
+    "board": BOARD_OPTION_DOC,
+    # -- The top module name. Default is 'main'.
+    "top-module": TOP_MODULE_OPTION_DOC,
+    # -- The default testbench name for 'apio sim'.
+    "default-testbench": DEFAULT_TESTBENCH_DOC,
+    # -- Multi line list of verible options for 'apio format'
+    "format-verible-options": FORMAT_VERIBLE_OPTIONS_DOC,
+    # -- Additional option for the yosys synth command (inside the -p arg).
+    "yosys-synth-extra-options": YOSYS_SYNTH_EXTRA_OPTIONS_DOC,
+}
+
+# -- The subset of the options in OPTIONS that are required.
+REQUIRED_OPTIONS = {
     "board",
 }
-
-# -- Set of additional options a project may have.
-OPTIONAL_OPTIONS = {
-    # -- The top module name. Default is 'main'.
-    "top-module",
-    # -- The default testbench name for 'apio sim'.
-    "default-testbench",
-    # -- Multi line list of verible options for 'apio format'
-    "format-verible-options",
-    # -- Additional option for the yosys synth command (inside the -p arg).
-    "yosys-synth-extra-options",
-}
-
-# -- Set of all options a project may have.
-ALL_OPTIONS = REQUIRED_OPTIONS | OPTIONAL_OPTIONS
 
 
 # pylint: disable=too-few-public-methods
@@ -90,17 +153,13 @@ class Project:
         # -- Check that all the required options are present.
         for option in REQUIRED_OPTIONS:
             if option not in self._options:
-                secho(
-                    f"Error: missing option '{option}' in {APIO_INI}.",
-                    fg="red",
-                )
+                cerror(f"Missing option '{option}' in apio.ini.")
                 sys.exit(1)
 
         # -- Check that there are no unknown options.
-        supported_options = ALL_OPTIONS
         for option in self._options:
-            if option not in supported_options:
-                secho(f"Error: unknown project option '{option}'", fg="red")
+            if option not in OPTIONS:
+                cerror(f"Unknown project option '{option}'")
                 sys.exit(1)
 
         # -- Force 'board' to have the canonical name of the board.
@@ -112,16 +171,16 @@ class Project:
         # -- If top-module was not specified, fill in the default value.
         if "top-module" not in self._options:
             self._options["top-module"] = DEFAULT_TOP_MODULE
-            secho(
+            cout(
                 "Project file has no 'top-module', "
                 f"assuming '{DEFAULT_TOP_MODULE}'.",
-                fg="yellow",
+                style="yellow",
             )
 
     def get(self, option: str, default: Any = None) -> Union[str, Any]:
         """Lookup an option value by name. Returns default if not found."""
         # -- If this fails, this is a programming error.
-        assert option in ALL_OPTIONS, f"Invalid project option: [{option}]"
+        assert option in OPTIONS, f"Invalid project option: [{option}]"
 
         # -- Lookup with default
         return self._options.get(option, default)
@@ -136,7 +195,7 @@ class Project:
     ) -> Union[List[str], Any]:
         """Lookup an option value that has a line list format. Returns
         the list of non empty lines or default if no value. Option
-        must be in ALL_OPTIONS."""
+        must be in OPTIONS."""
 
         # -- Get the raw value.
         values = self.get(option, None)
@@ -165,11 +224,11 @@ def load_project_from_file(
     call its validate() method."""
 
     # -- Construct the apio.ini path.
-    file_path = project_dir / APIO_INI
+    file_path = project_dir / "apio.ini"
 
     # -- Currently, apio.ini is still optional so we just warn.
     if not file_path.exists():
-        secho(f"Error: missing project file {APIO_INI}.", fg="red")
+        cerror("Missing project file apio.ini.")
         sys.exit(1)
 
     # -- Read and parse the file.
@@ -178,15 +237,12 @@ def load_project_from_file(
 
     # -- Should contain an [env] section.
     if "env" not in parser.sections():
-        secho(f"Error: {APIO_INI} has no [env] section.", fg="red")
+        cerror("The file apio.ini has no [env] section.")
         sys.exit(1)
 
     # -- Should not contain any other section.
     if len(parser.sections()) > 1:
-        secho(
-            f"Error: {APIO_INI} should contain only an [env] section.",
-            fg="red",
-        )
+        cerror("The file apio.ini should contain only an [env] section.")
         sys.exit(1)
 
     # -- Collect the name/value pairs.
@@ -206,16 +262,15 @@ def create_project_file(
     """Creates a new apio project file. Exits on any error."""
 
     # -- Construct the path
-    ini_path = project_dir / APIO_INI
+    ini_path = project_dir / "apio.ini"
 
     # -- Error if apio.ini already exists.
     if ini_path.exists():
-
-        secho(f"Error: the file {APIO_INI} already exists.", fg="red")
+        cerror("The file apio.ini already exists.")
         sys.exit(1)
 
     # -- Construct and write the apio.ini file..
-    secho(f"Creating {ini_path} file ...")
+    cout(f"Creating {ini_path} file ...")
 
     config = ConfigObj(str(ini_path))
     config.initial_comment = TOP_COMMENT.split("\n")
@@ -224,8 +279,4 @@ def create_project_file(
     config["env"]["top-module"] = top_module
 
     config.write()
-    secho(
-        f"The file '{ini_path}' was created successfully.",
-        fg="green",
-        bold=True,
-    )
+    cout(f"The file '{ini_path}' was created successfully.", style="green")

@@ -2,19 +2,19 @@
 // for passing parameters from the apio process to the scons process.
 
 // IMPORTANT: After making changes in this file, run the command 'update-proto.sh' 
-// to propogate them to the python stubs. Otherwise they do not take affect.
+// to propagate them to the python stubs. Otherwise they do not take affect.
 
 // Online proto formatter at https://formatter.org/protobuf-formatter
 
 // NOTE: Since we use the the serialized proto data within a single invocation
-// of apio, protocol buffers text mode and binary mode backeard compatibility
+// of apio, protocol buffers text mode and binary mode backward compatibility
 // considerations do not apply.
 
 // Using proto2 for features such as 'has' and 'required'. 
 syntax = "proto2";
 
  
-package apio.proto;
+package apio.common.proto;
 
 // The supported FPGA architectures, each with its own handler.
 enum ApioArch {
@@ -60,23 +60,24 @@ message FpgaInfo {
 message Verbosity {
   // If true, enable general verbosity.
   optional bool all = 1 [default = false];
-  // If true, enable synthesis verbosiry.
+  // If true, enable synthesis verbosity.
   optional bool synth = 2 [default = false];
   // If true, enable place-and-route verbosity.
   optional bool pnr = 3 [default = false];
 }
 
 // Information about the environment.
-message Envrionment {
+message Environment {
   // The underlying platform id as it appears in platforms.jsonc.
   required string platform_id = 1;
+  required bool is_windows = 2;
 
   // True if apio debug is enabled.
-  optional bool is_debug = 2 [default = false];
+  optional bool is_debug = 3 [default = false];
 
-  // Pathes to oss-cad-suite libraries.
-  required string yosys_path = 3;
-  required string trellis_path = 4;
+  // Paths to oss-cad-suite libraries.
+  required string yosys_path = 4;
+  required string trellis_path = 5;
 }
 
 // Information about the project.
@@ -115,7 +116,7 @@ message SimParams {
   // If not specified, scons will run if it finds a single testbench
   // file or exit with error if none or more than one.
   optional string testbench = 1 [default = ""];
- 
+
   // Force rerun of simulation, even if not change from previous
   // run.
   required bool force_sim = 2;
@@ -128,7 +129,7 @@ message ApioTestParams {
   optional string testbench = 1 [ default = ""];
 }
 
-// Upload target specific iparams.
+// Upload target specific params.
 message UploadParams {
   optional string programmer_cmd = 1;
 }
@@ -144,10 +145,24 @@ message TargetParams {
   }
 }
 
+// Contains parameters for working around the rich library bugs when
+// using piped output on windows.
+// See:
+// https://github.com/Textualize/rich/issues/3082
+// https://github.com/Textualize/rich/issues/3625
+message RichLibWindowsParams {
+  // The encoding of stdout, e.g. 'utf-8'.
+  required string stdout_encoding = 1;
+  // Copy of WindowsConsoleFeatures.vt.
+  required bool vt = 2;
+  // Copy of WindowsConsoleFeatures.truecolor.
+  required bool truecolor = 3;
+}
+
 // The top level messages that is passed from the apio process to
 // the scons process.
 message SconsParams {
-  // An arbitrary timesamp string that we pass also as an scons argument
+  // An arbitrary timestamp string that we pass also as an scons argument
   // to verify that scons reads the correct versions of the params file.
   required string timestamp = 1;
 
@@ -162,11 +177,14 @@ message SconsParams {
   optional Verbosity verbosity = 4;
 
   // General information about the environment.
-  required Envrionment envrionment = 5;
+  required Environment environment = 5;
 
   // General information about the project
   required Project project = 6;
 
   // Additional params for for scons targets that need it..
   optional TargetParams target = 7;
+
+  // Should be populated if an only if environment.is_windows is true.
+  optional RichLibWindowsParams rich_lib_windows_params = 8;
 }

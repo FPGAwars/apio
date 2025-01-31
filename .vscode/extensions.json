@@ -1,0 +1,18 @@
+{
+    "recommendations": [
+        "streetsidesoftware.code-spell-checker",
+        "ms-python.black-formatter",
+        "alefragnani.bookmarks",
+        "pbkit.vscode-pbkit",
+        "ms-python.vscode-pylance",
+        "ms-python.python",
+        "ms-python.debugpy",
+        "kukdh1.verible-formatter",
+        "mshr-h.veriloghdl",
+        "shakram02.bash-beautify",
+        "grapecity.gc-excelviewer",
+        "ybaumes.highlight-trailing-white-spaces",
+        "yzhang.markdown-all-in-one",
+        "shd101wyy.markdown-preview-enhanced"
+    ]
+}

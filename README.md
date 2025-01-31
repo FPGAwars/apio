@@ -7,22 +7,22 @@
 ![][linux-logo]&nbsp;&nbsp;&nbsp;![][macosx-logo]&nbsp;&nbsp;&nbsp;![][windows-logo]&nbsp;&nbsp;&nbsp;![][ubuntu-logo]&nbsp;&nbsp;&nbsp;![][raspbian-logo]
 
 
-**TL;DR, Apio is an extremly easy to install and use open-source toolbox for programming FPGA boards.**
+**TL;DR, Apio is an extremely easy to install and use open-source toolbox for programming FPGA boards.**
 
 ## What is Apio?
 
-* Apio is an **extremly easy to use** toolbox for FPGA programming.
+* Apio is an **extremely easy to use** toolbox for FPGA programming.
 * Apio is **easy to install**, no more dealing with 'toolcahins', licenses, scripts, and makefiles.
 * Apio runs on a wide range of platforms, **Linux, Windows, Mac, and more**.
 * Apio is **open source and free to use**.
-* Apio supports **all aspects of FPGA developement cycles**, including building, simulation, testing, and uploading a design.
+* Apio supports **all aspects of FPGA development cycles**, including building, simulation, testing, and uploading a design.
 * **Apio commands are very simple,** for example, ``apio build`` to build, ``apio test`` to test end ``apio upload`` to upload.
-* Apio can be used with **any text editor** and also **playes well with Visual Studio Code and github**.
+* Apio can be used with **any text editor** and also **plays well with Visual Studio Code and github**.
 * Apio supports out of the **more than 80 boards** and **custom boards can be easily added**.
 * Apio provides out of the box tens of simple **project examples ready to build and upload**.
 * Apio currently supports the ``ICE40`` and ``ECP5`` FPGA architecture with ``GOWIN`` architecture in the works.
 
-## The Apio phylosophy
+## The Apio philosophy
 
 Apio makes **extremely easy** the process of working with **FPGAs**. Go from **scratch** to having a **blinky LED** in your FPGA board in minutes! This is because it is was designed for ease of use and uses only **Free/Libre Open Source Software** (FLOSS). Just install it and use it as you want.
 

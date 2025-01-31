@@ -16,7 +16,7 @@ def test_clean_without_apio_ini(apio_runner: ApioRunner):
         # -- Run "apio clean" with no apio.ini
         result = sb.invoke_apio_cmd(apio, ["clean"])
         assert result.exit_code != 0, result.output
-        assert "Error: missing project file apio.ini" in result.output
+        assert "Error: Missing project file apio.ini" in result.output
 
 
 # R0801: Similar lines in 2 files

@@ -4,48 +4,50 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio examples' command"""
 
 from pathlib import Path
 from typing import List, Any
 import click
-from click import secho, style, echo
+from rich.table import Table
+from rich import box
+from apio.common import apio_console
+from apio.common.apio_console import cout, cprint
 from apio.managers import installer
 from apio.managers.examples import Examples, ExampleInfo
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import util
-from apio.utils.cmd_util import ApioGroup, ApioSubgroup
+from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
 
 # ---- apio examples list
 
 
+# -- Text in the markdown format of the python rich library.
 APIO_EXAMPLES_LIST_HELP = """
-The command ‘apio examples list’ lists the available Apio project examples
+The command 'apio examples list' lists the available Apio project examples \
 that you can use.
 
-\b
-Examples:
+Examples:[code]
   apio examples list                     # List all examples
-  apio examples list  -v                 # List with extra information.
-  apio examples list | grep alhambra-ii  # Show examples of a specific board.
-  apio examples list | grep -i blink     # Show all blinking examples.
-
-  """
+  apio examples list  -v                 # More verbose output.
+  apio examples list | grep alhambra-ii  # Show alhambra-ii examples.
+  apio examples list | grep -i blink     # Show blinking examples.[/code]
+"""
 
 
 def examples_sort_key(entry: ExampleInfo) -> Any:
-    """A key for sorting the fpga entries in our prefered order."""
+    """A key for sorting the fpga entries in our preferred order."""
     return (util.fpga_arch_sort_key(entry.fpga_arch), entry.name)
 
 
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
 def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
     """Print all the examples available. Return a process exit
     code, 0 if ok, non zero otherwise."""
-    # -- Get the output info (terminal vs pipe).
-    output_config = util.get_terminal_config()
 
     # -- Make sure that the examples package is installed.
     installer.install_missing_packages_on_the_fly(apio_ctx)
@@ -53,60 +55,68 @@ def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
     # -- Get list of examples.
     entries: List[ExampleInfo] = Examples(apio_ctx).get_examples_infos()
 
-    # -- Sort boards by case insensitive board namd.
+    # -- Sort boards by case insensitive board name.
     entries.sort(key=examples_sort_key)
 
-    # Compute field lengths
-    margin = 2
-    name_len = max(len(x.name) for x in entries) + margin
-    fpga_arch_len = max(len(x.fpga_arch) for x in entries) + margin
-    fpga_part_num_len = max(len(x.fpga_part_num) for x in entries) + margin
-    fpga_size_len = max(len(x.fpga_size) for x in entries) + margin + 1
+    # -- Define the table.
+    table = Table(
+        show_header=True,
+        show_lines=False,
+        box=box.SQUARE,
+        border_style="dim",
+        title="Apio Examples",
+        title_justify="left",
+    )
 
-    # -- Construct the title fields.
-    parts = []
-    parts.append(f"{'BOARD/EXAMPLE':<{name_len}}")
+    # -- Add columns.
+    table.add_column("BOARD/EXAMPLE", no_wrap=True, style="cyan")
+    table.add_column("ARCH", no_wrap=True)
     if verbose:
-        parts.append(f"{'ARCH':<{fpga_arch_len}}")
-        parts.append(f"{'PART-NUM':<{fpga_part_num_len}}")
-        parts.append(f"{'SIZE':<{fpga_size_len}}")
-    parts.append("DESCRIPTION")
+        table.add_column("PART-NUM", no_wrap=True)
+        table.add_column("SIZE", no_wrap=True)
+    table.add_column(
+        "DESCRIPTION",
+        no_wrap=True,
+        max_width=40 if verbose else 70,  # Limit in verbose mode.
+    )
 
-    # -- Print the title
-    secho("".join(parts), fg="cyan", bold="True")
-
-    # -- Emit the examples
+    # -- Add rows.
     last_arch = None
     for entry in entries:
-        # -- Seperation before each archictecture group, unless piped out.
-        if last_arch != entry.fpga_arch and output_config.terminal_mode:
-            echo("")
-            secho(f"{entry.fpga_arch.upper()}", fg="magenta", bold=True)
+        # -- Separation before each architecture group, unless piped out.
+        if last_arch != entry.fpga_arch and apio_console.is_terminal():
+            table.add_section()
         last_arch = entry.fpga_arch
 
-        # -- Construct the fpga fields.
-        parts = []
-        parts.append(style(f"{entry.name:<{name_len}}", fg="cyan"))
+        # -- Collect row's values.
+        values = []
+        values.append(entry.name)
+        values.append(entry.fpga_arch)
         if verbose:
-            parts.append(f"{entry.fpga_arch:<{fpga_arch_len}}")
-            parts.append(f"{entry.fpga_part_num:<{fpga_part_num_len}}")
-            parts.append(f"{entry.fpga_size:<{fpga_size_len}}")
-        parts.append(f"{entry.description}")
+            values.append(entry.fpga_part_num)
+            values.append(entry.fpga_size)
+        values.append(entry.description)
 
-        # -- Print the fpga line.
-        echo("".join(parts))
+        # -- Append the row
+        table.add_row(*values)
 
-    # -- Show summary.
-    if output_config.terminal_mode:
-        secho(f"Total of {util.plurality(entries, 'example')}")
+    # -- Render the table.
+    cout()
+    cprint(table)
+
+    # -- Print summary.
+    if apio_console.is_terminal():
+        cout(f"Total of {util.plurality(entries, 'example')}")
         if not verbose:
-            secho(
-                "Run 'apio examples -v' for additional columns.", fg="yellow"
+            cout(
+                "Run 'apio examples list -v' for additional columns.",
+                style="yellow",
             )
 
 
 @click.command(
     name="list",
+    cls=ApioCommand,
     short_help="List the available apio examples.",
     help=APIO_EXAMPLES_LIST_HELP,
 )
@@ -123,24 +133,22 @@ def _list_cli(verbose: bool):
 
 # ---- apio examples fetch
 
-
+# -- Text in the markdown format of the python rich library.
 APIO_EXAMPLES_FETCH_HELP = """
-The command ‘apio examples fetch’ fetches the files of the specified example
-to the current directory or to the directory specified by the –dst option.
-The destination directory does not need to exist, but if it does, it must be
+The command 'apio examples fetch' fetches the files of the specified example \
+to the current directory or to the directory specified by the '-dst' option. \
+The destination directory does not need to exist, but if it does, it must be \
 empty.
 
-\b
-Examples:
+Examples:[code]
   apio examples fetch alhambra-ii/ledon
-  apio examples fetch alhambra-ii/ledon -d foo/bar
-
-[Hint] For the list of available examples, type ‘apio examples list’.
+  apio examples fetch alhambra-ii/ledon -d foo/bar[/code]
 """
 
 
 @click.command(
     name="fetch",
+    cls=ApioCommand,
     short_help="Fetch the files of an example.",
     help=APIO_EXAMPLES_FETCH_HELP,
 )
@@ -168,23 +176,22 @@ def _fetch_cli(
 
 # ---- apio examples fetch-board
 
-
+# -- Text in the markdown format of the python rich library.
 APIO_EXAMPLES_FETCH_BOARD_HELP = """
-The command ‘apio examples fetch-board’ is used to fetch all the Apio examples
-for a specific board. The examples are copied to the current directory or to
-the specified destination directory if the –dst option is provided.
+The command 'apio examples fetch-board' is used to fetch all the Apio \
+examples for a specific board. The examples are copied to the current \
+directory or to the specified destination directory if the '–-dst' \
+option is provided.
 
-\b
-Examples:
-  apio examples fetch-board alhambra-ii             # Fetch to local directory
-  apio examples fetch-board alhambra-ii -d foo/bar  # Fetch to foo/bar
+Examples:[code]
+  apio examples fetch-board alhambra-ii  # Fetch board examples.
 
-[Hint] For the list of available examples, type ‘apio examples list’.
 """
 
 
 @click.command(
     name="fetch-board",
+    cls=ApioCommand,
     short_help="Fetch all examples of a board.",
     help=APIO_EXAMPLES_FETCH_BOARD_HELP,
 )
@@ -215,10 +222,11 @@ def _fetch_board_cli(
 
 # ---- apio examples
 
+# -- Text in the markdown format of the python rich library.
 APIO_EXAMPLES_HELP = """
-The command group ‘apio examples’ provides subcommands for listing and
-fetching Apio-provided examples. Each example is a self-contained mini-project
-that can be built and uploaded to an FPGA board.
+The command group 'apio examples' provides subcommands for listing and \
+fetching Apio-provided examples. Each example is a self-contained \
+mini-project that can be built and uploaded to an FPGA board.
 """
 
 

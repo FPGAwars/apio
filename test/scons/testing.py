@@ -9,7 +9,7 @@ import SCons.Defaults
 import SCons.Script.Main
 from google.protobuf import text_format
 from apio.scons.apio_env import ApioEnv
-from apio.proto.apio_pb2 import SconsParams, TargetParams
+from apio.common.proto.apio_pb2 import SconsParams, TargetParams
 
 # R0801: Similar lines in 2 files
 # pylint: disable=R0801
@@ -31,7 +31,7 @@ verbosity {
   synth: false
   pnr: false
 }
-envrionment {
+environment {
   platform_id: "darwin_arm64"
   is_debug: true
   yosys_path: "/Users/user/.apio/packages/oss-cad-suite/share/yosys"
@@ -45,13 +45,13 @@ project {
 
 
 class SconsHacks:
-    """A collection of staticmethods that encapsulate scons access outside of
+    """A collection of static methods that encapsulate scons access outside of
     the official scons API. Hopefully this will not be too difficult to adapt
     in future versions of SCons."""
 
     @staticmethod
     def reset_scons_state() -> None:
-        """Reset the relevant SCons global variables. וUnfurtunally scons
+        """Reset the relevant SCons global variables. Unfortunately scons
         uses a few global variables to hold its state. This works well in
         normal operation where an scons process contains a single scons
         session but with pytest testing, where multiple independent tests
@@ -82,7 +82,7 @@ class SconsHacks:
 
 
 def make_test_scons_params() -> SconsParams:
-    """Create a frake scons params for testing."""
+    """Create a fake scons params for testing."""
     return text_format.Parse(TEST_PARAMS, SconsParams())
 
 
@@ -90,12 +90,15 @@ def make_test_apio_env(
     *,
     targets: Optional[List[str]] = None,
     platform_id: str = None,
+    is_windows: bool = None,
     is_debug: bool = None,
     target_params: TargetParams = None,
 ) -> ApioEnv:
     """Creates a fresh apio env for testing. The env is created
     with the current directory as the root dir.
     """
+    # -- Specify both or nether.
+    assert (platform_id is None) == (is_windows is None)
 
     # -- Bring scons to a starting state.
     SconsHacks.reset_scons_state()
@@ -105,9 +108,11 @@ def make_test_apio_env(
 
     # -- Apply user overrides.
     if platform_id is not None:
-        scons_params.envrionment.platform_id = platform_id
+        scons_params.environment.platform_id = platform_id
+    if is_windows is not None:
+        scons_params.environment.is_windows = is_windows
     if is_debug is not None:
-        scons_params.envrionment.is_debug = is_debug
+        scons_params.environment.is_debug = is_debug
     if target_params is not None:
         scons_params.target.MergeFrom(target_params)
 

@@ -4,30 +4,33 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio preferences' command"""
 
 import click
-from click import secho, echo, style
+from rich.table import Table
+from rich import box
+from apio.common.apio_console import cout, cprint
 from apio.utils import cmd_util
 from apio.apio_context import ApioContext, ApioContextScope
-from apio.utils.cmd_util import ApioGroup, ApioSubgroup
+from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
 # ---- apio preferences list
 
-
+# -- Text in the markdown format of the python rich library.
 APIO_PREFERENCES_LIST_HELP = """
-The command ‘apio preferences list’ lists the current user preferences.
+The command 'apio preferences list' lists the current user preferences.
 
-\b
-Examples:
-  apio preferences list         # List the user preferences.
-
-  """
+Examples:[code]
+  apio preferences list  # List the user preferences.[/code]
+"""
 
 
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
 @click.command(
     name="list",
+    cls=ApioCommand,
     short_help="List the apio user preferences.",
     help=APIO_PREFERENCES_LIST_HELP,
 )
@@ -37,26 +40,39 @@ def _list_cli():
     # -- Create the apio context.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
-    # -- Print title.
-    secho("Apio user preferences:", fg="magenta")
+    table = Table(
+        show_header=True,
+        show_lines=True,
+        box=box.SQUARE,
+        border_style="dim",
+        title="Apio User Preferences",
+        title_justify="left",
+        padding=(0, 2),
+    )
 
-    # -- Show colors preference.
+    # -- Add columns.
+    table.add_column("ITEM", no_wrap=True)
+    table.add_column("VALUE", no_wrap=True, style="cyan", min_width=30)
+
+    # -- Add rows.
     value = apio_ctx.profile.preferences.get("colors", "on")
-    styled_value = style(value, fg="cyan", bold=True)
-    echo(f"Colors:   {styled_value}")
+    table.add_row("Colors", value)
+
+    # -- Render table.
+    cout()
+    cprint(table)
 
 
 # ---- apio preferences set
 
-
+# -- Text in the markdown format of the python rich library.
 APIO_PREF_SET_HELP = """
-The command ‘apio preferences set' allows to set the supported user
+The command 'apio preferences set' allows to set the supported user \
 preferences.
 
-\b
-Examples:
-  apio preferences set --colors yes   # Select multi-color output.
-  apio preferences set --colors no    # Select monochrome output.
+Examples:[code]
+  apio preferences set --colors on    # Enable colors.
+  apio preferences set --colors off   # Disable colors.[/code]
 
 The apio colors are optimized for a terminal windows with a white background.
 """
@@ -74,6 +90,7 @@ colors_options = click.option(
 
 @click.command(
     name="set",
+    cls=ApioCommand,
     short_help="Set the apio user preferences.",
     help=APIO_PREF_SET_HELP,
 )
@@ -89,18 +106,19 @@ def _set_cli(colors: str):
 
     # -- Show the result. The new colors preference is already in effect.
     color = apio_ctx.profile.preferences["colors"]
-    secho(f"Colors set to [{color}]", fg="green", bold=True)
+    cout(f"Colors set to [{color}]", style="green")
 
 
 # --- apio preferences
 
+# -- Text in the markdown format of the python rich library.
 APIO_PREFERENCES_HELP = """
-The command group ‘apio preferences' contains subcommands to manage
-the apio user preferences. These are user configurations that affect all the
-apio project on the same computer.
+The command group 'apio preferences' contains subcommands to manage \
+the apio user preferences. These are user configurations that affect all the \
+apio projects that use the same apio home directory (e.g. '~/.apio').
 
-The user preference is not part of any apio project and typically are not
-shared when multiple user colaborate on the same project.
+The user preference is not part of any apio project and typically are not \
+shared when multiple user collaborate on the same project.
 """
 
 # -- We have only a single group with the title 'Subcommands'.

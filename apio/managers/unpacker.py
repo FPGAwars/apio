@@ -4,18 +4,18 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 # -- Derived from:
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
-# ---- Licence Apache v2
+# ---- License Apache v2
 
 from os import chmod
 from pathlib import Path
 from tarfile import open as tarfile_open
 from zipfile import ZipFile
-import click
-from click import secho
+from rich.progress import track
+from apio.common.apio_console import cout, console
 from apio.utils import util
 
 
@@ -123,7 +123,7 @@ class FileUnpacker:
 
         # -- Archive type not known!! Raise an exception!
         if not self._unpacker:
-            secho(f"Can not unpack file '{archpath}'")
+            cout(f"Can not unpack file '{archpath}'")
             raise util.ApioException()
 
     def start(self) -> bool:
@@ -132,19 +132,12 @@ class FileUnpacker:
         # -- Build an array with all the files inside the tarball
         items = self._unpacker.get_items()
 
-        # -- Progress bar...
-        with click.progressbar(
-            items,
-            length=len(items),
-            label=click.style("Unpacking..", fg="yellow"),
-            fill_char=click.style("█", fg="cyan", bold=True),
-            empty_char=click.style("░", fg="cyan", bold=True),
-        ) as pbar:
-
-            # -- Go though all the files in the archive...
-            for item in pbar:
-
-                # -- Extract the file!
-                self._unpacker.extract_item(item, self._dest_dir)
+        # -- Unpack while displaying a progress bar.
+        for i in track(
+            range(len(items)),
+            description="Unpacking  ",
+            console=console(),
+        ):
+            self._unpacker.extract_item(items[i], self._dest_dir)
 
         return True

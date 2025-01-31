@@ -2,19 +2,18 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 # -- Derived from:
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
-# ---- Licence Apache v2
+# ---- License Apache v2
 """Utility functions related to apio packages."""
 
 from typing import List, Callable, Tuple
 from pathlib import Path
 from dataclasses import dataclass
 import os
-import click
-from click import secho
+from apio.common.apio_console import cout, cstyle
 from apio.apio_context import ApioContext
 from apio.utils import util
 
@@ -68,24 +67,24 @@ def _dump_env_mutations(
     apio_ctx: ApioContext, mutations: EnvMutations
 ) -> None:
     """Dumps a user friendly representation of the env mutations."""
-    secho("Envirnment settings:", fg="magenta")
+    cout("Environment settings:", style="magenta")
 
     # -- Print PATH mutations.
-    windows = apio_ctx.is_windows()
+    windows = apio_ctx.is_windows
     for p in reversed(mutations.paths):
-        styled_name = click.style("PATH", fg="magenta")
+        styled_name = cstyle("PATH", style="magenta")
         if windows:
-            secho(f"set {styled_name}={p};%PATH%")
+            cout(f"set {styled_name}={p};%PATH%")
         else:
-            secho(f'{styled_name}="{p}:$PATH"')
+            cout(f'{styled_name}="{p}:$PATH"')
 
     # -- Print vars mutations.
     for name, val in mutations.vars:
-        styled_name = click.style(name, fg="magenta")
+        styled_name = cstyle(name, style="magenta")
         if windows:
-            secho(f"set {styled_name}={val}")
+            cout(f"set {styled_name}={val}")
         else:
-            secho(f'{styled_name}="{val}"')
+            cout(f'{styled_name}="{val}"')
 
 
 def _apply_env_mutations(mutations: EnvMutations) -> None:
@@ -120,7 +119,7 @@ def set_env_for_packages(
     If quite is set, no output is printed. When verbose is set, additional
     output such as the env vars mutations are printed, otherwise, a minimal
     information is printed to make the user aware that they commands they
-    see are exectuted in a modified env settings.
+    see are executed in a modified env settings.
     """
 
     # -- If this fails, this is a programming error. Quiet and verbose
@@ -136,13 +135,13 @@ def set_env_for_packages(
     # -- If this is the first call in this apio invocation, apply the
     # -- mutations. These mutations are temporary for the lifetime of this
     # -- process and does not affect the user's shell environment.
-    # -- The mutations are also inheritated by child processes such as the
+    # -- The mutations are also inherited by child processes such as the
     # -- scons processes.
     if not apio_ctx.env_was_already_set:
         _apply_env_mutations(mutations)
         apio_ctx.env_was_already_set = True
         if not verbose and not quiet:
-            secho("Setting the envinronment.")
+            cout("Setting the environment.")
 
 
 @dataclass
@@ -150,12 +149,12 @@ class PackageScanResults:
     """Represents results of packages scan."""
 
     # -- Normal and Error. Packages in platform_packages that are installed
-    # -- regardless if the versin matches or not.
-    installed_package_names: List[str]
-    # -- Error. The subset of installed_package_names that have version
-    # -- mismatch.
-    bad_version_package_names_subset: List[str]
-    # -- Normal. Packages in platform_packages that are uninstaleld properly.
+    # -- regardless if the version matches or not.
+    installed_ok_package_names: List[str]
+    # -- Error. Packages in platform_packages that are installed but with
+    # -- version mismatch.
+    bad_version_package_names: List[str]
+    # -- Normal. Packages in platform_packages that are uninstalled properly.
     uninstalled_package_names: List[str]
     # -- Error. Packages in platform_packages with broken installation. E.g,
     # -- registered in profile but package directory is missing.
@@ -164,17 +163,26 @@ class PackageScanResults:
     # -- in platform_packages.
     orphan_package_names: List[str]
     # -- Error. Basenames of directories in packages dir that don't match
-    # -- folder_name of packages in platform_packates.
+    # -- folder_name of packages in platform_packages.
     orphan_dir_names: List[str]
     # -- Error. Basenames of all files in packages directory. That directory is
     # -- expected to contain only directories for packages.a
     orphan_file_names: List[str]
 
+    def packages_installed_ok(self) -> bool:
+        """Returns true if all packages are installed ok, regardless of
+        other fixable errors."""
+        return (
+            len(self.bad_version_package_names) == 0
+            and len(self.uninstalled_package_names) == 0
+            and len(self.broken_package_names) == 0
+        )
+
     def num_errors_to_fix(self) -> bool:
         """Returns the number of errors that required , having a non installed
         packages is not considered an error that need to be fix."""
         return (
-            len(self.bad_version_package_names_subset)
+            len(self.bad_version_package_names)
             + len(self.broken_package_names)
             + len(self.orphan_package_names)
             + len(self.orphan_dir_names)
@@ -190,14 +198,14 @@ class PackageScanResults:
 
     def dump(self):
         """Dump the content of this object. For debugging."""
-        print("Package scan results:")
-        print(f"  Installed     {self.installed_package_names}")
-        print(f"  bad version   {self.bad_version_package_names_subset}")
-        print(f"  Uninstalled   {self.uninstalled_package_names}")
-        print(f"  Broken        {self.broken_package_names}")
-        print(f"  Orphan ids    {self.orphan_package_names}")
-        print(f"  Orphan dirs   {self.orphan_dir_names}")
-        print(f"  Orphan files  {self.orphan_file_names}")
+        cout("Package scan results:")
+        cout(f"  Installed     {self.installed_ok_package_names}")
+        cout(f"  bad version   {self.bad_version_package_names}")
+        cout(f"  Uninstalled   {self.uninstalled_package_names}")
+        cout(f"  Broken        {self.broken_package_names}")
+        cout(f"  Orphan ids    {self.orphan_package_names}")
+        cout(f"  Orphan dirs   {self.orphan_dir_names}")
+        cout(f"  Orphan files  {self.orphan_file_names}")
 
 
 def package_version_ok(
@@ -207,8 +215,8 @@ def package_version_ok(
     cached_config_ok: bool,
     verbose: bool,
 ) -> bool:
-    """Return true if the packagea is both in profile and plagrom packages
-    and its version in the provile meet the requirements in the
+    """Return true if the package is both in profile and platform packages
+    and its version in the profile meet the requirements in the
     config.jsonc file. Otherwise return false."""
 
     # If this package is not applicable to this platform, return False.
@@ -227,11 +235,12 @@ def package_version_ok(
         package_name, cached_config_ok=cached_config_ok, verbose=verbose
     )
 
-    # -- Compare. We expect the two version to be nomalized and ths a string
+    # -- Compare. We expect the two version to be normalized and ths a string
     # -- comparison is sufficient.
     return current_ver == remote_ver
 
 
+# pylint: disable=too-many-branches
 def scan_packages(
     apio_ctx: ApioContext, *, cached_config_ok: bool, verbose: bool
 ) -> PackageScanResults:
@@ -251,7 +260,7 @@ def scan_packages(
         # -- Collect package's folder names in a set. For a later use.
         platform_folder_names.add(package_name)
 
-        # -- Classify the package as one of three cases.
+        # -- Classify the package as one of four cases.
         in_profile = package_name in apio_ctx.profile.packages
         has_dir = apio_ctx.get_package_dir(package_name).is_dir()
         version_ok = package_version_ok(
@@ -261,17 +270,20 @@ def scan_packages(
             verbose=verbose,
         )
         if in_profile and has_dir:
-            result.installed_package_names.append(package_name)
-            if not version_ok:
-                # -- The subset of installed_package_namess that has bad
-                # -- version.
-                result.bad_version_package_names_subset.append(package_name)
+            if version_ok:
+                # Case 1: Package installed ok.
+                result.installed_ok_package_names.append(package_name)
+            else:
+                # -- Case 2: Package installed but version mismatch.
+                result.bad_version_package_names.append(package_name)
         elif not in_profile and not has_dir:
+            # -- Case 3: Package not installed.
             result.uninstalled_package_names.append(package_name)
         else:
+            # -- Case 4: Package is broken.
             result.broken_package_names.append(package_name)
 
-    # -- Scan the packagtes ids that are registered in profile as installed
+    # -- Scan the packages ids that are registered in profile as installed
     # -- the ones that are not platform_packages as orphans.
     for package_name in apio_ctx.profile.packages:
         if package_name not in apio_ctx.platform_packages:
@@ -291,86 +303,3 @@ def scan_packages(
         result.dump()
 
     return result
-
-
-def _list_section(title: str, items: List[List[str]], color: str) -> None:
-    """A helper function for printing one serction of list_packages()."""
-    # -- Construct horizontal lines at terminal width.
-    config = util.get_terminal_config()
-    line_width = config.terminal_width if config.terminal_mode else 80
-    line = "─" * line_width
-    dline = "═" * line_width
-
-    # -- Print the section.
-    secho()
-    secho(dline, fg=color)
-    secho(title, fg=color, bold=True)
-    for item in items:
-        secho(line)
-        for sub_item in item:
-            secho(sub_item)
-    secho(dline, fg=color)
-
-
-# pylint: disable=too-many-branches
-def list_packages(apio_ctx: ApioContext, scan: PackageScanResults) -> None:
-    """Prints in a user friendly format the results of a packages scan."""
-
-    # -- Shortcuts to reduce clutter.
-    get_package_version = apio_ctx.profile.get_package_installed_version
-    get_package_info = apio_ctx.get_package_info
-
-    # --Print the installed packages, if any.
-    if scan.installed_package_names:
-        items = []
-        for package_name in scan.installed_package_names:
-            name = click.style(f"{package_name}", fg="cyan", bold=True)
-            version = get_package_version(package_name)
-            if package_name in scan.bad_version_package_names_subset:
-                note = click.style(" [Wrong version]", fg="red", bold=True)
-            else:
-                note = ""
-            description = get_package_info(package_name)["description"]
-            items.append([f"{name} {version}{note}", f"{description}"])
-        _list_section("Installed packages:", items, "green")
-
-    # -- Print the uninstalled packages, if any,
-    if scan.uninstalled_package_names:
-        items = []
-        for package_name in scan.uninstalled_package_names:
-            name = click.style(f"{package_name}", fg="cyan", bold=True)
-            description = get_package_info(package_name)["description"]
-            items.append([f"{name}  {description}"])
-        _list_section("Uinstalled packages:", items, "yellow")
-
-    # -- Print the broken packages, if any,
-    if scan.broken_package_names:
-        items = []
-        for package_name in scan.broken_package_names:
-            name = click.style(f"{package_name}", fg="red", bold=True)
-            description = get_package_info(package_name)["description"]
-            items.append([f"{name}  {description}"])
-        _list_section("[Error] Broken packages:", items, None)
-
-    # -- Print the orphan packages, if any,
-    if scan.orphan_package_names:
-        items = []
-        for package_name in scan.orphan_package_names:
-            name = click.style(f"{package_name}", fg="red", bold=True)
-            items.append([name])
-        _list_section("[Error] Unknown packages:", items, None)
-
-    # -- Print orphan directories and files, if any,
-    if scan.orphan_dir_names or scan.orphan_file_names:
-        items = []
-        for name in sorted(scan.orphan_dir_names + scan.orphan_file_names):
-            name = click.style(f"{name}", fg="red", bold=True)
-            items.append([name])
-        _list_section("[Error] Unknown files and directories:", items, None)
-
-    # -- Print an error summary
-    if scan.num_errors_to_fix():
-        secho(f"Total of {util.plurality(scan.num_errors_to_fix(), 'error')}")
-
-    # -- A line seperator. For asthetic reasons.
-    secho()

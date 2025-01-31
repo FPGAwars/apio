@@ -4,7 +4,7 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio format' command"""
 
 import sys
@@ -13,60 +13,57 @@ from pathlib import Path
 from glob import glob
 from typing import Tuple, List
 import click
-from click import secho
+from apio.common.apio_console import cout, cerror, cstyle
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import options
 from apio.managers import installer
-from apio.utils import util, pkg_util
+from apio.utils import util, pkg_util, cmd_util
 
 
-# ---------------------------
-# -- COMMAND
-# ---------------------------
+# -------------- apio format
+
+# -- Text in the markdown format of the python rich library.
 APIO_FORMAT_HELP = """
-The command ‘apio format’ formats Verilog source files to ensure consistency
-and style without altering their semantics. The command accepts the names of
-pecific source files to format or formats all project source files by default.
+The command 'apio format' formats Verilog source files to ensure consistency \
+and style without altering their semantics. The command accepts the names of \
+specific source files to format or formats all project source files by default.
 
-\b
-Examples:
+Examples:[code]
   apio format                    # Format all source files.
-  apio format -v                 # Same as above but with verbose output.
-  apio format main.v main_tb.v   # Format the two tiven files.
+  apio format -v                 # Same but with verbose output.
+  apio format main.v main_tb.v   # Format the two files.[/code]
 
-The format command utilizes the format tool from the Verible project, which
-can be configured by setting its flags in the apio.ini project file
+The format command utilizes the format tool from the Verible project, which \
+can be configured by setting its flags in the apio.ini project file \
 For example:
 
-\b
-format-verible-options =
-    --column_limit=80
-    --indentation_spaces=4
 
-If needed, sections of source code can be protected from formatting using
+[code]format-verible-options =
+    --column_limit=80
+    --indentation_spaces=4[/code]
+
+If needed, sections of source code can be protected from formatting using \
 Verible formatter directives:
 
-\b
-// verilog_format: off
+[code]// verilog_format: off
 ... untouched code ...
-// verilog_format: on
+// verilog_format: on[/code]
 
-For a full list of Verible formatter flags, refer to the documentation page
+For a full list of Verible formatter flags, refer to the documentation page \
 online or use the command 'apio raw -- verible-verilog-format --helpful'.
 """
 
 
 @click.command(
     name="format",
+    cls=cmd_util.ApioCommand,
     short_help="Format verilog source files.",
     help=APIO_FORMAT_HELP,
 )
-@click.pass_context
 @click.argument("files", nargs=-1, required=False)
 @options.project_dir_option
 @options.verbose_option
 def cli(
-    _cmd_ctx: click.Context,
     # Arguments
     files: Tuple[str],
     project_dir: Path,
@@ -97,7 +94,7 @@ def cli(
     # -- Convert the tuple with file names into a list.
     files: List[str] = list(files)
 
-    # -- If user didn't specify files to firmat, all all source files to
+    # -- If user didn't specify files to format, all all source files to
     # -- the list.
     if not files:
         files.extend(glob(str(apio_ctx.project_dir / "*.v")))
@@ -105,7 +102,7 @@ def cli(
 
     # -- Error if no file to format.
     if not files:
-        secho("Error: No '.v' or '.sv' files to format", fg="red")
+        cerror("No '.v' or '.sv' files to format")
         sys.exit(1)
 
     # -- Sort files, case insensitive.
@@ -121,21 +118,19 @@ def cli(
         # -- Check the file extension.
         _, ext = os.path.splitext(path)
         if ext not in [".v", ".sv"]:
-            secho(
-                f"Error: '{f}' has an invalid extension, "
-                "should be '.v' or '.sv'",
-                fg="red",
+            cerror(
+                f"'{f}' has an invalid extension, " "should be '.v' or '.sv'"
             )
             sys.exit(1)
 
         # -- Check that the file exists and is a file.
         if not path.is_file():
-            secho(f"Error: '{f}' is not a file.", fg="red")
+            cerror(f"'{f}' is not a file.")
             sys.exit(1)
 
         # -- Print file name.
-        styled_f = click.style(f, fg="magenta")
-        secho(f"Formatting {styled_f}")
+        styled_f = cstyle(f, style="magenta")
+        cout(f"Formatting {styled_f}")
 
         # -- Construct the formatter command line.
         command = (
@@ -143,14 +138,14 @@ def cli(
             f' {" ".join(cmd_options)} "{f}"'
         )
         if verbose:
-            secho(command)
+            cout(command)
 
         # -- Execute the formatter command line.
         exit_code = os.system(command)
         if exit_code != 0:
-            secho(f"Error: formatting of '{f}' failed", fg="red")
+            cerror(f"Formatting of '{f}' failed")
             return exit_code
 
     # -- All done ok.
-    secho(f"Formatted {util.plurality(files, 'file')}.", fg="green", bold=True)
+    cout(f"Formatted {util.plurality(files, 'file')}.", style="green")
     sys.exit(0)

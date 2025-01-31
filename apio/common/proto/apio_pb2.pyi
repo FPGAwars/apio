@@ -84,17 +84,19 @@ class Verbosity(_message.Message):
     pnr: bool
     def __init__(self, all: bool = ..., synth: bool = ..., pnr: bool = ...) -> None: ...
 
-class Envrionment(_message.Message):
-    __slots__ = ("platform_id", "is_debug", "yosys_path", "trellis_path")
+class Environment(_message.Message):
+    __slots__ = ("platform_id", "is_windows", "is_debug", "yosys_path", "trellis_path")
     PLATFORM_ID_FIELD_NUMBER: _ClassVar[int]
+    IS_WINDOWS_FIELD_NUMBER: _ClassVar[int]
     IS_DEBUG_FIELD_NUMBER: _ClassVar[int]
     YOSYS_PATH_FIELD_NUMBER: _ClassVar[int]
     TRELLIS_PATH_FIELD_NUMBER: _ClassVar[int]
     platform_id: str
+    is_windows: bool
     is_debug: bool
     yosys_path: str
     trellis_path: str
-    def __init__(self, platform_id: _Optional[str] = ..., is_debug: bool = ..., yosys_path: _Optional[str] = ..., trellis_path: _Optional[str] = ...) -> None: ...
+    def __init__(self, platform_id: _Optional[str] = ..., is_windows: bool = ..., is_debug: bool = ..., yosys_path: _Optional[str] = ..., trellis_path: _Optional[str] = ...) -> None: ...
 
 class Project(_message.Message):
     __slots__ = ("board_id", "top_module", "yosys_synth_extra_options")
@@ -162,20 +164,32 @@ class TargetParams(_message.Message):
     upload: UploadParams
     def __init__(self, lint: _Optional[_Union[LintParams, _Mapping]] = ..., graph: _Optional[_Union[GraphParams, _Mapping]] = ..., sim: _Optional[_Union[SimParams, _Mapping]] = ..., test: _Optional[_Union[ApioTestParams, _Mapping]] = ..., upload: _Optional[_Union[UploadParams, _Mapping]] = ...) -> None: ...
 
+class RichLibWindowsParams(_message.Message):
+    __slots__ = ("stdout_encoding", "vt", "truecolor")
+    STDOUT_ENCODING_FIELD_NUMBER: _ClassVar[int]
+    VT_FIELD_NUMBER: _ClassVar[int]
+    TRUECOLOR_FIELD_NUMBER: _ClassVar[int]
+    stdout_encoding: str
+    vt: bool
+    truecolor: bool
+    def __init__(self, stdout_encoding: _Optional[str] = ..., vt: bool = ..., truecolor: bool = ...) -> None: ...
+
 class SconsParams(_message.Message):
-    __slots__ = ("timestamp", "arch", "fpga_info", "verbosity", "envrionment", "project", "target")
+    __slots__ = ("timestamp", "arch", "fpga_info", "verbosity", "environment", "project", "target", "rich_lib_windows_params")
     TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
     ARCH_FIELD_NUMBER: _ClassVar[int]
     FPGA_INFO_FIELD_NUMBER: _ClassVar[int]
     VERBOSITY_FIELD_NUMBER: _ClassVar[int]
-    ENVRIONMENT_FIELD_NUMBER: _ClassVar[int]
+    ENVIRONMENT_FIELD_NUMBER: _ClassVar[int]
     PROJECT_FIELD_NUMBER: _ClassVar[int]
     TARGET_FIELD_NUMBER: _ClassVar[int]
+    RICH_LIB_WINDOWS_PARAMS_FIELD_NUMBER: _ClassVar[int]
     timestamp: str
     arch: ApioArch
     fpga_info: FpgaInfo
     verbosity: Verbosity
-    envrionment: Envrionment
+    environment: Environment
     project: Project
     target: TargetParams
-    def __init__(self, timestamp: _Optional[str] = ..., arch: _Optional[_Union[ApioArch, str]] = ..., fpga_info: _Optional[_Union[FpgaInfo, _Mapping]] = ..., verbosity: _Optional[_Union[Verbosity, _Mapping]] = ..., envrionment: _Optional[_Union[Envrionment, _Mapping]] = ..., project: _Optional[_Union[Project, _Mapping]] = ..., target: _Optional[_Union[TargetParams, _Mapping]] = ...) -> None: ...
+    rich_lib_windows_params: RichLibWindowsParams
+    def __init__(self, timestamp: _Optional[str] = ..., arch: _Optional[_Union[ApioArch, str]] = ..., fpga_info: _Optional[_Union[FpgaInfo, _Mapping]] = ..., verbosity: _Optional[_Union[Verbosity, _Mapping]] = ..., environment: _Optional[_Union[Environment, _Mapping]] = ..., project: _Optional[_Union[Project, _Mapping]] = ..., target: _Optional[_Union[TargetParams, _Mapping]] = ..., rich_lib_windows_params: _Optional[_Union[RichLibWindowsParams, _Mapping]] = ...) -> None: ...

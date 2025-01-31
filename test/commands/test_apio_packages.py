@@ -4,6 +4,7 @@
 
 from test.conftest import ApioRunner
 from apio.commands.apio import cli as apio
+from apio.common.apio_console import cunstyle
 
 
 def test_packages(apio_runner: ApioRunner):
@@ -15,7 +16,8 @@ def test_packages(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(apio, ["packages"])
         sb.assert_ok(result)
         assert "Subcommands:" in result.output
-        assert "apio packages install" in result.output
+        assert "apio packages install" in cunstyle(result.output)
+        assert result.output != cunstyle(result.output)  # Colored.
 
         # -- Execute "apio packages list"
         result = sb.invoke_apio_cmd(apio, ["packages", "list"])
@@ -26,14 +28,14 @@ def test_packages(apio_runner: ApioRunner):
             apio, ["packages", "install", "no-such-package"]
         )
         assert result.exit_code == 1, result.output
-        assert "Error: no such package 'no-such-package'" in result.output
+        assert "Error: No such package 'no-such-package'" in result.output
 
         # -- Execute "apio packages uninstall no-such-package"
         result = sb.invoke_apio_cmd(
             apio, ["packages", "uninstall", "no-such-package"]
         )
         assert result.exit_code == 1, result.output
-        assert "Error: no such package 'no-such-package'" in result.output
+        assert "Error: No such package 'no-such-package'" in result.output
 
         # -- Execute "apio packages fix"
         result = sb.invoke_apio_cmd(apio, ["packages", "fix"])

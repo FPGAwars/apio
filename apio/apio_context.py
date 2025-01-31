@@ -4,7 +4,7 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 
 import sys
 import json
@@ -13,15 +13,13 @@ from enum import Enum
 from collections import OrderedDict
 from pathlib import Path
 from typing import Optional, Dict
-import click
-from click import secho
+from apio.common.apio_console import cout, cerror, cwarning
 from apio.profile import Profile
 from apio.utils import jsonc, util, env_options
 from apio.managers.project import (
     Project,
     ProjectResolver,
     load_project_from_file,
-    APIO_INI,
 )
 
 
@@ -43,7 +41,7 @@ PLATFORMS_JSONC = "platforms.jsonc"
 PACKAGES_JSONC = "packages.jsonc"
 
 # -----------------------------------------
-# ---- File: resources/boads.jsonc
+# ---- File: resources/boards.jsonc
 # -----------------------------------------
 # -- Information about all the supported boards
 # -- names, fpga family, programmer, ftdi description, vendor id, product id
@@ -85,7 +83,7 @@ class ApioContextScope(Enum):
 
 # pylint: disable=too-many-instance-attributes
 class ApioContext:
-    """Apio context. Class for accesing apio resources and configurations."""
+    """Apio context. Class for accessing apio resources and configurations."""
 
     def __init__(
         self,
@@ -110,9 +108,9 @@ class ApioContext:
         # -- that modify its default behavior.
         defined_env_options = env_options.get_defined()
         if defined_env_options:
-            secho(
+            cout(
                 f"Active env options [{', '.join(defined_env_options)}].",
-                fg="yellow",
+                style="yellow",
             )
 
         # -- Store the scope
@@ -133,7 +131,7 @@ class ApioContext:
             )
         elif scope == ApioContextScope.PROJECT_OPTIONAL:
             project_dir = util.resolve_project_dir(project_dir_arg)
-            if (project_dir / APIO_INI).exists():
+            if (project_dir / "apio.ini").exists():
                 self._project_dir = project_dir
         else:
             assert (
@@ -150,7 +148,7 @@ class ApioContext:
         self.config = self._load_resource(CONFIG_JSONC)
 
         # -- Profile information, from ~/.apio/profile.json. We provide it with
-        # -- the remote config url template from disribution.jsonc such that
+        # -- the remote config url template from distribution.jsonc such that
         # -- can it fetch the remote config on demand.
         self.profile = Profile(self.home_dir, self.config["remote-config"])
 
@@ -183,7 +181,7 @@ class ApioContext:
             PROGRAMMERS_JSONC, allow_custom=True
         )
 
-        # -- Sort resources for consistency and intunitiveness.
+        # -- Sort resources for consistency and intuitiveness.
         # --
         # -- We don't sort the all_packages and platform_packages dictionaries
         # -- because that will affect the order of the env path items.
@@ -234,20 +232,18 @@ class ApioContext:
 
         # -- Fatal error if unknown board.
         if strict and canonical_name is None:
-            secho(f"Error: no such board '{board}'", fg="red")
-            secho(
-                "Run 'apio boards' for the list of board names.\n"
-                "Expecting a board name such as 'alhambra-ii'.",
-                fg="yellow",
+            cerror(f"No such board '{board}'")
+            cout(
+                "Run 'apio boards' for the list of board names.",
+                style="yellow",
             )
             sys.exit(1)
 
         # -- Warning if caller used a legacy board name.
         if warn and canonical_name and board != canonical_name:
-            secho(
-                f"Warning: '{board}' board name was changed. "
-                f"Please use '{canonical_name}' instead.",
-                fg="yellow",
+            cwarning(
+                f"'{board}' board name was changed. "
+                f"Please use '{canonical_name}' instead."
             )
 
         # -- Return the canonical board name.
@@ -301,7 +297,7 @@ class ApioContext:
             filepath = self._project_dir / name
             if filepath.exists():
                 if allow_custom:
-                    secho(f"Loading custom '{name}'.")
+                    cout(f"Loading custom '{name}'.")
                     return self._load_resource_file(filepath)
 
         # -- Load the stock resource file from the APIO package.
@@ -311,7 +307,7 @@ class ApioContext:
     @staticmethod
     def _load_resource_file(filepath: Path) -> dict:
         """Load the resources from a given jsonc file path
-        * OUTPUT: A dictionary with the jsons file data
+        * OUTPUT: A dictionary with the jsonc file data
           In case of error it raises an exception and finish
         """
 
@@ -323,21 +319,13 @@ class ApioContext:
                 data_jsonc = file.read()
 
         # -- The jsonc file NOT FOUND! This is an apio system error
-        # -- It should never ocurr unless there is a bug in the
+        # -- It should never occur unless there is a bug in the
         # -- apio system files, or a bug when calling this function
         # -- passing a wrong file
         except FileNotFoundError as exc:
 
-            # -- Display Main error
-            secho("Apio System Error! JSONC file not found", fg="red")
-
-            # -- Display the affected file (in a different color)
-            apio_file_msg = click.style("Apio file: ", fg="yellow")
-            filename = click.style(f"{filepath}", fg="cyan", bold=True)
-            secho(f"{apio_file_msg} {filename}")
-
-            # -- Display the specific error message
-            secho(f"{exc}\n", fg="red")
+            # -- Display error information
+            cerror("[Internal] .jsonc file not found", f"{exc}")
 
             # -- Abort!
             sys.exit(1)
@@ -350,20 +338,13 @@ class ApioContext:
             resource = json.loads(data_json)
 
         # -- Invalid json format! This is an apio system error
-        # -- It should never ocurr unless some develeper has
-        # -- made a mistake when changing the json file
+        # -- It should never occur unless a developer has
+        # -- made a mistake when changing the jsonc file
         except json.decoder.JSONDecodeError as exc:
 
             # -- Display Main error
-            secho("Apio System Error! Invalid JSONC file", fg="red")
-
-            # -- Display the affected file (in a different color)
-            apio_file_msg = click.style("Apio file: ", fg="yellow")
-            filename = click.style(f"{filepath}", fg="cyan", bold=True)
-            secho(f"{apio_file_msg} {filename}")
-
-            # -- Display the specific error message
-            secho(f"{exc}\n", fg="red")
+            cerror("Invalid .jsonc file", f"{exc}")
+            cout(f"File: {filepath}", style="yellow")
 
             # -- Abort!
             sys.exit(1)
@@ -376,7 +357,7 @@ class ApioContext:
         """Fills a packages env value template as they appear in
         packages.jsonc. Currently it recognizes only a single place holder
         '%p' representing the package absolute path. The '%p" can appear only
-        at the begigning of the template.
+        at the beginning of the template.
 
         E.g. '%p/bin' -> '/users/user/.apio/packages/drivers/bin'
 
@@ -433,12 +414,12 @@ class ApioContext:
 
     def get_package_info(self, package_name: str) -> str:
         """Returns the information of the package with given name.
-        The information is a JSON dict originated at packages.jsnon().
+        The information is a JSON dict originated at packages.json().
         Exits with an error message if the package is not defined.
         """
         package_info = self.platform_packages.get(package_name, None)
         if package_info is None:
-            secho(f"Error: unknown package '{package_name}'", fg="red")
+            cerror(f"Unknown package '{package_name}'")
             sys.exit(1)
 
         return package_info
@@ -462,12 +443,11 @@ class ApioContext:
         # -- Verify it's valid. This can be a user error if the override
         # -- is invalid.
         if platform_id not in platforms.keys():
-            secho(f"Error: unknown platform id: [{platform_id}]")
-            secho(
-                "\n"
-                "[Hint]: For the list of supported platforms\n"
+            cerror(f"Unknown platform id: [{platform_id}]")
+            cout(
+                "For the list of supported platforms "
                 "type 'apio system platforms'.",
-                fg="yellow",
+                style="yellow",
             )
             sys.exit(1)
 
@@ -552,14 +532,17 @@ class ApioContext:
         # -- Return the full platform
         return platform_str
 
+    @property
     def is_linux(self) -> bool:
         """Returns True iff platform_id indicates linux."""
         return "linux" in self.platform_id
 
+    @property
     def is_darwin(self) -> bool:
         """Returns True iff platform_id indicates Mac OSX."""
         return "darwin" in self.platform_id
 
+    @property
     def is_windows(self) -> bool:
         """Returns True iff platform_id indicates windows."""
         return "windows" in self.platform_id
@@ -568,7 +551,7 @@ class ApioContext:
 # pylint: disable=too-few-public-methods
 class _ProjectResolverImpl(ProjectResolver):
     def __init__(self, apio_context: ApioContext):
-        """When ApioContext instanciates this object, ApioContext is fully
+        """When ApioContext instances this object, ApioContext is fully
         constructed, except for the project field."""
         self._apio_context = apio_context
 

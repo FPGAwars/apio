@@ -2,24 +2,27 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 # -- Derived from:
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
-# ---- Licence Apache v2
+# ---- License Apache v2
 
 """Apio scons related utilities.."""
 
 import sys
-from click import secho
 from SCons.Script import ARGUMENTS, COMMAND_LINE_TARGETS
 from google.protobuf import text_format
 from apio.scons.plugin_ice40 import PluginIce40
 from apio.scons.plugin_ecp5 import PluginEcp5
 from apio.scons.plugin_gowin import PluginGowin
-from apio.proto.apio_pb2 import SconsParams, ICE40, ECP5, GOWIN
-from apio.scons.apio_env import ApioEnv, TARGET
+from apio.common.proto.apio_pb2 import SconsParams, ICE40, ECP5, GOWIN
+from apio.common import apio_console
+from apio.common.apio_consts import BUILD_DIR
+from apio.scons.apio_env import ApioEnv
+from apio.common.apio_consts import TARGET
 from apio.scons.plugin_base import PluginBase
+from apio.common import rich_lib_windows
 from apio.scons.plugin_util import (
     get_sim_config,
     get_tests_configs,
@@ -29,6 +32,7 @@ from apio.scons.plugin_util import (
     get_programmer_cmd,
     configure_cleanup,
 )
+from apio.common.apio_console import cerror, cout
 
 # -- Scons builders ids.
 SYNTH_BUILDER = "SYNTH_BUILDER"
@@ -56,7 +60,7 @@ class SconsHandler:
         execute an SconsHandler."""
 
         # -- Read the text of the scons params file.
-        with open("_build/scons.params", "r", encoding="utf8") as f:
+        with open(BUILD_DIR / "scons.params", "r", encoding="utf8") as f:
             proto_text = f.read()
 
         # -- Parse the text into SconsParams object.
@@ -65,6 +69,16 @@ class SconsHandler:
         # -- Compare the params timestamp to the timestamp in the command.
         timestamp = ARGUMENTS["timestamp"]
         assert params.timestamp == timestamp
+
+        # -- If running on windows, apply the lib library workaround
+        if params.environment.is_windows:
+            assert params.HasField("rich_lib_windows_params"), params
+            rich_lib_windows.apply_workaround(params.rich_lib_windows_params)
+        else:
+            assert not params.HasField("rich_lib_windows_params"), params
+
+        # -- Force colors even though we are piped out.
+        apio_console.configure(force_terminal=True)
 
         # -- Create the apio environment.
         apio_env = ApioEnv(COMMAND_LINE_TARGETS, params)
@@ -77,7 +91,7 @@ class SconsHandler:
         elif params.arch == GOWIN:
             plugin = PluginGowin(apio_env)
         else:
-            print(
+            cout(
                 f"Apio SConstruct dispatch error: unknown arch [{params.arch}]"
             )
             sys.exit(1)
@@ -426,11 +440,8 @@ class SconsHandler:
             self._register_lint_target(synth_srcs, test_srcs)
 
         else:
-            secho(
-                f"Error: scons handler got unexpected target [{target}]",
-                fg="red",
-            )
+            cerror(f"Unexpected scons target: {target}")
             sys.exit(1)
 
-        # -- Note that we just registered builders and target. The actual
-        # -- execution is done by scons once this method returns.
+        # -- Note that so far we just registered builders and target.
+        # -- The actual execution is done by scons once this method returns.

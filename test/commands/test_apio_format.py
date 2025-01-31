@@ -14,4 +14,4 @@ def test_format_without_apio_ini(apio_runner: ApioRunner):
         # -- Run "apio format" with no apio.ini
         result = sb.invoke_apio_cmd(apio, ["format"])
         assert result.exit_code != 0, result.output
-        assert "Error: missing project file apio.ini" in result.output
+        assert "Error: Missing project file apio.ini" in result.output

@@ -4,7 +4,7 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio clean' command"""
 
 import sys
@@ -13,24 +13,24 @@ import click
 from apio.managers.scons import SCons
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
+from apio.utils import cmd_util
 
 
-# ---------------------------
-# -- COMMAND
-# ---------------------------
+# ----------- apio clean
+
+# -- Text in the markdown format of the python rich library.
 APIO_CLEAN_HELP = """
-The command 'apio clean' removes temporary files generated in the project
+The command 'apio clean' removes temporary files generated in the project \
 directory by previous Apio commands.
 
-\b
-Example:
-  apio clean
-
+Example:[code]
+  apio clean[/code]
 """
 
 
 @click.command(
     name="clean",
+    cls=cmd_util.ApioCommand,
     short_help="Delete the apio generated files.",
     help=APIO_CLEAN_HELP,
 )

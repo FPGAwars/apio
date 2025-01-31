@@ -4,7 +4,7 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio create' command"""
 
 from pathlib import Path
@@ -29,21 +29,19 @@ board_option = click.option(
     cls=cmd_util.ApioOption,
 )
 
-# ---------------------------
-# -- COMMAND
-# ---------------------------
+# -------------- apio create
+
+# -- Text in the markdown format of the python rich library.
 APIO_CREATE_HELP = """
-The command 'apio create' creates a new `apio.ini` project file and is
+The command 'apio create' creates a new 'apio.ini' project file and is \
 typically used when setting up a new Apio project.
 
-\b
-Examples:
+Examples:[code]
   apio create --board alhambra-ii
-  apio create --board alhambra-ii --top-module MyModule
+  apio create --board alhambra-ii --top-module MyModule[/code]
 
-
-[Note] This command only creates a new 'apio.ini' file, rather than a complete
-and buildable project. To create complete projects, refer to the
+[b][Note][/b] This command only creates a new 'apio.ini' file, rather than a \
+complete and buildable project. To create complete projects, refer to the \
 'apio examples' command.
 """
 
@@ -52,6 +50,7 @@ and buildable project. To create complete projects, refer to the
 # pylint: disable=R0913
 @click.command(
     name="create",
+    cls=cmd_util.ApioCommand,
     short_help="Create an apio.ini project file.",
     help=APIO_CREATE_HELP,
 )

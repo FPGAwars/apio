@@ -70,7 +70,7 @@ def test_boards_list_ok(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(apio, ["boards"])
         sb.assert_ok(result)
         assert "Loading custom 'boards.jsonc'" not in result.output
-        assert "PACK" not in result.output
+        assert "FPGA-ID" not in result.output
         assert "alhambra-ii" in result.output
         assert "my_custom_board" not in result.output
         assert "Total of 1 board" not in result.output
@@ -79,7 +79,7 @@ def test_boards_list_ok(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(apio, ["boards", "-v"])
         sb.assert_ok(result)
         assert "Loading custom 'boards.jsonc'" not in result.output
-        assert "PACK" in result.output
+        assert "FPGA-ID" in result.output
         assert "alhambra-ii" in result.output
         assert "my_custom_board" not in result.output
         assert "Total of 1 board" not in result.output
@@ -100,7 +100,7 @@ def test_utilities(apio_runner: ApioRunner):
         # -- Run 'apio upgrade'
         result = sb.invoke_apio_cmd(apio, ["upgrade"])
         sb.assert_ok(result)
-        assert "Lastest Apio stable version" in result.output
+        assert "Latest Apio stable version" in result.output
 
         # -- Run 'apio raw  "nextpnr-ice40 --help"'
         result = sb.invoke_apio_cmd(
@@ -111,7 +111,7 @@ def test_utilities(apio_runner: ApioRunner):
         # -- Run 'apio raw -v'
         result = sb.invoke_apio_cmd(apio, ["raw", "-v"])
         sb.assert_ok(result)
-        assert "Envirnment settings:" in result.output
+        assert "Environment settings:" in result.output
         assert "YOSYS_LIB" in result.output
 
 
@@ -125,7 +125,7 @@ def test_project_with_legacy_board_name(apio_runner: ApioRunner):
 
     # -- We shared the apio home with the other tests in this file to speed
     # -- up apio package installation. Tests should not mutate the shared home
-    # -- to avoid cross-interferance between tests in this file.
+    # -- to avoid cross-interference between tests in this file.
     with apio_runner.in_sandbox(shared_home=True) as sb:
 
         # -- Fetch an example of a board that has a legacy name.
@@ -146,7 +146,7 @@ def test_project_with_legacy_board_name(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(apio, ["clean"])
         sb.assert_ok(result)
 
-        # -- Run 'apio build' again. It should also succeeed.
+        # -- Run 'apio build' again. It should also succeed.
         result = sb.invoke_apio_cmd(apio, ["build"])
         sb.assert_ok(result)
 
@@ -162,7 +162,7 @@ def _test_project(
     *,
     remote_proj_dir: bool,
     example: str,
-    testbench: str,
+    testbench_file: str,
     bitstream: str,
     report_item: str,
 ):
@@ -175,9 +175,12 @@ def _test_project(
     if apio_runner.offline_flag:
         pytest.skip("requires internet connection")
 
+    # -- Extract the base name of the testbench file
+    testbench, _ = os.path.splitext(testbench_file)
+
     # -- We shared the apio home with the other tests in this file to speed
     # -- up apio package installation. Tests should not mutate the shared home
-    # -- to avoid cross-interferance between tests in this file.
+    # -- to avoid cross-interference between tests in this file.
     with apio_runner.in_sandbox(shared_home=True) as sb:
 
         # -- If testing from a remote dir, step out of the proj dir, and
@@ -262,13 +265,13 @@ def _test_project(
         assert not (sb.proj_dir / f"_build/{testbench}.vcd").exists()
 
         # -- 'apio test <testbench-file>'
-        result = sb.invoke_apio_cmd(
-            apio, ["test", testbench + ".v"] + proj_arg
-        )
+        result = sb.invoke_apio_cmd(apio, ["test", testbench_file] + proj_arg)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert getsize(sb.proj_dir / f"_build/{testbench}.out")
         assert getsize(sb.proj_dir / f"_build/{testbench}.vcd")
+        # -- For issue https://github.com/FPGAwars/apio/issues/557
+        assert "warning: Timing checks are not supported" not in result.output
 
         # -- 'apio report'
         result = sb.invoke_apio_cmd(apio, ["report"] + proj_arg)
@@ -297,14 +300,13 @@ def _test_project(
 def test_project_ice40_local_dir(apio_runner: ApioRunner):
     """Tests building and testing an ice40 project as the current working
     dir."""
-
     _test_project(
         apio_runner,
         remote_proj_dir=False,
         example="alhambra-ii/bcd-counter",
-        testbench="main_tb",
+        testbench_file="main_tb.v",
         bitstream="hardware.bin",
-        report_item="ICESTORM_LC:",
+        report_item="ICESTORM_LC",
     )
 
 
@@ -315,9 +317,22 @@ def test_project_ice40_remote_dir(apio_runner: ApioRunner):
         apio_runner,
         remote_proj_dir=True,
         example="alhambra-ii/bcd-counter",
-        testbench="main_tb",
+        testbench_file="main_tb.v",
         bitstream="hardware.bin",
-        report_item="ICESTORM_LC:",
+        report_item="ICESTORM_LC",
+    )
+
+
+def test_project_ice40_system_verilog(apio_runner: ApioRunner):
+    """Tests building and testing an ice40 project that contains system
+    verilog files."""
+    _test_project(
+        apio_runner,
+        remote_proj_dir=False,
+        example="alhambra-ii/bcd-counter-sv",
+        testbench_file="main_tb.sv",
+        bitstream="hardware.bin",
+        report_item="ICESTORM_LC",
     )
 
 
@@ -327,9 +342,9 @@ def test_project_ecp5_local_dir(apio_runner: ApioRunner):
         apio_runner,
         remote_proj_dir=False,
         example="colorlight-5a-75b-v8/ledon",
-        testbench="ledon_tb",
+        testbench_file="ledon_tb.v",
         bitstream="hardware.bit",
-        report_item="ALU54B:",
+        report_item="ALU54B",
     )
 
 
@@ -339,9 +354,22 @@ def test_project_ecp5_remote_dir(apio_runner: ApioRunner):
         apio_runner,
         remote_proj_dir=True,
         example="colorlight-5a-75b-v8/ledon",
-        testbench="ledon_tb",
+        testbench_file="ledon_tb.v",
         bitstream="hardware.bit",
-        report_item="ALU54B:",
+        report_item="ALU54B",
+    )
+
+
+def test_project_ecp5_system_verilog(apio_runner: ApioRunner):
+    """Tests building and testing an ecp5 project that contains system
+    verilog files."""
+    _test_project(
+        apio_runner,
+        remote_proj_dir=False,
+        example="colorlight-5a-75b-v8/ledon-sv",
+        testbench_file="ledon_tb.sv",
+        bitstream="hardware.bit",
+        report_item="ALU54B",
     )
 
 
@@ -350,10 +378,10 @@ def test_project_gowin_local_dir(apio_runner: ApioRunner):
     _test_project(
         apio_runner,
         remote_proj_dir=False,
-        example="sipeed-tang-nano-4k/blinky",
-        testbench="blinky_tb",
+        example="sipeed-tang-nano-9k/blinky",
+        testbench_file="blinky_tb.v",
         bitstream="hardware.fs",
-        report_item="ALU54D:",
+        report_item="LUT4",
     )
 
 
@@ -362,8 +390,21 @@ def test_project_gowin_remote_dir(apio_runner: ApioRunner):
     _test_project(
         apio_runner,
         remote_proj_dir=True,
-        example="sipeed-tang-nano-4k/blinky",
-        testbench="blinky_tb",
+        example="sipeed-tang-nano-9k/blinky",
+        testbench_file="blinky_tb.v",
         bitstream="hardware.fs",
-        report_item="ALU54D:",
+        report_item="LUT4",
+    )
+
+
+def test_project_gowin_system_verilog(apio_runner: ApioRunner):
+    """Tests building and testing an gowin project that contains system
+    verilog files."""
+    _test_project(
+        apio_runner,
+        remote_proj_dir=False,
+        example="sipeed-tang-nano-9k/blinky-sv",
+        testbench_file="blinky_tb.sv",
+        bitstream="hardware.fs",
+        report_item="LUT4",
     )

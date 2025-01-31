@@ -16,4 +16,4 @@ def test_graph_no_apio_ini(apio_runner: ApioRunner):
         # -- Execute "apio graph"
         result = sb.invoke_apio_cmd(apio, ["graph"])
         assert result.exit_code == 1, result.output
-        assert "Error: missing project file apio.ini" in result.output
+        assert "Error: Missing project file apio.ini" in result.output

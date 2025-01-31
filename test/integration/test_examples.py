@@ -27,10 +27,11 @@ def test_examples(apio_runner: ApioRunner):
         assert "alhambra-ii/ledon" in result.output
         assert "Turning on a led" in result.output
 
-        # -- 'apio examples fetch alhambra-ii/ledon'
+        # -- 'apio examples fetch alhambra-ii/ledon' (colors off)
         result = sb.invoke_apio_cmd(
             apio,
             ["examples", "fetch", "alhambra-ii/ledon"],
+            terminal_mode=False,
         )
         sb.assert_ok(result)
         assert "Copying alhambra-ii/ledon example files" in result.output
@@ -39,30 +40,33 @@ def test_examples(apio_runner: ApioRunner):
         assert "Example fetched successfully" in result.output
         assert getsize("ledon.v")
 
-        # -- 'apio examples fetch-board alhambra-ii'
+        # -- 'apio examples fetch-board alhambra-ii' (colors off)
         result = sb.invoke_apio_cmd(
             apio,
             ["examples", "fetch-board", "alhambra-ii"],
+            terminal_mode=False,
         )
         sb.assert_ok(result)
         assert "Creating directory alhambra-ii" in result.output
         assert "Board examples fetched successfully" in result.output
         assert getsize("alhambra-ii/ledon/ledon.v")
 
-        # -- 'apio examples fetch alhambra-ii/ledon -d dir1'
+        # -- 'apio examples fetch alhambra-ii/ledon -d dir1' (colors off)
         result = sb.invoke_apio_cmd(
             apio,
             ["examples", "fetch", "alhambra-ii/ledon", "-d", "dir1"],
+            terminal_mode=False,
         )
         sb.assert_ok(result)
         assert "Copying alhambra-ii/ledon example files" in result.output
         assert "Example fetched successfully" in result.output
         assert getsize("dir1/ledon.v")
 
-        # -- 'apio examples fetch-board alhambra -d dir2
+        # -- 'apio examples fetch-board alhambra -d dir2 (colors off)
         result = sb.invoke_apio_cmd(
             apio,
             ["examples", "fetch-board", "alhambra-ii", "-d", "dir2"],
+            terminal_mode=False,
         )
         sb.assert_ok(result)
         assert f"Creating directory dir2{os.sep}alhambra-ii" in result.output

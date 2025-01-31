@@ -4,7 +4,7 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio fpgas' command"""
 
 import sys
@@ -12,9 +12,12 @@ from pathlib import Path
 from dataclasses import dataclass
 from typing import List, Dict
 import click
-from click import secho, style, echo
+from rich.table import Table
+from rich import box
+from apio.common import apio_console
+from apio.common.apio_console import cout, cprint
 from apio.apio_context import ApioContext, ApioContextScope
-from apio.utils import util
+from apio.utils import util, cmd_util
 from apio.commands import options
 
 
@@ -35,7 +38,7 @@ class Entry:
     fpga_speed: str
 
     def sort_key(self):
-        """A key for sorting the fpga entries in our prefered order."""
+        """A key for sorting the fpga entries in our preferred order."""
         return (util.fpga_arch_sort_key(self.fpga_arch), self.fpga.lower())
 
 
@@ -43,9 +46,6 @@ class Entry:
 # pylint: disable=too-many-statements
 def list_fpgas(apio_ctx: ApioContext, verbose: bool):
     """Prints all the available FPGA definitions."""
-
-    # -- Get the output info (terminal vs pipe).
-    output_config = util.get_terminal_config()
 
     # -- Collect a sparse dict with fpga ids to board count.
     boards_counts: Dict[str, int] = {}
@@ -80,89 +80,86 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
             )
         )
 
-    # -- Sort boards by our prefered order.
+    # -- Sort boards by our preferred order.
     entries.sort(key=lambda x: x.sort_key())
 
-    # -- Compute field lengths
-    margin = 3
-    fpga_len = max(len(x.fpga) for x in entries) + margin
-    board_count_len = 6 + margin
-    fpga_arch_len = max(len(x.fpga_arch) for x in entries) + margin
-    fpga_part_num_len = max(len(x.fpga_part_num) for x in entries) + margin
-    fpga_size_len = max(len(x.fpga_size) for x in entries) + margin
-    fpga_type_len = max(len(x.fpga_type) for x in entries) + margin
-    fpga_pack_len = max(len(x.fpga_pack) for x in entries) + margin
-    fpga_speed_len = 5 + margin
+    # -- Define the table.
+    table = Table(
+        show_header=True,
+        show_lines=False,
+        box=box.SQUARE,
+        border_style="dim",
+        title="Apio Supported FPGAs",
+        title_justify="left",
+    )
 
-    # -- Construct the title fields.
-    parts = []
-    parts.append(f"{'FPGA-ID':<{fpga_len}}")
-    parts.append(f"{'BOARDS':<{board_count_len}}")
-    parts.append(f"{'ARCH':<{fpga_arch_len}}")
-    parts.append(f"{'PART-NUMBER':<{fpga_part_num_len}}")
-    parts.append(f"{'SIZE':<{fpga_size_len}}")
+    # -- Add columns
+    table.add_column("FPGA-ID", no_wrap=True, style="cyan")
+    table.add_column("BOARDS", no_wrap=True, justify="center")
+    table.add_column("ARCH", no_wrap=True)
+    table.add_column("PART-NUMBER", no_wrap=True)
+    table.add_column("SIZE", no_wrap=True, justify="right")
     if verbose:
-        parts.append(f"{'TYPE':<{fpga_type_len}}")
-        parts.append(f"{'PACK':<{fpga_pack_len}}")
-        parts.append(f"{'SPEED':<{fpga_speed_len}}")
+        table.add_column("TYPE", no_wrap=True)
+        table.add_column("PACK", no_wrap=True)
+        table.add_column("SPEED", no_wrap=True, justify="center")
 
-    # -- Print the title
-    secho("".join(parts), fg="cyan", bold="True")
-
-    # -- Iterate and print the fpga entries in the list.
+    # -- Add rows.
     last_arch = None
     for entry in entries:
-        # -- Seperation before each archictecture group, unless piped out.
-        if last_arch != entry.fpga_arch and output_config.terminal_mode:
-            echo("")
-            secho(f"{entry.fpga_arch.upper()}", fg="magenta", bold=True)
+        # -- If switching architecture, add an horizontal separation line.
+        if last_arch != entry.fpga_arch and apio_console.is_terminal():
+            table.add_section()
         last_arch = entry.fpga_arch
 
-        # -- Construct the fpga fields.
-        parts = []
-        parts.append(style(f"{entry.fpga:<{fpga_len}}", fg="cyan"))
-        board_count = f"{entry.board_count:>3}" if entry.board_count else ""
-        parts.append(f"{board_count:<{board_count_len}}")
-        parts.append(f"{entry.fpga_arch:<{fpga_arch_len}}")
-        parts.append(f"{entry.fpga_part_num:<{fpga_part_num_len}}")
-        parts.append(f"{entry.fpga_size:<{fpga_size_len}}")
+        # -- Collect row values.
+        values = []
+        values.append(entry.fpga)
+        values.append(f"{entry.board_count:>2}" if entry.board_count else "")
+        values.append(entry.fpga_arch)
+        values.append(entry.fpga_part_num)
+        values.append(entry.fpga_size)
         if verbose:
-            parts.append(f"{entry.fpga_type:<{fpga_type_len}}")
-            parts.append(f"{entry.fpga_pack:<{fpga_pack_len}}")
-            parts.append(f"{entry.fpga_speed:<{fpga_speed_len}}")
+            values.append(entry.fpga_type)
+            values.append(entry.fpga_pack)
+            values.append(entry.fpga_speed)
 
-        # -- Print the fpga line.
-        echo("".join(parts))
+        # -- Add row.
+        table.add_row(*values)
+
+    # -- Render the table.
+    cout()
+    cprint(table)
 
     # -- Show summary.
-    if output_config.terminal_mode:
-        secho(f"Total of {util.plurality(entries, 'fpga')}")
+    if apio_console.is_terminal():
+        cout(f"Total of {util.plurality(entries, 'fpga')}")
         if not verbose:
-            secho("Run 'apio fpgas -v' for additional columns.", fg="yellow")
+            cout("Run 'apio fpgas -v' for additional columns.", style="yellow")
 
 
-# ---------------------------
-# -- COMMAND
-# ---------------------------
+# -------- apio fpgas
+
 # R0801: Similar lines in 2 files
 # pylint: disable = R0801
-APIO_FPGAS_HELP = """
-The command ‘apio fpgas’ lists the FPGAs recognized by Apio. Custom FPGAs
-supported by the underlying Yosys toolchain can be defined by placing a
-custom fpgas.jsonc file in the project directory, overriding Apio’s standard
-fpgas.jsonc file.
 
-\b
-Examples:
+# -- Text in the markdown format of the python rich library.
+APIO_FPGAS_HELP = """
+The command 'apio fpgas' lists the FPGAs recognized by Apio. Custom FPGAs \
+supported by the underlying Yosys toolchain can be defined by placing a \
+custom 'fpgas.jsonc' file in the project directory, overriding Apio’s \
+standard 'fpgas.jsonc' file.
+
+Examples:[code]
   apio fpgas               # List all fpgas.
   apio fpgas -v            # List with extra columns.
-  apio fpgas | grep gowin  # Filter FPGA results.
-
+  apio fpgas | grep gowin  # Filter FPGA results.[/code]
 """
 
 
 @click.command(
     name="fpgas",
+    cls=cmd_util.ApioCommand,
     short_help="List available FPGA definitions.",
     help=APIO_FPGAS_HELP,
 )

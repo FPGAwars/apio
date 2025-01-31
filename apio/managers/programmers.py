@@ -7,11 +7,11 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 
 import re
 import sys
-from click import secho
+from apio.common.apio_console import cout, cerror
 from apio.utils import util, pkg_util
 from apio.managers.system import System
 from apio.apio_context import ApioContext
@@ -57,12 +57,12 @@ def construct_programmer_cmd(
     # --
     # -- Special case for the TinyFPGA on MACOS platforms
     # -- TinyFPGA BX board is not detected in MacOS HighSierra
-    if "tinyprog" in board_info and apio_ctx.is_darwin():
+    if "tinyprog" in board_info and apio_ctx.is_darwin:
         # In this case the serial check is ignored
         # This is the command line to execute for uploading the
         # circuit
         if util.is_debug():
-            print("Applying a special case for tinyprog on darwin.")
+            cout("Applying a special case for tinyprog on darwin.")
         return "tinyprog --libusb --program $SOURCE"
 
     # -- Serialize programmer command
@@ -77,7 +77,7 @@ def construct_programmer_cmd(
         apio_ctx, board_info, sram, flash
     )
     if util.is_debug():
-        print(f"Programmer template: [{programmer}]")
+        cout(f"Programmer template: [{programmer}]")
     # -- The placeholder for the bitstream file name should always exist.
     assert "$SOURCE" in programmer, programmer
 
@@ -109,7 +109,7 @@ def construct_programmer_cmd(
         # -- We force an early env setting message to have
         # -- the programmer message closer to the error message.
         pkg_util.set_env_for_packages(apio_ctx)
-        secho("Querying programmer parameters.")
+        cout("Querying programmer parameters.")
 
         # -- Check that the board is connected
         # -- If not, an exception is raised
@@ -129,7 +129,7 @@ def construct_programmer_cmd(
         # -- We force an early env setting message to have
         # -- the programmer message closer to the error message.
         pkg_util.set_env_for_packages(apio_ctx)
-        secho("Querying serial port parameters.")
+        cout("Querying serial port parameters.")
 
         # -- Check that the board is connected
         _check_usb(apio_ctx, board, board_info)
@@ -230,7 +230,7 @@ def _check_usb(apio_ctx: ApioContext, board: str, board_info: dict) -> None:
     # -- If it does not have the "usb" property, it means
     # -- the board configuration is wrong...Raise an exception
     if "usb" not in board_info:
-        secho("Missing board configuration: usb", fg="red")
+        cerror("Missing board configuration: usb")
         sys.exit(1)
 
     # -- Get the vid and pid from the configuration
@@ -246,7 +246,7 @@ def _check_usb(apio_ctx: ApioContext, board: str, board_info: dict) -> None:
     connected_devices = system.get_usb_devices()
 
     if util.is_debug():
-        print(f"usb devices: {connected_devices}")
+        cout(f"usb devices: {connected_devices}")
 
     # -- Check if the given device (vid:pid) is connected!
     # -- Not connected by default
@@ -261,17 +261,17 @@ def _check_usb(apio_ctx: ApioContext, board: str, board_info: dict) -> None:
 
     # -- The board is NOT connected
     if not found:
+        cerror("Board " + board + " not connected")
 
         # -- Special case! TinyFPGA board
         # -- Maybe the board is NOT detected because
         # -- the user has not press the reset button and the bootloader
         # -- is not active
         if "tinyprog" in board_info:
-            secho(
+            cout(
                 "Activate bootloader by pressing the reset button",
-                fg="yellow",
+                style="yellow",
             )
-        secho("board " + board + " not connected", fg="red")
         sys.exit(1)
 
 
@@ -294,7 +294,7 @@ def _get_serial_port(
 
     # -- Board not connected
     if not device:
-        secho("board " + board + " not connected", fg="red")
+        cerror("Board " + board + " not connected")
         sys.exit(1)
 
     # -- Board connected. Return the serial port detected
@@ -317,7 +317,7 @@ def _check_serial(board: str, board_info: dict, ext_serial_port: str) -> str:
     # -- If it does not have the "usb" property, it means
     # -- the board configuration is wrong...Raise an exception
     if "usb" not in board_info:
-        secho("Missing board configuration: usb", fg="red")
+        cerror("Missing board configuration: usb")
         sys.exit(1)
 
     # -- Get the vid and pid from the configuration
@@ -334,11 +334,11 @@ def _check_serial(board: str, board_info: dict, ext_serial_port: str) -> str:
     serial_ports = util.get_serial_ports()
 
     if util.is_debug():
-        print(f"serial ports: {serial_ports}")
+        cout(f"serial ports: {serial_ports}")
 
     # -- If no serial ports detected, exit with an error.
     if not serial_ports:
-        secho("board " + board + " not available", fg="red")
+        cerror("Board " + board + " not available")
         sys.exit(1)
 
     # -- Match the discovered serial ports
@@ -440,7 +440,7 @@ def _get_ftdi_id(apio_ctx: ApioContext, board, board_info, ext_ftdi_id) -> str:
 
     # -- No FTDI board connected
     if ftdi_id is None:
-        secho("board " + board + " not connected", fg="red")
+        cerror("Board " + board + " not connected")
         sys.exit(1)
 
     # -- Return the FTDI index
@@ -467,7 +467,7 @@ def _check_ftdi(
     # -- Check that the given board has the property "ftdi"
     # -- If not, it is an error. Raise an exception
     if "ftdi" not in board_info:
-        secho("Missing board configuration: ftdi", fg="red")
+        cerror("Missing board configuration: ftdi")
         sys.exit(1)
 
     # -- Get the board description from the the apio database
@@ -490,7 +490,7 @@ def _check_ftdi(
 
     # -- No FTDI devices detected --> Error!
     if not connected_devices:
-        secho("board " + board + " not available", fg="red")
+        cerror("Board " + board + " not available")
         sys.exit(1)
 
     # -- Check if the given board is connected

@@ -2,11 +2,11 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 # -- Derived from:
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
-# ---- Licence Apache v2
+# ---- License Apache v2
 """Misc utility functions and classes."""
 
 import sys
@@ -15,18 +15,16 @@ import json
 import traceback
 import importlib.metadata
 from functools import wraps
-import shutil
 from enum import Enum
 from dataclasses import dataclass
 from typing import Optional, Any, Tuple, List
 import subprocess
 from threading import Thread
 from pathlib import Path
-from click import secho
 from varname import argname
 from serial.tools.list_ports import comports
-import requests
 from apio.utils import env_options
+from apio.common.apio_console import cout, cerror
 
 # ----------------------------------------
 # -- Constants
@@ -87,45 +85,6 @@ class TerminalMode(Enum):
     # Output is sent to a filter or a file. No width and ansi colors should
     # be avoided.
     PIPE = 2
-
-
-@dataclass(frozen=True)
-class TerminalConfig:
-    """Contains the stdout/err terminal/pipe configuration."""
-
-    mode: TerminalMode  # TERMINAL or PIPE.
-    terminal_width: Optional[int]  # Terminal width. None in PIPE mode.
-
-    def __post_init__(self):
-        """Validates initialization."""
-        assert isinstance(self.mode, TerminalMode), self
-        assert (self.terminal_width is not None) == self.terminal_mode, self
-
-    @property
-    def terminal_mode(self) -> bool:
-        """True iff in terminal mode."""
-        return self.mode == TerminalMode.TERMINAL
-
-    @property
-    def pipe_mode(self) -> bool:
-        """True iff in pipe mode."""
-        return self.mode == TerminalMode.PIPE
-
-
-def get_terminal_config() -> TerminalConfig:
-    """Return the terminal configuration of of the current process."""
-
-    # Try to get terminal width, with a fallback default if not a terminal.
-    terminal_width, _ = shutil.get_terminal_size(fallback=(999, 999))
-
-    # We got the fallback width so assuming a pipe.
-    if terminal_width == 999:
-        return TerminalConfig(mode=TerminalMode.PIPE, terminal_width=None)
-
-    # We got an actual terminal width so assuming a terminal.
-    return TerminalConfig(
-        mode=TerminalMode.TERMINAL, terminal_width=terminal_width
-    )
 
 
 def get_path_in_apio_package(subpath: str) -> Path:
@@ -218,12 +177,12 @@ def exec_command(*args, **kwargs) -> CommandResult:
 
     # -- User has pressed the Ctrl-C for aborting the command
     except KeyboardInterrupt:
-        secho("Aborted by user", fg="red")
+        cerror("Aborted by user")
         sys.exit(1)
 
     # -- The command does not exist!
     except FileNotFoundError:
-        secho(f"Command not found:\n{args}", fg="red")
+        cerror("Command not found:", args)
         sys.exit(1)
 
     # -- If stdout pipe is an AsyncPipe, extract its text.
@@ -243,64 +202,6 @@ def exec_command(*args, **kwargs) -> CommandResult:
     # -- All done.
     result = CommandResult(out_text, err_text, exit_code)
     return result
-
-
-def get_pypi_latest_version() -> str:
-    """Get the latest stable version of apio from Pypi
-    Internet connection is required
-    Returns: A string with the version (Ex: "0.9.0")
-      In case of error, it returns None
-    """
-
-    # -- Error message common to all exceptions
-    error_msg = "Error: could not connect to Pypi\n"
-
-    # -- Read the latest apio version from pypi
-    # -- More information: https://warehouse.pypa.io/api-reference/json.html
-    try:
-        req = requests.get(
-            "https://pypi.python.org/pypi/apio/json", timeout=10
-        )
-        req.raise_for_status()
-
-    # -- Connection error
-    except requests.exceptions.ConnectionError as e:
-        secho(
-            f"\n{error_msg}" "Check your internet connection and try again\n",
-            fg="red",
-        )
-        print_exception_developers(e)
-        return None
-
-    # -- HTTP Error
-    except requests.exceptions.HTTPError as e:
-        secho(f"\nHTTP ERROR\n{error_msg}", fg="red")
-        print_exception_developers(e)
-        return None
-
-    # -- Timeout!
-    except requests.exceptions.Timeout as e:
-        secho(f"\nTIMEOUT!\n{error_msg}", fg="red")
-        print_exception_developers(e)
-        return None
-
-    # -- Another error
-    except requests.exceptions.RequestException as e:
-        secho(f"\nFATAL ERROR!\n{error_msg}", fg="red")
-        print_exception_developers(e)
-        return None
-
-    # -- Get the version field from the json response
-    version = req.json()["info"]["version"]
-
-    return version
-
-
-def print_exception_developers(e):
-    """Print a message for developers, caused by the exception e"""
-
-    secho("Info for developers:")
-    secho(f"{e}\n", fg="yellow")
 
 
 def resolve_project_dir(
@@ -326,10 +227,7 @@ def resolve_project_dir(
 
     # -- Make sure the folder doesn't exist as a file.
     if project_dir.is_file():
-        secho(
-            f"Error: project directory is already a file: {project_dir}",
-            fg="red",
-        )
+        cerror(f"Project directory is a file: {project_dir}")
         sys.exit(1)
 
     # -- If the folder exists we are good
@@ -338,15 +236,12 @@ def resolve_project_dir(
 
     # -- Here when dir doesn't exist. Fatal error if must exist.
     if must_exist:
-        secho(
-            f"Error: project directory is missing: {str(project_dir)}",
-            fg="red",
-        )
+        cerror(f"Project directory is missing: {str(project_dir)}")
         sys.exit(1)
 
     # -- Create the directory if requested.
     if create_if_missing:
-        secho(f"Creating folder: {project_dir}")
+        cout(f"Creating folder: {project_dir}")
         project_dir.mkdir(parents=True)
 
     # -- All done
@@ -420,21 +315,21 @@ def get_tinyprog_meta() -> list:
      ]'
     """
 
-    # -- Construct the command to execute. Since we exectute tinyprog from
+    # -- Construct the command to execute. Since we execute tinyprog from
     # -- the apio packages which add to the path, we can use a simple name.
     command = ["tinyprog", "--pyserial", "--meta"]
     command_str = " ".join(command)
 
     # -- Execute the command!
     # -- It should return the meta information as a json string
-    secho(command_str)
+    cout(command_str)
     result = exec_command(command)
 
     if result.exit_code != 0:
-        secho(
-            f"Warning: the command `{command_str}`failed with exit code "
+        cout(
+            f"Warning: the command '{command_str}' failed with exit code "
             f"{result.exit_code}",
-            color="yellow",
+            style="yellow",
         )
         return []
 
@@ -443,11 +338,11 @@ def get_tinyprog_meta() -> list:
         meta = json.loads(result.out_text)
 
     except json.decoder.JSONDecodeError as exc:
-        secho(
-            f"Warning: invalid json dnvalid data provided by `{command_str}`",
-            fg="yellow",
+        cout(
+            f"Warning: invalid json data provided by `{command_str}`",
+            style="yellow",
         )
-        secho(f"{exc}", fg="red")
+        cout(f"{exc}", style="red")
         return []
 
     # -- Return the meta-data
@@ -497,7 +392,7 @@ def plurality(obj: Any, singular: str, plural: str = None) -> str:
     else:
         n = len(obj)
 
-    # -- For value of 1 return the signgular form.
+    # -- For value of 1 return the singular form.
     if n == 1:
         return f"{n} {singular}"
 
@@ -510,7 +405,7 @@ def plurality(obj: Any, singular: str, plural: str = None) -> str:
 def list_plurality(str_list: List[str], conjunction: str) -> str:
     """Format a list as a human friendly string."""
     # -- This is a programming error. Not a user error.
-    assert str_list, "list_plurarlity expect len() >= 1."
+    assert str_list, "list_plurality expect len() >= 1."
 
     # -- Handle the case of a single item.
     if len(str_list) == 1:
@@ -540,7 +435,7 @@ def nameof(*_args) -> List[str]:
     return list(argname("*_args"))
 
 
-def debug_decoractor(func):
+def debug_decorator(func):
     """A decorator for dumping the input and output of a function when
     APIO_DEBUG is defined.  Add it to functions and methods that you want
     to examine with APIO_DEBUG.
@@ -554,52 +449,52 @@ def debug_decoractor(func):
 
         if debug:
             # -- Print the arguments
-            secho(
+            cout(
                 f"\n>>> Function {os.path.basename(func.__code__.co_filename)}"
                 f"/{func.__name__}() BEGIN",
-                fg="magenta",
+                style="magenta",
             )
-            secho("    * Arguments:")
+            cout("    * Arguments:")
             for arg in args:
 
                 # -- Print all the key,values if it is a dictionary
                 if isinstance(arg, dict):
-                    secho("        * Dict:")
+                    cout("        * Dict:")
                     for key, value in arg.items():
-                        secho(f"          * {key}: {value}")
+                        cout(f"          * {key}: {value}")
 
-                # -- Print the plain argument if it is not a dicctionary
+                # -- Print the plain argument if it is not a dictionary
                 else:
-                    secho(f"        * {arg}")
-            print()
+                    cout(f"        * {arg}")
+            cout()
 
         # -- Call the function, dump exceptions, if any.
         try:
             result = func(*args)
         except Exception:
             if debug:
-                secho(traceback.format_exc())
+                cout(traceback.format_exc())
             raise
 
         if debug:
             # -- Print its output
-            secho("     Returns: ")
+            cout("     Returns: ")
 
             # -- The return object always is a tuple
             if isinstance(result, tuple):
 
                 # -- Print all the values in the tuple
                 for value in result:
-                    secho(f"      * {value}")
+                    cout(f"      * {value}")
 
             # -- But just in case it is not a tuple (because of an error...)
             else:
-                secho(f"      * No tuple: {result}")
+                cout(f"      * No tuple: {result}")
 
-            secho(
+            cout(
                 f"<<< Function {os.path.basename(func.__code__.co_filename)}"
                 f"/{func.__name__}() END\n",
-                fg="magenta",
+                style="magenta",
             )
 
         return result
@@ -608,7 +503,7 @@ def debug_decoractor(func):
 
 
 def get_apio_version() -> str:
-    """Returns the version of the apio packge."""
+    """Returns the version of the apio package."""
     return importlib.metadata.version("apio")
 
 
@@ -622,18 +517,16 @@ def _check_home_dir(home_dir: Path):
         home_dir, Path
     ), f"Error: home_dir is no a Path: {type(home_dir)}, {home_dir}"
 
-    # -- The path should be abosolute, see discussion here:
+    # -- The path should be absolute, see discussion here:
     # -- https://github.com/FPGAwars/apio/issues/522
     if not home_dir.is_absolute():
-        secho(
-            "Error: apio home dir should be an absolute path "
-            f"[{str(home_dir)}].",
-            fg="red",
+        cerror(
+            "Apio home dir should be an absolute path " f"[{str(home_dir)}].",
         )
-        secho(
+        cout(
             "You can use the system env var APIO_HOME_DIR to set "
             "a different apio home dir.",
-            fg="yellow",
+            style="yellow",
         )
         sys.exit(1)
 
@@ -642,26 +535,25 @@ def _check_home_dir(home_dir: Path):
     # -- See here https://github.com/FPGAwars/apio/issues/515
     for ch in str(home_dir):
         if ord(ch) < 33 or ord(ch) > 127:
-            secho(
-                f"Error: Unsupported character [{ch}] in apio home dir: "
+            cerror(
+                f"Unsupported character [{ch}] in apio home dir: "
                 f"[{str(home_dir)}].",
-                fg="red",
             )
-            secho(
+            cout(
                 "Only the ASCII characters in the range 33 to 127 are "
                 "allowed. You can use the\n"
                 "system env var 'APIO_HOME_DIR' to set a different apio"
                 "home dir.",
-                fg="yellow",
+                style="yellow",
             )
             sys.exit(1)
 
 
 def resolve_home_dir() -> Path:
     """Get the absolute apio home dir. This is the apio folder where the
-    profle is located and the packages are installed.
+    profile is located and the packages are installed.
     The apio home dir can be overridden using the APIO_HOME_DIR environment
-    varible or in the /etc/apio.json file (in
+    variable or in the /etc/apio.json file (in
     Debian). If not set, the user_home/.apio folder is used by default:
     Ej. Linux:  /home/obijuan/.apio
     If the folders does not exist, they are created
@@ -685,14 +577,14 @@ def resolve_home_dir() -> Path:
     else:
         home_dir = Path.home() / ".apio"
 
-    # -- Verify that the home dir meets apio's requirments.
+    # -- Verify that the home dir meets apio's requirements.
     _check_home_dir(home_dir)
 
     # -- Create the folder if it does not exist
     try:
         home_dir.mkdir(parents=True, exist_ok=True)
     except PermissionError:
-        secho(f"Error: no usable home directory {home_dir}", fg="red")
+        cerror(f"No usable home directory {home_dir}")
         sys.exit(1)
 
     # Return the home_dir as a Path
@@ -701,13 +593,13 @@ def resolve_home_dir() -> Path:
 
 def split(
     s: str,
-    seperator: str,
+    separator: str,
     strip: bool = False,
     keep_empty: bool = True,
 ) -> str:
     """Split a string into parts."""
     # -- A workaround for python's "".split(",") returning [''].
-    s = s.split(seperator) if s else []
+    s = s.split(separator) if s else []
 
     # -- Strip the elements if requested.
     if strip:
@@ -723,15 +615,15 @@ def split(
 
 def fpga_arch_sort_key(fpga_arch: str) -> Any:
     """Given an fpga arch name such as 'ice40', return a sort key
-    got force our prefered order of sorthing by architecutre. Used in
+    got force our preferred order of sorting by architecture. Used in
     reports such as examples, fpgas, and boards."""
 
-    # -- The prefered order of architectures, Add more if adding new
+    # -- The preferred order of architectures, Add more if adding new
     # -- architectures.
     archs = ["ice40", "ecp5", "gowin"]
 
-    # -- Primary key with prefered architecuted first and  in the
-    # -- prefered order.
+    # -- Primary key with preferred architecture first and  in the
+    # -- preferred order.
     primary_key = archs.index(fpga_arch) if fpga_arch in archs else len(archs)
 
     # -- Construct the key, unknown architectures list at the end by

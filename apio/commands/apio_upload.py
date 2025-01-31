@@ -4,7 +4,7 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Implementation of 'apio upload' command"""
 
 import sys
@@ -16,12 +16,11 @@ from apio.utils import cmd_util
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.managers.programmers import construct_programmer_cmd
-from apio.proto.apio_pb2 import UploadParams
+from apio.common.proto.apio_pb2 import UploadParams
 
 
-# ---------------------------
-# -- COMMAND SPECIFIC OPTIONS
-# ---------------------------
+# --------- apio upload
+
 serial_port_option = click.option(
     "serial_port",  # Var name.
     "--serial-port",
@@ -58,17 +57,13 @@ flash_option = click.option(
 )
 
 
-# ---------------------------
-# -- COMMAND
-# ---------------------------
-
+# -- Text in the markdown format of the python rich library.
 APIO_UPLOAD_HELP = """
-The command ‘apio upload’ builds the bitstream file (similar to the apio build
-command) and uploads it to the FPGA board.
+The command 'apio upload' builds the bitstream file (similar to the \
+'apio build' command) and uploads it to the FPGA board.
 
-\b
-Examples:
-  apio upload
+Examples:[code]
+  apio upload[/code]
 """
 
 
@@ -77,6 +72,7 @@ Examples:
 # pylint: disable=too-many-locals
 @click.command(
     name="upload",
+    cls=cmd_util.ApioCommand,
     short_help="Upload the bitstream to the FPGA.",
     help=APIO_UPLOAD_HELP,
 )

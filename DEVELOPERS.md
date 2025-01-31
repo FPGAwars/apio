@@ -16,7 +16,7 @@ For complete tests with several python versions run the command below.
 make check-all
 ```
 
-For quick tests that that don't load lengthy packagtes from the internet
+For quick tests that that don't load lengthy packages from the internet
 run the command below. It will skip all the tests that require internet 
 connection.
 
@@ -53,7 +53,7 @@ pytest test/code_commands/test_build.py
 
 ## Using APIO_DEBUG to print debug information
 
-To print internal debugging informaion define the environment variable ``APIO_DEBUG`` before running the apio command. The value of ``APIO_DEBUG`` doesn't matter as long as it's defined. Currently the the debugging information is mostly for commands that invoke scons.
+To print internal debugging information define the environment variable ``APIO_DEBUG`` before running the apio command. The value of ``APIO_DEBUG`` doesn't matter as long as it's defined. Currently the the debugging information is mostly for commands that invoke scons.
 
 Linux and Mac OSX:
 ```
@@ -89,7 +89,7 @@ The debug target can be viewed here https://github.com/FPGAwars/apio/blob/develo
 ## Debugging SConstruct scripts (subprocesses) with Visual Studio Code.
 
 To debug the scons scripts, which are run as apio subprocesses, we use a different method or remote debugging. 
-To activate, define the sytem env var ``APIO_SCONS_DEBUGGER`` (the value doesn't matter), run apio from the command line, and once it reports that it waits for a debugger, run the VCS ``Attach remote`` debug target to connect to the SConstruct process.
+To activate, define the system env var ``APIO_SCONS_DEBUGGER`` (the value doesn't matter), run apio from the command line, and once it reports that it waits for a debugger, run the VCS ``Attach remote`` debug target to connect to the SConstruct process.
 
 
 ## Using the dev repository for apio commands.
@@ -119,7 +119,7 @@ Package:  /Users/user/projects/apio_dev/repo/apio
 ### Manage python environment with Conda
 
 This section is a tip if you don't have python installed or you want to have independent versions of python isolated by apps or environments.
-Conda is a powerful tool for this, and it is multiplatform, providing you a way to work in all operating systems in the same way.
+Conda is a powerful tool for this, and it is multi-platform, providing you a way to work in all operating systems in the same way.
 
 To install Conda:
 

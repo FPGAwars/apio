@@ -2,21 +2,22 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 # -- Derived from:
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
-# ---- Licence Apache v2
+# ---- License Apache v2
 
 """Apio scons related utilities.."""
 
 from dataclasses import dataclass
-from click import secho
 from SCons.Builder import BuilderBase
 from SCons.Action import Action
 from SCons.Script import Builder
-from apio.scons.apio_env import ApioEnv, TARGET, BUILD_DIR_SEP
-from apio.proto.apio_pb2 import GraphOutputType
+from apio.common.apio_console import cout
+from apio.scons.apio_env import ApioEnv
+from apio.common.apio_consts import TARGET
+from apio.common.proto.apio_pb2 import GraphOutputType
 from apio.scons.plugin_util import (
     SRC_SUFFIXES,
     verilog_src_scanner,
@@ -122,11 +123,12 @@ class PluginBase:
         )
 
         return Builder(
+            # See https://tinyurl.com/yosys-sv-graph
             action=(
-                'yosys -f verilog -p "show -format dot -colors 1 '
-                '-prefix {0}hardware {1}" {2} $SOURCES'
+                'yosys -p "read_verilog -sv $SOURCES; show -format dot'
+                ' -colors 1 -prefix {0} {1}" {2}'
             ).format(
-                BUILD_DIR_SEP,
+                TARGET,
                 top_module,
                 "" if params.verbosity.all else "-q",
             ),
@@ -160,12 +162,7 @@ class PluginBase:
         def completion_action(source, target, env):  # noqa
             """Action function that prints a completion message."""
             _ = (source, target, env)  # Unused
-            secho(
-                f"Generated {TARGET}.{type_str}",
-                fg="green",
-                bold=True,
-                color=True,
-            )
+            cout(f"Generated {TARGET}.{type_str}", style="green", nl="")
 
         actions = [
             f"dot -T{type_str} $SOURCES -o $TARGET",

@@ -16,4 +16,4 @@ def test_report_no_apio(apio_runner: ApioRunner):
         # -- Run "apio report" without apio.ini
         result = sb.invoke_apio_cmd(apio, ["report"])
         assert result.exit_code != 0, result.output
-        assert "Error: missing project file apio.ini" in result.output
+        assert "Error: Missing project file apio.ini" in result.output

@@ -2,11 +2,11 @@
 # -- This file is part of the Apio project
 # -- (C) 2016-2018 FPGAwars
 # -- Author Jesús Arroyo
-# -- Licence GPLv2
+# -- License GPLv2
 # -- Derived from:
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
-# ---- Licence Apache v2
+# ---- License Apache v2
 
 """Apio scons plugin for the ecp5 architecture."""
 
@@ -16,7 +16,8 @@
 from pathlib import Path
 from SCons.Script import Builder
 from SCons.Builder import BuilderBase
-from apio.scons.apio_env import ApioEnv, TARGET, BUILD_DIR
+from apio.scons.apio_env import ApioEnv
+from apio.common.apio_consts import TARGET
 from apio.scons.plugin_base import PluginBase, ArchPluginInfo
 from apio.scons.plugin_util import (
     SRC_SUFFIXES,
@@ -38,8 +39,8 @@ class PluginEcp5(PluginBase):
         super().__init__(apio_env)
 
         # -- Cache values.
-        trellis_path = Path(apio_env.params.envrionment.trellis_path)
-        yosys_path = Path(apio_env.params.envrionment.yosys_path)
+        trellis_path = Path(apio_env.params.environment.trellis_path)
+        yosys_path = Path(apio_env.params.environment.yosys_path)
 
         self.database_path = trellis_path / "database"
         self.yosys_lib_dir = yosys_path / "ecp5"
@@ -111,10 +112,8 @@ class PluginEcp5(PluginBase):
     def bitstream_builder(self) -> BuilderBase:
         """Creates and returns the bitstream builder."""
         return Builder(
-            action="ecppack --compress --db {0} $SOURCE "
-            "{1}/hardware.bit".format(
+            action="ecppack --compress --db {0} $SOURCE $TARGET".format(
                 self.database_path,
-                BUILD_DIR,
             ),
             suffix=".bit",
             src_suffix=".config",

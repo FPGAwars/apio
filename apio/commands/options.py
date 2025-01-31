@@ -4,7 +4,7 @@
 # -- Authors
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- Licence GPLv2
+# -- License GPLv2
 """Common apio command options"""
 
 from pathlib import Path
@@ -21,7 +21,7 @@ from apio.utils import cmd_util
 
 
 # ----------------------------------
-# -- Customizeable option generators
+# -- Customizable option generators
 # ----------------------------------
 
 
