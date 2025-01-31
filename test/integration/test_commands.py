@@ -300,7 +300,6 @@ def _test_project(
 def test_project_ice40_local_dir(apio_runner: ApioRunner):
     """Tests building and testing an ice40 project as the current working
     dir."""
-
     _test_project(
         apio_runner,
         remote_proj_dir=False,
@@ -327,12 +326,11 @@ def test_project_ice40_remote_dir(apio_runner: ApioRunner):
 def test_project_ice40_system_verilog(apio_runner: ApioRunner):
     """Tests building and testing an ice40 project that contains system
     verilog files."""
-
     _test_project(
         apio_runner,
         remote_proj_dir=False,
-        example="edu-ciaa-fpga/and-gate-sv",
-        testbench_file="and_gate_tb.sv",
+        example="alhambra-ii/bcd-counter-sv",
+        testbench_file="main_tb.sv",
         bitstream="hardware.bin",
         report_item="ICESTORM_LC",
     )
@@ -362,15 +360,28 @@ def test_project_ecp5_remote_dir(apio_runner: ApioRunner):
     )
 
 
+def test_project_ecp5_system_verilog(apio_runner: ApioRunner):
+    """Tests building and testing an ecp5 project that contains system
+    verilog files."""
+    _test_project(
+        apio_runner,
+        remote_proj_dir=False,
+        example="colorlight-5a-75b-v8/ledon-sv",
+        testbench_file="ledon_tb.sv",
+        bitstream="hardware.bit",
+        report_item="ALU54B",
+    )
+
+
 def test_project_gowin_local_dir(apio_runner: ApioRunner):
     """Tests building and testing a gowin project as the current working dir"""
     _test_project(
         apio_runner,
         remote_proj_dir=False,
-        example="sipeed-tang-nano-4k/blinky",
+        example="sipeed-tang-nano-9k/blinky",
         testbench_file="blinky_tb.v",
         bitstream="hardware.fs",
-        report_item="ALU54D",
+        report_item="LUT4",
     )
 
 
@@ -379,8 +390,21 @@ def test_project_gowin_remote_dir(apio_runner: ApioRunner):
     _test_project(
         apio_runner,
         remote_proj_dir=True,
-        example="sipeed-tang-nano-4k/blinky",
+        example="sipeed-tang-nano-9k/blinky",
         testbench_file="blinky_tb.v",
         bitstream="hardware.fs",
-        report_item="ALU54D",
+        report_item="LUT4",
+    )
+
+
+def test_project_gowin_system_verilog(apio_runner: ApioRunner):
+    """Tests building and testing an gowin project that contains system
+    verilog files."""
+    _test_project(
+        apio_runner,
+        remote_proj_dir=False,
+        example="sipeed-tang-nano-9k/blinky-sv",
+        testbench_file="blinky_tb.sv",
+        bitstream="hardware.fs",
+        report_item="LUT4",
     )

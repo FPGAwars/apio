@@ -161,7 +161,7 @@ class PluginBase:
         def completion_action(source, target, env):  # noqa
             """Action function that prints a completion message."""
             _ = (source, target, env)  # Unused
-            cout(f"Generated {TARGET}.{type_str}", style="green")
+            cout(f"Generated {TARGET}.{type_str}", style="green", nl="")
 
         actions = [
             f"dot -T{type_str} $SOURCES -o $TARGET",
