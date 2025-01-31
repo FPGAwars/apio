@@ -18,8 +18,6 @@ from typing import Dict, Optional, Union, Any, List
 from configobj import ConfigObj
 from apio.common.apio_console import cout, cerror
 
-# -- Apio projecto filename
-APIO_INI = "apio.ini"
 
 DEFAULT_TOP_MODULE = "main"
 
@@ -155,7 +153,7 @@ class Project:
         # -- Check that all the required options are present.
         for option in REQUIRED_OPTIONS:
             if option not in self._options:
-                cerror(f"Missing option '{option}' in {APIO_INI}.")
+                cerror(f"Missing option '{option}' in apio.ini.")
                 sys.exit(1)
 
         # -- Check that there are no unknown options.
@@ -226,11 +224,11 @@ def load_project_from_file(
     call its validate() method."""
 
     # -- Construct the apio.ini path.
-    file_path = project_dir / APIO_INI
+    file_path = project_dir / "apio.ini"
 
     # -- Currently, apio.ini is still optional so we just warn.
     if not file_path.exists():
-        cerror(f"Missing project file {APIO_INI}.")
+        cerror("Missing project file apio.ini.")
         sys.exit(1)
 
     # -- Read and parse the file.
@@ -239,12 +237,12 @@ def load_project_from_file(
 
     # -- Should contain an [env] section.
     if "env" not in parser.sections():
-        cerror(f"The file {APIO_INI} has no [env] section.")
+        cerror("The file apio.ini has no [env] section.")
         sys.exit(1)
 
     # -- Should not contain any other section.
     if len(parser.sections()) > 1:
-        cerror(f"The file {APIO_INI} should contain only an [env] section.")
+        cerror("The file apio.ini should contain only an [env] section.")
         sys.exit(1)
 
     # -- Collect the name/value pairs.
@@ -264,11 +262,11 @@ def create_project_file(
     """Creates a new apio project file. Exits on any error."""
 
     # -- Construct the path
-    ini_path = project_dir / APIO_INI
+    ini_path = project_dir / "apio.ini"
 
     # -- Error if apio.ini already exists.
     if ini_path.exists():
-        cerror(f"The file {APIO_INI} already exists.")
+        cerror("The file apio.ini already exists.")
         sys.exit(1)
 
     # -- Construct and write the apio.ini file..

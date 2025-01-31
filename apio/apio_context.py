@@ -20,7 +20,6 @@ from apio.managers.project import (
     Project,
     ProjectResolver,
     load_project_from_file,
-    APIO_INI,
 )
 
 
@@ -132,7 +131,7 @@ class ApioContext:
             )
         elif scope == ApioContextScope.PROJECT_OPTIONAL:
             project_dir = util.resolve_project_dir(project_dir_arg)
-            if (project_dir / APIO_INI).exists():
+            if (project_dir / "apio.ini").exists():
                 self._project_dir = project_dir
         else:
             assert (
