@@ -12,7 +12,7 @@ def test_raw(apio_runner: ApioRunner):
     with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio raw"
-        result = sb.invoke_apio_cmd(apio, ["raw"])
+        result = sb.invoke_apio_cmd(apio, "raw")
         assert result.exit_code != 0, result.output
         assert (
             "at list one of --verbose or COMMAND must be specified"
@@ -20,7 +20,7 @@ def test_raw(apio_runner: ApioRunner):
         )
 
         # -- Execute "apio raw -v"
-        result = sb.invoke_apio_cmd(apio, ["raw", "-v"])
+        result = sb.invoke_apio_cmd(apio, "raw", "-v")
         assert result.exit_code == 0, result.output
         assert "Environment settings:" in result.output
         assert "PATH" in result.output

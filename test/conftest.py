@@ -94,8 +94,7 @@ class ApioSandbox:
     def invoke_apio_cmd(
         self,
         cli,
-        args=None,
-        *,
+        *args,
         input=None,
         env=None,
         catch_exceptions=True,
