@@ -17,14 +17,20 @@ def test_command_shortcuts(apio_runner: ApioRunner):
         sb.assert_ok(result)
         assert "Colors" in result.output
 
-        # -- Run 'apio pr list'
+        # -- Run 'apio pr list -xyz'
         # -- Unique match.
-        result = sb.invoke_apio_cmd(apio, "pr", "list")
+        result = sb.invoke_apio_cmd(apio, "pr", "list", "-xyz")
+        assert result.exit_code != 0
+        assert "Usage: apio preferences list" in result.output
+
+        # -- Run 'apio pr li -h'
+        # -- Help text should contain full commands..
+        result = sb.invoke_apio_cmd(apio, "pr", "li", "-h")
         sb.assert_ok(result)
-        assert "Colors" in result.output
+        assert "Usage: apio preferences list" in result.output
 
         # -- Run 'apio p list'
-        # -- Ambagious match
+        # -- Ambiguous match
         result = sb.invoke_apio_cmd(apio, "p", "list")
         assert result.exit_code != 0
         assert "'p' is ambagious: ['packages', 'preferences']" in result.output

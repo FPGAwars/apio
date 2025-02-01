@@ -247,6 +247,24 @@ def _format_apio_markdown_help_text(
         formatter.write(("  " + line).rstrip(" ") + "\n")
 
 
+def _patch_partial_commands_names(ctx: click.Context):
+    """Traverses the up the chain of command contexts and the partial command
+    names in the info_name fields with the full name of the command. This
+    causes help and error messages to use the full commands name of the path
+    rather than partial names that the user may used. We don't patch the top
+    context because it contains the the name used to invoke the program
+    rather than the name of the Command object associated with it. This
+    function is necessary for the support for partial command names we
+    added below. There is no harm in calling this function multiple times.
+    """
+    c = ctx
+    while c.parent is not None:
+        # -- Replace the partial name with the full name.
+        c.info_name = c.command.name
+        # -- Go one context up.
+        c = c.parent
+
+
 class ApioGroup(click.Group):
     """A customized click.Group class that allows apio customized help
     format."""
@@ -317,6 +335,7 @@ class ApioGroup(click.Group):
     def get_help(self, ctx: click.Context) -> str:
         """Overrides a super method to add blank line at the end of the help
         text."""
+        _patch_partial_commands_names(ctx)
         return super().get_help(ctx) + "\n"
 
     # @override
@@ -329,6 +348,7 @@ class ApioGroup(click.Group):
         Returns the Command or Group (a subclass of Command) of the matching
         sub command or None if not match.
         """
+        _patch_partial_commands_names(ctx)
         # -- First priority is for exact match. For this we use the click
         # -- default implementation from the parent class.
         cmd: click.Command = click.Group.get_command(self, ctx, cmd_name)
@@ -353,7 +373,7 @@ class ApioGroup(click.Group):
 
 class ApioCommand(click.Command):
     """A customized click.Command class that allows apio customized help
-    format."""
+    format and proper handling of command shortcuts."""
 
     # @override
     def format_help_text(
@@ -366,4 +386,16 @@ class ApioCommand(click.Command):
     def get_help(self, ctx: click.Context) -> str:
         """Overrides a super method to add blank line at the end of the help
         text."""
+        _patch_partial_commands_names(ctx)
         return super().get_help(ctx) + "\n"
+
+    # @override
+    def parse_args(self, ctx: click.Context, args: List[str]) -> List[str]:
+        """Called when the final command was identified but before parsing
+        its args. We use it to patch any partial command name (e.b. 'bu')
+        to its full command name (e.g. 'build') to have the full names in
+        case the help text or a usage error will be printed."""
+        # -- Patch names.
+        _patch_partial_commands_names(ctx)
+        # -- Call the parent implementation.
+        return click.Command.parse_args(self, ctx, args)
