@@ -27,6 +27,77 @@ from apio.common.apio_console import (
     cprint,
 )
 
+# -- apio docs cli
+
+# -- Text in the markdown format of the python rich library.
+APIO_DOCS_CLI_HELP = """
+The command 'apio docs cli' provides information the Apio's command line \
+conventions and features.  \
+
+Examples:[code]
+  apio docs cli        # Shoe the cli documentation text.
+"""
+
+# -- Text in the markdown format of the python rich library.
+APIO_DOCS_CLI_TEXT = """
+[apio.title]APIO's COMMAND LINE INTERFACE[/]
+This page describes the conventions and features of the apio command line \
+interface.
+
+[apio.title]1. APIO'S COMMANDS TREE[/]
+Apio commands are organized as a tree of command that start with the root \
+command 'apio'. Some command such as 'apio build' has only two level of \
+commands while other such as 'apio preferences set' have three and maybe \
+more levels. To explore the available commands at each level, type it with \
+'-h' to invoke its help message. For example:
+
+[code]  apio -h
+  apio docs -h
+  apio docs cli -h[/code]
+
+[apio.title]2. APIO'S COMMANDS OPTIONS[/]
+Most Apio's commands have options that allow to control their operation. For \
+example, the command 'apio build' that has options to control the verbosity \
+of its output: \
+
+[code]  apio build --verbose
+  apio build --verbose-synth[/code]
+
+For the list of options of each command type it with a '-h' option:
+
+[code]  apio build -h[/code]
+
+[apio.title]3. APIO'S COMMANDS SHORTCUTS[/]
+When typing apio commands, it's sufficient to type enough of the command to \
+make the selection non ambiguous. For example, the commands below are \
+equivalent.
+
+[code]  apio preferences
+  apio pref
+  apio pr[/code]
+
+However, the command 'apio p' is ambiguous because it matched both  \
+'apio preferences' and 'apio packages'.
+
+[apio.title]4. APIO'S SHELL AUTO COMPLETION[/]
+Apio's command line processor is based on the Python Click package which \
+supports auto completion with some shells. While the were able to make \
+it work as a proof of concept, this feature is experimental and is not \
+guaranteed to work. More information is available in the Click's \
+documentation at https://click.palletsprojects.com/en/stable/shell-completion.
+"""
+
+
+@click.command(
+    name="cli",
+    cls=cmd_util.ApioCommand,
+    short_help="Apio's command line conventions.'",
+    help=APIO_DOCS_CLI_HELP,
+)
+def _cli_cli():
+    """Implements the 'apio docs cli' command."""
+    docs_text(APIO_DOCS_CLI_TEXT)
+
 
 # -- apio docs options
 
@@ -198,7 +269,7 @@ apio documentation and references to online resources.
 SUBGROUPS = [
     ApioSubgroup(
         "Subcommands",
-        [_options_cli, _resources_cli],
+        [_cli_cli, _options_cli, _resources_cli],
     )
 ]
 

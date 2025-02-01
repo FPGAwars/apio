@@ -23,6 +23,12 @@ def test_apio_docs(apio_runner: ApioRunner):
         assert "apio docs options" in cunstyle(result.output)
         assert result.output == cunstyle(result.output)  # Colored.
 
+        # -- Execute "apio docs cli"
+        result = sb.invoke_apio_cmd(apio, "docs", "cli")
+        sb.assert_ok(result)
+        assert "APIO's COMMAND LINE INTERFACE" in cunstyle(result.output)
+        assert result.output != cunstyle(result.output)  # Colored.
+
         # -- Execute "apio docs options"
         result = sb.invoke_apio_cmd(apio, "docs", "options")
         assert result.exit_code == 0
