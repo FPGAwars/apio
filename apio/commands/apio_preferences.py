@@ -23,7 +23,8 @@ APIO_PREFERENCES_LIST_HELP = """
 The command 'apio preferences list' lists the current user preferences.
 
 Examples:[code]
-  apio preferences list  # List the user preferences.[/code]
+  apio preferences list  # List the user preferences.
+  apio pref l            # Same using shortcuts.[/code]
 """
 
 

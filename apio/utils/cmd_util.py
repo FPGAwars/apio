@@ -319,6 +319,37 @@ class ApioGroup(click.Group):
         text."""
         return super().get_help(ctx) + "\n"
 
+    # @override
+    def get_command(self, ctx, cmd_name) -> click.Command:
+        """Overrides the method that matches a token in the command line to
+        a sub-command. This alternative implementation allows to specify also
+        a prefix of the command name, as long as it matches exactly one
+        sub command. For example 'pref' or 'p' for 'preferences'.
+
+        Returns the Command or Group (a subclass of Command) of the matching
+        sub command or None if not match.
+        """
+        # -- First priority is for exact match. For this we use the click
+        # -- default implementation from the parent class.
+        cmd: click.Command = click.Group.get_command(self, ctx, cmd_name)
+        if cmd is not None:
+            return cmd
+
+        # -- Here when there was no exact match, we will try partial matches.
+        sub_cmds = self.list_commands(ctx)
+        matches = [x for x in sub_cmds if x.startswith(cmd_name)]
+        # -- Handle no matches.
+        if not matches:
+            return None
+        # -- Handle multiple matches.
+        if len(matches) > 1:
+            ctx.fail(f"Command prefix '{cmd_name}' is ambagious: {matches}.")
+            # cout(f"Command '{cmd_name}' is ambagious: {matches}", style=INFO)
+            return None
+        # -- Here when exact match. We are good.
+        cmd = click.Group.get_command(self, ctx, matches[0])
+        return cmd
+
 
 class ApioCommand(click.Command):
     """A customized click.Command class that allows apio customized help
