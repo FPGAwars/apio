@@ -15,7 +15,9 @@ import click
 from rich.table import Table
 from rich import box
 from apio.common.apio_console import cout, cprint
+from apio.common.styles import INFO
 from apio.common import apio_console
+from apio.common.styles import BORDER, EMPH1
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import util, cmd_util
 from apio.commands import options
@@ -96,13 +98,13 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
         show_header=True,
         show_lines=False,
         box=box.SQUARE,
-        border_style="dim",
+        border_style=BORDER,
         title_justify="left",
         title="Apio Supported Boards",
     )
 
     # -- Add columns.
-    table.add_column("BOARD-ID", no_wrap=True, style="cyan")
+    table.add_column("BOARD-ID", no_wrap=True, style=EMPH1)
     table.add_column("EXMPLS", no_wrap=True)
     if verbose:
         table.add_column("DESCRIPTION", no_wrap=True, max_width=25)
@@ -147,7 +149,8 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
         cout(f"Total of {util.plurality(entries, 'board')}")
         if not verbose:
             cout(
-                "Run 'apio boards -v' for additional columns.", style="yellow"
+                "Run 'apio boards -v' for additional columns.",
+                style=INFO,
             )
 
 

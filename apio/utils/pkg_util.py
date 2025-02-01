@@ -14,6 +14,7 @@ from pathlib import Path
 from dataclasses import dataclass
 import os
 from apio.common.apio_console import cout, cstyle
+from apio.common.styles import EMPH3
 from apio.apio_context import ApioContext
 from apio.utils import util
 
@@ -67,12 +68,12 @@ def _dump_env_mutations(
     apio_ctx: ApioContext, mutations: EnvMutations
 ) -> None:
     """Dumps a user friendly representation of the env mutations."""
-    cout("Environment settings:", style="magenta")
+    cout("Environment settings:", style=EMPH3)
 
     # -- Print PATH mutations.
     windows = apio_ctx.is_windows
     for p in reversed(mutations.paths):
-        styled_name = cstyle("PATH", style="magenta")
+        styled_name = cstyle("PATH", style=EMPH3)
         if windows:
             cout(f"set {styled_name}={p};%PATH%")
         else:
@@ -80,7 +81,7 @@ def _dump_env_mutations(
 
     # -- Print vars mutations.
     for name, val in mutations.vars:
-        styled_name = cstyle(name, style="magenta")
+        styled_name = cstyle(name, style=EMPH3)
         if windows:
             cout(f"set {styled_name}={val}")
         else:

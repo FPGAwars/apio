@@ -12,13 +12,14 @@ import click
 from apio.managers import project
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import cmd_util
+from apio.common.styles import TITLE
+from apio.common.styles import INFO
 from apio.common.apio_console import (
     docs_text,
     docs_rule,
     cout,
     cerror,
     cstyle,
-    DOCS_TITLE,
 )
 
 
@@ -74,7 +75,7 @@ def cli(
             cout(
                 "For the list of all apio.ini options, type "
                 "'apio docs options'.",
-                style="yellow",
+                style=INFO,
             )
             sys.exit(1)
 
@@ -91,7 +92,7 @@ def cli(
         # -- Print option's title.
         is_required = opt in project.REQUIRED_OPTIONS
         req = "REQUIRED" if is_required else "OPTIONAL"
-        styled_option = cstyle(opt.upper(), style=DOCS_TITLE)
+        styled_option = cstyle(opt.upper(), style=TITLE)
         cout()
         cout(f"{styled_option} ({req})")
 

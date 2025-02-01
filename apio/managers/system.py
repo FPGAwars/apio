@@ -9,6 +9,7 @@
 import re
 import sys
 from apio.common.apio_console import cout, cerror
+from apio.common.styles import INFO, ERROR, EMPH1
 from apio.utils import util, pkg_util
 from apio.apio_context import ApioContext
 from apio.managers import installer
@@ -33,7 +34,7 @@ class System:  # pragma: no cover
             cout(
                 "[Hint]: did you install the ftdi driver using "
                 "'apio drivers --ftdi-install'?",
-                style="yellow",
+                style=INFO,
             )
             sys.exit(1)
 
@@ -66,7 +67,7 @@ class System:  # pragma: no cover
             port = serial_port.get("port")
             description = serial_port.get("description")
             hwid = serial_port.get("hwid")
-            cout(port, style="cyan")
+            cout(port, style=EMPH1)
             cout(f"Description: {description}")
             cout(f"Hardware info: {hwid}\n")
 
@@ -91,7 +92,7 @@ class System:  # pragma: no cover
 
         if result.exit_code != 0:
             cout(result.out_text)
-            cout(result.err_text, style="red")
+            cout(result.err_text, style=ERROR)
             raise RuntimeError("Error executing lsusb")
 
         # -- Get the list of the usb devices. It is read
@@ -188,7 +189,7 @@ class System:  # pragma: no cover
         """Callback function. It is executed when the command prints
         information on the standard error
         """
-        cout(line, style="red")
+        cout(line, style=ERROR)
 
     @staticmethod
     def _parse_usb_devices(text: str) -> list:

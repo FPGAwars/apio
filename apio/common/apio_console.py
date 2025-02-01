@@ -7,7 +7,7 @@
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
 # ---- License Apache v2
-"""A class that manages the console output of the apio process."""
+"""A module with functions  to manages the apio console output."""
 
 from io import StringIO
 from dataclasses import dataclass
@@ -15,14 +15,13 @@ from typing import Optional
 from rich.console import Console
 from rich.ansi import AnsiDecoder
 from rich.theme import Theme
+from rich.style import Style
 from rich.text import Text
+from apio.common import styles
+from apio.common.styles import WARNING, ERROR, BORDER
 
 # -- The names of the Rich library color names is available at:
 # -- https://rich.readthedocs.io/en/stable/appendix/colors.html
-
-DOCS_TITLE = "dark_red bold"
-DOCS_EMPHASIZE = "deep_sky_blue4 bold"
-HELP_SUBCOMMANDS = "dark_red bold"
 
 
 # -- Redemanded table cell padding. 1 space on the left and 3 on the right.
@@ -46,6 +45,38 @@ class ConsoleState:
 _state: ConsoleState = ConsoleState()
 
 
+THEME1 = Theme(
+    {
+        # -- Styles that are used internally by rich library methods we
+        # -- call. These styles are not used directly by apio and thus we don't
+        # -- assign them abstract names.  For the full list of available
+        # -- styles see https://tinyurl.com/rich-default-styles
+        "bar.back": Style(color="grey23"),
+        "bar.complete": Style(color="rgb(249,38,114)"),
+        "bar.finished": Style(color="rgb(114,156,31)"),
+        "table.header": Style(bold=True),
+        # --Apio's abstracted style names.
+        styles.STRING: "italic",
+        styles.CODE: "bold",
+        styles.URL: "dark_blue",
+        styles.CMD_NAME: "dark_red bold",
+        styles.TITLE: "dark_red bold",
+        styles.BORDER: "dim",
+        styles.EMPH1: "cyan",
+        styles.EMPH2: "deep_sky_blue4 bold",
+        styles.EMPH3: "magenta",
+        styles.SUCCESS: "green",
+        styles.INFO: "yellow",
+        styles.WARNING: "yellow",
+        styles.ERROR: "red",
+    },
+    # -- By not inheriting styles we know for sure that the styles listed here
+    # -- are the only ones apio used. If hitting an error of a missing default
+    # -- style, add it above.
+    inherit=False,
+)
+
+
 def configure(*, colors: bool = None, force_terminal: bool = None) -> None:
     """Turn the color support on or off."""
     # -- Update color system if specified.
@@ -61,14 +92,7 @@ def configure(*, colors: bool = None, force_terminal: bool = None) -> None:
     _state.console = Console(
         color_system=_state.color_system,
         force_terminal=_state.force_terminal,
-        theme=Theme(
-            {
-                "repr.str": DOCS_EMPHASIZE,
-                "code": DOCS_EMPHASIZE,
-                "repr.url": DOCS_EMPHASIZE,
-                "repr.number": "",
-            }
-        ),
+        theme=THEME1,
     )
 
     # -- Construct the helper decoder.
@@ -124,10 +148,10 @@ def cerror(*text_lines: str) -> None:
     """Prints one or more text lines, adding to the first one the prefix
     'Error: ' and applying to all of them the red color."""
     # -- Output the first line.
-    _state.console.out(f"Error: {text_lines[0]}", style="red", highlight=False)
+    _state.console.out(f"Error: {text_lines[0]}", style=ERROR, highlight=False)
     # -- Output the rest of the lines.
     for text_line in text_lines[1:]:
-        _state.console.out(text_line, highlight=False, style="red")
+        _state.console.out(text_line, highlight=False, style=ERROR)
 
 
 def cwarning(*text_lines: str) -> None:
@@ -135,11 +159,11 @@ def cwarning(*text_lines: str) -> None:
     'Warning: ' and applying to all of them the yellow color."""
     # -- Emit first line.
     _state.console.out(
-        f"Warning: {text_lines[0]}", style="yellow", highlight=False
+        f"Warning: {text_lines[0]}", style=WARNING, highlight=False
     )
     # -- Emit the rest of the lines
     for text_line in text_lines[1:]:
-        _state.console.out(text_line, highlight=False, style="yellow")
+        _state.console.out(text_line, highlight=False, style=WARNING)
 
 
 def cprint(
@@ -193,7 +217,7 @@ def docs_text(
 
 def docs_rule(width: int = DOCS_WIDTH):
     """Print a docs horizontal separator."""
-    cout("─" * width, style="dim")
+    cout("─" * width, style=BORDER)
 
 
 def is_terminal():

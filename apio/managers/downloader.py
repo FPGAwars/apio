@@ -20,6 +20,7 @@ import requests
 from rich.progress import track
 from apio.utils import util
 from apio.common.apio_console import cout, console
+from apio.common.styles import ERROR
 
 # -- Timeout for getting a response from the server when downloading
 # -- a file (in seconds)
@@ -63,7 +64,7 @@ class FileDownloader:
                 "Got an unexpected HTTP status code: "
                 f"{self._request.status_code}",
                 f"When downloading {url}",
-                style="red",
+                style=ERROR,
             )
             raise util.ApioException()
 

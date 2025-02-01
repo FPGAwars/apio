@@ -12,6 +12,7 @@ from pathlib import Path
 import requests
 from apio.common import apio_console
 from apio.common.apio_console import cout, cerror, cprint
+from apio.common.styles import INFO, EMPH3
 from apio.utils import util
 
 
@@ -209,7 +210,7 @@ class Profile:
 
         # -- Dump for debugging.
         if util.is_debug():
-            cout("Saved profile:", style="magenta")
+            cout("Saved profile:", style=EMPH3)
             cprint(json.dumps(data, indent=2))
 
     def _get_remote_config(
@@ -244,7 +245,7 @@ class Profile:
                 "Downloading apio remote config file failed, "
                 f"error code {resp.status_code}",
             )
-            cout(f"URL {self.remote_config_url}", style="yellow")
+            cout(f"URL {self.remote_config_url}", style=INFO)
             sys.exit(1)
 
         # -- Here when download was ok.

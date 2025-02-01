@@ -16,6 +16,7 @@ from rich.table import Table
 from rich import box
 from apio.common import apio_console
 from apio.common.apio_console import cout, cprint
+from apio.common.styles import INFO, BORDER, EMPH1
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import util, cmd_util
 from apio.commands import options
@@ -88,13 +89,13 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
         show_header=True,
         show_lines=False,
         box=box.SQUARE,
-        border_style="dim",
+        border_style=BORDER,
         title="Apio Supported FPGAs",
         title_justify="left",
     )
 
     # -- Add columns
-    table.add_column("FPGA-ID", no_wrap=True, style="cyan")
+    table.add_column("FPGA-ID", no_wrap=True, style=EMPH1)
     table.add_column("BOARDS", no_wrap=True, justify="center")
     table.add_column("ARCH", no_wrap=True)
     table.add_column("PART-NUMBER", no_wrap=True)
@@ -135,7 +136,10 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
     if apio_console.is_terminal():
         cout(f"Total of {util.plurality(entries, 'fpga')}")
         if not verbose:
-            cout("Run 'apio fpgas -v' for additional columns.", style="yellow")
+            cout(
+                "Run 'apio fpgas -v' for additional columns.",
+                style=INFO,
+            )
 
 
 # -------- apio fpgas

@@ -18,6 +18,7 @@ import re
 from enum import Enum
 from typing import List, Optional, Tuple
 from apio.common.apio_console import cout
+from apio.common.styles import INFO, WARNING, SUCCESS, ERROR
 
 
 # -- Terminal cursor commands.
@@ -226,9 +227,9 @@ class SconsFilter:
             line_color = self._assign_line_color(
                 line.lower(),
                 [
-                    (r"^warning:", "yellow"),
-                    (r"^error:", "red"),
-                    (r"^fatal error:", "red"),
+                    (r"^warning:", WARNING),
+                    (r"^error:", ERROR),
+                    (r"^fatal error:", ERROR),
                 ],
             )
             cout(line, style=line_color)
@@ -305,7 +306,7 @@ class SconsFilter:
                 # -  Commit 93fc9bc4f3bfd21568e2d66f11976831467e3b97.
                 #
                 print(CURSOR_UP + ERASE_LINE, end="", flush=True)
-                cout(line, style="green")
+                cout(line, style=SUCCESS)
                 return
 
         # -- Special handling for tinyprog lines.
@@ -339,7 +340,7 @@ class SconsFilter:
         # -- Special filter for https://github.com/FPGAwars/apio/issues/557
         if IVERILOG_TIMING_WARNING_REGEX.search(line):
             # -- Ignore this line.
-            # cout(line, style="magenta")
+            # cout(line, style=WARNING)
             return
 
         # -- Handling the rest of the stdout lines.
@@ -348,9 +349,9 @@ class SconsFilter:
             line_color = self._assign_line_color(
                 line.lower(),
                 [
-                    (r"is up to date", "green"),
-                    (r"^warning:", "yellow"),
-                    (r"^error:", "red"),
+                    (r"is up to date", SUCCESS),
+                    (r"^warning:", WARNING),
+                    (r"^error:", ERROR),
                 ],
             )
             cout(line, style=line_color)
@@ -360,9 +361,9 @@ class SconsFilter:
         line_color = self._assign_line_color(
             line.lower(),
             [
-                (r"^info:", "yellow"),
-                (r"^warning:", "yellow"),
-                (r"^error:", "red"),
+                (r"^info:", INFO),
+                (r"^warning:", WARNING),
+                (r"^error:", ERROR),
             ],
         )
         cout(line, style=line_color)

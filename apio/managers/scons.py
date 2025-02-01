@@ -18,6 +18,7 @@ from functools import wraps
 from datetime import datetime
 from google.protobuf import text_format
 from apio.common.apio_console import cout, cerror, cstyle
+from apio.common.styles import SUCCESS, ERROR, EMPH1, EMPH3
 from apio.utils import util, pkg_util
 from apio.common.apio_consts import BUILD_DIR
 from apio.apio_context import ApioContext
@@ -373,7 +374,7 @@ class SCons:
         pkg_util.set_env_for_packages(self.apio_ctx)
 
         if util.is_debug():
-            cout("\nSCONS CALL:", style="magenta")
+            cout("\nSCONS CALL:", style=EMPH3)
             cout(f"* command:       {scons_command}")
             cout(f"* variables:     {variables}")
             cout(f"* uses packages: {uses_packages}")
@@ -388,7 +389,7 @@ class SCons:
         start_time = time.time()
 
         # -- Board name string in color
-        styled_board_id = cstyle(scons_params.project.board_id, style="cyan")
+        styled_board_id = cstyle(scons_params.project.board_id, style=EMPH1)
 
         # -- Print information on the console
         cout(f"Processing board {styled_board_id}")
@@ -443,9 +444,9 @@ class SCons:
 
         # -- Status message
         status = (
-            cstyle(" ERROR ", style="red")
+            cstyle(" ERROR ", style=ERROR)
             if is_error
-            else cstyle("SUCCESS", style="green")
+            else cstyle("SUCCESS", style=SUCCESS)
         )
 
         # -- Print the summary line.

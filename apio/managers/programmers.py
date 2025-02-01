@@ -12,6 +12,7 @@
 import re
 import sys
 from apio.common.apio_console import cout, cerror
+from apio.common.styles import INFO
 from apio.utils import util, pkg_util
 from apio.managers.system import System
 from apio.apio_context import ApioContext
@@ -270,7 +271,7 @@ def _check_usb(apio_ctx: ApioContext, board: str, board_info: dict) -> None:
         if "tinyprog" in board_info:
             cout(
                 "Activate bootloader by pressing the reset button",
-                style="yellow",
+                style=INFO,
             )
         sys.exit(1)
 

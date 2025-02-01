@@ -22,6 +22,7 @@ from SCons.Script.SConscript import SConsEnvironment
 from SCons.Environment import BuilderWrapper
 import SCons.Defaults
 from apio.common.apio_console import cout
+from apio.common.styles import EMPH3
 from apio.common.proto.apio_pb2 import SconsParams
 
 
@@ -116,7 +117,7 @@ class ApioEnv:
         keys = list(dictionary.keys())
         keys.sort()
         cout("")
-        cout(">>> Env vars BEGIN", style="magenta")
+        cout(">>> Env vars BEGIN", style=EMPH3)
         for key in keys:
             cout(f"{key} = {self.scons_env[key]}")
-        cout("<<< Env vars END\n", style="magenta")
+        cout("<<< Env vars END\n", style=EMPH3)

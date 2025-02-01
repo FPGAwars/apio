@@ -25,6 +25,8 @@ from varname import argname
 from serial.tools.list_ports import comports
 from apio.utils import env_options
 from apio.common.apio_console import cout, cerror
+from apio.common.styles import INFO, WARNING, ERROR, EMPH3
+
 
 # ----------------------------------------
 # -- Constants
@@ -329,7 +331,7 @@ def get_tinyprog_meta() -> list:
         cout(
             f"Warning: the command '{command_str}' failed with exit code "
             f"{result.exit_code}",
-            style="yellow",
+            style=WARNING,
         )
         return []
 
@@ -340,9 +342,9 @@ def get_tinyprog_meta() -> list:
     except json.decoder.JSONDecodeError as exc:
         cout(
             f"Warning: invalid json data provided by `{command_str}`",
-            style="yellow",
+            style=WARNING,
         )
-        cout(f"{exc}", style="red")
+        cout(f"{exc}", style=ERROR)
         return []
 
     # -- Return the meta-data
@@ -452,7 +454,7 @@ def debug_decorator(func):
             cout(
                 f"\n>>> Function {os.path.basename(func.__code__.co_filename)}"
                 f"/{func.__name__}() BEGIN",
-                style="magenta",
+                style=EMPH3,
             )
             cout("    * Arguments:")
             for arg in args:
@@ -494,7 +496,7 @@ def debug_decorator(func):
             cout(
                 f"<<< Function {os.path.basename(func.__code__.co_filename)}"
                 f"/{func.__name__}() END\n",
-                style="magenta",
+                style=EMPH3,
             )
 
         return result
@@ -526,7 +528,7 @@ def _check_home_dir(home_dir: Path):
         cout(
             "You can use the system env var APIO_HOME_DIR to set "
             "a different apio home dir.",
-            style="yellow",
+            style=INFO,
         )
         sys.exit(1)
 
@@ -544,7 +546,7 @@ def _check_home_dir(home_dir: Path):
                 "allowed. You can use the\n"
                 "system env var 'APIO_HOME_DIR' to set a different apio"
                 "home dir.",
-                style="yellow",
+                style=INFO,
             )
             sys.exit(1)
 

@@ -11,6 +11,7 @@ import click
 from rich.table import Table
 from rich import box
 from apio.common.apio_console import cout, cprint
+from apio.common.styles import BORDER, EMPH1, SUCCESS
 from apio.utils import cmd_util
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
@@ -44,7 +45,7 @@ def _list_cli():
         show_header=True,
         show_lines=True,
         box=box.SQUARE,
-        border_style="dim",
+        border_style=BORDER,
         title="Apio User Preferences",
         title_justify="left",
         padding=(0, 2),
@@ -52,7 +53,7 @@ def _list_cli():
 
     # -- Add columns.
     table.add_column("ITEM", no_wrap=True)
-    table.add_column("VALUE", no_wrap=True, style="cyan", min_width=30)
+    table.add_column("VALUE", no_wrap=True, style=EMPH1, min_width=30)
 
     # -- Add rows.
     value = apio_ctx.profile.preferences.get("colors", "on")
@@ -106,7 +107,7 @@ def _set_cli(colors: str):
 
     # -- Show the result. The new colors preference is already in effect.
     color = apio_ctx.profile.preferences["colors"]
-    cout(f"Colors set to [{color}]", style="green")
+    cout(f"Colors set to [{color}]", style=SUCCESS)
 
 
 # --- apio preferences

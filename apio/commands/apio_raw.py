@@ -12,6 +12,7 @@ import subprocess
 from typing import Tuple, List
 import click
 from apio.common.apio_console import cout
+from apio.common.styles import SUCCESS, ERROR
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import options
 from apio.utils import cmd_util, pkg_util
@@ -96,16 +97,16 @@ def cli(
     try:
         exit_code = subprocess.call(cmd, shell=False)
     except FileNotFoundError as e:
-        cout(f"{e}", style="red")
+        cout(f"{e}", style=ERROR)
         sys.exit(1)
 
     if verbose:
         cout("----\n")
         if exit_code == 0:
-            cout("Exit status [0] OK", style="green")
+            cout("Exit status [0] OK", style=SUCCESS)
 
         else:
-            cout(f"Exist status [{exit_code}] ERROR", style="red")
+            cout(f"Exist status [{exit_code}] ERROR", style=ERROR)
 
     # -- Return the command's status code.
     sys.exit(exit_code)

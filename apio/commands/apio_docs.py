@@ -14,6 +14,8 @@ from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import apio_docs_options
 from apio.common.apio_console import cprint, cout, docs_text, PADDING
+from apio.common.styles import BORDER, EMPH1
+
 
 # -- apio docs resources
 
@@ -62,13 +64,13 @@ def _resources_cli():
         show_lines=True,
         padding=PADDING,
         box=box.SQUARE,
-        border_style="dim",
+        border_style=BORDER,
         title="Apio Related Resources",
         title_justify="left",
     )
 
     table.add_column("RESOURCE", no_wrap=True)
-    table.add_column("RESOURCE LOCATION", no_wrap=True, style="cyan")
+    table.add_column("RESOURCE LOCATION", no_wrap=True, style=EMPH1)
 
     # -- Add rows
     table.add_row(

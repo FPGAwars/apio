@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Dict, Optional, Union, Any, List
 from configobj import ConfigObj
 from apio.common.apio_console import cout, cerror
+from apio.common.styles import INFO, SUCCESS
 
 
 DEFAULT_TOP_MODULE = "main"
@@ -174,7 +175,7 @@ class Project:
             cout(
                 "Project file has no 'top-module', "
                 f"assuming '{DEFAULT_TOP_MODULE}'.",
-                style="yellow",
+                style=INFO,
             )
 
     def get(self, option: str, default: Any = None) -> Union[str, Any]:
@@ -279,4 +280,4 @@ def create_project_file(
     config["env"]["top-module"] = top_module
 
     config.write()
-    cout(f"The file '{ini_path}' was created successfully.", style="green")
+    cout(f"The file '{ini_path}' was created successfully.", style=SUCCESS)

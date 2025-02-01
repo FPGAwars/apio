@@ -31,6 +31,8 @@ from SCons.Node.Alias import Alias
 from apio.scons.apio_env import ApioEnv
 from apio.common.apio_consts import TARGET, BUILD_DIR
 from apio.common.apio_console import cout, cerror, cwarning, cprint
+from apio.common.styles import INFO, BORDER, EMPH1, EMPH2, EMPH3
+
 
 # -- A list with the file extensions of the verilog source files.
 SRC_SUFFIXES = [".v", ".sv"]
@@ -189,9 +191,9 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
 
         # Debug info.
         if apio_env.is_debug:
-            cout(f"Dependencies of {file_node.name}:", style="blue")
+            cout(f"Dependencies of {file_node.name}:", style=EMPH2)
             for dependency in dependencies:
-                cout(f"  {dependency}", style="blue")
+                cout(f"  {dependency}", style=EMPH2)
 
         # All done
         return apio_env.scons_env.File(dependencies)
@@ -306,7 +308,7 @@ def check_valid_testbench_name(testbench: str) -> None:
     and exit."""
     if not is_verilog_src(testbench) or not has_testbench_name(testbench):
         cerror(f"'{testbench}' is not a valid testbench file name.")
-        cout(TESTBENCH_HINT, style="yellow")
+        cout(TESTBENCH_HINT, style=INFO)
         sys.exit(1)
 
 
@@ -330,14 +332,14 @@ def get_sim_config(
         # -- Case 2 Testbench name was not specified and no testbench files
         # -- were found in the project.
         cerror("No testbench files found in the project.")
-        cout(TESTBENCH_HINT, style="yellow")
+        cout(TESTBENCH_HINT, style=INFO)
 
         sys.exit(1)
     elif len(test_srcs) == 1:
         # -- Case 3 Testbench name was not specified but there is exactly
         # -- one in the project.
         testbench = test_srcs[0]
-        cout(f"Found testbench file {testbench}", style="cyan")
+        cout(f"Found testbench file {testbench}", style=EMPH1)
     else:
         # -- Case 4 Testbench name was not specified and there are multiple
         # -- testbench files in the project.
@@ -345,7 +347,7 @@ def get_sim_config(
         cout(
             "Please specify the testbench file name in the command "
             "or in apio.ini 'default-testbench' option.",
-            style="yellow",
+            style=INFO,
         )
         sys.exit(1)
 
@@ -383,7 +385,7 @@ def get_tests_configs(
         # -- Case 2 - Testbench file name was not specified and there are no
         # -- testbench files in the project.
         cerror("No testbench files found in the project.")
-        cout(TESTBENCH_HINT, style="yellow")
+        cout(TESTBENCH_HINT, style=INFO)
         sys.exit(1)
     else:
         # -- Case 3 - Testbench file name was not specified but there are one
@@ -448,7 +450,7 @@ def source_file_issue_action() -> FunctionAction:
                 continue
 
             # -- Here the file is a testbench file.
-            cout(f"Testbench {file.name}", style="cyan")
+            cout(f"Testbench {file.name}", style=EMPH1)
 
             # -- Read the testbench file text.
             file_text = file.get_text_contents()
@@ -495,7 +497,7 @@ def _print_pnr_utilization_report(report: Dict[str, any]):
         show_header=True,
         show_lines=False,
         box=box.SQUARE,
-        border_style="dim",
+        border_style=BORDER,
         title="FPGA Resource Utilization",
         title_justify="left",
         padding=(0, 2),
@@ -537,7 +539,7 @@ def _maybe_print_pnr_clocks_report(
         show_header=True,
         show_lines=True,
         box=box.SQUARE,
-        border_style="dim",
+        border_style=BORDER,
         title="Clock Information",
         title_justify="left",
         padding=(0, 2),
@@ -546,7 +548,7 @@ def _maybe_print_pnr_clocks_report(
     # -- Add columns
     table.add_column("CLOCK", no_wrap=True)
     table.add_column(
-        "MAX SPEED [Mhz]", no_wrap=True, justify="right", style="magenta"
+        "MAX SPEED [Mhz]", no_wrap=True, justify="right", style=EMPH3
     )
 
     # -- Add rows.
@@ -586,12 +588,12 @@ def _print_pnr_report(
     # -- Print summary.
     cout("")
     if not clock_report_printed:
-        cout("No clocks were found in the design.", style="yellow")
+        cout("No clocks were found in the design.", style=INFO)
     if not verbose:
         cout(
             "Run 'apio report --verbose' for more details.",
             nl=False,
-            style="yellow",
+            style=INFO,
         )
 
 
