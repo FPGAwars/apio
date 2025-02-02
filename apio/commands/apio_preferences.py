@@ -7,40 +7,24 @@
 # -- License GPLv2
 """Implementation of 'apio preferences' command"""
 
+import sys
 import click
 from rich.table import Table
 from rich import box
+from apio.commands import options
 from apio.common.apio_console import cout, cprint
 from apio.common.styles import BORDER, EMPH1, SUCCESS
 from apio.utils import cmd_util
 from apio.apio_context import ApioContext, ApioContextScope
-from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
+from apio.utils.cmd_util import ApioCommand
 
-# ---- apio preferences list
-
-# -- Text in the markdown format of the python rich library.
-APIO_PREFERENCES_LIST_HELP = """
-The command 'apio preferences list' lists the current user preferences.
-
-Examples:[code]
-  apio preferences list  # List the user preferences.
-  apio pref l            # Same using shortcuts.[/code]
-"""
+# --- apio preferences
 
 
 # R0801: Similar lines in 2 files
 # pylint: disable=R0801
-@click.command(
-    name="list",
-    cls=ApioCommand,
-    short_help="List the apio user preferences.",
-    help=APIO_PREFERENCES_LIST_HELP,
-)
-def _list_cli():
-    """Implements the 'apio preferences list' command."""
-
-    # -- Create the apio context.
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+def _list_preferences(apio_ctx: ApioContext):
+    """Lists the preferences."""
 
     table = Table(
         show_header=True,
@@ -58,93 +42,79 @@ def _list_cli():
 
     # -- Add rows.
     value = apio_ctx.profile.preferences.get("theme", "light")
-    table.add_row("Theme", value)
+    table.add_row("Theme name", value)
 
     # -- Render table.
     cout()
     cprint(table)
 
 
-# ---- apio preferences set
-
-# -- Text in the markdown format of the python rich library.
-APIO_PREF_SET_HELP = """
-The command 'apio preferences set' allows to set supported user \
-preferences.
-
-Examples:[code]
-  apio preferences set --theme light      # For light background.
-  apio preferences set --theme dark       # For dark background.
-  apio preferences set --theme no-color   # No colors.
-  apio pref set -t light                  # Using shortcuts.[/code]
-
-To list the current theme type 'apio preference list'.
-"""
-
-theme_options = click.option(
-    "theme",  # Var name
-    "-t",
-    "--theme",
-    required=True,
-    type=click.Choice(["light", "dark", "no-color"], case_sensitive=True),
-    help="Set theme.",
-    cls=cmd_util.ApioOption,
-)
-
-
-@click.command(
-    name="set",
-    cls=ApioCommand,
-    short_help="Set the apio user preferences.",
-    help=APIO_PREF_SET_HELP,
-)
-@theme_options
-def _set_cli(theme: str):
-    """Implements the 'apio preferences set' command."""
-
-    # -- Create the apio context.
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+def _set_theme(apio_ctx: ApioContext, theme_name: str):
+    """Sets the colors theme to the given theme name."""
 
     # -- Set the colors preference value.
-    apio_ctx.profile.set_preferences_theme(theme)
+    apio_ctx.profile.set_preferences_theme(theme_name)
 
     # -- Show the result. The new colors preference is already in effect.
     confirmed_theme = apio_ctx.profile.preferences["theme"]
     cout(f"Theme set to [{confirmed_theme}]", style=SUCCESS)
 
 
-# --- apio preferences
-
 # -- Text in the markdown format of the python rich library.
 APIO_PREFERENCES_HELP = """
-The command group 'apio preferences' contains subcommands to manage \
-the apio user preferences. These are user configurations that affect all the \
-apio projects that use the same apio home directory (e.g. '~/.apio').
+The command 'apio preferences' allows to view and manage the setting of the \
+apio's user's preferences. These settings are stored in the 'profile.json' \
+file in the apio home directory (e.g. '~/.apio') and apply to all \
+apio projects.
 
-The user preference is not part of any apio project and typically are not \
-shared when multiple user collaborate on the same project.
+Examples:[code]
+  apio preferences -t light      # Colors for light backgrounds.
+  apio preferences -t dark       # Colors for dark backgrounds.
+  apio preferences -t no-color   # No colors.
+  apio preferences --list        # List current preferences.
+  apio pref -t dark              # Using command shortcut.[/code]
 """
 
-# -- We have only a single group with the title 'Subcommands'.
-SUBGROUPS = [
-    ApioSubgroup(
-        "Subcommands",
-        [
-            _list_cli,
-            _set_cli,
-        ],
-    )
-]
+
+theme_option = click.option(
+    "theme_name",  # Var name
+    "-t",
+    "--theme",
+    type=click.Choice(["light", "dark", "no-color"], case_sensitive=True),
+    help="Set colors theme name.",
+    cls=cmd_util.ApioOption,
+)
 
 
 @click.command(
     name="preferences",
-    cls=ApioGroup,
-    subgroups=SUBGROUPS,
+    cls=ApioCommand,
     short_help="Manage the apio user preferences.",
     help=APIO_PREFERENCES_HELP,
 )
-def cli():
+@click.pass_context
+@theme_option
+@options.list_option_gen(help="List the preferences.")
+def cli(
+    cmd_ctx: click.Context,
+    # -- Options
+    theme_name: str,
+    list_: bool,
+):
     """Implements the apio preferences command."""
 
-    # pass
+    # -- If nothing to do print help and exit
+    if not (theme_name or list_):
+        click.echo(cmd_ctx.get_help())
+        sys.exit(0)
+
+    # -- Construct an apio context.
+    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+
+    # -- Handle theme setting.
+    if theme_name:
+        _set_theme(apio_ctx, theme_name)
+
+    # -- Handle preferences settings.
+    if list_:
+        _list_preferences(apio_ctx)

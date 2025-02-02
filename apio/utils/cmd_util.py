@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from typing import List, Dict, Union
 import click
 from click.formatting import HelpFormatter
+from apio.profile import Profile
 from apio.common.styles import CMD_NAME
 from apio.common.apio_console import (
     ConsoleCapture,
@@ -270,6 +271,11 @@ class ApioGroup(click.Group):
     format."""
 
     def __init__(self, *args, **kwargs):
+        # -- Remember if apply_theme was set to True for this command.
+        # -- This is used to setup the color preferences before
+        # -- the apio top level cli is invoked.
+        self._apply_theme = kwargs.pop("apply_theme", False)
+
         # -- Consume the 'subgroups' arg.
         self._subgroups: List[ApioSubgroup] = kwargs.pop("subgroups")
         assert isinstance(self._subgroups, list)
@@ -348,7 +354,16 @@ class ApioGroup(click.Group):
         Returns the Command or Group (a subclass of Command) of the matching
         sub command or None if not match.
         """
+
+        # -- This is triggered when starting to process the top level apio cli
+        # -- command. It sets the colors based on user preferences.
+        if self._apply_theme:
+            Profile.apply_color_preferences()
+
+        # -- This 'fix' partial command names into their full names,
+        # -- to have more intuitive help and usage messages.
         _patch_partial_commands_names(ctx)
+
         # -- First priority is for exact match. For this we use the click
         # -- default implementation from the parent class.
         cmd: click.Command = click.Group.get_command(self, ctx, cmd_name)

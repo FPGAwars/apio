@@ -72,10 +72,11 @@ THEME_LIGHT = {
     # -- call. These styles are not used directly by apio and thus we don't
     # -- assign them abstract names.  For the full list of available
     # -- styles see https://tinyurl.com/rich-default-styles
+    # -- Colors: https://rich.readthedocs.io/en/stable/appendix/colors.html
     "bar.back": Style(color="grey23"),
     "bar.complete": Style(color="rgb(249,38,114)"),
     "bar.finished": Style(color="rgb(114,156,31)"),
-    "table.header": Style(bold=True),
+    "table.header": "",
     # --Apio's abstracted style names.
     styles.STRING: "italic",
     styles.CODE: "bold",
@@ -100,20 +101,20 @@ THEME_DARK = {
     "bar.back": Style(color="grey23"),
     "bar.complete": Style(color="rgb(249,38,114)"),
     "bar.finished": Style(color="rgb(114,156,31)"),
-    "table.header": Style(bold=True),
+    "table.header": "",
     # --Apio's abstracted style names.
     styles.STRING: "italic",
     styles.CODE: "bold",
-    styles.URL: "dark_blue",
-    styles.CMD_NAME: "dark_red bold",
-    styles.TITLE: "dark_red bold",
+    styles.URL: "bright_blue",
+    styles.CMD_NAME: "bright_red",
+    styles.TITLE: "red bold",
     styles.BORDER: "dim",
-    styles.EMPH1: "blue",
-    styles.EMPH2: "deep_sky_blue4 bold",
-    styles.EMPH3: "cyan",
-    styles.SUCCESS: "green",
-    styles.INFO: "yellow",
-    styles.WARNING: "yellow",
+    styles.EMPH1: "bright_cyan",
+    styles.EMPH2: "bright_blue bold",
+    styles.EMPH3: "bright_magenta",
+    styles.SUCCESS: "bright_green",
+    styles.INFO: "bright_yellow",
+    styles.WARNING: "bright_yellow",
     styles.ERROR: "red",
 }
 
@@ -125,10 +126,15 @@ THEMES_TABLE = {
 
 def configure(
     *,
+    reset: bool = False,
     terminal_mode: TerminalMode = None,
     theme_name: str = None,
 ) -> None:
     """Change the apio console settings."""
+
+    # -- Reset the state if requested.
+    if reset:
+        _state.reset()
 
     # -- Update terminal mode if specified.
     if terminal_mode is not None:
@@ -151,6 +157,7 @@ def configure(
         color_system = "auto"
         theme_styles = THEMES_TABLE.get(_state.theme_name, THEME_LIGHT)
 
+    # -- Map the terminal mode to the console's force_terminal arg.
     if _state.terminal_mode == FORCE_TERMINAL:
         force_terminal = True
     elif _state.terminal_mode == FORCE_PIPE:
@@ -158,7 +165,7 @@ def configure(
     else:
         assert (
             _state.terminal_mode == AUTO_TERMINAL
-        ), f"**** {_state.terminal_mode=}"
+        ), f"{_state.terminal_mode=}"
         force_terminal = None
 
     # -- Construct the new console.
@@ -186,13 +193,6 @@ def console():
     """Returns the underlying console. This value should not be cached as
     the console object changes when the configure() or reset() are called."""
     return _state.console
-
-
-# pylint: disable=global-statement
-def reset():
-    """Reset the apio console to initial state."""
-    _state.reset()
-    configure()
 
 
 def cunstyle(text: str) -> str:
@@ -313,7 +313,3 @@ def is_terminal():
 def cwidth():
     """Return the console width."""
     return _state.console.width
-
-
-# -- Initialize the module.
-reset()

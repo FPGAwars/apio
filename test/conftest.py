@@ -122,9 +122,9 @@ class ApioSandbox:
 
         # -- If True, force terminal mode, if False, forces pipe mode,
         # -- otherwise auto which is pipe mode under pytest.
-        apio_console.reset()
         apio_console.configure(
-            terminal_mode=FORCE_TERMINAL if terminal_mode else FORCE_PIPE
+            reset=True,
+            terminal_mode=FORCE_TERMINAL if terminal_mode else FORCE_PIPE,
         )
 
         # -- Invoke the command. Get back the collected results.
@@ -368,7 +368,9 @@ class ApioRunner:
 
         # -- Reset the apio console, since we run multiple sandboxes in the
         # -- same process.
-        apio_console.reset()
+        apio_console.configure(
+            reset=True, terminal_mode=FORCE_TERMINAL, theme_name="light"
+        )
 
         try:
             # -- This is the end of the context manager _entry part. The

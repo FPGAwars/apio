@@ -262,7 +262,7 @@ def _resources_cli():
 # -- Text in the markdown format of the python rich library.
 APIO_DOCS_HELP = """
 The command group 'apio docs' contains subcommands that provides various \
-apio documentation and references to online resources.
+apio documentation and references information.
 """
 
 # -- We have only a single group with the title 'Subcommands'.
