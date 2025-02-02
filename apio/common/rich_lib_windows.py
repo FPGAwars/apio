@@ -35,12 +35,18 @@ def apply_workaround(params: RichLibWindowsParams):
     to apply the the workaround for the rich library."""
     assert params.IsInitialized, params
 
-    # This takes care of the table graphic box.
-    # https://github.com/Textualize/rich/issues/3625
+    # -- This takes care of the table graphic box.
+    # -- See https://github.com/Textualize/rich/issues/3625
     sys.stdout.reconfigure(encoding=params.stdout_encoding)
 
     # This enables the colors.
-    # https://github.com/Textualize/rich/issues/3082
+    # See https://github.com/Textualize/rich/issues/3082
+
+    # -- Make sure that _windows_console_features is initialized with cached
+    # -- values.
+    rich.console.get_windows_console_features()
     assert rich.console._windows_console_features is not None
+
+    # -- Apply the patch.
     rich.console._windows_console_features.vt = params.vt
     rich.console._windows_console_features.truecolor = params.truecolor
