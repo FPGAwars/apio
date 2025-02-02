@@ -36,6 +36,9 @@ PADDING = padding = (0, 3, 0, 1)
 # -- Line width when rendering help and docs.
 DOCS_WIDTH = 70
 
+# -- The name of the colors theme that turns colors off.
+NO_COLORS = "no-colors"
+
 
 # -- This console state is initialized at the end of this file.
 @dataclass
@@ -150,7 +153,7 @@ def configure(
         _state.theme_name = theme_name
 
     # -- Determine console color parameters.
-    if _state.theme_name == "no-color":
+    if _state.theme_name == NO_COLORS:
         color_system = None
         theme_styles = THEME_LIGHT  # Arbitrary, ignored since colors are off.
     else:
@@ -189,7 +192,7 @@ def configure(
 
 def is_colors_enabled() -> bool:
     """Returns True if colors are enabled."""
-    return _state.theme_name != "no-color"
+    return _state.theme_name != NO_COLORS
 
 
 def theme() -> str:

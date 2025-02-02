@@ -17,3 +17,4 @@ BUILD_DIR = Path("_build")
 
 # -- Target name. This is the base file name for various build artifacts.
 TARGET = str(BUILD_DIR / "hardware")
+

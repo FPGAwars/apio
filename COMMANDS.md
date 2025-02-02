@@ -837,14 +837,14 @@ Usage: apio preferences [OPTIONS]
   apply to all apio projects.
 
   Examples:
-    apio preferences -t light      # Colors for light backgrounds.
-    apio preferences -t dark       # Colors for dark backgrounds.
-    apio preferences -t no-color   # No colors.
-    apio preferences --list        # List current preferences.
-    apio pref -t dark              # Using command shortcut.
+    apio preferences -t light       # Colors for light backgrounds.
+    apio preferences -t dark        # Colors for dark backgrounds.
+    apio preferences -t no-colors   # No colors.
+    apio preferences --list         # List current preferences.
+    apio pref -t dark               # Using command shortcut.
 
 Options:
-  -t, --theme [light|dark|no-color]
+  -t, --theme [light|dark|no-colors]
                                   Set colors theme name.
   -l, --list                      List the preferences.
   -h, --help                      Show this message and exit.

@@ -37,16 +37,16 @@ def test_colors_on_off(apio_runner: ApioRunner):
         sb.assert_ok(result)
         assert result.output != cunstyle(result.output)  # Colored.
 
-        # -- Execute "apio preferences --theme no-color"
-        result = sb.invoke_apio_cmd(apio, "preferences", "--theme", "no-color")
+        # -- Execute "apio preferences --theme no-colors"
+        result = sb.invoke_apio_cmd(apio, "preferences", "--theme", "no-colors")
         sb.assert_ok(result)
-        assert "Theme set to [no-color]" in result.output
+        assert "Theme set to [no-colors]" in result.output
 
         # -- Execute "apio preferences --list". It should reports the
-        # -- no-color theme.
+        # -- no-colors theme.
         result = sb.invoke_apio_cmd(apio, "preferences", "--list")
         sb.assert_ok(result)
-        assert re.search(r"Theme.*no-color", result.output), result.output
+        assert re.search(r"Theme.*no-colors", result.output), result.output
         assert result.output == cunstyle(result.output)  # Non colored..
 
         # -- Execute "apio system info". It should not emit colors.

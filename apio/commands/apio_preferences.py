@@ -12,7 +12,7 @@ import click
 from rich.table import Table
 from rich import box
 from apio.commands import options
-from apio.common.apio_console import cout, cprint
+from apio.common.apio_console import cout, cprint, NO_COLORS
 from apio.common.styles import BORDER, EMPH1, SUCCESS
 from apio.utils import cmd_util
 from apio.apio_context import ApioContext, ApioContextScope
@@ -68,11 +68,11 @@ file in the apio home directory (e.g. '~/.apio') and apply to all \
 apio projects.
 
 Examples:[code]
-  apio preferences -t light      # Colors for light backgrounds.
-  apio preferences -t dark       # Colors for dark backgrounds.
-  apio preferences -t no-color   # No colors.
-  apio preferences --list        # List current preferences.
-  apio pref -t dark              # Using command shortcut.[/code]
+  apio preferences -t light       # Colors for light backgrounds.
+  apio preferences -t dark        # Colors for dark backgrounds.
+  apio preferences -t no-colors   # No colors.
+  apio preferences --list         # List current preferences.
+  apio pref -t dark               # Using command shortcut.[/code]
 """
 
 
@@ -80,7 +80,7 @@ theme_option = click.option(
     "theme_name",  # Var name
     "-t",
     "--theme",
-    type=click.Choice(["light", "dark", "no-color"], case_sensitive=True),
+    type=click.Choice(["light", "dark", NO_COLORS], case_sensitive=True),
     help="Set colors theme name.",
     cls=cmd_util.ApioOption,
 )
