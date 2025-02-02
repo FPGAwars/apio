@@ -5,6 +5,7 @@
   * [apio clean](#apio-clean) - Delete the apio generated files.
   * [apio create](#apio-create) - Create an apio.ini project file.
   * [apio docs](#apio-docs) - Read apio documentations.
+    * [apio docs cli](#apio-docs-cli) - Apio's command line conventions.'
     * [apio docs options](#apio-docs-options) - Apio.ini options documentation.
     * [apio docs resources](#apio-docs-resources) - Information about online resources.
   * [apio drivers](#apio-drivers) - Manage the operating system drivers.
@@ -32,8 +33,6 @@
     * [apio packages list](#apio-packages-list) - List apio packages.
     * [apio packages uninstall](#apio-packages-uninstall) - Uninstall apio packages.
   * [apio preferences](#apio-preferences) - Manage the apio user preferences.
-    * [apio preferences list](#apio-preferences-list) - List the apio user preferences.
-    * [apio preferences set](#apio-preferences-set) - Set the apio user preferences.
   * [apio raw](#apio-raw) - Execute commands directly from the Apio packages.
   * [apio report](#apio-report) - Report design utilization and timing.
   * [apio sim](#apio-sim) - Simulate a testbench with graphic results.
@@ -214,14 +213,32 @@ Options:
 Usage: apio docs [OPTIONS] COMMAND [ARGS]...
 
   The command group 'apio docs' contains subcommands that provides
-  various apio documentation and references to online resources.
+  various apio documentation and references information.
 
 Options:
   -h, --help  Show this message and exit.
 
 Subcommands:
+  apio docs cli        Apio's command line conventions.'
   apio docs options    Apio.ini options documentation.
   apio docs resources  Information about online resources.
+
+```
+
+<br>
+
+### apio docs cli
+
+```
+Usage: apio docs cli [OPTIONS]
+
+  The command 'apio docs cli' provides information the Apio's command
+  line conventions and features.
+  Examples:
+    apio docs cli        # Shoe the cli documentation text.
+
+Options:
+  -h, --help  Show this message and exit.
 
 ```
 
@@ -750,6 +767,7 @@ Usage: apio packages install [OPTIONS] PACKAGE
 
   Examples:
     apio packages install                   # Install missing packages.
+    apio pack inst                          # Same, with shortcuts
     apio packages install --force           # Reinstall all packages.
     apio packages install oss-cad-suite     # Install package.
     apio packages install examples@0.0.32   # Install a specific
@@ -811,63 +829,25 @@ Options:
 ### apio preferences
 
 ```
-Usage: apio preferences [OPTIONS] COMMAND [ARGS]...
+Usage: apio preferences [OPTIONS]
 
-  The command group 'apio preferences' contains subcommands to manage
-  the apio user preferences. These are user configurations that affect
-  all the apio projects that use the same apio home directory (e.g.
-  '~/.apio').
-
-  The user preference is not part of any apio project and typically are
-  not shared when multiple user collaborate on the same project.
-
-Options:
-  -h, --help  Show this message and exit.
-
-Subcommands:
-  apio preferences list  List the apio user preferences.
-  apio preferences set   Set the apio user preferences.
-
-```
-
-<br>
-
-### apio preferences list
-
-```
-Usage: apio preferences list [OPTIONS]
-
-  The command 'apio preferences list' lists the current user
-  preferences.
+  The command 'apio preferences' allows to view and manage the setting
+  of the apio's user's preferences. These settings are stored in the
+  'profile.json' file in the apio home directory (e.g. '~/.apio') and
+  apply to all apio projects.
 
   Examples:
-    apio preferences list  # List the user preferences.
+    apio preferences -t light      # Colors for light backgrounds.
+    apio preferences -t dark       # Colors for dark backgrounds.
+    apio preferences -t no-color   # No colors.
+    apio preferences --list        # List current preferences.
+    apio pref -t dark              # Using command shortcut.
 
 Options:
-  -h, --help  Show this message and exit.
-
-```
-
-<br>
-
-### apio preferences set
-
-```
-Usage: apio preferences set [OPTIONS]
-
-  The command 'apio preferences set' allows to set the supported user
-  preferences.
-
-  Examples:
-    apio preferences set --colors on    # Enable colors.
-    apio preferences set --colors off   # Disable colors.
-
-  The apio colors are optimized for a terminal windows with a white
-  background.
-
-Options:
-  -c, --colors [on|off]  Set/reset colors mode.  [required]
-  -h, --help             Show this message and exit.
+  -t, --theme [light|dark|no-color]
+                                  Set colors theme name.
+  -l, --list                      List the preferences.
+  -h, --help                      Show this message and exit.
 
 ```
 
