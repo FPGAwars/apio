@@ -13,6 +13,7 @@ import os
 import pytest
 from click.testing import CliRunner, Result
 from apio.common import apio_console
+from apio.common.proto.apio_pb2 import FORCE_PIPE, FORCE_TERMINAL
 
 
 # -- Debug mode on/off
@@ -121,7 +122,10 @@ class ApioSandbox:
 
         # -- If True, force terminal mode, if False, forces pipe mode,
         # -- otherwise auto which is pipe mode under pytest.
-        apio_console.configure(force_terminal=terminal_mode)
+        apio_console.reset()
+        apio_console.configure(
+            terminal_mode=FORCE_TERMINAL if terminal_mode else FORCE_PIPE
+        )
 
         # -- Invoke the command. Get back the collected results.
         result = self._click_runner.invoke(

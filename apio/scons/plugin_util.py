@@ -265,7 +265,7 @@ def waves_target(
     name: str,
     vcd_file_target: NodeList,
     sim_config: SimulationConfig,
-    allways_build: bool = False,
+    always_build: bool = False,
 ) -> List[Alias]:
     """Construct a target to launch the QTWave signal viwer.
     vcd_file_target is the simulator target that generated the vcd file
@@ -297,7 +297,7 @@ def waves_target(
         name,
         source=vcd_file_target,
         action=commands,
-        allways_build=allways_build,
+        always_build=always_build,
     )
 
     return target
@@ -518,7 +518,7 @@ def _print_pnr_utilization_report(report: Dict[str, any]):
         available_str = f"{available}  "
         percents = int(100 * used / available)
         percents_str = f"{percents}%  " if used else ""
-        style = "magenta" if used > 0 else None
+        style = EMPH3 if used > 0 else None
         table.add_row(
             resource, used_str, available_str, percents_str, style=style
         )

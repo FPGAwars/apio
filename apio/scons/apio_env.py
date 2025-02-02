@@ -87,7 +87,7 @@ class ApioEnv:
         builder_id: str,
         target,
         sources: List,
-        extra_dependecies: Optional[List] = None,
+        extra_dependencies: Optional[List] = None,
         always_build: bool = False,
     ):
         """Creates an return a target that uses the builder with given id."""
@@ -99,15 +99,15 @@ class ApioEnv:
         if always_build:
             self.scons_env.AlwaysBuild(target)
         # -- Add extra dependencies, if any.
-        if extra_dependecies:
-            for dependency in extra_dependecies:
+        if extra_dependencies:
+            for dependency in extra_dependencies:
                 self.scons_env.Depends(target, dependency)
         return target
 
-    def alias(self, name, *, source, action=None, allways_build: bool = False):
+    def alias(self, name, *, source, action=None, always_build: bool = False):
         """Creates a target with given dependencies"""
         target = self.scons_env.Alias(name, source, action)
-        if allways_build:
+        if always_build:
             self.scons_env.AlwaysBuild(target)
         return target
 

@@ -13,37 +13,38 @@ def test_colors_on_off(apio_runner: ApioRunner):
 
     with apio_runner.in_sandbox() as sb:
 
-        # -- Execute "apio preferences set --colors on"
+        # -- Execute "apio preferences set --theme dark"
         result = sb.invoke_apio_cmd(
-            apio, "preferences", "set", "--colors", "on"
+            apio, "preferences", "set", "--theme", "dark"
         )
         sb.assert_ok(result)
-        assert "Colors set to [on]" in result.output
+        assert "Theme set to [dark]" in result.output
         assert result.output != cunstyle(result.output)  # Colored.
 
-        # -- Execute "apio preferences list". It should reports colors on,
-        # -- in colors.
+        # -- Execute "apio preferences list". It should reports the dark
+        # -- theme.
         result = sb.invoke_apio_cmd(apio, "preferences", "list")
         sb.assert_ok(result)
         assert result.output != cunstyle(result.output)  # Colored.
+        assert "dark" in result.output
 
         # -- Execute "apio system info". It should emit colors.
         result = sb.invoke_apio_cmd(apio, "system", "info")
         sb.assert_ok(result)
         assert result.output != cunstyle(result.output)  # Colored.
 
-        # -- Execute "apio preferences set --colors off"
+        # -- Execute "apio preferences set --theme no-color"
         result = sb.invoke_apio_cmd(
-            apio, "preferences", "set", "--colors", "off"
+            apio, "preferences", "set", "--theme", "no-color"
         )
         sb.assert_ok(result)
-        assert "Colors set to [off]" in result.output
+        assert "Theme set to [no-color]" in result.output
 
-        # -- Execute "apio preferences list". It should reports colors off,
-        # -- without colors.
+        # -- Execute "apio preferences list". It should reports the
+        # -- no-color theme.
         result = sb.invoke_apio_cmd(apio, "preferences", "list")
         sb.assert_ok(result)
-        assert re.search(r"Colors.*off", result.output), result.output
+        assert re.search(r"Theme.*no-color", result.output), result.output
         assert result.output == cunstyle(result.output)  # Non colored..
 
         # -- Execute "apio system info". It should not emit colors.

@@ -15,7 +15,8 @@ def test_command_shortcuts(apio_runner: ApioRunner):
         # -- Exact match.
         result = sb.invoke_apio_cmd(apio, "preferences", "list")
         sb.assert_ok(result)
-        assert "Colors" in result.output
+        assert "Theme" in result.output
+        assert "light" in result.output
 
         # -- Run 'apio pr list -xyz'
         # -- Unique match.

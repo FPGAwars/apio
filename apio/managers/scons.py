@@ -17,6 +17,7 @@ import shutil
 from functools import wraps
 from datetime import datetime
 from google.protobuf import text_format
+from apio.common import apio_console
 from apio.common.apio_console import cout, cerror, cstyle
 from apio.common.styles import SUCCESS, ERROR, EMPH1, EMPH3
 from apio.utils import util, pkg_util
@@ -24,9 +25,10 @@ from apio.common.apio_consts import BUILD_DIR
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
 from apio.managers import installer
-from apio.profile import Profile
 from apio.common import rich_lib_windows
 from apio.common.proto.apio_pb2 import (
+    FORCE_PIPE,
+    FORCE_TERMINAL,
     Verbosity,
     Environment,
     SconsParams,
@@ -307,6 +309,12 @@ class SCons:
             Environment(
                 platform_id=apio_ctx.platform_id,
                 is_windows=apio_ctx.is_windows,
+                terminal_mode=(
+                    FORCE_TERMINAL
+                    if apio_console.is_terminal()
+                    else FORCE_PIPE
+                ),
+                theme_name=apio_console.theme(),
                 is_debug=util.is_debug(),
                 yosys_path=oss_vars["YOSYS_LIB"],
                 trellis_path=oss_vars["TRELLIS"],
@@ -412,8 +420,9 @@ class SCons:
 
         # -- An output filter that manipulates the scons stdout/err lines as
         # -- needed and write them to stdout.
-        colors_enabled = Profile.read_color_preferences()
-        scons_filter = SconsFilter(colors_enabled)
+        scons_filter = SconsFilter(
+            colors_enabled=apio_console.is_colors_enabled()
+        )
 
         # -- Write the scons parameters to a temp file in the build
         # -- directory. It will be cleaned up as part of 'apio cleanup'.

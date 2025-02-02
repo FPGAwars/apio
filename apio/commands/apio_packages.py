@@ -136,6 +136,7 @@ for the operation of Apio on your system.
 
 Examples:[code]
   apio packages install                   # Install missing packages.
+  apio pack inst                          # Same, with shortcuts
   apio packages install --force           # Reinstall all packages.
   apio packages install oss-cad-suite     # Install package.
   apio packages install examples@0.0.32   # Install a specific version.[/code]

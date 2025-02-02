@@ -7,7 +7,7 @@
 
 import json
 import sys
-from typing import Union, Any, Dict
+from typing import Dict, Optional
 from pathlib import Path
 import requests
 from apio.common import apio_console
@@ -70,15 +70,14 @@ class Profile:
         self._save()
 
     def add_setting(self, key: str, value: str):
-        """Add one key,value pair in the settings"""
+        """Add or overwrite a (key,value) pair in the settings"""
 
         self.settings[key] = value
         self._save()
 
-    def set_preferences_colors(self, value: str):
-        """Set the colors preferences to on or off."""
-        assert value in ["on", "off"], f"Invalid value [{value}]"
-        self.preferences["colors"] = value
+    def set_preferences_theme(self, theme: str):
+        """Set prefer theme name."""
+        self.preferences["theme"] = theme
         self._save()
         self.apply_color_preferences()
 
@@ -91,18 +90,16 @@ class Profile:
 
     @staticmethod
     def apply_color_preferences():
-        """If an colors are disabled and a click context exist, set it up to
-        disable colors.
-        """
-        # -- Determine if colors should be on or off.
-        colors: bool = Profile.read_color_preferences()
+        """Apply currently preferred theme."""
+        # -- If not specified, read the theme from file.
+        theme: str = Profile.read_preferences_theme()
 
-        # -- Apply to apio console which controls all output and coloring.
-        apio_console.configure(colors=colors)
+        # -- Apply to the apio console.
+        apio_console.configure(theme_name=theme)
 
     @staticmethod
-    def read_color_preferences(*, default=True) -> Union[bool, Any]:
-        """Returns the value of the colors preferences or default if not
+    def read_preferences_theme(*, default: str = "light") -> Optional[str]:
+        """Returns the value of the theme preference or default if not
         specified. This is a static method because we may need this value
         before creating  the profile object, for example when printing command
         help.
@@ -117,14 +114,10 @@ class Profile:
             # -- Get the colors preferences value, if exists.
             data = json.load(f)
             preferences = data.get("preferences", {})
-            colors = preferences.get("colors", None)
+            theme = preferences.get("theme", None)
 
         # -- Get the click context, if exists.
-        if colors == "on":
-            return True
-        if colors == "off":
-            return False
-        return default
+        return theme if theme else default
 
     def get_package_installed_version(
         self, package_name: str, default="0.0.0"

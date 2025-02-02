@@ -4,7 +4,9 @@ Tests of the scons manager scons.py
 
 from test.conftest import ApioRunner
 from google.protobuf import text_format
+from apio.common import apio_console
 from apio.common.proto.apio_pb2 import (
+    FORCE_TERMINAL,
     SconsParams,
     Verbosity,
     TargetParams,
@@ -42,6 +44,8 @@ fpga_info {
 environment {
   platform_id: "TBD"
   is_windows: true  # TBD
+  terminal_mode: FORCE_TERMINAL
+  theme_name: "light"
   is_debug: false
   yosys_path: "TBD"
   trellis_path: "TBD"
@@ -74,6 +78,8 @@ verbosity {
 environment {
   platform_id: "TBD"
   is_windows: true  # TBD
+  terminal_mode: FORCE_TERMINAL
+  theme_name: "light"
   is_debug: false
   yosys_path: "TBD"
   trellis_path: "TBD"
@@ -102,6 +108,9 @@ def test_default_params(apio_runner: ApioRunner):
     """Tests the construct_scons_params() with default values."""
 
     with apio_runner.in_sandbox() as sb:
+
+        # Force terminal mode.
+        apio_console.configure(terminal_mode=FORCE_TERMINAL)
 
         # -- Setup a Scons object.
         sb.write_apio_ini(TEST_APIO_INI_DICT)
@@ -143,6 +152,9 @@ def test_explicit_params(apio_runner: ApioRunner):
     """Tests the construct_scons_params() method with values override.."""
 
     with apio_runner.in_sandbox() as sb:
+
+        # Force terminal mode.
+        apio_console.configure(terminal_mode=FORCE_TERMINAL)
 
         # -- Setup a Scons object.
         sb.write_apio_ini(TEST_APIO_INI_DICT)

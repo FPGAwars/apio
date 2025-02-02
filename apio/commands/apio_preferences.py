@@ -57,8 +57,8 @@ def _list_cli():
     table.add_column("VALUE", no_wrap=True, style=EMPH1, min_width=30)
 
     # -- Add rows.
-    value = apio_ctx.profile.preferences.get("colors", "on")
-    table.add_row("Colors", value)
+    value = apio_ctx.profile.preferences.get("theme", "light")
+    table.add_row("Theme", value)
 
     # -- Render table.
     cout()
@@ -69,23 +69,25 @@ def _list_cli():
 
 # -- Text in the markdown format of the python rich library.
 APIO_PREF_SET_HELP = """
-The command 'apio preferences set' allows to set the supported user \
+The command 'apio preferences set' allows to set supported user \
 preferences.
 
 Examples:[code]
-  apio preferences set --colors on    # Enable colors.
-  apio preferences set --colors off   # Disable colors.[/code]
+  apio preferences set --theme light      # For light background.
+  apio preferences set --theme dark       # For dark background.
+  apio preferences set --theme no-color   # No colors.
+  apio pref set -t light                  # Using shortcuts.[/code]
 
-The apio colors are optimized for a terminal windows with a white background.
+To list the current theme type 'apio preference list'.
 """
 
-colors_options = click.option(
-    "colors",  # Var name
-    "-c",
-    "--colors",
+theme_options = click.option(
+    "theme",  # Var name
+    "-t",
+    "--theme",
     required=True,
-    type=click.Choice(["on", "off"], case_sensitive=True),
-    help="Set/reset colors mode.",
+    type=click.Choice(["light", "dark", "no-color"], case_sensitive=True),
+    help="Set theme.",
     cls=cmd_util.ApioOption,
 )
 
@@ -96,19 +98,19 @@ colors_options = click.option(
     short_help="Set the apio user preferences.",
     help=APIO_PREF_SET_HELP,
 )
-@colors_options
-def _set_cli(colors: str):
+@theme_options
+def _set_cli(theme: str):
     """Implements the 'apio preferences set' command."""
 
     # -- Create the apio context.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Set the colors preference value.
-    apio_ctx.profile.set_preferences_colors(colors)
+    apio_ctx.profile.set_preferences_theme(theme)
 
     # -- Show the result. The new colors preference is already in effect.
-    color = apio_ctx.profile.preferences["colors"]
-    cout(f"Colors set to [{color}]", style=SUCCESS)
+    confirmed_theme = apio_ctx.profile.preferences["theme"]
+    cout(f"Theme set to [{confirmed_theme}]", style=SUCCESS)
 
 
 # --- apio preferences

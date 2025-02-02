@@ -19,6 +19,12 @@ from rich.style import Style
 from rich.text import Text
 from apio.common import styles
 from apio.common.styles import WARNING, ERROR, BORDER
+from apio.common.proto.apio_pb2 import (
+    TerminalMode,
+    FORCE_PIPE,
+    FORCE_TERMINAL,
+    AUTO_TERMINAL,
+)
 
 # -- The names of the Rich library color names is available at:
 # -- https://rich.readthedocs.io/en/stable/appendix/colors.html
@@ -36,67 +42,144 @@ DOCS_WIDTH = 70
 class ConsoleState:
     """Contains the state of the apio console."""
 
-    color_system: Optional[str] = None
-    force_terminal: bool = None
+    # None = auto. True and False force to terminal and pipe mode respectively.
+    terminal_mode: TerminalMode = None
+    # The theme name. If None, default is "light"
+    theme_name: str = None
+    # The current console object.
     console: Console = None
+    # The latest AnsiDecoder we use for capture printing.
     decoder: AnsiDecoder = None
 
+    def __post_init__(self):
+        self.reset()
 
+    def reset(self):
+        """Reset the state to its default state."""
+        self.terminal_mode = AUTO_TERMINAL
+        self.theme_name = "light"
+        self.console = None
+        self.decoder = None
+
+
+# -- Initialized below by reset.
 _state: ConsoleState = ConsoleState()
 
 
-THEME1 = Theme(
-    {
-        # -- Styles that are used internally by rich library methods we
-        # -- call. These styles are not used directly by apio and thus we don't
-        # -- assign them abstract names.  For the full list of available
-        # -- styles see https://tinyurl.com/rich-default-styles
-        "bar.back": Style(color="grey23"),
-        "bar.complete": Style(color="rgb(249,38,114)"),
-        "bar.finished": Style(color="rgb(114,156,31)"),
-        "table.header": Style(bold=True),
-        # --Apio's abstracted style names.
-        styles.STRING: "italic",
-        styles.CODE: "bold",
-        styles.URL: "dark_blue",
-        styles.CMD_NAME: "dark_red bold",
-        styles.TITLE: "dark_red bold",
-        styles.BORDER: "dim",
-        styles.EMPH1: "cyan",
-        styles.EMPH2: "deep_sky_blue4 bold",
-        styles.EMPH3: "magenta",
-        styles.SUCCESS: "green",
-        styles.INFO: "yellow",
-        styles.WARNING: "yellow",
-        styles.ERROR: "red",
-    },
-    # -- By not inheriting styles we know for sure that the styles listed here
-    # -- are the only ones apio used. If hitting an error of a missing default
-    # -- style, add it above.
-    inherit=False,
-)
+# -- Default theme styles. Optimized for light terminal background.
+THEME_LIGHT = {
+    # -- Styles that are used internally by rich library methods we
+    # -- call. These styles are not used directly by apio and thus we don't
+    # -- assign them abstract names.  For the full list of available
+    # -- styles see https://tinyurl.com/rich-default-styles
+    "bar.back": Style(color="grey23"),
+    "bar.complete": Style(color="rgb(249,38,114)"),
+    "bar.finished": Style(color="rgb(114,156,31)"),
+    "table.header": Style(bold=True),
+    # --Apio's abstracted style names.
+    styles.STRING: "italic",
+    styles.CODE: "bold",
+    styles.URL: "dark_blue",
+    styles.CMD_NAME: "dark_red bold",
+    styles.TITLE: "dark_red bold",
+    styles.BORDER: "dim",
+    styles.EMPH1: "cyan",
+    styles.EMPH2: "deep_sky_blue4 bold",
+    styles.EMPH3: "magenta",
+    styles.SUCCESS: "green",
+    styles.INFO: "yellow",
+    styles.WARNING: "yellow",
+    styles.ERROR: "red",
+}
 
 
-def configure(*, colors: bool = None, force_terminal: bool = None) -> None:
-    """Turn the color support on or off."""
-    # -- Update color system if specified.
-    if colors is not None:
-        _state.color_system = "auto" if colors else None
+# -- Theme styles optimized for dark terminal background. Should contain
+# -- exactly The same keys as THEME_LIGHT.
+THEME_DARK = {
+    # -- Styles that are used internally by rich library.
+    "bar.back": Style(color="grey23"),
+    "bar.complete": Style(color="rgb(249,38,114)"),
+    "bar.finished": Style(color="rgb(114,156,31)"),
+    "table.header": Style(bold=True),
+    # --Apio's abstracted style names.
+    styles.STRING: "italic",
+    styles.CODE: "bold",
+    styles.URL: "dark_blue",
+    styles.CMD_NAME: "dark_red bold",
+    styles.TITLE: "dark_red bold",
+    styles.BORDER: "dim",
+    styles.EMPH1: "blue",
+    styles.EMPH2: "deep_sky_blue4 bold",
+    styles.EMPH3: "cyan",
+    styles.SUCCESS: "green",
+    styles.INFO: "yellow",
+    styles.WARNING: "yellow",
+    styles.ERROR: "red",
+}
 
-    # -- Update force terminal if specified.
-    if force_terminal is not None:
-        _state.force_terminal = True if force_terminal else None
+THEMES_TABLE = {
+    "light": THEME_LIGHT,
+    "dark": THEME_DARK,
+}
 
-    # -- Construct the new console. The highlighting colors are optimized
-    # -- for 'apio docs'.
+
+def configure(
+    *,
+    terminal_mode: TerminalMode = None,
+    theme_name: str = None,
+) -> None:
+    """Change the apio console settings."""
+
+    # -- Update terminal mode if specified.
+    if terminal_mode is not None:
+        assert terminal_mode in [
+            FORCE_TERMINAL,
+            FORCE_PIPE,
+            AUTO_TERMINAL,
+        ], terminal_mode
+        _state.terminal_mode = terminal_mode
+
+    # -- Update theme name if specified.
+    if theme_name is not None:
+        _state.theme_name = theme_name
+
+    # -- Determine console color parameters.
+    if _state.theme_name == "no-color":
+        color_system = None
+        theme_styles = THEME_LIGHT  # Arbitrary, ignored since colors are off.
+    else:
+        color_system = "auto"
+        theme_styles = THEMES_TABLE.get(_state.theme_name, THEME_LIGHT)
+
+    if _state.terminal_mode == FORCE_TERMINAL:
+        force_terminal = True
+    elif _state.terminal_mode == FORCE_PIPE:
+        force_terminal = False
+    else:
+        assert (
+            _state.terminal_mode == AUTO_TERMINAL
+        ), f"**** {_state.terminal_mode=}"
+        force_terminal = None
+
+    # -- Construct the new console.
     _state.console = Console(
-        color_system=_state.color_system,
-        force_terminal=_state.force_terminal,
-        theme=THEME1,
+        color_system=color_system,
+        force_terminal=force_terminal,
+        theme=Theme(theme_styles, inherit=False),
     )
 
     # -- Construct the helper decoder.
     _state.decoder = AnsiDecoder()
+
+
+def is_colors_enabled() -> bool:
+    """Returns True if colors are enabled."""
+    return _state.theme_name != "no-color"
+
+
+def theme() -> str:
+    """Return the current theme name."""
+    return _state.theme_name
 
 
 def console():
@@ -105,9 +188,11 @@ def console():
     return _state.console
 
 
+# pylint: disable=global-statement
 def reset():
-    """Reset to initial configuration."""
-    configure(colors=True, force_terminal=False)
+    """Reset the apio console to initial state."""
+    _state.reset()
+    configure()
 
 
 def cunstyle(text: str) -> str:
