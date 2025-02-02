@@ -12,6 +12,7 @@ import click
 from rich.table import Table
 from rich import box
 from apio.common.apio_console import cout, cprint
+from apio.common.styles import INFO, BORDER, ERROR, SUCCESS
 from apio.managers import installer
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import pkg_util
@@ -19,6 +20,8 @@ from apio.commands import options
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
 
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
 def print_packages_report(apio_ctx: ApioContext) -> None:
     """A common function to print the state of the packages."""
 
@@ -35,7 +38,7 @@ def print_packages_report(apio_ctx: ApioContext) -> None:
         show_header=True,
         show_lines=True,
         box=box.SQUARE,
-        border_style="dim",
+        border_style=BORDER,
         title="Apio Packages Status",
         title_justify="left",
         padding=(0, 2),
@@ -56,7 +59,7 @@ def print_packages_report(apio_ctx: ApioContext) -> None:
     for package_name in scan.uninstalled_package_names:
         description = get_package_info(package_name)["description"]
         table.add_row(
-            package_name, None, description, "Uninstalled", style="yellow"
+            package_name, None, description, "Uninstalled", style=INFO
         )
 
     # -- Add raws for installed with version mismatch packages.
@@ -64,13 +67,17 @@ def print_packages_report(apio_ctx: ApioContext) -> None:
         version = get_package_version(package_name)
         description = get_package_info(package_name)["description"]
         table.add_row(
-            package_name, version, description, "Wrong version", style="red"
+            package_name,
+            version,
+            description,
+            "Wrong version",
+            style=ERROR,
         )
 
     # -- Add rows for broken packages.
     for package_name in scan.broken_package_names:
         description = get_package_info(package_name)["description"]
-        table.add_row(package_name, None, description, "Broken", style="red")
+        table.add_row(package_name, None, description, "Broken", style=ERROR)
 
     # -- Render table.
     cout()
@@ -81,14 +88,14 @@ def print_packages_report(apio_ctx: ApioContext) -> None:
         show_header=True,
         show_lines=True,
         box=box.SQUARE,
-        border_style="dim",
+        border_style=BORDER,
         title="Apio Packages Errors",
         title_justify="left",
         padding=(0, 2),
     )
 
     # -- Add columns.
-    table.add_column("ERROR TYPE", no_wrap=True, min_width=15, style="red")
+    table.add_column("ERROR TYPE", no_wrap=True, min_width=15, style=ERROR)
     table.add_column("NAME", no_wrap=True, min_width=15)
 
     # -- Add rows.
@@ -111,15 +118,15 @@ def print_packages_report(apio_ctx: ApioContext) -> None:
     if not scan.packages_installed_ok():
         cout(
             "Run 'apio packages install' to install all packages.",
-            style="yellow",
+            style=INFO,
         )
     elif scan.num_errors_to_fix():
         cout(
             "Run 'apio packages fix' to fix the errors.",
-            style="yellow",
+            style=INFO,
         )
     else:
-        cout("All Apio packages are installed OK.", style="green")
+        cout("All Apio packages are installed OK.", style=SUCCESS)
 
 
 # ------ apio packages install
@@ -131,6 +138,7 @@ for the operation of Apio on your system.
 
 Examples:[code]
   apio packages install                   # Install missing packages.
+  apio pack inst                          # Same, with shortcuts
   apio packages install --force           # Reinstall all packages.
   apio packages install oss-cad-suite     # Install package.
   apio packages install examples@0.0.32   # Install a specific version.[/code]

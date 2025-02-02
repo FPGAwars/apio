@@ -15,6 +15,7 @@ from SCons.Builder import BuilderBase
 from SCons.Action import Action
 from SCons.Script import Builder
 from apio.common.apio_console import cout
+from apio.common.styles import SUCCESS
 from apio.scons.apio_env import ApioEnv
 from apio.common.apio_consts import TARGET
 from apio.common.proto.apio_pb2 import GraphOutputType
@@ -162,7 +163,7 @@ class PluginBase:
         def completion_action(source, target, env):  # noqa
             """Action function that prints a completion message."""
             _ = (source, target, env)  # Unused
-            cout(f"Generated {TARGET}.{type_str}", style="green", nl="")
+            cout(f"Generated {TARGET}.{type_str}", style=SUCCESS, nl="")
 
         actions = [
             f"dot -T{type_str} $SOURCES -o $TARGET",

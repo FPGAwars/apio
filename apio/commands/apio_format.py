@@ -14,6 +14,7 @@ from glob import glob
 from typing import Tuple, List
 import click
 from apio.common.apio_console import cout, cerror, cstyle
+from apio.common.styles import EMPH3, SUCCESS
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import options
 from apio.managers import installer
@@ -129,7 +130,7 @@ def cli(
             sys.exit(1)
 
         # -- Print file name.
-        styled_f = cstyle(f, style="magenta")
+        styled_f = cstyle(f, style=EMPH3)
         cout(f"Formatting {styled_f}")
 
         # -- Construct the formatter command line.
@@ -147,5 +148,5 @@ def cli(
             return exit_code
 
     # -- All done ok.
-    cout(f"Formatted {util.plurality(files, 'file')}.", style="green")
+    cout(f"Formatted {util.plurality(files, 'file')}.", style=SUCCESS)
     sys.exit(0)

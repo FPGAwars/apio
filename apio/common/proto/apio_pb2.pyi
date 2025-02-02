@@ -19,6 +19,13 @@ class ApioArch(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     ECP5: _ClassVar[ApioArch]
     GOWIN: _ClassVar[ApioArch]
 
+class TerminalMode(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    TERMINAL_UNSPECIFIED: _ClassVar[TerminalMode]
+    AUTO_TERMINAL: _ClassVar[TerminalMode]
+    FORCE_TERMINAL: _ClassVar[TerminalMode]
+    FORCE_PIPE: _ClassVar[TerminalMode]
+
 class GraphOutputType(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
     TYPE_UNSPECIFIED: _ClassVar[GraphOutputType]
@@ -29,6 +36,10 @@ ARCH_UNSPECIFIED: ApioArch
 ICE40: ApioArch
 ECP5: ApioArch
 GOWIN: ApioArch
+TERMINAL_UNSPECIFIED: TerminalMode
+AUTO_TERMINAL: TerminalMode
+FORCE_TERMINAL: TerminalMode
+FORCE_PIPE: TerminalMode
 TYPE_UNSPECIFIED: GraphOutputType
 SVG: GraphOutputType
 PNG: GraphOutputType
@@ -85,18 +96,22 @@ class Verbosity(_message.Message):
     def __init__(self, all: bool = ..., synth: bool = ..., pnr: bool = ...) -> None: ...
 
 class Environment(_message.Message):
-    __slots__ = ("platform_id", "is_windows", "is_debug", "yosys_path", "trellis_path")
+    __slots__ = ("platform_id", "is_windows", "terminal_mode", "theme_name", "is_debug", "yosys_path", "trellis_path")
     PLATFORM_ID_FIELD_NUMBER: _ClassVar[int]
     IS_WINDOWS_FIELD_NUMBER: _ClassVar[int]
+    TERMINAL_MODE_FIELD_NUMBER: _ClassVar[int]
+    THEME_NAME_FIELD_NUMBER: _ClassVar[int]
     IS_DEBUG_FIELD_NUMBER: _ClassVar[int]
     YOSYS_PATH_FIELD_NUMBER: _ClassVar[int]
     TRELLIS_PATH_FIELD_NUMBER: _ClassVar[int]
     platform_id: str
     is_windows: bool
+    terminal_mode: TerminalMode
+    theme_name: str
     is_debug: bool
     yosys_path: str
     trellis_path: str
-    def __init__(self, platform_id: _Optional[str] = ..., is_windows: bool = ..., is_debug: bool = ..., yosys_path: _Optional[str] = ..., trellis_path: _Optional[str] = ...) -> None: ...
+    def __init__(self, platform_id: _Optional[str] = ..., is_windows: bool = ..., terminal_mode: _Optional[_Union[TerminalMode, str]] = ..., theme_name: _Optional[str] = ..., is_debug: bool = ..., yosys_path: _Optional[str] = ..., trellis_path: _Optional[str] = ...) -> None: ...
 
 class Project(_message.Message):
     __slots__ = ("board_id", "top_module", "yosys_synth_extra_options")

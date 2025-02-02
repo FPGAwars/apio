@@ -14,6 +14,7 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Optional, Dict
 from apio.common.apio_console import cout, cerror, cwarning
+from apio.common.styles import INFO
 from apio.profile import Profile
 from apio.utils import jsonc, util, env_options
 from apio.managers.project import (
@@ -101,16 +102,13 @@ class ApioContext:
 
         """
 
-        # -- Set color on/off based on the option profile.json.
-        Profile.apply_color_preferences()
-
         # -- Inform as soon as possible about the list of apio env options
         # -- that modify its default behavior.
         defined_env_options = env_options.get_defined()
         if defined_env_options:
             cout(
                 f"Active env options [{', '.join(defined_env_options)}].",
-                style="yellow",
+                style=INFO,
             )
 
         # -- Store the scope
@@ -235,7 +233,7 @@ class ApioContext:
             cerror(f"No such board '{board}'")
             cout(
                 "Run 'apio boards' for the list of board names.",
-                style="yellow",
+                style=INFO,
             )
             sys.exit(1)
 
@@ -344,7 +342,7 @@ class ApioContext:
 
             # -- Display Main error
             cerror("Invalid .jsonc file", f"{exc}")
-            cout(f"File: {filepath}", style="yellow")
+            cout(f"File: {filepath}", style=INFO)
 
             # -- Abort!
             sys.exit(1)
@@ -447,7 +445,7 @@ class ApioContext:
             cout(
                 "For the list of supported platforms "
                 "type 'apio system platforms'.",
-                style="yellow",
+                style=INFO,
             )
             sys.exit(1)
 

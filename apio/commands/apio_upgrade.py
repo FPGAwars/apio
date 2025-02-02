@@ -13,6 +13,7 @@ import requests
 from packaging import version
 from apio.utils import util, cmd_util
 from apio.common.apio_console import cout, cerror
+from apio.common.styles import INFO, WARNING, EMPH1, EMPH3, SUCCESS
 
 
 def get_pypi_latest_version() -> str:
@@ -32,25 +33,25 @@ def get_pypi_latest_version() -> str:
 
     # -- Connection error
     except requests.exceptions.ConnectionError as e:
-        cout(str(e), style="yellow")
+        cout(str(e), style=WARNING)
         cerror("Connection error while accessing Pypi.")
         sys.exit(1)
 
     # -- HTTP Error
     except requests.exceptions.HTTPError as e:
-        cout(str(e), style="yellow")
+        cout(str(e), style=WARNING)
         cerror("HTTP error while accessing Pypi.")
         sys.exit(1)
 
     # -- Timeout!
     except requests.exceptions.Timeout as e:
-        cout(str(e), style="yellow")
+        cout(str(e), style=WARNING)
         cerror("HTTP timeout while accessing Pypi.")
         sys.exit(1)
 
     # -- Another error
     except requests.exceptions.RequestException as e:
-        cout(str(e), style="yellow")
+        cout(str(e), style=WARNING)
         cerror("HTTP exception while accessing Pypi.")
         sys.exit(1)
 
@@ -97,7 +98,7 @@ def cli(_: click.Context):
     cout(
         f"Local Apio version: {current_version}",
         f"Latest Apio stable version (Pypi): {latest_version}",
-        style="cyan",
+        style=EMPH1,
     )
 
     # -- Case 1: Using an old version.
@@ -105,7 +106,7 @@ def cli(_: click.Context):
         cout(
             "You're not up to date.",
             "Please execute 'pip install -U apio' to upgrade.",
-            style="yellow",
+            style=INFO,
         )
         return
 
@@ -113,7 +114,7 @@ def cli(_: click.Context):
     if version.parse(current_version) > version.parse(latest_version):
         cout(
             "You are using a development version. Enjoy it at your own risk.",
-            style="magenta",
+            style=EMPH3,
         )
         return
 
@@ -121,5 +122,5 @@ def cli(_: click.Context):
     cout(
         f"You're up-to-date!\nApio {latest_version} is currently the "
         "latest stable version available.",
-        style="green",
+        style=SUCCESS,
     )

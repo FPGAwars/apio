@@ -77,8 +77,12 @@ class SconsHandler:
         else:
             assert not params.HasField("rich_lib_windows_params"), params
 
-        # -- Force colors even though we are piped out.
-        apio_console.configure(force_terminal=True)
+        # -- Set terminal mode and theme to match the apio process.
+        apio_console.configure(
+            reset=True,
+            terminal_mode=params.environment.terminal_mode,
+            theme_name=params.environment.theme_name,
+        )
 
         # -- Create the apio environment.
         apio_env = ApioEnv(COMMAND_LINE_TARGETS, params)
@@ -124,7 +128,7 @@ class SconsHandler:
             always_build=(params.verbosity.all or params.verbosity.synth),
         )
 
-        # -- Place-and -oute builder and target
+        # -- Place-and-route builder and target
         apio_env.builder(PNR_BUILDER, plugin.pnr_builder())
 
         pnr_target = apio_env.builder_target(
@@ -159,7 +163,7 @@ class SconsHandler:
         apio_env.alias(
             "build",
             source=TARGET + plugin.plugin_info().bin_file_suffix,
-            allways_build=(
+            always_build=(
                 params.verbosity.all
                 or params.verbosity.synth
                 or params.verbosity.pnr
@@ -184,7 +188,7 @@ class SconsHandler:
             "upload",
             source=TARGET + plugin_info.bin_file_suffix,
             action=get_programmer_cmd(apio_env),
-            allways_build=True,
+            always_build=True,
         )
 
     def _register_report_target(self, synth_srcs):
@@ -207,7 +211,7 @@ class SconsHandler:
             action=report_action(
                 plugin_info.clk_name_index, params.verbosity.pnr
             ),
-            allways_build=True,
+            always_build=True,
         )
 
     def _register_graph_target(
@@ -249,7 +253,7 @@ class SconsHandler:
         apio_env.alias(
             "graph",
             source=graphviz_target,
-            allways_build=True,
+            always_build=True,
         )
 
     def _register_lint_target(self, synth_srcs, test_srcs):
@@ -280,14 +284,14 @@ class SconsHandler:
             builder_id=LINT_BUILDER,
             target=TARGET,
             sources=synth_srcs + test_srcs,
-            extra_dependecies=[lint_config_target],
+            extra_dependencies=[lint_config_target],
         )
 
         # -- Create the top level "lint" target.
         apio_env.alias(
             "lint",
             source=lint_out_target,
-            allways_build=True,
+            always_build=True,
         )
 
     def _register_sim_target(self, synth_srcs, test_srcs):
@@ -339,7 +343,7 @@ class SconsHandler:
             "sim",
             sim_vcd_target,
             sim_config,
-            allways_build=True,
+            always_build=True,
         )
 
     def _register_test_target(self, synth_srcs, test_srcs):
@@ -366,7 +370,7 @@ class SconsHandler:
         )
         apio_env.builder(TESTBENCH_RUN_BUILDER, plugin.testbench_run_builder())
 
-        # -- Create targes for each testbench we are testing.
+        # -- Create targets for each testbench we are testing.
         tests_targets = []
         for test_config in tests_configs:
 
@@ -390,7 +394,7 @@ class SconsHandler:
             tests_targets.append(test_vcd_target)
 
         # -- The top level 'test' target.
-        apio_env.alias("test", source=tests_targets, allways_build=True)
+        apio_env.alias("test", source=tests_targets, always_build=True)
 
     def execute(self):
         """The entry point of the scons handler. It registers the builders

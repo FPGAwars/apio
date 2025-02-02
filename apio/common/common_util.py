@@ -12,6 +12,7 @@ scons (child) process."""
 
 import os
 import debugpy
+from apio.common.styles import EMPH3, SUCCESS
 
 
 def maybe_wait_for_remote_debugger(env_var_name: str):
@@ -29,12 +30,12 @@ def maybe_wait_for_remote_debugger(env_var_name: str):
         print(
             "Attach Visual Studio Code python remote python debugger "
             f"to port {port}.",
-            style="magenta",
+            style=EMPH3,
         )
         # -- Block until the debugger connects.
         debugpy.wait_for_client()
         # -- Here the remote debugger is attached and the program continues.
         print(
             "Remote debugger is attached, program continues...",
-            style="green",
+            style=SUCCESS,
         )

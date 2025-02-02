@@ -15,6 +15,6 @@ def test_test(apio_runner: ApioRunner):
     with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio test"
-        result = sb.invoke_apio_cmd(apio, ["test"])
+        result = sb.invoke_apio_cmd(apio, "test")
         assert result.exit_code != 0, result.output
         assert "Error: Missing project file apio.ini" in result.output

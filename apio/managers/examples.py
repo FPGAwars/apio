@@ -13,6 +13,7 @@ from pathlib import Path, PosixPath
 from dataclasses import dataclass
 from typing import Optional, List, Dict
 from apio.common.apio_console import cout, cstyle, cerror
+from apio.common.styles import INFO, SUCCESS, EMPH1
 from apio.apio_context import ApioContext
 from apio.managers import installer
 
@@ -172,7 +173,7 @@ class Examples:
             cout(
                 "Run 'apio example list' for the list of examples.",
                 "Expecting an example name like alhambra-ii/ledon.",
-                style="yellow",
+                style=INFO,
             )
             sys.exit(1)
 
@@ -198,11 +199,11 @@ class Examples:
             # -- Copy the file unless it's 'info' which we ignore.
             if file.name != "info":
                 shutil.copy(file, dst_dir_path)
-                styled_name = cstyle(os.path.basename(file), style="cyan")
+                styled_name = cstyle(os.path.basename(file), style=EMPH1)
                 cout(f"Fetched file {styled_name}")
 
         # -- Inform the user.
-        cout("Example fetched successfully.", style="green")
+        cout("Example fetched successfully.", style=SUCCESS)
 
     def get_board_examples(self, board_name) -> List[ExampleInfo]:
         """Returns the list of examples with given board name."""
@@ -235,7 +236,7 @@ class Examples:
             cout(
                 "Run 'apio examples list' for the list of examples.",
                 "Expecting a board name such as 'alhambra-ii.",
-                style="yellow",
+                style=INFO,
             )
             sys.exit(1)
 
@@ -252,7 +253,7 @@ class Examples:
                 "Run 'apio examples list' for the list of available "
                 "examples.",
                 "Expecting a board name such as 'alhambra-ii'.",
-                style="yellow",
+                style=INFO,
             )
             sys.exit(1)
 
@@ -272,7 +273,7 @@ class Examples:
         shutil.copytree(src_board_dir, dst_board_dir, dirs_exist_ok=True)
 
         for example_name in os.listdir(dst_board_dir):
-            styled_name = cstyle(f"{board_name}/{example_name}", style="cyan")
+            styled_name = cstyle(f"{board_name}/{example_name}", style=EMPH1)
             cout(f"Fetched example {styled_name}")
 
-        cout("Board examples fetched successfully.", style="green")
+        cout("Board examples fetched successfully.", style=SUCCESS)

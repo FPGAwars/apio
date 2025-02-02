@@ -24,6 +24,13 @@ enum ApioArch {
   GOWIN = 3;
 }
 
+enum TerminalMode {
+  TERMINAL_UNSPECIFIED = 0;
+  AUTO_TERMINAL = 1;
+  FORCE_TERMINAL = 2;
+  FORCE_PIPE = 3;
+}
+
 // Ice40 specific fpga attributes.
 message Ice40FpgaInfo {
   required string type = 1;
@@ -72,12 +79,18 @@ message Environment {
   required string platform_id = 1;
   required bool is_windows = 2;
 
+  // The terminal mode to apply to apio_console.
+  required TerminalMode terminal_mode = 3;
+  
+  // The apio_console theme name.
+  required string theme_name = 4;
+
   // True if apio debug is enabled.
-  optional bool is_debug = 3 [default = false];
+  optional bool is_debug = 5 [default = false];
 
   // Paths to oss-cad-suite libraries.
-  required string yosys_path = 4;
-  required string trellis_path = 5;
+  required string yosys_path = 6;
+  required string trellis_path = 7;
 }
 
 // Information about the project.

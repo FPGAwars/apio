@@ -12,6 +12,7 @@ import subprocess
 from pathlib import Path
 from apio.utils import util
 from apio.common.apio_console import cout, cerror
+from apio.common.styles import INFO, SUCCESS
 from apio.apio_context import ApioContext
 from apio.managers import installer
 
@@ -243,10 +244,10 @@ class Drivers:
             # -- Execute the commands for reloading the udev system
             self._reload_rules_linux()
 
-            cout("FTDI drivers installed", style="green")
-            cout("Unplug and reconnect your board", style="yellow")
+            cout("FTDI drivers installed", style=SUCCESS)
+            cout("Unplug and reconnect your board", style=INFO)
         else:
-            cout("Already installed", style="yellow")
+            cout("Already installed", style=INFO)
 
         return 0
 
@@ -266,10 +267,10 @@ class Drivers:
             # -- # -- Execute the commands for reloading the udev system
             self._reload_rules_linux()
 
-            cout("FTDI drivers uninstalled", style="green")
-            cout("Unplug and reconnect your board", style="yellow")
+            cout("FTDI drivers uninstalled", style=SUCCESS)
+            cout("Unplug and reconnect your board", style=INFO)
         else:
-            cout("Already uninstalled", style="yellow")
+            cout("Already uninstalled", style=INFO)
 
         return 0
 
@@ -298,15 +299,15 @@ class Drivers:
             # -- Execute the commands for reloading the udev system
             self._reload_rules_linux()
 
-            cout("Serial drivers installed", style="green")
-            cout("Unplug and reconnect your board", style="yellow")
+            cout("Serial drivers installed", style=SUCCESS)
+            cout("Unplug and reconnect your board", style=INFO)
             if group_added:
                 cout(
                     "Restart your machine to install the dialout group",
-                    style="yellow",
+                    style=INFO,
                 )
         else:
-            cout("Already installed", style="yellow")
+            cout("Already installed", style=INFO)
 
         return 0
 
@@ -323,10 +324,10 @@ class Drivers:
 
             # -- Execute the commands for reloading the udev system
             self._reload_rules_linux()
-            cout("Serial drivers uninstalled", style="green")
-            cout("Unplug and reconnect your board", style="yellow")
+            cout("Serial drivers uninstalled", style=SUCCESS)
+            cout("Unplug and reconnect your board", style=INFO)
         else:
-            cout("Already uninstalled", style="yellow")
+            cout("Already uninstalled", style=INFO)
 
         return 0
 
@@ -367,14 +368,14 @@ class Drivers:
         self._brew_install_darwin("libffi")
         self._brew_install_darwin("libftdi")
         self.apio_ctx.profile.add_setting("macos_ftdi_drivers", True)
-        cout("FTDI drivers installed", style="green")
+        cout("FTDI drivers installed", style=SUCCESS)
         return 0
 
     def _ftdi_uninstall_darwin(self):
         """Uninstalls FTDI driver on darwin. Returns process status code."""
         cout("Uninstall FTDI drivers configuration")
         self.apio_ctx.profile.add_setting("macos_ftdi_drivers", False)
-        cout("FTDI drivers uninstalled", style="green")
+        cout("FTDI drivers uninstalled", style=SUCCESS)
         return 0
 
     def _serial_install_darwin(self):
@@ -390,13 +391,13 @@ class Drivers:
         self._brew_install_darwin("libffi")
         self._brew_install_darwin("libusb")
         # self._brew_install_serial_drivers_darwin()
-        cout("Serial drivers installed", style="green")
+        cout("Serial drivers installed", style=SUCCESS)
         return 0
 
     def _serial_uninstall_darwin(self):
         """Uninstalls serial driver on darwin. Returns process status code."""
         cout("Uninstall Serial drivers configuration")
-        cout("Serial drivers uninstalled", style="green")
+        cout("Serial drivers uninstalled", style=SUCCESS)
         return 0
 
     def _brew_install_darwin(self, brew_package):
@@ -461,16 +462,16 @@ class Drivers:
 
         # -- Show messages for the user
         cout(
-            "\nStarting the interactive config tool zadig.exe.", style="green"
+            "\nStarting the interactive config tool zadig.exe.", style=SUCCESS
         )
-        cout(FTDI_INSTALL_INSTRUCTIONS_WINDOWS, style="yellow")
+        cout(FTDI_INSTALL_INSTRUCTIONS_WINDOWS, style=INFO)
 
         # -- Execute zadig!
         # -- We execute it using os.system() rather than by
         # -- util.exec_command() because zadig required permissions
         # -- elevation.
         exit_code = os.system(str(zadig_exe))
-        cout("FTDI drivers configuration finished", style="green")
+        cout("FTDI drivers configuration finished", style=SUCCESS)
 
         # -- Remove zadig.ini from the current folder. It is no longer
         # -- needed
@@ -483,8 +484,8 @@ class Drivers:
         # -- Check that the required packages exist.
         installer.install_missing_packages_on_the_fly(self.apio_ctx)
 
-        cout("\nStarting the interactive Device Manager.", style="green")
-        cout(FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS, style="yellow")
+        cout("\nStarting the interactive Device Manager.", style=SUCCESS)
+        cout(FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS, style=INFO)
 
         # -- We launch the device manager using os.system() rather than with
         # -- util.exec_command() because util.exec_command() does not support
@@ -501,8 +502,8 @@ class Drivers:
         drivers_base_dir = self.apio_ctx.get_package_dir("drivers")
         drivers_bin_dir = drivers_base_dir / "bin"
 
-        cout("\nStarting the interactive Serial Installer.", style="green")
-        cout(SERIAL_INSTALL_INSTRUCTIONS_WINDOWS, style="yellow")
+        cout("\nStarting the interactive Serial Installer.", style=SUCCESS)
+        cout(SERIAL_INSTALL_INSTRUCTIONS_WINDOWS, style=INFO)
 
         # -- We launch the device manager using os.system() rather than with
         # -- util.exec_command() because util.exec_command() does not support
@@ -517,8 +518,8 @@ class Drivers:
         # -- Check that the required packages exist.
         installer.install_missing_packages_on_the_fly(self.apio_ctx)
 
-        cout("\nStarting the interactive Device Manager.", style="green")
-        cout(SERIAL_UNINSTALL_INSTRUCTIONS_WINDOWS, style="yellow")
+        cout("\nStarting the interactive Device Manager.", style=SUCCESS)
+        cout(SERIAL_UNINSTALL_INSTRUCTIONS_WINDOWS, style=INFO)
 
         # -- We launch the device manager using os.system() rather than with
         # -- util.exec_command() because util.exec_command() does not support

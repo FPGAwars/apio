@@ -11,6 +11,7 @@ import click
 from rich.table import Table
 from rich import box
 from apio.common.apio_console import cprint, PADDING, cout
+from apio.common.styles import BORDER, EMPH1, EMPH3
 from apio.utils import util
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
@@ -54,13 +55,13 @@ def _info_cli():
         show_lines=True,
         padding=PADDING,
         box=box.SQUARE,
-        border_style="dim",
+        border_style=BORDER,
         title="Apio System Information",
         title_justify="left",
     )
 
     table.add_column("ITEM", no_wrap=True)
-    table.add_column("VALUE", no_wrap=True, style="cyan")
+    table.add_column("VALUE", no_wrap=True, style=EMPH1)
 
     # -- Add rows
     table.add_row("Apio version", util.get_apio_version())
@@ -111,7 +112,7 @@ def _platforms_cli():
         show_lines=True,
         padding=PADDING,
         box=box.SQUARE,
-        style="dim",
+        border_style=BORDER,
         title="Apio Supported Platforms",
         title_justify="left",
     )
@@ -125,7 +126,7 @@ def _platforms_cli():
 
         # -- Mark the current platform.
         if platform_id == apio_ctx.platform_id:
-            style = "cyan bold"
+            style = EMPH3
             marker = "* "
         else:
             style = None

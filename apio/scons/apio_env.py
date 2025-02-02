@@ -22,6 +22,7 @@ from SCons.Script.SConscript import SConsEnvironment
 from SCons.Environment import BuilderWrapper
 import SCons.Defaults
 from apio.common.apio_console import cout
+from apio.common.styles import EMPH3
 from apio.common.proto.apio_pb2 import SconsParams
 
 
@@ -86,7 +87,7 @@ class ApioEnv:
         builder_id: str,
         target,
         sources: List,
-        extra_dependecies: Optional[List] = None,
+        extra_dependencies: Optional[List] = None,
         always_build: bool = False,
     ):
         """Creates an return a target that uses the builder with given id."""
@@ -98,15 +99,15 @@ class ApioEnv:
         if always_build:
             self.scons_env.AlwaysBuild(target)
         # -- Add extra dependencies, if any.
-        if extra_dependecies:
-            for dependency in extra_dependecies:
+        if extra_dependencies:
+            for dependency in extra_dependencies:
                 self.scons_env.Depends(target, dependency)
         return target
 
-    def alias(self, name, *, source, action=None, allways_build: bool = False):
+    def alias(self, name, *, source, action=None, always_build: bool = False):
         """Creates a target with given dependencies"""
         target = self.scons_env.Alias(name, source, action)
-        if allways_build:
+        if always_build:
             self.scons_env.AlwaysBuild(target)
         return target
 
@@ -116,7 +117,7 @@ class ApioEnv:
         keys = list(dictionary.keys())
         keys.sort()
         cout("")
-        cout(">>> Env vars BEGIN", style="magenta")
+        cout(">>> Env vars BEGIN", style=EMPH3)
         for key in keys:
             cout(f"{key} = {self.scons_env[key]}")
-        cout("<<< Env vars END\n", style="magenta")
+        cout("<<< Env vars END\n", style=EMPH3)

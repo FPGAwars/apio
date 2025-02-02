@@ -23,7 +23,7 @@ def test_packages(apio_runner: ApioRunner):
     with apio_runner.in_sandbox() as sb:
 
         # -- List packages
-        result = sb.invoke_apio_cmd(apio, ["packages", "list"])
+        result = sb.invoke_apio_cmd(apio, "packages", "list")
         assert result.exit_code == 0
         assert "examples" in result.output
         assert "oss-cad-suite" in result.output
@@ -33,7 +33,7 @@ def test_packages(apio_runner: ApioRunner):
 
         # -- Install the examples package. Package 'examples' should exist,
         # -- and package 'oss-cad-suite' should not.
-        result = sb.invoke_apio_cmd(apio, ["packages", "install", "examples"])
+        result = sb.invoke_apio_cmd(apio, "packages", "install", "examples")
         sb.assert_ok(result)
         assert "Package 'examples' installed successfully" in result.output
         assert listdir(sb.packages_dir / "examples/alhambra-ii")
@@ -42,7 +42,7 @@ def test_packages(apio_runner: ApioRunner):
         # -- Install the reset of the packages.
         # -- Both 'examples' and 'oss-cad-suite' should exist, and
         # -- maybe others, depending on the platform.
-        result = sb.invoke_apio_cmd(apio, ["packages", "install"])
+        result = sb.invoke_apio_cmd(apio, "packages", "install")
         sb.assert_ok(result)
         assert "Package 'examples' installed successfully" not in result.output
         assert (
@@ -60,7 +60,7 @@ def test_packages(apio_runner: ApioRunner):
 
         # -- Install the examples packages without forcing.
         # -- This should not do anything since it's considered to be installed.
-        result = sb.invoke_apio_cmd(apio, ["packages", "install", "examples"])
+        result = sb.invoke_apio_cmd(apio, "packages", "install", "examples")
         sb.assert_ok(result)
         assert "Package 'examples' installed" not in result.output
         assert not marker_file.exists()
@@ -68,7 +68,7 @@ def test_packages(apio_runner: ApioRunner):
         # -- Install the examples packages with forcing.
         # -- This should recover the file.
         result = sb.invoke_apio_cmd(
-            apio, ["packages", "install", "--force", "examples"]
+            apio, "packages", "install", "--force", "examples"
         )
         sb.assert_ok(result)
         assert "Package 'examples' installed" in result.output
@@ -77,16 +77,14 @@ def test_packages(apio_runner: ApioRunner):
         # -- Uninstall the examples package. It should delete the examples
         # -- package and will leave the rest.
         assert "examples" in listdir(sb.packages_dir)
-        result = sb.invoke_apio_cmd(
-            apio, ["packages", "uninstall", "examples"]
-        )
+        result = sb.invoke_apio_cmd(apio, "packages", "uninstall", "examples")
         sb.assert_ok(result)
         assert "examples" not in listdir(sb.packages_dir)
         assert "oss-cad-suite" in listdir(sb.packages_dir)
 
         # -- Uninstall all packages. This should uninstall also the
         # -- oss-cad-suite package.
-        result = sb.invoke_apio_cmd(apio, ["packages", "uninstall"])
+        result = sb.invoke_apio_cmd(apio, "packages", "uninstall")
         sb.assert_ok(result)
         assert "examples" not in listdir(sb.packages_dir)
         assert "oss-cad-suite" not in listdir(sb.packages_dir)
