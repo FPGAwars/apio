@@ -341,6 +341,11 @@ class ApioGroup(click.Group):
     def get_help(self, ctx: click.Context) -> str:
         """Overrides a super method to add blank line at the end of the help
         text."""
+        # -- Special case for the help of the top level apio command since its
+        # -- help is generated before any call to get_command().
+        if self._apply_theme:
+            Profile.apply_color_preferences()
+
         _patch_partial_commands_names(ctx)
         return super().get_help(ctx) + "\n"
 

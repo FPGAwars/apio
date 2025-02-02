@@ -178,6 +178,14 @@ def configure(
     # -- Construct the helper decoder.
     _state.decoder = AnsiDecoder()
 
+    # -- For debugging.
+    # print(f"***     {reset=}")
+    # print(f"***     {terminal_mode=}")
+    # print(f"***     {theme_name=}")
+    # print(f"***     {color_system=}")
+    # print(f"***     {force_terminal=}")
+    # print(f"***     state={_state}")
+
 
 def is_colors_enabled() -> bool:
     """Returns True if colors are enabled."""
@@ -192,6 +200,7 @@ def theme() -> str:
 def console():
     """Returns the underlying console. This value should not be cached as
     the console object changes when the configure() or reset() are called."""
+    assert _state.console, "The apio console is not configured."
     return _state.console
 
 
@@ -219,36 +228,34 @@ def cout(
 
         # -- If colors are off, strip potential coloring in the text.
         # -- This may be coloring that we received from the scons process.
-        if not _state.console.color_system:
+        if not console().color_system:
             text_line = cunstyle(text_line)
 
         # -- Determine end of line
         end = "\n" if nl else ""
 
         # -- Write it out using the given style.
-        _state.console.out(text_line, style=style, highlight=False, end=end)
+        console().out(text_line, style=style, highlight=False, end=end)
 
 
 def cerror(*text_lines: str) -> None:
     """Prints one or more text lines, adding to the first one the prefix
     'Error: ' and applying to all of them the red color."""
     # -- Output the first line.
-    _state.console.out(f"Error: {text_lines[0]}", style=ERROR, highlight=False)
+    console().out(f"Error: {text_lines[0]}", style=ERROR, highlight=False)
     # -- Output the rest of the lines.
     for text_line in text_lines[1:]:
-        _state.console.out(text_line, highlight=False, style=ERROR)
+        console().out(text_line, highlight=False, style=ERROR)
 
 
 def cwarning(*text_lines: str) -> None:
     """Prints one or more text lines, adding to the first one the prefix
     'Warning: ' and applying to all of them the yellow color."""
     # -- Emit first line.
-    _state.console.out(
-        f"Warning: {text_lines[0]}", style=WARNING, highlight=False
-    )
+    console().out(f"Warning: {text_lines[0]}", style=WARNING, highlight=False)
     # -- Emit the rest of the lines
     for text_line in text_lines[1:]:
-        _state.console.out(text_line, highlight=False, style=WARNING)
+        console().out(text_line, highlight=False, style=WARNING)
 
 
 def cprint(
@@ -256,7 +263,7 @@ def cprint(
 ) -> None:
     """Render the given markdown text. Applying optional style and if enabled,
     highlighting semantic elements such as strings if enabled."""
-    _state.console.print(
+    console().print(
         markdown_text,
         highlight=highlight,
         style=style,
@@ -271,13 +278,13 @@ class ConsoleCapture:
         self._buffer = None
 
     def __enter__(self):
-        self._saved_file = _state.console.file
+        self._saved_file = console().file
         self._buffer = StringIO()
-        _state.console.file = self._buffer
+        console().file = self._buffer
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        _state.console.file = self._saved_file
+        console().file = self._saved_file
 
     @property
     def value(self):
@@ -288,7 +295,7 @@ class ConsoleCapture:
 def cstyle(text: str, style: Optional[str] = None) -> str:
     """Render the text to a string using an optional style."""
     with ConsoleCapture() as capture:
-        _state.console.out(text, style=style, highlight=False, end="")
+        console().out(text, style=style, highlight=False, end="")
         return capture.value
 
 
@@ -297,7 +304,7 @@ def docs_text(
 ) -> None:
     """A wrapper around Console.print that is specialized for rendering
     help and docs."""
-    _state.console.print(markdown_text, highlight=True, width=width, end=end)
+    console().print(markdown_text, highlight=True, width=width, end=end)
 
 
 def docs_rule(width: int = DOCS_WIDTH):
@@ -307,9 +314,9 @@ def docs_rule(width: int = DOCS_WIDTH):
 
 def is_terminal():
     """Returns True if the console writes to a terminal (vs a pipe)."""
-    return _state.console.is_terminal
+    return console().is_terminal
 
 
 def cwidth():
     """Return the console width."""
-    return _state.console.width
+    return console().width
