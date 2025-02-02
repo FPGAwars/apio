@@ -82,12 +82,12 @@ THEME_LIGHT = {
     "table.header": "",
     # --Apio's abstracted style names.
     styles.STRING: "italic",
-    styles.CODE: "bold",
+    styles.CODE: "dark_green",
     styles.URL: "dark_blue",
     styles.CMD_NAME: "dark_red bold",
     styles.TITLE: "dark_red bold",
     styles.BORDER: "dim",
-    styles.EMPH1: "cyan",
+    styles.EMPH1: "dark_cyan",
     styles.EMPH2: "deep_sky_blue4 bold",
     styles.EMPH3: "magenta",
     styles.SUCCESS: "green",
@@ -107,10 +107,10 @@ THEME_DARK = {
     "table.header": "",
     # --Apio's abstracted style names.
     styles.STRING: "italic",
-    styles.CODE: "bold",
+    styles.CODE: "bright_green",
     styles.URL: "bright_blue",
     styles.CMD_NAME: "bright_red",
-    styles.TITLE: "red bold",
+    styles.TITLE: "bright_red bold",
     styles.BORDER: "dim",
     styles.EMPH1: "bright_cyan",
     styles.EMPH2: "bright_blue bold",
@@ -118,7 +118,7 @@ THEME_DARK = {
     styles.SUCCESS: "bright_green",
     styles.INFO: "bright_yellow",
     styles.WARNING: "bright_yellow",
-    styles.ERROR: "red",
+    styles.ERROR: "bright_red",
 }
 
 THEMES_TABLE = {
