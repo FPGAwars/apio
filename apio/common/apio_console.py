@@ -147,7 +147,7 @@ def configure(
             theme_name = _state.theme_name
         else:
             # -- Fall to default theme.
-            theme_name = "light."
+            theme_name = "light"
 
     # -- Determine terminal mode.
     if terminal_mode is None:
