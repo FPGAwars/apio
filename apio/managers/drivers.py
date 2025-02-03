@@ -84,7 +84,7 @@ FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS = f"""
 """
 
 # -- Text in the markdown format of the python rich library.
-SERIAL_INSTALL_INSTRUCTIONS_WINDOWS = """
+SERIAL_INSTALL_INSTRUCTIONS_WINDOWS = f"""
 {E3}Please follow these steps:[/]
 
   1. Make sure your FPGA {E1}board is connected[/] to the computer.
