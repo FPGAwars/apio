@@ -17,7 +17,7 @@ from rich.ansi import AnsiDecoder
 from rich.theme import Theme
 from rich.style import Style
 from rich.text import Text
-from apio.common import styles
+from apio.common import styles, rich_lib_windows
 from apio.common.styles import WARNING, ERROR, BORDER
 from apio.common.proto.apio_pb2 import (
     TerminalMode,
@@ -46,27 +46,23 @@ class ConsoleState:
     """Contains the state of the apio console."""
 
     # None = auto. True and False force to terminal and pipe mode respectively.
-    terminal_mode: TerminalMode = None
+    terminal_mode: TerminalMode
     # The theme name. If None, default is "light"
-    theme_name: str = None
+    theme_name: str
     # The current console object.
-    console: Console = None
+    console: Console
     # The latest AnsiDecoder we use for capture printing.
-    decoder: AnsiDecoder = None
+    decoder: AnsiDecoder
 
     def __post_init__(self):
-        self.reset()
-
-    def reset(self):
-        """Reset the state to its default state."""
-        self.terminal_mode = AUTO_TERMINAL
-        self.theme_name = "light"
-        self.console = None
-        self.decoder = None
+        assert self.terminal_mode is not None
+        assert self.theme_name is not None
+        assert self.console is not None
+        assert self.decoder is not None
 
 
-# -- Initialized below by reset.
-_state: ConsoleState = ConsoleState()
+# -- Initialized by Configure().
+_state: ConsoleState = None
 
 
 # -- Default theme styles. Optimized for light terminal background.
@@ -127,89 +123,120 @@ THEMES_TABLE = {
 }
 
 
+# NOTE: not declaring terminal_mode and  theme_name is Optional[] because it
+# causes the tests to fail with python 3.9.
+# pylint: disable=global-statement
 def configure(
     *,
-    reset: bool = False,
     terminal_mode: TerminalMode = None,
     theme_name: str = None,
 ) -> None:
     """Change the apio console settings."""
+    global _state
 
-    # -- Reset the state if requested.
-    if reset:
-        _state.reset()
+    # -- Force utf-8 output encoding. This is a workaround for rich library
+    # -- defaulting to non graphic ASCII border for tables.
+    # --
+    # stdout_fixed = rich_lib_windows.fix_windows_stdout_encoding()
+    rich_lib_windows.fix_windows_stdout_encoding()
 
-    # -- Update terminal mode if specified.
-    if terminal_mode is not None:
-        assert terminal_mode in [
-            FORCE_TERMINAL,
-            FORCE_PIPE,
-            AUTO_TERMINAL,
-        ], terminal_mode
-        _state.terminal_mode = terminal_mode
+    # -- Determine theme name.
+    if not theme_name:
+        if _state:
+            # -- Fall to theme name from state, if available.
+            theme_name = _state.theme_name
+        else:
+            # -- Fall to default theme.
+            theme_name = "light."
 
-    # -- Update theme name if specified.
-    if theme_name is not None:
-        _state.theme_name = theme_name
+    # -- Determine terminal mode.
+    if terminal_mode is None:
+        if _state:
+            # -- Fall to terminal mode from the state.
+            terminal_mode = _state.terminal_mode
+        else:
+            # -- Fall to default.
+            terminal_mode = AUTO_TERMINAL
 
     # -- Determine console color parameters.
-    if _state.theme_name == NO_COLORS:
+    if theme_name == NO_COLORS:
         color_system = None
         theme_styles = THEME_LIGHT  # Arbitrary, ignored since colors are off.
     else:
         color_system = "auto"
-        theme_styles = THEMES_TABLE.get(_state.theme_name, THEME_LIGHT)
+        theme_styles = THEMES_TABLE.get(theme_name, THEME_LIGHT)
 
-    # -- Map the terminal mode to the console's force_terminal arg.
-    if _state.terminal_mode == FORCE_TERMINAL:
+    # -- Determine console's force_terminal parameter.
+    if terminal_mode == FORCE_TERMINAL:
         force_terminal = True
-    elif _state.terminal_mode == FORCE_PIPE:
+    elif terminal_mode == FORCE_PIPE:
         force_terminal = False
     else:
-        assert (
-            _state.terminal_mode == AUTO_TERMINAL
-        ), f"{_state.terminal_mode=}"
+        assert terminal_mode == AUTO_TERMINAL, terminal_mode
         force_terminal = None
 
     # -- Construct the new console.
-    _state.console = Console(
+    console_ = Console(
         color_system=color_system,
         force_terminal=force_terminal,
         theme=Theme(theme_styles, inherit=False),
     )
 
     # -- Construct the helper decoder.
-    _state.decoder = AnsiDecoder()
+    decoder = AnsiDecoder()
+
+    # -- Save the state
+    _state = ConsoleState(
+        terminal_mode=terminal_mode,
+        theme_name=theme_name,
+        console=console_,
+        decoder=decoder,
+    )
 
     # -- For debugging.
-    # print(f"***     {reset=}")
+    # print()
+    # print(f"***     {_stdout_fixed=}")
     # print(f"***     {terminal_mode=}")
     # print(f"***     {theme_name=}")
     # print(f"***     {color_system=}")
+    # print(f"***     {terminal_mode=}")
     # print(f"***     {force_terminal=}")
+    # print(f"***     {_state.console.is_terminal=}")
+    # print(f"***     {_state.console.encoding=}")
+    # print(f"***     {_state.console.is_dumb_terminal=}")
+    # print(f"***     {_state.console.safe_box=}")
     # print(f"***     state={_state}")
+    # print()
+
+
+def check_apio_console_configured():
+    """A common check that the apio console has been configured."""
+    assert _state.console, "The apio console is not configured."
 
 
 def is_colors_enabled() -> bool:
     """Returns True if colors are enabled."""
+    check_apio_console_configured()
     return _state.theme_name != NO_COLORS
 
 
 def theme() -> str:
     """Return the current theme name."""
+    check_apio_console_configured()
     return _state.theme_name
 
 
 def console():
     """Returns the underlying console. This value should not be cached as
     the console object changes when the configure() or reset() are called."""
-    assert _state.console, "The apio console is not configured."
+    check_apio_console_configured()
     return _state.console
 
 
 def cunstyle(text: str) -> str:
     """A replacement for click unstyle(). This function removes ansi colors
     from a string."""
+    check_apio_console_configured()
     text_obj: Text = _state.decoder.decode_line(text)
     return text_obj.plain
 
@@ -220,7 +247,6 @@ def cout(
     nl: bool = True,
 ) -> None:
     """Prints lines of text to the console, using the optional style."""
-
     # -- If no args, just do an empty println.
     if not text_lines:
         text_lines = [""]

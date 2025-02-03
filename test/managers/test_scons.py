@@ -107,10 +107,6 @@ def test_default_params(apio_runner: ApioRunner):
 
     with apio_runner.in_sandbox() as sb:
 
-        # Force terminal mode.
-        # apio_console.configure(reset=True, terminal_mode=FORCE_TERMINAL,
-        # theme_name="light")
-
         # -- Setup a Scons object.
         sb.write_apio_ini(TEST_APIO_INI_DICT)
         apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
@@ -151,9 +147,6 @@ def test_explicit_params(apio_runner: ApioRunner):
     """Tests the construct_scons_params() method with values override.."""
 
     with apio_runner.in_sandbox() as sb:
-
-        # Force terminal mode.
-        # apio_console.configure(terminal_mode=FORCE_TERMINAL)
 
         # -- Setup a Scons object.
         sb.write_apio_ini(TEST_APIO_INI_DICT)

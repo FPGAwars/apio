@@ -180,14 +180,12 @@ class TargetParams(_message.Message):
     def __init__(self, lint: _Optional[_Union[LintParams, _Mapping]] = ..., graph: _Optional[_Union[GraphParams, _Mapping]] = ..., sim: _Optional[_Union[SimParams, _Mapping]] = ..., test: _Optional[_Union[ApioTestParams, _Mapping]] = ..., upload: _Optional[_Union[UploadParams, _Mapping]] = ...) -> None: ...
 
 class RichLibWindowsParams(_message.Message):
-    __slots__ = ("stdout_encoding", "vt", "truecolor")
-    STDOUT_ENCODING_FIELD_NUMBER: _ClassVar[int]
+    __slots__ = ("vt", "truecolor")
     VT_FIELD_NUMBER: _ClassVar[int]
     TRUECOLOR_FIELD_NUMBER: _ClassVar[int]
-    stdout_encoding: str
     vt: bool
     truecolor: bool
-    def __init__(self, stdout_encoding: _Optional[str] = ..., vt: bool = ..., truecolor: bool = ...) -> None: ...
+    def __init__(self, vt: bool = ..., truecolor: bool = ...) -> None: ...
 
 class SconsParams(_message.Message):
     __slots__ = ("timestamp", "arch", "fpga_info", "verbosity", "environment", "project", "target", "rich_lib_windows_params")
