@@ -1,10 +1,9 @@
-// List of FPGA boards programmers definition that are used by apio. 
+// List of FPGA boards programmers definition that are used by apio.
 // The programmers are reffers to by the boards in boards.jsonc which can
 // add additional arguments to the programmers' command lines.
 //
 // The programmer command is constructed as follows:
 // <programmer.args> $SOURCE <board.extra_args>
-
 {
   "iceprog": {
     "command": "iceprog",
@@ -16,7 +15,7 @@
   },
   "iceprogduino": {
     "command": "iceprogduino",
-    "args": ""
+    "args": "-I ${SERIAL_PORT}"
   },
   "blackiceprog": {
     "command": "black-iceprog",
