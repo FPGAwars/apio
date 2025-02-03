@@ -129,6 +129,7 @@ class ApioSandbox:
 
         # -- Invoke the command. Get back the collected results.
         result = self._click_runner.invoke(
+            prog_name="apio",
             cli=cli,
             args=args,
             input=input,

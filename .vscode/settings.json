@@ -107,8 +107,6 @@
         "pytest",
         "pyxx",
         "readmemh",
-        "sayno",
-        "sayyes",
         "scons",
         "sconsign",
         "sconstruct",
