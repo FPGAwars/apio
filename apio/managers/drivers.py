@@ -92,7 +92,7 @@ SERIAL_INSTALL_INSTRUCTIONS_WINDOWS = f"""
   2. {E1}Accept the Serial Installer request[/] to make changes to your \
 computer.
 
-  3. {E1}Find the Serial installer window and follow the instructions.[/]
+  3. Find the Serial installer window and {E1}follow the instructions.[/]
 
   4. To verify, {E1}disconnect and reconnect the board[/] and run the command
       {E1}'apio system lsserial'.[/]
