@@ -121,14 +121,9 @@ https://github.com/FPGAwars/apio/wiki/Apio
 """
 
 
-# We set apply_theme at the top level command to apply the color preferences
-# from profile.ini to apio_console.py before we start to parse the args. This
-# way, the correct colors applied even if the parsing fails and prints
-# a usage message.
 @click.group(
     name="apio",
     cls=ApioGroup,
-    apply_theme=True,
     subgroups=SUBGROUPS,
     help=APIO_HELP,
     short_help="Work with FPGAs with ease",

@@ -11,7 +11,7 @@
 
 import sys
 from dataclasses import dataclass
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Any
 import click
 from click.formatting import HelpFormatter
 from apio.profile import Profile
@@ -271,11 +271,6 @@ class ApioGroup(click.Group):
     format."""
 
     def __init__(self, *args, **kwargs):
-        # -- Remember if apply_theme was set to True for this command.
-        # -- This is used to setup the color preferences before
-        # -- the apio top level cli is invoked.
-        self._apply_theme = kwargs.pop("apply_theme", False)
-
         # -- Consume the 'subgroups' arg.
         self._subgroups: List[ApioSubgroup] = kwargs.pop("subgroups")
         assert isinstance(self._subgroups, list)
@@ -289,6 +284,17 @@ class ApioGroup(click.Group):
         for subgroup in self._subgroups:
             for cmd in subgroup.commands:
                 self.add_command(cmd=cmd, name=cmd.name)
+
+    # @override
+    def main(self, *args, **kwargs) -> Any:
+        """Override the parent 'main()' function to insert an
+        initialization of the apio_console with the user's preferred colors
+        theme. This method is invoked only for the top 'apio' command.
+        """
+        # -- Initializes apio_console with the user's preferred theme.
+        Profile.apply_color_preferences()
+        # -- Call the parent to do the normal operation.
+        return super().main(*args, **kwargs)
 
     # @override
     def format_help_text(
@@ -341,12 +347,10 @@ class ApioGroup(click.Group):
     def get_help(self, ctx: click.Context) -> str:
         """Overrides a super method to add blank line at the end of the help
         text."""
-        # -- Special case for the help of the top level apio command since its
-        # -- help is generated before any call to get_command().
-        if self._apply_theme:
-            Profile.apply_color_preferences()
 
+        # -- Patch the partial command names to their full version.
         _patch_partial_commands_names(ctx)
+        # -- Get the normal help text and add a blank line.
         return super().get_help(ctx) + "\n"
 
     # @override
@@ -360,13 +364,8 @@ class ApioGroup(click.Group):
         sub command or None if not match.
         """
 
-        # -- This is triggered when starting to process the top level apio cli
-        # -- command. It sets the colors based on user preferences.
-        if self._apply_theme:
-            Profile.apply_color_preferences()
-
-        # -- This 'fix' partial command names into their full names,
-        # -- to have more intuitive help and usage messages.
+        # -- Patch the partial command names the user used to their full
+        # -- names so we have them listed instead in the help message.
         _patch_partial_commands_names(ctx)
 
         # -- First priority is for exact match. For this we use the click
@@ -415,7 +414,8 @@ class ApioCommand(click.Command):
         its args. We use it to patch any partial command name (e.b. 'bu')
         to its full command name (e.g. 'build') to have the full names in
         case the help text or a usage error will be printed."""
-        # -- Patch names.
+        # -- Patch the partial command names the user used to their full
+        # -- names so we have them listed instead in the help message.
         _patch_partial_commands_names(ctx)
         # -- Call the parent implementation.
         return click.Command.parse_args(self, ctx, args)
