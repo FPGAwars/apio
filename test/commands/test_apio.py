@@ -14,14 +14,14 @@ def test_apio_cmd(apio_runner: ApioRunner):
         # -- Run 'apio'
         result = sb.invoke_apio_cmd(apio)
         sb.assert_ok(result)
-        assert "Work with FPGAs with ease" in result.output
+        assert "WORK WITH FPGAs WITH EASE." in result.output
         assert "Build commands:" in result.output
         assert "Upload the bitstream to the FPGA" in result.output
 
         # -- Run 'apio --help'
         result = sb.invoke_apio_cmd(apio, "--help")
         sb.assert_ok(result)
-        assert "Work with FPGAs with ease" in result.output
+        assert "WORK WITH FPGAs WITH EASE." in result.output
         assert "Build commands:" in result.output
         assert "Upload the bitstream to the FPGA" in result.output
 

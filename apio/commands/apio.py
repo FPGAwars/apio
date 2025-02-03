@@ -96,7 +96,7 @@ def context_settings():
 
 # -- Text in the markdown format of the python rich library.
 APIO_HELP = """
-[b]Work with FPGAs with ease.[/b]
+[b]WORK WITH FPGAs WITH EASE.[/b]
 
 Apio is an easy to use and open-source command-line suite designed to \
 streamline FPGA programming. It supports a wide range of tasks, including \
