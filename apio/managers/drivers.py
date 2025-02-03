@@ -11,12 +11,16 @@ import shutil
 import subprocess
 from pathlib import Path
 from apio.utils import util
-from apio.common.apio_console import cout, cerror
-from apio.common.styles import INFO, SUCCESS
+from apio.common.apio_console import cout, cerror, cprint
+from apio.common.styles import INFO, SUCCESS, EMPH3
 from apio.apio_context import ApioContext
 from apio.managers import installer
 
-FTDI_INSTALL_INSTRUCTIONS_WINDOWS = """
+# -- Style shortcuts
+E3 = f"[{EMPH3}]"
+
+# -- Text in the markdown format of the python rich library.
+FTDI_INSTALL_INSTRUCTIONS_WINDOWS = f"""
 Please follow these steps:
 
   1. Make sure your FPGA board is connected to the computer.
@@ -28,8 +32,8 @@ Please follow these steps:
   4. Select your FPGA board from the drop down list, For example
     'Alhambra II v1.0A - B09-335 (Interface 0)'.
 
-    **VERY IMPORTANT**
-    If your board appears multiple time, select the 'interface 0' entry.
+    {E3}IMPORTANT - \
+    If your board appears multiple time, select the 'interface 0' entry.[/]
 
   5. Make sure that 'WinUSB' is selected. For example
      'WinUSB (v6.1.7600.16385)'.
@@ -46,7 +50,8 @@ Please follow these steps:
      your board is listed.
 """
 
-FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS = """
+# -- Text in the markdown format of the python rich library.
+FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS = f"""
 Please follow these steps:
 
   1. Make sure your FPGA board is NOT connected to the computer.
@@ -62,9 +67,9 @@ Please follow these steps:
   5. Identify the entry of your board (e.g. in the 'Universal Serial
      Bus Devices' section).
 
-     NOTE: Boards with FT2232 ICs have two channels, 'interface 0'
+     {E3}NOTE: Boards with FT2232 ICs have two channels, 'interface 0'
      and 'interface 1'. Here we care only about 'interface 0' and
-     ignore 'interface 1' if it appears as a COM port.
+     ignore 'interface 1' if it appears as a COM port.[/]
 
   6. Right click on your board entry and select 'Uninstall device'.
 
@@ -76,6 +81,7 @@ Please follow these steps:
   9. Close the Device Manager window.
 """
 
+# -- Text in the markdown format of the python rich library.
 SERIAL_INSTALL_INSTRUCTIONS_WINDOWS = """
 Please follow these steps:
 
@@ -89,7 +95,8 @@ Please follow these steps:
       'apio system lsserial'.
 """
 
-SERIAL_UNINSTALL_INSTRUCTIONS_WINDOWS = """
+# -- Text in the markdown format of the python rich library.
+SERIAL_UNINSTALL_INSTRUCTIONS_WINDOWS = f"""
 Please follow these steps:
 
   1. Make sure your FPGA board is NOT connected to the computer.
@@ -103,13 +110,12 @@ Please follow these steps:
 
   5. Identify the entry of your board (typically in the Ports section).
 
-     NOTE: If your board does not show up as a COM port, it may not
-     have the 'apio drivers --serial-install' applied to it.
+     {E3} NOTE: If your board does not show up as a COM port, it may not
+     have the 'apio drivers --serial-install' applied to it.[/]
 
   6. Right click on your board entry and select 'Uninstall device'.
 
-  7. If available, check the box 'Delete the driver software for this
-     device'.
+  7. If available, check the box 'Delete the driver software for this device'.
 
   8. Click the 'Uninstall' button.
 
@@ -464,7 +470,7 @@ class Drivers:
         cout(
             "\nStarting the interactive config tool zadig.exe.", style=SUCCESS
         )
-        cout(FTDI_INSTALL_INSTRUCTIONS_WINDOWS, style=INFO)
+        cprint(FTDI_INSTALL_INSTRUCTIONS_WINDOWS)
 
         # -- Execute zadig!
         # -- We execute it using os.system() rather than by
@@ -485,7 +491,7 @@ class Drivers:
         installer.install_missing_packages_on_the_fly(self.apio_ctx)
 
         cout("\nStarting the interactive Device Manager.", style=SUCCESS)
-        cout(FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS, style=INFO)
+        cprint(FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS)
 
         # -- We launch the device manager using os.system() rather than with
         # -- util.exec_command() because util.exec_command() does not support
@@ -503,7 +509,7 @@ class Drivers:
         drivers_bin_dir = drivers_base_dir / "bin"
 
         cout("\nStarting the interactive Serial Installer.", style=SUCCESS)
-        cout(SERIAL_INSTALL_INSTRUCTIONS_WINDOWS, style=INFO)
+        cprint(SERIAL_INSTALL_INSTRUCTIONS_WINDOWS)
 
         # -- We launch the device manager using os.system() rather than with
         # -- util.exec_command() because util.exec_command() does not support
@@ -519,7 +525,7 @@ class Drivers:
         installer.install_missing_packages_on_the_fly(self.apio_ctx)
 
         cout("\nStarting the interactive Device Manager.", style=SUCCESS)
-        cout(SERIAL_UNINSTALL_INSTRUCTIONS_WINDOWS, style=INFO)
+        cprint(SERIAL_UNINSTALL_INSTRUCTIONS_WINDOWS)
 
         # -- We launch the device manager using os.system() rather than with
         # -- util.exec_command() because util.exec_command() does not support
