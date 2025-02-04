@@ -262,6 +262,9 @@ class ApioGroup(click.Group):
         assert isinstance(self._subgroups, list)
         assert isinstance(self._subgroups[0], ApioSubgroup)
 
+        # -- Override the static variable of the BaseCommand class to point
+        # -- to our custom ApioCmdContext. This causes the command to use
+        # -- contexts of type ApioCmdContext instead of click.Context.
         click.BaseCommand.context_class = ApioCmdContext
 
         # -- Pass the rest of the arg to init the base class.
