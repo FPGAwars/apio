@@ -10,7 +10,8 @@
 import click
 from rich.table import Table
 from rich import box
-from apio.common.apio_console import cprint, PADDING, cout
+from rich.color import ANSI_COLOR_NAMES
+from apio.common.apio_console import cprint, PADDING, cout, cstyle
 from apio.common.styles import BORDER, EMPH1, EMPH3
 from apio.utils import util
 from apio.apio_context import ApioContext, ApioContextScope
@@ -139,6 +140,52 @@ def _platforms_cli():
     cprint(table)
 
 
+# ------ apio system colors
+
+# -- Text in the markdown format of the python rich library.
+APIO_SYSTEM_COLORS_HELP = """
+The command ‘apio system colors shows how the ansi colors are rendered on \
+the platform, and it's used to diagnose color related issues.
+
+\b
+Examples:
+  apio system colors   # Print a table with the colors
+"""
+
+
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
+@click.command(
+    name="colors",
+    cls=ApioCommand,
+    short_help="Show colors table.",
+    help=APIO_SYSTEM_COLORS_HELP,
+)
+def _colors_cli():
+    """Implements the 'apio system colors' command."""
+
+    # -- Print title
+    cout("", "ANSI Colors:", "")
+
+    # -- Create an inverse color map.
+    colors = list(ANSI_COLOR_NAMES.keys())
+
+    # -- Print the table.
+    num_rows = 50
+    for row in range(num_rows):
+        values = []
+        for col in range(5):
+            i = row + (col * num_rows)
+            if i >= len(colors):
+                values.append("")
+            else:
+                name = colors[i]
+                num = ANSI_COLOR_NAMES[name]
+                s = f"{num:3} {name:20}"
+                values.append(cstyle(s, style=name))
+        cout("   ".join(values))
+
+
 # ------ apio system
 
 # -- Text in the markdown format of the python rich library.
@@ -154,6 +201,7 @@ SUBGROUPS = [
         [
             _platforms_cli,
             _info_cli,
+            _colors_cli,
         ],
     )
 ]
