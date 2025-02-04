@@ -50,7 +50,7 @@
 ```
 Usage: apio [OPTIONS] COMMAND [ARGS]...
 
-  Work with FPGAs with ease.
+  WORK WITH FPGAs WITH EASE.
 
   Apio is an easy to use and open-source command-line suite designed to
   streamline FPGA programming. It supports a wide range of tasks,
@@ -1012,6 +1012,7 @@ Usage: apio system platforms [OPTIONS]
 
 Options:
   -h, --help  Show this message and exit.
+
 ```
 
 <br>
