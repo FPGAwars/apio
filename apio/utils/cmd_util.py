@@ -11,9 +11,10 @@
 
 import sys
 from dataclasses import dataclass
-from typing import List, Dict, Union, Any
+from typing import List, Dict, Union
 import click
 from click.formatting import HelpFormatter
+from apio.common import apio_console
 from apio.profile import Profile
 from apio.common.styles import CMD_NAME
 from apio.common.apio_console import (
@@ -32,6 +33,8 @@ def fatal_usage_error(cmd_ctx: click.Context, msg: str) -> None:
     cmd_ctx: The context that was passed to the command.
     msg: A single line short error message.
     """
+    assert isinstance(cmd_ctx, ApioCmdContext)
+
     # Mimicking the usage error message from click/exceptions.py.
     # E.g. "Try 'apio packages -h' for help."
     cout(cmd_ctx.get_usage())
@@ -248,33 +251,18 @@ def _format_apio_markdown_help_text(
         formatter.write(("  " + line).rstrip(" ") + "\n")
 
 
-def _patch_partial_commands_names(ctx: click.Context):
-    """Traverses the up the chain of command contexts and the partial command
-    names in the info_name fields with the full name of the command. This
-    causes help and error messages to use the full commands name of the path
-    rather than partial names that the user may used. We don't patch the top
-    context because it contains the the name used to invoke the program
-    rather than the name of the Command object associated with it. This
-    function is necessary for the support for partial command names we
-    added below. There is no harm in calling this function multiple times.
-    """
-    c = ctx
-    while c.parent is not None:
-        # -- Replace the partial name with the full name.
-        c.info_name = c.command.name
-        # -- Go one context up.
-        c = c.parent
-
-
 class ApioGroup(click.Group):
     """A customized click.Group class that allows apio customized help
     format."""
 
     def __init__(self, *args, **kwargs):
+
         # -- Consume the 'subgroups' arg.
         self._subgroups: List[ApioSubgroup] = kwargs.pop("subgroups")
         assert isinstance(self._subgroups, list)
         assert isinstance(self._subgroups[0], ApioSubgroup)
+
+        click.BaseCommand.context_class = ApioCmdContext
 
         # -- Pass the rest of the arg to init the base class.
         super().__init__(*args, **kwargs)
@@ -286,21 +274,11 @@ class ApioGroup(click.Group):
                 self.add_command(cmd=cmd, name=cmd.name)
 
     # @override
-    def main(self, *args, **kwargs) -> Any:
-        """Override the parent 'main()' function to insert an
-        initialization of the apio_console with the user's preferred colors
-        theme. This method is invoked only for the top 'apio' command.
-        """
-        # -- Initializes apio_console with the user's preferred theme.
-        Profile.apply_color_preferences()
-        # -- Call the parent to do the normal operation.
-        return super().main(*args, **kwargs)
-
-    # @override
     def format_help_text(
         self, ctx: click.Context, formatter: HelpFormatter
     ) -> None:
         """Overrides the parent method that formats the command's help text."""
+        assert isinstance(ctx, ApioCmdContext)
         _format_apio_markdown_help_text(self.help, formatter)
 
     # @override
@@ -309,6 +287,7 @@ class ApioGroup(click.Group):
     ) -> None:
         """Overrides the parent method which formats the options and sub
         commands."""
+        assert isinstance(ctx, ApioCmdContext)
 
         # -- Call the grandparent method which formats the options without
         # -- the subcommands.
@@ -344,16 +323,6 @@ class ApioGroup(click.Group):
             formatter.write("\n")
 
     # @override
-    def get_help(self, ctx: click.Context) -> str:
-        """Overrides a super method to add blank line at the end of the help
-        text."""
-
-        # -- Patch the partial command names to their full version.
-        _patch_partial_commands_names(ctx)
-        # -- Get the normal help text and add a blank line.
-        return super().get_help(ctx) + "\n"
-
-    # @override
     def get_command(self, ctx, cmd_name) -> click.Command:
         """Overrides the method that matches a token in the command line to
         a sub-command. This alternative implementation allows to specify also
@@ -364,9 +333,7 @@ class ApioGroup(click.Group):
         sub command or None if not match.
         """
 
-        # -- Patch the partial command names the user used to their full
-        # -- names so we have them listed instead in the help message.
-        _patch_partial_commands_names(ctx)
+        assert isinstance(ctx, ApioCmdContext)
 
         # -- First priority is for exact match. For this we use the click
         # -- default implementation from the parent class.
@@ -399,23 +366,31 @@ class ApioCommand(click.Command):
         self, ctx: click.Context, formatter: HelpFormatter
     ) -> None:
         """Overrides the parent method that formats the command's help text."""
+        assert isinstance(ctx, ApioCmdContext), type(ctx)
         _format_apio_markdown_help_text(self.help, formatter)
 
-    # @override
-    def get_help(self, ctx: click.Context) -> str:
-        """Overrides a super method to add blank line at the end of the help
-        text."""
-        _patch_partial_commands_names(ctx)
-        return super().get_help(ctx) + "\n"
+
+class ApioCmdContext(click.Context):
+    """A custom click.Context class."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # -- Replace the potentially partial command name the user specified
+        # -- with the full command name. This will cause usage messages to
+        # -- include the full command names.
+        self.info_name = self.command.name
+
+        # -- If this the top command context, apply user color preferences
+        # -- to the apio console.
+        if self.parent is None:
+            Profile.apply_color_preferences()
+
+        # -- Synchronize the click color output setting to the apio console
+        # -- setting. The self.color flag affects output of help and
+        # -- usage text by click.
+        self.color = apio_console.is_terminal()
 
     # @override
-    def parse_args(self, ctx: click.Context, args: List[str]) -> List[str]:
-        """Called when the final command was identified but before parsing
-        its args. We use it to patch any partial command name (e.b. 'bu')
-        to its full command name (e.g. 'build') to have the full names in
-        case the help text or a usage error will be printed."""
-        # -- Patch the partial command names the user used to their full
-        # -- names so we have them listed instead in the help message.
-        _patch_partial_commands_names(ctx)
-        # -- Call the parent implementation.
-        return click.Command.parse_args(self, ctx, args)
+    def get_help(self) -> str:
+        return self.command.get_help(self) + "\n"

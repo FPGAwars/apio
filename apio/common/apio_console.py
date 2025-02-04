@@ -26,7 +26,7 @@ from apio.common.proto.apio_pb2 import (
     AUTO_TERMINAL,
 )
 
-# -- The names of the Rich library color names is available at:
+# -- The Rich library colors names are listed at:
 # -- https://rich.readthedocs.io/en/stable/appendix/colors.html
 
 
@@ -195,7 +195,7 @@ def configure(
 
     # -- For debugging.
     # print()
-    # print(f"***     {_stdout_fixed=}")
+    # print(f"***     {stdout_fixed=}")
     # print(f"***     {terminal_mode=}")
     # print(f"***     {theme_name=}")
     # print(f"***     {color_system=}")
