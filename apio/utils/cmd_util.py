@@ -396,4 +396,16 @@ class ApioCmdContext(click.Context):
 
     # @override
     def get_help(self) -> str:
-        return self.command.get_help(self) + "\n"
+        # IMPORTANT:
+        # This implementation behaves differently than the parent method
+        # it overrides.
+        #
+        # Instead of returning the help text, we print it using the rich
+        # library and exit and just return an empty string. This avoids
+        # the default printing using the click library which strips some
+        # colors on windows.
+        #
+        # The empty string we return is printed by click as an black line
+        # which adds a nice separation line. Otherwise we would pass None.
+        cout(self.command.get_help(self))
+        return ""

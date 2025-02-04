@@ -17,6 +17,7 @@ def test_colors_on_off(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(apio, "preferences")
         sb.assert_ok(result)
         assert "'apio preferences' allows" in cunstyle(result.output)
+        assert "-t, --theme [light|dark|no-colors]" in result.output
         assert result.output != cunstyle(result.output)  # Colored.
 
         # -- Execute "apio preferences --theme dark"

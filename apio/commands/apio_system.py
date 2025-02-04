@@ -156,8 +156,8 @@ Examples:
   apio system colors          # Rich library output (default)
   apio system colors --rich   # Same as above.
   apio system colors --click  # Click library output.
-  apio system colors --print  # Python's print() output.[/code]
-  apio sys col -p             # Using shortcuts
+  apio system colors --print  # Python's print() output.
+  apio sys col -p             # Using shortcuts.[/code]
 """
 
 rich_option = click.option(
