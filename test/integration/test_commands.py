@@ -287,6 +287,7 @@ def _test_project(
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert report_item in result.output
+        assert "─────┐" in result.output  # Graphical table border
         assert getsize(sb.proj_dir / "_build/hardware.pnr")
 
         # -- 'apio graph'

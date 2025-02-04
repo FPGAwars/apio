@@ -30,6 +30,7 @@ def test_fpgas_ok(apio_runner: ApioRunner):
         assert "Loading custom 'fpgas.jsonc'" not in result.output
         assert "ice40hx4k-tq144-8k" in result.output
         assert "my_custom_fpga" not in result.output
+        assert "─────┐" in result.output  # Graphic table border
 
 
 def test_custom_fpga(apio_runner: ApioRunner):
