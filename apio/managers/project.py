@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Dict, Optional, Union, Any, List
 from configobj import ConfigObj
 from apio.common.apio_console import cout, cerror
-from apio.common.styles import INFO, SUCCESS
+from apio.common.apio_styles import INFO, SUCCESS
 
 
 DEFAULT_TOP_MODULE = "main"

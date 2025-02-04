@@ -12,7 +12,7 @@ import click
 from rich.table import Table
 from rich import box
 from apio.common.apio_console import cout, cprint
-from apio.common.styles import INFO, BORDER, ERROR, SUCCESS
+from apio.common.apio_styles import INFO, BORDER, ERROR, SUCCESS
 from apio.managers import installer
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import pkg_util

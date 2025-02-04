@@ -31,7 +31,7 @@ from SCons.Node.Alias import Alias
 from apio.scons.apio_env import ApioEnv
 from apio.common.apio_consts import TARGET, BUILD_DIR
 from apio.common.apio_console import cout, cerror, cwarning, cprint
-from apio.common.styles import INFO, BORDER, EMPH1, EMPH2, EMPH3
+from apio.common.apio_styles import INFO, BORDER, EMPH1, EMPH2, EMPH3
 
 
 # -- A list with the file extensions of the verilog source files.

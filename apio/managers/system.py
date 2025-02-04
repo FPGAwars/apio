@@ -9,7 +9,7 @@
 import re
 import sys
 from apio.common.apio_console import cout, cerror
-from apio.common.styles import INFO, ERROR, EMPH1
+from apio.common.apio_styles import INFO, ERROR, EMPH1
 from apio.utils import util, pkg_util
 from apio.apio_context import ApioContext
 from apio.managers import installer

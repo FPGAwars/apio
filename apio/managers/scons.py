@@ -19,7 +19,7 @@ from datetime import datetime
 from google.protobuf import text_format
 from apio.common import apio_console
 from apio.common.apio_console import cout, cerror, cstyle
-from apio.common.styles import SUCCESS, ERROR, EMPH1, EMPH3
+from apio.common.apio_styles import SUCCESS, ERROR, EMPH1, EMPH3
 from apio.utils import util, pkg_util
 from apio.common.apio_consts import BUILD_DIR
 from apio.apio_context import ApioContext
@@ -315,7 +315,7 @@ class SCons:
                     if apio_console.is_terminal()
                     else FORCE_PIPE
                 ),
-                theme_name=apio_console.theme(),
+                theme_name=apio_console.current_theme_name(),
                 is_debug=util.is_debug(),
                 yosys_path=oss_vars["YOSYS_LIB"],
                 trellis_path=oss_vars["TRELLIS"],

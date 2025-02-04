@@ -12,8 +12,9 @@ import click
 from rich.table import Table
 from rich import box
 from apio.commands import options
-from apio.common.apio_console import cout, cprint, NO_COLORS
-from apio.common.styles import BORDER, EMPH1, SUCCESS
+from apio.common import apio_themes
+from apio.common.apio_console import cout, cprint
+from apio.common.apio_styles import BORDER, EMPH1, SUCCESS
 from apio.utils import cmd_util
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioCommand
@@ -80,7 +81,7 @@ theme_option = click.option(
     "theme_name",  # Var name
     "-t",
     "--theme",
-    type=click.Choice(["light", "dark", NO_COLORS], case_sensitive=True),
+    type=click.Choice(apio_themes.THEMES_NAMES, case_sensitive=True),
     help="Set colors theme name.",
     cls=cmd_util.ApioOption,
 )

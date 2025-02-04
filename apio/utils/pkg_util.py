@@ -14,7 +14,7 @@ from pathlib import Path
 from dataclasses import dataclass
 import os
 from apio.common.apio_console import cout, cstyle
-from apio.common.styles import EMPH3
+from apio.common.apio_styles import EMPH3
 from apio.apio_context import ApioContext
 from apio.utils import util
 

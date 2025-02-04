@@ -25,7 +25,7 @@ from varname import argname
 from serial.tools.list_ports import comports
 from apio.utils import env_options
 from apio.common.apio_console import cout, cerror
-from apio.common.styles import INFO, WARNING, ERROR, EMPH3
+from apio.common.apio_styles import INFO, WARNING, ERROR, EMPH3
 
 
 # ----------------------------------------

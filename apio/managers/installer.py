@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Tuple
 import shutil
 from apio.common.apio_console import cout, cerror
-from apio.common.styles import INFO, WARNING, ERROR, SUCCESS, EMPH3
+from apio.common.apio_styles import INFO, WARNING, ERROR, SUCCESS, EMPH3
 from apio.apio_context import ApioContext
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker

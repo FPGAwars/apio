@@ -14,9 +14,9 @@ from rich import box
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 from apio.utils import cmd_util
 from apio.apio_context import ApioContext, ApioContextScope
-from apio.common.styles import BORDER, EMPH1
+from apio.common.apio_styles import BORDER, EMPH1
 from apio.managers import project
-from apio.common.styles import TITLE, INFO
+from apio.common.apio_styles import TITLE, INFO
 from apio.common.apio_console import (
     PADDING,
     docs_text,
