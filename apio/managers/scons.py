@@ -252,9 +252,10 @@ class SCons:
         # -- Get the project fpga id from the board info.
         fpga_id = apio_ctx.boards.get(board).get("fpga")
         assert fpga_id, "construct_scons_params(): fpga assertion failed."
-        assert (
-            fpga_id in apio_ctx.fpgas
-        ), f"construct_scons_params(): unknown fpga {fpga_id} "
+        assert fpga_id in apio_ctx.fpgas, (
+            f"construct_scons_params(): unknown fpga id [{fpga_id}].\n"
+            "Run `apio fpgas` for fpga ids."
+        )
         fpga_config = apio_ctx.fpgas.get(fpga_id)
         fpga_arch = fpga_config["arch"]
 
