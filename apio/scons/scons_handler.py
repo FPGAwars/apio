@@ -79,7 +79,6 @@ class SconsHandler:
 
         # -- Set terminal mode and theme to match the apio process.
         apio_console.configure(
-            reset=True,
             terminal_mode=params.environment.terminal_mode,
             theme_name=params.environment.theme_name,
         )

@@ -11,109 +11,120 @@ import shutil
 import subprocess
 from pathlib import Path
 from apio.utils import util
-from apio.common.apio_console import cout, cerror
-from apio.common.styles import INFO, SUCCESS
+from apio.common.apio_console import cout, cerror, cprint
+from apio.common.styles import INFO, SUCCESS, EMPH1, EMPH3
 from apio.apio_context import ApioContext
 from apio.managers import installer
 
-FTDI_INSTALL_INSTRUCTIONS_WINDOWS = """
-Please follow these steps:
+# -- Style shortcuts
+E1 = f"[{EMPH1}]"
+E3 = f"[{EMPH3}]"
 
-  1. Make sure your FPGA board is connected to the computer.
+# -- Text in the markdown format of the python rich library.
+FTDI_INSTALL_INSTRUCTIONS_WINDOWS = f"""
+{E3}Please follow these steps:[/]
 
-  2. Accept the Zadig request to make changes to your computer.
+  1. Make sure your {E1}FPGA board is connected[/] to the computer.
 
-  3. Find the Zadig window on your screen.
+  2. {E1}Accept the Zadig request[/] to make changes to your computer.
 
-  4. Select your FPGA board from the drop down list, For example
+  3. {E1}Find the Zadig window[/] on your screen.
+
+  4. {E1}Select your FPGA board[/] from the drop down list, For example
     'Alhambra II v1.0A - B09-335 (Interface 0)'.
 
-    **VERY IMPORTANT**
-    If your board appears multiple time, select the 'interface 0' entry.
+  {E3}IMPORTANT - If your board appears multiple time, make sure
+  to select the 'interface 0' entry.[/]
 
-  5. Make sure that 'WinUSB' is selected. For example
+  5. Make sure that {E1}'WinUSB' is selected[/]. For example
      'WinUSB (v6.1.7600.16385)'.
 
-  6. Click the 'Replace Driver' button and wait for a successful
+  6. {E1}Click 'Replace Driver'[/] and wait for a successful
      completion, this can take a minute or two.
 
-  7. Close the Zadig window.
+  7. {E1}Close the Zadig window.[/]
 
-  8. Disconnect and reconnect your FPGA board for the new driver
+  8. {E1}Disconnect and reconnect[/] your FPGA board for the new driver
      to take affect.
 
-  9. Run the command 'apio system lsftdi' and verify that
+  9. {E1}Run the command 'apio drivers list ftdi'[/] and verify that
      your board is listed.
 """
 
-FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS = """
-Please follow these steps:
+# -- Text in the markdown format of the python rich library.
+FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS = f"""
+{E3}Please follow these steps:[/]
 
-  1. Make sure your FPGA board is NOT connected to the computer.
+  1. Make sure your FPGA {E1}board is NOT connected[/] to the computer.
 
-  2. If asked, allow the Device Manager to make changes to your system.
+  2. If asked, {E1}allow the Device Manager to make changes to your system.[/]
 
-  3. Find the Device Manager window.
+  3. {E1}Find the Device Manager window.[/]
 
-  4. Connect the board to your computer and a new entry will be added
+  4. {E1}Connect the board[/] to your computer and a new entry will be added
      to the device list (though sometimes it may be collapsed and
      hidden).
 
-  5. Identify the entry of your board (e.g. in the 'Universal Serial
+  5. {E1}Identify the entry of your board[/] (e.g. in the 'Universal Serial
      Bus Devices' section).
 
-     NOTE: Boards with FT2232 ICs have two channels, 'interface 0'
+     {E3}NOTE: Boards with FT2232 ICs have two channels, 'interface 0'
      and 'interface 1'. Here we care only about 'interface 0' and
-     ignore 'interface 1' if it appears as a COM port.
+     ignore 'interface 1' if it appears as a COM port.[/]
 
-  6. Right click on your board entry and select 'Uninstall device'.
+  6. {E1}Right click[/] on your board entry and \
+{E1}select 'Uninstall device'.[/]
 
-  7. If available, check the box 'Delete the driver software for this
-     device'.
+  7. If available, check the box {E1}'Delete the driver software for this
+     device'.[/]
 
-  8. Click the 'Uninstall' button.
+  8. Click the {E1}'Uninstall' button[/].
 
-  9. Close the Device Manager window.
+  9. {E1}Close[/] the Device Manager window.
 """
 
-SERIAL_INSTALL_INSTRUCTIONS_WINDOWS = """
-Please follow these steps:
+# -- Text in the markdown format of the python rich library.
+SERIAL_INSTALL_INSTRUCTIONS_WINDOWS = f"""
+{E3}Please follow these steps:[/]
 
-  1. Make sure your FPGA board is connected to the computer.
+  1. Make sure your FPGA {E1}board is connected[/] to the computer.
 
-  2. Accept the Serial Installer request to make changes to your computer.
+  2. {E1}Accept the Serial Installer request[/] to make changes to your \
+computer.
 
-  3. Find the Serial installer window and follow the instructions.
+  3. Find the Serial installer window and {E1}follow the instructions.[/]
 
-  4. To verify, disconnect and reconnect the board and run the command
-      'apio system lsserial'.
+  4. To verify, {E1}disconnect and reconnect the board[/] and run the command
+      {E1}'apio drivers list serial'.[/]
 """
 
-SERIAL_UNINSTALL_INSTRUCTIONS_WINDOWS = """
-Please follow these steps:
+# -- Text in the markdown format of the python rich library.
+SERIAL_UNINSTALL_INSTRUCTIONS_WINDOWS = f"""
+{E3}Please follow these steps:[/]
 
-  1. Make sure your FPGA board is NOT connected to the computer.
+  1. Make sure your FPGA {E1}board is NOT connected[/] to the computer.
 
-  2. If asked, allow the Device Manager to make changes to your system.
+  2. If asked, {E1}allow the Device Manager to make changes[/] to your system.
 
-  3. Find the Device Manager window.
+  3. {E1}Find the Device Manager window.[/]
 
-  4. Connect the board to your computer and a new entry will be added
+  4. {E1}Connect the board[/] to your computer and a new entry will be added
      to the device list (though sometimes it may be collapsed).
 
-  5. Identify the entry of your board (typically in the Ports section).
+  5. {E1}Identify the entry of your board[/] (typically in the Ports section).
 
-     NOTE: If your board does not show up as a COM port, it may not
-     have the 'apio drivers --serial-install' applied to it.
+     {E3} NOTE: If your board does not show up as a COM port, it may not
+     have the 'apio drivers --serial-install' applied to it.[/]
 
-  6. Right click on your board entry and select 'Uninstall device'.
+  6. {E1}Right click[/] on your board entry \
+and {E1}select 'Uninstall device'.[/]
 
-  7. If available, check the box 'Delete the driver software for this
-     device'.
+  7. If available, check the box \
+{E1}'Delete the driver software for this device'.[/]
 
-  8. Click the 'Uninstall' button.
+  8. Click the {E1}'Uninstall' button.[/]
 
-  9. Close the Device Manager window.
+  9. {E1}Close the Device Manager window.[/]
 """
 
 
@@ -461,17 +472,14 @@ class Drivers:
         zadig_exe = drivers_base_dir / "bin" / "zadig.exe"
 
         # -- Show messages for the user
-        cout(
-            "\nStarting the interactive config tool zadig.exe.", style=SUCCESS
-        )
-        cout(FTDI_INSTALL_INSTRUCTIONS_WINDOWS, style=INFO)
+        cout("", "Launching the interactive tool zadig.exe.")
+        cprint(FTDI_INSTALL_INSTRUCTIONS_WINDOWS)
 
         # -- Execute zadig!
         # -- We execute it using os.system() rather than by
         # -- util.exec_command() because zadig required permissions
         # -- elevation.
         exit_code = os.system(str(zadig_exe))
-        cout("FTDI drivers configuration finished", style=SUCCESS)
 
         # -- Remove zadig.ini from the current folder. It is no longer
         # -- needed
@@ -484,8 +492,8 @@ class Drivers:
         # -- Check that the required packages exist.
         installer.install_missing_packages_on_the_fly(self.apio_ctx)
 
-        cout("\nStarting the interactive Device Manager.", style=SUCCESS)
-        cout(FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS, style=INFO)
+        cout("", "Launching the interactive Device Manager.")
+        cprint(FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS)
 
         # -- We launch the device manager using os.system() rather than with
         # -- util.exec_command() because util.exec_command() does not support
@@ -502,8 +510,8 @@ class Drivers:
         drivers_base_dir = self.apio_ctx.get_package_dir("drivers")
         drivers_bin_dir = drivers_base_dir / "bin"
 
-        cout("\nStarting the interactive Serial Installer.", style=SUCCESS)
-        cout(SERIAL_INSTALL_INSTRUCTIONS_WINDOWS, style=INFO)
+        cout("", "Launching the interactive Serial Installer.")
+        cprint(SERIAL_INSTALL_INSTRUCTIONS_WINDOWS)
 
         # -- We launch the device manager using os.system() rather than with
         # -- util.exec_command() because util.exec_command() does not support
@@ -518,8 +526,8 @@ class Drivers:
         # -- Check that the required packages exist.
         installer.install_missing_packages_on_the_fly(self.apio_ctx)
 
-        cout("\nStarting the interactive Device Manager.", style=SUCCESS)
-        cout(SERIAL_UNINSTALL_INSTRUCTIONS_WINDOWS, style=INFO)
+        cout("", "Launching the interactive Device Manager.")
+        cprint(SERIAL_UNINSTALL_INSTRUCTIONS_WINDOWS)
 
         # -- We launch the device manager using os.system() rather than with
         # -- util.exec_command() because util.exec_command() does not support

@@ -103,25 +103,6 @@ project_dir_option = click.option(
 )
 
 
-sayno = click.option(
-    "sayno",  # Var name.
-    "-n",
-    "--sayno",
-    is_flag=True,
-    help="Automatically answer NO to all the questions.",
-    cls=cmd_util.ApioOption,
-)
-
-sayyes = click.option(
-    "sayyes",  # Var name.
-    "-y",
-    "--sayyes",
-    is_flag=True,
-    help="Automatically answer YES to all the questions.",
-    cls=cmd_util.ApioOption,
-)
-
-
 verbose_option = click.option(
     "verbose",  # Var name.
     "-v",

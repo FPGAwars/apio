@@ -13,9 +13,7 @@ from apio.common.apio_console import (
 def test_style_unstyle():
     """Test the styling and unstyling functions"""
 
-    apio_console.configure(
-        reset=True, terminal_mode=FORCE_TERMINAL, theme_name="light"
-    )
+    apio_console.configure(terminal_mode=FORCE_TERMINAL, theme_name="light")
 
     # -- Test cstyle()
     assert cstyle("") == ""

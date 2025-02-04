@@ -96,7 +96,7 @@ def context_settings():
 
 # -- Text in the markdown format of the python rich library.
 APIO_HELP = """
-[b]Work with FPGAs with ease.[/b]
+[b]WORK WITH FPGAs WITH EASE.[/b]
 
 Apio is an easy to use and open-source command-line suite designed to \
 streamline FPGA programming. It supports a wide range of tasks, including \
@@ -121,14 +121,9 @@ https://github.com/FPGAwars/apio/wiki/Apio
 """
 
 
-# We set apply_theme at the top level command to apply the color preferences
-# from profile.ini to apio_console.py before we start to parse the args. This
-# way, the correct colors applied even if the parsing fails and prints
-# a usage message.
 @click.group(
     name="apio",
     cls=ApioGroup,
-    apply_theme=True,
     subgroups=SUBGROUPS,
     help=APIO_HELP,
     short_help="Work with FPGAs with ease",

@@ -11,6 +11,7 @@
 on windows."""
 
 import sys
+import platform
 import rich.console
 from apio.common.proto.apio_pb2 import RichLibWindowsParams
 
@@ -18,11 +19,25 @@ from apio.common.proto.apio_pb2 import RichLibWindowsParams
 # pylint: disable=protected-access
 
 
+def fix_windows_stdout_encoding() -> bool:
+    """Called on the apio process (parent) to fix its output encoding.
+    Safe to call on non windows platforms. Returns True if fixed."""
+    # -- This takes care of the table graphic box.
+    # -- See https://github.com/Textualize/rich/issues/3625
+    if (
+        platform.system().lower() == "windows"
+        and sys.stdout.encoding != "utf-8"
+    ):
+        sys.stdout.reconfigure(encoding="utf-8")
+        return True
+    # -- Else.
+    return False
+
+
 def get_workaround_params() -> RichLibWindowsParams:
     """Called on the apio (parent) process side, when running on windows,
     to collect the parameters for the rich library workaround."""
     result = RichLibWindowsParams(
-        stdout_encoding=sys.stdout.encoding,
         vt=rich.console._windows_console_features.vt,
         truecolor=rich.console._windows_console_features.truecolor,
     )
@@ -37,7 +52,7 @@ def apply_workaround(params: RichLibWindowsParams):
 
     # -- This takes care of the table graphic box.
     # -- See https://github.com/Textualize/rich/issues/3625
-    sys.stdout.reconfigure(encoding=params.stdout_encoding)
+    # sys.stdout.reconfigure(encoding=params.stdout_encoding)
 
     # This enables the colors.
     # See https://github.com/Textualize/rich/issues/3082

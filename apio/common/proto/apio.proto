@@ -160,16 +160,13 @@ message TargetParams {
 
 // Contains parameters for working around the rich library bugs when
 // using piped output on windows.
-// See:
-// https://github.com/Textualize/rich/issues/3082
-// https://github.com/Textualize/rich/issues/3625
+// See:  https://github.com/Textualize/rich/issues/3082
+//       https://github.com/Textualize/rich/issues/3625
 message RichLibWindowsParams {
-  // The encoding of stdout, e.g. 'utf-8'.
-  required string stdout_encoding = 1;
   // Copy of WindowsConsoleFeatures.vt.
-  required bool vt = 2;
+  required bool vt = 1;
   // Copy of WindowsConsoleFeatures.truecolor.
-  required bool truecolor = 3;
+  required bool truecolor = 2;
 }
 
 // The top level messages that is passed from the apio process to

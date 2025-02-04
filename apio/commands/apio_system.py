@@ -10,9 +10,12 @@
 import click
 from rich.table import Table
 from rich import box
-from apio.common.apio_console import cprint, PADDING, cout
+from rich.color import ANSI_COLOR_NAMES
+from apio.common.apio_console import cprint, PADDING, cout, cstyle
 from apio.common.styles import BORDER, EMPH1, EMPH3
-from apio.utils import util
+from apio.utils import util, cmd_util
+from apio.utils.util import nameof
+from apio.utils.cmd_util import check_at_most_one_param
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
@@ -83,14 +86,13 @@ def _info_cli():
 # ------ apio system platforms
 
 APIO_SYSTEM_PLATFORMS_HELP = """
-The command ‘apio system platforms’ lists the platform IDs supported by Apio,
+The command 'apio system platforms' lists the platform IDs supported by Apio, \
 with the effective platform ID of your system highlighted.
 
-\b
-Examples:
-  apio system platforms   # List supported platform ids.
+[code]Examples:
+  apio system platforms   # List supported platform ids.[/code]
 
-[Advanced] The automatic platform ID detection of Apio can be overridden by
+[Advanced] The automatic platform ID detection of Apio can be overridden by \
 defining a different platform ID using the APIO_PLATFORM environment variable.
 """
 
@@ -139,6 +141,125 @@ def _platforms_cli():
     cprint(table)
 
 
+# ------ apio system colors
+
+# -- Text in the markdown format of the python rich library.
+APIO_SYSTEM_COLORS_HELP = """
+The command 'apio system colors' shows how ansi colors are rendered on \
+the platform, and is typically used to diagnose color related issues. \
+While the color name and styling is always handled by the Python Rich \
+library, the output is done via three different libraries, based on \
+the user's selection.
+
+[code]
+Examples:
+  apio system colors          # Rich library output (default)
+  apio system colors --rich   # Same as above.
+  apio system colors --click  # Click library output.
+  apio system colors --print  # Python's print() output.
+  apio sys col -p             # Using shortcuts.[/code]
+"""
+
+rich_option = click.option(
+    "rich_",  # Var name.
+    "-r",
+    "--rich",
+    is_flag=True,
+    help="Output using the rich lib.",
+    cls=cmd_util.ApioOption,
+)
+
+click_option = click.option(
+    "click_",  # Var name.
+    "-c",
+    "--click",
+    is_flag=True,
+    help="Output using the click lib.",
+    cls=cmd_util.ApioOption,
+)
+
+print_option = click.option(
+    "print_",  # Var name.
+    "-p",
+    "--print",
+    is_flag=True,
+    help="Output using python's print().",
+    cls=cmd_util.ApioOption,
+)
+
+
+# R0801: Similar lines in 2 files
+# pylint: disable=R0801
+# pylint: disable=too-many-locals
+@click.command(
+    name="colors",
+    cls=ApioCommand,
+    short_help="Show colors table.",
+    help=APIO_SYSTEM_COLORS_HELP,
+)
+@click.pass_context
+@rich_option
+@click_option
+@print_option
+def _colors_cli(
+    cmd_ctx: click.Context,
+    # options
+    rich_: bool,
+    click_: bool,
+    print_: bool,
+):
+    """Implements the 'apio system colors' command."""
+
+    # -- Allow at most one of --click and --print.
+    check_at_most_one_param(cmd_ctx, nameof(rich_, click_, print_))
+
+    # -- Select by output type.
+    if click_:
+        mode = "CLICK"
+        output_func = click.echo
+    elif print_:
+        mode = "PRINT"
+        output_func = print
+    else:
+        mode = "RICH"
+        output_func = cout
+
+    # -- Print title.
+    cout("", f"ANSI Colors [{mode} mode]", "")
+
+    # -- Create a reversed num->name map
+    lookup = {}
+    for name, num in ANSI_COLOR_NAMES.items():
+        assert 0 <= num <= 255
+        lookup[num] = name
+
+    # -- Print the table.
+    num_rows = 64
+    num_cols = 4
+    for row in range(num_rows):
+        values = []
+        for col in range(num_cols):
+            num = row + (col * num_rows)
+            name = lookup.get(num, None)
+            if name is None:
+                # -- No color name.
+                values.append(" " * 24)
+            else:
+                # -- Color name is available.
+                # -- Note that the color names and styling is always done by
+                # -- the rich library regardless of the choice of output.
+                s = f"{num:3} {name:20}"
+                values.append(cstyle(s, style=name))
+
+        # -- Construct the line.
+        line = "   ".join(values)
+
+        # -- Output the line.
+        output_func(line)
+
+    cout()
+
+
 # ------ apio system
 
 # -- Text in the markdown format of the python rich library.
@@ -154,6 +275,7 @@ SUBGROUPS = [
         [
             _platforms_cli,
             _info_cli,
+            _colors_cli,
         ],
     )
 ]

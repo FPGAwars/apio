@@ -37,6 +37,7 @@
   * [apio report](#apio-report) - Report design utilization and timing.
   * [apio sim](#apio-sim) - Simulate a testbench with graphic results.
   * [apio system](#apio-system) - Provides system info.
+    * [apio system colors](#apio-system-colors) - Show colors table.
     * [apio system info](#apio-system-info) - Show platform id and other info.
     * [apio system platforms](#apio-system-platforms) - List supported platforms ids.
   * [apio test](#apio-test) - Test all or a single verilog testbench module.
@@ -50,7 +51,7 @@
 ```
 Usage: apio [OPTIONS] COMMAND [ARGS]...
 
-  Work with FPGAs with ease.
+  WORK WITH FPGAs WITH EASE.
 
   Apio is an easy to use and open-source command-line suite designed to
   streamline FPGA programming. It supports a wide range of tasks,
@@ -966,6 +967,36 @@ Options:
 Subcommands:
   apio system platforms  List supported platforms ids.
   apio system info       Show platform id and other info.
+  apio system colors     Show colors table.
+
+```
+
+<br>
+
+### apio system colors
+
+```
+Usage: apio system colors [OPTIONS]
+
+  The command 'apio system colors' shows how ansi colors are rendered on
+  the platform, and is typically used to diagnose color related issues.
+  While the color name and styling is always handled by the Python Rich
+  library, the output is done via three different libraries, based on
+  the user's selection.
+
+
+  Examples:
+    apio system colors          # Rich library output (default)
+    apio system colors --rich   # Same as above.
+    apio system colors --click  # Click library output.
+    apio system colors --print  # Python's print() output.
+    apio sys col -p             # Using shortcuts.
+
+Options:
+  -r, --rich   Output using the rich lib.
+  -c, --click  Output using the click lib.
+  -p, --print  Output using python's print().
+  -h, --help   Show this message and exit.
 
 ```
 
@@ -1000,11 +1031,11 @@ Options:
 ```
 Usage: apio system platforms [OPTIONS]
 
-  The command ‘apio system platforms’ lists the platform IDs supported by
+  The command 'apio system platforms' lists the platform IDs supported by
   Apio, with the effective platform ID of your system highlighted.
 
-  Examples:
-    apio system platforms   # List supported platform ids.
+  [code]Examples:   apio system platforms   # List supported platform
+  ids.[/code]
 
   [Advanced] The automatic platform ID detection of Apio can be overridden by
   defining a different platform ID using the APIO_PLATFORM environment
@@ -1012,6 +1043,7 @@ Usage: apio system platforms [OPTIONS]
 
 Options:
   -h, --help  Show this message and exit.
+
 ```
 
 <br>

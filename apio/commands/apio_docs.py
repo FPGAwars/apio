@@ -58,7 +58,7 @@ more levels. To explore the available commands at each level, type it with \
 [apio.title]2. APIO'S COMMANDS OPTIONS[/]
 Most Apio's commands have options that allow to control their operation. For \
 example, the command 'apio build' that has options to control the verbosity \
-of its output: \
+of its output:
 
 [code]  apio build --verbose
   apio build --verbose-synth[/code]

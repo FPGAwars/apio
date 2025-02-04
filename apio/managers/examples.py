@@ -218,9 +218,8 @@ class Examples:
         Ex. The example alhambra-ii/ledon --> the folder alhambra-ii/ledon
         is created
           * INPUTS:
-            * example: Example name (Ex. 'alhambra-ii/ledon')
-            * project_dir: (optional)
-            * sayno: Automatically answer no
+            * board_name: e.g. 'alhambra-ii.
+            * dst_dir: (optional) destination directory.
         """
 
         # -- Check that the examples package is installed.
