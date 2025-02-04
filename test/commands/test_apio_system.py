@@ -4,6 +4,7 @@
 
 from test.conftest import ApioRunner
 from apio.commands.apio import cli as apio
+from apio.common.apio_console import cunstyle
 
 
 def test_system(apio_runner: ApioRunner):
@@ -29,3 +30,10 @@ def test_system(apio_runner: ApioRunner):
         assert result.exit_code == 0, result.output
         assert "darwin_arm64" in result.output
         assert "Mac OSX, ARM 64 bit" in result.output
+
+        # -- Execute "apio system colors"
+        result = sb.invoke_apio_cmd(apio, "system", "colors")
+        assert result.exit_code == 0, result.output
+        assert result.output != cunstyle(result.output)  # Colored
+        assert "ANSI Colors [RICH mode]" in result.output
+        assert "\x1b[31m  1 red                 \x1b[0m" in result.output
