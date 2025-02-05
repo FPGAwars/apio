@@ -1,7 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 added_files = [
-    ( '../../apio/resources/*.json', 'apio/resources' ),
+    ( '../../apio/resources/*.jsonc', 'apio/resources' ),
     ( '../../apio/scons/SConstruct', 'apio/scons' ),
 ]
 
