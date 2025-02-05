@@ -20,7 +20,7 @@ import requests
 from rich.progress import track
 from apio.utils import util
 from apio.common.apio_console import cout, console
-from apio.common.styles import ERROR
+from apio.common.apio_styles import ERROR
 
 # -- Timeout for getting a response from the server when downloading
 # -- a file (in seconds)

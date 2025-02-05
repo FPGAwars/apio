@@ -13,7 +13,7 @@ import requests
 from packaging import version
 from apio.utils import util, cmd_util
 from apio.common.apio_console import cout, cerror
-from apio.common.styles import INFO, WARNING, EMPH1, EMPH3, SUCCESS
+from apio.common.apio_styles import INFO, WARNING, EMPH1, EMPH3, SUCCESS
 
 
 def get_pypi_latest_version() -> str:

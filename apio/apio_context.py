@@ -14,7 +14,7 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Optional, Dict
 from apio.common.apio_console import cout, cerror, cwarning
-from apio.common.styles import INFO
+from apio.common.apio_styles import INFO
 from apio.profile import Profile
 from apio.utils import jsonc, util, env_options
 from apio.managers.project import (

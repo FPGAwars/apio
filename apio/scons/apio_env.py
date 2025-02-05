@@ -22,7 +22,7 @@ from SCons.Script.SConscript import SConsEnvironment
 from SCons.Environment import BuilderWrapper
 import SCons.Defaults
 from apio.common.apio_console import cout
-from apio.common.styles import EMPH3
+from apio.common.apio_styles import EMPH3
 from apio.common.proto.apio_pb2 import SconsParams
 
 

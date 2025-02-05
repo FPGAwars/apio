@@ -12,7 +12,7 @@ import subprocess
 from typing import Tuple, List
 import click
 from apio.common.apio_console import cout
-from apio.common.styles import SUCCESS, ERROR
+from apio.common.apio_styles import SUCCESS, ERROR
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import options
 from apio.utils import cmd_util, pkg_util

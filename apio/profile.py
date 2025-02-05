@@ -12,7 +12,7 @@ from pathlib import Path
 import requests
 from apio.common import apio_console
 from apio.common.apio_console import cout, cerror, cprint
-from apio.common.styles import INFO, EMPH3
+from apio.common.apio_styles import INFO, EMPH3
 from apio.utils import util
 
 

@@ -2,8 +2,6 @@
 
 from apio.common import apio_console
 from apio.common.apio_console import (
-    THEME_LIGHT,
-    THEMES_TABLE,
     FORCE_TERMINAL,
     cstyle,
     cunstyle,
@@ -30,11 +28,3 @@ def test_style_unstyle():
     assert cunstyle(cstyle("")) == ""
     assert cunstyle(cstyle("abc xyz")) == "abc xyz"
     assert cunstyle(cstyle("ab \n xy")) == "ab \n xy"
-
-
-def test_theme_style():
-    """Tests that all theme have the same set of style keys."""
-
-    for theme_name, theme_styles in THEMES_TABLE.items():
-        print(f"Testing theme {theme_name}")
-        assert set(theme_styles.keys()) == set(THEME_LIGHT.keys())

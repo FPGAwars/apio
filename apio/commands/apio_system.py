@@ -12,7 +12,7 @@ from rich.table import Table
 from rich import box
 from rich.color import ANSI_COLOR_NAMES
 from apio.common.apio_console import cprint, PADDING, cout, cstyle
-from apio.common.styles import BORDER, EMPH1, EMPH3
+from apio.common.apio_styles import BORDER, EMPH1, EMPH3
 from apio.utils import util, cmd_util
 from apio.utils.util import nameof
 from apio.utils.cmd_util import check_at_most_one_param

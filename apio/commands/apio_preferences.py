@@ -8,17 +8,58 @@
 """Implementation of 'apio preferences' command"""
 
 import sys
+from io import StringIO
 import click
+from rich.console import Console
 from rich.table import Table
 from rich import box
 from apio.commands import options
-from apio.common.apio_console import cout, cprint, NO_COLORS
-from apio.common.styles import BORDER, EMPH1, SUCCESS
+from apio.utils.util import nameof
+from apio.common import apio_themes
+from apio.common.apio_console import cout, cprint
+from apio.common.apio_styles import BORDER, EMPH1, SUCCESS
+from apio.common.apio_themes import THEMES_TABLE, THEMES_NAMES, DEFAULT_THEME
 from apio.utils import cmd_util
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioCommand
 
 # --- apio preferences
+
+
+def _list_themes_colors():
+    width = 16
+
+    # -- For color styling we use an independent rich Console to bypass
+    # -- the current theme of apio_console.
+    cons = Console(color_system="auto", force_terminal=True)
+
+    # -- Print title lines.
+    print()
+    values = []
+    for theme_name in THEMES_NAMES:
+        s = f"[{theme_name.upper()}]"
+        values.append(f"{s:{width}}")
+    print("  ".join(values))
+
+    # -- Print a line for each style name.
+    for style_name in DEFAULT_THEME.styles.keys():
+        values = []
+        for theme_name in THEMES_NAMES:
+            theme = THEMES_TABLE[theme_name]
+            # -- For themes with disabled colors we disable the color styling.
+            style = theme.styles[style_name] if theme.colors_enabled else None
+            # -- Format for a fixed with.
+            s = f"{style_name:{width}}"
+            # -- Install a capture buffer.
+            cons.file = StringIO()
+            # -- Output to buffer, with optional style.
+            cons.out(s, style=style, end="")
+            # -- Get the captured output.
+            values.append(cons.file.getvalue())
+        # -- Print the line with style colors.
+        print("  ".join(values))
+
+    print()
 
 
 # R0801: Similar lines in 2 files
@@ -80,8 +121,17 @@ theme_option = click.option(
     "theme_name",  # Var name
     "-t",
     "--theme",
-    type=click.Choice(["light", "dark", NO_COLORS], case_sensitive=True),
+    type=click.Choice(apio_themes.THEMES_NAMES, case_sensitive=True),
     help="Set colors theme name.",
+    cls=cmd_util.ApioOption,
+)
+
+colors_option = click.option(
+    "colors",  # Var name
+    "-c",
+    "--colors",
+    is_flag=True,
+    help="List themes colors.",
     cls=cmd_util.ApioOption,
 )
 
@@ -94,27 +144,38 @@ theme_option = click.option(
 )
 @click.pass_context
 @theme_option
+@colors_option
 @options.list_option_gen(help="List the preferences.")
 def cli(
     cmd_ctx: click.Context,
     # -- Options
     theme_name: str,
+    colors: bool,
     list_: bool,
 ):
     """Implements the apio preferences command."""
 
-    # -- If nothing to do print help and exit
-    if not (theme_name or list_):
-        click.echo(cmd_ctx.get_help())
-        sys.exit(0)
-
-    # -- Construct an apio context.
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+    # -- At most one of those.
+    cmd_util.check_at_most_one_param(
+        cmd_ctx, nameof(theme_name, colors, list_)
+    )
 
     # -- Handle theme setting.
     if theme_name:
+        apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
         _set_theme(apio_ctx, theme_name)
+        sys.exit(0)
 
     # -- Handle preferences settings.
     if list_:
+        apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
         _list_preferences(apio_ctx)
+        sys.exit(0)
+
+    if colors:
+        _list_themes_colors()
+        sys.exit(0)
+
+    # -- If nothing to do then print help and exit
+    click.echo(cmd_ctx.get_help())
+    sys.exit(0)

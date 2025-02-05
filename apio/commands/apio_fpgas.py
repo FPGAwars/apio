@@ -16,7 +16,7 @@ from rich.table import Table
 from rich import box
 from apio.common import apio_console
 from apio.common.apio_console import cout, cprint
-from apio.common.styles import INFO, BORDER, EMPH1
+from apio.common.apio_styles import INFO, BORDER, EMPH1
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import util, cmd_util
 from apio.commands import options

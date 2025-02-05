@@ -13,7 +13,7 @@ from pathlib import Path, PosixPath
 from dataclasses import dataclass
 from typing import Optional, List, Dict
 from apio.common.apio_console import cout, cstyle, cerror
-from apio.common.styles import INFO, SUCCESS, EMPH1
+from apio.common.apio_styles import INFO, SUCCESS, EMPH1
 from apio.apio_context import ApioContext
 from apio.managers import installer
 

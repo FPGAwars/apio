@@ -847,6 +847,7 @@ Usage: apio preferences [OPTIONS]
 Options:
   -t, --theme [light|dark|no-colors]
                                   Set colors theme name.
+  -c, --colors                    List themes colors.
   -l, --list                      List the preferences.
   -h, --help                      Show this message and exit.
 

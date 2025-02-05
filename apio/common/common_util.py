@@ -12,7 +12,7 @@ scons (child) process."""
 
 import os
 import debugpy
-from apio.common.styles import EMPH3, SUCCESS
+from apio.common.apio_styles import EMPH3, SUCCESS
 
 
 def maybe_wait_for_remote_debugger(env_var_name: str):

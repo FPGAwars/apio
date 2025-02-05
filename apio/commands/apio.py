@@ -12,6 +12,7 @@ from apio.utils.cmd_util import ApioSubgroup, ApioGroup
 
 # -- Import sub commands.
 from apio.commands import (
+    apio_api,
     apio_boards,
     apio_build,
     apio_clean,
@@ -74,6 +75,7 @@ SUBGROUPS = [
             apio_examples.cli,
             apio_system.cli,
             apio_raw.cli,
+            apio_api.cli,
             apio_upgrade.cli,
         ],
     ),
