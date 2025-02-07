@@ -16,7 +16,7 @@ from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
 # -- apio drivers install ftdi
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_DRIVERS_INSTALL_FTDI_HELP = """
 The command 'apio drivers install ftdi' installs on your system the FTDI \
 drivers required by some FPGA boards.
@@ -48,7 +48,7 @@ def _ftdi_cli():
 
 # -- apio driver install serial
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_DRIVERS_INSTALL_SERIAL_HELP = """
 The command 'apio drivers install serial' installs the necessary serial \
 drivers on your system, as required by certain FPGA boards.
@@ -80,7 +80,7 @@ def _serial_cli():
 
 # --- apio drivers install
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_DRIVERS_INSTALL_HELP = """
 The command group 'apio drivers install' includes subcommands that that \
 install system drivers that are used to upload designs to FPGA boards.

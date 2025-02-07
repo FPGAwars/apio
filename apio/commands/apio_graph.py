@@ -44,7 +44,7 @@ pdf_option = click.option(
     cls=cmd_util.ApioOption,
 )
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_GRAPH_HELP = """
 The command 'apio graph' generates a graphical representation of the Verilog \
 code in the project.

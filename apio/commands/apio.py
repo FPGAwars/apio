@@ -94,7 +94,7 @@ def context_settings():
 # -- Top click command node.
 # ---------------------------
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_HELP = """
 [b]WORK WITH FPGAs WITH EASE.[/b]
 

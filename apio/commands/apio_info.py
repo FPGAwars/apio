@@ -32,7 +32,7 @@ from apio.common.apio_console import (
 
 # -- apio info cli
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_INFO_CLI_HELP = """
 The command 'apio info cli' provides information the Apio's command line \
 conventions and features.  \
@@ -41,7 +41,7 @@ Examples:[code]
   apio info cli        # Shoe the cli documentation text.
 """
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_INFO_CLI_TEXT = """
 This page describes the conventions and features of the apio command line \
 interface.
@@ -119,7 +119,7 @@ def _cli_cli():
 
 # -- apio info options
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_INFO_OPTIONS_HELP = """
 The command 'apio info options' provides information about the required \
 project file 'apio.ini'.
@@ -129,7 +129,7 @@ Examples:[code]
   apio info options top-module   # List a single option.[/code]
 """
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_INI_DOC = """
 Every Apio project is required to have an 'apio.ini' project configuration \
 file. These are properties text files with '#' comments and a single section \
@@ -198,7 +198,7 @@ def _options_cli(
 
 # -- apio info resources
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_INFO_RESOURCES_HELP = """
 The command 'apio info resources' provides information about apio \
 related online resources.
@@ -207,7 +207,7 @@ Examples:[code]
   apio info resources   # Provides resources information[/code]
 """
 
-# -- Text in markdown in rich library format.
+# -- Text in rich-text in rich library format.
 APIO_INFO_RESOURCES_SUMMARY = """
 The table below provides a few Apio and FPGA design-related resources.
 
@@ -277,7 +277,7 @@ def _resources_cli():
 
 # ------ apio info system
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_INFO_INFO_HELP = """
 The command 'apio info system' provides general information about your \
 system and Apio installation, which is useful for diagnosing Apio \
@@ -398,7 +398,7 @@ def _platforms_cli():
 
 # ------ apio info colors
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_INFO_COLORS_HELP = """
 The command 'apio info colors' shows how ansi colors are rendered on \
 the platform, and is typically used to diagnose color related issues. \
@@ -517,7 +517,7 @@ def _colors_cli(
 
 # ------ apio info
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_INFO_HELP = """
 The command group 'apio info' contains subcommands that provide \
 various information about Apio usage, Apio's installation, and your system.

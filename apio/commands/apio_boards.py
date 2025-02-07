@@ -159,7 +159,7 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
 # R0801: Similar lines in 2 files
 # pylint: disable = R0801
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_BOARDS_HELP = """
 The command 'apio boards' lists the FPGA boards recognized by Apio. \
 Custom boards can be defined by placing a custom 'boards.jsonc' file in the \

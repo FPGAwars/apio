@@ -101,7 +101,7 @@ def _set_theme(apio_ctx: ApioContext, theme_name: str):
     cout(f"Theme set to [{confirmed_theme}]", style=SUCCESS)
 
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_PREFERENCES_HELP = """
 The command 'apio preferences' allows to view and manage the setting of the \
 apio's user's preferences. These settings are stored in the 'profile.json' \

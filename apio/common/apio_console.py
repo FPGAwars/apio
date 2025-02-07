@@ -226,12 +226,12 @@ def cwarning(*text_lines: str) -> None:
 
 
 def cprint(
-    markdown_text: str, *, style: Optional[str] = None, highlight: bool = False
+    rich_text: str, *, style: Optional[str] = None, highlight: bool = False
 ) -> None:
-    """Render the given markdown text. Applying optional style and if enabled,
+    """Render the given rich text. Applying optional style and if enabled,
     highlighting semantic elements such as strings if enabled."""
     console().print(
-        markdown_text,
+        rich_text,
         highlight=highlight,
         style=style,
     )
@@ -267,11 +267,11 @@ def cstyle(text: str, style: Optional[str] = None) -> str:
 
 
 def docs_text(
-    markdown_text: str, width: int = DOCS_WIDTH, end: str = "\n"
+    rich_text: str, width: int = DOCS_WIDTH, end: str = "\n"
 ) -> None:
     """A wrapper around Console.print that is specialized for rendering
     help and docs."""
-    console().print(markdown_text, highlight=True, width=width, end=end)
+    console().print(rich_text, highlight=True, width=width, end=end)
 
 
 def docs_rule(width: int = DOCS_WIDTH):

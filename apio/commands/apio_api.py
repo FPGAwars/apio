@@ -22,7 +22,7 @@ from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
 # ------ apio apio info
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_API_INFO_HELP = f"""
 The command 'apio api info' export information for apio in a JSON format \
 that can can be easily parsed an used by other tools and scripts. The \
@@ -190,7 +190,7 @@ def _info_cli(
 
 # ------ apio apio
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_API_HELP = """
 The command group 'apio apio' contains subcommands that that are intended \
 to be used by tools and programs such as icestudio, rather than being used \

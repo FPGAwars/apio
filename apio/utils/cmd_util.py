@@ -233,16 +233,16 @@ class ApioSubgroup:
     commands: List[click.Command]
 
 
-def _format_apio_markdown_help_text(
-    markdown_text: str, formatter: HelpFormatter
+def _format_apio_rich_text_help_text(
+    rich_text: str, formatter: HelpFormatter
 ) -> None:
-    """Format command's or group's help markdown text into a given
+    """Format command's or group's help rich text into a given
     click formatter."""
 
     # -- Style the metadata text.
     styled_text = None
     with ConsoleCapture() as capture:
-        docs_text(markdown_text.rstrip("\n"), end="")
+        docs_text(rich_text.rstrip("\n"), end="")
         styled_text = capture.value
 
     # -- Raw write to the output, with indent.
@@ -282,7 +282,7 @@ class ApioGroup(click.Group):
     ) -> None:
         """Overrides the parent method that formats the command's help text."""
         assert isinstance(ctx, ApioCmdContext)
-        _format_apio_markdown_help_text(self.help, formatter)
+        _format_apio_rich_text_help_text(self.help, formatter)
 
     # @override
     def format_options(
@@ -370,7 +370,7 @@ class ApioCommand(click.Command):
     ) -> None:
         """Overrides the parent method that formats the command's help text."""
         assert isinstance(ctx, ApioCmdContext), type(ctx)
-        _format_apio_markdown_help_text(self.help, formatter)
+        _format_apio_rich_text_help_text(self.help, formatter)
 
 
 class ApioCmdContext(click.Context):

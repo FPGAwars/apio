@@ -20,7 +20,7 @@ from apio.managers import installer
 E1 = f"[{EMPH1}]"
 E3 = f"[{EMPH3}]"
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 FTDI_INSTALL_INSTRUCTIONS_WINDOWS = f"""
 {E3}Please follow these steps:[/]
 
@@ -51,7 +51,7 @@ FTDI_INSTALL_INSTRUCTIONS_WINDOWS = f"""
      your board is listed.
 """
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS = f"""
 {E3}Please follow these steps:[/]
 
@@ -83,7 +83,7 @@ FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS = f"""
   9. {E1}Close[/] the Device Manager window.
 """
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 SERIAL_INSTALL_INSTRUCTIONS_WINDOWS = f"""
 {E3}Please follow these steps:[/]
 
@@ -98,7 +98,7 @@ computer.
       {E1}'apio drivers list serial'.[/]
 """
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 SERIAL_UNINSTALL_INSTRUCTIONS_WINDOWS = f"""
 {E3}Please follow these steps:[/]
 

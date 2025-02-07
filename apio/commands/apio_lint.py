@@ -56,7 +56,7 @@ warn_option = click.option(
 )
 
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_LINT_HELP = """
 The command 'apio lint' scans the project's Verilog code and reports errors, \
 inconsistencies, and style violations. The command uses the Verilator tool, \

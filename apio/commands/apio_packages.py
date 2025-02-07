@@ -131,7 +131,7 @@ def print_packages_report(apio_ctx: ApioContext) -> None:
 
 # ------ apio packages install
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_PACKAGES_INSTALL_HELP = """
 The command 'apio packages install' installs Apio packages that are required \
 for the operation of Apio on your system.
@@ -199,7 +199,7 @@ def _install_cli(
 
 # ------ apio packages uninstall
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_PACKAGES_UNINSTALL_HELP = """
 The command 'apio packages uninstall' removes installed Apio packages from \
 your system. The command does not uninstall the Apio tool itself.
@@ -257,7 +257,7 @@ def _uninstall_cli(
 
 # ------ apio packages list
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_PACKAGES_LIST_HELP = """
 The command 'apio packages list' lists the available and installed Apio \
 packages. The list of available packages depends on the operating system \
@@ -285,7 +285,7 @@ def _list_cli():
 
 # ------ apio packages fix
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_PACKAGES_FIX_HELP = """
 The command 'apio packages fix' removes broken or obsolete packages \
 that are listed as broken by the command 'apio packages list'.
@@ -318,7 +318,7 @@ def _fix_cli():
 
 # ------ apio packages (group)
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_PACKAGES_HELP = """
 The command group 'apio packages' provides commands to manage the \
 installation of Apio packages. These are not Python packages but \

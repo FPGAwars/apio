@@ -19,7 +19,7 @@ from apio.utils import cmd_util
 
 # --------- apio test
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_TEST_HELP = """
 The command 'apio test' simulates one or all the testbenches in the project \
 and is useful for automated testing of your design. Testbenches are expected \

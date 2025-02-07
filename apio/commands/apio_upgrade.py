@@ -63,7 +63,7 @@ def get_pypi_latest_version() -> str:
 
 # ---------- apio upgrade
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_UPGRADE_HELP = """
 The command 'apio upgrade' checks for the version of the latest Apio release \
 and provides upgrade directions if necessary.

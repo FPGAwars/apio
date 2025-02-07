@@ -23,7 +23,7 @@ from apio.utils import util, pkg_util, cmd_util
 
 # -------------- apio format
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_FORMAT_HELP = """
 The command 'apio format' formats Verilog source files to ensure consistency \
 and style without altering their semantics. The command accepts the names of \
