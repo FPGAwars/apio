@@ -22,17 +22,16 @@ from apio.commands import (
     apio_format,
     apio_fpgas,
     apio_graph,
+    apio_info,
     apio_lint,
     apio_packages,
     apio_preferences,
     apio_raw,
     apio_report,
     apio_sim,
-    apio_system,
     apio_test,
     apio_upgrade,
     apio_upload,
-    apio_docs,
 )
 
 
@@ -69,11 +68,10 @@ SUBGROUPS = [
     ApioSubgroup(
         "Utility commands",
         [
-            apio_docs.cli,
             apio_boards.cli,
             apio_fpgas.cli,
             apio_examples.cli,
-            apio_system.cli,
+            apio_info.cli,
             apio_raw.cli,
             apio_api.cli,
             apio_upgrade.cli,
