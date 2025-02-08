@@ -14,7 +14,7 @@ from glob import glob
 from typing import Tuple, List
 import click
 from apio.common.apio_console import cout, cerror, cstyle
-from apio.common.apio_styles import EMPH3, SUCCESS
+from apio.common.apio_styles import EMPH3, SUCCESS, INFO
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import options
 from apio.managers import installer
@@ -53,6 +53,10 @@ Verible formatter directives:
 For a full list of Verible formatter flags, refer to the documentation page \
 online or use the command 'apio raw -- verible-verilog-format --helpful'.
 """
+
+# -- File types that the format support. 'sv' indicates System Verilog
+# -- and 'h' indicates an includes file.
+_FILE_TYPES = [".v", ".sv", ".vh", ".svh"]
 
 
 @click.command(
@@ -98,12 +102,13 @@ def cli(
     # -- If user didn't specify files to format, all all source files to
     # -- the list.
     if not files:
-        files.extend(glob(str(apio_ctx.project_dir / "*.v")))
-        files.extend(glob(str(apio_ctx.project_dir / "*.sv")))
+        for ext in _FILE_TYPES:
+            pattern = "*" + ext
+            files.extend(glob(str(apio_ctx.project_dir / pattern)))
 
     # -- Error if no file to format.
     if not files:
-        cerror("No '.v' or '.sv' files to format")
+        cerror(f"No files of types {_FILE_TYPES}")
         sys.exit(1)
 
     # -- Sort files, case insensitive.
@@ -118,10 +123,9 @@ def cli(
 
         # -- Check the file extension.
         _, ext = os.path.splitext(path)
-        if ext not in [".v", ".sv"]:
-            cerror(
-                f"'{f}' has an invalid extension, " "should be '.v' or '.sv'"
-            )
+        if ext not in _FILE_TYPES:
+            cerror(f"'{f}' has an unexpected extension.")
+            cout(f"Should be one of {_FILE_TYPES}", style=INFO)
             sys.exit(1)
 
         # -- Check that the file exists and is a file.
