@@ -23,7 +23,7 @@ from apio.managers import installer
 
 # ----------- apio raw
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_RAW_HELP = """
 The command 'apio raw' allows you to bypass Apio and run underlying tools \
 directly. This is an advanced command that requires familiarity with the \

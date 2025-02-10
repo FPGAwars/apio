@@ -34,7 +34,7 @@ def test_colors_on_off(apio_runner: ApioRunner):
         assert "dark" in result.output
 
         # -- Execute "apio system info". It should emit colors.
-        result = sb.invoke_apio_cmd(apio, "system", "info")
+        result = sb.invoke_apio_cmd(apio, "info", "system")
         sb.assert_ok(result)
         assert result.output != cunstyle(result.output)  # Colored.
 

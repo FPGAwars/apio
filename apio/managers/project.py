@@ -27,8 +27,8 @@ APIO project configuration file. For details see
 https://github.com/FPGAwars/apio/wiki/Project-configuration-file
 """
 
-# -- The options docs here are formatted in the markdown format of the
-# -- python rich library. See apio_docs_apio_ini.py to see how they are
+# -- The options docs here are formatted in the rich-text format of the
+# -- python rich library. See apio_info.py to see how they are
 # -- used.
 BOARD_OPTION_DOC = """
 The option 'board' specifies the board definition that is used by the \

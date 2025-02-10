@@ -26,7 +26,7 @@ from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 # ---- apio examples list
 
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_EXAMPLES_LIST_HELP = """
 The command 'apio examples list' lists the available Apio project examples \
 that you can use.
@@ -134,7 +134,7 @@ def _list_cli(verbose: bool):
 
 # ---- apio examples fetch
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_EXAMPLES_FETCH_HELP = """
 The command 'apio examples fetch' fetches the files of the specified example \
 to the current directory or to the directory specified by the '-dst' option. \
@@ -177,7 +177,7 @@ def _fetch_cli(
 
 # ---- apio examples fetch-board
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_EXAMPLES_FETCH_BOARD_HELP = """
 The command 'apio examples fetch-board' is used to fetch all the Apio \
 examples for a specific board. The examples are copied to the current \
@@ -223,7 +223,7 @@ def _fetch_board_cli(
 
 # ---- apio examples
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_EXAMPLES_HELP = """
 The command group 'apio examples' provides subcommands for listing and \
 fetching Apio-provided examples. Each example is a self-contained \

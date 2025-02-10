@@ -17,7 +17,7 @@
 import re
 from enum import Enum
 from typing import List, Optional, Tuple
-from apio.common.apio_console import cout
+from apio.common.apio_console import cout, cunstyle
 from apio.common.apio_styles import INFO, WARNING, SUCCESS, ERROR
 
 
@@ -188,6 +188,15 @@ class SconsFilter:
                 return color
         return default_color
 
+    @staticmethod
+    def _output_line(line: str, style: Optional[str]) -> None:
+        """Output a line. If a style is given, force that style, otherwise,
+        pass on any color information it may have."""
+        if style:
+            cout(cunstyle(line), style=style)
+        else:
+            cout(line)
+
     # pylint: disable=too-many-return-statements
     # pylint: disable=too-many-branches
     def on_line(self, pipe_id: PipeId, line: str) -> None:
@@ -212,7 +221,7 @@ class SconsFilter:
         #     f"{'P' if in_pnr_verbose_range else '-'}"
         #     f"{'V' if in_iverolog_range else '-'}"
         #     f"{'I' if in_iverolog_range else '-'}"
-        #     f" {pipe_id} : {line}"
+        #     f" {pipe_id} : {line}", style="red"
         # )
 
         # -- Handle the line while in the nextpnr verbose log range.
@@ -232,7 +241,7 @@ class SconsFilter:
                     (r"^fatal error:", ERROR),
                 ],
             )
-            cout(line, style=line_color)
+            self._output_line(line, line_color)
             return
 
         # -- Special handling of iverilog lines. We drop warning line spam
@@ -289,7 +298,7 @@ class SconsFilter:
                     (r"^VERIFY OK", "green"),
                 ],
             )
-            cout(line, style=line_color)
+            self._output_line(line, line_color)
             return
 
         # -- Special handling for Fumo lines.
@@ -354,7 +363,7 @@ class SconsFilter:
                     (r"^error:", ERROR),
                 ],
             )
-            cout(line, style=line_color)
+            self._output_line(line, line_color)
             return
 
         # Handling the rest of stderr the lines.
@@ -366,4 +375,4 @@ class SconsFilter:
                 (r"^error:", ERROR),
             ],
         )
-        cout(line, style=line_color)
+        self._output_line(line, line_color)

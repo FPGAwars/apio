@@ -18,7 +18,7 @@ from apio.common.proto.apio_pb2 import Verbosity
 
 # ------------ apio build
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_BUILD_HELP = """
 The command 'apio build' processes the project’s source files and generates \
 a bitstream file, which can then be uploaded to your FPGA.

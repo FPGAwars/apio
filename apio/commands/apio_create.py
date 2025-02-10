@@ -31,7 +31,7 @@ board_option = click.option(
 
 # -------------- apio create
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_CREATE_HELP = """
 The command 'apio create' creates a new 'apio.ini' project file and is \
 typically used when setting up a new Apio project.

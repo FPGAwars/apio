@@ -16,7 +16,7 @@ from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
 # -- apio driver uninstall ftdi
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_DRIVERS_UNINSTALL_FTDI_HELP = """
 The command 'apio drivers uninstall ftdi' removes the FTDI drivers that may \
 have been installed earlier.
@@ -48,7 +48,7 @@ def _ftdi_cli():
 
 # -- apio drivers uninstall serial
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_DRIVERS_UNINSTALL_SERIAL_HELP = """
 The command 'apio drivers uninstall serial' removes the serial drivers that \
 you may have installed earlier.
@@ -80,7 +80,7 @@ def _serial_cli():
 
 # --- apio drivers uninstall
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_DRIVERS_UNINSTALL_HELP = """
 The command group 'apio drivers uninstall' includes subcommands that that \
 uninstall system drivers that are used to upload designs to FPGA boards.

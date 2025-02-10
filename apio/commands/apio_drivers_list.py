@@ -16,7 +16,7 @@ from apio.managers.system import System
 
 # -- apio drivers list ftdi
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_DRIVERS_LIST_FTDI_HELP = """
 The command 'apio drivers list ftdi' displays the FTDI devices currently \
 connected to your computer. It is useful for diagnosing FPGA board \
@@ -52,7 +52,7 @@ def _ftdi_cli():
 
 # -- apio drivers list serial
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_DRIVERS_LIST_SERIAL_HELP = """
 The command 'apio drivers list serial' lists the serial devices connected to \
 your computer. It is useful for diagnosing FPGA board connectivity issues.
@@ -87,7 +87,7 @@ def _serial_cli():
 
 # --- apio drivers list usb
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_DRIVERS_LIST_USB_HELP = """
 The command 'apio drivers list usb' runs the lsusb utility to list the USB \
 devices connected to your computer. It is typically used for diagnosing  \
@@ -123,7 +123,7 @@ def _usb_cli():
 
 # --- apio drivers list
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_DRIVERS_LIST_HELP = """
 The command group 'apio drivers list' includes subcommands that that lists \
 system drivers that are used with FPGA boards.

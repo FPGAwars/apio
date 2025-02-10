@@ -19,7 +19,7 @@ from apio.utils import cmd_util
 
 # ---------- apio report
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_REPORT_HELP = """
 The command 'apio report' provides information on the utilization and timing \
 of the design. It is useful for analyzing utilization bottlenecks and \

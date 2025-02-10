@@ -21,7 +21,7 @@ from apio.utils import cmd_util
 
 # --------- apio sim
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_SIM_HELP = """
 The command 'apio sim' simulates the default or the specified testbench file \
 and displays its simulation results in a graphical GTKWave window. \

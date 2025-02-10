@@ -18,7 +18,7 @@ from apio.utils import cmd_util
 
 # ----------- apio clean
 
-# -- Text in the markdown format of the python rich library.
+# -- Text in the rich-text format of the python rich library.
 APIO_CLEAN_HELP = """
 The command 'apio clean' removes temporary files generated in the project \
 directory by previous Apio commands.

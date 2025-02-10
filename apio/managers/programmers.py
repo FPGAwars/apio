@@ -52,20 +52,6 @@ def construct_programmer_cmd(
     assert board
     board_info = apio_ctx.boards[board]
 
-    # -- pylint: disable=fixme
-    # -- TODO: abstract this better in boards.jsonc. For example, add a
-    # -- property "darwin-no-detection".
-    # --
-    # -- Special case for the TinyFPGA on MACOS platforms
-    # -- TinyFPGA BX board is not detected in MacOS HighSierra
-    if "tinyprog" in board_info and apio_ctx.is_darwin:
-        # In this case the serial check is ignored
-        # This is the command line to execute for uploading the
-        # circuit
-        if util.is_debug():
-            cout("Applying a special case for tinyprog on darwin.")
-        return "tinyprog --libusb --program $SOURCE"
-
     # -- Serialize programmer command
     # -- Get a string with the command line to execute
     # -- BUT! it is a TEMPLATE string, with some parameters
