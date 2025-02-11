@@ -1,4 +1,7 @@
-#!/bin/bash 
+#!/bin/bash
+
+# Exit on error.
+set -e
 
 rm -rf _dist _build
 
@@ -34,4 +37,3 @@ echo
 echo `pwd`:
 echo
 ls -ld apio*
-  
