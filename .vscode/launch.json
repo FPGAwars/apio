@@ -5,10 +5,9 @@
             "name": "Run apio",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/apio/main.py",
+            "program": "${workspaceFolder}/apio/__main__.py",
             "args": [
-                "raw",
-                "which"
+                "fpgas",
             ],
             "console": "integratedTerminal",
             "justMyCode": false,

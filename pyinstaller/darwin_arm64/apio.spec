@@ -7,7 +7,7 @@ added_files = [
 
 
 a = Analysis(
-    ['../../apio/main.py'],
+    ['../../apio/__main__.py'],
     pathex=[],
     binaries=[],
     datas=added_files,
