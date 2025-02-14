@@ -414,9 +414,18 @@ class SCons:
             else []
         )
 
-        # -- Command to execute: scons -Q apio_cmd flags
-        scons_command = (
-            ["scons"] + ["-Q", scons_command] + debug_options + variables
+        # -- Construct the scons command line.
+        # --
+        # -- sys.executable is resolved to the full path of the python
+        # -- interpreter or to apio if running from a pyinstall setup.
+        # -- See https://github.com/orgs/pyinstaller/discussions/9023 for more
+        # -- information.
+        # --
+        cmd = (
+            [sys.executable, "-m", "SCons"]
+            + ["-Q", scons_command]
+            + debug_options
+            + variables
         )
 
         # -- An output filter that manipulates the scons stdout/err lines as
@@ -435,7 +444,7 @@ class SCons:
 
         # -- Execute the scons builder!
         result = util.exec_command(
-            scons_command,
+            cmd,
             stdout=util.AsyncPipe(scons_filter.on_stdout_line),
             stderr=util.AsyncPipe(scons_filter.on_stderr_line),
         )

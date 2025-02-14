@@ -4,7 +4,7 @@ Tests of scons_util.py
 
 import os
 import pytest
-from apio.utils.util import plurality, list_plurality, is_debug, nameof
+from apio.utils.util import plurality, list_plurality, is_debug
 
 # pylint: disable=fixme
 # TODO: Add more tests.
@@ -49,14 +49,3 @@ def test_is_debug():
     # -- Exit debug mode
     os.environ.pop("APIO_DEBUG")
     assert not is_debug()
-
-
-def test_nameof():
-    """Tests the nameof() function."""
-
-    def nameof_tester(a, _b, _c):
-        """Returns the names of a and _c."""
-        return nameof(a, _c)
-
-    # -- Calling foor should return the names of its a and _c args.
-    assert nameof_tester(1, 2, 3) == ["a", "_c"]

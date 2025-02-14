@@ -1,17 +1,20 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+from PyInstaller.utils.hooks import collect_submodules
+
 added_files = [
-    ( '../../apio/resources/*.jsonc', 'apio/resources' ),
-    ( '../../apio/scons/SConstruct', 'apio/scons' ),
+    ( '../apio/resources/*.jsonc', 'apio/resources' ),
+    ( '../apio/scons/SConstruct', 'apio/scons' ),
 ]
 
+hiddenimports = collect_submodules('SCons')  + collect_submodules('apio')
 
 a = Analysis(
-    ['../../apio/main.py'],
+    ['../apio/__main__.py'],
     pathex=[],
     binaries=[],
     datas=added_files,
-    hiddenimports=[],
+    hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

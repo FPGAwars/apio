@@ -1,6 +1,6 @@
 # Apio's project file.
 # Package version is set in apio/__init.py
- 
+
 [build-system]
 requires = ["flit_core >=2,<4"]
 build-backend = "flit_core.buildapi"
@@ -31,7 +31,6 @@ requires = [
     'requests==2.32.3',
     'scons==4.8.1',
     'semantic_version==2.10.0',
-    'varname==0.13.5',
     'wheel==0.45.1',
     'blackiceprog==2.0.0',
     'tinyfpgab==1.1.0',
@@ -54,32 +53,12 @@ icefunprog = ['icefunprog==2.0.3']
 
 
 [tool.flit.scripts]
-apio = "apio.main:main"
+apio = "apio.__main__:main"
 
 [tool.black]
 line-length = 79
 target-version = ['py39']
 
 [tool.pylint.messages_control]
-disable = [   
+disable = [
           ]
-
-          
-
-
-           
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

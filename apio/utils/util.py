@@ -13,7 +13,6 @@ import sys
 import os
 import json
 import traceback
-import importlib.metadata
 from functools import wraps
 from enum import Enum
 from dataclasses import dataclass
@@ -21,8 +20,8 @@ from typing import Optional, Any, Tuple, List
 import subprocess
 from threading import Thread
 from pathlib import Path
-from varname import argname
 from serial.tools.list_ports import comports
+import apio
 from apio.utils import env_options
 from apio.common.apio_console import cout, cerror
 from apio.common.apio_styles import INFO, WARNING, ERROR, EMPH3
@@ -428,15 +427,6 @@ def is_debug() -> bool:
     return env_options.is_defined("APIO_DEBUG")
 
 
-def nameof(*_args) -> List[str]:
-    """A workaround for the deprecation of varname.nameof(). Returns a list
-    of names of the arguments passed to it."""
-
-    # See this discussion for details.
-    # github.com/pwwang/python-varname/issues/117#issuecomment-2558351368
-    return list(argname("*_args"))
-
-
 def debug_decorator(func):
     """A decorator for dumping the input and output of a function when
     APIO_DEBUG is defined.  Add it to functions and methods that you want
@@ -506,7 +496,14 @@ def debug_decorator(func):
 
 def get_apio_version() -> str:
     """Returns the version of the apio package."""
-    return importlib.metadata.version("apio")
+    # -- Apio's version is defined in the __init__.py file of the apio package.
+    # -- Using the version from a file in the apio package rather than from
+    # -- the pip metadata makes apio more self contained, for example when
+    # -- installing with pyinstaller rather than with pip.
+    ver: Tuple[int] = apio.VERSION
+    assert len(ver) == 3, ver
+    # -- Format the tuple of three ints as a string such as "0.9.83"
+    return f"{ver[0]}.{ver[1]}.{ver[2]}"
 
 
 def _check_home_dir(home_dir: Path):
