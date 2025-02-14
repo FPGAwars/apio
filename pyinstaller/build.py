@@ -1,17 +1,18 @@
 """A script to build the apio pyinstaller package for the current platform.
 
+Prerequisites
+* Python is available.
+* This apio local repo is installed as the pip apio package.
+  (run 'pip install -e .' at the root of this repo.)
+* The Pyinstaller package is installed ('pip install pyinstaller').
+
 Usage:
   python ./build.py
 """
 
 from pathlib import Path
 import shutil
-import os
 from subprocess import CompletedProcess, run
-import sys
-
-# -- Allows to import apio ctx.
-sys.path.append("..")
 from apio.apio_context import ApioContext, ApioContextScope
 
 apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
