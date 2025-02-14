@@ -31,7 +31,6 @@ requires = [
     'requests==2.32.3',
     'scons==4.8.1',
     'semantic_version==2.10.0',
-    'varname==0.13.5',
     'wheel==0.45.1',
     'blackiceprog==2.0.0',
     'tinyfpgab==1.1.0',

@@ -101,6 +101,9 @@ def _is_param_specified(cmd_ctx, param_id) -> bool:
     command line."""
     # Mapping: param id -> param obj.
     params_dict = _get_all_params_definitions(cmd_ctx)
+    # If this fails, look for spelling error in the param name string in
+    # the apio command cli function.
+    assert param_id in params_dict, f"Unknown command param_id [{param_id}]."
     # Get the official status.
     param_src = cmd_ctx.get_parameter_source(param_id)
     is_specified = param_src == click.core.ParameterSource.COMMANDLINE
@@ -137,10 +140,8 @@ def check_at_most_one_param(
     the command line. If more than one param was specified, exits the
     program with a message and error status.
 
-    Params are click options and arguments that are passed to a command.
-    Param ids are the names of variables that are used to pass options and
-    argument values to the command. A safe way to construct param_ids
-    is nameof(param_var1, param_var2, ...)
+    Param ids are names click options and arguments variables that are passed
+    to a command.
     """
     # The the subset of ids of params that where used in the command.
     specified_param_ids = _specified_params(cmd_ctx, param_ids)
@@ -162,10 +163,8 @@ def check_exactly_one_param(
     the command line. If more or less than one params is specified, exits the
     program with a message and error status.
 
-    Params are click options and arguments that are passed to a command.
-    Param ids are the names of variables that are used to pass options and
-    argument values to the command. A safe way to construct param_ids
-    is nameof(param_var1, param_var2, ...)
+    Param ids are names click options and arguments variables that are passed
+    to a command.
     """
     # The the subset of ids of params that where used in the command.
     specified_param_ids = _specified_params(cmd_ctx, param_ids)
@@ -195,10 +194,8 @@ def check_at_least_one_param(
     the command line. If none of the params is specified, exits the
     program with a message and error status.
 
-    Params are click options and arguments that are passed to a command.
-    Param ids are the names of variables that are used to pass options and
-    argument values to the command. A safe way to construct param_ids
-    is nameof(param_var1, param_var2, ...)
+    Param ids are names click options and arguments variables that are passed
+    to a command.
     """
     # The the subset of ids of params that where used in the command.
     specified_param_ids = _specified_params(cmd_ctx, param_ids)

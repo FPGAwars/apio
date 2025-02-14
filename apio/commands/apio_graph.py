@@ -13,7 +13,6 @@ import click
 from apio.managers.scons import SCons
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
-from apio.utils.util import nameof
 from apio.utils import cmd_util
 from apio.common.proto.apio_pb2 import GraphOutputType, GraphParams, Verbosity
 
@@ -88,8 +87,11 @@ def cli(
     top_module: str,
 ):
     """Implements the apio graph command."""
+    # -- Make pylint happy.
+    _ = (svg,)
+
     # -- Sanity check the options.
-    cmd_util.check_at_most_one_param(cmd_ctx, nameof(svg, png, pdf))
+    cmd_util.check_at_most_one_param(cmd_ctx, ["svg", "png", "pdf"])
 
     # -- Create the apio context.
     apio_ctx = ApioContext(

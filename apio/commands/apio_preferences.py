@@ -14,7 +14,6 @@ from rich.console import Console
 from rich.table import Table
 from rich import box
 from apio.commands import options
-from apio.utils.util import nameof
 from apio.common import apio_themes
 from apio.common.apio_console import cout, cprint
 from apio.common.apio_styles import BORDER, EMPH1, SUCCESS
@@ -157,7 +156,7 @@ def cli(
 
     # -- At most one of those.
     cmd_util.check_at_most_one_param(
-        cmd_ctx, nameof(theme_name, colors, list_)
+        cmd_ctx, ["theme_name", "colors", "list_"]
     )
 
     # -- Handle theme setting.

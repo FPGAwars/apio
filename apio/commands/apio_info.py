@@ -15,7 +15,6 @@ from rich import box
 from rich.color import ANSI_COLOR_NAMES
 from apio.common.apio_styles import BORDER, EMPH1, EMPH3, TITLE, INFO
 from apio.utils import util, cmd_util
-from apio.utils.util import nameof
 from apio.utils.cmd_util import check_at_most_one_param
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
@@ -465,8 +464,11 @@ def _colors_cli(
 ):
     """Implements the 'apio info colors' command."""
 
+    # -- Make pylint happy.
+    _ = (rich_,)
+
     # -- Allow at most one of --click and --print.
-    check_at_most_one_param(cmd_ctx, nameof(rich_, click_, print_))
+    check_at_most_one_param(cmd_ctx, ["rich_", "click_", "print_"])
 
     # -- Select by output type.
     if click_:

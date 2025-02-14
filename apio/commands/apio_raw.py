@@ -17,7 +17,6 @@ from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import options
 from apio.utils import cmd_util, pkg_util
 from apio.utils.cmd_util import ApioCommand
-from apio.utils.util import nameof
 from apio.managers import installer
 
 
@@ -68,7 +67,7 @@ def cli(
     specified commands from apio installed tools.
     """
     # -- At lease one of -v and cmd should be specified.
-    cmd_util.check_at_least_one_param(cmd_ctx, nameof(verbose, cmd))
+    cmd_util.check_at_least_one_param(cmd_ctx, ["verbose", "cmd"])
 
     # -- Create an apio context. We don't care about an apio project.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
