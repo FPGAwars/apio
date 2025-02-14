@@ -1,3 +1,9 @@
+"""A script to build the apio pyinstaller package for the current platform.
+
+Usage:
+  python ./build.py
+"""
+
 from pathlib import Path
 import shutil
 import os
@@ -16,26 +22,11 @@ NAME = "apio-" + platform_id.replace("_", "-")
 print(f"\nPackage name = [{NAME}]")
 
 
-DARWIN_ACTIVATE=r"""
-# run 'source activate' to enable the apio executable.
-#
-echo "Please wait"
-echo "Removing quarantine flags in this directory."
-sudo find . -exec xattr -d com.apple.quarantine {} 2> /dev/null \;
-echo "Done"
-"""
-
-README=r"""
-1. Run 'source activate' once to enable the executables.
-2. Add this directory to your PATH.
-3. Use the 'apio' command. For example, 'apio -h' for help.
-"""
-
 dist = Path("_dist")
-build = Path("_build")
+work = Path("_work")
 
 # -- Clean old build dirs.
-for path in [dist, build]:
+for path in [dist, work]:
     if path.is_dir():
         print(f"Deleting old dir [{path}].")
         shutil.rmtree(path)
@@ -46,17 +37,15 @@ for path in [dist, build]:
 
 # -- Run the pyinstaller
 cmd = [
-        "pyinstaller",
-        "--distpath",
-        str(dist),
-        "--workpath",
-        str(build),
-        "./apio.spec",
-    ]
+    "pyinstaller",
+    "--distpath",
+    str(dist),
+    "--workpath",
+    str(work),
+    "./apio.spec",
+]
 print(f"\nRun: {cmd}")
-result: CompletedProcess = run(
-    cmd
-)
+result: CompletedProcess = run(cmd)
 assert result.returncode == 0, "Pyinstaller exited with an error code."
 print("Pyinstaller completed successfully")
 
@@ -70,21 +59,18 @@ package = dist / NAME
 print(f"\nRenaming [{str(main)}] to [{str(package)}]")
 shutil.move(main, package)
 
-# -- Add activate file.
+# -- Add the darwin activate file.
+
+resources = Path("resources")
 if apio_ctx.is_darwin:
-    activate_file = package / "activate"
-    print(f"\nWriting {str(activate_file)}.")
-    with open(activate_file, "w") as file:
-        file.write(DARWIN_ACTIVATE.lstrip())
+    print(f"\nWriting darwin activate file.")
+    shutil.copyfile(resources / "darwin-activate", package / "activate")
 
 # -- Add readme file.
-readme_file = package / "README.txt"
-print(f"\nWriting {str(readme_file)}.")
-with open(readme_file, "w") as file:
-    file.write(README.lstrip())
+print(f"\nWriting the README.txt file.")
+shutil.copyfile(resources / "README.txt", package / "README.txt")
 
 # -- Zip package
-print("\nCompressing package.")
+print("\nCompressing the package.")
 zip_fname = shutil.make_archive(package, "zip", package)
 print(f"\nCreated {zip_fname}.")
-
