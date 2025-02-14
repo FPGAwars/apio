@@ -5,14 +5,14 @@ from subprocess import CompletedProcess, run
 import sys
 
 # -- Allows to import apio ctx.
-sys.path.append("../../..")
+sys.path.append("..")
 from apio.apio_context import ApioContext, ApioContextScope
 
 apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 platform_id = apio_ctx.platform_id
 print(f"\nPlatform id = [{platform_id}]")
 
-NAME = "apio-" + platform_id
+NAME = "apio-" + platform_id.replace("_", "-")
 print(f"\nPackage name = [{NAME}]")
 
 
