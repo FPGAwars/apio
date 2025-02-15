@@ -14,12 +14,15 @@ from pathlib import Path
 import shutil
 from subprocess import CompletedProcess, run
 from apio.apio_context import ApioContext, ApioContextScope
+from apio.utils import util
+
+apio_version = util.get_apio_version()
 
 apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 platform_id = apio_ctx.platform_id
 print(f"\nPlatform id = [{platform_id}]")
 
-NAME = "apio-" + platform_id.replace("_", "-")
+NAME = "apio-" + platform_id.replace("_", "-") + "-" + apio_version
 print(f"\nPackage name = [{NAME}]")
 
 
