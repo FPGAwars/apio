@@ -7,7 +7,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/apio/__main__.py",
             "args": [
-                "fpgas",
+                "--version",
             ],
             "console": "integratedTerminal",
             "justMyCode": false,

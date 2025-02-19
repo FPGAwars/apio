@@ -9,6 +9,7 @@
 
 import click
 from apio.utils.cmd_util import ApioSubgroup, ApioGroup
+from apio.utils import util
 
 # -- Import sub commands.
 from apio.commands import (
@@ -129,7 +130,9 @@ https://github.com/FPGAwars/apio/wiki/Apio
     short_help="Work with FPGAs with ease",
     context_settings=context_settings(),
 )
-@click.version_option()
+# NOTE: Without the 'version' value, click has difficulty determining the
+# version when running under pyinstaller.
+@click.version_option(version=util.get_apio_version())
 def cli():
     """The top level command group of apio commands"""
 
