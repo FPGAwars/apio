@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# [APIO-VRSION] is a template placeholder.
+# Version placeholder: "[APIO-VRSION]"
 
 # Try to use the destination package var, or use default if not specified.
 if [ -n "$DSTROOT" ]; then
