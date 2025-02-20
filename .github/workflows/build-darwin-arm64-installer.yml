@@ -46,6 +46,7 @@ jobs:
         run: |
           mkdir _work
           mkdir _dist
+          mkdir _scripts
           pwd
           ls -la .
 
@@ -76,6 +77,15 @@ jobs:
           echo "_dist:"
           ls -al _dist
 
+
+      - name: Create installer scripts
+        run: |
+          sed "s/\${APIO_VERSION}/${APIO_VERSION}/g" .github/workflows/resources/darwin-installer-resources/postinstall.template > _scripts/postinstall
+          echo "_scripts:"
+          ls -al _scripts
+          echo "_scripts/postinstall:
+          cat _scripts/postinstall
+          
           
       - name: Run pkgbuild
         run: |
@@ -83,7 +93,7 @@ jobs:
                    --install-location /Applications \
                    --identifier "io.github.fpgawars.apio" \
                    --version "${{env.APIO_VERSION}}" \
-                   --scripts apio-repo/.github/workflows/resources/darwin-scripts \
+                   --scripts _scripts \
                    --ownership recommended \
                    apio-component.pkg
           pwd
