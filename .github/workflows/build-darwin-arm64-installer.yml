@@ -76,13 +76,13 @@ jobs:
         run: |
           info_file="_dist/apio/INFO"
           echo "Build information" >  ${info_file}
-          echo "Date:         $(date +'%Y-%m-%d %H:%M:%S %Z')" >> ${info_file}
+          echo "Time:         $(date +'%Y-%m-%d %H:%M:%S %Z')" >> ${info_file}
           echo "Run ID:       $GITHUB_RUN_ID" >> ${info_file}
-          echo "Run Number:   $GITHUB_RUN_NUMBER" >> ${info_file}
+          echo "Run number:   $GITHUB_RUN_NUMBER" >> ${info_file}
           echo "Commit SHA:   $GITHUB_SHA" >>  ${info_file}
           echo "Branch:       ${GITHUB_REF#refs/heads/}" >> ${info_file}
-          echo "Repo Owner:   $GITHUB_REPOSITORY_OWNER" >> ${info_file}
-          echo "Rep Name:     ${GITHUB_REPOSITORY#*/} ">> ${info_file}       
+          echo "Repo owner:   $GITHUB_REPOSITORY_OWNER" >> ${info_file}
+          echo "ReponName:    ${GITHUB_REPOSITORY#*/} ">> ${info_file}       
           echo "_dist/apio:"
           ls -al _dist/apio
           cat _dist/apio/INFO
