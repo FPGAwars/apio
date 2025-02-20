@@ -1,31 +1,23 @@
 #!/bin/bash
 
-echo "000" > /Users/user/kaka
-
-date >> /Users/user/kaka
-env >> /Users/user/kaka
-
-echo "111" >> /Users/user/kaka
+# This script is execution at the end of the package installation to 
+# set the path to the apio binary.
 
 # Version placeholder: "[APIO-VRSION]"
 
 # Try to use the destination package var, or use default if not specified.
 if [ -n "$DSTROOT" ]; then
-    echo "222" >> /Users/user/kaka
     dst_root="$DSTROOT"
 else
-    echo "333" >> /Users/user/kaka
     dst_root="/Applications"
 fi
 
 apio_path="${dst_root}/Apio-[APIO-VERSION]"
 apio_path_file="/etc/paths.d/Apio-[APIO-VERSION]"
 
-echo "444" >> /Users/user/kaka
-
+# date > /Users/user/apio.installer.postinstall.log
+# env >> /Users/user/apio.installer.postinstall.log
 
 # Write the path. New shells will have it in the PATH.
 echo "${apio_path}" > "${apio_path_file}"
-
-echo "999" >> /Users/user/kaka
 
