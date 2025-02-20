@@ -179,7 +179,10 @@ def exec_command(*args, **kwargs) -> CommandResult:
     # -- User has pressed the Ctrl-C for aborting the command
     except KeyboardInterrupt:
         cerror("Aborted by user")
-        sys.exit(1)
+        # NOTE: If using here sys.exit(1), apio requires pressing ctl-c twice
+        # when running 'apio sim'. This form of exist is more direct and
+        # 'hard'.
+        os._exit(1)
 
     # -- The command does not exist!
     except FileNotFoundError:
