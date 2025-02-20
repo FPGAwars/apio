@@ -1,14 +1,19 @@
 #!/bin/bash
 
+# [APIO-VRSION] is a template place holder.
+
 # Try to use the destination package var, or use default if not specified.
 if [ -n "$DSTROOT" ]; then
-    apio_path="$DSTROOT/Apio"
+    dst_root="$DSTROOT"
 else
-    apio_path="/Applications/Apio"
+    dst_root="/Applications"
 fi
+
+apio_path="${dst_root}/Apio-[APIO-ROOT]
+apio_path_file="/etc/paths.d/Apio-[APIO-ROOT]"
 
 date > /Users/user/kaka
 env >> /Users/user/kaka
 
 # Write the path. New shells will have it in the PATH.
-echo "${apio_path}" > /etc/paths.d/Apio
+echo "${apio_path}" > ${apio_path_file}
