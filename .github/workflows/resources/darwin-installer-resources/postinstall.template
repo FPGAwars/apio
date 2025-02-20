@@ -9,8 +9,8 @@ else
     dst_root="/Applications"
 fi
 
-apio_path="${dst_root}/Apio-[APIO-ROOT]
-apio_path_file="/etc/paths.d/Apio-[APIO-ROOT]"
+apio_path="${dst_root}/Apio-[APIO-VERSION]
+apio_path_file="/etc/paths.d/Apio-[APIO-VERSION]"
 
 date > /Users/user/kaka
 env >> /Users/user/kaka
