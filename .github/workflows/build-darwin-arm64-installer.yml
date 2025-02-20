@@ -45,7 +45,10 @@ jobs:
 
       - name: Run pyinstaller
         run: |
-          pyinstaller --workpath _work --distpath _dist this-repo/.github/workflows/apio.spec
+          pyinstaller \
+            --workpath _work \
+            --distpath _dist \
+            apio-repo/.github/workflows/resources/apio-pyinstaller.spec
           pwd
           ls -al _dist
           pwd
