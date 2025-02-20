@@ -1,0 +1,76 @@
+name: build-darwin-arm64-installer
+
+on:
+  # For now we use only manual triggers.
+  workflow_dispatch:  # 👈 Enables manual trigger
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+      - name: Install python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'  # Adjust version as needed
+
+      - name: Checkout the apio repo
+        uses: actions/checkout@v4
+        with:
+          path: apio-repo
+
+      - name: Pip install apio.
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e apio-repo
+
+      - name: Pip install pyinstaller
+        run: |
+          pip install pyinstaller
+
+      - name: Extract apio version
+        run: |
+          echo "APIO_VERSION=$(pip show apio | grep Version: | cut -d ' ' -f2)" >> $GITHUB_ENV
+
+      - name: Echo apio version
+        run: |
+          echo "$APIO_VERSION"
+
+      - name: Setup working directories.
+        run: |
+          mkdir _work
+          mkdir _dist
+          pwd
+          ls -la .
+
+      - name: Run pyinstaller
+        run: |
+          pyinstaller --workpath _work --distpath _dist this-repo/.github/workflows/apio.spec
+          pwd
+          ls -al _dist
+          pwd
+          ls -al _dist/apio
+
+      - name: Run pkgbuild
+        run: |
+          pkgbuild --root _dist \
+                   --install-location /Applications \
+                   --identifier "io.github.fpgawars.apio" \
+                   --version "0.9.6" \
+                   --ownership recommended \
+                   apio-component.pkg
+          pwd
+          ls -al
+
+      - name: Upload component File
+        uses: actions/upload-artifact@v4
+        with:
+          name: apio-component
+          path: apio-component.pkg
+
+
+      #- name: Upload Binary Artifact
+      #  uses: actions/upload-artifact@v4
+      #  with:
+      #    name: macos-binary
+      #    path: dist/your_script  # Adjust if using a different name
