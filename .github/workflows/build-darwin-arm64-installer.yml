@@ -63,7 +63,7 @@ jobs:
 
       - name: Add resource files
         run: |
-          cp apio-repo/LICENSE.txt _dist/apio
+          cp apio-repo/LICENSE _dist/apio
           echo "_dist:"
           ls -al _dist
           echo "_dist/apip:"
