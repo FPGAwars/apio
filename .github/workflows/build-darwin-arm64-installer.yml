@@ -56,9 +56,17 @@ jobs:
             --workpath _work \
             --distpath _dist \
             apio-repo/.github/workflows/resources/apio-pyinstaller.spec
-          pwd
+          echo "_dist:"
           ls -al _dist
-          pwd
+          echo "_dist/apip:"
+          ls -al _dist/apio
+
+      - name: Add resource files
+        run: |
+          cp apio-repo/LICENSE.txt _dist/apio
+          echo "_dist:"
+          ls -al _dist
+          echo "_dist/apip:"
           ls -al _dist/apio
 
 
@@ -84,7 +92,7 @@ jobs:
           ls -al
 
 
-      - name: Upload installer file
+      - name: Export the installer file as an artifact.
         uses: actions/upload-artifact@v4
         with:
           name: "apio-darwin-arm64-${{env.APIO_VERSION}}-installer"
