@@ -80,7 +80,7 @@ jobs:
 
       - name: Create installer scripts
         run: |
-          sed "s/\${APIO_VERSION}/${APIO_VERSION}/g" .github/workflows/resources/darwin-installer-resources/postinstall.template > _scripts/postinstall
+          sed "s/\[APIO-VERSION\]/$APIO_VERSION/g" .github/workflows/resources/darwin-installer-resources/postinstall.template > _scripts/postinstall
           echo "_scripts:"
           ls -al _scripts
           echo "_scripts/postinstall:
