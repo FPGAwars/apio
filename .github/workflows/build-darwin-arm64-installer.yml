@@ -59,19 +59,33 @@ jobs:
             apio-repo/.github/workflows/resources/apio-pyinstaller.spec
           echo "_dist:"
           ls -al _dist
-          echo "_dist/apip:"
+          echo "_dist/apio:"
           ls -al _dist/apio
 
 
-      - name: Add resource files
+      - name: Add LICENSE file
         run: |
           cp apio-repo/LICENSE _dist/apio
           echo "_dist:"
           ls -al _dist
-          echo "_dist/apip:"
+          echo "_dist/apio:"
           ls -al _dist/apio
 
-      - name: Rename app
+
+      - name: Add INFO file
+        run: |
+          echo "Build information" >  _dist/apio/INFO
+          echo "Date:         $(date +"%Y-%m-%d %H:%M:%S %Z")" >>  _dist/apio/INFO
+          echo "Run ID:       $GITHUB_RUN_ID"" >>  _dist/apio/INFO
+          echo "Run Number:   $GITHUB_RUN_NUMBER" >>  _dist/apio/INFO
+          echo "Commit SHA:   $GITHUB_SHA" >>  _dist/apio/INFO
+          echo "Branch:       ${GITHUB_REF#refs/heads/}" >>  _dist/apio/INFO
+          echo "_dist/apio:"
+          ls -al _dist/apio
+          cat _dist/apio/INFO
+
+
+      - name: Rename app to Apio-X.X.X
         run: |
           mv _dist/apio "_dist/Apio-${APIO_VERSION}"
           echo "_dist:"
