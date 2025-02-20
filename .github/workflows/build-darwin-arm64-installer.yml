@@ -83,7 +83,7 @@ jobs:
           sed "s/\[APIO-VERSION\]/$APIO_VERSION/g" apio-repo/.github/workflows/resources/darwin-installer-resources/postinstall.template > _scripts/postinstall
           echo "_scripts:"
           ls -al _scripts
-          echo "_scripts/postinstall:
+          echo "_scripts/postinstall:"
           cat _scripts/postinstall
           
           
