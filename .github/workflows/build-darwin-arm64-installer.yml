@@ -76,6 +76,7 @@ jobs:
                    --install-location /Applications \
                    --identifier "io.github.fpgawars.apio" \
                    --version "${{env.APIO_VERSION}}" \
+                   --scripts apio-repo/.github/workflows/resources/darwin-scripts \
                    --ownership recommended \
                    apio-component.pkg
           pwd
