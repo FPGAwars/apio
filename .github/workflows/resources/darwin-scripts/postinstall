@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Try to use the destination package var, or use default if not specified.
+if [ -n "$DSTROOT" ]; then
+    apio_path="$DSTROOT/Apio"
+else
+    apio_path="/Applications/Apio"
+fi
+
+echo "Apio postinstall: DSTROOT   = [${DSTROOT}]"
+echo "Apio postinstall: apio_path = [${apio_path}]"
+
+# Write the path. New shells will have it in the PATH.
+echo "${apio_path}" > /etc/paths.d/Apio
