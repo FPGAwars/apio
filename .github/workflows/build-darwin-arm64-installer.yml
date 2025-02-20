@@ -5,7 +5,7 @@ on:
   workflow_dispatch:  # 👈 Enables manual trigger
 
 jobs:
-  build-macos:
+  build-darwin-arm64-installer:
     runs-on: macos-latest
 
     steps:
@@ -84,18 +84,10 @@ jobs:
           ls -al
 
 
-      # TODO: Remove the uploading of the component.
-      - name: Upload component file
-        uses: actions/upload-artifact@v4
-        with:
-          name: apio-component
-          path: apio-component.pkg
-
-          
       - name: Upload installer file
         uses: actions/upload-artifact@v4
         with:
-          name: apio-installer
+          name: "apio-darwin-arm64-${{env.APIO_VERSION}}-installer"
           path: "apio-darwin-arm64-${{env.APIO_VERSION}}-installer.pkg"
 
       
