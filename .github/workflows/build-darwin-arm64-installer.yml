@@ -61,6 +61,7 @@ jobs:
           echo "_dist/apip:"
           ls -al _dist/apio
 
+
       - name: Add resource files
         run: |
           cp apio-repo/LICENSE _dist/apio
@@ -69,7 +70,13 @@ jobs:
           echo "_dist/apip:"
           ls -al _dist/apio
 
+      - name: Rename app
+        run: |
+          mv _dist/apio "_dist/Apio-${APIO_VERSION}"
+          echo "_dist:"
+          ls -al _dist
 
+          
       - name: Run pkgbuild
         run: |
           pkgbuild --root _dist \
