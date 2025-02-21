@@ -114,7 +114,7 @@ jobs:
 
       - name: Create installer postinstall scripts
         run: |
-          sed "s/\[APIO-VERSION\]/$APIO_VERSION/g" apio-repo/.github/workflows/resources/darwin-installer-resources/postinstall.template > _scripts/postinstall
+          cp apio-repo/.github/workflows/resources/darwin-installer-resources/postinstall _scripts/postinstall
           chmod 755 _scripts/postinstall
           echo "_scripts:"
           ls -al _scripts
