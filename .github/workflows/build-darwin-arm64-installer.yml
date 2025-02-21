@@ -12,6 +12,9 @@ jobs:
     runs-on: macos-latest
 
     steps:
+      - name: Log architecture info
+        run: uname -m
+  
       - name: Install python
         uses: actions/setup-python@v5
         with:
