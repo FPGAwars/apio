@@ -112,7 +112,7 @@ jobs:
           ls -al _dist
 
 
-      - name: Create installer scripts
+      - name: Create installer postinstall scripts
         run: |
           sed "s/\[APIO-VERSION\]/$APIO_VERSION/g" apio-repo/.github/workflows/resources/darwin-installer-resources/postinstall.template > _scripts/postinstall
           chmod 755 _scripts/postinstall
@@ -144,11 +144,13 @@ jobs:
           pwd
           ls -al
 
+
       - name: Export the pyinstaller archive as an artifact.
         uses: actions/upload-artifact@v4
         with:
           name: "apio-darwin-arm64-${{env.APIO_VERSION}}-package"
           path: "apio-darwin-arm64-${{env.APIO_VERSION}}-package.zip"
+
 
       - name: Export the installer file as an artifact.
         uses: actions/upload-artifact@v4
