@@ -101,7 +101,7 @@ jobs:
         run: |
           pushd _dist
           package="apio-darwin-arm64-${{env.APIO_VERSION}}-package.zip"
-          zip -r -y ../../${package} apio
+          zip -r -y ../${package} apio
           popd
           ls -al 
           
