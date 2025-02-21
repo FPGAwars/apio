@@ -1,9 +1,7 @@
 #!/bin/bash
 
-# This script is execution at the end of the package installation to 
+# This script is executied at the end of the package installation to 
 # set the path to the apio binary.
-
-# Version placeholder: "[APIO-VRSION]"
 
 # Try to use the destination package var, or use default if not specified.
 if [ -n "$DSTROOT" ]; then
@@ -12,8 +10,8 @@ else
     dst_root="/Applications"
 fi
 
-apio_path="${dst_root}/Apio-[APIO-VERSION]"
-apio_path_file="/etc/paths.d/Apio-[APIO-VERSION]"
+apio_path="${dst_root}/Apio"
+apio_path_file="/etc/paths.d/Apio"
 
 # date > /Users/user/apio.installer.postinstall.log
 # env >> /Users/user/apio.installer.postinstall.log
