@@ -1,0 +1,15 @@
+; Config file for building Apio's InnoSetup installer.
+; [APIO-VERSION] is a placeholder.
+
+[Setup]
+AppName=Apio
+AppVersion=[APIO-VERSION]
+DefaultDirName={commonpf}\Apio
+ArchitecturesInstallIn64BitMode=x64
+DefaultGroupName=Apio
+OutputDir=.
+OutputBaseFilename=apio-windows-amd64-[APIO-VERSION]-installer
+
+
+[Files]
+Source: "_dist\apio\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
