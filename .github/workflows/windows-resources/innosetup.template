@@ -13,8 +13,8 @@ OutputBaseFilename=apio-windows-amd64-[APIO-VERSION]-installer
 [Files]
 Source: "_dist\apio\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
-# Code from here is based on the answers at
-# https://stackoverflow.com/questions/3304463/how-do-i-modify-the-path-environment-variable-when-running-an-inno-setup-install
+; Code from here is based on the answers at
+; https://stackoverflow.com/questions/3304463/how-do-i-modify-the-path-environment-variable-when-running-an-inno-setup-install
 
 [Registry]
 Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"
