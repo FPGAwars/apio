@@ -13,3 +13,20 @@ OutputBaseFilename=apio-windows-amd64-[APIO-VERSION]-installer
 
 [Files]
 Source: "_dist\apio\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+
+[Registry]
+Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; \
+ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"; Flags: preserveexisting
+
+[Code]
+procedure RefreshEnvironment;
+begin
+  SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE, 0, 
+    LPARAM(PChar('Environment')), SMTO_ABORTIFHUNG, 5000, DWRESULT(nil));
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep = ssPostInstall then
+    RefreshEnvironment;
+end;
