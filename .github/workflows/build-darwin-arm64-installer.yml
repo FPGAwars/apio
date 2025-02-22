@@ -95,7 +95,7 @@ jobs:
 
       - name: Add 'activate' file
         run: |
-          cp apio-repo/.github/workflows/resources/darwin-installer-resources/activate _dist/apio/activate
+          cp apio-repo/.github/workflows/darwin-resources/activate _dist/apio/activate
           echo "_dist/apio:"
           ls -al _dist/apio
           cat _dist/apio/activate
@@ -126,7 +126,7 @@ jobs:
 
       - name: Create installer postinstall scripts
         run: |
-          cp apio-repo/.github/workflows/resources/darwin-installer-resources/postinstall _scripts/postinstall
+          cp apio-repo/.github/workflows/darwin-resources/postinstall _scripts/postinstall
           chmod 755 _scripts/postinstall
           echo "_scripts:"
           ls -al _scripts
@@ -149,8 +149,8 @@ jobs:
 
       - name: Run productbuild
         run: |
-          productbuild --resources apio-repo/.github/workflows/resources/darwin-installer-resources \
-                       --distribution apio-repo/.github/workflows/resources/darwin-installer-distribution.xml \
+          productbuild --resources apio-repo/.github/workflows/darwin-resources \
+                       --distribution apio-repo/.github/workflows/darwin-resources/distribution.xml \
                        --package-path . \
                        "apio-darwin-arm64-${{env.APIO_VERSION}}-installer.pkg"
           pwd

@@ -1,0 +1,150 @@
+name: build-windows-amd64-installer
+
+# TODO: Set complex file names once in reuseable variables.
+
+on:
+  # For now we use only manual triggers.
+  workflow_dispatch:  # 👈 Enables manual trigger
+
+jobs:
+  build-windows-amd64-installer:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash  # Set Bash as the default shell
+
+    steps:
+      - name: Show system info
+        run: |
+          systeminfo
+          
+  
+      - name: Install python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'  # Adjust version as needed
+
+
+      - name: Checkout the apio repo
+        uses: actions/checkout@v4
+        with:
+          path: apio-repo
+
+
+      - name: Pip install apio.
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e apio-repo
+
+
+      - name: Pip install pyinstaller
+        run: |
+          pip install pyinstaller
+
+
+      - name: Extract apio version
+        run: |     
+          APIO_VERSION=$(pip show apio | grep Version: | cut -d ' ' -f2)
+          echo "${APIO_VERSION}"
+          echo "APIO_VERSION=${APIO_VERSION}" >> $GITHUB_ENV
+
+      - name: Test apio version
+        run: |     
+          echo "${APIO_VERSION}"
+          
+      - name: Setup working directories.
+        run: |
+          mkdir _work
+          mkdir _dist
+          pwd
+          ls -la .
+
+
+      - name: Run pyinstaller
+        run: |
+          pyinstaller \
+            --workpath _work \
+            --distpath _dist \
+            apio-repo/.github/workflows/resources/apio-pyinstaller.spec
+          echo "_dist:"
+          ls -al _dist
+          echo "_dist/apio:"
+          ls -al _dist/apio
+          file _dist/apio/apio
+
+
+      - name: Add LICENSE file
+        run: |
+          cp apio-repo/LICENSE _dist/apio/LICENSE
+          echo "_dist:"
+          ls -al _dist
+          echo "_dist/apio:"
+          ls -al _dist/apio
+
+
+      - name: Add INFO file
+        run: |
+          out="_dist/apio/INFO"
+          echo "Build information" >  ${out}
+          echo "Time:         $(date +'%Y-%m-%d %H:%M:%S %Z')" >> ${out}
+          echo "Run ID:       $GITHUB_RUN_ID" >> ${out}
+          echo "Run number:   $GITHUB_RUN_NUMBER" >> ${out}
+          echo "Commit SHA:   $GITHUB_SHA" >>  ${out}
+          echo "Branch:       ${GITHUB_REF#refs/heads/}" >> ${out}
+          echo "Repo owner:   $GITHUB_REPOSITORY_OWNER" >> ${out}
+          echo "ReponName:    ${GITHUB_REPOSITORY#*/} ">> ${out}       
+          echo "_dist/apio:"
+          ls -al _dist/apio
+          cat ${out}
+          
+
+      - name: Zip the pyinstaller package
+        shell: powershell
+        run: |
+          # The github window bash doesn't have 'zip' so we use powershell instead.
+          Push-Location _dist
+          $package = "apio-windows-amd64-${{env.APIO_VERSION}}-package.zip"
+          Compress-Archive -Path apio -DestinationPath ../$package
+          Pop-Location
+          Get-ChildItem -Force
+
+
+      - name: Create innosetup.iss.
+        run: |
+          out="innosetup.iss"
+          sed "s/\[APIO-VERSION\]/$APIO_VERSION/g" apio-repo/.github/workflows/windows-resources/innosetup.template > ${out}
+          ls -al
+          cat ${out}
+
+
+      - name: Run innosetup
+        shell: cmd
+        run: |
+          "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" innosetup.iss
+          dir
+
+
+      - name: Verify installer created.
+        run: |
+          installer="apio-windows-amd64-${APIO_VERSION}-installer.exe"
+          if [[ ! -f "${installer}" ]]; then
+            echo "Error: File not found: ${installer}"
+            exit 1
+          fi
+          file "${installer}"
+    
+
+      - name: Export the pyinstaller output as an artifact.
+        uses: actions/upload-artifact@v4
+        with:
+          name: "apio-windows-amd64-package"
+          path: "apio-windows-amd64-${{env.APIO_VERSION}}-package.zip"
+
+
+      - name: Export the installer file as an artifact.
+        uses: actions/upload-artifact@v4
+        with:
+          name: "apio-windows-amd64-installer"
+          path: "apio-windows-amd64-${{env.APIO_VERSION}}-installer.exe"
+
+      
