@@ -14,6 +14,10 @@ OutputBaseFilename=apio-windows-amd64-[APIO-VERSION]-installer
 Source: "_dist\apio\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Code]
+type
+  WPARAM = LongWord;
+  LPARAM = LongWord;
+
 function SendMessageTimeout(hWnd: HWND; Msg: UINT; wParam: WPARAM; lParam: LPARAM; fuFlags: UINT; uTimeout: UINT; var lpdwResult: DWORD): DWORD;
   external 'SendMessageTimeoutA@user32.dll stdcall';
 
