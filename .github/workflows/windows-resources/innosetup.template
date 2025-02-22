@@ -14,9 +14,14 @@ OutputBaseFilename=apio-windows-amd64-[APIO-VERSION]-installer
 Source: "_dist\apio\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Run]
-Filename: "{sys}\reg.exe"; Parameters: 'ADD "HKCU\Environment" /v Path /t REG_SZ /d "%Path%;""""{app}"""" /f'; Description: "Add apio path to user's PATH"; Flags: runhidden; AfterInstall: BroadcastEnvironmentChange
+Filename: "{sys}\reg.exe"; Parameters: 'ADD "HKCU\Environment" /v Path /t REG_SZ /d "%Path%;{code:GetAppPath}" /f'; Description: "Add apio path to user's PATH"; Flags: runhidden; AfterInstall: BroadcastEnvironmentChange
 
 [Code]
+function GetAppPath(Param: string): string;
+begin
+  Result := '"' + ExpandConstant('{app}') + '"';
+end;
+
 procedure BroadcastEnvironmentChange();
 var
   HWND_BROADCAST: HWND;
