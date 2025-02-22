@@ -123,11 +123,16 @@ jobs:
           "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" innosetup.iss
           dir
 
-          
-      - name: Show installer file info
-        run: |
-          file "apio-windows-amd64-${{env.APIO_VERSION}}-installer.exe"
 
+      - name: Verify installer created.
+        run: |
+          installer="apio-windows-amd64-${APIO_VERSION}-installer.exe"
+          if [[ ! -f "${installer}" ]]; then
+            echo "Error: File not found: ${installer}"
+            exit 1
+          fi
+          file "${installer}"
+    
 
       - name: Export the pyinstaller output as an artifact.
         uses: actions/upload-artifact@v4
