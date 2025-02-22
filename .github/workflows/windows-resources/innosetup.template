@@ -13,42 +13,4 @@ OutputBaseFilename=apio-windows-amd64-[APIO-VERSION]-installer
 [Files]
 Source: "_dist\apio\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
-[Code]
-type
-  WPARAM = LongWord;
-  LPARAM = LongWord;
-
-function SendMessageTimeout(hWnd: HWND; Msg: UINT; wParam: WPARAM; lParam: LPARAM; fuFlags: UINT; uTimeout: UINT; var lpdwResult: DWORD): DWORD;
-  external 'SendMessageTimeoutA@user32.dll stdcall';
-
-procedure BroadcastEnvironmentChange();
-var
-  WM_SETTINGCHANGE: UINT;
-  dwResult: DWORD;
-begin
-  WM_SETTINGCHANGE := $001A;
-  SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE, 0, 0, SMTO_ABORTIFHUNG, 5000, dwResult);
-end;
-
-procedure AddAppPathToUserPath();
-var
-  PathValue, AppPath, NewPath: string;
-begin
-  if RegQueryStringValue(HKCU, 'Environment', 'Path', PathValue) then
-  begin
-    AppPath := ExpandConstant('{app}');
-    if Pos(';' + AppPath + ';', ';' + PathValue + ';') = 0 then // Check if already present
-    begin
-      NewPath := PathValue + ';' + AppPath;
-      if RegWriteStringValue(HKCU, 'Environment', 'Path', NewPath) then
-      begin
-        BroadcastEnvironmentChange();
-      end;
-    end;
-  end;
-end;
-
-[Run]
-Filename: "{code:AddAppPathToUserPath}"; Description: "Add apio path to user's PATH"; Flags: runhidden; AfterInstall: BroadcastEnvironmentChange
-
 
