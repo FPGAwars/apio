@@ -144,21 +144,12 @@ jobs:
       #     ls -al
 
 
-      # - name: Run productbuild
-      #   run: |
-      #     productbuild --resources apio-repo/.github/workflows/darwin-resources \
-      #                  --distribution apio-repo/.github/workflows/darwin-resources/distribution.xml \
-      #                  --package-path . \
-      #                  "apio-linux-x86-64-${{env.APIO_VERSION}}-installer.pkg"
-      #     pwd
-      #     ls -al
-
-
       - name: Export the pyinstaller archive as an artifact.
         uses: actions/upload-artifact@v4
         with:
           name: "apio-linux-x86-64-package"
           path: "apio-linux-x86-64-${{env.APIO_VERSION}}-package.zip"
+          if-no-files-found: error
 
 
       # - name: Export the installer file as an artifact.
