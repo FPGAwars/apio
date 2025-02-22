@@ -2,6 +2,7 @@
 ; [APIO-VERSION] is a placeholder.
 
 [Setup]
+ChangesEnvironment=yes
 AppName=Apio
 AppVersion=[APIO-VERSION]
 DefaultDirName={commonpf}\Apio
@@ -19,11 +20,13 @@ Source: "_dist\apio\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs cr
 [Registry]
 Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"
 
+[CustomMessages]
+AppAddPath=Add application directory to your environmental path (required)
+
 [Tasks]
 Name: modifypath; Description:{cm:AppAddPath};   
 
 [Code]
-
 const
     ModPathName = 'modifypath';
     ModPathType = 'system';
