@@ -1,0 +1,170 @@
+name: build-linux-x86-64-installer
+
+on:
+  # For now we use only manual triggers.
+  workflow_dispatch:  # 👈 Enables manual trigger
+
+jobs:
+  build-linux-x86-64-installer:
+    runs-on: linux-latest
+
+    steps:
+      - name: Log architecture info
+        run: uname -m
+  
+      # - name: Install python
+      #   uses: actions/setup-python@v5
+      #   with:
+      #     python-version: '3.11'  # Adjust version as needed
+
+
+      # - name: Checkout the apio repo
+      #   uses: actions/checkout@v4
+      #   with:
+      #     path: apio-repo
+
+
+      # - name: Pip install apio.
+      #   run: |
+      #     python -m pip install --upgrade pip
+      #     pip install -e apio-repo
+
+
+      # - name: Pip install pyinstaller
+      #   run: |
+      #     pip install pyinstaller
+
+
+      # - name: Extract apio version
+      #   run: |
+      #     echo "APIO_VERSION=$(pip show apio | grep Version: | cut -d ' ' -f2)" >> $GITHUB_ENV
+
+
+      # - name: Echo apio version
+      #   run: |
+      #     echo "$APIO_VERSION"
+
+
+      # - name: Setup working directories.
+      #   run: |
+      #     mkdir _work
+      #     mkdir _dist
+      #     mkdir _scripts
+      #     pwd
+      #     ls -la .
+
+
+      # - name: Run pyinstaller
+      #   run: |
+      #     pyinstaller \
+      #       --workpath _work \
+      #       --distpath _dist \
+      #       apio-repo/.github/workflows/resources/apio-pyinstaller.spec
+      #     echo "_dist:"
+      #     ls -al _dist
+      #     echo "_dist/apio:"
+      #     ls -al _dist/apio
+
+
+      # - name: Add LICENSE file
+      #   run: |
+      #     cp apio-repo/LICENSE _dist/apio
+      #     echo "_dist:"
+      #     ls -al _dist
+      #     echo "_dist/apio:"
+      #     ls -al _dist/apio
+
+
+      # - name: Add INFO file
+      #   run: |
+      #     info_file="_dist/apio/INFO"
+      #     echo "Build information" >  ${info_file}
+      #     echo "Time:         $(date +'%Y-%m-%d %H:%M:%S %Z')" >> ${info_file}
+      #     echo "Run ID:       $GITHUB_RUN_ID" >> ${info_file}
+      #     echo "Run number:   $GITHUB_RUN_NUMBER" >> ${info_file}
+      #     echo "Commit SHA:   $GITHUB_SHA" >>  ${info_file}
+      #     echo "Branch:       ${GITHUB_REF#refs/heads/}" >> ${info_file}
+      #     echo "Repo owner:   $GITHUB_REPOSITORY_OWNER" >> ${info_file}
+      #     echo "ReponName:    ${GITHUB_REPOSITORY#*/} ">> ${info_file}       
+      #     echo "_dist/apio:"
+      #     ls -al _dist/apio
+      #     cat _dist/apio/INFO
+
+      # - name: Add 'activate' file
+      #   run: |
+      #     cp apio-repo/.github/workflows/darwin-resources/activate _dist/apio/activate
+      #     echo "_dist/apio:"
+      #     ls -al _dist/apio
+      #     cat _dist/apio/activate
+
+      # - name: Zip the pyinstaller package
+      #   run: |
+      #     pushd _dist
+      #     package="apio-darwin-arm64-${{env.APIO_VERSION}}-package.zip"
+      #     zip -r -y ../${package} apio
+      #     popd
+      #     ls -al 
+
+
+      # - name: Delete the 'activate' file
+      #   run: |
+      #     rm _dist/apio/activate
+      #     echo "_dist/apio:"
+      #     ls -al _dist/apio
+
+
+      # # This sets the app name in /Applications
+      # - name: Rename apio to Apio
+      #   run: |
+      #     mv _dist/apio _dist/Apio
+      #     echo "_dist:"
+      #     ls -al _dist
+
+
+      # - name: Create installer postinstall scripts
+      #   run: |
+      #     cp apio-repo/.github/workflows/darwin-resources/postinstall _scripts/postinstall
+      #     chmod 755 _scripts/postinstall
+      #     echo "_scripts:"
+      #     ls -al _scripts
+      #     echo "_scripts/postinstall:"
+      #     cat _scripts/postinstall
+          
+          
+      # - name: Run pkgbuild
+      #   run: |
+      #     pkgbuild --root _dist \
+      #              --install-location /Applications \
+      #              --identifier "io.github.fpgawars.apio" \
+      #              --version "${{env.APIO_VERSION}}" \
+      #              --scripts _scripts \
+      #              --ownership recommended \
+      #              apio-component.pkg
+      #     pwd
+      #     ls -al
+
+
+      # - name: Run productbuild
+      #   run: |
+      #     productbuild --resources apio-repo/.github/workflows/darwin-resources \
+      #                  --distribution apio-repo/.github/workflows/darwin-resources/distribution.xml \
+      #                  --package-path . \
+      #                  "apio-darwin-arm64-${{env.APIO_VERSION}}-installer.pkg"
+      #     pwd
+      #     ls -al
+
+
+      # - name: Export the pyinstaller archive as an artifact.
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: "apio-darwin-arm64-package"
+      #     path: "apio-darwin-arm64-${{env.APIO_VERSION}}-package.zip"
+
+
+      # - name: Export the installer file as an artifact.
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: "apio-darwin-arm64-installer"
+      #     path: "apio-darwin-arm64-${{env.APIO_VERSION}}-installer.pkg"
+
+      
