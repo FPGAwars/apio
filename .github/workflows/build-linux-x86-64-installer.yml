@@ -119,7 +119,6 @@ jobs:
           mv _dist/apio/apio _debian/usr/local/bin
           # We move _internal instead of copying it, in case it has symlinks.
           mv _dist/apio/_internal _debian/usr/local/bin
-          cp apio-repo/.github/workflows/linux-resources/debian-control _debian/DEBIAN/control
           control="_debian/DEBIAN/control"
           sed "s/\[APIO-VERSION\]/$APIO_VERSION/g" apio-repo/.github/workflows/linux-resources/control.template > ${control}
           find _debian 
