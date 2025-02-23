@@ -105,6 +105,22 @@ jobs:
           popd
           ls -al 
 
+      - name: Populate the debian package
+        run: |
+          mkdir _debian
+          mkdir _debian/DEBIAN
+          mkdir -p _debian/usr/local/bin
+          mv _dist/apio/apio _debian/usr/local/bin
+          mv _dist/apio/_internal _debian/usr/local/bin
+          
+          
+          
+          pushd _dist
+          package="apio-linux-x86-64-${{env.APIO_VERSION}}-package.zip"
+          zip -r -y ../${package} apio
+          popd
+          ls -al 
+
 
       # - name: Delete the 'activate' file
       #   run: |
