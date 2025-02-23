@@ -10,6 +10,9 @@ on:
 jobs:
   build-darwin-arm64-installer:
     runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash  # Set Bash as the default shell
 
     steps:
       - name: Log architecture info
