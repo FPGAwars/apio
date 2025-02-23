@@ -7,6 +7,9 @@ on:
 jobs:
   build-linux-x86-64-installer:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash  # Set Bash as the default shell
 
     steps:
       - name: Log architecture info
@@ -17,12 +20,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'  # Adjust version as needed
-
-
-      # - name: Install dpkg tools
-      #   run: |
-      #     sudo apt update
-      #     sudo apt install -y dpkg-dev
 
 
       - name: Checkout the apio repo
@@ -96,12 +93,6 @@ jobs:
           ls -al _dist/apio
           cat _dist/apio/INFO
 
-      # - name: Add 'activate' file
-      #   run: |
-      #     cp apio-repo/.github/workflows/darwin-resources/activate _dist/apio/activate
-      #     echo "_dist/apio:"
-      #     ls -al _dist/apio
-      #     cat _dist/apio/activate
 
       - name: Zip the pyinstaller package
         run: |
@@ -110,6 +101,7 @@ jobs:
           zip -r -y ../${package} apio
           popd
           ls -al 
+
 
       - name: Populate the debian package
         run: |
@@ -132,37 +124,7 @@ jobs:
           dpkg-deb --build --root-owner-group _debian "apio-linux-x86-64-${APIO_VERSION}-debian.deb"
           ls -l 
 
-      # # This sets the app name in /Applications
-      # - name: Rename apio to Apio
-      #   run: |
-      #     mv _dist/apio _dist/Apio
-      #     echo "_dist:"
-      #     ls -al _dist
-
-
-      # - name: Create installer postinstall scripts
-      #   run: |
-      #     cp apio-repo/.github/workflows/darwin-resources/postinstall _scripts/postinstall
-      #     chmod 755 _scripts/postinstall
-      #     echo "_scripts:"
-      #     ls -al _scripts
-      #     echo "_scripts/postinstall:"
-      #     cat _scripts/postinstall
-          
-          
-      # - name: Run pkgbuild
-      #   run: |
-      #     pkgbuild --root _dist \
-      #              --install-location /Applications \
-      #              --identifier "io.github.fpgawars.apio" \
-      #              --version "${{env.APIO_VERSION}}" \
-      #              --scripts _scripts \
-      #              --ownership recommended \
-      #              apio-component.pkg
-      #     pwd
-      #     ls -al
-
-
+     
       - name: Export the pyinstaller archive as an artifact.
         uses: actions/upload-artifact@v4
         with:
@@ -177,9 +139,10 @@ jobs:
           name: "apio-linux-x86-64-debian"
           path: "apio-linux-x86-64-${{env.APIO_VERSION}}-debian.deb"
 
-      - name: Write run summary message
-        run: |
-          echo "line1" >> $GITHUB_STEP_SUMMARY
-          echo "${APIO_VERSION}" >> $GITHUB_STEP_SUMMARY
-          echo "line3" >> $GITHUB_STEP_SUMMARY
+
+      # - name: Write run summary message
+      #   run: |
+      #     echo "line1" >> $GITHUB_STEP_SUMMARY
+      #     echo "${APIO_VERSION}" >> $GITHUB_STEP_SUMMARY
+      #     echo "line3" >> $GITHUB_STEP_SUMMARY
         
