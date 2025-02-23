@@ -115,7 +115,7 @@ jobs:
           
           # /usr/local/bin
           mkdir -p _debian/usr/local/bin
-          pushd _debian/user/local/bin
+          pushd _debian/usr/local/bin
           ln -s ../../../opt/apio/apio apio
           popd
           
