@@ -19,6 +19,12 @@ jobs:
           python-version: '3.11'  # Adjust version as needed
 
 
+      - name: Install dpkg tools
+        run: |
+          sudo apt update
+          sudo apt install -y dpkg-dev
+
+
       - name: Checkout the apio repo
         uses: actions/checkout@v4
         with:
@@ -111,23 +117,21 @@ jobs:
           mkdir _debian/DEBIAN
           mkdir -p _debian/usr/local/bin
           mv _dist/apio/apio _debian/usr/local/bin
+          # We move _internal instead of copying it, in case it has symlinks.
           mv _dist/apio/_internal _debian/usr/local/bin
-          
-          
-          
-          pushd _dist
-          package="apio-linux-x86-64-${{env.APIO_VERSION}}-package.zip"
-          zip -r -y ../${package} apio
-          popd
-          ls -al 
+          cp apio-repo/.github/workflows/linux-resources/debian-control _debian/DEBIAN/control
+          control="_debian/DEBIAN/control"
+          sed "s/\[APIO-VERSION\]/$APIO_VERSION/g" apio-repo/.github/workflows/linux-resources/control.template > ${control}
+          find _debian 
+          cat ${control}
 
+      - name: Set permissions for debian control file
+        run: find _debian/DEBIAN -type f -exec chmod 644 {} \;
 
-      # - name: Delete the 'activate' file
-      #   run: |
-      #     rm _dist/apio/activate
-      #     echo "_dist/apio:"
-      #     ls -al _dist/apio
-
+      - name: Build .deb package
+        run: |
+          dpkg-deb --build --root-owner-group _debian "apio-linux-x86-64-${APIO_VERSION}-debian.deb"
+          ls -l 
 
       # # This sets the app name in /Applications
       # - name: Rename apio to Apio
@@ -168,10 +172,10 @@ jobs:
           if-no-files-found: error
 
 
-      # - name: Export the installer file as an artifact.
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: "apio-linux-x86-64-installer"
-      #     path: "apio-linux-x86-64-${{env.APIO_VERSION}}-installer.pkg"
+      - name: Export the installer file as an artifact.
+        uses: actions/upload-artifact@v4
+        with:
+          name: "apio-linux-x86-64-debian"
+          path: "apio-linux-x86-64-${{env.APIO_VERSION}}-debian.deb"
 
       
