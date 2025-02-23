@@ -19,10 +19,10 @@ jobs:
           python-version: '3.11'  # Adjust version as needed
 
 
-      - name: Install dpkg tools
-        run: |
-          sudo apt update
-          sudo apt install -y dpkg-dev
+      # - name: Install dpkg tools
+      #   run: |
+      #     sudo apt update
+      #     sudo apt install -y dpkg-dev
 
 
       - name: Checkout the apio repo
