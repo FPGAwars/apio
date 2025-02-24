@@ -21,8 +21,8 @@ jobs:
           sudo apt update
           sudo apt install -y snapd
           sudo snap install snapcraft --classic
-          sudo snap install lxd
-          sudo lxd init --auto
+          # sudo snap install lxd
+          # sudo lxd init --auto
           snapcraft --version
   
       - name: Install python
@@ -115,7 +115,7 @@ jobs:
       - name: Create the snap package
         run: |
           cp apio-repo/.github/workflows/linux-resources/snapcraft.yaml .
-          snapcraft
+          snapcraft --destructive-mode
           ls -al
 
 
