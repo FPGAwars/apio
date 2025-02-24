@@ -5,7 +5,7 @@ description: |
   A detailed description of your app and its purpose.
 
 # The base defines the Snap base you are using (core20, core22, etc.)
-base: core22
+base: core20
 
 grade: stable
 confinement: strict
@@ -22,8 +22,8 @@ parts:
   apio:
     plugin: dump
     source: .
-    stage-packages:
-      - libc6
+    #stage-packages:
+    #  - libc6
     organize:
       '_dist/apio/apio': bin/apio
       '_dist/apio/_internal': bin/_internal
