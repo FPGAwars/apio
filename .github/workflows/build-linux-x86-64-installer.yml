@@ -128,7 +128,7 @@ jobs:
           snapcraft --destructive-mode
           echo
           ls -al
-          _popd
+          popd
 
 
       - name: Populate the debian package
