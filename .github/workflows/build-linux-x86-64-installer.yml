@@ -78,6 +78,13 @@ jobs:
           echo "_dist/apio:"
           ls -al _dist/apio
 
+      - name: Check for symlinks
+        run: |
+          if find _dist -type l | grep -q .; then
+              echo "PyInstaller files contain symlinks"
+          else
+              echo "No symlinks found"
+          fi
 
       - name: Add LICENSE file
         run: |
