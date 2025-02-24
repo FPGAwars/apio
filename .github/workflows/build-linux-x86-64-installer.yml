@@ -117,7 +117,16 @@ jobs:
         run: |
           cp apio-repo/.github/workflows/linux-resources/snapcraft.yaml _snap
           pushd _snap
+          mkdir bin
+          mv ../_dist/apio/apio bin
+          mv ../_dist/apio/_internal bin
+          echo
+          ls -al .
+          echo
+          ls -al bin
+          echo
           snapcraft --destructive-mode
+          echo
           ls -al
           _popd
 
@@ -128,9 +137,9 @@ jobs:
           
           # -- /opt/apio
           mkdir -p _debian/opt/apio
-          mv _dist/apio/apio _debian/opt/apio
+          mv _snap/bin/apio _debian/opt/apio
           # We move _internal instead of copying it, in case it has symlinks.
-          mv _dist/apio/_internal _debian/opt/apio
+          mv _snap/bin/_internal _debian/opt/apio
           
           # /usr/local/bin
           mkdir -p _debian/usr/local/bin
