@@ -1,0 +1,30 @@
+name: apio
+version: '1.0'
+summary: A brief summary of your app
+description: |
+  A detailed description of your app and its purpose.
+
+# The base defines the Snap base you are using (core20, core22, etc.)
+base: core22
+
+grade: stable
+confinement: strict
+
+apps:
+  apio:
+    command: bin/apio
+    plugs:
+      - home  # Grant access to the user's home directory
+      - network
+      - network-bind
+
+parts:
+  apio:
+    plugin: dump
+    source: .
+    stage-packages:
+      - libc6
+    organize:
+      '_dist/apio/apio': bin/apio
+      '_dist/apio/_internal': bin/_internal
+
