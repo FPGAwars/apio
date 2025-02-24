@@ -62,6 +62,7 @@ jobs:
         run: |
           mkdir _work
           mkdir _dist
+          mkdir _snap
           pwd
           ls -la .
 
@@ -114,9 +115,11 @@ jobs:
 
       - name: Create the snap package
         run: |
-          cp apio-repo/.github/workflows/linux-resources/snapcraft.yaml .
+          cp apio-repo/.github/workflows/linux-resources/snapcraft.yaml _snap
+          pushd _snap
           snapcraft --destructive-mode
           ls -al
+          _popd
 
 
       - name: Populate the debian package
