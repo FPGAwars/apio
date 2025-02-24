@@ -15,6 +15,13 @@ jobs:
       - name: Log architecture info
         # Expecting 'x86_64'
         run: uname -m
+
+      - name: Install Snapcraft
+        run: |
+          sudo apt update
+          sudo apt install -y snapd
+          sudo snap install snapcraft --classic
+          snapcraft --version
   
       - name: Install python
         uses: actions/setup-python@v5
