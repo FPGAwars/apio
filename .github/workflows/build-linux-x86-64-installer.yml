@@ -168,10 +168,10 @@ jobs:
           path: "apio-linux-x86-64-${{env.APIO_VERSION}}-debian.deb"
 
 
-      - name: Export the installer file as an artifact.
+      - name: Export the snap package as an artifact.
         uses: actions/upload-artifact@v4
         with:
-          name: "apio-linux-x86-64-${{env.APIO_VERSION}}-snap"
+          name: "apio-linux-x86-64-snap"
           path: "apio_1.0_amd64.snap"
 
 
@@ -179,7 +179,4 @@ jobs:
       #   run: |
       #     echo "line1" >> $GITHUB_STEP_SUMMARY
       #     echo "${APIO_VERSION}" >> $GITHUB_STEP_SUMMARY
-      #     echo "line3" >> $GITHUB_STEP_SUMMARY
-
-      apio_1.0_amd64.snap
-        
+      #     echo "line3" >> $GITHUB_STEP_SUMMARY        
