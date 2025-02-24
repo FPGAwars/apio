@@ -175,7 +175,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: "apio-linux-x86-64-snap"
-          path: "apio_1.0_amd64.snap"
+          path: "_snap/apio_1.0_amd64.snap"
 
 
       # - name: Write run summary message
