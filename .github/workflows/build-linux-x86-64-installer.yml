@@ -103,6 +103,13 @@ jobs:
           ls -al 
 
 
+      - name: Create the snap package
+        run: |
+          cp apio-repo/.github/workflows/linux-resources/snapcraft.yaml .
+          snapcraft
+          ls -al
+
+
       - name: Populate the debian package
         run: |
           mkdir _debian
