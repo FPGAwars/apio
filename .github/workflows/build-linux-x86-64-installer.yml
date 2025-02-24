@@ -84,6 +84,8 @@ jobs:
           if find _dist -type l | grep -q .; then
               echo "PyInstaller files contain symlinks"
               exit 1
+          else
+              echo "No symlinks"
           fi
 
       - name: Add LICENSE file
