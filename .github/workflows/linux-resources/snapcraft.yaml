@@ -24,7 +24,7 @@ parts:
     source: .
     #stage-packages:
     #  - libc6
-    organize:
-      '../_dist/apio/apio': bin/apio
-      '../_dist/apio/_internal': bin/_internal
+    #organize:
+    #  '../_dist/apio/apio': bin/apio
+    #  '../_dist/apio/_internal': bin/_internal
 
