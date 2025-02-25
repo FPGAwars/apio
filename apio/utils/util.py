@@ -565,7 +565,7 @@ def resolve_home_dir() -> Path:
     for var in [
         env_options.APIO_HOME,
         env_options.APIO_HOME_DIR,
-        env_options.SNAP_USER_DATA,
+        env_options.SNAP_USER_COMMON,
     ]:
         apio_home_dir_env = env_options.get(var, default=None)
         if apio_home_dir_env:
