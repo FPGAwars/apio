@@ -116,7 +116,7 @@ jobs:
       - name: Zip the pyinstaller package
         run: |
           pushd _dist
-          package="apio-linux-x86-64-${{env.APIO_VERSION}}-package.zip"
+          package="apio-linux-x86-64-${{env.APIO_VERSION}}-pyinstaller.zip"
           zip -r -y ../${package} apio
           popd
           ls -al 
@@ -184,8 +184,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error
-          name: "apio-linux-x86-64-package"
-          path: "apio-linux-x86-64-${{env.APIO_VERSION}}-package.zip"
+          name: "apio-linux-x86-64-pyinstaller"
+          path: "apio-linux-x86-64-${{env.APIO_VERSION}}-pyinstaller.zip"
 
 
       - name: Export the installer file as an artifact.
