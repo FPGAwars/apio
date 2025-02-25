@@ -20,6 +20,7 @@ plugs:
     read:
     - /snap/apio/bin
     - /usr/lib
+    - /opt
  
  
 apps:
