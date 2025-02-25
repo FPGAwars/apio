@@ -31,7 +31,6 @@ apps:
       - network-bind
       - read-apio
       - x11
-      - gtk-common-themes
  
 parts:
   apio:
