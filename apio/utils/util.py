@@ -23,7 +23,7 @@ from pathlib import Path
 from serial.tools.list_ports import comports
 import apio
 from apio.utils import env_options
-from apio.common.apio_console import cout, cerror
+from apio.common.apio_console import cout, cerror, cwarning
 from apio.common.apio_styles import INFO, WARNING, ERROR, EMPH3
 
 
@@ -561,11 +561,23 @@ def resolve_home_dir() -> Path:
     If the folders does not exist, they are created
     """
 
-    # -- Get the APIO_HOME_DIR env variable
-    # -- It returns None if it was not defined
-    apio_home_dir_env = env_options.get(
-        env_options.APIO_HOME_DIR, default=None
-    )
+    # -- Inform the user about the name change. Delete APIO_HOME_DIR
+    # -- one release after the next one.
+    if env_options.is_defined(env_options.APIO_HOME_DIR):
+        cwarning(
+            f"Env variable ${env_options.APIO_HOME_DIR} is deprecated, "
+            f"please use ${env_options.APIO_HOME}."
+        )
+
+    # -- Try the env vars, by decreasing order of importance.
+    for var in [
+        env_options.APIO_HOME,
+        env_options.APIO_HOME_DIR,
+        env_options.SNAP_USER_DATA,
+    ]:
+        apio_home_dir_env = env_options.get(var, default=None)
+        if apio_home_dir_env:
+            break
 
     # -- Get the home dir. It is what the APIO_HOME_DIR env variable
     # -- says, or the default folder if None
@@ -577,6 +589,7 @@ def resolve_home_dir() -> Path:
         # -- Convert string to path.
         home_dir = Path(apio_home_dir_env)
     else:
+        # -- Else, use .apio under user home.
         home_dir = Path.home() / ".apio"
 
     # -- Verify that the home dir meets apio's requirements.
