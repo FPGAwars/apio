@@ -3,13 +3,24 @@ version: '1.0'
 summary: A brief summary of your app
 description: |
   A detailed description of your app and its purpose.
-
+ 
 # The base defines the Snap base you are using (core20, core22, etc.)
-base: core20
-
+base: core24
+ 
 grade: stable
 confinement: strict
-
+ 
+# See https://snapcraft.io/docs/system-files-interface
+# The apio app needs to access the files that pyinstaller
+# placed in its _internal directory.
+plugs:
+  read-apio:
+    interface: system-files
+    read:
+    - /snap/apio/bin
+    - /usr/lib
+ 
+ 
 apps:
   apio:
     command: bin/apio
@@ -17,14 +28,12 @@ apps:
       - home  # Grant access to the user's home directory
       - network
       - network-bind
-
+      - read-apio
+      - x11
+      - gtk-common-themes
+ 
 parts:
   apio:
     plugin: dump
     source: .
-    #stage-packages:
-    #  - libc6
-    #organize:
-    #  '../_dist/apio/apio': bin/apio
-    #  '../_dist/apio/_internal': bin/_internal
-
+ 
