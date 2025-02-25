@@ -1,9 +1,10 @@
 name: apio
-version: '1.0'
-summary: A brief summary of your app
+version: '[APIO-VERSION]'  # Using a placeholder for the actual version.
+summary: An easy to use FPGA design tool.
 description: |
-  A detailed description of your app and its purpose.
- 
+  Apio is an extremely easy to use open-source toolbox for programming FPGA boards.
+  For more information see the project home page a https://github.com/FPGAwars/apio.
+  
 # The base defines the Snap base you are using (core20, core22, etc.)
 base: core24
  
