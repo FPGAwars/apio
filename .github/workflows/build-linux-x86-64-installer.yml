@@ -123,8 +123,9 @@ jobs:
 
 
       - name: Create the snap package
-        run: |
-          cp apio-repo/.github/workflows/linux-resources/snapcraft.yaml _snap
+        run: |          
+          sed "s/\[APIO-VERSION\]/$APIO_VERSION/g" apio-repo/.github/workflows/linux-resources/snapcraft.template > _snap/snapcraft.yaml
+          cat _snap/snapcraft.yaml
           pushd _snap
           mkdir bin
           cp ../_dist/apio/apio bin
