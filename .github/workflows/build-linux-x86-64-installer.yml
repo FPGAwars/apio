@@ -141,6 +141,12 @@ jobs:
           popd
 
 
+      - name: Rename the snap package
+        run: |
+          mv _snap/apio_${APIO_VERSION}_amd64.snap apio-linux-x86-64-${{env.APIO_VERSION}}-snap.snap
+          ls -al
+
+
       - name: Populate the debian package
         run: |
           mkdir _debian
@@ -177,14 +183,15 @@ jobs:
       - name: Export the pyinstaller archive as an artifact.
         uses: actions/upload-artifact@v4
         with:
+          if-no-files-found: error
           name: "apio-linux-x86-64-package"
           path: "apio-linux-x86-64-${{env.APIO_VERSION}}-package.zip"
-          if-no-files-found: error
 
 
       - name: Export the installer file as an artifact.
         uses: actions/upload-artifact@v4
         with:
+          if-no-files-found: error
           name: "apio-linux-x86-64-debian"
           path: "apio-linux-x86-64-${{env.APIO_VERSION}}-debian.deb"
 
@@ -192,8 +199,9 @@ jobs:
       - name: Export the snap package as an artifact.
         uses: actions/upload-artifact@v4
         with:
+          if-no-files-found: error
           name: "apio-linux-x86-64-snap"
-          path: "_snap/apio_1.0_amd64.snap"
+          path: "apio-linux-x86-64-${{env.APIO_VERSION}}-snap.snap"
 
 
       # - name: Write run summary message
