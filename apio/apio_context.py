@@ -111,6 +111,12 @@ class ApioContext:
                 style=INFO,
             )
 
+            if env_options.APIO_HOME_DIR in defined_env_options:
+                cwarning(
+                    f"Env variable ${env_options.APIO_HOME_DIR} "
+                    f"is deprecated, please use ${env_options.APIO_HOME}.",
+                )
+
         # -- Store the scope
         assert isinstance(scope, ApioContextScope), "Not an ApioContextScope"
         self.scope = scope

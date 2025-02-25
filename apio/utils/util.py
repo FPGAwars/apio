@@ -23,7 +23,7 @@ from pathlib import Path
 from serial.tools.list_ports import comports
 import apio
 from apio.utils import env_options
-from apio.common.apio_console import cout, cerror, cwarning
+from apio.common.apio_console import cout, cerror
 from apio.common.apio_styles import INFO, WARNING, ERROR, EMPH3
 
 
@@ -560,14 +560,6 @@ def resolve_home_dir() -> Path:
     Ej. Linux:  /home/obijuan/.apio
     If the folders does not exist, they are created
     """
-
-    # -- Inform the user about the name change. Delete APIO_HOME_DIR
-    # -- one release after the next one.
-    if env_options.is_defined(env_options.APIO_HOME_DIR):
-        cwarning(
-            f"Env variable ${env_options.APIO_HOME_DIR} is deprecated, "
-            f"please use ${env_options.APIO_HOME}."
-        )
 
     # -- Try the env vars, by decreasing order of importance.
     for var in [
