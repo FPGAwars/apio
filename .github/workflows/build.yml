@@ -1,13 +1,17 @@
 # ...
 
-name: Build/Test
+name: Test
 
-on: [push]
+on:
+  push:
+  workflow_dispatch:  # Allows manual trigger
 
 jobs:
-    build:
+    test:
         runs-on: ubuntu-22.04
         strategy:
+            # TODO: Remove the matrix definition since 'make check-all' already
+            # iterates through the supported python versions.
             matrix:
                 python-version: [3.9]
 
