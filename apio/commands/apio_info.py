@@ -288,7 +288,7 @@ Examples:[code]
 [b][Advanced][/b] The default location of the Apio home directory, \
 where apio saves preferences and packages, is in the '.apio' directory \
 under the user home directory but can be changed using the system \
-environment variable 'APIO_HOME_DIR'.
+environment variable 'APIO_HOME'.
 """
 
 

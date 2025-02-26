@@ -510,7 +510,7 @@ def get_apio_version() -> str:
 
 
 def _check_home_dir(home_dir: Path):
-    """Check the path that was specified in APIO_HOME_DIR. Exit with an
+    """Check the path that was specified in APIO_HOME. Exit with an
     error message if it doesn't comply with apio's requirements.
     """
 
@@ -526,7 +526,7 @@ def _check_home_dir(home_dir: Path):
             "Apio home dir should be an absolute path " f"[{str(home_dir)}].",
         )
         cout(
-            "You can use the system env var APIO_HOME_DIR to set "
+            "You can use the system env var APIO_HOME to set "
             "a different apio home dir.",
             style=INFO,
         )
@@ -544,7 +544,7 @@ def _check_home_dir(home_dir: Path):
             cout(
                 "Only the ASCII characters in the range 33 to 127 are "
                 "allowed. You can use the\n"
-                "system env var 'APIO_HOME_DIR' to set a different apio"
+                "system env var 'APIO_HOME' to set a different apio"
                 "home dir.",
                 style=INFO,
             )
@@ -554,7 +554,7 @@ def _check_home_dir(home_dir: Path):
 def resolve_home_dir() -> Path:
     """Get the absolute apio home dir. This is the apio folder where the
     profile is located and the packages are installed.
-    The apio home dir can be overridden using the APIO_HOME_DIR environment
+    The apio home dir can be overridden using the APIO_HOME environment
     variable or in the /etc/apio.json file (in
     Debian). If not set, the user_home/.apio folder is used by default:
     Ej. Linux:  /home/obijuan/.apio
@@ -571,8 +571,7 @@ def resolve_home_dir() -> Path:
         if apio_home_dir_env:
             break
 
-    # -- Get the home dir. It is what the APIO_HOME_DIR env variable
-    # -- says, or the default folder if None
+    # -- If the env vars specified an home dir then process it.
     if apio_home_dir_env:
         # -- Expand user home '~' marker, if exists.
         apio_home_dir_env = os.path.expanduser(apio_home_dir_env)
@@ -581,7 +580,7 @@ def resolve_home_dir() -> Path:
         # -- Convert string to path.
         home_dir = Path(apio_home_dir_env)
     else:
-        # -- Else, use .apio under user home.
+        # -- Else, use the default home dir ~/.apio.
         home_dir = Path.home() / ".apio"
 
     # -- Verify that the home dir meets apio's requirements.

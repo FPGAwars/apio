@@ -813,7 +813,7 @@ Usage: apio info system [OPTIONS]
   [Advanced] The default location of the Apio home directory, where apio
   saves preferences and packages, is in the '.apio' directory under the
   user home directory but can be changed using the system environment
-  variable 'APIO_HOME_DIR'.
+  variable 'APIO_HOME'.
 
 Options:
   -h, --help  Show this message and exit.
