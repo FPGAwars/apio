@@ -163,6 +163,7 @@ jobs:
       - name: Export the pyinstaller archive as an artifact.
         uses: actions/upload-artifact@v4
         with:
+          if-no-files-found: error
           name: "apio-darwin-arm64-pyinstaller"
           path: "apio-darwin-arm64-${{env.APIO_VERSION}}-pyinstaller.zip"
 
@@ -170,6 +171,7 @@ jobs:
       - name: Export the installer file as an artifact.
         uses: actions/upload-artifact@v4
         with:
+          if-no-files-found: error
           name: "apio-darwin-arm64-package"
           path: "apio-darwin-arm64-${{env.APIO_VERSION}}-package.pkg"
 
