@@ -8,10 +8,11 @@ on:
 
 jobs:
     test:
-        runs-on: ubuntu-22.04
+        runs-on: ${{ matrix.os }}
         strategy:
             matrix:
-                python-version: [3.9]
+                os: [ubuntu-22.04, macos-latest, windows-latest]
+                python-version: [3.9, 3.13]
 
         steps:
             - name: Checkout sources
