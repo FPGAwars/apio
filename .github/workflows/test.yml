@@ -9,6 +9,11 @@ on:
 jobs:
     test:
         runs-on: ${{ matrix.os }}
+        
+        defaults:
+          run:
+            shell: bash
+            
         strategy:
             matrix:
                 os: [ubuntu-22.04, macos-latest, windows-latest]
@@ -31,6 +36,7 @@ jobs:
               run: |
                   # Convert py version such as '3.13' to 'py313' as required by tox.ini.
                   pyver="py${{matrix.python-version}}"
+                  echo "pyver: [$pyver]"
                   pyver=${pyver//./}
                   echo "pyver: [$pyver]"
                   python -m tox --skip-missing-interpreters false -e lint,$pyver
