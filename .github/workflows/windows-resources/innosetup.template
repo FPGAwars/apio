@@ -9,7 +9,7 @@ DefaultDirName={commonpf}\Apio
 ArchitecturesInstallIn64BitMode=x64
 DefaultGroupName=Apio
 OutputDir=.
-OutputBaseFilename=apio-windows-amd64-[APIO-VERSION]-installer
+OutputBaseFilename=apio-windows-amd64-[APIO-VERSION]-innosetup
 
 [Files]
 Source: "_dist\apio\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
