@@ -31,6 +31,6 @@ jobs:
                   # Convert py version such as '3.13' to 'py313' as required by tox.ini.
                   pyver="py${{matrix.python-version}}"
                   pyver=${pyver//./}
-                  echo "pyvar: [$pyvar]"
+                  echo "pyver: [$pyver]"
                   python -m tox --skip-missing-interpreters false -e lint,$pyver
                   
