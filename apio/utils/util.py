@@ -635,3 +635,38 @@ def fpga_arch_sort_key(fpga_arch: str) -> Any:
     # -- Construct the key, unknown architectures list at the end by
     # -- lexicographic order.
     return (primary_key, fpga_arch)
+
+
+def subprocess_call(
+    cmd: List[str],
+    shell: bool = False,
+    exit_on_error: bool = False,
+    failure_msg: str = None,
+    failure_msg_style: str = ERROR,
+) -> int:
+    """A helper for running subprocess.call."""
+
+    if is_debug():
+        cout(f"subprocess_call: {cmd}")
+
+    # -- Invoke the command.
+    exit_code = subprocess.call(cmd, shell=shell)
+
+    if is_debug():
+        cout(f"subprocess_call: exit code is {exit_code}")
+
+    # -- If ok, return.
+    if exit_code == 0:
+        return exit_code
+
+    # -- Print the messages
+    cerror(f"Command failed: {cmd}")
+    if failure_msg:
+        cout(failure_msg, style=failure_msg_style)
+
+    # -- Exit if requested.
+    if exit_on_error:
+        sys.exit(1)
+
+    # -- Return with the error code.
+    return exit_code
