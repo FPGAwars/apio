@@ -10,8 +10,6 @@ jobs:
     test:
         runs-on: ubuntu-22.04
         strategy:
-            # TODO: Remove the matrix definition since 'make check-all' already
-            # iterates through the supported python versions.
             matrix:
                 python-version: [3.9]
 
@@ -30,4 +28,8 @@ jobs:
 
             - name: Run Tests
               run: |
-                  make check-all
+                  # Convert py version such as '3.13' to 'py313' as required by tox.ini.
+                  pyver="py${{matrix.python-version}}"
+                  pyver=${pyver//./}
+                  python -m tox --skip-missing-interpreters false -e lint,$pyver
+                  
