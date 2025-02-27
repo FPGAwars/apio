@@ -82,3 +82,32 @@ def test_home_dir_with_relative_path(
             "Error: Apio home dir should be an absolute path"
             in capsys.readouterr().out
         )
+
+
+def test_snap_user_common(apio_runner: ApioRunner):
+    """Test that SNAP_USER_COMMON sets home dir."""
+    # -- Test with SNAP_USER_COMMON and no APIO_HOME. Home should come
+    # -- from SNAP_USER_COMMON
+    with apio_runner.in_sandbox() as sb:
+        # -- Delete the APIO_HOME definition that was set by the sandbox.
+        os.environ.pop("APIO_HOME")
+        # -- Simulate a snap env definition.
+        snap_home = str((sb.home_dir / "aaa/bbb").absolute())
+        os.environ["SNAP_USER_COMMON"] = snap_home
+        # -- Create an apio context.
+        apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+        # -- Verify that the home path came from SNAP_USER_COMMON.
+        assert str(apio_ctx.home_dir) == snap_home
+
+    # -- Test with both APIO_HOME and SNAP_USER_COMMON. APIO_HOME should
+    # -- have a higher priority.
+    with apio_runner.in_sandbox() as sb:
+        # -- Make sure the sandbox set APIO_HOME
+        assert os.environ["APIO_HOME"] == str(sb.home_dir)
+        # -- Simulate a snap env definition.
+        snap_home = str((sb.home_dir / "aaa/bbb").absolute())
+        os.environ["SNAP_USER_COMMON"] = snap_home
+        # -- Create an apio context.
+        apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+        # -- Verify that the home path came from APIO_HOME.
+        assert str(apio_ctx.home_dir) == str(sb.home_dir)
