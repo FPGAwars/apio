@@ -128,21 +128,21 @@ jobs:
           sed "s/\[APIO-VERSION\]/$APIO_VERSION/g" apio-repo/.github/workflows/linux-resources/snapcraft.template > _snap/snapcraft.yaml
           cat _snap/snapcraft.yaml
 
-          # Create _snap directory
-          pushd _snap
+          # Populate the _snap directory
           cp _dist/apio/LICENSE _snap
           cp _dist/apio/INFO _snap
 
-          # Create _snap/bin directory
-          mkdir bin
-          cp ../_dist/apio/apio bin
-          cp -r ../_dist/apio/_internal bin
+          # Populate the _snap/bin directory
+          mkdir _snap/bin
+          cp _dist/apio/apio _snap/bin
+          cp -r _dist/apio/_internal _snap/bin
           echo
-          ls -al .
+          ls -al _snap
           echo
-          ls -al bin
+          ls -al _snap/bin
 
           # Build snap package
+          pushd _snap
           echo
           snapcraft --destructive-mode
           echo
