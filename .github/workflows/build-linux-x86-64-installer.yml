@@ -123,10 +123,17 @@ jobs:
 
 
       - name: Create the snap package
-        run: |          
+        run: |     
+          # Expand config template
           sed "s/\[APIO-VERSION\]/$APIO_VERSION/g" apio-repo/.github/workflows/linux-resources/snapcraft.template > _snap/snapcraft.yaml
           cat _snap/snapcraft.yaml
+
+          # Create _snap directory
           pushd _snap
+          cp _dist/apio/LICENSE _snap
+          cp _dist/apio/INFO _snap
+
+          # Create _snap/bin directory
           mkdir bin
           cp ../_dist/apio/apio bin
           cp -r ../_dist/apio/_internal bin
@@ -134,6 +141,8 @@ jobs:
           ls -al .
           echo
           ls -al bin
+
+          # Build snap package
           echo
           snapcraft --destructive-mode
           echo
