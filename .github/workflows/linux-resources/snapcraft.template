@@ -4,39 +4,32 @@ summary: An easy to use FPGA design tool.
 description: |
   Apio is an extremely easy to use open-source toolbox for programming FPGA boards.
   For more information see the project home page a https://github.com/FPGAwars/apio.
-  
+
 # The base defines the Snap base you are using (core20, core22, etc.)
 base: core24
- 
+
 grade: stable
 confinement: strict
 
-# See https://snapcraft.io/docs/system-files-interface
-# This provide access read access to directories apio tools may 
-# need to access but require explicit 'snap connection apio:read-apio'
-# command to be activated.
-# plugs:
-#   read-apio:
-#     interface: system-files
-#     read:
-#     - /snap/apio/bin
-#     - /usr/lib
-#     - /opt
- 
- 
 apps:
   apio:
     command: bin/apio
     # Snap access permissions.
     plugs:
+      # Connected automatically
       - home
       - network
       - network-bind
       - x11
-      # - read-apio
+      # Required manual connection by the user. Used for example
+      # for boards with FT232/2232 interfaces.
+      - raw-usb
+      # Safety net. May be needed for some boards such as those
+      # with serial interfaces or proprietary protocols.
+      - serial-port
+      - hardware-observe
  
 parts:
   apio:
     plugin: dump
     source: .
- 
