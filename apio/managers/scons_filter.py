@@ -19,6 +19,7 @@ from enum import Enum
 from typing import List, Optional, Tuple
 from apio.common.apio_console import cout, cunstyle
 from apio.common.apio_styles import INFO, WARNING, SUCCESS, ERROR
+from apio.utils import util
 
 
 # -- Terminal cursor commands.
@@ -189,6 +190,7 @@ class SconsFilter:
         self._graphviz_dot_detector = GraphvizDotRangeDetector()
         self._iverilog_detector = IVerilogRangeDetector()
         self._iceprog_detector = IceProgRangeDetector()
+        self._is_debug = util.is_debug()
 
     def on_stdout_line(self, line: str) -> None:
         """Stdout pipe calls this on each line."""
@@ -219,6 +221,11 @@ class SconsFilter:
             cout(cunstyle(line), style=style)
         else:
             cout(line)
+
+    def _ignore_line(self, line: str) -> None:
+        """Handle an ignored line. It's dumped if in debug mode."""
+        if self._is_debug:
+            cout(f"IGNORED: {line}")
 
     # pylint: disable=too-many-return-statements
     # pylint: disable=too-many-branches
@@ -277,6 +284,7 @@ class SconsFilter:
         if in_graphviz_dot_range:
             if not line.strip():
                 # -- Drop empty lines
+                self._ignore_line(line)
                 return
             if (
                 "pango_font_describe: " "assertion 'font != NULL'" in line
@@ -284,6 +292,7 @@ class SconsFilter:
                 "assertion 'desc != NULL'" in line
             ):
                 # -- Suppress the error line.
+                self._ignore_line(line)
                 return
 
         # -- Special handling of iverilog lines. We drop warning line spam
@@ -295,6 +304,7 @@ class SconsFilter:
             and "Timing checks are not supported" in line
         ):
             # -- Drop the line.
+            self._ignore_line(line)
             return
 
         # -- Special handling for iceprog line range.
@@ -302,6 +312,7 @@ class SconsFilter:
             # -- Iceprog prints blank likes that are used as line erasers.
             # -- We don't need them here.
             if len(line) == 0:
+                self._ignore_line(line)
                 return
 
             # -- If the last iceprog line was a to-be-erased line, erase it
@@ -392,6 +403,7 @@ class SconsFilter:
         if IVERILOG_TIMING_WARNING_REGEX.search(line):
             # -- Ignore this line.
             # cout(line, style=WARNING)
+            self._ignore_line(line)
             return
 
         # -- Handling the rest of the stdout lines.
