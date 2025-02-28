@@ -10,28 +10,30 @@ base: core24
  
 grade: stable
 confinement: strict
- 
+
 # See https://snapcraft.io/docs/system-files-interface
-# The apio app needs to access the files that pyinstaller
-# placed in its _internal directory.
-plugs:
-  read-apio:
-    interface: system-files
-    read:
-    - /snap/apio/bin
-    - /usr/lib
-    - /opt
+# This provide access read access to directories apio tools may 
+# need to access but require explicit 'snap connection apio:read-apio'
+# command to be activated.
+# plugs:
+#   read-apio:
+#     interface: system-files
+#     read:
+#     - /snap/apio/bin
+#     - /usr/lib
+#     - /opt
  
  
 apps:
   apio:
     command: bin/apio
+    # Snap access permissions.
     plugs:
-      - home  # Grant access to the user's home directory
+      - home
       - network
       - network-bind
-      - read-apio
       - x11
+      # - read-apio
  
 parts:
   apio:
