@@ -25,6 +25,10 @@ connectivity issues.
 Examples:[code]
   apio drivers list ftdi    # List the ftdi devices.[/code]
 
+[Note] When apio is installed on Linux using the Snap package \
+manager, run the command 'snap connect apio:raw-usb' once \
+to grant the necessary permissions to access USB devices.
+
 [Hint] This command uses the lsftdi utility, which can also be invoked \
 directly with the 'apio raw -- lsftdi ...' command.
 """

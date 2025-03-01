@@ -670,3 +670,8 @@ def subprocess_call(
 
     # -- Return with the error code.
     return exit_code
+
+
+def is_snap() -> bool:
+    """Returns True if the current process is running under snap."""
+    return env_options.is_defined(env_options.SNAP_NAME)

@@ -64,6 +64,10 @@ The command 'apio upload' builds the bitstream file (similar to the \
 
 Examples:[code]
   apio upload[/code]
+
+[Note] When apio is installed on Linux using the Snap package \
+manager, run the command 'snap connect apio:raw-usb' once \
+to grant the necessary permissions to access USB devices.
 """
 
 

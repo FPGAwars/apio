@@ -371,6 +371,10 @@ Usage: apio drivers list ftdi [OPTIONS]
   Examples:
     apio drivers list ftdi    # List the ftdi devices.
 
+  [Note] When apio is installed on Linux using the Snap package manager,
+  run the command 'snap connect apio:raw-usb' once to grant the
+  necessary permissions to access USB devices.
+
   [Hint] This command uses the lsftdi utility, which can also be invoked
   directly with the 'apio raw -- lsftdi ...' command.
 
@@ -1152,6 +1156,10 @@ Usage: apio upload [OPTIONS]
 
   Examples:
     apio upload
+
+  [Note] When apio is installed on Linux using the Snap package manager,
+  run the command 'snap connect apio:raw-usb' once to grant the
+  necessary permissions to access USB devices.
 
 Options:
   --serial-port serial-port  Set the serial port.

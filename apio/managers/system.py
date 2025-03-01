@@ -30,10 +30,15 @@ class System:  # pragma: no cover
         cerror("The 'lsftdi' command failed.", result.err_text)
 
         # -- Hint the user about the need to install driver.
-        if self.apio_ctx.is_windows:
+        cout(
+            "[Hint]: Some platforms require ftdi driver installation "
+            "using 'apio drivers install ftdi'.",
+            style=INFO,
+        )
+        if util.is_snap():
             cout(
-                "[Hint]: Some platforms require ftdi driver installation "
-                "using 'apio drivers install ftdi'.",
+                "[Hint]: Snap applications may require "
+                "'snap connect apio:raw-usb' to access USB devices.",
                 style=INFO,
             )
 
