@@ -14,7 +14,7 @@ from rich.table import Table
 from rich import box
 from rich.color import ANSI_COLOR_NAMES
 from apio.common.apio_styles import BORDER, EMPH1, EMPH3, TITLE, INFO
-from apio.utils import util, cmd_util
+from apio.utils import util, cmd_util, snap_util
 from apio.utils.cmd_util import check_at_most_one_param
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
@@ -322,15 +322,21 @@ def _system_cli():
 
     # -- Add rows
     table.add_row("Apio version", util.get_apio_version())
-    table.add_row("Python version ", util.get_python_version())
-    table.add_row("Platform id ", apio_ctx.platform_id)
-    table.add_row("Python package ", str(util.get_path_in_apio_package("")))
-    table.add_row("Apio home ", str(apio_ctx.home_dir))
-    table.add_row("Apio packages ", str(apio_ctx.packages_dir))
+    table.add_row("Python version", util.get_python_version())
+    table.add_row("Platform id", apio_ctx.platform_id)
+    table.add_row("Python package", str(util.get_path_in_apio_package("")))
+    table.add_row("Apio home", str(apio_ctx.home_dir))
+    table.add_row("Apio packages", str(apio_ctx.packages_dir))
     table.add_row(
-        "Veriable language server ",
+        "Veriable language server",
         str(apio_ctx.packages_dir / "verible/bin/verible-verilog-ls"),
     )
+    # -- If running under snap, show some snap info.
+    if snap_util.is_snap():
+        for plug in snap_util.MANUAL_PLUGS:
+            plug_connected = snap_util.is_plug_connected(plug)
+            plug_status = "Connected" if plug_connected else "Not connected"
+            table.add_row(f"Snap {plug}", plug_status)
 
     # -- Render the table.
     cout()

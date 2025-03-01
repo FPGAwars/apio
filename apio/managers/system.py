@@ -10,7 +10,7 @@ import re
 import sys
 from apio.common.apio_console import cout, cerror
 from apio.common.apio_styles import INFO, ERROR, EMPH1
-from apio.utils import util, pkg_util
+from apio.utils import util, pkg_util, snap_util
 from apio.apio_context import ApioContext
 from apio.managers import installer
 
@@ -35,7 +35,7 @@ class System:  # pragma: no cover
             "using 'apio drivers install ftdi'.",
             style=INFO,
         )
-        if util.is_snap():
+        if snap_util.is_snap():
             cout(
                 "[Hint]: Snap applications may require "
                 "'snap connect apio:raw-usb' to access USB devices.",
