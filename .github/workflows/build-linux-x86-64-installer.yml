@@ -1,8 +1,10 @@
 name: build-linux-x86-64-installer
 
 on:
-  # For now we use only manual triggers.
-  workflow_dispatch:  # 👈 Enables manual trigger
+  schedule:
+    - cron: '0 0 * * *'  # Runs daily at midnight UTC
+  workflow_dispatch:  # Manual triggers ok.
+
 
 jobs:
   build-linux-x86-64-installer:
