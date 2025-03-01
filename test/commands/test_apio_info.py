@@ -24,7 +24,7 @@ def test_apio_info(apio_runner: ApioRunner):
         assert result.exit_code == 0, result.output
         assert "Platform id" in result.output
         # -- The these env options are set by the apio text fixture.
-        assert "Active env options [APIO_HOME_DIR]" in result.output
+        assert "Active env options [APIO_HOME]" in result.output
 
         # -- Execute "apio info platforms"
         result = sb.invoke_apio_cmd(apio, "info", "platforms")

@@ -29,14 +29,21 @@ class System:  # pragma: no cover
         cout(result.out_text)
         cerror("The 'lsftdi' command failed.", result.err_text)
 
-        # -- A special hint for zadig on windows.
-        if self.apio_ctx.is_windows:
+        # -- Hint the user about the need to install driver.
+        cout(
+            "[Hint]: Some platforms require ftdi driver installation "
+            "using 'apio drivers install ftdi'.",
+            style=INFO,
+        )
+        if util.is_snap():
             cout(
-                "[Hint]: did you install the ftdi driver using "
-                "'apio drivers --ftdi-install'?",
+                "[Hint]: Snap applications may require "
+                "'snap connect apio:raw-usb' to access USB devices.",
                 style=INFO,
             )
-            sys.exit(1)
+
+        # -- Exit with an error code.
+        sys.exit(1)
 
     def lsusb(self) -> int:
         """Run the lsusb command. Returns exit code."""

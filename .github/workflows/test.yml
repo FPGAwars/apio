@@ -1,0 +1,51 @@
+# ...
+
+name: Test
+
+on:
+  push:
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+    test:
+        runs-on: ${{ matrix.os }}
+        
+        defaults:
+          run:
+            shell: bash
+            
+        strategy:
+            max-parallel: 3
+            matrix:
+                os: [ubuntu-22.04, macos-latest, windows-latest]
+                python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
+                # Windows test are almost x10 slower on github so we drop the
+                # less critical ones.                
+                exclude:
+                  - os: windows-latest
+                    python-version: '3.9'
+                  - os: windows-latest
+                    python-version: '3.10'
+                  
+        steps:
+            - name: Checkout sources
+              uses: actions/checkout@v3
+
+            - name: Set up Python
+              uses: actions/setup-python@v4
+              with:
+                  python-version: ${{ matrix.python-version }}
+
+            - name: Install dependencies
+              run: |
+                  make deps
+
+            - name: Run Tests
+              run: |
+                  # Convert py version such as '3.13' to 'py313' as required by tox.ini.
+                  pyver="py${{matrix.python-version}}"
+                  echo "pyver: [$pyver]"
+                  pyver=${pyver//./}
+                  echo "pyver: [$pyver]"
+                  python -m tox --skip-missing-interpreters false -e lint,$pyver
+                  

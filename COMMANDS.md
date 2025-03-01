@@ -371,6 +371,10 @@ Usage: apio drivers list ftdi [OPTIONS]
   Examples:
     apio drivers list ftdi    # List the ftdi devices.
 
+  [Note] When apio is installed on Linux using the Snap package manager,
+  run the command 'snap connect apio:raw-usb' once to grant the
+  necessary permissions to access USB devices.
+
   [Hint] This command uses the lsftdi utility, which can also be invoked
   directly with the 'apio raw -- lsftdi ...' command.
 
@@ -813,7 +817,7 @@ Usage: apio info system [OPTIONS]
   [Advanced] The default location of the Apio home directory, where apio
   saves preferences and packages, is in the '.apio' directory under the
   user home directory but can be changed using the system environment
-  variable 'APIO_HOME_DIR'.
+  variable 'APIO_HOME'.
 
 Options:
   -h, --help  Show this message and exit.
@@ -1152,6 +1156,10 @@ Usage: apio upload [OPTIONS]
 
   Examples:
     apio upload
+
+  [Note] When apio is installed on Linux using the Snap package manager,
+  run the command 'snap connect apio:raw-usb' once to grant the
+  necessary permissions to access USB devices.
 
 Options:
   --serial-port serial-port  Set the serial port.

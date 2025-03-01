@@ -118,7 +118,7 @@ class ApioSandbox:
 
         # -- These two env vars are set when creating the context. Let's
         # -- check that the test didn't corrupt them.
-        assert os.environ["APIO_HOME_DIR"] == str(self.home_dir)
+        assert os.environ["APIO_HOME"] == str(self.home_dir)
 
         # -- If True, force terminal mode, if False, forces pipe mode,
         # -- otherwise auto which is pipe mode under pytest.
@@ -364,7 +364,7 @@ class ApioRunner:
 
         # -- Set the system env vars to inform ApioContext what are the
         # -- home and packages dirs.
-        os.environ["APIO_HOME_DIR"] = str(home_dir)
+        os.environ["APIO_HOME"] = str(home_dir)
 
         # -- Reset the apio console, since we run multiple sandboxes in the
         # -- same process.

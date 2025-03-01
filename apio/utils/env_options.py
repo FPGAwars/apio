@@ -17,8 +17,18 @@ from typing import List
 # -- Env variable to override the apio home dir ~/.apio. If specified,
 # -- it will contains the profile.json file and if APIO_PACKAGES_DIR is not
 # -- specified, the 'packages' directory with the individual packages.
+APIO_HOME = "APIO_HOME"
+
+# -- Deprecated. Use APIO HOME instead.
 APIO_HOME_DIR = "APIO_HOME_DIR"
 
+# -- Env variable that is set by the snap launcher when running under snap.
+# -- It's one of the overrides for the default apio home dir.
+SNAP_USER_COMMON = "SNAP_USER_COMMON"
+
+# -- Env variable that is set by the snap launcher when running under snap.
+# -- Used to detect if running under snap.
+SNAP_NAME = "SNAP_NAME"
 
 # -- Env variable to override the platform id that is determined automatically
 # -- from the system properties. If specified, the value should match one
@@ -35,9 +45,13 @@ APIO_PLATFORM = "APIO_PLATFORM"
 # -- for the scons process use scons_util.is_debug().
 APIO_DEBUG = "APIO_DEBUG"
 
+
 # -- List of all supported env options.
 _SUPPORTED_APIO_VARS = [
-    APIO_HOME_DIR,
+    APIO_HOME,
+    APIO_HOME_DIR,  # Deprecated
+    SNAP_USER_COMMON,
+    SNAP_NAME,
     APIO_PLATFORM,
     APIO_DEBUG,
 ]

@@ -12,7 +12,7 @@ apio_dir = Path(sys.modules["apio"].__file__).parent
 print(f"{apio_dir=}")
 
 added_files = [
-    ( apio_dir / 'resources/*.jsonc', 'apio/resources' ),
+    ( apio_dir / 'resources/*', 'apio/resources' ),
     ( apio_dir / 'scons/SConstruct', 'apio/scons' ),
 ]
 

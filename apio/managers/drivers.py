@@ -243,13 +243,14 @@ class Drivers:
 
             # -- The file does not exist. Copy!
             # -- Execute the cmd: sudo cp src_file target_file
-            subprocess.call(
+            util.subprocess_call(
                 [
                     "sudo",
                     "cp",
                     str(self.ftdi_rules_local_path),
                     str(self.ftdi_rules_system_path),
-                ]
+                ],
+                exit_on_error=True,
             )
 
             # -- Execute the commands for reloading the udev system
@@ -298,13 +299,14 @@ class Drivers:
 
             # -- The file does not exist. Copy!
             # -- Execute the cmd: sudo cp src_file target_file
-            subprocess.call(
+            util.subprocess_call(
                 [
                     "sudo",
                     "cp",
                     str(self.serial_rules_local_path),
                     str(self.serial_rules_system_path),
-                ]
+                ],
+                exit_on_error=True,
             )
 
             # -- Execute the commands for reloading the udev system

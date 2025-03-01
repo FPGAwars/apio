@@ -1,8 +1,10 @@
 name: build-linux-x86-64-installer
 
 on:
-  # For now we use only manual triggers.
-  workflow_dispatch:  # 👈 Enables manual trigger
+  schedule:
+    - cron: '0 0 * * *'  # Runs daily at midnight UTC
+  workflow_dispatch:  # Manual triggers ok.
+
 
 jobs:
   build-linux-x86-64-installer:
@@ -15,11 +17,18 @@ jobs:
       - name: Log architecture info
         # Expecting 'x86_64'
         run: uname -m
+
+      - name: Install Snapcraft
+        run: |
+          sudo apt update
+          sudo apt install -y snapd
+          sudo snap install snapcraft --classic
+          snapcraft --version
   
       - name: Install python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'  # Adjust version as needed
+          python-version: '3.13'  # Adjust version as needed
 
 
       - name: Checkout the apio repo
@@ -53,6 +62,7 @@ jobs:
         run: |
           mkdir _work
           mkdir _dist
+          mkdir _snap
           pwd
           ls -la .
 
@@ -68,6 +78,17 @@ jobs:
           echo "_dist/apio:"
           ls -al _dist/apio
 
+      - name: Check for symlinks
+        run: |
+          # If _dist/_internal contains symlinks, we need to revisit how
+          # we copy it around, while preserving symlinks. May need to copy
+          # using rsync, or just move it around instead of copying.
+          if find _dist -type l | grep -q .; then
+              echo "PyInstaller files contain symlinks"
+              exit 1
+          else
+              echo "No symlinks"
+          fi
 
       - name: Add LICENSE file
         run: |
@@ -97,10 +118,44 @@ jobs:
       - name: Zip the pyinstaller package
         run: |
           pushd _dist
-          package="apio-linux-x86-64-${{env.APIO_VERSION}}-package.zip"
+          package="apio-linux-x86-64-${{env.APIO_VERSION}}-pyinstaller.zip"
           zip -r -y ../${package} apio
           popd
           ls -al 
+
+
+      - name: Create the snap package
+        run: |     
+          # Expand config template
+          sed "s/\[APIO-VERSION\]/$APIO_VERSION/g" apio-repo/.github/workflows/linux-resources/snapcraft.template > _snap/snapcraft.yaml
+          cat _snap/snapcraft.yaml
+
+          # Populate the _snap directory
+          cp _dist/apio/LICENSE _snap
+          cp _dist/apio/INFO _snap
+
+          # Populate the _snap/bin directory
+          mkdir _snap/bin
+          cp _dist/apio/apio _snap/bin
+          cp -r _dist/apio/_internal _snap/bin
+          echo
+          ls -al _snap
+          echo
+          ls -al _snap/bin
+
+          # Build snap package
+          pushd _snap
+          echo
+          snapcraft --destructive-mode
+          echo
+          ls -al
+          popd
+
+
+      - name: Rename the snap package
+        run: |
+          mv _snap/apio_${APIO_VERSION}_amd64.snap apio-linux-x86-64-${{env.APIO_VERSION}}-snap.snap
+          ls -al
 
 
       - name: Populate the debian package
@@ -109,9 +164,8 @@ jobs:
           
           # -- /opt/apio
           mkdir -p _debian/opt/apio
-          mv _dist/apio/apio _debian/opt/apio
-          # We move _internal instead of copying it, in case it has symlinks.
-          mv _dist/apio/_internal _debian/opt/apio
+          cp _dist/apio/apio _debian/opt/apio
+          cp -r _dist/apio/_internal _debian/opt/apio
           
           # /usr/local/bin
           mkdir -p _debian/usr/local/bin
@@ -140,21 +194,29 @@ jobs:
       - name: Export the pyinstaller archive as an artifact.
         uses: actions/upload-artifact@v4
         with:
-          name: "apio-linux-x86-64-package"
-          path: "apio-linux-x86-64-${{env.APIO_VERSION}}-package.zip"
           if-no-files-found: error
+          name: "apio-linux-x86-64-pyinstaller"
+          path: "apio-linux-x86-64-${{env.APIO_VERSION}}-pyinstaller.zip"
 
 
       - name: Export the installer file as an artifact.
         uses: actions/upload-artifact@v4
         with:
+          if-no-files-found: error
           name: "apio-linux-x86-64-debian"
           path: "apio-linux-x86-64-${{env.APIO_VERSION}}-debian.deb"
+
+
+      - name: Export the snap package as an artifact.
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: error
+          name: "apio-linux-x86-64-snap"
+          path: "apio-linux-x86-64-${{env.APIO_VERSION}}-snap.snap"
 
 
       # - name: Write run summary message
       #   run: |
       #     echo "line1" >> $GITHUB_STEP_SUMMARY
       #     echo "${APIO_VERSION}" >> $GITHUB_STEP_SUMMARY
-      #     echo "line3" >> $GITHUB_STEP_SUMMARY
-        
+      #     echo "line3" >> $GITHUB_STEP_SUMMARY        

@@ -3,8 +3,9 @@ name: build-windows-amd64-installer
 # TODO: Set complex file names once in reuseable variables.
 
 on:
-  # For now we use only manual triggers.
-  workflow_dispatch:  # 👈 Enables manual trigger
+  schedule:
+    - cron: '0 0 * * *'  # Runs daily at midnight UTC
+  workflow_dispatch:  # Manual triggers ok.
 
 jobs:
   build-windows-amd64-installer:
@@ -103,7 +104,7 @@ jobs:
         run: |
           # The github window bash doesn't have 'zip' so we use powershell instead.
           Push-Location _dist
-          $package = "apio-windows-amd64-${{env.APIO_VERSION}}-package.zip"
+          $package = "apio-windows-amd64-${{env.APIO_VERSION}}-pyinstaller.zip"
           Compress-Archive -Path apio -DestinationPath ../$package
           Pop-Location
           Get-ChildItem -Force
@@ -123,28 +124,19 @@ jobs:
           "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" innosetup.iss
           dir
 
-
-      - name: Verify installer created.
-        run: |
-          installer="apio-windows-amd64-${APIO_VERSION}-installer.exe"
-          if [[ ! -f "${installer}" ]]; then
-            echo "Error: File not found: ${installer}"
-            exit 1
-          fi
-          file "${installer}"
-    
-
       - name: Export the pyinstaller output as an artifact.
         uses: actions/upload-artifact@v4
         with:
-          name: "apio-windows-amd64-package"
-          path: "apio-windows-amd64-${{env.APIO_VERSION}}-package.zip"
+          if-no-files-found: error
+          name: "apio-windows-amd64-pyinstaller"
+          path: "apio-windows-amd64-${{env.APIO_VERSION}}-pyinstaller.zip"
 
 
       - name: Export the installer file as an artifact.
         uses: actions/upload-artifact@v4
         with:
-          name: "apio-windows-amd64-installer"
-          path: "apio-windows-amd64-${{env.APIO_VERSION}}-installer.exe"
+          if-no-files-found: error
+          name: "apio-windows-amd64-innosetup"
+          path: "apio-windows-amd64-${{env.APIO_VERSION}}-innosetup.exe"
 
       
