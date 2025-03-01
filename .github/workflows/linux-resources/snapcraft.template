@@ -24,9 +24,8 @@ apps:
       # Required manual connection by the user. Used for example
       # for boards with FT232/2232 interfaces.
       - raw-usb
-      # Safety net. May be needed for some boards such as those
-      # with serial interfaces or proprietary protocols.
-      - serial-port
+      # Not sure if this required. Added as a safety net until we 
+      # test with all the available board drivers.
       - hardware-observe
  
 parts:

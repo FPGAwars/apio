@@ -14,10 +14,11 @@ import subprocess
 from subprocess import CompletedProcess
 import shutil
 
+# -- Relevant snap plugs. See snapcraft.yaml.
 RAW_USB_PLUG = "raw-usb"
-SERIAL_PORT_PLUG = "serial-port"
+HARDWARE_OBSERVE = "hardware-observe"
 
-MANUAL_PLUGS = [RAW_USB_PLUG, SERIAL_PORT_PLUG]
+MANUAL_PLUGS = [RAW_USB_PLUG, HARDWARE_OBSERVE]
 
 
 def is_snap() -> bool:
