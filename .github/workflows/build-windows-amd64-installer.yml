@@ -3,8 +3,9 @@ name: build-windows-amd64-installer
 # TODO: Set complex file names once in reuseable variables.
 
 on:
-  # For now we use only manual triggers.
-  workflow_dispatch:  # 👈 Enables manual trigger
+  schedule:
+    - cron: '0 0 * * *'  # Runs daily at midnight UTC
+  workflow_dispatch:  # Manual triggers ok.
 
 jobs:
   build-windows-amd64-installer:
