@@ -4,8 +4,9 @@ name: build-darwin-arm64-installer
 # TODO: Generate also darwin x86
 
 on:
-  # For now we use only manual triggers.
-  workflow_dispatch:  # 👈 Enables manual trigger
+  schedule:
+    - cron: '0 0 * * *'  # Runs daily at midnight UTC
+  workflow_dispatch:  # Manual triggers ok.
 
 jobs:
   build-darwin-arm64-installer:
