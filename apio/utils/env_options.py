@@ -26,10 +26,6 @@ APIO_HOME_DIR = "APIO_HOME_DIR"
 # -- It's one of the overrides for the default apio home dir.
 SNAP_USER_COMMON = "SNAP_USER_COMMON"
 
-# -- Env variable that is set by the snap launcher when running under snap.
-# -- Used to detect if running under snap.
-SNAP_NAME = "SNAP_NAME"
-
 # -- Env variable to override the platform id that is determined automatically
 # -- from the system properties. If specified, the value should match one
 # -- of the platforms specified in resources/platforms.json.
@@ -51,7 +47,6 @@ _SUPPORTED_APIO_VARS = [
     APIO_HOME,
     APIO_HOME_DIR,  # Deprecated
     SNAP_USER_COMMON,
-    SNAP_NAME,
     APIO_PLATFORM,
     APIO_DEBUG,
 ]
