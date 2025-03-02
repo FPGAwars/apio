@@ -215,8 +215,8 @@ jobs:
           path: "apio-linux-x86-64-${{env.APIO_VERSION}}-snap.snap"
 
 
-      # - name: Write run summary message
-      #   run: |
-      #     echo "line1" >> $GITHUB_STEP_SUMMARY
-      #     echo "${APIO_VERSION}" >> $GITHUB_STEP_SUMMARY
-      #     echo "line3" >> $GITHUB_STEP_SUMMARY        
+      - name: Write a summary message
+        run: |
+          echo "Note: Github workflows the artifacts with an additional level of zip archive." >> $GITHUB_STEP_SUMMARY
+          echo "To retrieve the artifact file, first unzip the artifact zip file downloaded >> $GITHUB_STEP_SUMMARY       
+          echo "from this page. >> $GITHUB_STEP_SUMMARY       
