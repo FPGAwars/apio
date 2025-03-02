@@ -217,6 +217,5 @@ jobs:
 
       - name: Write a summary message
         run: |
-          echo "Note: Github workflows the artifacts with an additional level of zip archive." >> $GITHUB_STEP_SUMMARY
-          echo "To retrieve the artifact file, first unzip the artifact zip file downloaded"   >> $GITHUB_STEP_SUMMARY       
-          echo "from this page."                                                               >> $GITHUB_STEP_SUMMARY       
+          echo "Note: Github workflows the artifacts with an additional level of zip archive."               >> $GITHUB_STEP_SUMMARY
+          echo "To retrieve the artifact file, first unzip the artifact zip file downloaded from this page." >> $GITHUB_STEP_SUMMARY       
