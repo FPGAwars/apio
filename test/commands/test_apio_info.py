@@ -4,13 +4,15 @@
 
 from test.conftest import ApioRunner
 from apio.commands.apio import cli as apio
-from apio.common.apio_console import cunstyle
+from apio.common.apio_console import cunstyle, cwidth
 
 
 def test_apio_info(apio_runner: ApioRunner):
     """Test "apio info" with different parameters"""
 
     with apio_runner.in_sandbox() as sb:
+        # -- For debugging table column truncation in github testing.
+        print(f"Apio console width = {cwidth()}")
 
         # -- Execute "apio info"
         result = sb.invoke_apio_cmd(apio, "info")

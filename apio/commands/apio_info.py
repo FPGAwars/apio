@@ -317,7 +317,7 @@ def _system_cli():
         title_justify="left",
     )
 
-    table.add_column("ITEM", no_wrap=True)
+    table.add_column("ITEM", no_wrap=True, min_width=20)
     table.add_column("VALUE", no_wrap=True, style=EMPH1)
 
     # -- Add rows
