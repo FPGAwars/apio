@@ -10,19 +10,19 @@ module bcd_digit_tb ();
   `DEF_CLK
 
   // Inputs.
-  reg  reset = 1;
+  reg reset = 1;
   reg tick_in = 0;
 
   // Outputs.
   wire tick_out;
   wire [3:0] count;
 
-  bcd_digit digit(
-    .sys_clk(clk),    
-    .sys_reset(reset), 
-    .tick_in(tick_in),  
-    .tick_out(tick_out),   
-    .count(count) 
+  bcd_digit digit (
+      .sys_clk(clk),
+      .sys_reset(reset),
+      .tick_in(tick_in),
+      .tick_out(tick_out),
+      .count(count)
   );
 
   initial begin
@@ -34,17 +34,17 @@ module bcd_digit_tb ();
     reset = 0;
 
     // Count 15 times
-    repeat(15) begin
+    repeat (15) begin
       `CLKS(2)
       tick_in = 1;
       `CLK
-      tick_in =0;
+      tick_in = 0;
       `CLKS(3)
     end
 
     // Assert on ethe xpected digit value.
     `EXPECT(count, 15 % 10)
-    
+
     // End of test.
     `TEST_END
   end
