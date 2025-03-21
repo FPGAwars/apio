@@ -51,7 +51,7 @@ class Examples:
         """Return true if the given dir is empty, ignoring hidden entry.
         That is, the dir may contain only hidden entries.
         We use this relaxed criteria of emptiness to avoid user confusion.
-        We could use glop.glob() but in python 3.10 and earlier it doesn't
+        We could use glob.glob() but in python 3.10 and earlier it doesn't
         have the 'include_hidden' argument.
         """
         # -- Check prerequisites.

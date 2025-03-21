@@ -177,24 +177,28 @@ def test_get_source_files(apio_runner):
 
         # -- Make files verilog src names (out of order)
         Path("bbb.v").touch()
-        Path("aaa.v").touch()
+        Path("aaa.sv").touch()
 
         # -- Make files with testbench names (out of order)
         Path("ccc_tb.v").touch()
-        Path("aaa_tb.v").touch()
+        Path("aaa_tb.sv").touch()
 
         # -- Make files with non related names.
         Path("ddd.vh").touch()
         Path("eee.vlt").touch()
-        Path("subdir").mkdir()
-        Path("subdir/eee.v").touch()
+
+        # -- Make files in subdirectories.
+        Path("subdir1").mkdir()
+        Path("subdir2").mkdir()
+        Path("subdir1/eee.v").touch()
+        Path("subdir2/eee_tb.v").touch()
 
         # -- Invoked the tested method.
         srcs, testbenches = source_files(apio_env)
 
         # -- Verify results.
-        assert srcs == ["aaa.v", "bbb.v"]
-        assert testbenches == ["aaa_tb.v", "ccc_tb.v"]
+        assert srcs == ["aaa.sv", "bbb.v", "subdir1/eee.v"]
+        assert testbenches == ["aaa_tb.sv", "ccc_tb.v", "subdir2/eee_tb.v"]
 
 
 def test_get_programmer_cmd(capsys: LogCaptureFixture):

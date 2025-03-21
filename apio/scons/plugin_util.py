@@ -16,6 +16,7 @@ import sys
 import os
 import re
 import json
+from glob import glob
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Tuple, Dict, Optional, Union
@@ -465,28 +466,34 @@ def source_file_issue_action() -> FunctionAction:
     return Action(report_source_files_issues, "Scanning for issues.")
 
 
+# Remove apio_env ark is not needed anymore.
+# pylint: disable=unused-argument
 def source_files(apio_env: ApioEnv) -> Tuple[List[str], List[str]]:
-    """Get the list of *.v files, splitted into synth and testbench lists.
-    If a .v file has the suffix _tb.v it's is classified st a testbench,
+    """Get the list of *.v|sv files in the directory tree under the current
+    directory, splitted into synth and testbench lists.
+    If source file has the suffix _tb it's is classified st a testbench,
     otherwise as a synthesis file.
     """
     # -- Get a list of all *.v and .sv files in the project dir.
-    files: List[File] = apio_env.scons_env.Glob("*.sv")
+    # -- Ideally we should use the scons env.Glob() method but it doesn't
+    # -- work with the recursive=True option. So we use the glob() function
+    # -- instead.
+    files: List[str] = glob("**/*.sv", recursive=True)
     if files:
         cwarning(
             "Project contains .sv files, system-verilog support "
             "is experimental."
         )
-    files = files + apio_env.scons_env.Glob("*.v")
+    files = files + glob("**/*.v", recursive=True)
 
     # Split file names to synth files and testbench file lists
     synth_srcs = []
     test_srcs = []
     for file in files:
-        if has_testbench_name(file.name):
-            test_srcs.append(file.name)
+        if has_testbench_name(file):
+            test_srcs.append(file)
         else:
-            synth_srcs.append(file.name)
+            synth_srcs.append(file)
     return (synth_srcs, test_srcs)
 
 
