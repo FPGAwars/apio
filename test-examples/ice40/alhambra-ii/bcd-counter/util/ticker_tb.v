@@ -1,6 +1,6 @@
 // A testbench for testing the ticker module.
 
-`include "apio_testing.vh"
+`include "testing/apio_testing.vh"
 
 `timescale 10 ns / 1 ns
 

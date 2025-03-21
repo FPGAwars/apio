@@ -1,7 +1,7 @@
 // A testbench of main.v.
 
 // Import apio friendly testing macros.
-`include "apio_testing.vh"
+`include "testing/apio_testing.vh"
 
 `timescale 10 ns / 1 ns
 
