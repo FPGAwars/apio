@@ -309,5 +309,8 @@ def test_clean_if_requested(apio_runner: ApioRunner):
         assert target.name == "cleanup-target"
 
         # -- Verify the dependencies. These are the files to delete.
+        # -- We don't care about the order of the files.
         file_names = [x.name for x in dependencies]
-        assert file_names == ["aaa", "bbb", "zadig.ini", "_build"]
+        assert sorted(file_names) == sorted(
+            ["aaa", "bbb", "zadig.ini", "_build"]
+        )
