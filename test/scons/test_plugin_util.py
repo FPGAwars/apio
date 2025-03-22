@@ -113,8 +113,8 @@ def test_verilog_src_scanner(apio_runner: ApioRunner):
 
         file_dependencies = [
             "apio_testing.vh",
-            "subdir2/my_data.hex",
-            "subdir1/v771499.list",
+            join("subdir2", "my_data.hex"),
+            join("subdir1", "v771499.list"),
         ]
 
         # -- Create dummy files. This should cause the dependencies to be
