@@ -115,9 +115,7 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
     # Example
     #   Text:     `include "apio_testing.vh"
     #   Capture:  'apio_testing.vh'
-    verilog_include_re = re.compile(
-        r'`\s*include\s+["]([a-zA-Z_./]+)["]', re.M
-    )
+    verilog_include_re = re.compile(r'`\s*include\s+["]([^"]+)["]', re.M)
 
     # A regex for inclusion via $readmemh()
     # Example
@@ -156,24 +154,44 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
             file_node.name
         ), f"Not a src file: {file_node.name}"
 
-        # Create the initial set with the core dependencies.
-        candidates_set = set()
-        candidates_set.update(core_dependencies)
+        # Get the directory of the file, relative to the project root which is
+        # the current working directory. This value is equals to "." if the
+        # file is in the project root.
+        file_dir: str = file_node.get_dir().get_path()
+
+        # Prepare an empty set of dependencies.
+        candidates_raw_set = set()
 
         # Read the file. This returns [] if the file doesn't exist.
         file_content = file_node.get_text_contents()
 
         # Get verilog includes references.
-        candidates_set.update(verilog_include_re.findall(file_content))
+        candidates_raw_set.update(verilog_include_re.findall(file_content))
 
         # Get $readmemh() function references.
-        candidates_set.update(readmemh_reference_re.findall(file_content))
+        candidates_raw_set.update(readmemh_reference_re.findall(file_content))
 
         # Get IceStudio references.
-        candidates_set.update(icestudio_list_re.findall(file_content))
+        candidates_raw_set.update(icestudio_list_re.findall(file_content))
+
+        # Since we don't know if the dependency's path is relative to the file
+        # location or the project root, we try both. We prefer to have high
+        # recall of dependencies of high precision, risking at most unnecessary
+        # rebuilds.
+        candidates_set = candidates_raw_set.copy()
+        # If the file is not in the project dir, add a dependency also relative
+        # to the project dir.
+        if file_dir != ".":
+            for raw_candidate in candidates_raw_set:
+                candidate: str = os.path.join(file_dir, raw_candidate)
+                candidates_set.add(candidate)
+
+        # Add the core dependencies. They are always relative to the project
+        # root.
+        candidates_set.update(core_dependencies)
 
         # Filter out candidates that don't have a matching files to prevert
-        # breakign the build. This handle for example the case where the
+        # breaking the build. This handle for example the case where the
         # file references is in a comment or non reachable code.
         # See also https://stackoverflow.com/q/79302552/15038713
         dependencies = []
