@@ -195,15 +195,23 @@ class Examples:
         cout("Copying " + example_name + " example files.")
 
         # -- Go though all the files in the example folder.
-        for file in src_example_path.iterdir():
-            # -- Copy the file unless it's 'info' which we ignore.
-            if file.name != "info":
-                shutil.copy(file, dst_dir_path)
-                styled_name = cstyle(os.path.basename(file), style=EMPH1)
-                cout(f"Fetched file {styled_name}")
+        for entry_path in src_example_path.iterdir():
+            # -- Case 1: Skip 'info' files.
+            if entry_path.name == "info":
+                continue
+            # -- Case 2: Copy subdirectory.
+            if entry_path.is_dir():
+                shutil.copytree(
+                    entry_path,  # src
+                    dst_dir_path / entry_path.name,  # dst
+                    dirs_exist_ok=False,
+                )
+                continue
+            # -- Case 3: Copy file.
+            shutil.copy(entry_path, dst_dir_path)
 
         # -- Inform the user.
-        cout("Example fetched successfully.", style=SUCCESS)
+        cout(f"Example '{example_name}' fetched successfully.", style=SUCCESS)
 
     def get_board_examples(self, board_name) -> List[ExampleInfo]:
         """Returns the list of examples with given board name."""
