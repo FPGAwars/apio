@@ -268,8 +268,16 @@ class Examples:
             cout(f"Creating directory {dst_board_dir}.")
             dst_board_dir.mkdir(parents=True, exist_ok=False)
 
+        # -- Create an ignore callback to skip 'info' files.
+        ignore_callback = shutil.ignore_patterns("info")
+
         # -- Copy the directory tree.
-        shutil.copytree(src_board_dir, dst_board_dir, dirs_exist_ok=True)
+        shutil.copytree(
+            src_board_dir,
+            dst_board_dir,
+            dirs_exist_ok=True,
+            ignore=ignore_callback,
+        )
 
         for example_name in os.listdir(dst_board_dir):
             styled_name = cstyle(f"{board_name}/{example_name}", style=EMPH1)
