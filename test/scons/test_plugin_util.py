@@ -82,20 +82,20 @@ def test_verilog_src_scanner(apio_runner: ApioRunner):
         `include "apio_testing.v
 
         // $readmemh() function reference.
-        $readmemh("my_data.hex", State_buff);
+        $readmemh("subdir2/my_data.hex", State_buff);
         """
 
     with apio_runner.in_sandbox() as sb:
 
         # -- Write a test file name in the current directory.
-        sb.write_file("test_file.v", file_content)
+        sb.write_file("subdir1/test_file.v", file_content)
 
         # -- Create a scanner
         apio_env = make_test_apio_env()
         scanner = verilog_src_scanner(apio_env)
 
         # -- Run the scanner. It returns a list of File.
-        file = FS.File(FS(), "test_file.v")
+        file = FS.File(FS(), "subdir1/test_file.v")
         dependency_files = scanner.function(file, apio_env, None)
 
         # -- Files list should be empty since none of the dependency candidate
@@ -113,8 +113,8 @@ def test_verilog_src_scanner(apio_runner: ApioRunner):
 
         file_dependencies = [
             "apio_testing.vh",
-            "my_data.hex",
-            "v771499.list",
+            "subdir2/my_data.hex",
+            "subdir1/v771499.list",
         ]
 
         # -- Create dummy files. This should cause the dependencies to be
@@ -127,7 +127,7 @@ def test_verilog_src_scanner(apio_runner: ApioRunner):
         dependency_files = scanner.function(file, apio_env, None)
 
         # -- Check the dependencies
-        file_names = [f.name for f in dependency_files]
+        file_names = [f.path for f in dependency_files]
         assert file_names == sorted(core_dependencies + file_dependencies)
 
 
