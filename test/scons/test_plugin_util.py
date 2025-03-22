@@ -2,7 +2,7 @@
 Tests of the scons plugin_util.py functions.
 """
 
-from os.path import isfile, exists
+from os.path import isfile, exists, join
 from test.scons.testing import make_test_apio_env, SconsHacks
 from test.conftest import ApioRunner
 from pathlib import Path
@@ -197,8 +197,12 @@ def test_get_source_files(apio_runner):
         srcs, testbenches = source_files(apio_env)
 
         # -- Verify results.
-        assert srcs == ["aaa.sv", "bbb.v", "subdir1/eee.v"]
-        assert testbenches == ["aaa_tb.sv", "ccc_tb.v", "subdir2/eee_tb.v"]
+        assert srcs == ["aaa.sv", "bbb.v", join("subdir1", "eee.v")]
+        assert testbenches == [
+            "aaa_tb.sv",
+            "ccc_tb.v",
+            join("subdir2", "eee_tb.v"),
+        ]
 
 
 def test_get_programmer_cmd(capsys: LogCaptureFixture):
