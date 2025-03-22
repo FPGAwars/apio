@@ -1,6 +1,6 @@
 """
-  Test different "apio" commands. These tests use installed apio packages
-  and are slower than the offline tests at test/commands.
+Test different "apio" commands. These tests use installed apio packages
+and are slower than the offline tests at test/commands.
 """
 
 import os
@@ -309,6 +309,8 @@ def _test_project(
         assert set(os.listdir(sb.proj_dir)) == set(project_files)
 
 
+# NOTE: We use the alhambra-ii/bcd-counter example because it uses
+# subdirectories. This increases the test coverage.
 def test_project_ice40_local_dir(apio_runner: ApioRunner):
     """Tests building and testing an ice40 project as the current working
     dir."""
