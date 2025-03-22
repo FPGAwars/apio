@@ -191,7 +191,7 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
 
         # Debug info.
         if apio_env.is_debug:
-            cout(f"Dependencies of {file_node.name}:", style=EMPH2)
+            cout(f"Dependencies of {file_node}:", style=EMPH2)
             for dependency in dependencies:
                 cout(f"  {dependency}", style=EMPH2)
 
