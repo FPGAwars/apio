@@ -7,8 +7,7 @@
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
 # ---- License Apache v2
-"""Helper functions for apio scons plugins.
-"""
+"""Helper functions for apio scons plugins."""
 
 # pylint: disable=consider-using-f-string
 
@@ -755,11 +754,16 @@ def configure_cleanup(apio_env: ApioEnv) -> None:
 
     # -- Get the list of all files to clean. Scons adds to the list non
     # -- existing files from other targets it encountered.
+    # --
+    # -- Note: Normally we would use the Scons's Glob since it scans also
+    # -- non existing target files but it doesn't work with the recursive
+    # -- option. So we use the standard glob() function instead. This is OK
+    # -- since we are only cleaning and we don't care about non existing files.
     files_to_clean = (
-        scons_env.Glob(str(BUILD_DIR / "*"))
-        + scons_env.Glob("zadig.ini")
-        + scons_env.Glob(".sconsign.dblite")
-        + scons_env.Glob(str(BUILD_DIR))
+        glob("zadig.ini")
+        + glob(".sconsign.dblite")
+        + glob(str(BUILD_DIR / "**/*"), recursive=True)
+        + glob(str(BUILD_DIR))
     )
 
     # pylint: disable=fixme
@@ -771,15 +775,15 @@ def configure_cleanup(apio_env: ApioEnv) -> None:
     # -- directory rather than the _build directory. To simplify the
     # -- transition we clean here also left over files from 0.9.5.
     legacy_files_to_clean = (
-        scons_env.Glob("hardware.*")
-        + scons_env.Glob("*_tb.vcd")
-        + scons_env.Glob("*_tb.out")
+        glob("hardware.*") + glob("*_tb.vcd") + glob("*_tb.out")
     )
 
     if legacy_files_to_clean:
         cwarning("Deleting also leftover files.")
-
         files_to_clean.extend(legacy_files_to_clean)
+
+    # -- Sort for determinism.
+    files_to_clean.sort()
 
     # -- Create a dummy target.  I
     dummy_target = scons_env.Command("cleanup-target", "", "")
