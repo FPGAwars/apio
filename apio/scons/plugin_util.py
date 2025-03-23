@@ -468,7 +468,7 @@ def source_file_issue_action() -> FunctionAction:
                 continue
 
             # -- Here the file is a testbench file.
-            cout(f"Testbench {file.name}", style=EMPH1)
+            cout(f"Testbench {file}", style=EMPH1)
 
             # -- Read the testbench file text.
             file_text = file.get_text_contents()
