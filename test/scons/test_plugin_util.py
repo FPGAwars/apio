@@ -2,7 +2,7 @@
 Tests of the scons plugin_util.py functions.
 """
 
-from os.path import isfile, exists
+from os.path import isfile, exists, join
 from test.scons.testing import make_test_apio_env, SconsHacks
 from test.conftest import ApioRunner
 from pathlib import Path
@@ -82,20 +82,20 @@ def test_verilog_src_scanner(apio_runner: ApioRunner):
         `include "apio_testing.v
 
         // $readmemh() function reference.
-        $readmemh("my_data.hex", State_buff);
+        $readmemh("subdir2/my_data.hex", State_buff);
         """
 
     with apio_runner.in_sandbox() as sb:
 
         # -- Write a test file name in the current directory.
-        sb.write_file("test_file.v", file_content)
+        sb.write_file("subdir1/test_file.v", file_content)
 
         # -- Create a scanner
         apio_env = make_test_apio_env()
         scanner = verilog_src_scanner(apio_env)
 
         # -- Run the scanner. It returns a list of File.
-        file = FS.File(FS(), "test_file.v")
+        file = FS.File(FS(), "subdir1/test_file.v")
         dependency_files = scanner.function(file, apio_env, None)
 
         # -- Files list should be empty since none of the dependency candidate
@@ -113,8 +113,8 @@ def test_verilog_src_scanner(apio_runner: ApioRunner):
 
         file_dependencies = [
             "apio_testing.vh",
-            "my_data.hex",
-            "v771499.list",
+            join("subdir2", "my_data.hex"),
+            join("subdir1", "v771499.list"),
         ]
 
         # -- Create dummy files. This should cause the dependencies to be
@@ -127,7 +127,7 @@ def test_verilog_src_scanner(apio_runner: ApioRunner):
         dependency_files = scanner.function(file, apio_env, None)
 
         # -- Check the dependencies
-        file_names = [f.name for f in dependency_files]
+        file_names = [f.path for f in dependency_files]
         assert file_names == sorted(core_dependencies + file_dependencies)
 
 
@@ -177,24 +177,32 @@ def test_get_source_files(apio_runner):
 
         # -- Make files verilog src names (out of order)
         Path("bbb.v").touch()
-        Path("aaa.v").touch()
+        Path("aaa.sv").touch()
 
         # -- Make files with testbench names (out of order)
         Path("ccc_tb.v").touch()
-        Path("aaa_tb.v").touch()
+        Path("aaa_tb.sv").touch()
 
         # -- Make files with non related names.
         Path("ddd.vh").touch()
         Path("eee.vlt").touch()
-        Path("subdir").mkdir()
-        Path("subdir/eee.v").touch()
+
+        # -- Make files in subdirectories.
+        Path("subdir1").mkdir()
+        Path("subdir2").mkdir()
+        Path("subdir1/eee.v").touch()
+        Path("subdir2/eee_tb.v").touch()
 
         # -- Invoked the tested method.
         srcs, testbenches = source_files(apio_env)
 
         # -- Verify results.
-        assert srcs == ["aaa.v", "bbb.v"]
-        assert testbenches == ["aaa_tb.v", "ccc_tb.v"]
+        assert srcs == ["aaa.sv", "bbb.v", join("subdir1", "eee.v")]
+        assert testbenches == [
+            "aaa_tb.sv",
+            "ccc_tb.v",
+            join("subdir2", "eee_tb.v"),
+        ]
 
 
 def test_get_programmer_cmd(capsys: LogCaptureFixture):
@@ -305,5 +313,8 @@ def test_clean_if_requested(apio_runner: ApioRunner):
         assert target.name == "cleanup-target"
 
         # -- Verify the dependencies. These are the files to delete.
+        # -- We don't care about the order of the files.
         file_names = [x.name for x in dependencies]
-        assert file_names == ["aaa", "bbb", "zadig.ini", "_build"]
+        assert sorted(file_names) == sorted(
+            ["aaa", "bbb", "zadig.ini", "_build"]
+        )

@@ -1,5 +1,5 @@
 """
-  Test different "apio" commands
+Test different "apio" commands
 """
 
 import os
@@ -37,9 +37,10 @@ def test_examples(apio_runner: ApioRunner):
         )
         sb.assert_ok(result)
         assert "Copying alhambra-ii/ledon example files" in result.output
-        assert "Fetched file apio.ini" in result.output
-        assert "Fetched file ledon.v" in result.output
-        assert "Example fetched successfully" in result.output
+        assert (
+            "Example 'alhambra-ii/ledon' fetched successfully" in result.output
+        )
+        assert getsize("apio.ini")
         assert getsize("ledon.v")
 
         # -- 'apio examples fetch-board alhambra-ii' (colors off)
@@ -67,7 +68,9 @@ def test_examples(apio_runner: ApioRunner):
         )
         sb.assert_ok(result)
         assert "Copying alhambra-ii/ledon example files" in result.output
-        assert "Example fetched successfully" in result.output
+        assert (
+            "Example 'alhambra-ii/ledon' fetched successfully" in result.output
+        )
         assert getsize("dir1/ledon.v")
 
         # -- 'apio examples fetch-board alhambra -d dir2 (colors off)

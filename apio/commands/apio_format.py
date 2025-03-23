@@ -103,8 +103,10 @@ def cli(
     # -- the list.
     if not files:
         for ext in _FILE_TYPES:
-            pattern = "*" + ext
-            files.extend(glob(str(apio_ctx.project_dir / pattern)))
+            pattern = "**/*" + ext
+            files.extend(
+                glob(str(apio_ctx.project_dir / pattern), recursive=True)
+            )
 
     # -- Error if no file to format.
     if not files:

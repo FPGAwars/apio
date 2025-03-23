@@ -7,8 +7,7 @@
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
 # ---- License Apache v2
-"""Helper functions for apio scons plugins.
-"""
+"""Helper functions for apio scons plugins."""
 
 # pylint: disable=consider-using-f-string
 
@@ -16,6 +15,7 @@ import sys
 import os
 import re
 import json
+from glob import glob
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Tuple, Dict, Optional, Union
@@ -115,9 +115,7 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
     # Example
     #   Text:     `include "apio_testing.vh"
     #   Capture:  'apio_testing.vh'
-    verilog_include_re = re.compile(
-        r'`\s*include\s+["]([a-zA-Z_./]+)["]', re.M
-    )
+    verilog_include_re = re.compile(r'`\s*include\s+["]([^"]+)["]', re.M)
 
     # A regex for inclusion via $readmemh()
     # Example
@@ -156,24 +154,44 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
             file_node.name
         ), f"Not a src file: {file_node.name}"
 
-        # Create the initial set with the core dependencies.
-        candidates_set = set()
-        candidates_set.update(core_dependencies)
+        # Get the directory of the file, relative to the project root which is
+        # the current working directory. This value is equals to "." if the
+        # file is in the project root.
+        file_dir: str = file_node.get_dir().get_path()
+
+        # Prepare an empty set of dependencies.
+        candidates_raw_set = set()
 
         # Read the file. This returns [] if the file doesn't exist.
         file_content = file_node.get_text_contents()
 
         # Get verilog includes references.
-        candidates_set.update(verilog_include_re.findall(file_content))
+        candidates_raw_set.update(verilog_include_re.findall(file_content))
 
         # Get $readmemh() function references.
-        candidates_set.update(readmemh_reference_re.findall(file_content))
+        candidates_raw_set.update(readmemh_reference_re.findall(file_content))
 
         # Get IceStudio references.
-        candidates_set.update(icestudio_list_re.findall(file_content))
+        candidates_raw_set.update(icestudio_list_re.findall(file_content))
+
+        # Since we don't know if the dependency's path is relative to the file
+        # location or the project root, we try both. We prefer to have high
+        # recall of dependencies of high precision, risking at most unnecessary
+        # rebuilds.
+        candidates_set = candidates_raw_set.copy()
+        # If the file is not in the project dir, add a dependency also relative
+        # to the project dir.
+        if file_dir != ".":
+            for raw_candidate in candidates_raw_set:
+                candidate: str = os.path.join(file_dir, raw_candidate)
+                candidates_set.add(candidate)
+
+        # Add the core dependencies. They are always relative to the project
+        # root.
+        candidates_set.update(core_dependencies)
 
         # Filter out candidates that don't have a matching files to prevert
-        # breakign the build. This handle for example the case where the
+        # breaking the build. This handle for example the case where the
         # file references is in a comment or non reachable code.
         # See also https://stackoverflow.com/q/79302552/15038713
         dependencies = []
@@ -191,7 +209,7 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
 
         # Debug info.
         if apio_env.is_debug:
-            cout(f"Dependencies of {file_node.name}:", style=EMPH2)
+            cout(f"Dependencies of {file_node}:", style=EMPH2)
             for dependency in dependencies:
                 cout(f"  {dependency}", style=EMPH2)
 
@@ -450,7 +468,7 @@ def source_file_issue_action() -> FunctionAction:
                 continue
 
             # -- Here the file is a testbench file.
-            cout(f"Testbench {file.name}", style=EMPH1)
+            cout(f"Testbench {file}", style=EMPH1)
 
             # -- Read the testbench file text.
             file_text = file.get_text_contents()
@@ -465,28 +483,34 @@ def source_file_issue_action() -> FunctionAction:
     return Action(report_source_files_issues, "Scanning for issues.")
 
 
+# Remove apio_env ark is not needed anymore.
+# pylint: disable=unused-argument
 def source_files(apio_env: ApioEnv) -> Tuple[List[str], List[str]]:
-    """Get the list of *.v files, splitted into synth and testbench lists.
-    If a .v file has the suffix _tb.v it's is classified st a testbench,
+    """Get the list of *.v|sv files in the directory tree under the current
+    directory, splitted into synth and testbench lists.
+    If source file has the suffix _tb it's is classified st a testbench,
     otherwise as a synthesis file.
     """
     # -- Get a list of all *.v and .sv files in the project dir.
-    files: List[File] = apio_env.scons_env.Glob("*.sv")
+    # -- Ideally we should use the scons env.Glob() method but it doesn't
+    # -- work with the recursive=True option. So we use the glob() function
+    # -- instead.
+    files: List[str] = glob("**/*.sv", recursive=True)
     if files:
         cwarning(
             "Project contains .sv files, system-verilog support "
             "is experimental."
         )
-    files = files + apio_env.scons_env.Glob("*.v")
+    files = files + glob("**/*.v", recursive=True)
 
     # Split file names to synth files and testbench file lists
     synth_srcs = []
     test_srcs = []
     for file in files:
-        if has_testbench_name(file.name):
-            test_srcs.append(file.name)
+        if has_testbench_name(file):
+            test_srcs.append(file)
         else:
-            synth_srcs.append(file.name)
+            synth_srcs.append(file)
     return (synth_srcs, test_srcs)
 
 
@@ -748,11 +772,16 @@ def configure_cleanup(apio_env: ApioEnv) -> None:
 
     # -- Get the list of all files to clean. Scons adds to the list non
     # -- existing files from other targets it encountered.
+    # --
+    # -- Note: Normally we would use the Scons's Glob since it scans also
+    # -- non existing target files but it doesn't work with the recursive
+    # -- option. So we use the standard glob() function instead. This is OK
+    # -- since we are only cleaning and we don't care about non existing files.
     files_to_clean = (
-        scons_env.Glob(str(BUILD_DIR / "*"))
-        + scons_env.Glob("zadig.ini")
-        + scons_env.Glob(".sconsign.dblite")
-        + scons_env.Glob(str(BUILD_DIR))
+        glob("zadig.ini")
+        + glob(".sconsign.dblite")
+        + glob(str(BUILD_DIR / "**/*"), recursive=True)
+        + glob(str(BUILD_DIR))
     )
 
     # pylint: disable=fixme
@@ -764,15 +793,15 @@ def configure_cleanup(apio_env: ApioEnv) -> None:
     # -- directory rather than the _build directory. To simplify the
     # -- transition we clean here also left over files from 0.9.5.
     legacy_files_to_clean = (
-        scons_env.Glob("hardware.*")
-        + scons_env.Glob("*_tb.vcd")
-        + scons_env.Glob("*_tb.out")
+        glob("hardware.*") + glob("*_tb.vcd") + glob("*_tb.out")
     )
 
     if legacy_files_to_clean:
         cwarning("Deleting also leftover files.")
-
         files_to_clean.extend(legacy_files_to_clean)
+
+    # -- Sort for determinism.
+    files_to_clean.sort()
 
     # -- Create a dummy target.  I
     dummy_target = scons_env.Command("cleanup-target", "", "")

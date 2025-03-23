@@ -51,7 +51,7 @@ class Examples:
         """Return true if the given dir is empty, ignoring hidden entry.
         That is, the dir may contain only hidden entries.
         We use this relaxed criteria of emptiness to avoid user confusion.
-        We could use glop.glob() but in python 3.10 and earlier it doesn't
+        We could use glob.glob() but in python 3.10 and earlier it doesn't
         have the 'include_hidden' argument.
         """
         # -- Check prerequisites.
@@ -195,15 +195,23 @@ class Examples:
         cout("Copying " + example_name + " example files.")
 
         # -- Go though all the files in the example folder.
-        for file in src_example_path.iterdir():
-            # -- Copy the file unless it's 'info' which we ignore.
-            if file.name != "info":
-                shutil.copy(file, dst_dir_path)
-                styled_name = cstyle(os.path.basename(file), style=EMPH1)
-                cout(f"Fetched file {styled_name}")
+        for entry_path in src_example_path.iterdir():
+            # -- Case 1: Skip 'info' files.
+            if entry_path.name == "info":
+                continue
+            # -- Case 2: Copy subdirectory.
+            if entry_path.is_dir():
+                shutil.copytree(
+                    entry_path,  # src
+                    dst_dir_path / entry_path.name,  # dst
+                    dirs_exist_ok=False,
+                )
+                continue
+            # -- Case 3: Copy file.
+            shutil.copy(entry_path, dst_dir_path)
 
         # -- Inform the user.
-        cout("Example fetched successfully.", style=SUCCESS)
+        cout(f"Example '{example_name}' fetched successfully.", style=SUCCESS)
 
     def get_board_examples(self, board_name) -> List[ExampleInfo]:
         """Returns the list of examples with given board name."""
@@ -268,8 +276,16 @@ class Examples:
             cout(f"Creating directory {dst_board_dir}.")
             dst_board_dir.mkdir(parents=True, exist_ok=False)
 
+        # -- Create an ignore callback to skip 'info' files.
+        ignore_callback = shutil.ignore_patterns("info")
+
         # -- Copy the directory tree.
-        shutil.copytree(src_board_dir, dst_board_dir, dirs_exist_ok=True)
+        shutil.copytree(
+            src_board_dir,
+            dst_board_dir,
+            dirs_exist_ok=True,
+            ignore=ignore_callback,
+        )
 
         for example_name in os.listdir(dst_board_dir):
             styled_name = cstyle(f"{board_name}/{example_name}", style=EMPH1)
