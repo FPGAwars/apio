@@ -130,11 +130,13 @@ class ApioContext:
         # -- self._project_dir to the project dir, otherwise, leave it None.
         self._project_dir: Path = None
         if scope == ApioContextScope.PROJECT_REQUIRED:
-            self._project_dir = util.resolve_project_dir(
-                project_dir_arg, must_exist=True
+            self._project_dir = util.user_directory_or_cwd(
+                project_dir_arg, description="Project", must_exist=True
             )
         elif scope == ApioContextScope.PROJECT_OPTIONAL:
-            project_dir = util.resolve_project_dir(project_dir_arg)
+            project_dir = util.user_directory_or_cwd(
+                project_dir_arg, description="Project", must_exist=False
+            )
             if (project_dir / "apio.ini").exists():
                 self._project_dir = project_dir
         else:
