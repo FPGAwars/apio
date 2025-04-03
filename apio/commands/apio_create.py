@@ -9,13 +9,13 @@
 
 from pathlib import Path
 import click
+from apio.utils import util, cmd_util
+from apio.commands import options
+from apio.apio_context import ApioContext, ApioContextScope
 from apio.managers.project import (
     DEFAULT_TOP_MODULE,
     create_project_file,
 )
-from apio.utils import util, cmd_util
-from apio.commands import options
-from apio.apio_context import ApioContext, ApioContextScope
 
 
 board_option = click.option(
@@ -79,8 +79,10 @@ def cli(
     # -- Map to canonical board name. This fails if the board is unknown.
     board_name = apio_ctx.lookup_board_name(board)
 
-    # -- Map the optional project dir argument to an actual project dir.
-    project_dir = util.resolve_project_dir(project_dir, create_if_missing=True)
+    # -- Determine the new project directory. Create if needed.
+    project_dir: Path = util.user_directory_or_cwd(
+        project_dir, description="Project", create_if_missing=True
+    )
 
     # Create the apio.ini file. It exists with an error status if any error.
     create_project_file(

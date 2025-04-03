@@ -208,48 +208,46 @@ def exec_command(*args, **kwargs) -> CommandResult:
     return result
 
 
-def resolve_project_dir(
-    project_dir_arg: Optional[Path],
+def user_directory_or_cwd(
+    dir_arg: Optional[Path],
     *,
-    create_if_missing: bool = False,
+    description: str,
     must_exist: bool = False,
+    create_if_missing=False,
 ) -> Path:
-    """Check if the given path is a folder. It it does not exists
-    and create_if_missing is true, folder is created, otherwise a fatal error.
-    If no path is given the current working directory is used.
-      * INPUTS:
-        * _dir: The Path to check.
-      * OUTPUT:
-        * The effective path (same if given)
+    """Condition a directory arg with current directory as default. If dir_arg
+    is specified, it is return after validation, else cwd "." is returned.
+    Description is directory function to include in error messages, e.g.
+    "Project" or "Destination".
     """
+
     assert not (create_if_missing and must_exist), "Conflicting flags."
 
-    # -- If no path is given, get the current working directory.
-    # -- We use Path(".") instead of Path.cwd() to stay with a relative
-    # -- (and simple to the user) path.
-    project_dir = project_dir_arg if project_dir_arg else Path(".")
+    # -- Case 1: User provided dir path.
+    if dir_arg:
+        project_dir = dir_arg
 
-    # -- Make sure the folder doesn't exist as a file.
-    if project_dir.is_file():
-        cerror(f"Project directory is a file: {project_dir}")
-        sys.exit(1)
+        # -- If exists, it must be a dir.
+        if project_dir.exists() and not project_dir.is_dir():
+            cerror(f"{description} directory is a file: {project_dir}")
+            sys.exit(1)
 
-    # -- If the folder exists we are good
-    if project_dir.is_dir():
+        # -- If required, it must exist.
+        if must_exist and not project_dir.exists():
+            cerror(f"{description} directory is missing: {str(project_dir)}")
+            sys.exit(1)
+
+        # -- If requested, create
+        if create_if_missing and not project_dir.exists():
+            cout(f"Creating folder: {project_dir}")
+            project_dir.mkdir(parents=True)
+
+        # -- All done.
         return project_dir
 
-    # -- Here when dir doesn't exist. Fatal error if must exist.
-    if must_exist:
-        cerror(f"Project directory is missing: {str(project_dir)}")
-        sys.exit(1)
-
-    # -- Create the directory if requested.
-    if create_if_missing:
-        cout(f"Creating folder: {project_dir}")
-        project_dir.mkdir(parents=True)
-
-    # -- All done
-    return project_dir
+    # -- Case 2: Using current directory.
+    # -- We prefer the relative path "." over the absolute path Path.cwd().
+    return Path(".")
 
 
 def get_serial_ports() -> list:

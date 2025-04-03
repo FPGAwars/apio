@@ -169,9 +169,13 @@ def _fetch_cli(
     # -- Create the examples manager.
     examples = Examples(apio_ctx)
 
-    dst_dir_path = util.resolve_project_dir(dst)
+    # -- Determine the destination directory.
+    dst_dir_path = util.user_directory_or_cwd(
+        dst, description="Destination", must_exist=False
+    )
 
-    # -- Fetch example files.
+    # -- Fetch example files. This also creates the destination directory
+    # -- if missing.
     examples.copy_example_files(example, dst_dir_path)
 
 
@@ -215,9 +219,13 @@ def _fetch_board_cli(
     # -- Create the examples manager.
     examples = Examples(apio_ctx)
 
-    dst_dir_path = util.resolve_project_dir(dst)
+    # -- Determine the destination directory.
+    dst_dir_path = util.user_directory_or_cwd(
+        dst, description="Destination", must_exist=False
+    )
 
-    # # -- Option: Copy the directory
+    # -- Fetch the examples. This also creates the destination directory if
+    # -- needed.
     examples.copy_board_examples(board, dst_dir_path)
 
 
