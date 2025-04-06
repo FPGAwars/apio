@@ -15,7 +15,7 @@ def test_raw(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(apio, "raw")
         assert result.exit_code != 0, result.output
         assert (
-            "at list one of --verbose or COMMAND must be specified"
+            "at least one of --verbose or COMMAND must be specified"
             in result.output
         )
 

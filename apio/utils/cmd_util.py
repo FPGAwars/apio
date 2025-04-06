@@ -204,7 +204,7 @@ def check_at_least_one_param(
         canonical_aliases = _params_ids_to_aliases(cmd_ctx, param_ids)
         aliases_str = util.list_plurality(canonical_aliases, "or")
         fatal_usage_error(
-            cmd_ctx, f"at list one of {aliases_str} must be specified."
+            cmd_ctx, f"at least one of {aliases_str} must be specified."
         )
 
 
