@@ -2,7 +2,8 @@ name: build-linux-x86-64-installer
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Runs daily at midnight UTC
+    # We run the build daily at 2PM, after running the tests at midnight.
+    - cron: '0 2 * * *'
   workflow_dispatch:  # Manual triggers ok.
 
 

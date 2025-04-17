@@ -4,6 +4,11 @@ name: Test
 
 on:
   push:
+  # NOTE: We run the test daily, even if we don't push anything, to ensure
+  # that the tests are still passing, despite potential changes in the github
+  # dependencies.
+  schedule:
+    - cron: '0 0 * * *'  # Runs daily at midnight UTC
   workflow_dispatch:  # Allows manual trigger
 
 jobs:
