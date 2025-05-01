@@ -1164,8 +1164,8 @@ Usage: apio upload [OPTIONS]
 Options:
   --serial-port serial-port  Set the serial port.
   --ftdi-id ftdi-id          Set the FTDI id.
-  -s, --sram                 Perform SRAM programming.
-  -f, --flash                Perform FLASH programming.
+  -s, --sram                 Perform SRAM programming (iceprog* programmers
+                             only).
   -p, --project-dir path     Set the root directory for the project.
   -h, --help                 Show this message and exit.
 
