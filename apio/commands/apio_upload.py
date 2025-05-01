@@ -43,16 +43,7 @@ sram_option = click.option(
     "-s",
     "--sram",
     is_flag=True,
-    help="Perform SRAM programming.",
-    cls=cmd_util.ApioOption,
-)
-
-flash_option = click.option(
-    "flash",  # Var name.
-    "-f",
-    "--flash",
-    is_flag=True,
-    help="Perform FLASH programming.",
+    help="Perform SRAM programming (iceprog* programmers only).",
     cls=cmd_util.ApioOption,
 )
 
@@ -84,7 +75,6 @@ to grant the necessary permissions to access USB devices.
 @serial_port_option
 @ftdi_id_option
 @sram_option
-@flash_option
 @options.project_dir_option
 def cli(
     _: click.Context,
@@ -92,7 +82,6 @@ def cli(
     serial_port: str,
     ftdi_id: str,
     sram: bool,
-    flash: bool,
     project_dir: Path,
 ):
     """Implements the upload command."""
@@ -118,7 +107,6 @@ def cli(
         serial_port=serial_port,
         ftdi_id=ftdi_id,
         sram=sram,
-        flash=flash,
     )
 
     # Construct the scons upload params.

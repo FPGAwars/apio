@@ -7,11 +7,6 @@ from test.conftest import ApioRunner
 from apio.apio_context import ApioContext, ApioContextScope
 
 
-# -- These programmers are known to be unused.
-# -- https://github.com/FPGAwars/apio/issues/536
-KNOWN_UNUSED_PROGRAMMERS = ["ujprog"]
-
-
 def lc_part_num(part_num: str) -> str:
     """Convert an fpga part number to a lower-case id."""
     return part_num.lower().replace("/", "-")
@@ -49,10 +44,6 @@ def test_resources_references(apio_runner: ApioRunner):
             # -- by more than one board, it may already be removed.
             if board_programmer_type in unused_programmers:
                 unused_programmers.remove(board_programmer_type)
-
-        # -- Remove programmers that are known to be unused.
-        for programmer in KNOWN_UNUSED_PROGRAMMERS:
-            unused_programmers.remove(programmer)
 
         # -- We should end up with an empty set of unused programmers.
         assert not unused_programmers, unused_programmers

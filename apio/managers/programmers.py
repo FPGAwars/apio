@@ -23,7 +23,6 @@ def construct_programmer_cmd(
     serial_port: str,
     ftdi_id: str,
     sram: bool,
-    flash: bool,
 ) -> str:
     """Get the command line (string) to execute for programming
     the FPGA (programmer executable + arguments)
@@ -33,7 +32,6 @@ def construct_programmer_cmd(
         * serial_port: Serial port name
         * ftdi_id: ftdi identificator
         * sram: Perform SRAM programming
-        * flash: Perform Flash programming
 
     * OUTPUT: A string with the command+args to execute and a $SOURCE
         placeholder for the bitstream file name.
@@ -52,9 +50,7 @@ def construct_programmer_cmd(
     # --   * "${PID}" (optional): USB Product id
     # --   * "${FTDI_ID}" (optional): FTDI id
     # --   * "${SERIAL_PORT}" (optional): Serial port name
-    programmer = _construct_programmer_cmd_template(
-        apio_ctx, board_info, sram, flash
-    )
+    programmer = _construct_programmer_cmd_template(apio_ctx, board_info, sram)
     if util.is_debug():
         cout(f"Programmer template: [{programmer}]")
     # -- The placeholder for the bitstream file name should always exist.
@@ -127,7 +123,7 @@ def construct_programmer_cmd(
 
 
 def _construct_programmer_cmd_template(
-    apio_ctx: ApioContext, board_info: dict, sram: bool, flash: bool
+    apio_ctx: ApioContext, board_info: dict, sram: bool
 ) -> str:
     """
     * INPUT:
@@ -177,21 +173,20 @@ def _construct_programmer_cmd_template(
     if prog_info.get("extra_args"):
         programmer_cmd += f" {prog_info['extra_args']}"
 
-    # -- Special cases for different programmers
+    # -- Special case for specific programmers
 
-    # -- Enable SRAM programming
+    # -- Enable SRAM programming for the iceprog* programmer only.
     if sram:
-
         # Only for iceprog programmer
         if programmer_cmd.startswith("iceprog"):
             programmer_cmd += " -S"
-
-    # -- Enable FLASH programming
-    if flash:
-
-        # Only for ujprog programmer
-        if programmer_cmd.startswith("ujprog"):
-            programmer_cmd = programmer_cmd.replace("SRAM", "FLASH")
+        else:
+            # -- Programmer not supported
+            cerror(
+                "The --sram flag is not available for the "
+                f"{prog_type} programmer."
+            )
+            sys.exit(1)
 
     return programmer_cmd
 
