@@ -18,14 +18,6 @@ from apio.managers.system import System
 from apio.apio_context import ApioContext
 
 
-# -- Constant for the dictionary PROG, which contains
-# -- the programming configuration
-SERIAL_PORT = "serial_port"
-FTDI_ID = "ftdi_id"
-SRAM = "sram"
-FLASH = "flash"
-
-
 def construct_programmer_cmd(
     apio_ctx: ApioContext,
     serial_port: str,

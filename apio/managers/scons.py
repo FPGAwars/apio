@@ -46,13 +46,6 @@ from apio.common.proto.apio_pb2 import (
     UploadParams,
 )
 
-# -- Constant for the dictionary PROG, which contains
-# -- the programming configuration
-SERIAL_PORT = "serial_port"
-FTDI_ID = "ftdi_id"
-SRAM = "sram"
-FLASH = "flash"
-
 
 # W0703: Catching too general exception Exception (broad-except)
 # pylint: disable=W0703
