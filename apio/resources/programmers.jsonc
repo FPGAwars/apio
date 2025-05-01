@@ -44,10 +44,6 @@
     "command": "tinyprog",
     "args": "--pyserial -c ${SERIAL_PORT} --program"
   },
-  "ujprog": {
-    "command": "ujprog",
-    "args": "-q -j SRAM"
-  },
   "fujprog": {
     "command": "fujprog",
     "args": "-l 2"
