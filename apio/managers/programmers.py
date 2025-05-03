@@ -30,7 +30,7 @@ def construct_programmer_cmd(
     * INPUT
         * apio_ctx: ApioContext of this apio invocation.
         * serial_port: Serial port name
-        * ftdi_id: ftdi identificator
+        * ftdi_id: ftdi identifier
         * sram: Perform SRAM programming
 
     * OUTPUT: A string with the command+args to execute and a $SOURCE
