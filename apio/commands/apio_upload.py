@@ -62,8 +62,8 @@ typically a non-volatile FLASH memory. For SRAM programming (also known \
 as ICE programming), use the '--sram' option, subject to the following \
 restrictions:
 
-1. The board must use the iceprog programmer or a programmer whose \
-name begins with iceprog.
+1. The board must use the 'iceprog' programmer or a programmer whose \
+name begins with 'iceprog'.
 
 2. The board must support SRAM programming and be configured accordingly. \
 Refer to your board’s documentation for details (SRAM programming is \
