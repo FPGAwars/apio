@@ -1156,6 +1156,19 @@ Usage: apio upload [OPTIONS]
 
   Examples:
     apio upload
+    apio upload --sram
+
+  The command programs the board’s default configuration memory, which
+  is typically a non-volatile FLASH memory. For SRAM programming (also
+  known as ICE programming), use the '--sram' option, subject to the
+  following restrictions:
+
+  1. The board must use the iceprog programmer or a programmer whose
+  name begins with iceprog.
+
+  2. The board must support SRAM programming and be configured
+  accordingly. Refer to your board’s documentation for details (SRAM
+  programming is also referred to as ICE programming).
 
   [Note] When apio is installed on Linux using the Snap package manager,
   run the command 'snap connect apio:raw-usb' once to grant the
@@ -1164,8 +1177,7 @@ Usage: apio upload [OPTIONS]
 Options:
   --serial-port serial-port  Set the serial port.
   --ftdi-id ftdi-id          Set the FTDI id.
-  -s, --sram                 Perform SRAM programming (iceprog* programmers
-                             only).
+  -s, --sram                 Perform SRAM programming (see restrictions).
   -p, --project-dir path     Set the root directory for the project.
   -h, --help                 Show this message and exit.
 

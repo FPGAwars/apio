@@ -43,7 +43,7 @@ sram_option = click.option(
     "-s",
     "--sram",
     is_flag=True,
-    help="Perform SRAM programming (iceprog* programmers only).",
+    help="Perform SRAM programming (see restrictions).",
     cls=cmd_util.ApioOption,
 )
 
@@ -54,7 +54,20 @@ The command 'apio upload' builds the bitstream file (similar to the \
 'apio build' command) and uploads it to the FPGA board.
 
 Examples:[code]
-  apio upload[/code]
+  apio upload
+  apio upload --sram[/code]
+
+The command programs the board’s default configuration memory, which is \
+typically a non-volatile FLASH memory. For SRAM programming (also known \
+as ICE programming), use the '--sram' option, subject to the following \
+restrictions:
+
+1. The board must use the iceprog programmer or a programmer whose \
+name begins with iceprog.
+
+2. The board must support SRAM programming and be configured accordingly. \
+Refer to your board’s documentation for details (SRAM programming is \
+also referred to as ICE programming).
 
 [Note] When apio is installed on Linux using the Snap package \
 manager, run the command 'snap connect apio:raw-usb' once \
