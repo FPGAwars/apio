@@ -8,6 +8,7 @@
 
 import re
 import sys
+from typing import Dict, List
 from apio.common.apio_console import cout, cerror
 from apio.common.apio_styles import INFO, ERROR, EMPH1
 from apio.utils import util, pkg_util, snap_util
@@ -136,7 +137,7 @@ class System:  # pragma: no cover
         # -- from the command stdout
         # -- Ex: [{'index': '0', 'manufacturer': 'AlhambraBits',
         # --      'description': 'Alhambra II v1.0A - B07-095'}]
-        ftdi_devices = self._parse_ftdi_devices(result.out_text)
+        ftdi_devices = self._parse_lsftdi_devices(result.out_text)
 
         # -- Return the devices
         return ftdi_devices
@@ -231,10 +232,18 @@ class System:  # pragma: no cover
         return usb_devices
 
     @staticmethod
-    def _parse_ftdi_devices(text):
+    def _parse_lsftdi_devices(text: str) -> List[Dict]:
+        """Get a list of FTDI devices from the output text of lsftdi."""
         pattern = r"Number\sof\sFTDI\sdevices\sfound:\s(?P<n>\d+?)\n"
         match = re.search(pattern, text)
         num = int(match.group("n")) if match else 0
+
+        # pylint: disable=fixme
+        # TODO: Change the parsing to iterate over lines and create a device
+        # from each line. This will make the code more intuitive and robust.
+
+        # TODO: Change the output format from a list of dicts to a list of
+        # dataclass objects. Motivation is code quality.
 
         pattern = r".*Checking\sdevice:\s(?P<index>.*?)\n.*"
         index = re.findall(pattern, text)
@@ -254,5 +263,9 @@ class System:  # pragma: no cover
                 "description": description[i],
             }
             ftdi_devices.append(ftdi_device)
+
+            # -- Dump the device info if in debug mode..
+            if util.is_debug():
+                cout(f"FTDI device: {ftdi_device}")
 
         return ftdi_devices
