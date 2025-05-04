@@ -11,6 +11,7 @@
 
 import re
 import sys
+from typing import Optional
 from apio.common.apio_console import cout, cerror
 from apio.common.apio_styles import INFO
 from apio.utils import util, pkg_util
@@ -20,8 +21,8 @@ from apio.apio_context import ApioContext
 
 def construct_programmer_cmd(
     apio_ctx: ApioContext,
-    serial_port: str,
-    ftdi_id: str,
+    serial_port: Optional[str],
+    ftdi_idx: Optional[int],
     sram: bool,
 ) -> str:
     """Get the command line (string) to execute for programming
@@ -29,8 +30,8 @@ def construct_programmer_cmd(
 
     * INPUT
         * apio_ctx: ApioContext of this apio invocation.
-        * serial_port: Serial port name
-        * ftdi_id: ftdi identifier
+        * serial_port: Optional, serial port name
+        * ftdi_idx: Optional, restrict to ftdi device with given index
         * sram: Perform SRAM programming
 
     * OUTPUT: A string with the command+args to execute and a $SOURCE
@@ -91,7 +92,7 @@ def construct_programmer_cmd(
         _check_usb(apio_ctx, board, board_info)
 
         # -- Get the FTDI index of the connected board
-        ftdi_id = _get_ftdi_id(apio_ctx, board, board_info, ftdi_id)
+        ftdi_id = _get_ftdi_id(apio_ctx, board, board_info, ftdi_idx)
 
         # -- Place the value in the command string
         programmer = programmer.replace("${FTDI_ID}", ftdi_id)
@@ -395,13 +396,15 @@ def _check_tinyprog(board_info: dict, port: str) -> bool:
     return False
 
 
-def _get_ftdi_id(apio_ctx: ApioContext, board, board_info, ext_ftdi_id) -> str:
+def _get_ftdi_id(
+    apio_ctx: ApioContext, board: str, board_info, ftdi_idx: Optional[int]
+) -> str:
     """Get the FTDI index of the detected board
 
     * INPUT:
         * board: Board name (string)
         * board_info: Dictionary with board info from boards.jsonc.
-        * ext_ftdi_id: FTDI index given by the user (optional)
+        * ftdi_idx: FTDI index given by the user (optional)
 
     * OUTPUT: It return the FTDI index (as a string)
                 Ex: '0'
@@ -409,12 +412,17 @@ def _get_ftdi_id(apio_ctx: ApioContext, board, board_info, ext_ftdi_id) -> str:
         It raises an exception if no FTDI device is connected
     """
 
-    # -- Search device by FTDI id
-    ftdi_id = _check_ftdi(apio_ctx, board, board_info, ext_ftdi_id)
+    # -- Search device by FTDI id.
+    ftdi_id = _check_ftdi(apio_ctx, board, board_info, ftdi_idx)
 
-    # -- No FTDI board connected
+    # -- No matching FTDI board connected
     if ftdi_id is None:
-        cerror("Board " + board + " not connected")
+        cerror("Board " + board + " not found")
+        cout(
+            "Run 'apio drivers list ftdi' to see the available FTDI devices",
+            style=INFO,
+        )
+
         sys.exit(1)
 
     # -- Return the FTDI index
@@ -423,7 +431,10 @@ def _get_ftdi_id(apio_ctx: ApioContext, board, board_info, ext_ftdi_id) -> str:
 
 
 def _check_ftdi(
-    apio_ctx: ApioContext, board: str, board_info: dict, ext_ftdi_id: str
+    apio_ctx: ApioContext,
+    board: str,
+    board_info: dict,
+    ftdi_idx: Optional[int],
 ) -> str:
     """Check if the given ftdi board is connected or not to the computer
         and return its FTDI index
@@ -431,7 +442,7 @@ def _check_ftdi(
     * INPUT:
         * board: Board name (string)
         * board_info: Dictionary with board info from boards.jsonc.
-        * ext_ftdi_id: FTDI index given by the user (optional)
+        * ftdi_idx: FTDI index given by the user (optional)
 
     * OUTPUT: It return the FTDI index (as a string)
                 Ex: '0'
@@ -475,9 +486,10 @@ def _check_ftdi(
         # -- Ex: '0'
         index = ftdi_device["index"]
 
-        # If the --device options is set but it doesn't match
-        # with the detected index, skip the port.
-        if ext_ftdi_id is not None and ext_ftdi_id != index:
+        # If the --ftdi-idx options is set, we consider only the device
+        # with given index in the lsftdi output. This is useful in case
+        # multiple compatible boards are connected to the host computer.
+        if ftdi_idx is not None and ftdi_idx != int(index):
             continue
 
         # If matches the description pattern

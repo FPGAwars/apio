@@ -1156,8 +1156,9 @@ Usage: apio upload [OPTIONS]
   'apio build' command) and uploads it to the FPGA board.
 
   Examples:
-    apio upload
-    apio upload --sram  # See SRAM restrictions below
+    apio upload              # Typical usage.
+    apio upload --ftdi-idx 2 # Consider only FTDI device at index 2
+    apio upload --sram       # See below
 
   The command programs the board’s default configuration memory, which
   is typically a non-volatile FLASH memory. For SRAM programming (also
@@ -1171,13 +1172,19 @@ Usage: apio upload [OPTIONS]
   accordingly. Refer to your board’s documentation for details (SRAM
   programming is also referred to as ICE programming).
 
+  The optional flag '--ftdi-idx' is used in special cases involving
+  boards with FTDI devices, particularly when multiple boards are
+  connected to the host computer. It tells Apio to consider only the
+  device at the specified index in the list shown by the command: 'apio
+  devices list ftdi'. The first device in the list has index 0.
+
   [Note] When apio is installed on Linux using the Snap package manager,
   run the command 'snap connect apio:raw-usb' once to grant the
   necessary permissions to access USB devices.
 
 Options:
   --serial-port serial-port  Set the serial port.
-  --ftdi-id ftdi-id          Set the FTDI id.
+  --ftdi-idx ftdi-idx        Consider only FTDI device with given index.
   -s, --sram                 Perform SRAM programming (see restrictions).
   -p, --project-dir path     Set the root directory for the project.
   -h, --help                 Show this message and exit.

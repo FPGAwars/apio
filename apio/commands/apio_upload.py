@@ -30,12 +30,13 @@ serial_port_option = click.option(
     cls=cmd_util.ApioOption,
 )
 
-ftdi_id_option = click.option(
-    "ftdi_id",  # Var name.
-    "--ftdi-id",
-    type=str,
-    metavar="ftdi-id",
-    help="Set the FTDI id.",
+ftdi_idx_option = click.option(
+    "ftdi_idx",  # Var name.
+    "--ftdi-idx",
+    type=int,
+    default=None,  # 0 is a valid value.
+    metavar="ftdi-idx",
+    help="Consider only FTDI device with given index.",
 )
 
 sram_option = click.option(
@@ -54,8 +55,9 @@ The command 'apio upload' builds the bitstream file (similar to the \
 'apio build' command) and uploads it to the FPGA board.
 
 Examples:[code]
-  apio upload
-  apio upload --sram  # See SRAM restrictions below[/code]
+  apio upload              # Typical usage.
+  apio upload --ftdi-idx 2 # Consider only FTDI device at index 2
+  apio upload --sram       # See below[/code]
 
 The command programs the board’s default configuration memory, which is \
 typically a non-volatile FLASH memory. For SRAM programming (also known \
@@ -68,6 +70,12 @@ name begins with 'iceprog'.
 2. The board must support SRAM programming and be configured accordingly. \
 Refer to your board’s documentation for details (SRAM programming is \
 also referred to as ICE programming).
+
+The optional flag '--ftdi-idx' is used in special cases involving boards with \
+FTDI devices, particularly when multiple boards are connected to the host \
+computer. It tells Apio to consider only the device at the specified index in \
+the list shown by the command: 'apio devices list ftdi'. The first device in \
+the list has index 0.
 
 [Note] When apio is installed on Linux using the Snap package \
 manager, run the command 'snap connect apio:raw-usb' once \
@@ -86,14 +94,14 @@ to grant the necessary permissions to access USB devices.
 )
 @click.pass_context
 @serial_port_option
-@ftdi_id_option
+@ftdi_idx_option
 @sram_option
 @options.project_dir_option
 def cli(
     _: click.Context,
     # Options
     serial_port: str,
-    ftdi_id: str,
+    ftdi_idx: int,
     sram: bool,
     project_dir: Path,
 ):
@@ -118,7 +126,7 @@ def cli(
     programmer_cmd = construct_programmer_cmd(
         apio_ctx,
         serial_port=serial_port,
-        ftdi_id=ftdi_id,
+        ftdi_idx=ftdi_idx,
         sram=sram,
     )
 
