@@ -44,7 +44,6 @@ class Entry:
 
 
 # pylint: disable=too-many-locals
-# pylint: disable=too-many-statements
 def list_fpgas(apio_ctx: ApioContext, verbose: bool):
     """Prints all the available FPGA definitions."""
 

@@ -1,8 +1,5 @@
 """DOC: TODO"""
 
-# C0302: Too many lines in module (1032/1000) (too-many-lines)
-# pylint: disable=C0302
-
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
@@ -49,7 +46,6 @@ from apio.common.proto.apio_pb2 import (
 
 # W0703: Catching too general exception Exception (broad-except)
 # pylint: disable=W0703
-# pylint: disable=W0150
 #
 # -- Based on
 # -- https://stackoverflow.com/questions/5929107/decorators-with-parameters
@@ -344,8 +340,6 @@ class SCons:
         return result
 
     # pylint: disable=too-many-locals
-    # pylint: disable=too-many-arguments
-    # pylint: disable=too-many-positional-arguments
     def _run(
         self,
         scons_command: str,

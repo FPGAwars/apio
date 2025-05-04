@@ -33,8 +33,6 @@ Examples:[code]
 """
 
 
-# pylint: disable=too-many-arguments
-# pylint: disable=too-many-positional-arguments
 @click.command(
     name="build",
     cls=cmd_util.ApioCommand,

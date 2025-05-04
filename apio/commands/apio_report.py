@@ -32,8 +32,6 @@ Examples:[code]
 
 
 # pylint: disable=duplicate-code
-# pylint: disable=too-many-arguments
-# pylint: disable=too-many-positional-arguments
 @click.command(
     name="report",
     cls=cmd_util.ApioCommand,

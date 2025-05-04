@@ -7,14 +7,8 @@
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
 # ---- License Apache v2
-"""A class with common services for the apio scons handlers.
-"""
+"""A class with common services for the apio scons handlers."""
 
-# C0209: Formatting could be an f-string (consider-using-f-string)
-# pylint: disable=C0209
-
-# W0613: Unused argument
-# pylint: disable=W0613
 
 import os
 from typing import List, Optional
@@ -26,7 +20,6 @@ from apio.common.apio_styles import EMPH3
 from apio.common.proto.apio_pb2 import SconsParams
 
 
-# pylint: disable=too-many-public-methods
 class ApioEnv:
     """Provides abstracted scons env and other user services."""
 
@@ -46,11 +39,9 @@ class ApioEnv:
         # -- not used unintentionally, e.v. in tests that run create multiple
         # -- scons env in the same session.
         # --
-        # pylint: disable=protected-access
         assert (
             SCons.Defaults._default_env is None
         ), "DefaultEnvironment already exists"
-        # pylint: enable=protected-access
 
         # Extra info for debugging.
         if self.is_debug:

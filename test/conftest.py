@@ -90,8 +90,6 @@ class ApioSandbox:
     # pylint: disable=R0913
     # W0622: Redefining built-in 'input' (redefined-builtin)
     # pylint: disable=W0622
-    # R0917: Too many positional arguments (7/5)
-    # pylint: disable=R0917
     def invoke_apio_cmd(
         self,
         cli,

@@ -10,8 +10,6 @@ from apio.commands.apio import cli as apio
 
 # R0801: Similar lines in 2 files
 # pylint: disable=R0801
-# # R0915: Too many statements (52/50) (too-many-statements)
-# # pylint: disable=R0915
 def test_packages(apio_runner: ApioRunner):
     """Tests listing, installation and uninstallation of packages."""
 

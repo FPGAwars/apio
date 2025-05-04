@@ -452,8 +452,6 @@ class Drivers:
     def _check_ftdi_driver_darwin(self, driver):
         return driver in str(subprocess.check_output(["kextstat"]))
 
-    # W0703: Catching too general exception Exception (broad-except)
-    # pylint: disable=W0703
     def _ftdi_install_windows(self) -> int:
         # -- Check that the required packages are installed.
         installer.install_missing_packages_on_the_fly(self.apio_ctx)
@@ -503,8 +501,6 @@ class Drivers:
         exit_code = os.system("mmc devmgmt.msc")
         return exit_code
 
-    # W0703: Catching too general exception Exception (broad-except)
-    # pylint: disable=W0703
     def _serial_install_windows(self) -> int:
         # -- Check that the required packages exist.
         installer.install_missing_packages_on_the_fly(self.apio_ctx)

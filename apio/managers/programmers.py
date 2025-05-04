@@ -1,8 +1,5 @@
 """DOC: TODO"""
 
-# C0302: Too many lines in module (1032/1000) (too-many-lines)
-# pylint: disable=C0302
-
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars

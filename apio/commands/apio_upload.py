@@ -83,9 +83,6 @@ to grant the necessary permissions to access USB devices.
 """
 
 
-# pylint: disable=too-many-arguments
-# pylint: disable=too-many-positional-arguments
-# pylint: disable=too-many-locals
 @click.command(
     name="upload",
     cls=cmd_util.ApioCommand,

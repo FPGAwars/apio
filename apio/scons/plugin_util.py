@@ -219,8 +219,6 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
     return apio_env.scons_env.Scanner(function=verilog_src_scanner_func)
 
 
-# pylint: disable=too-many-arguments
-# pylint: disable=too-many-positional-arguments
 def verilator_lint_action(
     apio_env: ApioEnv,
     *,
@@ -667,7 +665,6 @@ def get_programmer_cmd(apio_env: ApioEnv) -> str:
 
 
 # pylint: disable=too-many-arguments
-# pylint: disable=too-many-positional-arguments
 def iverilog_action(
     *,
     verbose: bool,
@@ -784,7 +781,6 @@ def configure_cleanup(apio_env: ApioEnv) -> None:
         + glob(str(BUILD_DIR))
     )
 
-    # pylint: disable=fixme
     # -- TODO: Remove the cleanup of legacy files after releasing the first
     # -- release with the _build directory.
     # --
