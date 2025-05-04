@@ -55,7 +55,7 @@ The command 'apio upload' builds the bitstream file (similar to the \
 
 Examples:[code]
   apio upload
-  apio upload --sram[/code]
+  apio upload --sram  # See SRAM restrictions below[/code]
 
 The command programs the board’s default configuration memory, which is \
 typically a non-volatile FLASH memory. For SRAM programming (also known \
