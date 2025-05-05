@@ -6,14 +6,24 @@
 # -- Author Jesús Arroyo
 # -- License GPLv2
 
+from dataclasses import dataclass
 import re
 import sys
-from typing import Dict, List
+from typing import List
 from apio.common.apio_console import cout, cerror
 from apio.common.apio_styles import INFO, ERROR, EMPH1
 from apio.utils import util, pkg_util, snap_util
 from apio.apio_context import ApioContext
 from apio.managers import installer
+
+
+@dataclass(frozen=True)
+class FtdiDevice:
+    """Class to represent a parsed FTDI device from lsftdi output."""
+
+    ftdi_idx: int
+    manufacturer: str
+    description: str
 
 
 class System:  # pragma: no cover
@@ -111,16 +121,11 @@ class System:  # pragma: no cover
         # -- Return the devices
         return usb_devices
 
-    def get_ftdi_devices(self) -> list:
+    def get_ftdi_devices(self) -> List[FtdiDevice]:
         """Return a list of the connected FTDI devices
          This list is obtained by running the "lsftdi" command
 
-         * OUTPUT:  A list of objects with the FTDI devices
-        Ex. [{'index': '0', 'manufacturer': 'AlhambraBits',
-              'description': 'Alhambra II v1.0A - B07-095'}]
-
-        It raises an exception in case of not being able to
-        execute the "lsftdi" command
+        It raises an exception if the command lsftdi fails.
         """
 
         # -- Initial empty ftdi devices list
@@ -133,11 +138,10 @@ class System:  # pragma: no cover
         if result.exit_code != 0:
             self._lsftdi_fatal_error(result)
 
-        # -- Get the list of the ftdi devices. It is read
-        # -- from the command stdout
-        # -- Ex: [{'index': '0', 'manufacturer': 'AlhambraBits',
-        # --      'description': 'Alhambra II v1.0A - B07-095'}]
-        ftdi_devices = self._parse_lsftdi_devices(result.out_text)
+        # -- Extract the list of FTDI devices from the command output
+        ftdi_devices: List[FtdiDevice] = self._parse_lsftdi_devices(
+            result.out_text
+        )
 
         # -- Return the devices
         return ftdi_devices
@@ -232,36 +236,39 @@ class System:  # pragma: no cover
         return usb_devices
 
     @staticmethod
-    def _parse_lsftdi_devices(text: str) -> List[Dict]:
+    def _parse_lsftdi_devices(text: str) -> List[FtdiDevice]:
         """Get a list of FTDI devices from the output text of lsftdi."""
-        pattern = r"Number\sof\sFTDI\sdevices\sfound:\s(?P<n>\d+?)\n"
-        match = re.search(pattern, text)
+
+        num_pattern = r"Number\sof\sFTDI\sdevices\sfound:\s(?P<n>\d+?)\n"
+        match = re.search(num_pattern, text)
         num = int(match.group("n")) if match else 0
 
-        # pylint: disable=fixme
-        # TODO: Change the parsing to iterate over lines and create a device
-        # from each line. This will make the code more intuitive and robust.
+        # -- NOTE: Since the information of each device is spread over two
+        # -- lines, we extract the information by field rather than by device
+        # -- line. It's awkward, but it works.
 
+        # pylint: disable=fixme
         # TODO: Change the output format from a list of dicts to a list of
         # dataclass objects. Motivation is code quality.
 
-        pattern = r".*Checking\sdevice:\s(?P<index>.*?)\n.*"
-        index = re.findall(pattern, text)
+        index_pattern = r".*Checking\sdevice:\s(?P<index>.*?)\n.*"
+        indices = re.findall(index_pattern, text)
 
-        pattern = r".*Manufacturer:\s(?P<n>.*?),.*"
-        manufacturer = re.findall(pattern, text)
+        manufacturer_pattern = r".*Manufacturer:\s(?P<n>.*?),.*"
+        manufacturers = re.findall(manufacturer_pattern, text)
 
-        pattern = r".*Description:\s(?P<n>.*?)\n.*"
-        description = re.findall(pattern, text)
+        description_pattern = r".*Description:\s(?P<n>.*?)\n.*"
+        descriptions = re.findall(description_pattern, text)
 
         ftdi_devices = []
 
         for i in range(num):
-            ftdi_device = {
-                "index": index[i],
-                "manufacturer": manufacturer[i],
-                "description": description[i],
-            }
+            index = int(indices[i])
+            ftdi_device = FtdiDevice(
+                ftdi_idx=index,
+                manufacturer=manufacturers[i],
+                description=descriptions[i],
+            )
             ftdi_devices.append(ftdi_device)
 
             # -- Dump the device info if in debug mode..

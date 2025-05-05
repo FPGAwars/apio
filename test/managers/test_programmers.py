@@ -29,7 +29,7 @@ def test_construct_programmer_cmd_template(apio_runner: ApioRunner):
         # -- Check the command.
         assert (
             programmer_cmd
-            == "iceprog -d i:0x${VID}:0x${PID}:${FTDI_ID} $SOURCE"
+            == "iceprog -d i:0x${VID}:0x${PID}:${FTDI_IDX} $SOURCE"
         )
 
 
@@ -54,7 +54,7 @@ def test_construct_programmer_cmd_template_sram_ok(apio_runner: ApioRunner):
         # Notice the additional -S for SRAM.
         assert (
             programmer_cmd
-            == "iceprog -d i:0x${VID}:0x${PID}:${FTDI_ID} $SOURCE -S"
+            == "iceprog -d i:0x${VID}:0x${PID}:${FTDI_IDX} $SOURCE -S"
         )
 
 

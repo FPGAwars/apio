@@ -122,8 +122,8 @@ def cli(
     # -- Get the programmer command.
     programmer_cmd = construct_programmer_cmd(
         apio_ctx,
-        serial_port=serial_port,
-        ftdi_idx=ftdi_idx,
+        serial_port_arg=serial_port,
+        ftdi_idx_arg=ftdi_idx,  # None if not specified.
         sram=sram,
     )
 
