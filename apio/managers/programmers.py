@@ -1,8 +1,5 @@
 """DOC: TODO"""
 
-# C0302: Too many lines in module (1032/1000) (too-many-lines)
-# pylint: disable=C0302
-
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
 # -- (C) 2016-2019 FPGAwars
@@ -11,18 +8,18 @@
 
 import re
 import sys
-from typing import Optional
-from apio.common.apio_console import cout, cerror
+from typing import Optional, List
+from apio.common.apio_console import cout, cerror, cwarning
 from apio.common.apio_styles import INFO
 from apio.utils import util, pkg_util
-from apio.managers.system import System
+from apio.managers.system import System, FtdiDevice
 from apio.apio_context import ApioContext
 
 
 def construct_programmer_cmd(
     apio_ctx: ApioContext,
-    serial_port: Optional[str],
-    ftdi_idx: Optional[int],
+    serial_port_arg: Optional[str],
+    ftdi_idx_arg: Optional[int],
     sram: bool,
 ) -> str:
     """Get the command line (string) to execute for programming
@@ -49,7 +46,7 @@ def construct_programmer_cmd(
     # -- that needs to be set!
     # --   * "${VID}" (optional): USB vendor id
     # --   * "${PID}" (optional): USB Product id
-    # --   * "${FTDI_ID}" (optional): FTDI id
+    # --   * "${FTDI_IDX}" (optional): FTDI idx (e.g. 0, 1, 2...)
     # --   * "${SERIAL_PORT}" (optional): Serial port name
     programmer = _construct_programmer_cmd_template(apio_ctx, board_info, sram)
     if util.is_debug():
@@ -78,8 +75,8 @@ def construct_programmer_cmd(
         programmer = programmer.replace("${PID}", pid)
 
     # -- Replace FTDI index
-    # -- Ex. "${FTDI_ID}" --> "0"
-    if "${FTDI_ID}" in programmer:
+    # -- Ex. "${FTDI_IDX}" --> "0"
+    if "${FTDI_IDX}" in programmer:
         # -- Inform the user we are accessing the programmer
         # -- to give context for ftdi failures.
         # -- We force an early env setting message to have
@@ -92,10 +89,24 @@ def construct_programmer_cmd(
         _check_usb(apio_ctx, board, board_info)
 
         # -- Get the FTDI index of the connected board
-        ftdi_id = _get_ftdi_id(apio_ctx, board, board_info, ftdi_idx)
+        device_ftdi_idx = _get_ftdi_idx(
+            apio_ctx, board, board_info, ftdi_idx_arg
+        )
+
+        if util.is_debug():
+            cout(f"FTDI index: {device_ftdi_idx}")
 
         # -- Place the value in the command string
-        programmer = programmer.replace("${FTDI_ID}", ftdi_id)
+        programmer = programmer.replace("${FTDI_IDX}", str(device_ftdi_idx))
+
+    # -- NOTE: We use 'is not None' since 0 is a valid FTDI index.
+    elif ftdi_idx_arg is not None:
+        # -- The user has specified a FTDI index but the
+        # -- programmer does not use it. Ignore the value.
+        cwarning(
+            f"FTDI index {ftdi_idx_arg} ignored for "
+            f"programmer {board_info['programmer']['type']}"
+        )
 
     # Replace Serial port
     # -- The board uses a Serial port for uploading the circuit
@@ -111,10 +122,18 @@ def construct_programmer_cmd(
         _check_usb(apio_ctx, board, board_info)
 
         # -- Get the serial port
-        device = _get_serial_port(board, board_info, serial_port)
+        device = _get_serial_port(board, board_info, serial_port_arg)
 
         # -- Place the value in the command string
         programmer = programmer.replace("${SERIAL_PORT}", device)
+
+    elif serial_port_arg:
+        # -- The user has specified a serial port but the
+        # -- programmer does not use it. Ignore the value.
+        cwarning(
+            f"Serial port {serial_port_arg} ignored for "
+            f"programmer {board_info['programmer']['type']}"
+        )
 
     # -- Return the Command to execute for uploading the circuit
     # -- to the given board. Scons will replace $SOURCE with the
@@ -134,12 +153,12 @@ def _construct_programmer_cmd_template(
         parameters (in the string):
         * "${VID}" (optional): USB vendor id
         * "${PID}" (optional): USB Product id
-        * "${FTDI_ID}" (optional): FTDI id
+        * "${FTDI_IDX}" (optional): FTDI idx
         * "${SERIAL_PORT}" (optional): Serial port name
 
         Example of output strings:
         "'tinyprog --pyserial -c ${SERIAL_PORT} --program $SOURCE'"
-        "'iceprog -d i:0x${VID}:0x${PID}:${FTDI_ID} $SOURCE'"
+        "'iceprog -d i:0x${VID}:0x${PID}:${FTDI_IDX} $SOURCE'"
     """
 
     # -- Get the programmer type
@@ -396,27 +415,28 @@ def _check_tinyprog(board_info: dict, port: str) -> bool:
     return False
 
 
-def _get_ftdi_id(
-    apio_ctx: ApioContext, board: str, board_info, ftdi_idx: Optional[int]
-) -> str:
+def _get_ftdi_idx(
+    apio_ctx: ApioContext, board: str, board_info, ftdi_idx_arg: Optional[int]
+) -> int:
     """Get the FTDI index of the detected board
 
     * INPUT:
         * board: Board name (string)
         * board_info: Dictionary with board info from boards.jsonc.
-        * ftdi_idx: FTDI index given by the user (optional)
+        * ftdi_idx_arg: FTDI index given by the user (optional)
 
-    * OUTPUT: It return the FTDI index (as a string)
-                Ex: '0'
+    * OUTPUT: It return the FTDI index.
 
         It raises an exception if no FTDI device is connected
     """
 
-    # -- Search device by FTDI id.
-    ftdi_id = _check_ftdi(apio_ctx, board, board_info, ftdi_idx)
+    # -- Search device description matching.
+    ftdi_idx: Optional[int] = _check_ftdi(
+        apio_ctx, board, board_info, ftdi_idx_arg
+    )
 
     # -- No matching FTDI board connected
-    if ftdi_id is None:
+    if ftdi_idx is None:
         cerror("Board " + board + " not found")
         cout(
             "Run 'apio drivers list ftdi' to see the available FTDI devices",
@@ -425,28 +445,25 @@ def _get_ftdi_id(
 
         sys.exit(1)
 
-    # -- Return the FTDI index
-    # -- Ex: '0'
-    return ftdi_id
+    # -- Return the FTDI index, e.g. 0.
+    return ftdi_idx
 
 
 def _check_ftdi(
     apio_ctx: ApioContext,
     board: str,
     board_info: dict,
-    ftdi_idx: Optional[int],
-) -> str:
+    ftdi_idx_arg: Optional[int],
+) -> Optional[int]:
     """Check if the given ftdi board is connected or not to the computer
         and return its FTDI index
 
     * INPUT:
         * board: Board name (string)
         * board_info: Dictionary with board info from boards.jsonc.
-        * ftdi_idx: FTDI index given by the user (optional)
+        * ftdi_idx_arg: FTDI index given by the user (optional)
 
-    * OUTPUT: It return the FTDI index (as a string)
-                Ex: '0'
-            * Or None if no board is found
+    * OUTPUT: The FTDI device index or None if no board is found.
     """
 
     # -- Check that the given board has the property "ftdi"
@@ -471,7 +488,7 @@ def _check_ftdi(
     # -- Get the list of the connected FTDI devices
     # -- (execute the command "lsftdi" from the apio System module)
     system = System(apio_ctx)
-    connected_devices = system.get_ftdi_devices()
+    connected_devices: List[FtdiDevice] = system.get_ftdi_devices()
 
     # -- No FTDI devices detected --> Error!
     if not connected_devices:
@@ -484,18 +501,18 @@ def _check_ftdi(
 
         # -- Get the FTDI index
         # -- Ex: '0'
-        index = ftdi_device["index"]
+        ftdi_idx: int = ftdi_device.ftdi_idx
 
         # If the --ftdi-idx options is set, we consider only the device
         # with given index in the lsftdi output. This is useful in case
         # multiple compatible boards are connected to the host computer.
-        if ftdi_idx is not None and ftdi_idx != int(index):
+        if ftdi_idx_arg is not None and ftdi_idx_arg != ftdi_idx:
             continue
 
         # If matches the description pattern
         # return the index for the FTDI device.
-        if re.match(desc_pattern, ftdi_device["description"]):
-            return index
+        if re.match(desc_pattern, ftdi_device.description):
+            return ftdi_idx
 
     # -- No FTDI board found
     return None

@@ -28,15 +28,16 @@ FTDI_INSTALL_INSTRUCTIONS_WINDOWS = f"""
 
   2. {E1}Accept the Zadig request[/] to make changes to your computer.
 
-  3. {E1}Find the Zadig window[/] on your screen.
+  3. {E1}Find the Zadig window[/] on your screen. You may need to click
+    on its icon in the task bar for it to appear.
 
   4. {E1}Select your FPGA board[/] from the drop down list, For example
     'Alhambra II v1.0A - B09-335 (Interface 0)'.
 
-  {E3}IMPORTANT - If your board appears multiple time, make sure
-  to select the 'interface 0' entry.[/]
+  {E3}VERY IMPORTANT - If your board appears multiple time, make sure
+  to select its 'interface 0' entry.[/]
 
-  5. Make sure that {E1}'WinUSB' is selected[/]. For example
+  5. {E1}Select the 'WinUSB' driver[/] as the target driver. For example
      'WinUSB (v6.1.7600.16385)'.
 
   6. {E1}Click 'Replace Driver'[/] and wait for a successful
@@ -452,8 +453,6 @@ class Drivers:
     def _check_ftdi_driver_darwin(self, driver):
         return driver in str(subprocess.check_output(["kextstat"]))
 
-    # W0703: Catching too general exception Exception (broad-except)
-    # pylint: disable=W0703
     def _ftdi_install_windows(self) -> int:
         # -- Check that the required packages are installed.
         installer.install_missing_packages_on_the_fly(self.apio_ctx)
@@ -503,8 +502,6 @@ class Drivers:
         exit_code = os.system("mmc devmgmt.msc")
         return exit_code
 
-    # W0703: Catching too general exception Exception (broad-except)
-    # pylint: disable=W0703
     def _serial_install_windows(self) -> int:
         # -- Check that the required packages exist.
         installer.install_missing_packages_on_the_fly(self.apio_ctx)

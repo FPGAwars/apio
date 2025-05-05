@@ -50,7 +50,6 @@ class Entry:
 
 # R0914: Too many local variables (17/15)
 # pylint: disable=R0914
-# pylint: disable=too-many-statements
 def list_boards(apio_ctx: ApioContext, verbose: bool):
     """Prints all the available board definitions."""
 

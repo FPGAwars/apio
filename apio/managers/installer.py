@@ -249,7 +249,6 @@ def install_missing_packages_on_the_fly(apio_ctx: ApioContext) -> None:
         )
 
 
-# pylint: disable=too-many-branches
 def install_package(
     apio_ctx: ApioContext,
     *,

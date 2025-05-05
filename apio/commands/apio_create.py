@@ -46,8 +46,6 @@ complete and buildable project. To create complete projects, refer to the \
 """
 
 
-# R0913: Too many arguments (6/5)
-# pylint: disable=R0913
 @click.command(
     name="create",
     cls=cmd_util.ApioCommand,

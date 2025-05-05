@@ -83,9 +83,6 @@ to grant the necessary permissions to access USB devices.
 """
 
 
-# pylint: disable=too-many-arguments
-# pylint: disable=too-many-positional-arguments
-# pylint: disable=too-many-locals
 @click.command(
     name="upload",
     cls=cmd_util.ApioCommand,
@@ -125,8 +122,8 @@ def cli(
     # -- Get the programmer command.
     programmer_cmd = construct_programmer_cmd(
         apio_ctx,
-        serial_port=serial_port,
-        ftdi_idx=ftdi_idx,
+        serial_port_arg=serial_port,
+        ftdi_idx_arg=ftdi_idx,  # None if not specified.
         sram=sram,
     )
 

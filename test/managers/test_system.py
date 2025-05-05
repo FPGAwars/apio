@@ -3,7 +3,7 @@ Tests of apio.managers.system.py
 """
 
 from test.conftest import ApioRunner
-from apio.managers.system import System
+from apio.managers.system import System, FtdiDevice
 from apio.apio_context import ApioContext, ApioContextScope
 
 # pylint: disable=fixme
@@ -36,11 +36,11 @@ def test_parse_lsftdi_devices(apio_runner: ApioRunner):
             "B09-335\n"
         )
         assert devices == [
-            {
-                "description": "Alhambra II v1.0A - B09-335",
-                "index": "0",
-                "manufacturer": "AlhambraBits",
-            }
+            FtdiDevice(
+                ftdi_idx=0,
+                manufacturer="AlhambraBits",
+                description="Alhambra II v1.0A - B09-335",
+            )
         ]
 
         # -- Test with two devices.
@@ -54,14 +54,14 @@ def test_parse_lsftdi_devices(apio_runner: ApioRunner):
             "B09-335\n"
         )
         assert devices == [
-            {
-                "index": "0",
-                "manufacturer": "tinyVision.ai",
-                "description": "UPduino v3.1c",
-            },
-            {
-                "index": "1",
-                "manufacturer": "AlhambraBits",
-                "description": "Alhambra II v1.0A - B09-335",
-            },
+            FtdiDevice(
+                ftdi_idx=0,
+                manufacturer="tinyVision.ai",
+                description="UPduino v3.1c",
+            ),
+            FtdiDevice(
+                ftdi_idx=1,
+                manufacturer="AlhambraBits",
+                description="Alhambra II v1.0A - B09-335",
+            ),
         ]
