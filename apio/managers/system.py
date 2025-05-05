@@ -244,6 +244,10 @@ class System:  # pragma: no cover
     def _parse_lsftdi_devices(text: str) -> List[FtdiDevice]:
         """Get a list of FTDI devices from the output text of lsftdi."""
 
+        # -- Dump for debugging.
+        if util.is_debug():
+            cout(f"lsftdi text:\n{text}")
+
         num_pattern = r"Number\sof\sFTDI\sdevices\sfound:\s(?P<n>\d+?)\n"
         match = re.search(num_pattern, text)
         num = int(match.group("n")) if match else 0
@@ -265,12 +269,24 @@ class System:  # pragma: no cover
         description_pattern = r".*Description:\s(?P<n>.*?)\n.*"
         descriptions = re.findall(description_pattern, text)
 
-        ftdi_devices = []
+        # -- Dump for debugging.
+        if util.is_debug():
+            cout(f"Parsed num: {num}")
+            cout(f"Parsed indices: {indices}")
+            cout(f"Parsed manufacturers: {manufacturers}")
+            cout(f"Parsed descriptions: {descriptions}")
+            cout()
 
+        # -- Sanity checks.
+        assert num == len(indices), f"{num} != {len(indices)}"
+        assert num == len(manufacturers), f"{num} != {len(manufacturers)}"
+        assert num == len(descriptions), f"{num} != {len(descriptions)}"
+
+        # -- Create the list of FTDI devices.
+        ftdi_devices = []
         for i in range(num):
-            index = int(indices[i])
             ftdi_device = FtdiDevice(
-                ftdi_idx=index,
+                ftdi_idx=int(indices[i]),
                 manufacturer=manufacturers[i],
                 description=descriptions[i],
             )
