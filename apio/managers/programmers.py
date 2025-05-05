@@ -9,7 +9,7 @@
 import re
 import sys
 from typing import Optional, List
-from apio.common.apio_console import cout, cerror
+from apio.common.apio_console import cout, cerror, cwarning
 from apio.common.apio_styles import INFO
 from apio.utils import util, pkg_util
 from apio.managers.system import System, FtdiDevice
@@ -99,6 +99,15 @@ def construct_programmer_cmd(
         # -- Place the value in the command string
         programmer = programmer.replace("${FTDI_IDX}", str(device_ftdi_idx))
 
+    # -- NOTE: We use 'is not None' since 0 is a valid FTDI index.
+    elif ftdi_idx_arg is not None:
+        # -- The user has specified a FTDI index but the
+        # -- programmer does not use it. Ignore the value.
+        cwarning(
+            f"FTDI index {ftdi_idx_arg} ignored for "
+            f"programmer {board_info['programmer']['type']}"
+        )
+
     # Replace Serial port
     # -- The board uses a Serial port for uploading the circuit
     if "${SERIAL_PORT}" in programmer:
@@ -117,6 +126,14 @@ def construct_programmer_cmd(
 
         # -- Place the value in the command string
         programmer = programmer.replace("${SERIAL_PORT}", device)
+
+    elif serial_port_arg:
+        # -- The user has specified a serial port but the
+        # -- programmer does not use it. Ignore the value.
+        cwarning(
+            f"Serial port {serial_port_arg} ignored for "
+            f"programmer {board_info['programmer']['type']}"
+        )
 
     # -- Return the Command to execute for uploading the circuit
     # -- to the given board. Scons will replace $SOURCE with the
