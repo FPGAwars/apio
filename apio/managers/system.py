@@ -25,6 +25,11 @@ class FtdiDevice:
     manufacturer: str
     description: str
 
+    def __post_init__(self):
+        assert isinstance(self.ftdi_idx, int)
+        assert isinstance(self.manufacturer, str)
+        assert isinstance(self.description, str)
+
 
 class System:  # pragma: no cover
     """System class. Managing and execution of the system commands"""
