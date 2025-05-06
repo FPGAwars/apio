@@ -19,6 +19,8 @@ from apio.utils import cmd_util
 
 # --------- apio test
 
+# pylint: disable=duplicate-code
+
 # -- Text in the rich-text format of the python rich library.
 APIO_TEST_HELP = """
 The command 'apio test' simulates one or all the testbenches in the project \
@@ -30,7 +32,10 @@ Examples:[code]
   apio test                 # Run all *_tb.v testbenches.
   apio test my_module_tb.v  # Run a single testbench.[/code]
 
-[b][Important][/b] Avoid using the Verilog '$dumpfile()' function in your \
+[NOTE] Testbench specification is always the testbench file path relative to \
+the project directory, even if using the '--project-dir' option.
+
+[IMPORTANT] Avoid using the Verilog '$dumpfile()' function in your \
 testbenches, as this may override the default name and location Apio sets \
 for the generated .vcd file.
 

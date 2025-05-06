@@ -21,6 +21,8 @@ from apio.utils import cmd_util
 
 # --------- apio sim
 
+# pylint: disable=duplicate-code
+
 # -- Text in the rich-text format of the python rich library.
 APIO_SIM_HELP = """
 The command 'apio sim' simulates the default or the specified testbench file \
@@ -35,7 +37,10 @@ Example:[code]
   apio sim                   # Simulate the default testbench.
   apio sim my_module_tb.v    # Simulate the specified testbench.[/code]
 
-[b][Important][/b] Avoid using the Verilog '$dumpfile()' function in your \
+[NOTE] Testbench specification is always the testbench file path relative to \
+the project directory, even if using the '--project-dir' option.
+
+[IMPORTANT] Avoid using the Verilog '$dumpfile()' function in your \
 testbenches, as this may override the default name and location Apio sets \
 for the generated .vcd file.
 
