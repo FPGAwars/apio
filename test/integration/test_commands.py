@@ -300,6 +300,13 @@ def _test_project(
         result = sb.invoke_apio_cmd(apio, *args)
         sb.assert_ok(result)
 
+        # -- 'apio format <testbench-file>'
+        # -- This tests the project relative specification even when
+        # -- the option --project-dir is used.
+        args = ["format", testbench_file] + proj_arg
+        result = sb.invoke_apio_cmd(apio, *args)
+        sb.assert_ok(result)
+
         # -- 'apio test'
         args = ["test"] + proj_arg
         result = sb.invoke_apio_cmd(apio, *args)
