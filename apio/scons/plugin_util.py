@@ -522,8 +522,7 @@ def source_files(apio_env: ApioEnv) -> Tuple[List[str], List[str]]:
     return (synth_srcs, test_srcs)
 
 
-# R0801: Similar lines in 2 files
-# pylint: disable=R0801
+# pylint: disable=duplicate-code
 def _print_pnr_utilization_report(report: Dict[str, any]):
     table = Table(
         show_header=True,

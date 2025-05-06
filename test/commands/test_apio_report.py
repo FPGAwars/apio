@@ -6,8 +6,7 @@ from test.conftest import ApioRunner
 from apio.commands.apio import cli as apio
 
 
-# R0801: Similar lines in 2 files
-# pylint: disable=R0801
+# pylint: disable=duplicate-code
 def test_report_no_apio(apio_runner: ApioRunner):
     """Tests the apio report command without an apio.ini file."""
 

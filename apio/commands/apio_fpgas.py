@@ -22,8 +22,7 @@ from apio.utils import util, cmd_util
 from apio.commands import options
 
 
-# R0801: Similar lines in 2 files
-# pylint: disable=R0801
+# pylint: disable=duplicate-code
 # pylint: disable=too-many-instance-attributes
 @dataclass(frozen=True)
 class Entry:
@@ -143,8 +142,7 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
 
 # -------- apio fpgas
 
-# R0801: Similar lines in 2 files
-# pylint: disable = R0801
+# pylint: disable=duplicate-code
 
 # -- Text in the rich-text format of the python rich library.
 APIO_FPGAS_HELP = """

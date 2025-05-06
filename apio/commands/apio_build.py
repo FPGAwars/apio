@@ -73,8 +73,7 @@ def cli(
     # -- Create the scons manager.
     scons = SCons(apio_ctx)
 
-    # R0801: Similar lines in 2 files
-    # pylint: disable=R0801
+    # pylint: disable=duplicate-code
     # -- Build the project with the given parameters
     exit_code = scons.build(
         Verbosity(all=verbose, synth=verbose_synth, pnr=verbose_pnr)

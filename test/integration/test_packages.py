@@ -8,8 +8,7 @@ import pytest
 from apio.commands.apio import cli as apio
 
 
-# R0801: Similar lines in 2 files
-# pylint: disable=R0801
+# pylint: disable=duplicate-code
 def test_packages(apio_runner: ApioRunner):
     """Tests listing, installation and uninstallation of packages."""
 

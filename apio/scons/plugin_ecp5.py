@@ -10,8 +10,7 @@
 
 """Apio scons plugin for the ecp5 architecture."""
 
-# R0801: Similar lines
-# pylint: disable=R0801
+# pylint: disable=duplicate-code
 
 from pathlib import Path
 from SCons.Script import Builder

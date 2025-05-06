@@ -61,8 +61,7 @@ def _list_themes_colors():
     print()
 
 
-# R0801: Similar lines in 2 files
-# pylint: disable=R0801
+# pylint: disable=duplicate-code
 def _list_preferences(apio_ctx: ApioContext):
     """Lists the preferences."""
 
