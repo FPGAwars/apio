@@ -509,10 +509,16 @@ def source_files(apio_env: ApioEnv) -> Tuple[List[str], List[str]]:
     synth_srcs = []
     test_srcs = []
     for file in files:
+        if BUILD_DIR in Path(file).parents:
+            # -- Ignore source files from the _build directory.
+            continue
         if has_testbench_name(file):
+            # -- Handle a testbench file.
             test_srcs.append(file)
         else:
+            # -- Handle a synthesis file.
             synth_srcs.append(file)
+
     return (synth_srcs, test_srcs)
 
 

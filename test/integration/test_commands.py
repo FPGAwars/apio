@@ -153,6 +153,51 @@ def test_project_with_legacy_board_name(apio_runner: ApioRunner):
         sb.assert_ok(result)
 
 
+def test_files_order(apio_runner: ApioRunner):
+    """Tests that source files are sorted in apio build command."""
+
+    # -- If the option 'offline' is passed, the test is skip
+    # -- (This test is slow and requires internet connectivity)
+    if apio_runner.offline_flag:
+        pytest.skip("requires internet connection")
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Fetch a working example.
+        result = sb.invoke_apio_cmd(
+            apio,
+            "examples",
+            "fetch",
+            "alhambra-ii/ledon",
+            terminal_mode=False,
+        )
+
+        # -- Add dummy source files
+        Path("aa").mkdir(parents=True)
+        Path("bb").mkdir(parents=True)
+        Path("aa/bb.v").touch()
+        Path("aa/cc.v").touch()
+        Path("bb/aa.v").touch()
+
+        # -- Add a fake source files in _build directory. It should not be
+        # -- picked up.
+        Path("_build").mkdir()
+        Path("_build/zzz.v").touch()
+
+        # -- 'apio build'
+        args = ["build"]
+        result = sb.invoke_apio_cmd(apio, *args)
+        sb.assert_ok(result)
+        assert "SUCCESS" in result.output
+
+        # -- Check that the source file from the _build directory was not
+        # -- picked up.
+        assert "_build/zzz.v" not in result.output
+
+        # -- Check that the files in the build command are sorted
+        assert "ledon.v aa/bb.v aa/cc.v bb/aa.v" in result.output
+
+
 # Too many statements (60/50) (too-many-statements)
 # pylint: disable=too-many-statements
 # R0801: Similar lines in 2 files
