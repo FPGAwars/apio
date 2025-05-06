@@ -15,6 +15,7 @@ from typing import Tuple, List
 import click
 from apio.common.apio_console import cout, cerror, cstyle
 from apio.common.apio_styles import EMPH3, SUCCESS, INFO
+from apio.common.common_util import sort_files
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import options
 from apio.managers import installer
@@ -114,7 +115,7 @@ def cli(
         sys.exit(1)
 
     # -- Sort files, case insensitive.
-    files = sorted(files, key=str.casefold)
+    files = sort_files(files)
 
     # -- Iterate the files and format one at a time. We could format
     # -- all of them at once but this way we can make the output more

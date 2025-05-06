@@ -27,6 +27,10 @@ The 'apio build' command compiles all .v files (e.g., my_module.v) in the \
 project directory, except those whose names end with '_tb' \
 (e.g., my_module_tb.v) which are assumed to be testbenches.
 
+[NOTE] The files are compiled in the order they are found in the sub \
+directories of the source tree. This provides a simple way to control the \
+compilation order by naming subdirectories for the desired build order.
+
 Examples:[code]
   apio build       # Build
   apio build -v    # Build with verbose info[/code]
