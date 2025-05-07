@@ -191,10 +191,13 @@ def test_files_order(apio_runner: ApioRunner):
 
         # -- Check that the source file from the _build directory was not
         # -- picked up.
-        assert "_build/zzz.v" not in result.output
+        assert "zzz.v" not in result.output
 
-        # -- Check that the files in the build command are sorted
-        assert "ledon.v aa/bb.v aa/cc.v bb/aa.v" in result.output
+        # -- Check that the files in the build command are sorted.
+        # -- We adjust for the "/" vs "\" difference between Windows and Linux.
+        expected_order = ["ledon.v", "aa/bb.v", "aa/cc.v", "bb/aa.v"]
+        expected_text = " ".join([str(Path(f)) for f in expected_order])
+        assert expected_text in result.output
 
 
 # Too many statements (60/50) (too-many-statements)
