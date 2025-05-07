@@ -1,40 +1,40 @@
 """Test for common_utils.py."""
 
 from pathlib import Path
-from apio.common.common_util import sort_files, file_sort_compare_func
+from apio.common.common_util import sort_files, file_sort_key_func
 
 
 def test_file_sort_compare_func():
     """Test"""
 
-    # -- Use a shortcut for the function name.
-    f = file_sort_compare_func
+    # -- A shortcut to the tested key function.
+    key = file_sort_key_func
 
-    assert f("a", "a") == 0
-    assert f("A", "a") == 0
-    assert f("a", "A") == 0
-    assert f("A", "A") == 0
+    assert key("a") == key("a")
+    assert key("A") == key("a")
+    assert key("a") == key("A")
+    assert key("A") == key("A")
 
-    assert f("a", "b") == -1
-    assert f("A", "b") == -1
-    assert f("a", "B") == -1
-    assert f("A", "B") == -1
+    assert key("a") < key("b")
+    assert key("A") < key("b")
+    assert key("a") < key("B")
+    assert key("A") < key("B")
 
-    assert f("b", "a") == 1
-    assert f("B", "a") == 1
-    assert f("b", "A") == 1
-    assert f("B", "A") == 1
+    assert key("b") > key("a")
+    assert key("B") > key("a")
+    assert key("b") > key("A")
+    assert key("B") > key("A")
 
-    assert f("b", "a/a") == -1
-    assert f("a/a", "b") == 1
+    assert key("b") < key("a/a")
+    assert key("a/a") > key("b")
 
-    assert f("a/a", "a/b") == -1
-    assert f("a/b", "a/ ") == 1
+    assert key("a/a") < key("a/b")
+    assert key("a/b") > key("a/ ")
 
-    assert f(Path("a"), Path("b")) == -1
-    assert f(Path("b"), Path("A")) == 1
-    assert f(Path("a"), Path("a")) == 0
-    assert f(Path("B"), Path("a")) == 1
+    assert key(Path("a")) < key(Path("b"))
+    assert key(Path("b")) > key(Path("A"))
+    assert key(Path("a")) == key(Path("a"))
+    assert key(Path("B")) > key(Path("a"))
 
 
 def test_sort_files():
