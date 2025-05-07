@@ -9,8 +9,7 @@ import pytest
 from apio.commands.apio import cli as apio
 
 
-# R0801: Similar lines in 2 files
-# pylint: disable=R0801
+# pylint: disable=duplicate-code
 def test_examples(apio_runner: ApioRunner):
     """Tests the listing and fetching apio examples."""
 

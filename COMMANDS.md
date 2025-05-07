@@ -204,6 +204,11 @@ Usage: apio build [OPTIONS]
   the project directory, except those whose names end with '_tb' (e.g.,
   my_module_tb.v) which are assumed to be testbenches.
 
+  [NOTE] The files are compiled in the order they are found in the sub
+  directories of the source tree. This provides a simple way to control
+  the compilation order by naming subdirectories for the desired build
+  order.
+
   Examples:
     apio build       # Build
     apio build -v    # Build with verbose info
@@ -586,6 +591,9 @@ Usage: apio format [OPTIONS] [FILES]...
     apio format                    # Format all source files.
     apio format -v                 # Same but with verbose output.
     apio format main.v main_tb.v   # Format the two files.
+
+  [NOTE] The file arguments are relative to the project directory, even
+  if the --project-dir option is used.
 
   The format command utilizes the format tool from the Verible project,
   which can be configured by setting its flags in the apio.ini project

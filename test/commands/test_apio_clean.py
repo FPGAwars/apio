@@ -19,8 +19,7 @@ def test_clean_without_apio_ini(apio_runner: ApioRunner):
         assert "Error: Missing project file apio.ini" in result.output
 
 
-# R0801: Similar lines in 2 files
-# pylint: disable=R0801
+# pylint: disable=duplicate-code
 def test_clean_with_apio_ini(apio_runner: ApioRunner):
     """Tests the apio clean command with an apio.ini file."""
 

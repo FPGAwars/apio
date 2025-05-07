@@ -44,8 +44,7 @@ def examples_sort_key(entry: ExampleInfo) -> Any:
     return (util.fpga_arch_sort_key(entry.fpga_arch), entry.name)
 
 
-# R0801: Similar lines in 2 files
-# pylint: disable=R0801
+# pylint: disable=duplicate-code
 def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
     """Print all the examples available. Return a process exit
     code, 0 if ok, non zero otherwise."""

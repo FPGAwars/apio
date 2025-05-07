@@ -10,8 +10,7 @@ from configobj import ConfigObj
 from apio.commands.apio import cli as apio
 
 
-# R0801: Similar lines in 2 files
-# pylint: disable=R0801
+# pylint: disable=duplicate-code
 def _check_ini_file(apio_ini: Path, expected_vars: Dict[str, str]) -> None:
     """Assert that apio.ini contains exactly the given vars."""
     # Read the ini file.

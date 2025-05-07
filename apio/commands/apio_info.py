@@ -219,8 +219,7 @@ same functionality.
 """
 
 
-# R0801: Similar lines in 2 files
-# pylint: disable=R0801
+# pylint: disable=duplicate-code
 @click.command(
     name="resources",
     cls=ApioCommand,
@@ -292,8 +291,7 @@ environment variable 'APIO_HOME'.
 """
 
 
-# R0801: Similar lines in 2 files
-# pylint: disable=R0801
+# pylint: disable=duplicate-code
 @click.command(
     name="system",
     cls=ApioCommand,
@@ -448,8 +446,7 @@ print_option = click.option(
 )
 
 
-# R0801: Similar lines in 2 files
-# pylint: disable=R0801
+# pylint: disable=duplicate-code
 # pylint: disable=too-many-locals
 @click.command(
     name="colors",

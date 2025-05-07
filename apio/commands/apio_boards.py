@@ -24,8 +24,7 @@ from apio.commands import options
 from apio.managers.examples import Examples
 
 
-# R0801: Similar lines in 2 files
-# pylint: disable=R0801
+# pylint: disable=duplicate-code
 # pylint: disable=too-many-instance-attributes
 @dataclass(frozen=True)
 class Entry:
@@ -155,8 +154,8 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
 
 # ------------- apio boards
 
-# R0801: Similar lines in 2 files
-# pylint: disable = R0801
+# pylint: disable=duplicate-code
+
 
 # -- Text in the rich-text format of the python rich library.
 APIO_BOARDS_HELP = """

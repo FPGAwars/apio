@@ -14,24 +14,24 @@ on:
 jobs:
     test:
         runs-on: ${{ matrix.os }}
-        
+
         defaults:
           run:
             shell: bash
-            
+
         strategy:
-            max-parallel: 3
+            # max-parallel: 3
             matrix:
                 os: [ubuntu-22.04, macos-latest, windows-latest]
                 python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
                 # Windows test are almost x10 slower on github so we drop the
-                # less critical ones.                
+                # less critical ones.
                 exclude:
                   - os: windows-latest
                     python-version: '3.9'
                   - os: windows-latest
                     python-version: '3.10'
-                  
+
         steps:
             - name: Checkout sources
               uses: actions/checkout@v3
@@ -53,4 +53,4 @@ jobs:
                   pyver=${pyver//./}
                   echo "pyver: [$pyver]"
                   python -m tox --skip-missing-interpreters false -e lint,$pyver
-                  
+

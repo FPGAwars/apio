@@ -11,8 +11,7 @@ from google.protobuf import text_format
 from apio.scons.apio_env import ApioEnv
 from apio.common.proto.apio_pb2 import SconsParams, TargetParams
 
-# R0801: Similar lines in 2 files
-# pylint: disable=R0801
+# pylint: disable=duplicate-code
 
 TEST_PARAMS = """
 timestamp: "20123412052"

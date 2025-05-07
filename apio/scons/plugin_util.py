@@ -29,6 +29,7 @@ from SCons.Script.SConscript import SConsEnvironment
 from SCons.Node import NodeList
 from SCons.Node.Alias import Alias
 from apio.scons.apio_env import ApioEnv
+from apio.common.common_util import sort_files
 from apio.common.apio_consts import TARGET, BUILD_DIR
 from apio.common.apio_console import cout, cerror, cwarning, cprint
 from apio.common.apio_styles import INFO, BORDER, EMPH1, EMPH2, EMPH3
@@ -501,19 +502,27 @@ def source_files(apio_env: ApioEnv) -> Tuple[List[str], List[str]]:
         )
     files = files + glob("**/*.v", recursive=True)
 
-    # Split file names to synth files and testbench file lists
+    # -- Sort the files by directory and then by file name.
+    files = sort_files(files)
+
+    # -- Split file names to synth files and testbench file lists
     synth_srcs = []
     test_srcs = []
     for file in files:
+        if BUILD_DIR in Path(file).parents:
+            # -- Ignore source files from the _build directory.
+            continue
         if has_testbench_name(file):
+            # -- Handle a testbench file.
             test_srcs.append(file)
         else:
+            # -- Handle a synthesis file.
             synth_srcs.append(file)
+
     return (synth_srcs, test_srcs)
 
 
-# R0801: Similar lines in 2 files
-# pylint: disable=R0801
+# pylint: disable=duplicate-code
 def _print_pnr_utilization_report(report: Dict[str, any]):
     table = Table(
         show_header=True,
@@ -714,7 +723,7 @@ def basename(file_name: str) -> str:
 
 def make_verilator_config_builder(lib_path: Path):
     """Create a scons Builder that writes a verilator config file
-    (hardware.vlt) that supresses warnings in the lib directory."""
+    (hardware.vlt) that suppresses warnings in the lib directory."""
     assert isinstance(lib_path, Path), lib_path
 
     # -- Construct a glob of all library files.
@@ -723,7 +732,7 @@ def make_verilator_config_builder(lib_path: Path):
     # -- Escape for windows. A single backslash is converted into two.
     glob_str = str(glob_path).replace("\\", "\\\\")
 
-    # -- Generate the files lines.  We supress a union of all the errors we
+    # -- Generate the files lines.  We suppress a union of all the errors we
     # -- encountered in all the architectures.
     lines = ["`verilator_config"]
     for rule in [

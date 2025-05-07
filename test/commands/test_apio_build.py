@@ -6,8 +6,7 @@ from test.conftest import ApioRunner
 from apio.commands.apio import cli as apio
 
 
-# R0801: Similar lines in 2 files
-# pylint: disable=R0801
+# pylint: disable=duplicate-code
 def test_build_without_apio_init(apio_runner: ApioRunner):
     """Tests build with various valid and invalid apio variation, all tests
     are offline and without any apio package installed."""
