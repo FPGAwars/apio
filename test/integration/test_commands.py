@@ -160,7 +160,7 @@ def test_files_order(apio_runner: ApioRunner):
     if apio_runner.offline_flag:
         pytest.skip("requires internet connection")
 
-    with apio_runner.in_sandbox() as sb:
+    with apio_runner.in_sandbox(shared_home=True) as sb:
 
         # -- Fetch a working example.
         result = sb.invoke_apio_cmd(
