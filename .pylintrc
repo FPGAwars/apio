@@ -1,0 +1,5 @@
+# Configuration file for pylint.
+
+[SIMILARITIES]
+# Reducing the sensitivity of duplicate code (default is 4)
+min-similarity-lines=15

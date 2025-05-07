@@ -20,7 +20,6 @@ from apio.commands import options
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
 
-# pylint: disable=duplicate-code
 def print_packages_report(apio_ctx: ApioContext) -> None:
     """A common function to print the state of the packages."""
 

@@ -22,7 +22,6 @@ from apio.utils import util, cmd_util
 from apio.commands import options
 
 
-# pylint: disable=duplicate-code
 # pylint: disable=too-many-instance-attributes
 @dataclass(frozen=True)
 class Entry:
@@ -142,7 +141,6 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
 
 # -------- apio fpgas
 
-# pylint: disable=duplicate-code
 
 # -- Text in the rich-text format of the python rich library.
 APIO_FPGAS_HELP = """

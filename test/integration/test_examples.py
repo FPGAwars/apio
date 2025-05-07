@@ -9,7 +9,6 @@ import pytest
 from apio.commands.apio import cli as apio
 
 
-# pylint: disable=duplicate-code
 def test_examples(apio_runner: ApioRunner):
     """Tests the listing and fetching apio examples."""
 

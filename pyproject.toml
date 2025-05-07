@@ -59,5 +59,5 @@ apio = "apio.__main__:main"
 line-length = 79
 target-version = ['py39']
 
-[tool.pylint.messages_control]
-disable = [ ]
+# NOTE: For pylint control see .pylintrc in this directory.
+# It allows controls that pyproject.toml doesn't support.

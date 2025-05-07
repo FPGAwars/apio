@@ -219,7 +219,6 @@ same functionality.
 """
 
 
-# pylint: disable=duplicate-code
 @click.command(
     name="resources",
     cls=ApioCommand,
@@ -291,7 +290,6 @@ environment variable 'APIO_HOME'.
 """
 
 
-# pylint: disable=duplicate-code
 @click.command(
     name="system",
     cls=ApioCommand,
@@ -446,7 +444,6 @@ print_option = click.option(
 )
 
 
-# pylint: disable=duplicate-code
 # pylint: disable=too-many-locals
 @click.command(
     name="colors",

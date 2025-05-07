@@ -24,7 +24,6 @@ from apio.commands import options
 from apio.managers.examples import Examples
 
 
-# pylint: disable=duplicate-code
 # pylint: disable=too-many-instance-attributes
 @dataclass(frozen=True)
 class Entry:
@@ -153,8 +152,6 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
 
 
 # ------------- apio boards
-
-# pylint: disable=duplicate-code
 
 
 # -- Text in the rich-text format of the python rich library.

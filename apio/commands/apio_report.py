@@ -31,7 +31,6 @@ Examples:[code]
 """
 
 
-# pylint: disable=duplicate-code
 @click.command(
     name="report",
     cls=cmd_util.ApioCommand,

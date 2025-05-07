@@ -61,7 +61,6 @@ def _list_themes_colors():
     print()
 
 
-# pylint: disable=duplicate-code
 def _list_preferences(apio_ctx: ApioContext):
     """Lists the preferences."""
 

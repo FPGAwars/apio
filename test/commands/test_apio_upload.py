@@ -6,7 +6,6 @@ from test.conftest import ApioRunner
 from apio.commands.apio import cli as apio
 
 
-# pylint: disable=duplicate-code
 def test_upload_without_apio_ini(apio_runner: ApioRunner):
     """Test: apio upload
     when no apio.ini file is given

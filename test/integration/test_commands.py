@@ -85,7 +85,6 @@ def test_boards_list_ok(apio_runner: ApioRunner):
         assert "Total of 1 board" not in result.output
 
 
-# pylint: disable=duplicate-code
 def test_utilities(apio_runner: ApioRunner):
     """Tests apio utility commands."""
 
@@ -202,7 +201,6 @@ def test_files_order(apio_runner: ApioRunner):
 
 # Too many statements (60/50) (too-many-statements)
 # pylint: disable=too-many-statements
-# pylint: disable=duplicate-code
 # R0913: Too many arguments (6/5) (too-many-arguments)
 # pylint: disable=too-many-arguments
 def _test_project(
