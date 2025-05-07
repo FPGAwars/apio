@@ -1,5 +1,9 @@
 # Configuration file for pylint.
 
+[MESSAGES CONTROL]
+# Do not warn about TODOs.
+disable=fixme
+
 [SIMILARITIES]
 # Reducing the sensitivity of duplicate code (default is 4)
 min-similarity-lines=15

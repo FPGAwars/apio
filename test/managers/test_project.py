@@ -5,7 +5,6 @@ Tests of project.py
 from test.conftest import ApioRunner
 from apio.apio_context import ApioContext, ApioContextScope
 
-# pylint: disable=fixme
 # TODO: Add more tests.
 
 

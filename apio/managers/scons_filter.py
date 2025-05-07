@@ -6,7 +6,6 @@
 # -- Author Jesús Arroyo
 # -- License GPLv2
 
-# pylint: disable=fixme
 # TODO: Implement range detectors for Fumo, Tinyprog, and Iceprog, similar to
 # the pnr detector. This will avoid matching of output from other programs.
 
@@ -227,8 +226,6 @@ class SconsFilter:
         if self._is_debug:
             cout(f"IGNORED: {line}")
 
-    # pylint: disable=too-many-return-statements
-    # pylint: disable=too-many-branches
     def on_line(self, pipe_id: PipeId, line: str) -> None:
         """A shared handler for stdout/err lines from the scons sub process.
         The handler writes both stdout and stderr lines to stdout, possibly
@@ -240,6 +237,9 @@ class SconsFilter:
         came from that program. That is to minimize the risk of matching lines
         from other programs. See the PNR detector for an example.
         """
+
+        # pylint: disable=too-many-return-statements
+        # pylint: disable=too-many-branches
 
         # -- Update the range detectors.
         in_pnr_verbose_range = self._pnr_detector.update(pipe_id, line)

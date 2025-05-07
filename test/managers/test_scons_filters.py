@@ -4,7 +4,6 @@ Tests of scons_filters.py
 
 from apio.managers.scons_filter import PnrRangeDetector, PipeId
 
-# pylint: disable=fixme
 # TODO: Add more tests.
 
 

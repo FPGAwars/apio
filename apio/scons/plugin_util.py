@@ -9,7 +9,6 @@
 # ---- License Apache v2
 """Helper functions for apio scons plugins."""
 
-# pylint: disable=consider-using-f-string
 
 import sys
 import os
@@ -233,6 +232,8 @@ def verilator_lint_action(
     * lib_files: Optional additional files to include.
     """
 
+    # pylint: disable=consider-using-f-string
+
     # -- Sanity checks
     assert apio_env.targeting("lint")
     assert apio_env.params.target.HasField("lint")
@@ -288,6 +289,8 @@ def waves_target(
     vcd_file_target is the simulator target that generated the vcd file
     with the signals. Returns the new targets.
     """
+
+    # pylint: disable=consider-using-f-string
 
     # -- Construct the commands list.
     commands = []
@@ -672,7 +675,6 @@ def get_programmer_cmd(apio_env: ApioEnv) -> str:
     return programmer_cmd
 
 
-# pylint: disable=too-many-arguments
 def iverilog_action(
     *,
     verbose: bool,
@@ -693,6 +695,9 @@ def iverilog_action(
     *
     * Returns the scons action string for the IVerilog command.
     """
+
+    # pylint: disable=too-many-arguments
+    # pylint: disable=consider-using-f-string
 
     # Escaping for windows. '\' -> '\\'
     escaped_vcd_output_name = vcd_output_name.replace("\\", "\\\\")

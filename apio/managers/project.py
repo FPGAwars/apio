@@ -114,12 +114,13 @@ REQUIRED_OPTIONS = {
 }
 
 
-# pylint: disable=too-few-public-methods
 class ProjectResolver(ABC):
     """An abstract class with services that are needed for project validation.
     Generally speaking it provides a subset of the functionality of ApioContext
     and we use it to avoid a cyclic import between Project and ApioContext.
     """
+
+    # pylint: disable=too-few-public-methods
 
     @abstractmethod
     def lookup_board_name(self, board: str) -> str:

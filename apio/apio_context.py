@@ -82,9 +82,10 @@ class ApioContextScope(Enum):
     PROJECT_REQUIRED = 3
 
 
-# pylint: disable=too-many-instance-attributes
 class ApioContext:
     """Apio context. Class for accessing apio resources and configurations."""
+
+    # pylint: disable=too-many-instance-attributes
 
     def __init__(
         self,
@@ -554,8 +555,9 @@ class ApioContext:
         return "windows" in self.platform_id
 
 
-# pylint: disable=too-few-public-methods
 class _ProjectResolverImpl(ProjectResolver):
+    # pylint: disable=too-few-public-methods
+
     def __init__(self, apio_context: ApioContext):
         """When ApioContext instances this object, ApioContext is fully
         constructed, except for the project field."""

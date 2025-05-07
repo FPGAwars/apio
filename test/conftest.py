@@ -86,10 +86,6 @@ class ApioSandbox:
         """Returns the sandbox's apio packages dir."""
         return self.home_dir / "packages"
 
-    # R0913: Too many arguments (7/5) (too-many-arguments)
-    # pylint: disable=R0913
-    # W0622: Redefining built-in 'input' (redefined-builtin)
-    # pylint: disable=W0622
     def invoke_apio_cmd(
         self,
         cli,
@@ -101,6 +97,10 @@ class ApioSandbox:
         **extra,
     ):
         """Invoke an apio command."""
+
+        # pylint: disable=too-many-arguments
+        # W0622: Redefining built-in 'input' (redefined-builtin)
+        # pylint: disable=redefined-builtin
 
         print(f"\nInvoking apio command [{cli.name}], args={args}.")
 

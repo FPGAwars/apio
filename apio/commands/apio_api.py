@@ -78,7 +78,6 @@ output_option = click.option(
 )
 
 
-# pylint: disable=too-many-locals
 @click.command(
     name="info",
     cls=ApioCommand,
@@ -97,6 +96,8 @@ def _info_cli(
     force: bool,
 ):
     """Implements the 'apio apio info' command."""
+
+    # pylint: disable=too-many-locals
 
     # -- Should have at list one section
     if not sections:

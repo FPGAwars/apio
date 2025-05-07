@@ -351,10 +351,11 @@ def get_tinyprog_meta() -> list:
     return meta
 
 
-# pylint: disable=E1101
-# -- E1101: Instance of 'module' has no '__file__' member (no-member)
 def get_bin_dir() -> Path:
     """Get the Apio executable Path"""
+
+    # E1101: Instance of 'module' has no '__file__' member (no-member)
+    # pylint: disable=no-member
 
     # -- Get the apio main module
     main_mod = sys.modules["__main__"]

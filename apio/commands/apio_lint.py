@@ -69,8 +69,6 @@ Examples:[code]
 """
 
 
-# pylint: disable=too-many-arguments
-# pylint: disable=too-many-positional-arguments
 @click.command(
     name="lint",
     cls=cmd_util.ApioCommand,
@@ -97,6 +95,9 @@ def cli(
     project_dir: Path,
 ):
     """Lint the verilog code."""
+
+    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-positional-arguments
 
     # -- Create the apio context.
     apio_ctx = ApioContext(

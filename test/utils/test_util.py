@@ -6,7 +6,6 @@ import os
 import pytest
 from apio.utils.util import plurality, list_plurality, is_debug
 
-# pylint: disable=fixme
 # TODO: Add more tests.
 
 

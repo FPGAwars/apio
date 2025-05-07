@@ -444,7 +444,6 @@ print_option = click.option(
 )
 
 
-# pylint: disable=too-many-locals
 @click.command(
     name="colors",
     cls=ApioCommand,
@@ -463,6 +462,8 @@ def _colors_cli(
     print_: bool,
 ):
     """Implements the 'apio info colors' command."""
+
+    # pylint: disable=too-many-locals
 
     # -- Make pylint happy.
     _ = (rich_,)

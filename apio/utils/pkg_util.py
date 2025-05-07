@@ -241,12 +241,13 @@ def package_version_ok(
     return current_ver == remote_ver
 
 
-# pylint: disable=too-many-branches
 def scan_packages(
     apio_ctx: ApioContext, *, cached_config_ok: bool, verbose: bool
 ) -> PackageScanResults:
     """Scans the available and installed packages and returns
     the findings as a PackageScanResults object."""
+
+    # pylint: disable=too-many-branches
 
     # Initialize the result with empty data.
     result = PackageScanResults([], [], [], [], [], [], [])
