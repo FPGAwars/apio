@@ -1,6 +1,4 @@
-"""
-  Test for the "apio lint" command
-"""
+"""Test for the "apio lint" command."""
 
 from test.conftest import ApioRunner
 from apio.commands.apio import cli as apio

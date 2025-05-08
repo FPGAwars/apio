@@ -15,9 +15,6 @@ import platform
 import rich.console
 from apio.common.proto.apio_pb2 import RichLibWindowsParams
 
-# For accessing rich.console._windows_console_features
-# pylint: disable=protected-access
-
 
 def fix_windows_stdout_encoding() -> bool:
     """Called on the apio process (parent) to fix its output encoding.
@@ -37,6 +34,10 @@ def fix_windows_stdout_encoding() -> bool:
 def get_workaround_params() -> RichLibWindowsParams:
     """Called on the apio (parent) process side, when running on windows,
     to collect the parameters for the rich library workaround."""
+
+    # For accessing rich.console._windows_console_features
+    # pylint: disable=protected-access
+
     result = RichLibWindowsParams(
         vt=rich.console._windows_console_features.vt,
         truecolor=rich.console._windows_console_features.truecolor,
@@ -49,6 +50,9 @@ def apply_workaround(params: RichLibWindowsParams):
     """Called on the scons (child) process side, when running on windows,
     to apply the the workaround for the rich library."""
     assert params.IsInitialized, params
+
+    # For accessing rich.console._windows_console_features
+    # pylint: disable=protected-access
 
     # -- This takes care of the table graphic box.
     # -- See https://github.com/Textualize/rich/issues/3625

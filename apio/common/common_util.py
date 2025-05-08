@@ -11,9 +11,8 @@
 scons (child) process."""
 
 import os
-import functools
 from pathlib import Path
-from typing import List, Union
+from typing import List, Union, Any
 import debugpy
 from apio.common.apio_styles import EMPH3, SUCCESS
 
@@ -44,23 +43,16 @@ def maybe_wait_for_remote_debugger(env_var_name: str):
         )
 
 
-def file_sort_compare_func(a: Union[str, Path], b: Union[str, Path]) -> int:
-    """Compare functions for sorting files. It sorts first by directory
-    and then by file name. Returns -1 if a < b, 0 if a == b and 1 if a > b."""
-    # -- files as Path objects.
-    path1 = Path(a)
-    path2 = Path(b)
-
-    # -- List of parents.
-    parents1: List[str] = [s.lower() for s in path1.parent.parts]
-    parents2: List[str] = [s.lower() for s in path2.parent.parts]
-
-    # -- Key to sort by parents and then by name.
-    key1 = [parents1, path1.name.lower()]
-    key2 = [parents2, path2.name.lower()]
-
-    # -- Resolve as -1, 0 or 1.
-    return (key1 > key2) - (key1 < key2)
+def file_sort_key_func(f: Union[str, Path]) -> Any:
+    """Given a file name or path, return a key to sort a file list.
+    The order is lexicography and case sensitive."""
+    path = Path(f)
+    # -- List of directory names in lower case.
+    parents: List[str] = [s.lower() for s in path.parent.parts]
+    # -- File name in lower case.
+    name: str = path.name.lower()
+    # -- Sort by directory and then by file name.
+    return [parents, name]
 
 
 def sort_files(files: List[str]) -> List[str]:
@@ -68,4 +60,4 @@ def sort_files(files: List[str]) -> List[str]:
     A new sorted list is returned.
     """
     # -- Sort the files by directory and then by file name.
-    return sorted(files, key=functools.cmp_to_key(file_sort_compare_func))
+    return sorted(files, key=file_sort_key_func)

@@ -29,7 +29,6 @@ from apio.scons.plugin_util import (
 )
 
 
-# pylint: disable=consider-using-f-string
 class PluginGowin(PluginBase):
     """Apio scons plugin for the ice40 architecture."""
 
@@ -53,6 +52,9 @@ class PluginGowin(PluginBase):
     # @overrides
     def synth_builder(self) -> BuilderBase:
         """Creates and returns the synth builder."""
+
+        # pylint: disable=consider-using-f-string
+
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params
@@ -75,6 +77,9 @@ class PluginGowin(PluginBase):
     # @overrides
     def pnr_builder(self) -> BuilderBase:
         """Creates and returns the pnr builder."""
+
+        # pylint: disable=consider-using-f-string
+
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params
@@ -106,6 +111,9 @@ class PluginGowin(PluginBase):
     # @overrides
     def bitstream_builder(self) -> BuilderBase:
         """Creates and returns the bitstream builder."""
+
+        # pylint: disable=consider-using-f-string
+
         return Builder(
             action="gowin_pack -d {0} -o $TARGET $SOURCE".format(
                 self.apio_env.params.fpga_info.gowin.family

@@ -25,10 +25,12 @@ from apio.utils import cmd_util
 # ----------------------------------
 
 
-# W0622: Redefining built-in 'help'
-# pylint: disable=W0622
 def force_option_gen(*, help: str):
     """Generate a --force option with given help text."""
+
+    # W0622: Redefining built-in 'help'
+    # pylint: disable=redefined-builtin
+
     return click.option(
         "force",  # Var name
         "-f",
@@ -39,10 +41,12 @@ def force_option_gen(*, help: str):
     )
 
 
-# W0622: Redefining built-in 'help'
-# pylint: disable=W0622
 def list_option_gen(*, help: str):
     """Generate a --list option with given help text."""
+
+    # W0622: Redefining built-in 'help'
+    # pylint: disable=redefined-builtin
+
     return click.option(
         "list_",  # Var name. Deconflicting from python builtin 'list'.
         "-l",
@@ -53,13 +57,15 @@ def list_option_gen(*, help: str):
     )
 
 
-# W0622: Redefining built-in 'help'
-# pylint: disable=W0622
 def top_module_option_gen(
     *,
     help: str = "Set the top level module name.",
 ):
     """Generate a --top-module option with given help text."""
+
+    # W0622: Redefining built-in 'help'
+    # pylint: disable=redefined-builtin
+
     return click.option(
         "top_module",  # Var name.
         "-t",
@@ -74,6 +80,10 @@ def top_module_option_gen(
 
 def dst_option_gen(*, help: str):
     """Generate a --dst option with given help text."""
+
+    # W0622: Redefining built-in 'help'
+    # pylint: disable=redefined-builtin
+
     dst_option = click.option(
         "dst",  # Var name.
         "-d",

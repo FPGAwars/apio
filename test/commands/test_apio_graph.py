@@ -1,12 +1,9 @@
-"""
-  Test for the "apio graph" command
-"""
+"""Test for the "apio graph" command."""
 
 from test.conftest import ApioRunner
 from apio.commands.apio import cli as apio
 
 
-# pylint: disable=duplicate-code
 def test_graph_no_apio_ini(apio_runner: ApioRunner):
     """Test: apio graph with no apio.ini"""
 

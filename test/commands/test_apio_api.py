@@ -1,6 +1,4 @@
-"""
-  Test for the "apio api" command
-"""
+"""Test for the "apio api" command."""
 
 import json
 from test.conftest import ApioRunner

@@ -39,7 +39,6 @@ class ArchPluginInfo:
     clk_name_index: int
 
 
-# pylint: disable=consider-using-f-string
 class PluginBase:
     """Base apio arch plugin handler"""
 
@@ -105,6 +104,8 @@ class PluginBase:
     def yosys_dot_builder(self) -> BuilderBase:
         """Creates and returns the yosys dot builder. Should be called
         only when serving the graph command."""
+
+        # pylint: disable=consider-using-f-string
 
         # -- Sanity checks
         assert self.apio_env.targeting("graph")

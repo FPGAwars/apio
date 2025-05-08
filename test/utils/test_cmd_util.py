@@ -11,7 +11,6 @@ from apio.utils.cmd_util import (
     check_at_most_one_param,
 )
 
-# pylint: disable=fixme
 # TODO: Add more tests.
 
 

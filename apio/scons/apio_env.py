@@ -71,7 +71,6 @@ class ApioEnv:
         that name that contains a wrapper to that builder."""
         self.scons_env.Append(BUILDERS={builder_id: builder})
 
-    # pylint: disable=too-many-arguments
     def builder_target(
         self,
         *,
@@ -82,6 +81,9 @@ class ApioEnv:
         always_build: bool = False,
     ):
         """Creates an return a target that uses the builder with given id."""
+
+        # pylint: disable=too-many-arguments
+
         # -- Scons wraps the builder with a wrapper. We use it to create the
         # -- new target.
         builder_wrapper: BuilderWrapper = getattr(self.scons_env, builder_id)

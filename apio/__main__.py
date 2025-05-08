@@ -3,11 +3,11 @@
 
 import sys
 
-# pylint: disable=import-outside-toplevel
-
 
 def main():
     """Apio starting point."""
+
+    # pylint: disable=import-outside-toplevel
 
     # -- Handle the case in which we run under pyinstaller and the pyinstaller
     # -- program was invoked to run the scons subprocess. This case doesn't

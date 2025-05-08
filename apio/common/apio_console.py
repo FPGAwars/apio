@@ -64,13 +64,15 @@ _state: ConsoleState = None
 
 # NOTE: not declaring terminal_mode and  theme_name is Optional[] because it
 # causes the tests to fail with python 3.9.
-# pylint: disable=global-statement
 def configure(
     *,
     terminal_mode: TerminalMode = None,
     theme_name: str = None,
 ) -> None:
     """Change the apio console settings."""
+
+    # pylint: disable=global-statement
+
     global _state
 
     # -- Force utf-8 output encoding. This is a workaround for rich library

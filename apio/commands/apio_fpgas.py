@@ -22,11 +22,11 @@ from apio.utils import util, cmd_util
 from apio.commands import options
 
 
-# pylint: disable=duplicate-code
-# pylint: disable=too-many-instance-attributes
 @dataclass(frozen=True)
 class Entry:
     """A class to hold the field of a single line of the report."""
+
+    # pylint: disable=too-many-instance-attributes
 
     fpga: str
     board_count: int
@@ -42,9 +42,10 @@ class Entry:
         return (util.fpga_arch_sort_key(self.fpga_arch), self.fpga.lower())
 
 
-# pylint: disable=too-many-locals
 def list_fpgas(apio_ctx: ApioContext, verbose: bool):
     """Prints all the available FPGA definitions."""
+
+    # pylint: disable=too-many-locals
 
     # -- Collect a sparse dict with fpga ids to board count.
     boards_counts: Dict[str, int] = {}
@@ -142,7 +143,6 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
 
 # -------- apio fpgas
 
-# pylint: disable=duplicate-code
 
 # -- Text in the rich-text format of the python rich library.
 APIO_FPGAS_HELP = """

@@ -29,7 +29,6 @@ from apio.scons.plugin_util import (
 )
 
 
-# pylint: disable=consider-using-f-string
 class PluginIce40(PluginBase):
     """Apio scons plugin for the ice40 architecture."""
 
@@ -53,6 +52,9 @@ class PluginIce40(PluginBase):
     # @overrides
     def synth_builder(self) -> BuilderBase:
         """Creates and returns the synth builder."""
+
+        # pylint: disable=consider-using-f-string
+
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params
@@ -75,6 +77,9 @@ class PluginIce40(PluginBase):
     # @overrides
     def pnr_builder(self) -> BuilderBase:
         """Creates and returns the pnr builder."""
+
+        # pylint: disable=consider-using-f-string
+
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params

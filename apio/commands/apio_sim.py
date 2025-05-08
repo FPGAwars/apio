@@ -21,7 +21,6 @@ from apio.utils import cmd_util
 
 # --------- apio sim
 
-# pylint: disable=duplicate-code
 
 # -- Text in the rich-text format of the python rich library.
 APIO_SIM_HELP = """

@@ -339,7 +339,6 @@ class SCons:
         assert result.IsInitialized(), result
         return result
 
-    # pylint: disable=too-many-locals
     def _run(
         self,
         scons_command: str,
@@ -348,6 +347,8 @@ class SCons:
         uses_packages: bool,
     ):
         """Invoke an scons subprocess."""
+
+        # pylint: disable=too-many-locals
 
         # -- Pass to the scons process the name of the sconstruct file it
         # -- should use.

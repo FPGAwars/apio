@@ -24,11 +24,11 @@ from apio.commands import options
 from apio.managers.examples import Examples
 
 
-# pylint: disable=duplicate-code
-# pylint: disable=too-many-instance-attributes
 @dataclass(frozen=True)
 class Entry:
     """Holds the values of a single board report line."""
+
+    # pylint: disable=too-many-instance-attributes
 
     board: str
     examples_count: str
@@ -47,10 +47,10 @@ class Entry:
         return (util.fpga_arch_sort_key(self.fpga_arch), self.board.lower())
 
 
-# R0914: Too many local variables (17/15)
-# pylint: disable=R0914
 def list_boards(apio_ctx: ApioContext, verbose: bool):
     """Prints all the available board definitions."""
+
+    # pylint: disable=too-many-locals
 
     # -- Get examples counts by board. This is a sparse dictionary.
     examples = Examples(apio_ctx)
@@ -153,8 +153,6 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
 
 
 # ------------- apio boards
-
-# pylint: disable=duplicate-code
 
 
 # -- Text in the rich-text format of the python rich library.

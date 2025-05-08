@@ -1,6 +1,4 @@
-"""
-  Test for the "apio upgrade" command
-"""
+"""Test for the "apio upgrade" command."""
 
 from test.conftest import ApioRunner
 import pytest

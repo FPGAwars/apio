@@ -61,8 +61,6 @@ graph, and on Mac OS type 'open _build/hardware.svg'.
 """
 
 
-# pylint: disable=too-many-arguments
-# pylint: disable=too-many-positional-arguments
 @click.command(
     name="graph",
     cls=cmd_util.ApioCommand,
@@ -87,6 +85,10 @@ def cli(
     top_module: str,
 ):
     """Implements the apio graph command."""
+
+    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-positional-arguments
+
     # -- Make pylint happy.
     _ = (svg,)
 

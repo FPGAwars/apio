@@ -1,6 +1,4 @@
-"""
-  Test for the "apio preferences" command
-"""
+"""Test for the "apio preferences" command."""
 
 import re
 from test.conftest import ApioRunner

@@ -6,15 +6,16 @@ from test.conftest import ApioRunner
 from apio.managers.system import System, FtdiDevice
 from apio.apio_context import ApioContext, ApioContextScope
 
-# pylint: disable=fixme
 # TODO: Add more tests.
-
-# pylint: disable=protected-access
-# pylint: disable=use-implicit-booleaness-not-comparison
 
 
 def test_parse_lsftdi_devices(apio_runner: ApioRunner):
     """Test the parsing of the lsftdi command output."""
+
+    # Access to a protected member _parse_lsftdi_devices of a client class
+    # pylint: disable=protected-access
+
+    # pylint: disable=use-implicit-booleaness-not-comparison
 
     with apio_runner.in_sandbox():
 

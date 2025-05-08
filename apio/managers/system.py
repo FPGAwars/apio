@@ -173,7 +173,6 @@ class System:  # pragma: no cover
         installer.install_missing_packages_on_the_fly(self.apio_ctx)
         pkg_util.set_env_for_packages(self.apio_ctx, quiet=True)
 
-        # pylint: disable=fixme
         # TODO: Is this necessary or does windows accepts commands without
         # the '.exe' extension?
         if self.apio_ctx.is_windows:
@@ -256,7 +255,6 @@ class System:  # pragma: no cover
         # -- lines, we extract the information by field rather than by device
         # -- line. It's awkward, but it works.
 
-        # pylint: disable=fixme
         # TODO: Change the output format from a list of dicts to a list of
         # dataclass objects. Motivation is code quality.
 

@@ -1,6 +1,4 @@
-"""
-  Test different "apio" commands
-"""
+"""Test different "apio" commands."""
 
 from os import listdir
 from test.conftest import ApioRunner
@@ -8,7 +6,6 @@ import pytest
 from apio.commands.apio import cli as apio
 
 
-# pylint: disable=duplicate-code
 def test_packages(apio_runner: ApioRunner):
     """Tests listing, installation and uninstallation of packages."""
 

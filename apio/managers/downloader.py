@@ -11,7 +11,6 @@
 packages release repositories.
 """
 
-# pylint: disable=fixme
 # TODO: capture all the exceptions and return them as method return status.
 # Motivation is simplifying the usage.
 

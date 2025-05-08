@@ -13,7 +13,6 @@ from apio.common.proto.apio_pb2 import (
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.managers.scons import SCons
 
-# pylint: disable=duplicate-code
 
 TEST_APIO_INI_DICT = {
     # -- Required.
