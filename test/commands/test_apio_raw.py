@@ -1,6 +1,4 @@
-"""
-  Test for the "apio raw" command
-"""
+"""Test for the "apio raw" command."""
 
 from test.conftest import ApioRunner
 from apio.commands.apio import cli as apio

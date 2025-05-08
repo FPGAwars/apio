@@ -1,6 +1,4 @@
-"""
-  Test for the "apio system" command
-"""
+"""Test for the "apio system" command."""
 
 from test.conftest import ApioRunner
 from apio.commands.apio import cli as apio

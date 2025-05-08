@@ -7,7 +7,7 @@
 # ---- Platformio project
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
 # ---- License Apache v2
-"""Utility functionality for apio click commands. """
+"""Utility functionality for apio click commands."""
 
 import sys
 from abc import ABC, abstractmethod

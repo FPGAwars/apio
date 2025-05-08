@@ -1,6 +1,4 @@
-"""
-  Test for the "apio create" command
-"""
+"""Test for the "apio create" command."""
 
 from pathlib import Path
 from os.path import isfile, exists

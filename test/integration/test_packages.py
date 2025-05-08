@@ -1,6 +1,4 @@
-"""
-  Test different "apio" commands
-"""
+"""Test different "apio" commands."""
 
 from os import listdir
 from test.conftest import ApioRunner

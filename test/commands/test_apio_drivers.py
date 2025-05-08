@@ -1,6 +1,4 @@
-"""
-  Test for the "apio drivers" command
-"""
+"""Test for the "apio drivers" command."""
 
 from test.conftest import ApioRunner
 from apio.common.apio_console import cunstyle

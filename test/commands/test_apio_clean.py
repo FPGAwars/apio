@@ -1,6 +1,4 @@
-"""
-  Test for the "apio clean" command
-"""
+"""Test for the "apio clean" command."""
 
 from os.path import join
 from pathlib import Path
