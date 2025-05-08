@@ -2,9 +2,9 @@
 
 [![PyPI Version][pypi-image]][pypi-url] [![License][license-image]][license-url]
 
-[![Test](https://github.com/FPGAwars/apio/actions/workflows/test.yml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/test.yml)
-[![build-linux-x86-64-installer](https://github.com/FPGAwars/apio/actions/workflows/build-linux-x86-64-installer.yml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/build-linux-x86-64-installer.yml)
-[![build-darwin-arm64-installer](https://github.com/FPGAwars/apio/actions/workflows/build-darwin-arm64-installer.yml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/build-darwin-arm64-installer.yml)
+[![Test](https://github.com/FPGAwars/apio/actions/workflows/test.yml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/test.yml)<br>
+[![build-linux-x86-64-installer](https://github.com/FPGAwars/apio/actions/workflows/build-linux-x86-64-installer.yml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/build-linux-x86-64-installer.yml)<br>
+[![build-darwin-arm64-installer](https://github.com/FPGAwars/apio/actions/workflows/build-darwin-arm64-installer.yml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/build-darwin-arm64-installer.yml)<br>
 [![build-windows-amd64-installer](https://github.com/FPGAwars/apio/actions/workflows/build-windows-amd64-installer.yml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/build-windows-amd64-installer.yml)
 
 ![][linux-logo]&nbsp;&nbsp;&nbsp;![][macosx-logo]&nbsp;&nbsp;&nbsp;![][windows-logo]&nbsp;&nbsp;&nbsp;![][ubuntu-logo]&nbsp;&nbsp;&nbsp;![][raspbian-logo]
