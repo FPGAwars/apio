@@ -20,7 +20,7 @@ classifiers=[
         'Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)',
 ]
 description-file = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 requires = [
     'click==8.1.8',
     'colorama==0.4.6',
@@ -57,7 +57,7 @@ apio = "apio.__main__:main"
 
 [tool.black]
 line-length = 79
-target-version = ['py39']
+target-version = ['py311']
 
 # NOTE: For pylint control see .pylintrc in this directory.
 # It allows controls that pyproject.toml doesn't support.
