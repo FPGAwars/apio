@@ -15,7 +15,7 @@ from apio.common.proto.apio_pb2 import TargetParams, UploadParams
 from apio.scons.plugin_util import (
     get_constraint_file,
     verilog_src_scanner,
-    is_verilog_src,
+    is_source_file,
     has_testbench_name,
     source_files,
     get_programmer_cmd,
@@ -131,23 +131,23 @@ def test_verilog_src_scanner(apio_runner: ApioRunner):
         assert file_names == sorted(core_dependencies + file_dependencies)
 
 
-def test_is_verilog_src():
-    """Tests the is_verilog_src() function."""
+def test_is_source_file():
+    """Tests the is_source_file() function."""
 
     # -- Verilog and system-verilog source names,
-    assert is_verilog_src("aaa.v")
-    assert is_verilog_src("bbb/aaa.v")
-    assert is_verilog_src("bbb\\aaa.v")
-    assert is_verilog_src("aaatb.v")
-    assert is_verilog_src("aaa_tb.v")
-    assert is_verilog_src("aaa.sv")
-    assert is_verilog_src("bbb\\aaa.sv")
-    assert is_verilog_src("aaa_tb.sv")
+    assert is_source_file("aaa.v")
+    assert is_source_file("bbb/aaa.v")
+    assert is_source_file("bbb\\aaa.v")
+    assert is_source_file("aaatb.v")
+    assert is_source_file("aaa_tb.v")
+    assert is_source_file("aaa.sv")
+    assert is_source_file("bbb\\aaa.sv")
+    assert is_source_file("aaa_tb.sv")
 
     # -- Non verilog source names, system-verilog included.
-    assert not is_verilog_src("aaatb.vv")
-    assert not is_verilog_src("aaatb.V")
-    assert not is_verilog_src("aaa_tb.vh")
+    assert not is_source_file("aaatb.vv")
+    assert not is_source_file("aaatb.V")
+    assert not is_source_file("aaa_tb.vh")
 
 
 def test_has_testbench_name():

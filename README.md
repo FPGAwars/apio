@@ -14,7 +14,7 @@
 
 ## What is Apio?
 
-* Apio is an **extremely easy to use** toolbox for FPGA programming.
+* Apio is an **extremely easy to use** toolbox for programming FPGAs in **Verilog** and **System Verilog**.
 * Apio is **easy to install**, no more dealing with 'toolcahins', licenses, scripts, and makefiles.
 * Apio runs on a wide range of platforms, **Linux, Windows, Mac, and more**.
 * Apio is **open source and free to use**.
@@ -23,7 +23,7 @@
 * Apio can be used with **any text editor** and also **plays well with Visual Studio Code and github**.
 * Apio supports out of the **more than 80 boards** and **custom boards can be easily added**.
 * Apio provides out of the box tens of simple **project examples ready to build and upload**.
-* Apio currently supports the ``ICE40`` and ``ECP5`` FPGA architecture with ``GOWIN`` architecture in the works.
+* Apio currently supports the **ICE40** and **ECP5** FPGA architecture with **GOWIN** architecture in the works.
 
 ## The Apio philosophy
 

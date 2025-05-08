@@ -27,11 +27,12 @@
   * [apio info](#apio-info) - Apio's info and info.
     * [apio info cli](#apio-info-cli) - Command line conventions.
     * [apio info colors](#apio-info-colors) - Colors table.
+    * [apio info files](#apio-info-files) - Apio project files types.
     * [apio info options](#apio-info-options) - Apio.ini options.
     * [apio info platforms](#apio-info-platforms) - Supported platforms.
     * [apio info resources](#apio-info-resources) - Additional resources.
     * [apio info system](#apio-info-system) - Show system information.
-  * [apio lint](#apio-lint) - Lint the verilog code.
+  * [apio lint](#apio-lint) - Lint the source code.
   * [apio packages](#apio-packages) - Manage the apio packages.
     * [apio packages fix](#apio-packages-fix) - Fix broken apio packages.
     * [apio packages install](#apio-packages-install) - Install apio packages.
@@ -87,7 +88,7 @@ Build commands:
   apio clean        Delete the apio generated files.
 
 Verification commands:
-  apio lint         Lint the verilog code.
+  apio lint         Lint the source code.
   apio format       Format verilog source files.
   apio sim          Simulate a testbench with graphic results.
   apio test         Test all or a single verilog testbench module.
@@ -197,21 +198,22 @@ Options:
 ```
 Usage: apio build [OPTIONS]
 
-  The command 'apio build' processes the project’s source files and
-  generates a bitstream file, which can then be uploaded to your FPGA.
-
-  The 'apio build' command compiles all .v files (e.g., my_module.v) in
-  the project directory, except those whose names end with '_tb' (e.g.,
-  my_module_tb.v) which are assumed to be testbenches.
-
-  [NOTE] The files are compiled in the order they are found in the sub
-  directories of the source tree. This provides a simple way to control
-  the compilation order by naming subdirectories for the desired build
-  order.
+  The command 'apio build' processes the project’s synthesis source
+  files and generates a bitstream file, which can then be uploaded to
+  your FPGA.
 
   Examples:
-    apio build       # Build
-    apio build -v    # Build with verbose info
+    apio build                   # Typical usage
+    apio build -v                # Verbose info (all)
+    apio build --verbose-synth   # Verbose synthesis info
+    apio build --verbose-pnr     # Verbose place and route info
+
+  NOTES:
+  * The files are sorted in a deterministic lexicographic order.
+  * You can specify the name of the top module in apio.ini.
+  * The build command ignores testbench files (*_tb.v, and *_tb.sv).
+  * It is unnecessary to run 'apio build' before 'apio upload'.
+  * To force a rebuild from scratch use the command 'apio clean' first.
 
 Options:
   -p, --project-dir path  Set the root directory for the project.
@@ -582,7 +584,7 @@ Options:
 ```
 Usage: apio format [OPTIONS] [FILES]...
 
-  The command 'apio format' formats Verilog source files to ensure
+  The command 'apio format' formats the project's source files to ensure
   consistency and style without altering their semantics. The command
   accepts the names of specific source files to format or formats all
   project source files by default.
@@ -654,7 +656,7 @@ Options:
 Usage: apio graph [OPTIONS]
 
   The command 'apio graph' generates a graphical representation of the
-  Verilog code in the project.
+  design.
 
   Examples:
     apio graph               # Generate a svg file.
@@ -695,6 +697,7 @@ Options:
 Documentation:
   apio info options    Apio.ini options.
   apio info cli        Command line conventions.
+  apio info files      Apio project files types.
   apio info resources  Additional resources.
 
 Information:
@@ -747,6 +750,24 @@ Options:
   -c, --click  Output using the click lib.
   -p, --print  Output using python's print().
   -h, --help   Show this message and exit.
+
+```
+
+<br>
+
+### apio info files
+
+```
+Usage: apio info files [OPTIONS]
+
+  The command 'apio info options' provides information about the various
+  files types used in an Apio project.
+
+  Examples:
+    apio info files
+
+Options:
+  -h, --help  Show this message and exit.
 
 ```
 
@@ -840,7 +861,7 @@ Options:
 ```
 Usage: apio lint [OPTIONS]
 
-  The command 'apio lint' scans the project's Verilog code and reports
+  The command 'apio lint' scans the project's source files and reports
   errors, inconsistencies, and style violations. The command uses the
   Verilator tool, which is included in the standard Apio installation.
 
@@ -1069,16 +1090,21 @@ Usage: apio sim [OPTIONS] [TESTBENCH]
   The command 'apio sim' simulates the default or the specified
   testbench file and displays its simulation results in a graphical
   GTKWave window. The testbench is expected to have a name ending with
-  _tb, such as main_tb.v or main_tb.sv. The default testbench file can
-  be specified using the apio.ini option 'default-testbench'. If
+  _tb, such as 'main_tb.v' or 'main_tb.sv'. The default testbench file
+  can be specified using the apio.ini option 'default-testbench'. If
   'default-testbench' is not specified and the project has exactly one
   testbench file, that file will be used as the default testbench.
 
   Example:
     apio sim                   # Simulate the default testbench.
     apio sim my_module_tb.v    # Simulate the specified testbench.
+    apio sim my_module_tb.sv   # Simulate the specified testbench.
 
-  [Important] Avoid using the Verilog '$dumpfile()' function in your
+  [NOTE] Testbench specification is always the testbench file path
+  relative to the project directory, even if using the '--project-dir'
+  option.
+
+  [IMPORTANT] Avoid using the Verilog '$dumpfile()' function in your
   testbenches, as this may override the default name and location Apio
   sets for the generated .vcd file.
 
@@ -1118,7 +1144,11 @@ Usage: apio test [OPTIONS] [TESTBENCH_FILE]
     apio test                 # Run all *_tb.v testbenches.
     apio test my_module_tb.v  # Run a single testbench.
 
-  [Important] Avoid using the Verilog '$dumpfile()' function in your
+  [NOTE] Testbench specification is always the testbench file path
+  relative to the project directory, even if using the '--project-dir'
+  option.
+
+  [IMPORTANT] Avoid using the Verilog '$dumpfile()' function in your
   testbenches, as this may override the default name and location Apio
   sets for the generated .vcd file.
 

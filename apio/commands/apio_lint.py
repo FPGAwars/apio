@@ -58,7 +58,7 @@ warn_option = click.option(
 
 # -- Text in the rich-text format of the python rich library.
 APIO_LINT_HELP = """
-The command 'apio lint' scans the project's Verilog code and reports errors, \
+The command 'apio lint' scans the project's source files and reports errors, \
 inconsistencies, and style violations. The command uses the Verilator tool, \
 which is included in the standard Apio installation.
 
@@ -72,7 +72,7 @@ Examples:[code]
 @click.command(
     name="lint",
     cls=cmd_util.ApioCommand,
-    short_help="Lint the verilog code.",
+    short_help="Lint the source code.",
     help=APIO_LINT_HELP,
 )
 @click.pass_context
@@ -94,7 +94,7 @@ def cli(
     top_module: str,
     project_dir: Path,
 ):
-    """Lint the verilog code."""
+    """Lint the source code."""
 
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-positional-arguments

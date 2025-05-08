@@ -27,14 +27,15 @@ APIO_SIM_HELP = """
 The command 'apio sim' simulates the default or the specified testbench file \
 and displays its simulation results in a graphical GTKWave window. \
 The testbench is expected to have a name ending with _tb, such as \
-main_tb.v or main_tb.sv. The default testbench file can be specified using \
-the apio.ini option 'default-testbench'. If 'default-testbench' is not \
+'main_tb.v' or 'main_tb.sv'. The default testbench file can be specified \
+using the apio.ini option 'default-testbench'. If 'default-testbench' is not \
 specified and the project has exactly one testbench file, that file will be \
 used as the default testbench.
 
 Example:[code]
   apio sim                   # Simulate the default testbench.
-  apio sim my_module_tb.v    # Simulate the specified testbench.[/code]
+  apio sim my_module_tb.v    # Simulate the specified testbench.
+  apio sim my_module_tb.sv   # Simulate the specified testbench.[/code]
 
 [NOTE] Testbench specification is always the testbench file path relative to \
 the project directory, even if using the '--project-dir' option.

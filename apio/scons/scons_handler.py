@@ -402,8 +402,8 @@ class SconsHandler:
 
         apio_env = self.apio_env
 
-        # -- Collect a list of the synthesizable files (e.g. "main.v") and a
-        # -- list of the testbench files (e.g. "main_tb.v")
+        # -- Collect the lists of the synthesizable files (e.g. "main.v") and a
+        # -- testbench files (e.g. "main_tb.v")
         synth_srcs, test_srcs = source_files(apio_env)
 
         # -- A cleanup request is passed as scons -c option rather than as
