@@ -23,20 +23,33 @@ def test_build_with_apio_init(apio_runner: ApioRunner):
     with apio_runner.in_sandbox() as sb:
 
         # -- Run "apio build" with a missing board var.
-        sb.write_apio_ini({"top-module": "main"})
+        sb.write_apio_ini({"[env]": {"top-module": "main"}})
         result = sb.invoke_apio_cmd(apio, "build")
         assert result.exit_code == 1, result.output
         assert "Error: Missing option 'board'" in result.output
 
         # -- Run "apio build" with an invalid board
-        sb.write_apio_ini({"board": "no-such-board", "top-module": "main"})
+        sb.write_apio_ini(
+            {
+                "[env]": {
+                    "board": "no-such-board",
+                    "top-module": "main",
+                }
+            }
+        )
         result = sb.invoke_apio_cmd(apio, "build")
         assert result.exit_code == 1, result.output
         assert "no such board 'no-such-board'" in result.output.lower()
 
         # -- Run "apio build" with an unknown option.
         sb.write_apio_ini(
-            {"board": "alhambra-ii", "top-module": "main", "unknown": "xyz"}
+            {
+                "[env]": {
+                    "board": "alhambra-ii",
+                    "top-module": "main",
+                    "unknown": "xyz",
+                }
+            }
         )
         result = sb.invoke_apio_cmd(apio, "build")
         assert result.exit_code == 1, result.output

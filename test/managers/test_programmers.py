@@ -14,7 +14,14 @@ def test_construct_programmer_cmd_template(apio_runner: ApioRunner):
     with apio_runner.in_sandbox() as sb:
 
         # -- Construct an apio context.
-        sb.write_apio_ini({"board": "alhambra-ii", "top-module": "my_module"})
+        sb.write_apio_ini(
+            {
+                "[env]": {
+                    "board": "alhambra-ii",
+                    "top-module": "my_module",
+                }
+            }
+        )
         apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
         board_info = apio_ctx.boards.get(apio_ctx.project.get("board"))
         assert board_info["programmer"]["type"] == "iceprog"
@@ -39,7 +46,14 @@ def test_construct_programmer_cmd_template_sram_ok(apio_runner: ApioRunner):
     with apio_runner.in_sandbox() as sb:
 
         # -- Construct an apio context.
-        sb.write_apio_ini({"board": "alhambra-ii", "top-module": "my_module"})
+        sb.write_apio_ini(
+            {
+                "[env]": {
+                    "board": "alhambra-ii",
+                    "top-module": "my_module",
+                }
+            }
+        )
         apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
         board_info = apio_ctx.boards.get(apio_ctx.project.get("board"))
         assert board_info["programmer"]["type"] == "iceprog"
@@ -68,7 +82,12 @@ def test_construct_programmer_cmd_template_sram_error(
         # -- Construct an apio context with a board that does not
         # -- support the flag --sram.
         sb.write_apio_ini(
-            {"board": "colorlight-5a-75b-v7", "top-module": "my_module"}
+            {
+                "[env]": {
+                    "board": "colorlight-5a-75b-v7",
+                    "top-module": "my_module",
+                }
+            }
         )
         apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
         board_info = apio_ctx.boards.get(apio_ctx.project.get("board"))

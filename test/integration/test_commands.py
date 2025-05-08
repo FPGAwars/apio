@@ -41,7 +41,14 @@ def test_boards_custom_board(apio_runner: ApioRunner):
     with apio_runner.in_sandbox(shared_home=True) as sb:
 
         # -- Write an apio.ini file.
-        sb.write_apio_ini({"board": "my_custom_board", "top-module": "main"})
+        sb.write_apio_ini(
+            {
+                "[env]": {
+                    "board": "my_custom_board",
+                    "top-module": "main",
+                }
+            }
+        )
 
         # -- Write a custom boards.jsonc file in the project's directory.
         sb.write_file("boards.jsonc", CUSTOM_BOARDS)
@@ -140,7 +147,14 @@ def test_project_with_legacy_board_name(apio_runner: ApioRunner):
         sb.assert_ok(result)
 
         # -- Modify the apio.ini to have the legacy board name
-        sb.write_apio_ini({"board": "iCE40-HX8K", "top-module": "leds"})
+        sb.write_apio_ini(
+            {
+                "[env]": {
+                    "board": "iCE40-HX8K",
+                    "top-module": "leds",
+                }
+            }
+        )
 
         # -- Run 'apio clean'
         result = sb.invoke_apio_cmd(apio, "clean")

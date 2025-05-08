@@ -227,28 +227,43 @@ class ApioSandbox:
         # -- All done
         return text
 
-    def write_apio_ini(self, properties: Dict[str, str]):
+    def write_apio_ini(
+        self,
+        sections: Dict[str, Dict[str, str]] = None,
+    ):
         """Write in the current directory an apio.ini file with given
-        values. If an apio.ini file already exists, it is overwritten."""
+        section. If an apio.ini file already exists, overwrite it."""
 
-        assert isinstance(properties, dict), "Not a dict."
+        assert isinstance(sections, dict)
 
+        # -- Construct output file path.
         path = Path("apio.ini")
 
-        # -- Requested to write. Construct the lines.
-        lines = ["[env]"]
-        for name, value in properties.items():
-            lines.append(f"{name} = {value}")
+        # -- List with text of each section.
+        sections_texts: List[str] = []
 
-        # -- Write the file.
-        self.write_file(path, lines, exists_ok=True)
+        # -- Add the apio section if specified.
+        for section_header, section_options in sections.items():
+            lines = [section_header]
+            for name, value in section_options.items():
+                lines.append(f"{name} = {value}")
+            sections_texts.append("\n".join(lines))
+
+        # -- Join the sections with a blank line.
+        file_text = "\n\n".join(sections_texts)
+
+        # # -- Write the file.
+        self.write_file(path, file_text, exists_ok=True)
 
     def write_default_apio_ini(self):
         """Write in the local directory an apio.ini file with default values
         for testing. If the file exists, it's overwritten."""
+
         default_apio_ini = {
-            "board": "alhambra-ii",
-            "top-module": "main",
+            "[env]": {
+                "board": "alhambra-ii",
+                "top-module": "main",
+            }
         }
         self.write_apio_ini(default_apio_ini)
 
@@ -256,6 +271,7 @@ class ApioSandbox:
     def offline_flag(self):
         """Returns True if pytest was invoked with --offline to skip
         tests that require internet connectivity and are slower in general."""
+
         assert not self.expired, "Trying to use an expired sandbox"
         return self._apio_runner.offline_flag
 
