@@ -1,7 +1,7 @@
 [![][apio-logo]][wiki]
 
-[![PyPI Version][pypi-image]][pypi-url] [![License][license-image]][license-url]
-
+[![PyPI Version][pypi-image]][pypi-url]<br>
+[![License][license-image]][license-url]<br>
 [![Test](https://github.com/FPGAwars/apio/actions/workflows/test.yml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/test.yml)<br>
 [![build-linux-x86-64-installer](https://github.com/FPGAwars/apio/actions/workflows/build-linux-x86-64-installer.yml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/build-linux-x86-64-installer.yml)<br>
 [![build-darwin-arm64-installer](https://github.com/FPGAwars/apio/actions/workflows/build-darwin-arm64-installer.yml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/build-darwin-arm64-installer.yml)<br>
