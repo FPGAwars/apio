@@ -159,7 +159,7 @@ def _options_cli(
 
     # -- If option was specified, validate it.
     if option:
-        if option not in project.OPTIONS:
+        if option not in project.ENV_OPTIONS:
             cerror(f"No such api.ini option: '{option}'")
             cout(
                 "For the list of all apio.ini options, type "
@@ -173,20 +173,20 @@ def _options_cli(
         docs_text(APIO_INI_DOC)
 
     # -- Determine options to print
-    options = [option] if option else project.OPTIONS.keys()
+    options = [option] if option else project.ENV_OPTIONS.keys()
 
     # -- Print the initial separator line.
     docs_rule()
     for opt in options:
         # -- Print option's title.
-        is_required = opt in project.REQUIRED_OPTIONS
+        is_required = opt in project.ENV_REQUIRED_OPTIONS
         req = "REQUIRED" if is_required else "OPTIONAL"
         styled_option = cstyle(opt.upper(), style=TITLE)
         cout()
         cout(f"{styled_option} ({req})")
 
         # -- Print the option's text.
-        text = project.OPTIONS[opt]
+        text = project.ENV_OPTIONS[opt]
         docs_text(text)
         docs_rule()
 

@@ -53,4 +53,7 @@ def test_build_with_apio_init(apio_runner: ApioRunner):
         )
         result = sb.invoke_apio_cmd(apio, "build")
         assert result.exit_code == 1, result.output
-        assert "Error: Unknown project option 'unknown'" in result.output
+        assert (
+            "Error: Unknown option 'unknown' in [env:default] section "
+            "of apio.ini" in result.output
+        )
