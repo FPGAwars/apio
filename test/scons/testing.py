@@ -35,7 +35,7 @@ environment {
   yosys_path: "/Users/user/.apio/packages/oss-cad-suite/share/yosys"
   trellis_path: "/Users/user/.apio/packages/oss-cad-suite/share/trellis"
 }
-project {
+apio_env_params {
   board_id: "alhambra-ii"
   top_module: "main"
 }

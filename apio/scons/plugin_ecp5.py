@@ -68,8 +68,8 @@ class PluginEcp5(PluginBase):
                 'yosys -p "synth_ecp5 -top {0} {1} -json $TARGET" {2} '
                 "$SOURCES"
             ).format(
-                params.project.top_module,
-                params.project.yosys_synth_extra_options,
+                params.apio_env_params.top_module,
+                params.apio_env_params.yosys_synth_extra_options,
                 "" if params.verbosity.all or params.verbosity.synth else "-q",
             ),
             suffix=".json",

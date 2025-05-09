@@ -246,7 +246,7 @@ def verilator_lint_action(
     top_module = (
         lint_params.top_module
         if lint_params.top_module
-        else params.project.top_module
+        else params.apio_env_params.top_module
     )
 
     # -- Construct the action

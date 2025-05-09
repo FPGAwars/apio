@@ -81,7 +81,7 @@ message Environment {
 
   // The terminal mode to apply to apio_console.
   required TerminalMode terminal_mode = 3;
-  
+
   // The apio_console theme name.
   required string theme_name = 4;
 
@@ -93,8 +93,8 @@ message Environment {
   required string trellis_path = 7;
 }
 
-// Information about the project.
-message Project {
+// Information about the resolved active env from apio.ini.
+message ApioEnvParams {
   required string board_id = 1;
   required string top_module = 2;
   // The value of 'yosys-synth-extra-options' from apio.ini.
@@ -190,7 +190,7 @@ message SconsParams {
   required Environment environment = 5;
 
   // General information about the project
-  required Project project = 6;
+  required ApioEnvParams apio_env_params = 6;
 
   // Additional params for for scons targets that need it..
   optional TargetParams target = 7;

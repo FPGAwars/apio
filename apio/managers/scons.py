@@ -31,7 +31,7 @@ from apio.common.proto.apio_pb2 import (
     SconsParams,
     TargetParams,
     FpgaInfo,
-    Project,
+    ApioEnvParams,
     Ice40FpgaInfo,
     Ecp5FpgaInfo,
     GowinFpgaInfo,
@@ -313,8 +313,8 @@ class SCons:
         assert result.environment.IsInitialized(), result
 
         # -- Populate the Project params.
-        result.project.MergeFrom(
-            Project(
+        result.apio_env_params.MergeFrom(
+            ApioEnvParams(
                 board_id=project["board"],
                 top_module=project["top-module"],
                 yosys_synth_extra_options=apio_ctx.project.get(
@@ -322,7 +322,7 @@ class SCons:
                 ),
             )
         )
-        assert result.project.IsInitialized(), result
+        assert result.apio_env_params.IsInitialized(), result
 
         # -- Populate the optional command specific params.
         if target_params:
@@ -386,7 +386,9 @@ class SCons:
         start_time = time.time()
 
         # -- Board name string in color
-        styled_board_id = cstyle(scons_params.project.board_id, style=EMPH1)
+        styled_board_id = cstyle(
+            scons_params.apio_env_params.board_id, style=EMPH1
+        )
 
         # -- Print information on the console
         cout(f"Processing board {styled_board_id}")

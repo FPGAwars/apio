@@ -48,7 +48,7 @@ environment {
   yosys_path: "TBD"
   trellis_path: "TBD"
 }
-project {
+apio_env_params {
   board_id: "alhambra-ii"
   top_module: "my_module"
   yosys_synth_extra_options: "-dsp -xyz"
@@ -82,7 +82,7 @@ environment {
   yosys_path: "TBD"
   trellis_path: "TBD"
 }
-project {
+apio_env_params {
   board_id: "alhambra-ii"
   top_module: "my_module"
   yosys_synth_extra_options: "-dsp -xyz"

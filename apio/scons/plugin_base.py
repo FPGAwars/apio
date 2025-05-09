@@ -66,7 +66,7 @@ class PluginBase:
             self._constrain_file = get_constraint_file(
                 apio_env,
                 self.plugin_info().constrains_file_ext,
-                params.project.top_module,
+                params.apio_env_params.top_module,
             )
         return self._constrain_file
 
@@ -121,7 +121,7 @@ class PluginBase:
         top_module = (
             graph_params.top_module
             if graph_params.top_module
-            else params.project.top_module
+            else params.apio_env_params.top_module
         )
 
         return Builder(
