@@ -533,11 +533,13 @@ def create_project_file(
     # -- Construct and write the apio.ini file..
     cout(f"Creating {ini_path} file ...")
 
+    section_name = "env:default"
+
     config = ConfigObj(str(ini_path))
     config.initial_comment = TOP_COMMENT.split("\n")
-    config["env"] = {}
-    config["env"]["board"] = board_name
-    config["env"]["top-module"] = top_module
+    config[section_name] = {}
+    config[section_name]["board"] = board_name
+    config[section_name]["top-module"] = top_module
 
     config.write()
     cout(f"The file '{ini_path}' was created successfully.", style=SUCCESS)

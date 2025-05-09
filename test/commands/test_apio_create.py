@@ -16,7 +16,7 @@ def _check_ini_file(apio_ini: Path, expected_vars: Dict[str, str]) -> None:
     # Check the expected comment at the top.
     assert "# APIO project configuration file" in conf.initial_comment[0]
     # Check the expected vars.
-    assert conf.dict() == {"env": expected_vars}
+    assert conf.dict() == {"env:default": expected_vars}
 
 
 def test_create(apio_runner: ApioRunner):
