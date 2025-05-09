@@ -34,7 +34,7 @@ from apio.common.apio_console import cout, cerror, cwarning, cprint
 from apio.common.apio_styles import INFO, BORDER, EMPH1, EMPH2, EMPH3
 
 
-# -- A list with the file extensions of the verilog source files.
+# -- A list with the file extensions of the source files.
 SRC_SUFFIXES = [".v", ".sv"]
 
 TESTBENCH_HINT = "Testbench file names must end with '_tb.v' or '_tb.sv'."
@@ -111,7 +111,7 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
     #   Captures:  'v771499.list'
     icestudio_list_re = re.compile(r"[\n|\s][^\/]?\"(.*\.list?)\"", re.M)
 
-    # A regex to match a verilog include.
+    # A regex to match a verilog include directive.
     # Example
     #   Text:     `include "apio_testing.vh"
     #   Capture:  'apio_testing.vh'
@@ -137,10 +137,10 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
     def verilog_src_scanner_func(
         file_node: File, env: SConsEnvironment, ignored_path
     ) -> List[str]:
-        """Given a Verilog file, scan it and return a list of references
-        to other files it depends on. It's not require to report dependency
-        on another .v file in the project since scons loads anyway
-        all the .v files in the project.
+        """Given a [System]Verilog file, scan it and return a list of
+        references to other files it depends on. It's not require to report
+        dependency on another source file in the project since scons loads
+        anyway all the source files in the project.
 
         Returns a list of files. Dependencies that don't have an existing
         file are ignored and not returned. This is to avoid references in
@@ -150,7 +150,7 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
 
         # Sanity check. Should be called only to scan verilog files. If
         # this fails, this is a programming error rather than a user error.
-        assert is_verilog_src(
+        assert is_source_file(
             file_node.name
         ), f"Not a src file: {file_node.name}"
 
@@ -246,7 +246,7 @@ def verilator_lint_action(
     top_module = (
         lint_params.top_module
         if lint_params.top_module
-        else params.project.top_module
+        else params.apio_env_params.top_module
     )
 
     # -- Construct the action
@@ -326,7 +326,7 @@ def waves_target(
 def check_valid_testbench_name(testbench: str) -> None:
     """Check if a testbench name is valid. If not, print an error message
     and exit."""
-    if not is_verilog_src(testbench) or not has_testbench_name(testbench):
+    if not is_source_file(testbench) or not has_testbench_name(testbench):
         cerror(f"'{testbench}' is not a valid testbench file name.")
         cout(TESTBENCH_HINT, style=INFO)
         sys.exit(1)
@@ -428,7 +428,7 @@ def get_tests_configs(
     return configs
 
 
-def is_verilog_src(file_name: str) -> bool:
+def is_source_file(file_name: str) -> bool:
     """Given a file name, determine by its extension if it's a verilog
     source file (testbenches included)."""
     _, ext = os.path.splitext(file_name)
@@ -437,8 +437,8 @@ def is_verilog_src(file_name: str) -> bool:
 
 def has_testbench_name(file_name: str) -> bool:
     """Given a file name, return true if it's base name indicates a
-    testbench. It can be for example abc_tb.v or _build/abc_tb.out.
-    The file extension is ignored.
+    testbench. For example abc_tb.v or _build/abc_tb.out. The file extension
+    is ignored.
     """
     name, _ = os.path.splitext(file_name)
     return name.lower().endswith("_tb")
@@ -464,7 +464,7 @@ def source_file_issue_action() -> FunctionAction:
 
             # -- For now we report issues only in testbenches so skip
             # -- otherwise.
-            if not is_verilog_src(file.name) or not has_testbench_name(
+            if not is_source_file(file.name) or not has_testbench_name(
                 file.name
             ):
                 continue
@@ -488,22 +488,18 @@ def source_file_issue_action() -> FunctionAction:
 # Remove apio_env ark is not needed anymore.
 # pylint: disable=unused-argument
 def source_files(apio_env: ApioEnv) -> Tuple[List[str], List[str]]:
-    """Get the list of *.v|sv files in the directory tree under the current
+    """Get the list of source files in the directory tree under the current
     directory, splitted into synth and testbench lists.
     If source file has the suffix _tb it's is classified st a testbench,
     otherwise as a synthesis file.
     """
-    # -- Get a list of all *.v and .sv files in the project dir.
+    # -- Get a list of all source files in the project dir.
     # -- Ideally we should use the scons env.Glob() method but it doesn't
     # -- work with the recursive=True option. So we use the glob() function
     # -- instead.
-    files: List[str] = glob("**/*.sv", recursive=True)
-    if files:
-        cwarning(
-            "Project contains .sv files, system-verilog support "
-            "is experimental."
-        )
-    files = files + glob("**/*.v", recursive=True)
+    files: List[str] = []
+    for ext in SRC_SUFFIXES:
+        files.extend(glob(f"**/*{ext}", recursive=True))
 
     # -- Sort the files by directory and then by file name.
     files = sort_files(files)
@@ -703,8 +699,7 @@ def iverilog_action(
     escaped_vcd_output_name = vcd_output_name.replace("\\", "\\\\")
 
     # -- Construct the action string.
-    # -- The -g2012 is for system-verilog support and we use it here as an
-    # -- experimental feature.
+    # -- The -g2012 is for system-verilog support.
     action = (
         "iverilog -g2012 {0} -o $TARGET {1} {2} {3} {4} {5} $SOURCES"
     ).format(

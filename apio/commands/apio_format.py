@@ -27,9 +27,10 @@ from apio.utils import util, pkg_util, cmd_util
 
 # -- Text in the rich-text format of the python rich library.
 APIO_FORMAT_HELP = """
-The command 'apio format' formats Verilog source files to ensure consistency \
-and style without altering their semantics. The command accepts the names of \
-specific source files to format or formats all project source files by default.
+The command 'apio format' formats the project's source files to ensure \
+consistency and style without altering their semantics. The command accepts \
+the names of specific source files to format or formats all project source \
+files by default.
 
 Examples:[code]
   apio format                    # Format all source files.

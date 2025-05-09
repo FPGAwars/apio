@@ -20,20 +20,21 @@ from apio.common.proto.apio_pb2 import Verbosity
 
 # -- Text in the rich-text format of the python rich library.
 APIO_BUILD_HELP = """
-The command 'apio build' processes the project’s source files and generates \
-a bitstream file, which can then be uploaded to your FPGA.
-
-The 'apio build' command compiles all .v files (e.g., my_module.v) in the \
-project directory, except those whose names end with '_tb' \
-(e.g., my_module_tb.v) which are assumed to be testbenches.
-
-[NOTE] The files are compiled in the order they are found in the sub \
-directories of the source tree. This provides a simple way to control the \
-compilation order by naming subdirectories for the desired build order.
+The command 'apio build' processes the project’s synthesis source files and \
+generates a bitstream file, which can then be uploaded to your FPGA.
 
 Examples:[code]
-  apio build       # Build
-  apio build -v    # Build with verbose info[/code]
+  apio build                   # Typical usage
+  apio build -v                # Verbose info (all)
+  apio build --verbose-synth   # Verbose synthesis info
+  apio build --verbose-pnr     # Verbose place and route info[/code]
+
+NOTES:
+* The files are sorted in a deterministic lexicographic order.
+* You can specify the name of the top module in apio.ini.
+* The build command ignores testbench files (*_tb.v, and *_tb.sv).
+* It is unnecessary to run 'apio build' before 'apio upload'.
+* To force a rebuild from scratch use the command 'apio clean' first.
 """
 
 
@@ -59,10 +60,6 @@ def cli(
     """Implements the apio build command. It invokes the toolchain
     to synthesize the source files into a bitstream file.
     """
-
-    # The bitstream is generated from the source files (verilog)
-    # by means of the scons tool
-    # https://www.scons.org/documentation.html
 
     # -- Create the apio context.
     apio_ctx = ApioContext(

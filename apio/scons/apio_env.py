@@ -36,7 +36,7 @@ class ApioEnv:
         self.scons_env = SConsEnvironment(ENV=os.environ, tools=[])
 
         # -- Since we ae not using the default environment, make sure it was
-        # -- not used unintentionally, e.v. in tests that run create multiple
+        # -- not used unintentionally, e.g. in tests that run create multiple
         # -- scons env in the same session.
         # --
         assert (

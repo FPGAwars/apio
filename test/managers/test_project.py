@@ -16,12 +16,14 @@ def test_required_and_optionals(apio_runner: ApioRunner):
         # -- Create an apio.ini.
         sb.write_apio_ini(
             {
-                # -- Required.
-                "board": "alhambra-ii",
-                # -- Optional.
-                "top-module": "my_module",
-                "format-verible-options": "\n  --aaa bbb\n  --ccc ddd",
-                "yosys-synth-extra-options": "-dsp -xyz",
+                "[env]": {
+                    # -- Required.
+                    "board": "alhambra-ii",
+                    # -- Optional.
+                    "top-module": "my_module",
+                    "format-verible-options": "\n  --aaa bbb\n  --ccc ddd",
+                    "yosys-synth-extra-options": "-dsp -xyz",
+                }
             }
         )
 
@@ -56,7 +58,9 @@ def test_required_only(apio_runner: ApioRunner):
         # -- Create an apio.ini.
         sb.write_apio_ini(
             {
-                "board": "alhambra-ii",
+                "[env]": {
+                    "board": "alhambra-ii",
+                }
             }
         )
 

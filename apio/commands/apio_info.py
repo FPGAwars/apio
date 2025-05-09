@@ -157,10 +157,6 @@ def _options_cli(
 ):
     """Implements the 'apio info options' command."""
 
-    # -- Create the apio context. We don't really need it here but it also
-    # -- reads the user preferences and configure the console's colors.
-    ApioContext(scope=ApioContextScope.NO_PROJECT)
-
     # -- If option was specified, validate it.
     if option:
         if option not in project.OPTIONS:
@@ -195,6 +191,60 @@ def _options_cli(
         docs_rule()
 
 
+# -- apio info files
+
+# -- Text in the rich-text format of the python rich library.
+APIO_INFO_FILES_HELP = """
+The command 'apio info options' provides information about the various \
+files types used in an Apio project.
+
+Examples:[code]
+  apio info files
+"""
+
+# -- Text in the rich-text format of the python rich library.
+APIO_INFO_FILES_DOC = """
+Following are apio conventions for project file names. The list does not \
+include files that are specific to a particular architecture or toolchain.
+
+[b]apio.ini[/] - This is a required project configuration configuration. \
+Run 'apio info options' for the list of supported options.
+
+[b]*.v, *.sv[/] - Verilog and System Verilog synthesis sources files \
+(unless they match the testbench patterns below).
+
+[b]*_tb.v, *_tb.sv[/] - Verilog and System Verilog testbench files.
+
+[b]*.vh, *.svh[/] - Verilog and System Verilog include files.
+
+[b]_build[/] - This is an auto created directory that contains the generated \
+files. The directory '_build' is removed when the command 'apio clean' is run.
+
+[b].sconsign.dblite[/] - This is a cache info file that is created by the \
+Apio in the project directory and can be ignored and removed. The file \
+`.sconsign.dblite` is removed when the command 'apio clean' is run.
+
+[NOTE] If using git for your project, it is recommended to have the following \
+entires in your '.gitignore' file:
+[code]
+  _build
+  .sconsign.dblite[/code]
+"""
+
+
+@click.command(
+    name="files",
+    cls=cmd_util.ApioCommand,
+    short_help="Apio project files types.",
+    help=APIO_INFO_FILES_HELP,
+)
+def _files_cli():
+    """Implements the 'apio info files' command."""
+
+    # -- Print the text.
+    docs_text(APIO_INFO_FILES_DOC)
+
+
 # -- apio info resources
 
 # -- Text in the rich-text format of the python rich library.
@@ -227,10 +277,6 @@ same functionality.
 )
 def _resources_cli():
     """Implements the 'apio info resources' command."""
-
-    # -- Create the apio context. We don't really need it here but it also
-    # -- reads the user preferences and configure the console's colors.
-    ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     docs_text(APIO_INFO_RESOURCES_SUMMARY, width=73)
 
@@ -533,6 +579,7 @@ SUBGROUPS = [
         [
             _options_cli,
             _cli_cli,
+            _files_cli,
             _resources_cli,
         ],
     ),

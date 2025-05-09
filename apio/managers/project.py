@@ -67,7 +67,8 @@ contains more than one testbench file and a testbench was not specified in \
 the 'apio sim' command.
 
 Example:[code]
-  default-testbench = my_module_tb.v[/code]
+  default-testbench = my_module_tb.v
+  default-testbench = my_module_tb.sv[/code]
 """
 
 FORMAT_VERIBLE_OPTIONS_DOC = """

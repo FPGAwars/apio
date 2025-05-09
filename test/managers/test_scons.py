@@ -15,12 +15,14 @@ from apio.managers.scons import SCons
 
 
 TEST_APIO_INI_DICT = {
-    # -- Required.
-    "board": "alhambra-ii",
-    # -- Optional.
-    "top-module": "my_module",
-    "format-verible-options": "\n  --aaa bbb\n  --ccc ddd",
-    "yosys-synth-extra-options": "-dsp -xyz",
+    "[env]": {
+        # -- Required.
+        "board": "alhambra-ii",
+        # -- Optional.
+        "top-module": "my_module",
+        "format-verible-options": "\n  --aaa bbb\n  --ccc ddd",
+        "yosys-synth-extra-options": "-dsp -xyz",
+    }
 }
 
 # -- The non determinisitc values marked with TBD are patched by the test
@@ -46,7 +48,7 @@ environment {
   yosys_path: "TBD"
   trellis_path: "TBD"
 }
-project {
+apio_env_params {
   board_id: "alhambra-ii"
   top_module: "my_module"
   yosys_synth_extra_options: "-dsp -xyz"
@@ -80,7 +82,7 @@ environment {
   yosys_path: "TBD"
   trellis_path: "TBD"
 }
-project {
+apio_env_params {
   board_id: "alhambra-ii"
   top_module: "my_module"
   yosys_synth_extra_options: "-dsp -xyz"

@@ -45,8 +45,7 @@ pdf_option = click.option(
 
 # -- Text in the rich-text format of the python rich library.
 APIO_GRAPH_HELP = """
-The command 'apio graph' generates a graphical representation of the Verilog \
-code in the project.
+The command 'apio graph' generates a graphical representation of the design.
 
 Examples:[code]
   apio graph               # Generate a svg file.
