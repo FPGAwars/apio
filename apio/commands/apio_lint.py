@@ -7,6 +7,7 @@
 # -- License GPLv2
 """Implementation of 'apio lint' command"""
 import sys
+from typing import Optional
 from pathlib import Path
 import click
 from apio.managers.scons import SCons
@@ -83,6 +84,7 @@ Examples:[code]
 @options.top_module_option_gen(
     help="Restrict linting to this module and its dependencies."
 )
+@options.env_option
 @options.project_dir_option
 def cli(
     _: click.Context,
@@ -92,6 +94,7 @@ def cli(
     warn: str,
     all_: bool,
     top_module: str,
+    env: Optional[str],
     project_dir: Path,
 ):
     """Lint the source code."""
@@ -103,6 +106,7 @@ def cli(
     apio_ctx = ApioContext(
         scope=ApioContextScope.PROJECT_REQUIRED,
         project_dir_arg=project_dir,
+        env_arg=env,
     )
 
     # -- Create the scons manager.

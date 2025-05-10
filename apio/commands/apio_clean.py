@@ -8,6 +8,7 @@
 """Implementation of 'apio clean' command"""
 
 import sys
+from typing import Optional
 from pathlib import Path
 import click
 from apio.managers.scons import SCons
@@ -35,10 +36,12 @@ Example:[code]
     help=APIO_CLEAN_HELP,
 )
 @click.pass_context
+@options.env_option
 @options.project_dir_option
 def cli(
     _: click.Context,
     # Options
+    env: Optional[str],
     project_dir: Path,
 ):
     """Implements the apio clean command. It deletes temporary files generated
@@ -49,6 +52,7 @@ def cli(
     apio_ctx = ApioContext(
         scope=ApioContextScope.PROJECT_REQUIRED,
         project_dir_arg=project_dir,
+        env_arg=env,
     )
 
     # -- Create the scons manager.

@@ -204,6 +204,7 @@ Usage: apio build [OPTIONS]
 
   Examples:
     apio build                   # Typical usage
+    apio build -e debug          # Set the apio.ini env.
     apio build -v                # Verbose info (all)
     apio build --verbose-synth   # Verbose synthesis info
     apio build --verbose-pnr     # Verbose place and route info
@@ -216,6 +217,7 @@ Usage: apio build [OPTIONS]
   * To force a rebuild from scratch use the command 'apio clean' first.
 
 Options:
+  -e, --env name          Set the apio.ini env.
   -p, --project-dir path  Set the root directory for the project.
   -v, --verbose           Show detailed output.
   --verbose-synth         Show detailed synth stage output.
@@ -238,6 +240,7 @@ Usage: apio clean [OPTIONS]
     apio clean
 
 Options:
+  -e, --env name          Set the apio.ini env.
   -p, --project-dir path  Set the root directory for the project.
   -h, --help              Show this message and exit.
 
@@ -618,6 +621,7 @@ Usage: apio format [OPTIONS] [FILES]...
   --helpful'.
 
 Options:
+  -e, --env name          Set the apio.ini env.
   -p, --project-dir path  Set the root directory for the project.
   -v, --verbose           Show detailed output.
   -h, --help              Show this message and exit.
@@ -673,6 +677,7 @@ Options:
   --svg                   Generate a svg file (default).
   --png                   Generate a png file.
   --pdf                   Generate a pdf file.
+  -e, --env name          Set the apio.ini env.
   -p, --project-dir path  Set the root directory for the project.
   -t, --top-module name   Set the name of the top module to graph.
   -v, --verbose           Show detailed output.
@@ -1074,6 +1079,7 @@ Usage: apio report [OPTIONS]
     apio report --verbose  # Print extra information.
 
 Options:
+  -e, --env name          Set the apio.ini env.
   -p, --project-dir path  Set the root directory for the project.
   -v, --verbose           Show detailed output.
   -h, --help              Show this message and exit.
@@ -1122,6 +1128,7 @@ Usage: apio sim [OPTIONS] [TESTBENCH]
 
 Options:
   -f, --force             Force simulation.
+  -e, --env name          Set the apio.ini env.
   -p, --project-dir path  Set the root directory for the project.
   -h, --help              Show this message and exit.
 
@@ -1160,6 +1167,7 @@ Usage: apio test [OPTIONS] [TESTBENCH_FILE]
   signals, refer to the 'apio sim' command.
 
 Options:
+  -e, --env name          Set the apio.ini env.
   -p, --project-dir path  Set the root directory for the project.
   -h, --help              Show this message and exit.
 
@@ -1224,6 +1232,7 @@ Options:
   --serial-port serial-port  Set the serial port.
   --ftdi-idx ftdi-idx        Consider only FTDI device with given index.
   -s, --sram                 Perform SRAM programming (see restrictions).
+  -e, --env name             Set the apio.ini env.
   -p, --project-dir path     Set the root directory for the project.
   -h, --help                 Show this message and exit.
 
