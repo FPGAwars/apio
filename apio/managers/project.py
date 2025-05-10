@@ -235,9 +235,6 @@ class Project:
     ):
         """Validate the parsed apio.ini sections."""
 
-        # -- Validate the apio section.
-        Project.validate_apio_section(apio_section, env_sections)
-
         # -- Validate the common section.
         Project.validate_env_section("[common]", common_section, resolver)
 
@@ -253,11 +250,16 @@ class Project:
                 f"[env:{env_name}]", section_options, resolver
             )
 
+        # -- Validate the apio section. At this point the env_sections are
+        # -- already validated.
+        Project.validate_apio_section(apio_section, env_sections)
+
     @staticmethod
     def validate_apio_section(
         apio_section: Dict[str, str], env_sections: Dict[str, Dict[str, str]]
     ):
-        """Validate the [apio] section."""
+        """Validate the [apio] section. 'env_sections' are assumed to be
+        validated."""
 
         # -- Look for unknown options.
         for option in apio_section:
