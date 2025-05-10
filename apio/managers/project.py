@@ -222,15 +222,6 @@ class Project:
             print(f"Patched env options: {self._env_options}")
 
     @staticmethod
-    def validate_apio_ini_env_name(env_name: str):
-        """Validate the given env name. Use only for env names found in
-        apio.ini, not from command lines or other sources."""
-        if not ENV_NAME_REGEX.match(env_name):
-            cerror(f"Invalid apio env name '{env_name}' in apio.ini.")
-            cout(ENV_NAME_HINT, style=INFO)
-            sys.exit(1)
-
-    @staticmethod
     def validate_sections(
         apio_section: Optional[Dict[str, str]],
         common_section: Optional[Dict[str, str]],
@@ -247,7 +238,12 @@ class Project:
 
         # -- Validate the env sections.
         for env_name, section_options in env_sections.items():
-            Project.validate_apio_ini_env_name(env_name)
+            # -- Validate env name format.
+            if not ENV_NAME_REGEX.match(env_name):
+                cerror(f"Invalid env name '{env_name}' in apio.ini.")
+                cout(ENV_NAME_HINT, style=INFO)
+                sys.exit(1)
+            # -- Validate env section options.
             Project.validate_env_section(
                 f"[env:{env_name}]", section_options, resolver
             )
@@ -266,10 +262,19 @@ class Project:
                 )
                 sys.exit(1)
 
-        # -- If 'board' option exists, verify the board exists.
+        # -- If 'default-env' option exists, verify the env name is valid and
+        # -- and the name exists.
         default_env_name = apio_section.get("default-env", None)
         if default_env_name:
-            Project.validate_apio_ini_env_name(default_env_name)
+            # -- Validate env name format.
+            if not ENV_NAME_REGEX.match(default_env_name):
+                cerror(
+                    f"Invalid default env name '{default_env_name}' "
+                    "in apio.ini."
+                )
+                cout(ENV_NAME_HINT, style=INFO)
+                sys.exit(1)
+            # -- Make sure the env exists.
             if default_env_name not in env_sections:
                 cerror(f"Env '{default_env_name}' not found in apio.ini.")
                 cout(
