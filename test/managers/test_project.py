@@ -16,7 +16,7 @@ def test_required_and_optionals(apio_runner: ApioRunner):
         # -- Create an apio.ini.
         sb.write_apio_ini(
             {
-                "[env]": {
+                "[env:default]": {
                     # -- Required.
                     "board": "alhambra-ii",
                     # -- Optional.
@@ -58,7 +58,7 @@ def test_required_only(apio_runner: ApioRunner):
         # -- Create an apio.ini.
         sb.write_apio_ini(
             {
-                "[env]": {
+                "[env:default]": {
                     "board": "alhambra-ii",
                 }
             }

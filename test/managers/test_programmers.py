@@ -16,7 +16,7 @@ def test_construct_programmer_cmd_template(apio_runner: ApioRunner):
         # -- Construct an apio context.
         sb.write_apio_ini(
             {
-                "[env]": {
+                "[env:default]": {
                     "board": "alhambra-ii",
                     "top-module": "my_module",
                 }
@@ -48,7 +48,7 @@ def test_construct_programmer_cmd_template_sram_ok(apio_runner: ApioRunner):
         # -- Construct an apio context.
         sb.write_apio_ini(
             {
-                "[env]": {
+                "[env:default]": {
                     "board": "alhambra-ii",
                     "top-module": "my_module",
                 }
@@ -83,7 +83,7 @@ def test_construct_programmer_cmd_template_sram_error(
         # -- support the flag --sram.
         sb.write_apio_ini(
             {
-                "[env]": {
+                "[env:default]": {
                     "board": "colorlight-5a-75b-v7",
                     "top-module": "my_module",
                 }

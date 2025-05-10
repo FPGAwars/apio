@@ -15,7 +15,7 @@ from apio.managers.scons import SCons
 
 
 TEST_APIO_INI_DICT = {
-    "[env]": {
+    "[env:default]": {
         # -- Required.
         "board": "alhambra-ii",
         # -- Optional.

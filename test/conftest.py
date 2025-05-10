@@ -260,7 +260,7 @@ class ApioSandbox:
         for testing. If the file exists, it's overwritten."""
 
         default_apio_ini = {
-            "[env]": {
+            "[env:default]": {
                 "board": "alhambra-ii",
                 "top-module": "main",
             }
