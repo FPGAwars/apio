@@ -142,7 +142,7 @@ def set_env_for_packages(
         _apply_env_mutations(mutations)
         apio_ctx.env_was_already_set = True
         if not verbose and not quiet:
-            cout("Setting the environment.")
+            cout("Setting shell vars.")
 
 
 @dataclass

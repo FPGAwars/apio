@@ -208,23 +208,12 @@ class Project:
             print(f"Resolved env name: {self.env_name}")
             print(f"Resolved env options: {self.env_options}")
 
-        # TODO: Debug code. Remove.
-        print()
-        print(f"Parsed [apio] section: {apio_section}")
-        print(f"Parsed [common] section: {common_section}")
-        print(f"Parsed [env:*] sections: {env_sections}")
-        print(f"Resolved env name: {self.env_name}")
-        print(f"Resolved env options: {self.env_options}")
-        print()
-
         # -- Validate the resolved env. This is where we check for required
         # -- options.
         Project.validate_resolved_env(self.env_options, self.env_name)
 
         # -- Patch board and top-module options in the resolved options.
         Project.patch_resolved_options(self.env_options, resolver)
-
-        print(f"Patched env options: {self.env_options}")
 
         if util.is_debug():
             print(f"Patched env options: {self.env_options}")

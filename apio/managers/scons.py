@@ -397,7 +397,9 @@ class SCons:
         )
 
         # -- Print information on the console
-        cout(f"Processing env {styled_env_name}, board {styled_board_id}")
+        cout(
+            f"Processing apio env {styled_env_name} (board {styled_board_id})"
+        )
 
         # -- Print a horizontal line
         cout("-" * terminal_width)
