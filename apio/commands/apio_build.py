@@ -8,8 +8,10 @@
 """Implementation of 'apio build' command"""
 
 import sys
+from typing import Optional
 from pathlib import Path
 import click
+
 from apio.utils import cmd_util
 from apio.managers.scons import SCons
 from apio.commands import options
@@ -25,6 +27,7 @@ generates a bitstream file, which can then be uploaded to your FPGA.
 
 Examples:[code]
   apio build                   # Typical usage
+  apio build -e debug          # Set the apio.ini env.
   apio build -v                # Verbose info (all)
   apio build --verbose-synth   # Verbose synthesis info
   apio build --verbose-pnr     # Verbose place and route info[/code]
@@ -45,6 +48,7 @@ NOTES:
     help=APIO_BUILD_HELP,
 )
 @click.pass_context
+@options.env_option
 @options.project_dir_option
 @options.verbose_option
 @options.verbose_synth_option
@@ -52,6 +56,7 @@ NOTES:
 def cli(
     _: click.Context,
     # Options
+    env: Optional[str],
     project_dir: Path,
     verbose: bool,
     verbose_synth: bool,
@@ -65,6 +70,7 @@ def cli(
     apio_ctx = ApioContext(
         scope=ApioContextScope.PROJECT_REQUIRED,
         project_dir_arg=project_dir,
+        env_arg=env,
     )
 
     # -- Create the scons manager.

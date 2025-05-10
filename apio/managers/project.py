@@ -169,15 +169,25 @@ class Project:
         apio_section: Optional[Dict[str, str]],
         common_section: Optional[Dict[str, str]],
         env_sections: Dict[str, Dict[str, str]],
+        env_arg: Optional[str],
         resolver: ProjectResolver,
     ):
         """Construct a Project object with given options sections and a
         resolver with context information."""
 
+        # pylint: disable=too-many-arguments
+
         if util.is_debug():
             print(f"Parsed [apio] section:\n  {apio_section}")
             print(f"Parsed [common] section:\n  {common_section}")
             print(f"Parsed [env:*] sections:\n  {env_sections}")
+
+        # -- Validate the env_arg format
+        if env_arg is not None:
+            if not ENV_NAME_REGEX.match(env_arg):
+                cerror(f"Invalid --env value '{env_arg}'.")
+                cout(ENV_NAME_HINT, style=INFO)
+                sys.exit(1)
 
         # -- Validate the sections.
         Project.validate_sections(
@@ -187,9 +197,9 @@ class Project:
             resolver=resolver,
         )
 
-        # -- Determine active env name and options.
+        # -- Determine the active env name and options.
         self.env_name = Project.resolve_default_env_name(
-            apio_section, env_sections
+            apio_section, env_sections, env_arg
         )
         self.env_options = Project.resolve_env_options(
             common_section, env_sections[self.env_name]
@@ -313,15 +323,22 @@ class Project:
 
     @staticmethod
     def resolve_default_env_name(
-        apio_section: Dict[str, str], env_sections: Dict[str, Dict[str, str]]
+        apio_section: Dict[str, str],
+        env_sections: Dict[str, Dict[str, str]],
+        env_arg: Optional[str],
     ) -> str:
         """Determines the active env name. Sections are assumed to be
-        validated."""
-        # -- Priority #1 (highest): The optional default-env option in the
-        # -- [apio] section.
-        env_name = apio_section.get("default-env", None)
+        validated. 'env_arg' is the value of the optional command line --env
+        which allows the user to select the env."""
+        # -- Priority #1 (highest): User specified env name in the command.
+        env_name = env_arg
 
-        # -- Priority #2 (lowest): Picking the first env defined in apio.ini.
+        # -- Priority #2: The optional default-env option in the
+        # -- [apio] section.
+        if env_name is None:
+            env_name = apio_section.get("default-env", None)
+
+        # -- Priority #3 (lowest): Picking the first env defined in apio.ini.
         # -- Note that the envs order is preserved in env_sections.
         if env_name is None:
             # -- The env sections preserve the order in apio.ini.
@@ -444,7 +461,7 @@ class Project:
 
 
 def load_project_from_file(
-    project_dir: Path, resolver: ProjectResolver
+    project_dir: Path, env_arg: Optional[str], resolver: ProjectResolver
 ) -> Project:
     """Read project file from given project dir. Returns None if file
     does not exists. Exits on any error. Otherwise creates adn
@@ -527,6 +544,7 @@ def load_project_from_file(
         apio_section=apio_section or {},
         common_section=common_section or {},
         env_sections=env_sections,
+        env_arg=env_arg,
         resolver=resolver,
     )
 

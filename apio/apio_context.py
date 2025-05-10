@@ -92,6 +92,7 @@ class ApioContext:
         *,
         scope: ApioContextScope,
         project_dir_arg: Optional[Path] = None,
+        env_arg: Optional[str] = None,
     ):
         """Initializes the ApioContext object.
 
@@ -100,6 +101,9 @@ class ApioContext:
 
         'project_dir_arg' is an optional user specification of the project dir.
         Must be None if scope is NO_PROJECT.
+
+        'env_arg' is an optional command line option value that select the
+        apio.ini env if the project is loaded.
 
         """
 
@@ -206,7 +210,9 @@ class ApioContext:
         self._project: Optional[Project] = None
         if self._project_dir:
             resolver = _ProjectResolverImpl(self)
-            self._project = load_project_from_file(self._project_dir, resolver)
+            self._project = load_project_from_file(
+                self._project_dir, env_arg, resolver
+            )
             assert self.has_project, "init(): project not loaded"
         else:
             assert not self.has_project, "init(): project loaded"

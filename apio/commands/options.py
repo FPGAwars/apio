@@ -101,6 +101,16 @@ def dst_option_gen(*, help: str):
 # -- Static options
 # ---------------------------
 
+env_option = click.option(
+    "env",  # Var name.
+    "-e",
+    "--env",
+    type=str,
+    default=None,
+    metavar="name",
+    help="Set the apio.ini env.",
+    cls=cmd_util.ApioOption,
+)
 
 project_dir_option = click.option(
     "project_dir",  # Var name.
