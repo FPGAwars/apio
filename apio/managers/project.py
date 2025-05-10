@@ -139,6 +139,7 @@ ENV_REQUIRED_OPTIONS = {
 }
 
 
+# -- 'ABC' stands for Abstract Base Class.
 class ProjectResolver(ABC):
     """An abstract class with services that are needed for project validation.
     Generally speaking it provides a subset of the functionality of ApioContext
@@ -148,8 +149,15 @@ class ProjectResolver(ABC):
     # pylint: disable=too-few-public-methods
 
     @abstractmethod
-    def lookup_board_name(self, board: str) -> str:
-        """Similar to ApioContext.lookup_board()"""
+    def lookup_board_name(
+        self,
+        board: str,
+        *,
+        accept_legacy_names: bool,
+        warn_if_legacy_name: bool,
+        exit_if_not_found: bool,
+    ) -> Optional[str]:
+        """Similar to ApioContext.lookup_board_name()"""
 
 
 class Project:
@@ -186,26 +194,32 @@ class Project:
             apio_section, env_sections
         )
         self._env_options = Project.resolve_env_options(
-            self._env_name, common_section, env_sections
+            common_section, env_sections[self._env_name]
         )
         if util.is_debug():
             print(f"Resolved env name: {self._env_name}")
             print(f"Resolved env options: {self._env_options}")
 
         # TODO: Debug code. Remove.
-        # print()
-        # print(f"Parsed [apio] section: {apio_section}")
-        # print(f"Parsed [common] section: {common_section}")
-        # print(f"Parsed [env:*] sections: {env_sections}")
-        # print(f"Resolved env name: {self._env_name}")
-        # print(f"Resolved env options: {self._env_options}")
-        # print()
+        print()
+        print(f"Parsed [apio] section: {apio_section}")
+        print(f"Parsed [common] section: {common_section}")
+        print(f"Parsed [env:*] sections: {env_sections}")
+        print(f"Resolved env name: {self._env_name}")
+        print(f"Resolved env options: {self._env_options}")
+        print()
 
         # -- Validate the resolved env. This is where we check for required
         # -- options.
-        Project.validate_resolved_env(
-            self._env_name, self._env_options, resolver
-        )
+        Project.validate_resolved_env(self._env_options, self._env_name)
+
+        # -- Patch board and top-module options in the resolved options.
+        Project.patch_resolved_options(self._env_options, resolver)
+
+        print(f"Patched env options: {self._env_options}")
+
+        if util.is_debug():
+            print(f"Patched env options: {self._env_options}")
 
     @staticmethod
     def validate_apio_ini_env_name(env_name: str):
@@ -267,7 +281,9 @@ class Project:
 
     @staticmethod
     def validate_env_section(
-        section_title: str, section_options: Dict[str, str], resolver
+        section_title: str,
+        section_options: Dict[str, str],
+        resolver: ProjectResolver,
     ):
         """Validate the options of a section that contains env options. This
         includes the sections [env:*] and [common]."""
@@ -283,8 +299,14 @@ class Project:
 
         # -- If 'board' option exists, verify the board exists.
         if "board" in section_options:
-            # -- This exits with an error if board does not exist.
-            resolver.lookup_board_name(section_options["board"])
+            # -- This exits with an error if board does not exist. we
+            # -- patch the legacy to canonical board name in a latter step.
+            resolver.lookup_board_name(
+                section_options["board"],
+                accept_legacy_names=True,
+                warn_if_legacy_name=True,
+                exit_if_not_found=True,
+            )
 
     @staticmethod
     def resolve_default_env_name(
@@ -316,34 +338,31 @@ class Project:
 
     @staticmethod
     def resolve_env_options(
-        env_name,
         common_section: Dict[str, str],
-        env_sections: Dict[str, Dict[str, str]],
+        env_section: Dict[str, str],
     ) -> Tuple[str, Dict[str, str]]:
-        """Returns env name and options. Sections are prevalidated"""
+        """Returns env name and options. The two sections are prevalidated.
+        The result preserves the order of the options in apio.ini"""
 
-        # -- Get the options of selected env.
-        env_section: Dict[str, str] = env_sections[env_name]
+        result: Dict[str, str] = {}
 
-        # -- Merge the options while preserving their order in apio.ini.
-        env_options = {}
         # -- Add common options that are not in env section
         for name, val in common_section.items():
             if name not in env_section:
-                env_options[name] = val
+                result[name] = val
+
         # -- Add all the options from the env section.
         for name, val in env_section.items():
-            env_options[name] = val
+            result[name] = val
 
         # -- All done.
-        return env_options
+        return result
 
     @staticmethod
-    def validate_resolved_env(
-        env_name: str, env_options: Dict[str, str], resolver: ProjectResolver
-    ):
+    def validate_resolved_env(env_options: Dict[str, str], env_name: str):
         """Validate the resolved env options. These are the option after
-        selecting the active env and resolving the options inheritance."""
+        selecting the active env and resolving the options inheritance
+        but before patching the board and top-module options."""
 
         # -- Check that all the required options are present.
         for option in ENV_REQUIRED_OPTIONS:
@@ -354,12 +373,25 @@ class Project:
                 )
                 sys.exit(1)
 
-        # -- We already validated the sections for unknown options so don't
-        # -- need to check here.
+    @staticmethod
+    def patch_resolved_options(
+        env_options: Dict[str, str], resolver: ProjectResolver
+    ):
+        """Patch a the post validation resolved env options."""
 
-        # -- Force 'board' to have the canonical name of the board.
-        # -- This exists with an error message if the board is unknown.
-        env_options["board"] = resolver.lookup_board_name(env_options["board"])
+        # -- Map the board  name to canonical. We already validated that
+        # -- the board exists and warned about usage of legacy name.
+        env_options["board"] = resolver.lookup_board_name(
+            env_options["board"],
+            accept_legacy_names=True,
+            warn_if_legacy_name=False,
+            exit_if_not_found=False,
+        )
+
+        # -- If this fails, this is a programming errors since the validation
+        # -- made sure that all 'board' options have a valid value and that
+        # -- The resolved env options contain the required 'board' option.
+        assert env_options["board"]
 
         # -- If top-module was not specified, fill in the default value.
         if "top-module" not in env_options:

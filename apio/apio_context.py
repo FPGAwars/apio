@@ -212,8 +212,13 @@ class ApioContext:
             assert not self.has_project, "init(): project loaded"
 
     def lookup_board_name(
-        self, board: str, *, warn: bool = True, strict: bool = True
-    ) -> str:
+        self,
+        board: str,
+        *,
+        accept_legacy_names: bool,
+        warn_if_legacy_name: bool,
+        exit_if_not_found: bool,
+    ) -> Optional[str]:
         """Lookup and return the board's canonical board name which is its key
         in boards.jsonc.  'board' can be the canonical name itself or a
         legacy id of the board as defined in boards.jsonc.  The method prints
@@ -230,7 +235,7 @@ class ApioContext:
         if board in self.boards:
             # -- Here when board is already the canonical name.
             canonical_name = board
-        else:
+        elif accept_legacy_names:
             # -- Look up for a board with 'board' as its legacy name.
             for board_name, board_info in self.boards.items():
                 if board == board_info.get("legacy_name", None):
@@ -238,7 +243,7 @@ class ApioContext:
                     break
 
         # -- Fatal error if unknown board.
-        if strict and canonical_name is None:
+        if exit_if_not_found and canonical_name is None:
             cerror(f"No such board '{board}'")
             cout(
                 "Run 'apio boards' for the list of board names.",
@@ -247,7 +252,7 @@ class ApioContext:
             sys.exit(1)
 
         # -- Warning if caller used a legacy board name.
-        if warn and canonical_name and board != canonical_name:
+        if warn_if_legacy_name and canonical_name and board != canonical_name:
             cwarning(
                 f"'{board}' board name was changed. "
                 f"Please use '{canonical_name}' instead."
@@ -564,6 +569,18 @@ class _ProjectResolverImpl(ProjectResolver):
         self._apio_context = apio_context
 
     # @override
-    def lookup_board_name(self, board: str) -> str:
+    def lookup_board_name(
+        self,
+        board: str,
+        *,
+        accept_legacy_names: bool,
+        warn_if_legacy_name: bool,
+        exit_if_not_found: bool,
+    ) -> Optional[str]:
         """Implementation of lookup_board_name."""
-        return self._apio_context.lookup_board_name(board)
+        return self._apio_context.lookup_board_name(
+            board,
+            accept_legacy_names=accept_legacy_names,
+            warn_if_legacy_name=warn_if_legacy_name,
+            exit_if_not_found=exit_if_not_found,
+        )

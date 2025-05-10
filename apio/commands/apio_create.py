@@ -75,7 +75,12 @@ def cli(
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Map to canonical board name. This fails if the board is unknown.
-    board_name = apio_ctx.lookup_board_name(board)
+    board_name = apio_ctx.lookup_board_name(
+        board,
+        accept_legacy_names=False,
+        warn_if_legacy_name=False,
+        exit_if_not_found=True,
+    )
 
     # -- Determine the new project directory. Create if needed.
     project_dir: Path = util.user_directory_or_cwd(
