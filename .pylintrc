@@ -2,7 +2,8 @@
 
 [MESSAGES CONTROL]
 # Do not warn about TODOs.
-disable=fixme
+# Do not warn about too few public methods in a class.
+disable=fixme,too-few-public-methods
 
 [SIMILARITIES]
 # Reducing the sensitivity of duplicate code (default is 4)
