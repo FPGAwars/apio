@@ -561,7 +561,6 @@ class ApioContext:
 
 
 class _ProjectResolverImpl(ProjectResolver):
-    # pylint: disable=too-few-public-methods
 
     def __init__(self, apio_context: ApioContext):
         """When ApioContext instances this object, ApioContext is fully

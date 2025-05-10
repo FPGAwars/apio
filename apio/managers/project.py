@@ -146,8 +146,6 @@ class ProjectResolver(ABC):
     and we use it to avoid a cyclic import between Project and ApioContext.
     """
 
-    # pylint: disable=too-few-public-methods
-
     @abstractmethod
     def lookup_board_name(
         self,

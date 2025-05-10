@@ -93,8 +93,6 @@ class ZIPArchive(ArchiveBase):
         self.preserve_permissions(item, dest_dir)
 
 
-# R0903: Too few public methods (1/2) (too-few-public-methods)
-# pylint: disable=R0903
 class FileUnpacker:
     """Class for unpacking compressed files"""
 
