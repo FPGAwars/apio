@@ -82,7 +82,7 @@ def cli(
     png: bool,
     pdf: bool,
     env: Optional[str],
-    project_dir: Path,
+    project_dir: Optional[Path],
     verbose: bool,
     top_module: str,
 ):

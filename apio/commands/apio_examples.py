@@ -8,7 +8,7 @@
 """Implementation of 'apio examples' command"""
 
 from pathlib import Path
-from typing import List, Any
+from typing import List, Any, Optional
 import click
 from rich.table import Table
 from rich import box
@@ -157,7 +157,7 @@ def _fetch_cli(
     # Arguments
     example: str,
     # Options
-    dst: Path,
+    dst: Optional[Path],
 ):
     """Implements the 'apio examples fetch' command."""
 
@@ -204,7 +204,7 @@ def _fetch_board_cli(
     # Arguments
     board: str,
     # Options
-    dst: Path,
+    dst: Optional[Path],
 ):
     """Implements the 'apio examples fetch-board' command."""
 

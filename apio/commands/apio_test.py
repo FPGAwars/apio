@@ -64,7 +64,7 @@ def cli(
     testbench_file: str,
     # Options
     env: Optional[str],
-    project_dir: Path,
+    project_dir: Optional[Path],
 ):
     """Implements the test command."""
 

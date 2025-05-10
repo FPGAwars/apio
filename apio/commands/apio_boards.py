@@ -10,7 +10,7 @@
 import sys
 from pathlib import Path
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import List, Dict, Optional
 import click
 from rich.table import Table
 from rich import box
@@ -180,7 +180,7 @@ Examples:[code]
 def cli(
     # Options
     verbose: bool,
-    project_dir: Path,
+    project_dir: Optional[Path],
 ):
     """Implements the 'boards' command which lists available board
     definitions."""

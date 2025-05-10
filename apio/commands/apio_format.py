@@ -79,7 +79,7 @@ def cli(
     # Arguments
     files: Tuple[str],
     env: Optional[str],
-    project_dir: Path,
+    project_dir: Optional[Path],
     verbose: bool,
 ):
     """Implements the format command which formats given or all source

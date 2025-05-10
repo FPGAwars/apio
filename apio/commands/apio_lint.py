@@ -95,7 +95,7 @@ def cli(
     all_: bool,
     top_module: str,
     env: Optional[str],
-    project_dir: Path,
+    project_dir: Optional[Path],
 ):
     """Lint the source code."""
 

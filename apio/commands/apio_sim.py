@@ -77,7 +77,7 @@ def cli(
     # Options
     force: bool,
     env: Optional[str],
-    project_dir: Path,
+    project_dir: Optional[Path],
 ):
     """Implements the apio sim command. It simulates a single testbench
     file and shows graphically the signal graphs.

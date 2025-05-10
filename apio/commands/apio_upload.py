@@ -103,7 +103,7 @@ def cli(
     ftdi_idx: int,
     sram: bool,
     env: Optional[str],
-    project_dir: Path,
+    project_dir: Optional[Path],
 ):
     """Implements the upload command."""
 

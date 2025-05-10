@@ -42,7 +42,7 @@ def cli(
     _: click.Context,
     # Options
     env: Optional[str],
-    project_dir: Path,
+    project_dir: Optional[Path],
 ):
     """Implements the apio clean command. It deletes temporary files generated
     by apio commands.

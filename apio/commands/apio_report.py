@@ -46,7 +46,7 @@ def cli(
     _: click.Context,
     # Options
     env: Optional[str],
-    project_dir: Path,
+    project_dir: Optional[Path],
     verbose: bool,
 ):
     """Analyze the design and report timing."""

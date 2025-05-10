@@ -57,7 +57,7 @@ def cli(
     _: click.Context,
     # Options
     env: Optional[str],
-    project_dir: Path,
+    project_dir: Optional[Path],
     verbose: bool,
     verbose_synth: bool,
     verbose_pnr: bool,
