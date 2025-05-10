@@ -188,36 +188,36 @@ class Project:
         )
 
         # -- Determine active env name and options.
-        self._env_name = Project.resolve_default_env_name(
+        self.env_name = Project.resolve_default_env_name(
             apio_section, env_sections
         )
-        self._env_options = Project.resolve_env_options(
-            common_section, env_sections[self._env_name]
+        self.env_options = Project.resolve_env_options(
+            common_section, env_sections[self.env_name]
         )
         if util.is_debug():
-            print(f"Resolved env name: {self._env_name}")
-            print(f"Resolved env options: {self._env_options}")
+            print(f"Resolved env name: {self.env_name}")
+            print(f"Resolved env options: {self.env_options}")
 
         # TODO: Debug code. Remove.
         print()
         print(f"Parsed [apio] section: {apio_section}")
         print(f"Parsed [common] section: {common_section}")
         print(f"Parsed [env:*] sections: {env_sections}")
-        print(f"Resolved env name: {self._env_name}")
-        print(f"Resolved env options: {self._env_options}")
+        print(f"Resolved env name: {self.env_name}")
+        print(f"Resolved env options: {self.env_options}")
         print()
 
         # -- Validate the resolved env. This is where we check for required
         # -- options.
-        Project.validate_resolved_env(self._env_options, self._env_name)
+        Project.validate_resolved_env(self.env_options, self.env_name)
 
         # -- Patch board and top-module options in the resolved options.
-        Project.patch_resolved_options(self._env_options, resolver)
+        Project.patch_resolved_options(self.env_options, resolver)
 
-        print(f"Patched env options: {self._env_options}")
+        print(f"Patched env options: {self.env_options}")
 
         if util.is_debug():
-            print(f"Patched env options: {self._env_options}")
+            print(f"Patched env options: {self.env_options}")
 
     @staticmethod
     def validate_sections(
@@ -411,7 +411,7 @@ class Project:
         assert option in ENV_OPTIONS, f"Invalid env option: [{option}]"
 
         # -- Lookup with default
-        return self._env_options.get(option, default)
+        return self.env_options.get(option, default)
 
     def __getitem__(self, option: str) -> Optional[str]:
         """Lookup an env option value by name using the [] operator. Returns

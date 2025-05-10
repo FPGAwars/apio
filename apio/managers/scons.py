@@ -315,6 +315,7 @@ class SCons:
         # -- Populate the Project params.
         result.apio_env_params.MergeFrom(
             ApioEnvParams(
+                env_name=apio_ctx.project.env_name,
                 board_id=project["board"],
                 top_module=project["top-module"],
                 yosys_synth_extra_options=apio_ctx.project.get(
@@ -385,13 +386,18 @@ class SCons:
         # -- to execute the apio command)
         start_time = time.time()
 
+        # -- Env name string in color
+        styled_env_name = cstyle(
+            scons_params.apio_env_params.env_name, style=EMPH1
+        )
+
         # -- Board name string in color
         styled_board_id = cstyle(
             scons_params.apio_env_params.board_id, style=EMPH1
         )
 
         # -- Print information on the console
-        cout(f"Processing board {styled_board_id}")
+        cout(f"Processing env {styled_env_name}, board {styled_board_id}")
 
         # -- Print a horizontal line
         cout("-" * terminal_width)

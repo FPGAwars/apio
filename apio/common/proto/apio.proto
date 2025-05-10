@@ -95,10 +95,14 @@ message Environment {
 
 // Information about the resolved active env from apio.ini.
 message ApioEnvParams {
-  required string board_id = 1;
-  required string top_module = 2;
-  // The value of 'yosys-synth-extra-options' from apio.ini.
-  optional string yosys_synth_extra_options = 3 [default = ""];
+  // The name of the apio.ini env used.
+  required string env_name = 1;
+  // The board id. E.g. 'alhambra-ii'.
+  required string board_id = 2;
+  // The name of the top verilog module, e.g. 'main'.
+  required string top_module = 3;
+  // This is the value of 'yosys-synth-extra-options' from apio.ini.
+  optional string yosys_synth_extra_options = 4 [default = ""];
 }
 
 // Lint target specific params.
