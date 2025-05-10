@@ -103,8 +103,8 @@ class ApioContext:
         Must be None if scope is NO_PROJECT.
 
         'env_arg' is an optional command line option value that select the
-        apio.ini env if the project is loaded.
-
+        apio.ini env if the project is loaded. it makes sense only when scope
+        is PROJECT_REQUIRED (enforced by an assertion).
         """
 
         # -- Inform as soon as possible about the list of apio env options
@@ -125,6 +125,11 @@ class ApioContext:
         # -- Store the scope
         assert isinstance(scope, ApioContextScope), "Not an ApioContextScope"
         self.scope = scope
+
+        # -- Sanity check, env_arg makes sense only when scope is
+        # -- PROJECT_REQUIRED.
+        if env_arg is not None:
+            assert scope == ApioContextScope.PROJECT_REQUIRED
 
         # -- A flag to indicate if the system env was already set in this
         # -- apio session. Used to avoid multiple repeated settings that
