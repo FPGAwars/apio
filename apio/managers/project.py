@@ -19,7 +19,7 @@ from typing import Dict, Optional, Union, Any, List, Tuple
 from configobj import ConfigObj
 from apio.utils import util
 from apio.common.apio_console import cout, cerror, cwarning
-from apio.common.apio_styles import INFO, SUCCESS
+from apio.common.apio_styles import INFO, SUCCESS, EMPH2
 
 
 DEFAULT_TOP_MODULE = "main"
@@ -178,9 +178,14 @@ class Project:
         # pylint: disable=too-many-arguments
 
         if util.is_debug():
-            print(f"Parsed [apio] section:\n  {apio_section}")
-            print(f"Parsed [common] section:\n  {common_section}")
-            print(f"Parsed [env:*] sections:\n  {env_sections}")
+            cout()
+            cout("Parsed [apio] section:", style=EMPH2)
+            cout(f"  {apio_section}\n")
+            cout("Parsed [common] section:", style=EMPH2)
+            cout(f"  {common_section}\n")
+            for env_name, section_options in env_sections.items():
+                cout(f"Parsed [env:{env_name}] section:", style=EMPH2)
+                cout(f"{section_options}\n")
 
         # -- Validate the env_arg format
         if env_arg is not None:
@@ -205,8 +210,10 @@ class Project:
             common_section, env_sections[self.env_name]
         )
         if util.is_debug():
-            print(f"Resolved env name: {self.env_name}")
-            print(f"Resolved env options: {self.env_options}")
+            cout("Resolved env name:", style=EMPH2)
+            cout(f"  {self.env_name}\n")
+            cout("Resolved env options:", style=EMPH2)
+            cout(f"  {self.env_options}\n")
 
         # -- Validate the resolved env. This is where we check for required
         # -- options.
@@ -216,7 +223,8 @@ class Project:
         Project.patch_resolved_options(self.env_options, resolver)
 
         if util.is_debug():
-            print(f"Patched env options: {self.env_options}")
+            cout("Patched env options:", style=EMPH2)
+            cout(f"  {self.env_options}\n")
 
     @staticmethod
     def validate_sections(
