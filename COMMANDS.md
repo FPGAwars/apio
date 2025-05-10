@@ -25,10 +25,10 @@
   * [apio fpgas](#apio-fpgas) - List available FPGA definitions.
   * [apio graph](#apio-graph) - Generate a visual graph of the code.
   * [apio info](#apio-info) - Apio's info and info.
+    * [apio info apio.ini](#apio-info-apio.ini) - Apio.ini options.
     * [apio info cli](#apio-info-cli) - Command line conventions.
     * [apio info colors](#apio-info-colors) - Colors table.
     * [apio info files](#apio-info-files) - Apio project files types.
-    * [apio info options](#apio-info-options) - Apio.ini options.
     * [apio info platforms](#apio-info-platforms) - Supported platforms.
     * [apio info resources](#apio-info-resources) - Additional resources.
     * [apio info system](#apio-info-system) - Show system information.
@@ -695,7 +695,7 @@ Options:
   -h, --help  Show this message and exit.
 
 Documentation:
-  apio info options    Apio.ini options.
+  apio info apio.ini   Apio.ini options.
   apio info cli        Command line conventions.
   apio info files      Apio project files types.
   apio info resources  Additional resources.
@@ -704,6 +704,25 @@ Information:
   apio info platforms  Supported platforms.
   apio info system     Show system information.
   apio info colors     Colors table.
+
+```
+
+<br>
+
+### apio info apio.ini
+
+```
+Usage: apio info apio.ini [OPTIONS] [OPTION]
+
+  The command 'apio info apio.ini' provides information about the
+  required project file 'apio.ini'.
+
+  Examples:
+    apio info apio.ini              # List an overview and all options.
+    apio info apio.ini top-module   # List a single option.
+
+Options:
+  -h, --help  Show this message and exit.
 
 ```
 
@@ -760,30 +779,11 @@ Options:
 ```
 Usage: apio info files [OPTIONS]
 
-  The command 'apio info options' provides information about the various
+  The command 'apio info files' provides information about the various
   files types used in an Apio project.
 
   Examples:
     apio info files
-
-Options:
-  -h, --help  Show this message and exit.
-
-```
-
-<br>
-
-### apio info options
-
-```
-Usage: apio info options [OPTIONS] [OPTION]
-
-  The command 'apio info options' provides information about the
-  required project file 'apio.ini'.
-
-  Examples:
-    apio info options              # List an overview and all options.
-    apio info options top-module   # List a single option.
 
 Options:
   -h, --help  Show this message and exit.

@@ -39,31 +39,12 @@ https://github.com/FPGAwars/apio/wiki/Project-configuration-file
 # -- Apio options. These are the options that appear in the [apio] section.
 # -- They are not subject to inheritance and resolution.
 
-# -- The options docs here are formatted in the rich-text format of the
-# -- python rich library. See apio_info.py to see how they are
-# -- used.
-APIO_DEFAULT_ENV_DOC = """
-The option 'default-env' selects the default env to use if --env is not \
-specified on the command line. Without it, the first env in apio.ini is \
-used as the default. This option is useful when apio.ini has more than one \
-env.
 
-Example:[code]
-  [apio]
-  default-env = bar
-
-  [env:foo]
-  ...
-
-  [env:bar]
-  ...[/code]
-"""
-
-APIO_OPTIONS = {
+APIO_OPTIONS = [
     # -- Selecting the env to use if not overridden in command line. Otherwise
     # -- the first env is the default.
-    "default-env": APIO_DEFAULT_ENV_DOC,
-}
+    "default-env",
+]
 
 
 # -- Env options. These are options that appear in the [common] and [env:*]
