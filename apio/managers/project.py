@@ -383,8 +383,8 @@ class Project:
         for option in ENV_REQUIRED_OPTIONS:
             if option not in result:
                 cerror(
-                    f"Missing option '{option}' "
-                    f"after resolving env {env_name}."
+                    f"Missing required option '{option}' "
+                    f"for env '{env_name}'."
                 )
                 sys.exit(1)
 

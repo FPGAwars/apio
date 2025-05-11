@@ -26,7 +26,10 @@ def test_build_with_apio_init(apio_runner: ApioRunner):
         sb.write_apio_ini({"[env:default]": {"top-module": "main"}})
         result = sb.invoke_apio_cmd(apio, "build")
         assert result.exit_code == 1, result.output
-        assert "Error: Missing option 'board'" in result.output
+        assert (
+            "Error: Missing required option 'board' for env 'default'"
+            in result.output
+        )
 
         # -- Run "apio build" with an invalid board
         sb.write_apio_ini(
