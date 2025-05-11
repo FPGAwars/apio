@@ -42,3 +42,19 @@ def test_clean_with_apio_ini(apio_runner: ApioRunner):
         assert not Path(".sconsign.dblite").exists()
         assert not Path("_build/hardware.out").exists()
         assert not Path("_build").exists()
+
+
+def test_clean_with_env_arg_error(apio_runner: ApioRunner):
+    """Tests the command with an invalid --env value. This error message
+    confirms that the --env arg was propagated to the apio.ini loading
+    logic."""
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Run "apio clean --env no-such-env"
+        sb.write_apio_ini({"[env:default]": {"top-module": "main"}})
+        result = sb.invoke_apio_cmd(apio, "clean", "--env", "no-such-env")
+        assert result.exit_code == 1, result.output
+        assert (
+            "Error: Env 'no-such-env' not found in apio.ini" in result.output
+        )

@@ -882,6 +882,7 @@ Options:
   -a, --all               Enable all warnings, including code style warnings.
   -t, --top-module name   Restrict linting to this module and its
                           dependencies.
+  -e, --env name          Set the apio.ini env.
   -p, --project-dir path  Set the root directory for the project.
   -h, --help              Show this message and exit.
 
