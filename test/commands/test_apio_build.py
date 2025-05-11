@@ -42,7 +42,10 @@ def test_build_with_apio_ini(apio_runner: ApioRunner):
         )
         result = sb.invoke_apio_cmd(apio, "build")
         assert result.exit_code == 1, result.output
-        assert "no such board 'no-such-board'" in result.output.lower()
+        assert (
+            "Error: Unknown board name 'no-such-board' in apio.ini"
+            in result.output
+        )
 
         # -- Run "apio build" with an unknown option.
         sb.write_apio_ini(

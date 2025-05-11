@@ -10,7 +10,6 @@
 """Utility functionality for apio click commands."""
 
 import sys
-from abc import ABC, abstractmethod
 import re
 import configparser
 from collections import OrderedDict
@@ -138,25 +137,6 @@ ENV_REQUIRED_OPTIONS = {
 }
 
 
-# -- 'ABC' stands for Abstract Base Class.
-class ProjectResolver(ABC):
-    """An abstract class with services that are needed for project validation.
-    Generally speaking it provides a subset of the functionality of ApioContext
-    and we use it to avoid a cyclic import between Project and ApioContext.
-    """
-
-    @abstractmethod
-    def lookup_board_name(
-        self,
-        board: str,
-        *,
-        accept_legacy_names: bool,
-        warn_if_legacy_name: bool,
-        exit_if_not_found: bool,
-    ) -> Optional[str]:
-        """Similar to ApioContext.lookup_board_name()"""
-
-
 class Project:
     """An instance of this class holds the information from the project's
     apio.ini file.
@@ -169,10 +149,10 @@ class Project:
         common_section: Optional[Dict[str, str]],
         env_sections: Dict[str, Dict[str, str]],
         env_arg: Optional[str],
-        resolver: ProjectResolver,
+        boards: Dict[str, Dict],
     ):
-        """Construct a Project object with given options sections and a
-        resolver with context information."""
+        """Construct the project with information from apio.ini, command
+        line arg, and boards resources."""
 
         # pylint: disable=too-many-arguments
 
@@ -193,6 +173,11 @@ class Project:
                 cout(ENV_NAME_HINT, style=INFO)
                 sys.exit(1)
 
+        # -- Patch legacy board ids in the common and env sections.
+        Project._patch_legacy_board_name(common_section, boards)
+        for section_options in env_sections.values():
+            Project._patch_legacy_board_name(section_options, boards)
+
         # -- Validate the apio.ini sections. We prefer to perform as much
         # -- validation as possible before we expand the env because the env
         # -- expansion may hide some options.
@@ -200,7 +185,7 @@ class Project:
             apio_section=apio_section,
             common_section=common_section,
             env_sections=env_sections,
-            resolver=resolver,
+            boards=boards,
         )
 
         # -- Determine the name of the active env.
@@ -214,7 +199,6 @@ class Project:
             env_name=self.env_name,
             common_section=common_section,
             env_sections=env_sections,
-            resolver=resolver,
         )
         if util.is_debug():
             cout("Selected env name:", style=EMPH2)
@@ -223,16 +207,49 @@ class Project:
             cout(f"  {self.env_options}\n")
 
     @staticmethod
+    def _patch_legacy_board_name(
+        section_options: Dict[str, Dict[str, str]], boards: Dict[str, Dict]
+    ) -> Optional[str]:
+        """Temporary patching of old board names to new in an env or common
+        section. If there is a "board" option with a legacy board name,
+        then change it to the board's canonical name. Otherwise, leave the
+        options as are."""
+
+        # -- Get the value of the "board" option.
+        board_name = section_options.get("board", None)
+
+        # -- Nothing to do if no "board" option.
+        if board_name is None:
+            return
+
+        # -- Nothing to do if board_name is in the boards dict. It's
+        # -- a good (new style) board name.
+        if board_name in boards:
+            return
+
+        # -- Iterate the boards and if board_name matches the legacy name of
+        # -- a board, change the "board" option to the canonical name of that
+        # -- board.
+        for canonical_name, board_info in boards.items():
+            if board_name == board_info.get("legacy_name", None):
+                section_options["board"] = canonical_name
+                cwarning(
+                    f"'Board {board_name}' was renamed to '{canonical_name}'. "
+                    "Please update apio.ini."
+                )
+                return
+
+    @staticmethod
     def _validate_all_sections(
         apio_section: Optional[Dict[str, str]],
         common_section: Optional[Dict[str, str]],
         env_sections: Dict[str, Dict[str, str]],
-        resolver: ProjectResolver,
+        boards: Dict[str, Dict],
     ):
         """Validate the parsed apio.ini sections."""
 
         # -- Validate the common section.
-        Project._validate_env_section("[common]", common_section, resolver)
+        Project._validate_env_section("[common]", common_section, boards)
 
         # -- Validate the env sections.
         for env_name, section_options in env_sections.items():
@@ -243,7 +260,7 @@ class Project:
                 sys.exit(1)
             # -- Validate env section options.
             Project._validate_env_section(
-                f"[env:{env_name}]", section_options, resolver
+                f"[env:{env_name}]", section_options, boards
             )
 
         # -- Validate the apio section. At this point the env_sections are
@@ -291,7 +308,7 @@ class Project:
     def _validate_env_section(
         section_title: str,
         section_options: Dict[str, str],
-        resolver: ProjectResolver,
+        boards: Dict[str, Dict],
     ):
         """Validate the options of a section that contains env options. This
         includes the sections [env:*] and [common]."""
@@ -305,16 +322,11 @@ class Project:
                 )
                 sys.exit(1)
 
-        # -- If 'board' option exists, verify the board exists.
-        if "board" in section_options:
-            # -- This exits with an error if board does not exist. we
-            # -- patch the legacy to canonical board name in a latter step.
-            resolver.lookup_board_name(
-                section_options["board"],
-                accept_legacy_names=True,
-                warn_if_legacy_name=True,
-                exit_if_not_found=True,
-            )
+        # -- If 'board' option exists, verify that the board exists.
+        board_name = section_options.get("board", None)
+        if board_name is not None and board_name not in boards:
+            cerror(f"Unknown board name '{board_name}' in apio.ini.")
+            sys.exit(1)
 
     @staticmethod
     def _determine_default_env_name(
@@ -356,7 +368,6 @@ class Project:
         env_name: str,
         common_section: Dict[str, str],
         env_sections: Dict[str, Dict[str, str]],
-        resolver: ProjectResolver,
     ) -> Dict[str, str]:
         """Expand the options of given env name. The given common and envs
         sections are already validate.
@@ -379,7 +390,7 @@ class Project:
         for name, val in env_section.items():
             result[name] = val
 
-        # -- check that all the require options exist.
+        # -- check that all the required options exist.
         for option in ENV_REQUIRED_OPTIONS:
             if option not in result:
                 cerror(
@@ -387,20 +398,6 @@ class Project:
                     f"for env '{env_name}'."
                 )
                 sys.exit(1)
-
-        # -- Map the board  name to the canonical name. We already validated
-        # -- that the board exists and warned about usage of legacy name.
-        result["board"] = resolver.lookup_board_name(
-            result["board"],
-            accept_legacy_names=True,
-            warn_if_legacy_name=False,
-            exit_if_not_found=False,
-        )
-
-        # -- If this fails, this is a programming errors since the validation
-        # -- made sure that all 'board' options have a valid value and that
-        # -- The expanded env options contain the required 'board' option.
-        assert result["board"]
 
         # -- If top-module was not specified, fill in the default value.
         if "top-module" not in result:
@@ -452,7 +449,7 @@ class Project:
 
 
 def load_project_from_file(
-    project_dir: Path, env_arg: Optional[str], resolver: ProjectResolver
+    project_dir: Path, env_arg: Optional[str], boards: Dict[str, Dict]
 ) -> Project:
     """Read project file from given project dir. Returns None if file
     does not exists. Exits on any error. Otherwise creates adn
@@ -536,7 +533,7 @@ def load_project_from_file(
         common_section=common_section or {},
         env_sections=env_sections,
         env_arg=env_arg,
-        resolver=resolver,
+        boards=boards,
     )
 
 

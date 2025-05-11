@@ -7,11 +7,13 @@
 # -- License GPLv2
 """Implementation of 'apio examples' command"""
 
+import sys
 from pathlib import Path
 from typing import List, Any, Optional
 import click
 from rich.table import Table
 from rich import box
+from apio.common.apio_console import cerror
 from apio.common import apio_console
 from apio.common.apio_console import cout, cprint
 from apio.common.apio_styles import INFO, BORDER, EMPH1
@@ -211,13 +213,10 @@ def _fetch_board_cli(
     # -- Create the apio context.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
-    # -- This fails with an error message if there is no such board.
-    apio_ctx.lookup_board_name(
-        board,
-        accept_legacy_names=False,
-        warn_if_legacy_name=False,
-        exit_if_not_found=True,
-    )
+    # -- Make sure the board exist.
+    if board not in apio_ctx.boards:
+        cerror(f"Unknown board name '{board}.")
+        sys.exit(1)
 
     # -- Create the examples manager.
     examples = Examples(apio_ctx)

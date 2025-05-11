@@ -127,8 +127,8 @@ def test_legacy_board_name(apio_runner: ApioRunner, capsys: LogCaptureFixture):
         "top-module": "my_top_module",
     }
     assert (
-        "Warning: 'iCE40-HX8K' board name was changed. "
-        "Please use 'ice40-hx8k' instead" in stdout
+        "Warning: 'Board iCE40-HX8K' was renamed to 'ice40-hx8k'. "
+        "Please update apio.ini" in stdout
     )
 
 
@@ -300,7 +300,7 @@ def test_validation_errors(apio_runner: ApioRunner, capsys: LogCaptureFixture):
                 "board": "no-such-board",
             }
         },
-        expected_error="Error: No such board 'no-such-board'",
+        expected_error="Error: Unknown board name 'no-such-board' in apio.ini",
         apio_runner=apio_runner,
         capsys=capsys,
     )
