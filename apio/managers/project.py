@@ -15,7 +15,7 @@ import re
 import configparser
 from collections import OrderedDict
 from pathlib import Path
-from typing import Dict, Optional, Union, Any, List, Tuple
+from typing import Dict, Optional, Union, Any, List
 from configobj import ConfigObj
 from apio.utils import util
 from apio.common.apio_console import cout, cerror, cwarning
@@ -46,10 +46,9 @@ APIO_OPTIONS = [
     "default-env",
 ]
 
-
 # -- Env options. These are options that appear in the [common] and [env:*]
-# -- sections of apio.ini. The 'require' attribute refers to their apperance
-# -- in the env options after resolving the inheritance.
+# -- sections of apio.ini. The 'require' attribute refers to their appearance
+# -- in the env options after expanding the inheritance.
 
 # -- The options docs here are formatted in the rich-text format of the
 # -- python rich library. See apio_info.py to see how they are
@@ -187,47 +186,44 @@ class Project:
                 cout(f"Parsed [env:{env_name}] section:", style=EMPH2)
                 cout(f"{section_options}\n")
 
-        # -- Validate the env_arg format
+        # -- Validate the format of the env_arg value.
         if env_arg is not None:
             if not ENV_NAME_REGEX.match(env_arg):
                 cerror(f"Invalid --env value '{env_arg}'.")
                 cout(ENV_NAME_HINT, style=INFO)
                 sys.exit(1)
 
-        # -- Validate the sections.
-        Project.validate_sections(
+        # -- Validate the apio.ini sections. We prefer to perform as much
+        # -- validation as possible before we expand the env because the env
+        # -- expansion may hide some options.
+        Project._validate_all_sections(
             apio_section=apio_section,
             common_section=common_section,
             env_sections=env_sections,
             resolver=resolver,
         )
 
-        # -- Determine the active env name and options.
-        self.env_name = Project.resolve_default_env_name(
+        # -- Determine the name of the active env.
+        self.env_name = Project._determine_default_env_name(
             apio_section, env_sections, env_arg
         )
-        self.env_options = Project.resolve_env_options(
-            common_section, env_sections[self.env_name]
+
+        # -- Expand and selected env options. This is also patches default
+        # -- values and validates the results.
+        self.env_options = Project._expand_env_options(
+            env_name=self.env_name,
+            common_section=common_section,
+            env_sections=env_sections,
+            resolver=resolver,
         )
         if util.is_debug():
-            cout("Resolved env name:", style=EMPH2)
+            cout("Selected env name:", style=EMPH2)
             cout(f"  {self.env_name}\n")
-            cout("Resolved env options:", style=EMPH2)
-            cout(f"  {self.env_options}\n")
-
-        # -- Validate the resolved env. This is where we check for required
-        # -- options.
-        Project.validate_resolved_env(self.env_options, self.env_name)
-
-        # -- Patch board and top-module options in the resolved options.
-        Project.patch_resolved_options(self.env_options, resolver)
-
-        if util.is_debug():
-            cout("Patched env options:", style=EMPH2)
+            cout("Expanded env options:", style=EMPH2)
             cout(f"  {self.env_options}\n")
 
     @staticmethod
-    def validate_sections(
+    def _validate_all_sections(
         apio_section: Optional[Dict[str, str]],
         common_section: Optional[Dict[str, str]],
         env_sections: Dict[str, Dict[str, str]],
@@ -236,7 +232,7 @@ class Project:
         """Validate the parsed apio.ini sections."""
 
         # -- Validate the common section.
-        Project.validate_env_section("[common]", common_section, resolver)
+        Project._validate_env_section("[common]", common_section, resolver)
 
         # -- Validate the env sections.
         for env_name, section_options in env_sections.items():
@@ -246,16 +242,16 @@ class Project:
                 cout(ENV_NAME_HINT, style=INFO)
                 sys.exit(1)
             # -- Validate env section options.
-            Project.validate_env_section(
+            Project._validate_env_section(
                 f"[env:{env_name}]", section_options, resolver
             )
 
         # -- Validate the apio section. At this point the env_sections are
         # -- already validated.
-        Project.validate_apio_section(apio_section, env_sections)
+        Project._validate_apio_section(apio_section, env_sections)
 
     @staticmethod
-    def validate_apio_section(
+    def _validate_apio_section(
         apio_section: Dict[str, str], env_sections: Dict[str, Dict[str, str]]
     ):
         """Validate the [apio] section. 'env_sections' are assumed to be
@@ -292,7 +288,7 @@ class Project:
                 sys.exit(1)
 
     @staticmethod
-    def validate_env_section(
+    def _validate_env_section(
         section_title: str,
         section_options: Dict[str, str],
         resolver: ProjectResolver,
@@ -321,7 +317,7 @@ class Project:
             )
 
     @staticmethod
-    def resolve_default_env_name(
+    def _determine_default_env_name(
         apio_section: Dict[str, str],
         env_sections: Dict[str, Dict[str, str]],
         env_arg: Optional[str],
@@ -356,13 +352,22 @@ class Project:
         return env_name
 
     @staticmethod
-    def resolve_env_options(
+    def _expand_env_options(
+        env_name: str,
         common_section: Dict[str, str],
-        env_section: Dict[str, str],
-    ) -> Tuple[str, Dict[str, str]]:
-        """Returns env name and options. The two sections are prevalidated.
-        The result preserves the order of the options in apio.ini"""
+        env_sections: Dict[str, Dict[str, str]],
+        resolver: ProjectResolver,
+    ) -> Dict[str, str]:
+        """Expand the options of given env name. The given common and envs
+        sections are already validate.
+        """
 
+        # -- Select the env section by name.
+        env_section = env_sections[env_name]
+
+        # -- Create an empty result dict.
+        # -- We will insert to it the relevant options by the oder they appear
+        # -- in apio.ini.
         result: Dict[str, str] = {}
 
         # -- Add common options that are not in env section
@@ -374,34 +379,19 @@ class Project:
         for name, val in env_section.items():
             result[name] = val
 
-        # -- All done.
-        return result
-
-    @staticmethod
-    def validate_resolved_env(env_options: Dict[str, str], env_name: str):
-        """Validate the resolved env options. These are the option after
-        selecting the active env and resolving the options inheritance
-        but before patching the board and top-module options."""
-
-        # -- Check that all the required options are present.
+        # -- check that all the require options exist.
         for option in ENV_REQUIRED_OPTIONS:
-            if option not in env_options:
+            if option not in result:
                 cerror(
                     f"Missing option '{option}' "
                     f"after resolving env {env_name}."
                 )
                 sys.exit(1)
 
-    @staticmethod
-    def patch_resolved_options(
-        env_options: Dict[str, str], resolver: ProjectResolver
-    ):
-        """Patch a the post validation resolved env options."""
-
-        # -- Map the board  name to canonical. We already validated that
-        # -- the board exists and warned about usage of legacy name.
-        env_options["board"] = resolver.lookup_board_name(
-            env_options["board"],
+        # -- Map the board  name to the canonical name. We already validated
+        # -- that the board exists and warned about usage of legacy name.
+        result["board"] = resolver.lookup_board_name(
+            result["board"],
             accept_legacy_names=True,
             warn_if_legacy_name=False,
             exit_if_not_found=False,
@@ -409,17 +399,19 @@ class Project:
 
         # -- If this fails, this is a programming errors since the validation
         # -- made sure that all 'board' options have a valid value and that
-        # -- The resolved env options contain the required 'board' option.
-        assert env_options["board"]
+        # -- The expanded env options contain the required 'board' option.
+        assert result["board"]
 
         # -- If top-module was not specified, fill in the default value.
-        if "top-module" not in env_options:
-            env_options["top-module"] = DEFAULT_TOP_MODULE
+        if "top-module" not in result:
+            result["top-module"] = DEFAULT_TOP_MODULE
             cout(
-                "Option 'top-module' is missing, "
-                f"using '{DEFAULT_TOP_MODULE}'.",
+                f"Option 'top-module' is missing for env {env_name}, "
+                f"assuming '{DEFAULT_TOP_MODULE}'.",
                 style=INFO,
             )
+
+        return result
 
     def get(self, option: str, default: Any = None) -> Union[str, Any]:
         """Lookup an env option value by name. Returns default if not found."""

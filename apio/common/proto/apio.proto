@@ -93,7 +93,7 @@ message Environment {
   required string trellis_path = 7;
 }
 
-// Information about the resolved active env from apio.ini.
+// Information about the expanded active env from apio.ini.
 message ApioEnvParams {
   // The name of the apio.ini env used.
   required string env_name = 1;

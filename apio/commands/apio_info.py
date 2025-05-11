@@ -177,11 +177,11 @@ At runtime, apio select the environment to use based on this rules in \
 
 When apio determines the environment to use, it collects its options from the \
 \\[common] and the env section, with options in the env section having higher \
-priority, and executes the command with these resolved environment options.
+priority, and executes the command with these expanded environment options.
 
 Following is a list of the options that can appear in the \\[common] and \
 the \\[env:*] section. The terms 'required' and 'optional' refers to the \
-presence of the options in the options resolved from the \\[common] and the \
+presence of the options in the options expanded from the \\[common] and the \
 \\[env:name] sections.
 """
 
