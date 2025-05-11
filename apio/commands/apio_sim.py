@@ -8,6 +8,7 @@
 """Implementation of 'apio sim' command"""
 
 import sys
+from typing import Optional
 from pathlib import Path
 import click
 from apio.common.apio_console import cout
@@ -67,6 +68,7 @@ simulation.
 @click.pass_context
 @click.argument("testbench", nargs=1, required=False)
 @options.force_option_gen(help="Force simulation.")
+@options.env_option
 @options.project_dir_option
 def cli(
     _: click.Context,
@@ -74,7 +76,8 @@ def cli(
     testbench: str,
     # Options
     force: bool,
-    project_dir: Path,
+    env: Optional[str],
+    project_dir: Optional[Path],
 ):
     """Implements the apio sim command. It simulates a single testbench
     file and shows graphically the signal graphs.
@@ -84,6 +87,7 @@ def cli(
     apio_ctx = ApioContext(
         scope=ApioContextScope.PROJECT_REQUIRED,
         project_dir_arg=project_dir,
+        env_arg=env,
     )
 
     # -- Create the scons manager.

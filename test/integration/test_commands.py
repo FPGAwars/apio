@@ -43,7 +43,7 @@ def test_boards_custom_board(apio_runner: ApioRunner):
         # -- Write an apio.ini file.
         sb.write_apio_ini(
             {
-                "[env]": {
+                "[env:default]": {
                     "board": "my_custom_board",
                     "top-module": "main",
                 }
@@ -149,7 +149,7 @@ def test_project_with_legacy_board_name(apio_runner: ApioRunner):
         # -- Modify the apio.ini to have the legacy board name
         sb.write_apio_ini(
             {
-                "[env]": {
+                "[env:default]": {
                     "board": "iCE40-HX8K",
                     "top-module": "leds",
                 }

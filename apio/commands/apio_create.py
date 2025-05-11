@@ -7,8 +7,11 @@
 # -- License GPLv2
 """Implementation of 'apio create' command"""
 
+import sys
+from typing import Optional
 from pathlib import Path
 import click
+from apio.common.apio_console import cerror
 from apio.utils import util, cmd_util
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
@@ -61,7 +64,7 @@ def cli(
     # Options
     board: str,
     top_module: str,
-    project_dir: Path,
+    project_dir: Optional[Path],
 ):
     """Create a project file."""
 
@@ -74,8 +77,10 @@ def cli(
     # -- Create the apio context.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
-    # -- Map to canonical board name. This fails if the board is unknown.
-    board_name = apio_ctx.lookup_board_name(board)
+    # -- Make sure the board exist.
+    if board not in apio_ctx.boards:
+        cerror(f"Unknown board name '{board}'.")
+        sys.exit(1)
 
     # -- Determine the new project directory. Create if needed.
     project_dir: Path = util.user_directory_or_cwd(
@@ -85,6 +90,6 @@ def cli(
     # Create the apio.ini file. It exists with an error status if any error.
     create_project_file(
         project_dir,
-        board_name,
+        board,
         top_module,
     )

@@ -8,6 +8,7 @@
 """Implementation of 'apio graph' command"""
 
 import sys
+from typing import Optional
 from pathlib import Path
 import click
 from apio.managers.scons import SCons
@@ -70,6 +71,7 @@ graph, and on Mac OS type 'open _build/hardware.svg'.
 @svg_option
 @png_option
 @pdf_option
+@options.env_option
 @options.project_dir_option
 @options.top_module_option_gen(help="Set the name of the top module to graph.")
 @options.verbose_option
@@ -79,7 +81,8 @@ def cli(
     svg: bool,
     png: bool,
     pdf: bool,
-    project_dir: Path,
+    env: Optional[str],
+    project_dir: Optional[Path],
     verbose: bool,
     top_module: str,
 ):
@@ -96,7 +99,9 @@ def cli(
 
     # -- Create the apio context.
     apio_ctx = ApioContext(
-        scope=ApioContextScope.PROJECT_REQUIRED, project_dir_arg=project_dir
+        scope=ApioContextScope.PROJECT_REQUIRED,
+        project_dir_arg=project_dir,
+        env_arg=env,
     )
 
     # -- Create the scons manager.

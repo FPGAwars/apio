@@ -16,7 +16,7 @@ def _check_ini_file(apio_ini: Path, expected_vars: Dict[str, str]) -> None:
     # Check the expected comment at the top.
     assert "# APIO project configuration file" in conf.initial_comment[0]
     # Check the expected vars.
-    assert conf.dict() == {"env": expected_vars}
+    assert conf.dict() == {"env:default": expected_vars}
 
 
 def test_create(apio_runner: ApioRunner):
@@ -33,10 +33,10 @@ def test_create(apio_runner: ApioRunner):
         assert "Error: Missing option" in result.output
         assert not exists(apio_ini)
 
-        # -- Execute "apio create --board missed_board"
-        result = sb.invoke_apio_cmd(apio, "create", "--board", "missed_board")
+        # -- Execute "apio create --board no-such-board"
+        result = sb.invoke_apio_cmd(apio, "create", "--board", "no-such-board")
         assert result.exit_code == 1, result.output
-        assert "Error: No such board" in result.output
+        assert "Error: Unknown board name 'no-such-board'" in result.output
         assert not exists(apio_ini)
 
         # -- Execute "apio create --board alhambra-ii"

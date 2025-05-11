@@ -116,54 +116,96 @@ def _cli_cli():
         cout()
 
 
-# -- apio info options
+# -- apio info apio.ini
 
 # -- Text in the rich-text format of the python rich library.
-APIO_INFO_OPTIONS_HELP = """
-The command 'apio info options' provides information about the required \
+APIO_INFO_APIO_INO_HELP = """
+The command 'apio info apio.ini' provides information about the required \
 project file 'apio.ini'.
 
 Examples:[code]
-  apio info options              # List an overview and all options.
-  apio info options top-module   # List a single option.[/code]
+  apio info apio.ini              # List an overview and all options.
+  apio info apio.ini top-module   # List a single option.[/code]
 """
 
 # -- Text in the rich-text format of the python rich library.
-APIO_INI_DOC = """
-Every Apio project is required to have an 'apio.ini' project configuration \
-file. These are properties text files with '#' comments and a single section \
-called '\\[env]' that contains the required and optional options for this \
-project.
+APIO_INI_DOC = f"""
+[{TITLE}]APIO PROJECT CONFIGURATION FILE[/]
+
+Every Apio project is required to have in its root directory a text file \
+named [b]apio.ini[/] that contains the project  configuration. At minimum, \
+the file looks like the example below with a single 'env' section that with \
+the require configuration options.
 
 Example:[code]
-  \\[env]
+  \\[env:default]
   board = alhambra-ii   # Board id
   top-module = my_main  # Top module name[/code]
 
-Following is a list of the apio.ini options and their descriptions.
+The apio.ini file can contains multiple named env sections, a common section \
+with options that are shared between envs and a section called apio which \
+allow to define the default env.
+
+Example:[code]
+  # Optional \\[apio] section.
+  \\[apio]
+  default-env = env2
+
+  # Optional \\[common] section.
+  \\[common]
+  board = alhambra-ii
+  top-module = main
+
+  # Required first env section.
+  \\[env:env1]
+  default-testbench = main_tb.v
+
+  # Optional additional env section(s).
+  \\[env:env2]
+  default-testbench = io_module_tb.v[/code]
+
+The above example defines two environments, called 'env1' and 'env2' \
+(default), each with the options in the \\[common] section and the additional \
+options from their respective sections.
+
+At runtime, apio select the environment to use based on this rules in \
+[b]decreasing[/b] levels of priorities:
+
+- User specified environment name using the --env command line option.
+- The value of default-env if exists in the \\[apio] section.
+- The first env section that is listed in apio.ini.
+
+When apio determines the environment to use, it collects its options from the \
+\\[common] and the env section, with options in the env section having higher \
+priority, and executes the command with these expanded environment options.
+
+Following is a list of the options that can appear in the \\[common] and \
+the \\[env:*] section. The terms 'required' and 'optional' refers to the \
+presence of the options in the options expanded from the \\[common] and the \
+\\[env:name] sections.
 """
 
 
 @click.command(
-    name="options",
+    name="apio.ini",
     cls=cmd_util.ApioCommand,
     short_help="Apio.ini options.",
-    help=APIO_INFO_OPTIONS_HELP,
+    help=APIO_INFO_APIO_INO_HELP,
 )
 @click.argument("option", nargs=1, required=False)
-def _options_cli(
+def _apio_ini_cli(
     # Argument
     option: str,
 ):
-    """Implements the 'apio info options' command."""
+    """Implements the 'apio info apio.ini' command."""
 
     # -- If option was specified, validate it.
     if option:
-        if option not in project.OPTIONS:
+        if option not in project.ENV_OPTIONS:
             cerror(f"No such api.ini option: '{option}'")
             cout(
                 "For the list of all apio.ini options, type "
-                "'apio info options'.",
+                "'apio info apio.ini'.",
                 style=INFO,
             )
             sys.exit(1)
@@ -173,20 +215,20 @@ def _options_cli(
         docs_text(APIO_INI_DOC)
 
     # -- Determine options to print
-    options = [option] if option else project.OPTIONS.keys()
+    options = [option] if option else project.ENV_OPTIONS.keys()
 
     # -- Print the initial separator line.
     docs_rule()
     for opt in options:
         # -- Print option's title.
-        is_required = opt in project.REQUIRED_OPTIONS
+        is_required = opt in project.ENV_REQUIRED_OPTIONS
         req = "REQUIRED" if is_required else "OPTIONAL"
         styled_option = cstyle(opt.upper(), style=TITLE)
         cout()
-        cout(f"{styled_option} ({req})")
+        cout(f"{styled_option} option ({req})")
 
         # -- Print the option's text.
-        text = project.OPTIONS[opt]
+        text = project.ENV_OPTIONS[opt]
         docs_text(text)
         docs_rule()
 
@@ -195,7 +237,7 @@ def _options_cli(
 
 # -- Text in the rich-text format of the python rich library.
 APIO_INFO_FILES_HELP = """
-The command 'apio info options' provides information about the various \
+The command 'apio info files' provides information about the various \
 files types used in an Apio project.
 
 Examples:[code]
@@ -208,7 +250,7 @@ Following are apio conventions for project file names. The list does not \
 include files that are specific to a particular architecture or toolchain.
 
 [b]apio.ini[/] - This is a required project configuration configuration. \
-Run 'apio info options' for the list of supported options.
+Run 'apio info apio.ini' for the list of supported options.
 
 [b]*.v, *.sv[/] - Verilog and System Verilog synthesis sources files \
 (unless they match the testbench patterns below).
@@ -577,7 +619,7 @@ SUBGROUPS = [
     ApioSubgroup(
         "Documentation",
         [
-            _options_cli,
+            _apio_ini_cli,
             _cli_cli,
             _files_cli,
             _resources_cli,

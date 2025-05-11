@@ -36,6 +36,7 @@ environment {
   trellis_path: "/Users/user/.apio/packages/oss-cad-suite/share/trellis"
 }
 apio_env_params {
+  env_name: "default"
   board_id: "alhambra-ii"
   top_module: "main"
 }

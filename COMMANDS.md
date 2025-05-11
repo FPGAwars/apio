@@ -25,10 +25,10 @@
   * [apio fpgas](#apio-fpgas) - List available FPGA definitions.
   * [apio graph](#apio-graph) - Generate a visual graph of the code.
   * [apio info](#apio-info) - Apio's info and info.
+    * [apio info apio.ini](#apio-info-apio.ini) - Apio.ini options.
     * [apio info cli](#apio-info-cli) - Command line conventions.
     * [apio info colors](#apio-info-colors) - Colors table.
     * [apio info files](#apio-info-files) - Apio project files types.
-    * [apio info options](#apio-info-options) - Apio.ini options.
     * [apio info platforms](#apio-info-platforms) - Supported platforms.
     * [apio info resources](#apio-info-resources) - Additional resources.
     * [apio info system](#apio-info-system) - Show system information.
@@ -204,6 +204,7 @@ Usage: apio build [OPTIONS]
 
   Examples:
     apio build                   # Typical usage
+    apio build -e debug          # Set the apio.ini env.
     apio build -v                # Verbose info (all)
     apio build --verbose-synth   # Verbose synthesis info
     apio build --verbose-pnr     # Verbose place and route info
@@ -216,6 +217,7 @@ Usage: apio build [OPTIONS]
   * To force a rebuild from scratch use the command 'apio clean' first.
 
 Options:
+  -e, --env name          Set the apio.ini env.
   -p, --project-dir path  Set the root directory for the project.
   -v, --verbose           Show detailed output.
   --verbose-synth         Show detailed synth stage output.
@@ -238,6 +240,7 @@ Usage: apio clean [OPTIONS]
     apio clean
 
 Options:
+  -e, --env name          Set the apio.ini env.
   -p, --project-dir path  Set the root directory for the project.
   -h, --help              Show this message and exit.
 
@@ -618,6 +621,7 @@ Usage: apio format [OPTIONS] [FILES]...
   --helpful'.
 
 Options:
+  -e, --env name          Set the apio.ini env.
   -p, --project-dir path  Set the root directory for the project.
   -v, --verbose           Show detailed output.
   -h, --help              Show this message and exit.
@@ -673,6 +677,7 @@ Options:
   --svg                   Generate a svg file (default).
   --png                   Generate a png file.
   --pdf                   Generate a pdf file.
+  -e, --env name          Set the apio.ini env.
   -p, --project-dir path  Set the root directory for the project.
   -t, --top-module name   Set the name of the top module to graph.
   -v, --verbose           Show detailed output.
@@ -695,7 +700,7 @@ Options:
   -h, --help  Show this message and exit.
 
 Documentation:
-  apio info options    Apio.ini options.
+  apio info apio.ini   Apio.ini options.
   apio info cli        Command line conventions.
   apio info files      Apio project files types.
   apio info resources  Additional resources.
@@ -704,6 +709,25 @@ Information:
   apio info platforms  Supported platforms.
   apio info system     Show system information.
   apio info colors     Colors table.
+
+```
+
+<br>
+
+### apio info apio.ini
+
+```
+Usage: apio info apio.ini [OPTIONS] [OPTION]
+
+  The command 'apio info apio.ini' provides information about the
+  required project file 'apio.ini'.
+
+  Examples:
+    apio info apio.ini              # List an overview and all options.
+    apio info apio.ini top-module   # List a single option.
+
+Options:
+  -h, --help  Show this message and exit.
 
 ```
 
@@ -760,30 +784,11 @@ Options:
 ```
 Usage: apio info files [OPTIONS]
 
-  The command 'apio info options' provides information about the various
+  The command 'apio info files' provides information about the various
   files types used in an Apio project.
 
   Examples:
     apio info files
-
-Options:
-  -h, --help  Show this message and exit.
-
-```
-
-<br>
-
-### apio info options
-
-```
-Usage: apio info options [OPTIONS] [OPTION]
-
-  The command 'apio info options' provides information about the
-  required project file 'apio.ini'.
-
-  Examples:
-    apio info options              # List an overview and all options.
-    apio info options top-module   # List a single option.
 
 Options:
   -h, --help  Show this message and exit.
@@ -877,6 +882,7 @@ Options:
   -a, --all               Enable all warnings, including code style warnings.
   -t, --top-module name   Restrict linting to this module and its
                           dependencies.
+  -e, --env name          Set the apio.ini env.
   -p, --project-dir path  Set the root directory for the project.
   -h, --help              Show this message and exit.
 
@@ -1074,6 +1080,7 @@ Usage: apio report [OPTIONS]
     apio report --verbose  # Print extra information.
 
 Options:
+  -e, --env name          Set the apio.ini env.
   -p, --project-dir path  Set the root directory for the project.
   -v, --verbose           Show detailed output.
   -h, --help              Show this message and exit.
@@ -1122,6 +1129,7 @@ Usage: apio sim [OPTIONS] [TESTBENCH]
 
 Options:
   -f, --force             Force simulation.
+  -e, --env name          Set the apio.ini env.
   -p, --project-dir path  Set the root directory for the project.
   -h, --help              Show this message and exit.
 
@@ -1160,6 +1168,7 @@ Usage: apio test [OPTIONS] [TESTBENCH_FILE]
   signals, refer to the 'apio sim' command.
 
 Options:
+  -e, --env name          Set the apio.ini env.
   -p, --project-dir path  Set the root directory for the project.
   -h, --help              Show this message and exit.
 
@@ -1224,6 +1233,7 @@ Options:
   --serial-port serial-port  Set the serial port.
   --ftdi-idx ftdi-idx        Consider only FTDI device with given index.
   -s, --sram                 Perform SRAM programming (see restrictions).
+  -e, --env name             Set the apio.ini env.
   -p, --project-dir path     Set the root directory for the project.
   -h, --help                 Show this message and exit.
 

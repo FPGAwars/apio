@@ -8,6 +8,7 @@
 """Implementation of 'apio test' command"""
 
 import sys
+from typing import Optional
 from pathlib import Path
 import click
 from apio.managers.scons import SCons
@@ -54,6 +55,7 @@ of the signals, refer to the 'apio sim' command.
 )
 @click.pass_context
 @click.argument("testbench_file", nargs=1, required=False)
+@options.env_option
 @options.project_dir_option
 # @options.testbench
 def cli(
@@ -61,13 +63,16 @@ def cli(
     # Arguments
     testbench_file: str,
     # Options
-    project_dir: Path,
+    env: Optional[str],
+    project_dir: Optional[Path],
 ):
     """Implements the test command."""
 
     # -- Create the apio context.
     apio_ctx = ApioContext(
-        scope=ApioContextScope.PROJECT_REQUIRED, project_dir_arg=project_dir
+        scope=ApioContextScope.PROJECT_REQUIRED,
+        project_dir_arg=project_dir,
+        env_arg=env,
     )
 
     # -- Create the scons manager.

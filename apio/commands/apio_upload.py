@@ -8,6 +8,7 @@
 """Implementation of 'apio upload' command"""
 
 import sys
+from typing import Optional
 from pathlib import Path
 import click
 from apio.managers.scons import SCons
@@ -93,6 +94,7 @@ to grant the necessary permissions to access USB devices.
 @serial_port_option
 @ftdi_idx_option
 @sram_option
+@options.env_option
 @options.project_dir_option
 def cli(
     _: click.Context,
@@ -100,13 +102,16 @@ def cli(
     serial_port: str,
     ftdi_idx: int,
     sram: bool,
-    project_dir: Path,
+    env: Optional[str],
+    project_dir: Optional[Path],
 ):
     """Implements the upload command."""
 
     # -- Create a apio context.
     apio_ctx = ApioContext(
-        scope=ApioContextScope.PROJECT_REQUIRED, project_dir_arg=project_dir
+        scope=ApioContextScope.PROJECT_REQUIRED,
+        project_dir_arg=project_dir,
+        env_arg=env,
     )
 
     # -- Create the drivers manager.

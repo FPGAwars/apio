@@ -8,6 +8,7 @@
 """Implementation of 'apio' report' command"""
 
 import sys
+from typing import Optional
 from pathlib import Path
 import click
 from apio.managers.scons import SCons
@@ -38,12 +39,14 @@ Examples:[code]
     help=APIO_REPORT_HELP,
 )
 @click.pass_context
+@options.env_option
 @options.project_dir_option
 @options.verbose_option
 def cli(
     _: click.Context,
     # Options
-    project_dir: Path,
+    env: Optional[str],
+    project_dir: Optional[Path],
     verbose: bool,
 ):
     """Analyze the design and report timing."""
@@ -52,6 +55,7 @@ def cli(
     apio_ctx = ApioContext(
         scope=ApioContextScope.PROJECT_REQUIRED,
         project_dir_arg=project_dir,
+        env_arg=env,
     )
 
     # -- Create the scons manager.

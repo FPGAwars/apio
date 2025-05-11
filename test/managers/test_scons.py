@@ -15,7 +15,7 @@ from apio.managers.scons import SCons
 
 
 TEST_APIO_INI_DICT = {
-    "[env]": {
+    "[env:default]": {
         # -- Required.
         "board": "alhambra-ii",
         # -- Optional.
@@ -49,6 +49,7 @@ environment {
   trellis_path: "TBD"
 }
 apio_env_params {
+  env_name: "default"
   board_id: "alhambra-ii"
   top_module: "my_module"
   yosys_synth_extra_options: "-dsp -xyz"
@@ -83,6 +84,7 @@ environment {
   trellis_path: "TBD"
 }
 apio_env_params {
+  env_name: "default"
   board_id: "alhambra-ii"
   top_module: "my_module"
   yosys_synth_extra_options: "-dsp -xyz"

@@ -11,7 +11,7 @@ import sys
 import os
 from pathlib import Path
 from glob import glob
-from typing import Tuple, List
+from typing import Tuple, List, Optional
 import click
 from apio.common.apio_console import cout, cerror, cstyle
 from apio.common.apio_styles import EMPH3, SUCCESS, INFO
@@ -72,12 +72,14 @@ _FILE_TYPES = [".v", ".sv", ".vh", ".svh"]
     help=APIO_FORMAT_HELP,
 )
 @click.argument("files", nargs=-1, required=False)
+@options.env_option
 @options.project_dir_option
 @options.verbose_option
 def cli(
     # Arguments
     files: Tuple[str],
-    project_dir: Path,
+    env: Optional[str],
+    project_dir: Optional[Path],
     verbose: bool,
 ):
     """Implements the format command which formats given or all source
@@ -86,7 +88,9 @@ def cli(
 
     # -- Create an apio context with a project object.
     apio_ctx = ApioContext(
-        scope=ApioContextScope.PROJECT_REQUIRED, project_dir_arg=project_dir
+        scope=ApioContextScope.PROJECT_REQUIRED,
+        project_dir_arg=project_dir,
+        env_arg=env,
     )
 
     # -- Get the optional formatter options from apio.ini

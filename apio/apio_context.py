@@ -17,11 +17,7 @@ from apio.common.apio_console import cout, cerror, cwarning
 from apio.common.apio_styles import INFO
 from apio.profile import Profile
 from apio.utils import jsonc, util, env_options
-from apio.managers.project import (
-    Project,
-    ProjectResolver,
-    load_project_from_file,
-)
+from apio.managers.project import Project, load_project_from_file
 
 
 # ---------- RESOURCES
@@ -92,6 +88,7 @@ class ApioContext:
         *,
         scope: ApioContextScope,
         project_dir_arg: Optional[Path] = None,
+        env_arg: Optional[str] = None,
     ):
         """Initializes the ApioContext object.
 
@@ -101,6 +98,9 @@ class ApioContext:
         'project_dir_arg' is an optional user specification of the project dir.
         Must be None if scope is NO_PROJECT.
 
+        'env_arg' is an optional command line option value that select the
+        apio.ini env if the project is loaded. it makes sense only when scope
+        is PROJECT_REQUIRED (enforced by an assertion).
         """
 
         # -- Inform as soon as possible about the list of apio env options
@@ -121,6 +121,11 @@ class ApioContext:
         # -- Store the scope
         assert isinstance(scope, ApioContextScope), "Not an ApioContextScope"
         self.scope = scope
+
+        # -- Sanity check, env_arg makes sense only when scope is
+        # -- PROJECT_REQUIRED.
+        if env_arg is not None:
+            assert scope == ApioContextScope.PROJECT_REQUIRED
 
         # -- A flag to indicate if the system env was already set in this
         # -- apio session. Used to avoid multiple repeated settings that
@@ -205,56 +210,12 @@ class ApioContext:
         # -- apio.ini data.
         self._project: Optional[Project] = None
         if self._project_dir:
-            resolver = _ProjectResolverImpl(self)
-            self._project = load_project_from_file(self._project_dir, resolver)
+            self._project = load_project_from_file(
+                self._project_dir, env_arg, self.boards
+            )
             assert self.has_project, "init(): project not loaded"
         else:
             assert not self.has_project, "init(): project loaded"
-
-    def lookup_board_name(
-        self, board: str, *, warn: bool = True, strict: bool = True
-    ) -> str:
-        """Lookup and return the board's canonical board name which is its key
-        in boards.jsonc.  'board' can be the canonical name itself or a
-        legacy id of the board as defined in boards.jsonc.  The method prints
-        a warning if 'board' is a legacy board name that is mapped to its
-        canonical name and 'warn' is True. If the  board is not found, the
-        method returns None if 'strict' is False or exit the program with a
-        message if 'strict' is True."""
-        # -- If this fails, it's a programming error.
-        assert board is not None
-
-        # -- The result. The board's key in boards.jsonc.
-        canonical_name = None
-
-        if board in self.boards:
-            # -- Here when board is already the canonical name.
-            canonical_name = board
-        else:
-            # -- Look up for a board with 'board' as its legacy name.
-            for board_name, board_info in self.boards.items():
-                if board == board_info.get("legacy_name", None):
-                    canonical_name = board_name
-                    break
-
-        # -- Fatal error if unknown board.
-        if strict and canonical_name is None:
-            cerror(f"No such board '{board}'")
-            cout(
-                "Run 'apio boards' for the list of board names.",
-                style=INFO,
-            )
-            sys.exit(1)
-
-        # -- Warning if caller used a legacy board name.
-        if warn and canonical_name and board != canonical_name:
-            cwarning(
-                f"'{board}' board name was changed. "
-                f"Please use '{canonical_name}' instead."
-            )
-
-        # -- Return the canonical board name.
-        return canonical_name
 
     @property
     def packages_dir(self):
@@ -553,17 +514,3 @@ class ApioContext:
     def is_windows(self) -> bool:
         """Returns True iff platform_id indicates windows."""
         return "windows" in self.platform_id
-
-
-class _ProjectResolverImpl(ProjectResolver):
-    # pylint: disable=too-few-public-methods
-
-    def __init__(self, apio_context: ApioContext):
-        """When ApioContext instances this object, ApioContext is fully
-        constructed, except for the project field."""
-        self._apio_context = apio_context
-
-    # @override
-    def lookup_board_name(self, board: str) -> str:
-        """Implementation of lookup_board_name."""
-        return self._apio_context.lookup_board_name(board)
