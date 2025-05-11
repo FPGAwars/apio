@@ -32,8 +32,8 @@ def test_init(apio_runner: ApioRunner):
         assert apio_ctx.packages_dir == sb.packages_dir
 
         # -- Verify build dirs
-        assert apio_ctx.build_all_dir == Path("_build")
-        assert apio_ctx.build_env_dir == Path("_build/default")
+        assert apio_ctx.build_all_path == Path("_build")
+        assert apio_ctx.build_env_path == Path("_build/default")
 
 
 def test_home_dir_with_a_bad_character(

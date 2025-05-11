@@ -96,7 +96,7 @@ class Verbosity(_message.Message):
     def __init__(self, all: bool = ..., synth: bool = ..., pnr: bool = ...) -> None: ...
 
 class Environment(_message.Message):
-    __slots__ = ("platform_id", "is_windows", "terminal_mode", "theme_name", "is_debug", "yosys_path", "trellis_path")
+    __slots__ = ("platform_id", "is_windows", "terminal_mode", "theme_name", "is_debug", "yosys_path", "trellis_path", "build_all_path", "build_env_path")
     PLATFORM_ID_FIELD_NUMBER: _ClassVar[int]
     IS_WINDOWS_FIELD_NUMBER: _ClassVar[int]
     TERMINAL_MODE_FIELD_NUMBER: _ClassVar[int]
@@ -104,6 +104,8 @@ class Environment(_message.Message):
     IS_DEBUG_FIELD_NUMBER: _ClassVar[int]
     YOSYS_PATH_FIELD_NUMBER: _ClassVar[int]
     TRELLIS_PATH_FIELD_NUMBER: _ClassVar[int]
+    BUILD_ALL_PATH_FIELD_NUMBER: _ClassVar[int]
+    BUILD_ENV_PATH_FIELD_NUMBER: _ClassVar[int]
     platform_id: str
     is_windows: bool
     terminal_mode: TerminalMode
@@ -111,7 +113,9 @@ class Environment(_message.Message):
     is_debug: bool
     yosys_path: str
     trellis_path: str
-    def __init__(self, platform_id: _Optional[str] = ..., is_windows: bool = ..., terminal_mode: _Optional[_Union[TerminalMode, str]] = ..., theme_name: _Optional[str] = ..., is_debug: bool = ..., yosys_path: _Optional[str] = ..., trellis_path: _Optional[str] = ...) -> None: ...
+    build_all_path: str
+    build_env_path: str
+    def __init__(self, platform_id: _Optional[str] = ..., is_windows: bool = ..., terminal_mode: _Optional[_Union[TerminalMode, str]] = ..., theme_name: _Optional[str] = ..., is_debug: bool = ..., yosys_path: _Optional[str] = ..., trellis_path: _Optional[str] = ..., build_all_path: _Optional[str] = ..., build_env_path: _Optional[str] = ...) -> None: ...
 
 class ApioEnvParams(_message.Message):
     __slots__ = ("env_name", "board_id", "top_module", "yosys_synth_extra_options")

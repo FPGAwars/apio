@@ -308,6 +308,8 @@ class SCons:
                 is_debug=util.is_debug(),
                 yosys_path=oss_vars["YOSYS_LIB"],
                 trellis_path=oss_vars["TRELLIS"],
+                build_all_path=str(apio_ctx.build_all_path),
+                build_env_path=str(apio_ctx.build_env_path),
             )
         )
         assert result.environment.IsInitialized(), result

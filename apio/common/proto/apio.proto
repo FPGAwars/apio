@@ -91,6 +91,13 @@ message Environment {
   // Paths to oss-cad-suite libraries.
   required string yosys_path = 6;
   required string trellis_path = 7;
+
+  // Build directories, relative to project dir.
+  // Examples:
+  //   build_all_path = "_build"
+  //   build_env_path = "_build/my-env"
+  required string build_all_path = 8;
+  required string build_env_path = 9;
 }
 
 // Information about the expanded active env from apio.ini.

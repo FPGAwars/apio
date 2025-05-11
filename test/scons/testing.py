@@ -34,6 +34,8 @@ environment {
   is_debug: true
   yosys_path: "/Users/user/.apio/packages/oss-cad-suite/share/yosys"
   trellis_path: "/Users/user/.apio/packages/oss-cad-suite/share/trellis"
+  build_all_path: "_build"
+  build_env_path: "_build/default"
 }
 apio_env_params {
   env_name: "default"

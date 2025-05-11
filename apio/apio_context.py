@@ -244,18 +244,18 @@ class ApioContext:
         return self._project
 
     @property
-    def build_all_dir(self) -> str:
+    def build_all_path(self) -> str:
         """Returns the relative path of the build root directory from the
         project dir. Should be called only when has_project is True."""
         assert self.has_project, "project(): project is not loaded"
         return Path("_build")
 
     @property
-    def build_env_dir(self) -> str:
+    def build_env_path(self) -> str:
         """Returns the relative path of the current env build directory from
         the project dir. Should be called only when has_project is True."""
         assert self.has_project, "project(): project is not loaded"
-        return self.build_all_dir / self.project.env_name
+        return self.build_all_path / self.project.env_name
 
     def _load_resource(self, name: str, allow_custom: bool = False) -> dict:
         """Load the resources from a given jsonc file
