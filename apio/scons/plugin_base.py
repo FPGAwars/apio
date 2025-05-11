@@ -17,7 +17,6 @@ from SCons.Script import Builder
 from apio.common.apio_console import cout
 from apio.common.apio_styles import SUCCESS
 from apio.scons.apio_env import ApioEnv
-from apio.common.apio_consts import TARGET
 from apio.common.proto.apio_pb2 import GraphOutputType
 from apio.scons.plugin_util import (
     SRC_SUFFIXES,
@@ -130,7 +129,7 @@ class PluginBase:
                 'yosys -p "read_verilog -sv $SOURCES; show -format dot'
                 ' -colors 1 -prefix {0} {1}" {2}'
             ).format(
-                TARGET,
+                apio_env.target,
                 top_module,
                 "" if params.verbosity.all else "-q",
             ),
@@ -164,7 +163,9 @@ class PluginBase:
         def completion_action(source, target, env):  # noqa
             """Action function that prints a completion message."""
             _ = (source, target, env)  # Unused
-            cout(f"Generated {TARGET}.{type_str}", style=SUCCESS, nl="")
+            cout(
+                f"Generated {apio_env.target}.{type_str}", style=SUCCESS, nl=""
+            )
 
         actions = [
             f"dot -T{type_str} $SOURCES -o $TARGET",

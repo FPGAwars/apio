@@ -16,7 +16,6 @@ from pathlib import Path
 from SCons.Script import Builder
 from SCons.Builder import BuilderBase
 from apio.scons.apio_env import ApioEnv
-from apio.common.apio_consts import TARGET
 from apio.scons.plugin_base import PluginBase, ArchPluginInfo
 from apio.scons.plugin_util import (
     SRC_SUFFIXES,
@@ -87,7 +86,7 @@ class PluginIce40(PluginBase):
         # -- We use an emmiter to add to the builder a second output file.
         def emitter(target, source, env):
             _ = env  # Unused
-            target.append(TARGET + ".pnr")
+            target.append(apio_env.target + ".pnr")
             return target, source
 
         # -- Create the builder.
@@ -98,7 +97,7 @@ class PluginIce40(PluginBase):
             ).format(
                 params.fpga_info.ice40.type,
                 params.fpga_info.ice40.pack,
-                TARGET + ".pnr",
+                apio_env.target + ".pnr",
                 self.constrain_file(),
                 "" if params.verbosity.all or params.verbosity.pnr else "-q",
             ),

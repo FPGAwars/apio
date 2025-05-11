@@ -16,7 +16,6 @@ from pathlib import Path
 from SCons.Script import Builder
 from SCons.Builder import BuilderBase
 from apio.scons.apio_env import ApioEnv
-from apio.common.apio_consts import TARGET
 from apio.scons.plugin_base import PluginBase, ArchPluginInfo
 from apio.scons.plugin_util import (
     SRC_SUFFIXES,
@@ -87,7 +86,7 @@ class PluginGowin(PluginBase):
         # -- We use an emmiter to add to the builder a second output file.
         def emitter(target, source, env):
             _ = env  # Unused
-            target.append(TARGET + ".pnr")
+            target.append(apio_env.target + ".pnr")
             return target, source
 
         # -- Create the builder.
@@ -98,7 +97,7 @@ class PluginGowin(PluginBase):
                 "--vopt cst={3} {4}"
             ).format(
                 params.fpga_info.part_num,
-                TARGET + ".pnr",
+                apio_env.target + ".pnr",
                 params.fpga_info.gowin.family,
                 self.constrain_file(),
                 "" if params.verbosity.all or params.verbosity.pnr else "-q",

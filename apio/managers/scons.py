@@ -18,7 +18,6 @@ from apio.common import apio_console
 from apio.common.apio_console import cout, cerror, cstyle
 from apio.common.apio_styles import SUCCESS, ERROR, EMPH1, EMPH3
 from apio.utils import util, pkg_util
-from apio.common.apio_consts import BUILD_DIR
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
 from apio.managers import installer
@@ -353,11 +352,19 @@ class SCons:
 
         # pylint: disable=too-many-locals
 
+        # -- Create a shortcut.
+        apio_ctx = self.apio_ctx
+
         # -- Pass to the scons process the name of the sconstruct file it
         # -- should use.
         scons_dir = util.get_path_in_apio_package("scons")
         scons_file_path = scons_dir / "SConstruct"
         variables = ["-f", f"{scons_file_path}"]
+
+        # -- Pass the path to the proto params file. The path is relative
+        # -- to the project root.
+        params_file_path = apio_ctx.build_env_path / "scons.params"
+        variables += [f"params={str(params_file_path)}"]
 
         # -- Pass to the scons process the timestamp of the scons params we
         # -- pass via a file. This is for verification purposes only.
@@ -366,12 +373,12 @@ class SCons:
         # -- If the apio packages are required for this command, install them
         # -- if needed.
         if uses_packages:
-            installer.install_missing_packages_on_the_fly(self.apio_ctx)
+            installer.install_missing_packages_on_the_fly(apio_ctx)
 
         # -- We set the env variables also for a command such as 'clean'
         # -- which doesn't use the packages, to satisfy the required env
         # -- variables of the scons arg parser.
-        pkg_util.set_env_for_packages(self.apio_ctx)
+        pkg_util.set_env_for_packages(apio_ctx)
 
         if util.is_debug():
             cout("\nSCONS CALL:", style=EMPH3)
@@ -438,8 +445,8 @@ class SCons:
         # -- directory. It will be cleaned up as part of 'apio cleanup'.
         # -- At this point, the project is the current directory, even if
         # -- the command used the --project-dir option.
-        os.makedirs(BUILD_DIR, exist_ok=True)
-        with open(BUILD_DIR / "scons.params", "w", encoding="utf8") as f:
+        os.makedirs(apio_ctx.build_env_path, exist_ok=True)
+        with open(params_file_path, "w", encoding="utf8") as f:
             f.write(text_format.MessageToString(scons_params))
 
         # -- Execute the scons builder!

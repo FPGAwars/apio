@@ -23,7 +23,6 @@ _build/
 _dist/
 htmlcov/
 __pycache__/
-docs/_build/*
 env/
 venv/
 examples/

@@ -29,7 +29,6 @@ from SCons.Node import NodeList
 from SCons.Node.Alias import Alias
 from apio.scons.apio_env import ApioEnv
 from apio.common.common_util import sort_files
-from apio.common.apio_consts import TARGET, BUILD_DIR
 from apio.common.apio_console import cout, cerror, cwarning, cprint
 from apio.common.apio_styles import INFO, BORDER, EMPH1, EMPH2, EMPH3
 
@@ -262,7 +261,7 @@ def verilator_lint_action(
         f"--top-module {top_module}",
         map_params(extra_params, "{}"),
         map_params(lib_dirs, '-I"{}"'),
-        TARGET + ".vlt",
+        apio_env.target + ".vlt",
         map_params(lib_files, '"{}"'),
     )
 
@@ -333,6 +332,7 @@ def check_valid_testbench_name(testbench: str) -> None:
 
 
 def get_sim_config(
+    apio_env: ApioEnv,
     testbench: str,
     synth_srcs: List[str],
     test_srcs: List[str],
@@ -377,12 +377,13 @@ def get_sim_config(
     # -- Construct a SimulationParams with all the synth files + the
     # -- testbench file.
     testbench_name = basename(testbench)
-    build_testbench_name = str(BUILD_DIR / testbench_name)
+    build_testbench_name = str(apio_env.build_env_path / testbench_name)
     srcs = synth_srcs + [testbench]
     return SimulationConfig(testbench_name, build_testbench_name, srcs)
 
 
 def get_tests_configs(
+    apio_env: ApioEnv,
     testbench: str,
     synth_srcs: List[str],
     test_srcs: list[str],
@@ -419,7 +420,7 @@ def get_tests_configs(
     configs = []
     for tb in testbenches:
         testbench_name = basename(tb)
-        build_testbench_name = str(BUILD_DIR / testbench_name)
+        build_testbench_name = str(apio_env.build_env_path / testbench_name)
         srcs = synth_srcs + [tb]
         configs.append(
             SimulationConfig(testbench_name, build_testbench_name, srcs)
@@ -485,8 +486,6 @@ def source_file_issue_action() -> FunctionAction:
     return Action(report_source_files_issues, "Scanning for issues.")
 
 
-# Remove apio_env ark is not needed anymore.
-# pylint: disable=unused-argument
 def source_files(apio_env: ApioEnv) -> Tuple[List[str], List[str]]:
     """Get the list of source files in the directory tree under the current
     directory, splitted into synth and testbench lists.
@@ -508,7 +507,7 @@ def source_files(apio_env: ApioEnv) -> Tuple[List[str], List[str]]:
     synth_srcs = []
     test_srcs = []
     for file in files:
-        if BUILD_DIR in Path(file).parents:
+        if apio_env.build_all_path in Path(file).parents:
             # -- Ignore source files from the _build directory.
             continue
         if has_testbench_name(file):
@@ -785,8 +784,8 @@ def configure_cleanup(apio_env: ApioEnv) -> None:
     files_to_clean = (
         glob("zadig.ini")
         + glob(".sconsign.dblite")
-        + glob(str(BUILD_DIR / "**/*"), recursive=True)
-        + glob(str(BUILD_DIR))
+        + glob(str(apio_env.build_all_path / "**/*"), recursive=True)
+        + glob(str(apio_env.build_all_path))
     )
 
     # -- TODO: Remove the cleanup of legacy files after releasing the first
