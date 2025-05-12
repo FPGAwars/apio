@@ -18,13 +18,16 @@ from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import cmd_util, util
 from apio.common.apio_console import cout
-from apio.common.apio_styles import SUCCESS
+from apio.common.apio_styles import SUCCESS, ERROR
 
 
 # ----------- apio clean
 
 
 def _delete_dir_or_file(path):
+    """Delete a file or a dir with a given path."""
+
+    # pylint: disable=broad-exception-caught
 
     assert os.path.exists(path), path
 
@@ -33,7 +36,13 @@ def _delete_dir_or_file(path):
         os.remove(path)
     else:
         # -- Delete a dir
-        shutil.rmtree(path)
+        # -- We asset that _build is in the path for safety.
+        assert "_build" in str(path), path
+        try:
+            shutil.rmtree(path)
+        except Exception as e:
+            cout(f"{e}", style=ERROR)
+            sys.exit(1)
 
     assert not os.path.exists(path), path
     cout(f"- Removed {path}")
