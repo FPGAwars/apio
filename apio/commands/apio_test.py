@@ -55,7 +55,7 @@ of the signals, refer to the 'apio sim' command.
 )
 @click.pass_context
 @click.argument("testbench_file", nargs=1, required=False)
-@options.env_option
+@options.env_option_gen()
 @options.project_dir_option
 # @options.testbench
 def cli(

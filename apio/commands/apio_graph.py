@@ -71,7 +71,7 @@ graph, and on Mac OS type 'open _build/hardware.svg'.
 @svg_option
 @png_option
 @pdf_option
-@options.env_option
+@options.env_option_gen()
 @options.project_dir_option
 @options.top_module_option_gen(help="Set the name of the top module to graph.")
 @options.verbose_option

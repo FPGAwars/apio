@@ -331,7 +331,7 @@ def _test_project(
         args = ["clean"] + proj_arg
         result = sb.invoke_apio_cmd(apio, *args)
         sb.assert_ok(result)
-        assert "SUCCESS" in result.output
+        assert "Cleanup completed" in result.output
         assert not (sb.proj_dir / f"_build/default/{testbench}.out").exists()
         assert not (sb.proj_dir / f"_build/default/{testbench}.vcd").exists()
 
@@ -363,10 +363,11 @@ def _test_project(
         assert getsize(sb.proj_dir / "_build/default/hardware.svg")
 
         # -- 'apio clean'
+        assert Path(sb.proj_dir / "_build/default").exists()
         args = ["clean"] + proj_arg
         result = sb.invoke_apio_cmd(apio, *args)
         sb.assert_ok(result)
-        assert "SUCCESS" in result.output
+        assert "Cleanup completed" in result.output
         assert not Path(sb.proj_dir / "_build/default").exists()
 
         # -- Here we should have only the original project files.

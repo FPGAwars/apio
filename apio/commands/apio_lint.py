@@ -20,14 +20,6 @@ from apio.common.proto.apio_pb2 import LintParams
 
 # ------- apio lint
 
-all_option = click.option(
-    "all_",  # Var name. Deconflicting from Python'g builtin 'all'.
-    "-a",
-    "--all",
-    is_flag=True,
-    help="Enable all warnings, including code style warnings.",
-    cls=cmd_util.ApioOption,
-)
 
 nostyle_option = click.option(
     "nostyle",  # Var name
@@ -80,11 +72,13 @@ Examples:[code]
 @nostyle_option
 @nowarn_option
 @warn_option
-@all_option
+@options.all_option_gen(
+    help="Enable all warnings, including code style warnings."
+)
 @options.top_module_option_gen(
     help="Restrict linting to this module and its dependencies."
 )
-@options.env_option
+@options.env_option_gen()
 @options.project_dir_option
 def cli(
     _: click.Context,

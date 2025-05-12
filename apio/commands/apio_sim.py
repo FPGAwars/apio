@@ -68,7 +68,7 @@ simulation.
 @click.pass_context
 @click.argument("testbench", nargs=1, required=False)
 @options.force_option_gen(help="Force simulation.")
-@options.env_option
+@options.env_option_gen()
 @options.project_dir_option
 def cli(
     _: click.Context,

@@ -25,6 +25,40 @@ from apio.utils import cmd_util
 # ----------------------------------
 
 
+def env_option_gen(*, help: str = "Set the apio.ini env."):
+    """Generate an --env option with given help text."""
+
+    # W0622: Redefining built-in 'help'
+    # pylint: disable=redefined-builtin
+
+    return click.option(
+        "env",  # Var name.
+        "-e",
+        "--env",
+        type=str,
+        default=None,
+        metavar="name",
+        help=help,
+        cls=cmd_util.ApioOption,
+    )
+
+
+def all_option_gen(*, help: str):
+    """Generate an --all option with given help text."""
+
+    # W0622: Redefining built-in 'help'
+    # pylint: disable=redefined-builtin
+
+    return click.option(
+        "all_",  # Var name. Deconflicting from Python'g builtin 'all'.
+        "-a",
+        "--all",
+        is_flag=True,
+        help=help,
+        cls=cmd_util.ApioOption,
+    )
+
+
 def force_option_gen(*, help: str):
     """Generate a --force option with given help text."""
 
@@ -101,16 +135,6 @@ def dst_option_gen(*, help: str):
 # -- Static options
 # ---------------------------
 
-env_option = click.option(
-    "env",  # Var name.
-    "-e",
-    "--env",
-    type=str,
-    default=None,
-    metavar="name",
-    help="Set the apio.ini env.",
-    cls=cmd_util.ApioOption,
-)
 
 project_dir_option = click.option(
     "project_dir",  # Var name.

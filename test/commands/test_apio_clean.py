@@ -6,55 +6,124 @@ from test.conftest import ApioRunner
 from apio.commands.apio import cli as apio
 
 
-def test_clean_without_apio_ini(apio_runner: ApioRunner):
-    """Tests the apio clean command without an apio.ini file."""
+def test_clean_env_single(apio_runner: ApioRunner):
+    """Tests the 'apio clean' command with a single env in _build. It should
+    delete also the _build dir which is left empty after the cleanup.
+    """
 
     with apio_runner.in_sandbox() as sb:
 
-        # -- Run "apio clean" with no apio.ini
-        result = sb.invoke_apio_cmd(apio, "clean")
-        assert result.exit_code != 0, result.output
-        assert "Error: Missing project file apio.ini" in result.output
-
-
-def test_clean_with_apio_ini(apio_runner: ApioRunner):
-    """Tests the apio clean command with an apio.ini file."""
-
-    with apio_runner.in_sandbox() as sb:
-
-        # -- Run "apio clean" with a valid apio.ini and no dirty files.
-        sb.write_default_apio_ini()
-        result = sb.invoke_apio_cmd(apio, "clean")
-        assert result.exit_code == 0, result.output
-
-        # -- Run "apio clean" with apio.ini and dirty files.
         sb.write_default_apio_ini()
         sb.write_file(".sconsign.dblite", "dummy text")
-        sb.write_file("_build/hardware.out", "dummy text")
+        sb.write_file("_build/default/hardware.out", "dummy text")
+
         assert Path(".sconsign.dblite").exists()
-        assert Path("_build/hardware.out").exists()
-        assert Path("_build").exists()
+        assert Path("_build/default/hardware.out").exists()
+
         result = sb.invoke_apio_cmd(apio, "clean")
         assert result.exit_code == 0, result.output
+
         assert "Removed .sconsign.dblite" in result.output
-        assert f"Removed {join('_build', 'hardware.out')}" in result.output
-        assert "Removed directory _build" in result.output
+        assert f"Removed {join('_build', 'default')}" in result.output
+        assert "Removed _build" in result.output
+
         assert not Path(".sconsign.dblite").exists()
-        assert not Path("_build/hardware.out").exists()
+        assert not Path("_build/default").exists()
         assert not Path("_build").exists()
 
 
-def test_clean_with_env_arg_error(apio_runner: ApioRunner):
-    """Tests the command with an invalid --env value. This error message
-    confirms that the --env arg was propagated to the apio.ini loading
-    logic."""
+def test_clean_env_multiple(apio_runner: ApioRunner):
+    """Tests the 'apio clean --env env2' with an additional _build/env1 env.
+    It should leave _build/env1 intact.
+    """
 
     with apio_runner.in_sandbox() as sb:
 
-        # -- Run "apio clean --env no-such-env"
-        sb.write_apio_ini({"[env:default]": {"top-module": "main"}})
-        result = sb.invoke_apio_cmd(apio, "clean", "--env", "no-such-env")
-        assert result.exit_code == 1, result.output
-        assert (
-            "Error: Env 'no-such-env' not found in apio.ini" in result.output
+        sb.write_apio_ini(
+            {
+                "[env:env1]": {
+                    "board": "alhambra-ii",
+                    "top-module": "main",
+                },
+                "[env:env2]": {
+                    "board": "alhambra-ii",
+                    "top-module": "main",
+                },
+            }
         )
+
+        sb.write_file(".sconsign.dblite", "dummy text")
+        sb.write_file("_build/env1/hardware.out", "dummy text")
+        sb.write_file("_build/env2/hardware.out", "dummy text")
+
+        assert Path(".sconsign.dblite").exists()
+        assert Path("_build/env1/hardware.out").exists()
+        assert Path("_build/env2/hardware.out").exists()
+
+        result = sb.invoke_apio_cmd(apio, "clean", "--env", "env2")
+        assert result.exit_code == 0, result.output
+
+        assert "Removed .sconsign.dblite" in result.output
+        assert f"Removed {join('_build', 'env2')}" in result.output
+
+        assert not Path(".sconsign.dblite").exists()
+        assert not Path("_build/env2").exists()
+
+        # -- The other env was not cleaned up.
+        assert Path("_build/env1/hardware.out").exists()
+
+
+def test_clean_env_all(apio_runner: ApioRunner):
+    """Tests the 'apio clean --all' with two envs. It should delete _build."""
+
+    with apio_runner.in_sandbox() as sb:
+
+        sb.write_apio_ini(
+            {
+                "[env:env1]": {
+                    "board": "alhambra-ii",
+                    "top-module": "main",
+                },
+                "[env:env2]": {
+                    "board": "alhambra-ii",
+                    "top-module": "main",
+                },
+            }
+        )
+
+        sb.write_file(".sconsign.dblite", "dummy text")
+        sb.write_file("_build/env1/hardware.out", "dummy text")
+        sb.write_file("_build/env2/hardware.out", "dummy text")
+
+        assert Path(".sconsign.dblite").exists()
+        assert Path("_build/env1/hardware.out").exists()
+        assert Path("_build/env2/hardware.out").exists()
+
+        result = sb.invoke_apio_cmd(apio, "clean", "--env", "env2")
+        assert result.exit_code == 0, result.output
+
+        assert "Removed .sconsign.dblite" in result.output
+        assert f"Removed {join('_build', 'env2')}" in result.output
+
+        assert not Path(".sconsign.dblite").exists()
+        assert not Path("_build/env2").exists()
+
+        # -- The other env was not cleaned up.
+        assert Path("_build/env1/hardware.out").exists()
+
+
+def test_clean_env_no_build(apio_runner: ApioRunner):
+    """Tests the 'apio clean' command with nothing to delete."""
+
+    with apio_runner.in_sandbox() as sb:
+
+        sb.write_default_apio_ini()
+
+        assert not Path(".sconsign.dblite").exists()
+        assert not Path("_build").exists()
+
+        result = sb.invoke_apio_cmd(apio, "clean")
+        assert result.exit_code == 0, result.output
+
+        assert "Removed" not in result.output
+        assert "Already cleaned up" in result.output

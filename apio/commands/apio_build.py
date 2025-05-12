@@ -48,7 +48,7 @@ NOTES:
     help=APIO_BUILD_HELP,
 )
 @click.pass_context
-@options.env_option
+@options.env_option_gen()
 @options.project_dir_option
 @options.verbose_option
 @options.verbose_synth_option

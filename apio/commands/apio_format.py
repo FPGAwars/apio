@@ -71,7 +71,7 @@ _FILE_TYPES = [".v", ".sv", ".vh", ".svh"]
     help=APIO_FORMAT_HELP,
 )
 @click.argument("files", nargs=-1, required=False)
-@options.env_option
+@options.env_option_gen()
 @options.project_dir_option
 @options.verbose_option
 def cli(

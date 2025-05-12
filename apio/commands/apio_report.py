@@ -39,7 +39,7 @@ Examples:[code]
     help=APIO_REPORT_HELP,
 )
 @click.pass_context
-@options.env_option
+@options.env_option_gen()
 @options.project_dir_option
 @options.verbose_option
 def cli(
