@@ -3,12 +3,11 @@ Tests of the scons plugin_util.py functions.
 """
 
 from os.path import isfile, exists, join
-from test.scons.testing import make_test_apio_env, SconsHacks
+from test.scons.testing import make_test_apio_env
 from test.conftest import ApioRunner
 from pathlib import Path
 import pytest
 from SCons.Node.FS import FS
-from SCons.Script import SetOption
 from pytest import LogCaptureFixture
 from apio.common.apio_console import cunstyle
 from apio.common.proto.apio_pb2 import TargetParams, UploadParams
@@ -21,7 +20,6 @@ from apio.scons.plugin_util import (
     get_programmer_cmd,
     map_params,
     make_verilator_config_builder,
-    configure_cleanup,
 )
 
 
@@ -273,48 +271,3 @@ def test_make_verilator_config_builder(apio_runner: ApioRunner):
         text = sb.read_file("hardware.vlt")
         assert "verilator_config" in text, text
         assert "lint_off -rule COMBDLY" in text, text
-
-
-def test_clean_if_requested(apio_runner: ApioRunner):
-    """Tests the success path of set_up_cleanup()."""
-
-    with apio_runner.in_sandbox():
-
-        # -- Create an env with 'clean' option set.
-        apio_env = make_test_apio_env()
-
-        # -- Create files that shouldn't be cleaned up.
-        Path("my_source.v").touch()
-        Path("apio.ini").touch()
-
-        # -- Create files that should be cleaned up.
-        Path("zadig.ini").touch()
-        Path("_build").mkdir()
-        Path("_build/aaa").touch()
-        Path("_build/bbb").touch()
-
-        # -- Run clean_if_requested with no cleanup requested. It assert.
-        assert len(SconsHacks.get_targets()) == 0
-        with pytest.raises(AssertionError):
-            configure_cleanup(apio_env)
-
-        # -- Run the cleanup setup. It's expected to add a single
-        # -- target with the dependencies to clean up.
-        assert len(SconsHacks.get_targets()) == 0
-        SetOption("clean", True)
-        configure_cleanup(apio_env)
-        assert len(SconsHacks.get_targets()) == 1
-
-        # -- Get the target and its dependencies
-        items_list = list(SconsHacks.get_targets().items())
-        target, dependencies = items_list[0]
-
-        # -- Verify the target name, hard coded in set_up_cleanup()
-        assert target.name == "cleanup-target"
-
-        # -- Verify the dependencies. These are the files to delete.
-        # -- We don't care about the order of the files.
-        file_names = [x.name for x in dependencies]
-        assert sorted(file_names) == sorted(
-            ["aaa", "bbb", "zadig.ini", "_build"]
-        )

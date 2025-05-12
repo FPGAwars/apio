@@ -84,16 +84,6 @@ class SCons:
         os.chdir(apio_ctx.project_dir)
 
     @on_exception(exit_code=1)
-    def clean(self) -> int:
-        """Runs a scons subprocess with the 'clean' option. Returns process
-        exit code, 0 if ok."""
-
-        scons_params = self.construct_scons_params()
-
-        # --Clean the project: run scons -c (with additional arguments)
-        return self._run("-c", scons_params=scons_params, uses_packages=False)
-
-    @on_exception(exit_code=1)
     def graph(self, graph_params: GraphParams, verbosity: Verbosity) -> int:
         """Runs a scons subprocess with the 'graph' target. Returns process
         exit code, 0 if ok."""

@@ -203,7 +203,7 @@ message SconsParams {
   // General information about the project
   required ApioEnvParams apio_env_params = 6;
 
-  // Additional params for for scons targets that need it..
+  // Additional params for for scons targets that need it.
   optional TargetParams target = 7;
 
   // Should be populated if an only if environment.is_windows is true.

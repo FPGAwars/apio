@@ -53,6 +53,7 @@ class ApioEnv:
 
         # Extra info for debugging.
         if self.is_debug:
+            cout(f"command_line_targets: {command_line_targets}")
             self.dump_env_vars()
 
     @property

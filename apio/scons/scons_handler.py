@@ -29,7 +29,6 @@ from apio.scons.plugin_util import (
     source_files,
     report_action,
     get_programmer_cmd,
-    configure_cleanup,
 )
 from apio.common.apio_console import cerror, cout
 
@@ -406,15 +405,12 @@ class SconsHandler:
         # -- testbench files (e.g. "main_tb.v")
         synth_srcs, test_srcs = source_files(apio_env)
 
-        # -- A cleanup request is passed as scons -c option rather than as
-        # -- a target.
-        targets = apio_env.command_line_targets
-        if not targets:
-            assert apio_env.scons_env.GetOption("clean")
-            configure_cleanup(apio_env)
-            return
+        # -- Sanity check that we don't call the scons to do cleanup. This is
+        # -- handled directly by the 'apio clean' command.
+        assert not apio_env.scons_env.GetOption("clean")
 
         # -- Get the target, we expect exactly one.
+        targets = apio_env.command_line_targets
         assert len(targets) == 1, targets
         target = targets[0]
 
