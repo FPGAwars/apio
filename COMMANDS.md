@@ -232,8 +232,7 @@ Usage: apio clean [OPTIONS]
   used to clean other envs or all envs.
 
   If the command cleans a single env and finds that upon return the
-  _build
-  directory is empty, it deletes it as well.
+  '_build' directory is empty, it deletes it as well.
 
   Example:
     apio clean                 # Clean the default env
