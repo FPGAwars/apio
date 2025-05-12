@@ -252,13 +252,14 @@ def verilator_lint_action(
     action = (
         "verilator_bin --lint-only --quiet --bbox-unsup --timing "
         "-Wno-TIMESCALEMOD -Wno-MULTITOP "
-        "{0} {1} {2} {3} {4} {5} {6} {7} {8} $SOURCES"
+        "{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} $SOURCES"
     ).format(
         "-Wall" if lint_params.verilator_all else "",
         "-Wno-style" if lint_params.verilator_no_style else "",
         map_params(lint_params.verilator_no_warns, "-Wno-{}"),
         map_params(lint_params.verilator_warns, "-Wwarn-{}"),
         f"--top-module {top_module}",
+        get_define_flags(apio_env),
         map_params(extra_params, "{}"),
         map_params(lib_dirs, '-I"{}"'),
         apio_env.target + ".vlt",
@@ -670,7 +671,18 @@ def get_programmer_cmd(apio_env: ApioEnv) -> str:
     return programmer_cmd
 
 
+def get_define_flags(apio_env: ApioEnv) -> str:
+    """Return a string with the -D flags for the verilog defines. Returns
+    an empty string if there are no defines."""
+    flags: List[str] = []
+    for define in apio_env.params.apio_env_params.defines:
+        flags.append("-D" + define)
+
+    return " ".join(flags)
+
+
 def iverilog_action(
+    apio_env: ApioEnv,
     *,
     verbose: bool,
     vcd_output_name: str,
@@ -700,10 +712,11 @@ def iverilog_action(
     # -- Construct the action string.
     # -- The -g2012 is for system-verilog support.
     action = (
-        "iverilog -g2012 {0} -o $TARGET {1} {2} {3} {4} {5} $SOURCES"
+        "iverilog -g2012 {0} -o $TARGET {1} {2} {3} {4} {5} {6} $SOURCES"
     ).format(
         "-v" if verbose else "",
         f"-DVCD_OUTPUT={escaped_vcd_output_name}",
+        get_define_flags(apio_env),
         "-DINTERACTIVE_SIM" if is_interactive else "",
         map_params(extra_params, "{}"),
         map_params(lib_dirs, '-I"{}"'),

@@ -25,6 +25,7 @@ from apio.scons.plugin_util import (
     iverilog_action,
     basename,
     make_verilator_config_builder,
+    get_define_flags,
 )
 
 
@@ -61,12 +62,13 @@ class PluginIce40(PluginBase):
         # -- The yosys synth builder.
         return Builder(
             action=(
-                'yosys -p "synth_ice40 -top {0} {1} -json $TARGET" {2} '
+                'yosys -p "synth_ice40 -top {0} {1} -json $TARGET" {2} {3} '
                 "$SOURCES"
             ).format(
                 params.apio_env_params.top_module,
                 params.apio_env_params.yosys_synth_extra_options,
                 "" if params.verbosity.all or params.verbosity.synth else "-q",
+                get_define_flags(apio_env),
             ),
             suffix=".json",
             src_suffix=SRC_SUFFIXES,
@@ -142,6 +144,7 @@ class PluginIce40(PluginBase):
                 source_file_issue_action(),
                 # -- Perform the actual test or sim compilation.
                 iverilog_action(
+                    apio_env,
                     verbose=params.verbosity.all,
                     vcd_output_name=testbench_name,
                     is_interactive=apio_env.targeting("sim"),

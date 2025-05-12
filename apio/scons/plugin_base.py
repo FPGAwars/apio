@@ -22,6 +22,7 @@ from apio.scons.plugin_util import (
     SRC_SUFFIXES,
     verilog_src_scanner,
     get_constraint_file,
+    get_define_flags,
 )
 
 
@@ -127,11 +128,12 @@ class PluginBase:
             # See https://tinyurl.com/yosys-sv-graph
             action=(
                 'yosys -p "read_verilog -sv $SOURCES; show -format dot'
-                ' -colors 1 -prefix {0} {1}" {2}'
+                ' -colors 1 -prefix {0} {1}" {2} {3}'
             ).format(
                 apio_env.target,
                 top_module,
                 "" if params.verbosity.all else "-q",
+                get_define_flags(apio_env),
             ),
             suffix=".dot",
             src_suffix=SRC_SUFFIXES,

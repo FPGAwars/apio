@@ -93,6 +93,20 @@ Example:[code]
   default-testbench = my_module_tb.sv[/code]
 """
 
+ENV_DEFINE_DOC = """
+The option 'defines' allows to specify Verilog macros that are \
+passed to tools such as Yosys and Iverilog that parse Verilog code.
+
+Each macro is specified in a separate lines and they are passed to the \
+Verilog parsers as '-D' command lines options. For example the \
+below is passed as '-DDEBUG_MODE -D45'.
+
+Example:[code]
+  defines =
+      DEBUG_MODE
+      SPEED=45[/code]
+"""
+
 ENV_FORMAT_VERIBLE_OPTIONS_DOC = """
 The option 'format-verible-options' allows controlling the operation of the \
 'apio format' command by specifying additional options to the underlying \
@@ -118,6 +132,7 @@ Example:[code]
   yosys-synth-extra-options = -dsp[/code]
 """
 
+
 ENV_OPTIONS = {
     # -- The board name.
     "board": ENV_BOARD_OPTION_DOC,
@@ -125,6 +140,8 @@ ENV_OPTIONS = {
     "top-module": ENV_TOP_MODULE_OPTION_DOC,
     # -- The default testbench name for 'apio sim'.
     "default-testbench": ENV_DEFAULT_TESTBENCH_DOC,
+    # -- Verilog macro definitions.
+    "defines": ENV_DEFINE_DOC,
     # -- Multi line list of verible options for 'apio format'
     "format-verible-options": ENV_FORMAT_VERIBLE_OPTIONS_DOC,
     # -- Additional option for the yosys synth command (inside the -p arg).

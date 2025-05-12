@@ -309,6 +309,9 @@ class SCons:
                 env_name=apio_ctx.project.env_name,
                 board_id=project["board"],
                 top_module=project["top-module"],
+                defines=apio_ctx.project.get_as_lines_list(
+                    "defines", default=[]
+                ),
                 yosys_synth_extra_options=apio_ctx.project.get(
                     "yosys-synth-extra-options", None
                 ),

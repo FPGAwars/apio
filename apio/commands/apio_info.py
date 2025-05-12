@@ -133,7 +133,7 @@ APIO_INI_DOC = f"""
 [{TITLE}]APIO PROJECT CONFIGURATION FILE[/]
 
 Every Apio project is required to have in its root directory a text file \
-named [b]apio.ini[/] that contains the project  configuration. At minimum, \
+named [b]apio.ini[/] that contains the project configuration. At minimum, \
 the file looks like the example below with a single 'env' section that with \
 the require configuration options.
 
