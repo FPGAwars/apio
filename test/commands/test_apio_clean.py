@@ -15,19 +15,23 @@ def test_clean_env_single(apio_runner: ApioRunner):
 
         sb.write_default_apio_ini()
         sb.write_file(".sconsign.dblite", "dummy text")
+        sb.write_file("zadig.ini", "dummy text")
         sb.write_file("_build/default/hardware.out", "dummy text")
 
         assert Path(".sconsign.dblite").exists()
+        assert Path("zadig.ini").exists()
         assert Path("_build/default/hardware.out").exists()
 
         result = sb.invoke_apio_cmd(apio, "clean")
         assert result.exit_code == 0, result.output
 
         assert "Removed .sconsign.dblite" in result.output
+        assert "Removed zadig.ini" in result.output
         assert f"Removed {join('_build', 'default')}" in result.output
         assert "Removed _build" in result.output
 
         assert not Path(".sconsign.dblite").exists()
+        assert not Path("zadig.ini").exists()
         assert not Path("_build/default").exists()
         assert not Path("_build").exists()
 
@@ -127,3 +131,34 @@ def test_clean_env_no_build(apio_runner: ApioRunner):
 
         assert "Removed" not in result.output
         assert "Already cleaned up" in result.output
+
+
+def test_clean_legacy_files(apio_runner: ApioRunner):
+    """Tests that 'apio clean' deletes also legacy files that may have been
+    left in the project dir.
+    """
+
+    with apio_runner.in_sandbox() as sb:
+
+        legacy_files = [
+            "hardware.asc",
+            "hardware.bin",
+            "hardware.dot",
+            "hardware.json",
+            "hardware.pnr",
+            "hardware.svg",
+            "main_tb.vcd",
+        ]
+
+        sb.write_default_apio_ini()
+
+        for legacy_file in legacy_files:
+            sb.write_file(legacy_file, "dummy text")
+            assert Path(legacy_file).exists()
+
+        result = sb.invoke_apio_cmd(apio, "clean")
+        assert result.exit_code == 0, result.output
+
+        for legacy_file in legacy_files:
+            assert f"Removed {legacy_file}" in result.output
+            assert not Path(legacy_file).exists()

@@ -10,12 +10,13 @@
 import os
 import shutil
 import sys
+from glob import glob
 from typing import Optional, List
 from pathlib import Path
 import click
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
-from apio.utils import cmd_util
+from apio.utils import cmd_util, util
 from apio.common.apio_console import cout
 from apio.common.apio_styles import SUCCESS
 
@@ -38,8 +39,13 @@ def _delete_dir_or_file(path):
     cout(f"- Removed {path}")
 
 
-def _delete_candidates(candidates: List[str], wrapper: Optional[str]):
+def _delete_candidates(candidates: List[str], wrapper_dir: Optional[str]):
     """Delete given files and dirs."""
+
+    # -- Dump for debugging.
+    if util.is_debug():
+        cout(f"\nDeletion candidates: {candidates}")
+        cout(f"Deletion wrapper dir: {wrapper_dir}\n")
 
     # -- Delete candidates that exists.
     items_deleted = 0
@@ -49,8 +55,12 @@ def _delete_candidates(candidates: List[str], wrapper: Optional[str]):
             items_deleted += 1
 
     # -- If wrapper dir was specified and it's empty, delete it as well.
-    if wrapper and os.path.isdir(wrapper) and not os.listdir(wrapper):
-        _delete_dir_or_file(wrapper)
+    if (
+        wrapper_dir
+        and os.path.isdir(wrapper_dir)
+        and not os.listdir(wrapper_dir)
+    ):
+        _delete_dir_or_file(wrapper_dir)
         items_deleted += 1
 
     # -- Report
@@ -112,7 +122,18 @@ def cli(
     build_env_path: Path = apio_ctx.build_env_path
 
     # -- Determine candidates for deletion.
-    candidates = [".sconsign.dblite"]
+    candidates = [".sconsign.dblite", "zadig.ini"]
+
+    # -- TODO: Remove the cleanup of legacy files after releasing the first
+    # -- release with the _build directory.
+    # --
+    # --
+    # -- Until apio 0.9.6, the build artifacts were created in the project
+    # -- directory rather than the _build directory. To simplify the
+    # -- transition we clean here also left over files from 0.9.5.
+    candidates += glob("hardware.*")
+    candidates += glob("*_tb.vcd")
+    candidates += glob("*_tb.out")
 
     # -- Handle clean all.
     if all_:
@@ -126,6 +147,6 @@ def cli(
 
     # -- Delete the candidates if exists and if build build all dir
     # -- is left empty, delete it as well.
-    _delete_candidates(candidates, wrapper=build_all_path)
+    _delete_candidates(candidates, wrapper_dir=build_all_path)
 
     sys.exit(0)
