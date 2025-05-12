@@ -5,7 +5,6 @@ from typing import Optional, List
 import SCons.Script.SConsOptions
 import SCons.Node.FS
 import SCons.Environment
-import SCons.Defaults
 import SCons.Script.Main
 from google.protobuf import text_format
 from apio.scons.apio_env import ApioEnv
