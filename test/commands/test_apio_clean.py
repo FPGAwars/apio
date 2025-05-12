@@ -1,5 +1,6 @@
 """Test for the "apio clean" command."""
 
+import os
 from os.path import join
 from pathlib import Path
 from test.conftest import ApioRunner
@@ -32,6 +33,44 @@ def test_clean_env_single(apio_runner: ApioRunner):
 
         assert not Path(".sconsign.dblite").exists()
         assert not Path("zadig.ini").exists()
+        assert not Path("_build/default").exists()
+        assert not Path("_build").exists()
+
+
+def test_clean_env_single_remote_dir(apio_runner: ApioRunner):
+    """Similar to test_clean_env_single but done from a remote dir using
+    --project-dir."""
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Cache directories values.
+        proj_dir: Path = sb.proj_dir
+        remote_dir: Path = sb.sandbox_dir
+
+        os.chdir(proj_dir)
+
+        sb.write_default_apio_ini()
+        sb.write_file(".sconsign.dblite", "dummy text")
+        sb.write_file("_build/default/hardware.out", "dummy text")
+
+        assert Path(".sconsign.dblite").exists()
+        assert Path("_build/default/hardware.out").exists()
+
+        # -- Run the clean command from a remote dir.
+        os.chdir(remote_dir)
+        assert not Path("apio.ini").exists()
+        result = sb.invoke_apio_cmd(
+            apio, "clean", "--project-dir", str(proj_dir)
+        )
+        assert result.exit_code == 0, result.output
+        os.chdir(proj_dir)
+
+        # -- Back in the project dir.
+        assert "Removed .sconsign.dblite" in result.output
+        assert f"Removed {join('_build', 'default')}" in result.output
+        assert "Removed _build" in result.output
+
+        assert not Path(".sconsign.dblite").exists()
         assert not Path("_build/default").exists()
         assert not Path("_build").exists()
 

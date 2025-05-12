@@ -125,6 +125,9 @@ def cli(
         env_arg=env,
     )
 
+    # -- Change to the project's folder.
+    os.chdir(apio_ctx.project_dir)
+
     # -- Get shortcuts to apio context values.
     env_name: str = apio_ctx.project.env_name
     build_all_path: Path = apio_ctx.build_all_path
