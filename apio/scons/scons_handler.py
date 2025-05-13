@@ -11,6 +11,7 @@
 """Apio scons related utilities.."""
 
 import sys
+from pathlib import Path
 from SCons.Script import ARGUMENTS, COMMAND_LINE_TARGETS
 from google.protobuf import text_format
 from apio.scons.plugin_ice40 import PluginIce40
@@ -18,9 +19,7 @@ from apio.scons.plugin_ecp5 import PluginEcp5
 from apio.scons.plugin_gowin import PluginGowin
 from apio.common.proto.apio_pb2 import SconsParams, ICE40, ECP5, GOWIN
 from apio.common import apio_console
-from apio.common.apio_consts import BUILD_DIR
 from apio.scons.apio_env import ApioEnv
-from apio.common.apio_consts import TARGET
 from apio.scons.plugin_base import PluginBase
 from apio.common import rich_lib_windows
 from apio.scons.plugin_util import (
@@ -30,7 +29,6 @@ from apio.scons.plugin_util import (
     source_files,
     report_action,
     get_programmer_cmd,
-    configure_cleanup,
 )
 from apio.common.apio_console import cerror, cout
 
@@ -60,7 +58,8 @@ class SconsHandler:
         execute an SconsHandler."""
 
         # -- Read the text of the scons params file.
-        with open(BUILD_DIR / "scons.params", "r", encoding="utf8") as f:
+        params_path = Path(ARGUMENTS["params"])
+        with open(params_path, "r", encoding="utf8") as f:
             proto_text = f.read()
 
         # -- Parse the text into SconsParams object.
@@ -122,7 +121,7 @@ class SconsHandler:
 
         synth_target = apio_env.builder_target(
             builder_id=SYNTH_BUILDER,
-            target=TARGET,
+            target=apio_env.target,
             sources=[synth_srcs],
             always_build=(params.verbosity.all or params.verbosity.synth),
         )
@@ -132,7 +131,7 @@ class SconsHandler:
 
         pnr_target = apio_env.builder_target(
             builder_id=PNR_BUILDER,
-            target=TARGET,
+            target=apio_env.target,
             sources=[synth_target, self.arch_plugin.constrain_file()],
             always_build=(params.verbosity.all or params.verbosity.pnr),
         )
@@ -142,7 +141,7 @@ class SconsHandler:
 
         apio_env.builder_target(
             builder_id=BITSTREAM_BUILDER,
-            target=TARGET,
+            target=apio_env.target,
             sources=pnr_target,
         )
 
@@ -161,7 +160,7 @@ class SconsHandler:
         # -- Top level "build" target.
         apio_env.alias(
             "build",
-            source=TARGET + plugin.plugin_info().bin_file_suffix,
+            source=apio_env.target + plugin.plugin_info().bin_file_suffix,
             always_build=(
                 params.verbosity.all
                 or params.verbosity.synth
@@ -185,7 +184,7 @@ class SconsHandler:
         # -- Create the top level 'upload' target.
         apio_env.alias(
             "upload",
-            source=TARGET + plugin_info.bin_file_suffix,
+            source=apio_env.target + plugin_info.bin_file_suffix,
             action=get_programmer_cmd(apio_env),
             always_build=True,
         )
@@ -206,7 +205,7 @@ class SconsHandler:
         # -- Register the top level 'report' target.
         apio_env.alias(
             "report",
-            source=TARGET + ".pnr",
+            source=apio_env.target + ".pnr",
             action=report_action(
                 plugin_info.clk_name_index, params.verbosity.pnr
             ),
@@ -232,7 +231,7 @@ class SconsHandler:
 
         dot_target = apio_env.builder_target(
             builder_id=YOSYS_DOT_BUILDER,
-            target=TARGET,
+            target=apio_env.target,
             sources=synth_srcs,
             always_build=True,
         )
@@ -243,7 +242,7 @@ class SconsHandler:
         )
         graphviz_target = apio_env.builder_target(
             builder_id=GRAPHVIZ_RENDERER_BUILDER,
-            target=TARGET,
+            target=apio_env.target,
             sources=dot_target,
             always_build=True,
         )
@@ -272,7 +271,7 @@ class SconsHandler:
 
         lint_config_target = apio_env.builder_target(
             builder_id=LINT_CONFIG_BUILDER,
-            target=TARGET,
+            target=apio_env.target,
             sources=[],
         )
 
@@ -281,7 +280,7 @@ class SconsHandler:
 
         lint_out_target = apio_env.builder_target(
             builder_id=LINT_BUILDER,
-            target=TARGET,
+            target=apio_env.target,
             sources=synth_srcs + test_srcs,
             extra_dependencies=[lint_config_target],
         )
@@ -310,7 +309,7 @@ class SconsHandler:
         testbench = sim_params.testbench  # Optional.
 
         # -- Collect information for sim.
-        sim_config = get_sim_config(testbench, synth_srcs, test_srcs)
+        sim_config = get_sim_config(apio_env, testbench, synth_srcs, test_srcs)
 
         # -- Compilation builder and target
 
@@ -360,7 +359,7 @@ class SconsHandler:
         # -- Collect the test related values.
         test_params = params.target.test
         tests_configs = get_tests_configs(
-            test_params.testbench, synth_srcs, test_srcs
+            apio_env, test_params.testbench, synth_srcs, test_srcs
         )
 
         # -- Create compilation and simulation targets.
@@ -406,15 +405,12 @@ class SconsHandler:
         # -- testbench files (e.g. "main_tb.v")
         synth_srcs, test_srcs = source_files(apio_env)
 
-        # -- A cleanup request is passed as scons -c option rather than as
-        # -- a target.
-        targets = apio_env.command_line_targets
-        if not targets:
-            assert apio_env.scons_env.GetOption("clean")
-            configure_cleanup(apio_env)
-            return
+        # -- Sanity check that we don't call the scons to do cleanup. This is
+        # -- handled directly by the 'apio clean' command.
+        assert not apio_env.scons_env.GetOption("clean")
 
         # -- Get the target, we expect exactly one.
+        targets = apio_env.command_line_targets
         assert len(targets) == 1, targets
         target = targets[0]
 

@@ -237,11 +237,25 @@ class ApioContext:
 
     @property
     def project(self) -> Project:
-        """Return the project. Should be called only if has_project_loaded() is
+        """Return the project. Should be called only if has_project() is
         True."""
         # -- Failure here is a programming error, not a user error.
         assert self.has_project, "project(): project is not loaded"
         return self._project
+
+    @property
+    def build_all_path(self) -> str:
+        """Returns the relative path of the build root directory from the
+        project dir. Should be called only when has_project is True."""
+        assert self.has_project, "project(): project is not loaded"
+        return Path("_build")
+
+    @property
+    def build_env_path(self) -> str:
+        """Returns the relative path of the current env build directory from
+        the project dir. Should be called only when has_project is True."""
+        assert self.has_project, "project(): project is not loaded"
+        return self.build_all_path / self.project.env_name
 
     def _load_resource(self, name: str, allow_custom: bool = False) -> dict:
         """Load the resources from a given jsonc file

@@ -91,6 +91,13 @@ message Environment {
   // Paths to oss-cad-suite libraries.
   required string yosys_path = 6;
   required string trellis_path = 7;
+
+  // Build directories, relative to project dir.
+  // Examples:
+  //   build_all_path = "_build"
+  //   build_env_path = "_build/my-env"
+  required string build_all_path = 8;
+  required string build_env_path = 9;
 }
 
 // Information about the expanded active env from apio.ini.
@@ -101,8 +108,10 @@ message ApioEnvParams {
   required string board_id = 2;
   // The name of the top verilog module, e.g. 'main'.
   required string top_module = 3;
-  // This is the value of 'yosys-synth-extra-options' from apio.ini.
-  optional string yosys_synth_extra_options = 4 [default = ""];
+  // The optional values of 'defines' option in apio.ini.
+  repeated string defines = 4;
+  // The optional value of 'yosys-synth-extra-options' option in apio.ini.
+  optional string yosys_synth_extra_options = 5 [default = ""];
 }
 
 // Lint target specific params.
@@ -196,7 +205,7 @@ message SconsParams {
   // General information about the project
   required ApioEnvParams apio_env_params = 6;
 
-  // Additional params for for scons targets that need it..
+  // Additional params for for scons targets that need it.
   optional TargetParams target = 7;
 
   // Should be populated if an only if environment.is_windows is true.

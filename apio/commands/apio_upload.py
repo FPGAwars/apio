@@ -94,7 +94,7 @@ to grant the necessary permissions to access USB devices.
 @serial_port_option
 @ftdi_idx_option
 @sram_option
-@options.env_option
+@options.env_option_gen()
 @options.project_dir_option
 def cli(
     _: click.Context,

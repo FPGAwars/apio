@@ -133,7 +133,7 @@ APIO_INI_DOC = f"""
 [{TITLE}]APIO PROJECT CONFIGURATION FILE[/]
 
 Every Apio project is required to have in its root directory a text file \
-named [b]apio.ini[/] that contains the project  configuration. At minimum, \
+named [b]apio.ini[/] that contains the project configuration. At minimum, \
 the file looks like the example below with a single 'env' section that with \
 the require configuration options.
 
@@ -147,20 +147,20 @@ with options that are shared between envs and a section called apio which \
 allow to define the default env.
 
 Example:[code]
-  # Optional \\[apio] section.
+  ; Optional \\[apio] section.
   \\[apio]
   default-env = env2
 
-  # Optional \\[common] section.
+  ; Optional \\[common] section.
   \\[common]
   board = alhambra-ii
   top-module = main
 
-  # Required first env section.
+  ; Required first env section.
   \\[env:env1]
   default-testbench = main_tb.v
 
-  # Optional additional env section(s).
+  ; Optional additional env section(s).
   \\[env:env2]
   default-testbench = io_module_tb.v[/code]
 

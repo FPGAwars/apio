@@ -1,11 +1,10 @@
 """
 Helpers for apio's scons testing."""
 
-from typing import Dict, Optional, List
+from typing import Optional, List
 import SCons.Script.SConsOptions
 import SCons.Node.FS
 import SCons.Environment
-import SCons.Defaults
 import SCons.Script.Main
 from google.protobuf import text_format
 from apio.scons.apio_env import ApioEnv
@@ -34,6 +33,8 @@ environment {
   is_debug: true
   yosys_path: "/Users/user/.apio/packages/oss-cad-suite/share/yosys"
   trellis_path: "/Users/user/.apio/packages/oss-cad-suite/share/trellis"
+  build_all_path: "_build"
+  build_env_path: "_build/default"
 }
 apio_env_params {
   env_name: "default"
@@ -73,11 +74,6 @@ class SconsHacks:
 
         # -- Clear the SCons targets
         SCons.Environment.CleanTargets = {}
-
-    @staticmethod
-    def get_targets() -> Dict:
-        """Get the scons {target -> dependencies} dictionary."""
-        return SCons.Environment.CleanTargets
 
 
 def make_test_scons_params() -> SconsParams:

@@ -276,7 +276,7 @@ def _test_project(
         result = sb.invoke_apio_cmd(apio, *args)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
-        assert getsize(sb.proj_dir / "_build" / bitstream)
+        assert getsize(sb.proj_dir / "_build/default" / bitstream)
 
         # -- 'apio build' (no change)
         args = ["build"] + proj_arg
@@ -305,7 +305,7 @@ def _test_project(
         result = sb.invoke_apio_cmd(apio, *args)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
-        assert getsize(sb.proj_dir / "_build/hardware.vlt")
+        assert getsize(sb.proj_dir / "_build/default/hardware.vlt")
 
         # -- 'apio format'
         args = ["format"] + proj_arg
@@ -324,24 +324,24 @@ def _test_project(
         result = sb.invoke_apio_cmd(apio, *args)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
-        assert getsize(sb.proj_dir / f"_build/{testbench}.out")
-        assert getsize(sb.proj_dir / f"_build/{testbench}.vcd")
+        assert getsize(sb.proj_dir / f"_build/default/{testbench}.out")
+        assert getsize(sb.proj_dir / f"_build/default/{testbench}.vcd")
 
         # -- 'apio clean'
         args = ["clean"] + proj_arg
         result = sb.invoke_apio_cmd(apio, *args)
         sb.assert_ok(result)
-        assert "SUCCESS" in result.output
-        assert not (sb.proj_dir / f"_build/{testbench}.out").exists()
-        assert not (sb.proj_dir / f"_build/{testbench}.vcd").exists()
+        assert "Cleanup completed" in result.output
+        assert not (sb.proj_dir / f"_build/default/{testbench}.out").exists()
+        assert not (sb.proj_dir / f"_build/default/{testbench}.vcd").exists()
 
         # -- 'apio test <testbench-file>'
         args = ["test", testbench_file] + proj_arg
         result = sb.invoke_apio_cmd(apio, *args)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
-        assert getsize(sb.proj_dir / f"_build/{testbench}.out")
-        assert getsize(sb.proj_dir / f"_build/{testbench}.vcd")
+        assert getsize(sb.proj_dir / f"_build/default/{testbench}.out")
+        assert getsize(sb.proj_dir / f"_build/default/{testbench}.vcd")
         # -- For issue https://github.com/FPGAwars/apio/issues/557
         assert "warning: Timing checks are not supported" not in result.output
 
@@ -352,22 +352,23 @@ def _test_project(
         assert "SUCCESS" in result.output
         assert report_item in result.output
         assert "─────┐" in result.output  # Graphical table border
-        assert getsize(sb.proj_dir / "_build/hardware.pnr")
+        assert getsize(sb.proj_dir / "_build/default/hardware.pnr")
 
         # -- 'apio graph'
         args = ["graph"] + proj_arg
         result = sb.invoke_apio_cmd(apio, *args)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
-        assert getsize(sb.proj_dir / "_build/hardware.dot")
-        assert getsize(sb.proj_dir / "_build/hardware.svg")
+        assert getsize(sb.proj_dir / "_build/default/hardware.dot")
+        assert getsize(sb.proj_dir / "_build/default/hardware.svg")
 
         # -- 'apio clean'
+        assert Path(sb.proj_dir / "_build/default").exists()
         args = ["clean"] + proj_arg
         result = sb.invoke_apio_cmd(apio, *args)
         sb.assert_ok(result)
-        assert "SUCCESS" in result.output
-        assert not Path(sb.proj_dir / "_build").exists()
+        assert "Cleanup completed" in result.output
+        assert not Path(sb.proj_dir / "_build/default").exists()
 
         # -- Here we should have only the original project files.
         assert set(os.listdir(sb.proj_dir)) == set(project_files)

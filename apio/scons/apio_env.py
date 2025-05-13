@@ -11,6 +11,7 @@
 
 
 import os
+from pathlib import Path
 from typing import List, Optional
 from SCons.Script.SConscript import SConsEnvironment
 from SCons.Environment import BuilderWrapper
@@ -32,6 +33,13 @@ class ApioEnv:
         self.command_line_targets = command_line_targets
         self.params = scons_params
 
+        # -- Cache build paths
+        self.build_all_path = Path(self.params.environment.build_all_path)
+        self.build_env_path = Path(self.params.environment.build_env_path)
+
+        # -- Create the base target.
+        self.target = str(self.build_env_path / "hardware")
+
         # -- Create the underlying scons env.
         self.scons_env = SConsEnvironment(ENV=os.environ, tools=[])
 
@@ -45,6 +53,7 @@ class ApioEnv:
 
         # Extra info for debugging.
         if self.is_debug:
+            cout(f"command_line_targets: {command_line_targets}")
             self.dump_env_vars()
 
     @property

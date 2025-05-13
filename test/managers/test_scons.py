@@ -47,6 +47,8 @@ environment {
   is_debug: false
   yosys_path: "TBD"
   trellis_path: "TBD"
+  build_all_path: "TBD"
+  build_env_path: "TBD"
 }
 apio_env_params {
   env_name: "default"
@@ -82,6 +84,8 @@ environment {
   is_debug: false
   yosys_path: "TBD"
   trellis_path: "TBD"
+  build_all_path: "TBD"
+  build_env_path: "TBD"
 }
 apio_env_params {
   env_name: "default"
@@ -120,14 +124,16 @@ def test_default_params(apio_runner: ApioRunner):
         # -- Construct the expected value. We fill in non deterministic values.
         expected = text_format.Parse(EXPECTED1, SconsParams())
         expected.timestamp = scons_params.timestamp
+        expected.environment.platform_id = apio_ctx.platform_id
+        expected.environment.is_windows = apio_ctx.is_windows
         expected.environment.yosys_path = str(
             sb.packages_dir / "oss-cad-suite/share/yosys"
         )
         expected.environment.trellis_path = str(
             sb.packages_dir / "oss-cad-suite/share/trellis"
         )
-        expected.environment.platform_id = apio_ctx.platform_id
-        expected.environment.is_windows = apio_ctx.is_windows
+        expected.environment.build_all_path = str(apio_ctx.build_all_path)
+        expected.environment.build_env_path = str(apio_ctx.build_env_path)
 
         # The field rich_lib_windows_params is too dynamic so we just assert
         # for its existence and remove it from the comparison.
@@ -173,14 +179,16 @@ def test_explicit_params(apio_runner: ApioRunner):
         # -- Construct the expected value. We fill in non deterministic values.
         expected = text_format.Parse(EXPECTED2, SconsParams())
         expected.timestamp = scons_params.timestamp
+        expected.environment.platform_id = apio_ctx.platform_id
+        expected.environment.is_windows = apio_ctx.is_windows
         expected.environment.yosys_path = str(
             sb.packages_dir / "oss-cad-suite/share/yosys"
         )
         expected.environment.trellis_path = str(
             sb.packages_dir / "oss-cad-suite/share/trellis"
         )
-        expected.environment.platform_id = apio_ctx.platform_id
-        expected.environment.is_windows = apio_ctx.is_windows
+        expected.environment.build_all_path = str(apio_ctx.build_all_path)
+        expected.environment.build_env_path = str(apio_ctx.build_env_path)
 
         # The field rich_lib_windows_params is too dynamic so we just assert
         # for its existence and remove it from the comparison.

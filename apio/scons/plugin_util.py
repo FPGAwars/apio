@@ -29,7 +29,6 @@ from SCons.Node import NodeList
 from SCons.Node.Alias import Alias
 from apio.scons.apio_env import ApioEnv
 from apio.common.common_util import sort_files
-from apio.common.apio_consts import TARGET, BUILD_DIR
 from apio.common.apio_console import cout, cerror, cwarning, cprint
 from apio.common.apio_styles import INFO, BORDER, EMPH1, EMPH2, EMPH3
 
@@ -232,8 +231,6 @@ def verilator_lint_action(
     * lib_files: Optional additional files to include.
     """
 
-    # pylint: disable=consider-using-f-string
-
     # -- Sanity checks
     assert apio_env.targeting("lint")
     assert apio_env.params.target.HasField("lint")
@@ -253,16 +250,17 @@ def verilator_lint_action(
     action = (
         "verilator_bin --lint-only --quiet --bbox-unsup --timing "
         "-Wno-TIMESCALEMOD -Wno-MULTITOP "
-        "{0} {1} {2} {3} {4} {5} {6} {7} {8} $SOURCES"
+        "{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} $SOURCES"
     ).format(
         "-Wall" if lint_params.verilator_all else "",
         "-Wno-style" if lint_params.verilator_no_style else "",
         map_params(lint_params.verilator_no_warns, "-Wno-{}"),
         map_params(lint_params.verilator_warns, "-Wwarn-{}"),
         f"--top-module {top_module}",
+        get_define_flags(apio_env),
         map_params(extra_params, "{}"),
         map_params(lib_dirs, '-I"{}"'),
-        TARGET + ".vlt",
+        apio_env.target + ".vlt",
         map_params(lib_files, '"{}"'),
     )
 
@@ -289,8 +287,6 @@ def waves_target(
     vcd_file_target is the simulator target that generated the vcd file
     with the signals. Returns the new targets.
     """
-
-    # pylint: disable=consider-using-f-string
 
     # -- Construct the commands list.
     commands = []
@@ -333,6 +329,7 @@ def check_valid_testbench_name(testbench: str) -> None:
 
 
 def get_sim_config(
+    apio_env: ApioEnv,
     testbench: str,
     synth_srcs: List[str],
     test_srcs: List[str],
@@ -377,12 +374,13 @@ def get_sim_config(
     # -- Construct a SimulationParams with all the synth files + the
     # -- testbench file.
     testbench_name = basename(testbench)
-    build_testbench_name = str(BUILD_DIR / testbench_name)
+    build_testbench_name = str(apio_env.build_env_path / testbench_name)
     srcs = synth_srcs + [testbench]
     return SimulationConfig(testbench_name, build_testbench_name, srcs)
 
 
 def get_tests_configs(
+    apio_env: ApioEnv,
     testbench: str,
     synth_srcs: List[str],
     test_srcs: list[str],
@@ -419,7 +417,7 @@ def get_tests_configs(
     configs = []
     for tb in testbenches:
         testbench_name = basename(tb)
-        build_testbench_name = str(BUILD_DIR / testbench_name)
+        build_testbench_name = str(apio_env.build_env_path / testbench_name)
         srcs = synth_srcs + [tb]
         configs.append(
             SimulationConfig(testbench_name, build_testbench_name, srcs)
@@ -485,8 +483,6 @@ def source_file_issue_action() -> FunctionAction:
     return Action(report_source_files_issues, "Scanning for issues.")
 
 
-# Remove apio_env ark is not needed anymore.
-# pylint: disable=unused-argument
 def source_files(apio_env: ApioEnv) -> Tuple[List[str], List[str]]:
     """Get the list of source files in the directory tree under the current
     directory, splitted into synth and testbench lists.
@@ -508,7 +504,7 @@ def source_files(apio_env: ApioEnv) -> Tuple[List[str], List[str]]:
     synth_srcs = []
     test_srcs = []
     for file in files:
-        if BUILD_DIR in Path(file).parents:
+        if apio_env.build_all_path in Path(file).parents:
             # -- Ignore source files from the _build directory.
             continue
         if has_testbench_name(file):
@@ -671,7 +667,18 @@ def get_programmer_cmd(apio_env: ApioEnv) -> str:
     return programmer_cmd
 
 
+def get_define_flags(apio_env: ApioEnv) -> str:
+    """Return a string with the -D flags for the verilog defines. Returns
+    an empty string if there are no defines."""
+    flags: List[str] = []
+    for define in apio_env.params.apio_env_params.defines:
+        flags.append("-D" + define)
+
+    return " ".join(flags)
+
+
 def iverilog_action(
+    apio_env: ApioEnv,
     *,
     verbose: bool,
     vcd_output_name: str,
@@ -693,7 +700,6 @@ def iverilog_action(
     """
 
     # pylint: disable=too-many-arguments
-    # pylint: disable=consider-using-f-string
 
     # Escaping for windows. '\' -> '\\'
     escaped_vcd_output_name = vcd_output_name.replace("\\", "\\\\")
@@ -701,10 +707,11 @@ def iverilog_action(
     # -- Construct the action string.
     # -- The -g2012 is for system-verilog support.
     action = (
-        "iverilog -g2012 {0} -o $TARGET {1} {2} {3} {4} {5} $SOURCES"
+        "iverilog -g2012 {0} -o $TARGET {1} {2} {3} {4} {5} {6} $SOURCES"
     ).format(
         "-v" if verbose else "",
         f"-DVCD_OUTPUT={escaped_vcd_output_name}",
+        get_define_flags(apio_env),
         "-DINTERACTIVE_SIM" if is_interactive else "",
         map_params(extra_params, "{}"),
         map_params(lib_dirs, '-I"{}"'),
@@ -760,55 +767,3 @@ def make_verilator_config_builder(lib_path: Path):
         ),
         suffix=".vlt",
     )
-
-
-def configure_cleanup(apio_env: ApioEnv) -> None:
-    """Should be called only when the "clean" target is specified.
-    Configures in scons env do delete all the files in the build directory.
-    """
-
-    # -- Sanity check.
-    assert apio_env.scons_env.GetOption(
-        "clean"
-    ), "Error, cleaning not requested."
-
-    # -- Get the underlying scons environment.
-    scons_env = apio_env.scons_env
-
-    # -- Get the list of all files to clean. Scons adds to the list non
-    # -- existing files from other targets it encountered.
-    # --
-    # -- Note: Normally we would use the Scons's Glob since it scans also
-    # -- non existing target files but it doesn't work with the recursive
-    # -- option. So we use the standard glob() function instead. This is OK
-    # -- since we are only cleaning and we don't care about non existing files.
-    files_to_clean = (
-        glob("zadig.ini")
-        + glob(".sconsign.dblite")
-        + glob(str(BUILD_DIR / "**/*"), recursive=True)
-        + glob(str(BUILD_DIR))
-    )
-
-    # -- TODO: Remove the cleanup of legacy files after releasing the first
-    # -- release with the _build directory.
-    # --
-    # --
-    # -- Until apio 0.9.6, the build artifacts were created in the project
-    # -- directory rather than the _build directory. To simplify the
-    # -- transition we clean here also left over files from 0.9.5.
-    legacy_files_to_clean = (
-        glob("hardware.*") + glob("*_tb.vcd") + glob("*_tb.out")
-    )
-
-    if legacy_files_to_clean:
-        cwarning("Deleting also leftover files.")
-        files_to_clean.extend(legacy_files_to_clean)
-
-    # -- Sort for determinism.
-    files_to_clean.sort()
-
-    # -- Create a dummy target.  I
-    dummy_target = scons_env.Command("cleanup-target", "", "")
-
-    # -- Associate all the files with the dummy target.
-    scons_env.Clean(dummy_target, files_to_clean)

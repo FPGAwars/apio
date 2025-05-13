@@ -56,8 +56,9 @@ Examples:[code]
   apio graph -t my_module  # Graph my_module module.[/code]
 
 
-[b][Hint][/b] On Windows, type 'explorer _build/hardware.svg' to view the \
-graph, and on Mac OS type 'open _build/hardware.svg'.
+[b][Hint][/b] On Windows, type 'explorer _build/default/hardware.svg' to view \
+the graph, and on Mac OS type 'open _build/default/hardware.svg' (if your \
+env is different than 'default' change the commands accordingly).
 """
 
 
@@ -71,7 +72,7 @@ graph, and on Mac OS type 'open _build/hardware.svg'.
 @svg_option
 @png_option
 @pdf_option
-@options.env_option
+@options.env_option_gen()
 @options.project_dir_option
 @options.top_module_option_gen(help="Set the name of the top module to graph.")
 @options.verbose_option

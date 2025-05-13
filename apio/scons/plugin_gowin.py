@@ -16,7 +16,6 @@ from pathlib import Path
 from SCons.Script import Builder
 from SCons.Builder import BuilderBase
 from apio.scons.apio_env import ApioEnv
-from apio.common.apio_consts import TARGET
 from apio.scons.plugin_base import PluginBase, ArchPluginInfo
 from apio.scons.plugin_util import (
     SRC_SUFFIXES,
@@ -26,6 +25,7 @@ from apio.scons.plugin_util import (
     iverilog_action,
     basename,
     make_verilator_config_builder,
+    get_define_flags,
 )
 
 
@@ -53,8 +53,6 @@ class PluginGowin(PluginBase):
     def synth_builder(self) -> BuilderBase:
         """Creates and returns the synth builder."""
 
-        # pylint: disable=consider-using-f-string
-
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params
@@ -62,12 +60,13 @@ class PluginGowin(PluginBase):
         # -- The yosys synth builder.
         return Builder(
             action=(
-                'yosys -p "synth_gowin -top {0} {1} -json $TARGET" {2} '
+                'yosys -p "synth_gowin -top {0} {1} -json $TARGET" {2} {3} '
                 "$SOURCES"
             ).format(
                 params.apio_env_params.top_module,
                 params.apio_env_params.yosys_synth_extra_options,
                 "" if params.verbosity.all or params.verbosity.synth else "-q",
+                get_define_flags(apio_env),
             ),
             suffix=".json",
             src_suffix=SRC_SUFFIXES,
@@ -78,8 +77,6 @@ class PluginGowin(PluginBase):
     def pnr_builder(self) -> BuilderBase:
         """Creates and returns the pnr builder."""
 
-        # pylint: disable=consider-using-f-string
-
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params
@@ -87,7 +84,7 @@ class PluginGowin(PluginBase):
         # -- We use an emmiter to add to the builder a second output file.
         def emitter(target, source, env):
             _ = env  # Unused
-            target.append(TARGET + ".pnr")
+            target.append(apio_env.target + ".pnr")
             return target, source
 
         # -- Create the builder.
@@ -98,7 +95,7 @@ class PluginGowin(PluginBase):
                 "--vopt cst={3} {4}"
             ).format(
                 params.fpga_info.part_num,
-                TARGET + ".pnr",
+                apio_env.target + ".pnr",
                 params.fpga_info.gowin.family,
                 self.constrain_file(),
                 "" if params.verbosity.all or params.verbosity.pnr else "-q",
@@ -111,8 +108,6 @@ class PluginGowin(PluginBase):
     # @overrides
     def bitstream_builder(self) -> BuilderBase:
         """Creates and returns the bitstream builder."""
-
-        # pylint: disable=consider-using-f-string
 
         return Builder(
             action="gowin_pack -d {0} -o $TARGET $SOURCE".format(
@@ -149,6 +144,7 @@ class PluginGowin(PluginBase):
                 source_file_issue_action(),
                 # -- Perform the actual test or sim compilation.
                 iverilog_action(
+                    apio_env,
                     verbose=params.verbosity.all,
                     vcd_output_name=testbench_name,
                     is_interactive=apio_env.targeting("sim"),

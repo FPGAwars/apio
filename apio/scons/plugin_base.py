@@ -17,12 +17,12 @@ from SCons.Script import Builder
 from apio.common.apio_console import cout
 from apio.common.apio_styles import SUCCESS
 from apio.scons.apio_env import ApioEnv
-from apio.common.apio_consts import TARGET
 from apio.common.proto.apio_pb2 import GraphOutputType
 from apio.scons.plugin_util import (
     SRC_SUFFIXES,
     verilog_src_scanner,
     get_constraint_file,
+    get_define_flags,
 )
 
 
@@ -105,8 +105,6 @@ class PluginBase:
         """Creates and returns the yosys dot builder. Should be called
         only when serving the graph command."""
 
-        # pylint: disable=consider-using-f-string
-
         # -- Sanity checks
         assert self.apio_env.targeting("graph")
         assert self.apio_env.params.target.HasField("graph")
@@ -128,11 +126,12 @@ class PluginBase:
             # See https://tinyurl.com/yosys-sv-graph
             action=(
                 'yosys -p "read_verilog -sv $SOURCES; show -format dot'
-                ' -colors 1 -prefix {0} {1}" {2}'
+                ' -colors 1 -prefix {0} {1}" {2} {3}'
             ).format(
-                TARGET,
+                apio_env.target,
                 top_module,
                 "" if params.verbosity.all else "-q",
+                get_define_flags(apio_env),
             ),
             suffix=".dot",
             src_suffix=SRC_SUFFIXES,
@@ -164,7 +163,9 @@ class PluginBase:
         def completion_action(source, target, env):  # noqa
             """Action function that prints a completion message."""
             _ = (source, target, env)  # Unused
-            cout(f"Generated {TARGET}.{type_str}", style=SUCCESS, nl="")
+            cout(
+                f"Generated {apio_env.target}.{type_str}", style=SUCCESS, nl=""
+            )
 
         actions = [
             f"dot -T{type_str} $SOURCES -o $TARGET",
