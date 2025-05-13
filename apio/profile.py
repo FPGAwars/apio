@@ -228,8 +228,10 @@ class Profile:
             cout(f"Fetching remote config from '{self.remote_config_url}'")
 
         # -- Fetch the version info.
+        # -- With timeout = 5, this failed a few times on github workflow
+        # -- tests so increased to 10.
         resp: requests.Response = requests.get(
-            self.remote_config_url, timeout=5
+            self.remote_config_url, timeout=10
         )
 
         # -- Exit if http error.
