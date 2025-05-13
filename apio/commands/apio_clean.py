@@ -154,7 +154,7 @@ def cli(
 
     # -- Handle clean env.
     else:
-        cout(f"Cleaning {env_name}")
+        cout(f"Cleaning env '{env_name}'")
         candidates.append(str(build_env_path))
 
     # -- Delete the candidates if exists and if build build all dir
