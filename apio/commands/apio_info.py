@@ -147,20 +147,20 @@ with options that are shared between envs and a section called apio which \
 allow to define the default env.
 
 Example:[code]
-  # Optional \\[apio] section.
+  ; Optional \\[apio] section.
   \\[apio]
   default-env = env2
 
-  # Optional \\[common] section.
+  ; Optional \\[common] section.
   \\[common]
   board = alhambra-ii
   top-module = main
 
-  # Required first env section.
+  ; Required first env section.
   \\[env:env1]
   default-testbench = main_tb.v
 
-  # Optional additional env section(s).
+  ; Optional additional env section(s).
   \\[env:env2]
   default-testbench = io_module_tb.v[/code]
 
