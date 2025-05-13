@@ -122,9 +122,12 @@ def cli(
     """
 
     # -- Create the apio context.
+    # -- We suppress the message with the env and board names since it's
+    # -- not relevant for this command.
     apio_ctx = ApioContext(
         scope=ApioContextScope.PROJECT_REQUIRED,
         project_dir_arg=project_dir,
+        report_env=False,
     )
 
     # -- Change to the project's folder.

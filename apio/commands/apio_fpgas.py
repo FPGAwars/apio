@@ -177,8 +177,12 @@ def cli(
 
     # -- Create the apio context. If project dir has a fpgas.jsonc file,
     # -- it will be loaded instead of the apio's standard file.
+    # -- We suppress the message with the env and board names since it's
+    # -- not relevant for this command.
     apio_ctx = ApioContext(
-        scope=ApioContextScope.PROJECT_OPTIONAL, project_dir_arg=project_dir
+        scope=ApioContextScope.PROJECT_OPTIONAL,
+        project_dir_arg=project_dir,
+        report_env=False,
     )
 
     list_fpgas(apio_ctx, verbose)

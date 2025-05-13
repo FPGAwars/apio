@@ -16,7 +16,7 @@ from datetime import datetime
 from google.protobuf import text_format
 from apio.common import apio_console
 from apio.common.apio_console import cout, cerror, cstyle
-from apio.common.apio_styles import SUCCESS, ERROR, EMPH1, EMPH3
+from apio.common.apio_styles import SUCCESS, ERROR, EMPH3
 from apio.utils import util, pkg_util
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
@@ -387,21 +387,6 @@ class SCons:
         # -- Read the time (for measuring how long does it take
         # -- to execute the apio command)
         start_time = time.time()
-
-        # -- Env name string in color
-        styled_env_name = cstyle(
-            scons_params.apio_env_params.env_name, style=EMPH1
-        )
-
-        # -- Board name string in color
-        styled_board_id = cstyle(
-            scons_params.apio_env_params.board_id, style=EMPH1
-        )
-
-        # -- Print information on the console
-        cout(
-            f"Processing apio env {styled_env_name} (board {styled_board_id})"
-        )
 
         # -- Print a horizontal line
         cout("-" * terminal_width)

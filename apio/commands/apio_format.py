@@ -103,7 +103,7 @@ def cli(
 
     # -- Prepare the packages for use.
     installer.install_missing_packages_on_the_fly(apio_ctx)
-    pkg_util.set_env_for_packages(apio_ctx)
+    pkg_util.set_env_for_packages(apio_ctx, quiet=not verbose)
 
     # -- Convert the tuple with file names into a list.
     files: List[str] = list(files)
@@ -150,6 +150,8 @@ def cli(
             sys.exit(1)
 
         # -- Print file name.
+        if verbose:
+            cout()
         styled_f = cstyle(f, style=EMPH3)
         cout(f"Formatting {styled_f}")
 

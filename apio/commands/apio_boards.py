@@ -187,9 +187,12 @@ def cli(
 
     # -- Create the apio context. If the project exists, it's custom
     # -- boards.jsonc is also loaded.
+    # -- We suppress the message with the env and board names since it's
+    # -- not relevant for this command.
     apio_ctx = ApioContext(
         scope=ApioContextScope.PROJECT_OPTIONAL,
         project_dir_arg=project_dir,
+        report_env=False,
     )
 
     list_boards(apio_ctx, verbose)
