@@ -56,8 +56,6 @@ class PluginEcp5(PluginBase):
     def synth_builder(self) -> BuilderBase:
         """Creates and returns the synth builder."""
 
-        # pylint: disable=consider-using-f-string
-
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params
@@ -81,8 +79,6 @@ class PluginEcp5(PluginBase):
     # @overrides
     def pnr_builder(self) -> BuilderBase:
         """Creates and returns the pnr builder."""
-
-        # pylint: disable=consider-using-f-string
 
         # -- Keep short references.
         apio_env = self.apio_env
@@ -116,8 +112,6 @@ class PluginEcp5(PluginBase):
     # @overrides
     def bitstream_builder(self) -> BuilderBase:
         """Creates and returns the bitstream builder."""
-
-        # pylint: disable=consider-using-f-string
 
         return Builder(
             action="ecppack --compress --db {0} $SOURCE $TARGET".format(

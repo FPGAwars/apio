@@ -231,8 +231,6 @@ def verilator_lint_action(
     * lib_files: Optional additional files to include.
     """
 
-    # pylint: disable=consider-using-f-string
-
     # -- Sanity checks
     assert apio_env.targeting("lint")
     assert apio_env.params.target.HasField("lint")
@@ -289,8 +287,6 @@ def waves_target(
     vcd_file_target is the simulator target that generated the vcd file
     with the signals. Returns the new targets.
     """
-
-    # pylint: disable=consider-using-f-string
 
     # -- Construct the commands list.
     commands = []
@@ -704,7 +700,6 @@ def iverilog_action(
     """
 
     # pylint: disable=too-many-arguments
-    # pylint: disable=consider-using-f-string
 
     # Escaping for windows. '\' -> '\\'
     escaped_vcd_output_name = vcd_output_name.replace("\\", "\\\\")

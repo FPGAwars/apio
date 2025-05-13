@@ -53,8 +53,6 @@ class PluginGowin(PluginBase):
     def synth_builder(self) -> BuilderBase:
         """Creates and returns the synth builder."""
 
-        # pylint: disable=consider-using-f-string
-
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params
@@ -78,8 +76,6 @@ class PluginGowin(PluginBase):
     # @overrides
     def pnr_builder(self) -> BuilderBase:
         """Creates and returns the pnr builder."""
-
-        # pylint: disable=consider-using-f-string
 
         # -- Keep short references.
         apio_env = self.apio_env
@@ -112,8 +108,6 @@ class PluginGowin(PluginBase):
     # @overrides
     def bitstream_builder(self) -> BuilderBase:
         """Creates and returns the bitstream builder."""
-
-        # pylint: disable=consider-using-f-string
 
         return Builder(
             action="gowin_pack -d {0} -o $TARGET $SOURCE".format(

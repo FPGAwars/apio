@@ -105,8 +105,6 @@ class PluginBase:
         """Creates and returns the yosys dot builder. Should be called
         only when serving the graph command."""
 
-        # pylint: disable=consider-using-f-string
-
         # -- Sanity checks
         assert self.apio_env.targeting("graph")
         assert self.apio_env.params.target.HasField("graph")
