@@ -168,5 +168,5 @@ def cli(
             return exit_code
 
     # -- All done ok.
-    cout(f"Formatted {util.plurality(files, 'file')}.", style=SUCCESS)
+    cout(f"Processed {util.plurality(files, 'file')}.", style=SUCCESS)
     sys.exit(0)
