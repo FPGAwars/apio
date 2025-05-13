@@ -150,8 +150,6 @@ def cli(
             sys.exit(1)
 
         # -- Print file name.
-        if verbose:
-            cout()
         styled_f = cstyle(f, style=EMPH3)
         cout(f"Formatting {styled_f}")
 
