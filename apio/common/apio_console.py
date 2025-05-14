@@ -200,11 +200,16 @@ def cout(
         if not console().color_system:
             text_line = cunstyle(text_line)
 
-        # -- Determine end of line
-        end = "\n" if nl else ""
+        # -- Write it out using the given style but without line break..
+        console().out(text_line, style=style, highlight=False, end=None)
 
-        # -- Write it out using the given style.
-        console().out(text_line, style=style, highlight=False, end=end)
+        # -- If needed, write the line break. By writing the line break in
+        # -- a separate call, we force the console().out() call above to
+        # -- reset the colors before the line break rather than after. This
+        # -- caused an additional blank lines after a colored fatal error
+        # -- messages from scons.
+        if nl:
+            console().out("")
 
 
 def cerror(*text_lines: str) -> None:
