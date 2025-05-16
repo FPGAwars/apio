@@ -379,8 +379,10 @@ Usage: apio drivers list ftdi [OPTIONS]
   run the command 'snap connect apio:raw-usb' once to grant the
   necessary permissions to access USB devices.
 
-  [Hint] This command uses the lsftdi utility, which can also be invoked
-  directly with the 'apio raw -- lsftdi ...' command.
+  [Hint] This command invokes the command below and displays its output
+  in a table form:
+
+    'apio raw -- openFPGALoader --scan-usb
 
 Options:
   -h, --help  Show this message and exit.

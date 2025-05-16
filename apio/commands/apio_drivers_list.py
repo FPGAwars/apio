@@ -9,12 +9,73 @@
 
 import sys
 import click
+from rich.table import Table
+from rich import box
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 from apio.managers.system import System
+from apio.managers import installer
+from apio.common.apio_console import cout, cprint
+from apio.common.apio_styles import BORDER, SUCCESS, ERROR, EMPH3
+from apio.utils import pkg_util, ftdi_util, util
 
 
 # -- apio drivers list ftdi
+
+
+def _list_ftdi_devices(apio_ctx: ApioContext) -> None:
+    """Lists the connected FTDI devices in table format."""
+
+    installer.install_missing_packages_on_the_fly(apio_ctx)
+    pkg_util.set_env_for_packages(apio_ctx, quiet=True)
+
+    devices = ftdi_util.get_devices()
+
+    # -- If not found, print a message and exit.
+    if not devices:
+        cout("No devices found.", style=ERROR)
+        return
+
+    # -- Define the table.
+    table = Table(
+        show_header=True,
+        show_lines=True,
+        box=box.SQUARE,
+        border_style=BORDER,
+    )
+
+    # -- Add columns
+    table.add_column("INDEX", no_wrap=True, justify="center")
+    table.add_column("TYPE", no_wrap=True)
+    table.add_column("MANUFACTURER", no_wrap=True, style=EMPH3)
+    table.add_column("DESCRIPTION", no_wrap=True, style=EMPH3)
+    table.add_column("VID", no_wrap=True)
+    table.add_column("PID", no_wrap=True)
+    table.add_column("SERIAL", no_wrap=True)
+    table.add_column("BUS", no_wrap=True, justify="center")
+    table.add_column("DEVICE", no_wrap=True, justify="center")
+
+    # -- Add a raw per device
+    for device in devices:
+        values = []
+        values.append(str(device.index))
+        values.append(device.type)
+        values.append(device.manufacturer)
+        values.append(device.description)
+        values.append(device.vendor_id)
+        values.append(device.product_id)
+        values.append(device.serial_code)
+        values.append(str(device.bus))
+        values.append(str(device.device))
+
+        # -- Add row.
+        table.add_row(*values)
+
+    # -- Render the table.
+    cout()
+    cprint(table)
+    cout(f"Found {util.plurality(devices, "device")}", style=SUCCESS)
+
 
 # -- Text in the rich-text format of the python rich library.
 APIO_DRIVERS_LIST_FTDI_HELP = """
@@ -29,8 +90,10 @@ Examples:[code]
 manager, run the command 'snap connect apio:raw-usb' once \
 to grant the necessary permissions to access USB devices.
 
-[Hint] This command uses the lsftdi utility, which can also be invoked \
-directly with the 'apio raw -- lsftdi ...' command.
+[Hint] This command invokes the command below and displays its output in a \
+table form:
+
+[code]  'apio raw -- openFPGALoader --scan-usb[code]
 """
 
 
@@ -46,12 +109,9 @@ def _ftdi_cli():
     # Create the apio context.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
-    # -- Create the system object
-    system = System(apio_ctx)
-
     # -- List all connected ftdi devices
-    exit_code = system.lsftdi()
-    sys.exit(exit_code)
+    _list_ftdi_devices(apio_ctx)
+    sys.exit(0)
 
 
 # -- apio drivers list serial

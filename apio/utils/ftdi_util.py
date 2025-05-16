@@ -7,6 +7,7 @@ from typing import List, Tuple
 from dataclasses import dataclass
 from apio.common.apio_console import cout, cerror
 from apio.common.apio_styles import INFO
+from apio.utils import snap_util
 
 
 # -- A regex to parse the header field titles. Each field title includes
@@ -25,11 +26,13 @@ class DeviceInfo:
 
     # pylint: disable=too-many-instance-attributes
 
+    # -- The fields in the order they appear in the 'openFPGAList --scan-usb'
+    # -- output which is different from the order in which we print them.
     index: int
     bus: int
-    dev: int
-    vid: str
-    pid: str
+    device: int
+    vendor_id: str
+    product_id: str
     type: str
     manufacturer: str
     serial_code: str
@@ -39,9 +42,9 @@ class DeviceInfo:
         """Dump the device info. For debugging."""
         print(f"Device             [{self.index}]")
         print(f"    bus:           [{self.bus}]")
-        print(f"    dev:           [{self.dev}]")
-        print(f"    vid:           [{self.vid}]")
-        print(f"    pid:           [{self.pid}]")
+        print(f"    dev:           [{self.device}]")
+        print(f"    vid:           [{self.vendor_id}]")
+        print(f"    pid:           [{self.product_id}]")
         print(f"    type:          [{self.type}]")
         print(f"    manufacturer:  [{self.manufacturer}]")
         print(f"    serial_code:   [{self.serial_code}]")
@@ -212,9 +215,9 @@ def _get_devices_from_text(text: str) -> DeviceInfo:
         device = DeviceInfo(
             index=index,
             bus=int(bus),
-            dev=int(dev),
-            vid=vid,
-            pid=pid,
+            device=int(dev),
+            vendor_id=vid,
+            product_id=pid,
             type=type_str,
             manufacturer=manufacturer,
             serial_code=serial_code,
@@ -245,6 +248,17 @@ def get_devices() -> List[DeviceInfo]:
             "The command 'openFPGALoader --scan-usb' failed with "
             f"error code {result.returncode}"
         )
+        cout(
+            "[Hint]: Some platforms require ftdi driver installation "
+            "using 'apio drivers install ftdi'.",
+            style=INFO,
+        )
+        if snap_util.is_snap():
+            cout(
+                "[Hint]: Snap applications may require "
+                "'snap connect apio:raw-usb' to access USB devices.",
+                style=INFO,
+            )
         sys.exit(1)
 
     # -- Parse the output text into a list of devices and return.

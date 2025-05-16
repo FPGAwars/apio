@@ -68,18 +68,6 @@ class System:  # pragma: no cover
 
         return result.exit_code if result else 1
 
-    def lsftdi(self) -> int:
-        """Runs the lsftdi command. Returns exit code."""
-
-        result = self._run_command("lsftdi", silent=True)
-
-        if result.exit_code != 0:
-            # -- Print error message and exit.
-            self._lsftdi_fatal_error(result)
-
-        cout(result.out_text)
-        return 0
-
     def lsserial(self) -> int:
         """List the serial ports. Returns exit code."""
 
