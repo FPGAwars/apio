@@ -41,7 +41,7 @@ def test_text_with_devices():
         devices = ftdi_util._get_devices_from_text(text)
 
         expected = [
-            ftdi_util.DeviceInfo(
+            ftdi_util.FtdiDeviceInfo(
                 index=0,
                 bus=0,
                 device=1,
@@ -52,7 +52,7 @@ def test_text_with_devices():
                 serial_code="",
                 description="Alhambra II v1.0A - B09-335",
             ),
-            ftdi_util.DeviceInfo(
+            ftdi_util.FtdiDeviceInfo(
                 index=1,
                 bus=1,
                 device=1,
@@ -63,7 +63,7 @@ def test_text_with_devices():
                 serial_code="FT94RQ8V",
                 description="UPduino v3.1c",
             ),
-            ftdi_util.DeviceInfo(
+            ftdi_util.FtdiDeviceInfo(
                 index=2,
                 bus=2,
                 device=1,

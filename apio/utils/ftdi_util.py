@@ -21,7 +21,7 @@ HEADER_REGEX = re.compile(
 
 
 @dataclass()
-class DeviceInfo:
+class FtdiDeviceInfo:
     """A data class to hold the information of a single FTDI device."""
 
     # pylint: disable=too-many-instance-attributes
@@ -168,7 +168,7 @@ def _extract_field(
     return value
 
 
-def _get_devices_from_text(text: str) -> DeviceInfo:
+def _get_devices_from_text(text: str) -> FtdiDeviceInfo:
     """Parse the devices information from an output text of the command
     'openFPGALoader --scan-usb'."""
 
@@ -212,7 +212,7 @@ def _get_devices_from_text(text: str) -> DeviceInfo:
         pid = tokens[1][2:]
 
         # -- Construct the device info.
-        device = DeviceInfo(
+        device = FtdiDeviceInfo(
             index=index,
             bus=int(bus),
             device=int(dev),
@@ -229,7 +229,7 @@ def _get_devices_from_text(text: str) -> DeviceInfo:
     return devices
 
 
-def get_devices() -> List[DeviceInfo]:
+def scan_ftdi_devices() -> List[FtdiDeviceInfo]:
     """Run 'openFPGALoader --scan-usb' and return its results as a list of
     device info objects. This functions requires the apio shell vars to be
     set such that openFPGALoader is on the path."""
@@ -271,7 +271,7 @@ def get_devices() -> List[DeviceInfo]:
 # -- For testing with actual boards.
 # -- Make sure 'openFPGALoader is on the path.
 if __name__ == "__main__":
-    devices_ = get_devices()
+    devices_ = scan_ftdi_devices()
     for device_ in devices_:
         print()
         device_.dump()

@@ -6,29 +6,13 @@
 # -- Author Jesús Arroyo
 # -- License GPLv2
 
-from dataclasses import dataclass
 import re
-import sys
 from typing import List
-from apio.common.apio_console import cout, cerror
-from apio.common.apio_styles import INFO, ERROR, EMPH1
-from apio.utils import util, pkg_util, snap_util
+from apio.common.apio_console import cout
+from apio.common.apio_styles import ERROR, EMPH1
+from apio.utils import util, pkg_util
 from apio.apio_context import ApioContext
 from apio.managers import installer
-
-
-@dataclass(frozen=True)
-class FtdiDevice:
-    """Class to represent a parsed FTDI device from lsftdi output."""
-
-    ftdi_idx: int
-    manufacturer: str
-    description: str
-
-    def __post_init__(self):
-        assert isinstance(self.ftdi_idx, int)
-        assert isinstance(self.manufacturer, str)
-        assert isinstance(self.description, str)
 
 
 class System:  # pragma: no cover
@@ -38,31 +22,8 @@ class System:  # pragma: no cover
 
         self.apio_ctx = apio_ctx
 
-    def _lsftdi_fatal_error(self, result: util.CommandResult) -> None:
-        """Handles a failure of a 'lsftdi' command. Print message and exits."""
-        #
-        assert result.exit_code != 0, result
-        cout(result.out_text)
-        cerror("The 'lsftdi' command failed.", result.err_text)
-
-        # -- Hint the user about the need to install driver.
-        cout(
-            "[Hint]: Some platforms require ftdi driver installation "
-            "using 'apio drivers install ftdi'.",
-            style=INFO,
-        )
-        if snap_util.is_snap():
-            cout(
-                "[Hint]: Snap applications may require "
-                "'snap connect apio:raw-usb' to access USB devices.",
-                style=INFO,
-            )
-
-        # -- Exit with an error code.
-        sys.exit(1)
-
     def lsusb(self) -> int:
-        """Run the lsusb command. Returns exit code."""
+        """Run the lsusb command for its stdout output. Returns exit code."""
 
         result = self._run_command("lsusb", silent=False)
 
@@ -113,33 +74,6 @@ class System:  # pragma: no cover
 
         # -- Return the devices
         return usb_devices
-
-    def get_ftdi_devices(self) -> List[FtdiDevice]:
-        """Return a list of the connected FTDI devices
-         This list is obtained by running the "lsftdi" command
-
-        It raises an exception if the command lsftdi fails.
-        """
-
-        # -- Initial empty ftdi devices list
-        ftdi_devices = []
-
-        # -- Run the "lsftdi" command.
-        result = self._run_command("lsftdi", silent=True)
-
-        # -- Exit if error.
-        if result.exit_code != 0:
-            self._lsftdi_fatal_error(result)
-
-        # -- Extract the list of FTDI devices from the command output
-        ftdi_devices: List[FtdiDevice] = self._parse_lsftdi_devices(
-            result.out_text
-        )
-
-        # -- Return the devices
-        return ftdi_devices
-
-        # -- Print error message and exit.
 
     def _run_command(
         self, command: str, *, silent: bool
@@ -196,7 +130,7 @@ class System:  # pragma: no cover
         cout(line, style=ERROR)
 
     @staticmethod
-    def _parse_usb_devices(text: str) -> list:
+    def _parse_usb_devices(text: str) -> list[dict]:
         """Get a list of usb devices from the input string
         * INPUT: string that contains usb devices
             (Ex. "... 1d6b:0003 ... 8087:0aaa ...")
@@ -213,7 +147,7 @@ class System:  # pragma: no cover
         hwids = re.findall(pattern, text)
 
         # -- Output empty list
-        usb_devices = []
+        usb_devices: List[dict] = []
 
         # -- Build the list
         for hwid in hwids:
@@ -226,60 +160,3 @@ class System:  # pragma: no cover
 
         # -- Return the final list
         return usb_devices
-
-    @staticmethod
-    def _parse_lsftdi_devices(text: str) -> List[FtdiDevice]:
-        """Get a list of FTDI devices from the output text of lsftdi."""
-
-        # -- Dump for debugging.
-        if util.is_debug():
-            cout(f"lsftdi text:\n{text}")
-
-        num_pattern = r"Number\sof\sFTDI\sdevices\sfound:\s(?P<n>\d+?)\n"
-        match = re.search(num_pattern, text)
-        num = int(match.group("n")) if match else 0
-
-        # -- NOTE: Since the information of each device is spread over two
-        # -- lines, we extract the information by field rather than by device
-        # -- line. It's awkward, but it works.
-
-        # TODO: Change the output format from a list of dicts to a list of
-        # dataclass objects. Motivation is code quality.
-
-        index_pattern = r".*Checking\sdevice:\s(?P<index>.*?)\n.*"
-        indices = re.findall(index_pattern, text)
-
-        manufacturer_pattern = r".*Manufacturer:\s(?P<n>.*?),.*"
-        manufacturers = re.findall(manufacturer_pattern, text)
-
-        description_pattern = r".*Description:\s(?P<n>.*?)\n.*"
-        descriptions = re.findall(description_pattern, text)
-
-        # -- Dump for debugging.
-        if util.is_debug():
-            cout(f"Parsed num: {num}")
-            cout(f"Parsed indices: {indices}")
-            cout(f"Parsed manufacturers: {manufacturers}")
-            cout(f"Parsed descriptions: {descriptions}")
-            cout()
-
-        # -- Sanity checks.
-        assert num == len(indices), f"{num} != {len(indices)}"
-        assert num == len(manufacturers), f"{num} != {len(manufacturers)}"
-        assert num == len(descriptions), f"{num} != {len(descriptions)}"
-
-        # -- Create the list of FTDI devices.
-        ftdi_devices = []
-        for i in range(num):
-            ftdi_device = FtdiDevice(
-                ftdi_idx=int(indices[i]),
-                manufacturer=manufacturers[i],
-                description=descriptions[i],
-            )
-            ftdi_devices.append(ftdi_device)
-
-            # -- Dump the device info if in debug mode..
-            if util.is_debug():
-                cout(f"FTDI device: {ftdi_device}")
-
-        return ftdi_devices

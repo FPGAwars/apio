@@ -12,7 +12,8 @@ from typing import Optional, List
 from apio.common.apio_console import cout, cerror, cwarning
 from apio.common.apio_styles import INFO
 from apio.utils import util, pkg_util
-from apio.managers.system import System, FtdiDevice
+from apio.managers.system import System
+from apio.utils.ftdi_util import scan_ftdi_devices, FtdiDeviceInfo
 from apio.apio_context import ApioContext
 
 
@@ -89,9 +90,7 @@ def construct_programmer_cmd(
         _check_usb(apio_ctx, board, board_info)
 
         # -- Get the FTDI index of the connected board
-        device_ftdi_idx = _get_ftdi_idx(
-            apio_ctx, board, board_info, ftdi_idx_arg
-        )
+        device_ftdi_idx = _get_ftdi_idx(board, board_info, ftdi_idx_arg)
 
         if util.is_debug():
             cout(f"FTDI index: {device_ftdi_idx}")
@@ -415,9 +414,7 @@ def _check_tinyprog(board_info: dict, port: str) -> bool:
     return False
 
 
-def _get_ftdi_idx(
-    apio_ctx: ApioContext, board: str, board_info, ftdi_idx_arg: Optional[int]
-) -> int:
+def _get_ftdi_idx(board: str, board_info, ftdi_idx_arg: Optional[int]) -> int:
     """Get the FTDI index of the detected board
 
     * INPUT:
@@ -431,9 +428,7 @@ def _get_ftdi_idx(
     """
 
     # -- Search device description matching.
-    ftdi_idx: Optional[int] = _check_ftdi(
-        apio_ctx, board, board_info, ftdi_idx_arg
-    )
+    ftdi_idx: Optional[int] = _check_ftdi(board, board_info, ftdi_idx_arg)
 
     # -- No matching FTDI board connected
     if ftdi_idx is None:
@@ -450,7 +445,6 @@ def _get_ftdi_idx(
 
 
 def _check_ftdi(
-    apio_ctx: ApioContext,
     board: str,
     board_info: dict,
     ftdi_idx_arg: Optional[int],
@@ -485,10 +479,8 @@ def _check_ftdi(
     # --   $  --> End of string
     desc_pattern = f"^{board_desc}.*$"
 
-    # -- Get the list of the connected FTDI devices
-    # -- (execute the command "lsftdi" from the apio System module)
-    system = System(apio_ctx)
-    connected_devices: List[FtdiDevice] = system.get_ftdi_devices()
+    # -- Get the list of the connected FTDI devices.
+    connected_devices: List[FtdiDeviceInfo] = scan_ftdi_devices()
 
     # -- No FTDI devices detected --> Error!
     if not connected_devices:
@@ -501,7 +493,7 @@ def _check_ftdi(
 
         # -- Get the FTDI index
         # -- Ex: '0'
-        ftdi_idx: int = ftdi_device.ftdi_idx
+        ftdi_idx: int = ftdi_device.index
 
         # If the --ftdi-idx options is set, we consider only the device
         # with given index in the lsftdi output. This is useful in case

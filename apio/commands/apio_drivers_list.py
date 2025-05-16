@@ -29,7 +29,7 @@ def _list_ftdi_devices(apio_ctx: ApioContext) -> None:
     installer.install_missing_packages_on_the_fly(apio_ctx)
     pkg_util.set_env_for_packages(apio_ctx, quiet=True)
 
-    devices = ftdi_util.get_devices()
+    devices = ftdi_util.scan_ftdi_devices()
 
     # -- If not found, print a message and exit.
     if not devices:
