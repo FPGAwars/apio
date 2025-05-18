@@ -22,13 +22,6 @@ class System:  # pragma: no cover
 
         self.apio_ctx = apio_ctx
 
-    def lsusb(self) -> int:
-        """Run the lsusb command for its stdout output. Returns exit code."""
-
-        result = self._run_command("lsusb", silent=False)
-
-        return result.exit_code if result else 1
-
     def lsserial(self) -> int:
         """List the serial ports. Returns exit code."""
 
