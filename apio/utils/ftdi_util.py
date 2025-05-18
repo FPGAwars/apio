@@ -1,11 +1,11 @@
-"""FTDI device related utilities."""
+"""FTDI devices related utilities."""
 
 import re
 import sys
 import subprocess
-from typing import List, Tuple, Optional
+from typing import List, Tuple
 from dataclasses import dataclass
-from apio.common.apio_console import cout, cerror
+from apio.common.apio_console import cout, cerror, configure
 from apio.common.apio_styles import INFO
 from apio.utils import snap_util
 
@@ -39,14 +39,14 @@ class FtdiDeviceInfo:
 
     def dump(self):
         """Dump the device info. For debugging."""
-        print(f"    bus:           [{self.bus}]")
-        print(f"    dev:           [{self.device}]")
-        print(f"    vid:           [{self.vendor_id}]")
-        print(f"    pid:           [{self.product_id}]")
-        print(f"    type:          [{self.type}]")
-        print(f"    manufacturer:  [{self.manufacturer}]")
-        print(f"    serial_code:   [{self.serial_code}]")
-        print(f"    descripition:  [{self.description}]")
+        cout(f"    bus:           [{self.bus}]")
+        cout(f"    dev:           [{self.device}]")
+        cout(f"    vid:           [{self.vendor_id}]")
+        cout(f"    pid:           [{self.product_id}]")
+        cout(f"    type:          [{self.type}]")
+        cout(f"    manufacturer:  [{self.manufacturer}]")
+        cout(f"    serial_code:   [{self.serial_code}]")
+        cout(f"    descripition:  [{self.description}]")
 
 
 def _locate_header_fields_starts(header_line: str) -> List[int]:
@@ -326,17 +326,18 @@ class FtdiDeviceFilter:
         return True
 
     def filter(self, devices: List[FtdiDeviceInfo]):
-        # -- Return a copy of the devices list with devices that passe the
-        # -- filter. The order is preserved.
+        """Return a copy of the list with items that are pass this filter.
+        Items order is preserved."""
         result = [d for d in devices if self._eval(d)]
         return result
 
 
 # -- For testing with actual boards.
-# -- Make sure 'openFPGALoader is on the path.
+# -- Make sure 'openFPGALoader' is on the path.
 if __name__ == "__main__":
+    configure()
     devices_ = scan_ftdi_devices()
     for device_ in devices_:
-        print()
+        cout()
         device_.dump()
-        print()
+        cout()

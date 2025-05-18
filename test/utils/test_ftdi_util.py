@@ -36,8 +36,6 @@ PROGRAM_TYPE_TITLES = ["probe type", "probe_type"]
 def test_text_with_devices():
     """Test parsing of 'openFPGALoader --scan-usb' text that contains devices."""
 
-    # pylint: disable=protected-access
-
     for title in PROGRAM_TYPE_TITLES:
         print(f"{title=}")
 
@@ -85,7 +83,6 @@ def test_text_without_devices():
     """Test parsing of 'openFPGALoader --scan-usb' text that contains
     no devices."""
 
-    # pylint: disable=protected-access
     # pylint: disable=use-implicit-booleaness-not-comparison
 
     for title in ["probe type", "probe_type"]:
@@ -99,6 +96,7 @@ def test_text_without_devices():
 
 
 def test_filter_ftdi_devices():
+    """Test the filtering function."""
     last_bus = -1
 
     # -- A helper function to generate fake devices.
@@ -108,6 +106,7 @@ def test_filter_ftdi_devices():
         serial_code: str,
         description: str,
     ) -> FtdiDeviceInfo:
+        """A helper function to create fake a FtdiDeviceInfo."""
         nonlocal last_bus
         last_bus += 1
         return FtdiDeviceInfo(
@@ -122,62 +121,54 @@ def test_filter_ftdi_devices():
         )
 
     # -- Create a list of fake devices.
-    devices: List[FtdiDeviceInfo] = [
-        device("0403", "6010", "SER01", "Description 0001"),
-        device("0410", "6020", "SER02", "Description 0002"),
-        device("0403", "6020", "SER03", "Description 0003"),
-        device("0403", "6010", "SER04", "Description 0001"),
-        device("0410", "6020", "SER05", "Description 0002"),
-        device("0403", "6020", "SER06", "Description 0003"),
-        device("0403", "6010", "SER07", "Description 0001"),
-        device("0410", "6020", "SER08", "Description 0002"),
-        device("0403", "6020", "SER09", "Description 0003"),
+    devs: List[FtdiDeviceInfo] = [
+        device("0403", "6010", "SER01", "Description 0001"),  # devs[0]
+        device("0410", "6020", "SER02", "Description 0002"),  # devs[1]
+        device("0403", "6020", "SER03", "Description 0003"),  # devs[2]
+        device("0403", "6010", "SER04", "Description 0001"),  # devs[3]
+        device("0410", "6020", "SER05", "Description 0002"),  # devs[4]
+        device("0403", "6020", "SER06", "Description 0003"),  # devs[5]
+        device("0403", "6010", "SER07", "Description 0001"),  # devs[6]
+        device("0410", "6020", "SER08", "Description 0002"),  # devs[7]
+        device("0403", "6020", "SER09", "Description 0003"),  # devs[8]
     ]
 
     # -- All filtering disabled.
-    filtered = FtdiDeviceFilter().filter(devices)
-    assert filtered == devices
+    filtered = FtdiDeviceFilter().filter(devs)
+    assert filtered == devs
 
     # -- Filter by VID.
-    filtered = FtdiDeviceFilter().vendor_id("9999").filter(devices)
+    filtered = FtdiDeviceFilter().vendor_id("9999").filter(devs)
     assert filtered == []
 
-    filtered = FtdiDeviceFilter().vendor_id("0403").filter(devices)
-    serials = [f.serial_code for f in filtered]
-    assert serials == ["SER01", "SER03", "SER04", "SER06", "SER07", "SER09"]
+    filtered = FtdiDeviceFilter().vendor_id("0403").filter(devs)
+    assert filtered == [devs[0], devs[2], devs[3], devs[5], devs[6], devs[8]]
 
     # # -- Filter by PID
-    filtered = FtdiDeviceFilter().product_id("9999").filter(devices)
+    filtered = FtdiDeviceFilter().product_id("9999").filter(devs)
     assert filtered == []
 
-    filtered = FtdiDeviceFilter().product_id("6020").filter(devices)
-    serials = [f.serial_code for f in filtered]
-    assert serials == ["SER02", "SER03", "SER05", "SER06", "SER08", "SER09"]
+    filtered = FtdiDeviceFilter().product_id("6020").filter(devs)
+    assert filtered == [devs[1], devs[2], devs[4], devs[5], devs[7], devs[8]]
 
     # -- Filter by serial code.
-    filtered = FtdiDeviceFilter().serial_code("9999").filter(devices)
+    filtered = FtdiDeviceFilter().serial_code("9999").filter(devs)
     assert filtered == []
 
-    filtered = FtdiDeviceFilter().serial_code("SER05").filter(devices)
-    serials = [f.serial_code for f in filtered]
-    assert serials == ["SER05"]
+    filtered = FtdiDeviceFilter().serial_code("SER05").filter(devs)
+    assert filtered == [devs[4]]
 
     # -- Filter by description regex. Note that the regex need to match
     # -- from the begining of the description.
-    filtered = (
-        FtdiDeviceFilter().description_regex("scription").filter(devices)
-    )
-    assert filtered == devices
+    filtered = FtdiDeviceFilter().description_regex("scription").filter(devs)
+    assert filtered == devs
 
     filtered = (
-        FtdiDeviceFilter()
-        .description_regex("^Description 0003")
-        .filter(devices)
+        FtdiDeviceFilter().description_regex("^Description 0003").filter(devs)
     )
-    serials = [f.serial_code for f in filtered]
-    assert serials == ["SER03", "SER06", "SER09"]
+    assert filtered == [devs[2], devs[5], devs[8]]
 
-    filtered = FtdiDeviceFilter().description_regex("^0003").filter(devices)
+    filtered = FtdiDeviceFilter().description_regex("^0003").filter(devs)
     assert filtered == []
 
     filtered = (
@@ -186,7 +177,6 @@ def test_filter_ftdi_devices():
         .product_id("6020")
         .serial_code("SER06")
         .description_regex("0003")
-        .filter(devices)
+        .filter(devs)
     )
-    serials = [f.serial_code for f in filtered]
-    assert serials == ["SER06"]
+    assert filtered == [devs[5]]
