@@ -418,15 +418,21 @@ Options:
 ```
 Usage: apio drivers list usb [OPTIONS]
 
-  The command 'apio drivers list usb' runs the lsusb utility to list the
-  USB devices connected to your computer. It is typically used for
-  diagnosing  connectivity issues with FPGA boards.
+  The command 'apio drivers list usb' displays the USB devices currently
+  connected to your computer. It is useful for diagnosing FPGA board
+  connectivity issues.
 
   Examples:
-    apio drivers list usb    # List the usb devices
+    apio drivers list usb    # List the usb devices.
 
-  [Hint] You can also run the lsusb utility using the command 'apio raw
-  -- lsusb ...'.
+  [Note] When apio is installed on Linux using the Snap package manager,
+  run the command 'snap connect apio:raw-usb' once to grant the
+  necessary permissions to access USB devices.
+
+  [Hint] This command invokes the command below and displays its output
+  in a table form:
+
+    'apio raw -- lsusb
 
 Options:
   -h, --help  Show this message and exit.

@@ -17,7 +17,7 @@ from apio.managers.system import System
 from apio.managers import installer
 from apio.common.apio_console import cout, cprint
 from apio.common.apio_styles import BORDER, SUCCESS, ERROR, EMPH3
-from apio.utils import pkg_util, ftdi_util, util
+from apio.utils import pkg_util, ftdi_util, usb_util, util
 
 
 # -- apio drivers list ftdi
@@ -33,7 +33,7 @@ def _list_ftdi_devices(apio_ctx: ApioContext) -> None:
 
     # -- If not found, print a message and exit.
     if not devices:
-        cout("No devices found.", style=ERROR)
+        cout("No FTDI devices found.", style=ERROR)
         return
 
     # -- Define the table.
@@ -42,6 +42,8 @@ def _list_ftdi_devices(apio_ctx: ApioContext) -> None:
         show_lines=True,
         box=box.SQUARE,
         border_style=BORDER,
+        title="FTDI Devices",
+        title_justify="left",
     )
 
     # -- Add columns
@@ -72,7 +74,7 @@ def _list_ftdi_devices(apio_ctx: ApioContext) -> None:
     # -- Render the table.
     cout()
     cprint(table)
-    cout(f"Found {util.plurality(devices, "device")}", style=SUCCESS)
+    cout(f"Found {util.plurality(devices, 'device')}", style=SUCCESS)
 
 
 # -- Text in the rich-text format of the python rich library.
@@ -91,7 +93,7 @@ to grant the necessary permissions to access USB devices.
 [Hint] This command invokes the command below and displays its output in a \
 table form:
 
-[code]  'apio raw -- openFPGALoader --scan-usb[code]
+[code]  apio raw -- openFPGALoader --scan-usb[code]
 """
 
 
@@ -149,17 +151,72 @@ def _serial_cli():
 
 # --- apio drivers list usb
 
+
+def _list_usb_devices(apio_ctx: ApioContext) -> None:
+    """Lists the connected USB devices in table format."""
+
+    installer.install_missing_packages_on_the_fly(apio_ctx)
+    pkg_util.set_env_for_packages(apio_ctx, quiet=True)
+
+    devices = usb_util.scan_usb_devices()
+
+    # -- If not found, print a message and exit.
+    if not devices:
+        cout("No USB devices found.", style=ERROR)
+        return
+
+    # -- Define the table.
+    table = Table(
+        show_header=True,
+        show_lines=True,
+        box=box.SQUARE,
+        border_style=BORDER,
+        title="USB Devices",
+        title_justify="left",
+    )
+
+    # -- Add columns
+    table.add_column("VID", no_wrap=True, style=EMPH3)
+    table.add_column("PID", no_wrap=True, style=EMPH3)
+    table.add_column("BUS", no_wrap=True, justify="center")
+    table.add_column("DEVICE", no_wrap=True, justify="center")
+    table.add_column("PATH", no_wrap=True, justify="center")
+
+    # -- Add a raw per device
+    for device in devices:
+        values = []
+        values.append(device.vendor_id)
+        values.append(device.product_id)
+        values.append(str(device.bus))
+        values.append(str(device.device))
+        values.append(str(device.path))
+
+        # -- Add row.
+        table.add_row(*values)
+
+    # -- Render the table.
+    cout()
+    cprint(table)
+    cout(f"Found {util.plurality(devices, 'USB device')}", style=SUCCESS)
+
+
 # -- Text in the rich-text format of the python rich library.
 APIO_DRIVERS_LIST_USB_HELP = """
-The command 'apio drivers list usb' runs the lsusb utility to list the USB \
-devices connected to your computer. It is typically used for diagnosing  \
-connectivity issues with FPGA boards.
+The command 'apio drivers list usb' displays the USB devices currently \
+connected to your computer. It is useful for diagnosing FPGA board \
+connectivity issues.
 
 Examples:[code]
-  apio drivers list usb    # List the usb devices[/code]
+  apio drivers list usb    # List the usb devices.[/code]
 
-[b][Hint][/b] You can also run the lsusb utility using the command \
-'apio raw -- lsusb ...'.
+[Note] When apio is installed on Linux using the Snap package \
+manager, run the command 'snap connect apio:raw-usb' once \
+to grant the necessary permissions to access USB devices.
+
+[Hint] This command invokes the command below and displays its output in a \
+table form:
+
+[code]  apio raw -- lsusb[code]
 """
 
 
@@ -175,12 +232,9 @@ def _usb_cli():
     # Create the apio context.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
-    # -- Create the system object
-    system = System(apio_ctx)
-
-    # -- List the USB device.
-    exit_code = system.lsusb()
-    sys.exit(exit_code)
+    # -- List all connected usb devices
+    _list_usb_devices(apio_ctx)
+    sys.exit(0)
 
 
 # --- apio drivers list
