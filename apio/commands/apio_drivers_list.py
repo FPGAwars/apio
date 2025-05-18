@@ -45,7 +45,6 @@ def _list_ftdi_devices(apio_ctx: ApioContext) -> None:
     )
 
     # -- Add columns
-    table.add_column("INDEX", no_wrap=True, justify="center")
     table.add_column("TYPE", no_wrap=True)
     table.add_column("MANUFACTURER", no_wrap=True, style=EMPH3)
     table.add_column("DESCRIPTION", no_wrap=True, style=EMPH3)
@@ -58,7 +57,6 @@ def _list_ftdi_devices(apio_ctx: ApioContext) -> None:
     # -- Add a raw per device
     for device in devices:
         values = []
-        values.append(str(device.index))
         values.append(device.type)
         values.append(device.manufacturer)
         values.append(device.description)

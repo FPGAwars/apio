@@ -3,7 +3,7 @@
 import re
 import sys
 import subprocess
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 from dataclasses import dataclass
 from apio.common.apio_console import cout, cerror
 from apio.common.apio_styles import INFO
@@ -28,7 +28,6 @@ class FtdiDeviceInfo:
 
     # -- The fields in the order they appear in the 'openFPGAList --scan-usb'
     # -- output which is different from the order in which we print them.
-    index: int
     bus: int
     device: int
     vendor_id: str
@@ -40,7 +39,6 @@ class FtdiDeviceInfo:
 
     def dump(self):
         """Dump the device info. For debugging."""
-        print(f"Device             [{self.index}]")
         print(f"    bus:           [{self.bus}]")
         print(f"    dev:           [{self.device}]")
         print(f"    vid:           [{self.vendor_id}]")
@@ -183,7 +181,7 @@ def _get_devices_from_text(text: str) -> FtdiDeviceInfo:
 
     # -- Iterate the device lines and parse into a list of DeviceInfo.
     devices = []
-    for index, line in enumerate(devices_lines):
+    for line in devices_lines:
 
         # -- Adjust the starts for fields 4, 5, which may exceed the their
         # -- header widths.
@@ -213,7 +211,6 @@ def _get_devices_from_text(text: str) -> FtdiDeviceInfo:
 
         # -- Construct the device info.
         device = FtdiDeviceInfo(
-            index=index,
             bus=int(bus),
             device=int(dev),
             vendor_id=vid,
@@ -266,6 +263,73 @@ def scan_ftdi_devices() -> List[FtdiDeviceInfo]:
 
     # -- All done.
     return devices
+
+
+@dataclass
+class FtdiDeviceFilter:
+    """A class to filter a list of ftdi devices by attributes. We use the
+    Fluent Interface design pattern so we can assert that the values that
+    the caller passes as filters are not unintentionally None or empty
+    unintentionally."""
+
+    _vendor_id: str = None
+    _product_id: str = None
+    _serial_code: str = None
+    _description_regex: str = None
+
+    def vendor_id(self, vendor_id: str) -> "FtdiDeviceFilter":
+        """Pass only devices with given vendor id."""
+        assert vendor_id
+        self._vendor_id = vendor_id
+        return self
+
+    def product_id(self, product_id: str) -> "FtdiDeviceFilter":
+        """Pass only devices given product id."""
+        assert product_id
+        self._product_id = product_id
+        return self
+
+    def serial_code(self, serial_code: str) -> "FtdiDeviceFilter":
+        """Pass only devices given serial code."""
+        assert serial_code
+        self._serial_code = serial_code
+        return self
+
+    def description_regex(self, description_regex: str) -> "FtdiDeviceFilter":
+        """Pass only devices where this regex matches their head.e"""
+        assert description_regex
+        self._description_regex = description_regex
+        return self
+
+    def _eval(self, device: FtdiDeviceInfo) -> bool:
+        """Test if the devices passes this field."""
+        if (self._vendor_id is not None) and (
+            self._vendor_id != device.vendor_id
+        ):
+            return False
+
+        if (self._product_id is not None) and (
+            self._product_id != device.product_id
+        ):
+            return False
+
+        if (self._serial_code is not None) and (
+            self._serial_code != device.serial_code
+        ):
+            return False
+
+        if (self._description_regex is not None) and not (
+            re.search(self._description_regex, device.description)
+        ):
+            return False
+
+        return True
+
+    def filter(self, devices: List[FtdiDeviceInfo]):
+        # -- Return a copy of the devices list with devices that passe the
+        # -- filter. The order is preserved.
+        result = [d for d in devices if self._eval(d)]
+        return result
 
 
 # -- For testing with actual boards.

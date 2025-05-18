@@ -7,7 +7,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/apio/__main__.py",
             "args": [
-                "--version",
+                "upload"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
@@ -31,7 +31,7 @@
             "args": [
                 "-s",
                 "-vv",
-                "test/integration/test_commands.py::test_with_colors_on_and_off"
+                "test/utils/test_ftdi_util.py::test_filter_ftdi_devices"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
