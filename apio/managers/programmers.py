@@ -381,15 +381,7 @@ def _check_tinyprog(board_info: dict, port: str) -> bool:
         return False
 
     # -- Get the board description from the the apio database
-    board_desc = board_info["tinyprog"]["desc"]
-
-    # -- Build a regular expresion for finding this board
-    # -- description in the connected board
-    # -- Ex: '^TinyFPGA BX$'
-    # -- Notes on regular expresions:
-    # --   ^  --> Means the begining of the string
-    # --   $  --> End of string
-    desc_pattern = f"^{board_desc}$"
+    name_regex = board_info["tinyprog"]["name-regex"]
 
     # -- Get a list with the meta data of all the TinyFPGA boards
     # -- connected
@@ -405,8 +397,7 @@ def _check_tinyprog(board_info: dict, port: str) -> bool:
         tinyprog_name = tinyprog_meta["boardmeta"]["name"]
 
         # -- # If the port is detected and it matches the pattern
-        if port == tinyprog_port and re.match(desc_pattern, tinyprog_name):
-
+        if port == tinyprog_port and re.search(name_regex, tinyprog_name):
             # -- TinyFPGA board detected!
             return True
 
@@ -466,18 +457,8 @@ def _check_ftdi(
         cerror("Missing board configuration: ftdi")
         sys.exit(1)
 
-    # -- Get the board description from the the apio database
-    board_desc = board_info["ftdi"]["desc"]
-
-    # -- Build a regular expresion for finding this board
-    # -- description in the connected board
-    # -- Ex: '^Alhambra II.*$'
-    # -- Notes on regular expresions:
-    # --   ^  --> Means the begining of the string
-    # --   .  --> Any character
-    # --   .* --> zero or many characters
-    # --   $  --> End of string
-    desc_pattern = f"^{board_desc}.*$"
+    # -- Get the board description pattern from the the apio boards database
+    desc_regex = board_info["ftdi"]["desc-regex"]
 
     # -- Get the list of the connected FTDI devices.
     connected_devices: List[FtdiDeviceInfo] = scan_ftdi_devices()
@@ -503,7 +484,7 @@ def _check_ftdi(
 
         # If matches the description pattern
         # return the index for the FTDI device.
-        if re.match(desc_pattern, ftdi_device.description):
+        if re.search(desc_regex, ftdi_device.description):
             return ftdi_idx
 
     # -- No FTDI board found

@@ -23,7 +23,7 @@ CUSTOM_BOARDS = """
       "pid": "6010"
     },
     "ftdi": {
-      "desc": "My Custom Board"
+      "desc-regex": "^My Custom Board"
     }
   }
 }
