@@ -9,7 +9,7 @@
 import re
 from typing import List
 from apio.common.apio_console import cout
-from apio.common.apio_styles import ERROR, EMPH1
+from apio.common.apio_styles import ERROR
 from apio.utils import util, pkg_util
 from apio.apio_context import ApioContext
 from apio.managers import installer
@@ -21,22 +21,6 @@ class System:  # pragma: no cover
     def __init__(self, apio_ctx: ApioContext):
 
         self.apio_ctx = apio_ctx
-
-    def lsserial(self) -> int:
-        """List the serial ports. Returns exit code."""
-
-        serial_ports = util.get_serial_ports()
-        cout(f"Number of Serial devices found: {len(serial_ports)}")
-
-        for serial_port in serial_ports:
-            port = serial_port.get("port")
-            description = serial_port.get("description")
-            hwid = serial_port.get("hwid")
-            cout(port, style=EMPH1)
-            cout(f"Description: {description}")
-            cout(f"Hardware info: {hwid}\n")
-
-        return 0
 
     def get_usb_devices(self) -> list:
         """Return a list of the connected USB devices

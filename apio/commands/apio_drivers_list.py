@@ -13,11 +13,10 @@ from rich.table import Table
 from rich import box
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
-from apio.managers.system import System
 from apio.managers import installer
 from apio.common.apio_console import cout, cprint
 from apio.common.apio_styles import BORDER, SUCCESS, ERROR, EMPH3
-from apio.utils import pkg_util, ftdi_util, usb_util, util
+from apio.utils import pkg_util, ftdi_util, usb_util, serial_util, util
 
 
 # -- apio drivers list ftdi
@@ -116,16 +115,68 @@ def _ftdi_cli():
 
 # -- apio drivers list serial
 
+
+def _list_serial_devices(apio_ctx: ApioContext) -> None:
+    """Lists the connected serial devices in table format."""
+
+    installer.install_missing_packages_on_the_fly(apio_ctx)
+    pkg_util.set_env_for_packages(apio_ctx, quiet=True)
+
+    devices = serial_util.scan_serial_devices()
+
+    # -- If not found, print a message and exit.
+    if not devices:
+        cout("No SERIAL devices found.", style=ERROR)
+        return
+
+    # -- Define the table.
+    table = Table(
+        show_header=True,
+        show_lines=True,
+        box=box.SQUARE,
+        border_style=BORDER,
+        title="SERIAL Devices",
+        title_justify="left",
+    )
+
+    # -- Add columns
+    table.add_column("MANUFACTURER", no_wrap=True, style=EMPH3)
+    table.add_column("DESCRIPTION", no_wrap=True, style=EMPH3)
+    table.add_column("VID", no_wrap=True)
+    table.add_column("PID", no_wrap=True)
+    table.add_column("SERIAL-NUM", no_wrap=True)
+    table.add_column("PORT", no_wrap=True)
+
+    # -- Add a raw per device
+    for device in devices:
+        values = []
+        values.append(device.manufacturer)
+        values.append(device.description)
+        values.append(device.vendor_id)
+        values.append(device.product_id)
+        values.append(device.serial_number)
+        values.append(device.port)
+
+        # -- Add row.
+        table.add_row(*values)
+
+    # -- Render the table.
+    cout()
+    cprint(table)
+    cout(f"Found {util.plurality(devices, 'device')}", style=SUCCESS)
+
+
 # -- Text in the rich-text format of the python rich library.
 APIO_DRIVERS_LIST_SERIAL_HELP = """
-The command 'apio drivers list serial' lists the serial devices connected to \
-your computer. It is useful for diagnosing FPGA board connectivity issues.
+The command 'apio drivers list serial' displays the serial devices currently \
+connected to your computer. It is useful for diagnosing FPGA board \
+connectivity issues.
 
 Examples:[code]
-  apio drivers list serial   # List the serial devices.[/code]
+  apio drivers list serial    # List the serial devices.[/code]
 
-[b][Hint][/b] This command executes the utility lsserial, which can also be \
-invoked using the command 'apio raw -- lsserial ...'.
+Note that devices such as FTDI FTDI2232 that have more than one channel \
+are listed as multiple rows, one for each of their serial ports.
 """
 
 
@@ -141,12 +192,9 @@ def _serial_cli():
     # Create the apio context.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
-    # -- Create the system object
-    system = System(apio_ctx)
-
-    # # -- List all connected serial devices
-    exit_code = system.lsserial()
-    sys.exit(exit_code)
+    # -- List all connected serial devices
+    _list_serial_devices(apio_ctx)
+    sys.exit(0)
 
 
 # --- apio drivers list usb

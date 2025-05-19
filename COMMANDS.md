@@ -382,7 +382,7 @@ Usage: apio drivers list ftdi [OPTIONS]
   [Hint] This command invokes the command below and displays its output
   in a table form:
 
-    'apio raw -- openFPGALoader --scan-usb
+    apio raw -- openFPGALoader --scan-usb
 
 Options:
   -h, --help  Show this message and exit.
@@ -396,15 +396,16 @@ Options:
 ```
 Usage: apio drivers list serial [OPTIONS]
 
-  The command 'apio drivers list serial' lists the serial devices
-  connected to your computer. It is useful for diagnosing FPGA board
-  connectivity issues.
+  The command 'apio drivers list serial' displays the serial devices
+  currently connected to your computer. It is useful for diagnosing FPGA
+  board connectivity issues.
 
   Examples:
-    apio drivers list serial   # List the serial devices.
+    apio drivers list serial    # List the serial devices.
 
-  [Hint] This command executes the utility lsserial, which can also be
-  invoked using the command 'apio raw -- lsserial ...'.
+  Note that devices such as FTDI FTDI2232 that have more than one
+  channel are listed as multiple rows, one for each of their serial
+  ports.
 
 Options:
   -h, --help  Show this message and exit.
@@ -432,7 +433,7 @@ Usage: apio drivers list usb [OPTIONS]
   [Hint] This command invokes the command below and displays its output
   in a table form:
 
-    'apio raw -- lsusb
+    apio raw -- lsusb
 
 Options:
   -h, --help  Show this message and exit.
