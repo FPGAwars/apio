@@ -64,7 +64,7 @@ def _list_ftdi_devices(apio_ctx: ApioContext) -> None:
         values.append(device.description)
         values.append(device.vendor_id)
         values.append(device.product_id)
-        values.append(device.serial_code)
+        values.append(device.serial_number)
         values.append(str(device.bus))
         values.append(str(device.device))
 

@@ -51,7 +51,7 @@ def test_text_with_devices():
                 product_id="6010",
                 type="FTDI2232",
                 manufacturer="AlhambraBits",
-                serial_code="",
+                serial_number="",
                 description="Alhambra II v1.0A - B09-335",
             ),
             FtdiDeviceInfo(
@@ -61,7 +61,7 @@ def test_text_with_devices():
                 product_id="6010",
                 type="FTDI2232",
                 manufacturer="tinyVision.ai",
-                serial_code="FT94RQ8V",
+                serial_number="FT94RQ8V",
                 description="UPduino v3.1c",
             ),
             FtdiDeviceInfo(
@@ -71,7 +71,7 @@ def test_text_with_devices():
                 product_id="6010",
                 type="FTDI2232",
                 manufacturer="tinyVision.ai.v3",
-                serial_code="FT94RQ8V",
+                serial_number="FT94RQ8V",
                 description="UPduino v3.1c",
             ),
         ]
@@ -103,7 +103,7 @@ def test_filter_ftdi_devices():
     def device(
         vendor_id: str,
         product_id: str,
-        serial_code: str,
+        serial_number: str,
         description: str,
     ) -> FtdiDeviceInfo:
         """A helper function to create fake a FtdiDeviceInfo."""
@@ -116,7 +116,7 @@ def test_filter_ftdi_devices():
             product_id=product_id,
             type="Fake Type",
             manufacturer="Fake Manufacturer",
-            serial_code=serial_code,
+            serial_number=serial_number,
             description=description,
         )
 
@@ -152,10 +152,10 @@ def test_filter_ftdi_devices():
     assert filtered == [devs[1], devs[2], devs[4], devs[5], devs[7], devs[8]]
 
     # -- Filter by serial code.
-    filtered = FtdiDeviceFilter().serial_code("9999").filter(devs)
+    filtered = FtdiDeviceFilter().serial_number("9999").filter(devs)
     assert filtered == []
 
-    filtered = FtdiDeviceFilter().serial_code("SER05").filter(devs)
+    filtered = FtdiDeviceFilter().serial_number("SER05").filter(devs)
     assert filtered == [devs[4]]
 
     # -- Filter by description regex. Note that the regex need to match
@@ -175,7 +175,7 @@ def test_filter_ftdi_devices():
         FtdiDeviceFilter()
         .vendor_id("0403")
         .product_id("6020")
-        .serial_code("SER06")
+        .serial_number("SER06")
         .description_regex("0003")
         .filter(devs)
     )

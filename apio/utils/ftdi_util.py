@@ -34,7 +34,7 @@ class FtdiDeviceInfo:
     product_id: str
     type: str
     manufacturer: str
-    serial_code: str
+    serial_number: str
     description: str
 
     def dump(self):
@@ -45,7 +45,7 @@ class FtdiDeviceInfo:
         cout(f"    pid:           [{self.product_id}]")
         cout(f"    type:          [{self.type}]")
         cout(f"    manufacturer:  [{self.manufacturer}]")
-        cout(f"    serial_code:   [{self.serial_code}]")
+        cout(f"    serial_number:   [{self.serial_number}]")
         cout(f"    descripition:  [{self.description}]")
 
 
@@ -198,7 +198,7 @@ def _get_devices_from_text(text: str) -> FtdiDeviceInfo:
         vid_pid = _extract_field(line, 2, line_starts)
         type_str = _extract_field(line, 3, line_starts)
         manufacturer = _extract_field(line, 4, line_starts)
-        serial_code = _extract_field(line, 5, line_starts)
+        serial_number = _extract_field(line, 5, line_starts)
         description = _extract_field(line, 6, line_starts)
 
         # -- Split pid_vid to pid and vid
@@ -217,7 +217,7 @@ def _get_devices_from_text(text: str) -> FtdiDeviceInfo:
             product_id=pid,
             type=type_str,
             manufacturer=manufacturer,
-            serial_code=serial_code,
+            serial_number=serial_number,
             description=description,
         )
         devices.append(device)
@@ -289,10 +289,10 @@ class FtdiDeviceFilter:
         self._product_id = product_id
         return self
 
-    def serial_code(self, serial_code: str) -> "FtdiDeviceFilter":
+    def serial_number(self, serial_number: str) -> "FtdiDeviceFilter":
         """Pass only devices given serial code."""
-        assert serial_code
-        self._serial_code = serial_code
+        assert serial_number
+        self._serial_code = serial_number
         return self
 
     def description_regex(self, description_regex: str) -> "FtdiDeviceFilter":
@@ -314,7 +314,7 @@ class FtdiDeviceFilter:
             return False
 
         if (self._serial_code is not None) and (
-            self._serial_code != device.serial_code
+            self._serial_code != device.serial_number
         ):
             return False
 
