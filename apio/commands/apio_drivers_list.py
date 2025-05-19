@@ -52,7 +52,7 @@ def _list_ftdi_devices(apio_ctx: ApioContext) -> None:
     table.add_column("DESCRIPTION", no_wrap=True, style=EMPH3)
     table.add_column("VID", no_wrap=True)
     table.add_column("PID", no_wrap=True)
-    table.add_column("SERIAL", no_wrap=True)
+    table.add_column("SERIAL-NUM", no_wrap=True)
     table.add_column("BUS", no_wrap=True, justify="center")
     table.add_column("DEVICE", no_wrap=True, justify="center")
 
