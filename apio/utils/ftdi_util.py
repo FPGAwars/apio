@@ -66,7 +66,7 @@ def _locate_header_columns_starts(header_line: str) -> List[int]:
         sys.exit(1)
 
     # -- Sanity check. If this fails, it's a programming error.
-    assert m.lastindex == num_fields
+    assert len(m.groups()) == num_fields
 
     # -- Collect the start index of all the header fields.
     fields_starts = []

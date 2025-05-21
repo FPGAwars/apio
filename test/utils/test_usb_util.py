@@ -15,6 +15,9 @@ TEXT_WITH_DEVICES = "\n".join(
     [
         "0403:6010 (bus 1, device 1) path: 1",
         "0403:6010 (bus 0, device 1) path: 1",
+        "1022:15e0 (bus 2, device 0)",
+        "0b0e:0305 (bus 2, device 6) path: 4.4",
+        "0403:6010 (bus 2, device 8) path: 4.3.1",
     ]
 )
 
@@ -30,10 +33,19 @@ def test_text_with_devices():
 
     expected = [
         UsbDeviceInfo(
-            bus=1, device=1, vendor_id="0403", product_id="6010", path=1
+            bus=1, device=1, vendor_id="0403", product_id="6010", path="1"
         ),
         UsbDeviceInfo(
-            bus=0, device=1, vendor_id="0403", product_id="6010", path=1
+            bus=0, device=1, vendor_id="0403", product_id="6010", path="1"
+        ),
+        UsbDeviceInfo(
+            bus=2, device=0, vendor_id="1022", product_id="15E0", path=""
+        ),
+        UsbDeviceInfo(
+            bus=2, device=6, vendor_id="0B0E", product_id="0305", path="4.4"
+        ),
+        UsbDeviceInfo(
+            bus=2, device=8, vendor_id="0403", product_id="6010", path="4.3.1"
         ),
     ]
 
@@ -53,12 +65,12 @@ def test_text_without_devices():
 def test_filter_usb_devices():
     """Test the filtering function."""
     devs: List[UsbDeviceInfo] = [
-        UsbDeviceInfo(0, 1, "0403", "6010", 0),  # devs[0]
-        UsbDeviceInfo(3, 1, "0403", "6020", 1),  # devs[1]
-        UsbDeviceInfo(3, 1, "0405", "6020", 2),  # devs[2]
-        UsbDeviceInfo(2, 1, "0403", "6020", 3),  # devs[3]
-        UsbDeviceInfo(1, 1, "0403", "6010", 4),  # devs[4]
-        UsbDeviceInfo(1, 1, "0405", "6010", 5),  # devs[5]
+        UsbDeviceInfo(0, 1, "0403", "6010", "0"),  # devs[0]
+        UsbDeviceInfo(3, 1, "0403", "6020", "1"),  # devs[1]
+        UsbDeviceInfo(3, 1, "0405", "6020", "2"),  # devs[2]
+        UsbDeviceInfo(2, 1, "0403", "6020", "3"),  # devs[3]
+        UsbDeviceInfo(1, 1, "0403", "6010", "4"),  # devs[4]
+        UsbDeviceInfo(1, 1, "0405", "6010", "5"),  # devs[5]
     ]
 
     # -- All filtering disabled.

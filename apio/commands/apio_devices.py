@@ -242,7 +242,7 @@ def _list_usb_devices(apio_ctx: ApioContext) -> None:
         values.append(device.product_id)
         values.append(str(device.bus))
         values.append(str(device.device))
-        values.append(str(device.path))
+        values.append(device.path)
 
         # -- Add row.
         table.add_row(*values)

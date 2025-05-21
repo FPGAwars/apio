@@ -9,15 +9,15 @@ from apio.common.apio_console import cout, cerror, configure
 from apio.common.apio_styles import INFO
 from apio.utils import snap_util
 
-# -- A regex to parse a device line of 'lsusb'. Sample line:
-# -- "0403:6010 (bus 1, device 1) path: 1"
+# -- A regex to parse a device line of 'lsusb'.
+# -- See sample lines at test_usb_util.py.
 DEVICE_REGEX = re.compile(
     r"^"
     r"([a-fA-F0-9]{4}):"
-    r"([a-fA-F0-9]{4}).*"
-    r"bus ([0-9]+).*"
-    r"device ([0-9]+).*"
-    r"path: ([0-9]+).*"
+    r"([a-fA-F0-9]{4})[ ]+"
+    r"[(]bus ([0-9]+),"
+    r"[ ]+device ([0-9]+)[)]"
+    r"(?:[ ]+path: ([0-9.]+)[ ]*)?"
     r"$"
 )
 
@@ -30,7 +30,7 @@ class UsbDeviceInfo:
     device: int
     vendor_id: str
     product_id: str
-    path: int
+    path: str
 
     def dump(self):
         """Dump the device info. For debugging."""
@@ -65,7 +65,7 @@ def _get_devices_from_text(text: str) -> List[UsbDeviceInfo]:
 
         # -- Sanity checks of the number of expected fields.
         assert DEVICE_REGEX.groups == 5
-        assert m.lastindex == 5
+        assert len(m.groups()) == 5
 
         # -- Create the device object. and append to the list.
         device = UsbDeviceInfo(
@@ -73,7 +73,7 @@ def _get_devices_from_text(text: str) -> List[UsbDeviceInfo]:
             device=int(m.group(4)),
             vendor_id=m.group(1).upper(),
             product_id=m.group(2).upper(),
-            path=int(m.group(5)),
+            path=m.group(5) or "",
         )
 
         devices.append(device)
