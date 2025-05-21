@@ -12,10 +12,8 @@ from apio.utils import snap_util
 
 # -- A regex to parse the header field titles. Each field title includes
 # -- Trailing spaces so we can derive it's width.
-# -- Using 'probe[ _]type' instead of 'probe type' to handle also the
-# -- recent change of openFPGALoader to probe_type.
 HEADER_REGEX = re.compile(
-    r"^(Bus *)(device *)(vid:pid *)(probe[ _]type *)(manufacturer *)"
+    r"^(Bus *)(device *)(vid:pid *)(probe_type *)(manufacturer *)"
     r"(serial *)(product *)$"
 )
 
@@ -49,7 +47,7 @@ class FtdiDeviceInfo:
         cout(f"    descripition:  [{self.description}]")
 
 
-def _locate_header_fields_starts(header_line: str) -> List[int]:
+def _locate_header_columns_starts(header_line: str) -> List[int]:
     """Given the header line of an 'openFPGALoader --scan-usb' report, returns
     a list with the indexes of the first char of each of teh columns.
     We use this information later to parse the individual device lines."""
@@ -108,42 +106,6 @@ def _get_report_lines(text: str) -> Tuple[str, List[str]]:
     return (header_line, devices_lines)
 
 
-def _patch_device_field_end(
-    device_line: str, field_index: int, field_starts: List[int]
-) -> List[int]:
-    """Given a device line from a 'openFPGALoader --scan-usb' report, a field
-    index of the list of fields starts, possibly extend the given field length
-    if it seems that it's longer expected.
-
-    This is a partial workaround for the issue desctibed at
-    https://github.com/trabucayre/openFPGALoader/issues/549 that doesn't
-    address all the possible edge cases."""
-
-    # -- No point for calling the last field since its has no end.
-    assert field_index < (len(field_starts) - 1)
-
-    # -- Make a copy of the starts list so we can mutate it without
-    # -- affecting the caller's data.
-    result = field_starts.copy()
-
-    # -- Extend the field by one char until it ends with " " or we reached
-    # -- the end of the string. When we extend the field by moving by one
-    # -- the starts of all the fields that follow it.
-    while True:
-        # -- Field end index is the start of the next field.
-        end = result[field_index + 1]
-        if end >= len(device_line):
-            break
-        if device_line[end - 1] == " ":
-            break
-        # -- Increment by one the starts of all following fields.
-        for i in range(field_index + 1, len(field_starts)):
-            result[i] += 1
-
-    # -- All done. Return the possibly modified starts list.
-    return result
-
-
 def _extract_field(
     device_line: str, field_index: int, fields_starts: List[int]
 ):
@@ -176,30 +138,25 @@ def _get_devices_from_text(text: str) -> FtdiDeviceInfo:
     header, devices_lines = _get_report_lines(text)
 
     # -- Find the starts of the header fields. We expect exactly 7 fields,.
-    header_starts = _locate_header_fields_starts(header)
-    assert len(header_starts) == 7, header_starts
+    columns_starts = _locate_header_columns_starts(header)
+    assert len(columns_starts) == 7, columns_starts
 
     # -- Iterate the device lines and parse into a list of DeviceInfo.
     devices = []
     for line in devices_lines:
 
-        # -- Adjust the starts for fields 4, 5, which may exceed the their
-        # -- header widths.
-        line_starts = _patch_device_field_end(line, 4, header_starts)
-        line_starts = _patch_device_field_end(line, 5, line_starts)
-
         # -- Pad the line to have at least one char in the last field.
-        min_len = line_starts[-1] + 1
+        min_len = columns_starts[-1] + 1
         line = line.ljust(min_len)
 
         # -- Extract fields
-        bus = _extract_field(line, 0, line_starts)
-        dev = _extract_field(line, 1, line_starts)
-        vid_pid = _extract_field(line, 2, line_starts)
-        type_str = _extract_field(line, 3, line_starts)
-        manufacturer = _extract_field(line, 4, line_starts)
-        serial_number = _extract_field(line, 5, line_starts)
-        description = _extract_field(line, 6, line_starts)
+        bus = _extract_field(line, 0, columns_starts)
+        dev = _extract_field(line, 1, columns_starts)
+        vid_pid = _extract_field(line, 2, columns_starts)
+        type_str = _extract_field(line, 3, columns_starts)
+        manufacturer = _extract_field(line, 4, columns_starts)
+        serial_number = _extract_field(line, 5, columns_starts)
+        description = _extract_field(line, 6, columns_starts)
 
         # -- Split pid_vid to pid and vid
         tokens = vid_pid.split(":")
