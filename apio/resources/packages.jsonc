@@ -18,7 +18,7 @@
   "oss-cad-suite": {
     "repository": {
       "name": "tools-oss-cad-suite",
-      "organization": "FPGAwars"
+      "organization": "zapta"
     },
     "release": {
       "release_tag": "v%V",
