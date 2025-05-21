@@ -18,6 +18,7 @@ from apio.commands import (
     apio_build,
     apio_clean,
     apio_create,
+    apio_devices,
     apio_drivers,
     apio_examples,
     apio_format,
@@ -64,6 +65,7 @@ SUBGROUPS = [
             apio_preferences.cli,
             apio_packages.cli,
             apio_drivers.cli,
+            apio_devices.cli,
         ],
     ),
     ApioSubgroup(

@@ -425,7 +425,7 @@ def _get_ftdi_idx(board: str, board_info, ftdi_idx_arg: Optional[int]) -> int:
     if ftdi_idx is None:
         cerror("Board " + board + " not found")
         cout(
-            "Run 'apio drivers list ftdi' to see the available FTDI devices",
+            "Run 'apio devices ftdi' to see the available FTDI devices",
             style=INFO,
         )
 
@@ -470,22 +470,18 @@ def _check_ftdi(
 
     # -- Check if the given board is connected
     # -- and if so, return its FTDI index
-    for ftdi_device in connected_devices:
-
-        # -- Get the FTDI index
-        # -- Ex: '0'
-        ftdi_idx: int = ftdi_device.index
+    for index, ftdi_device in enumerate(connected_devices):
 
         # If the --ftdi-idx options is set, we consider only the device
         # with given index in the lsftdi output. This is useful in case
         # multiple compatible boards are connected to the host computer.
-        if ftdi_idx_arg is not None and ftdi_idx_arg != ftdi_idx:
+        if ftdi_idx_arg is not None and ftdi_idx_arg != index:
             continue
 
         # If matches the description pattern
         # return the index for the FTDI device.
         if re.search(desc_regex, ftdi_device.description):
-            return ftdi_idx
+            return index
 
     # -- No FTDI board found
     return None

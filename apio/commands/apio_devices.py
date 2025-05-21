@@ -5,7 +5,7 @@
 # --  * Jesús Arroyo (2016-2019)
 # --  * Juan Gonzalez (obijuan) (2019-2024)
 # -- License GPLv2
-"""Implementation of 'apio drivers list' command"""
+"""Implementation of 'apio devices' command"""
 
 import sys
 import click
@@ -19,7 +19,7 @@ from apio.common.apio_styles import BORDER, SUCCESS, ERROR, EMPH3
 from apio.utils import pkg_util, ftdi_util, usb_util, serial_util, util
 
 
-# -- apio drivers list ftdi
+# -- apio devices ftdi
 
 
 def _list_ftdi_devices(apio_ctx: ApioContext) -> None:
@@ -77,17 +77,22 @@ def _list_ftdi_devices(apio_ctx: ApioContext) -> None:
 
 
 # -- Text in the rich-text format of the python rich library.
-APIO_DRIVERS_LIST_FTDI_HELP = """
-The command 'apio drivers list ftdi' displays the FTDI devices currently \
-connected to your computer. It is useful for diagnosing FPGA board \
-connectivity issues.
+APIO_DEVICES_FTDI_HELP = """
+The command 'apio devices ftdi' displays the FTDI devices currently \
+connected to your computer and recognized by the FPGA toolchain. \
+It is useful for diagnosing FPGA board connectivity and drivers issues.
 
 Examples:[code]
-  apio drivers list ftdi    # List the ftdi devices.[/code]
+  apio devices ftdi    # List the ftdi devices.[/code]
+
+If an FTDI board is attached to the computer by is not shown in \
+this command, it may require a driver installation. For details see \
+'apio drivers install ftdi'.
 
 [Note] When apio is installed on Linux using the Snap package \
 manager, run the command 'snap connect apio:raw-usb' once \
 to grant the necessary permissions to access USB devices.
+
 
 [Hint] This command invokes the command below and displays its output in a \
 table form:
@@ -100,10 +105,10 @@ table form:
     name="ftdi",
     cls=ApioCommand,
     short_help="List the connected ftdi devices.",
-    help=APIO_DRIVERS_LIST_FTDI_HELP,
+    help=APIO_DEVICES_FTDI_HELP,
 )
 def _ftdi_cli():
-    """Implements the 'apio drivers list ftdi' command."""
+    """Implements the 'apio devices ftdi' command."""
 
     # Create the apio context.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
@@ -113,7 +118,7 @@ def _ftdi_cli():
     sys.exit(0)
 
 
-# -- apio drivers list serial
+# -- apio devices serial
 
 
 def _list_serial_devices(apio_ctx: ApioContext) -> None:
@@ -135,27 +140,27 @@ def _list_serial_devices(apio_ctx: ApioContext) -> None:
         show_lines=True,
         box=box.SQUARE,
         border_style=BORDER,
-        title="SERIAL Devices",
+        title="SERIAL Ports",
         title_justify="left",
     )
 
     # -- Add columns
-    table.add_column("MANUFACTURER", no_wrap=True, style=EMPH3)
-    table.add_column("DESCRIPTION", no_wrap=True, style=EMPH3)
+    table.add_column("PORT", no_wrap=True, style=EMPH3)
+    table.add_column("MANUFACTURER", no_wrap=True)
+    table.add_column("DESCRIPTION", no_wrap=True)
     table.add_column("VID", no_wrap=True)
     table.add_column("PID", no_wrap=True)
     table.add_column("SERIAL-NUM", no_wrap=True)
-    table.add_column("PORT", no_wrap=True)
 
     # -- Add a raw per device
     for device in devices:
         values = []
+        values.append(device.port)
         values.append(device.manufacturer)
         values.append(device.description)
         values.append(device.vendor_id)
         values.append(device.product_id)
         values.append(device.serial_number)
-        values.append(device.port)
 
         # -- Add row.
         table.add_row(*values)
@@ -167,13 +172,13 @@ def _list_serial_devices(apio_ctx: ApioContext) -> None:
 
 
 # -- Text in the rich-text format of the python rich library.
-APIO_DRIVERS_LIST_SERIAL_HELP = """
-The command 'apio drivers list serial' displays the serial devices currently \
+APIO_DEVICES_SERIAL_HELP = """
+The command 'apio devices serial' displays the serial devices currently \
 connected to your computer. It is useful for diagnosing FPGA board \
 connectivity issues.
 
 Examples:[code]
-  apio drivers list serial    # List the serial devices.[/code]
+  apio devices serial    # List the serial devices.[/code]
 
 Note that devices such as FTDI FTDI2232 that have more than one channel \
 are listed as multiple rows, one for each of their serial ports.
@@ -184,10 +189,10 @@ are listed as multiple rows, one for each of their serial ports.
     name="serial",
     cls=ApioCommand,
     short_help="List the connected serial devices.",
-    help=APIO_DRIVERS_LIST_SERIAL_HELP,
+    help=APIO_DEVICES_SERIAL_HELP,
 )
 def _serial_cli():
-    """Implements the 'apio drivers list serial' command."""
+    """Implements the 'apio devices serial' command."""
 
     # Create the apio context.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
@@ -197,7 +202,7 @@ def _serial_cli():
     sys.exit(0)
 
 
-# --- apio drivers list usb
+# --- apio devices usb
 
 
 def _list_usb_devices(apio_ctx: ApioContext) -> None:
@@ -249,13 +254,13 @@ def _list_usb_devices(apio_ctx: ApioContext) -> None:
 
 
 # -- Text in the rich-text format of the python rich library.
-APIO_DRIVERS_LIST_USB_HELP = """
-The command 'apio drivers list usb' displays the USB devices currently \
+APIO_DEVICES_USB_HELP = """
+The command 'apio devices usb' displays the USB devices currently \
 connected to your computer. It is useful for diagnosing FPGA board \
 connectivity issues.
 
 Examples:[code]
-  apio drivers list usb    # List the usb devices.[/code]
+  apio devices usb    # List the usb devices.[/code]
 
 [Note] When apio is installed on Linux using the Snap package \
 manager, run the command 'snap connect apio:raw-usb' once \
@@ -272,10 +277,10 @@ table form:
     name="usb",
     cls=ApioCommand,
     short_help="List connected USB devices.",
-    help=APIO_DRIVERS_LIST_USB_HELP,
+    help=APIO_DEVICES_USB_HELP,
 )
 def _usb_cli():
-    """Implements the 'apio drivers list usb' command."""
+    """Implements the 'apio devices usb' command."""
 
     # Create the apio context.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
@@ -285,12 +290,13 @@ def _usb_cli():
     sys.exit(0)
 
 
-# --- apio drivers list
+# --- apio devices
 
 # -- Text in the rich-text format of the python rich library.
-APIO_DRIVERS_LIST_HELP = """
-The command group 'apio drivers list' includes subcommands that that lists \
-system drivers that are used with FPGA boards.
+APIO_DEVICES_HELP = """
+The command group 'apio devices' includes subcommands that lists devices
+that are attached to the computer. It's main usage is diagnostics or
+devices connectivity and drivers.
 """
 
 # -- We have only a single group with the title 'Subcommands'.
@@ -307,13 +313,13 @@ SUBGROUPS = [
 
 
 @click.command(
-    name="list",
+    name="devices",
     cls=ApioGroup,
     subgroups=SUBGROUPS,
-    short_help="List system drivers.",
-    help=APIO_DRIVERS_LIST_HELP,
+    short_help="List attached devices.",
+    help=APIO_DEVICES_HELP,
 )
 def cli():
-    """Implements the 'apio drivers list' command."""
+    """Implements the 'apio devices' command."""
 
     # pass

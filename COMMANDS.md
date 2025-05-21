@@ -6,14 +6,14 @@
   * [apio build](#apio-build) - Synthesize the bitstream.
   * [apio clean](#apio-clean) - Delete the apio generated files.
   * [apio create](#apio-create) - Create an apio.ini project file.
+  * [apio devices](#apio-devices) - List attached devices.
+    * [apio devices ftdi](#apio-devices-ftdi) - List the connected ftdi devices.
+    * [apio devices serial](#apio-devices-serial) - List the connected serial devices.
+    * [apio devices usb](#apio-devices-usb) - List connected USB devices.
   * [apio drivers](#apio-drivers) - Manage the operating system drivers.
     * [apio drivers install](#apio-drivers-install) - Install drivers.
       * [apio drivers install ftdi](#apio-drivers-install-ftdi) - Install the ftdi drivers.
       * [apio drivers install serial](#apio-drivers-install-serial) - Install the serial drivers.
-    * [apio drivers list](#apio-drivers-list) - List system drivers.
-      * [apio drivers list ftdi](#apio-drivers-list-ftdi) - List the connected ftdi devices.
-      * [apio drivers list serial](#apio-drivers-list-serial) - List the connected serial devices.
-      * [apio drivers list usb](#apio-drivers-list-usb) - List connected USB devices.
     * [apio drivers uninstall](#apio-drivers-uninstall) - Uninstall drivers.
       * [apio drivers uninstall ftdi](#apio-drivers-uninstall-ftdi) - Uninstall the ftdi drivers.
       * [apio drivers uninstall serial](#apio-drivers-uninstall-serial) - Uninstall the serial drivers.
@@ -100,6 +100,7 @@ Setup commands:
   apio preferences  Manage the apio user preferences.
   apio packages     Manage the apio packages.
   apio drivers      Manage the operating system drivers.
+  apio devices      List attached devices.
 
 Utility commands:
   apio boards       List available board definitions.
@@ -267,6 +268,112 @@ Options:
 
 <br>
 
+### apio devices
+
+```
+Usage: apio devices [OPTIONS] COMMAND [ARGS]...
+
+  The command group 'apio devices' includes subcommands that lists
+  devices
+  that are attached to the computer. It's main usage is diagnostics or
+  devices connectivity and drivers.
+
+Options:
+  -h, --help  Show this message and exit.
+
+Subcommands:
+  apio devices ftdi    List the connected ftdi devices.
+  apio devices serial  List the connected serial devices.
+  apio devices usb     List connected USB devices.
+
+```
+
+<br>
+
+### apio devices ftdi
+
+```
+Usage: apio devices ftdi [OPTIONS]
+
+  The command 'apio devices ftdi' displays the FTDI devices currently
+  connected to your computer and recognized by the FPGA toolchain. It is
+  useful for diagnosing FPGA board connectivity and drivers issues.
+
+  Examples:
+    apio devices ftdi    # List the ftdi devices.
+
+  If an FTDI board is attached to the computer by is not shown in this
+  command, it may require a driver installation. For details see 'apio
+  drivers install ftdi'.
+
+  [Note] When apio is installed on Linux using the Snap package manager,
+  run the command 'snap connect apio:raw-usb' once to grant the
+  necessary permissions to access USB devices.
+
+
+  [Hint] This command invokes the command below and displays its output
+  in a table form:
+
+    apio raw -- openFPGALoader --scan-usb
+
+Options:
+  -h, --help  Show this message and exit.
+
+```
+
+<br>
+
+### apio devices serial
+
+```
+Usage: apio devices serial [OPTIONS]
+
+  The command 'apio devices serial' displays the serial devices
+  currently connected to your computer. It is useful for diagnosing FPGA
+  board connectivity issues.
+
+  Examples:
+    apio devices serial    # List the serial devices.
+
+  Note that devices such as FTDI FTDI2232 that have more than one
+  channel are listed as multiple rows, one for each of their serial
+  ports.
+
+Options:
+  -h, --help  Show this message and exit.
+
+```
+
+<br>
+
+### apio devices usb
+
+```
+Usage: apio devices usb [OPTIONS]
+
+  The command 'apio devices usb' displays the USB devices currently
+  connected to your computer. It is useful for diagnosing FPGA board
+  connectivity issues.
+
+  Examples:
+    apio devices usb    # List the usb devices.
+
+  [Note] When apio is installed on Linux using the Snap package manager,
+  run the command 'snap connect apio:raw-usb' once to grant the
+  necessary permissions to access USB devices.
+
+  [Hint] This command invokes the command below and displays its output
+  in a table form:
+
+    apio raw -- lsusb
+
+Options:
+  -h, --help  Show this message and exit.
+
+```
+
+<br>
+
 ### apio drivers
 
 ```
@@ -279,7 +386,6 @@ Options:
   -h, --help  Show this message and exit.
 
 Subcommands:
-  apio drivers list       List system drivers.
   apio drivers install    Install drivers.
   apio drivers uninstall  Uninstall drivers.
 
@@ -335,105 +441,6 @@ Usage: apio drivers install serial [OPTIONS]
 
   Examples:
     apio drivers install serial  # Install the serial drivers.
-
-Options:
-  -h, --help  Show this message and exit.
-
-```
-
-<br>
-
-### apio drivers list
-
-```
-Usage: apio drivers list [OPTIONS] COMMAND [ARGS]...
-
-  The command group 'apio drivers list' includes subcommands that that
-  lists system drivers that are used with FPGA boards.
-
-Options:
-  -h, --help  Show this message and exit.
-
-Subcommands:
-  apio drivers list ftdi    List the connected ftdi devices.
-  apio drivers list serial  List the connected serial devices.
-  apio drivers list usb     List connected USB devices.
-
-```
-
-<br>
-
-### apio drivers list ftdi
-
-```
-Usage: apio drivers list ftdi [OPTIONS]
-
-  The command 'apio drivers list ftdi' displays the FTDI devices
-  currently connected to your computer. It is useful for diagnosing FPGA
-  board connectivity issues.
-
-  Examples:
-    apio drivers list ftdi    # List the ftdi devices.
-
-  [Note] When apio is installed on Linux using the Snap package manager,
-  run the command 'snap connect apio:raw-usb' once to grant the
-  necessary permissions to access USB devices.
-
-  [Hint] This command invokes the command below and displays its output
-  in a table form:
-
-    apio raw -- openFPGALoader --scan-usb
-
-Options:
-  -h, --help  Show this message and exit.
-
-```
-
-<br>
-
-### apio drivers list serial
-
-```
-Usage: apio drivers list serial [OPTIONS]
-
-  The command 'apio drivers list serial' displays the serial devices
-  currently connected to your computer. It is useful for diagnosing FPGA
-  board connectivity issues.
-
-  Examples:
-    apio drivers list serial    # List the serial devices.
-
-  Note that devices such as FTDI FTDI2232 that have more than one
-  channel are listed as multiple rows, one for each of their serial
-  ports.
-
-Options:
-  -h, --help  Show this message and exit.
-
-```
-
-<br>
-
-### apio drivers list usb
-
-```
-Usage: apio drivers list usb [OPTIONS]
-
-  The command 'apio drivers list usb' displays the USB devices currently
-  connected to your computer. It is useful for diagnosing FPGA board
-  connectivity issues.
-
-  Examples:
-    apio drivers list usb    # List the usb devices.
-
-  [Note] When apio is installed on Linux using the Snap package manager,
-  run the command 'snap connect apio:raw-usb' once to grant the
-  necessary permissions to access USB devices.
-
-  [Hint] This command invokes the command below and displays its output
-  in a table form:
-
-    apio raw -- lsusb
 
 Options:
   -h, --help  Show this message and exit.

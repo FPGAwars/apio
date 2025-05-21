@@ -83,6 +83,9 @@ def scan_serial_devices() -> List[SerialDeviceInfo]:
             )
         )
 
+    # -- Sort by port name, case insensitive.
+    devices = sorted(devices, key=lambda d: d.port.lower())
+
     # -- All done.
     return devices
 
