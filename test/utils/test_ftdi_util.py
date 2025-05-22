@@ -16,9 +16,9 @@ from apio.utils.ftdi_util import (
 TEXT_WITH_DEVICES = """
 empty
 Bus device vid:pid       probe_type manufacturer     serial    product
-000 001    0x0403:0x6010 FTDI2232   AlhambraBits     none      Alhambra II v1.0A - B09-335
-001 001    0x0403:0x6010 FTDI2232   tinyVision.ai    FT94RQ8V  UPduino v3.1c
 002 001    0x0403:0x6010 FTDI2232   tinyVision.ai.v3 FT94RQ8V  UPduino v3.1c
+001 001    0x0403:0x6010 FTDI2232   tinyVision.ai    FT94RQ8V  UPduino v3.1c
+000 001    0x0403:0x6010 FTDI2232   AlhambraBits     none      Alhambra II v1.0A - B09-335
 """
 
 # -- Text when no device is connected.
@@ -32,6 +32,7 @@ Bus device vid:pid  probe_type  manufacturer serial  product
 def test_text_with_devices():
     """Test parsing of 'openFPGALoader --scan-usb' text that contains devices."""
 
+    # -- Devices are returned sorted.
     devices = _get_devices_from_text(TEXT_WITH_DEVICES)
 
     expected = [
@@ -73,8 +74,6 @@ def test_text_with_devices():
 def test_text_without_devices():
     """Test parsing of 'openFPGALoader --scan-usb' text that contains
     no devices."""
-
-    # pylint: disable=use-implicit-booleaness-not-comparison
 
     devices = _get_devices_from_text(TEXT_NO_DEVICES)
 

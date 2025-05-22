@@ -29,23 +29,24 @@ TEXT_NO_DEVICES = "\n"
 def test_text_with_devices():
     """Test parsing of 'lsusb' text that contains devices."""
 
+    # -- Devices are returned sorted.
     devices = _get_devices_from_text(TEXT_WITH_DEVICES)
 
     expected = [
         UsbDeviceInfo(
-            bus=1, device=1, vendor_id="0403", product_id="6010", path="1"
-        ),
-        UsbDeviceInfo(
             bus=0, device=1, vendor_id="0403", product_id="6010", path="1"
         ),
         UsbDeviceInfo(
-            bus=2, device=0, vendor_id="1022", product_id="15E0", path=""
+            bus=1, device=1, vendor_id="0403", product_id="6010", path="1"
+        ),
+        UsbDeviceInfo(
+            bus=2, device=8, vendor_id="0403", product_id="6010", path="4.3.1"
         ),
         UsbDeviceInfo(
             bus=2, device=6, vendor_id="0B0E", product_id="0305", path="4.4"
         ),
         UsbDeviceInfo(
-            bus=2, device=8, vendor_id="0403", product_id="6010", path="4.3.1"
+            bus=2, device=0, vendor_id="1022", product_id="15E0", path=""
         ),
     ]
 
@@ -54,8 +55,6 @@ def test_text_with_devices():
 
 def test_text_without_devices():
     """Test parsing of 'lsusb' text that containsno devices."""
-
-    # pylint: disable=use-implicit-booleaness-not-comparison
 
     devices = _get_devices_from_text(TEXT_NO_DEVICES)
 

@@ -179,6 +179,11 @@ def _get_devices_from_text(text: str) -> FtdiDeviceInfo:
         )
         devices.append(device)
 
+    # -- Sort by (vendor, manufacturer), case insensitive.
+    devices = sorted(
+        devices, key=lambda d: (d.manufacturer.lower(), d.description.lower())
+    )
+
     # -- All done.
     return devices
 
