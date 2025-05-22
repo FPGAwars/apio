@@ -21,7 +21,6 @@ def construct_programmer_cmd(
     apio_ctx: ApioContext,
     serial_port_arg: Optional[str],
     ftdi_idx_arg: Optional[int],
-    sram: bool,
 ) -> str:
     """Get the command line (string) to execute for programming
     the FPGA (programmer executable + arguments)
@@ -30,7 +29,6 @@ def construct_programmer_cmd(
         * apio_ctx: ApioContext of this apio invocation.
         * serial_port: Optional, serial port name
         * ftdi_idx: Optional, restrict to ftdi device with given index
-        * sram: Perform SRAM programming
 
     * OUTPUT: A string with the command+args to execute and a $SOURCE
         placeholder for the bitstream file name.
@@ -49,7 +47,7 @@ def construct_programmer_cmd(
     # --   * "${PID}" (optional): USB Product id
     # --   * "${FTDI_IDX}" (optional): FTDI idx (e.g. 0, 1, 2...)
     # --   * "${SERIAL_PORT}" (optional): Serial port name
-    programmer = _construct_programmer_cmd_template(apio_ctx, board_info, sram)
+    programmer = _construct_programmer_cmd_template(apio_ctx, board_info)
     if util.is_debug():
         cout(f"Programmer template: [{programmer}]")
     # -- The placeholder for the bitstream file name should always exist.
@@ -142,7 +140,7 @@ def construct_programmer_cmd(
 
 
 def _construct_programmer_cmd_template(
-    apio_ctx: ApioContext, board_info: dict, sram: bool
+    apio_ctx: ApioContext, board_info: dict
 ) -> str:
     """
     * INPUT:
@@ -191,21 +189,6 @@ def _construct_programmer_cmd_template(
     # -- (like dfu-util for example)
     if prog_info.get("extra_args"):
         programmer_cmd += f" {prog_info['extra_args']}"
-
-    # -- Special case for specific programmers
-
-    # -- Enable SRAM programming for the iceprog* programmer only.
-    if sram:
-        # Only for iceprog programmer
-        if programmer_cmd.startswith("iceprog"):
-            programmer_cmd += " -S"
-        else:
-            # -- Programmer not supported
-            cerror(
-                "The --sram flag is not available for the "
-                f"{prog_type} programmer."
-            )
-            sys.exit(1)
 
     return programmer_cmd
 

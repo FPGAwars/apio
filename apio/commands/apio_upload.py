@@ -40,15 +40,6 @@ ftdi_idx_option = click.option(
     help="Consider only FTDI device with given index.",
 )
 
-sram_option = click.option(
-    "sram",  # Var name.
-    "-s",
-    "--sram",
-    is_flag=True,
-    help="Perform SRAM programming (see restrictions).",
-    cls=cmd_util.ApioOption,
-)
-
 
 # -- Text in the rich-text format of the python rich library.
 APIO_UPLOAD_HELP = """
@@ -58,19 +49,6 @@ The command 'apio upload' builds the bitstream file (similar to the \
 Examples:[code]
   apio upload              # Typical usage.
   apio upload --ftdi-idx 2 # Consider only FTDI device at index 2
-  apio upload --sram       # See below[/code]
-
-The command programs the board’s default configuration memory, which is \
-typically a non-volatile FLASH memory. For SRAM programming (also known \
-as ICE programming), use the '--sram' option, subject to the following \
-restrictions:
-
-1. The board must use the 'iceprog' programmer or a programmer whose \
-name begins with 'iceprog'.
-
-2. The board must support SRAM programming and be configured accordingly. \
-Refer to your board’s documentation for details (SRAM programming is \
-also referred to as ICE programming).
 
 The optional flag '--ftdi-idx' is used in special cases involving boards with \
 FTDI devices, particularly when multiple boards are connected to the host \
@@ -93,7 +71,6 @@ to grant the necessary permissions to access USB devices.
 @click.pass_context
 @serial_port_option
 @ftdi_idx_option
-@sram_option
 @options.env_option_gen()
 @options.project_dir_option
 def cli(
@@ -101,7 +78,6 @@ def cli(
     # Options
     serial_port: str,
     ftdi_idx: int,
-    sram: bool,
     env: Optional[str],
     project_dir: Optional[Path],
 ):
@@ -129,7 +105,6 @@ def cli(
         apio_ctx,
         serial_port_arg=serial_port,
         ftdi_idx_arg=ftdi_idx,  # None if not specified.
-        sram=sram,
     )
 
     # Construct the scons upload params.
