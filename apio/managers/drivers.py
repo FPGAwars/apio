@@ -20,6 +20,10 @@ from apio.managers import installer
 E1 = f"[{EMPH1}]"
 E3 = f"[{EMPH3}]"
 
+# -- A message to print when trying to install/uninstall apio drivers
+# -- on platforms that don't require it.
+NO_DRIVERS_MSG = "No driver installation is required on this platform."
+
 # -- Text in the rich-text format of the python rich library.
 FTDI_INSTALL_INSTRUCTIONS_WINDOWS = f"""
 {E3}Please follow these steps:[/]
@@ -358,53 +362,23 @@ class Drivers:
     def _ftdi_install_darwin(self) -> int:
         """Installs FTDI driver on darwin. Returns process status code."""
         # Check homebrew
-        brew = subprocess.call("which brew > /dev/null", shell=True)
-        if brew != 0:
-            cerror("Homebrew is required")
-            return 1
-
-        cout("Install FTDI drivers for FPGA")
-        subprocess.call(["brew", "update"])
-        self._brew_install_darwin("libffi")
-        self._brew_install_darwin("libftdi")
-        cout("FTDI drivers installed", style=SUCCESS)
+        cout(NO_DRIVERS_MSG, style=SUCCESS)
         return 0
 
     def _ftdi_uninstall_darwin(self):
         """Uninstalls FTDI driver on darwin. Returns process status code."""
-        cout("Uninstall FTDI drivers configuration")
-        cout("FTDI drivers uninstalled", style=SUCCESS)
+        cout(NO_DRIVERS_MSG, style=SUCCESS)
         return 0
 
     def _serial_install_darwin(self):
         """Installs serial driver on darwin. Returns process status code."""
-        # Check homebrew
-        brew = subprocess.call("which brew > /dev/null", shell=True)
-        if brew != 0:
-            cerror("Homebrew is required")
-            return 1
-
-        cout("Install Serial drivers for FPGA")
-        subprocess.call(["brew", "update"])
-        self._brew_install_darwin("libffi")
-        self._brew_install_darwin("libusb")
-        # self._brew_install_serial_drivers_darwin()
-        cout("Serial drivers installed", style=SUCCESS)
+        cout(NO_DRIVERS_MSG, style=SUCCESS)
         return 0
 
     def _serial_uninstall_darwin(self):
         """Uninstalls serial driver on darwin. Returns process status code."""
-        cout("Uninstall Serial drivers configuration")
-        cout("Serial drivers uninstalled", style=SUCCESS)
+        cout(NO_DRIVERS_MSG, style=SUCCESS)
         return 0
-
-    def _brew_install_darwin(self, brew_package):
-        subprocess.call(["brew", "install", "--force", brew_package])
-        subprocess.call(["brew", "unlink", brew_package])
-        subprocess.call(["brew", "link", "--force", brew_package])
-
-    def _check_ftdi_driver_darwin(self, driver):
-        return driver in str(subprocess.check_output(["kextstat"]))
 
     def _ftdi_install_windows(self) -> int:
         # -- Check that the required packages are installed.
