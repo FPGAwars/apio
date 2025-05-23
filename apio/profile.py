@@ -42,9 +42,6 @@ class Profile:
         # User preferences
         self.preferences = {}
 
-        # Apio settings
-        self.settings = {}
-
         # -- Installed package versions
         self.packages = {}
 
@@ -67,12 +64,6 @@ class Profile:
         """Add a package to the profile class"""
 
         self.packages[name] = {"version": version}
-        self._save()
-
-    def add_setting(self, key: str, value: str):
-        """Add or overwrite a (key,value) pair in the settings"""
-
-        self.settings[key] = value
         self._save()
 
     def set_preferences_theme(self, theme: str):
@@ -171,7 +162,6 @@ class Profile:
 
         # -- Extract the fields
         self.preferences = data.get("preferences", {})
-        self.settings = data.get("settings", {})
         self.packages = data.get("installed-packages", {})
         self.remote_config = data.get("remote-config", {})
 
@@ -190,8 +180,7 @@ class Profile:
         data = {}
         if self.preferences:
             data["preferences"] = self.preferences
-        if self.settings:
-            data["settings"] = self.settings
+
         if self.packages:
             data["installed-packages"] = self.packages
         if self.remote_config:

@@ -12,7 +12,6 @@ from typing import Optional
 from pathlib import Path
 import click
 from apio.managers.scons import SCons
-from apio.managers.drivers import Drivers
 from apio.utils import cmd_util
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
@@ -90,13 +89,6 @@ def cli(
         env_arg=env,
     )
 
-    # -- Create the drivers manager.
-    drivers = Drivers(apio_ctx)
-
-    # -- Only for MAC
-    # -- Operation to do before uploading a design in MAC
-    drivers.pre_upload()
-
     # -- Create the scons manager
     scons = SCons(apio_ctx)
 
@@ -112,10 +104,6 @@ def cli(
 
     # Run scons: upload command
     exit_code = scons.upload(upload_params)
-
-    # -- Only for MAC
-    # -- Operation to do after uploading a design in MAC
-    drivers.post_upload()
 
     # -- Done!
     sys.exit(exit_code)

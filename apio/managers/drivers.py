@@ -219,20 +219,6 @@ class Drivers:
         cerror(f"Unknown platform '{self.apio_ctx.platform_id}'.")
         return 1
 
-    def pre_upload(self):
-        """Operations to do before uploading a design
-        Only for mac platforms"""
-
-        if self.apio_ctx.is_darwin:
-            self._pre_upload_darwin()
-
-    def post_upload(self):
-        """Operations to do after uploading a design
-        Only for mac platforms"""
-
-        if self.apio_ctx.is_darwin:
-            self._post_upload_darwin()
-
     def _ftdi_install_linux(self) -> int:
         """Drivers install on Linux. It copies the .rules file into
         the corresponding folder. Return process exit code."""
@@ -381,14 +367,12 @@ class Drivers:
         subprocess.call(["brew", "update"])
         self._brew_install_darwin("libffi")
         self._brew_install_darwin("libftdi")
-        self.apio_ctx.profile.add_setting("macos_ftdi_drivers", True)
         cout("FTDI drivers installed", style=SUCCESS)
         return 0
 
     def _ftdi_uninstall_darwin(self):
         """Uninstalls FTDI driver on darwin. Returns process status code."""
         cout("Uninstall FTDI drivers configuration")
-        self.apio_ctx.profile.add_setting("macos_ftdi_drivers", False)
         cout("FTDI drivers uninstalled", style=SUCCESS)
         return 0
 
@@ -418,37 +402,6 @@ class Drivers:
         subprocess.call(["brew", "install", "--force", brew_package])
         subprocess.call(["brew", "unlink", brew_package])
         subprocess.call(["brew", "link", "--force", brew_package])
-
-    # def _brew_install_serial_drivers_darwin(self):
-    #     subprocess.call(
-    #         [
-    #             "brew",
-    #             "tap",
-    #             "mengbo/ch340g-ch34g-ch34x-mac-os-x-driver",
-    #             "https://github.com/mengbo/ch340g-ch34g-ch34x-mac-os-x-driver",
-    #         ]
-    #     )
-    #     subprocess.call(
-    #         ["brew", "cask", "install", "wch-ch34x-usb-serial-driver"]
-    #     )
-
-    def _pre_upload_darwin(self):
-        if self.apio_ctx.profile.settings.get("macos_ftdi_drivers", False):
-            # Check and unload the drivers
-            driver_a = "com.FTDI.driver.FTDIUSBSerialDriver"
-            driver_b = "com.apple.driver.AppleUSBFTDI"
-            if self._check_ftdi_driver_darwin(driver_a):
-                subprocess.call(["sudo", "kextunload", "-b", driver_a])
-                self.driver_c = driver_a
-            elif self._check_ftdi_driver_darwin(driver_b):
-                subprocess.call(["sudo", "kextunload", "-b", driver_b])
-                self.driver_c = driver_b
-
-    def _post_upload_darwin(self):
-        if self.apio_ctx.profile.settings.get("macos_ftdi_drivers", False):
-            # Restore previous driver configuration
-            if self.driver_c:
-                subprocess.call(["sudo", "kextload", "-b", self.driver_c])
 
     def _check_ftdi_driver_darwin(self, driver):
         return driver in str(subprocess.check_output(["kextstat"]))
