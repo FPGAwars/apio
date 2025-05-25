@@ -62,12 +62,17 @@ jobs:
                   pyver=${pyver//./}
                   echo "pyver: [$pyver]"
 
-                  # Determine pytest {posargs} value. Github passes the verbose
-                  # value only when we run the workflow manually se we default
-                  # its value here to 'false'.
+                  # Determine if we run in verbose mode. This can be enabled
+                  # in the github dashboard when running the workflow manuall.y.
                   echo "Original verbose: [${{ github.event.inputs.verbose }}]"
                   verbose="${{ github.event.inputs.verbose || 'false' }}"
                   echo "Effective verbose: [${verbose}]"
+                  if [[ "$verbose" != "true" && "$verbose" != "false" ]]; then
+                      echo "Error: 'verbose' must be 'true' or 'false'.
+                      exit 1
+                  fi
+
+                  # Determine the posargs to pass to pytest.
                   if [ "${verbose}" = "true" ]; then
                     echo "Verbose mode ON"
                     posargs="-s"
