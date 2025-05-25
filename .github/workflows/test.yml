@@ -53,5 +53,16 @@ jobs:
                   echo "pyver: [$pyver]"
                   pyver=${pyver//./}
                   echo "pyver: [$pyver]"
-                  python -m tox --skip-missing-interpreters false -e lint,$pyver
+
+                  # Determine pytest {posargs} value
+                  if [ "${{ github.event.inputs.verbose }}" = "true" ]; then
+                    echo "Verbose mode ON"
+                    posargs="-- -s"
+                  else
+                    echo "Verbose mode OFF"
+                    posargs=""
+                  fi
+
+                  # Run the tests
+                  python -m tox --skip-missing-interpreters false -e lint,$pyver ${posargs}
 
