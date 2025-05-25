@@ -108,10 +108,18 @@ def get_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
     # -- Collect the devices
     result: List[UsbDevice] = []
     for device in devices:
-        assert isinstance(device, usb.core.Device)
+        # -- Print entire device info for debugging.
+        if util.is_debug():
+            print()
+            print(device)
+            print()
 
+        # -- Sanity check.
+        assert isinstance(device, usb.core.Device), type(device)
+
+        # -- Skip hubs. We don't care about them.
         if device.bDeviceClass == 0x09:
-            continue  # skip hubs
+            continue
 
         # -- Determine ftdi type or "".
         if device.idVendor == 0x0403:
@@ -152,7 +160,6 @@ def _test_cli():
     """Implements the 'apio apio test' command."""
 
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
-    cout(f"Platform id: {apio_ctx.platform_id}")
 
     # -- Prepare the packages for use.
     installer.install_missing_packages_on_the_fly(apio_ctx)
@@ -196,8 +203,6 @@ def _test_cli():
         values.append(device.description)
         values.append(device.serial_num)
         values.append(device.ftdi_type)
-
-        print(f"{values=}")
 
         # -- Add row.
         table.add_row(*values)
