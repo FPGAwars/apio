@@ -55,6 +55,7 @@ jobs:
                   echo "pyver: [$pyver]"
 
                   # Determine pytest {posargs} value
+                  echo "Verbose flag: [${{ github.event.inputs.verbose }}]"
                   if [ "${{ github.event.inputs.verbose }}" = "true" ]; then
                     echo "Verbose mode ON"
                     posargs="-- -s"
