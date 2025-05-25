@@ -62,12 +62,12 @@ jobs:
                   echo "Effective verbose: [${verbose}]"
                   if [ "${verbose}" = "true" ]; then
                     echo "Verbose mode ON"
-                    posargs="-- -s"
+                    posargs="-s"
                   else
                     echo "Verbose mode OFF"
                     posargs=""
                   fi
 
                   # Run the tests
-                  python -m tox --skip-missing-interpreters false -e lint,$pyver ${posargs}
+                  python -m tox --skip-missing-interpreters false -e lint,$pyver -- ${posargs}
 
