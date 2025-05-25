@@ -1,7 +1,7 @@
 // List of computer plaforms that are supported by apio.
 //
 {
-  "darwin": {
+  "darwin_x86_64": {
     "description": "Mac OSX, x86 64 bit",
     "package_selector": "darwin_x86_64"
   },
