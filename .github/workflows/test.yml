@@ -16,7 +16,7 @@ on:
   workflow_dispatch:  # Allows manual trigger
     inputs:
         verbose:
-          description: 'Print additional information.'
+          description: 'Verbose'
           required: false
           default: 'false'
 
