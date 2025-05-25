@@ -9,14 +9,88 @@
 
 import sys
 import json
+from typing import Optional
 from pathlib import Path
+from glob import glob
 import click
+import usb.core
+import usb.backend.libusb1
 from apio.commands import options
 from apio.common.apio_console import cout, cerror
 from apio.common.apio_styles import INFO
 from apio.utils import cmd_util
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
+
+
+# ------ apio api test
+
+# TODO: Delete this command once the testing is done.
+
+# -- Text in the rich-text format of the python rich library.
+APIO_API_LAB_HELP = """
+The command 'apio api test' is a temporary command that is used \
+for cross platform testing by the apio team.
+"""
+
+
+def get_usb_str(device: usb.core.Device, index: int) -> Optional[str]:
+    """Extract usb string by its index."""
+    # pylint: disable=broad-exception-caught
+    try:
+        return usb.util.get_string(device, index)
+    #   print(f"{serial_number=}")
+    except Exception as e:
+        _ = e
+        return "(exception)"
+
+
+@click.command(
+    name="test",
+    cls=ApioCommand,
+    short_help="Temporary experimental internal testing.",
+    help=APIO_API_LAB_HELP,
+)
+def _test_cli():
+    """Implements the 'apio apio test' command."""
+
+    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+    cout(f"Platform id: {apio_ctx.platform_id}")
+
+    def find_library(name: str):
+        print(f"{name=}")
+        oss_dir = apio_ctx.get_package_dir("oss-cad-suite")
+        print(f"{oss_dir=}")
+        pattern = oss_dir / "lib" / f"lib{name}*"
+        print(f"{pattern=}")
+        print("aaa")
+        files = glob(str(pattern))
+        assert len(files) == 1, files
+        print("bbb")
+        print(f"{files=}")
+        print("ccc", flush=True)
+        return files[0]
+
+    backend = usb.backend.libusb1.get_backend(find_library=find_library)
+
+    # find USB devices
+    devices = usb.core.find(find_all=True, backend=backend)
+    # loop through devices, printing vendor and product ids in decimal and hex
+    for i, device in enumerate(devices):
+        print()
+        print(f"========= Device [{i}] ===========")
+        print()
+        assert isinstance(device, usb.core.Device), type(device)
+
+        print(f"id:           {device.idVendor:04X}:{device.idProduct:04x}")
+        print(f"bus:dev:      {device.bus}:{device.address}")
+        print(f"manufacturer: {get_usb_str(device, device.iManufacturer)}")
+        print(f"product:      {get_usb_str(device, device.iProduct)}")
+        print(f"Serial:       {get_usb_str(device, device.iSerialNumber)}")
+
+        print()
+        print(device)
+        print()
 
 
 # ------ apio api info
@@ -157,6 +231,7 @@ SUBGROUPS = [
         "Subcommands",
         [
             _info_cli,
+            _test_cli,
         ],
     )
 ]
