@@ -68,7 +68,7 @@ jobs:
                   verbose="${{ github.event.inputs.verbose || 'false' }}"
                   echo "Effective verbose: [${verbose}]"
                   if [[ "$verbose" != "true" && "$verbose" != "false" ]]; then
-                      echo "Error: 'verbose' must be 'true' or 'false'.
+                      echo "Error: 'verbose' must be 'true' or 'false'."
                       exit 1
                   fi
 
