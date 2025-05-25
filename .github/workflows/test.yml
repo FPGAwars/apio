@@ -31,8 +31,8 @@ jobs:
         strategy:
             matrix:
                 # 'macos-latest' -> darwin apple silicon
-                # 'macos-12'     -> darwin intel x86
-                os: [ubuntu-22.04, macos-latest, macos-12, windows-latest]
+                # 'macos-13'     -> darwin intel x86
+                os: [ubuntu-22.04, macos-latest, macos-13, windows-latest]
                 python-version: ['3.11', '3.12', '3.13']
 
         steps:
