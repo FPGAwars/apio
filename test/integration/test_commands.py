@@ -4,11 +4,14 @@ and are slower than the offline tests at test/commands.
 """
 
 import os
+import sys
+import subprocess
 from os.path import getsize
 from pathlib import Path
 from test.conftest import ApioRunner
 import pytest
 from apio.commands.apio import cli as apio
+from apio import __main__ as apio_main
 
 CUSTOM_BOARDS = """
 {
@@ -128,12 +131,23 @@ def test_api_test(apio_runner: ApioRunner):
     if apio_runner.offline_flag:
         pytest.skip("requires internet connection")
 
-    with apio_runner.in_sandbox(shared_home=True) as sb:
+    with apio_runner.in_sandbox(shared_home=True):
+        # We run 'apio api test' in a subprocess. This is because on Windows
+        # the libusb library file in in the oss-cad-suite package cannot be
+        # deleted because it is loaded as a backend for pyusb, which causes
+        # the test cleanup code to fail on rmtree().
+        result = subprocess.run(
+            [sys.executable, apio_main.__file__, "api", "test"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
 
-        # -- Run 'apio api test'
-        # -- We verify that libusb backend was found.
-        result = sb.invoke_apio_cmd(apio, "api", "test")
-        assert result.exit_code == 0
+        print("Exit code:", result.returncode)
+        print("STDOUT:", result.stdout)
+        print("STDERR:", result.stderr)
+
+        assert result.returncode == 0
 
 
 def test_project_with_legacy_board_name(apio_runner: ApioRunner):
