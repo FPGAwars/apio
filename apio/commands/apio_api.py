@@ -15,6 +15,7 @@ from glob import glob
 import click
 import usb.core
 import usb.backend.libusb1
+from apio.managers import installer
 from apio.commands import options
 from apio.common.apio_console import cout, cerror
 from apio.common.apio_styles import INFO
@@ -57,21 +58,25 @@ def _test_cli():
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
     cout(f"Platform id: {apio_ctx.platform_id}")
 
+    # -- Prepare the packages for use.
+    installer.install_missing_packages_on_the_fly(apio_ctx)
+    # pkg_util.set_env_for_packages(apio_ctx, quiet=not verbose)
+
     def find_library(name: str):
         print(f"{name=}")
         oss_dir = apio_ctx.get_package_dir("oss-cad-suite")
         print(f"{oss_dir=}")
         pattern = oss_dir / "lib" / f"lib{name}*"
         print(f"{pattern=}")
-        print("aaa")
         files = glob(str(pattern))
-        assert len(files) == 1, files
-        print("bbb")
         print(f"{files=}")
-        print("ccc", flush=True)
-        return files[0]
+        assert len(files) <= 1
+        if files:
+            return files[0]
+        return None
 
     backend = usb.backend.libusb1.get_backend(find_library=find_library)
+    # backend = usb.backend.libusb1.get_backend()
 
     # find USB devices
     devices = usb.core.find(find_all=True, backend=backend)

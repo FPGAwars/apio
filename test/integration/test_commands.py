@@ -120,6 +120,22 @@ def test_utilities(apio_runner: ApioRunner):
         assert "YOSYS_LIB" in result.output
 
 
+def test_api_test(apio_runner: ApioRunner):
+    """Tests apio api test command (experimental)."""
+
+    # -- If the option 'offline' is passed, the test is skip
+    # -- (This test is slow and requires internet connectivity)
+    if apio_runner.offline_flag:
+        pytest.skip("requires internet connection")
+
+    with apio_runner.in_sandbox(shared_home=True) as sb:
+
+        # -- Run 'apio api test'
+        # -- We verify that libusb backend was found.
+        result = sb.invoke_apio_cmd(apio, "api", "test")
+        assert result.exit_code == 0
+
+
 def test_project_with_legacy_board_name(apio_runner: ApioRunner):
     """Test a project that uses a legacy board name."""
 
