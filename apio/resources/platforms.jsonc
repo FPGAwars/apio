@@ -1,9 +1,11 @@
-// List of computer plaforms that are supported by apio.
+// List of computer platforms that are supported by apio.
 //
 {
+  // NOTE: For historical reasons, the packages for the platform
+  // "darwin_x86_64" are called "darwin" rather than "darwin_x86_64.
   "darwin_x86_64": {
     "description": "Mac OSX, x86 64 bit",
-    "package_selector": "darwin_x86_64"
+    "package_selector": "darwin"
   },
   "darwin_arm64": {
     "description": "Mac OSX, ARM 64 bit",
