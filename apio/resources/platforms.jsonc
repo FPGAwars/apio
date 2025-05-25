@@ -3,7 +3,7 @@
 {
   "darwin": {
     "description": "Mac OSX, x86 64 bit",
-    "package_selector": "darwin"
+    "package_selector": "darwin_x86_64"
   },
   "darwin_arm64": {
     "description": "Mac OSX, ARM 64 bit",
