@@ -166,7 +166,11 @@ class ApioContext:
         # -- Profile information, from ~/.apio/profile.json. We provide it with
         # -- the remote config url template from distribution.jsonc such that
         # -- can it fetch the remote config on demand.
-        self.profile = Profile(self.home_dir, self.config["remote-config"])
+        remote_config_url = env_options.get(
+            env_options.APIO_REMOTE_CONFIG_URL,
+            default=self.config["remote-config"],
+        )
+        self.profile = Profile(self.home_dir, remote_config_url)
 
         # -- Read the platforms information.
         self.platforms = self._load_resource(PLATFORMS_JSONC)
