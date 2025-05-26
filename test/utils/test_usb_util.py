@@ -40,13 +40,13 @@ def test_text_with_devices():
             bus=1, device=1, vendor_id="0403", product_id="6010", path="1"
         ),
         UsbDeviceInfo(
-            bus=2, device=8, vendor_id="0403", product_id="6010", path="4.3.1"
+            bus=2, device=0, vendor_id="1022", product_id="15E0", path=""
         ),
         UsbDeviceInfo(
             bus=2, device=6, vendor_id="0B0E", product_id="0305", path="4.4"
         ),
         UsbDeviceInfo(
-            bus=2, device=0, vendor_id="1022", product_id="15E0", path=""
+            bus=2, device=8, vendor_id="0403", product_id="6010", path="4.3.1"
         ),
     ]
 
