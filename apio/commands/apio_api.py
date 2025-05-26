@@ -206,7 +206,7 @@ def _test_cli():
         values.append(str(device.bus))
         values.append(str(device.device))
         values.append(f"{device.vendor_id:04X}")
-        values.append(f"{device.product_id:04x}")
+        values.append(f"{device.product_id:04X}")
         values.append(device.manufacturer)
         values.append(device.description)
         values.append(device.serial_num)
