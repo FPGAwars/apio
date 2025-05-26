@@ -67,43 +67,29 @@ FTDI_PID_TO_MODEL = {
 }
 
 
-def get_usb_str(device: usb.core.Device, index: int) -> Optional[str]:
+def get_usb_str(
+    device: usb.core.Device, index: int, default: str
+) -> Optional[str]:
     """Extract usb string by its index."""
     # pylint: disable=broad-exception-caught
     try:
         s = usb.util.get_string(device, index)
-        # For Tang 9K which contains a null char as a string seperator.
+        # For Tang 9K which contains a null char as a string separator.
         # It's not USB standard but C tools do that implicitly.
         s = s.split("\x00", 1)[0]
         return s
-    #   print(f"{serial_number=}")
     except Exception as e:
-        _ = e
-        return "(exception)"
+        if util.is_debug():
+            print(f"Error getting USB string at index {index}: {e}")
+        return default
 
 
 def get_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
     """Query and return a list with usb device info."""
 
-    # def find_library(name: str):
-    #     """A callback for looking up the libusb backend file."""
-    #     oss_dir = apio_ctx.get_package_dir("oss-cad-suite")
-    #     pattern = oss_dir / "lib" / f"lib{name}*"
-    #     files = glob(str(pattern))
-    #     assert len(files) <= 1, files
-    #     if files:
-    #         return files[0]
-    #     return None
-
-    # -- Lookup libusb backend library file in oss-cad-suite/lib.
-    # backend = usb.backend.libusb1.get_backend(find_library=find_library)
-
-    # old_val = os.environ["PATH"]
-    # items = mutations.paths + [old_val]
-    # new_val = os.pathsep.join(items)
-
     lib_path = str(apio_ctx.get_package_dir("oss-cad-suite") / "lib")
     print(f"{lib_path=}")
+    # TODO: prepend to path if has prior value.
     os.environ["DYLD_LIBRARY_PATH"] = lib_path
 
     # -- Find the usb devices.
@@ -125,10 +111,12 @@ def get_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
         if device.bDeviceClass == 0x09:
             continue
 
-        # -- Determine ftdi type or "".
+        # -- Determine ftdi type.
         if device.idVendor == 0x0403:
+            # -- This is an FTDI device, so look up its type by its PID.
             ftdi_type = FTDI_PID_TO_MODEL.get(device.idProduct, "UNKNOWN")
         else:
+            # -- Not an FTDI device, so no type.
             ftdi_type = ""
 
         # -- Create the device object.
@@ -137,9 +125,13 @@ def get_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
             device=device.address,
             vendor_id=device.idVendor,
             product_id=device.idProduct,
-            manufacturer=get_usb_str(device, device.iManufacturer),
-            description=get_usb_str(device, device.iProduct),
-            serial_num=get_usb_str(device, device.iSerialNumber),
+            manufacturer=get_usb_str(
+                device, device.iManufacturer, default="(unavail)"
+            ),
+            description=get_usb_str(
+                device, device.iProduct, default="(unavail)"
+            ),
+            serial_num=get_usb_str(device, device.iSerialNumber, default=""),
             ftdi_type=ftdi_type,
         )
         result.append(item)
