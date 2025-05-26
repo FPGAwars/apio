@@ -8,209 +8,15 @@
 """Implementation of 'apio api' command"""
 
 import sys
-import os
 import json
-from typing import Optional, List
-from dataclasses import dataclass
 from pathlib import Path
-
-# from glob import glob
 import click
-from rich.table import Table
-from rich import box
-import usb.core
-
-# import usb.backend.libusb1
-from apio.managers import installer
 from apio.commands import options
-from apio.common.apio_console import cout, cerror, cprint
-from apio.common.apio_styles import INFO, ERROR, BORDER, EMPH3, SUCCESS
-from apio.utils import cmd_util, util
+from apio.common.apio_console import cout, cerror
+from apio.common.apio_styles import INFO
+from apio.utils import cmd_util
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
-
-
-# ------ apio api test
-
-# TODO: Delete this command once the testing is done.
-
-
-@dataclass()
-class UsbDevice:
-    """A data class to hold the information of a single USB device."""
-
-    # pylint: disable=too-many-instance-attributes
-
-    bus: int
-    device: int
-    vendor_id: str
-    product_id: str
-    manufacturer: str
-    description: str
-    serial_num: str
-    ftdi_type: str
-
-
-# -- Mapping of FTDI PID to IC model number. Try to keep it consistent with
-# -- src/libusb_ll.cpp#L159 at https://github.com/trabucayre/openFPGALoader.
-FTDI_PID_TO_MODEL = {
-    0x6001: "FT232R",  # Most common UART interface
-    0x6010: "FT2232H",  # Dual channel, high-speed
-    0x6011: "FT4232H",  # Quad channel, high-speed
-    0x6014: "FT232H",  # Single channel, high-speed, multi-protocol
-    0x6015: "FTX Series",  # Includes FT231X, FT234X (basic UART)
-    0x6017: "FT313H",  # USB host controller IC
-    0x8372: "FT245R",  # Parallel FIFO interface
-    0x8371: "FT232BM",  # Older UART chip
-    0x8373: "FT2232C",  # Early dual interface device
-    0x8374: "FT4232",  # Early quad interface device
-}
-
-
-def get_usb_str(
-    device: usb.core.Device, index: int, default: str
-) -> Optional[str]:
-    """Extract usb string by its index."""
-    # pylint: disable=broad-exception-caught
-    try:
-        s = usb.util.get_string(device, index)
-        # For Tang 9K which contains a null char as a string separator.
-        # It's not USB standard but C tools do that implicitly.
-        s = s.split("\x00", 1)[0]
-        return s
-    except Exception as e:
-        if util.is_debug():
-            print(f"Error getting USB string at index {index}: {e}")
-        return default
-
-
-def get_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
-    """Query and return a list with usb device info."""
-
-    lib_path = str(apio_ctx.get_package_dir("oss-cad-suite") / "lib")
-    print(f"{lib_path=}")
-    # TODO: prepend to path if has prior value.
-    os.environ["DYLD_LIBRARY_PATH"] = lib_path
-
-    # -- Find the usb devices.
-    devices: List[usb.core.Device] = usb.core.find(find_all=True)
-
-    # -- Collect the devices
-    result: List[UsbDevice] = []
-    for device in devices:
-        # -- Print entire device info for debugging.
-        if util.is_debug():
-            print()
-            print(device)
-            print()
-
-        # -- Sanity check.
-        assert isinstance(device, usb.core.Device), type(device)
-
-        # -- Skip hubs. We don't care about them.
-        if device.bDeviceClass == 0x09:
-            continue
-
-        # -- Determine ftdi type.
-        if device.idVendor == 0x0403:
-            # -- This is an FTDI device, so look up its type by its PID.
-            ftdi_type = FTDI_PID_TO_MODEL.get(device.idProduct, "UNKNOWN")
-        else:
-            # -- Not an FTDI device, so no type.
-            ftdi_type = ""
-
-        # -- Create the device object.
-        item = UsbDevice(
-            bus=device.bus,
-            device=device.address,
-            vendor_id=device.idVendor,
-            product_id=device.idProduct,
-            manufacturer=get_usb_str(
-                device, device.iManufacturer, default="(unavail)"
-            ),
-            description=get_usb_str(
-                device, device.iProduct, default="(unavail)"
-            ),
-            serial_num=get_usb_str(device, device.iSerialNumber, default=""),
-            ftdi_type=ftdi_type,
-        )
-        result.append(item)
-
-    # -- Sort by (bus, device).
-    result = sorted(result, key=lambda d: (d.bus, d.device))
-
-    # -- All done.
-    return result
-
-
-# -- Text in the rich-text format of the python rich library.
-APIO_API_LAB_HELP = """
-The command 'apio api test' is a temporary command that is used \
-for cross platform testing by the apio team.
-"""
-
-
-@click.command(
-    name="test",
-    cls=ApioCommand,
-    short_help="Temporary experimental internal testing.",
-    help=APIO_API_LAB_HELP,
-)
-def _test_cli():
-    """Implements the 'apio apio test' command."""
-
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
-
-    # -- Prepare the packages for use.
-    installer.install_missing_packages_on_the_fly(apio_ctx)
-
-    # -- Get the list of devices
-    devices = get_usb_devices(apio_ctx)
-
-    # -- If not found, print a message and exit.
-    if not devices:
-        cout("No USB devices found.", style=ERROR)
-        return
-
-    # -- Define the table.
-    table = Table(
-        show_header=True,
-        show_lines=True,
-        box=box.SQUARE,
-        border_style=BORDER,
-        title="USB Devices",
-        title_justify="left",
-    )
-
-    # -- Add columns
-    table.add_column("BUS", no_wrap=True, justify="center")
-    table.add_column("DEV", no_wrap=True, justify="center")
-    table.add_column("VID", no_wrap=True)
-    table.add_column("PID", no_wrap=True)
-    table.add_column("MANUFACTURER", no_wrap=True, style=EMPH3)
-    table.add_column("DESCRIPTION", no_wrap=True, style=EMPH3)
-    table.add_column("SERIAL-NUM", no_wrap=True)
-    table.add_column("FTDI-TYPE", no_wrap=True)
-
-    # -- Add a raw per device
-    for device in devices:
-        values = []
-        values.append(str(device.bus))
-        values.append(str(device.device))
-        values.append(f"{device.vendor_id:04X}")
-        values.append(f"{device.product_id:04X}")
-        values.append(device.manufacturer)
-        values.append(device.description)
-        values.append(device.serial_num)
-        values.append(device.ftdi_type)
-
-        # -- Add row.
-        table.add_row(*values)
-
-    # -- Render the table.
-    cout()
-    cprint(table)
-    cout(f"Found {util.plurality(devices, 'USB device')}", style=SUCCESS)
 
 
 # ------ apio api info
@@ -351,7 +157,6 @@ SUBGROUPS = [
         "Subcommands",
         [
             _info_cli,
-            _test_cli,
         ],
     )
 ]

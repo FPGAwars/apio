@@ -25,6 +25,7 @@ from apio.commands import (
     apio_fpgas,
     apio_graph,
     apio_info,
+    apio_labs,
     apio_lint,
     apio_packages,
     apio_preferences,
@@ -78,6 +79,7 @@ SUBGROUPS = [
             apio_raw.cli,
             apio_api.cli,
             apio_upgrade.cli,
+            apio_labs.cli,
         ],
     ),
 ]

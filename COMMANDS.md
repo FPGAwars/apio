@@ -32,6 +32,8 @@
     * [apio info platforms](#apio-info-platforms) - Supported platforms.
     * [apio info resources](#apio-info-resources) - Additional resources.
     * [apio info system](#apio-info-system) - Show system information.
+  * [apio labs](#apio-labs) - Experimental apio commands.
+    * [apio labs usb-scan](#apio-labs-usb-scan) - An experimental command to scan USB devices.
   * [apio lint](#apio-lint) - Lint the source code.
   * [apio packages](#apio-packages) - Manage the apio packages.
     * [apio packages fix](#apio-packages-fix) - Fix broken apio packages.
@@ -110,6 +112,7 @@ Utility commands:
   apio raw          Execute commands directly from the Apio packages.
   apio api          Apio programmatic interface.
   apio upgrade      Check the latest Apio version.
+  apio labs         Experimental apio commands.
 
 ```
 
@@ -871,6 +874,48 @@ Options:
 
 <br>
 
+### apio labs
+
+```
+Usage: apio labs [OPTIONS] COMMAND [ARGS]...
+
+  The command group 'apio labs' contains experimental commands that are
+  used to evaluate new features and ideas. They are not part of the
+  official apio command set and most likely change or be removed in the
+  future.
+
+Options:
+  -h, --help  Show this message and exit.
+
+Subcommands:
+  apio labs usb-scan  An experimental command to scan USB devices.
+
+```
+
+<br>
+
+### apio labs usb-scan
+
+```
+Usage: apio labs usb-scan [OPTIONS]
+
+  The command 'apio labs usb-scan' is a temporary command that is used
+  to evaluate a new way to scan USB devices connected to the host
+  system. It is not part of the official apio command set and most
+  likely will change or be removed in the future.
+
+  Examples:
+    apio labs usb-scan     # Scan and print USB devices
+    apio labs usb-scan -v  # With extra info
+
+Options:
+  -v, --verbose  Show detailed output.
+  -h, --help     Show this message and exit.
+
+```
+
+<br>
+
 ### apio lint
 
 ```
@@ -1215,19 +1260,6 @@ Usage: apio upload [OPTIONS]
   Examples:
     apio upload              # Typical usage.
     apio upload --ftdi-idx 2 # Consider only FTDI device at index 2
-    apio upload --sram       # See below
-
-  The command programs the board’s default configuration memory, which
-  is typically a non-volatile FLASH memory. For SRAM programming (also
-  known as ICE programming), use the '--sram' option, subject to the
-  following restrictions:
-
-  1. The board must use the 'iceprog' programmer or a programmer whose
-  name begins with 'iceprog'.
-
-  2. The board must support SRAM programming and be configured
-  accordingly. Refer to your board’s documentation for details (SRAM
-  programming is also referred to as ICE programming).
 
   The optional flag '--ftdi-idx' is used in special cases involving
   boards with FTDI devices, particularly when multiple boards are
@@ -1242,7 +1274,6 @@ Usage: apio upload [OPTIONS]
 Options:
   --serial-port serial-port  Set the serial port.
   --ftdi-idx ftdi-idx        Consider only FTDI device with given index.
-  -s, --sram                 Perform SRAM programming (see restrictions).
   -e, --env name             Set the apio.ini env.
   -p, --project-dir path     Set the root directory for the project.
   -h, --help                 Show this message and exit.

@@ -123,8 +123,8 @@ def test_utilities(apio_runner: ApioRunner):
         assert "YOSYS_LIB" in result.output
 
 
-def test_api_test(apio_runner: ApioRunner):
-    """Tests apio api test command (experimental)."""
+def test_labs_usb_scan(apio_runner: ApioRunner):
+    """Tests 'apio labs usb-scan' command (experimental)."""
 
     # -- If the option 'offline' is passed, the test is skip
     # -- (This test is slow and requires internet connectivity)
@@ -137,7 +137,7 @@ def test_api_test(apio_runner: ApioRunner):
         # deleted because it is loaded as a backend for pyusb, which causes
         # the test cleanup code to fail on rmtree().
         result = subprocess.run(
-            [sys.executable, apio_main.__file__, "api", "test"],
+            [sys.executable, apio_main.__file__, "labs", "usb-scan"],
             capture_output=True,
             text=True,
             check=False,
