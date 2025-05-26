@@ -8,16 +8,19 @@
 """Implementation of 'apio api' command"""
 
 import sys
+import os
 import json
 from typing import Optional, List
 from dataclasses import dataclass
 from pathlib import Path
-from glob import glob
+
+# from glob import glob
 import click
 from rich.table import Table
 from rich import box
 import usb.core
-import usb.backend.libusb1
+
+# import usb.backend.libusb1
 from apio.managers import installer
 from apio.commands import options
 from apio.common.apio_console import cout, cerror, cprint
@@ -82,23 +85,29 @@ def get_usb_str(device: usb.core.Device, index: int) -> Optional[str]:
 def get_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
     """Query and return a list with usb device info."""
 
-    def find_library(name: str):
-        """A callback for looking up the libusb backend file."""
-        oss_dir = apio_ctx.get_package_dir("oss-cad-suite")
-        pattern = oss_dir / "lib" / f"lib{name}*"
-        files = glob(str(pattern))
-        assert len(files) <= 1, files
-        if files:
-            return files[0]
-        return None
+    # def find_library(name: str):
+    #     """A callback for looking up the libusb backend file."""
+    #     oss_dir = apio_ctx.get_package_dir("oss-cad-suite")
+    #     pattern = oss_dir / "lib" / f"lib{name}*"
+    #     files = glob(str(pattern))
+    #     assert len(files) <= 1, files
+    #     if files:
+    #         return files[0]
+    #     return None
 
     # -- Lookup libusb backend library file in oss-cad-suite/lib.
-    backend = usb.backend.libusb1.get_backend(find_library=find_library)
+    # backend = usb.backend.libusb1.get_backend(find_library=find_library)
+
+    # old_val = os.environ["PATH"]
+    # items = mutations.paths + [old_val]
+    # new_val = os.pathsep.join(items)
+
+    lib_path = str(apio_ctx.get_package_dir("oss-cad-suite") / "lib")
+    print(f"{lib_path=}")
+    os.environ["DYLD_LIBRARY_PATH"] = lib_path
 
     # -- Find the usb devices.
-    devices: List[usb.core.Device] = usb.core.find(
-        find_all=True, backend=backend
-    )
+    devices: List[usb.core.Device] = usb.core.find(find_all=True)
 
     # -- Collect the devices
     result: List[UsbDevice] = []
