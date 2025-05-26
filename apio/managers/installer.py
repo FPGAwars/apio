@@ -17,10 +17,14 @@ from apio.apio_context import ApioContext
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
 from apio.utils import util, pkg_util
+from apio.profile import PackageRemoteConfig
 
 
 def _construct_package_download_url(
-    apio_ctx: ApioContext, package_name: str, target_version: str
+    apio_ctx: ApioContext,
+    package_name: str,
+    target_version: str,
+    package_config: PackageRemoteConfig,
 ) -> str:
     """Construct the download URL for the given package name and version.
 
@@ -54,11 +58,11 @@ def _construct_package_download_url(
     # -- E.g. 'atools-oss-cad-suite-darwin_arm64-0.0.9.tar.gz'
     file_name = f"{file_name}.{extension}"
 
-    # -- Get the github user name. E.g. 'FGPAWars'.
-    organization = package_info["repository"]["organization"]
-
     # -- Get the github repo name. e.g. 'tools-oss-cad-tools'
-    repo_name = package_info["repository"]["name"]
+    repo_name = package_config.repo_name
+
+    # -- Get the github user name. E.g. 'FGPAWars'.
+    repo_organization = package_config.repo_organization
 
     # -- Construct the release tag name. E.g 'v0.0.9'.
     release_tag = package_info["release"]["release_tag"].replace(
@@ -67,7 +71,7 @@ def _construct_package_download_url(
 
     # -- Construct the full url.
     download_url = (
-        f"https://github.com/{organization}/{repo_name}/releases/"
+        f"https://github.com/{repo_organization}/{repo_name}/releases/"
         f"download/{release_tag}/{file_name}"
     )
 
@@ -280,12 +284,15 @@ def install_package(
 
     cout(f"Installing apio package '{package_spec}'", style=EMPH3)
 
+    # -- Get package remote config.
+    package_config = apio_ctx.profile.get_package_config(
+        package_name, cached_config_ok=cached_config_ok, verbose=verbose
+    )
+
     # -- If the user didn't specify a target version we use the one specified
     # -- in the remote config.
     if not target_version:
-        target_version = apio_ctx.profile.get_package_required_version(
-            package_name, cached_config_ok=cached_config_ok, verbose=verbose
-        )
+        target_version = package_config.required_version
 
     cout(f"Target version {target_version}")
 
@@ -310,7 +317,7 @@ def install_package(
 
     # -- Construct the download URL.
     download_url = _construct_package_download_url(
-        apio_ctx, package_name, target_version
+        apio_ctx, package_name, target_version, package_config
     )
     if verbose:
         cout(f"Download URL: {download_url}")

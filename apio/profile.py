@@ -7,13 +7,26 @@
 
 import json
 import sys
+from dataclasses import dataclass
 from typing import Dict, Optional
 from pathlib import Path
 import requests
 from apio.common import apio_console
 from apio.common.apio_console import cout, cerror, cprint
 from apio.common.apio_styles import INFO, EMPH3, ERROR
-from apio.utils import util
+from apio.utils import util, jsonc
+
+
+@dataclass(frozen=True)
+class PackageRemoteConfig:
+    """Contains a package info from the remote config."""
+
+    # -- E.g. "0.2.3"
+    required_version: str
+    # -- E.g. "tools-oss-cad-suite"
+    repo_name: str
+    # -- E.g. "FPGAwars"
+    repo_organization: str
 
 
 class Profile:
@@ -123,22 +136,32 @@ class Profile:
         # -- Else, return the default value.
         return default
 
-    def get_package_required_version(
+    def get_package_config(
         self,
         package_name: str,
         *,
         cached_config_ok=True,
         verbose: bool = False,
-    ):
-        """Get from the required version of the package with given name.
+    ) -> PackageRemoteConfig:
+        """Given a package name, return the remote config information with the
+        version and fetch information.
         If cached_config_ok is False, we make sure to use a fresh remote config
         from this invocation of apio.
         """
         config = self._get_remote_config(
             cached_config_ok=cached_config_ok, verbose=verbose
         )
-        required_version = config["packages"][package_name]["version"]
-        return required_version
+
+        package_info = config["packages"][package_name]
+        required_version = package_info["version"]
+        repo_name = package_info["repository"]["name"]
+        repo_organization = package_info["repository"]["organization"]
+
+        return PackageRemoteConfig(
+            required_version=required_version,
+            repo_name=repo_name,
+            repo_organization=repo_organization,
+        )
 
     def load(self):
         """Load the profile from the file"""
@@ -198,12 +221,15 @@ class Profile:
     def _fetch_remote_config_text(self) -> str:
         """Fetch and return the apio remote config JSON text."""
 
+        # pylint: disable=broad-exception-caught
+
         # -- If the URL has a file protocol, read from the file. This
         # -- is used mostly for testing of a new package version.
         if self.remote_config_url.startswith("file://"):
             file_path = self.remote_config_url[7:]
             try:
-                file_text = text = open(file_path, encoding="utf-8").read()
+                with open(file_path, encoding="utf-8") as f:
+                    file_text = f.read()
             except Exception as e:
                 cout("Failed to load local config file.", str(e), style=ERROR)
                 sys.exit(1)
@@ -262,6 +288,9 @@ class Profile:
         # -- Print the file's content.
         if util.is_debug():
             cout(config_text)
+
+        # -- Convert the jsonc to json by removing '//' comments.
+        config_text = jsonc.to_json(config_text)
 
         # -- Parse the remote JSON config file into a dict.
         try:

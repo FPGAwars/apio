@@ -6,5 +6,9 @@
   //
   // This value can be overridden for testing using the env var
   // APIO_REMOTE_CONFIG_URL, including for reading from a local files.
-  "remote-config": "https://github.com/FPGAwars/apio/raw/develop/remote-config/apio-%V.json"
+
+  // "remote-config": "https://github.com/FPGAwars/apio/raw/develop/remote-config/apio-%V.jsonc"
+
+  "remote-config": "https://github.com/zapta/apio-dev/raw/develop/remote-config/apio-%V.jsonc"
+
 }
