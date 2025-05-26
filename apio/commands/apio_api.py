@@ -47,18 +47,9 @@ class UsbDevice:
     serial_num: str
     ftdi_type: str
 
-    def dump(self):
-        """Dump the device info. For debugging."""
-        cout(f"    bus:          [{self.bus}]")
-        cout(f"    device:       [{self.device}]")
-        cout(f"    vendor_id:    [{self.vendor_id}]")
-        cout(f"    product_id:   [{self.product_id}]")
-        cout(f"    manufacturer: [{self.manufacturer}]")
-        cout(f"    description:  [{self.description}]")
-        cout(f"    serial-num:   [{self.serial_num}]")
-        cout(f"    serial-num:   [{self.ftdi_type}]")
 
-
+# -- Mapping of FTDI PID to IC model number. Try to keep it consistent with
+# -- src/libusb_ll.cpp#L159 at https://github.com/trabucayre/openFPGALoader.
 FTDI_PID_TO_MODEL = {
     0x6001: "FT232R",  # Most common UART interface
     0x6010: "FT2232H",  # Dual channel, high-speed
@@ -77,7 +68,11 @@ def get_usb_str(device: usb.core.Device, index: int) -> Optional[str]:
     """Extract usb string by its index."""
     # pylint: disable=broad-exception-caught
     try:
-        return usb.util.get_string(device, index)
+        s = usb.util.get_string(device, index)
+        # For Tang 9K which contains a null char as a string seperator.
+        # It's not USB standard but C tools do that implicitly.
+        s = s.split("\x00", 1)[0]
+        return s
     #   print(f"{serial_number=}")
     except Exception as e:
         _ = e
@@ -123,7 +118,7 @@ def get_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
 
         # -- Determine ftdi type or "".
         if device.idVendor == 0x0403:
-            ftdi_type = FTDI_PID_TO_MODEL.get(device.idProduct, "")
+            ftdi_type = FTDI_PID_TO_MODEL.get(device.idProduct, "UNKNOWN")
         else:
             ftdi_type = ""
 
@@ -140,6 +135,10 @@ def get_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
         )
         result.append(item)
 
+    # -- Sort by (bus, device).
+    result = sorted(result, key=lambda d: (d.bus, d.device))
+
+    # -- All done.
     return result
 
 
@@ -183,22 +182,22 @@ def _test_cli():
     )
 
     # -- Add columns
-    table.add_column("VID", no_wrap=True, style=EMPH3)
-    table.add_column("PID", no_wrap=True, style=EMPH3)
     table.add_column("BUS", no_wrap=True, justify="center")
-    table.add_column("DEVICE", no_wrap=True, justify="center")
-    table.add_column("MANUFACTURER", no_wrap=True)
-    table.add_column("DESCRIPTION", no_wrap=True)
+    table.add_column("DEV", no_wrap=True, justify="center")
+    table.add_column("VID", no_wrap=True)
+    table.add_column("PID", no_wrap=True)
+    table.add_column("MANUFACTURER", no_wrap=True, style=EMPH3)
+    table.add_column("DESCRIPTION", no_wrap=True, style=EMPH3)
     table.add_column("SERIAL-NUM", no_wrap=True)
     table.add_column("FTDI-TYPE", no_wrap=True)
 
     # -- Add a raw per device
     for device in devices:
         values = []
-        values.append(f"{device.vendor_id:04X}")
-        values.append(f"{device.product_id:04x}")
         values.append(str(device.bus))
         values.append(str(device.device))
+        values.append(f"{device.vendor_id:04X}")
+        values.append(f"{device.product_id:04x}")
         values.append(device.manufacturer)
         values.append(device.description)
         values.append(device.serial_num)

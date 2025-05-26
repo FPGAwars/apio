@@ -46,26 +46,26 @@ def _list_ftdi_devices(apio_ctx: ApioContext) -> None:
     )
 
     # -- Add columns
-    table.add_column("TYPE", no_wrap=True)
-    table.add_column("MANUFACTURER", no_wrap=True, style=EMPH3)
-    table.add_column("DESCRIPTION", no_wrap=True, style=EMPH3)
+    table.add_column("BUS", no_wrap=True, justify="center")
+    table.add_column("DEV", no_wrap=True, justify="center")
     table.add_column("VID", no_wrap=True)
     table.add_column("PID", no_wrap=True)
+    table.add_column("MANUFACTURER", no_wrap=True, style=EMPH3)
+    table.add_column("DESCRIPTION", no_wrap=True, style=EMPH3)
     table.add_column("SERIAL-NUM", no_wrap=True)
-    table.add_column("BUS", no_wrap=True, justify="center")
-    table.add_column("DEVICE", no_wrap=True, justify="center")
+    table.add_column("FTDI-TYPE", no_wrap=True)
 
     # -- Add a raw per device
     for device in devices:
         values = []
-        values.append(device.type)
-        values.append(device.manufacturer)
-        values.append(device.description)
-        values.append(device.vendor_id)
-        values.append(device.product_id)
-        values.append(device.serial_number)
         values.append(str(device.bus))
         values.append(str(device.device))
+        values.append(device.vendor_id)
+        values.append(device.product_id)
+        values.append(device.manufacturer)
+        values.append(device.description)
+        values.append(device.serial_number)
+        values.append(device.type)
 
         # -- Add row.
         table.add_row(*values)
@@ -231,19 +231,19 @@ def _list_usb_devices(apio_ctx: ApioContext) -> None:
     )
 
     # -- Add columns
-    table.add_column("VID", no_wrap=True, style=EMPH3)
-    table.add_column("PID", no_wrap=True, style=EMPH3)
     table.add_column("BUS", no_wrap=True, justify="center")
     table.add_column("DEVICE", no_wrap=True, justify="center")
+    table.add_column("VID", no_wrap=True, style=EMPH3)
+    table.add_column("PID", no_wrap=True, style=EMPH3)
     table.add_column("PATH", no_wrap=True, justify="center")
 
     # -- Add a raw per device
     for device in devices:
         values = []
-        values.append(device.vendor_id)
-        values.append(device.product_id)
         values.append(str(device.bus))
         values.append(str(device.device))
+        values.append(device.vendor_id)
+        values.append(device.product_id)
         values.append(device.path)
 
         # -- Add row.

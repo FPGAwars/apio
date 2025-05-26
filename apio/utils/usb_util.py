@@ -78,10 +78,8 @@ def _get_devices_from_text(text: str) -> List[UsbDeviceInfo]:
 
         devices.append(device)
 
-    # -- Sort by (vendor_id, product_id, bus, device).
-    devices = sorted(
-        devices, key=lambda d: (d.vendor_id, d.product_id, d.bus, d.device)
-    )
+    # -- Sort by (bus, device).
+    devices = sorted(devices, key=lambda d: (d.bus, d.device))
 
     # -- All done.
     return devices
