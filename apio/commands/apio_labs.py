@@ -84,6 +84,9 @@ def get_usb_devices(apio_ctx: ApioContext, verbose: bool) -> List[UsbDevice]:
     def find_library(name: str):
         """A callback for looking up the libusb backend file."""
 
+        cout("find_library() call:")
+        cout(f"   {name=}")
+
         # -- Track searched names, for diagnostics
         searched_names.append(name)
 
@@ -92,11 +95,8 @@ def get_usb_devices(apio_ctx: ApioContext, verbose: bool) -> List[UsbDevice]:
         pattern = oss_dir / "lib" / f"lib{name}*"
         files = glob(str(pattern))
 
-        if util.is_debug():
-            cout("find_library() call:")
-            cout(f"   {name=}")
-            cout(f"   {pattern=}")
-            cout(f"   {files=}")
+        cout(f"   {pattern=}")
+        cout(f"   {files=}")
 
         # -- We don't expect multiple matches.
         if len(files) > 1:
