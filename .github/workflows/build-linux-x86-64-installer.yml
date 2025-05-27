@@ -71,6 +71,7 @@ jobs:
       - name: Run pyinstaller
         run: |
           pyinstaller \
+            --log-level=DEBUG \
             --workpath _work \
             --distpath _dist \
             apio-repo/.github/workflows/resources/apio-pyinstaller.spec
@@ -214,9 +215,3 @@ jobs:
           if-no-files-found: error
           name: "apio-linux-x86-64-snap"
           path: "apio-linux-x86-64-${{env.APIO_VERSION}}-snap.snap"
-
-
-      - name: Write a summary message
-        run: |
-          echo "NOTE: Github wraps the artifact files with an additional level of zip archive."    >> $GITHUB_STEP_SUMMARY
-          echo "To retrieve the artifact files, unzip the zip files you download from this page."  >> $GITHUB_STEP_SUMMARY       
