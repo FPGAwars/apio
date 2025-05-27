@@ -19,7 +19,7 @@ import usb.backend.libusb1
 from apio.managers import installer
 from apio.commands import options
 from apio.common.apio_console import cout, cprint, cerror
-from apio.common.apio_styles import ERROR, BORDER, EMPH3, SUCCESS
+from apio.common.apio_styles import ERROR, BORDER, EMPH3, SUCCESS, INFO
 from apio.utils import util
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
@@ -78,8 +78,16 @@ def get_usb_str(
 def get_usb_devices(apio_ctx: ApioContext, verbose: bool) -> List[UsbDevice]:
     """Query and return a list with usb device info."""
 
+    # -- Track the names we searched for. For diagnostics.
+    searched_names = []
+
     def find_library(name: str):
         """A callback for looking up the libusb backend file."""
+
+        # -- Track searched names, for diagnostics
+        searched_names.append(name)
+
+        # -- Try to match to a lib in oss-cad-suite/lib.
         oss_dir = apio_ctx.get_package_dir("oss-cad-suite")
         pattern = oss_dir / "lib" / f"lib{name}*"
         files = glob(str(pattern))
@@ -102,8 +110,10 @@ def get_usb_devices(apio_ctx: ApioContext, verbose: bool) -> List[UsbDevice]:
     # -- Lookup libusb backend library file in oss-cad-suite/lib.
     backend = usb.backend.libusb1.get_backend(find_library=find_library)
 
-    if util.is_debug():
-       print(f"get_usb_devices(): {backend=}")
+    if not backend:
+        cerror("Libusb backend not found")
+        cout(f"Searched names: {searched_names}", style=INFO)
+        sys.exit(1)
 
     # -- Find the usb devices.
     devices: List[usb.core.Device] = usb.core.find(
