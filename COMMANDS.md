@@ -33,6 +33,7 @@
     * [apio info resources](#apio-info-resources) - Additional resources.
     * [apio info system](#apio-info-system) - Show system information.
   * [apio labs](#apio-labs) - Experimental apio commands.
+    * [apio labs ftdi-scan](#apio-labs-ftdi-scan) - An experimental command to scan FTDI devices.
     * [apio labs usb-scan](#apio-labs-usb-scan) - An experimental command to scan USB devices.
   * [apio lint](#apio-lint) - Lint the source code.
   * [apio packages](#apio-packages) - Manage the apio packages.
@@ -888,7 +889,30 @@ Options:
   -h, --help  Show this message and exit.
 
 Subcommands:
-  apio labs usb-scan  An experimental command to scan USB devices.
+  apio labs usb-scan   An experimental command to scan USB devices.
+  apio labs ftdi-scan  An experimental command to scan FTDI devices.
+
+```
+
+<br>
+
+### apio labs ftdi-scan
+
+```
+Usage: apio labs ftdi-scan [OPTIONS]
+
+  The command 'apio labs ftdi-scan' is a temporary command that is used
+  to evaluate a new way to scan USB devices connected to the host
+  system. It is not part of the official apio command set and most
+  likely will change or be removed in the future.
+
+  Examples:
+    apio labs ftdi-scan     # Scan and print FTDI devices
+    apio labs ftdi-scan -v  # With extra info
+
+Options:
+  -v, --verbose  Show detailed output.
+  -h, --help     Show this message and exit.
 
 ```
 
