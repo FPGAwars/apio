@@ -7,7 +7,6 @@
 # -- License GPLv2
 """Implementation of 'apio api' command"""
 
-import sys
 from typing import Optional, List
 from dataclasses import dataclass
 from glob import glob
@@ -18,7 +17,7 @@ import usb.core
 import usb.backend.libusb1
 from apio.managers import installer
 from apio.commands import options
-from apio.common.apio_console import cout, cprint, cerror
+from apio.common.apio_console import cout, cprint
 from apio.common.apio_styles import ERROR, BORDER, EMPH3, SUCCESS
 from apio.utils import util
 from apio.apio_context import ApioContext, ApioContextScope
@@ -55,8 +54,7 @@ class UsbDevice:
     manufacturer: str
     description: str
     serial_num: str
-    comment: str
-    assessable: bool
+    device_type: str
 
 
 def get_usb_str(
@@ -76,15 +74,15 @@ def get_usb_str(
         return default
 
 
-def is_device_accessible(dev, verbose: bool):
-    """Check if the device is accessible via libusb"""
-    try:
-        dev.set_configuration()  # Attempt to claim device
-        return True
-    except usb.core.USBError as e:
-        if verbose:
-            print(f"Accessability exception: {e}")
-        return False
+# def is_device_accessible(dev, verbose: bool):
+#     """Check if the device is accessible via libusb"""
+#     try:
+#         dev.set_configuration()  # Attempt to claim device
+#         return True
+#     except usb.core.USBError as e:
+#         if verbose:
+#             print(f"Accessability exception: {e}")
+#         return False
 
 
 def get_usb_devices(apio_ctx: ApioContext, verbose: bool) -> List[UsbDevice]:
@@ -102,9 +100,10 @@ def get_usb_devices(apio_ctx: ApioContext, verbose: bool) -> List[UsbDevice]:
             cout(f"   {pattern=}")
             cout(f"   {files=}")
 
-        if len(files) > 1:
-            cerror(f"Found multiple backends for '{name}': {files}")
-            sys.exit(1)
+        # TODO: Enable after removing oss-cad-suite libusb alias
+        # if len(files) > 1:
+        #     cerror(f"Found multiple backends for '{name}': {files}")
+        #     sys.exit(1)
 
         if files:
             return files[0]
@@ -130,24 +129,18 @@ def get_usb_devices(apio_ctx: ApioContext, verbose: bool) -> List[UsbDevice]:
         # -- Sanity check.
         assert isinstance(device, usb.core.Device), type(device)
 
-        # -- Determine if this is a hub.
-        is_hub = device.bDeviceClass == 0x09
+        # -- Skip hubs, they are not interesting.
+        if device.bDeviceClass == 0x09:
+            continue
 
         # -- Determine ftdi type.
-        if is_hub:
-            comment = "Hub"
-        elif device.idVendor == 0x0403:
+
+        if device.idVendor == 0x0403:
             # -- This is an FTDI device, so look up its type by its PID.
-            comment = FTDI_PID_TO_MODEL.get(device.idProduct, "UNKNOWN")
+            device_type = FTDI_PID_TO_MODEL.get(device.idProduct, "FTDI")
         else:
             # -- Not an FTDI device, so no type.
-            comment = ""
-
-        # -- Check if it's has a libusb compatible driver.
-        # -- We skip this check for hubs.
-        accessible = (not is_hub) and is_device_accessible(
-            device, verbose=verbose
-        )
+            device_type = ""
 
         # -- Create the device object.
         item = UsbDevice(
@@ -167,8 +160,7 @@ def get_usb_devices(apio_ctx: ApioContext, verbose: bool) -> List[UsbDevice]:
             serial_num=get_usb_str(
                 device, device.iSerialNumber, default="", verbose=verbose
             ),
-            comment=comment,
-            assessable=accessible,
+            device_type=device_type,
         )
         result.append(item)
 
@@ -236,21 +228,17 @@ def _scan_usb_cli(
     table.add_column("MANUFACTURER", no_wrap=True, style=EMPH3)
     table.add_column("DESCRIPTION", no_wrap=True, style=EMPH3)
     table.add_column("SERIAL-NUM", no_wrap=True)
-    table.add_column("ACCESS", no_wrap=True, justify="center")
-    table.add_column("COMMENT", no_wrap=True)
+    table.add_column("TYPE", no_wrap=True)
 
     # -- Add a raw per device
     for device in devices:
         values = []
         values.append(f"{device.bus}:{device.device}")
-        # values.append(f"{device.device:02d}")
         values.append(f"{device.vendor_id:04X}:{device.product_id:04X}")
-        # values.append(f"{device.product_id:04X}")
         values.append(device.manufacturer)
         values.append(device.description)
         values.append(device.serial_num)
-        values.append("Y" if device.assessable else "")
-        values.append(device.comment)
+        values.append(device.device_type)
 
         # -- Add row.
         table.add_row(*values)
