@@ -102,6 +102,9 @@ def get_usb_devices(apio_ctx: ApioContext, verbose: bool) -> List[UsbDevice]:
     # -- Lookup libusb backend library file in oss-cad-suite/lib.
     backend = usb.backend.libusb1.get_backend(find_library=find_library)
 
+    if util.is_debug():
+       print(f"get_usb_devices(): {backend=}")
+
     # -- Find the usb devices.
     devices: List[usb.core.Device] = usb.core.find(
         find_all=True, backend=backend
