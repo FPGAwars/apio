@@ -16,7 +16,7 @@ added_files = [
     ( apio_dir / 'scons/SConstruct', 'apio/scons' ),
 ]
 
-hiddenimports = collect_submodules('SCons')  + collect_submodules('apio')
+hiddenimports = collect_submodules('SCons')  + collect_submodules('apio') + collect_submodules('usb')
 
 a = Analysis(
     [apio_dir / '__main__.py'],
