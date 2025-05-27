@@ -7,6 +7,7 @@
 # -- License GPLv2
 """Implementation of 'apio api' command"""
 
+import sys
 from typing import Optional, List
 from dataclasses import dataclass
 from glob import glob
@@ -17,7 +18,7 @@ import usb.core
 import usb.backend.libusb1
 from apio.managers import installer
 from apio.commands import options
-from apio.common.apio_console import cout, cprint
+from apio.common.apio_console import cout, cprint, cerror
 from apio.common.apio_styles import ERROR, BORDER, EMPH3, SUCCESS
 from apio.utils import util
 from apio.apio_context import ApioContext, ApioContextScope
@@ -74,17 +75,6 @@ def get_usb_str(
         return default
 
 
-# def is_device_accessible(dev, verbose: bool):
-#     """Check if the device is accessible via libusb"""
-#     try:
-#         dev.set_configuration()  # Attempt to claim device
-#         return True
-#     except usb.core.USBError as e:
-#         if verbose:
-#             print(f"Accessability exception: {e}")
-#         return False
-
-
 def get_usb_devices(apio_ctx: ApioContext, verbose: bool) -> List[UsbDevice]:
     """Query and return a list with usb device info."""
 
@@ -100,10 +90,10 @@ def get_usb_devices(apio_ctx: ApioContext, verbose: bool) -> List[UsbDevice]:
             cout(f"   {pattern=}")
             cout(f"   {files=}")
 
-        # TODO: Enable after removing oss-cad-suite libusb alias
-        # if len(files) > 1:
-        #     cerror(f"Found multiple backends for '{name}': {files}")
-        #     sys.exit(1)
+        # -- We don't expect multiple matches.
+        if len(files) > 1:
+            cerror(f"Found multiple backends for '{name}': {files}")
+            sys.exit(1)
 
         if files:
             return files[0]
