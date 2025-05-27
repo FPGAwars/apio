@@ -16,6 +16,7 @@
 .venv/
 build/
 dist/
+_dist/
 ice-build
 ice-build/
 ice-build/*
@@ -28,6 +29,7 @@ venv/
 examples/
 ice-build/
 work/
+_work/
 test-colorlight-v61.ice
 _build
 hardware.json

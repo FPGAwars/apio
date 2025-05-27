@@ -65,6 +65,7 @@ jobs:
       - name: Run pyinstaller
         run: |
           pyinstaller \
+            --log-level=DEBUG \
             --workpath _work \
             --distpath _dist \
             apio-repo/.github/workflows/resources/apio-pyinstaller.spec
