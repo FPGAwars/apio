@@ -39,7 +39,7 @@ requires = [
     'apycula==0.15',
     'apollo_fpga==1.1.1',
     'protobuf==5.29.3',
-    'rich==13.9.4'
+    'rich==14.0.0'
 ]
 
 [tool.flit.sdist]
