@@ -69,8 +69,6 @@ def construct_programmer_cmd(
         # -- Place the value in the command string
         programmer = programmer.replace("${PID}", pid)
 
- 
-
     # Replace Serial port
     # -- The board uses a Serial port for uploading the circuit
     if "${SERIAL_PORT}" in programmer:
@@ -351,6 +349,3 @@ def _check_tinyprog(board_info: dict, port: str) -> bool:
 
     # -- TinyFPGA board not detected!
     return False
-
-
-

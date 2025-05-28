@@ -31,8 +31,6 @@ serial_port_option = click.option(
 )
 
 
-
-
 # -- Text in the rich-text format of the python rich library.
 APIO_UPLOAD_HELP = """
 The command 'apio upload' builds the bitstream file (similar to the \
