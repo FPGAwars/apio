@@ -49,6 +49,19 @@ jobs:
           pip install pyinstaller
 
 
+      # A temporary workaround until this fix will be released
+      # https://github.com/pyinstaller/pyinstaller-hooks-contrib/pull/913
+      # We delete the usb line in the hook pyinstaller hook list file
+      # rthooks.dat to disable this hook.
+      - name: Patch pyinstaller usb hook
+        run: |
+          module_dir=$(dirname "$(python -c 'import _pyinstaller_hooks_contrib; print(_pyinstaller_hooks_contrib.__file__)')")
+          f="$module_dir/rthooks.dat"
+          cat -n $f
+          sed -i.bak "/'usb':/d" "$f" && rm -f "${f}.bak"
+          cat -n $f
+
+
       - name: Extract apio version
         run: |
           echo "APIO_VERSION=$(pip show apio | grep Version: | cut -d ' ' -f2)" >> $GITHUB_ENV

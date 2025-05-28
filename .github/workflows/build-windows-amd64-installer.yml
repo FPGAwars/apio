@@ -1,12 +1,12 @@
 name: build-windows-amd64-installer
 
-# TODO: Set complex file names once in reuseable variables.
 
 on:
   schedule:
     # We run the build daily at 2PM, after running the tests at midnight.
     - cron: '0 2 * * *'
   workflow_dispatch:  # Manual triggers ok.
+
 
 jobs:
   build-windows-amd64-installer:
@@ -42,6 +42,19 @@ jobs:
       - name: Pip install pyinstaller
         run: |
           pip install pyinstaller
+
+
+      # A temporary workaround until this fix will be released
+      # https://github.com/pyinstaller/pyinstaller-hooks-contrib/pull/913
+      # We delete the usb line in the hook pyinstaller hook list file
+      # rthooks.dat to disable this hook.
+      - name: Patch pyinstaller usb hook
+        run: |
+          module_dir=$(dirname "$(python -c 'import _pyinstaller_hooks_contrib; print(_pyinstaller_hooks_contrib.__file__)')")
+          f="$module_dir/rthooks.dat"
+          cat -n $f
+          sed -i.bak "/'usb':/d" "$f" && rm -f "${f}.bak"
+          cat -n $f
 
 
       - name: Extract apio version

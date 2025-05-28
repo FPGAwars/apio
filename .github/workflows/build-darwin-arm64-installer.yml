@@ -1,13 +1,13 @@
 name: build-darwin-arm64-installer
 
-# TODO: Set complex file names once in reusealble variables.
-# TODO: Generate also darwin x86
+
 
 on:
   schedule:
     # We run the build daily at 2PM, after running the tests at midnight.
     - cron: '0 2 * * *'
   workflow_dispatch:  # Manual triggers ok.
+
 
 jobs:
   build-darwin-arm64-installer:
