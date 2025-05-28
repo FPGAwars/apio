@@ -20,9 +20,7 @@ CUSTOM_BOARDS = """
     },
     "usb": {
       "vid": "0403",
-      "pid": "6010"
-    },
-    "ftdi": {
+      "pid": "6010",
       "desc-regex": "^My Custom Board"
     }
   }
