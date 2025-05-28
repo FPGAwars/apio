@@ -163,7 +163,7 @@
       "pid": "5740"
     }
   },
-  // https://www.robot-electronics.co.uk/products/fpga/icefun.html
+  // https://www.robotshop.com/products/icefun-fpga-board
   "icefun": {
     "description": "iceFUN",
     "fpga": "ice40hx8k-cb132",
