@@ -1,12 +1,11 @@
 // Definition of apio software packages. These are packages with various
 // data and utilities that are installed by apio. 
 //
+// Additional packages information is fetched dynamically from the remote 
+// config and is saved in .apio/profile.json.
+//
 {
   "examples": {
-    "repository": {
-      "name": "apio-examples",
-      "organization": "FPGAwars"
-    },
     "release": {
       "release_tag": "%V",
       "file_name": "apio-examples-%V",
@@ -16,10 +15,6 @@
     "env": {}
   },
   "oss-cad-suite": {
-    "repository": {
-      "name": "tools-oss-cad-suite",
-      "organization": "FPGAwars"
-    },
     "release": {
       "release_tag": "v%V",
       "file_name": "tools-oss-cad-suite-%P-%V",
@@ -40,10 +35,6 @@
     }
   },
   "graphviz": {
-    "repository": {
-      "name": "tools-graphviz",
-      "organization": "FPGAwars"
-    },
     "release": {
       "release_tag": "v%V",
       "file_name": "tools-graphviz-%P-%V",
@@ -60,10 +51,6 @@
     }
   },
   "verible": {
-    "repository": {
-      "name": "tools-verible",
-      "organization": "FPGAwars"
-    },
     "release": {
       "release_tag": "v%V",
       "file_name": "tools-verible-%P-%V",
@@ -77,10 +64,6 @@
     }
   },
   "drivers": {
-    "repository": {
-      "name": "tools-drivers",
-      "organization": "FPGAwars"
-    },
     "release": {
       "release_tag": "v%V",
       "file_name": "tools-drivers-%P-%V",
@@ -97,10 +80,6 @@
     }
   },
   "system": {
-    "repository": {
-      "name": "tools-system",
-      "organization": "FPGAwars"
-    },
     "release": {
       "release_tag": "v%V",
       "file_name": "tools-system-%P-%V",

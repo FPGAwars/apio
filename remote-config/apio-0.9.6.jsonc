@@ -1,0 +1,52 @@
+{
+  "packages": {
+    // -- System
+    "system": {
+      "version": "1.1.2",
+      "repository": {
+        "name": "tools-system",
+        "organization": "FPGAwars"
+      }
+    },
+    // -- Drivers
+    "drivers": {
+      "version": "1.2.0",
+      "repository": {
+        "name": "tools-drivers",
+        "organization": "FPGAwars"
+      }
+    },
+    // -- Examples
+    "examples": {
+      "version": "0.1.4",
+      "repository": {
+        "name": "apio-examples",
+        "organization": "FPGAwars"
+      }
+    },
+    // -- Graphviz
+    "graphviz": {
+      "version": "12.1.2",
+      "repository": {
+        "name": "tools-graphviz",
+        "organization": "FPGAwars"
+      }
+    },
+    // -- Verible
+    "verible": {
+      "version": "0.0.1",
+      "repository": {
+        "name": "tools-verible",
+        "organization": "FPGAwars"
+      }
+    },
+    // -- Yosys HQ suite
+    "oss-cad-suite": {
+      "version": "0.2.3",
+      "repository": {
+        "name": "tools-oss-cad-suite",
+        "organization": "FPGAwars"
+      }
+    }
+  }
+}

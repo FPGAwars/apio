@@ -17,6 +17,7 @@ from apio.common.apio_console import cout, cstyle
 from apio.common.apio_styles import EMPH3
 from apio.apio_context import ApioContext
 from apio.utils import util
+from apio.profile import PackageRemoteConfig
 
 
 @dataclass(frozen=True)
@@ -231,14 +232,14 @@ def package_version_ok(
     if not current_ver:
         return False
 
-    # -- Get the required version from the remote config.
-    remote_ver = apio_ctx.profile.get_package_required_version(
+    # -- Get the package remote config.
+    package_config: PackageRemoteConfig = apio_ctx.profile.get_package_config(
         package_name, cached_config_ok=cached_config_ok, verbose=verbose
     )
 
-    # -- Compare. We expect the two version to be normalized and ths a string
-    # -- comparison is sufficient.
-    return current_ver == remote_ver
+    # -- Compare to the required version. We expect the two version to be
+    # -- normalized and ths a string comparison is sufficient.
+    return current_ver == package_config.required_version
 
 
 def scan_packages(

@@ -3,13 +3,22 @@
 name: Test
 
 on:
+  # Run on each commit.
   push:
+
   # NOTE: We run the test daily, even if we don't push anything, to ensure
   # that the tests are still passing, despite potential changes in the github
   # dependencies.
   schedule:
     - cron: '0 0 * * *'  # Runs daily at midnight UTC
+
+  # Can be launched manually in github actions tab.
   workflow_dispatch:  # Allows manual trigger
+    inputs:
+        verbose:
+          description: 'Verbose [false|true]'
+          required: false
+          default: 'false'
 
 jobs:
     test:
@@ -21,10 +30,15 @@ jobs:
 
         strategy:
             matrix:
-                os: [ubuntu-22.04, macos-latest, windows-latest]
+                # 'macos-latest' -> darwin apple silicon
+                # 'macos-13'     -> darwin intel x86
+                os: [ubuntu-22.04, macos-latest, macos-13, windows-latest]
                 python-version: ['3.11', '3.12', '3.13']
 
         steps:
+            - name: Show architecture
+              run: uname -a
+
             - name: Checkout sources
               uses: actions/checkout@v3
 
@@ -32,6 +46,9 @@ jobs:
               uses: actions/setup-python@v4
               with:
                   python-version: ${{ matrix.python-version }}
+
+            - name: Show python version
+              run: python --version
 
             - name: Install dependencies
               run: |
@@ -44,5 +61,26 @@ jobs:
                   echo "pyver: [$pyver]"
                   pyver=${pyver//./}
                   echo "pyver: [$pyver]"
-                  python -m tox --skip-missing-interpreters false -e lint,$pyver
+
+                  # Determine if we run in verbose mode. This can be enabled
+                  # in the github dashboard when running the workflow manuall.y.
+                  echo "Original verbose: [${{ github.event.inputs.verbose }}]"
+                  verbose="${{ github.event.inputs.verbose || 'false' }}"
+                  echo "Effective verbose: [${verbose}]"
+                  if [[ "$verbose" != "true" && "$verbose" != "false" ]]; then
+                      echo "Error: 'verbose' must be 'true' or 'false'."
+                      exit 1
+                  fi
+
+                  # Determine the posargs to pass to pytest.
+                  if [ "${verbose}" = "true" ]; then
+                    echo "Verbose mode ON"
+                    posargs="-s"
+                  else
+                    echo "Verbose mode OFF"
+                    posargs=""
+                  fi
+
+                  # Run the tests
+                  python -m tox --skip-missing-interpreters false -e lint,$pyver -- ${posargs}
 

@@ -16,7 +16,14 @@ added_files = [
     ( apio_dir / 'scons/SConstruct', 'apio/scons' ),
 ]
 
-hiddenimports = collect_submodules('SCons')  + collect_submodules('apio')
+hiddenimports = (
+    collect_submodules('SCons') +
+    collect_submodules('apio') +
+    collect_submodules('usb')
+)
+
+# Per https://github.com/orgs/pyinstaller/discussions/9148
+excludes = [ 'pkg_resources' ]
 
 a = Analysis(
     [apio_dir / '__main__.py'],
@@ -27,7 +34,7 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=excludes,
     noarchive=False,
     optimize=0,
 )

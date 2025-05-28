@@ -41,6 +41,16 @@ APIO_PLATFORM = "APIO_PLATFORM"
 # -- for the scons process use scons_util.is_debug().
 APIO_DEBUG = "APIO_DEBUG"
 
+# -- An env variable that if defined, contains an override url of the remote
+# -- config file defined in apio/resources/config.jsonc.
+#
+# Examples:
+#   file:///projects/apio-dev/repo/remote-config/apio-0.9.6.jsonc
+#   file:///projects/apio-dev/repo/remote-config/apio-%V.jsonc
+#   https://github.com/zapta/apio_dev/raw/develop/remote-config/apio-%V.jsonc
+#
+APIO_REMOTE_CONFIG_URL = "APIO_REMOTE_CONFIG_URL"
+
 
 # -- List of all supported env options.
 _SUPPORTED_APIO_VARS = [
@@ -49,6 +59,7 @@ _SUPPORTED_APIO_VARS = [
     SNAP_USER_COMMON,
     APIO_PLATFORM,
     APIO_DEBUG,
+    APIO_REMOTE_CONFIG_URL,
 ]
 
 

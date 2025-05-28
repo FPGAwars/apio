@@ -7,13 +7,26 @@
 
 import json
 import sys
+from dataclasses import dataclass
 from typing import Dict, Optional
 from pathlib import Path
 import requests
 from apio.common import apio_console
 from apio.common.apio_console import cout, cerror, cprint
-from apio.common.apio_styles import INFO, EMPH3
-from apio.utils import util
+from apio.common.apio_styles import INFO, EMPH3, ERROR
+from apio.utils import util, jsonc
+
+
+@dataclass(frozen=True)
+class PackageRemoteConfig:
+    """Contains a package info from the remote config."""
+
+    # -- E.g. "0.2.3"
+    required_version: str
+    # -- E.g. "tools-oss-cad-suite"
+    repo_name: str
+    # -- E.g. "FPGAwars"
+    repo_organization: str
 
 
 class Profile:
@@ -42,9 +55,6 @@ class Profile:
         # User preferences
         self.preferences = {}
 
-        # Apio settings
-        self.settings = {}
-
         # -- Installed package versions
         self.packages = {}
 
@@ -67,12 +77,6 @@ class Profile:
         """Add a package to the profile class"""
 
         self.packages[name] = {"version": version}
-        self._save()
-
-    def add_setting(self, key: str, value: str):
-        """Add or overwrite a (key,value) pair in the settings"""
-
-        self.settings[key] = value
         self._save()
 
     def set_preferences_theme(self, theme: str):
@@ -132,22 +136,32 @@ class Profile:
         # -- Else, return the default value.
         return default
 
-    def get_package_required_version(
+    def get_package_config(
         self,
         package_name: str,
         *,
         cached_config_ok=True,
         verbose: bool = False,
-    ):
-        """Get from the required version of the package with given name.
+    ) -> PackageRemoteConfig:
+        """Given a package name, return the remote config information with the
+        version and fetch information.
         If cached_config_ok is False, we make sure to use a fresh remote config
         from this invocation of apio.
         """
         config = self._get_remote_config(
             cached_config_ok=cached_config_ok, verbose=verbose
         )
-        required_version = config["packages"][package_name]["version"]
-        return required_version
+
+        package_info = config["packages"][package_name]
+        required_version = package_info["version"]
+        repo_name = package_info["repository"]["name"]
+        repo_organization = package_info["repository"]["organization"]
+
+        return PackageRemoteConfig(
+            required_version=required_version,
+            repo_name=repo_name,
+            repo_organization=repo_organization,
+        )
 
     def load(self):
         """Load the profile from the file"""
@@ -171,7 +185,6 @@ class Profile:
 
         # -- Extract the fields
         self.preferences = data.get("preferences", {})
-        self.settings = data.get("settings", {})
         self.packages = data.get("installed-packages", {})
         self.remote_config = data.get("remote-config", {})
 
@@ -190,8 +203,7 @@ class Profile:
         data = {}
         if self.preferences:
             data["preferences"] = self.preferences
-        if self.settings:
-            data["settings"] = self.settings
+
         if self.packages:
             data["installed-packages"] = self.packages
         if self.remote_config:
@@ -205,6 +217,45 @@ class Profile:
         if util.is_debug():
             cout("Saved profile:", style=EMPH3)
             cprint(json.dumps(data, indent=2))
+
+    def _fetch_remote_config_text(self) -> str:
+        """Fetch and return the apio remote config JSON text."""
+
+        # pylint: disable=broad-exception-caught
+
+        # -- If the URL has a file protocol, read from the file. This
+        # -- is used mostly for testing of a new package version.
+        if self.remote_config_url.startswith("file://"):
+            file_path = self.remote_config_url[7:]
+            try:
+                with open(file_path, encoding="utf-8") as f:
+                    file_text = f.read()
+            except Exception as e:
+                cout("Failed to load local config file.", str(e), style=ERROR)
+                sys.exit(1)
+
+            # -- Local file read OK.
+            return file_text
+
+        # -- Here is the normal case where the config url is not of a local
+        # -- file but at a remote URL.
+
+        # -- Fetch the remote config. With timeout = 5, this failed a few times
+        # -- on github workflow tests so increased to 10.
+        resp: requests.Response = requests.get(
+            self.remote_config_url, timeout=10
+        )
+
+        # -- Exit if http error.
+        if resp.status_code != 200:
+            cerror(
+                "Downloading apio remote config file failed, "
+                f"error code {resp.status_code}",
+            )
+            cout(f"URL {self.remote_config_url}", style=INFO)
+            sys.exit(1)
+
+        return resp.text
 
     def _get_remote_config(
         self, *, cached_config_ok: bool, verbose: bool
@@ -227,31 +278,23 @@ class Profile:
         if verbose or util.is_debug():
             cout(f"Fetching remote config from '{self.remote_config_url}'")
 
-        # -- Fetch the version info.
-        resp: requests.Response = requests.get(
-            self.remote_config_url, timeout=5
-        )
-
-        # -- Exit if http error.
-        if resp.status_code != 200:
-            cerror(
-                "Downloading apio remote config file failed, "
-                f"error code {resp.status_code}",
-            )
-            cout(f"URL {self.remote_config_url}", style=INFO)
-            sys.exit(1)
+        # -- Fetch the config text.
+        config_text = self._fetch_remote_config_text()
 
         # -- Here when download was ok.
         if verbose or util.is_debug():
-            cout("Remote config file downloaded ok.")
+            cout("Remote config file fetched ok.")
 
         # -- Print the file's content.
         if util.is_debug():
-            cout(resp.text)
+            cout(config_text)
+
+        # -- Convert the jsonc to json by removing '//' comments.
+        config_text = jsonc.to_json(config_text)
 
         # -- Parse the remote JSON config file into a dict.
         try:
-            remote_config = json.loads(resp.text)
+            remote_config = json.loads(config_text)
 
         # -- Handle parsing error.
         except json.decoder.JSONDecodeError as exc:

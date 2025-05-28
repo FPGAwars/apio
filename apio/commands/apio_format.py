@@ -103,7 +103,7 @@ def cli(
 
     # -- Prepare the packages for use.
     installer.install_missing_packages_on_the_fly(apio_ctx)
-    pkg_util.set_env_for_packages(apio_ctx)
+    pkg_util.set_env_for_packages(apio_ctx, quiet=not verbose)
 
     # -- Convert the tuple with file names into a list.
     files: List[str] = list(files)
@@ -168,5 +168,5 @@ def cli(
             return exit_code
 
     # -- All done ok.
-    cout(f"Formatted {util.plurality(files, 'file')}.", style=SUCCESS)
+    cout(f"Processed {util.plurality(files, 'file')}.", style=SUCCESS)
     sys.exit(0)

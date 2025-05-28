@@ -1,12 +1,12 @@
 name: build-windows-amd64-installer
 
-# TODO: Set complex file names once in reuseable variables.
 
 on:
   schedule:
     # We run the build daily at 2PM, after running the tests at midnight.
     - cron: '0 2 * * *'
   workflow_dispatch:  # Manual triggers ok.
+
 
 jobs:
   build-windows-amd64-installer:
@@ -44,6 +44,19 @@ jobs:
           pip install pyinstaller
 
 
+      # A temporary workaround until this fix will be released
+      # https://github.com/pyinstaller/pyinstaller-hooks-contrib/pull/913
+      # We delete the usb line in the hook pyinstaller hook list file
+      # rthooks.dat to disable this hook.
+      - name: Patch pyinstaller usb hook
+        run: |
+          module_dir=$(dirname "$(python -c 'import _pyinstaller_hooks_contrib; print(_pyinstaller_hooks_contrib.__file__)')")
+          f="$module_dir/rthooks.dat"
+          cat -n $f
+          sed -i.bak "/'usb':/d" "$f" && rm -f "${f}.bak"
+          cat -n $f
+
+
       - name: Extract apio version
         run: |     
           APIO_VERSION=$(pip show apio | grep Version: | cut -d ' ' -f2)
@@ -65,6 +78,7 @@ jobs:
       - name: Run pyinstaller
         run: |
           pyinstaller \
+            --log-level=DEBUG \
             --workpath _work \
             --distpath _dist \
             apio-repo/.github/workflows/resources/apio-pyinstaller.spec
@@ -139,9 +153,3 @@ jobs:
           if-no-files-found: error
           name: "apio-windows-amd64-innosetup"
           path: "apio-windows-amd64-${{env.APIO_VERSION}}-innosetup.exe"
-
-      
-      - name: Write a summary message
-        run: |
-          echo "NOTE: Github wraps the artifact files with an additional level of zip archive."    >> $GITHUB_STEP_SUMMARY
-          echo "To retrieve the artifact files, unzip the zip files you download from this page."  >> $GITHUB_STEP_SUMMARY       

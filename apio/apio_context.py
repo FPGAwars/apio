@@ -13,8 +13,8 @@ from enum import Enum
 from collections import OrderedDict
 from pathlib import Path
 from typing import Optional, Dict
-from apio.common.apio_console import cout, cerror, cwarning
-from apio.common.apio_styles import INFO
+from apio.common.apio_console import cout, cerror, cwarning, cstyle
+from apio.common.apio_styles import INFO, EMPH1
 from apio.profile import Profile
 from apio.utils import jsonc, util, env_options
 from apio.managers.project import Project, load_project_from_file
@@ -89,6 +89,7 @@ class ApioContext:
         scope: ApioContextScope,
         project_dir_arg: Optional[Path] = None,
         env_arg: Optional[str] = None,
+        report_env=True,
     ):
         """Initializes the ApioContext object.
 
@@ -101,6 +102,9 @@ class ApioContext:
         'env_arg' is an optional command line option value that select the
         apio.ini env if the project is loaded. it makes sense only when scope
         is PROJECT_REQUIRED (enforced by an assertion).
+
+        If an apio.ini project is loaded, the method prints to the user the
+        selected env and board, unless if report_env = False.
         """
 
         # -- Inform as soon as possible about the list of apio env options
@@ -162,7 +166,11 @@ class ApioContext:
         # -- Profile information, from ~/.apio/profile.json. We provide it with
         # -- the remote config url template from distribution.jsonc such that
         # -- can it fetch the remote config on demand.
-        self.profile = Profile(self.home_dir, self.config["remote-config"])
+        remote_config_url = env_options.get(
+            env_options.APIO_REMOTE_CONFIG_URL,
+            default=self.config["remote-config"],
+        )
+        self.profile = Profile(self.home_dir, remote_config_url)
 
         # -- Read the platforms information.
         self.platforms = self._load_resource(PLATFORMS_JSONC)
@@ -214,8 +222,28 @@ class ApioContext:
                 self._project_dir, env_arg, self.boards
             )
             assert self.has_project, "init(): project not loaded"
+            # -- Inform the user if needed.
+            if report_env:
+                self.report_env()
         else:
             assert not self.has_project, "init(): project loaded"
+
+    def report_env(self):
+        """Report to the user the env and board used. Asserts that the
+        project is loaded."""
+        # -- Do not call if project is not loaded.
+        assert self.has_project
+
+        # -- Env name string in color
+        styled_env_name = cstyle(self.project.env_name, style=EMPH1)
+
+        # -- Board name string in color
+        styled_board_id = cstyle(
+            self.project.env_options["board"], style=EMPH1
+        )
+
+        # -- Report.
+        cout(f"Using env {styled_env_name} ({styled_board_id})")
 
     @property
     def packages_dir(self):

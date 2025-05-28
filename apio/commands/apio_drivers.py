@@ -10,7 +10,6 @@
 import click
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup
 from apio.commands import (
-    apio_drivers_list,
     apio_drivers_install,
     apio_drivers_uninstall,
 )
@@ -29,7 +28,6 @@ SUBGROUPS = [
     ApioSubgroup(
         "Subcommands",
         [
-            apio_drivers_list.cli,
             apio_drivers_install.cli,
             apio_drivers_uninstall.cli,
         ],

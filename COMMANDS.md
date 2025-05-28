@@ -6,14 +6,14 @@
   * [apio build](#apio-build) - Synthesize the bitstream.
   * [apio clean](#apio-clean) - Delete the apio generated files.
   * [apio create](#apio-create) - Create an apio.ini project file.
+  * [apio devices](#apio-devices) - List attached devices.
+    * [apio devices ftdi](#apio-devices-ftdi) - List the connected ftdi devices.
+    * [apio devices serial](#apio-devices-serial) - List the connected serial devices.
+    * [apio devices usb](#apio-devices-usb) - List connected USB devices.
   * [apio drivers](#apio-drivers) - Manage the operating system drivers.
     * [apio drivers install](#apio-drivers-install) - Install drivers.
       * [apio drivers install ftdi](#apio-drivers-install-ftdi) - Install the ftdi drivers.
       * [apio drivers install serial](#apio-drivers-install-serial) - Install the serial drivers.
-    * [apio drivers list](#apio-drivers-list) - List system drivers.
-      * [apio drivers list ftdi](#apio-drivers-list-ftdi) - List the connected ftdi devices.
-      * [apio drivers list serial](#apio-drivers-list-serial) - List the connected serial devices.
-      * [apio drivers list usb](#apio-drivers-list-usb) - List connected USB devices.
     * [apio drivers uninstall](#apio-drivers-uninstall) - Uninstall drivers.
       * [apio drivers uninstall ftdi](#apio-drivers-uninstall-ftdi) - Uninstall the ftdi drivers.
       * [apio drivers uninstall serial](#apio-drivers-uninstall-serial) - Uninstall the serial drivers.
@@ -32,6 +32,8 @@
     * [apio info platforms](#apio-info-platforms) - Supported platforms.
     * [apio info resources](#apio-info-resources) - Additional resources.
     * [apio info system](#apio-info-system) - Show system information.
+  * [apio labs](#apio-labs) - Experimental apio commands.
+    * [apio labs scan-usb](#apio-labs-scan-usb) - An experimental command to scan USB devices.
   * [apio lint](#apio-lint) - Lint the source code.
   * [apio packages](#apio-packages) - Manage the apio packages.
     * [apio packages fix](#apio-packages-fix) - Fix broken apio packages.
@@ -100,6 +102,7 @@ Setup commands:
   apio preferences  Manage the apio user preferences.
   apio packages     Manage the apio packages.
   apio drivers      Manage the operating system drivers.
+  apio devices      List attached devices.
 
 Utility commands:
   apio boards       List available board definitions.
@@ -109,6 +112,7 @@ Utility commands:
   apio raw          Execute commands directly from the Apio packages.
   apio api          Apio programmatic interface.
   apio upgrade      Check the latest Apio version.
+  apio labs         Experimental apio commands.
 
 ```
 
@@ -267,6 +271,112 @@ Options:
 
 <br>
 
+### apio devices
+
+```
+Usage: apio devices [OPTIONS] COMMAND [ARGS]...
+
+  The command group 'apio devices' includes subcommands that lists
+  devices
+  that are attached to the computer. It's main usage is diagnostics or
+  devices connectivity and drivers.
+
+Options:
+  -h, --help  Show this message and exit.
+
+Subcommands:
+  apio devices ftdi    List the connected ftdi devices.
+  apio devices serial  List the connected serial devices.
+  apio devices usb     List connected USB devices.
+
+```
+
+<br>
+
+### apio devices ftdi
+
+```
+Usage: apio devices ftdi [OPTIONS]
+
+  The command 'apio devices ftdi' displays the FTDI devices currently
+  connected to your computer and recognized by the FPGA toolchain. It is
+  useful for diagnosing FPGA board connectivity and drivers issues.
+
+  Examples:
+    apio devices ftdi    # List the ftdi devices.
+
+  If an FTDI board is attached to the computer by is not shown in this
+  command, it may require a driver installation. For details see 'apio
+  drivers install ftdi'.
+
+  [Note] When apio is installed on Linux using the Snap package manager,
+  run the command 'snap connect apio:raw-usb' once to grant the
+  necessary permissions to access USB devices.
+
+
+  [Hint] This command invokes the command below and displays its output
+  in a table form:
+
+    apio raw -- openFPGALoader --scan-usb
+
+Options:
+  -h, --help  Show this message and exit.
+
+```
+
+<br>
+
+### apio devices serial
+
+```
+Usage: apio devices serial [OPTIONS]
+
+  The command 'apio devices serial' displays the serial devices
+  currently connected to your computer. It is useful for diagnosing FPGA
+  board connectivity issues.
+
+  Examples:
+    apio devices serial    # List the serial devices.
+
+  Note that devices such as FTDI FTDI2232 that have more than one
+  channel are listed as multiple rows, one for each of their serial
+  ports.
+
+Options:
+  -h, --help  Show this message and exit.
+
+```
+
+<br>
+
+### apio devices usb
+
+```
+Usage: apio devices usb [OPTIONS]
+
+  The command 'apio devices usb' displays the USB devices currently
+  connected to your computer. It is useful for diagnosing FPGA board
+  connectivity issues.
+
+  Examples:
+    apio devices usb    # List the usb devices.
+
+  [Note] When apio is installed on Linux using the Snap package manager,
+  run the command 'snap connect apio:raw-usb' once to grant the
+  necessary permissions to access USB devices.
+
+  [Hint] This command invokes the command below and displays its output
+  in a table form:
+
+    apio raw -- lsusb
+
+Options:
+  -h, --help  Show this message and exit.
+
+```
+
+<br>
+
 ### apio drivers
 
 ```
@@ -279,7 +389,6 @@ Options:
   -h, --help  Show this message and exit.
 
 Subcommands:
-  apio drivers list       List system drivers.
   apio drivers install    Install drivers.
   apio drivers uninstall  Uninstall drivers.
 
@@ -335,96 +444,6 @@ Usage: apio drivers install serial [OPTIONS]
 
   Examples:
     apio drivers install serial  # Install the serial drivers.
-
-Options:
-  -h, --help  Show this message and exit.
-
-```
-
-<br>
-
-### apio drivers list
-
-```
-Usage: apio drivers list [OPTIONS] COMMAND [ARGS]...
-
-  The command group 'apio drivers list' includes subcommands that that
-  lists system drivers that are used with FPGA boards.
-
-Options:
-  -h, --help  Show this message and exit.
-
-Subcommands:
-  apio drivers list ftdi    List the connected ftdi devices.
-  apio drivers list serial  List the connected serial devices.
-  apio drivers list usb     List connected USB devices.
-
-```
-
-<br>
-
-### apio drivers list ftdi
-
-```
-Usage: apio drivers list ftdi [OPTIONS]
-
-  The command 'apio drivers list ftdi' displays the FTDI devices
-  currently connected to your computer. It is useful for diagnosing FPGA
-  board connectivity issues.
-
-  Examples:
-    apio drivers list ftdi    # List the ftdi devices.
-
-  [Note] When apio is installed on Linux using the Snap package manager,
-  run the command 'snap connect apio:raw-usb' once to grant the
-  necessary permissions to access USB devices.
-
-  [Hint] This command uses the lsftdi utility, which can also be invoked
-  directly with the 'apio raw -- lsftdi ...' command.
-
-Options:
-  -h, --help  Show this message and exit.
-
-```
-
-<br>
-
-### apio drivers list serial
-
-```
-Usage: apio drivers list serial [OPTIONS]
-
-  The command 'apio drivers list serial' lists the serial devices
-  connected to your computer. It is useful for diagnosing FPGA board
-  connectivity issues.
-
-  Examples:
-    apio drivers list serial   # List the serial devices.
-
-  [Hint] This command executes the utility lsserial, which can also be
-  invoked using the command 'apio raw -- lsserial ...'.
-
-Options:
-  -h, --help  Show this message and exit.
-
-```
-
-<br>
-
-### apio drivers list usb
-
-```
-Usage: apio drivers list usb [OPTIONS]
-
-  The command 'apio drivers list usb' runs the lsusb utility to list the
-  USB devices connected to your computer. It is typically used for
-  diagnosing  connectivity issues with FPGA boards.
-
-  Examples:
-    apio drivers list usb    # List the usb devices
-
-  [Hint] You can also run the lsusb utility using the command 'apio raw
-  -- lsusb ...'.
 
 Options:
   -h, --help  Show this message and exit.
@@ -855,6 +874,48 @@ Options:
 
 <br>
 
+### apio labs
+
+```
+Usage: apio labs [OPTIONS] COMMAND [ARGS]...
+
+  The command group 'apio labs' contains experimental commands that are
+  used to evaluate new features and ideas. They are not part of the
+  official apio command set and most likely change or be removed in the
+  future.
+
+Options:
+  -h, --help  Show this message and exit.
+
+Subcommands:
+  apio labs scan-usb  An experimental command to scan USB devices.
+
+```
+
+<br>
+
+### apio labs scan-usb
+
+```
+Usage: apio labs scan-usb [OPTIONS]
+
+  The command 'apio labs scan-usb' is a temporary command that is used
+  to evaluate a new way to scan USB devices connected to the host
+  system. It is not part of the official apio command set and most
+  likely will change or be removed in the future.
+
+  Examples:
+    apio labs scan-usb     # Scan and print USB devices
+    apio labs scan-usb -v  # With extra info
+
+Options:
+  -v, --verbose  Show detailed output.
+  -h, --help     Show this message and exit.
+
+```
+
+<br>
+
 ### apio lint
 
 ```
@@ -1199,19 +1260,6 @@ Usage: apio upload [OPTIONS]
   Examples:
     apio upload              # Typical usage.
     apio upload --ftdi-idx 2 # Consider only FTDI device at index 2
-    apio upload --sram       # See below
-
-  The command programs the board’s default configuration memory, which
-  is typically a non-volatile FLASH memory. For SRAM programming (also
-  known as ICE programming), use the '--sram' option, subject to the
-  following restrictions:
-
-  1. The board must use the 'iceprog' programmer or a programmer whose
-  name begins with 'iceprog'.
-
-  2. The board must support SRAM programming and be configured
-  accordingly. Refer to your board’s documentation for details (SRAM
-  programming is also referred to as ICE programming).
 
   The optional flag '--ftdi-idx' is used in special cases involving
   boards with FTDI devices, particularly when multiple boards are
@@ -1226,7 +1274,6 @@ Usage: apio upload [OPTIONS]
 Options:
   --serial-port serial-port  Set the serial port.
   --ftdi-idx ftdi-idx        Consider only FTDI device with given index.
-  -s, --sram                 Perform SRAM programming (see restrictions).
   -e, --env name             Set the apio.ini env.
   -p, --project-dir path     Set the root directory for the project.
   -h, --help                 Show this message and exit.

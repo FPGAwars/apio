@@ -23,11 +23,18 @@ def get_pypi_latest_version() -> str:
     Exits on an error.
     """
 
+    # -- Create http request headers.
+    # -- Added May 2025 when we started to get the following error:
+    # -- "406 Client Error: go-http-client redirect ..."
+    headers = {"User-Agent": "python-requests/2.31.0"}
+
     # -- Read the latest apio version from pypi
     # -- More information: https://warehouse.pypa.io/api-reference/json.html
     try:
         req = requests.get(
-            "https://pypi.python.org/pypi/apio/json", timeout=10
+            "https://pypi.python.org/pypi/apio/json",
+            headers=headers,
+            timeout=10,
         )
         req.raise_for_status()
 

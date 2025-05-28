@@ -12,7 +12,8 @@ from typing import Optional, List
 from apio.common.apio_console import cout, cerror, cwarning
 from apio.common.apio_styles import INFO
 from apio.utils import util, pkg_util
-from apio.managers.system import System, FtdiDevice
+from apio.managers.system import System
+from apio.utils.ftdi_util import scan_ftdi_devices, FtdiDeviceInfo
 from apio.apio_context import ApioContext
 
 
@@ -20,7 +21,6 @@ def construct_programmer_cmd(
     apio_ctx: ApioContext,
     serial_port_arg: Optional[str],
     ftdi_idx_arg: Optional[int],
-    sram: bool,
 ) -> str:
     """Get the command line (string) to execute for programming
     the FPGA (programmer executable + arguments)
@@ -29,7 +29,6 @@ def construct_programmer_cmd(
         * apio_ctx: ApioContext of this apio invocation.
         * serial_port: Optional, serial port name
         * ftdi_idx: Optional, restrict to ftdi device with given index
-        * sram: Perform SRAM programming
 
     * OUTPUT: A string with the command+args to execute and a $SOURCE
         placeholder for the bitstream file name.
@@ -48,7 +47,7 @@ def construct_programmer_cmd(
     # --   * "${PID}" (optional): USB Product id
     # --   * "${FTDI_IDX}" (optional): FTDI idx (e.g. 0, 1, 2...)
     # --   * "${SERIAL_PORT}" (optional): Serial port name
-    programmer = _construct_programmer_cmd_template(apio_ctx, board_info, sram)
+    programmer = _construct_programmer_cmd_template(apio_ctx, board_info)
     if util.is_debug():
         cout(f"Programmer template: [{programmer}]")
     # -- The placeholder for the bitstream file name should always exist.
@@ -89,9 +88,7 @@ def construct_programmer_cmd(
         _check_usb(apio_ctx, board, board_info)
 
         # -- Get the FTDI index of the connected board
-        device_ftdi_idx = _get_ftdi_idx(
-            apio_ctx, board, board_info, ftdi_idx_arg
-        )
+        device_ftdi_idx = _get_ftdi_idx(board, board_info, ftdi_idx_arg)
 
         if util.is_debug():
             cout(f"FTDI index: {device_ftdi_idx}")
@@ -143,7 +140,7 @@ def construct_programmer_cmd(
 
 
 def _construct_programmer_cmd_template(
-    apio_ctx: ApioContext, board_info: dict, sram: bool
+    apio_ctx: ApioContext, board_info: dict
 ) -> str:
     """
     * INPUT:
@@ -192,21 +189,6 @@ def _construct_programmer_cmd_template(
     # -- (like dfu-util for example)
     if prog_info.get("extra_args"):
         programmer_cmd += f" {prog_info['extra_args']}"
-
-    # -- Special case for specific programmers
-
-    # -- Enable SRAM programming for the iceprog* programmer only.
-    if sram:
-        # Only for iceprog programmer
-        if programmer_cmd.startswith("iceprog"):
-            programmer_cmd += " -S"
-        else:
-            # -- Programmer not supported
-            cerror(
-                "The --sram flag is not available for the "
-                f"{prog_type} programmer."
-            )
-            sys.exit(1)
 
     return programmer_cmd
 
@@ -382,15 +364,7 @@ def _check_tinyprog(board_info: dict, port: str) -> bool:
         return False
 
     # -- Get the board description from the the apio database
-    board_desc = board_info["tinyprog"]["desc"]
-
-    # -- Build a regular expresion for finding this board
-    # -- description in the connected board
-    # -- Ex: '^TinyFPGA BX$'
-    # -- Notes on regular expresions:
-    # --   ^  --> Means the begining of the string
-    # --   $  --> End of string
-    desc_pattern = f"^{board_desc}$"
+    name_regex = board_info["tinyprog"]["name-regex"]
 
     # -- Get a list with the meta data of all the TinyFPGA boards
     # -- connected
@@ -406,8 +380,7 @@ def _check_tinyprog(board_info: dict, port: str) -> bool:
         tinyprog_name = tinyprog_meta["boardmeta"]["name"]
 
         # -- # If the port is detected and it matches the pattern
-        if port == tinyprog_port and re.match(desc_pattern, tinyprog_name):
-
+        if port == tinyprog_port and re.search(name_regex, tinyprog_name):
             # -- TinyFPGA board detected!
             return True
 
@@ -415,9 +388,7 @@ def _check_tinyprog(board_info: dict, port: str) -> bool:
     return False
 
 
-def _get_ftdi_idx(
-    apio_ctx: ApioContext, board: str, board_info, ftdi_idx_arg: Optional[int]
-) -> int:
+def _get_ftdi_idx(board: str, board_info, ftdi_idx_arg: Optional[int]) -> int:
     """Get the FTDI index of the detected board
 
     * INPUT:
@@ -431,15 +402,13 @@ def _get_ftdi_idx(
     """
 
     # -- Search device description matching.
-    ftdi_idx: Optional[int] = _check_ftdi(
-        apio_ctx, board, board_info, ftdi_idx_arg
-    )
+    ftdi_idx: Optional[int] = _check_ftdi(board, board_info, ftdi_idx_arg)
 
     # -- No matching FTDI board connected
     if ftdi_idx is None:
         cerror("Board " + board + " not found")
         cout(
-            "Run 'apio drivers list ftdi' to see the available FTDI devices",
+            "Run 'apio devices ftdi' to see the available FTDI devices",
             style=INFO,
         )
 
@@ -450,7 +419,6 @@ def _get_ftdi_idx(
 
 
 def _check_ftdi(
-    apio_ctx: ApioContext,
     board: str,
     board_info: dict,
     ftdi_idx_arg: Optional[int],
@@ -472,23 +440,11 @@ def _check_ftdi(
         cerror("Missing board configuration: ftdi")
         sys.exit(1)
 
-    # -- Get the board description from the the apio database
-    board_desc = board_info["ftdi"]["desc"]
+    # -- Get the board description pattern from the the apio boards database
+    desc_regex = board_info["ftdi"]["desc-regex"]
 
-    # -- Build a regular expresion for finding this board
-    # -- description in the connected board
-    # -- Ex: '^Alhambra II.*$'
-    # -- Notes on regular expresions:
-    # --   ^  --> Means the begining of the string
-    # --   .  --> Any character
-    # --   .* --> zero or many characters
-    # --   $  --> End of string
-    desc_pattern = f"^{board_desc}.*$"
-
-    # -- Get the list of the connected FTDI devices
-    # -- (execute the command "lsftdi" from the apio System module)
-    system = System(apio_ctx)
-    connected_devices: List[FtdiDevice] = system.get_ftdi_devices()
+    # -- Get the list of the connected FTDI devices.
+    connected_devices: List[FtdiDeviceInfo] = scan_ftdi_devices()
 
     # -- No FTDI devices detected --> Error!
     if not connected_devices:
@@ -497,22 +453,18 @@ def _check_ftdi(
 
     # -- Check if the given board is connected
     # -- and if so, return its FTDI index
-    for ftdi_device in connected_devices:
-
-        # -- Get the FTDI index
-        # -- Ex: '0'
-        ftdi_idx: int = ftdi_device.ftdi_idx
+    for index, ftdi_device in enumerate(connected_devices):
 
         # If the --ftdi-idx options is set, we consider only the device
         # with given index in the lsftdi output. This is useful in case
         # multiple compatible boards are connected to the host computer.
-        if ftdi_idx_arg is not None and ftdi_idx_arg != ftdi_idx:
+        if ftdi_idx_arg is not None and ftdi_idx_arg != index:
             continue
 
         # If matches the description pattern
         # return the index for the FTDI device.
-        if re.match(desc_pattern, ftdi_device.description):
-            return ftdi_idx
+        if re.search(desc_regex, ftdi_device.description):
+            return index
 
     # -- No FTDI board found
     return None

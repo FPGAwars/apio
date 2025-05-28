@@ -350,7 +350,6 @@ def get_sim_config(
         # -- were found in the project.
         cerror("No testbench files found in the project.")
         cout(TESTBENCH_HINT, style=INFO)
-
         sys.exit(1)
     elif len(test_srcs) == 1:
         # -- Case 3 Testbench name was not specified but there is exactly
