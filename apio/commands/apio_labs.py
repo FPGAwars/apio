@@ -24,22 +24,23 @@ from apio.utils import util
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
-# -- Mapping of FTDI PID to IC model number. Try to keep it consistent with
-# -- src/libusb_ll.cpp#L159 at https://github.com/trabucayre/openFPGALoader.
-FTDI_PID_TO_MODEL = {
-    0x6001: "FT232R",  # Most common UART interface
-    0x6010: "FT2232H",  # Dual channel, high-speed
-    0x6011: "FT4232H",  # Quad channel, high-speed
-    0x6014: "FT232H",  # Single channel, high-speed, multi-protocol
-    0x6015: "FTX Series",  # Includes FT231X, FT234X (basic UART)
-    0x6017: "FT313H",  # USB host controller IC
-    0x8372: "FT245R",  # Parallel FIFO interface
-    0x8371: "FT232BM",  # Older UART chip
-    0x8373: "FT2232C",  # Early dual interface device
-    0x8374: "FT4232",  # Early quad interface device
-}
 
 # ------ apio labs scan-usb
+
+# Mapping of (VID), and (VID:PID) to device type.
+USB_TYPES = {
+    # -- FTDI
+    (0x0403): "FTDI",
+    (0x0403, 0x6001): "FT232R",
+    (0x0403, 0x6010): "FT2232H",
+    (0x0403, 0x6011): "FT4232H",
+    (0x0403, 0x6014): "FT232H",
+    (0x0403, 0x6017): "FT313H",
+    (0x0403, 0x8372): "FT245R",
+    (0x0403, 0x8371): "FT232BM",
+    (0x0403, 0x8373): "FT2232C",
+    (0x0403, 0x8374): "FT4232",
+}
 
 
 @dataclass()
@@ -136,16 +137,14 @@ def get_usb_devices(apio_ctx: ApioContext, verbose: bool) -> List[UsbDevice]:
         if device.bDeviceClass == 0x09:
             continue
 
-        # -- Determine ftdi type.
-
-        if device.idVendor == 0x0403:
-            # -- This is an FTDI device, so look up its type by its PID.
-            device_type = FTDI_PID_TO_MODEL.get(device.idProduct, "FTDI")
-        else:
-            # -- Not an FTDI device, so no type.
-            device_type = ""
+        # -- Determine device type string. Try to match by (vid, pid) and if
+        # -- not found, by (vid)
+        device_type = USB_TYPES.get((device.idVendor, device.idProduct), "")
+        if not device_type:
+            device_type = USB_TYPES.get((device.idVendor), "")
 
         # -- Create the device object.
+        unavail = "--unavail--"
         item = UsbDevice(
             bus=device.bus,
             device=device.address,
@@ -154,11 +153,11 @@ def get_usb_devices(apio_ctx: ApioContext, verbose: bool) -> List[UsbDevice]:
             manufacturer=get_usb_str(
                 device,
                 device.iManufacturer,
-                default="(unavail)",
+                default=unavail,
                 verbose=verbose,
             ),
             description=get_usb_str(
-                device, device.iProduct, default="(unavail)", verbose=verbose
+                device, device.iProduct, default=unavail, verbose=verbose
             ),
             serial_num=get_usb_str(
                 device, device.iSerialNumber, default="", verbose=verbose
@@ -167,8 +166,10 @@ def get_usb_devices(apio_ctx: ApioContext, verbose: bool) -> List[UsbDevice]:
         )
         result.append(item)
 
-    # -- Sort by (bus, device).
-    result = sorted(result, key=lambda d: (d.bus, d.device))
+    # -- Sort by (vendor, product, bus, device).
+    result = sorted(
+        result, key=lambda d: (d.vendor_id, d.device_type, d.bus, d.device)
+    )
 
     # -- All done.
     return result
@@ -224,10 +225,8 @@ def _scan_usb_cli(
     )
 
     # -- Add columns
-    table.add_column("BUS:DEV", no_wrap=True, justify="center")
-    # table.add_column("DEV", no_wrap=True, justify="center")
     table.add_column("VID:PID", no_wrap=True)
-    # table.add_column("PID", no_wrap=True)
+    table.add_column("BUS:DEV", no_wrap=True, justify="center")
     table.add_column("MANUFACTURER", no_wrap=True, style=EMPH3)
     table.add_column("DESCRIPTION", no_wrap=True, style=EMPH3)
     table.add_column("SERIAL-NUM", no_wrap=True)
@@ -236,8 +235,8 @@ def _scan_usb_cli(
     # -- Add a raw per device
     for device in devices:
         values = []
-        values.append(f"{device.bus}:{device.device}")
         values.append(f"{device.vendor_id:04X}:{device.product_id:04X}")
+        values.append(f"{device.bus}:{device.device}")
         values.append(device.manufacturer)
         values.append(device.description)
         values.append(device.serial_num)
