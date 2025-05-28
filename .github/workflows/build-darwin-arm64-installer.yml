@@ -49,8 +49,7 @@ jobs:
       # rthooks.dat to disable this hook.
       - name: Patch pyinstaller usb hook
         run: |
-          module=_pyinstaller_hooks_contrib
-          module_dir=$(dirname "$(python -c 'import $module; print($module.__file__)')")
+          module_dir=$(dirname "$(python -c 'import _pyinstaller_hooks_contrib; print(_pyinstaller_hooks_contrib.__file__)')")
           f=$module/rthooks.dat
           cat -n $f
           sed -i.bak "/'usb':/d" "$f" && rm -f "${f}.bak"
