@@ -151,7 +151,6 @@ def _list_serial_devices(apio_ctx: ApioContext) -> None:
     table.add_column("VID", no_wrap=True)
     table.add_column("PID", no_wrap=True)
     table.add_column("SERIAL-NUM", no_wrap=True)
-    table.add_column("LOCATION", no_wrap=True)
 
     # -- Add a raw per device
     for device in devices:
@@ -162,7 +161,6 @@ def _list_serial_devices(apio_ctx: ApioContext) -> None:
         values.append(device.vendor_id)
         values.append(device.product_id)
         values.append(device.serial_number)
-        values.append(device.location)
 
         # -- Add row.
         table.add_row(*values)
