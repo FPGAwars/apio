@@ -32,7 +32,4 @@ def test_construct_programmer_cmd_template(apio_runner: ApioRunner):
         )
 
         # -- Check the command.
-        assert (
-            programmer_cmd
-            == "iceprog -d i:0x${VID}:0x${PID}:${FTDI_IDX} $SOURCE"
-        )
+        assert programmer_cmd == "iceprog -d i:0x${VID}:0x${PID} $SOURCE"

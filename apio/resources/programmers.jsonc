@@ -8,13 +8,12 @@
 // The following placeholders, if present, are resolved by apio:
 // "${VID}" (optional): USB vendor id
 // "${PID}" (optional): USB Product id
-// "${FTDI_IDX}" (optional): FTDI idx
 // "${SERIAL_PORT}" (optional): Serial port name
 //
 {
   "iceprog": {
     "command": "iceprog",
-    "args": "-d i:0x${VID}:0x${PID}:${FTDI_IDX}"
+    "args": "-d i:0x${VID}:0x${PID}"
   },
   "pi-sicle-loader": {
     "command": "pi-sicle-loader",

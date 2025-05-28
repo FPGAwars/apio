@@ -30,14 +30,7 @@ serial_port_option = click.option(
     cls=cmd_util.ApioOption,
 )
 
-ftdi_idx_option = click.option(
-    "ftdi_idx",  # Var name.
-    "--ftdi-idx",
-    type=int,
-    default=None,  # 0 is a valid value.
-    metavar="ftdi-idx",
-    help="Consider only FTDI device with given index.",
-)
+
 
 
 # -- Text in the rich-text format of the python rich library.
@@ -47,13 +40,6 @@ The command 'apio upload' builds the bitstream file (similar to the \
 
 Examples:[code]
   apio upload              # Typical usage.
-  apio upload --ftdi-idx 2 # Consider only FTDI device at index 2[/code]
-
-The optional flag '--ftdi-idx' is used in special cases involving boards with \
-FTDI devices, particularly when multiple boards are connected to the host \
-computer. It tells Apio to consider only the device at the specified index in \
-the list shown by the command: 'apio devices list ftdi'. The first device in \
-the list has index 0.
 
 [Note] When apio is installed on Linux using the Snap package \
 manager, run the command 'snap connect apio:raw-usb' once \
@@ -69,14 +55,12 @@ to grant the necessary permissions to access USB devices.
 )
 @click.pass_context
 @serial_port_option
-@ftdi_idx_option
 @options.env_option_gen()
 @options.project_dir_option
 def cli(
     _: click.Context,
     # Options
     serial_port: str,
-    ftdi_idx: int,
     env: Optional[str],
     project_dir: Optional[Path],
 ):
@@ -94,9 +78,7 @@ def cli(
 
     # -- Get the programmer command.
     programmer_cmd = construct_programmer_cmd(
-        apio_ctx,
-        serial_port_arg=serial_port,
-        ftdi_idx_arg=ftdi_idx,  # None if not specified.
+        apio_ctx, serial_port_arg=serial_port
     )
 
     # Construct the scons upload params.

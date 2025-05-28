@@ -1179,13 +1179,6 @@ Usage: apio upload [OPTIONS]
 
   Examples:
     apio upload              # Typical usage.
-    apio upload --ftdi-idx 2 # Consider only FTDI device at index 2
-
-  The optional flag '--ftdi-idx' is used in special cases involving
-  boards with FTDI devices, particularly when multiple boards are
-  connected to the host computer. It tells Apio to consider only the
-  device at the specified index in the list shown by the command: 'apio
-  devices list ftdi'. The first device in the list has index 0.
 
   [Note] When apio is installed on Linux using the Snap package manager,
   run the command 'snap connect apio:raw-usb' once to grant the
@@ -1193,7 +1186,6 @@ Usage: apio upload [OPTIONS]
 
 Options:
   --serial-port serial-port  Set the serial port.
-  --ftdi-idx ftdi-idx        Consider only FTDI device with given index.
   -e, --env name             Set the apio.ini env.
   -p, --project-dir path     Set the root directory for the project.
   -h, --help                 Show this message and exit.
