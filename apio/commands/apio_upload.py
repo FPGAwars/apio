@@ -47,7 +47,7 @@ The command 'apio upload' builds the bitstream file (similar to the \
 
 Examples:[code]
   apio upload              # Typical usage.
-  apio upload --ftdi-idx 2 # Consider only FTDI device at index 2
+  apio upload --ftdi-idx 2 # Consider only FTDI device at index 2[/code]
 
 The optional flag '--ftdi-idx' is used in special cases involving boards with \
 FTDI devices, particularly when multiple boards are connected to the host \

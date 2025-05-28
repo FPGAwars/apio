@@ -45,7 +45,7 @@ class UsbDevice:
 
 
 def get_usb_str(
-    device: usb.core.Device, index: int, default: str, verbose: bool
+    device: usb.core.Device, index: int, default: str
 ) -> Optional[str]:
     """Extract usb string by its index."""
     # pylint: disable=broad-exception-caught
@@ -56,12 +56,12 @@ def get_usb_str(
         s = s.split("\x00", 1)[0]
         return s
     except Exception as e:
-        if verbose:
+        if util.is_debug():
             print(f"Error getting USB string at index {index}: {e}")
         return default
 
 
-def scan_usb_devices(apio_ctx: ApioContext, verbose: bool) -> List[UsbDevice]:
+def scan_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
     """Query and return a list with usb device info."""
 
     # -- Track the names we searched for. For diagnostics.
@@ -110,7 +110,7 @@ def scan_usb_devices(apio_ctx: ApioContext, verbose: bool) -> List[UsbDevice]:
     result: List[UsbDevice] = []
     for device in devices:
         # -- Print entire device info for debugging.
-        if verbose:
+        if util.is_debug():
             cout()
             cout(str(device))
             cout()
@@ -139,14 +139,9 @@ def scan_usb_devices(apio_ctx: ApioContext, verbose: bool) -> List[UsbDevice]:
                 device,
                 device.iManufacturer,
                 default=unavail,
-                verbose=verbose,
             ),
-            description=get_usb_str(
-                device, device.iProduct, default=unavail, verbose=verbose
-            ),
-            serial_num=get_usb_str(
-                device, device.iSerialNumber, default="", verbose=verbose
-            ),
+            description=get_usb_str(device, device.iProduct, default=unavail),
+            serial_num=get_usb_str(device, device.iSerialNumber, default=""),
             device_type=device_type,
         )
         result.append(item)
@@ -207,7 +202,7 @@ class UsbDeviceFilter:
 if __name__ == "__main__":
     configure()
     apio_ctx_ = ApioContext(scope=ApioContextScope.NO_PROJECT)
-    devices_ = scan_usb_devices(apio_ctx=apio_ctx_, verbose=False)
+    devices_ = scan_usb_devices(apio_ctx=apio_ctx_)
     for device_ in devices_:
         cout()
         cout(str(device_))

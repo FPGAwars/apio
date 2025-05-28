@@ -7,9 +7,8 @@
   * [apio clean](#apio-clean) - Delete the apio generated files.
   * [apio create](#apio-create) - Create an apio.ini project file.
   * [apio devices](#apio-devices) - List attached devices.
-    * [apio devices ftdi](#apio-devices-ftdi) - List the connected ftdi devices.
-    * [apio devices serial](#apio-devices-serial) - List the connected serial devices.
-    * [apio devices usb](#apio-devices-usb) - List connected USB devices.
+    * [apio devices serial](#apio-devices-serial) - List serial devices.
+    * [apio devices usb](#apio-devices-usb) - List USB devices.
   * [apio drivers](#apio-drivers) - Manage the operating system drivers.
     * [apio drivers install](#apio-drivers-install) - Install drivers.
       * [apio drivers install ftdi](#apio-drivers-install-ftdi) - Install the ftdi drivers.
@@ -32,8 +31,6 @@
     * [apio info platforms](#apio-info-platforms) - Supported platforms.
     * [apio info resources](#apio-info-resources) - Additional resources.
     * [apio info system](#apio-info-system) - Show system information.
-  * [apio labs](#apio-labs) - Experimental apio commands.
-    * [apio labs scan-usb](#apio-labs-scan-usb) - An experimental command to scan USB devices.
   * [apio lint](#apio-lint) - Lint the source code.
   * [apio packages](#apio-packages) - Manage the apio packages.
     * [apio packages fix](#apio-packages-fix) - Fix broken apio packages.
@@ -112,7 +109,6 @@ Utility commands:
   apio raw          Execute commands directly from the Apio packages.
   apio api          Apio programmatic interface.
   apio upgrade      Check the latest Apio version.
-  apio labs         Experimental apio commands.
 
 ```
 
@@ -285,42 +281,8 @@ Options:
   -h, --help  Show this message and exit.
 
 Subcommands:
-  apio devices ftdi    List the connected ftdi devices.
-  apio devices serial  List the connected serial devices.
-  apio devices usb     List connected USB devices.
-
-```
-
-<br>
-
-### apio devices ftdi
-
-```
-Usage: apio devices ftdi [OPTIONS]
-
-  The command 'apio devices ftdi' displays the FTDI devices currently
-  connected to your computer and recognized by the FPGA toolchain. It is
-  useful for diagnosing FPGA board connectivity and drivers issues.
-
-  Examples:
-    apio devices ftdi    # List the ftdi devices.
-
-  If an FTDI board is attached to the computer by is not shown in this
-  command, it may require a driver installation. For details see 'apio
-  drivers install ftdi'.
-
-  [Note] When apio is installed on Linux using the Snap package manager,
-  run the command 'snap connect apio:raw-usb' once to grant the
-  necessary permissions to access USB devices.
-
-
-  [Hint] This command invokes the command below and displays its output
-  in a table form:
-
-    apio raw -- openFPGALoader --scan-usb
-
-Options:
-  -h, --help  Show this message and exit.
+  apio devices usb     List USB devices.
+  apio devices serial  List serial devices.
 
 ```
 
@@ -869,48 +831,6 @@ Usage: apio info system [OPTIONS]
 
 Options:
   -h, --help  Show this message and exit.
-
-```
-
-<br>
-
-### apio labs
-
-```
-Usage: apio labs [OPTIONS] COMMAND [ARGS]...
-
-  The command group 'apio labs' contains experimental commands that are
-  used to evaluate new features and ideas. They are not part of the
-  official apio command set and most likely change or be removed in the
-  future.
-
-Options:
-  -h, --help  Show this message and exit.
-
-Subcommands:
-  apio labs scan-usb  An experimental command to scan USB devices.
-
-```
-
-<br>
-
-### apio labs scan-usb
-
-```
-Usage: apio labs scan-usb [OPTIONS]
-
-  The command 'apio labs scan-usb' is a temporary command that is used
-  to evaluate a new way to scan USB devices connected to the host
-  system. It is not part of the official apio command set and most
-  likely will change or be removed in the future.
-
-  Examples:
-    apio labs scan-usb     # Scan and print USB devices
-    apio labs scan-usb -v  # With extra info
-
-Options:
-  -v, --verbose  Show detailed output.
-  -h, --help     Show this message and exit.
 
 ```
 

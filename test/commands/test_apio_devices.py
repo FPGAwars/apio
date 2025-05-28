@@ -13,6 +13,5 @@ def test_devices(apio_runner: ApioRunner):
         # -- Execute "apio devices"
         result = sb.invoke_apio_cmd(apio, "devices")
         sb.assert_ok(result)
-        assert "apio devices ftdi" in cunstyle(result.output)
         assert "apio devices usb" in cunstyle(result.output)
         assert "apio devices serial" in cunstyle(result.output)
