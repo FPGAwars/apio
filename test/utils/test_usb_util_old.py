@@ -1,9 +1,9 @@
 """
-Tests of usb_util.py
+Tests of usb_util_old.py
 """
 
 from typing import List
-from apio.utils.usb_util import (
+from apio.utils.usb_util_old import (
     UsbDeviceInfo,
     UsbDeviceFilter,
     _get_devices_from_text,

@@ -16,7 +16,7 @@ from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 from apio.managers import installer
 from apio.common.apio_console import cout, cprint
 from apio.common.apio_styles import BORDER, SUCCESS, ERROR, EMPH3
-from apio.utils import pkg_util, ftdi_util, usb_util, serial_util, util
+from apio.utils import pkg_util, ftdi_util, serial_util, usb_util_old, util
 
 
 # -- apio devices ftdi
@@ -211,7 +211,7 @@ def _list_usb_devices(apio_ctx: ApioContext) -> None:
     installer.install_missing_packages_on_the_fly(apio_ctx)
     pkg_util.set_env_for_packages(apio_ctx, quiet=True)
 
-    devices = usb_util.scan_usb_devices()
+    devices = usb_util_old.scan_usb_devices()
 
     # -- If not found, print a message and exit.
     if not devices:
