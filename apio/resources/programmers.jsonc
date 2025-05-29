@@ -5,10 +5,19 @@
 // The programmer command is constructed as follows:
 // <programmer.args> $SOURCE <board.extra_args>
 //
-// The following placeholders, if present, are resolved by apio:
-// "${VID}" (optional): USB vendor id
-// "${PID}" (optional): USB Product id
-// "${SERIAL_PORT}" (optional): Serial port name
+// The programmers command may contain placeholders that are replaced by
+// apio at runtime. These placeholders can be from one of the two sets
+// below and cannot be mixed:
+//
+// Serial device placeholders:
+// ${SERIAL_PORT} - the serial port that the devices is connected it.
+//
+// USB device placeholders
+// ${VID}        - the USB vendor ID.
+// ${PID}        - the USB product ID.
+// ${BUS}        - the USB bus number..
+// ${DEV}        - the USB device address number.
+// ${SERIAL_NUM} - the USB serial number string.
 //
 {
   "iceprog": {
