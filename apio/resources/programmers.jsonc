@@ -13,7 +13,9 @@
 {
   "iceprog": {
     "command": "iceprog",
-    "args": "-d i:0x${VID}:0x${PID}"
+    // Addressing by bus/dev allows better board arbitration even with old
+    // Alhambra-ii boards that don't have serial number.
+    "args": "-d d:${BUS}/${DEV}"
   },
   "pi-sicle-loader": {
     "command": "pi-sicle-loader",
