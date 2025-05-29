@@ -222,7 +222,8 @@
     "description": "Alhambra II",
     "fpga": "ice40hx4k-tq144-8k",
     "programmer": {
-      "type": "iceprog"
+      "type": "openfpgaloader",
+      "extra_args": "--verify -b ice40_generic --vid ${VID} --pid ${PID} --busdev-num ${BUS}:${DEV}"
     },
     "usb": {
       "vid": "0403",
