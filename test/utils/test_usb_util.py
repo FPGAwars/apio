@@ -21,25 +21,29 @@ def test_filter_usb_devices():
     ]
 
     # -- All filtering disabled.
-    filtered = UsbDeviceFilter().filter(devs)
-    assert filtered == devs
+    filt = UsbDeviceFilter()
+    assert str(filt) == "[all]"
+    assert filt.filter(devs) == devs
 
     # -- Filter by VID
-    filtered = UsbDeviceFilter().vendor_id("9999").filter(devs)
-    assert filtered == []
+    filt = UsbDeviceFilter().vendor_id("9999")
+    assert str(filt) == "[VID=9999]"
+    assert filt.filter(devs) == []
 
-    filtered = UsbDeviceFilter().vendor_id("0405").filter(devs)
-    assert filtered == [devs[2], devs[5]]
+    filt = UsbDeviceFilter().vendor_id("0405")
+    assert str(filt) == "[VID=0405]"
+    assert filt.filter(devs) == [devs[2], devs[5]]
 
     # -- Filter by PID
-    filtered = UsbDeviceFilter().product_id("9999").filter(devs)
-    assert filtered == []
+    filt = UsbDeviceFilter().product_id("9999")
+    assert str(filt) == "[PID=9999]"
+    assert filt.filter(devs) == []
 
-    filtered = UsbDeviceFilter().product_id("6020").filter(devs)
-    assert filtered == [devs[1], devs[2], devs[3]]
+    filt = UsbDeviceFilter().product_id("6020")
+    assert str(filt) == "[PID=6020]"
+    assert filt.filter(devs) == [devs[1], devs[2], devs[3]]
 
     # -- Filter by VID, PID
-    filtered = (
-        UsbDeviceFilter().vendor_id("0403").product_id("6010").filter(devs)
-    )
-    assert filtered == [devs[0], devs[4]]
+    filt = UsbDeviceFilter().vendor_id("0403").product_id("6010")
+    assert str(filt) == "[VID=0403, PID=6010]"
+    assert filt.filter(devs) == [devs[0], devs[4]]

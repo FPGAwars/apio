@@ -6,8 +6,8 @@
 # -- Author Jesús Arroyo
 # -- License GPLv2
 
-import re
-from typing import List
+# import re
+# from typing import List
 from apio.common.apio_console import cout
 from apio.common.apio_styles import ERROR
 from apio.utils import util, pkg_util
@@ -21,36 +21,6 @@ class System:  # pragma: no cover
     def __init__(self, apio_ctx: ApioContext):
 
         self.apio_ctx = apio_ctx
-
-    def get_usb_devices(self) -> list:
-        """Return a list of the connected USB devices
-         This list is obtained by running the "lsusb" command
-
-         * OUTPUT:  A list of objects with the usb devices
-        Ex. [{'hwid':'1d6b:0003'}, {'hwid':'8087:0aaa'}, ...]
-
-        It raises an exception in case of not being able to
-        execute the "lsusb" command
-        """
-
-        # -- Initial empty usb devices list
-        usb_devices = []
-
-        # -- Run the "lsusb" command!
-        result = self._run_command("lsusb", silent=True)
-
-        if result.exit_code != 0:
-            cout(result.out_text)
-            cout(result.err_text, style=ERROR)
-            raise RuntimeError("Error executing lsusb")
-
-        # -- Get the list of the usb devices. It is read
-        # -- from the command stdout
-        # -- Ex: [{'hwid':'1d6b:0003'}, {'hwid':'04f2:b68b'}...]
-        usb_devices = self._parse_usb_devices(result.out_text)
-
-        # -- Return the devices
-        return usb_devices
 
     def _run_command(
         self, command: str, *, silent: bool
@@ -105,35 +75,3 @@ class System:  # pragma: no cover
         information on the standard error
         """
         cout(line, style=ERROR)
-
-    @staticmethod
-    def _parse_usb_devices(text: str) -> list[dict]:
-        """Get a list of usb devices from the input string
-        * INPUT: string that contains usb devices
-            (Ex. "... 1d6b:0003 ... 8087:0aaa ...")
-        * OUTPUT: A list of objects with the usb devices
-          Ex. [{'hwid':'1d6b:0003'}, {'hwid':'8087:0aaa'}, ...]
-        """
-
-        # -- Build the regular expression for representing
-        # -- patterns like '1d6b:0003'
-        pattern = r"(?P<hwid>[a-f0-9]{4}:[a-f0-9]{4}?)\s"
-
-        # -- Get the list of strings with that patter
-        # -- Ex. ['1d6b:0003','8087:0aaa'...]
-        hwids = re.findall(pattern, text)
-
-        # -- Output empty list
-        usb_devices: List[dict] = []
-
-        # -- Build the list
-        for hwid in hwids:
-
-            # -- Create the Object with the hardware id
-            usb_device = {"hwid": hwid}
-
-            # -- Add the object to the output list
-            usb_devices.append(usb_device)
-
-        # -- Return the final list
-        return usb_devices

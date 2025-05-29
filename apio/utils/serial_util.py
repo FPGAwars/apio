@@ -1,14 +1,16 @@
 """Serial devices related utilities."""
 
+import re
 from typing import List
 from dataclasses import dataclass
 from serial.tools.list_ports import comports
 from serial.tools.list_ports_common import ListPortInfo
-from apio.common.apio_console import cout, configure
+from apio.common.apio_console import cout
+from apio.utils import util
 
 
 @dataclass()
-class SerialDeviceInfo:
+class SerialDevice:
     """A data class to hold the information of a single Serial device."""
 
     # pylint: disable=too-many-instance-attributes
@@ -34,24 +36,14 @@ class SerialDeviceInfo:
         cout(f"    location:      [{self.location}]")
 
 
-def scan_serial_devices() -> List[SerialDeviceInfo]:
+def scan_serial_devices() -> List[SerialDevice]:
     """Scan the connected serial devices and return their information."""
-
-    # TODO: Figure out the data and update the comments.
-    #
-    # """Get a list of the serial port devices connected
-    # * OUTPUT: A list with the devides
-    #      Ex: [{'port': '/dev/ttyACM0',
-    #            'description': 'ttyACM0',
-    #            'hwid': 'USB VID:PID=1D50:6130 LOCATION=1-5:1.0'}]
-    # """
 
     # -- Initial empty device list
     devices = []
 
     # -- Use the serial.tools.list_ports module for reading the
-    # -- serial ports
-    # -- More info:
+    # -- serial ports. More info:
     # --   https://pyserial.readthedocs.io/en/latest/tools.html
     list_port_info: List[ListPortInfo] = comports()
     assert isinstance(list_port_info, list)
@@ -71,7 +63,7 @@ def scan_serial_devices() -> List[SerialDeviceInfo]:
 
         # -- Add device to list.
         devices.append(
-            SerialDeviceInfo(
+            SerialDevice(
                 port=item.device,
                 port_name=item.name,
                 manufacturer=item.manufacturer,
@@ -86,18 +78,98 @@ def scan_serial_devices() -> List[SerialDeviceInfo]:
     # -- Sort by port name, case insensitive.
     devices = sorted(devices, key=lambda d: d.port.lower())
 
+    if util.is_debug():
+        cout(f"Found {len(devices)} serial device:")
+        for i, device in enumerate(devices):
+            cout()
+            cout(f"---- serial device {i}")
+            device.dump()
+
     # -- All done.
     return devices
 
 
-# TODO: Add a filter class, similar to usb_util.py.
+@dataclass
+class SerialDeviceFilter:
+    """A class to filter a list of serial devices by attributes. We use the
+    Fluent Interface design pattern so we can assert that the values that
+    the caller passes as filters are not unintentionally None or empty
+    unintentionally."""
 
-# -- For testing with actual boards.
-if __name__ == "__main__":
-    configure()
-    devices_ = scan_serial_devices()
-    for index, device_ in enumerate(devices_):
-        cout()
-        print(f"[{index}]")
-        device_.dump()
-        cout()
+    _vendor_id: str = None
+    _product_id: str = None
+    _desc_regex: str = None
+    _serial_port: str = None
+
+    def __str__(self) -> str:
+        """User friendly representation of the filter"""
+        terms = []
+        if self._vendor_id:
+            terms.append(f"VID={self._vendor_id}")
+        if self._product_id:
+            terms.append(f"PID={self._product_id}")
+        if self._desc_regex:
+            terms.append(f"regex='{self._desc_regex}'")
+        if self._serial_port:
+            terms.append(f"port={self._serial_port}")
+        if terms:
+            return "[" + ", ".join(terms) + "]"
+        return "[all]"
+
+    def vendor_id(self, vendor_id: str) -> "SerialDeviceFilter":
+        """Pass only devices with given vendor id."""
+        assert vendor_id
+        self._vendor_id = vendor_id
+        return self
+
+    def product_id(self, product_id: str) -> "SerialDeviceFilter":
+        """Pass only devices given product id."""
+        assert product_id
+        self._product_id = product_id
+        return self
+
+    def desc_regex(self, desc_regex: str) -> "SerialDeviceFilter":
+        """Pass only devices whose description match given regex."""
+        assert desc_regex
+        self._desc_regex = desc_regex
+        return self
+
+    def port(self, serial_port: str) -> "SerialDeviceFilter":
+        """Pass only devices given product serial port.."""
+        assert serial_port
+        self._serial_port = serial_port
+        return self
+
+    def _eval(self, device: SerialDevice) -> bool:
+        """Test if the devices passes this field."""
+        if (self._vendor_id is not None) and (
+            self._vendor_id.lower() != device.vendor_id.lower()
+        ):
+            return False
+
+        if (self._product_id is not None) and (
+            self._product_id.lower() != device.product_id.lower()
+        ):
+            return False
+
+        if (self._desc_regex is not None) and not re.search(
+            self._desc_regex, device.description
+        ):
+            return False
+
+        # -- We allow matching by full port string or by port name.
+        if (self._serial_port is not None) and (
+            (
+                self._serial_port.lower()
+                not in [device.port.lower(), device.port_name.lower()]
+            )
+        ):
+            return False
+
+        return True
+
+    def filter(self, devices: List[SerialDevice]):
+        """Return a copy of the list with items that are pass this filter.
+        Items order is preserved."""
+        result = [d for d in devices if self._eval(d)]
+        return result

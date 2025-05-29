@@ -1,18 +1,21 @@
 """USB devices related utilities."""
 
 import sys
+import re
 from glob import glob
 from typing import List, Optional
 from dataclasses import dataclass
 import usb.core
 import usb.backend.libusb1
-from apio.common.apio_console import cout, cerror, configure
+from apio.common.apio_console import cout, cerror
 from apio.common.apio_styles import INFO
 from apio.utils import util
-from apio.apio_context import ApioContext, ApioContextScope
+from apio.apio_context import ApioContext
 
 
-# Mapping of (VID), and (VID:PID) to device type.
+# -- Mapping of (VID), and (VID:PID) to device type. This is presented to the
+# -- user as an information only. Add more as you like.
+
 USB_TYPES = {
     # -- FTDI
     (0x0403): "FTDI",
@@ -40,8 +43,19 @@ class UsbDevice:
     product_id: str
     manufacturer: str
     description: str
-    serial_num: str
+    serial_number: str
     device_type: str
+
+    def dump(self):
+        """Dump the device info. For debugging."""
+        cout(f"    bus:           [{self.bus}]")
+        cout(f"    device:        [{self.device}]")
+        cout(f"    vendor_id:     [{self.vendor_id}]")
+        cout(f"    product_id:    [{self.product_id}]")
+        cout(f"    manufacturer:  [{self.manufacturer}]")
+        cout(f"    description:   [{self.description}]")
+        cout(f"    serial_number: [{self.serial_number}]")
+        cout(f"    device_type:   [{self.device_type}]")
 
 
 def get_usb_str(
@@ -57,7 +71,7 @@ def get_usb_str(
         return s
     except Exception as e:
         if util.is_debug():
-            print(f"Error getting USB string at index {index}: {e}")
+            cout(f"Error getting USB string at index {index}: {e}")
         return default
 
 
@@ -109,7 +123,7 @@ def scan_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
     # -- Collect the devices
     result: List[UsbDevice] = []
     for device in devices:
-        # -- Print entire device info for debugging.
+        # -- Print entire raw device info for debugging.
         if util.is_debug():
             cout()
             cout(str(device))
@@ -133,23 +147,38 @@ def scan_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
         item = UsbDevice(
             bus=device.bus,
             device=device.address,
-            vendor_id=device.idVendor,
-            product_id=device.idProduct,
+            vendor_id=f"{device.idVendor:04X}",
+            product_id=f"{device.idProduct:04x}",
             manufacturer=get_usb_str(
                 device,
                 device.iManufacturer,
                 default=unavail,
             ),
             description=get_usb_str(device, device.iProduct, default=unavail),
-            serial_num=get_usb_str(device, device.iSerialNumber, default=""),
+            serial_number=get_usb_str(
+                device, device.iSerialNumber, default=""
+            ),
             device_type=device_type,
         )
         result.append(item)
 
     # -- Sort by (vendor, product, bus, device).
     result = sorted(
-        result, key=lambda d: (d.vendor_id, d.device_type, d.bus, d.device)
+        result,
+        key=lambda d: (
+            d.vendor_id.lower(),
+            d.product_id.lower(),
+            d.bus,
+            d.device,
+        ),
     )
+
+    if util.is_debug():
+        cout(f"Found {len(devices)} USB devices:")
+        for i, device in enumerate(devices):
+            cout()
+            cout(f"---- USB device {i}")
+            device.dump()
 
     # -- All done.
     return result
@@ -164,6 +193,22 @@ class UsbDeviceFilter:
 
     _vendor_id: str = None
     _product_id: str = None
+    _desc_regex: str = None
+
+    def __str__(self) -> str:
+        """User friendly representation of the filter"""
+        terms = []
+
+        if self._vendor_id:
+            terms.append(f"VID={self._vendor_id}")
+        if self._product_id:
+            terms.append(f"PID={self._product_id}")
+        if self._desc_regex:
+            terms.append(f"regex='{self._desc_regex}'")
+
+        if terms:
+            return "[" + ", ".join(terms) + "]"
+        return "[all]"
 
     def vendor_id(self, vendor_id: str) -> "UsbDeviceFilter":
         """Pass only devices with given vendor id."""
@@ -172,20 +217,31 @@ class UsbDeviceFilter:
         return self
 
     def product_id(self, product_id: str) -> "UsbDeviceFilter":
-        """Pass only devices given product id."""
+        """Pass only devices aith given product id."""
         assert product_id
         self._product_id = product_id
+        return self
+
+    def desc_regex(self, desc_regex: str) -> "UsbDeviceFilter":
+        """Pass only devices whose description match given regex."""
+        assert desc_regex
+        self._desc_regex = desc_regex
         return self
 
     def _eval(self, device: UsbDevice) -> bool:
         """Test if the devices passes this field."""
         if (self._vendor_id is not None) and (
-            self._vendor_id != device.vendor_id
+            self._vendor_id.lower() != device.vendor_id.lower()
         ):
             return False
 
         if (self._product_id is not None) and (
-            self._product_id != device.product_id
+            self._product_id.lower() != device.product_id.lower()
+        ):
+            return False
+
+        if (self._desc_regex is not None) and not re.search(
+            self._desc_regex, device.description
         ):
             return False
 
@@ -196,13 +252,3 @@ class UsbDeviceFilter:
         Items order is preserved."""
         result = [d for d in devices if self._eval(d)]
         return result
-
-
-# -- For testing with actual boards.
-if __name__ == "__main__":
-    configure()
-    apio_ctx_ = ApioContext(scope=ApioContextScope.NO_PROJECT)
-    devices_ = scan_usb_devices(apio_ctx=apio_ctx_)
-    for device_ in devices_:
-        cout()
-        cout(str(device_))

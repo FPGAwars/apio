@@ -11,7 +11,6 @@
 
 import sys
 import os
-import json
 import traceback
 from functools import wraps
 from enum import Enum
@@ -24,7 +23,7 @@ from serial.tools.list_ports import comports
 import apio
 from apio.utils import env_options
 from apio.common.apio_console import cout, cerror
-from apio.common.apio_styles import INFO, WARNING, ERROR, EMPH3
+from apio.common.apio_styles import INFO, ERROR, EMPH3
 
 
 # ----------------------------------------
@@ -286,69 +285,6 @@ def get_serial_ports() -> list:
 
     # -- Return the list of serial ports
     return result
-
-
-def get_tinyprog_meta() -> list:
-    """Special function for the TinyFPGA board
-     Get information directly from the board, just by
-     executing the command: "tinyprog --pyserial --meta"
-
-     OUTPUT: It returns a list with the meta-data of all
-       the TinyFPGA boards connected
-       Ex:
-    '[ {"boardmeta": {
-          "name": "TinyFPGA BX",
-          "fpga": "ice40lp8k-cm81",
-          "hver": "1.0.0",
-          "uuid": "7d41d659-876b-454a-9a91-51e5f157e80c"
-         },
-       "bootmeta": {
-         "bootloader": "TinyFPGA USB Bootloader",
-         "bver": "1.0.1",
-         "update": "https://tinyfpga.com/update/tinyfpga-bx",
-         "addrmap": {
-             "bootloader": "0x000a0-0x28000",
-             "userimage": "0x28000-0x50000",
-             "userdata": "0x50000-0x100000"
-          }\n
-        },
-        "port": "/dev/ttyACM0"\n
-       }
-     ]'
-    """
-
-    # -- Construct the command to execute. Since we execute tinyprog from
-    # -- the apio packages which add to the path, we can use a simple name.
-    command = ["tinyprog", "--pyserial", "--meta"]
-    command_str = " ".join(command)
-
-    # -- Execute the command!
-    # -- It should return the meta information as a json string
-    cout(command_str)
-    result = exec_command(command)
-
-    if result.exit_code != 0:
-        cout(
-            f"Warning: the command '{command_str}' failed with exit code "
-            f"{result.exit_code}",
-            style=WARNING,
-        )
-        return []
-
-    # -- Convert the json string to an object (list)
-    try:
-        meta = json.loads(result.out_text)
-
-    except json.decoder.JSONDecodeError as exc:
-        cout(
-            f"Warning: invalid json data provided by `{command_str}`",
-            style=WARNING,
-        )
-        cout(f"{exc}", style=ERROR)
-        return []
-
-    # -- Return the meta-data
-    return meta
 
 
 def get_bin_dir() -> Path:
