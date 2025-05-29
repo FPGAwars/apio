@@ -32,7 +32,7 @@ SERIAL_VARS = [SERIAL_PORT_VAR]
 ALL_VARS = USB_VARS + SERIAL_VARS
 
 
-class DeviceScanner:
+class _DeviceScanner:
     """Provides usb and serial devices scanning, with caching."""
 
     def __init__(self, apio_ctx: ApioContext):
@@ -62,13 +62,13 @@ def construct_programmer_cmd(
     """Construct the programmer command for an 'apio upload' command."""
 
     # -- This is a thin wrapper to allow injecting test scanners in tests.
-    scanner = DeviceScanner(apio_ctx)
+    scanner = _DeviceScanner(apio_ctx)
     return _construct_programmer_cmd(apio_ctx, scanner, serial_port_arg)
 
 
 def _construct_programmer_cmd(
     apio_ctx: ApioContext,
-    scanner: DeviceScanner,
+    scanner: _DeviceScanner,
     serial_port_arg: Optional[str],
 ) -> str:
     """Construct the programmer command for an 'apio upload' command."""
@@ -125,7 +125,7 @@ def _construct_programmer_cmd(
     return cmd
 
 
-def _check_device_presence(apio_ctx: ApioContext, scanner: DeviceScanner):
+def _check_device_presence(apio_ctx: ApioContext, scanner: _DeviceScanner):
     """If the board info has a "usb" section, check that there is at least one
     usb device that matches the constraints, if any, in the "usb" section.
     Returns if OK, exits with an error otherwise.
@@ -172,7 +172,7 @@ def _check_device_presence(apio_ctx: ApioContext, scanner: DeviceScanner):
 
 def _resolve_serial_cmd_template(
     apio_ctx: ApioContext,
-    scanner: DeviceScanner,
+    scanner: _DeviceScanner,
     serial_port_arg: Optional[str],
     cmd_template: str,
 ) -> str:
@@ -194,7 +194,7 @@ def _resolve_serial_cmd_template(
 
 
 def _resolve_usb_cmd_template(
-    apio_ctx: ApioContext, scanner: DeviceScanner, cmd_template: str
+    apio_ctx: ApioContext, scanner: _DeviceScanner, cmd_template: str
 ) -> str:
     """Resolves a programmer command template for an USB device."""
 
@@ -263,7 +263,7 @@ def _construct_cmd_template(apio_ctx: ApioContext) -> str:
 
 def _match_serial_device(
     apio_ctx: ApioContext,
-    scanner: DeviceScanner,
+    scanner: _DeviceScanner,
     ext_serial_port: Optional[str],
 ) -> SerialDevice:
     """Scans the serial devices and selects and returns a single matching
