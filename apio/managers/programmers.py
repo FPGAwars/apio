@@ -88,7 +88,7 @@ def _construct_programmer_cmd(
     # -- placeholder is resolved later in scons.
     assert "$SOURCE" in cmd_template, cmd_template
 
-    # -- Determine how to handle this device.
+    # -- Determine how to resolve this template.
     has_usb_vars = any(s in cmd_template for s in USB_VARS)
     has_serial_vars = any(s in cmd_template for s in SERIAL_VARS)
 
