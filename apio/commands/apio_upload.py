@@ -12,7 +12,7 @@ from typing import Optional
 from pathlib import Path
 import click
 from apio.managers.scons import SCons
-from apio.utils import cmd_util
+from apio.utils import cmd_util, pkg_util
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.managers.programmers import construct_programmer_cmd
@@ -71,8 +71,8 @@ def cli(
         env_arg=env,
     )
 
-    # -- Create the scons manager
-    scons = SCons(apio_ctx)
+    # -- Set the shell env.
+    pkg_util.set_env_for_packages(apio_ctx)
 
     # -- Get the programmer command.
     programmer_cmd = construct_programmer_cmd(
@@ -81,6 +81,9 @@ def cli(
 
     # Construct the scons upload params.
     upload_params = UploadParams(programmer_cmd=programmer_cmd)
+
+    # -- Create the scons manager
+    scons = SCons(apio_ctx)
 
     # Run scons: upload command
     exit_code = scons.upload(upload_params)

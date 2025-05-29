@@ -145,24 +145,24 @@ def _check_device_presence(apio_ctx: ApioContext, scanner: _DeviceScanner):
     # -- Create a device filter with the constraints. Note that the "usb"
     # -- section may contain no constrained which will result in a pass-all
     # -- filter.
-    filt = UsbDeviceFilter()
+    usb_filter = UsbDeviceFilter()
     if "vid" in usb_info:
-        filt.vendor_id(usb_info["vid"])
+        usb_filter.vendor_id(usb_info["vid"])
     if "pid" in usb_info:
-        filt.product_id(usb_info["pid"])
+        usb_filter.product_id(usb_info["pid"])
     if "desc-regex" in usb_info:
-        filt.desc_regex(usb_info["desc-regex"])
+        usb_filter.desc_regex(usb_info["desc-regex"])
 
     # -- Scan the USB devices and filter by the filter.
     all_devices = scanner.get_usb_devices()
-    matching_devices = filt.filter(all_devices)
+    matching_devices = usb_filter.filter(all_devices)
 
     # -- If no device passed the filter fail the check.
     if not matching_devices:
         cerror(f"Board '{board}' not found.")
         cout(
             "Type 'apio devices usb' to list the usb devices.",
-            f"Filter used: {str(filt)}",
+            f"Filter used: {usb_filter.summary()}",
             style=INFO,
         )
         sys.exit(1)
@@ -284,21 +284,21 @@ def _match_serial_device(
     # desc_regex = usb_info.get("desc-regex", )
 
     # -- Construct a device filter.
-    filt = SerialDeviceFilter()
+    serial_filter = SerialDeviceFilter()
     if "vid" in usb_info:
-        filt.vendor_id(usb_info["vid"])
+        serial_filter.vendor_id(usb_info["vid"])
     if "pid" in usb_info:
-        filt.product_id(usb_info["pid"])
+        serial_filter.product_id(usb_info["pid"])
     if "desc-regex" in usb_info:
-        filt.desc_regex(usb_info["desc-regex"])
+        serial_filter.desc_regex(usb_info["desc-regex"])
     if ext_serial_port:
-        filt.port(ext_serial_port)
+        serial_filter.port(ext_serial_port)
 
     # -- Get matching devices
-    matching: List[SerialDevice] = filt.filter(all_devices)
+    matching: List[SerialDevice] = serial_filter.filter(all_devices)
 
     if util.is_debug():
-        cout(f"Serial device filter: {str(filt)}")
+        cout(f"Serial device filter: {serial_filter.summary()}")
         cout(f"Matching serial devices: {matching}")
 
     if util.is_debug():
@@ -309,7 +309,7 @@ def _match_serial_device(
         cerror(f"Serial board '{board}' not found.")
         cout(
             "Type 'apio devices serial' to list the serial devices.",
-            f"Filter used: {str(filt)}",
+            f"Filter used: {serial_filter.summary()}",
             style=INFO,
         )
 
@@ -319,14 +319,15 @@ def _match_serial_device(
             f"Found {len(matching)} serial devices "
             f"matching'{board}' board."
         )
+        for device in matching:
+            cout(f"Serial device {device.summary()}", style=INFO)
         cout(
             "Type 'apio devices serial' to list the serial devices.",
-            f"Filter used: {str(filt)}",
+            f"Filter used: {serial_filter.summary()}",
             style=INFO,
         )
 
-    if util.is_debug():
-        cout(f"Serial device: {matching[0]}")
+    cout(f"Using serial device {matching[0].summary()}", style=INFO)
 
     # -- All done. We have a single match.
     return matching[0]
@@ -348,19 +349,19 @@ def _match_usb_device(apio_ctx: ApioContext, scanner) -> UsbDevice:
     usb_info = board_info.get("usb", {})
 
     # -- Construct a device filter.
-    filt = UsbDeviceFilter()
+    usb_filter = UsbDeviceFilter()
     if "vid" in usb_info:
-        filt.vendor_id(usb_info["vid"])
+        usb_filter.vendor_id(usb_info["vid"])
     if "pid" in usb_info:
-        filt.product_id(usb_info["pid"])
+        usb_filter.product_id(usb_info["pid"])
     if "desc-regex" in usb_info:
-        filt.desc_regex(usb_info["desc-regex"])
+        usb_filter.desc_regex(usb_info["desc-regex"])
 
     # -- Get matching devices
-    matching: List[UsbDevice] = filt.filter(all_devices)
+    matching: List[UsbDevice] = usb_filter.filter(all_devices)
 
     if util.is_debug():
-        cout(f"USB device filter: {str(filt)}")
+        cout(f"USB device filter: {usb_filter.summary()}")
         cout(f"Matching USB devices: {matching}")
 
     if util.is_debug():
@@ -371,7 +372,7 @@ def _match_usb_device(apio_ctx: ApioContext, scanner) -> UsbDevice:
         cerror(f"USB board '{board}' not found.")
         cout(
             "Type 'apio devices usb' to list the usb devices.",
-            f"Filter used: {str(filt)}",
+            f"Filter used: {usb_filter.summary()}",
             style=INFO,
         )
         sys.exit(1)
@@ -381,15 +382,16 @@ def _match_usb_device(apio_ctx: ApioContext, scanner) -> UsbDevice:
         cerror(
             f"Found {len(matching)} usb devices " f"matching'{board}' board."
         )
+        for device in matching:
+            cout(f"USB device {device.summary()}", style=INFO)
         cout(
             "Type 'apio devices usb' for the list of available devices.",
-            f"Filter used: {str(filt)}",
+            f"Filter used: {usb_filter.summary()}",
             style=INFO,
         )
         sys.exit(1)
 
-    if util.is_debug():
-        cout(f"USB device: {matching[0]}")
+    cout(f"Using USB device {matching[0].summary()}")
 
     # -- All done. We have a single match.
     return matching[0]

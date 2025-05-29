@@ -16,7 +16,7 @@ from apio.apio_context import ApioContext
 # -- Mapping of (VID), and (VID:PID) to device type. This is presented to the
 # -- user as an information only. Add more as you like.
 
-USB_TYPES = {
+_USB_TYPES = {
     # -- FTDI
     (0x0403): "FTDI",
     (0x0403, 0x6001): "FT232R",
@@ -34,10 +34,9 @@ USB_TYPES = {
 def get_device_type(vid: int, pid: int) -> str:
     """Determine device type string. Try to match by (vid, pid) and if
     not found, by (vid). Returns "" if not found."""
-    print((vid, pid))
-    device_type = USB_TYPES.get((vid, pid), "")
+    device_type = _USB_TYPES.get((vid, pid), "")
     if not device_type:
-        device_type = USB_TYPES.get((vid), "")
+        device_type = _USB_TYPES.get((vid), "")
     return device_type
 
 
@@ -56,7 +55,7 @@ class UsbDevice:
     serial_number: str
     device_type: str
 
-    def dump(self):
+    def dump(self) -> None:
         """Dump the device info. For debugging."""
         cout(f"    bus:           [{self.bus}]")
         cout(f"    device:        [{self.device}]")
@@ -67,8 +66,16 @@ class UsbDevice:
         cout(f"    serial_number: [{self.serial_number}]")
         cout(f"    device_type:   [{self.device_type}]")
 
+    def summary(self) -> str:
+        """Returns a user friendly short description of this device."""
+        return (
+            f"[{self.vendor_id}:{self.product_id}, "
+            f"{self.bus}:{self.device}], [{self.manufacturer}] "
+            f"[{self.description}] [{self.serial_number}]"
+        )
 
-def get_usb_str(
+
+def _get_usb_str(
     device: usb.core.Device, index: int, default: str
 ) -> Optional[str]:
     """Extract usb string by its index."""
@@ -156,13 +163,13 @@ def scan_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
             device=device.address,
             vendor_id=f"{device.idVendor:04X}",
             product_id=f"{device.idProduct:04x}",
-            manufacturer=get_usb_str(
+            manufacturer=_get_usb_str(
                 device,
                 device.iManufacturer,
                 default=unavail,
             ),
-            description=get_usb_str(device, device.iProduct, default=unavail),
-            serial_number=get_usb_str(
+            description=_get_usb_str(device, device.iProduct, default=unavail),
+            serial_number=_get_usb_str(
                 device, device.iSerialNumber, default=""
             ),
             device_type=device_type,
@@ -202,7 +209,7 @@ class UsbDeviceFilter:
     _product_id: str = None
     _desc_regex: str = None
 
-    def __str__(self) -> str:
+    def summary(self) -> str:
         """User friendly representation of the filter"""
         terms = []
 

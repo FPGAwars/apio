@@ -25,7 +25,7 @@ class SerialDevice:
     device_type: str
     location: str
 
-    def dump(self):
+    def dump(self) -> None:
         """Dump the device info. For debugging."""
         cout(f"    port:          [{self.port}]")
         cout(f"    port-name:     [{self.port_name}]")
@@ -36,6 +36,15 @@ class SerialDevice:
         cout(f"    serial_number: [{self.serial_number}]")
         cout(f"    device_type  : [{self.device_type}]")
         cout(f"    location:      [{self.location}]")
+
+    def summary(self) -> str:
+        """Returns a user friendly short description of this device."""
+        return (
+            f"[{self.port}] "
+            f"[{self.vendor_id}:{self.product_id}, "
+            f"[{self.manufacturer}] [{self.description}] "
+            f"[{self.serial_number}]"
+        )
 
 
 def scan_serial_devices() -> List[SerialDevice]:
@@ -104,7 +113,7 @@ class SerialDeviceFilter:
     _desc_regex: str = None
     _serial_port: str = None
 
-    def __str__(self) -> str:
+    def summary(self) -> str:
         """User friendly representation of the filter"""
         terms = []
         if self._vendor_id:
