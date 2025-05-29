@@ -31,6 +31,16 @@ USB_TYPES = {
 }
 
 
+def get_device_type(vid: int, pid: int) -> str:
+    """Determine device type string. Try to match by (vid, pid) and if
+    not found, by (vid). Returns "" if not found."""
+    print((vid, pid))
+    device_type = USB_TYPES.get((vid, pid), "")
+    if not device_type:
+        device_type = USB_TYPES.get((vid), "")
+    return device_type
+
+
 @dataclass()
 class UsbDevice:
     """A data class to hold the information of a single USB device."""
@@ -136,11 +146,8 @@ def scan_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
         if device.bDeviceClass == 0x09:
             continue
 
-        # -- Determine device type string. Try to match by (vid, pid) and if
-        # -- not found, by (vid)
-        device_type = USB_TYPES.get((device.idVendor, device.idProduct), "")
-        if not device_type:
-            device_type = USB_TYPES.get((device.idVendor), "")
+        # -- Lookup device type or "" if not found.
+        device_type = get_device_type(device.idVendor, device.idProduct)
 
         # -- Create the device object.
         unavail = "--unavail--"

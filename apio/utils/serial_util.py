@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from serial.tools.list_ports import comports
 from serial.tools.list_ports_common import ListPortInfo
 from apio.common.apio_console import cout
-from apio.utils import util
+from apio.utils import util, usb_util
 
 
 @dataclass()
@@ -22,6 +22,7 @@ class SerialDevice:
     vendor_id: str
     product_id: str
     serial_number: str
+    device_type: str
     location: str
 
     def dump(self):
@@ -33,6 +34,7 @@ class SerialDevice:
         cout(f"    vendor_id:     [{self.vendor_id}]")
         cout(f"    product_id:    [{self.product_id}]")
         cout(f"    serial_number: [{self.serial_number}]")
+        cout(f"    device_type  : [{self.device_type}]")
         cout(f"    location:      [{self.location}]")
 
 
@@ -71,6 +73,7 @@ def scan_serial_devices() -> List[SerialDevice]:
                 vendor_id=f"{item.vid:04X}",
                 product_id=f"{item.pid:04X}",
                 serial_number=item.serial_number or "",
+                device_type=usb_util.get_device_type(item.vid, item.pid),
                 location=item.location,
             )
         )

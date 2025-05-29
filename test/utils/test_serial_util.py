@@ -20,6 +20,7 @@ def test_filter_serial_devices():
             "0403",
             "6020",
             "serial0",
+            "type0",
             "location0",
         ),
         SerialDevice(  # devs[1]
@@ -30,6 +31,7 @@ def test_filter_serial_devices():
             "0405",
             "6010",
             "serial1",
+            "type1",
             "location1",
         ),
         SerialDevice(  # devs[2]
@@ -40,6 +42,7 @@ def test_filter_serial_devices():
             "0403",
             "6010",
             "serial2",
+            "type2",
             "location2",
         ),
         SerialDevice(  # devs[3]
@@ -50,6 +53,7 @@ def test_filter_serial_devices():
             "0405",
             "6020",
             "serial3",
+            "type3",
             "location3",
         ),
     ]

@@ -137,21 +137,21 @@ def _list_serial_devices(apio_ctx: ApioContext) -> None:
 
     # -- Add columns
     table.add_column("PORT", no_wrap=True, style=EMPH3)
-    table.add_column("MANUFACTURER", no_wrap=True)
-    table.add_column("DESCRIPTION", no_wrap=True)
-    table.add_column("VID", no_wrap=True)
-    table.add_column("PID", no_wrap=True)
+    table.add_column("VID:PID", no_wrap=True)
+    table.add_column("MANUFACTURER", no_wrap=True, style=EMPH3)
+    table.add_column("DESCRIPTION", no_wrap=True, style=EMPH3)
     table.add_column("SERIAL-NUM", no_wrap=True)
+    table.add_column("TYPE", no_wrap=True)
 
     # -- Add a raw per device
     for device in devices:
         values = []
         values.append(device.port)
+        values.append(f"{device.vendor_id}:{device.product_id}")
         values.append(device.manufacturer)
         values.append(device.description)
-        values.append(device.vendor_id)
-        values.append(device.product_id)
         values.append(device.serial_number)
+        values.append(device.device_type)
 
         # -- Add row.
         table.add_row(*values)
