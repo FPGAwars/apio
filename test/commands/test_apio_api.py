@@ -34,5 +34,5 @@ def test_apio_api_info(apio_runner: ApioRunner):
                 "part-num": "ICE40HX4K-TQ144",
                 "arch": "ice40",
             },
-            "programmer": {"id": "iceprog"},
+            "programmer": {"id": "openfpgaloader"},
         }
