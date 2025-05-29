@@ -168,7 +168,6 @@ def _check_device_presence(apio_ctx: ApioContext, scanner: DeviceScanner):
         sys.exit(1)
 
     # -- All OK.
-    cout(f"Device present: {filt}")
 
 
 def _resolve_serial_cmd_template(
@@ -295,11 +294,12 @@ def _match_serial_device(
     if ext_serial_port:
         filt.port(ext_serial_port)
 
-    # -- Show the filter.
-    print(f"Serial device filter: {str(filt)}")
-
     # -- Get matching devices
     matching: List[SerialDevice] = filt.filter(all_devices)
+
+    if util.is_debug():
+        cout(f"Serial device filter: {str(filt)}")
+        cout(f"Matching serial devices: {matching}")
 
     if util.is_debug():
         cout(f"Matching serial devices: {matching}")
@@ -325,7 +325,8 @@ def _match_serial_device(
             style=INFO,
         )
 
-    cout(f"Selected serial device: {matching[0]}")
+    if util.is_debug():
+        cout(f"Serial device: {matching[0]}")
 
     # -- All done. We have a single match.
     return matching[0]
@@ -346,8 +347,6 @@ def _match_usb_device(apio_ctx: ApioContext, scanner) -> UsbDevice:
     # -- Get board optional usb constraints
     usb_info = board_info.get("usb", {})
 
-
-
     # -- Construct a device filter.
     filt = UsbDeviceFilter()
     if "vid" in usb_info:
@@ -357,13 +356,12 @@ def _match_usb_device(apio_ctx: ApioContext, scanner) -> UsbDevice:
     if "desc-regex" in usb_info:
         filt.desc_regex(usb_info["desc-regex"])
 
-
-
-    # -- Show the filter.
-    print(f"USB device filter: {str(filt)}")
-
     # -- Get matching devices
     matching: List[UsbDevice] = filt.filter(all_devices)
+
+    if util.is_debug():
+        cout(f"USB device filter: {str(filt)}")
+        cout(f"Matching USB devices: {matching}")
 
     if util.is_debug():
         cout(f"Matching usb devices: {matching}")
@@ -390,7 +388,8 @@ def _match_usb_device(apio_ctx: ApioContext, scanner) -> UsbDevice:
         )
         sys.exit(1)
 
-    cout(f"Selected usb device: {matching[0]}")
+    if util.is_debug():
+        cout(f"USB device: {matching[0]}")
 
     # -- All done. We have a single match.
     return matching[0]
