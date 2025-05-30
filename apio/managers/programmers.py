@@ -87,7 +87,7 @@ def _construct_programmer_cmd(
     # -- contain ${} vars.
     cmd_template = _construct_cmd_template(apio_ctx)
     if util.is_debug():
-        cout(f"Programmer template: [{cmd_template}]")
+        cout(f"Cmd template: [{cmd_template}]")
 
     # -- Resolved the mandatory ${BIN_FILE} to $SOURCE which will be replaced
     # -- by scons with the path of the bitstream file.
@@ -96,6 +96,10 @@ def _construct_programmer_cmd(
     # -- Determine how to resolve this template.
     has_usb_vars = any(s in cmd_template for s in USB_VARS)
     has_serial_vars = any(s in cmd_template for s in SERIAL_VARS)
+
+    if util.is_debug():
+        cout(f"Template has usb vars: {has_usb_vars}]")
+        cout(f"Template has serial vars: {has_serial_vars}]")
 
     # -- Can't have both serial and usb vars (OK to have none).
     if has_usb_vars and has_serial_vars:
@@ -130,8 +134,6 @@ def _construct_programmer_cmd(
 
     # -- At this point, all vars should be resolved.
     assert not any(s in cmd for s in ALL_VARS), cmd_template
-
-
 
     # -- Return the resolved command.
     return cmd
