@@ -52,7 +52,7 @@ FTDI_INSTALL_INSTRUCTIONS_WINDOWS = f"""
   8. {E1}Disconnect and reconnect[/] your FPGA board for the new driver
      to take affect.
 
-  9. {E1}Run the command 'apio devices ftdi'[/] and verify that
+  9. {E1}Run the command 'apio devices usb'[/] and verify that
      your board is listed.
 """
 
