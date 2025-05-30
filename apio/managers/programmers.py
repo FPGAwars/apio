@@ -302,6 +302,9 @@ def _match_serial_device(
     # -- Get matching devices
     matching: List[SerialDevice] = serial_filter.filter(all_devices)
 
+    for dev in matching:
+        cout(f"- DEVICE {dev.summary()}")
+
     if util.is_debug():
         cout(f"Serial device filter: {serial_filter.summary()}")
         cout(f"Matching serial devices: {matching}")
@@ -319,18 +322,11 @@ def _match_serial_device(
 
     # -- Error more than one match
     if len(matching) > 1:
-        cerror(
-            f"Found {len(matching)} serial devices "
-            f"matching'{board}' board."
-        )
-        for device in matching:
-            cout(f"Serial device {device.summary()}", style=INFO)
+        cerror(f"Found multiple matching serial devices.")
         cout(
             "Type 'apio devices serial' for available serial devices.",
             style=INFO,
         )
-
-    cout(f"- DEVICE {matching[0].summary()}")
 
     # -- All done. We have a single match.
     return matching[0]
@@ -371,6 +367,9 @@ def _match_usb_device(
     # -- Get matching devices
     matching: List[UsbDevice] = usb_filter.filter(all_devices)
 
+    for dev in matching:
+        cout(f"- DEVICE {dev.summary()}")
+
     if util.is_debug():
         cout(f"USB device filter: {usb_filter.summary()}")
         cout(f"Matching USB devices: {matching}")
@@ -389,18 +388,12 @@ def _match_usb_device(
 
     # -- Error more than one match
     if len(matching) > 1:
-        cerror(
-            f"Found {len(matching)} usb devices " f"matching'{board}' board."
-        )
-        for device in matching:
-            cout(f"USB device {device.summary()}", style=INFO)
+        cerror(f"Found multiple matching usb devices.")
         cout(
             "Type 'apio devices usb' for available usb device.",
             style=INFO,
         )
         sys.exit(1)
-
-    cout(f"- DEVICE {matching[0].summary()}")
 
     # -- All done. We have a single match.
     return matching[0]

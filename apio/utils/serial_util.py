@@ -126,7 +126,7 @@ class SerialDeviceFilter:
         if self._serial_port:
             terms.append(f"PORT={self._serial_port}")
         if self._serial_num:
-            terms.append(f"S/N={self._serial_num}")
+            terms.append(f'S/N="{self._serial_num}"')
         if terms:
             return "[" + ", ".join(terms) + "]"
         return "[all]"
