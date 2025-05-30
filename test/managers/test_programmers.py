@@ -3,9 +3,9 @@ Tests of the apio.managers.programmers.py module.
 """
 
 from typing import List
-from apio.apio_context import ApioContext, ApioContextScope
 from test.conftest import ApioRunner
 from pytest import LogCaptureFixture, raises
+from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.usb_util import UsbDevice
 from apio.utils.serial_util import SerialDevice
 
@@ -20,11 +20,13 @@ class FakeDeviceScanner(_DeviceScanner):
     """A fake device scanner for testing."""
 
     def __init__(
-        self, usb_devices: List[UsbDevice], serial_devices: List[SerialDevice]
+        self,
+        usb_devices: List[UsbDevice] = None,
+        serial_devices: List[SerialDevice] = None,
     ):
+        super().__init__(apio_ctx=None)
         self._usb_devices = usb_devices
         self._serial_devices = serial_devices
-        pass
 
     # @override
     def get_usb_devices(self) -> List[UsbDevice]:
@@ -39,7 +41,7 @@ class FakeDeviceScanner(_DeviceScanner):
         return self._serial_devices
 
 
-def fake_usb_board(
+def fake_usb_device(
     *,
     bus=0,
     dev=0,
@@ -48,9 +50,10 @@ def fake_usb_board(
     manuf="AlhambraBits",
     desc="Alhambra II v1.0A",
     sn="SNXXXX",
-    type="FT2232H",
+    device_type="FT2232H",
 ) -> UsbDevice:
     """Create a fake usb device for resting."""
+    # pylint: disable=too-many-arguments
     return UsbDevice(
         bus=bus,
         device=dev,
@@ -59,7 +62,33 @@ def fake_usb_board(
         manufacturer=manuf,
         description=desc,
         serial_number=sn,
-        device_type=type,
+        device_type=device_type,
+    )
+
+
+def fake_serial_device(
+    *,
+    port_name="port0",
+    manuf="IceFUN",
+    desc="Ice Fun",
+    vid="04D8",
+    pid="FFEE",
+    sn="SNXXXX",
+    device_type="FT2232H",
+    location="0.1",
+) -> UsbDevice:
+    """Create a fake serial device for resting."""
+    # pylint: disable=too-many-arguments
+    return SerialDevice(
+        port="/dev/" + port_name,
+        port_name=port_name,
+        manufacturer=manuf,
+        description=desc,
+        vendor_id=vid,
+        product_id=pid,
+        serial_number=sn,
+        device_type=device_type,
+        location=location,
     )
 
 
@@ -75,7 +104,6 @@ def test_default_cmd_template(
             {
                 "[env:default]": {
                     "board": "alhambra-ii",
-                    "top-module": "my_module",
                 }
             }
         )
@@ -107,7 +135,6 @@ def test_custom_cmd_template(
             {
                 "[env:default]": {
                     "board": "alhambra-ii",
-                    "top-module": "my_module",
                     "programmer-cmd": "my template ${VID} ${PID}",
                 }
             }
@@ -132,7 +159,6 @@ def test_get_cmd_usb(apio_runner: ApioRunner, capsys: LogCaptureFixture):
             {
                 "[env:default]": {
                     "board": "alhambra-ii",
-                    "top-module": "my_module",
                     "programmer-cmd": (
                         "my-programmer --bus ${BUS} --dev ${DEV} "
                         "--vid ${VID} --pid ${PID} "
@@ -145,15 +171,13 @@ def test_get_cmd_usb(apio_runner: ApioRunner, capsys: LogCaptureFixture):
         # -- Construct the apio context.
         apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
 
-        # -- Create a fake device scanner. Trying to scan for serial devices
-        # -- will fail on an assertion.
+        # -- Create fake devices
         scanner = FakeDeviceScanner(
             usb_devices=[
-                fake_usb_board(dev=0, desc="non alhambra"),
-                fake_usb_board(dev=1),
-                fake_usb_board(dev=2, desc="non alhambra"),
+                fake_usb_device(dev=0, desc="non alhambra"),
+                fake_usb_device(dev=1),
+                fake_usb_device(dev=2, desc="non alhambra"),
             ],
-            serial_devices=None,
         )
 
         # -- Call the tested function
@@ -188,7 +212,6 @@ def test_get_cmd_usb_no_match(
             {
                 "[env:default]": {
                     "board": "alhambra-ii",
-                    "top-module": "my_module",
                     "programmer-cmd": "my-programmer ${VID} ${PID}",
                 }
             }
@@ -197,14 +220,12 @@ def test_get_cmd_usb_no_match(
         # -- Construct the apio context.
         apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
 
-        # -- Create fake usb devices that don't match alhambra's II
-        # -- description regex.
+        # -- Create fake devices
         scanner = FakeDeviceScanner(
             usb_devices=[
-                fake_usb_board(dev=0, desc="non alhambra"),
-                fake_usb_board(dev=2, desc="non alhambra"),
+                fake_usb_device(dev=0, desc="non alhambra"),
+                fake_usb_device(dev=2, desc="non alhambra"),
             ],
-            serial_devices=None,
         )
 
         # -- Call the tested function
@@ -235,7 +256,6 @@ def test_get_cmd_usb_multiple_matches(
             {
                 "[env:default]": {
                     "board": "alhambra-ii",
-                    "top-module": "my_module",
                     "programmer-cmd": "my-programmer ${VID} ${PID}",
                 }
             }
@@ -244,14 +264,13 @@ def test_get_cmd_usb_multiple_matches(
         # -- Construct the apio context.
         apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
 
-        # -- Two usb devices matches the filter.
+        # -- Create fake devices
         scanner = FakeDeviceScanner(
             usb_devices=[
-                fake_usb_board(dev=0, sn="SN001"),
-                fake_usb_board(dev=1, desc="non alhambra"),
-                fake_usb_board(dev=2, sn="SN002"),
+                fake_usb_device(dev=0, sn="SN001"),
+                fake_usb_device(dev=1, desc="non alhambra"),
+                fake_usb_device(dev=2, sn="SN002"),
             ],
-            serial_devices=None,
         )
 
         # -- Call the tested function
@@ -276,3 +295,46 @@ def test_get_cmd_usb_multiple_matches(
             "[Alhambra II v1.0A] [SN002]"
         ) in log
         assert "Error: Found multiple matching usb devices" in log
+
+
+def test_get_cmd_serial(apio_runner: ApioRunner, capsys: LogCaptureFixture):
+    """Test generation of a programmer command for a serial device."""
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Create a fake apio.ini file.
+        sb.write_apio_ini(
+            {
+                "[env:default]": {
+                    "board": "icefun",
+                    "programmer-cmd": "my-programmer --port ${SERIAL_PORT}",
+                }
+            }
+        )
+
+        # -- Construct the apio context.
+        apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
+
+        # -- Create fake devices
+        scanner = FakeDeviceScanner(
+            serial_devices=[
+                fake_serial_device(port_name="port1", pid="1234"),
+                fake_serial_device(port_name="port2"),
+                fake_serial_device(port_name="port3", desc="1234"),
+            ],
+        )
+
+        # -- Call the tested function
+        cmd = _construct_programmer_cmd(
+            apio_ctx, scanner, serial_port_flag=None, serial_num_flag=None
+        )
+
+        # -- Test the result programmer command.
+        assert cmd == "my-programmer --port /dev/port2"
+
+        # -- Test the log.
+        log = capsys.readouterr().out
+        assert "Selecting serial device" in log
+        assert "FILTER [VID=04d8, PID=ffee]" in log
+        assert (
+            "DEVICE [/dev/port3] [04D8:FFEE, [IceFUN] [1234] [SNXXXX]" in log
+        )

@@ -322,7 +322,7 @@ def _match_serial_device(
 
     # -- Error more than one match
     if len(matching) > 1:
-        cerror(f"Found multiple matching serial devices.")
+        cerror("Found multiple matching serial devices.")
         cout(
             "Type 'apio devices serial' for available serial devices.",
             style=INFO,
@@ -388,7 +388,7 @@ def _match_usb_device(
 
     # -- Error more than one match
     if len(matching) > 1:
-        cerror(f"Found multiple matching usb devices.")
+        cerror("Found multiple matching usb devices.")
         cout(
             "Type 'apio devices usb' for available usb device.",
             style=INFO,
