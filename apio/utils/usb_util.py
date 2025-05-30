@@ -224,19 +224,19 @@ class UsbDeviceFilter:
             return "[" + ", ".join(terms) + "]"
         return "[all]"
 
-    def vendor_id(self, vendor_id: str) -> "UsbDeviceFilter":
+    def set_vendor_id(self, vendor_id: str) -> "UsbDeviceFilter":
         """Pass only devices with given vendor id."""
         assert vendor_id
         self._vendor_id = vendor_id
         return self
 
-    def product_id(self, product_id: str) -> "UsbDeviceFilter":
+    def set_product_id(self, product_id: str) -> "UsbDeviceFilter":
         """Pass only devices aith given product id."""
         assert product_id
         self._product_id = product_id
         return self
 
-    def desc_regex(self, desc_regex: str) -> "UsbDeviceFilter":
+    def set_desc_regex(self, desc_regex: str) -> "UsbDeviceFilter":
         """Pass only devices whose description match given regex."""
         assert desc_regex
         self._desc_regex = desc_regex

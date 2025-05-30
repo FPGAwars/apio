@@ -147,11 +147,11 @@ def _check_device_presence(apio_ctx: ApioContext, scanner: _DeviceScanner):
     # -- filter.
     usb_filter = UsbDeviceFilter()
     if "vid" in usb_info:
-        usb_filter.vendor_id(usb_info["vid"])
+        usb_filter.set_vendor_id(usb_info["vid"])
     if "pid" in usb_info:
-        usb_filter.product_id(usb_info["pid"])
+        usb_filter.set_product_id(usb_info["pid"])
     if "desc-regex" in usb_info:
-        usb_filter.desc_regex(usb_info["desc-regex"])
+        usb_filter.set_desc_regex(usb_info["desc-regex"])
 
     # -- Scan the USB devices and filter by the filter.
     all_devices = scanner.get_usb_devices()
@@ -286,13 +286,13 @@ def _match_serial_device(
     # -- Construct a device filter.
     serial_filter = SerialDeviceFilter()
     if "vid" in usb_info:
-        serial_filter.vendor_id(usb_info["vid"])
+        serial_filter.set_vendor_id(usb_info["vid"])
     if "pid" in usb_info:
-        serial_filter.product_id(usb_info["pid"])
+        serial_filter.set_product_id(usb_info["pid"])
     if "desc-regex" in usb_info:
-        serial_filter.desc_regex(usb_info["desc-regex"])
+        serial_filter.set_desc_regex(usb_info["desc-regex"])
     if ext_serial_port:
-        serial_filter.port(ext_serial_port)
+        serial_filter.set_port(ext_serial_port)
 
     # -- Get matching devices
     matching: List[SerialDevice] = serial_filter.filter(all_devices)
@@ -351,11 +351,11 @@ def _match_usb_device(apio_ctx: ApioContext, scanner) -> UsbDevice:
     # -- Construct a device filter.
     usb_filter = UsbDeviceFilter()
     if "vid" in usb_info:
-        usb_filter.vendor_id(usb_info["vid"])
+        usb_filter.set_vendor_id(usb_info["vid"])
     if "pid" in usb_info:
-        usb_filter.product_id(usb_info["pid"])
+        usb_filter.set_product_id(usb_info["pid"])
     if "desc-regex" in usb_info:
-        usb_filter.desc_regex(usb_info["desc-regex"])
+        usb_filter.set_desc_regex(usb_info["desc-regex"])
 
     # -- Get matching devices
     matching: List[UsbDevice] = usb_filter.filter(all_devices)

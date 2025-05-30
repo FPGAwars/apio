@@ -128,25 +128,25 @@ class SerialDeviceFilter:
             return "[" + ", ".join(terms) + "]"
         return "[all]"
 
-    def vendor_id(self, vendor_id: str) -> "SerialDeviceFilter":
+    def set_vendor_id(self, vendor_id: str) -> "SerialDeviceFilter":
         """Pass only devices with given vendor id."""
         assert vendor_id
         self._vendor_id = vendor_id
         return self
 
-    def product_id(self, product_id: str) -> "SerialDeviceFilter":
+    def set_product_id(self, product_id: str) -> "SerialDeviceFilter":
         """Pass only devices given product id."""
         assert product_id
         self._product_id = product_id
         return self
 
-    def desc_regex(self, desc_regex: str) -> "SerialDeviceFilter":
+    def set_desc_regex(self, desc_regex: str) -> "SerialDeviceFilter":
         """Pass only devices whose description match given regex."""
         assert desc_regex
         self._desc_regex = desc_regex
         return self
 
-    def port(self, serial_port: str) -> "SerialDeviceFilter":
+    def set_port(self, serial_port: str) -> "SerialDeviceFilter":
         """Pass only devices given product serial port.."""
         assert serial_port
         self._serial_port = serial_port
