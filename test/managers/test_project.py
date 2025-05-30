@@ -44,15 +44,13 @@ def test_all_options_env(apio_runner: ApioRunner, capsys: LogCaptureFixture):
 
     apio_ini = {
         "[env:default]": {
-            # -- Required.
-            "board": "alhambra-ii",
-            # -- Optional.
-            "top-module": "my_module",
+            "board": "alhambra-ii",  # required.
             "default-testbench": "main_tb.v",
-            "format-verible-options": "\n  --aaa bbb\n  --ccc ddd",
             "defines": "\n  aaa=111\n  bbb=222",
-            "yosys-synth-extra-options": "-dsp -xyz",
+            "format-verible-options": "\n  --aaa bbb\n  --ccc ddd",
             "programmer-cmd": "iceprog ${VID}:${PID}",
+            "top-module": "my_module",
+            "yosys-synth-extra-options": "-dsp -xyz",
         }
     }
 
@@ -69,12 +67,12 @@ def test_all_options_env(apio_runner: ApioRunner, capsys: LogCaptureFixture):
     assert project.env_name == "default"
     assert project.env_options == {
         "board": "alhambra-ii",
-        "top-module": "my_module",
         "default-testbench": "main_tb.v",
-        "format-verible-options": "\n--aaa bbb\n--ccc ddd",
         "defines": "\naaa=111\nbbb=222",
+        "format-verible-options": "\n--aaa bbb\n--ccc ddd",
+        "programmer-cmd": "iceprog ${VID}:${PID}",
+        "top-module": "my_module",
         "yosys-synth-extra-options": "-dsp -xyz",
-        "programmer-cmd": "iceprog ${VID}:${PID}"
     }
 
     # -- Try a few as dict lookup on the project object.

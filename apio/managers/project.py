@@ -155,22 +155,23 @@ Example:[code]
 standard boards definitions files 'boards.jsonc'.
 """
 
-
+# -- Keep the list below in alphabetical order. This is the order that
+# -- 'apio info apio.ini' uses.
 ENV_OPTIONS = {
     # -- The board name.
     "board": ENV_BOARD_OPTION_DOC,
-    # -- The top module name. Default is 'main'.
-    "top-module": ENV_TOP_MODULE_OPTION_DOC,
     # -- The default testbench name for 'apio sim'.
-    "default-testbench": ENV_DEFAULT_TESTBENCH_DOC,
+    "default-testbench": ENV_DEFAULT_TESTBENCH_DOC, 
     # -- Verilog macro definitions.
     "defines": ENV_DEFINE_DOC,
     # -- Multi line list of verible options for 'apio format'
     "format-verible-options": ENV_FORMAT_VERIBLE_OPTIONS_DOC,
-    # -- Additional option for the yosys synth command (inside the -p arg).
-    "yosys-synth-extra-options": ENV_YOSYS_SYNTH_EXTRA_OPTIONS_DOC,
     # -- Overrides the programmer command.
     "programmer-cmd": ENV_PROGRAMMER_CMD_DOC,
+    # -- The top module name. Default is 'main'.
+    "top-module": ENV_TOP_MODULE_OPTION_DOC,
+    # -- Additional option for the yosys synth command (inside the -p arg).
+    "yosys-synth-extra-options": ENV_YOSYS_SYNTH_EXTRA_OPTIONS_DOC,
 }
 
 # -- The subset of the options in OPTIONS that are required.
