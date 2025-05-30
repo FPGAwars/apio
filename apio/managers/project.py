@@ -161,7 +161,7 @@ ENV_OPTIONS = {
     # -- The board name.
     "board": ENV_BOARD_OPTION_DOC,
     # -- The default testbench name for 'apio sim'.
-    "default-testbench": ENV_DEFAULT_TESTBENCH_DOC, 
+    "default-testbench": ENV_DEFAULT_TESTBENCH_DOC,
     # -- Verilog macro definitions.
     "defines": ENV_DEFINE_DOC,
     # -- Multi line list of verible options for 'apio format'

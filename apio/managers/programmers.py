@@ -131,8 +131,7 @@ def _construct_programmer_cmd(
     # -- At this point, all vars should be resolved.
     assert not any(s in cmd for s in ALL_VARS), cmd_template
 
-    # -- The placeholder for the bitstream file name should always exist.
-    assert BIN_FILE_VALUE in cmd, cmd
+
 
     # -- Return the resolved command.
     return cmd
@@ -151,8 +150,11 @@ def _construct_cmd_template(apio_ctx: ApioContext) -> str:
     custom_template = apio_ctx.project.get("programmer-cmd")
     if custom_template:
         cout("Using custom programmer cmd.")
-        assert BIN_FILE_VALUE not in custom_template, custom_template
-        assert BIN_FILE_VAR in custom_template, custom_template
+        if BIN_FILE_VALUE in custom_template:
+            cerror(
+                f"Custom programmer-cmd should not contain '{BIN_FILE_VALUE}'."
+            )
+            sys.exit(1)
         return custom_template
 
     board = apio_ctx.project["board"]
