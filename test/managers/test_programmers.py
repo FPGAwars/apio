@@ -331,7 +331,7 @@ def test_get_cmd_serial(apio_runner: ApioRunner, capsys: LogCaptureFixture):
         # -- Check the log.
         log = capsys.readouterr().out
         assert "Selecting serial device" in log
-        assert "FILTER [VID=04d8, PID=ffee]" in log
+        assert "FILTER [VID=04D8, PID=FFEE]" in log
         assert (
             "DEVICE [/dev/port2] [04D8:FFEE, [IceFUN] [Ice Fun] [SNXXXX]"
             in log
@@ -375,7 +375,7 @@ def test_get_cmd_serial_no_match(
 
         log = capsys.readouterr().out
         assert "Selecting serial device" in log
-        assert "FILTER [VID=04d8, PID=ffee]" in log
+        assert "FILTER [VID=04D8, PID=FFEE]" in log
         assert "Serial device 'icefun' not found" in log
 
 
@@ -418,7 +418,7 @@ def test_get_cmd_serial_multiple_matches(
 
         log = capsys.readouterr().out
         assert "Selecting serial device" in log
-        assert "FILTER [VID=04d8, PID=ffee]" in log
+        assert "FILTER [VID=04D8, PID=FFEE]" in log
         assert (
             "DEVICE [/dev/port1] [04D8:FFEE, [IceFUN] [Ice Fun] [SNXXXX]"
         ) in log

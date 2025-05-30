@@ -25,6 +25,11 @@ class SerialDevice:
     device_type: str
     location: str
 
+    def __post_init__(self):
+        """Check that vid, pid, has the format %04X."""
+        usb_util.check_usb_id_format(self.vendor_id)
+        usb_util.check_usb_id_format(self.product_id)
+
     def dump(self) -> None:
         """Dump the device info. For debugging."""
         cout(f"    port:          [{self.port}]")
@@ -133,13 +138,13 @@ class SerialDeviceFilter:
 
     def set_vendor_id(self, vendor_id: str) -> "SerialDeviceFilter":
         """Pass only devices with given vendor id."""
-        assert vendor_id
+        usb_util.check_usb_id_format(vendor_id)
         self._vendor_id = vendor_id
         return self
 
     def set_product_id(self, product_id: str) -> "SerialDeviceFilter":
         """Pass only devices given product id."""
-        assert product_id
+        usb_util.check_usb_id_format(product_id)
         self._product_id = product_id
         return self
 
@@ -164,12 +169,12 @@ class SerialDeviceFilter:
     def _eval(self, device: SerialDevice) -> bool:
         """Test if the devices passes this field."""
         if (self._vendor_id is not None) and (
-            self._vendor_id.lower() != device.vendor_id.lower()
+            self._vendor_id != device.vendor_id
         ):
             return False
 
         if (self._product_id is not None) and (
-            self._product_id.lower() != device.product_id.lower()
+            self._product_id != device.product_id
         ):
             return False
 

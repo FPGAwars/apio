@@ -40,6 +40,12 @@ def get_device_type(vid: int, pid: int) -> str:
     return device_type
 
 
+def check_usb_id_format(usb_id: str) -> None:
+    """Check that a vid or pid is in 4 char uppercase hex."""
+    if not re.search(r"^[0-9A-F]{4}$", usb_id):
+        raise ValueError(f"Invalid 04X hex value: [{usb_id}]")
+
+
 @dataclass()
 class UsbDevice:
     """A data class to hold the information of a single USB device."""
@@ -54,6 +60,11 @@ class UsbDevice:
     description: str
     serial_number: str
     device_type: str
+
+    def __post_init__(self):
+        """Check that vid, pid, has the format %04X."""
+        check_usb_id_format(self.vendor_id)
+        check_usb_id_format(self.product_id)
 
     def dump(self) -> None:
         """Dump the device info. For debugging."""
@@ -228,13 +239,13 @@ class UsbDeviceFilter:
 
     def set_vendor_id(self, vendor_id: str) -> "UsbDeviceFilter":
         """Pass only devices with given vendor id."""
-        assert vendor_id
+        check_usb_id_format(vendor_id)
         self._vendor_id = vendor_id
         return self
 
     def set_product_id(self, product_id: str) -> "UsbDeviceFilter":
-        """Pass only devices aith given product id."""
-        assert product_id
+        """Pass only devices with given product id."""
+        check_usb_id_format(product_id)
         self._product_id = product_id
         return self
 
@@ -253,12 +264,12 @@ class UsbDeviceFilter:
     def _eval(self, device: UsbDevice) -> bool:
         """Test if the devices passes this field."""
         if (self._vendor_id is not None) and (
-            self._vendor_id.lower() != device.vendor_id.lower()
+            self._vendor_id != device.vendor_id
         ):
             return False
 
         if (self._product_id is not None) and (
-            self._product_id.lower() != device.product_id.lower()
+            self._product_id != device.product_id
         ):
             return False
 
