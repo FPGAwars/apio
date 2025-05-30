@@ -10,6 +10,7 @@ import pytest
 from SCons.Node.FS import FS
 from pytest import LogCaptureFixture
 from apio.common.apio_console import cunstyle
+from apio.common import apio_console
 from apio.common.proto.apio_pb2 import TargetParams, UploadParams
 from apio.scons.plugin_util import (
     get_constraint_file,
@@ -205,6 +206,8 @@ def test_get_source_files(apio_runner):
 
 def test_get_programmer_cmd(capsys: LogCaptureFixture):
     """Tests the function programmer_cmd()."""
+
+    apio_console.configure()
 
     # -- Test a valid programmer command.
     apio_env = make_test_apio_env(
