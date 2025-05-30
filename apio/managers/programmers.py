@@ -28,8 +28,14 @@ USB_VARS = [VID_VAR, PID_VAR, BUS_VAR, DEV_VAR, SERIAL_NUM_VAR]
 SERIAL_PORT_VAR = "${SERIAL_PORT}"
 SERIAL_VARS = [SERIAL_PORT_VAR]
 
-# -- For all devices.
-ALL_VARS = USB_VARS + SERIAL_VARS
+# -- The ${BIN_FILE} placed holder is replaced here with $SOURCE and later
+# -- in scons with the bitstream file path. It can appear in both USB and
+# -- serial devices.
+BIN_FILE_VAR = "${BIN_FILE}"
+BIN_FILE_VALUE = "$SOURCE"
+
+# -- All possible vars.
+ALL_VARS = USB_VARS + SERIAL_VARS + [BIN_FILE_VAR]
 
 
 class _DeviceScanner:
@@ -84,9 +90,9 @@ def _construct_programmer_cmd(
     if util.is_debug():
         cout(f"Programmer template: [{cmd_template}]")
 
-    # -- The placeholder for the bitstream file name should always exist. This
-    # -- placeholder is resolved later in scons.
-    assert "$SOURCE" in cmd_template, cmd_template
+    # -- Resolved the mandatory ${BIN_FILE} to $SOURCE which will be replaced
+    # -- by scons with the path of the bitstream file.
+    cmd_template = _resolve_bin_file(cmd_template)
 
     # -- Determine how to resolve this template.
     has_usb_vars = any(s in cmd_template for s in USB_VARS)
@@ -119,10 +125,28 @@ def _construct_programmer_cmd(
     assert not any(s in cmd for s in ALL_VARS), cmd_template
 
     # -- The placeholder for the bitstream file name should always exist.
-    assert "$SOURCE" in cmd, cmd
+    assert BIN_FILE_VALUE in cmd, cmd
 
     # -- Return the resolved command.
     return cmd
+
+
+def _resolve_bin_file(cmd_template: str) -> str:
+    """Resolve the mandatory ${BIN_FILE} placeholder to the mandatory $SOURCE
+    value which scons replaces with the bin file path.."""
+    # -- Must have ${BIN_FILE} and not $SOURCE
+    assert BIN_FILE_VAR in cmd_template, cmd_template
+    assert BIN_FILE_VALUE not in cmd_template, cmd_template
+
+    # -- Replace.
+    cmd_template = cmd_template.replace(BIN_FILE_VAR, BIN_FILE_VALUE)
+
+    # -- Must have $SOURCE and not ${BIN_FILE}
+    assert BIN_FILE_VAR not in cmd_template, cmd_template
+    assert BIN_FILE_VALUE in cmd_template, cmd_template
+
+    # -- All done
+    return cmd_template
 
 
 def _check_device_presence(apio_ctx: ApioContext, scanner: _DeviceScanner):
@@ -216,11 +240,11 @@ def _resolve_usb_cmd_template(
 
 
 def _construct_cmd_template(apio_ctx: ApioContext) -> str:
-    """Construct a command template for the board. This is
+    """Construct a command template for the board.
 
     Example of output strings:
-    "'tinyprog --pyserial -c ${SERIAL_PORT} --program $SOURCE'"
-    "'iceprog -d i:0x${VID}:0x${PID} $SOURCE'"
+    "tinyprog --pyserial -c ${SERIAL_PORT} --program ${BIN_FILE}"
+    "iceprog -d i:0x${VID}:0x${PID} ${BIN_FILE}"
     """
 
     board = apio_ctx.project["board"]
@@ -229,8 +253,8 @@ def _construct_cmd_template(apio_ctx: ApioContext) -> str:
     # -- Get the programmer type
     # -- Ex. type: "tinyprog"
     # -- Ex. type: "iceprog"
-    prog_info = board_info["programmer"]
-    prog_type = prog_info["type"]
+    board_programmer_info = board_info["programmer"]
+    prog_type = board_programmer_info["type"]
 
     # -- Get all the information for that type of programmer
     # -- * command
@@ -245,18 +269,22 @@ def _construct_cmd_template(apio_ctx: ApioContext) -> str:
     cmd_template = programmer_info["command"]
 
     # -- Let's add the arguments for executing the programmer
-    if programmer_info.get("args"):
-        cmd_template += f" {programmer_info['args']}"
-
-    # -- Mark the expected location of the bitstream file name, before
-    # -- we append any arg to the command. Some programmers such as
-    # -- dfu-util require it immediatly after the "args" string.
-    cmd_template += " $SOURCE"
+    args = programmer_info.get("args")
+    if args:
+        assert BIN_FILE_VALUE not in args, args
+        cmd_template += f" {args}"
 
     # -- Some tools need extra arguments
     # -- (like dfu-util for example)
-    if prog_info.get("extra_args"):
-        cmd_template += f" {prog_info['extra_args']}"
+    extra_args = board_programmer_info.get("extra_args")
+    if extra_args:
+        assert BIN_FILE_VALUE not in extra_args, extra_args
+        cmd_template += f" {extra_args}"
+
+    # -- If there is no placeholder for the bin file path, add it at the end
+    # -- of the command.
+    if BIN_FILE_VAR not in cmd_template:
+        cmd_template += f" {BIN_FILE_VAR}"
 
     return cmd_template
 
