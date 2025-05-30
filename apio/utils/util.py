@@ -19,7 +19,6 @@ from typing import Optional, Any, Tuple, List
 import subprocess
 from threading import Thread
 from pathlib import Path
-from serial.tools.list_ports import comports
 import apio
 from apio.utils import env_options
 from apio.common.apio_console import cout, cerror
@@ -247,44 +246,6 @@ def user_directory_or_cwd(
     # -- Case 2: Using current directory.
     # -- We prefer the relative path "." over the absolute path Path.cwd().
     return Path(".")
-
-
-def get_serial_ports() -> list:
-    """Get a list of the serial port devices connected
-    * OUTPUT: A list with the devides
-         Ex: [{'port': '/dev/ttyACM0',
-               'description': 'ttyACM0',
-               'hwid': 'USB VID:PID=1D50:6130 LOCATION=1-5:1.0'}]
-    """
-
-    # -- Initial empty device list
-    result = []
-
-    # -- Use the serial.tools.list_ports module for reading the
-    # -- serial ports
-    # -- More info:
-    # --   https://pyserial.readthedocs.io/en/latest/tools.html
-    list_port_info = comports()
-
-    # -- Only the USB serial ports are included
-    # -- in the final list
-    for port, description, hwid in list_port_info:
-
-        # -- Not a serial port: ignore. Proceed to the
-        # -- next device
-        if not port:
-            continue
-
-        # -- If it has the "VID:PID" string, it is an USB serial port
-        if "VID:PID" in hwid:
-
-            # -- Add to the final list
-            result.append(
-                {"port": port, "description": description, "hwid": hwid}
-            )
-
-    # -- Return the list of serial ports
-    return result
 
 
 def get_bin_dir() -> Path:
