@@ -91,7 +91,7 @@ def _construct_programmer_cmd(
 
     # -- Resolved the mandatory ${BIN_FILE} to $SOURCE which will be replaced
     # -- by scons with the path of the bitstream file.
-    cmd_template = _resolve_bin_file(cmd_template)
+    cmd_template = cmd_template.replace(BIN_FILE_VAR, BIN_FILE_VALUE)
 
     # -- Determine how to resolve this template.
     has_usb_vars = any(s in cmd_template for s in USB_VARS)
@@ -146,6 +146,15 @@ def _construct_cmd_template(apio_ctx: ApioContext) -> str:
     "iceprog -d i:0x${VID}:0x${PID} ${BIN_FILE}"
     """
 
+    # -- If the project file a custom programmer command use it instead of the
+    # -- standard definitions.
+    custom_template = apio_ctx.project.get("programmer-cmd")
+    if custom_template:
+        cout("Using custom programmer cmd.")
+        assert BIN_FILE_VALUE not in custom_template, custom_template
+        assert BIN_FILE_VAR in custom_template, custom_template
+        return custom_template
+
     board = apio_ctx.project["board"]
     board_info = apio_ctx.boards[board]
 
@@ -185,24 +194,6 @@ def _construct_cmd_template(apio_ctx: ApioContext) -> str:
     if BIN_FILE_VAR not in cmd_template:
         cmd_template += f" {BIN_FILE_VAR}"
 
-    return cmd_template
-
-
-def _resolve_bin_file(cmd_template: str) -> str:
-    """Resolve the mandatory ${BIN_FILE} placeholder to the mandatory $SOURCE
-    value which scons replaces with the bin file path.."""
-    # -- Must have ${BIN_FILE} and not $SOURCE
-    assert BIN_FILE_VAR in cmd_template, cmd_template
-    assert BIN_FILE_VALUE not in cmd_template, cmd_template
-
-    # -- Replace.
-    cmd_template = cmd_template.replace(BIN_FILE_VAR, BIN_FILE_VALUE)
-
-    # -- Must have $SOURCE and not ${BIN_FILE}
-    assert BIN_FILE_VAR not in cmd_template, cmd_template
-    assert BIN_FILE_VALUE in cmd_template, cmd_template
-
-    # -- All done
     return cmd_template
 
 

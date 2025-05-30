@@ -52,6 +52,7 @@ def test_all_options_env(apio_runner: ApioRunner, capsys: LogCaptureFixture):
             "format-verible-options": "\n  --aaa bbb\n  --ccc ddd",
             "defines": "\n  aaa=111\n  bbb=222",
             "yosys-synth-extra-options": "-dsp -xyz",
+            "programmer-cmd": "iceprog ${VID}:${PID}",
         }
     }
 
@@ -73,6 +74,7 @@ def test_all_options_env(apio_runner: ApioRunner, capsys: LogCaptureFixture):
         "format-verible-options": "\n--aaa bbb\n--ccc ddd",
         "defines": "\naaa=111\nbbb=222",
         "yosys-synth-extra-options": "-dsp -xyz",
+        "programmer-cmd": "iceprog ${VID}:${PID}"
     }
 
     # -- Try a few as dict lookup on the project object.

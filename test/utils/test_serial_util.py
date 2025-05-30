@@ -84,15 +84,15 @@ def test_filter_serial_devices():
     # -- Filter by port and port name
 
     serial_filter = SerialDeviceFilter().set_port("no-such-port")
-    assert serial_filter.summary() == "[port=no-such-port]"
+    assert serial_filter.summary() == "[PORT=no-such-port]"
     assert serial_filter.filter(devs) == []
 
     serial_filter = SerialDeviceFilter().set_port("port2")
-    assert serial_filter.summary() == "[port=port2]"
+    assert serial_filter.summary() == "[PORT=port2]"
     assert serial_filter.filter(devs) == [devs[2]]
 
     serial_filter = SerialDeviceFilter().set_port("name2")
-    assert serial_filter.summary() == "[port=name2]"
+    assert serial_filter.summary() == "[PORT=name2]"
     assert serial_filter.filter(devs) == [devs[2]]
 
     # -- Filter by VID, PID
@@ -102,7 +102,7 @@ def test_filter_serial_devices():
         .set_product_id("6020")
         .set_port("port3")
     )
-    assert serial_filter.summary() == "[VID=0405, PID=6020, port=port3]"
+    assert serial_filter.summary() == "[VID=0405, PID=6020, PORT=port3]"
     assert serial_filter.filter(devs) == [devs[3]]
 
     serial_filter = (
@@ -111,5 +111,5 @@ def test_filter_serial_devices():
         .set_product_id("6020")
         .set_port("name3")
     )
-    assert serial_filter.summary() == "[VID=0405, PID=6020, port=name3]"
+    assert serial_filter.summary() == "[VID=0405, PID=6020, PORT=name3]"
     assert serial_filter.filter(devs) == [devs[3]]
