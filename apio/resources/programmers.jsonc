@@ -64,7 +64,10 @@
   },
   "dfu": {
     "command": "dfu-util",
-    "args": "-d ${VID}:${PID} -a 0 -D"
+    // ${BIN_FILE} per https://github.com/FPGAwars/apio/issues/377
+    // Bitstream must appear after the -D, even when extra_args are added by
+    // the board.
+    "args": "-d ${VID}:${PID} -a 0 -D ${BIN_FILE}"
   },
   "icesprog": {
     "command": "icesprog",
