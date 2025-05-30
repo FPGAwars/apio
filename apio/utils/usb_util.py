@@ -221,7 +221,7 @@ class UsbDeviceFilter:
         if self._desc_regex:
             terms.append(f'REGEX="{self._desc_regex}"')
         if self._serial_num:
-            terms.append(f"S/N={self._serial_num}")
+            terms.append(f'S/N="{self._serial_num}"')
         if terms:
             return "[" + ", ".join(terms) + "]"
         return "[all]"

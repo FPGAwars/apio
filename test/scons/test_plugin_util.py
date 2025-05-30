@@ -204,7 +204,7 @@ def test_get_source_files(apio_runner):
         ]
 
 
-def test_get_programmer_cmd(capsys: LogCaptureFixture):
+def test_get_programmer_cmd():
     """Tests the function programmer_cmd()."""
 
     apio_console.configure()
