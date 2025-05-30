@@ -319,6 +319,7 @@ def _match_serial_device(
             "Type 'apio devices serial' for available serial devices.",
             style=INFO,
         )
+        sys.exit(1)
 
     # -- Error more than one match
     if len(matching) > 1:
@@ -327,6 +328,7 @@ def _match_serial_device(
             "Type 'apio devices serial' for available serial devices.",
             style=INFO,
         )
+        sys.exit(1)
 
     # -- All done. We have a single match.
     return matching[0]

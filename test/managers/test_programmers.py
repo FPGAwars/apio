@@ -191,7 +191,7 @@ def test_get_cmd_usb(apio_runner: ApioRunner, capsys: LogCaptureFixture):
             "--serial-num SNXXXX --bin-file $SOURCE"
         )
 
-        # -- Test the log.
+        # -- Check the log.
         log = capsys.readouterr().out
         assert "Selecting USB device" in log
         assert 'FILTER [VID=0403, PID=6010, REGEX="^Alhambra II.*"]' in log
@@ -238,7 +238,6 @@ def test_get_cmd_usb_no_match(
         assert e.value.code == 1
 
         log = capsys.readouterr().out
-        assert "" in log
         assert "Selecting USB device" in log
         assert 'FILTER [VID=0403, PID=6010, REGEX="^Alhambra II.*"]' in log
         assert "USB board 'alhambra-ii' not found" in log
@@ -274,7 +273,6 @@ def test_get_cmd_usb_multiple_matches(
         )
 
         # -- Call the tested function
-
         with raises(SystemExit) as e:
             _construct_programmer_cmd(
                 apio_ctx, scanner, serial_port_flag=None, serial_num_flag=None
@@ -283,7 +281,6 @@ def test_get_cmd_usb_multiple_matches(
         assert e.value.code == 1
 
         log = capsys.readouterr().out
-        assert "" in log
         assert "Selecting USB device" in log
         assert 'FILTER [VID=0403, PID=6010, REGEX="^Alhambra II.*"]' in log
         assert (
@@ -319,7 +316,7 @@ def test_get_cmd_serial(apio_runner: ApioRunner, capsys: LogCaptureFixture):
             serial_devices=[
                 fake_serial_device(port_name="port1", pid="1234"),
                 fake_serial_device(port_name="port2"),
-                fake_serial_device(port_name="port3", desc="1234"),
+                fake_serial_device(port_name="port3", pid="1234"),
             ],
         )
 
@@ -331,10 +328,196 @@ def test_get_cmd_serial(apio_runner: ApioRunner, capsys: LogCaptureFixture):
         # -- Test the result programmer command.
         assert cmd == "my-programmer --port /dev/port2"
 
-        # -- Test the log.
+        # -- Check the log.
         log = capsys.readouterr().out
         assert "Selecting serial device" in log
         assert "FILTER [VID=04d8, PID=ffee]" in log
         assert (
-            "DEVICE [/dev/port3] [04D8:FFEE, [IceFUN] [1234] [SNXXXX]" in log
+            "DEVICE [/dev/port2] [04D8:FFEE, [IceFUN] [Ice Fun] [SNXXXX]"
+            in log
         )
+
+
+def test_get_cmd_serial_no_match(
+    apio_runner: ApioRunner, capsys: LogCaptureFixture
+):
+    """Test command generation error when the serial device is not found."""
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Create a fake apio.ini file.
+        sb.write_apio_ini(
+            {
+                "[env:default]": {
+                    "board": "icefun",
+                    "programmer-cmd": "my-programmer --port ${SERIAL_PORT}",
+                }
+            }
+        )
+
+        # -- Construct the apio context.
+        apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
+
+        # -- Create fake devices
+        scanner = FakeDeviceScanner(
+            serial_devices=[
+                fake_serial_device(port_name="port1", pid="1234"),
+                fake_serial_device(port_name="port3", pid="1234"),
+            ],
+        )
+
+        # -- Call the tested function
+        with raises(SystemExit) as e:
+            _construct_programmer_cmd(
+                apio_ctx, scanner, serial_port_flag=None, serial_num_flag=None
+            )
+
+        assert e.value.code == 1
+
+        log = capsys.readouterr().out
+        assert "Selecting serial device" in log
+        assert "FILTER [VID=04d8, PID=ffee]" in log
+        assert "Serial device 'icefun' not found" in log
+
+
+def test_get_cmd_serial_multiple_matches(
+    apio_runner: ApioRunner, capsys: LogCaptureFixture
+):
+    """Test command generation error when multiple serial devices match the
+    filter."""
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Create a fake apio.ini file.
+        sb.write_apio_ini(
+            {
+                "[env:default]": {
+                    "board": "icefun",
+                    "programmer-cmd": "my-programmer --port ${SERIAL_PORT}",
+                }
+            }
+        )
+
+        # -- Construct the apio context.
+        apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
+
+        # -- Create fake devices
+        scanner = FakeDeviceScanner(
+            serial_devices=[
+                fake_serial_device(port_name="port1"),
+                fake_serial_device(port_name="port2", pid="1234"),
+                fake_serial_device(port_name="port3"),
+            ],
+        )
+
+        # -- Call the tested function
+        with raises(SystemExit) as e:
+            _construct_programmer_cmd(
+                apio_ctx, scanner, serial_port_flag=None, serial_num_flag=None
+            )
+
+        assert e.value.code == 1
+
+        log = capsys.readouterr().out
+        assert "Selecting serial device" in log
+        assert "FILTER [VID=04d8, PID=ffee]" in log
+        assert (
+            "DEVICE [/dev/port1] [04D8:FFEE, [IceFUN] [Ice Fun] [SNXXXX]"
+        ) in log
+        assert (
+            "DEVICE [/dev/port3] [04D8:FFEE, [IceFUN] [Ice Fun] [SNXXXX]"
+        ) in log
+        assert "Error: Found multiple matching serial devices" in log
+
+
+def test_device_presence_ok(
+    apio_runner: ApioRunner, capsys: LogCaptureFixture
+):
+    """Test generation of a presence check only device."""
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Create a fake apio.ini file.
+        sb.write_apio_ini(
+            {
+                "[env:default]": {
+                    "board": "alhambra-ii",
+                    # -- The command has no serial or usb vars.
+                    "programmer-cmd": "my programmer command ${BIN_FILE}",
+                }
+            }
+        )
+
+        # -- Construct the apio context.
+        apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
+
+        # -- Create fake devices, with two matching devices.
+        scanner = FakeDeviceScanner(
+            usb_devices=[
+                fake_usb_device(dev=0),
+                fake_usb_device(dev=1, desc="non alhambra"),
+                fake_usb_device(dev=2),
+            ],
+        )
+
+        # -- Call the tested function
+        cmd = _construct_programmer_cmd(
+            apio_ctx, scanner, serial_port_flag=None, serial_num_flag=None
+        )
+
+        # -- Test the result programmer command.
+        assert cmd == "my programmer command $SOURCE"
+
+        # -- Check the log.
+        log = capsys.readouterr().out
+        assert "Checking device presence" in log
+        assert 'FILTER [VID=0403, PID=6010, REGEX="^Alhambra II.*"]' in log
+        assert (
+            "DEVICE [0403:6010, 0:0], [AlhambraBits] "
+            "[Alhambra II v1.0A] [SNXXXX]"
+        ) in log
+
+        assert (
+            "DEVICE [0403:6010, 0:2], [AlhambraBits] "
+            "[Alhambra II v1.0A] [SNXXXX]"
+        ) in log
+
+
+def test_device_presence_not_found(
+    apio_runner: ApioRunner, capsys: LogCaptureFixture
+):
+    """Test generation of a presence only device, with no device."""
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Create a fake apio.ini file.
+        sb.write_apio_ini(
+            {
+                "[env:default]": {
+                    "board": "alhambra-ii",
+                    # -- The command has no serial or usb vars.
+                    "programmer-cmd": "my programmer command ${BIN_FILE}",
+                }
+            }
+        )
+
+        # -- Construct the apio context.
+        apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
+
+        # -- Create fake devices, with two matching devices.
+        scanner = FakeDeviceScanner(
+            usb_devices=[
+                fake_usb_device(dev=0, desc="non alhambra"),
+                fake_usb_device(dev=1, desc="non alhambra"),
+            ],
+        )
+
+        # -- Call the tested function
+        with raises(SystemExit) as e:
+            _construct_programmer_cmd(
+                apio_ctx, scanner, serial_port_flag=None, serial_num_flag=None
+            )
+
+        assert e.value.code == 1
+
+        # -- Check the log.
+        log = capsys.readouterr().out
+        assert "Checking device presence" in log
+        assert 'FILTER [VID=0403, PID=6010, REGEX="^Alhambra II.*"]' in log
+        assert "Error: Board 'alhambra-ii' not found" in log
