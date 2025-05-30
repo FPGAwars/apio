@@ -8,7 +8,7 @@
 
 import sys
 from typing import Optional, List, Dict
-from apio.common.apio_console import cout, cerror
+from apio.common.apio_console import cout, cerror, cwarning
 from apio.common.apio_styles import INFO
 from apio.utils import util, serial_util, usb_util
 from apio.utils.serial_util import SerialDevice, SerialDeviceFilter
@@ -118,6 +118,7 @@ def _construct_programmer_cmd(
         )
 
     elif has_usb_vars:
+        _report_unused_flag("--serial-port", serial_port_flag)
         cmd = _resolve_usb_cmd_template(
             apio_ctx, scanner, serial_num_flag, cmd_template
         )
@@ -127,6 +128,8 @@ def _construct_programmer_cmd(
         # -- specific usb or serial device but just to check that if the board
         # -- has 'usb' section, there is at least one device that matchs the
         # -- constraints in that section.
+        _report_unused_flag("--serial-port", serial_port_flag)
+        _report_unused_flag("--serial-num", serial_num_flag)
         _check_device_presence(apio_ctx, scanner)
 
         # -- Template has no vars, we just use it as is.
@@ -137,6 +140,12 @@ def _construct_programmer_cmd(
 
     # -- Return the resolved command.
     return cmd
+
+
+def _report_unused_flag(flag_name: str, flag_value: str):
+    """If flag_value is not falsy then print a warning message."""
+    if flag_value:
+        cwarning(f"{flag_name} ignored.")
 
 
 def _construct_cmd_template(apio_ctx: ApioContext) -> str:
