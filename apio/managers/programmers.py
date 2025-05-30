@@ -79,11 +79,6 @@ def _construct_programmer_cmd(
 ) -> str:
     """Construct the programmer command for an 'apio upload' command."""
 
-    # -- If the board info has a "usb" section, check that there is at least
-    # -- one usb device that meets those constrained. Note that this may apply
-    # -- also to devices that are resolved below as 'serial'.
-    _check_device_presence(apio_ctx, scanner)
-
     # -- Construct the programmer cmd template for the board. It may or may not
     # -- contain ${} vars.
     cmd_template = _construct_cmd_template(apio_ctx)
@@ -118,7 +113,13 @@ def _construct_programmer_cmd(
         cmd = _resolve_usb_cmd_template(apio_ctx, scanner, cmd_template)
 
     else:
-        # -- Template has no vars, no need to resolve.
+        # -- If there are no vars to resolve, we don't need to match to a
+        # -- specific usb or serial device but just to check that if the board
+        # -- has 'usb' section, there is at least one device that matchs the
+        # -- constraints in that section.
+        _check_device_presence(apio_ctx, scanner)
+
+        # -- Template has no vars, we just use it as is.
         cmd = cmd_template
 
     # -- At this point, all vars should be resolved.
@@ -129,114 +130,6 @@ def _construct_programmer_cmd(
 
     # -- Return the resolved command.
     return cmd
-
-
-def _resolve_bin_file(cmd_template: str) -> str:
-    """Resolve the mandatory ${BIN_FILE} placeholder to the mandatory $SOURCE
-    value which scons replaces with the bin file path.."""
-    # -- Must have ${BIN_FILE} and not $SOURCE
-    assert BIN_FILE_VAR in cmd_template, cmd_template
-    assert BIN_FILE_VALUE not in cmd_template, cmd_template
-
-    # -- Replace.
-    cmd_template = cmd_template.replace(BIN_FILE_VAR, BIN_FILE_VALUE)
-
-    # -- Must have $SOURCE and not ${BIN_FILE}
-    assert BIN_FILE_VAR not in cmd_template, cmd_template
-    assert BIN_FILE_VALUE in cmd_template, cmd_template
-
-    # -- All done
-    return cmd_template
-
-
-def _check_device_presence(apio_ctx: ApioContext, scanner: _DeviceScanner):
-    """If the board info has a "usb" section, check that there is at least one
-    usb device that matches the constraints, if any, in the "usb" section.
-    Returns if OK, exits with an error otherwise.
-    """
-
-    # -- Get board info
-    board = apio_ctx.project["board"]
-    board_info = apio_ctx.boards[board]
-
-    # -- Get the optional "usb" section
-    usb_info: Dict[str, str] = board_info.get("usb", None)
-
-    # -- If no "usb" section there are no constrained to check.
-    if usb_info is None:
-        return
-
-    # -- Create a device filter with the constraints. Note that the "usb"
-    # -- section may contain no constrained which will result in a pass-all
-    # -- filter.
-    usb_filter = UsbDeviceFilter()
-    if "vid" in usb_info:
-        usb_filter.set_vendor_id(usb_info["vid"])
-    if "pid" in usb_info:
-        usb_filter.set_product_id(usb_info["pid"])
-    if "desc-regex" in usb_info:
-        usb_filter.set_desc_regex(usb_info["desc-regex"])
-
-    # -- Scan the USB devices and filter by the filter.
-    all_devices = scanner.get_usb_devices()
-    matching_devices = usb_filter.filter(all_devices)
-
-    # -- If no device passed the filter fail the check.
-    if not matching_devices:
-        cerror(f"Board '{board}' not found.")
-        cout(
-            "Type 'apio devices usb' to list the usb devices.",
-            f"Filter used: {usb_filter.summary()}",
-            style=INFO,
-        )
-        sys.exit(1)
-
-    # -- All OK.
-
-
-def _resolve_serial_cmd_template(
-    apio_ctx: ApioContext,
-    scanner: _DeviceScanner,
-    serial_port_arg: Optional[str],
-    cmd_template: str,
-) -> str:
-    """Resolves a programmer command template for a serial device."""
-
-    # -- Match to a single serial device.
-    device: SerialDevice = _match_serial_device(
-        apio_ctx, scanner, serial_port_arg
-    )
-
-    # -- Resolve serial port var.
-    cmd_template = cmd_template.replace(SERIAL_PORT_VAR, device.port)
-
-    # -- Sanity check, should have no serial vars unresolved.
-    # assert not any(s in template for s in SERIAL_VARS), template
-
-    # -- All done.
-    return cmd_template
-
-
-def _resolve_usb_cmd_template(
-    apio_ctx: ApioContext, scanner: _DeviceScanner, cmd_template: str
-) -> str:
-    """Resolves a programmer command template for an USB device."""
-
-    # -- Match to a single usb device.
-    device: UsbDevice = _match_usb_device(apio_ctx, scanner)
-
-    # -- Substitute vars.
-    cmd_template = cmd_template.replace(VID_VAR, device.vendor_id)
-    cmd_template = cmd_template.replace(PID_VAR, device.product_id)
-    cmd_template = cmd_template.replace(BUS_VAR, str(device.bus))
-    cmd_template = cmd_template.replace(DEV_VAR, str(device.device))
-    cmd_template = cmd_template.replace(SERIAL_NUM_VAR, device.serial_number)
-
-    # -- Sanity check, should have no usb vars unresolved.
-    # assert not any(s in cmd_template for s in USB_VARS), cmd_template
-
-    # -- All done.
-    return cmd_template
 
 
 def _construct_cmd_template(apio_ctx: ApioContext) -> str:
@@ -286,6 +179,69 @@ def _construct_cmd_template(apio_ctx: ApioContext) -> str:
     if BIN_FILE_VAR not in cmd_template:
         cmd_template += f" {BIN_FILE_VAR}"
 
+    return cmd_template
+
+
+def _resolve_bin_file(cmd_template: str) -> str:
+    """Resolve the mandatory ${BIN_FILE} placeholder to the mandatory $SOURCE
+    value which scons replaces with the bin file path.."""
+    # -- Must have ${BIN_FILE} and not $SOURCE
+    assert BIN_FILE_VAR in cmd_template, cmd_template
+    assert BIN_FILE_VALUE not in cmd_template, cmd_template
+
+    # -- Replace.
+    cmd_template = cmd_template.replace(BIN_FILE_VAR, BIN_FILE_VALUE)
+
+    # -- Must have $SOURCE and not ${BIN_FILE}
+    assert BIN_FILE_VAR not in cmd_template, cmd_template
+    assert BIN_FILE_VALUE in cmd_template, cmd_template
+
+    # -- All done
+    return cmd_template
+
+
+def _resolve_serial_cmd_template(
+    apio_ctx: ApioContext,
+    scanner: _DeviceScanner,
+    serial_port_arg: Optional[str],
+    cmd_template: str,
+) -> str:
+    """Resolves a programmer command template for a serial device."""
+
+    # -- Match to a single serial device.
+    device: SerialDevice = _match_serial_device(
+        apio_ctx, scanner, serial_port_arg
+    )
+
+    # -- Resolve serial port var.
+    cmd_template = cmd_template.replace(SERIAL_PORT_VAR, device.port)
+
+    # -- Sanity check, should have no serial vars unresolved.
+    # assert not any(s in template for s in SERIAL_VARS), template
+
+    # -- All done.
+    return cmd_template
+
+
+def _resolve_usb_cmd_template(
+    apio_ctx: ApioContext, scanner: _DeviceScanner, cmd_template: str
+) -> str:
+    """Resolves a programmer command template for an USB device."""
+
+    # -- Match to a single usb device.
+    device: UsbDevice = _match_usb_device(apio_ctx, scanner)
+
+    # -- Substitute vars.
+    cmd_template = cmd_template.replace(VID_VAR, device.vendor_id)
+    cmd_template = cmd_template.replace(PID_VAR, device.product_id)
+    cmd_template = cmd_template.replace(BUS_VAR, str(device.bus))
+    cmd_template = cmd_template.replace(DEV_VAR, str(device.device))
+    cmd_template = cmd_template.replace(SERIAL_NUM_VAR, device.serial_number)
+
+    # -- Sanity check, should have no usb vars unresolved.
+    # assert not any(s in cmd_template for s in USB_VARS), cmd_template
+
+    # -- All done.
     return cmd_template
 
 
@@ -423,3 +379,53 @@ def _match_usb_device(apio_ctx: ApioContext, scanner) -> UsbDevice:
 
     # -- All done. We have a single match.
     return matching[0]
+
+
+def _check_device_presence(apio_ctx: ApioContext, scanner: _DeviceScanner):
+    """If the board info has a "usb" section, check that there is at least one
+    usb device that matches the constraints, if any, in the "usb" section.
+    Returns if OK, exits with an error otherwise.
+    """
+
+    # -- Get board info
+    board = apio_ctx.project["board"]
+    board_info = apio_ctx.boards[board]
+
+    # -- Get the optional "usb" section of the board.
+    usb_info: Dict[str, str] = board_info.get("usb", None)
+
+    # -- If no "usb" section there are no constrained to check. We don't
+    # -- even check that any usb device exists.
+    if usb_info is None:
+        return
+
+    # -- Create a device filter with the constraints. Note that the "usb"
+    # -- section may contain no constrained which will result in a pass-all
+    # -- filter.
+    usb_filter = UsbDeviceFilter()
+    if "vid" in usb_info:
+        usb_filter.set_vendor_id(usb_info["vid"])
+    if "pid" in usb_info:
+        usb_filter.set_product_id(usb_info["pid"])
+    if "desc-regex" in usb_info:
+        usb_filter.set_desc_regex(usb_info["desc-regex"])
+
+    # -- Scan the USB devices and filter by the filter.
+    all_devices = scanner.get_usb_devices()
+    matching_devices = usb_filter.filter(all_devices)
+
+    # -- If no device passed the filter fail the check.
+    if not matching_devices:
+        cerror(f"Board '{board}' not found.")
+        cout(
+            "Type 'apio devices usb' to list the usb devices.",
+            f"Filter used: {usb_filter.summary()}",
+            style=INFO,
+        )
+        sys.exit(1)
+
+    # -- Inform the user.
+    for device in matching_devices:
+        cout(f"Matching device: {device.summary()}")
+
+    # -- All OK.
