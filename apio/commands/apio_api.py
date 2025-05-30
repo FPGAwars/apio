@@ -8,6 +8,7 @@
 """Implementation of 'apio api' command"""
 
 import sys
+from typing import Dict
 import json
 from pathlib import Path
 import click
@@ -17,6 +18,39 @@ from apio.common.apio_styles import INFO
 from apio.utils import cmd_util
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
+
+
+def gen_boards_section(apio_ctx: ApioContext) -> Dict:
+    """Generate a json dict with boards info."""
+    # -- Generate the 'boards' section.
+    result = {}
+    for board_id, board_info in apio_ctx.boards.items():
+        # -- The board output dict.
+        new_board = {}
+
+        # -- Add board description
+        new_board["description"] = board_info.get("description", None)
+
+        # -- Add board's fpga information.
+        new_fpga = {}
+        fpga_id = board_info.get("fpga", None)
+        fpga_info = apio_ctx.fpgas.get(fpga_id, {})
+        new_fpga["id"] = fpga_id
+        new_fpga["part-num"] = fpga_info.get("part_num", None)
+        new_fpga["arch"] = fpga_info.get("arch", None)
+        new_board["fpga"] = new_fpga
+
+        # -- Add board's programmer information.
+        new_programmer = {}
+        programmer_id = board_info.get("programmer", {}).get("type", None)
+        new_programmer["id"] = programmer_id
+        new_board["programmer"] = new_programmer
+
+        # -- Add the board to the boards dict.
+        result[board_id] = new_board
+
+    # -- All done.
+    return result
 
 
 # ------ apio api info
@@ -76,8 +110,6 @@ def _info_cli(
 ):
     """Implements the 'apio apio info' command."""
 
-    # pylint: disable=too-many-locals
-
     # -- For now, the information is not in a project context. That may
     # -- change in the future.
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
@@ -90,33 +122,7 @@ def _info_cli(
         top_dict["timestamp"] = timestamp
 
     # -- Generate the 'boards' section.
-    boards_section = {}
-    for board_id, board_info in apio_ctx.boards.items():
-        # -- The board output dict.
-        new_board = {}
-
-        # -- Add board description
-        new_board["description"] = board_info.get("description", None)
-
-        # -- Add board's fpga information.
-        new_fpga = {}
-        fpga_id = board_info.get("fpga", None)
-        fpga_info = apio_ctx.fpgas.get(fpga_id, {})
-        new_fpga["id"] = fpga_id
-        new_fpga["part-num"] = fpga_info.get("part_num", None)
-        new_fpga["arch"] = fpga_info.get("arch", None)
-        new_board["fpga"] = new_fpga
-
-        # -- Add board's programmer information.
-        new_programmer = {}
-        programmer_id = board_info.get("programmer", {}).get("type", None)
-        new_programmer["id"] = programmer_id
-        new_board["programmer"] = new_programmer
-
-        # -- Add the board to the boards dict.
-        boards_section[board_id] = new_board
-
-    # -- Add the boards section to the top dict.
+    boards_section = gen_boards_section(apio_ctx)
     top_dict["boards"] = boards_section
 
     # -- Format the top dict as json text.
