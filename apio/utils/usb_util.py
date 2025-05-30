@@ -188,8 +188,8 @@ def scan_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
     )
 
     if util.is_debug():
-        cout(f"Found {len(devices)} USB devices:")
-        for i, device in enumerate(devices):
+        cout(f"Found {len(result)} USB devices:")
+        for i, device in enumerate(result):
             cout()
             cout(f"---- USB device {i}")
             device.dump()
