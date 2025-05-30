@@ -208,6 +208,7 @@ class UsbDeviceFilter:
     _vendor_id: str = None
     _product_id: str = None
     _desc_regex: str = None
+    _serial_num: str = None
 
     def summary(self) -> str:
         """User friendly representation of the filter"""
@@ -218,8 +219,9 @@ class UsbDeviceFilter:
         if self._product_id:
             terms.append(f"PID={self._product_id}")
         if self._desc_regex:
-            terms.append(f"regex='{self._desc_regex}'")
-
+            terms.append(f'REGEX="{self._desc_regex}"')
+        if self._serial_num:
+            terms.append(f"S/N={self._serial_num}")
         if terms:
             return "[" + ", ".join(terms) + "]"
         return "[all]"
@@ -242,6 +244,12 @@ class UsbDeviceFilter:
         self._desc_regex = desc_regex
         return self
 
+    def set_serial_num(self, serial_num: str) -> "UsbDeviceFilter":
+        """Pass only devices given product serial number.."""
+        assert serial_num
+        self._serial_num = serial_num
+        return self
+
     def _eval(self, device: UsbDevice) -> bool:
         """Test if the devices passes this field."""
         if (self._vendor_id is not None) and (
@@ -256,6 +264,11 @@ class UsbDeviceFilter:
 
         if (self._desc_regex is not None) and not re.search(
             self._desc_regex, device.description
+        ):
+            return False
+
+        if (self._serial_num is not None) and (
+            self._serial_num.lower() != device.serial_number.lower()
         ):
             return False
 

@@ -63,19 +63,23 @@ class _DeviceScanner:
 
 def construct_programmer_cmd(
     apio_ctx: ApioContext,
-    serial_port_arg: Optional[str],
+    serial_port_flag: Optional[str],
+    serial_num_flag: Optional[str],
 ) -> str:
     """Construct the programmer command for an 'apio upload' command."""
 
     # -- This is a thin wrapper to allow injecting test scanners in tests.
     scanner = _DeviceScanner(apio_ctx)
-    return _construct_programmer_cmd(apio_ctx, scanner, serial_port_arg)
+    return _construct_programmer_cmd(
+        apio_ctx, scanner, serial_port_flag, serial_num_flag
+    )
 
 
 def _construct_programmer_cmd(
     apio_ctx: ApioContext,
     scanner: _DeviceScanner,
-    serial_port_arg: Optional[str],
+    serial_port_flag: Optional[str],
+    serial_num_flag: Optional[str],
 ) -> str:
     """Construct the programmer command for an 'apio upload' command."""
 
@@ -106,11 +110,13 @@ def _construct_programmer_cmd(
     # -- Dispatch to the appropriate template resolver.
     if has_serial_vars:
         cmd = _resolve_serial_cmd_template(
-            apio_ctx, scanner, serial_port_arg, cmd_template
+            apio_ctx, scanner, serial_port_flag, serial_num_flag, cmd_template
         )
 
     elif has_usb_vars:
-        cmd = _resolve_usb_cmd_template(apio_ctx, scanner, cmd_template)
+        cmd = _resolve_usb_cmd_template(
+            apio_ctx, scanner, serial_num_flag, cmd_template
+        )
 
     else:
         # -- If there are no vars to resolve, we don't need to match to a
@@ -204,13 +210,14 @@ def _resolve_serial_cmd_template(
     apio_ctx: ApioContext,
     scanner: _DeviceScanner,
     serial_port_arg: Optional[str],
+    serial_port_num: Optional[str],
     cmd_template: str,
 ) -> str:
     """Resolves a programmer command template for a serial device."""
 
     # -- Match to a single serial device.
     device: SerialDevice = _match_serial_device(
-        apio_ctx, scanner, serial_port_arg
+        apio_ctx, scanner, serial_port_arg, serial_port_num
     )
 
     # -- Resolve serial port var.
@@ -224,12 +231,15 @@ def _resolve_serial_cmd_template(
 
 
 def _resolve_usb_cmd_template(
-    apio_ctx: ApioContext, scanner: _DeviceScanner, cmd_template: str
+    apio_ctx: ApioContext,
+    scanner: _DeviceScanner,
+    serial_num_flag: Optional[str],
+    cmd_template: str,
 ) -> str:
     """Resolves a programmer command template for an USB device."""
 
     # -- Match to a single usb device.
-    device: UsbDevice = _match_usb_device(apio_ctx, scanner)
+    device: UsbDevice = _match_usb_device(apio_ctx, scanner, serial_num_flag)
 
     # -- Substitute vars.
     cmd_template = cmd_template.replace(VID_VAR, device.vendor_id)
@@ -248,7 +258,8 @@ def _resolve_usb_cmd_template(
 def _match_serial_device(
     apio_ctx: ApioContext,
     scanner: _DeviceScanner,
-    ext_serial_port: Optional[str],
+    serial_port_flag: Optional[str],
+    serial_num_flag: Optional[str],
 ) -> SerialDevice:
     """Scans the serial devices and selects and returns a single matching
     device. Exits with an error if none or multiple matching devices.
@@ -275,8 +286,14 @@ def _match_serial_device(
         serial_filter.set_product_id(usb_info["pid"])
     if "desc-regex" in usb_info:
         serial_filter.set_desc_regex(usb_info["desc-regex"])
-    if ext_serial_port:
-        serial_filter.set_port(ext_serial_port)
+    if serial_port_flag:
+        serial_filter.set_port(serial_port_flag)
+    if serial_num_flag:
+        serial_filter.set_serial_num(serial_num_flag)
+
+    # -- Inform the user.
+    cout("Selecting serial device:")
+    cout(f"- FILTER {serial_filter.summary()}")
 
     # -- Get matching devices
     matching: List[SerialDevice] = serial_filter.filter(all_devices)
@@ -290,10 +307,9 @@ def _match_serial_device(
 
     # -- Error if not exactly one match.
     if not matching:
-        cerror(f"Serial board '{board}' not found.")
+        cerror(f"Serial device '{board}' not found.")
         cout(
-            "Type 'apio devices serial' to list the serial devices.",
-            f"Filter used: {serial_filter.summary()}",
+            "Type 'apio devices serial' for available serial devices.",
             style=INFO,
         )
 
@@ -306,18 +322,19 @@ def _match_serial_device(
         for device in matching:
             cout(f"Serial device {device.summary()}", style=INFO)
         cout(
-            "Type 'apio devices serial' to list the serial devices.",
-            f"Filter used: {serial_filter.summary()}",
+            "Type 'apio devices serial' for available serial devices.",
             style=INFO,
         )
 
-    cout(f"Using serial device {matching[0].summary()}", style=INFO)
+    cout(f"- DEVICE {matching[0].summary()}")
 
     # -- All done. We have a single match.
     return matching[0]
 
 
-def _match_usb_device(apio_ctx: ApioContext, scanner) -> UsbDevice:
+def _match_usb_device(
+    apio_ctx: ApioContext, scanner, serial_num_flag: Optional[str]
+) -> UsbDevice:
     """Scans the USB devices and selects and returns a single matching
     device. Exits with an error if none or multiple matching devices.
     """
@@ -340,6 +357,12 @@ def _match_usb_device(apio_ctx: ApioContext, scanner) -> UsbDevice:
         usb_filter.set_product_id(usb_info["pid"])
     if "desc-regex" in usb_info:
         usb_filter.set_desc_regex(usb_info["desc-regex"])
+    if serial_num_flag:
+        usb_filter.set_serial_num(serial_num_flag)
+
+    # -- Inform the user.
+    cout("Selecting USB device:")
+    cout(f"- FILTER {usb_filter.summary()}")
 
     # -- Get matching devices
     matching: List[UsbDevice] = usb_filter.filter(all_devices)
@@ -355,8 +378,7 @@ def _match_usb_device(apio_ctx: ApioContext, scanner) -> UsbDevice:
     if not matching:
         cerror(f"USB board '{board}' not found.")
         cout(
-            "Type 'apio devices usb' to list the usb devices.",
-            f"Filter used: {usb_filter.summary()}",
+            "Type 'apio devices usb' for available usb devices.",
             style=INFO,
         )
         sys.exit(1)
@@ -369,13 +391,12 @@ def _match_usb_device(apio_ctx: ApioContext, scanner) -> UsbDevice:
         for device in matching:
             cout(f"USB device {device.summary()}", style=INFO)
         cout(
-            "Type 'apio devices usb' for the list of available devices.",
-            f"Filter used: {usb_filter.summary()}",
+            "Type 'apio devices usb' for available usb device.",
             style=INFO,
         )
         sys.exit(1)
 
-    cout(f"Using USB device {matching[0].summary()}")
+    cout(f"- DEVICE {matching[0].summary()}")
 
     # -- All done. We have a single match.
     return matching[0]
@@ -410,22 +431,23 @@ def _check_device_presence(apio_ctx: ApioContext, scanner: _DeviceScanner):
     if "desc-regex" in usb_info:
         usb_filter.set_desc_regex(usb_info["desc-regex"])
 
+    cout("Checking device presence:")
+    cout(f"- FILTER {usb_filter.summary()}")
+
     # -- Scan the USB devices and filter by the filter.
     all_devices = scanner.get_usb_devices()
     matching_devices = usb_filter.filter(all_devices)
+
+    for device in matching_devices:
+        cout(f"- DEVICE {device.summary()}")
 
     # -- If no device passed the filter fail the check.
     if not matching_devices:
         cerror(f"Board '{board}' not found.")
         cout(
-            "Type 'apio devices usb' to list the usb devices.",
-            f"Filter used: {usb_filter.summary()}",
+            "Type 'apio devices usb' for available usb devices.",
             style=INFO,
         )
         sys.exit(1)
-
-    # -- Inform the user.
-    for device in matching_devices:
-        cout(f"Matching device: {device.summary()}")
 
     # -- All OK.

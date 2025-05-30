@@ -23,10 +23,21 @@ from apio.common.proto.apio_pb2 import UploadParams
 
 serial_port_option = click.option(
     "serial_port",  # Var name.
+    "-s",
     "--serial-port",
     type=str,
     metavar="serial-port",
     help="Set the serial port.",
+    cls=cmd_util.ApioOption,
+)
+
+serial_num_option = click.option(
+    "serial_num",  # Var name.
+    "-n",
+    "--serial-num",
+    type=str,
+    metavar="serial-num",
+    help="Select the device's USB serial number.",
     cls=cmd_util.ApioOption,
 )
 
@@ -37,9 +48,19 @@ The command 'apio upload' builds the bitstream file (similar to the \
 'apio build' command) and uploads it to the FPGA board.
 
 Examples:[code]
-  apio upload              # Typical usage.
+  apio upload                            # Typical invocation
+  apio upload -s /dev/cu.usbserial-1300  # Select serial port
+  apio upload -n FTXYA34Z                # Select serial number[/code]
 
-[Note] When apio is installed on Linux using the Snap package \
+Typically the simple form 'apio upload' is sufficient to locate and program \
+the FPGA board. The optional flags '--serial-port' and '--serial-num' allows \
+to select the desired board if more than one matching board is detected.
+
+[HINT] You can use the command 'apio devices' to list the connected USB and \
+serial devices and the command 'apio drivers' to install and uninstall device \
+drivers.
+
+[NOTE] When apio is installed on Linux using the Snap package \
 manager, run the command 'snap connect apio:raw-usb' once \
 to grant the necessary permissions to access USB devices.
 """
@@ -53,12 +74,14 @@ to grant the necessary permissions to access USB devices.
 )
 @click.pass_context
 @serial_port_option
+@serial_num_option
 @options.env_option_gen()
 @options.project_dir_option
 def cli(
     _: click.Context,
     # Options
     serial_port: str,
+    serial_num: str,
     env: Optional[str],
     project_dir: Optional[Path],
 ):
@@ -76,7 +99,7 @@ def cli(
 
     # -- Get the programmer command.
     programmer_cmd = construct_programmer_cmd(
-        apio_ctx, serial_port_arg=serial_port
+        apio_ctx, serial_port_flag=serial_port, serial_num_flag=serial_num
     )
 
     # Construct the scons upload params.

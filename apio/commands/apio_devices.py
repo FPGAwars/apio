@@ -81,7 +81,7 @@ connectivity issues.
 Examples:[code]
   apio devices usb    # List the usb devices.[/code]
 
-[Note] When apio is installed on Linux using the Snap package \
+[NOTE] When apio is installed on Linux using the Snap package \
 manager, run the command 'snap connect apio:raw-usb' once \
 to grant the necessary permissions to access USB devices.
 

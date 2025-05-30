@@ -253,7 +253,7 @@ Usage: apio create [OPTIONS]
     apio create --board alhambra-ii
     apio create --board alhambra-ii --top-module MyModule
 
-  [Note] This command only creates a new 'apio.ini' file, rather than a
+  [NOTE] This command only creates a new 'apio.ini' file, rather than a
   complete and buildable project. To create complete projects, refer to
   the 'apio examples' command.
 
@@ -323,7 +323,7 @@ Usage: apio devices usb [OPTIONS]
   Examples:
     apio devices usb    # List the usb devices.
 
-  [Note] When apio is installed on Linux using the Snap package manager,
+  [NOTE] When apio is installed on Linux using the Snap package manager,
   run the command 'snap connect apio:raw-usb' once to grant the
   necessary permissions to access USB devices.
 
@@ -1178,16 +1178,28 @@ Usage: apio upload [OPTIONS]
   'apio build' command) and uploads it to the FPGA board.
 
   Examples:
-    apio upload              # Typical usage.
+    apio upload                            # Typical invocation
+    apio upload -s /dev/cu.usbserial-1300  # Select serial port
+    apio upload -n FTXYA34Z                # Select serial number
 
-  [Note] When apio is installed on Linux using the Snap package manager,
+  Typically the simple form 'apio upload' is sufficient to locate and
+  program the FPGA board. The optional flags '--serial-port' and
+  '--serial-num' allows to select the desired board if more than one
+  matching board is detected.
+
+  [HINT] You can use the command 'apio devices' to list the connected
+  USB and serial devices and the command 'apio drivers' to install and
+  uninstall device drivers.
+
+  [NOTE] When apio is installed on Linux using the Snap package manager,
   run the command 'snap connect apio:raw-usb' once to grant the
   necessary permissions to access USB devices.
 
 Options:
-  --serial-port serial-port  Set the serial port.
-  -e, --env name             Set the apio.ini env.
-  -p, --project-dir path     Set the root directory for the project.
-  -h, --help                 Show this message and exit.
+  -s, --serial-port serial-port  Set the serial port.
+  -n, --serial-num serial-num    Select the device's USB serial number.
+  -e, --env name                 Set the apio.ini env.
+  -p, --project-dir path         Set the root directory for the project.
+  -h, --help                     Show this message and exit.
 
 ```
