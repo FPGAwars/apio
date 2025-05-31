@@ -102,7 +102,7 @@ class ApioSandbox:
         cli,
         args: List[str],
         terminal_mode: bool = True,
-        in_subprocess: bool = True,
+        in_subprocess: bool = False,
     ) -> ApioResult:
         """Invoke an apio command.  in_subprocess run apios in a subprocess,
         currently this suppresses colors because of the piping."""
