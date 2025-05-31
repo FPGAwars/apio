@@ -1,8 +1,8 @@
-"""
-Pytest
-TEST configuration file
-"""
+"""Pytest TEST configuration file"""
 
+import sys
+import subprocess
+from subprocess import CompletedProcess
 from dataclasses import dataclass
 import shutil
 import tempfile
@@ -13,6 +13,7 @@ from typing import Dict, Any
 import os
 import pytest
 from click.testing import CliRunner, Result
+from apio import __main__
 from apio.common import apio_console
 from apio.common.proto.apio_pb2 import FORCE_PIPE, FORCE_TERMINAL
 
@@ -100,7 +101,8 @@ class ApioSandbox:
         self,
         cli,
         *args,
-        terminal_mode=True,
+        terminal_mode: bool = True,
+        in_subprocess: bool = False,
     ) -> ApioResult:
         """Invoke an apio command."""
 
@@ -126,21 +128,48 @@ class ApioSandbox:
             terminal_mode=FORCE_TERMINAL if terminal_mode else FORCE_PIPE,
         )
 
-        # -- Invoke the command. Get back the collected results.
-        result: Result = self._click_runner.invoke(
-            prog_name="apio",
-            cli=cli,
-            args=args,
-            color=terminal_mode,
-        )
+        if in_subprocess:
+            # -- Invoke apio in a sub process.
+            print("Invoking apio in a sub process.")
+            process_result: CompletedProcess = subprocess.run(
+                (
+                    sys.executable,
+                    __main__.__file__,
+                )
+                + args,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            print(f"{process_result.returncode=}")
+            print(f"{process_result.stderr=}")
+            print(f"{process_result.stdout=}")
+            apio_result = ApioResult(
+                process_result.returncode,
+                process_result.stdout,
+                None,
+            )
+
+        else:
+            # -- Invoke the command in the same process using click.
+            print("Invoking apio in-process using click")
+            click_result: Result = self._click_runner.invoke(
+                prog_name="apio",
+                cli=cli,
+                args=args,
+                color=terminal_mode,
+            )
+
+            # -- Convert click result to apio result.
+            apio_result = ApioResult(
+                click_result.exit_code,
+                click_result.output,
+                click_result.exception,
+            )
 
         # -- Restore system env. Since apio commands tend to change vars
         # -- such as PATH.
         self.set_system_env(original_env)
-
-        apio_result = ApioResult(
-            result.exit_code, result.output, result.exception
-        )
 
         return apio_result
 

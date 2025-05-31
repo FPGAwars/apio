@@ -4,16 +4,12 @@ and are slower than the offline tests at test/commands.
 """
 
 import os
-import sys
-import subprocess
-from subprocess import CompletedProcess
 from os.path import getsize
 from pathlib import Path
 import json
 from test.conftest import ApioRunner
 import pytest
 from apio.commands.apio import cli as apio
-from apio import __main__
 
 CUSTOM_BOARDS = """
 {
@@ -105,51 +101,33 @@ def test_apio_api_scan_devices(apio_runner: ApioRunner):
 
     with apio_runner.in_sandbox(shared_home=True) as sb:
 
-        # -- Execute "apio api info -t xyz"  (stdout). We run it in a
+        # -- Execute "apio api scan-devices -t xyz"  (stdout). We run it in a
         # -- subprocess such that it releases the libusb1 file it uses.
-        result: CompletedProcess = subprocess.run(
-            [
-                sys.executable,
-                __main__.__file__,
-                "api",
-                "scan-devices",
-                "-t",
-                "xyz",
-            ],
-            capture_output=True,
-            text=True,
-            check=False,
+        result = sb.invoke_apio_cmd(
+            apio, "api", "scan-devices", "-t", "xyz", in_subprocess=True
         )
-        assert result.returncode == 0
+        sb.assert_ok(result)
 
-        assert "xyz" in result.stdout
-        assert "usb-devices" in result.stdout
-        assert "serial-devices" in result.stdout
+        assert "xyz" in result.output
+        assert "usb-devices" in result.output
+        assert "serial-devices" in result.output
 
         # -- Execute "apio api get-boards -t xyz -s boards -o <dir>"  (file)
         path = sb.proj_dir / "apio.json"
 
-        # result = sb.invoke_apio_cmd(
-        #     apio, "api", "scan-devices", "-t", "xyz", "-o", str(path)
-        # )
-
-        result: CompletedProcess = subprocess.run(
-            [
-                sys.executable,
-                __main__.__file__,
-                "api",
-                "scan-devices",
-                "-t",
-                "xyz",
-                "-o",
-                str(path),
-            ],
-            capture_output=True,
-            text=True,
-            check=True,
+        result = sb.invoke_apio_cmd(
+            apio,
+            "api",
+            "scan-devices",
+            "-t",
+            "xyz",
+            "-o",
+            str(path),
+            in_subprocess=True,
         )
+        sb.assert_ok(result)
 
-        assert result.returncode == 0
+       
 
         # -- Read and verify the output file. Since we don't know what
         # -- devices the platform has, we just check for the section keys.
