@@ -3,12 +3,13 @@ Pytest
 TEST configuration file
 """
 
+from dataclasses import dataclass
 import shutil
 import tempfile
 import contextlib
 from pathlib import Path
 from typing import List, Union, cast, Optional
-from typing import Dict
+from typing import Dict, Any
 import os
 import pytest
 from click.testing import CliRunner, Result
@@ -37,6 +38,15 @@ def pytest_addoption(parser: pytest.Parser):
     parser.addoption(
         "--offline", action="store_true", help="Run tests in offline mode"
     )
+
+
+@dataclass(frozen=True)
+class ApioResult:
+    """Represent the outcome of an apio invocation."""
+
+    exit_code: int
+    output: str  # stdout only
+    exception: Any
 
 
 class ApioSandbox:
@@ -90,17 +100,9 @@ class ApioSandbox:
         self,
         cli,
         *args,
-        input=None,
-        env=None,
-        catch_exceptions=True,
         terminal_mode=True,
-        **extra,
-    ) -> Result:
+    ) -> ApioResult:
         """Invoke an apio command."""
-
-        # pylint: disable=too-many-arguments
-        # W0622: Redefining built-in 'input' (redefined-builtin)
-        # pylint: disable=redefined-builtin
 
         print(f"\nInvoking apio command [{cli.name}], args={args}.")
 
@@ -129,21 +131,23 @@ class ApioSandbox:
             prog_name="apio",
             cli=cli,
             args=args,
-            input=input,
-            env=env,
-            catch_exceptions=catch_exceptions,
             color=terminal_mode,
-            **extra,
         )
 
         # -- Restore system env. Since apio commands tend to change vars
         # -- such as PATH.
         self.set_system_env(original_env)
 
-        return result
+        apio_result = ApioResult(
+            result.exit_code, result.output, result.exception
+        )
 
-    def assert_ok(self, result: Result):
+        return apio_result
+
+    def assert_ok(self, result: ApioResult):
         """Check if apio command results where ok"""
+
+        assert isinstance(result, ApioResult)
 
         # -- It should return an exit code of 0: success
         assert result.exit_code == 0, result.output
