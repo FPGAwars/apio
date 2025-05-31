@@ -10,7 +10,7 @@ def test_lint_apio_init(apio_runner: ApioRunner):
     with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio lint"
-        result = sb.invoke_apio_cmd(apio, "lint")
+        result = sb.invoke_apio_cmd(apio, ["lint"])
         assert result.exit_code == 1, result.output
         assert "Error: Missing project file apio.ini" in result.output
 
@@ -24,7 +24,7 @@ def test_lint_with_env_arg_error(apio_runner: ApioRunner):
 
         # -- Run "apio lint --env no-such-env"
         sb.write_apio_ini({"[env:default]": {"top-module": "main"}})
-        result = sb.invoke_apio_cmd(apio, "lint", "--env", "no-such-env")
+        result = sb.invoke_apio_cmd(apio, ["lint", "--env", "no-such-env"])
         assert result.exit_code == 1, result.output
         assert (
             "Error: Env 'no-such-env' not found in apio.ini" in result.output

@@ -53,7 +53,7 @@ def test_boards_custom_board(apio_runner: ApioRunner):
         sb.write_file("boards.jsonc", CUSTOM_BOARDS)
 
         # -- Execute "apio boards"
-        result = sb.invoke_apio_cmd(apio, "boards")
+        result = sb.invoke_apio_cmd(apio, ["boards"])
         sb.assert_ok(result)
         # -- Note: pytest sees the piped version of the command's output.
         assert "Loading custom 'boards.jsonc'" in result.output
@@ -73,7 +73,7 @@ def test_boards_list_ok(apio_runner: ApioRunner):
     with apio_runner.in_sandbox(shared_home=True) as sb:
 
         # -- Run 'apio boards'
-        result = sb.invoke_apio_cmd(apio, "boards")
+        result = sb.invoke_apio_cmd(apio, ["boards"])
         sb.assert_ok(result)
         assert "Loading custom 'boards.jsonc'" not in result.output
         assert "FPGA-ID" not in result.output
@@ -82,7 +82,7 @@ def test_boards_list_ok(apio_runner: ApioRunner):
         assert "Total of 1 board" not in result.output
 
         # -- Run 'apio boards -v'
-        result = sb.invoke_apio_cmd(apio, "boards", "-v")
+        result = sb.invoke_apio_cmd(apio, ["boards", "-v"])
         sb.assert_ok(result)
         assert "Loading custom 'boards.jsonc'" not in result.output
         assert "FPGA-ID" in result.output
@@ -104,7 +104,7 @@ def test_apio_api_scan_devices(apio_runner: ApioRunner):
         # -- Execute "apio api scan-devices -t xyz"  (stdout). We run it in a
         # -- subprocess such that it releases the libusb1 file it uses.
         result = sb.invoke_apio_cmd(
-            apio, "api", "scan-devices", "-t", "xyz", in_subprocess=True
+            apio, ["api", "scan-devices", "-t", "xyz"], in_subprocess=True
         )
         sb.assert_ok(result)
 
@@ -117,12 +117,7 @@ def test_apio_api_scan_devices(apio_runner: ApioRunner):
 
         result = sb.invoke_apio_cmd(
             apio,
-            "api",
-            "scan-devices",
-            "-t",
-            "xyz",
-            "-o",
-            str(path),
+            ["api", "scan-devices", "-t", "xyz", "-o", str(path)],
             in_subprocess=True,
         )
         sb.assert_ok(result)
@@ -147,18 +142,18 @@ def test_utilities(apio_runner: ApioRunner):
     with apio_runner.in_sandbox(shared_home=True) as sb:
 
         # -- Run 'apio upgrade'
-        result = sb.invoke_apio_cmd(apio, "upgrade")
+        result = sb.invoke_apio_cmd(apio, ["upgrade"])
         sb.assert_ok(result)
         assert "Latest Apio stable version" in result.output
 
         # -- Run 'apio raw  "nextpnr-ice40 --help"'
         result = sb.invoke_apio_cmd(
-            apio, "raw", "--", "nextpnr-ice40", "--help"
+            apio, ["raw", "--", "nextpnr-ice40", "--help"]
         )
         sb.assert_ok(result)
 
         # -- Run 'apio raw -v'
-        result = sb.invoke_apio_cmd(apio, "raw", "-v")
+        result = sb.invoke_apio_cmd(apio, ["raw", "-v"])
         sb.assert_ok(result)
         assert "Environment settings:" in result.output
         assert "YOSYS_LIB" in result.output
@@ -179,15 +174,12 @@ def test_project_with_legacy_board_name(apio_runner: ApioRunner):
 
         # -- Fetch an example of a board that has a legacy name.
         result = sb.invoke_apio_cmd(
-            apio,
-            "examples",
-            "fetch",
-            "ice40-hx8k/leds",
+            apio, ["examples", "fetch", "ice40-hx8k/leds"]
         )
         sb.assert_ok(result)
 
         # -- Run 'apio build'
-        result = sb.invoke_apio_cmd(apio, "build")
+        result = sb.invoke_apio_cmd(apio, ["build"])
         sb.assert_ok(result)
 
         # -- Modify the apio.ini to have the legacy board name
@@ -201,11 +193,11 @@ def test_project_with_legacy_board_name(apio_runner: ApioRunner):
         )
 
         # -- Run 'apio clean'
-        result = sb.invoke_apio_cmd(apio, "clean")
+        result = sb.invoke_apio_cmd(apio, ["clean"])
         sb.assert_ok(result)
 
         # -- Run 'apio build' again. It should also succeed.
-        result = sb.invoke_apio_cmd(apio, "build")
+        result = sb.invoke_apio_cmd(apio, ["build"])
         sb.assert_ok(result)
 
 
@@ -222,9 +214,7 @@ def test_files_order(apio_runner: ApioRunner):
         # -- Fetch a working example.
         result = sb.invoke_apio_cmd(
             apio,
-            "examples",
-            "fetch",
-            "alhambra-ii/ledon",
+            ["examples", "fetch", "alhambra-ii/ledon"],
             terminal_mode=False,
         )
 
@@ -241,8 +231,7 @@ def test_files_order(apio_runner: ApioRunner):
         Path("_build/zzz.v").touch()
 
         # -- 'apio build'
-        args = ["build"]
-        result = sb.invoke_apio_cmd(apio, *args)
+        result = sb.invoke_apio_cmd(apio, ["build"])
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
 
@@ -306,7 +295,7 @@ def _test_project(
 
         # -- 'apio examples fetch <example> -d <proj_dir>'
         args = ["examples", "fetch", example] + dst_arg
-        result = sb.invoke_apio_cmd(apio, *args)
+        result = sb.invoke_apio_cmd(apio, args)
         sb.assert_ok(result)
         assert f"Copying {example} example files" in result.output
         assert "fetched successfully" in result.output
@@ -317,14 +306,14 @@ def _test_project(
 
         # -- 'apio build'
         args = ["build"] + proj_arg
-        result = sb.invoke_apio_cmd(apio, *args)
+        result = sb.invoke_apio_cmd(apio, args)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert getsize(sb.proj_dir / "_build/default" / bitstream)
 
         # -- 'apio build' (no change)
         args = ["build"] + proj_arg
-        result = sb.invoke_apio_cmd(apio, *args)
+        result = sb.invoke_apio_cmd(apio, args)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert "yosys" not in result.output
@@ -339,33 +328,33 @@ def _test_project(
         # -- 'apio build'
         # -- Apio.ini modification should triggers a new build.
         args = ["build"] + proj_arg
-        result = sb.invoke_apio_cmd(apio, *args)
+        result = sb.invoke_apio_cmd(apio, args)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert "yosys" in result.output
 
         # -- 'apio lint'
         args = ["lint"] + proj_arg
-        result = sb.invoke_apio_cmd(apio, *args)
+        result = sb.invoke_apio_cmd(apio, args)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert getsize(sb.proj_dir / "_build/default/hardware.vlt")
 
         # -- 'apio format'
         args = ["format"] + proj_arg
-        result = sb.invoke_apio_cmd(apio, *args)
+        result = sb.invoke_apio_cmd(apio, args)
         sb.assert_ok(result)
 
         # -- 'apio format <testbench-file>'
         # -- This tests the project relative specification even when
         # -- the option --project-dir is used.
         args = ["format", testbench_file] + proj_arg
-        result = sb.invoke_apio_cmd(apio, *args)
+        result = sb.invoke_apio_cmd(apio, args)
         sb.assert_ok(result)
 
         # -- 'apio test'
         args = ["test"] + proj_arg
-        result = sb.invoke_apio_cmd(apio, *args)
+        result = sb.invoke_apio_cmd(apio, args)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert getsize(sb.proj_dir / f"_build/default/{testbench}.out")
@@ -373,7 +362,7 @@ def _test_project(
 
         # -- 'apio clean'
         args = ["clean"] + proj_arg
-        result = sb.invoke_apio_cmd(apio, *args)
+        result = sb.invoke_apio_cmd(apio, args)
         sb.assert_ok(result)
         assert "Cleanup completed" in result.output
         assert not (sb.proj_dir / f"_build/default/{testbench}.out").exists()
@@ -381,7 +370,7 @@ def _test_project(
 
         # -- 'apio test <testbench-file>'
         args = ["test", testbench_file] + proj_arg
-        result = sb.invoke_apio_cmd(apio, *args)
+        result = sb.invoke_apio_cmd(apio, args)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert getsize(sb.proj_dir / f"_build/default/{testbench}.out")
@@ -391,7 +380,7 @@ def _test_project(
 
         # -- 'apio report'
         args = ["report"] + proj_arg
-        result = sb.invoke_apio_cmd(apio, *args)
+        result = sb.invoke_apio_cmd(apio, args)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert report_item in result.output
@@ -400,7 +389,7 @@ def _test_project(
 
         # -- 'apio graph'
         args = ["graph"] + proj_arg
-        result = sb.invoke_apio_cmd(apio, *args)
+        result = sb.invoke_apio_cmd(apio, args)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
         assert getsize(sb.proj_dir / "_build/default/hardware.dot")
@@ -409,7 +398,7 @@ def _test_project(
         # -- 'apio clean'
         assert Path(sb.proj_dir / "_build/default").exists()
         args = ["clean"] + proj_arg
-        result = sb.invoke_apio_cmd(apio, *args)
+        result = sb.invoke_apio_cmd(apio, args)
         sb.assert_ok(result)
         assert "Cleanup completed" in result.output
         assert not Path(sb.proj_dir / "_build/default").exists()

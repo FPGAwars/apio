@@ -14,7 +14,7 @@ def test_apio_api_get_boards(apio_runner: ApioRunner):
     with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio api info -t xyz"  (stdout)
-        result = sb.invoke_apio_cmd(apio, "api", "get-boards", "-t", "xyz")
+        result = sb.invoke_apio_cmd(apio, ["api", "get-boards", "-t", "xyz"])
         sb.assert_ok(result)
         assert "xyz" in result.output
         assert "alhambra-ii" in result.output
@@ -22,7 +22,7 @@ def test_apio_api_get_boards(apio_runner: ApioRunner):
         # -- Execute "apio api get-boards -t xyz -s boards -o <dir>"  (file)
         path = sb.proj_dir / "apio.json"
         result = sb.invoke_apio_cmd(
-            apio, "api", "get-boards", "-t", "xyz", "-o", str(path)
+            apio, ["api", "get-boards", "-t", "xyz", "-o", str(path)]
         )
         sb.assert_ok(result)
 

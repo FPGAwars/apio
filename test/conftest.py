@@ -100,7 +100,7 @@ class ApioSandbox:
     def invoke_apio_cmd(
         self,
         cli,
-        *args,
+        args: List[str],
         terminal_mode: bool = True,
         in_subprocess: bool = False,
     ) -> ApioResult:
@@ -132,10 +132,10 @@ class ApioSandbox:
             # -- Invoke apio in a sub process.
             print("Invoking apio in a sub process.")
             process_result: CompletedProcess = subprocess.run(
-                (
+                [
                     sys.executable,
                     __main__.__file__,
-                )
+                ]
                 + args,
                 capture_output=True,
                 text=True,

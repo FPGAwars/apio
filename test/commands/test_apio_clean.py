@@ -32,7 +32,7 @@ def test_clean(apio_runner: ApioRunner):
         assert Path("_build/env1/hardware.out").exists()
         assert Path("_build/env2/hardware.out").exists()
 
-        result = sb.invoke_apio_cmd(apio, "clean")
+        result = sb.invoke_apio_cmd(apio, ["clean"])
         assert result.exit_code == 0, result.output
 
         assert "Removed .sconsign.dblite" in result.output
@@ -76,7 +76,7 @@ def test_clean_from_remote_dir(apio_runner: ApioRunner):
         os.chdir(remote_dir)
         assert not Path("apio.ini").exists()
         result = sb.invoke_apio_cmd(
-            apio, "clean", "--project-dir", str(proj_dir)
+            apio, ["clean", "--project-dir", str(proj_dir)]
         )
         assert result.exit_code == 0, result.output
         os.chdir(proj_dir)
@@ -98,7 +98,7 @@ def test_clean_no_build(apio_runner: ApioRunner):
         assert not Path(".sconsign.dblite").exists()
         assert not Path("_build").exists()
 
-        result = sb.invoke_apio_cmd(apio, "clean")
+        result = sb.invoke_apio_cmd(apio, ["clean"])
         assert result.exit_code == 0, result.output
 
         assert "Removed" not in result.output
@@ -128,7 +128,7 @@ def test_clean_legacy_files(apio_runner: ApioRunner):
             sb.write_file(legacy_file, "dummy text")
             assert Path(legacy_file).exists()
 
-        result = sb.invoke_apio_cmd(apio, "clean")
+        result = sb.invoke_apio_cmd(apio, ["clean"])
         assert result.exit_code == 0, result.output
 
         for legacy_file in legacy_files:
