@@ -95,7 +95,7 @@ class ApioSandbox:
         catch_exceptions=True,
         terminal_mode=True,
         **extra,
-    ):
+    ) -> Result:
         """Invoke an apio command."""
 
         # pylint: disable=too-many-arguments
@@ -125,7 +125,7 @@ class ApioSandbox:
         )
 
         # -- Invoke the command. Get back the collected results.
-        result = self._click_runner.invoke(
+        result: Result = self._click_runner.invoke(
             prog_name="apio",
             cli=cli,
             args=args,
