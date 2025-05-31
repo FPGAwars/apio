@@ -127,8 +127,6 @@ def test_apio_api_scan_devices(apio_runner: ApioRunner):
         )
         sb.assert_ok(result)
 
-       
-
         # -- Read and verify the output file. Since we don't know what
         # -- devices the platform has, we just check for the section keys.
         text = sb.read_file(path)
