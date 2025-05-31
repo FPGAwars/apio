@@ -142,9 +142,7 @@ class ApioSandbox:
                 text=True,
                 check=False,
             )
-            print(f"{process_result.returncode=}")
-            print(f"{process_result.stderr=}")
-            print(f"{process_result.stdout=}")
+
             apio_result = ApioResult(
                 process_result.returncode,
                 process_result.stdout,
@@ -167,6 +165,11 @@ class ApioSandbox:
                 click_result.output,
                 click_result.exception,
             )
+
+        # -- Dump to test log.
+        print(f"result.exit_code:{apio_result.exit_code}")
+        print("result.output:")
+        print(Result.output)
 
         # -- Restore system env. Since apio commands tend to change vars
         # -- such as PATH.

@@ -101,7 +101,7 @@ def test_apio_api_scan_devices(apio_runner: ApioRunner):
 
     with apio_runner.in_sandbox(shared_home=True) as sb:
 
-        # -- Execute "apio api scan-devices -t xyz"  (stdout). We run it in a
+        # -- Execute "apio api scan-devices -t xyz". We run it in a
         # -- subprocess such that it releases the libusb1 file it uses.
         result = sb.invoke_apio_cmd(
             apio, ["api", "scan-devices", "-t", "xyz"], in_subprocess=True
@@ -129,6 +129,33 @@ def test_apio_api_scan_devices(apio_runner: ApioRunner):
         assert data["timestamp"] == "xyz"
         assert "usb-devices" in data
         assert "serial-devices" in data
+
+
+def test_apio_devices(apio_runner: ApioRunner):
+    """Test "apio devices usb|serial" """
+
+    # -- If the option 'offline' is passed, the test is skip
+    # -- (This test is slow and requires internet connectivity)
+    if apio_runner.offline_flag:
+        pytest.skip("requires internet connection")
+
+    with apio_runner.in_sandbox(shared_home=True) as sb:
+
+        # -- Execute "apio devices usb". We run it in a
+        # -- subprocess such that it releases the libusb1 file it uses.
+        result = sb.invoke_apio_cmd(
+            apio, ["devices", "usb"], in_subprocess=True
+        )
+        sb.assert_ok(result)
+        print(result.output)
+
+        # -- Execute "apio devices serial". We run it in a
+        # -- subprocess such that it releases the libusb1 file it uses.
+        result = sb.invoke_apio_cmd(
+            apio, ["devices", "serial"], in_subprocess=True
+        )
+        sb.assert_ok(result)
+        print(result.output)
 
 
 def test_utilities(apio_runner: ApioRunner):
