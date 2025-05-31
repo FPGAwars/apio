@@ -66,17 +66,6 @@ class UsbDevice:
         check_usb_id_format(self.vendor_id)
         check_usb_id_format(self.product_id)
 
-    def dump(self) -> None:
-        """Dump the device info. For debugging."""
-        cout(f"    bus:           [{self.bus}]")
-        cout(f"    device:        [{self.device}]")
-        cout(f"    vendor_id:     [{self.vendor_id}]")
-        cout(f"    product_id:    [{self.product_id}]")
-        cout(f"    manufacturer:  [{self.manufacturer}]")
-        cout(f"    description:   [{self.description}]")
-        cout(f"    serial_number: [{self.serial_number}]")
-        cout(f"    device_type:   [{self.device_type}]")
-
     def summary(self) -> str:
         """Returns a user friendly short description of this device."""
         return (
@@ -200,10 +189,8 @@ def scan_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
 
     if util.is_debug():
         cout(f"Found {len(result)} USB devices:")
-        for i, device in enumerate(result):
-            cout()
-            cout(f"---- USB device {i}")
-            device.dump()
+        for device in result:
+            cout(str(device))
 
     # -- All done.
     return result

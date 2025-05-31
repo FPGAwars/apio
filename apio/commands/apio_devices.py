@@ -16,7 +16,7 @@ from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 from apio.managers import installer
 from apio.common.apio_console import cout, cprint
 from apio.common.apio_styles import BORDER, SUCCESS, ERROR, EMPH3
-from apio.utils import pkg_util, serial_util, usb_util, util
+from apio.utils import serial_util, usb_util, util
 
 
 # --- apio devices usb
@@ -25,8 +25,8 @@ from apio.utils import pkg_util, serial_util, usb_util, util
 def _list_usb_devices(apio_ctx: ApioContext) -> None:
     """Lists the connected USB devices in table format."""
 
+    # -- We need the packages for the 'libusb' backend.
     installer.install_missing_packages_on_the_fly(apio_ctx)
-    pkg_util.set_env_for_packages(apio_ctx, quiet=True)
 
     devices = usb_util.scan_usb_devices(apio_ctx=apio_ctx)
 
@@ -115,8 +115,8 @@ def _usb_cli():
 def _list_serial_devices(apio_ctx: ApioContext) -> None:
     """Lists the connected serial devices in table format."""
 
+    # -- We need the packages for the 'libusb' backend.
     installer.install_missing_packages_on_the_fly(apio_ctx)
-    pkg_util.set_env_for_packages(apio_ctx, quiet=True)
 
     devices = serial_util.scan_serial_devices()
 

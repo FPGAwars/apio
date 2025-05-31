@@ -6,6 +6,7 @@ and are slower than the offline tests at test/commands.
 import os
 from os.path import getsize
 from pathlib import Path
+import json
 from test.conftest import ApioRunner
 import pytest
 from apio.commands.apio import cli as apio
@@ -88,6 +89,39 @@ def test_boards_list_ok(apio_runner: ApioRunner):
         assert "alhambra-ii" in result.output
         assert "my_custom_board" not in result.output
         assert "Total of 1 board" not in result.output
+
+
+def test_apio_api_scan_devices(apio_runner: ApioRunner):
+    """Test "apio api scan-devices" """
+
+    # -- If the option 'offline' is passed, the test is skip
+    # -- (This test is slow and requires internet connectivity)
+    if apio_runner.offline_flag:
+        pytest.skip("requires internet connection")
+
+    with apio_runner.in_sandbox(shared_home=True) as sb:
+
+        # -- Execute "apio api info -t xyz"  (stdout)
+        result = sb.invoke_apio_cmd(apio, "api", "scan-devices", "-t", "xyz")
+        sb.assert_ok(result)
+        assert "xyz" in result.output
+        assert "usb-devices" in result.output
+        assert "serial-devices" in result.output
+
+        # -- Execute "apio api get-boards -t xyz -s boards -o <dir>"  (file)
+        path = sb.proj_dir / "apio.json"
+        result = sb.invoke_apio_cmd(
+            apio, "api", "scan-devices", "-t", "xyz", "-o", str(path)
+        )
+        sb.assert_ok(result)
+
+        # -- Read and verify the output file. Since we don't know what
+        # -- devices the platform has, we just check for the section keys.
+        text = sb.read_file(path)
+        data = json.loads(text)
+        assert data["timestamp"] == "xyz"
+        assert "usb-devices" in data
+        assert "serial-devices" in data
 
 
 def test_utilities(apio_runner: ApioRunner):

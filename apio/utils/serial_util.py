@@ -30,18 +30,6 @@ class SerialDevice:
         usb_util.check_usb_id_format(self.vendor_id)
         usb_util.check_usb_id_format(self.product_id)
 
-    def dump(self) -> None:
-        """Dump the device info. For debugging."""
-        cout(f"    port:          [{self.port}]")
-        cout(f"    port-name:     [{self.port_name}]")
-        cout(f"    manufacturer:  [{self.manufacturer}]")
-        cout(f"    description:   [{self.description}]")
-        cout(f"    vendor_id:     [{self.vendor_id}]")
-        cout(f"    product_id:    [{self.product_id}]")
-        cout(f"    serial_number: [{self.serial_number}]")
-        cout(f"    device_type  : [{self.device_type}]")
-        cout(f"    location:      [{self.location}]")
-
     def summary(self) -> str:
         """Returns a user friendly short description of this device."""
         return (
@@ -97,10 +85,8 @@ def scan_serial_devices() -> List[SerialDevice]:
 
     if util.is_debug():
         cout(f"Found {len(devices)} serial device:")
-        for i, device in enumerate(devices):
-            cout()
-            cout(f"---- serial device {i}")
-            device.dump()
+        for device in devices:
+            cout(str(device))
 
     # -- All done.
     return devices
