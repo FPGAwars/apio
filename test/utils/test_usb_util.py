@@ -9,19 +9,19 @@ from apio.utils.usb_util import (
 
 def test_device_summaries():
     """Test usb device summary() string."""
-    device = UsbDevice(0, 1, "0403", "6010", "m0", "p0", "sn0", "t0")
+    device = UsbDevice("0403", "6010", 0, 1, "m0", "p0", "sn0", "t0")
     assert device.summary() == "[0403:6010, 0:1], [m0] [p0] [sn0]"
 
 
 def test_filtering():
     """Test the filtering function."""
     devs: List[UsbDevice] = [
-        UsbDevice(0, 1, "0403", "6010", "m0", "p0", "sn0", "t0"),  # devs[0]
-        UsbDevice(3, 1, "0403", "6020", "m1", "p1", "sn1", "t1"),  # devs[1]
-        UsbDevice(3, 1, "0405", "6020", "m2", "p2", "sn2", "t2"),  # devs[2]
-        UsbDevice(2, 1, "0403", "6020", "m3", "p3", "sn3", "t3"),  # devs[3]
-        UsbDevice(1, 1, "0403", "6010", "m4", "p4", "sn4", "t4"),  # devs[4]
-        UsbDevice(1, 1, "0405", "6010", "m5", "p5", "sn5", "t5"),  # devs[5]
+        UsbDevice("0403", "6010", 0, 1, "m0", "p0", "sn0", "t0"),  # devs[0]
+        UsbDevice("0403", "6020", 3, 1, "m1", "p1", "sn1", "t1"),  # devs[1]
+        UsbDevice("0405", "6020", 3, 1, "m2", "p2", "sn2", "t2"),  # devs[2]
+        UsbDevice("0403", "6020", 2, 1, "m3", "p3", "sn3", "t3"),  # devs[3]
+        UsbDevice("0403", "6010", 1, 1, "m4", "p4", "sn4", "t4"),  # devs[4]
+        UsbDevice("0405", "6010", 1, 1, "m5", "p5", "sn5", "t5"),  # devs[5]
     ]
 
     # -- All filtering disabled.

@@ -228,7 +228,7 @@ def _resolve_serial_cmd_template(
     cmd_template = cmd_template.replace(SERIAL_PORT_VAR, device.port)
 
     # -- Sanity check, should have no serial vars unresolved.
-    # assert not any(s in template for s in SERIAL_VARS), template
+    assert not any(s in cmd_template for s in SERIAL_VARS), cmd_template
 
     # -- All done.
     return cmd_template
@@ -253,7 +253,7 @@ def _resolve_usb_cmd_template(
     cmd_template = cmd_template.replace(SERIAL_NUM_VAR, device.serial_number)
 
     # -- Sanity check, should have no usb vars unresolved.
-    # assert not any(s in cmd_template for s in USB_VARS), cmd_template
+    assert not any(s in cmd_template for s in USB_VARS), cmd_template
 
     # -- All done.
     return cmd_template
@@ -278,9 +278,6 @@ def _match_serial_device(
 
     # -- Get board optional usb constraints
     usb_info = board_info.get("usb", {})
-    # vid = usb_info.get("vid", None)
-    # pid = usb_info.get("pid", None)
-    # desc_regex = usb_info.get("desc-regex", )
 
     # -- Construct a device filter.
     serial_filter = SerialDeviceFilter()

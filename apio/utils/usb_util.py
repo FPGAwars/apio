@@ -52,10 +52,10 @@ class UsbDevice:
 
     # pylint: disable=too-many-instance-attributes
 
-    bus: int
-    device: int
     vendor_id: str
     product_id: str
+    bus: int
+    device: int
     manufacturer: str
     description: str
     serial_number: str
@@ -159,10 +159,10 @@ def scan_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
         # -- Create the device object.
         unavail = "--unavail--"
         item = UsbDevice(
-            bus=device.bus,
-            device=device.address,
             vendor_id=f"{device.idVendor:04X}",
             product_id=f"{device.idProduct:04x}",
+            bus=device.bus,
+            device=device.address,
             manufacturer=_get_usb_str(
                 device,
                 device.iManufacturer,

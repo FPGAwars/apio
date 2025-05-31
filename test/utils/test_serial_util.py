@@ -12,7 +12,7 @@ from apio.utils.serial_util import (
 def test_device_summaries():
     """Test serial device summary() string."""
     device = SerialDevice(
-        "dev/port0", "port0", "m0", "p0", "0403", "6010", "sn0", "t0", "l0"
+        "dev/port0", "port0", "0403", "6010", "m0", "p0", "sn0", "t0", "l0"
     )
     assert device.summary() == "[dev/port0] [0403:6010, [m0] [p0] [sn0]"
 
@@ -23,10 +23,10 @@ def test_filtering():
         SerialDevice(  # devs[0]
             "port0",
             "name0",
-            "manuf0",
-            "product0",
             "0403",
             "6020",
+            "manuf0",
+            "product0",
             "serial0",
             "type0",
             "location0",
@@ -34,10 +34,10 @@ def test_filtering():
         SerialDevice(  # devs[1]
             "port1",
             "name1",
-            "manuf1",
-            "product1",
             "0405",
             "6010",
+            "manuf1",
+            "product1",
             "serial1",
             "type1",
             "location1",
@@ -45,10 +45,10 @@ def test_filtering():
         SerialDevice(  # devs[2]
             "port2",
             "name2",
-            "manuf2",
-            "product2",
             "0403",
             "6010",
+            "manuf2",
+            "product2",
             "serial2",
             "type2",
             "location2",
@@ -56,10 +56,10 @@ def test_filtering():
         SerialDevice(  # devs[3]
             "port3",
             "name3",
-            "manuf3",
-            "product3",
             "0405",
             "6020",
+            "manuf3",
+            "product3",
             "serial3",
             "type3",
             "location3",

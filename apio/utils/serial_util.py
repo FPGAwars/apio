@@ -17,10 +17,10 @@ class SerialDevice:
 
     port: str
     port_name: str
-    manufacturer: str
-    description: str
     vendor_id: str
     product_id: str
+    manufacturer: str
+    description: str
     serial_number: str
     device_type: str
     location: str
@@ -70,10 +70,10 @@ def scan_serial_devices() -> List[SerialDevice]:
             SerialDevice(
                 port=item.device,
                 port_name=item.name,
-                manufacturer=item.manufacturer,
-                description=item.description,
                 vendor_id=f"{item.vid:04X}",
                 product_id=f"{item.pid:04X}",
+                manufacturer=item.manufacturer,
+                description=item.description,
                 serial_number=item.serial_number or "",
                 device_type=usb_util.get_device_type(item.vid, item.pid),
                 location=item.location,

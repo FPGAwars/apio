@@ -43,10 +43,10 @@ class FakeDeviceScanner(_DeviceScanner):
 
 def fake_usb_device(
     *,
-    bus=0,
-    dev=0,
     vid="0403",
     pid="6010",
+    bus=0,
+    dev=0,
     manuf="AlhambraBits",
     desc="Alhambra II v1.0A",
     sn="SNXXXX",
@@ -55,10 +55,10 @@ def fake_usb_device(
     """Create a fake usb device for resting."""
     # pylint: disable=too-many-arguments
     return UsbDevice(
-        bus=bus,
-        device=dev,
         vendor_id=vid,
         product_id=pid,
+        bus=bus,
+        device=dev,
         manufacturer=manuf,
         description=desc,
         serial_number=sn,
@@ -69,10 +69,10 @@ def fake_usb_device(
 def fake_serial_device(
     *,
     port_name="port0",
-    manuf="IceFUN",
-    desc="Ice Fun",
     vid="04D8",
     pid="FFEE",
+    manuf="IceFUN",
+    desc="Ice Fun",
     sn="SNXXXX",
     device_type="FT2232H",
     location="0.1",
@@ -82,10 +82,10 @@ def fake_serial_device(
     return SerialDevice(
         port="/dev/" + port_name,
         port_name=port_name,
-        manufacturer=manuf,
-        description=desc,
         vendor_id=vid,
         product_id=pid,
+        manufacturer=manuf,
+        description=desc,
         serial_number=sn,
         device_type=device_type,
         location=location,
