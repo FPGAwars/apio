@@ -3,18 +3,32 @@
 // add additional arguments to the programmers' command lines.
 //
 // The programmer command is constructed as follows:
-// <programmer.args> $SOURCE <board.extra_args>
+// <programmer.args> <board.extra_args>
 //
-// The following placeholders, if present, are resolved by apio:
-// "${VID}" (optional): USB vendor id
-// "${PID}" (optional): USB Product id
-// "${FTDI_IDX}" (optional): FTDI idx
-// "${SERIAL_PORT}" (optional): Serial port name
+// The programmers command may contain placeholders that are replaced by
+// apio at runtime. These placeholders can be from one of the two sets
+// below and cannot be mixed:
+//
+// Serial device placeholders:
+//   ${SERIAL_PORT} - the serial port that the devices is connected it.
+//
+// USB device placeholders
+//   ${VID}        - the USB vendor ID.
+//   ${PID}        - the USB product ID.
+//   ${BUS}        - the USB bus number..
+//   ${DEV}        - the USB device address number.
+//   ${SERIAL_NUM} - the USB serial number string.
+//
+// In addition, the placeholder ${BIN_FILE} is replaced by apio with the
+// path to the bitstream file. If it doesn't appear in the programmer command,
+// it is added automatically at the end, with a space.
 //
 {
   "iceprog": {
     "command": "iceprog",
-    "args": "-d i:0x${VID}:0x${PID}:${FTDI_IDX}"
+    // Addressing by bus/dev allows better board arbitration even with old
+    // Alhambra-ii boards that don't have serial number.
+    "args": "-d d:${BUS}/${DEV}"
   },
   "pi-sicle-loader": {
     "command": "pi-sicle-loader",
@@ -50,7 +64,10 @@
   },
   "dfu": {
     "command": "dfu-util",
-    "args": "-d ${VID}:${PID} -a 0 -D"
+    // ${BIN_FILE} per https://github.com/FPGAwars/apio/issues/377
+    // Bitstream must appear after the -D, even when extra_args are added by
+    // the board.
+    "args": "-d ${VID}:${PID} -a 0 -D ${BIN_FILE}"
   },
   "icesprog": {
     "command": "icesprog",

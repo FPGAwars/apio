@@ -28,19 +28,21 @@ def test_create(apio_runner: ApioRunner):
         assert not exists(apio_ini)
 
         # -- Execute "apio create"
-        result = sb.invoke_apio_cmd(apio, "create")
+        result = sb.invoke_apio_cmd(apio, ["create"])
         assert result.exit_code != 0, result.output
         assert "Error: Missing option" in result.output
         assert not exists(apio_ini)
 
         # -- Execute "apio create --board no-such-board"
-        result = sb.invoke_apio_cmd(apio, "create", "--board", "no-such-board")
+        result = sb.invoke_apio_cmd(
+            apio, ["create", "--board", "no-such-board"]
+        )
         assert result.exit_code == 1, result.output
         assert "Error: Unknown board name 'no-such-board'" in result.output
         assert not exists(apio_ini)
 
         # -- Execute "apio create --board alhambra-ii"
-        result = sb.invoke_apio_cmd(apio, "create", "--board", "alhambra-ii")
+        result = sb.invoke_apio_cmd(apio, ["create", "--board", "alhambra-ii"])
         sb.assert_ok(result)
         assert "was created successfully." in result.output
         _check_ini_file(
@@ -51,11 +53,13 @@ def test_create(apio_runner: ApioRunner):
         # --                      --top-module my_module" with 'y' input"
         result = sb.invoke_apio_cmd(
             apio,
-            "create",
-            "--board",
-            "alhambra-ii",
-            "--top-module",
-            "my_module",
+            [
+                "create",
+                "--board",
+                "alhambra-ii",
+                "--top-module",
+                "my_module",
+            ],
         )
         assert result.exit_code != 0
         assert "Error: The file apio.ini already exists." in result.output
@@ -65,7 +69,7 @@ def test_create(apio_runner: ApioRunner):
 
         # -- Execute "apio create --board alhambra-ii -p aa/bb"
         result = sb.invoke_apio_cmd(
-            apio, "create", "--board", "alhambra-ii", "-p", "aa/bb"
+            apio, ["create", "--board", "alhambra-ii", "-p", "aa/bb"]
         )
         sb.assert_ok(result)
         assert "was created successfully." in result.output

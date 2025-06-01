@@ -16,5 +16,5 @@ def test_upgrade(apio_runner: ApioRunner):
     with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio upgrade"
-        result = sb.invoke_apio_cmd(apio, "upgrade")
+        result = sb.invoke_apio_cmd(apio, ["upgrade"])
         sb.assert_ok(result)

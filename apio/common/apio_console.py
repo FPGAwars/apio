@@ -193,7 +193,7 @@ def cout(
 
     for text_line in text_lines:
         # -- User is responsible to conversion to strings.
-        assert isinstance(text_line, str)
+        assert isinstance(text_line, str), type(text_line)
 
         # -- If colors are off, strip potential coloring in the text.
         # -- This may be coloring that we received from the scons process.

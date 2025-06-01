@@ -1,11 +1,10 @@
 // Apio boards definitions.
 //
-
-// "desc-regex" is a python regular expression that is matched against the
-// FTDI chip description field using the Python function re.search(). To force
-// matching at the beginning of the description field prepend with '^'. To
-// force matching till the end of the description string append'$'. Having
-// capturing groups in the regex is OK.
+// "desc-regex" is a an optional python regular expression that is matched
+// against the usb device description as shown with the 'apio devices usb'
+// command. To force matching at the beginning of the description field
+// prepend with '^'. To force matching till the end of the description
+// string append'$'. Having capturing groups in the regex is OK.
 //
 // "name-regex" works in the same way but matches the 'name' string fetched
 // from the tinyprog board.
@@ -14,7 +13,6 @@
 // * https://www.geeksforgeeks.org/python-regex-cheat-sheet/
 // * https://pythex.org/
 //
-
 {
   // https://embedded-tek.com/?product=development-fpga-board-pi-sicle
   "pi-sicle": {
@@ -33,9 +31,7 @@
     },
     "usb": {
       "vid": "0403",
-      "pid": "6010"
-    },
-    "ftdi": {
+      "pid": "6010",
       "desc-regex": "^IceZUM Alhambra.*"
     }
   },
@@ -48,9 +44,7 @@
     },
     "usb": {
       "vid": "0403",
-      "pid": "6010"
-    },
-    "ftdi": {
+      "pid": "6010",
       "desc-regex": "^(Dual RS232-HS)|(Lattice FTUSB Interface Cable)"
     }
   },
@@ -75,9 +69,7 @@
     },
     "usb": {
       "vid": "0403",
-      "pid": "6010"
-    },
-    "ftdi": {
+      "pid": "6010",
       "desc-regex": "^Dual RS232-HS"
     }
   },
@@ -91,9 +83,7 @@
     },
     "usb": {
       "vid": "0403",
-      "pid": "6010"
-    },
-    "ftdi": {
+      "pid": "6010",
       "desc-regex": "^(Dual RS232-HS)|(Lattice FTUSB Interface Cable)"
     }
   },
@@ -133,9 +123,7 @@
     },
     "usb": {
       "vid": "0403",
-      "pid": "6010"
-    },
-    "ftdi": {
+      "pid": "6010",
       "desc-regex": "^Milk JTAG:u"
     }
   },
@@ -175,7 +163,7 @@
       "pid": "5740"
     }
   },
-  // https://www.robot-electronics.co.uk/products/fpga/icefun.html
+  // https://www.robotshop.com/products/icefun-fpga-board
   "icefun": {
     "description": "iceFUN",
     "fpga": "ice40hx8k-cb132",
@@ -234,13 +222,12 @@
     "description": "Alhambra II",
     "fpga": "ice40hx4k-tq144-8k",
     "programmer": {
-      "type": "iceprog"
+      "type": "openfpgaloader",
+      "extra_args": "--verify -b ice40_generic --vid ${VID} --pid ${PID} --busdev-num ${BUS}:${DEV}"
     },
     "usb": {
       "vid": "0403",
-      "pid": "6010"
-    },
-    "ftdi": {
+      "pid": "6010",
       "desc-regex": "^Alhambra II.*"
     }
   },
@@ -253,9 +240,7 @@
     },
     "usb": {
       "vid": "0403",
-      "pid": "6014"
-    },
-    "ftdi": {
+      "pid": "6014",
       "desc-regex": "^Single RS232-HS"
     }
   },
@@ -268,9 +253,7 @@
     },
     "usb": {
       "vid": "0403",
-      "pid": "6014"
-    },
-    "ftdi": {
+      "pid": "6014",
       "desc-regex": "^Single RS232-HS"
     }
   },
@@ -283,9 +266,7 @@
     },
     "usb": {
       "vid": "0403",
-      "pid": "6014"
-    },
-    "ftdi": {
+      "pid": "6014",
       "desc-regex": "^(Single RS232-HS)|(UPduino v2.*)"
     }
   },
@@ -298,9 +279,7 @@
     },
     "usb": {
       "vid": "0403",
-      "pid": "6014"
-    },
-    "ftdi": {
+      "pid": "6014",
       "desc-regex": "^UPduino v3\\.0"
     }
   },
@@ -313,9 +292,7 @@
     },
     "usb": {
       "vid": "0403",
-      "pid": "6014"
-    },
-    "ftdi": {
+      "pid": "6014",
       "desc-regex": "^UPduino v3\\.1"
     }
   },
@@ -329,9 +306,7 @@
     },
     "usb": {
       "vid": "0403",
-      "pid": "6010"
-    },
-    "ftdi": {
+      "pid": "6010",
       "desc-regex": "^(Dual RS232-HS)|(iCEBreaker.*)"
     }
   },
@@ -345,9 +320,7 @@
     },
     "usb": {
       "vid": "1d50",
-      "pid": "6146"
-    },
-    "ftdi": {
+      "pid": "6146",
       "desc-regex": "^iCEBreaker bitsy v0.*"
     }
   },
@@ -361,9 +334,7 @@
     },
     "usb": {
       "vid": "1d50",
-      "pid": "6146"
-    },
-    "ftdi": {
+      "pid": "6146",
       "desc-regex": "^iCEBreaker bitsy1.*"
     }
   },
@@ -376,9 +347,7 @@
     },
     "usb": {
       "vid": "0403",
-      "pid": "6014"
-    },
-    "ftdi": {
+      "pid": "6014",
       "desc-regex": "^Single RS232-HS"
     }
   },
@@ -392,9 +361,7 @@
     },
     "usb": {
       "vid": "0403",
-      "pid": "6010"
-    },
-    "ftdi": {
+      "pid": "6010",
       "desc-regex": "^(USB <-> Serial Converter)|(Lattice iCE40UP5K Breakout)"
     }
   },
@@ -408,9 +375,7 @@
     },
     "usb": {
       "vid": "0403",
-      "pid": "6010"
-    },
-    "ftdi": {
+      "pid": "6010",
       "desc-regex": "^(Dual RS2232H)|(Lattice HW-USBN-2B)"
     }
   },
@@ -496,9 +461,7 @@
     },
     "usb": {
       "vid": "1209",
-      "pid": "5af0"
-    },
-    "ftdi": {
+      "pid": "5af0",
       "desc-regex": "^OrangeCrab r0.2 DFU bootloader"
     }
   },
@@ -510,9 +473,7 @@
     },
     "usb": {
       "vid": "1209",
-      "pid": "5af0"
-    },
-    "ftdi": {
+      "pid": "5af0",
       "desc-regex": "^OrangeCrab r0.2 DFU bootloader"
     }
   },
@@ -526,9 +487,7 @@
     },
     "usb": {
       "vid": "1209",
-      "pid": "5af1"
-    },
-    "ftdi": {
+      "pid": "5af1",
       "desc-regex": "^butterstick (dfu v1.1)"
     }
   },
@@ -558,9 +517,7 @@
     },
     "usb": {
       "vid": "0403",
-      "pid": "6010"
-    },
-    "ftdi": {
+      "pid": "6010",
       "desc-regex": "^(USB <-> Serial Converter)|(Lattice ECP5 Versa Board)"
     }
   },
@@ -573,9 +530,7 @@
     },
     "usb": {
       "vid": "0403",
-      "pid": "6010"
-    },
-    "ftdi": {
+      "pid": "6010",
       "desc-regex": "^Alchitry Cu"
     }
   },
@@ -587,9 +542,7 @@
     },
     "usb": {
       "vid": "1209",
-      "pid": "5bf0"
-    },
-    "ftdi": {
+      "pid": "5bf0",
       "desc-regex": "^Fomu Hacker running DFU Bootloader v1.8.8"
     }
   },
@@ -601,9 +554,7 @@
     },
     "usb": {
       "vid": "0403",
-      "pid": "6014"
-    },
-    "ftdi": {
+      "pid": "6014",
       "desc-regex": "^Single RS232-HS"
     }
   },
@@ -615,9 +566,7 @@
     },
     "usb": {
       "vid": "0403",
-      "pid": "6010"
-    },
-    "ftdi": {
+      "pid": "6010",
       "desc-regex": "^Dual RS232-HS"
     }
   },
@@ -642,9 +591,7 @@
     },
     "usb": {
       "vid": "0403",
-      "pid": "6010"
-    },
-    "ftdi": {
+      "pid": "6010",
       "desc-regex": "^Dual RS232-HS"
     }
   },
@@ -657,9 +604,7 @@
     },
     "usb": {
       "vid": "1209",
-      "pid": "b1c0"
-    },
-    "ftdi": {
+      "pid": "b1c0",
       "desc-regex": "^DFU flash"
     }
   },
@@ -895,9 +840,7 @@
     },
     "usb": {
       "vid": "0403",
-      "pid": "6010"
-    },
-    "ftdi": {
+      "pid": "6010",
       "desc-regex": "^ETH4K"
     }
   },

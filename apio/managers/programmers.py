@@ -6,163 +6,176 @@
 # -- Author Jesús Arroyo
 # -- License GPLv2
 
-import re
 import sys
-from typing import Optional, List
+from typing import Optional, List, Dict
 from apio.common.apio_console import cout, cerror, cwarning
 from apio.common.apio_styles import INFO
-from apio.utils import util, pkg_util
-from apio.managers.system import System
-from apio.utils.ftdi_util import scan_ftdi_devices, FtdiDeviceInfo
+from apio.utils import util, serial_util, usb_util
+from apio.utils.serial_util import SerialDevice, SerialDeviceFilter
+from apio.utils.usb_util import UsbDevice, UsbDeviceFilter
 from apio.apio_context import ApioContext
+
+# -- For USB devices
+VID_VAR = "${VID}"
+PID_VAR = "${PID}"
+BUS_VAR = "${BUS}"
+DEV_VAR = "${DEV}"
+SERIAL_NUM_VAR = "${SERIAL_NUM}"
+
+USB_VARS = [VID_VAR, PID_VAR, BUS_VAR, DEV_VAR, SERIAL_NUM_VAR]
+
+# -- For serial devices.
+SERIAL_PORT_VAR = "${SERIAL_PORT}"
+SERIAL_VARS = [SERIAL_PORT_VAR]
+
+# -- The ${BIN_FILE} placed holder is replaced here with $SOURCE and later
+# -- in scons with the bitstream file path. It can appear in both USB and
+# -- serial devices.
+BIN_FILE_VAR = "${BIN_FILE}"
+BIN_FILE_VALUE = "$SOURCE"
+
+# -- All possible vars.
+ALL_VARS = USB_VARS + SERIAL_VARS + [BIN_FILE_VAR]
+
+
+class _DeviceScanner:
+    """Provides usb and serial devices scanning, with caching."""
+
+    def __init__(self, apio_ctx: ApioContext):
+        self._apio_ctx: ApioContext = apio_ctx
+        self._usb_devices: List[UsbDevice] = None
+        self._serial_devices: List[SerialDevice] = None
+
+    def get_usb_devices(self) -> List[UsbDevice]:
+        """Scan usb devices, with caching."""
+        if self._usb_devices is None:
+            self._usb_devices = usb_util.scan_usb_devices(self._apio_ctx)
+            assert isinstance(self._usb_devices, list)
+        return self._usb_devices
+
+    def get_serial_devices(self) -> List[UsbDevice]:
+        """Scan serial devices, with caching."""
+        if self._serial_devices is None:
+            self._serial_devices = serial_util.scan_serial_devices()
+            assert isinstance(self._serial_devices, list)
+        return self._serial_devices
 
 
 def construct_programmer_cmd(
     apio_ctx: ApioContext,
-    serial_port_arg: Optional[str],
-    ftdi_idx_arg: Optional[int],
+    serial_port_flag: Optional[str],
+    serial_num_flag: Optional[str],
 ) -> str:
-    """Get the command line (string) to execute for programming
-    the FPGA (programmer executable + arguments)
+    """Construct the programmer command for an 'apio upload' command."""
 
-    * INPUT
-        * apio_ctx: ApioContext of this apio invocation.
-        * serial_port: Optional, serial port name
-        * ftdi_idx: Optional, restrict to ftdi device with given index
+    # -- This is a thin wrapper to allow injecting test scanners in tests.
+    scanner = _DeviceScanner(apio_ctx)
+    return _construct_programmer_cmd(
+        apio_ctx, scanner, serial_port_flag, serial_num_flag
+    )
 
-    * OUTPUT: A string with the command+args to execute and a $SOURCE
-        placeholder for the bitstream file name.
-    """
 
-    # -- Get the board info.
-    board = apio_ctx.project["board"]
-    assert board
-    board_info = apio_ctx.boards[board]
+def _construct_programmer_cmd(
+    apio_ctx: ApioContext,
+    scanner: _DeviceScanner,
+    serial_port_flag: Optional[str],
+    serial_num_flag: Optional[str],
+) -> str:
+    """Construct the programmer command for an 'apio upload' command."""
 
-    # -- Serialize programmer command
-    # -- Get a string with the command line to execute
-    # -- BUT! it is a TEMPLATE string, with some parameters
-    # -- that needs to be set!
-    # --   * "${VID}" (optional): USB vendor id
-    # --   * "${PID}" (optional): USB Product id
-    # --   * "${FTDI_IDX}" (optional): FTDI idx (e.g. 0, 1, 2...)
-    # --   * "${SERIAL_PORT}" (optional): Serial port name
-    programmer = _construct_programmer_cmd_template(apio_ctx, board_info)
+    # -- Construct the programmer cmd template for the board. It may or may not
+    # -- contain ${} vars.
+    cmd_template = _construct_cmd_template(apio_ctx)
     if util.is_debug():
-        cout(f"Programmer template: [{programmer}]")
-    # -- The placeholder for the bitstream file name should always exist.
-    assert "$SOURCE" in programmer, programmer
+        cout(f"Cmd template: [{cmd_template}]")
 
-    # -- Assign the parameters in the Template string
+    # -- Resolved the mandatory ${BIN_FILE} to $SOURCE which will be replaced
+    # -- by scons with the path of the bitstream file.
+    cmd_template = cmd_template.replace(BIN_FILE_VAR, BIN_FILE_VALUE)
 
-    # -- Replace USB vendor id
-    # -- Ex. "${VID}" --> "0403"
-    if "${VID}" in programmer:
+    # -- Determine how to resolve this template.
+    has_usb_vars = any(s in cmd_template for s in USB_VARS)
+    has_serial_vars = any(s in cmd_template for s in SERIAL_VARS)
 
-        # -- Get the vendor id
-        vid = board_info["usb"]["vid"]
-        # -- Place the value in the command string
-        programmer = programmer.replace("${VID}", vid)
+    if util.is_debug():
+        cout(f"Template has usb vars: {has_usb_vars}]")
+        cout(f"Template has serial vars: {has_serial_vars}]")
 
-    # -- Replace USB product id
-    # -- Ex. "${PID}" --> "6010"
-    if "${PID}" in programmer:
+    # -- Can't have both serial and usb vars (OK to have none).
+    if has_usb_vars and has_serial_vars:
+        board = apio_ctx.project["board"]
+        cerror(
+            f"The programmer cmd template of the board '{board}' has "
+            "both usb and serial ${} vars. "
+        )
+        cout(f"Cmd template: {cmd_template}", style=INFO)
+        sys.exit(1)
 
-        # -- Get the product id
-        pid = board_info["usb"]["pid"]
-        # -- Place the value in the command string
-        programmer = programmer.replace("${PID}", pid)
-
-    # -- Replace FTDI index
-    # -- Ex. "${FTDI_IDX}" --> "0"
-    if "${FTDI_IDX}" in programmer:
-        # -- Inform the user we are accessing the programmer
-        # -- to give context for ftdi failures.
-        # -- We force an early env setting message to have
-        # -- the programmer message closer to the error message.
-        pkg_util.set_env_for_packages(apio_ctx)
-        cout("Querying programmer parameters.")
-
-        # -- Check that the board is connected
-        # -- If not, an exception is raised
-        _check_usb(apio_ctx, board, board_info)
-
-        # -- Get the FTDI index of the connected board
-        device_ftdi_idx = _get_ftdi_idx(board, board_info, ftdi_idx_arg)
-
-        if util.is_debug():
-            cout(f"FTDI index: {device_ftdi_idx}")
-
-        # -- Place the value in the command string
-        programmer = programmer.replace("${FTDI_IDX}", str(device_ftdi_idx))
-
-    # -- NOTE: We use 'is not None' since 0 is a valid FTDI index.
-    elif ftdi_idx_arg is not None:
-        # -- The user has specified a FTDI index but the
-        # -- programmer does not use it. Ignore the value.
-        cwarning(
-            f"FTDI index {ftdi_idx_arg} ignored for "
-            f"programmer {board_info['programmer']['type']}"
+    # -- Dispatch to the appropriate template resolver.
+    if has_serial_vars:
+        cmd = _resolve_serial_cmd_template(
+            apio_ctx, scanner, serial_port_flag, serial_num_flag, cmd_template
         )
 
-    # Replace Serial port
-    # -- The board uses a Serial port for uploading the circuit
-    if "${SERIAL_PORT}" in programmer:
-        # -- Inform the user we are accessing the programmer
-        # -- to give context for ftdi failures.
-        # -- We force an early env setting message to have
-        # -- the programmer message closer to the error message.
-        pkg_util.set_env_for_packages(apio_ctx)
-        cout("Querying serial port parameters.")
-
-        # -- Check that the board is connected
-        _check_usb(apio_ctx, board, board_info)
-
-        # -- Get the serial port
-        device = _get_serial_port(board, board_info, serial_port_arg)
-
-        # -- Place the value in the command string
-        programmer = programmer.replace("${SERIAL_PORT}", device)
-
-    elif serial_port_arg:
-        # -- The user has specified a serial port but the
-        # -- programmer does not use it. Ignore the value.
-        cwarning(
-            f"Serial port {serial_port_arg} ignored for "
-            f"programmer {board_info['programmer']['type']}"
+    elif has_usb_vars:
+        _report_unused_flag("--serial-port", serial_port_flag)
+        cmd = _resolve_usb_cmd_template(
+            apio_ctx, scanner, serial_num_flag, cmd_template
         )
 
-    # -- Return the Command to execute for uploading the circuit
-    # -- to the given board. Scons will replace $SOURCE with the
-    # -- bitstream file name before executing the command.
-    assert "$SOURCE" in programmer, programmer
-    return programmer
+    else:
+        # -- If there are no vars to resolve, we don't need to match to a
+        # -- specific usb or serial device but just to check that if the board
+        # -- has 'usb' section, there is at least one device that matchs the
+        # -- constraints in that section.
+        _report_unused_flag("--serial-port", serial_port_flag)
+        _report_unused_flag("--serial-num", serial_num_flag)
+        _check_device_presence(apio_ctx, scanner)
+
+        # -- Template has no vars, we just use it as is.
+        cmd = cmd_template
+
+    # -- At this point, all vars should be resolved.
+    assert not any(s in cmd for s in ALL_VARS), cmd_template
+
+    # -- Return the resolved command.
+    return cmd
 
 
-def _construct_programmer_cmd_template(
-    apio_ctx: ApioContext, board_info: dict
-) -> str:
+def _report_unused_flag(flag_name: str, flag_value: str):
+    """If flag_value is not falsy then print a warning message."""
+    if flag_value:
+        cwarning(f"{flag_name} ignored.")
+
+
+def _construct_cmd_template(apio_ctx: ApioContext) -> str:
+    """Construct a command template for the board.
+
+    Example of output strings:
+    "tinyprog --pyserial -c ${SERIAL_PORT} --program ${BIN_FILE}"
+    "iceprog -d i:0x${VID}:0x${PID} ${BIN_FILE}"
     """
-    * INPUT:
-        * board_info: Dictionary with board info from boards.jsonc.
-    * OUTPUT: It returns a template string with the command line
-        to execute for uploading the circuit. It has the following
-        parameters (in the string):
-        * "${VID}" (optional): USB vendor id
-        * "${PID}" (optional): USB Product id
-        * "${FTDI_IDX}" (optional): FTDI idx
-        * "${SERIAL_PORT}" (optional): Serial port name
 
-        Example of output strings:
-        "'tinyprog --pyserial -c ${SERIAL_PORT} --program $SOURCE'"
-        "'iceprog -d i:0x${VID}:0x${PID}:${FTDI_IDX} $SOURCE'"
-    """
+    # -- If the project file a custom programmer command use it instead of the
+    # -- standard definitions.
+    custom_template = apio_ctx.project.get("programmer-cmd")
+    if custom_template:
+        cout("Using custom programmer cmd.")
+        if BIN_FILE_VALUE in custom_template:
+            cerror(
+                f"Custom programmer-cmd should not contain '{BIN_FILE_VALUE}'."
+            )
+            sys.exit(1)
+        return custom_template
+
+    board = apio_ctx.project["board"]
+    board_info = apio_ctx.boards[board]
 
     # -- Get the programmer type
     # -- Ex. type: "tinyprog"
     # -- Ex. type: "iceprog"
-    prog_info = board_info["programmer"]
-    prog_type = prog_info["type"]
+    board_programmer_info = board_info["programmer"]
+    prog_type = board_programmer_info["type"]
 
     # -- Get all the information for that type of programmer
     # -- * command
@@ -174,297 +187,263 @@ def _construct_programmer_cmd_template(
     # -- for programming the current board
     # -- Ex. "tinyprog"
     # -- Ex. "iceprog"
-    programmer_cmd = programmer_info["command"]
+    cmd_template = programmer_info["command"]
 
     # -- Let's add the arguments for executing the programmer
-    if programmer_info.get("args"):
-        programmer_cmd += f" {programmer_info['args']}"
-
-    # -- Mark the expected location of the bitstream file name, before
-    # -- we appened any arg to the command. Some programmers such as
-    # -- dfu-util require it immediatly after the "args" string.
-    programmer_cmd += " $SOURCE"
+    args = programmer_info.get("args")
+    if args:
+        assert BIN_FILE_VALUE not in args, args
+        cmd_template += f" {args}"
 
     # -- Some tools need extra arguments
     # -- (like dfu-util for example)
-    if prog_info.get("extra_args"):
-        programmer_cmd += f" {prog_info['extra_args']}"
+    extra_args = board_programmer_info.get("extra_args")
+    if extra_args:
+        assert BIN_FILE_VALUE not in extra_args, extra_args
+        cmd_template += f" {extra_args}"
 
-    return programmer_cmd
+    # -- If there is no placeholder for the bin file path, add it at the end
+    # -- of the command.
+    if BIN_FILE_VAR not in cmd_template:
+        cmd_template += f" {BIN_FILE_VAR}"
 
-
-def _check_usb(apio_ctx: ApioContext, board: str, board_info: dict) -> None:
-    """Check if the given board is connected or not to the computer
-        If it is not connected, an exception is raised
-
-    * INPUT:
-        * board: Board name (string)
-        * board_info: Dictionary with board info from boards.jsonc.
-    """
-
-    # -- The board is connected by USB
-    # -- If it does not have the "usb" property, it means
-    # -- the board configuration is wrong...Raise an exception
-    if "usb" not in board_info:
-        cerror("Missing board configuration: usb")
-        sys.exit(1)
-
-    # -- Get the vid and pid from the configuration
-    # -- Ex. {'vid': '0403', 'pid':'6010'}
-    usb_data = board_info["usb"]
-
-    # -- Create a string with vid, pid in the format "vid:pid"
-    hwid = f"{usb_data['vid']}:{usb_data['pid']}"
-
-    # -- Get the list of the connected USB devices
-    # -- (execute the command "lsusb" from the apio System module)
-    system = System(apio_ctx)
-    connected_devices = system.get_usb_devices()
-
-    if util.is_debug():
-        cout(f"usb devices: {connected_devices}")
-
-    # -- Check if the given device (vid:pid) is connected!
-    # -- Not connected by default
-    found = False
-
-    for usb_device in connected_devices:
-
-        # -- Device found! Board connected!
-        if usb_device["hwid"] == hwid:
-            found = True
-            break
-
-    # -- The board is NOT connected
-    if not found:
-        cerror("Board " + board + " not connected")
-
-        # -- Special case! TinyFPGA board
-        # -- Maybe the board is NOT detected because
-        # -- the user has not press the reset button and the bootloader
-        # -- is not active
-        if "tinyprog" in board_info:
-            cout(
-                "Activate bootloader by pressing the reset button",
-                style=INFO,
-            )
-        sys.exit(1)
+    return cmd_template
 
 
-def _get_serial_port(
-    board: str, borad_info: dict, ext_serial_port: str
+def _resolve_serial_cmd_template(
+    apio_ctx: ApioContext,
+    scanner: _DeviceScanner,
+    serial_port_arg: Optional[str],
+    serial_port_num: Optional[str],
+    cmd_template: str,
 ) -> str:
-    """Get the serial port of the connected board
-    * INPUT:
-        * board: Board name (string)
-        * board_info: Dictionary with board info from boards.jsonc.
-        * ext_serial_port: serial port name given by the user (optional)
+    """Resolves a programmer command template for a serial device."""
 
-    * OUTPUT: (string) The serial port name
+    # -- Match to a single serial device.
+    device: SerialDevice = _match_serial_device(
+        apio_ctx, scanner, serial_port_arg, serial_port_num
+    )
 
-    It raises an exception if the board is not connected
+    # -- Resolve serial port var.
+    cmd_template = cmd_template.replace(SERIAL_PORT_VAR, device.port)
+
+    # -- Sanity check, should have no serial vars unresolved.
+    assert not any(s in cmd_template for s in SERIAL_VARS), cmd_template
+
+    # -- All done.
+    return cmd_template
+
+
+def _resolve_usb_cmd_template(
+    apio_ctx: ApioContext,
+    scanner: _DeviceScanner,
+    serial_num_flag: Optional[str],
+    cmd_template: str,
+) -> str:
+    """Resolves a programmer command template for an USB device."""
+
+    # -- Match to a single usb device.
+    device: UsbDevice = _match_usb_device(apio_ctx, scanner, serial_num_flag)
+
+    # -- Substitute vars.
+    cmd_template = cmd_template.replace(VID_VAR, device.vendor_id)
+    cmd_template = cmd_template.replace(PID_VAR, device.product_id)
+    cmd_template = cmd_template.replace(BUS_VAR, str(device.bus))
+    cmd_template = cmd_template.replace(DEV_VAR, str(device.device))
+    cmd_template = cmd_template.replace(SERIAL_NUM_VAR, device.serial_number)
+
+    # -- Sanity check, should have no usb vars unresolved.
+    assert not any(s in cmd_template for s in USB_VARS), cmd_template
+
+    # -- All done.
+    return cmd_template
+
+
+def _match_serial_device(
+    apio_ctx: ApioContext,
+    scanner: _DeviceScanner,
+    serial_port_flag: Optional[str],
+    serial_num_flag: Optional[str],
+) -> SerialDevice:
+    """Scans the serial devices and selects and returns a single matching
+    device. Exits with an error if none or multiple matching devices.
     """
 
-    # -- Search Serial port by USB id
-    device = _check_serial(board, borad_info, ext_serial_port)
+    # -- Get board info.
+    board = apio_ctx.project["board"]
+    board_info = apio_ctx.boards[board]
 
-    # -- Board not connected
-    if not device:
-        cerror("Board " + board + " not connected")
-        sys.exit(1)
+    # -- Scan for all serial devices.
+    all_devices: List[SerialDevice] = scanner.get_serial_devices()
 
-    # -- Board connected. Return the serial port detected
-    return device
+    # -- Get board optional usb constraints
+    usb_info = board_info.get("usb", {})
 
+    # -- Construct a device filter.
+    serial_filter = SerialDeviceFilter()
+    if "vid" in usb_info:
+        serial_filter.set_vendor_id(usb_info["vid"].upper())
+    if "pid" in usb_info:
+        serial_filter.set_product_id(usb_info["pid"].upper())
+    if "desc-regex" in usb_info:
+        serial_filter.set_desc_regex(usb_info["desc-regex"])
+    if serial_port_flag:
+        serial_filter.set_port(serial_port_flag)
+    if serial_num_flag:
+        serial_filter.set_serial_num(serial_num_flag)
 
-def _check_serial(board: str, board_info: dict, ext_serial_port: str) -> str:
-    """Check the that the serial port for the given board exists
-        (board connedted)
+    # -- Inform the user.
+    cout("Selecting serial device:")
+    cout(f"- FILTER {serial_filter.summary()}")
 
-    * INPUT:
-        * board: Board name (string)
-        * board_info: Dictionary with board info from boards.jsonc.
-        * ext_serial_port: serial port name given by the user (optional)
+    # -- Get matching devices
+    matching: List[SerialDevice] = serial_filter.filter(all_devices)
 
-    * OUTPUT: (string) The serial port name
-    """
-
-    # -- The board is connected by USB
-    # -- If it does not have the "usb" property, it means
-    # -- the board configuration is wrong...Raise an exception
-    if "usb" not in board_info:
-        cerror("Missing board configuration: usb")
-        sys.exit(1)
-
-    # -- Get the vid and pid from the configuration
-    # -- Ex. {'vid': '0403', 'pid':'6010'}
-    usb_data = board_info["usb"]
-
-    # -- Create a string with vid, pid in the format "vid:pid"
-    hwid = f"{usb_data['vid']}:{usb_data['pid']}"
-
-    # -- Get the list of the connected serial ports
-    # -- Ex: [{'port': '/dev/ttyACM0',
-    #          'description': 'ttyACM0',
-    #          'hwid': 'USB VID:PID=1D50:6130 LOCATION=1-5:1.0'}]
-    serial_ports = util.get_serial_ports()
+    for dev in matching:
+        cout(f"- DEVICE {dev.summary()}")
 
     if util.is_debug():
-        cout(f"serial ports: {serial_ports}")
+        cout(f"Serial device filter: {serial_filter.summary()}")
+        cout(f"Matching serial devices: {matching}")
 
-    # -- If no serial ports detected, exit with an error.
-    if not serial_ports:
-        cerror("Board " + board + " not available")
-        sys.exit(1)
+    if util.is_debug():
+        cout(f"Matching serial devices: {matching}")
 
-    # -- Match the discovered serial ports
-    for serial_port_data in serial_ports:
-
-        # -- Get the port name of the detected board
-        port = serial_port_data["port"]
-
-        # If the --device options is set but it doesn't match
-        # the detected port, skip the port.
-        if ext_serial_port and ext_serial_port != port:
-            continue
-
-        # -- Check if the TinyFPGA board is connected
-        connected = _check_tinyprog(board_info, port)
-
-        # -- If the usb id matches...
-        if hwid.lower() in serial_port_data["hwid"].lower():
-
-            # -- Special case: TinyFPGA. Ignore usb id if
-            # -- board not detected
-            if "tinyprog" in board_info and not connected:
-                continue
-
-            # -- Return the serial port
-            return port
-
-    # -- No serial port found...
-    return None
-
-
-@staticmethod
-def _check_tinyprog(board_info: dict, port: str) -> bool:
-    """Check if the correct TinyFPGA board is connected
-    * INPUT:
-        * board_info: Dictionary with board info from boards.jsonc.
-        * port: Serial port name
-
-    * OUTPUT:
-        * True: TinyFPGA detected
-        * False: TinyFPGA not detected
-    """
-
-    # -- Check that the given board has the property "tinyprog"
-    # -- If not, return False
-    if "tinyprog" not in board_info:
-        return False
-
-    # -- Get the board description from the the apio database
-    name_regex = board_info["tinyprog"]["name-regex"]
-
-    # -- Get a list with the meta data of all the TinyFPGA boards
-    # -- connected
-    list_meta = util.get_tinyprog_meta()
-
-    # -- Check if there is a match: target TinyFPGA is ok
-    for tinyprog_meta in list_meta:
-
-        # -- Get the serial port name
-        tinyprog_port = tinyprog_meta["port"]
-
-        # -- Get the name of the connected board
-        tinyprog_name = tinyprog_meta["boardmeta"]["name"]
-
-        # -- # If the port is detected and it matches the pattern
-        if port == tinyprog_port and re.search(name_regex, tinyprog_name):
-            # -- TinyFPGA board detected!
-            return True
-
-    # -- TinyFPGA board not detected!
-    return False
-
-
-def _get_ftdi_idx(board: str, board_info, ftdi_idx_arg: Optional[int]) -> int:
-    """Get the FTDI index of the detected board
-
-    * INPUT:
-        * board: Board name (string)
-        * board_info: Dictionary with board info from boards.jsonc.
-        * ftdi_idx_arg: FTDI index given by the user (optional)
-
-    * OUTPUT: It return the FTDI index.
-
-        It raises an exception if no FTDI device is connected
-    """
-
-    # -- Search device description matching.
-    ftdi_idx: Optional[int] = _check_ftdi(board, board_info, ftdi_idx_arg)
-
-    # -- No matching FTDI board connected
-    if ftdi_idx is None:
-        cerror("Board " + board + " not found")
+    # -- Error if not exactly one match.
+    if not matching:
+        cerror(f"Serial device '{board}' not found.")
         cout(
-            "Run 'apio devices ftdi' to see the available FTDI devices",
+            "Type 'apio devices serial' for available serial devices.",
             style=INFO,
         )
-
         sys.exit(1)
 
-    # -- Return the FTDI index, e.g. 0.
-    return ftdi_idx
+    # -- Error more than one match
+    if len(matching) > 1:
+        cerror("Found multiple matching serial devices.")
+        cout(
+            "Type 'apio devices serial' for available serial devices.",
+            style=INFO,
+        )
+        sys.exit(1)
+
+    # -- All done. We have a single match.
+    return matching[0]
 
 
-def _check_ftdi(
-    board: str,
-    board_info: dict,
-    ftdi_idx_arg: Optional[int],
-) -> Optional[int]:
-    """Check if the given ftdi board is connected or not to the computer
-        and return its FTDI index
-
-    * INPUT:
-        * board: Board name (string)
-        * board_info: Dictionary with board info from boards.jsonc.
-        * ftdi_idx_arg: FTDI index given by the user (optional)
-
-    * OUTPUT: The FTDI device index or None if no board is found.
+def _match_usb_device(
+    apio_ctx: ApioContext, scanner, serial_num_flag: Optional[str]
+) -> UsbDevice:
+    """Scans the USB devices and selects and returns a single matching
+    device. Exits with an error if none or multiple matching devices.
     """
 
-    # -- Check that the given board has the property "ftdi"
-    # -- If not, it is an error. Raise an exception
-    if "ftdi" not in board_info:
-        cerror("Missing board configuration: ftdi")
+    # -- Get the board info.
+    board = apio_ctx.project["board"]
+    board_info = apio_ctx.boards[board]
+
+    # -- Scan for all serial devices.
+    all_devices: List[UsbDevice] = scanner.get_usb_devices()
+
+    # -- Get board optional usb constraints
+    usb_info = board_info.get("usb", {})
+
+    # -- Construct a device filter.
+    usb_filter = UsbDeviceFilter()
+    if "vid" in usb_info:
+        usb_filter.set_vendor_id(usb_info["vid"].upper())
+    if "pid" in usb_info:
+        usb_filter.set_product_id(usb_info["pid"].upper())
+    if "desc-regex" in usb_info:
+        usb_filter.set_desc_regex(usb_info["desc-regex"])
+    if serial_num_flag:
+        usb_filter.set_serial_num(serial_num_flag)
+
+    # -- Inform the user.
+    cout("Selecting USB device:")
+    cout(f"- FILTER {usb_filter.summary()}")
+
+    # -- Get matching devices
+    matching: List[UsbDevice] = usb_filter.filter(all_devices)
+
+    for dev in matching:
+        cout(f"- DEVICE {dev.summary()}")
+
+    if util.is_debug():
+        cout(f"USB device filter: {usb_filter.summary()}")
+        cout(f"Matching USB devices: {matching}")
+
+    if util.is_debug():
+        cout(f"Matching usb devices: {matching}")
+
+    # -- Error if not exactly one match.
+    if not matching:
+        cerror(f"USB board '{board}' not found.")
+        cout(
+            "Type 'apio devices usb' for available usb devices.",
+            style=INFO,
+        )
         sys.exit(1)
 
-    # -- Get the board description pattern from the the apio boards database
-    desc_regex = board_info["ftdi"]["desc-regex"]
-
-    # -- Get the list of the connected FTDI devices.
-    connected_devices: List[FtdiDeviceInfo] = scan_ftdi_devices()
-
-    # -- No FTDI devices detected --> Error!
-    if not connected_devices:
-        cerror("Board " + board + " not available")
+    # -- Error more than one match
+    if len(matching) > 1:
+        cerror("Found multiple matching usb devices.")
+        cout(
+            "Type 'apio devices usb' for available usb device.",
+            style=INFO,
+        )
         sys.exit(1)
 
-    # -- Check if the given board is connected
-    # -- and if so, return its FTDI index
-    for index, ftdi_device in enumerate(connected_devices):
+    # -- All done. We have a single match.
+    return matching[0]
 
-        # If the --ftdi-idx options is set, we consider only the device
-        # with given index in the lsftdi output. This is useful in case
-        # multiple compatible boards are connected to the host computer.
-        if ftdi_idx_arg is not None and ftdi_idx_arg != index:
-            continue
 
-        # If matches the description pattern
-        # return the index for the FTDI device.
-        if re.search(desc_regex, ftdi_device.description):
-            return index
+def _check_device_presence(apio_ctx: ApioContext, scanner: _DeviceScanner):
+    """If the board info has a "usb" section, check that there is at least one
+    usb device that matches the constraints, if any, in the "usb" section.
+    Returns if OK, exits with an error otherwise.
+    """
 
-    # -- No FTDI board found
-    return None
+    # -- Get board info
+    board = apio_ctx.project["board"]
+    board_info = apio_ctx.boards[board]
+
+    # -- Get the optional "usb" section of the board.
+    usb_info: Dict[str, str] = board_info.get("usb", None)
+
+    # -- If no "usb" section there are no constrained to check. We don't
+    # -- even check that any usb device exists.
+    if usb_info is None:
+        return
+
+    # -- Create a device filter with the constraints. Note that the "usb"
+    # -- section may contain no constrained which will result in a pass-all
+    # -- filter.
+    usb_filter = UsbDeviceFilter()
+    if "vid" in usb_info:
+        usb_filter.set_vendor_id(usb_info["vid"].upper())
+    if "pid" in usb_info:
+        usb_filter.set_product_id(usb_info["pid"].upper())
+    if "desc-regex" in usb_info:
+        usb_filter.set_desc_regex(usb_info["desc-regex"])
+
+    cout("Checking device presence:")
+    cout(f"- FILTER {usb_filter.summary()}")
+
+    # -- Scan the USB devices and filter by the filter.
+    all_devices = scanner.get_usb_devices()
+    matching_devices = usb_filter.filter(all_devices)
+
+    for device in matching_devices:
+        cout(f"- DEVICE {device.summary()}")
+
+    # -- If no device passed the filter fail the check.
+    if not matching_devices:
+        cerror(f"Board '{board}' not found.")
+        cout(
+            "Type 'apio devices usb' for available usb devices.",
+            style=INFO,
+        )
+        sys.exit(1)
+
+    # -- All OK.

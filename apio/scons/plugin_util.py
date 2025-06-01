@@ -654,14 +654,9 @@ def get_programmer_cmd(apio_env: ApioEnv) -> str:
     programmer_cmd = params.target.upload.programmer_cmd
     assert programmer_cmd, params
 
-    # It's an error if the programmer command doesn't have the $SOURCE
-    # placeholder when scons inserts the binary file name.
-    if "$SOURCE" not in programmer_cmd:
-        cerror(
-            "[Internal] $SOURCE is missing in programmer command: "
-            f"{programmer_cmd}"
-        )
-        sys.exit(1)
+    # -- [NOTE] Generally speaking we would expect the command to include
+    # -- $SOURCE for the binary file path but since we allow custom commands
+    # -- using apio.ini's 'programmer-cmd' option, we don't check for it here.
 
     return programmer_cmd
 

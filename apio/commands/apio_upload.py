@@ -12,7 +12,7 @@ from typing import Optional
 from pathlib import Path
 import click
 from apio.managers.scons import SCons
-from apio.utils import cmd_util
+from apio.utils import cmd_util, pkg_util
 from apio.commands import options
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.managers.programmers import construct_programmer_cmd
@@ -23,6 +23,7 @@ from apio.common.proto.apio_pb2 import UploadParams
 
 serial_port_option = click.option(
     "serial_port",  # Var name.
+    "-s",
     "--serial-port",
     type=str,
     metavar="serial-port",
@@ -30,13 +31,14 @@ serial_port_option = click.option(
     cls=cmd_util.ApioOption,
 )
 
-ftdi_idx_option = click.option(
-    "ftdi_idx",  # Var name.
-    "--ftdi-idx",
-    type=int,
-    default=None,  # 0 is a valid value.
-    metavar="ftdi-idx",
-    help="Consider only FTDI device with given index.",
+serial_num_option = click.option(
+    "serial_num",  # Var name.
+    "-n",
+    "--serial-num",
+    type=str,
+    metavar="serial-num",
+    help="Select the device's USB serial number.",
+    cls=cmd_util.ApioOption,
 )
 
 
@@ -46,18 +48,21 @@ The command 'apio upload' builds the bitstream file (similar to the \
 'apio build' command) and uploads it to the FPGA board.
 
 Examples:[code]
-  apio upload              # Typical usage.
-  apio upload --ftdi-idx 2 # Consider only FTDI device at index 2
+  apio upload                            # Typical invocation
+  apio upload -s /dev/cu.usbserial-1300  # Select serial port
+  apio upload -n FTXYA34Z                # Select serial number[/code]
 
-The optional flag '--ftdi-idx' is used in special cases involving boards with \
-FTDI devices, particularly when multiple boards are connected to the host \
-computer. It tells Apio to consider only the device at the specified index in \
-the list shown by the command: 'apio devices list ftdi'. The first device in \
-the list has index 0.
+Typically the simple form 'apio upload' is sufficient to locate and program \
+the FPGA board. The optional flags '--serial-port' and '--serial-num' allows \
+to select the desired board if more than one matching board is detected.
 
-[Note] When apio is installed on Linux using the Snap package \
-manager, run the command 'snap connect apio:raw-usb' once \
-to grant the necessary permissions to access USB devices.
+[HINT] You can use the command 'apio devices' to list the connected USB and \
+serial devices and the command 'apio drivers' to install and uninstall device \
+drivers.
+
+[HINT] The default programmer command of your board can be overridden using \
+the 'programmer-cmd' option in apio.ini. For details run the command \
+'apio info apio.ini programmer-cmd'.
 """
 
 
@@ -69,14 +74,14 @@ to grant the necessary permissions to access USB devices.
 )
 @click.pass_context
 @serial_port_option
-@ftdi_idx_option
+@serial_num_option
 @options.env_option_gen()
 @options.project_dir_option
 def cli(
     _: click.Context,
     # Options
     serial_port: str,
-    ftdi_idx: int,
+    serial_num: str,
     env: Optional[str],
     project_dir: Optional[Path],
 ):
@@ -89,18 +94,19 @@ def cli(
         env_arg=env,
     )
 
-    # -- Create the scons manager
-    scons = SCons(apio_ctx)
+    # -- Set the shell env.
+    pkg_util.set_env_for_packages(apio_ctx)
 
     # -- Get the programmer command.
     programmer_cmd = construct_programmer_cmd(
-        apio_ctx,
-        serial_port_arg=serial_port,
-        ftdi_idx_arg=ftdi_idx,  # None if not specified.
+        apio_ctx, serial_port_flag=serial_port, serial_num_flag=serial_num
     )
 
     # Construct the scons upload params.
     upload_params = UploadParams(programmer_cmd=programmer_cmd)
+
+    # -- Create the scons manager
+    scons = SCons(apio_ctx)
 
     # Run scons: upload command
     exit_code = scons.upload(upload_params)

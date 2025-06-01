@@ -1,97 +1,79 @@
-"""
-Tests of usb_util.py
-"""
+"""Tests of usb_util.py"""
 
 from typing import List
 from apio.utils.usb_util import (
-    UsbDeviceInfo,
+    UsbDevice,
     UsbDeviceFilter,
-    _get_devices_from_text,
 )
 
 
-# -- Simulated 'lsusb' output text.
-TEXT_WITH_DEVICES = "\n".join(
-    [
-        "0403:6010 (bus 1, device 1) path: 1",
-        "0403:6010 (bus 0, device 1) path: 1",
-        "1022:15e0 (bus 2, device 0)",
-        "0b0e:0305 (bus 2, device 6) path: 4.4",
-        "0403:6010 (bus 2, device 8) path: 4.3.1",
-    ]
-)
+def test_device_summaries():
+    """Test usb device summary() string."""
+    device = UsbDevice("0403", "6010", 0, 1, "m0", "p0", "sn0", "t0")
+    assert device.summary() == "[0403:6010, 0:1], [m0] [p0] [sn0]"
 
 
-# -- Text when no device is connected.
-TEXT_NO_DEVICES = "\n"
-
-
-def test_text_with_devices():
-    """Test parsing of 'lsusb' text that contains devices."""
-
-    # -- Devices are returned sorted.
-    devices = _get_devices_from_text(TEXT_WITH_DEVICES)
-
-    expected = [
-        UsbDeviceInfo(
-            bus=0, device=1, vendor_id="0403", product_id="6010", path="1"
-        ),
-        UsbDeviceInfo(
-            bus=1, device=1, vendor_id="0403", product_id="6010", path="1"
-        ),
-        UsbDeviceInfo(
-            bus=2, device=0, vendor_id="1022", product_id="15E0", path=""
-        ),
-        UsbDeviceInfo(
-            bus=2, device=6, vendor_id="0B0E", product_id="0305", path="4.4"
-        ),
-        UsbDeviceInfo(
-            bus=2, device=8, vendor_id="0403", product_id="6010", path="4.3.1"
-        ),
-    ]
-
-    assert devices == expected
-
-
-def test_text_without_devices():
-    """Test parsing of 'lsusb' text that containsno devices."""
-
-    devices = _get_devices_from_text(TEXT_NO_DEVICES)
-
-    assert devices == []
-
-
-def test_filter_usb_devices():
+def test_filtering():
     """Test the filtering function."""
-    devs: List[UsbDeviceInfo] = [
-        UsbDeviceInfo(0, 1, "0403", "6010", "0"),  # devs[0]
-        UsbDeviceInfo(3, 1, "0403", "6020", "1"),  # devs[1]
-        UsbDeviceInfo(3, 1, "0405", "6020", "2"),  # devs[2]
-        UsbDeviceInfo(2, 1, "0403", "6020", "3"),  # devs[3]
-        UsbDeviceInfo(1, 1, "0403", "6010", "4"),  # devs[4]
-        UsbDeviceInfo(1, 1, "0405", "6010", "5"),  # devs[5]
+    devs: List[UsbDevice] = [
+        UsbDevice("0403", "6010", 0, 1, "m0", "p0", "sn0", "t0"),  # devs[0]
+        UsbDevice("0403", "6020", 3, 1, "m1", "p1", "sn1", "t1"),  # devs[1]
+        UsbDevice("0405", "6020", 3, 1, "m2", "p2", "sn2", "t2"),  # devs[2]
+        UsbDevice("0403", "6020", 2, 1, "m3", "p3", "sn3", "t3"),  # devs[3]
+        UsbDevice("0403", "6010", 1, 1, "m4", "p4", "sn4", "t4"),  # devs[4]
+        UsbDevice("0405", "6010", 1, 1, "m5", "p5", "sn5", "t5"),  # devs[5]
     ]
 
     # -- All filtering disabled.
-    filtered = UsbDeviceFilter().filter(devs)
-    assert filtered == devs
+    filt = UsbDeviceFilter()
+    assert filt.summary() == "[all]"
+    assert filt.filter(devs) == devs
 
     # -- Filter by VID
-    filtered = UsbDeviceFilter().vendor_id("9999").filter(devs)
-    assert filtered == []
+    filt = UsbDeviceFilter().set_vendor_id("9999")
+    assert filt.summary() == "[VID=9999]"
+    assert filt.filter(devs) == []
 
-    filtered = UsbDeviceFilter().vendor_id("0405").filter(devs)
-    assert filtered == [devs[2], devs[5]]
+    filt = UsbDeviceFilter().set_vendor_id("0405")
+    assert filt.summary() == "[VID=0405]"
+    assert filt.filter(devs) == [devs[2], devs[5]]
 
     # -- Filter by PID
-    filtered = UsbDeviceFilter().product_id("9999").filter(devs)
-    assert filtered == []
+    filt = UsbDeviceFilter().set_product_id("9999")
+    assert filt.summary() == "[PID=9999]"
+    assert filt.filter(devs) == []
 
-    filtered = UsbDeviceFilter().product_id("6020").filter(devs)
-    assert filtered == [devs[1], devs[2], devs[3]]
+    filt = UsbDeviceFilter().set_product_id("6020")
+    assert filt.summary() == "[PID=6020]"
+    assert filt.filter(devs) == [devs[1], devs[2], devs[3]]
+
+    # -- Filter by description regex
+    filt = UsbDeviceFilter().set_desc_regex("no-such-device")
+    assert filt.summary() == '[REGEX="no-such-device"]'
+    assert filt.filter(devs) == []
+
+    filt = UsbDeviceFilter().set_desc_regex("^p2$")
+    assert filt.summary() == '[REGEX="^p2$"]'
+    assert filt.filter(devs) == [devs[2]]
+
+    filt = UsbDeviceFilter().set_desc_regex("p2")
+    assert filt.summary() == '[REGEX="p2"]'
+    assert filt.filter(devs) == [devs[2]]
+
+    filt = UsbDeviceFilter().set_desc_regex("(p3)|(p2)")
+    assert filt.summary() == '[REGEX="(p3)|(p2)"]'
+    assert filt.filter(devs) == [devs[2], devs[3]]
+
+    # -- Filter by serial number
+    filt = UsbDeviceFilter().set_serial_num("no-such-device")
+    assert filt.summary() == '[S/N="no-such-device"]'
+    assert filt.filter(devs) == []
+
+    filt = UsbDeviceFilter().set_serial_num("sn2")
+    assert filt.summary() == '[S/N="sn2"]'
+    assert filt.filter(devs) == [devs[2]]
 
     # -- Filter by VID, PID
-    filtered = (
-        UsbDeviceFilter().vendor_id("0403").product_id("6010").filter(devs)
-    )
-    assert filtered == [devs[0], devs[4]]
+    filt = UsbDeviceFilter().set_vendor_id("0403").set_product_id("6010")
+    assert filt.summary() == "[VID=0403, PID=6010]"
+    assert filt.filter(devs) == [devs[0], devs[4]]

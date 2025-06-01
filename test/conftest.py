@@ -1,17 +1,19 @@
-"""
-Pytest
-TEST configuration file
-"""
+"""Pytest TEST configuration file"""
 
+import sys
+import subprocess
+from subprocess import CompletedProcess
+from dataclasses import dataclass
 import shutil
 import tempfile
 import contextlib
 from pathlib import Path
 from typing import List, Union, cast, Optional
-from typing import Dict
+from typing import Dict, Any
 import os
 import pytest
 from click.testing import CliRunner, Result
+from apio import __main__
 from apio.common import apio_console
 from apio.common.proto.apio_pb2 import FORCE_PIPE, FORCE_TERMINAL
 
@@ -37,6 +39,15 @@ def pytest_addoption(parser: pytest.Parser):
     parser.addoption(
         "--offline", action="store_true", help="Run tests in offline mode"
     )
+
+
+@dataclass(frozen=True)
+class ApioResult:
+    """Represent the outcome of an apio invocation."""
+
+    exit_code: int
+    output: str  # stdout only
+    exception: Any
 
 
 class ApioSandbox:
@@ -89,18 +100,12 @@ class ApioSandbox:
     def invoke_apio_cmd(
         self,
         cli,
-        *args,
-        input=None,
-        env=None,
-        catch_exceptions=True,
-        terminal_mode=True,
-        **extra,
-    ):
-        """Invoke an apio command."""
-
-        # pylint: disable=too-many-arguments
-        # W0622: Redefining built-in 'input' (redefined-builtin)
-        # pylint: disable=redefined-builtin
+        args: List[str],
+        terminal_mode: bool = True,
+        in_subprocess: bool = False,
+    ) -> ApioResult:
+        """Invoke an apio command.  in_subprocess run apios in a subprocess,
+        currently this suppresses colors because of the piping."""
 
         print(f"\nInvoking apio command [{cli.name}], args={args}.")
 
@@ -124,26 +129,58 @@ class ApioSandbox:
             terminal_mode=FORCE_TERMINAL if terminal_mode else FORCE_PIPE,
         )
 
-        # -- Invoke the command. Get back the collected results.
-        result = self._click_runner.invoke(
-            prog_name="apio",
-            cli=cli,
-            args=args,
-            input=input,
-            env=env,
-            catch_exceptions=catch_exceptions,
-            color=terminal_mode,
-            **extra,
-        )
+        if in_subprocess:
+            # -- Invoke apio in a sub process.
+            print("Invoking apio in a sub process.")
+            process_result: CompletedProcess = subprocess.run(
+                [
+                    sys.executable,
+                    __main__.__file__,
+                ]
+                + args,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+
+            apio_result = ApioResult(
+                process_result.returncode,
+                process_result.stdout,
+                None,
+            )
+
+        else:
+            # -- Invoke the command in the same process using click.
+            print("Invoking apio in-process using click")
+            click_result: Result = self._click_runner.invoke(
+                prog_name="apio",
+                cli=cli,
+                args=args,
+                color=terminal_mode,
+            )
+
+            # -- Convert click result to apio result.
+            apio_result = ApioResult(
+                click_result.exit_code,
+                click_result.output,
+                click_result.exception,
+            )
+
+        # -- Dump to test log.
+        print(f"result.exit_code:{apio_result.exit_code}")
+        print("result.output:")
+        print(Result.output)
 
         # -- Restore system env. Since apio commands tend to change vars
         # -- such as PATH.
         self.set_system_env(original_env)
 
-        return result
+        return apio_result
 
-    def assert_ok(self, result: Result):
+    def assert_ok(self, result: ApioResult):
         """Check if apio command results where ok"""
+
+        assert isinstance(result, ApioResult)
 
         # -- It should return an exit code of 0: success
         assert result.exit_code == 0, result.output

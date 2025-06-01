@@ -43,7 +43,7 @@ Examples:[code]
   apio create --board alhambra-ii
   apio create --board alhambra-ii --top-module MyModule[/code]
 
-[b][Note][/b] This command only creates a new 'apio.ini' file, rather than a \
+[b][NOTE][/b] This command only creates a new 'apio.ini' file, rather than a \
 complete and buildable project. To create complete projects, refer to the \
 'apio examples' command.
 """

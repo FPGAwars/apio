@@ -10,6 +10,7 @@ import pytest
 from SCons.Node.FS import FS
 from pytest import LogCaptureFixture
 from apio.common.apio_console import cunstyle
+from apio.common import apio_console
 from apio.common.proto.apio_pb2 import TargetParams, UploadParams
 from apio.scons.plugin_util import (
     get_constraint_file,
@@ -203,8 +204,10 @@ def test_get_source_files(apio_runner):
         ]
 
 
-def test_get_programmer_cmd(capsys: LogCaptureFixture):
+def test_get_programmer_cmd():
     """Tests the function programmer_cmd()."""
+
+    apio_console.configure()
 
     # -- Test a valid programmer command.
     apio_env = make_test_apio_env(
@@ -214,21 +217,6 @@ def test_get_programmer_cmd(capsys: LogCaptureFixture):
         ),
     )
     assert get_programmer_cmd(apio_env) == "my_prog aa $SOURCE bb"
-
-    # -- If prog string doesn't contains $SOURCE, expected to exit with an
-    # -- error message.
-    apio_env = make_test_apio_env(
-        targets=["upload"],
-        target_params=TargetParams(
-            upload=UploadParams(programmer_cmd="my_prog aa SOURCE bb")
-        ),
-    )
-    with pytest.raises(SystemExit) as e:
-        capsys.readouterr()  # Reset capturing.
-        get_programmer_cmd(apio_env)
-    captured = capsys.readouterr()
-    assert e.value.code == 1
-    assert "$SOURCE is missing" in captured.out
 
 
 def test_map_params():

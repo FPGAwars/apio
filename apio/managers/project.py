@@ -132,18 +132,44 @@ Example:[code]
   yosys-synth-extra-options = -dsp[/code]
 """
 
+ENV_YOSYS_SYNTH_EXTRA_OPTIONS_DOC = """
+The option 'yosys-synth-extra-options' allows adding options to the \
+yosys synth command. In the example below, it adds the option '-dsp', \
+which enables for some FPGAs the use of DSP cells to implement multiply \
+operations. This is an advanced and esoteric option that is typically \
+not needed.
 
+Example:[code]
+  yosys-synth-extra-options = -dsp[/code]
+"""
+
+ENV_PROGRAMMER_CMD_DOC = """
+The option 'programmer-cmd' allows to override the programmer command used \
+by 'apio upload'. It is intended for special cases and should be avoided \
+if possible.
+
+Example:[code]
+  programmer-cmd = iceprog -d i:0x${VID}:0x${PID} ${BIN_FILE}[/code]
+
+[HINT] The list of supported placeholders is available in the apio's
+standard boards definitions files 'boards.jsonc'.
+"""
+
+# -- Keep the list below in alphabetical order. This is the order that
+# -- 'apio info apio.ini' uses.
 ENV_OPTIONS = {
     # -- The board name.
     "board": ENV_BOARD_OPTION_DOC,
-    # -- The top module name. Default is 'main'.
-    "top-module": ENV_TOP_MODULE_OPTION_DOC,
     # -- The default testbench name for 'apio sim'.
     "default-testbench": ENV_DEFAULT_TESTBENCH_DOC,
     # -- Verilog macro definitions.
     "defines": ENV_DEFINE_DOC,
     # -- Multi line list of verible options for 'apio format'
     "format-verible-options": ENV_FORMAT_VERIBLE_OPTIONS_DOC,
+    # -- Overrides the programmer command.
+    "programmer-cmd": ENV_PROGRAMMER_CMD_DOC,
+    # -- The top module name. Default is 'main'.
+    "top-module": ENV_TOP_MODULE_OPTION_DOC,
     # -- Additional option for the yosys synth command (inside the -p arg).
     "yosys-synth-extra-options": ENV_YOSYS_SYNTH_EXTRA_OPTIONS_DOC,
 }
