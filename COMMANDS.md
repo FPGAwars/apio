@@ -328,6 +328,10 @@ Usage: apio devices serial [OPTIONS]
   channel are listed as multiple rows, one for each of their serial
   ports.
 
+  On Windows, manufacturer and description strings of FTDI based devices
+  may show their FTDI generic values rather than the custom values such
+  such as 'Alhambra II' set by the device manufacturer.
+
 Options:
   -h, --help  Show this message and exit.
 
@@ -346,15 +350,6 @@ Usage: apio devices usb [OPTIONS]
 
   Examples:
     apio devices usb    # List the usb devices.
-
-  [NOTE] When apio is installed on Linux using the Snap package manager,
-  run the command 'snap connect apio:raw-usb' once to grant the
-  necessary permissions to access USB devices.
-
-  [Hint] This command invokes the command below and displays its output
-  in a table form:
-
-    apio raw -- lsusb
 
 Options:
   -h, --help  Show this message and exit.
@@ -1218,10 +1213,6 @@ Usage: apio upload [OPTIONS]
   [HINT] The default programmer command of your board can be overridden
   using the 'programmer-cmd' option in apio.ini. For details run the
   command 'apio info apio.ini programmer-cmd'.
-
-  [NOTE] When apio is installed on Linux using the Snap package manager,
-  run the command 'snap connect apio:raw-usb' once to grant the
-  necessary permissions to access USB devices.
 
 Options:
   -s, --serial-port serial-port  Set the serial port.

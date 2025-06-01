@@ -81,14 +81,6 @@ connectivity issues.
 Examples:[code]
   apio devices usb    # List the usb devices.[/code]
 
-[NOTE] When apio is installed on Linux using the Snap package \
-manager, run the command 'snap connect apio:raw-usb' once \
-to grant the necessary permissions to access USB devices.
-
-[Hint] This command invokes the command below and displays its output in a \
-table form:
-
-[code]  apio raw -- lsusb[code]
 """
 
 
@@ -173,6 +165,10 @@ Examples:[code]
 
 Note that devices such as FTDI FTDI2232 that have more than one channel \
 are listed as multiple rows, one for each of their serial ports.
+
+On Windows, manufacturer and description strings of FTDI based devices \
+may show their FTDI generic values rather than the custom values such \
+such as 'Alhambra II' set by the device manufacturer.
 """
 
 
