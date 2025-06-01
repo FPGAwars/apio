@@ -1,8 +1,0 @@
-Package: apio 
-Version: [APIO-VERSION]
-Section: electronic
-Priority: optional
-Architecture: amd64
-Maintainer: Jesus Arroyo jesus.jkhlg@gmail.com, https://github.com/FPGAwars/apio
-Description: Open source FPGA design tool.
-
