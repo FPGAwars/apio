@@ -160,7 +160,7 @@ def scan_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
         unavail = "--unavail--"
         item = UsbDevice(
             vendor_id=f"{device.idVendor:04X}",
-            product_id=f"{device.idProduct:04x}",
+            product_id=f"{device.idProduct:04X}",
             bus=device.bus,
             device=device.address,
             manufacturer=_get_usb_str(
