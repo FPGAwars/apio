@@ -55,28 +55,35 @@ def scan_serial_devices() -> List[SerialDevice]:
         assert isinstance(list_port_info[0], ListPortInfo)
 
     # -- Collect the items that are USB serial ports.
-    for item in list_port_info:
+    for port in list_port_info:
+
+        # -- Dump for debugging.
+        if util.is_debug():
+            cout("Raw serial port:")
+            cout(f"    Device: {port.device}")
+            cout(f"    Hwid: {port.hwid}")
+            cout(f"    Interface: {port.interface}")
 
         # # -- Skip if not a serial port.
-        if not item.device:
+        if not port.device:
             continue
 
         # -- Skip if not a USB device.
-        if not item.vid or not item.pid:
+        if not port.vid or not port.pid:
             continue
 
         # -- Add device to list.
         devices.append(
             SerialDevice(
-                port=item.device,
-                port_name=item.name,
-                vendor_id=f"{item.vid:04X}",
-                product_id=f"{item.pid:04X}",
-                manufacturer=item.manufacturer,
-                description=item.description,
-                serial_number=item.serial_number or "",
-                device_type=usb_util.get_device_type(item.vid, item.pid),
-                location=item.location,
+                port=port.device,
+                port_name=port.name,
+                vendor_id=f"{port.vid:04X}",
+                product_id=f"{port.pid:04X}",
+                manufacturer=port.manufacturer,
+                description=port.description,
+                serial_number=port.serial_number or "",
+                device_type=usb_util.get_device_type(port.vid, port.pid),
+                location=port.location,
             )
         )
 
