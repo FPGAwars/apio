@@ -71,7 +71,7 @@ While many use Apio as a stand alone text based CLI toolbox, it can also be used
 
 ## Documentation
 
-* [Apio installation guide](https://github.com/zapta/apio-dev-builds-dev)
+* [Apio daily builds and installation guide](https://github.com/FPGAwars/apio-dev-builds)
 
 * [Apio Documentation Wiki](https://github.com/FPGAwars/apio/wiki)
 
