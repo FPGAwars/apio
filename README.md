@@ -3,7 +3,7 @@
 [![PyPI Version][pypi-image]][pypi-url]<br>
 [![License][license-image]][license-url]<br>
 [![Test](https://github.com/FPGAwars/apio/actions/workflows/test.yml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/test.yml)<br>
-[![build-all](https://github.com/zapta/apio-dev-builds-dev/actions/workflows/build-all.yaml/badge.svg?branch=main)](https://github.com/zapta/apio-dev-builds-dev/actions/workflows/build-all.yaml)
+[![build-all](https://github.com/FPGAwars/apio-dev-builds/actions/workflows/build-all.yaml/badge.svg)](https://github.com/FPGAwars/apio-dev-builds/actions/workflows/build-all.yaml)
 
 ![][linux-logo]&nbsp;&nbsp;&nbsp;![][macosx-logo]&nbsp;&nbsp;&nbsp;![][windows-logo]&nbsp;&nbsp;&nbsp;![][ubuntu-logo]&nbsp;&nbsp;&nbsp;![][raspbian-logo]
 
