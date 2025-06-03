@@ -240,7 +240,7 @@ def test_get_cmd_usb_no_match(
         log = capsys.readouterr().out
         assert "Selecting USB device" in log
         assert 'FILTER [VID=0403, PID=6010, REGEX="^Alhambra II.*"]' in log
-        assert "USB board 'alhambra-ii' not found" in log
+        assert "No matching USB device" in log
 
 
 def test_get_cmd_usb_multiple_matches(
@@ -376,7 +376,7 @@ def test_get_cmd_serial_no_match(
         log = capsys.readouterr().out
         assert "Selecting serial device" in log
         assert "FILTER [VID=04D8, PID=FFEE]" in log
-        assert "Serial device 'icefun' not found" in log
+        assert "No matching serial device" in log
 
 
 def test_get_cmd_serial_multiple_matches(
@@ -520,4 +520,4 @@ def test_device_presence_not_found(
         log = capsys.readouterr().out
         assert "Checking device presence" in log
         assert 'FILTER [VID=0403, PID=6010, REGEX="^Alhambra II.*"]' in log
-        assert "Error: Board 'alhambra-ii' not found" in log
+        assert "Error: No matching device." in log
