@@ -5,7 +5,8 @@
 [![Test](https://github.com/FPGAwars/apio/actions/workflows/test.yml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/test.yml)<br>
 [![build-linux-x86-64-installer](https://github.com/FPGAwars/apio/actions/workflows/build-linux-x86-64-installer.yml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/build-linux-x86-64-installer.yml)<br>
 [![build-darwin-arm64-installer](https://github.com/FPGAwars/apio/actions/workflows/build-darwin-arm64-installer.yml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/build-darwin-arm64-installer.yml)<br>
-[![build-windows-amd64-installer](https://github.com/FPGAwars/apio/actions/workflows/build-windows-amd64-installer.yml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/build-windows-amd64-installer.yml)
+[![build-windows-amd64-installer](https://github.com/FPGAwars/apio/actions/workflows/build-windows-amd64-installer.yml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/build-windows-amd64-installer.yml)<br>
+[![build-all](https://github.com/zapta/apio-dev-builds-dev/actions/workflows/build-all.yaml/badge.svg?branch=main)](https://github.com/zapta/apio-dev-builds-dev/actions/workflows/build-all.yaml)
 
 ![][linux-logo]&nbsp;&nbsp;&nbsp;![][macosx-logo]&nbsp;&nbsp;&nbsp;![][windows-logo]&nbsp;&nbsp;&nbsp;![][ubuntu-logo]&nbsp;&nbsp;&nbsp;![][raspbian-logo]
 
