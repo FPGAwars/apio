@@ -8,8 +8,6 @@
 ![][linux-logo]&nbsp;&nbsp;&nbsp;![][macosx-logo]&nbsp;&nbsp;&nbsp;![][windows-logo]&nbsp;&nbsp;&nbsp;![][ubuntu-logo]&nbsp;&nbsp;&nbsp;![][raspbian-logo]
 
 
-**TL;DR, Apio is an extremely easy to install and use open-source toolbox for programming FPGA boards.**
-
 ## What is Apio?
 
 * Apio is an **extremely easy to use** toolbox for programming FPGAs in **Verilog** and **System Verilog**.
