@@ -311,7 +311,7 @@ def _match_serial_device(
 
     # -- Error if not exactly one match.
     if not matching:
-        cerror(f"Serial device '{board}' not found.")
+        cerror("No matching serial device.")
         cout(
             "Type 'apio devices serial' for available serial devices.",
             style=INFO,
@@ -378,7 +378,7 @@ def _match_usb_device(
 
     # -- Error if not exactly one match.
     if not matching:
-        cerror(f"USB board '{board}' not found.")
+        cerror("No matching USB device.")
         cout(
             "Type 'apio devices usb' for available usb devices.",
             style=INFO,
@@ -439,7 +439,7 @@ def _check_device_presence(apio_ctx: ApioContext, scanner: _DeviceScanner):
 
     # -- If no device passed the filter fail the check.
     if not matching_devices:
-        cerror(f"Board '{board}' not found.")
+        cerror("No matching device.")
         cout(
             "Type 'apio devices usb' for available usb devices.",
             style=INFO,

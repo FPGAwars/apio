@@ -117,27 +117,6 @@ class PnrRangeDetector(RangeDetector):
         return None
 
 
-# class GraphvizDotRangeDetector(RangeDetector):
-#     """Implements a RangeDetector for the graphviz dot command."""
-
-#     def classify_line(self, pipe_id: PipeId, line: str) -> RangeEvents:
-#         # -- Break line into words.
-#         tokens = line.split()
-
-#         # -- Range start: A nextpnr command on stdout without
-#         # -- the -q (quiet) flag.
-#         if pipe_id == (
-#             PipeId.STDOUT and len(tokens) > 4 and tokens[0] == "dot"
-#         ):
-#             return RangeEvents.START_AFTER
-
-#         # Range end: The end message of nextnpr.
-#         if pipe_id == PipeId.STDOUT and line.startswith("================="):
-#             return RangeEvents.END_BEFORE
-
-#         return None
-
-
 class IVerilogRangeDetector(RangeDetector):
     """Implements a RangeDetector for the iverolog command output."""
 
@@ -185,7 +164,6 @@ class SconsFilter:
     def __init__(self, colors_enabled: bool):
         self.colors_enabled = colors_enabled
         self._pnr_detector = PnrRangeDetector()
-        # self._graphviz_dot_detector = GraphvizDotRangeDetector()
         self._iverilog_detector = IVerilogRangeDetector()
         self._iceprog_detector = IceProgRangeDetector()
         self._is_debug = util.is_debug()
@@ -242,21 +220,8 @@ class SconsFilter:
 
         # -- Update the range detectors.
         in_pnr_verbose_range = self._pnr_detector.update(pipe_id, line)
-        # in_graphviz_dot_range = self._graphviz_dot_detector.update(
-        #     pipe_id, line
-        # )
         in_iverolog_range = self._iverilog_detector.update(pipe_id, line)
         in_iceprog_range = self._iceprog_detector.update(pipe_id, line)
-
-        # -- For debugging.
-        # cout(
-        #     f"{'P' if in_pnr_verbose_range else '-'}"
-        #     f"{'D' if in_graphviz_dot_range else '-'}"
-        #     f"{'V' if in_iverolog_range else '-'}"
-        #     f"{'I' if in_iverolog_range else '-'}"
-        #     f" {pipe_id} : {line}",
-        #     style="red",
-        # )
 
         # -- Handle the line while in the nextpnr verbose log range.
         if pipe_id == PipeId.STDERR and in_pnr_verbose_range:
@@ -277,22 +242,6 @@ class SconsFilter:
             )
             self._output_line(line, line_color)
             return
-
-        # -- Handle graphviz dot range. We suppress permissions errors that
-        # -- we get on linux when installing with as a strict snap package.
-        # if in_graphviz_dot_range:
-        #     if not line.strip():
-        #         # -- Drop empty lines
-        #         self._ignore_line(line)
-        #         return
-        #     if (
-        #         "pango_font_describe: " "assertion 'font != NULL'" in line
-        #         or "pango_font_description_get_variant: "
-        #         "assertion 'desc != NULL'" in line
-        #     ):
-        #         # -- Suppress the error line.
-        #         self._ignore_line(line)
-        #         return
 
         # -- Special handling of iverilog lines. We drop warning line spam
         # -- per Per https://github.com/FPGAwars/apio/issues/530
