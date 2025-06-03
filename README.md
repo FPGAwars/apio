@@ -3,9 +3,6 @@
 [![PyPI Version][pypi-image]][pypi-url]<br>
 [![License][license-image]][license-url]<br>
 [![Test](https://github.com/FPGAwars/apio/actions/workflows/test.yml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/test.yml)<br>
-[![build-linux-x86-64-installer](https://github.com/FPGAwars/apio/actions/workflows/build-linux-x86-64-installer.yml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/build-linux-x86-64-installer.yml)<br>
-[![build-darwin-arm64-installer](https://github.com/FPGAwars/apio/actions/workflows/build-darwin-arm64-installer.yml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/build-darwin-arm64-installer.yml)<br>
-[![build-windows-amd64-installer](https://github.com/FPGAwars/apio/actions/workflows/build-windows-amd64-installer.yml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/build-windows-amd64-installer.yml)<br>
 [![build-all](https://github.com/zapta/apio-dev-builds-dev/actions/workflows/build-all.yaml/badge.svg?branch=main)](https://github.com/zapta/apio-dev-builds-dev/actions/workflows/build-all.yaml)
 
 ![][linux-logo]&nbsp;&nbsp;&nbsp;![][macosx-logo]&nbsp;&nbsp;&nbsp;![][windows-logo]&nbsp;&nbsp;&nbsp;![][ubuntu-logo]&nbsp;&nbsp;&nbsp;![][raspbian-logo]
@@ -76,7 +73,9 @@ While many use Apio as a stand alone text based CLI toolbox, it can also be used
 
 ## Documentation
 
-Find all the information on this [WIKI PAGE](https://github.com/FPGAwars/apio/wiki)
+* [Apio installation guide](https://github.com/zapta/apio-dev-builds-dev)
+
+* [Apio Documentation Wiki](https://github.com/FPGAwars/apio/wiki)
 
 
 ## Authors
