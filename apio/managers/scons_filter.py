@@ -16,7 +16,7 @@
 import re
 from enum import Enum
 from typing import List, Optional, Tuple
-from apio.common.apio_console import cout, cunstyle
+from apio.common.apio_console import cout, cunstyle, cwrite
 from apio.common.apio_styles import INFO, WARNING, SUCCESS, ERROR
 from apio.utils import util
 
@@ -168,13 +168,13 @@ class SconsFilter:
         self._iceprog_detector = IceProgRangeDetector()
         self._is_debug = util.is_debug()
 
-    def on_stdout_line(self, line: str) -> None:
+    def on_stdout_line(self, line: str, terminator: str) -> None:
         """Stdout pipe calls this on each line."""
-        self.on_line(PipeId.STDOUT, line)
+        self.on_line(PipeId.STDOUT, line, terminator)
 
-    def on_stderr_line(self, line: str) -> None:
+    def on_stderr_line(self, line: str, terminator: str) -> None:
         """Stderr pipe calls this on each line."""
-        self.on_line(PipeId.STDERR, line)
+        self.on_line(PipeId.STDERR, line, terminator)
 
     @staticmethod
     def _assign_line_color(
@@ -190,24 +190,31 @@ class SconsFilter:
         return default_color
 
     @staticmethod
-    def _output_line(line: str, style: Optional[str]) -> None:
+    def _output_line(line: str, style: Optional[str], terminator: str) -> None:
         """Output a line. If a style is given, force that style, otherwise,
         pass on any color information it may have."""
         if style:
-            cout(cunstyle(line), style=style)
+            cout(cunstyle(line), style=style, nl=False)
         else:
-            cout(line)
+            cout(line, nl=False)
+
+        # -- Output the optional terminator. See AsyncPipe.__init__ for
+        # -- possible terminator values. It's important to get it correctly
+        # -- for progress bars which terminate with "\r" to stay on same line.
+        cwrite(terminator)
 
     def _ignore_line(self, line: str) -> None:
         """Handle an ignored line. It's dumped if in debug mode."""
         if self._is_debug:
             cout(f"IGNORED: {line}")
 
-    def on_line(self, pipe_id: PipeId, line: str) -> None:
+    def on_line(self, pipe_id: PipeId, line: str, terminator) -> None:
         """A shared handler for stdout/err lines from the scons sub process.
         The handler writes both stdout and stderr lines to stdout, possibly
         with modifications such as text deletion, coloring, and cursor
         directives.
+
+        For the possible values of terminator, see AsyncPipe.__init__().
 
         NOTE: Ideally, the program specific patterns such as for Fumo and
         Iceprog should should be condition by a range detector for lines that
@@ -217,6 +224,8 @@ class SconsFilter:
 
         # pylint: disable=too-many-return-statements
         # pylint: disable=too-many-branches
+
+        # print(f"*** LINE: [{pipe_id}], [{repr(line)}], [{repr(terminator)}]")
 
         # -- Update the range detectors.
         in_pnr_verbose_range = self._pnr_detector.update(pipe_id, line)
@@ -240,7 +249,7 @@ class SconsFilter:
                     (r"^fatal error:", ERROR),
                 ],
             )
-            self._output_line(line, line_color)
+            self._output_line(line, line_color, terminator)
             return
 
         # -- Special handling of iverilog lines. We drop warning line spam
@@ -299,7 +308,7 @@ class SconsFilter:
                     (r"^VERIFY OK", "green"),
                 ],
             )
-            self._output_line(line, line_color)
+            self._output_line(line, line_color, terminator)
             return
 
         # -- Special handling for Fumo lines.
@@ -365,7 +374,7 @@ class SconsFilter:
                     (r"^error:", ERROR),
                 ],
             )
-            self._output_line(line, line_color)
+            self._output_line(line, line_color, terminator)
             return
 
         # Handling the rest of stderr the lines.
@@ -377,4 +386,4 @@ class SconsFilter:
                 (r"^error:", ERROR),
             ],
         )
-        self._output_line(line, line_color)
+        self._output_line(line, line_color, terminator)

@@ -73,9 +73,6 @@ class AsyncPipe(Thread):
         See __init__ for the description of terminator.
         """
 
-        # TODO: Remove this.
-        _ = terminator
-
         # -- Convert the line's bytes to a string. Replace invalid utf-8
         # -- chars with "�"
         line = bfr.decode("utf-8", errors="replace")
@@ -90,7 +87,7 @@ class AsyncPipe(Thread):
         # -- Report back if caller passed a callback.
         if self.outcallback:
             # self.outcallback(line, terminator)
-            self.outcallback(line)
+            self.outcallback(line, terminator)
 
     def run(self):
         """DOC: TODO"""
