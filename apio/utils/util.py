@@ -77,9 +77,9 @@ class AsyncPipe(Thread):
         # -- chars with "�"
         line = bfr.decode("utf-8", errors="replace")
 
-        # -- Trim trailing space, leaver leading space to preserve
+        # -- Trim trailing space, leaving leading space to preserve
         # -- indentation.
-        line = line.rstrip()
+        # line = line.rstrip()
 
         # -- Append to the lines buffer.
         self._lines_buffer.append(line)
