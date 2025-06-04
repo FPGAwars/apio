@@ -37,36 +37,119 @@ class ApioException(Exception):
 class AsyncPipe(Thread):
     """DOC: TODO"""
 
-    def __init__(self, outcallback=None):
+    def __init__(self, line_callback=None):
+        """If line_callback is not None, it is called for each line as
+        line_callback(line:str, terminator:str) where line is the line content
+        and terminator is one of:
+            "\r"   (CR)
+            "\n"   (LF)
+            "\r\r" (CR/LF)
+            ""     (EOF)
+        """
+
         Thread.__init__(self)
-        self.outcallback = outcallback
+        self.outcallback = line_callback
 
         self._fd_read, self._fd_write = os.pipe()
-        self._pipe_reader = os.fdopen(self._fd_read, encoding="UTF-8")
-        self._buffer = []
+
+        # -- A list of lines received so far.
+        self._lines_buffer = []
 
         self.start()
 
     def get_buffer(self):
         """DOC: TODO"""
 
-        return self._buffer
+        return self._lines_buffer
 
     def fileno(self):
         """DOC: TODO"""
 
         return self._fd_write
 
+    def _handle_incoming_line(self, bfr: bytearray, terminator: str):
+        """Handle a new incoming line.
+        Bfr is a bytes with the line's content, possibly empty.
+        See __init__ for the description of terminator.
+        """
+
+        # TODO: Remove this.
+        _ = terminator
+
+        # -- Convert the line's bytes to a string. Replace invalid utf-8
+        # -- chars with "�"
+        line = bfr.decode("utf-8", errors="replace")
+
+        # -- Trim trailing space, leaver leading space to preserve
+        # -- indentation.
+        line = line.rstrip()
+
+        # -- Append to the lines buffer.
+        self._lines_buffer.append(line)
+
+        # -- Report back if caller passed a callback.
+        if self.outcallback:
+            # self.outcallback(line, terminator)
+            self.outcallback(line)
+
     def run(self):
         """DOC: TODO"""
+        # -- Indicate if a "\r" is pending for reporting.
+        pending_cr = False
 
-        for line in iter(self._pipe_reader.readline, ""):
-            # We do preserve trailing whitespace and indentation.
-            line = line.rstrip()
-            self._buffer.append(line)
-            if self.outcallback:
-                self.outcallback(line)
-        self._pipe_reader.close()
+        # -- Collects the line's chars, excluding the terminators.
+        bfr = bytearray()
+
+        # -- We open in binary mode so we have access to the line terminators.
+        # -- This is important with progress bars which don't advance to the
+        # -- next line but redraw on the same line.
+        with os.fdopen(self._fd_read, "rb") as f:
+            while True:
+                b: Optional[bytearray] = f.read(1)
+                assert len(b) <= 1
+
+                if not b:
+                    # -- Handle EOF
+                    if bfr or pending_cr:
+                        # -- Report if we have anything pending.
+                        terminator = "\r" if pending_cr else ""
+                        self._handle_incoming_line(bfr, terminator)
+                    # -- All done, exit
+                    break
+
+                if b == b"\r":
+                    # -- Handle "\r"
+                    if not pending_cr:
+                        # -- Save the "\r" and continue.
+                        pending_cr = True
+                        continue
+                    # -- We got two consecutive "\r", report the first one.
+                    self._handle_incoming_line(bfr, "\r")
+                    # -- Clear the line buffer, keep pending_cr True.
+                    bfr.clear()
+                    continue
+
+                if b == b"\n":
+                    # -- Handle "\n". We always report, with or without a
+                    # -- pending "\r"
+                    terminator = "\r\n" if pending_cr else "\n"
+                    self._handle_incoming_line(bfr, terminator)
+                    # -- Clear the line.
+                    pending_cr = False
+                    bfr.clear()
+                    continue
+
+                # -- Else, handle a regular char.
+                if pending_cr:
+                    # -- We got a regular char after a "\r", with report
+                    # -- the line with "\r" terminator and clear the line.
+                    self._handle_incoming_line(bfr, "\r")
+                    pending_cr = False
+                    bfr.clear()
+                # -- Append the regular char to the buffer.
+                bfr.append(b[0])
+
+        # -- All done.
 
     def close(self):
         """DOC: TODO"""
