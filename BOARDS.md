@@ -5,6 +5,8 @@
 
 > Generated on June 5, 2025. For the complete list run `apio boards`.
 
+> Custom board definitions can be added in the project directory.
+
 <br>
 
 ### ICE40 boards

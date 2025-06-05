@@ -45,7 +45,10 @@ with open("BOARDS.md", "w") as f:
         f"> Generated on {today}. For the complete list run `apio boards`.",
         file=f,
     )
-    print("", file=f)
+    print(
+        "\n> Custom board definitions can be added in the project directory.\n",
+        file=f,
+    )
     for arch, board_ids in board_groups.items():
 
         print("<br>\n", file=f)
