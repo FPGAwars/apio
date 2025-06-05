@@ -26,8 +26,8 @@
 | ice40-hx1k-evb | 1k | ICE40HX1K-EVB | ICE40HX1K-VQ100 |
 | ice40-hx8k | 8k | iCE40-HX8K Breakout Board | ICE40HX8K-CT256 |
 | ice40-hx8k-evb | 8k | iCE40HX8K-EVB | ICE40HX8K-CT256 |
-| ice40-ul1k-breakout | 1k | iCE40-UL1K UltraLite Breakout Board | ICE40UL1K-CM36A |
-| ice40-up5k | 5k | iCE40 UltraPlus Breakout Board | ICE40UP5K-SG48 |
+| ice40-ul1k-breakout | 1k | iCE40-UL1K UltraLite Breakout | ICE40UL1K-CM36A |
+| ice40-up5k | 5k | iCE40 UltraPlus Breakout | ICE40UP5K-SG48 |
 | iceblink40-hx1k | 1k | iCEblink40-HX1K Eval Kit | ICE40HX1K-VQ100 |
 | icebreaker | 5k | iCEBreaker | ICE40UP5K-SG48 |
 | icebreaker-bitsy0 | 5k | iCEBreaker bitsy | ICE40UP5K-SG48 |

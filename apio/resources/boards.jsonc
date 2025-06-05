@@ -354,7 +354,7 @@
   // https://www.latticesemi.com/Products/DevelopmentBoardsAndKits/iCE40UltraPlusBreakoutBoard
   "ice40-up5k": {
     "legacy_name": "iCE40-UP5K",
-    "description": "iCE40 UltraPlus Breakout Board",
+    "description": "iCE40 UltraPlus Breakout",
     "fpga": "ice40up5k-sg48",
     "programmer": {
       "type": "iceprog"
@@ -368,7 +368,7 @@
   // https://www.latticesemi.com/products/developmentboardsandkits/ice40ultralitebreakoutboard
   "ice40-ul1k-breakout": {
     "legacy_name": "iCE40-UL1K-Breakout",
-    "description": "iCE40-UL1K UltraLite Breakout Board",
+    "description": "iCE40-UL1K UltraLite Breakout",
     "fpga": "ice40ul1k-cm36a",
     "programmer": {
       "type": "iceprog"
