@@ -47,7 +47,14 @@ with open("FPGAS.md", "w") as f:
         "\n> Custom fpga definitions can be added in the project directory.\n",
         file=f,
     )
-    for arch, fpga_ids in fpga_groups.items():
+
+    # TODO: Use util.fpga_arch_sort_key for preferred arch order.
+    arch_order = ["ice40", "ecp5", "gowin"]
+    assert set(fpga_groups.keys()) == set(arch_order)
+
+    for arch in arch_order:
+        # for arch, fpga_ids in fpga_groups.items():
+        fpga_ids = fpga_groups[arch]
 
         print("<br>\n", file=f)
         print(f"### {arch.upper()} FPGAs", file=f)

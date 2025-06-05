@@ -9,18 +9,6 @@
 
 <br>
 
-### GOWIN FPGAs
-
-| FPGA-ID | SIZE | PART-NUM |
-| :----- | :---- | :---- |
-| gw1n-lv1qn48c6-i5 | 1k | GW1N-LV1QN48C6/I5 |
-| gw1nr-lv9qn88pc6-i5 | 9k | GW1NR-LV9QN88PC6/I5 |
-| gw1nsr-lv4cqn48pc7-i6 | 4k | GW1NSR-LV4CQN48PC7/I6 |
-| gw1nz-lv1qn48c6-i5 | 1k | GW1NZ-LV1QN48C6/I5 |
-| gw2ar-lv18qn88c8-i7 | 20k | GW2AR-LV18QN88C8/I7 |
-
-<br>
-
 ### ICE40 FPGAs
 
 | FPGA-ID | SIZE | PART-NUM |
@@ -105,6 +93,18 @@
 | lfe5um5g-85f-8bg554c | 85k | LFE5UM5G-85F-8BG554C |
 | lfe5um5g-85f-8bg756c | 85k | LFE5UM5G-85F-8BG756C |
 | lfe5um5g-85f-8mg285c | 85k | LFE5UM5G-85F-8MG285C |
+
+<br>
+
+### GOWIN FPGAs
+
+| FPGA-ID | SIZE | PART-NUM |
+| :----- | :---- | :---- |
+| gw1n-lv1qn48c6-i5 | 1k | GW1N-LV1QN48C6/I5 |
+| gw1nr-lv9qn88pc6-i5 | 9k | GW1NR-LV9QN88PC6/I5 |
+| gw1nsr-lv4cqn48pc7-i6 | 4k | GW1NSR-LV4CQN48PC7/I6 |
+| gw1nz-lv1qn48c6-i5 | 1k | GW1NZ-LV1QN48C6/I5 |
+| gw2ar-lv18qn88c8-i7 | 20k | GW2AR-LV18QN88C8/I7 |
 
 <br>
 

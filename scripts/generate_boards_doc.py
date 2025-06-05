@@ -49,7 +49,14 @@ with open("BOARDS.md", "w") as f:
         "\n> Custom board definitions can be added in the project directory.\n",
         file=f,
     )
-    for arch, board_ids in board_groups.items():
+
+    # TODO: Use util.fpga_arch_sort_key for preferred arch order.
+    arch_order = ["ice40", "ecp5", "gowin"]
+    assert set(board_groups.keys()) == set(arch_order)
+
+    for arch in arch_order:
+        # for arch, board_ids in board_groups.items():
+        board_ids = board_groups[arch]
 
         print("<br>\n", file=f)
         print(f"### {arch.upper()} boards", file=f)
