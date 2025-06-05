@@ -48,7 +48,7 @@ def fake_usb_device(
     bus=0,
     dev=0,
     manuf="AlhambraBits",
-    desc="Alhambra II v1.0A",
+    prod="Alhambra II v1.0A",
     sn="SNXXXX",
     device_type="FT2232H",
 ) -> UsbDevice:
@@ -60,7 +60,7 @@ def fake_usb_device(
         bus=bus,
         device=dev,
         manufacturer=manuf,
-        description=desc,
+        product=prod,
         serial_number=sn,
         device_type=device_type,
     )
@@ -72,7 +72,7 @@ def fake_serial_device(
     vid="04D8",
     pid="FFEE",
     manuf="IceFUN",
-    desc="Ice Fun",
+    prod="Ice Fun",
     sn="SNXXXX",
     device_type="FT2232H",
     location="0.1",
@@ -85,7 +85,7 @@ def fake_serial_device(
         vendor_id=vid,
         product_id=pid,
         manufacturer=manuf,
-        description=desc,
+        product=prod,
         serial_number=sn,
         device_type=device_type,
         location=location,
@@ -174,9 +174,9 @@ def test_get_cmd_usb(apio_runner: ApioRunner, capsys: LogCaptureFixture):
         # -- Create fake devices
         scanner = FakeDeviceScanner(
             usb_devices=[
-                fake_usb_device(dev=0, desc="non alhambra"),
+                fake_usb_device(dev=0, prod="non alhambra"),
                 fake_usb_device(dev=1),
-                fake_usb_device(dev=2, desc="non alhambra"),
+                fake_usb_device(dev=2, prod="non alhambra"),
             ],
         )
 
@@ -223,8 +223,8 @@ def test_get_cmd_usb_no_match(
         # -- Create fake devices
         scanner = FakeDeviceScanner(
             usb_devices=[
-                fake_usb_device(dev=0, desc="non alhambra"),
-                fake_usb_device(dev=2, desc="non alhambra"),
+                fake_usb_device(dev=0, prod="non alhambra"),
+                fake_usb_device(dev=2, prod="non alhambra"),
             ],
         )
 
@@ -267,7 +267,7 @@ def test_get_cmd_usb_multiple_matches(
         scanner = FakeDeviceScanner(
             usb_devices=[
                 fake_usb_device(dev=0, sn="SN001"),
-                fake_usb_device(dev=1, desc="non alhambra"),
+                fake_usb_device(dev=1, prod="non alhambra"),
                 fake_usb_device(dev=2, sn="SN002"),
             ],
         )
@@ -452,7 +452,7 @@ def test_device_presence_ok(
         scanner = FakeDeviceScanner(
             usb_devices=[
                 fake_usb_device(dev=0),
-                fake_usb_device(dev=1, desc="non alhambra"),
+                fake_usb_device(dev=1, prod="non alhambra"),
                 fake_usb_device(dev=2),
             ],
         )
@@ -503,8 +503,8 @@ def test_device_presence_not_found(
         # -- Create fake devices, with two matching devices.
         scanner = FakeDeviceScanner(
             usb_devices=[
-                fake_usb_device(dev=0, desc="non alhambra"),
-                fake_usb_device(dev=1, desc="non alhambra"),
+                fake_usb_device(dev=0, prod="non alhambra"),
+                fake_usb_device(dev=1, prod="non alhambra"),
             ],
         )
 

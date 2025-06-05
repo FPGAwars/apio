@@ -105,7 +105,7 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
     table.add_column("BOARD-ID", no_wrap=True, style=EMPH1)
     table.add_column("EXMPLS", no_wrap=True)
     if verbose:
-        table.add_column("DESCRIPTION", no_wrap=True, max_width=25)
+        table.add_column("PRODUCT", no_wrap=True, max_width=25)
     table.add_column("ARCH", no_wrap=True)
     table.add_column("SIZE", no_wrap=True)
     if verbose:

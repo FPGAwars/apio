@@ -1,9 +1,9 @@
 // Apio boards definitions.
 //
-// "desc-regex" is a an optional python regular expression that is matched
-// against the usb device description as shown with the 'apio devices usb'
-// command. To force matching at the beginning of the description field
-// prepend with '^'. To force matching till the end of the description
+// "product-regex" is a an optional python regular expression that is matched
+// against the usb device product string as shown with the 'apio devices usb'
+// command. To force matching at the beginning of the product string
+// prepend with '^'. To force matching till the end of the product string
 // string append'$'. Having capturing groups in the regex is OK.
 //
 // "name-regex" works in the same way but matches the 'name' string fetched
@@ -32,7 +32,7 @@
     "usb": {
       "vid": "0403",
       "pid": "6010",
-      "desc-regex": "^IceZUM Alhambra.*"
+      "product-regex": "^IceZUM Alhambra.*"
     }
   },
   // https://www.latticesemi.com/icestick
@@ -45,7 +45,7 @@
     "usb": {
       "vid": "0403",
       "pid": "6010",
-      "desc-regex": "^(Dual RS232-HS)|(Lattice FTUSB Interface Cable)"
+      "product-regex": "^(Dual RS232-HS)|(Lattice FTUSB Interface Cable)"
     }
   },
   // https://www.latticesemi.com/iCEblink40-HX1K
@@ -70,7 +70,7 @@
     "usb": {
       "vid": "0403",
       "pid": "6010",
-      "desc-regex": "^Dual RS232-HS"
+      "product-regex": "^Dual RS232-HS"
     }
   },
   // https://www.latticesemi.com/Products/DevelopmentBoardsAndKits/iCE40HX8KBreakoutBoard.aspx
@@ -84,7 +84,7 @@
     "usb": {
       "vid": "0403",
       "pid": "6010",
-      "desc-regex": "^(Dual RS232-HS)|(Lattice FTUSB Interface Cable)"
+      "product-regex": "^(Dual RS232-HS)|(Lattice FTUSB Interface Cable)"
     }
   },
   // https://www.olimex.com/Products/FPGA/iCE40/iCE40HX8K-EVB/open-source-hardware
@@ -124,7 +124,7 @@
     "usb": {
       "vid": "0403",
       "pid": "6010",
-      "desc-regex": "^Milk JTAG:u"
+      "product-regex": "^Milk JTAG:u"
     }
   },
   // URL: TBD
@@ -228,7 +228,7 @@
     "usb": {
       "vid": "0403",
       "pid": "6010",
-      "desc-regex": "^Alhambra II.*"
+      "product-regex": "^Alhambra II.*"
     }
   },
   // TBD
@@ -241,7 +241,7 @@
     "usb": {
       "vid": "0403",
       "pid": "6014",
-      "desc-regex": "^Single RS232-HS"
+      "product-regex": "^Single RS232-HS"
     }
   },
   // TBD
@@ -254,7 +254,7 @@
     "usb": {
       "vid": "0403",
       "pid": "6014",
-      "desc-regex": "^Single RS232-HS"
+      "product-regex": "^Single RS232-HS"
     }
   },
   // https://github.com/tinyvision-ai-inc/UPduino-v2.1
@@ -267,7 +267,7 @@
     "usb": {
       "vid": "0403",
       "pid": "6014",
-      "desc-regex": "^(Single RS232-HS)|(UPduino v2.*)"
+      "product-regex": "^(Single RS232-HS)|(UPduino v2.*)"
     }
   },
   // https://github.com/tinyvision-ai-inc/UPduino-v3.0
@@ -280,7 +280,7 @@
     "usb": {
       "vid": "0403",
       "pid": "6014",
-      "desc-regex": "^UPduino v3\\.0"
+      "product-regex": "^UPduino v3\\.0"
     }
   },
   // https://github.com/tinyvision-ai-inc/UPduino-v3.0
@@ -293,7 +293,7 @@
     "usb": {
       "vid": "0403",
       "pid": "6014",
-      "desc-regex": "^UPduino v3\\.1"
+      "product-regex": "^UPduino v3\\.1"
     }
   },
   // https://github.com/icebreaker-fpga/icebreaker
@@ -307,7 +307,7 @@
     "usb": {
       "vid": "0403",
       "pid": "6010",
-      "desc-regex": "^(Dual RS232-HS)|(iCEBreaker.*)"
+      "product-regex": "^(Dual RS232-HS)|(iCEBreaker.*)"
     }
   },
   // https://github.com/icebreaker-fpga/icebreaker
@@ -321,7 +321,7 @@
     "usb": {
       "vid": "1d50",
       "pid": "6146",
-      "desc-regex": "^iCEBreaker bitsy v0.*"
+      "product-regex": "^iCEBreaker bitsy v0.*"
     }
   },
   // https://github.com/icebreaker-fpga/icebreaker
@@ -335,7 +335,7 @@
     "usb": {
       "vid": "1d50",
       "pid": "6146",
-      "desc-regex": "^iCEBreaker bitsy1.*"
+      "product-regex": "^iCEBreaker bitsy1.*"
     }
   },
   // TBD
@@ -348,7 +348,7 @@
     "usb": {
       "vid": "0403",
       "pid": "6014",
-      "desc-regex": "^Single RS232-HS"
+      "product-regex": "^Single RS232-HS"
     }
   },
   // https://www.latticesemi.com/Products/DevelopmentBoardsAndKits/iCE40UltraPlusBreakoutBoard
@@ -362,7 +362,7 @@
     "usb": {
       "vid": "0403",
       "pid": "6010",
-      "desc-regex": "^(USB <-> Serial Converter)|(Lattice iCE40UP5K Breakout)"
+      "product-regex": "^(USB <-> Serial Converter)|(Lattice iCE40UP5K Breakout)"
     }
   },
   // https://www.latticesemi.com/products/developmentboardsandkits/ice40ultralitebreakoutboard
@@ -376,7 +376,7 @@
     "usb": {
       "vid": "0403",
       "pid": "6010",
-      "desc-regex": "^(Dual RS2232H)|(Lattice HW-USBN-2B)"
+      "product-regex": "^(Dual RS2232H)|(Lattice HW-USBN-2B)"
     }
   },
   "tinyfpga-ex-rev1": {
@@ -462,7 +462,7 @@
     "usb": {
       "vid": "1209",
       "pid": "5af0",
-      "desc-regex": "^OrangeCrab r0.2 DFU bootloader"
+      "product-regex": "^OrangeCrab r0.2 DFU bootloader"
     }
   },
   "orangecrab-r02-85f": {
@@ -474,7 +474,7 @@
     "usb": {
       "vid": "1209",
       "pid": "5af0",
-      "desc-regex": "^OrangeCrab r0.2 DFU bootloader"
+      "product-regex": "^OrangeCrab r0.2 DFU bootloader"
     }
   },
   "butterstick-r10-2g-85k": {
@@ -488,7 +488,7 @@
     "usb": {
       "vid": "1209",
       "pid": "5af1",
-      "desc-regex": "^butterstick (dfu v1.1)"
+      "product-regex": "^butterstick (dfu v1.1)"
     }
   },
   "butterstick-r10-2g-85k-ft2232h": {
@@ -518,7 +518,7 @@
     "usb": {
       "vid": "0403",
       "pid": "6010",
-      "desc-regex": "^(USB <-> Serial Converter)|(Lattice ECP5 Versa Board)"
+      "product-regex": "^(USB <-> Serial Converter)|(Lattice ECP5 Versa Board)"
     }
   },
   "alchitry-cu": {
@@ -531,7 +531,7 @@
     "usb": {
       "vid": "0403",
       "pid": "6010",
-      "desc-regex": "^Alchitry Cu"
+      "product-regex": "^Alchitry Cu"
     }
   },
   "fomu": {
@@ -543,7 +543,7 @@
     "usb": {
       "vid": "1209",
       "pid": "5bf0",
-      "desc-regex": "^Fomu Hacker running DFU Bootloader v1.8.8"
+      "product-regex": "^Fomu Hacker running DFU Bootloader v1.8.8"
     }
   },
   "arice1": {
@@ -555,7 +555,7 @@
     "usb": {
       "vid": "0403",
       "pid": "6014",
-      "desc-regex": "^Single RS232-HS"
+      "product-regex": "^Single RS232-HS"
     }
   },
   "edu-ciaa-fpga": {
@@ -567,7 +567,7 @@
     "usb": {
       "vid": "0403",
       "pid": "6010",
-      "desc-regex": "^Dual RS232-HS"
+      "product-regex": "^Dual RS232-HS"
     }
   },
   "icesugar-nano": {
@@ -592,7 +592,7 @@
     "usb": {
       "vid": "0403",
       "pid": "6010",
-      "desc-regex": "^Dual RS232-HS"
+      "product-regex": "^Dual RS232-HS"
     }
   },
   "pico-ice": {
@@ -605,7 +605,7 @@
     "usb": {
       "vid": "1209",
       "pid": "b1c0",
-      "desc-regex": "^DFU flash"
+      "product-regex": "^DFU flash"
     }
   },
   "icesugar-1-5": {
@@ -841,7 +841,7 @@
     "usb": {
       "vid": "0403",
       "pid": "6010",
-      "desc-regex": "^ETH4K"
+      "product-regex": "^ETH4K"
     }
   },
   "sipeed-tang-nano": {

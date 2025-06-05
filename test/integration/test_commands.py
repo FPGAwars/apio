@@ -22,7 +22,7 @@ CUSTOM_BOARDS = """
     "usb": {
       "vid": "0403",
       "pid": "6010",
-      "desc-regex": "^My Custom Board"
+      "product-regex": "^My Custom Board"
     }
   }
 }

@@ -208,7 +208,7 @@ def _scan_devices_cli(
         dev["bus"] = device.bus
         dev["device"] = device.device
         dev["manufacturer"] = device.manufacturer
-        dev["description"] = device.description
+        dev["product"] = device.product
         dev["serial-number"] = device.serial_number
         dev["device_type"] = device.device_type
 
@@ -227,7 +227,7 @@ def _scan_devices_cli(
         dev["vendor-id"] = device.vendor_id
         dev["product-id"] = device.product_id
         dev["manufacturer"] = device.manufacturer
-        dev["description"] = device.description
+        dev["product"] = device.product
         dev["serial-number"] = device.serial_number
         dev["device-type"] = device.device_type
 

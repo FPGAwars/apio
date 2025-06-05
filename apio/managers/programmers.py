@@ -285,8 +285,8 @@ def _match_serial_device(
         serial_filter.set_vendor_id(usb_info["vid"].upper())
     if "pid" in usb_info:
         serial_filter.set_product_id(usb_info["pid"].upper())
-    if "desc-regex" in usb_info:
-        serial_filter.set_desc_regex(usb_info["desc-regex"])
+    if "product-regex" in usb_info:
+        serial_filter.set_product_regex(usb_info["product-regex"])
     if serial_port_flag:
         serial_filter.set_port(serial_port_flag)
     if serial_num_flag:
@@ -354,8 +354,8 @@ def _match_usb_device(
         usb_filter.set_vendor_id(usb_info["vid"].upper())
     if "pid" in usb_info:
         usb_filter.set_product_id(usb_info["pid"].upper())
-    if "desc-regex" in usb_info:
-        usb_filter.set_desc_regex(usb_info["desc-regex"])
+    if "product-regex" in usb_info:
+        usb_filter.set_product_regex(usb_info["product-regex"])
     if serial_num_flag:
         usb_filter.set_serial_num(serial_num_flag)
 
@@ -424,8 +424,8 @@ def _check_device_presence(apio_ctx: ApioContext, scanner: _DeviceScanner):
         usb_filter.set_vendor_id(usb_info["vid"].upper())
     if "pid" in usb_info:
         usb_filter.set_product_id(usb_info["pid"].upper())
-    if "desc-regex" in usb_info:
-        usb_filter.set_desc_regex(usb_info["desc-regex"])
+    if "product-regex" in usb_info:
+        usb_filter.set_product_regex(usb_info["product-regex"])
 
     cout("Checking device presence:")
     cout(f"- FILTER {usb_filter.summary()}")

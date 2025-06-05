@@ -90,19 +90,19 @@ def test_filtering():
     assert filt.filter(devs) == [devs[0], devs[3]]
 
     # -- Filter by description regex
-    filt = SerialDeviceFilter().set_desc_regex("no-such-device")
+    filt = SerialDeviceFilter().set_product_regex("no-such-device")
     assert filt.summary() == '[REGEX="no-such-device"]'
     assert filt.filter(devs) == []
 
-    filt = SerialDeviceFilter().set_desc_regex("^product2$")
+    filt = SerialDeviceFilter().set_product_regex("^product2$")
     assert filt.summary() == '[REGEX="^product2$"]'
     assert filt.filter(devs) == [devs[2]]
 
-    filt = SerialDeviceFilter().set_desc_regex("product2")
+    filt = SerialDeviceFilter().set_product_regex("product2")
     assert filt.summary() == '[REGEX="product2"]'
     assert filt.filter(devs) == [devs[2]]
 
-    filt = SerialDeviceFilter().set_desc_regex("(product3)|(product2)")
+    filt = SerialDeviceFilter().set_product_regex("(product3)|(product2)")
     assert filt.summary() == '[REGEX="(product3)|(product2)"]'
     assert filt.filter(devs) == [devs[2], devs[3]]
 
