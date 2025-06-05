@@ -95,6 +95,7 @@
         "nowarn",
         "obijuan",
         "outcallback",
+        "oversizing",
         "pinout",
         "posargs",
         "prevalidated",

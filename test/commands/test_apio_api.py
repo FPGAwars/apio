@@ -36,6 +36,7 @@ def test_apio_api_get_boards(apio_runner: ApioRunner):
                 "id": "ice40hx4k-tq144-8k",
                 "part-num": "ICE40HX4K-TQ144",
                 "arch": "ice40",
+                "size": "8k",
             },
             "programmer": {"id": "openfpgaloader"},
         }

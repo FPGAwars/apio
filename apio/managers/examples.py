@@ -104,7 +104,7 @@ class Examples:
                 fpga_id = board_info.get("fpga", "")
                 fpga_info = self.apio_ctx.fpgas.get(fpga_id, {})
                 fpga_arch = fpga_info.get("arch", "")
-                fpga_part_num = fpga_info.get("part_num", "")
+                fpga_part_num = fpga_info.get("part-num", "")
                 fpga_size = fpga_info.get("size", "")
 
                 # -- Append this example to the list.

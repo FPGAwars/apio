@@ -70,3 +70,6 @@ with open("BOARDS.md", "w") as f:
         print("", file=f)
 
     print("<br>\n", file=f)
+
+print("Updated BOARDS.md")
+

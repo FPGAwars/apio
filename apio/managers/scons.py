@@ -241,7 +241,7 @@ class SCons:
         result.fpga_info.MergeFrom(
             FpgaInfo(
                 fpga_id=fpga_id,
-                part_num=fpga_config["part_num"],
+                part_num=fpga_config["part-num"],
                 size=fpga_config["size"],
             )
         )
