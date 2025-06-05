@@ -25,7 +25,6 @@
   * [apio fpgas](#apio-fpgas) - List available FPGA definitions.
   * [apio graph](#apio-graph) - Generate a visual graph of the code.
   * [apio info](#apio-info) - Apio's info and info.
-    * [apio info apio.ini](#apio-info-apio.ini) - Apio.ini options.
     * [apio info cli](#apio-info-cli) - Command line conventions.
     * [apio info colors](#apio-info-colors) - Colors table.
     * [apio info files](#apio-info-files) - Apio project files types.
@@ -328,9 +327,9 @@ Usage: apio devices serial [OPTIONS]
   channel are listed as multiple rows, one for each of their serial
   ports.
 
-  On Windows, manufacturer and description strings of FTDI based devices
-  may show their FTDI generic values rather than the custom values such
-  such as 'Alhambra II' set by the device manufacturer.
+  On Windows, manufacturer and product strings of FTDI based devices may
+  show their FTDI generic values rather than the custom values such such
+  as 'Alhambra II' set by the device manufacturer.
 
 Options:
   -h, --help  Show this message and exit.
@@ -694,7 +693,6 @@ Options:
   -h, --help  Show this message and exit.
 
 Documentation:
-  apio info apio.ini   Apio.ini options.
   apio info cli        Command line conventions.
   apio info files      Apio project files types.
   apio info resources  Additional resources.
@@ -703,25 +701,6 @@ Information:
   apio info platforms  Supported platforms.
   apio info system     Show system information.
   apio info colors     Colors table.
-
-```
-
-<br>
-
-### apio info apio.ini
-
-```
-Usage: apio info apio.ini [OPTIONS] [OPTION]
-
-  The command 'apio info apio.ini' provides information about the
-  required project file 'apio.ini'.
-
-  Examples:
-    apio info apio.ini              # List an overview and all options.
-    apio info apio.ini top-module   # List a single option.
-
-Options:
-  -h, --help  Show this message and exit.
 
 ```
 
@@ -1211,8 +1190,7 @@ Usage: apio upload [OPTIONS]
   uninstall device drivers.
 
   [HINT] The default programmer command of your board can be overridden
-  using the 'programmer-cmd' option in apio.ini. For details run the
-  command 'apio info apio.ini programmer-cmd'.
+  using the apio.ini option 'programmer-cmd'.
 
 Options:
   -s, --serial-port serial-port  Set the serial port.

@@ -50,24 +50,6 @@ def test_apio_info(apio_runner: ApioRunner):
         assert "This page describes the conventions" in cunstyle(result.output)
         assert result.output != cunstyle(result.output)  # Colored.
 
-        # -- Execute "apio info apio.ini"
-        result = sb.invoke_apio_cmd(apio, ["info", "apio.ini"])
-        assert result.exit_code == 0
-        assert "BOARD option (REQUIRED)" in cunstyle(result.output)
-        assert "YOSYS-SYNTH-EXTRA-OPTIONS option (OPTIONAL)" in cunstyle(
-            result.output
-        )
-        assert result.output != cunstyle(result.output)  # Colored.
-
-        # -- Execute "apio info apio.ini board"
-        result = sb.invoke_apio_cmd(apio, ["info", "apio.ini", "board"])
-        assert result.exit_code == 0
-        assert "BOARD option (REQUIRED)" in cunstyle(result.output)
-        assert "YOSYS-SYNTH-EXTRA-OPTIONS option (OPTIONAL)" not in cunstyle(
-            result.output
-        )
-        assert result.output != cunstyle(result.output)  # Colored.
-
         # # -- Execute "apio info resources"
         result = sb.invoke_apio_cmd(apio, ["info", "resources"])
         assert result.exit_code == 0

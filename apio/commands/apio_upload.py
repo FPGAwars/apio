@@ -61,8 +61,7 @@ serial devices and the command 'apio drivers' to install and uninstall device \
 drivers.
 
 [HINT] The default programmer command of your board can be overridden using \
-the 'programmer-cmd' option in apio.ini. For details run the command \
-'apio info apio.ini programmer-cmd'.
+the apio.ini option 'programmer-cmd'.
 """
 
 
