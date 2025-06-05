@@ -131,6 +131,7 @@ def _get_boards_cli(
         new_fpga["id"] = fpga_id
         new_fpga["part-num"] = fpga_info.get("part_num", None)
         new_fpga["arch"] = fpga_info.get("arch", None)
+        new_fpga["size"] = fpga_info.get("size", None)
         new_board["fpga"] = new_fpga
 
         # -- Add board's programmer information.
