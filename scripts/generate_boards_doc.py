@@ -51,8 +51,8 @@ with open("BOARDS.md", "w") as f:
         print("<br>\n", file=f)
         print(f"### {arch.upper()} boards", file=f)
         print("", file=f)
-        print("| BOARD-ID | SIZE | DESCRIPTION | FPGA | PROGRAMMER |", file=f)
-        print("| :----- | :---- | :---- | :---- | :---- |", file=f)
+        print("| BOARD-ID | SIZE | DESCRIPTION | FPGA |", file=f)
+        print("| :----- | :---- | :---- | :---- |", file=f)
         for board_id in board_ids:
             board_info = data["boards"][board_id]
             print(
@@ -61,7 +61,6 @@ with open("BOARDS.md", "w") as f:
                     board_info["fpga"]["size"],
                     board_info["description"],
                     board_info["fpga"]["part-num"],
-                    board_info["programmer"]["id"],
                 ),
                 file=f,
             )

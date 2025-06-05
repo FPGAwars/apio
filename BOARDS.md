@@ -9,8 +9,8 @@
 
 ### ICE40 boards
 
-| BOARD-ID | SIZE | DESCRIPTION | FPGA | PROGRAMMER |
-| :----- | :---- | :---- | :---- | :---- |
+| BOARD-ID | SIZE | DESCRIPTION | FPGA |
+| :----- | :---- | :---- | :---- |
 | alchitry-cu | 8k | Alchitry Cu Development Board | ICE40HX8K-CB132 |
 | alhambra-ii | 8k | Alhambra II | ICE40HX4K-TQ144 |
 | arice1 | 5k | ARiCE v1 | ICE40UP5K-SG48 |
@@ -54,8 +54,8 @@
 
 ### ECP5 boards
 
-| BOARD-ID | SIZE | DESCRIPTION | FPGA | PROGRAMMER |
-| :----- | :---- | :---- | :---- | :---- |
+| BOARD-ID | SIZE | DESCRIPTION | FPGA |
+| :----- | :---- | :---- | :---- |
 | butterstick-r10-2g-85k | 85k | butterstick r1.0 | LFE5UM5G-85F-8BG381C |
 | butterstick-r10-2g-85k-ft2232h | 85k | butterstick r1.0 | LFE5UM5G-85F-8BG381C |
 | butterstick-r10-2g-85k-ft232h | 85k | butterstick r1.0 | LFE5UM5G-85F-8BG381C |
@@ -97,8 +97,8 @@
 
 ### GOWIN boards
 
-| BOARD-ID | SIZE | DESCRIPTION | FPGA | PROGRAMMER |
-| :----- | :---- | :---- | :---- | :---- |
+| BOARD-ID | SIZE | DESCRIPTION | FPGA |
+| :----- | :---- | :---- | :---- |
 | sipeed-tang-nano | 1k | Sipeed Tang Nano | GW1N-LV1QN48C6/I5 |
 | sipeed-tang-nano-1k | 1k | Sipeed Tang Nano 1k | GW1NZ-LV1QN48C6/I5 |
 | sipeed-tang-nano-20k | 20k | Sipeed Tang Nano 20k | GW2AR-LV18QN88C8/I7 |
