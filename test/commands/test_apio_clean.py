@@ -24,21 +24,17 @@ def test_clean(apio_runner: ApioRunner):
             }
         )
 
-        sb.write_file(".sconsign.dblite", "dummy text")
         sb.write_file("_build/env1/hardware.out", "dummy text")
         sb.write_file("_build/env2/hardware.out", "dummy text")
 
-        assert Path(".sconsign.dblite").exists()
         assert Path("_build/env1/hardware.out").exists()
         assert Path("_build/env2/hardware.out").exists()
 
         result = sb.invoke_apio_cmd(apio, ["clean"])
         assert result.exit_code == 0, result.output
 
-        assert "Removed .sconsign.dblite" in result.output
         assert "Removed _build" in result.output
 
-        assert not Path(".sconsign.dblite").exists()
         assert not Path("_build").exists()
 
 
@@ -64,11 +60,9 @@ def test_clean_from_remote_dir(apio_runner: ApioRunner):
             }
         )
 
-        sb.write_file(".sconsign.dblite", "dummy text")
         sb.write_file("_build/env1/hardware.out", "dummy text")
         sb.write_file("_build/env2/hardware.out", "dummy text")
 
-        assert Path(".sconsign.dblite").exists()
         assert Path("_build/env1/hardware.out").exists()
         assert Path("_build/env2/hardware.out").exists()
 
@@ -81,10 +75,8 @@ def test_clean_from_remote_dir(apio_runner: ApioRunner):
         assert result.exit_code == 0, result.output
         os.chdir(proj_dir)
 
-        assert "Removed .sconsign.dblite" in result.output
         assert "Removed _build" in result.output
 
-        assert not Path(".sconsign.dblite").exists()
         assert not Path("_build").exists()
 
 
@@ -95,7 +87,6 @@ def test_clean_no_build(apio_runner: ApioRunner):
 
         sb.write_default_apio_ini()
 
-        assert not Path(".sconsign.dblite").exists()
         assert not Path("_build").exists()
 
         result = sb.invoke_apio_cmd(apio, ["clean"])

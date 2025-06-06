@@ -134,7 +134,7 @@ def cli(
     os.chdir(apio_ctx.project_dir)
 
     # -- Determine candidates for deletion.
-    candidates = [".sconsign.dblite", "zadig.ini"]
+    candidates = ["zadig.ini"]
 
     # -- TODO: Remove the cleanup of legacy files after releasing the first
     # -- release with the _build directory.

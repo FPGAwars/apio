@@ -144,10 +144,6 @@ include files that are specific to a particular architecture or toolchain.
 [b]_build[/] - This is an auto created directory that contains the generated \
 files. The directory '_build' is removed when the command 'apio clean' is run.
 
-[b].sconsign.dblite[/] - This is a cache info file that is created by the \
-Apio in the project directory and can be ignored and removed. The file \
-`.sconsign.dblite` is removed when the command 'apio clean' is run.
-
 [NOTE] If using git for your project, it is recommended to have the following \
 entires in your '.gitignore' file:
 [code]
