@@ -286,7 +286,9 @@ def _system_cli():
     table.add_row("Apio version", util.get_apio_version())
     table.add_row("Python version", util.get_python_version())
     table.add_row("Platform id", apio_ctx.platform_id)
-    table.add_row("Python package", str(util.get_path_in_apio_package("")))
+    table.add_row(
+        "Apio Python package", str(util.get_path_in_apio_package(""))
+    )
     table.add_row("Apio home", str(apio_ctx.home_dir))
     table.add_row("Apio packages", str(apio_ctx.packages_dir))
     table.add_row(
