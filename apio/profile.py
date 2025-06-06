@@ -273,22 +273,20 @@ class Profile:
 
         # -- Here we need to fetch the remote config from the remote server.
         # -- Construct remote config file url.
-        if (
-            verbose
-            or util.is_debug()
-            or env_options.is_defined(env_options.APIO_REMOTE_CONFIG_URL)
-        ):
+        if env_options.is_defined(env_options.APIO_REMOTE_CONFIG_URL):
             cout(
-                f"Fetching remote config from '{self.remote_config_url}'",
+                f"Custom remote config: '{self.remote_config_url}'",
                 style=EMPH3,
             )
+        elif verbose or util.is_debug():
+
+            cout(f"Remote config: '{self.remote_config_url}'")
 
         # -- Fetch the config text.
         config_text = self._fetch_remote_config_text()
 
         # -- Here when download was ok.
-        if verbose or util.is_debug():
-            cout("Remote config file fetched ok.")
+        cout("Remote config fetched ok.")
 
         # -- Print the file's content.
         if util.is_debug():
