@@ -387,6 +387,9 @@ class Drivers:
         # -- Get the drivers apio package base folder
         drivers_base_dir = self.apio_ctx.get_package_dir("drivers")
 
+        # NOTE: Zadig documentation:
+        # https://github.com/pbatard/libwdi/wiki/Zadig?utm_source=chatgpt.com
+
         # -- Path to the zadig.ini file
         # -- It is the zadig config file
         zadig_ini_src = drivers_base_dir / "share" / "zadig.ini"
