@@ -14,7 +14,7 @@ import requests
 from apio.common import apio_console
 from apio.common.apio_console import cout, cerror, cprint
 from apio.common.apio_styles import INFO, EMPH3, ERROR
-from apio.utils import util, jsonc
+from apio.utils import util, jsonc, env_options
 
 
 @dataclass(frozen=True)
@@ -273,10 +273,15 @@ class Profile:
 
         # -- Here we need to fetch the remote config from the remote server.
         # -- Construct remote config file url.
-        # apio_version = util.get_apio_version()
-        # config_url = APIO_REMOTE_CONFIG_URL_TEMPLATE.format(apio_version)
-        if verbose or util.is_debug():
-            cout(f"Fetching remote config from '{self.remote_config_url}'")
+        if (
+            verbose
+            or util.is_debug()
+            or env_options.is_defined(env_options.APIO_REMOTE_CONFIG_URL)
+        ):
+            cout(
+                f"Fetching remote config from '{self.remote_config_url}'",
+                style=EMPH3,
+            )
 
         # -- Fetch the config text.
         config_text = self._fetch_remote_config_text()
