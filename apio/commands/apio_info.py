@@ -290,6 +290,10 @@ def _system_cli():
     table.add_row("Apio home", str(apio_ctx.home_dir))
     table.add_row("Apio packages", str(apio_ctx.packages_dir))
     table.add_row(
+        "Veriable formatter",
+        str(apio_ctx.packages_dir / "verible/bin/verible-verilog-format"),
+    )
+    table.add_row(
         "Veriable language server",
         str(apio_ctx.packages_dir / "verible/bin/verible-verilog-ls"),
     )
