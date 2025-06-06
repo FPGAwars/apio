@@ -293,7 +293,7 @@ def _match_serial_device(
         serial_filter.set_serial_num(serial_num_flag)
 
     # -- Inform the user.
-    cout("Selecting serial device:")
+    cout("Scanning for a serial device:")
     cout(f"- FILTER {serial_filter.summary()}")
 
     # -- Get matching devices
@@ -360,7 +360,7 @@ def _match_usb_device(
         usb_filter.set_serial_num(serial_num_flag)
 
     # -- Inform the user.
-    cout("Selecting USB device:")
+    cout("Scanning for a USB device:")
     cout(f"- FILTER {usb_filter.summary()}")
 
     # -- Get matching devices
@@ -427,7 +427,7 @@ def _check_device_presence(apio_ctx: ApioContext, scanner: _DeviceScanner):
     if "product-regex" in usb_info:
         usb_filter.set_product_regex(usb_info["product-regex"])
 
-    cout("Checking device presence:")
+    cout("Checking device presence...")
     cout(f"- FILTER {usb_filter.summary()}")
 
     # -- Scan the USB devices and filter by the filter.

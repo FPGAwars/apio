@@ -193,7 +193,7 @@ def test_get_cmd_usb(apio_runner: ApioRunner, capsys: LogCaptureFixture):
 
         # -- Check the log.
         log = capsys.readouterr().out
-        assert "Selecting USB device" in log
+        assert "Scanning for a USB device:" in log
         assert 'FILTER [VID=0403, PID=6010, REGEX="^Alhambra II.*"]' in log
         assert (
             "DEVICE [0403:6010, 0:1], [AlhambraBits] "
@@ -238,7 +238,7 @@ def test_get_cmd_usb_no_match(
         assert e.value.code == 1
 
         log = capsys.readouterr().out
-        assert "Selecting USB device" in log
+        assert "Scanning for a USB device:" in log
         assert 'FILTER [VID=0403, PID=6010, REGEX="^Alhambra II.*"]' in log
         assert "No matching USB device" in log
 
@@ -281,7 +281,7 @@ def test_get_cmd_usb_multiple_matches(
         assert e.value.code == 1
 
         log = capsys.readouterr().out
-        assert "Selecting USB device" in log
+        assert "Scanning for a USB device:" in log
         assert 'FILTER [VID=0403, PID=6010, REGEX="^Alhambra II.*"]' in log
         assert (
             "DEVICE [0403:6010, 0:0], [AlhambraBits] "
@@ -330,7 +330,7 @@ def test_get_cmd_serial(apio_runner: ApioRunner, capsys: LogCaptureFixture):
 
         # -- Check the log.
         log = capsys.readouterr().out
-        assert "Selecting serial device" in log
+        assert "Scanning for a serial device:" in log
         assert "FILTER [VID=04D8, PID=FFEE]" in log
         assert (
             "DEVICE [/dev/port2] [04D8:FFEE, [IceFUN] [Ice Fun] [SNXXXX]"
@@ -374,7 +374,7 @@ def test_get_cmd_serial_no_match(
         assert e.value.code == 1
 
         log = capsys.readouterr().out
-        assert "Selecting serial device" in log
+        assert "Scanning for a serial device:" in log
         assert "FILTER [VID=04D8, PID=FFEE]" in log
         assert "No matching serial device" in log
 
@@ -417,7 +417,7 @@ def test_get_cmd_serial_multiple_matches(
         assert e.value.code == 1
 
         log = capsys.readouterr().out
-        assert "Selecting serial device" in log
+        assert "Scanning for a serial device:" in log
         assert "FILTER [VID=04D8, PID=FFEE]" in log
         assert (
             "DEVICE [/dev/port1] [04D8:FFEE, [IceFUN] [Ice Fun] [SNXXXX]"
