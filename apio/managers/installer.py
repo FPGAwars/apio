@@ -38,15 +38,15 @@ def _construct_package_download_url(
 
     # -- Create vars mapping.
     url_vars = {
-        "%P": platform_selector,
-        "%V": target_version,
-        "%T": target_version.replace(".", "-"),
+        "${P}": platform_selector,
+        "${V}": target_version,
+        "${T}": target_version.replace(".", "-"),
     }
     if util.is_debug():
         cout(f"Package URL vars: {url_vars}")
 
     # -- Get the compressed name of the package. This is base name of the
-    # -- downloaded file. E.g. "tools-oss-cad-suite-%P-%V"
+    # -- downloaded file. E.g. "tools-oss-cad-suite-${P}-${V}"
     file_name = package_info["release"]["file_name"]
 
     # -- Get the package file name extension. e.g. 'tar.gz'.

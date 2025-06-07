@@ -42,8 +42,8 @@ APIO_DEBUG = "APIO_DEBUG"
 #
 # Examples:
 #   file:///projects/apio-dev/repo/remote-config/apio-0.9.6.jsonc
-#   file:///projects/apio-dev/repo/remote-config/apio-%V.jsonc
-#   https://github.com/zapta/apio_dev/raw/develop/remote-config/apio-%V.jsonc
+#   file:///projects/apio-dev/repo/remote-config/apio-${V}.jsonc
+#   https://github.com/zapta/apio_dev/raw/develop/remote-config/apio-${V}.jsonc
 #
 APIO_REMOTE_CONFIG_URL = "APIO_REMOTE_CONFIG_URL"
 
