@@ -12,6 +12,7 @@
 import sys
 import os
 import traceback
+from contextlib import contextmanager
 from functools import wraps
 from enum import Enum
 from dataclasses import dataclass
@@ -645,3 +646,14 @@ def subprocess_call(
 
     # -- Return with the error code.
     return exit_code
+
+
+@contextmanager
+def pushd(target_dir: Path):
+    """A context manager for temporary execution in a given directory."""
+    prev_dir = os.getcwd()
+    os.chdir(target_dir)
+    try:
+        yield
+    finally:
+        os.chdir(prev_dir)

@@ -133,9 +133,6 @@ def cli(
     # -- Change to the project's folder.
     os.chdir(apio_ctx.project_dir)
 
-    # -- Determine candidates for deletion.
-    candidates = ["zadig.ini"]
-
     # -- TODO: Remove the cleanup of legacy files after releasing the first
     # -- release with the _build directory.
     # --
@@ -143,7 +140,7 @@ def cli(
     # -- Until apio 0.9.6, the build artifacts were created in the project
     # -- directory rather than the _build directory. To simplify the
     # -- transition we clean here also left over files from 0.9.5.
-    candidates += glob("hardware.*")
+    candidates = glob("hardware.*")
     candidates += glob("*_tb.vcd")
     candidates += glob("*_tb.out")
 

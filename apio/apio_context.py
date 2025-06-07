@@ -439,6 +439,14 @@ class ApioContext:
 
         return self.packages_dir / package_name
 
+    def get_tmp_dir(self, create: bool = True) -> Path:
+        """Return the tmp dir under the apio home dir. If 'create' is true
+        create the dir and its parents if they do not exist."""
+        tmp_dir = self.home_dir / "tmp"
+        if create:
+            tmp_dir.mkdir(parents=True, exist_ok=True)
+        return tmp_dir
+
     @staticmethod
     def _determine_platform_id(platforms: Dict[str, Dict]) -> str:
         """Determines and returns the platform io based on system info and
