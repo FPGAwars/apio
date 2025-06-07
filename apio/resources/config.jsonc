@@ -11,4 +11,5 @@
 
   "remote-config": "https://github.com/zapta/apio-dev/raw/develop/remote-config/apio-%V.jsonc"
 
+  // "remote-config": "file:///projects/apio-dev/repo/remote-config/apio-0.9.6.jsonc"
 }

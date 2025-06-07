@@ -24,58 +24,66 @@ def _construct_package_download_url(
     apio_ctx: ApioContext,
     package_name: str,
     target_version: str,
-    package_config: PackageRemoteConfig,
+    package_remote_config: PackageRemoteConfig,
 ) -> str:
-    """Construct the download URL for the given package name and version.
-
-    Sample output:
-    'https://github.com/FPGAwars/tools-oss-cad-suite/releases/download/
-                       v0.0.9/tools-oss-cad-suite-darwin_arm64-0.0.9.tar.gz'
-    """
+    """Construct the download URL for the given package name and version."""
 
     # -- Get the package info (originated from packages.jsonc)
     package_info = apio_ctx.get_package_info(package_name)
 
-    # -- Get the package selector of this platform (the package selectors
-    # -- are specified in platforms.jsonc). E.g. 'darwin_arm64'
+    # -- Get the platform package selector of this platform (the package
+    # -- selectors  are specified in platforms.jsonc). E.g. 'darwin_arm64'
     platform_id = apio_ctx.platform_id
-    package_selector = apio_ctx.platforms[platform_id]["package_selector"]
+    platform_selector = apio_ctx.platforms[platform_id]["package_selector"]
+
+    # -- Create vars mapping.
+    url_vars = {
+        "%P": platform_selector,
+        "%V": target_version,
+        "%T": target_version.replace(".", "-"),
+    }
+    if util.is_debug():
+        cout(f"Package URL vars: {url_vars}")
 
     # -- Get the compressed name of the package. This is base name of the
     # -- downloaded file. E.g. "tools-oss-cad-suite-%P-%V"
     file_name = package_info["release"]["file_name"]
 
-    # -- Replace %P, if any, with package selector.
-    file_name = file_name.replace("%P", package_selector)
-
-    # -- Replace %V, if any,  with the package version
-    file_name = file_name.replace("%V", target_version)
-
     # -- Get the package file name extension. e.g. 'tar.gz'.
     extension = package_info["release"]["extension"]
 
-    # -- Construct the package file name.
-    # -- E.g. 'atools-oss-cad-suite-darwin_arm64-0.0.9.tar.gz'
-    file_name = f"{file_name}.{extension}"
+    # -- Define the url parts.
+    url_parts = [
+        "https://github.com/",
+        package_remote_config.repo_organization,
+        "/",
+        package_remote_config.repo_name,
+        "/releases/download/",
+        package_remote_config.release_tag,
+        "/",
+        file_name,
+        ".",
+        extension,
+    ]
 
-    # -- Get the github repo name. e.g. 'tools-oss-cad-tools'
-    repo_name = package_config.repo_name
+    if util.is_debug():
+        cout(f"package url parts = {url_parts}")
 
-    # -- Get the github user name. E.g. 'FGPAWars'.
-    repo_organization = package_config.repo_organization
+    # -- Concatanate the URL parts.
+    url = "".join(url_parts)
 
-    # -- Construct the release tag name. E.g 'v0.0.9'.
-    release_tag = package_info["release"]["release_tag"].replace(
-        "%V", target_version
-    )
+    if util.is_debug():
+        cout(f"Combined package url: {url}")
 
-    # -- Construct the full url.
-    download_url = (
-        f"https://github.com/{repo_organization}/{repo_name}/releases/"
-        f"download/{release_tag}/{file_name}"
-    )
+    # -- Replace placeholders with values.
+    for name, val in url_vars.items():
+        url = url.replace(name, val)
 
-    return download_url
+    if util.is_debug():
+        cout(f"Resolved package url: {url}")
+
+    # -- All done.
+    return url
 
 
 def _download_package_file(url: str, dir_path: Path) -> str:
@@ -292,7 +300,7 @@ def install_package(
     # -- If the user didn't specify a target version we use the one specified
     # -- in the remote config.
     if not target_version:
-        target_version = package_config.required_version
+        target_version = package_config.release_version
 
     cout(f"Target version {target_version}")
 

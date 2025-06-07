@@ -7,7 +7,6 @@
 {
   "examples": {
     "release": {
-      "release_tag": "%V",
       "file_name": "apio-examples-%V",
       "extension": "zip"
     },
@@ -16,7 +15,6 @@
   },
   "oss-cad-suite": {
     "release": {
-      "release_tag": "v%V",
       "file_name": "tools-oss-cad-suite-%P-%V",
       "extension": "tar.gz"
     },
@@ -36,7 +34,6 @@
   },
   "graphviz": {
     "release": {
-      "release_tag": "v%V",
       "file_name": "tools-graphviz-%P-%V",
       "extension": "tar.gz",
       "available_platforms": [
@@ -52,7 +49,6 @@
   },
   "verible": {
     "release": {
-      "release_tag": "v%V",
       "file_name": "tools-verible-%P-%V",
       "extension": "tar.gz"
     },
@@ -65,7 +61,6 @@
   },
   "drivers": {
     "release": {
-      "release_tag": "v%V",
       "file_name": "tools-drivers-%P-%V",
       "extension": "tar.gz",
       "available_platforms": [
@@ -81,7 +76,6 @@
   },
   "system": {
     "release": {
-      "release_tag": "v%V",
       "file_name": "tools-system-%P-%V",
       "extension": "tar.gz",
       "available_platforms": [

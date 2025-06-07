@@ -239,7 +239,7 @@ def package_version_ok(
 
     # -- Compare to the required version. We expect the two version to be
     # -- normalized and ths a string comparison is sufficient.
-    return current_ver == package_config.required_version
+    return current_ver == package_config.release_version
 
 
 def scan_packages(

@@ -21,12 +21,14 @@ from apio.utils import util, jsonc, env_options
 class PackageRemoteConfig:
     """Contains a package info from the remote config."""
 
-    # -- E.g. "0.2.3"
-    required_version: str
     # -- E.g. "tools-oss-cad-suite"
     repo_name: str
     # -- E.g. "FPGAwars"
     repo_organization: str
+    # -- E.g. "0.2.3"
+    release_version: str
+    # -- E.g. %T
+    release_tag: str
 
 
 class Profile:
@@ -152,15 +154,18 @@ class Profile:
             cached_config_ok=cached_config_ok, verbose=verbose
         )
 
-        package_info = config["packages"][package_name]
-        required_version = package_info["version"]
-        repo_name = package_info["repository"]["name"]
-        repo_organization = package_info["repository"]["organization"]
+        # -- Extract package's remote config.
+        remote_config = config["packages"][package_name]
+        repo_name = remote_config["repository"]["name"]
+        repo_organization = remote_config["repository"]["organization"]
+        release_version = remote_config["release"]["version"]
+        release_tag = remote_config["release"]["tag"]
 
         return PackageRemoteConfig(
-            required_version=required_version,
             repo_name=repo_name,
             repo_organization=repo_organization,
+            release_version=release_version,
+            release_tag=release_tag,
         )
 
     def load(self):
