@@ -1,26 +1,18 @@
 {
   "packages": {
-    // -- System
-    "system": {
-      "version": "1.1.2",
-      "repository": {
-        "name": "tools-system",
-        "organization": "FPGAwars"
-      }
-    },
-    // -- Drivers
-    "drivers": {
-      "version": "1.2.0",
-      "repository": {
-        "name": "tools-drivers",
-        "organization": "FPGAwars"
-      }
-    },
     // -- Examples
     "examples": {
       "version": "0.1.4",
       "repository": {
         "name": "apio-examples",
+        "organization": "FPGAwars"
+      }
+    },
+    // -- Yosys HQ suite
+    "oss-cad-suite": {
+      "version": "0.2.3",
+      "repository": {
+        "name": "tools-oss-cad-suite",
         "organization": "FPGAwars"
       }
     },
@@ -40,11 +32,19 @@
         "organization": "FPGAwars"
       }
     },
-    // -- Yosys HQ suite
-    "oss-cad-suite": {
-      "version": "0.2.3",
+    // -- Drivers
+    "drivers": {
+      "version": "1.2.0",
       "repository": {
-        "name": "tools-oss-cad-suite",
+        "name": "tools-drivers",
+        "organization": "FPGAwars"
+      }
+    },
+    // -- System
+    "system": {
+      "version": "1.1.2",
+      "repository": {
+        "name": "tools-system",
         "organization": "FPGAwars"
       }
     }
