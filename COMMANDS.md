@@ -929,7 +929,8 @@ Usage: apio packages fix [OPTIONS]
     apio packages fix     # Fix package errors, if any.
 
 Options:
-  -h, --help  Show this message and exit.
+  -v, --verbose  Show detailed output.
+  -h, --help     Show this message and exit.
 
 ```
 
@@ -977,7 +978,8 @@ Usage: apio packages list [OPTIONS]
     apio packages list
 
 Options:
-  -h, --help  Show this message and exit.
+  -v, --verbose  Show detailed output.
+  -h, --help     Show this message and exit.
 
 ```
 

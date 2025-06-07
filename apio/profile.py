@@ -284,7 +284,6 @@ class Profile:
                 style=EMPH3,
             )
         elif verbose or util.is_debug():
-
             cout(f"Remote config: '{self.remote_config_url}'")
 
         # -- Fetch the config text.
