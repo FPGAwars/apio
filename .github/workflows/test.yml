@@ -85,6 +85,14 @@ jobs:
                     posargs=""
                   fi
 
+                  # If the remote config url manual input was specified. pass
+                  # it via the env to the tested apio. This var passing is
+                  # enabled in tox.ini.
+                  if [ -n "${{ inputs.remote_config_url }}" ]; then
+                      export APIO_REMOTE_CONFIG_URL="${{ inputs.remote_config_url }}"
+                      echo "Using APIO_REMOTE_CONFIG_URL: [${APIO_REMOTE_CONFIG_URL}]"
+                  fi
+
                   # Run the tests
                   python -m tox --skip-missing-interpreters false -e lint,$pyver -- ${posargs}
 
