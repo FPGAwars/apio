@@ -58,6 +58,18 @@ jobs:
               run: |
                   make deps
 
+            - name: Maybe set APIO_REMOTE_CONFIG_URL
+              run: |
+                  # If the remote config url manual input was specified. pass
+                  # it via the env to the tested apio. This var passing is
+                  # enabled in tox.ini.
+                  if [ -n '${{inputs.remote_config_url}}' ]; then
+                      echo 'APIO_REMOTE_CONFIG_URL=${{inputs.remote_config_url}}' >> $GITHUB_ENV
+                      echo "Using APIO_REMOTE_CONFIG_URL"
+                  else
+                      echo "Not using APIO_REMOTE_CONFIG_URL"
+                  fi
+
             - name: Run Tests
               run: |
                   # Convert py version such as '3.13' to 'py313' as required by tox.ini.
@@ -83,14 +95,6 @@ jobs:
                   else
                     echo "Verbose mode OFF"
                     posargs=""
-                  fi
-
-                  # If the remote config url manual input was specified. pass
-                  # it via the env to the tested apio. This var passing is
-                  # enabled in tox.ini.
-                  if [ -n '${{ inputs.remote_config_url }}' ]; then
-                      export APIO_REMOTE_CONFIG_URL='${{ inputs.remote_config_url }}'
-                      echo "Using APIO_REMOTE_CONFIG_URL"
                   fi
 
                   # Run the tests
