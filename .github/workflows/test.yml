@@ -89,8 +89,8 @@ jobs:
                   # it via the env to the tested apio. This var passing is
                   # enabled in tox.ini.
                   if [ -n "${{ inputs.remote_config_url }}" ]; then
-                      export APIO_REMOTE_CONFIG_URL="${{ inputs.remote_config_url }}"
-                      echo "Using APIO_REMOTE_CONFIG_URL: [${APIO_REMOTE_CONFIG_URL}]"
+                      export APIO_REMOTE_CONFIG_URL='${{ inputs.remote_config_url }}''
+                      echo "Using APIO_REMOTE_CONFIG_URL"
                   fi
 
                   # Run the tests
