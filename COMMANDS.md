@@ -34,10 +34,8 @@
     * [apio info system](#apio-info-system) - Show system information.
   * [apio lint](#apio-lint) - Lint the source code.
   * [apio packages](#apio-packages) - Manage the apio packages.
-    * [apio packages fix](#apio-packages-fix) - Fix broken apio packages.
-    * [apio packages install](#apio-packages-install) - Install apio packages.
     * [apio packages list](#apio-packages-list) - List apio packages.
-    * [apio packages uninstall](#apio-packages-uninstall) - Uninstall apio packages.
+    * [apio packages update](#apio-packages-update) - Update apio packages.
   * [apio preferences](#apio-preferences) - Manage the apio user preferences.
   * [apio raw](#apio-raw) - Execute commands directly from the Apio packages.
   * [apio report](#apio-report) - Report design utilization and timing.
@@ -897,9 +895,9 @@ Options:
 Usage: apio packages [OPTIONS] COMMAND [ARGS]...
 
   The command group 'apio packages' provides commands to manage the
-  installation of Apio packages. These are not Python packages but
-  Apio-specific packages containing various tools and data essential for
-  the operation of Apio.
+  installation of Apio packages. These are not Python packages but Apio
+  packages containing various tools and data essential for the operation
+  of Apio.
 
   The list of available packages depends on the operating system you are
   using and may vary between different operating systems.
@@ -908,58 +906,8 @@ Options:
   -h, --help  Show this message and exit.
 
 Subcommands:
-  apio packages install    Install apio packages.
-  apio packages uninstall  Uninstall apio packages.
-  apio packages list       List apio packages.
-  apio packages fix        Fix broken apio packages.
-
-```
-
-<br>
-
-### apio packages fix
-
-```
-Usage: apio packages fix [OPTIONS]
-
-  The command 'apio packages fix' removes broken or obsolete packages
-  that are listed as broken by the command 'apio packages list'.
-
-  Examples:
-    apio packages fix     # Fix package errors, if any.
-
-Options:
-  -v, --verbose  Show detailed output.
-  -h, --help     Show this message and exit.
-
-```
-
-<br>
-
-### apio packages install
-
-```
-Usage: apio packages install [OPTIONS] PACKAGE
-
-  The command 'apio packages install' installs Apio packages that are
-  required for the operation of Apio on your system.
-
-  Examples:
-    apio packages install                   # Install missing packages.
-    apio pack inst                          # Same, with shortcuts
-    apio packages install --force           # Reinstall all packages.
-    apio packages install oss-cad-suite     # Install package.
-    apio packages install examples@0.0.32   # Install a specific
-  version.
-
-  Adding the '--force' option forces the reinstallation of existing
-  packages; otherwise, packages that are already installed correctly
-  remain unchanged.
-
-Options:
-  -f, --force    Force installation.
-  -v, --verbose  Show detailed output.
-  -h, --help     Show this message and exit.
+  apio packages update  Update apio packages.
+  apio packages list    List apio packages.
 
 ```
 
@@ -985,20 +933,31 @@ Options:
 
 <br>
 
-### apio packages uninstall
+### apio packages update
 
 ```
-Usage: apio packages uninstall [OPTIONS] PACKAGE
+Usage: apio packages update [OPTIONS]
 
-  The command 'apio packages uninstall' removes installed Apio packages
-  from your system. The command does not uninstall the Apio tool itself.
+  The command 'apio packages update' updates the installed Apio packages
+  to their latest requirements.
 
   Examples:
-    apio packages uninstall                    # Uninstall all packages
-    apio packages uninstall oss-cad-suite      # Uninstall a package
-    apio packages uninstall verible examples   # Uninstall two packages
+    apio packages update            # Update packages
+    apio pack upd                   # Same, with shortcuts
+    apio packages update --force    # Force reinstallation from scratch
+    apio packages update --verbose  # Provide additional info
+
+  Adding the '--force' option forces the reinstallation of existing
+  packages; otherwise, packages that are already installed correctly
+  remain unchanged.
+
+  It is highly recommended to run the 'apio packages update' once in a
+  while because it check the Apio remote server for the latest packages
+  versions which may included fixes and enhancements such as new
+  examples that were added to the examples package.
 
 Options:
+  -f, --force    Force reinstallation.
   -v, --verbose  Show detailed output.
   -h, --help     Show this message and exit.
 

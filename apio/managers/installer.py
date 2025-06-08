@@ -224,7 +224,6 @@ def install_missing_packages_on_the_fly(apio_ctx: ApioContext) -> None:
                 package_name=package_name,
                 force_reinstall=False,
                 cached_config_ok=False,
-                explicit=False,
                 verbose=False,
             )
 
@@ -246,7 +245,6 @@ def install_package(
     package_name: str,
     force_reinstall: bool,
     cached_config_ok: bool,
-    explicit: bool,
     verbose: bool,
 ) -> None:
     """Install a given package.
@@ -263,8 +261,6 @@ def install_package(
     and a user message if an error is detected.
     """
 
-    # pylint: disable=too-many-arguments
-
     # -- Caller is responsible to check check that package name is valid
     # -- on this platform.
     assert package_name in apio_ctx.platform_packages, package_name
@@ -276,7 +272,7 @@ def install_package(
 
     # -- If in chatty mode, announce now and clear. Otherwise we will
     # -- announce later only if actually installing.
-    if explicit or verbose:
+    if verbose:
         cout(pending_announcement)
         pending_announcement = None
 
@@ -303,7 +299,7 @@ def install_package(
         # -- If the installed and the target versions are the same then
         # -- nothing to do.
         if target_version == installed_version:
-            if explicit or verbose:
+            if verbose:
                 cout(
                     f"Version {target_version} is already installed",
                     style=SUCCESS,
@@ -358,39 +354,6 @@ def install_package(
 
     # -- Inform the user!
     cout(f"Package '{package_name}' installed successfully", style=SUCCESS)
-
-
-def uninstall_package(
-    apio_ctx: ApioContext, *, package_name: str, verbose: bool
-):
-    """Uninstall the apio package"""
-
-    cout(f"Uninstalling apio package '{package_name}'", style=EMPH3)
-
-    # -- Caller is responsible to check check that package name is valid
-    # -- on this platform.
-    assert package_name in apio_ctx.platform_packages, package_name
-
-    # -- Remove the folder with all its content!!
-    dir_existed = _delete_package_dir(apio_ctx, package_name, verbose)
-
-    installed_version = apio_ctx.profile.get_package_installed_version(
-        package_name, None
-    )
-
-    # -- Remove the package from the profile file
-    apio_ctx.profile.remove_package(package_name)
-
-    # -- Check that it is a folder...
-    if dir_existed or installed_version:
-
-        # -- Inform the user
-        cout(
-            f"Package '{package_name}' uninstalled successfully", style=SUCCESS
-        )
-    else:
-        # -- Package not installed. We treat it as a success.
-        cout(f"Package '{package_name}' was not installed", style=SUCCESS)
 
 
 def _fix_packages(
