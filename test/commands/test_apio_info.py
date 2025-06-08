@@ -1,5 +1,6 @@
 """Test for the "apio system" command."""
 
+import re
 from test.conftest import ApioRunner
 from apio.commands.apio import cli as apio
 from apio.common.apio_console import cunstyle, cwidth
@@ -23,8 +24,12 @@ def test_apio_info(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(apio, ["info", "system"])
         assert result.exit_code == 0, result.output
         assert "Platform id" in result.output
-        # -- The these env options are set by the apio text fixture.
-        assert "Active env options [APIO_HOME]" in result.output
+        # -- The these env options are set by the apio text fixture. We
+        # -- relax the expression to allow additional env vars that are
+        # -- injected to the test such as APIO_REMOTE_URL_CONFIG
+        assert re.search(
+            r"Active env options \[[^]]*APIO_HOME[^]]*\]", result.output
+        )
 
         # -- Execute "apio info platforms"
         result = sb.invoke_apio_cmd(apio, ["info", "platforms"])
