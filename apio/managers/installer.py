@@ -9,10 +9,9 @@ Used by the 'apio packages' command.
 
 import sys
 from pathlib import Path
-from typing import Tuple
 import shutil
-from apio.common.apio_console import cout, cerror
-from apio.common.apio_styles import INFO, WARNING, ERROR, SUCCESS, EMPH3
+from apio.common.apio_console import cout, cerror, cstyle
+from apio.common.apio_styles import WARNING, ERROR, SUCCESS, EMPH3
 from apio.apio_context import ApioContext
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
@@ -147,27 +146,6 @@ def _unpack_package_file(package_file: Path, package_dir: Path) -> None:
         sys.exit(1)
 
 
-def _parse_package_spec(package_spec: str) -> Tuple[str, str]:
-    """Parse package spec into package name and optional version.
-    Returns a tuple (name, version || None), exits with error message if
-    any error.
-
-    E.g.
-      'my_package@1.2.3' -> ('my_package', '1.2.3')
-      'my_package'       -> ('my_package', None)
-    """
-    tokens = package_spec.split("@")
-    if len(tokens) not in [1, 2]:
-        cerror(f"Invalid package spec '{package_spec}")
-        cout("Try 'my_package' or  'my_package@0.1.2'", style=INFO)
-        sys.exit(1)
-
-    package_name = tokens[0]
-    package_version = tokens[1] if len(tokens) > 1 else ""
-
-    return (package_name, package_version)
-
-
 def _delete_package_dir(
     apio_ctx: ApioContext, package_name: str, verbose: bool
 ) -> bool:
@@ -243,9 +221,10 @@ def install_missing_packages_on_the_fly(apio_ctx: ApioContext) -> None:
         if package_name not in installed_packages:
             install_package(
                 apio_ctx,
-                package_spec=package_name,
+                package_name=package_name,
                 force_reinstall=False,
                 cached_config_ok=False,
+                explicit=False,
                 verbose=False,
             )
 
@@ -264,64 +243,81 @@ def install_missing_packages_on_the_fly(apio_ctx: ApioContext) -> None:
 def install_package(
     apio_ctx: ApioContext,
     *,
-    package_spec: str,
+    package_name: str,
     force_reinstall: bool,
-    cached_config_ok,
+    cached_config_ok: bool,
+    explicit: bool,
     verbose: bool,
 ) -> None:
     """Install a given package.
 
     'apio_ctx' is the context object of this apio invocation.
-    'package_spec' is a package name with optional version suffix
-        e.b. 'drivers', 'drivers@1.2.0'.
+    'package_name' is the package name, e.g. 'examples' or 'oss-cad-suite'.
     'force' indicates if to perform the installation even if a matching
         package is already installed.
+    'explicit' indicates that the user specified the package name(s) explicitly
+    and thus expect more feedback in case of a 'no change'
     'verbose' indicates if to print extra information.
 
     Returns normally if no error, exits the program with an error status
     and a user message if an error is detected.
     """
 
-    # -- Parse the requested package spec.
-    package_name, target_version = _parse_package_spec(package_spec)
+    # pylint: disable=too-many-arguments
 
-    # -- Exit if no such package for this platform.
-    if package_name not in apio_ctx.platform_packages:
-        cerror(f"No such package '{package_name}'")
-        sys.exit(1)
+    # -- Caller is responsible to check check that package name is valid
+    # -- on this platform.
+    assert package_name in apio_ctx.platform_packages, package_name
 
-    cout(f"Installing apio package '{package_spec}'", style=EMPH3)
+    # -- Set up installation announcement
+    pending_announcement = cstyle(
+        f"Installing apio package '{package_name}'", style=EMPH3
+    )
 
-    # -- Get package remote config.
-    package_config = apio_ctx.profile.get_package_config(
+    # -- If in chatty mode, announce now and clear. Otherwise we will
+    # -- announce later only if actually installing.
+    if explicit or verbose:
+        cout(pending_announcement)
+        pending_announcement = None
+
+    # -- Get package remote config from the cache. Caller can refresh the
+    # -- cache with the latest remote config if desired.
+    package_config: PackageRemoteConfig = apio_ctx.profile.get_package_config(
         package_name, cached_config_ok=cached_config_ok, verbose=verbose
     )
 
-    # -- If the user didn't specify a target version we use the one specified
-    # -- in the remote config.
-    if not target_version:
-        target_version = package_config.release_version
+    # -- Get the version we should have.
+    target_version = package_config.release_version
 
-    cout(f"Target version {target_version}")
-
-    # -- If not forcing and the target version already installed nothing to do.
+    # -- If not forcing and the target version already installed then
+    # -- nothing to do and we leave quietly.
     if not force_reinstall:
-        # -- Get the version of the installed package, None otherwise.
+        # -- Get the version of the installed package, None if not installed.
         installed_version = apio_ctx.profile.get_package_installed_version(
             package_name, default=None
         )
 
         if verbose:
-            cout(f"Installed version {installed_version}", style=SUCCESS)
+            cout(f"Installed version: {installed_version}")
 
         # -- If the installed and the target versions are the same then
         # -- nothing to do.
         if target_version == installed_version:
-            cout(
-                f"Version {target_version} was already installed",
-                style=SUCCESS,
-            )
+            if explicit or verbose:
+                cout(
+                    f"Version {target_version} is already installed",
+                    style=SUCCESS,
+                )
             return
+
+    # -- Here we need to fetch and install so can be more chatty.
+
+    # -- Here we actually do the work. Announce if we haven't done it yet.
+    if pending_announcement:
+        cout(pending_announcement)
+        pending_announcement = True
+
+    cout(f"Fetching version {target_version}")
 
     # -- Construct the download URL.
     download_url = _construct_package_download_url(
@@ -365,19 +361,15 @@ def install_package(
 
 
 def uninstall_package(
-    apio_ctx: ApioContext, *, package_spec: str, verbose: bool
+    apio_ctx: ApioContext, *, package_name: str, verbose: bool
 ):
     """Uninstall the apio package"""
 
-    # -- Parse package spec. We ignore the version silently.
-    package_name, _ = _parse_package_spec(package_spec)
-
-    package_info = apio_ctx.platform_packages.get(package_name, None)
-    if not package_info:
-        cerror(f"No such package '{package_name}'")
-        sys.exit(1)
-
     cout(f"Uninstalling apio package '{package_name}'", style=EMPH3)
+
+    # -- Caller is responsible to check check that package name is valid
+    # -- on this platform.
+    assert package_name in apio_ctx.platform_packages, package_name
 
     # -- Remove the folder with all its content!!
     dir_existed = _delete_package_dir(apio_ctx, package_name, verbose)
@@ -388,7 +380,6 @@ def uninstall_package(
 
     # -- Remove the package from the profile file
     apio_ctx.profile.remove_package(package_name)
-    # apio_ctx.profile.save()
 
     # -- Check that it is a folder...
     if dir_existed or installed_version:
@@ -399,9 +390,7 @@ def uninstall_package(
         )
     else:
         # -- Package not installed. We treat it as a success.
-        cout(
-            f"Package '{package_name}' was already uninstalled", style=SUCCESS
-        )
+        cout(f"Package '{package_name}' was not installed", style=SUCCESS)
 
 
 def _fix_packages(

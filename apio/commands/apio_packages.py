@@ -7,11 +7,12 @@
 # -- License GPLv2
 """Implementation of 'apio packages' command"""
 
+import sys
 from typing import Tuple
 import click
 from rich.table import Table
 from rich import box
-from apio.common.apio_console import cout, cprint
+from apio.common.apio_console import cout, cprint, cerror
 from apio.common.apio_styles import INFO, BORDER, ERROR, SUCCESS
 from apio.managers import installer
 from apio.apio_context import ApioContext, ApioContextScope
@@ -138,8 +139,7 @@ Examples:[code]
   apio packages install                   # Install missing packages.
   apio pack inst                          # Same, with shortcuts
   apio packages install --force           # Reinstall all packages.
-  apio packages install oss-cad-suite     # Install package.
-  apio packages install examples@0.0.32   # Install a specific version.[/code]
+  apio packages install oss-cad-suite     # Install a package.
 
 Adding the '--force' option forces the reinstallation of existing packages; \
 otherwise, packages that are already installed correctly remain unchanged.
@@ -173,23 +173,29 @@ def _install_cli(
         apio_ctx, cached_config_ok=False, verbose=verbose
     )
 
-    # -- If packages where specified, install all the missing ones, if any.
-    scan = pkg_util.scan_packages(
-        apio_ctx, cached_config_ok=False, verbose=False
-    )
+    # If specific packages was not specified, apply to all the packages.
     if not packages:
+        explicit = False
         packages = apio_ctx.platform_packages.keys()
+    else:
+        explicit = True
+
+    # -- Check package names
+    for package in packages:
+        if package not in apio_ctx.platform_packages:
+            cerror(f"Invalid package name `{package}'")
+            sys.exit(1)
 
     # -- Install the packages, one by one.
     for package in packages:
-        if force or package not in scan.installed_ok_package_names:
-            installer.install_package(
-                apio_ctx,
-                package_spec=package,
-                force_reinstall=force,
-                cached_config_ok=False,
-                verbose=verbose,
-            )
+        installer.install_package(
+            apio_ctx,
+            package_name=package,
+            force_reinstall=force,
+            cached_config_ok=False,
+            explicit=explicit,
+            verbose=verbose,
+        )
 
     # -- Scan the available and installed packages.
     print_packages_report(apio_ctx, verbose=verbose)
@@ -232,22 +238,25 @@ def _uninstall_cli(
         apio_ctx, cached_config_ok=False, verbose=verbose
     )
 
-    # -- Scan the packages.
-    scan = pkg_util.scan_packages(
-        apio_ctx, cached_config_ok=False, verbose=False
-    )
+
 
     # -- If packages where specified, uninstall all packages.
     if not packages:
         packages = apio_ctx.platform_packages.keys()
 
+    # -- Check package names
+    for package in packages:
+        if package not in apio_ctx.platform_packages:
+            cerror(f"Invalid package name `{package}'")
+            sys.exit(1)
+
     # -- Uninstall the packages.
     for package in packages:
         # -- Skip packages that are alredy uninstalled.
-        if package not in scan.uninstalled_package_names:
-            installer.uninstall_package(
-                apio_ctx, package_spec=package, verbose=verbose
-            )
+        # -- if package not in scan.uninstalled_package_names:
+        installer.uninstall_package(
+            apio_ctx, package_name=package, verbose=verbose
+        )
 
     # -- Print updated package report.
     print_packages_report(apio_ctx, verbose=verbose)
@@ -328,7 +337,7 @@ def _fix_cli(
 APIO_PACKAGES_HELP = """
 The command group 'apio packages' provides commands to manage the \
 installation of Apio packages. These are not Python packages but \
-Apio-specific packages containing various tools and data essential for the \
+Apio  packages containing various tools and data essential for the \
 operation of Apio.
 
 The list of available packages depends on the operating system you are \
