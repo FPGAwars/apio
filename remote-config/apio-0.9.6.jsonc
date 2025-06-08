@@ -1,7 +1,6 @@
 // Remote config file for Apio 0.9.6
 // See installer.py for the placeholders ${P}, ${V}, ${T}.
-//
-// TODO: Delelte the "version" field, we use "release"."version".
+
 {
   "packages": {
     // -- Examples
