@@ -1,17 +1,18 @@
 // Remote config file for Apio 0.9.6
-// See installer.py for the placeholders ${P}, ${V}, ${T}.
-
+// See installer.py for the var ${P}, ${V}, ${T}.
 {
   "packages": {
     // -- Examples
     "examples": {
       "repository": {
         "name": "apio-examples",
-        "organization": "FPGAwars"
+        "organization": "zapta"
+        // "organization": "FPGAwars"
       },
       "release": {
-        "version": "0.1.4",
-        "tag": "${V}"
+        "version": "2025.06.08",
+        "tag": "${T}",
+        "file": "apio-examples-${T}.zip"
       }
     },
     // -- Yosys HQ suite
@@ -22,7 +23,8 @@
       },
       "release": {
         "version": "0.2.3",
-        "tag": "v${V}"
+        "tag": "v${V}",
+        "file": "tools-oss-cad-suite-${P}-${V}.tar.gz"
       }
     },
     // -- Graphviz
@@ -33,7 +35,8 @@
       },
       "release": {
         "version": "12.1.2",
-        "tag": "v${V}"
+        "tag": "v${V}",
+        "file": "tools-graphviz-${P}-${V}.tar.gz"
       }
     },
     // -- Verible
@@ -44,7 +47,8 @@
       },
       "release": {
         "version": "0.0.1",
-        "tag": "v${V}"
+        "tag": "v${V}",
+        "file": "tools-verible-${P}-${V}.tar.gz"
       }
     },
     // -- Drivers
@@ -55,7 +59,8 @@
       },
       "release": {
         "version": "1.2.0",
-        "tag": "v${V}"
+        "tag": "v${V}",
+        "file": "tools-drivers-${P}-${V}.tar.gz"
       }
     },
     // -- System
@@ -66,7 +71,8 @@
       },
       "release": {
         "version": "1.1.2",
-        "tag": "v${V}"
+        "tag": "v${V}",
+        "file": "tools-system-${P}-${V}.tar.gz"
       }
     }
   }

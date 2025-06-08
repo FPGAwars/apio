@@ -21,14 +21,10 @@ from apio.profile import PackageRemoteConfig
 
 def _construct_package_download_url(
     apio_ctx: ApioContext,
-    package_name: str,
     target_version: str,
     package_remote_config: PackageRemoteConfig,
 ) -> str:
     """Construct the download URL for the given package name and version."""
-
-    # -- Get the package info (originated from packages.jsonc)
-    package_info = apio_ctx.get_package_info(package_name)
 
     # -- Get the platform package selector of this platform (the package
     # -- selectors  are specified in platforms.jsonc). E.g. 'darwin_arm64'
@@ -44,13 +40,6 @@ def _construct_package_download_url(
     if util.is_debug():
         cout(f"Package URL vars: {url_vars}")
 
-    # -- Get the compressed name of the package. This is base name of the
-    # -- downloaded file. E.g. "tools-oss-cad-suite-${P}-${V}"
-    file_name = package_info["release"]["file_name"]
-
-    # -- Get the package file name extension. e.g. 'tar.gz'.
-    extension = package_info["release"]["extension"]
-
     # -- Define the url parts.
     url_parts = [
         "https://github.com/",
@@ -60,9 +49,7 @@ def _construct_package_download_url(
         "/releases/download/",
         package_remote_config.release_tag,
         "/",
-        file_name,
-        ".",
-        extension,
+        package_remote_config.release_file,
     ]
 
     if util.is_debug():
@@ -317,7 +304,7 @@ def install_package(
 
     # -- Construct the download URL.
     download_url = _construct_package_download_url(
-        apio_ctx, package_name, target_version, package_config
+        apio_ctx, target_version, package_config
     )
     if verbose:
         cout(f"Download URL: {download_url}")

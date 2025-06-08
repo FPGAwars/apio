@@ -29,6 +29,8 @@ class PackageRemoteConfig:
     release_version: str
     # -- E.g. ${T}
     release_tag: str
+    # -- E.g. tools-oss-cad-suite-${P}-${V}.tar.gz
+    release_file: str
 
 
 class Profile:
@@ -160,12 +162,14 @@ class Profile:
         repo_organization = remote_config["repository"]["organization"]
         release_version = remote_config["release"]["version"]
         release_tag = remote_config["release"]["tag"]
+        release_file = remote_config["release"]["file"]
 
         return PackageRemoteConfig(
             repo_name=repo_name,
             repo_organization=repo_organization,
             release_version=release_version,
             release_tag=release_tag,
+            release_file=release_file,
         )
 
     def load(self):

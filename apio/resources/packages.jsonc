@@ -4,6 +4,7 @@
 // Additional packages information is fetched dynamically from the remote 
 // config and is saved in .apio/profile.json.
 //
+// TODO: Delete "file_name" and "extension". They move to the remote config.
 {
   "examples": {
     "release": {
