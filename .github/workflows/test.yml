@@ -15,6 +15,10 @@ on:
   # Can be launched manually in github actions tab.
   workflow_dispatch:  # Allows manual trigger
     inputs:
+        remote_config_url:
+          description: 'APIO_REMOTE_CONFIG_URL override'
+          required: false
+          default: ''
         verbose:
           description: 'Verbose [false|true]'
           required: false
