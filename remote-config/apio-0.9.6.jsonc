@@ -1,12 +1,16 @@
 // Remote config file for Apio 0.9.6
-// See installer.py for the var ${P}, ${V}, ${T}.
+// See installer.py for the vars ${P}, ${V}, ${T}.
+//
+// ${P} - Platform: Platform 'package selector' (from platforms.jsonc)
+// ${V} - Version:  The value of the "version" field here. E.g. "0.9.7"
+// ${T} - Tag:      ${V} with "." replaced with "-". E.g. "0-9-7"
+//
 {
   "packages": {
     // -- Examples
     "examples": {
       "repository": {
         "name": "apio-examples",
-        // "organization": "zapta"
         "organization": "FPGAwars"
       },
       "release": {
