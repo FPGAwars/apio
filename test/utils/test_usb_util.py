@@ -48,19 +48,19 @@ def test_filtering():
     assert filt.filter(devs) == [devs[1], devs[2], devs[3]]
 
     # -- Filter by description regex
-    filt = UsbDeviceFilter().set_desc_regex("no-such-device")
+    filt = UsbDeviceFilter().set_product_regex("no-such-device")
     assert filt.summary() == '[REGEX="no-such-device"]'
     assert filt.filter(devs) == []
 
-    filt = UsbDeviceFilter().set_desc_regex("^p2$")
+    filt = UsbDeviceFilter().set_product_regex("^p2$")
     assert filt.summary() == '[REGEX="^p2$"]'
     assert filt.filter(devs) == [devs[2]]
 
-    filt = UsbDeviceFilter().set_desc_regex("p2")
+    filt = UsbDeviceFilter().set_product_regex("p2")
     assert filt.summary() == '[REGEX="p2"]'
     assert filt.filter(devs) == [devs[2]]
 
-    filt = UsbDeviceFilter().set_desc_regex("(p3)|(p2)")
+    filt = UsbDeviceFilter().set_product_regex("(p3)|(p2)")
     assert filt.summary() == '[REGEX="(p3)|(p2)"]'
     assert filt.filter(devs) == [devs[2], devs[3]]
 

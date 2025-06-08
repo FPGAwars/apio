@@ -43,6 +43,12 @@ class ApioEnv:
         # -- Create the underlying scons env.
         self.scons_env = SConsEnvironment(ENV=os.environ, tools=[])
 
+        # -- Set the location of the scons incremental build database.
+        # -- By default it would be stored in project root dir.
+        self.scons_env.SConsignFile(
+            self.build_env_path.absolute() / "sconsign.dblite"
+        )
+
         # -- Since we ae not using the default environment, make sure it was
         # -- not used unintentionally, e.g. in tests that run create multiple
         # -- scons env in the same session.

@@ -45,136 +45,19 @@ APIO_OPTIONS = [
     "default-env",
 ]
 
-# -- Env options. These are options that appear in the [common] and [env:*]
-# -- sections of apio.ini. The 'require' attribute refers to their appearance
-# -- in the env options after expanding the inheritance.
 
-# -- The options docs here are formatted in the rich-text format of the
-# -- python rich library. See apio_info.py to see how they are
-# -- used.
-ENV_BOARD_OPTION_DOC = """
-The option 'board' specifies the board definition that is used by the \
-project. The board ID must be one of the board IDs, such as 'alhambra-ii', \
-that is listed by the command 'apio boards'.
-
-Example:[code]
-  board = alhambra-ii[/code]
-
-Apio uses the board ID to determine information such as the FPGA part number \
-and the programmer command to use to upload the design to the board.
-
-Apio has resource files with definitions of boards, FPGAs, and programmers. \
-If the project requires custom definitions, you can add custom \
-'boards.jsonc', 'fpgas.jsonc', and 'programmers.jsonc' files in the project \
-directory, and Apio will use them instead.
-"""
-
-ENV_TOP_MODULE_OPTION_DOC = """
-The option 'top-module' specifies the name of the top module of the design. \
-If 'top-module' is not specified, Apio assumes the default name 'main'; \
-however, it is a good practice to always explicitly specify the top module.
-
-Example:[code]
-  top-module = my_main[/code]
-"""
-
-ENV_DEFAULT_TESTBENCH_DOC = """
-The option 'default-testbench' is useful in projects that have more than \
-a single testbench file, because it allows specifying the default testbench \
-that will be simulated when the command 'apio sim' is run without a testbench \
-argument.
-
-Without this option, Apio will exit with an error message if the project \
-contains more than one testbench file and a testbench was not specified in \
-the 'apio sim' command.
-
-Example:[code]
-  default-testbench = my_module_tb.v
-  default-testbench = my_module_tb.sv[/code]
-"""
-
-ENV_DEFINE_DOC = """
-The option 'defines' allows to specify Verilog macros that are \
-passed to tools such as Yosys and Iverilog that parse Verilog code.
-
-Each macro is specified in a separate lines and they are passed to the \
-Verilog parsers as '-D' command lines options. For example the \
-below is passed as '-DDEBUG_MODE -D45'.
-
-Example:[code]
-  defines =
-      DEBUG_MODE
-      SPEED=45[/code]
-"""
-
-ENV_FORMAT_VERIBLE_OPTIONS_DOC = """
-The option 'format-verible-options' allows controlling the operation of the \
-'apio format' command by specifying additional options to the underlying \
-'verible' formatter.
-
-Example:[code]
-  format-verible-options =
-      --column_limit=80
-      --indentation_spaces=4[/code]
-
-For the list of the Verible formatter options, run the command \
-'apio raw -- verible-verilog-format --helpfull'
-"""
-
-ENV_YOSYS_SYNTH_EXTRA_OPTIONS_DOC = """
-The option 'yosys-synth-extra-options' allows adding options to the \
-yosys synth command. In the example below, it adds the option '-dsp', \
-which enables for some FPGAs the use of DSP cells to implement multiply \
-operations. This is an advanced and esoteric option that is typically \
-not needed.
-
-Example:[code]
-  yosys-synth-extra-options = -dsp[/code]
-"""
-
-ENV_YOSYS_SYNTH_EXTRA_OPTIONS_DOC = """
-The option 'yosys-synth-extra-options' allows adding options to the \
-yosys synth command. In the example below, it adds the option '-dsp', \
-which enables for some FPGAs the use of DSP cells to implement multiply \
-operations. This is an advanced and esoteric option that is typically \
-not needed.
-
-Example:[code]
-  yosys-synth-extra-options = -dsp[/code]
-"""
-
-ENV_PROGRAMMER_CMD_DOC = """
-The option 'programmer-cmd' allows to override the programmer command used \
-by 'apio upload'. It is intended for special cases and should be avoided \
-if possible.
-
-Example:[code]
-  programmer-cmd = iceprog -d i:0x${VID}:0x${PID} ${BIN_FILE}[/code]
-
-[HINT] The list of supported placeholders is available in the apio's
-standard boards definitions files 'boards.jsonc'.
-"""
-
-# -- Keep the list below in alphabetical order. This is the order that
-# -- 'apio info apio.ini' uses.
+# -- All env options.
 ENV_OPTIONS = {
-    # -- The board name.
-    "board": ENV_BOARD_OPTION_DOC,
-    # -- The default testbench name for 'apio sim'.
-    "default-testbench": ENV_DEFAULT_TESTBENCH_DOC,
-    # -- Verilog macro definitions.
-    "defines": ENV_DEFINE_DOC,
-    # -- Multi line list of verible options for 'apio format'
-    "format-verible-options": ENV_FORMAT_VERIBLE_OPTIONS_DOC,
-    # -- Overrides the programmer command.
-    "programmer-cmd": ENV_PROGRAMMER_CMD_DOC,
-    # -- The top module name. Default is 'main'.
-    "top-module": ENV_TOP_MODULE_OPTION_DOC,
-    # -- Additional option for the yosys synth command (inside the -p arg).
-    "yosys-synth-extra-options": ENV_YOSYS_SYNTH_EXTRA_OPTIONS_DOC,
+    "board",
+    "default-testbench",
+    "defines",
+    "format-verible-options",
+    "programmer-cmd",
+    "top-module",
+    "yosys-synth-extra-options",
 }
 
-# -- The subset of the options in OPTIONS that are required.
+# -- The subset ENV_OPTIONS that is required.
 ENV_REQUIRED_OPTIONS = {
     "board",
 }

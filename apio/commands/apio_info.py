@@ -7,24 +7,21 @@
 # -- License GPLv2
 """Implementation of 'apio info' command"""
 
-import sys
 import re
 import click
 from rich.table import Table
 from rich import box
 from rich.color import ANSI_COLOR_NAMES
-from apio.common.apio_styles import BORDER, EMPH1, EMPH3, TITLE, INFO
+from apio.common.apio_styles import BORDER, EMPH1, EMPH3
 from apio.utils import util, cmd_util
 from apio.utils.cmd_util import check_at_most_one_param
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
-from apio.managers import project
 from apio.common.apio_console import (
     PADDING,
     docs_text,
     docs_rule,
     cout,
-    cerror,
     cstyle,
     cprint,
 )
@@ -116,121 +113,7 @@ def _cli_cli():
         cout()
 
 
-# -- apio info apio.ini
-
-# -- Text in the rich-text format of the python rich library.
-APIO_INFO_APIO_INO_HELP = """
-The command 'apio info apio.ini' provides information about the required \
-project file 'apio.ini'.
-
-Examples:[code]
-  apio info apio.ini              # List an overview and all options.
-  apio info apio.ini top-module   # List a single option.[/code]
-"""
-
-# -- Text in the rich-text format of the python rich library.
-APIO_INI_DOC = f"""
-[{TITLE}]APIO PROJECT CONFIGURATION FILE[/]
-
-Every Apio project is required to have in its root directory a text file \
-named [b]apio.ini[/] that contains the project configuration. At minimum, \
-the file looks like the example below with a single 'env' section that with \
-the require configuration options.
-
-Example:[code]
-  \\[env:default]
-  board = alhambra-ii   # Board id
-  top-module = my_main  # Top module name[/code]
-
-The apio.ini file can contains multiple named env sections, a common section \
-with options that are shared between envs and a section called apio which \
-allow to define the default env.
-
-Example:[code]
-  ; Optional \\[apio] section.
-  \\[apio]
-  default-env = env2
-
-  ; Optional \\[common] section.
-  \\[common]
-  board = alhambra-ii
-  top-module = main
-
-  ; Required first env section.
-  \\[env:env1]
-  default-testbench = main_tb.v
-
-  ; Optional additional env section(s).
-  \\[env:env2]
-  default-testbench = io_module_tb.v[/code]
-
-The above example defines two environments, called 'env1' and 'env2' \
-(default), each with the options in the \\[common] section and the additional \
-options from their respective sections.
-
-At runtime, apio select the environment to use based on this rules in \
-[b]decreasing[/b] levels of priorities:
-
-- User specified environment name using the --env command line option.
-- The value of default-env if exists in the \\[apio] section.
-- The first env section that is listed in apio.ini.
-
-When apio determines the environment to use, it collects its options from the \
-\\[common] and the env section, with options in the env section having higher \
-priority, and executes the command with these expanded environment options.
-
-Following is a list of the options that can appear in the \\[common] and \
-the \\[env:*] section. The terms 'required' and 'optional' refers to the \
-presence of the options in the options expanded from the \\[common] and the \
-\\[env:name] sections.
-"""
-
-
-@click.command(
-    name="apio.ini",
-    cls=cmd_util.ApioCommand,
-    short_help="Apio.ini options.",
-    help=APIO_INFO_APIO_INO_HELP,
-)
-@click.argument("option", nargs=1, required=False)
-def _apio_ini_cli(
-    # Argument
-    option: str,
-):
-    """Implements the 'apio info apio.ini' command."""
-
-    # -- If option was specified, validate it.
-    if option:
-        if option not in project.ENV_OPTIONS:
-            cerror(f"No such api.ini option: '{option}'")
-            cout(
-                "For the list of all apio.ini options, type "
-                "'apio info apio.ini'.",
-                style=INFO,
-            )
-            sys.exit(1)
-
-    # -- If printing all the options, print first the overview.
-    if not option:
-        docs_text(APIO_INI_DOC)
-
-    # -- Determine options to print
-    options = [option] if option else project.ENV_OPTIONS.keys()
-
-    # -- Print the initial separator line.
-    docs_rule()
-    for opt in options:
-        # -- Print option's title.
-        is_required = opt in project.ENV_REQUIRED_OPTIONS
-        req = "REQUIRED" if is_required else "OPTIONAL"
-        styled_option = cstyle(opt.upper(), style=TITLE)
-        cout()
-        cout(f"{styled_option} option ({req})")
-
-        # -- Print the option's text.
-        text = project.ENV_OPTIONS[opt]
-        docs_text(text)
-        docs_rule()
+#
 
 
 # -- apio info files
@@ -249,8 +132,7 @@ APIO_INFO_FILES_DOC = """
 Following are apio conventions for project file names. The list does not \
 include files that are specific to a particular architecture or toolchain.
 
-[b]apio.ini[/] - This is a required project configuration configuration. \
-Run 'apio info apio.ini' for the list of supported options.
+[b]apio.ini[/] - This is a required project configuration configuration.
 
 [b]*.v, *.sv[/] - Verilog and System Verilog synthesis sources files \
 (unless they match the testbench patterns below).
@@ -261,10 +143,6 @@ Run 'apio info apio.ini' for the list of supported options.
 
 [b]_build[/] - This is an auto created directory that contains the generated \
 files. The directory '_build' is removed when the command 'apio clean' is run.
-
-[b].sconsign.dblite[/] - This is a cache info file that is created by the \
-Apio in the project directory and can be ignored and removed. The file \
-`.sconsign.dblite` is removed when the command 'apio clean' is run.
 
 [NOTE] If using git for your project, it is recommended to have the following \
 entires in your '.gitignore' file:
@@ -408,9 +286,16 @@ def _system_cli():
     table.add_row("Apio version", util.get_apio_version())
     table.add_row("Python version", util.get_python_version())
     table.add_row("Platform id", apio_ctx.platform_id)
-    table.add_row("Python package", str(util.get_path_in_apio_package("")))
+    table.add_row(
+        "Apio Python package", str(util.get_path_in_apio_package(""))
+    )
     table.add_row("Apio home", str(apio_ctx.home_dir))
     table.add_row("Apio packages", str(apio_ctx.packages_dir))
+    table.add_row("Remote config", apio_ctx.profile.remote_config_url)
+    table.add_row(
+        "Veriable formatter",
+        str(apio_ctx.packages_dir / "verible/bin/verible-verilog-format"),
+    )
     table.add_row(
         "Veriable language server",
         str(apio_ctx.packages_dir / "verible/bin/verible-verilog-ls"),
@@ -613,7 +498,7 @@ SUBGROUPS = [
     ApioSubgroup(
         "Documentation",
         [
-            _apio_ini_cli,
+            # _apio_ini_cli,
             _cli_cli,
             _files_cli,
             _resources_cli,

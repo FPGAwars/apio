@@ -61,7 +61,7 @@ def list_fpgas(apio_ctx: ApioContext, verbose: bool):
         # -- Construct the Entry for this fpga.
         board_count = boards_counts.get(fpga, 0)
         fpga_arch = fpga_info.get("arch", "")
-        fpga_part_num = fpga_info.get("part_num", "")
+        fpga_part_num = fpga_info.get("part-num", "")
         fpga_size = fpga_info.get("size", "")
         fpga_type = fpga_info.get("type", "")
         fpga_pack = fpga_info.get("pack", "")

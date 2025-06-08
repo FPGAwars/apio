@@ -211,25 +211,7 @@ def cout(
         if nl:
             console().out("")
 
-
-def cerror(*text_lines: str) -> None:
-    """Prints one or more text lines, adding to the first one the prefix
-    'Error: ' and applying to all of them the red color."""
-    # -- Output the first line.
-    console().out(f"Error: {text_lines[0]}", style=ERROR, highlight=False)
-    # -- Output the rest of the lines.
-    for text_line in text_lines[1:]:
-        console().out(text_line, highlight=False, style=ERROR)
-
-
-def cwarning(*text_lines: str) -> None:
-    """Prints one or more text lines, adding to the first one the prefix
-    'Warning: ' and applying to all of them the yellow color."""
-    # -- Emit first line.
-    console().out(f"Warning: {text_lines[0]}", style=WARNING, highlight=False)
-    # -- Emit the rest of the lines
-    for text_line in text_lines[1:]:
-        console().out(text_line, highlight=False, style=WARNING)
+    console().file.flush()
 
 
 def cprint(
@@ -242,6 +224,36 @@ def cprint(
         highlight=highlight,
         style=style,
     )
+    console().file.flush()
+
+
+def cwrite(s: str) -> None:
+    """A low level output that doesn't do any formatting, style, line
+    terminator and so on. Flushing is important"""
+    console().file.write(s)
+    console().file.flush()
+
+
+def cerror(*text_lines: str) -> None:
+    """Prints one or more text lines, adding to the first one the prefix
+    'Error: ' and applying to all of them the red color."""
+    # -- Output the first line.
+    console().out(f"Error: {text_lines[0]}", style=ERROR, highlight=False)
+    # -- Output the rest of the lines.
+    for text_line in text_lines[1:]:
+        console().out(text_line, highlight=False, style=ERROR)
+    console().file.flush()
+
+
+def cwarning(*text_lines: str) -> None:
+    """Prints one or more text lines, adding to the first one the prefix
+    'Warning: ' and applying to all of them the yellow color."""
+    # -- Emit first line.
+    console().out(f"Warning: {text_lines[0]}", style=WARNING, highlight=False)
+    # -- Emit the rest of the lines
+    for text_line in text_lines[1:]:
+        console().out(text_line, highlight=False, style=WARNING)
+    console().file.flush()
 
 
 class ConsoleCapture:

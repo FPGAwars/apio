@@ -614,11 +614,7 @@ def _print_pnr_report(
     if not clock_report_printed:
         cout("No clocks were found in the design.", style=INFO)
     if not verbose:
-        cout(
-            "Run 'apio report --verbose' for more details.",
-            nl=False,
-            style=INFO,
-        )
+        cout("Run 'apio report --verbose' for more details.", style=INFO)
 
 
 def report_action(clk_name_index: int, verbose: bool) -> FunctionAction:

@@ -57,7 +57,7 @@ class UsbDevice:
     bus: int
     device: int
     manufacturer: str
-    description: str
+    product: str
     serial_number: str
     device_type: str
 
@@ -71,7 +71,7 @@ class UsbDevice:
         return (
             f"[{self.vendor_id}:{self.product_id}, "
             f"{self.bus}:{self.device}], [{self.manufacturer}] "
-            f"[{self.description}] [{self.serial_number}]"
+            f"[{self.product}] [{self.serial_number}]"
         )
 
 
@@ -168,7 +168,7 @@ def scan_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
                 device.iManufacturer,
                 default=unavail,
             ),
-            description=_get_usb_str(device, device.iProduct, default=unavail),
+            product=_get_usb_str(device, device.iProduct, default=unavail),
             serial_number=_get_usb_str(
                 device, device.iSerialNumber, default=""
             ),
@@ -205,7 +205,7 @@ class UsbDeviceFilter:
 
     _vendor_id: str = None
     _product_id: str = None
-    _desc_regex: str = None
+    product_regex: str = None
     _serial_num: str = None
 
     def summary(self) -> str:
@@ -216,8 +216,8 @@ class UsbDeviceFilter:
             terms.append(f"VID={self._vendor_id}")
         if self._product_id:
             terms.append(f"PID={self._product_id}")
-        if self._desc_regex:
-            terms.append(f'REGEX="{self._desc_regex}"')
+        if self.product_regex:
+            terms.append(f'REGEX="{self.product_regex}"')
         if self._serial_num:
             terms.append(f'S/N="{self._serial_num}"')
         if terms:
@@ -236,10 +236,10 @@ class UsbDeviceFilter:
         self._product_id = product_id
         return self
 
-    def set_desc_regex(self, desc_regex: str) -> "UsbDeviceFilter":
-        """Pass only devices whose description match given regex."""
-        assert desc_regex
-        self._desc_regex = desc_regex
+    def set_product_regex(self, product_regex: str) -> "UsbDeviceFilter":
+        """Pass only devices whose product string match given regex."""
+        assert product_regex
+        self.product_regex = product_regex
         return self
 
     def set_serial_num(self, serial_num: str) -> "UsbDeviceFilter":
@@ -260,8 +260,8 @@ class UsbDeviceFilter:
         ):
             return False
 
-        if (self._desc_regex is not None) and not re.search(
-            self._desc_regex, device.description
+        if (self.product_regex is not None) and not re.search(
+            self.product_regex, device.product
         ):
             return False
 

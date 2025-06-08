@@ -7,7 +7,6 @@
 # -- License GPLv2
 """Implementation of 'apio packages' command"""
 
-from typing import Tuple
 import click
 from rich.table import Table
 from rich import box
@@ -20,12 +19,12 @@ from apio.commands import options
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
 
-def print_packages_report(apio_ctx: ApioContext) -> None:
+def print_packages_report(apio_ctx: ApioContext, verbose: bool) -> None:
     """A common function to print the state of the packages."""
 
     # -- Scan the packages
     scan = pkg_util.scan_packages(
-        apio_ctx, cached_config_ok=False, verbose=False
+        apio_ctx, cached_config_ok=False, verbose=verbose
     )
 
     # -- Shortcuts to reduce clutter.
@@ -113,144 +112,75 @@ def print_packages_report(apio_ctx: ApioContext) -> None:
 
     # -- Print summary.
     cout()
-    if not scan.packages_installed_ok():
-        cout(
-            "Run 'apio packages install' to install all packages.",
-            style=INFO,
-        )
-    elif scan.num_errors_to_fix():
-        cout(
-            "Run 'apio packages fix' to fix the errors.",
-            style=INFO,
-        )
-    else:
+    if scan.is_all_ok():
         cout("All Apio packages are installed OK.", style=SUCCESS)
+    else:
+        cout(
+            "Run 'apio packages update' to update the packages.",
+            style=INFO,
+        )
 
 
-# ------ apio packages install
+# ------ apio packages update
 
 # -- Text in the rich-text format of the python rich library.
-APIO_PACKAGES_INSTALL_HELP = """
-The command 'apio packages install' installs Apio packages that are required \
-for the operation of Apio on your system.
+APIO_PACKAGES_UPDATE_HELP = """
+The command 'apio packages update' updates the installed Apio packages  \
+to their latest requirements.
 
 Examples:[code]
-  apio packages install                   # Install missing packages.
-  apio pack inst                          # Same, with shortcuts
-  apio packages install --force           # Reinstall all packages.
-  apio packages install oss-cad-suite     # Install package.
-  apio packages install examples@0.0.32   # Install a specific version.[/code]
+  apio packages update            # Update packages
+  apio pack upd                   # Same, with shortcuts
+  apio packages update --force    # Force reinstallation from scratch
+  apio packages update --verbose  # Provide additional info
 
 Adding the '--force' option forces the reinstallation of existing packages; \
 otherwise, packages that are already installed correctly remain unchanged.
+
+It is highly recommended to run the 'apio packages update' once in a while \
+because it check the Apio remote server for the latest packages versions \
+which may included fixes and enhancements such as new examples that were \
+added to the examples package.
 """
 
 
 @click.command(
-    name="install",
+    name="update",
     cls=ApioCommand,
-    short_help="Install apio packages.",
-    help=APIO_PACKAGES_INSTALL_HELP,
+    short_help="Update apio packages.",
+    help=APIO_PACKAGES_UPDATE_HELP,
 )
-@click.argument("packages", metavar="PACKAGE", nargs=-1, required=False)
-@options.force_option_gen(help="Force installation.")
+@options.force_option_gen(help="Force reinstallation.")
 @options.verbose_option
-def _install_cli(
-    # Arguments
-    packages: Tuple[str],
+def _update_cli(
     # Options
     force: bool,
     verbose: bool,
 ):
-    """Implements the 'apio packages install' command."""
+    """Implements the 'apio packages update' command."""
 
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     cout(f"Platform id '{apio_ctx.platform_id}'")
 
-    # -- First thing, fix broken packages, if any.
+    # -- First thing, fix broken packages, if any. This forces fetching
+    # -- of the latest remote config file.
     installer.scan_and_fix_packages(
         apio_ctx, cached_config_ok=False, verbose=verbose
     )
-
-    # -- If packages where specified, install all the missing ones, if any.
-    scan = pkg_util.scan_packages(
-        apio_ctx, cached_config_ok=False, verbose=False
-    )
-    if not packages:
-        packages = apio_ctx.platform_packages.keys()
 
     # -- Install the packages, one by one.
-    for package in packages:
-        if force or package not in scan.installed_ok_package_names:
-            installer.install_package(
-                apio_ctx,
-                package_spec=package,
-                force_reinstall=force,
-                cached_config_ok=False,
-                verbose=verbose,
-            )
+    for package in apio_ctx.platform_packages:
+        installer.install_package(
+            apio_ctx,
+            package_name=package,
+            force_reinstall=force,
+            cached_config_ok=False,
+            verbose=verbose,
+        )
 
     # -- Scan the available and installed packages.
-    print_packages_report(apio_ctx)
-
-
-# ------ apio packages uninstall
-
-# -- Text in the rich-text format of the python rich library.
-APIO_PACKAGES_UNINSTALL_HELP = """
-The command 'apio packages uninstall' removes installed Apio packages from \
-your system. The command does not uninstall the Apio tool itself.
-
-Examples:[code]
-  apio packages uninstall                    # Uninstall all packages
-  apio packages uninstall oss-cad-suite      # Uninstall a package
-  apio packages uninstall verible examples   # Uninstall two packages[/code]
-"""
-
-
-@click.command(
-    name="uninstall",
-    cls=ApioCommand,
-    short_help="Uninstall apio packages.",
-    help=APIO_PACKAGES_UNINSTALL_HELP,
-)
-@click.argument("packages", metavar="PACKAGE", nargs=-1, required=False)
-@options.verbose_option
-def _uninstall_cli(
-    # Arguments
-    packages: Tuple[str],
-    # Options
-    verbose: bool,
-):
-    """Implements the 'apio packages uninstall' command."""
-
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
-
-    # -- First thing, fix broken packages, if any.
-    installer.scan_and_fix_packages(
-        apio_ctx, cached_config_ok=False, verbose=verbose
-    )
-
-    # -- Scan the packages.
-    scan = pkg_util.scan_packages(
-        apio_ctx, cached_config_ok=False, verbose=False
-    )
-
-    # -- If packages where specified, uninstall all packages.
-    if not packages:
-        packages = apio_ctx.platform_packages.keys()
-
-    # -- Uninstall the packages.
-    for package in packages:
-        # -- Skip packages that are alredy uninstalled.
-        if package not in scan.uninstalled_package_names:
-            installer.uninstall_package(
-                apio_ctx, package_spec=package, verbose=verbose
-            )
-
-    # -- Print updated package report.
-    print_packages_report(apio_ctx)
+    print_packages_report(apio_ctx, verbose=verbose)
 
 
 # ------ apio packages list
@@ -272,46 +202,17 @@ Examples:[code]
     short_help="List apio packages.",
     help=APIO_PACKAGES_LIST_HELP,
 )
-def _list_cli():
+@options.verbose_option
+def _list_cli(
+    # Options
+    verbose: bool,
+):
     """Implements the 'apio packages list' command."""
 
     apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
 
     # -- Print packages report.
-    print_packages_report(apio_ctx)
-
-
-# ------ apio packages fix
-
-# -- Text in the rich-text format of the python rich library.
-APIO_PACKAGES_FIX_HELP = """
-The command 'apio packages fix' removes broken or obsolete packages \
-that are listed as broken by the command 'apio packages list'.
-
-Examples:[code]
-  apio packages fix     # Fix package errors, if any.[/code]
-"""
-
-
-@click.command(
-    name="fix",
-    cls=ApioCommand,
-    short_help="Fix broken apio packages.",
-    help=APIO_PACKAGES_FIX_HELP,
-)
-def _fix_cli():
-    """Implements the 'apio packages fix' command."""
-
-    # -- Create the apio context.
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
-
-    # -- First thing, fix broken packages, if any.
-    installer.scan_and_fix_packages(
-        apio_ctx, cached_config_ok=False, verbose=False
-    )
-
-    # -- Print updated packages report.
-    print_packages_report(apio_ctx)
+    print_packages_report(apio_ctx, verbose=verbose)
 
 
 # ------ apio packages (group)
@@ -320,7 +221,7 @@ def _fix_cli():
 APIO_PACKAGES_HELP = """
 The command group 'apio packages' provides commands to manage the \
 installation of Apio packages. These are not Python packages but \
-Apio-specific packages containing various tools and data essential for the \
+Apio  packages containing various tools and data essential for the \
 operation of Apio.
 
 The list of available packages depends on the operating system you are \
@@ -333,10 +234,8 @@ SUBGROUPS = [
     ApioSubgroup(
         "Subcommands",
         [
-            _install_cli,
-            _uninstall_cli,
+            _update_cli,
             _list_cli,
-            _fix_cli,
         ],
     )
 ]

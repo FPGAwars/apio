@@ -2,7 +2,7 @@
 // the speed (6 | 7 | 8) affects the max clock speed.
 {
   "lfe5u-25f-6bg256c": {
-    "part_num": "LFE5U-25F-6BG256C",
+    "part-num": "LFE5U-25F-6BG256C",
     "arch": "ecp5",
     "size": "25k",
     "type": "25k",

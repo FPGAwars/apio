@@ -20,7 +20,7 @@ class SerialDevice:
     vendor_id: str
     product_id: str
     manufacturer: str
-    description: str
+    product: str
     serial_number: str
     device_type: str
     location: str
@@ -35,7 +35,7 @@ class SerialDevice:
         return (
             f"[{self.port}] "
             f"[{self.vendor_id}:{self.product_id}, "
-            f"[{self.manufacturer}] [{self.description}] "
+            f"[{self.manufacturer}] [{self.product}] "
             f"[{self.serial_number}]"
         )
 
@@ -80,7 +80,7 @@ def scan_serial_devices() -> List[SerialDevice]:
                 vendor_id=f"{port.vid:04X}",
                 product_id=f"{port.pid:04X}",
                 manufacturer=port.manufacturer,
-                description=port.description,
+                product=port.product,
                 serial_number=port.serial_number or "",
                 device_type=usb_util.get_device_type(port.vid, port.pid),
                 location=port.location,
@@ -108,7 +108,7 @@ class SerialDeviceFilter:
 
     _vendor_id: str = None
     _product_id: str = None
-    _desc_regex: str = None
+    _product_regex: str = None
     _serial_port: str = None
     _serial_num: str = None
 
@@ -119,8 +119,8 @@ class SerialDeviceFilter:
             terms.append(f"VID={self._vendor_id}")
         if self._product_id:
             terms.append(f"PID={self._product_id}")
-        if self._desc_regex:
-            terms.append(f'REGEX="{self._desc_regex}"')
+        if self._product_regex:
+            terms.append(f'REGEX="{self._product_regex}"')
         if self._serial_port:
             terms.append(f"PORT={self._serial_port}")
         if self._serial_num:
@@ -141,10 +141,10 @@ class SerialDeviceFilter:
         self._product_id = product_id
         return self
 
-    def set_desc_regex(self, desc_regex: str) -> "SerialDeviceFilter":
-        """Pass only devices whose description match given regex."""
-        assert desc_regex
-        self._desc_regex = desc_regex
+    def set_product_regex(self, product_regex: str) -> "SerialDeviceFilter":
+        """Pass only devices whose product string match given regex."""
+        assert product_regex
+        self._product_regex = product_regex
         return self
 
     def set_port(self, serial_port: str) -> "SerialDeviceFilter":
@@ -171,8 +171,8 @@ class SerialDeviceFilter:
         ):
             return False
 
-        if (self._desc_regex is not None) and not re.search(
-            self._desc_regex, device.description
+        if (self._product_regex is not None) and not re.search(
+            self._product_regex, device.product
         ):
             return False
 

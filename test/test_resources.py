@@ -75,7 +75,7 @@ def test_resources_names(apio_runner: ApioRunner):
             # or its the lower-case part num with a suffix that starts with
             # '-'. E.g, for part num 'PART-NUM', the fpga id can be 'part-num'
             # or 'part-num-somethings'
-            lc_part = lc_part_num(fgpa_info["part_num"])
+            lc_part = lc_part_num(fgpa_info["part-num"])
             assert fpga_id == lc_part or fpga_id.startswith(
                 lc_part + "-"
             ), f"{fpga_id=}"
@@ -103,13 +103,13 @@ def test_fpga_definitions(apio_runner: ApioRunner):
             # -- Ice40
             if arch == "ice40":
                 assert fpga_info.keys() == {
-                    "part_num",
+                    "part-num",
                     "arch",
                     "size",
                     "type",
                     "pack",
                 }, context
-                assert fpga_info["part_num"], context
+                assert fpga_info["part-num"], context
                 assert fpga_info["arch"], context
                 assert fpga_info["size"], context
                 assert fpga_info["type"], context
@@ -119,14 +119,14 @@ def test_fpga_definitions(apio_runner: ApioRunner):
             # -- Ecp5
             if arch == "ecp5":
                 assert set(fpga_info.keys()) == {
-                    "part_num",
+                    "part-num",
                     "arch",
                     "size",
                     "type",
                     "pack",
                     "speed",
                 }, context
-                assert fpga_info["part_num"], context
+                assert fpga_info["part-num"], context
                 assert fpga_info["arch"], context
                 assert fpga_info["size"], context
                 assert fpga_info["type"], context
@@ -137,12 +137,12 @@ def test_fpga_definitions(apio_runner: ApioRunner):
             # -- Gowin
             if arch == "gowin":
                 assert fpga_info.keys() == {
-                    "part_num",
+                    "part-num",
                     "arch",
                     "size",
                     "type",
                 }, context
-                assert fpga_info["part_num"], context
+                assert fpga_info["part-num"], context
                 assert fpga_info["arch"], context
                 assert fpga_info["size"], context
                 assert fpga_info["type"], context

@@ -1,4 +1,4 @@
-"""A python script to print the -h help of all apio commands."""
+"""A python script to generate COMMANDS.md."""
 
 import os
 from typing import List, Self

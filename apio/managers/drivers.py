@@ -387,34 +387,37 @@ class Drivers:
         # -- Get the drivers apio package base folder
         drivers_base_dir = self.apio_ctx.get_package_dir("drivers")
 
-        # -- Path to the zadig.ini file
-        # -- It is the zadig config file
+        # NOTE: Zadig documentation:
+        # https://github.com/pbatard/libwdi/wiki/Zadig?utm_source=chatgpt.com
+
+        # -- Path to the config file zadig.ini.
         zadig_ini_src = drivers_base_dir / "share" / "zadig.ini"
-        zadig_ini_dst = Path("zadig.ini")
 
-        # -- copy the zadig.ini file to the current working folder
-        # -- so that zadig open it when executed
-        shutil.copyfile(zadig_ini_src, zadig_ini_dst)
+        # -- Execute in a tmp directory, this way we don't contaminate the
+        # -- current with zadig.ini, in case the program crashes.
+        # -- Using a fix tmp location prevents accumulation of leftover
+        # -- zadig.ini in case the are not cleaned up properly.
+        # -- We can't store zadig under _build since we don't necessarily
+        # -- run in a context of a project..
+        with util.pushd(self.apio_ctx.get_tmp_dir()):
+            # -- Bring a copy of zadig.ini
+            shutil.copyfile(zadig_ini_src, "zadig.ini")
 
-        # -- Zadig exe file with full path:
-        zadig_exe = drivers_base_dir / "bin" / "zadig.exe"
+            # -- Zadig exe file with full path:
+            zadig_exe = drivers_base_dir / "bin" / "zadig.exe"
 
-        # -- Show messages for the user
-        cout("", "Launching the interactive tool zadig.exe.")
-        cprint(FTDI_INSTALL_INSTRUCTIONS_WINDOWS)
+            # -- Show messages for the user
+            cout("", "Launching zadig.exe.")
+            cprint(FTDI_INSTALL_INSTRUCTIONS_WINDOWS)
 
-        # -- Execute zadig!
-        # -- We execute it using os.system() rather than by
-        # -- util.exec_command() because zadig required permissions
-        # -- elevation.
-        exit_code = os.system(str(zadig_exe))
+            # -- Execute zadig!
+            # -- We execute it using os.system() rather than by
+            # -- util.exec_command() because zadig required permissions
+            # -- elevation.
+            exit_code = os.system(str(zadig_exe))
 
-        # -- Remove zadig.ini from the current folder. It is no longer
-        # -- needed
-        if zadig_ini_dst.exists():
-            zadig_ini_dst.unlink()
-
-        return exit_code
+            # -- All done.
+            return exit_code
 
     def _ftdi_uninstall_windows(self) -> int:
         # -- Check that the required packages exist.

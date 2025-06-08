@@ -163,9 +163,7 @@ class PluginBase:
         def completion_action(source, target, env):  # noqa
             """Action function that prints a completion message."""
             _ = (source, target, env)  # Unused
-            cout(
-                f"Generated {apio_env.target}.{type_str}", style=SUCCESS, nl=""
-            )
+            cout(f"Generated {apio_env.target}.{type_str}", style=SUCCESS)
 
         actions = [
             f"dot -T{type_str} $SOURCES -o $TARGET",

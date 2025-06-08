@@ -66,7 +66,7 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
         board_description = board_info.get("description", "")
         fpga_arch = fpga_info.get("arch", "")
         fpga_size = fpga_info.get("size", "")
-        fpga_part_num = fpga_info.get("part_num", "")
+        fpga_part_num = fpga_info.get("part-num", "")
         fpga_type = fpga_info.get("type", "")
         fpga_pack = fpga_info.get("pack", "")
         fpga_speed = fpga_info.get("speed", "")
@@ -105,7 +105,7 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
     table.add_column("BOARD-ID", no_wrap=True, style=EMPH1)
     table.add_column("EXMPLS", no_wrap=True)
     if verbose:
-        table.add_column("DESCRIPTION", no_wrap=True, max_width=25)
+        table.add_column("PRODUCT", no_wrap=True, max_width=25)
     table.add_column("ARCH", no_wrap=True)
     table.add_column("SIZE", no_wrap=True)
     if verbose:

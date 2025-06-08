@@ -367,8 +367,7 @@ def test_validation_errors(apio_runner: ApioRunner, capsys: LogCaptureFixture):
         apio_ini={
             "[env:default]": {"board": "alhambra-ii"},
         },
-        expected_error="Active env options [APIO_HOME].\nError: "
-        "Env 'no-such-env' not found in apio.ini",
+        expected_error="Error: Env 'no-such-env' not found in apio.ini",
         apio_runner=apio_runner,
         capsys=capsys,
     )

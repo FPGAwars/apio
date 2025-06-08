@@ -9,10 +9,9 @@ Used by the 'apio packages' command.
 
 import sys
 from pathlib import Path
-from typing import Tuple
 import shutil
-from apio.common.apio_console import cout, cerror
-from apio.common.apio_styles import INFO, WARNING, ERROR, SUCCESS, EMPH3
+from apio.common.apio_console import cout, cerror, cstyle
+from apio.common.apio_styles import WARNING, ERROR, SUCCESS, EMPH3
 from apio.apio_context import ApioContext
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
@@ -24,58 +23,66 @@ def _construct_package_download_url(
     apio_ctx: ApioContext,
     package_name: str,
     target_version: str,
-    package_config: PackageRemoteConfig,
+    package_remote_config: PackageRemoteConfig,
 ) -> str:
-    """Construct the download URL for the given package name and version.
-
-    Sample output:
-    'https://github.com/FPGAwars/tools-oss-cad-suite/releases/download/
-                       v0.0.9/tools-oss-cad-suite-darwin_arm64-0.0.9.tar.gz'
-    """
+    """Construct the download URL for the given package name and version."""
 
     # -- Get the package info (originated from packages.jsonc)
     package_info = apio_ctx.get_package_info(package_name)
 
-    # -- Get the package selector of this platform (the package selectors
-    # -- are specified in platforms.jsonc). E.g. 'darwin_arm64'
+    # -- Get the platform package selector of this platform (the package
+    # -- selectors  are specified in platforms.jsonc). E.g. 'darwin_arm64'
     platform_id = apio_ctx.platform_id
-    package_selector = apio_ctx.platforms[platform_id]["package_selector"]
+    platform_selector = apio_ctx.platforms[platform_id]["package_selector"]
+
+    # -- Create vars mapping.
+    url_vars = {
+        "${P}": platform_selector,
+        "${V}": target_version,
+        "${T}": target_version.replace(".", "-"),
+    }
+    if util.is_debug():
+        cout(f"Package URL vars: {url_vars}")
 
     # -- Get the compressed name of the package. This is base name of the
-    # -- downloaded file. E.g. "tools-oss-cad-suite-%P-%V"
+    # -- downloaded file. E.g. "tools-oss-cad-suite-${P}-${V}"
     file_name = package_info["release"]["file_name"]
-
-    # -- Replace %P, if any, with package selector.
-    file_name = file_name.replace("%P", package_selector)
-
-    # -- Replace %V, if any,  with the package version
-    file_name = file_name.replace("%V", target_version)
 
     # -- Get the package file name extension. e.g. 'tar.gz'.
     extension = package_info["release"]["extension"]
 
-    # -- Construct the package file name.
-    # -- E.g. 'atools-oss-cad-suite-darwin_arm64-0.0.9.tar.gz'
-    file_name = f"{file_name}.{extension}"
+    # -- Define the url parts.
+    url_parts = [
+        "https://github.com/",
+        package_remote_config.repo_organization,
+        "/",
+        package_remote_config.repo_name,
+        "/releases/download/",
+        package_remote_config.release_tag,
+        "/",
+        file_name,
+        ".",
+        extension,
+    ]
 
-    # -- Get the github repo name. e.g. 'tools-oss-cad-tools'
-    repo_name = package_config.repo_name
+    if util.is_debug():
+        cout(f"package url parts = {url_parts}")
 
-    # -- Get the github user name. E.g. 'FGPAWars'.
-    repo_organization = package_config.repo_organization
+    # -- Concatanate the URL parts.
+    url = "".join(url_parts)
 
-    # -- Construct the release tag name. E.g 'v0.0.9'.
-    release_tag = package_info["release"]["release_tag"].replace(
-        "%V", target_version
-    )
+    if util.is_debug():
+        cout(f"Combined package url: {url}")
 
-    # -- Construct the full url.
-    download_url = (
-        f"https://github.com/{repo_organization}/{repo_name}/releases/"
-        f"download/{release_tag}/{file_name}"
-    )
+    # -- Replace placeholders with values.
+    for name, val in url_vars.items():
+        url = url.replace(name, val)
 
-    return download_url
+    if util.is_debug():
+        cout(f"Resolved package url: {url}")
+
+    # -- All done.
+    return url
 
 
 def _download_package_file(url: str, dir_path: Path) -> str:
@@ -137,27 +144,6 @@ def _unpack_package_file(package_file: Path, package_dir: Path) -> None:
     if not ok:
         cerror(f"Failed to unpack package file {package_file}")
         sys.exit(1)
-
-
-def _parse_package_spec(package_spec: str) -> Tuple[str, str]:
-    """Parse package spec into package name and optional version.
-    Returns a tuple (name, version || None), exits with error message if
-    any error.
-
-    E.g.
-      'my_package@1.2.3' -> ('my_package', '1.2.3')
-      'my_package'       -> ('my_package', None)
-    """
-    tokens = package_spec.split("@")
-    if len(tokens) not in [1, 2]:
-        cerror(f"Invalid package spec '{package_spec}")
-        cout("Try 'my_package' or  'my_package@0.1.2'", style=INFO)
-        sys.exit(1)
-
-    package_name = tokens[0]
-    package_version = tokens[1] if len(tokens) > 1 else ""
-
-    return (package_name, package_version)
 
 
 def _delete_package_dir(
@@ -235,7 +221,7 @@ def install_missing_packages_on_the_fly(apio_ctx: ApioContext) -> None:
         if package_name not in installed_packages:
             install_package(
                 apio_ctx,
-                package_spec=package_name,
+                package_name=package_name,
                 force_reinstall=False,
                 cached_config_ok=False,
                 verbose=False,
@@ -256,64 +242,78 @@ def install_missing_packages_on_the_fly(apio_ctx: ApioContext) -> None:
 def install_package(
     apio_ctx: ApioContext,
     *,
-    package_spec: str,
+    package_name: str,
     force_reinstall: bool,
-    cached_config_ok,
+    cached_config_ok: bool,
     verbose: bool,
 ) -> None:
     """Install a given package.
 
     'apio_ctx' is the context object of this apio invocation.
-    'package_spec' is a package name with optional version suffix
-        e.b. 'drivers', 'drivers@1.2.0'.
+    'package_name' is the package name, e.g. 'examples' or 'oss-cad-suite'.
     'force' indicates if to perform the installation even if a matching
         package is already installed.
+    'explicit' indicates that the user specified the package name(s) explicitly
+    and thus expect more feedback in case of a 'no change'
     'verbose' indicates if to print extra information.
 
     Returns normally if no error, exits the program with an error status
     and a user message if an error is detected.
     """
 
-    # -- Parse the requested package spec.
-    package_name, target_version = _parse_package_spec(package_spec)
+    # -- Caller is responsible to check check that package name is valid
+    # -- on this platform.
+    assert package_name in apio_ctx.platform_packages, package_name
 
-    # -- Exit if no such package for this platform.
-    if package_name not in apio_ctx.platform_packages:
-        cerror(f"No such package '{package_name}'")
-        sys.exit(1)
+    # -- Set up installation announcement
+    pending_announcement = cstyle(
+        f"Installing apio package '{package_name}'", style=EMPH3
+    )
 
-    cout(f"Installing apio package '{package_spec}'", style=EMPH3)
+    # -- If in chatty mode, announce now and clear. Otherwise we will
+    # -- announce later only if actually installing.
+    if verbose:
+        cout(pending_announcement)
+        pending_announcement = None
 
-    # -- Get package remote config.
-    package_config = apio_ctx.profile.get_package_config(
+    # -- Get package remote config from the cache. Caller can refresh the
+    # -- cache with the latest remote config if desired.
+    package_config: PackageRemoteConfig = apio_ctx.profile.get_package_config(
         package_name, cached_config_ok=cached_config_ok, verbose=verbose
     )
 
-    # -- If the user didn't specify a target version we use the one specified
-    # -- in the remote config.
-    if not target_version:
-        target_version = package_config.required_version
+    # -- Get the version we should have.
+    target_version = package_config.release_version
 
-    cout(f"Target version {target_version}")
-
-    # -- If not forcing and the target version already installed nothing to do.
+    # -- If not forcing and the target version already installed then
+    # -- nothing to do and we leave quietly.
     if not force_reinstall:
-        # -- Get the version of the installed package, None otherwise.
+        # -- Get the version of the installed package, None if not installed.
         installed_version = apio_ctx.profile.get_package_installed_version(
             package_name, default=None
         )
 
         if verbose:
-            cout(f"Installed version {installed_version}", style=SUCCESS)
+            cout(f"Installed version: {installed_version}")
 
         # -- If the installed and the target versions are the same then
         # -- nothing to do.
         if target_version == installed_version:
-            cout(
-                f"Version {target_version} was already installed",
-                style=SUCCESS,
-            )
+            if verbose:
+                cout(
+                    f"Version {target_version} is already installed",
+                    style=SUCCESS,
+                )
             return
+
+    # -- Here we need to fetch and install so can be more chatty.
+
+    # -- Here we actually do the work. Announce if we haven't done it yet.
+    if pending_announcement:
+        cout(pending_announcement)
+        pending_announcement = True
+
+    cout(f"Fetching version {target_version}")
 
     # -- Construct the download URL.
     download_url = _construct_package_download_url(
@@ -354,46 +354,6 @@ def install_package(
 
     # -- Inform the user!
     cout(f"Package '{package_name}' installed successfully", style=SUCCESS)
-
-
-def uninstall_package(
-    apio_ctx: ApioContext, *, package_spec: str, verbose: bool
-):
-    """Uninstall the apio package"""
-
-    # -- Parse package spec. We ignore the version silently.
-    package_name, _ = _parse_package_spec(package_spec)
-
-    package_info = apio_ctx.platform_packages.get(package_name, None)
-    if not package_info:
-        cerror(f"No such package '{package_name}'")
-        sys.exit(1)
-
-    cout(f"Uninstalling apio package '{package_name}'", style=EMPH3)
-
-    # -- Remove the folder with all its content!!
-    dir_existed = _delete_package_dir(apio_ctx, package_name, verbose)
-
-    installed_version = apio_ctx.profile.get_package_installed_version(
-        package_name, None
-    )
-
-    # -- Remove the package from the profile file
-    apio_ctx.profile.remove_package(package_name)
-    # apio_ctx.profile.save()
-
-    # -- Check that it is a folder...
-    if dir_existed or installed_version:
-
-        # -- Inform the user
-        cout(
-            f"Package '{package_name}' uninstalled successfully", style=SUCCESS
-        )
-    else:
-        # -- Package not installed. We treat it as a success.
-        cout(
-            f"Package '{package_name}' was already uninstalled", style=SUCCESS
-        )
 
 
 def _fix_packages(

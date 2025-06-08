@@ -15,6 +15,10 @@ on:
   # Can be launched manually in github actions tab.
   workflow_dispatch:  # Allows manual trigger
     inputs:
+        remote_config_url:
+          description: 'APIO_REMOTE_CONFIG_URL override'
+          required: false
+          default: ''
         verbose:
           description: 'Verbose [false|true]'
           required: false
@@ -53,6 +57,18 @@ jobs:
             - name: Install dependencies
               run: |
                   make deps
+
+            - name: Maybe set APIO_REMOTE_CONFIG_URL
+              run: |
+                  # If the remote config url manual input was specified. pass
+                  # it via the env to the tested apio. This var passing is
+                  # enabled in tox.ini.
+                  if [ -n '${{inputs.remote_config_url}}' ]; then
+                      echo 'APIO_REMOTE_CONFIG_URL=${{inputs.remote_config_url}}' >> $GITHUB_ENV
+                      echo "Using APIO_REMOTE_CONFIG_URL"
+                  else
+                      echo "Not using APIO_REMOTE_CONFIG_URL"
+                  fi
 
             - name: Run Tests
               run: |

@@ -14,19 +14,21 @@ import requests
 from apio.common import apio_console
 from apio.common.apio_console import cout, cerror, cprint
 from apio.common.apio_styles import INFO, EMPH3, ERROR
-from apio.utils import util, jsonc
+from apio.utils import util, jsonc, env_options
 
 
 @dataclass(frozen=True)
 class PackageRemoteConfig:
     """Contains a package info from the remote config."""
 
-    # -- E.g. "0.2.3"
-    required_version: str
     # -- E.g. "tools-oss-cad-suite"
     repo_name: str
     # -- E.g. "FPGAwars"
     repo_organization: str
+    # -- E.g. "0.2.3"
+    release_version: str
+    # -- E.g. ${T}
+    release_tag: str
 
 
 class Profile:
@@ -35,13 +37,13 @@ class Profile:
     """
 
     def __init__(self, home_dir: Path, remote_config_url_template: str):
-        """remote_config_url_template is a url string with a "%V"
+        """remote_config_url_template is a url string with a "${V}"
         placeholder for the apio version such as "0.9.6."""
 
-        # -- Resolve and cache the remote config url. We replace any %V with
+        # -- Resolve and cache the remote config url. We replace any ${V} with
         # -- the apio version such as "0.9.6".
         self.remote_config_url = remote_config_url_template.replace(
-            "%V", util.get_apio_version()
+            "${V}", util.get_apio_version()
         )
 
         # -- Verify that we resolved all the placeholders.
@@ -152,15 +154,18 @@ class Profile:
             cached_config_ok=cached_config_ok, verbose=verbose
         )
 
-        package_info = config["packages"][package_name]
-        required_version = package_info["version"]
-        repo_name = package_info["repository"]["name"]
-        repo_organization = package_info["repository"]["organization"]
+        # -- Extract package's remote config.
+        remote_config = config["packages"][package_name]
+        repo_name = remote_config["repository"]["name"]
+        repo_organization = remote_config["repository"]["organization"]
+        release_version = remote_config["release"]["version"]
+        release_tag = remote_config["release"]["tag"]
 
         return PackageRemoteConfig(
-            required_version=required_version,
             repo_name=repo_name,
             repo_organization=repo_organization,
+            release_version=release_version,
+            release_tag=release_tag,
         )
 
     def load(self):
@@ -273,17 +278,19 @@ class Profile:
 
         # -- Here we need to fetch the remote config from the remote server.
         # -- Construct remote config file url.
-        # apio_version = util.get_apio_version()
-        # config_url = APIO_REMOTE_CONFIG_URL_TEMPLATE.format(apio_version)
-        if verbose or util.is_debug():
-            cout(f"Fetching remote config from '{self.remote_config_url}'")
+        if env_options.is_defined(env_options.APIO_REMOTE_CONFIG_URL):
+            cout(
+                f"Custom remote config: '{self.remote_config_url}'",
+                style=EMPH3,
+            )
+        elif verbose or util.is_debug():
+            cout(f"Remote config: '{self.remote_config_url}'")
 
         # -- Fetch the config text.
         config_text = self._fetch_remote_config_text()
 
         # -- Here when download was ok.
-        if verbose or util.is_debug():
-            cout("Remote config file fetched ok.")
+        cout("Remote config fetched ok.")
 
         # -- Print the file's content.
         if util.is_debug():
