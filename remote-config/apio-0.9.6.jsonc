@@ -6,8 +6,8 @@
     "examples": {
       "repository": {
         "name": "apio-examples",
-        "organization": "zapta"
-        // "organization": "FPGAwars"
+        // "organization": "zapta"
+        "organization": "FPGAwars"
       },
       "release": {
         "version": "2025.06.08",
