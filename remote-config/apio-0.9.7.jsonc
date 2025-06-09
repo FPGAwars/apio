@@ -50,13 +50,13 @@
     // -- Verible
     "verible": {
       "repository": {
-        "organization": "FPGAwars",
+        "organization": "zapta",
         "name": "tools-verible"
       },
       "release": {
-        "version": "0.0.1",
-        "release-tag": "v0.0.1",
-        "package-file": "tools-verible-${LEGACY-PLATFORM}-0.0.1.tar.gz"
+        "version": "2025.06.09",
+        "release-tag": "${YYYY-MM-DD}",
+        "package-file": "apio-verible-${PLATFORM}-${YYYYMMDD}.zip"
       }
     },
     // -- Drivers
