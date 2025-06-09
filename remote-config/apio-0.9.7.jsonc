@@ -3,8 +3,8 @@
 // See installer.py for the vars ${P}, ${V}, ${T}.
 //
 //   ${PLATFORM}         - platform tag (from platforms.jsonc)
-//   ${YYYY-MM-DD}       - Version as YYYY-MM-DD
-//   ${YYYYMMDD}          - Version as YYYYMMDD
+//   ${YYYY-MM-DD}       - version as YYYY-MM-DD
+//   ${YYYYMMDD}         - version as YYYYMMDD
 //
 // Transitional var:
 //   ${LEGACY-PLATFORM}  - Legacy platform tag (from platforms.jsonc)
@@ -20,7 +20,7 @@
       "release": {
         "version": "2025.06.09",
         "release-tag": "${YYYY-MM-DD}",
-        "package-file": "apio-examples-${YYYYMMDD}.zip"
+        "package-file": "apio-examples-${YYYYMMDD}.tar.gz"
       }
     },
     // -- Yosys HQ suite
@@ -32,19 +32,19 @@
       "release": {
         "version": "2025.06.09",
         "release-tag": "${YYYY-MM-DD}",
-        "package-file": "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.zip"
+        "package-file": "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.tar.gz"
       }
     },
     // -- Graphviz
     "graphviz": {
       "repository": {
-        "organization": "FPGAwars",
+        "organization": "zapta",
         "name": "tools-graphviz"
       },
       "release": {
-        "version": "12.1.2",
-        "release-tag": "v12.1.2",
-        "package-file": "tools-graphviz-${LEGACY-PLATFORM}-12.1.2.tar.gz"
+        "version": "2025.06.09",
+        "release-tag": "${YYYY-MM-DD}",
+        "package-file": "graphviz-${PLATFORM}-${YYYYMMDD}.tar.gz"
       }
     },
     // -- Verible
@@ -56,7 +56,7 @@
       "release": {
         "version": "2025.06.09",
         "release-tag": "${YYYY-MM-DD}",
-        "package-file": "apio-verible-${PLATFORM}-${YYYYMMDD}.zip"
+        "package-file": "apio-verible-${PLATFORM}-${YYYYMMDD}.tar.gz"
       }
     },
     // -- Drivers
