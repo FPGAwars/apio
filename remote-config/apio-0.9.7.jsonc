@@ -44,7 +44,7 @@
       "release": {
         "version": "2025.06.09",
         "release-tag": "${YYYY-MM-DD}",
-        "package-file": "graphviz-${PLATFORM}-${YYYYMMDD}.tar.gz"
+        "package-file": "apio-graphviz-${PLATFORM}-${YYYYMMDD}.tar.gz"
       }
     },
     // -- Verible
