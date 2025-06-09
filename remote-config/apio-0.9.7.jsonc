@@ -62,13 +62,13 @@
     // -- Drivers
     "drivers": {
       "repository": {
-        "organization": "FPGAwars",
+        "organization": "zapta",
         "name": "tools-drivers"
       },
       "release": {
-        "version": "1.2.0",
-        "release-tag": "v1.2.0",
-        "package-file": "tools-drivers-${LEGACY-PLATFORM}-1.2.0.tar.gz"
+        "version": "2025.06.09",
+        "release-tag": "${YYYY-MM-DD}",
+        "package-file": "apio-drivers-${PLATFORM}-${YYYYMMDD}.tar.gz"
       }
     },
     // -- System
