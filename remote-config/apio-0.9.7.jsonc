@@ -1,0 +1,87 @@
+// Remote config file for Apio 0.9.6
+//
+// See installer.py for the vars ${P}, ${V}, ${T}.
+//
+//   ${PLATFORM}         - platform tag (from platforms.jsonc)
+//   ${YYYY-MM-DD}       - Version as YYYY-MM-DD
+//   ${YYYYMMDD}          - Version as YYYYMMDD
+//
+// Transitional var:
+//   ${LEGACY-PLATFORM}  - Legacy platform tag (from platforms.jsonc)
+//
+{
+  "packages": {
+    // -- Examples
+    "examples": {
+      "repository": {
+        "organization": "zapta",
+        "name": "apio-examples"
+      },
+      "release": {
+        "version": "2025.06.09",
+        "release-tag": "${YYYY-MM-DD}",
+        "package-file": "apio-examples-${YYYYMMDD}.zip"
+      }
+    },
+    // -- Yosys HQ suite
+    "oss-cad-suite": {
+      "repository": {
+        "organization": "zapta",
+        "name": "tools-oss-cad-suite"
+      },
+      "release": {
+        "version": "2025.06.09",
+        "release-tag": "${YYYY-MM-DD}",
+        "package-file": "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.zip"
+      }
+    },
+    // -- Graphviz
+    "graphviz": {
+      "repository": {
+        "organization": "FPGAwars",
+        "name": "tools-graphviz"
+      },
+      "release": {
+        "version": "12.1.2",
+        "release-tag": "v12.1.2",
+        "package-file": "tools-graphviz-${LEGACY-PLATFORM}-12.1.2.tar.gz"
+      }
+    },
+    // -- Verible
+    "verible": {
+      "repository": {
+        "organization": "FPGAwars",
+        "name": "tools-verible"
+      },
+      "release": {
+        "version": "0.0.1",
+        "release-tag": "v0.0.1",
+        "package-file": "tools-verible-${LEGACY-PLATFORM}-0.0.1.tar.gz"
+      }
+    },
+    // -- Drivers
+    "drivers": {
+      "repository": {
+        "organization": "FPGAwars",
+        "name": "tools-drivers"
+      },
+      "release": {
+        "version": "1.2.0",
+        "release-tag": "v1.2.0",
+        "package-file": "tools-drivers-${LEGACY-PLATFORM}-1.2.0.tar.gz"
+      }
+    },
+    // -- System
+    "system": {
+      "repository": {
+        "organization": "FPGAwars",
+        "name": "tools-system"
+      },
+      "release": {
+        "version": "1.1.2",
+        "release-tag": "v1.1.2",
+        "package-file": "tools-system-${LEGACY-PLATFORM}-1.1.2.tar.gz"
+      }
+    }
+  }
+}

@@ -26,16 +26,32 @@ def _construct_package_download_url(
 ) -> str:
     """Construct the download URL for the given package name and version."""
 
-    # -- Get the platform package selector of this platform (the package
-    # -- selectors  are specified in platforms.jsonc). E.g. 'darwin_arm64'
+    # -- Get platform ID.
     platform_id = apio_ctx.platform_id
-    platform_selector = apio_ctx.platforms[platform_id]["package_selector"]
+
+    # -- Get the platform tag.
+    platform_info = apio_ctx.platforms[platform_id]
+    legacy_platform_tag = platform_info["legacy-platform-tag"]
+    platform_tag = platform_info["platform-tag"]
+
+    # -- Convert the version to "YYYY-MM-DD"
+    # -- Move to a function in util.py.
+    version_tokens = target_version.split(".")
+    assert len(version_tokens) == 3, version_tokens
+    yyyy_mm_dd = (
+        f"{int(version_tokens[0]):04d}"
+        + "-"
+        + f"{int(version_tokens[1]):02d}"
+        + "-"
+        + f"{int(version_tokens[2]):02d}"
+    )
 
     # -- Create vars mapping.
     url_vars = {
-        "${P}": platform_selector,
-        "${V}": target_version,
-        "${T}": target_version.replace(".", "-"),
+        "${PLATFORM}": platform_tag,
+        "${LEGACY-PLATFORM}": legacy_platform_tag,  # Transitional
+        "${YYYY-MM-DD}": yyyy_mm_dd,
+        "${YYYYMMDD}": yyyy_mm_dd.replace("-", ""),
     }
     if util.is_debug():
         cout(f"Package URL vars: {url_vars}")

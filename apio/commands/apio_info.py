@@ -291,7 +291,7 @@ def _system_cli():
     )
     table.add_row("Apio home", str(apio_ctx.home_dir))
     table.add_row("Apio packages", str(apio_ctx.packages_dir))
-    table.add_row("Remote config", apio_ctx.profile.remote_config_url)
+    table.add_row("Remote config URL", apio_ctx.profile.remote_config_url)
     table.add_row(
         "Veriable formatter",
         str(apio_ctx.packages_dir / "verible/bin/verible-verilog-format"),
@@ -357,7 +357,7 @@ def _platforms_cli():
             style = None
             marker = "  "
 
-        table.add_row(f"{marker}{platform_id}", f"{description}", style=style)
+        table.add_row(f"{marker}{platform_id}", description, style=style)
 
     # -- Render the table.
     cout()
