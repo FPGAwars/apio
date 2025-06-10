@@ -45,9 +45,8 @@ jobs:
             - name: Install apio dev latest
               run: |
                 # If this runs on a dev fork of FPGAwars/apio, it tests
-                # itself and not the main FPGAwars/apio. 
-                pip install --force-reinstall \
-                    -U git+https://github.com/${{github.workflow}}.git@develop#egg=apio
+                # itself and not the main FPGAwars/apio.
+                pip install --force-reinstall -U git+https://github.com/${{github.repository}}.git@develop#egg=apio
 
             - name: Load apio packages (slow)
               run: |
