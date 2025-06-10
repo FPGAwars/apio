@@ -58,14 +58,11 @@ jobs:
 
             - name: Test ICE40 project
               run: |
-                # Exit on any error
-                set -e
-
                 # Create a project
                 mkdir ice40_project
                 cd ice40_project
                 apio examples fetch alhambra-ii/bcd-counter
-                ls -al
+                find .
 
                 # Run a few command
                 apio lint
@@ -75,6 +72,8 @@ jobs:
                 apio format
                 apio devices usb
                 apio devices serial
+
+                find .
 
                 # Check that a few files exists (fails if not)
                 cd _build/default
@@ -85,14 +84,11 @@ jobs:
 
             - name: Test ECP5 project
               run: |
-                # Exit on any error
-                set -e
-
                 # Create a project
                 mkdir ecp_project
                 cd ecp_project
                 apio examples fetch colorlight-5a-75b-v8/ledon
-                ls -al
+                find .
 
                 # Run a few command
                 apio lint
@@ -102,6 +98,8 @@ jobs:
                 apio format
                 apio devices usb
                 apio devices serial
+
+                find .
 
                 # Check that a few files exists (fails if not)
                 cd _build/default
@@ -112,14 +110,11 @@ jobs:
 
             - name: Test GOWIN project
               run: |
-                # Exit on any error
-                set -e
-
                 # Create a project
                 mkdir gowin_project
                 cd gowin_project
                 apio examples fetch sipeed-tang-nano-9k/blinky
-                ls -al
+                find .
 
                 # Run a few command
                 apio lint
@@ -129,6 +124,8 @@ jobs:
                 apio format
                 apio devices usb
                 apio devices serial
+
+                find .
 
                 # Check that a few files exists (fails if not)
                 cd _build/default
