@@ -1,7 +1,7 @@
 # A periodic workflow to test that the latest dev version is functional.
 # It's not a through test by any means, more like a sanity test.
 
-name: Test
+name: monitor-apio-latest
 
 on:
   # Run on commit.
