@@ -83,3 +83,32 @@ jobs:
                 ls -al hardware.svg
                 ls -al util/ticker_tb.vcd
 
+            - name: Test ECP5 project
+              run: |
+                # Exit on any error
+                set -e
+
+                # Create a project
+                mkdir ecp_project
+                cd ecp_project
+                apio examples fetch colorlight-5a-75b-v8/ledon
+                ls -al
+
+                # Run a few command
+                apio lint
+                apio build
+                apio test
+                apio graph
+                apio format
+                apio devices usb
+                apio devices serial
+
+                # Check that a few files exists (fails if not)
+                cd _build/default
+                ls -al hardware.bit
+                ls -al hardware.pnr
+                ls -al hardware.svg
+                ls -al ledon_tb.vcd
+
+                
+
