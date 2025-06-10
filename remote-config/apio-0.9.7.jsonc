@@ -18,7 +18,7 @@
         "name": "apio-examples"
       },
       "release": {
-        "version": "2025.06.09",
+        "version": "2025.06.10",
         "release-tag": "${YYYY-MM-DD}",
         "package-file": "apio-examples-${YYYYMMDD}.tar.gz"
       }
@@ -30,7 +30,7 @@
         "name": "tools-oss-cad-suite"
       },
       "release": {
-        "version": "2025.06.09",
+        "version": "2025.06.10",
         "release-tag": "${YYYY-MM-DD}",
         "package-file": "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.tar.gz"
       }
@@ -42,7 +42,7 @@
         "name": "tools-graphviz"
       },
       "release": {
-        "version": "2025.06.09",
+        "version": "2025.06.10",
         "release-tag": "${YYYY-MM-DD}",
         "package-file": "apio-graphviz-${PLATFORM}-${YYYYMMDD}.tar.gz"
       }
@@ -54,7 +54,7 @@
         "name": "tools-verible"
       },
       "release": {
-        "version": "2025.06.09",
+        "version": "2025.06.10",
         "release-tag": "${YYYY-MM-DD}",
         "package-file": "apio-verible-${PLATFORM}-${YYYYMMDD}.tar.gz"
       }
@@ -66,7 +66,7 @@
         "name": "tools-drivers"
       },
       "release": {
-        "version": "2025.06.09",
+        "version": "2025.06.10",
         "release-tag": "${YYYY-MM-DD}",
         "package-file": "apio-drivers-${PLATFORM}-${YYYYMMDD}.tar.gz"
       }
