@@ -59,7 +59,7 @@ jobs:
                 # Create a project
                 mkdir ice40_project
                 cd ice40_project
-                apio apio examples --files Alhambra-II/Blinky
+                apio examples --files Alhambra-II/Blinky
                 ls -al
 
                 # Run a few command
