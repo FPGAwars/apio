@@ -20,7 +20,7 @@ jobs:
 
         defaults:
           run:
-            shell: bash
+            shell: bash -x
 
         strategy:
             matrix:
