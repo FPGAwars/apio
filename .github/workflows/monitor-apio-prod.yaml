@@ -20,7 +20,7 @@ jobs:
 
         defaults:
           run:
-            shell: bash -x
+            shell: bash
 
         strategy:
             matrix:
@@ -56,6 +56,9 @@ jobs:
 
             - name: Test ICE40 project
               run: |
+                # Show commands
+                set -x
+
                 # Create a project
                 mkdir ice40_project
                 cd ice40_project
