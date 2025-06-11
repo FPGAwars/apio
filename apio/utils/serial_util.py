@@ -34,7 +34,7 @@ class SerialDevice:
         """Returns a user friendly short description of this device."""
         return (
             f"[{self.port}] "
-            f"[{self.vendor_id}:{self.product_id}, "
+            f"[{self.vendor_id}:{self.product_id}] "
             f"[{self.manufacturer}] [{self.product}] "
             f"[{self.serial_number}]"
         )

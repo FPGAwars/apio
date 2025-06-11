@@ -69,7 +69,7 @@ class UsbDevice:
     def summary(self) -> str:
         """Returns a user friendly short description of this device."""
         return (
-            f"[{self.vendor_id}:{self.product_id}, "
+            f"[{self.vendor_id}:{self.product_id}] "
             f"{self.bus}:{self.device}], [{self.manufacturer}] "
             f"[{self.product}] [{self.serial_number}]"
         )
