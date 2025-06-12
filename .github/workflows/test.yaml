@@ -1,6 +1,6 @@
 # ...
 
-name: Test
+name: test
 
 on:
   # Run on each commit.
