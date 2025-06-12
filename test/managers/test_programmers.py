@@ -196,7 +196,7 @@ def test_get_cmd_usb(apio_runner: ApioRunner, capsys: LogCaptureFixture):
         assert "Scanning for a USB device:" in log
         assert 'FILTER [VID=0403, PID=6010, REGEX="^Alhambra II.*"]' in log
         assert (
-            "DEVICE [0403:6010, 0:1], [AlhambraBits] "
+            "DEVICE [0403:6010] [0:1] [AlhambraBits] "
             "[Alhambra II v1.0A] [SNXXXX]"
         ) in log
 
@@ -284,11 +284,11 @@ def test_get_cmd_usb_multiple_matches(
         assert "Scanning for a USB device:" in log
         assert 'FILTER [VID=0403, PID=6010, REGEX="^Alhambra II.*"]' in log
         assert (
-            "DEVICE [0403:6010, 0:0], [AlhambraBits] "
+            "DEVICE [0403:6010] [0:0] [AlhambraBits] "
             "[Alhambra II v1.0A] [SN001]"
         ) in log
         assert (
-            "DEVICE [0403:6010, 0:2], [AlhambraBits] "
+            "DEVICE [0403:6010] [0:2] [AlhambraBits] "
             "[Alhambra II v1.0A] [SN002]"
         ) in log
         assert "Error: Found multiple matching usb devices" in log
@@ -333,7 +333,7 @@ def test_get_cmd_serial(apio_runner: ApioRunner, capsys: LogCaptureFixture):
         assert "Scanning for a serial device:" in log
         assert "FILTER [VID=04D8, PID=FFEE]" in log
         assert (
-            "DEVICE [/dev/port2] [04D8:FFEE, [IceFUN] [Ice Fun] [SNXXXX]"
+            "DEVICE [/dev/port2] [04D8:FFEE] [IceFUN] [Ice Fun] [SNXXXX]"
             in log
         )
 
@@ -420,10 +420,10 @@ def test_get_cmd_serial_multiple_matches(
         assert "Scanning for a serial device:" in log
         assert "FILTER [VID=04D8, PID=FFEE]" in log
         assert (
-            "DEVICE [/dev/port1] [04D8:FFEE, [IceFUN] [Ice Fun] [SNXXXX]"
+            "DEVICE [/dev/port1] [04D8:FFEE] [IceFUN] [Ice Fun] [SNXXXX]"
         ) in log
         assert (
-            "DEVICE [/dev/port3] [04D8:FFEE, [IceFUN] [Ice Fun] [SNXXXX]"
+            "DEVICE [/dev/port3] [04D8:FFEE] [IceFUN] [Ice Fun] [SNXXXX]"
         ) in log
         assert "Error: Found multiple matching serial devices" in log
 
@@ -470,12 +470,12 @@ def test_device_presence_ok(
         assert "Checking device presence" in log
         assert 'FILTER [VID=0403, PID=6010, REGEX="^Alhambra II.*"]' in log
         assert (
-            "DEVICE [0403:6010, 0:0], [AlhambraBits] "
+            "DEVICE [0403:6010] [0:0] [AlhambraBits] "
             "[Alhambra II v1.0A] [SNXXXX]"
         ) in log
 
         assert (
-            "DEVICE [0403:6010, 0:2], [AlhambraBits] "
+            "DEVICE [0403:6010] [0:2] [AlhambraBits] "
             "[Alhambra II v1.0A] [SNXXXX]"
         ) in log
 

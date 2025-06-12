@@ -14,7 +14,7 @@ def test_device_summaries():
     device = SerialDevice(
         "dev/port0", "port0", "0403", "6010", "m0", "p0", "sn0", "t0", "l0"
     )
-    assert device.summary() == "[dev/port0] [0403:6010, [m0] [p0] [sn0]"
+    assert device.summary() == "[dev/port0] [0403:6010] [m0] [p0] [sn0]"
 
 
 def test_filtering():

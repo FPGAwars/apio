@@ -10,7 +10,7 @@ from apio.utils.usb_util import (
 def test_device_summaries():
     """Test usb device summary() string."""
     device = UsbDevice("0403", "6010", 0, 1, "m0", "p0", "sn0", "t0")
-    assert device.summary() == "[0403:6010, 0:1], [m0] [p0] [sn0]"
+    assert device.summary() == "[0403:6010] [0:1] [m0] [p0] [sn0]"
 
 
 def test_filtering():
