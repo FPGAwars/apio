@@ -109,7 +109,7 @@ class FileUnpacker:
 
         # -- Select the unpacker... according to the file extension
         # -- tar zip file
-        if arch_ext in (".tgz", ".gz"):
+        if arch_ext in (".tgz"):
             self._unpacker = TARArchive(archpath)
 
         # -- Zip file
