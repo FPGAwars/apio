@@ -6,9 +6,8 @@
 //   ${YYYY-MM-DD}       - version as YYYY-MM-DD
 //   ${YYYYMMDD}         - version as YYYYMMDD
 //
-// Transitional var:
-//   ${LEGACY-PLATFORM}  - Legacy platform tag (from platforms.jsonc)
-//
+// NOTE: Github has a cache propagation of about 1 min between the
+// time this file is submitted and until it's available for download.
 {
   "packages": {
     // -- Examples

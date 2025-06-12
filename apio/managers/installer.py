@@ -31,7 +31,6 @@ def _construct_package_download_url(
 
     # -- Get the platform tag.
     platform_info = apio_ctx.platforms[platform_id]
-    legacy_platform_tag = platform_info["legacy-platform-tag"]
     platform_tag = platform_info["platform-tag"]
 
     # -- Convert the version to "YYYY-MM-DD"
@@ -49,7 +48,6 @@ def _construct_package_download_url(
     # -- Create vars mapping.
     url_vars = {
         "${PLATFORM}": platform_tag,
-        "${LEGACY-PLATFORM}": legacy_platform_tag,  # Transitional
         "${YYYY-MM-DD}": yyyy_mm_dd,
         "${YYYYMMDD}": yyyy_mm_dd.replace("-", ""),
     }

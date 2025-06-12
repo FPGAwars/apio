@@ -2,27 +2,22 @@
 {
   "darwin_arm64": {
     "description": "Mac OSX, ARM 64 bit (Apple Silicon)",
-    "platform-tag": "darwin-arm64",
-    "legacy-platform-tag": "darwin_arm64"
+    "platform-tag": "darwin-arm64"
   },
   "darwin_x86_64": {
     "description": "Mac OSX, x86 64 bit (Intel)",
-    "platform-tag": "darwin-x86-64",
-    "legacy-platform-tag": "darwin"
+    "platform-tag": "darwin-x86-64"
   },
   "linux_x86_64": {
     "description": "Linux X86 64 bit",
-    "platform-tag": "linux-x86-64",
-    "legacy-platform-tag": "linux_x86_64"
+    "platform-tag": "linux-x86-64"
   },
   "linux_aarch64": {
     "description": "Linux ARM 64 bit",
-    "platform-tag": "linux-aarch64",
-    "legacy-platform-tag": "linux_aarch64"
+    "platform-tag": "linux-aarch64"
   },
   "windows_amd64": {
     "description": "Windows x86 64 bit",
-    "platform-tag": "windows-amd64",
-    "legacy-platform-tag": "windows_amd64"
+    "platform-tag": "windows-amd64"
   }
 }
