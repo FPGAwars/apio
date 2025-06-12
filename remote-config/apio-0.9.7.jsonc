@@ -32,7 +32,7 @@
       "release": {
         "version": "2025.06.12",
         "release-tag": "${YYYY-MM-DD}",
-        "package-file": "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.tar.gz"
+        "package-file": "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
     // -- Graphviz
@@ -44,7 +44,7 @@
       "release": {
         "version": "2025.06.12",
         "release-tag": "${YYYY-MM-DD}",
-        "package-file": "apio-graphviz-${PLATFORM}-${YYYYMMDD}.tar.gz"
+        "package-file": "apio-graphviz-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
     // -- Verible
@@ -56,7 +56,7 @@
       "release": {
         "version": "2025.06.12",
         "release-tag": "${YYYY-MM-DD}",
-        "package-file": "apio-verible-${PLATFORM}-${YYYYMMDD}.tar.gz"
+        "package-file": "apio-verible-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
     // -- Drivers
@@ -68,7 +68,7 @@
       "release": {
         "version": "2025.06.12",
         "release-tag": "${YYYY-MM-DD}",
-        "package-file": "apio-drivers-${PLATFORM}-${YYYYMMDD}.tar.gz"
+        "package-file": "apio-drivers-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     }
   }
