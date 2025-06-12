@@ -20,7 +20,7 @@
       "release": {
         "version": "2025.06.12",
         "release-tag": "${YYYY-MM-DD}",
-        "package-file": "apio-examples-${YYYYMMDD}.tar.gz"
+        "package-file": "apio-examples-${YYYYMMDD}.tgz"
       }
     },
     // -- Yosys HQ suite

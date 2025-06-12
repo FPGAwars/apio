@@ -10,12 +10,10 @@
 # ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
 # ---- License Apache v2
 
-from os import chmod
 from pathlib import Path
 from tarfile import open as tarfile_open
-from zipfile import ZipFile
 from rich.progress import track
-from apio.common.apio_console import cout, console
+from apio.common.apio_console import console, cerror
 from apio.utils import util
 
 
@@ -62,35 +60,34 @@ class TARArchive(ArchiveBase):
         return self._afo.getmembers()
 
 
-class ZIPArchive(ArchiveBase):
-    """DOC: TODO"""
+# class ZIPArchive(ArchiveBase):
+#     """DOC: TODO"""
 
-    def __init__(self, archpath):
-        # R1732: Consider using 'with' for resource-allocating operations
-        # (consider-using-with)
-        # pylint: disable=R1732
-        ArchiveBase.__init__(self, ZipFile(archpath), is_tar_file=False)
+#     def __init__(self, archpath):
+#         # R1732: Consider using 'with' for resource-allocating operations
+#         # (consider-using-with)
+#         ArchiveBase.__init__(self, ZipFile(archpath), is_tar_file=False)
 
-    @staticmethod
-    def preserve_permissions(item, dest_dir):
-        """DOC: TODO"""
+#     @staticmethod
+#     def preserve_permissions(item, dest_dir):
+#         """DOC: TODO"""
 
-        # -- Build the filename
-        file = str(Path(dest_dir) / item.filename)
+#         # -- Build the filename
+#         file = str(Path(dest_dir) / item.filename)
 
-        attrs = item.external_attr >> 16
-        if attrs:
-            chmod(file, attrs)
+#         attrs = item.external_attr >> 16
+#         if attrs:
+#             chmod(file, attrs)
 
-    def get_items(self):
-        """DOC: TODO"""
+#     def get_items(self):
+#         """DOC: TODO"""
 
-        return self._afo.infolist()
+#         return self._afo.infolist()
 
-    def after_extract(self, item, dest_dir):
-        """DOC: TODO"""
+#     def after_extract(self, item, dest_dir):
+#         """DOC: TODO"""
 
-        self.preserve_permissions(item, dest_dir)
+#         self.preserve_permissions(item, dest_dir)
 
 
 class FileUnpacker:
@@ -112,16 +109,16 @@ class FileUnpacker:
 
         # -- Select the unpacker... according to the file extension
         # -- tar zip file
-        if arch_ext in (".gz", ".bz2"):
+        if arch_ext in (".tgz", ".gz"):
             self._unpacker = TARArchive(archpath)
 
         # -- Zip file
-        elif arch_ext == ".zip":
-            self._unpacker = ZIPArchive(archpath)
+        # elif arch_ext == ".zip":
+        #     self._unpacker = ZIPArchive(archpath)
 
-        # -- Archive type not known!! Raise an exception!
+        # -- Fatal error. Unknown extension.
         if not self._unpacker:
-            cout(f"Can not unpack file '{archpath}'")
+            cerror(f"Can not unpack file '{archpath}'")
             raise util.ApioException()
 
     def start(self) -> bool:
