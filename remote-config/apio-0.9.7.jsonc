@@ -13,7 +13,7 @@
     // -- Examples
     "examples": {
       "repository": {
-        "organization": "zapta",
+        "organization": "FPGAwars",
         "name": "apio-examples"
       },
       "release": {
