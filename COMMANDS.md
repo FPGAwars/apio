@@ -867,7 +867,7 @@ Usage: apio lint [OPTIONS]
 
   The command 'apio lint' scans the project's source files and reports
   errors, inconsistencies, and style violations. The command uses the
-  Verilator tool, which is included in the standard Apio installation.
+  Verilator tool, which is included with the standard Apio installation.
 
   Examples:
     apio lint
