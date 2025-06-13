@@ -39,13 +39,13 @@ class Profile:
     """
 
     def __init__(self, home_dir: Path, remote_config_url_template: str):
-        """remote_config_url_template is a url string with a "${V}"
+        """remote_config_url_template is a url string with a "{V}"
         placeholder for the apio version such as "0.9.6."""
 
-        # -- Resolve and cache the remote config url. We replace any ${V} with
+        # -- Resolve and cache the remote config url. We replace any {V} with
         # -- the apio version such as "0.9.6".
         self.remote_config_url = remote_config_url_template.replace(
-            "${V}", util.get_apio_version()
+            "{V}", util.get_apio_version()
         )
 
         # -- Verify that we resolved all the placeholders.
