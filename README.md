@@ -1,9 +1,13 @@
 [![][apio-logo]][wiki]
 
-[![PyPI Version][pypi-image]][pypi-url]<br>
-[![License][license-image]][license-url]<br>
-[![Test](https://github.com/FPGAwars/apio/actions/workflows/test.yml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/test.yml)<br>
+[![PyPI Version][pypi-image]][pypi-url]
+[![License][license-image]][license-url]
+
+[![test](https://github.com/FPGAwars/apio/actions/workflows/test.yaml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/test.yaml)
 [![build-all](https://github.com/FPGAwars/apio-dev-builds/actions/workflows/build-all.yaml/badge.svg)](https://github.com/FPGAwars/apio-dev-builds/actions/workflows/build-all.yaml)
+
+[![build-and-release](https://github.com/FPGAwars/apio-examples/actions/workflows/build-and-release.yaml/badge.svg)](https://github.com/FPGAwars/apio-examples/actions/workflows/build-and-release.yaml)
+[![build-and-release](https://github.com/FPGAwars/tools-oss-cad-suite/actions/workflows/build-and-release.yaml/badge.svg)](https://github.com/FPGAwars/tools-oss-cad-suite/actions/workflows/build-and-release.yaml)
 
 ![][linux-logo]&nbsp;&nbsp;&nbsp;![][macosx-logo]&nbsp;&nbsp;&nbsp;![][windows-logo]&nbsp;&nbsp;&nbsp;![][ubuntu-logo]&nbsp;&nbsp;&nbsp;![][raspbian-logo]
 
