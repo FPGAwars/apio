@@ -53,7 +53,7 @@
         "name": "tools-verible"
       },
       "release": {
-        "version": "2025.06.12",
+        "version": "2025.06.13",
         "release-tag": "${YYYY-MM-DD}",
         "package-file": "apio-verible-${PLATFORM}-${YYYYMMDD}.tgz"
       }
