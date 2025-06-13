@@ -35,7 +35,8 @@ def test_apio_info(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(apio, ["info", "platforms"])
         assert result.exit_code == 0, result.output
         assert "darwin-arm64" in result.output
-        assert "Mac OSX, ARM 64 bit (Apple Silicon)" in result.output
+        assert "Mac OSX" in result.output
+        assert "ARM 64 bit (Apple Silicon)" in result.output
 
         # -- Execute "apio info colors"
         result = sb.invoke_apio_cmd(apio, ["info", "colors"])

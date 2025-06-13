@@ -342,12 +342,14 @@ def _platforms_cli():
         title_justify="left",
     )
 
-    table.add_column("PLATFORM ID", min_width=20, no_wrap=True)
-    table.add_column("DESCRIPTION", min_width=30, no_wrap=True)
+    table.add_column("  PLATFORM ID", no_wrap=True)
+    table.add_column("TYPE", no_wrap=True)
+    table.add_column("VARIANT", no_wrap=True)
 
     # -- Add rows.
     for platform_id, platform_info in apio_ctx.platforms.items():
-        description = platform_info.get("description")
+        platform_type = platform_info.get("type")
+        platform_variant = platform_info.get("variant")
 
         # -- Mark the current platform.
         if platform_id == apio_ctx.platform_id:
@@ -357,7 +359,12 @@ def _platforms_cli():
             style = None
             marker = "  "
 
-        table.add_row(f"{marker}{platform_id}", description, style=style)
+        table.add_row(
+            f"{marker}{platform_id}",
+            platform_type,
+            platform_variant,
+            style=style,
+        )
 
     # -- Render the table.
     cout()

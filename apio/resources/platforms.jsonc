@@ -1,18 +1,23 @@
 // List of computer platforms that are supported by apio.
 {
   "darwin-arm64": {
-    "description": "Mac OSX, ARM 64 bit (Apple Silicon)"
+    "type": "Mac OSX",
+    "variant": "ARM 64 bit (Apple Silicon)"
   },
   "darwin-x86-64": {
-    "description": "Mac OSX, x86 64 bit (Intel)"
+    "type": "Mac OSX",
+    "variant": "x86 64 bit (Intel)"
   },
   "linux-x86-64": {
-    "description": "Linux X86 64 bit"
+    "type": "Linux",
+    "variant": "X86 64 bit"
   },
   "linux-aarch64": {
-    "description": "Linux ARM 64 bit"
+    "type": "Linux",
+    "variant": "ARM 64 bit"
   },
   "windows-amd64": {
-    "description": "Windows x86 64 bit"
+    "type": "Windows",
+    "variant": "x86 64 bit"
   }
 }
