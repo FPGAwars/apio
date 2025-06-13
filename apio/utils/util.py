@@ -365,7 +365,9 @@ def get_python_ver_tuple() -> Tuple[int, int, int]:
     return sys.version_info[:3]
 
 
-def plurality(obj: Any, singular: str, plural: str = None) -> str:
+def plurality(
+    obj: Any, singular: str, plural: str = None, include_num: bool = True
+) -> str:
     """Returns singular or plural based on the size of the object."""
     # -- Figure out the size of the object
     if isinstance(obj, int):
@@ -375,12 +377,17 @@ def plurality(obj: Any, singular: str, plural: str = None) -> str:
 
     # -- For value of 1 return the singular form.
     if n == 1:
-        return f"{n} {singular}"
+        if include_num:
+            return f"{n} {singular}"
+        return singular
 
     # -- For all other values, return the plural form.
     if plural is None:
         plural = singular + "s"
-    return f"{n} {plural}"
+
+    if include_num:
+        return f"{n} {plural}"
+    return plural
 
 
 def list_plurality(str_list: List[str], conjunction: str) -> str:

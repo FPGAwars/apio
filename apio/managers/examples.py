@@ -13,9 +13,10 @@ from pathlib import Path, PosixPath
 from dataclasses import dataclass
 from typing import Optional, List, Dict
 from apio.common.apio_console import cout, cstyle, cerror
-from apio.common.apio_styles import INFO, SUCCESS, EMPH1
+from apio.common.apio_styles import INFO, SUCCESS, EMPH3
 from apio.apio_context import ApioContext
 from apio.managers import installer
+from apio.utils import util
 
 
 @dataclass
@@ -237,7 +238,8 @@ class Examples:
         # dst_dir = util.resolve_project_dir(
         #     dst_dir, create_if_missing=True
         # )
-        board_examples = self.get_board_examples(board_name)
+        board_examples: List[ExampleInfo] = self.get_board_examples(board_name)
+
         if not board_examples:
             cerror(f"No examples for board '{board_name}.")
             cout(
@@ -246,9 +248,6 @@ class Examples:
                 style=INFO,
             )
             sys.exit(1)
-
-        # -- Build the destination example path
-        dst_board_dir = dst_dir / board_name
 
         # -- Build the source example path (where the example was installed)
         src_board_dir = self.examples_dir / board_name
@@ -264,31 +263,38 @@ class Examples:
             )
             sys.exit(1)
 
-        if dst_board_dir.is_dir():
-            # -- To avoid confusion to the user, we ignore hidden files.
-            if not self.is_dir_empty(dst_board_dir):
+        if dst_dir.is_dir():
+            # -- To avoid confusion from the user, we ignore hidden files.
+            if not self.is_dir_empty(dst_dir):
                 cerror(
-                    f"Destination directory '{str(dst_board_dir)}' "
-                    "is not empty."
+                    f"Destination directory '{str(dst_dir)}' " "is not empty."
                 )
                 sys.exit(1)
         else:
-            cout(f"Creating directory {dst_board_dir}.")
-            dst_board_dir.mkdir(parents=True, exist_ok=False)
+            cout(f"Creating directory {dst_dir}.")
+            dst_dir.mkdir(parents=True, exist_ok=False)
 
         # -- Create an ignore callback to skip 'info' files.
         ignore_callback = shutil.ignore_patterns("info")
 
-        # -- Copy the directory tree.
-        shutil.copytree(
-            src_board_dir,
-            dst_board_dir,
-            dirs_exist_ok=True,
-            ignore=ignore_callback,
+        cout(
+            f"Found {util.plurality(board_examples, "example")} "
+            f"for board '{board_name}'"
         )
 
-        for example_name in os.listdir(dst_board_dir):
-            styled_name = cstyle(f"{board_name}/{example_name}", style=EMPH1)
-            cout(f"Fetched example {styled_name}")
+        for board_example in board_examples:
+            example_name = board_example.example_dir_name
+            styled_name = cstyle(example_name, style=EMPH3)
+            cout(f"Fetching {board_name}/{styled_name}")
+            shutil.copytree(
+                src_board_dir / example_name,
+                dst_dir / example_name,
+                dirs_exist_ok=False,
+                ignore=ignore_callback,
+            )
 
-        cout("Board examples fetched successfully.", style=SUCCESS)
+        cout(
+            f"{util.plurality(board_examples, "Example", include_num=False)} "
+            "fetched successfully.",
+            style=SUCCESS,
+        )

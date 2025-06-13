@@ -8,6 +8,7 @@
 """Implementation of 'apio examples' command"""
 
 import sys
+import re
 from pathlib import Path
 from typing import List, Any, Optional
 import click
@@ -136,14 +137,16 @@ def _list_cli(verbose: bool):
 
 # -- Text in the rich-text format of the python rich library.
 APIO_EXAMPLES_FETCH_HELP = """
-The command 'apio examples fetch' fetches the files of the specified example \
-to the current directory or to the directory specified by the '-dst' option. \
-The destination directory does not need to exist, but if it does, it must be \
-empty.
+The command 'apio examples fetch' fetches a single examples or all the \
+examples of a board. The destination directory is either the current \
+directory or the directory specified with '--dst' and it should be empty \
+and non existing.
 
 Examples:[code]
-  apio examples fetch alhambra-ii/ledon
-  apio examples fetch alhambra-ii/ledon -d foo/bar[/code]
+  apio examples fetch alhambra-ii/ledon    # Single example
+  apio examples fetch alhambra-ii          # All board's examples
+  apio examples fetch alhambra-ii -d work  # Explicit destination
+
 """
 
 
@@ -174,61 +177,26 @@ def _fetch_cli(
         dst, description="Destination", must_exist=False
     )
 
-    # -- Fetch example files. This also creates the destination directory
-    # -- if missing.
-    examples.copy_example_files(example, dst_dir_path)
-
-
-# ---- apio examples fetch-board
-
-# -- Text in the rich-text format of the python rich library.
-APIO_EXAMPLES_FETCH_BOARD_HELP = """
-The command 'apio examples fetch-board' is used to fetch all the Apio \
-examples for a specific board. The examples are copied to the current \
-directory or to the specified destination directory if the '–-dst' \
-option is provided.
-
-Examples:[code]
-  apio examples fetch-board alhambra-ii  # Fetch board examples.
-
-"""
-
-
-@click.command(
-    name="fetch-board",
-    cls=ApioCommand,
-    short_help="Fetch all examples of a board.",
-    help=APIO_EXAMPLES_FETCH_BOARD_HELP,
-)
-@click.argument("board", metavar="BOARD", nargs=1, required=True)
-@options.dst_option_gen(help="Set a different destination directory.")
-def _fetch_board_cli(
-    # Arguments
-    board: str,
-    # Options
-    dst: Optional[Path],
-):
-    """Implements the 'apio examples fetch-board' command."""
-
-    # -- Create the apio context.
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
-
-    # -- Make sure the board exist.
-    if board not in apio_ctx.boards:
-        cerror(f"Unknown board name '{board}.")
+    # Parse the argument as board or board/example
+    pattern = r"^([a-zA-Z0-9-]+)(?:[/]([a-zA-Z0-9-]+))?$"
+    match = re.match(pattern, example)
+    if not match:
+        cerror(f"Invalid example specification '{example}.")
+        cout(
+            "Expecting board-name or board/example-name, e.g. "
+            "'alhambra-ii' or 'alhambra-ii/blinky.",
+            style=INFO,
+        )
         sys.exit(1)
+    board_name: str = match.group(1)
+    example_name: Optional[str] = match.group(2)
 
-    # -- Create the examples manager.
-    examples = Examples(apio_ctx)
-
-    # -- Determine the destination directory.
-    dst_dir_path = util.user_directory_or_cwd(
-        dst, description="Destination", must_exist=False
-    )
-
-    # -- Fetch the examples. This also creates the destination directory if
-    # -- needed.
-    examples.copy_board_examples(board, dst_dir_path)
+    if example_name:
+        # -- Copy the files of a single example.
+        examples.copy_example_files(example, dst_dir_path)
+    else:
+        # -- Copy the directories of the board's examples.
+        examples.copy_board_examples(board_name, dst_dir_path)
 
 
 # ---- apio examples
@@ -248,7 +216,6 @@ SUBGROUPS = [
         [
             _list_cli,
             _fetch_cli,
-            _fetch_board_cli,
         ],
     )
 ]

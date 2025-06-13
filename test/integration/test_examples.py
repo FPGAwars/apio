@@ -39,16 +39,20 @@ def test_examples(apio_runner: ApioRunner):
         assert getsize("apio.ini")
         assert getsize("ledon.v")
 
-        # -- 'apio examples fetch-board alhambra-ii' (colors off)
+        # -- 'apio examples fetch alhambra-ii' (colors off)
+        os.makedirs("temp", exist_ok=False)
+        os.chdir("temp")
         result = sb.invoke_apio_cmd(
             apio,
-            ["examples", "fetch-board", "alhambra-ii"],
+            ["examples", "fetch", "alhambra-ii"],
             terminal_mode=False,
         )
         sb.assert_ok(result)
-        assert "Creating directory alhambra-ii" in result.output
-        assert "Board examples fetched successfully" in result.output
-        assert getsize("alhambra-ii/ledon/ledon.v")
+        assert "Fetching alhambra-ii/blinky" in result.output
+        assert "Fetching alhambra-ii/ledon" in result.output
+        assert "Examples fetched successfully" in result.output
+        assert getsize("ledon/ledon.v")
+        os.chdir("..")
 
         # -- 'apio examples fetch alhambra-ii/ledon -d dir1' (colors off)
         result = sb.invoke_apio_cmd(
@@ -63,13 +67,12 @@ def test_examples(apio_runner: ApioRunner):
         )
         assert getsize("dir1/ledon.v")
 
-        # -- 'apio examples fetch-board alhambra -d dir2 (colors off)
+        # -- 'apio examples fetch alhambra -d dir2 (colors off)
         result = sb.invoke_apio_cmd(
             apio,
-            ["examples", "fetch-board", "alhambra-ii", "-d", "dir2"],
+            ["examples", "fetch", "alhambra-ii", "-d", "dir2"],
             terminal_mode=False,
         )
         sb.assert_ok(result)
-        assert f"Creating directory dir2{os.sep}alhambra-ii" in result.output
-        assert "Board examples fetched successfully" in result.output
-        assert getsize("dir2/alhambra-ii/ledon/ledon.v")
+        assert "Examples fetched successfully" in result.output
+        assert getsize("dir2/ledon/ledon.v")
