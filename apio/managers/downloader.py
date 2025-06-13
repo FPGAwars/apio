@@ -22,8 +22,8 @@ from apio.common.apio_console import cout, console
 from apio.common.apio_styles import ERROR
 
 # -- Timeout for getting a response from the server when downloading
-# -- a file (in seconds)
-TIMEOUT_SECS = 10
+# -- a file (in seconds). We had github tests failing with timeout=10
+TIMEOUT_SECS = 30
 
 
 class FileDownloader:
