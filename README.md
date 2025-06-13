@@ -5,6 +5,8 @@
 
 [![test](https://github.com/FPGAwars/apio/actions/workflows/test.yaml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/test.yaml)
 [![build-all](https://github.com/FPGAwars/apio-dev-builds/actions/workflows/build-all.yaml/badge.svg)](https://github.com/FPGAwars/apio-dev-builds/actions/workflows/build-all.yaml)
+[![monitor-apio-prod](https://github.com/FPGAwars/apio/actions/workflows/monitor-apio-prod.yaml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/monitor-apio-prod.yaml)
+[![monitor-apio-latest](https://github.com/FPGAwars/apio/actions/workflows/monitor-apio-latest.yaml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/monitor-apio-latest.yaml)
 
 [![build-and-release](https://github.com/FPGAwars/apio-examples/actions/workflows/build-and-release.yaml/badge.svg)](https://github.com/FPGAwars/apio-examples/actions/workflows/build-and-release.yaml)
 [![build-and-release](https://github.com/FPGAwars/tools-oss-cad-suite/actions/workflows/build-and-release.yaml/badge.svg)](https://github.com/FPGAwars/tools-oss-cad-suite/actions/workflows/build-and-release.yaml)
