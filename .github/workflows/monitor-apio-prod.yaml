@@ -1,0 +1,82 @@
+# A periodic workflow to test that the latest dev version is functional.
+# It's not a through test by any means, more like a sanity test.
+
+name: monitor-apio-prod
+
+on:
+  # Run on commit.
+  # push:
+
+  # Run every 6 hours
+  schedule:
+    - cron: '0 */6 * * *'
+
+  # Allow manual launch
+  workflow_dispatch:
+
+jobs:
+    monitor:
+        runs-on: ${{ matrix.os }}
+
+        defaults:
+          run:
+            shell: bash
+
+        strategy:
+            matrix:
+                # 'macos-latest' -> darwin apple silicon
+                # 'macos-13'     -> darwin intel x86
+                os: [ubuntu-22.04, macos-latest, macos-13, windows-latest]
+                python-version: ['3.11', '3.12', '3.13']
+
+        steps:
+            - name: Show architecture
+              run: uname -a
+
+            - name: Set up Python
+              uses: actions/setup-python@v4
+              with:
+                  python-version: ${{matrix.python-version}}
+
+            - name: Show python version
+              run: |
+                python --version
+
+            - name: Install apio from pypi
+              run: |
+                pip install apio
+
+            - name: Load apio packages (slow)
+              run: |
+                apio install --all
+
+            - name: Show apio info
+              run: |
+                apio system --info
+
+            - name: Test ICE40 project
+              run: |
+                # Show commands
+                set -x
+
+                # Create a project
+                mkdir ice40_project
+                cd ice40_project
+                apio examples --files Alhambra-II/Blinky
+                ls -al
+
+                # Run a few command
+                # apio lint
+                apio verify
+                apio build
+                apio time
+                apio system --lsftdi
+                apio system --lsusb
+                apio system --lsserial
+
+                find .
+
+                # Check that a few files exists (fails if not)
+                ls -al hardware.bin
+                ls -al hardware.rpt
+                ls -al hardware.out

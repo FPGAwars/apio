@@ -27,8 +27,10 @@ class PackageRemoteConfig:
     repo_organization: str
     # -- E.g. "0.2.3"
     release_version: str
-    # -- E.g. ${T}
+    # -- E.g. "${YYYY-MM-DD}""
     release_tag: str
+    # -- E.g. "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.zip"
+    release_file: str
 
 
 class Profile:
@@ -159,13 +161,15 @@ class Profile:
         repo_name = remote_config["repository"]["name"]
         repo_organization = remote_config["repository"]["organization"]
         release_version = remote_config["release"]["version"]
-        release_tag = remote_config["release"]["tag"]
+        release_tag = remote_config["release"]["release-tag"]
+        release_file = remote_config["release"]["package-file"]
 
         return PackageRemoteConfig(
             repo_name=repo_name,
             repo_organization=repo_organization,
             release_version=release_version,
             release_tag=release_tag,
+            release_file=release_file,
         )
 
     def load(self):

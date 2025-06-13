@@ -1,0 +1,74 @@
+// Remote config file for Apio 0.9.6
+//
+// See installer.py for the vars ${P}, ${V}, ${T}.
+//
+//   ${PLATFORM}         - platform tag (from platforms.jsonc)
+//   ${YYYY-MM-DD}       - version as YYYY-MM-DD
+//   ${YYYYMMDD}         - version as YYYYMMDD
+//
+// NOTE: Github has a cache propagation of about 1 min between the
+// time this file is submitted and until it's available for download.
+{
+  "packages": {
+    // -- Examples
+    "examples": {
+      "repository": {
+        "organization": "FPGAwars",
+        "name": "apio-examples"
+      },
+      "release": {
+        "version": "2025.06.13",
+        "release-tag": "${YYYY-MM-DD}",
+        "package-file": "apio-examples-${YYYYMMDD}.tgz"
+      }
+    },
+    // -- Yosys HQ suite
+    "oss-cad-suite": {
+      "repository": {
+        "organization": "FPGAwars",
+        "name": "tools-oss-cad-suite"
+      },
+      "release": {
+        "version": "2025.06.13",
+        "release-tag": "${YYYY-MM-DD}",
+        "package-file": "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.tgz"
+      }
+    },
+    // -- Graphviz
+    "graphviz": {
+      "repository": {
+        "organization": "FPGAwars",
+        "name": "tools-graphviz"
+      },
+      "release": {
+        "version": "2025.06.13",
+        "release-tag": "${YYYY-MM-DD}",
+        "package-file": "apio-graphviz-${PLATFORM}-${YYYYMMDD}.tgz"
+      }
+    },
+    // -- Verible
+    "verible": {
+      "repository": {
+        "organization": "FPGAwars",
+        "name": "tools-verible"
+      },
+      "release": {
+        "version": "2025.06.13",
+        "release-tag": "${YYYY-MM-DD}",
+        "package-file": "apio-verible-${PLATFORM}-${YYYYMMDD}.tgz"
+      }
+    },
+    // -- Drivers
+    "drivers": {
+      "repository": {
+        "organization": "FPGAwars",
+        "name": "tools-drivers"
+      },
+      "release": {
+        "version": "2025.06.13",
+        "release-tag": "${YYYY-MM-DD}",
+        "package-file": "apio-drivers-${PLATFORM}-${YYYYMMDD}.tgz"
+      }
+    }
+  }
+}

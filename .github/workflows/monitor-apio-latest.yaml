@@ -1,0 +1,146 @@
+# A periodic workflow to test that the latest dev version is functional.
+# It's not a through test by any means, more like a sanity test.
+
+name: monitor-apio-latest
+
+on:
+  # Run on commit.
+  push:
+
+  # Run every 6 hours
+  schedule:
+    - cron: '0 */6 * * *'
+
+  # Allow manual launch
+  workflow_dispatch:
+
+jobs:
+    monitor:
+        runs-on: ${{ matrix.os }}
+
+        defaults:
+          run:
+            shell: bash
+
+        strategy:
+            matrix:
+                # 'macos-latest' -> darwin apple silicon
+                # 'macos-13'     -> darwin intel x86
+                os: [ubuntu-22.04, macos-latest, macos-13, windows-latest]
+                # python-version: ['3.11', '3.12', '3.13']
+                python-version: ['3.13']
+
+        steps:
+            - name: Show architecture
+              run: uname -a
+
+            - name: Set up Python
+              uses: actions/setup-python@v4
+              with:
+                  python-version: ${{matrix.python-version}}
+
+            - name: Show python version
+              run: |
+                python --version
+
+            - name: Install apio dev latest
+              run: |
+                # If this runs on a dev fork of FPGAwars/apio, it tests
+                # itself and not the main FPGAwars/apio.
+                pip install --force-reinstall -U git+https://github.com/${{github.repository}}.git@develop#egg=apio
+
+            - name: Load apio packages (slow)
+              run: |
+                apio packages update -v
+
+            - name: Show apio info
+              run: |
+                apio info system
+
+            - name: Test ICE40 project
+              run: |
+                # Show commands
+                set -x
+
+                # Create a project
+                mkdir ice40_project
+                cd ice40_project
+                apio examples fetch alhambra-ii/bcd-counter
+                find .
+
+                # Run a few command
+                apio lint
+                apio build
+                apio test
+                apio graph
+                apio format
+                apio devices usb
+                apio devices serial
+
+                find .
+
+                # Check that a few files exists (fails if not)
+                cd _build/default
+                ls -al hardware.bin
+                ls -al hardware.pnr
+                ls -al hardware.svg
+                ls -al util/ticker_tb.vcd
+
+            - name: Test ECP5 project
+              run: |
+                # Show commands
+                set -x
+
+                # Create a project
+                mkdir ecp_project
+                cd ecp_project
+                apio examples fetch colorlight-5a-75b-v8/ledon
+                find .
+
+                # Run a few command
+                apio lint
+                apio build
+                apio test
+                apio graph
+                apio format
+                apio devices usb
+                apio devices serial
+
+                find .
+
+                # Check that a few files exists (fails if not)
+                cd _build/default
+                ls -al hardware.bit
+                ls -al hardware.pnr
+                ls -al hardware.svg
+                ls -al ledon_tb.vcd
+
+            - name: Test GOWIN project
+              run: |
+                # Show commands
+                set -x
+
+                # Create a project
+                mkdir gowin_project
+                cd gowin_project
+                apio examples fetch sipeed-tang-nano-9k/blinky
+                find .
+
+                # Run a few command
+                apio lint
+                apio build
+                apio test
+                apio graph
+                apio format
+                apio devices usb
+                apio devices serial
+
+                find .
+
+                # Check that a few files exists (fails if not)
+                cd _build/default
+                ls -al hardware.fs
+                ls -al hardware.pnr
+                ls -al hardware.svg
+                ls -al blinky_tb.vcd
+

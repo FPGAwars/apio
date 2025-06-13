@@ -53,7 +53,7 @@ warn_option = click.option(
 APIO_LINT_HELP = """
 The command 'apio lint' scans the project's source files and reports errors, \
 inconsistencies, and style violations. The command uses the Verilator tool, \
-which is included in the standard Apio installation.
+which is included with the standard Apio installation.
 
 Examples:[code]
   apio lint

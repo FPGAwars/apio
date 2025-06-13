@@ -4,21 +4,16 @@
 // Additional packages information is fetched dynamically from the remote 
 // config and is saved in .apio/profile.json.
 //
+// TODO: Delete "file_name" and "extension". They move to the remote config.
 {
+  // "examples" package
   "examples": {
-    "release": {
-      "file_name": "apio-examples-${V}",
-      "extension": "zip"
-    },
-    "description": "Apio's project examples",
+    "description": "Apio project examples",
     "env": {}
   },
+  // "oss-cad-suite" package
   "oss-cad-suite": {
-    "release": {
-      "file_name": "tools-oss-cad-suite-${P}-${V}",
-      "extension": "tar.gz"
-    },
-    "description": "YosysHQ's oss-cad-suite",
+    "description": "YosysHQ oss-cad-suite",
     "env": {
       "path": [
         "%p/bin",
@@ -32,14 +27,11 @@
       }
     }
   },
+  // "graphviz" package
   "graphviz": {
-    "release": {
-      "file_name": "tools-graphviz-${P}-${V}",
-      "extension": "tar.gz",
-      "available_platforms": [
-        "windows_amd64"
-      ]
-    },
+    "restricted-to-platforms": [
+      "windows_amd64"
+    ],
     "description": "Graphviz tool for Windows",
     "env": {
       "path": [
@@ -47,42 +39,21 @@
       ]
     }
   },
+  // "verible" package
   "verible": {
-    "release": {
-      "file_name": "tools-verible-${P}-${V}",
-      "extension": "tar.gz"
-    },
-    "description": "Chips Aliance's Verible toolset",
+    "description": "Chips Aliance Verible toolset",
     "env": {
       "path": [
         "%p/bin"
       ]
     }
   },
+  // "drivers" package
   "drivers": {
-    "release": {
-      "file_name": "tools-drivers-${P}-${V}",
-      "extension": "tar.gz",
-      "available_platforms": [
-        "windows_amd64"
-      ]
-    },
+    "restricted-to-platforms": [
+      "windows_amd64"
+    ],
     "description": "Drivers tools for Windows",
-    "env": {
-      "path": [
-        "%p/bin"
-      ]
-    }
-  },
-  "system": {
-    "release": {
-      "file_name": "tools-system-${P}-${V}",
-      "extension": "tar.gz",
-      "available_platforms": [
-        "windows_amd64"
-      ]
-    },
-    "description": "System tools",
     "env": {
       "path": [
         "%p/bin"

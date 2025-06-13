@@ -1,26 +1,23 @@
 // List of computer platforms that are supported by apio.
-//
 {
-  // NOTE: For historical reasons, the packages for the platform
-  // "darwin_x86_64" are called "darwin" rather than "darwin_x86_64.
   "darwin_arm64": {
     "description": "Mac OSX, ARM 64 bit (Apple Silicon)",
-    "package_selector": "darwin_arm64"
+    "platform-tag": "darwin-arm64"
   },
   "darwin_x86_64": {
     "description": "Mac OSX, x86 64 bit (Intel)",
-    "package_selector": "darwin"
+    "platform-tag": "darwin-x86-64"
   },
   "linux_x86_64": {
     "description": "Linux X86 64 bit",
-    "package_selector": "linux_x86_64"
+    "platform-tag": "linux-x86-64"
   },
   "linux_aarch64": {
     "description": "Linux ARM 64 bit",
-    "package_selector": "linux_aarch64"
+    "platform-tag": "linux-aarch64"
   },
   "windows_amd64": {
     "description": "Windows x86 64 bit",
-    "package_selector": "windows_amd64"
+    "platform-tag": "windows-amd64"
   }
 }

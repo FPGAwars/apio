@@ -1,4 +1,4 @@
-name: Publish Pypi
+name: publish-to-pypi
 
 # Manual activation
 on: [workflow_dispatch]

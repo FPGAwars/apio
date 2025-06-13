@@ -20,7 +20,6 @@
       * [apio drivers uninstall serial](#apio-drivers-uninstall-serial) - Uninstall the serial drivers.
   * [apio examples](#apio-examples) - List and fetch apio examples.
     * [apio examples fetch](#apio-examples-fetch) - Fetch the files of an example.
-    * [apio examples fetch-board](#apio-examples-fetch-board) - Fetch all examples of a board.
     * [apio examples list](#apio-examples-list) - List the available apio examples.
   * [apio format](#apio-format) - Format verilog source files.
   * [apio fpgas](#apio-fpgas) - List available FPGA definitions.
@@ -527,9 +526,8 @@ Options:
   -h, --help  Show this message and exit.
 
 Subcommands:
-  apio examples list         List the available apio examples.
-  apio examples fetch        Fetch the files of an example.
-  apio examples fetch-board  Fetch all examples of a board.
+  apio examples list   List the available apio examples.
+  apio examples fetch  Fetch the files of an example.
 
 ```
 
@@ -540,35 +538,15 @@ Subcommands:
 ```
 Usage: apio examples fetch [OPTIONS] EXAMPLE
 
-  The command 'apio examples fetch' fetches the files of the specified
-  example to the current directory or to the directory specified by the
-  '-dst' option. The destination directory does not need to exist, but
-  if it does, it must be empty.
+  The command 'apio examples fetch' fetches a single examples or all the
+  examples of a board. The destination directory is either the current
+  directory or the directory specified with '--dst' and it should be
+  empty and non existing.
 
   Examples:
-    apio examples fetch alhambra-ii/ledon
-    apio examples fetch alhambra-ii/ledon -d foo/bar
-
-Options:
-  -d, --dst path  Set a different destination directory.
-  -h, --help      Show this message and exit.
-
-```
-
-<br>
-
-### apio examples fetch-board
-
-```
-Usage: apio examples fetch-board [OPTIONS] BOARD
-
-  The command 'apio examples fetch-board' is used to fetch all the Apio
-  examples for a specific board. The examples are copied to the current
-  directory or to the specified destination directory if the '–-dst'
-  option is provided.
-
-  Examples:
-    apio examples fetch-board alhambra-ii  # Fetch board examples.
+    apio examples fetch alhambra-ii/ledon    # Single example
+    apio examples fetch alhambra-ii          # All board's examples
+    apio examples fetch alhambra-ii -d work  # Explicit destination
 
 Options:
   -d, --dst path  Set a different destination directory.
@@ -867,7 +845,7 @@ Usage: apio lint [OPTIONS]
 
   The command 'apio lint' scans the project's source files and reports
   errors, inconsistencies, and style violations. The command uses the
-  Verilator tool, which is included in the standard Apio installation.
+  Verilator tool, which is included with the standard Apio installation.
 
   Examples:
     apio lint

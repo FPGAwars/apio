@@ -478,10 +478,13 @@ class ApioContext:
         platform_id: str,
         platforms: Dict[str, Dict],
     ):
-        """Given a dictionary with the packages.jsonc packages configurations,
-        returns subset dictionary with packages that are applicable to the
-        this platform.
+        """Given a dictionary with the packages.jsonc packages infos,
+        returns subset dictionary with packages that are available for
+        'platform_id'.
         """
+
+        # -- If fails, this is a programming error.
+        assert platform_id in platforms, platform
 
         # -- Final dict with the output packages
         filtered_packages = {}
@@ -489,40 +492,26 @@ class ApioContext:
         # -- Check all the packages
         for package_name in all_packages.keys():
 
-            # -- Get the information about the package
-            release = all_packages[package_name]["release"]
+            # -- Get the package info.
+            package_info = all_packages[package_name]
 
-            # -- This packages is available only for certain platforms.
-            if "available_platforms" in release:
+            # -- Get the list of platforms ids on which this package is
+            # -- available. The package is available on all platforms unless
+            # -- restricted by the ""restricted-to-platforms" field.
+            available_on_platforms = package_info.get(
+                "restricted-to-platforms", platforms.keys()
+            )
 
-                # -- Get the available platforms
-                available_platforms = release["available_platforms"]
+            # -- Sanity check that all platform ids are valid. If fails it's
+            # -- a programming error.
+            for p in available_on_platforms:
+                assert p in platforms.keys(), platform
 
-                # -- Check all the available platforms
-                for available_platform in available_platforms:
-
-                    # -- Sanity check. If this fails, it's a programming error
-                    # -- rather than a user error.
-                    assert available_platform in platforms, (
-                        f"Unknown available platform: '{available_platform}' "
-                        "in package '{pkg}'"
-                    )
-
-                    # -- Match!
-                    if platform_id == available_platform:
-
-                        # -- Add it to the output dictionary
-                        filtered_packages[package_name] = all_packages[
-                            package_name
-                        ]
-
-            # -- Package for all the platforms
-            else:
-
-                # -- Add it to the output dictionary
+            # -- If available for 'platform_id', add it.
+            if platform_id in available_on_platforms:
                 filtered_packages[package_name] = all_packages[package_name]
 
-        # -- Update the current packages!
+        # -- Return the subset dict with the packages for 'platform_id'.
         return filtered_packages
 
     @staticmethod
