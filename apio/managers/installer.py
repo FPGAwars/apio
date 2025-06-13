@@ -26,13 +26,6 @@ def _construct_package_download_url(
 ) -> str:
     """Construct the download URL for the given package name and version."""
 
-    # -- Get platform ID.
-    platform_id = apio_ctx.platform_id
-
-    # -- Get the platform tag.
-    platform_info = apio_ctx.platforms[platform_id]
-    platform_tag = platform_info["platform-tag"]
-
     # -- Convert the version to "YYYY-MM-DD"
     # -- Move to a function in util.py.
     version_tokens = target_version.split(".")
@@ -47,7 +40,7 @@ def _construct_package_download_url(
 
     # -- Create vars mapping.
     url_vars = {
-        "${PLATFORM}": platform_tag,
+        "${PLATFORM}": apio_ctx.platform_id,
         "${YYYY-MM-DD}": yyyy_mm_dd,
         "${YYYYMMDD}": yyyy_mm_dd.replace("-", ""),
     }
