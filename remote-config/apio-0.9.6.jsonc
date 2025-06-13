@@ -14,9 +14,9 @@
         "organization": "FPGAwars"
       },
       "release": {
-        "version": "2025.06.08",
-        "tag": "${T}",
-        "file": "apio-examples-${T}.zip"
+        "version": "0.1.4",
+        "tag": "${V}",
+        "file": "apio-examples-${V}.zip"
       }
     },
     // -- Yosys HQ suite
