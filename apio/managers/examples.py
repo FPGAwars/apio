@@ -294,7 +294,7 @@ class Examples:
             )
 
         cout(
-            f"{util.plurality(board_examples, "Example", include_num=False)} "
+            f"{util.plurality(board_examples, 'Example', include_num=False)} "
             "fetched successfully.",
             style=SUCCESS,
         )
