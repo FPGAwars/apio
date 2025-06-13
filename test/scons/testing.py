@@ -29,7 +29,7 @@ verbosity {
   pnr: false
 }
 environment {
-  platform_id: "darwin_arm64"
+  platform_id: "darwin-arm64"
   is_debug: true
   yosys_path: "/Users/user/.apio/packages/oss-cad-suite/share/yosys"
   trellis_path: "/Users/user/.apio/packages/oss-cad-suite/share/trellis"

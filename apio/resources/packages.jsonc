@@ -30,7 +30,7 @@
   // "graphviz" package
   "graphviz": {
     "restricted-to-platforms": [
-      "windows_amd64"
+      "windows-amd64"
     ],
     "description": "Graphviz tool for Windows",
     "env": {
@@ -51,7 +51,7 @@
   // "drivers" package
   "drivers": {
     "restricted-to-platforms": [
-      "windows_amd64"
+      "windows-amd64"
     ],
     "description": "Drivers tools for Windows",
     "env": {
