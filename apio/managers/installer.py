@@ -363,21 +363,21 @@ def _fix_packages(
     """If the package scan result contains errors, fix them."""
 
     for package_name in scan.bad_version_package_names:
-        cout(f"Uninstalling bad version of '{package_name}'", style=EMPH3)
+        cout(f"Uninstalling bad version of '{package_name}'")
         _delete_package_dir(apio_ctx, package_name, verbose=False)
         apio_ctx.profile.remove_package(package_name)
 
     for package_name in scan.broken_package_names:
-        cout(f"Uninstalling broken package '{package_name}'", style=EMPH3)
+        cout(f"Uninstalling broken package '{package_name}'")
         _delete_package_dir(apio_ctx, package_name, verbose=False)
         apio_ctx.profile.remove_package(package_name)
 
     for package_name in scan.orphan_package_names:
-        cout(f"Uninstalling unknown package '{package_name}'", style=EMPH3)
+        cout(f"Uninstalling unknown package '{package_name}'")
         apio_ctx.profile.remove_package(package_name)
 
     for dir_name in scan.orphan_dir_names:
-        cout(f"Deleting unknown package dir '{dir_name}'", style=EMPH3)
+        cout(f"Deleting unknown package dir '{dir_name}'")
         # -- Sanity check. Since apio_ctx.packages_dir is guaranteed to include
         # -- the word packages, this can fail only due to programming error.
         dir_path = apio_ctx.packages_dir / dir_name
@@ -386,7 +386,7 @@ def _fix_packages(
         shutil.rmtree(dir_path)
 
     for file_name in scan.orphan_file_names:
-        cout(f"Deleting unknown package file '{file_name}'", style=EMPH3)
+        cout(f"Deleting unknown package file '{file_name}'")
         # -- Sanity check. Since apio_ctx.packages_dir is guaranteed to
         # -- include the word packages, this can fail only due to programming
         # -- error.
