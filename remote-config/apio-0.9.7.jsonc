@@ -37,7 +37,7 @@
     // -- Graphviz
     "graphviz": {
       "repository": {
-        "organization": "zapta",
+        "organization": "FPGAwars",
         "name": "tools-graphviz"
       },
       "release": {
@@ -49,7 +49,7 @@
     // -- Verible
     "verible": {
       "repository": {
-        "organization": "zapta",
+        "organization": "FPGAwars",
         "name": "tools-verible"
       },
       "release": {
