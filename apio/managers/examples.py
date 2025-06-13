@@ -278,7 +278,7 @@ class Examples:
         ignore_callback = shutil.ignore_patterns("info")
 
         cout(
-            f"Found {util.plurality(board_examples, "example")} "
+            f'Found {util.plurality(board_examples, "example")} '
             f"for board '{board_name}'"
         )
 
