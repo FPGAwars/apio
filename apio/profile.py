@@ -6,6 +6,7 @@
 """Manage the apio profile file"""
 
 import json
+import re
 import sys
 from dataclasses import dataclass
 from typing import Dict, Optional
@@ -139,6 +140,25 @@ class Profile:
 
         # -- Else, return the default value.
         return default
+
+    def _check_remote_config(self, config: Dict):
+        """Check that the package versions have the expected format YYYY.MM.DD
+        so we can transform them to the tag YYYYY-MM-DD. Fatal error if not.
+        """
+        pattern = r"^[0-9]{4}[.][0-9]{2}[.][0-9]{2}$"
+        for package_id, package_info in config["packages"].items():
+            version = package_info["release"]["version"]
+            if not re.match(pattern, version):
+                cerror(
+                    f"Invalid version '{version}' in package "
+                    f"'{package_id}' remote config."
+                )
+                cout(
+                    "Package versions should have the format "
+                    "YYYY.MM.DD, e.g. 2025.06.15.",
+                    style=INFO,
+                )
+                sys.exit(1)
 
     def get_package_config(
         self,
@@ -313,6 +333,10 @@ class Profile:
             # -- Show the error and abort.
             cerror("Invalid remote config file", f"{exc}")
             sys.exit(1)
+
+        # -- Do some checks and fail if invalid. This is not an exhaustive
+        # -- check.
+        self._check_remote_config(remote_config)
 
         # -- Update the profile and save
         if remote_config != self.remote_config:

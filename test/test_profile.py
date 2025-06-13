@@ -30,7 +30,7 @@ def test_profile_loading(apio_runner: ApioRunner):
         path = sb.home_dir / "profile.json"
         sb.write_file(path, json.dumps(TEST_DATA, indent=2))
 
-        # -- Read back the contnt.
+        # -- Read back the content.
         profile = Profile(sb.home_dir, "http://fake-domain.com/config")
 
         # -- Verify
