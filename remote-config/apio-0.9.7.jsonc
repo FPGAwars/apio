@@ -17,7 +17,7 @@
         "name": "apio-examples"
       },
       "release": {
-        "version": "2025.06.12",
+        "version": "2025.06.13",
         "release-tag": "${YYYY-MM-DD}",
         "package-file": "apio-examples-${YYYYMMDD}.tgz"
       }
@@ -25,11 +25,11 @@
     // -- Yosys HQ suite
     "oss-cad-suite": {
       "repository": {
-        "organization": "zapta",
+        "organization": "FPGAwars",
         "name": "tools-oss-cad-suite"
       },
       "release": {
-        "version": "2025.06.12",
+        "version": "2025.06.13",
         "release-tag": "${YYYY-MM-DD}",
         "package-file": "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.tgz"
       }
@@ -41,7 +41,7 @@
         "name": "tools-graphviz"
       },
       "release": {
-        "version": "2025.06.12",
+        "version": "2025.06.13",
         "release-tag": "${YYYY-MM-DD}",
         "package-file": "apio-graphviz-${PLATFORM}-${YYYYMMDD}.tgz"
       }
@@ -61,11 +61,11 @@
     // -- Drivers
     "drivers": {
       "repository": {
-        "organization": "zapta",
+        "organization": "FPGAwars",
         "name": "tools-drivers"
       },
       "release": {
-        "version": "2025.06.12",
+        "version": "2025.06.13",
         "release-tag": "${YYYY-MM-DD}",
         "package-file": "apio-drivers-${PLATFORM}-${YYYYMMDD}.tgz"
       }
