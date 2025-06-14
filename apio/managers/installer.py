@@ -26,13 +26,6 @@ def _construct_package_download_url(
 ) -> str:
     """Construct the download URL for the given package name and version."""
 
-    # -- Get platform ID.
-    platform_id = apio_ctx.platform_id
-
-    # -- Get the platform tag.
-    platform_info = apio_ctx.platforms[platform_id]
-    platform_tag = platform_info["platform-tag"]
-
     # -- Convert the version to "YYYY-MM-DD"
     # -- Move to a function in util.py.
     version_tokens = target_version.split(".")
@@ -47,7 +40,7 @@ def _construct_package_download_url(
 
     # -- Create vars mapping.
     url_vars = {
-        "${PLATFORM}": platform_tag,
+        "${PLATFORM}": apio_ctx.platform_id,
         "${YYYY-MM-DD}": yyyy_mm_dd,
         "${YYYYMMDD}": yyyy_mm_dd.replace("-", ""),
     }
@@ -363,21 +356,21 @@ def _fix_packages(
     """If the package scan result contains errors, fix them."""
 
     for package_name in scan.bad_version_package_names:
-        cout(f"Uninstalling bad version of '{package_name}'", style=EMPH3)
+        cout(f"Uninstalling bad version of '{package_name}'")
         _delete_package_dir(apio_ctx, package_name, verbose=False)
         apio_ctx.profile.remove_package(package_name)
 
     for package_name in scan.broken_package_names:
-        cout(f"Uninstalling broken package '{package_name}'", style=EMPH3)
+        cout(f"Uninstalling broken package '{package_name}'")
         _delete_package_dir(apio_ctx, package_name, verbose=False)
         apio_ctx.profile.remove_package(package_name)
 
     for package_name in scan.orphan_package_names:
-        cout(f"Uninstalling unknown package '{package_name}'", style=EMPH3)
+        cout(f"Uninstalling unknown package '{package_name}'")
         apio_ctx.profile.remove_package(package_name)
 
     for dir_name in scan.orphan_dir_names:
-        cout(f"Deleting unknown package dir '{dir_name}'", style=EMPH3)
+        cout(f"Deleting unknown package dir '{dir_name}'")
         # -- Sanity check. Since apio_ctx.packages_dir is guaranteed to include
         # -- the word packages, this can fail only due to programming error.
         dir_path = apio_ctx.packages_dir / dir_name
@@ -386,7 +379,7 @@ def _fix_packages(
         shutil.rmtree(dir_path)
 
     for file_name in scan.orphan_file_names:
-        cout(f"Deleting unknown package file '{file_name}'", style=EMPH3)
+        cout(f"Deleting unknown package file '{file_name}'")
         # -- Sanity check. Since apio_ctx.packages_dir is guaranteed to
         # -- include the word packages, this can fail only due to programming
         # -- error.

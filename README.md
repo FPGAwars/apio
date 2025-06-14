@@ -1,9 +1,18 @@
 [![][apio-logo]][wiki]
 
-[![PyPI Version][pypi-image]][pypi-url]<br>
-[![License][license-image]][license-url]<br>
-[![Test](https://github.com/FPGAwars/apio/actions/workflows/test.yml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/test.yml)<br>
+[![PyPI Version][pypi-image]][pypi-url]
+[![License][license-image]][license-url]
+
+[![test](https://github.com/FPGAwars/apio/actions/workflows/test.yaml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/test.yaml)
 [![build-all](https://github.com/FPGAwars/apio-dev-builds/actions/workflows/build-all.yaml/badge.svg)](https://github.com/FPGAwars/apio-dev-builds/actions/workflows/build-all.yaml)
+[![monitor-apio-prod](https://github.com/FPGAwars/apio/actions/workflows/monitor-apio-prod.yaml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/monitor-apio-prod.yaml)
+[![monitor-apio-latest](https://github.com/FPGAwars/apio/actions/workflows/monitor-apio-latest.yaml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/monitor-apio-latest.yaml)
+
+[![build-and-release](https://github.com/FPGAwars/apio-examples/actions/workflows/build-and-release.yaml/badge.svg)](https://github.com/FPGAwars/apio-examples/actions/workflows/build-and-release.yaml)
+[![build-and-release](https://github.com/FPGAwars/tools-oss-cad-suite/actions/workflows/build-and-release.yaml/badge.svg)](https://github.com/FPGAwars/tools-oss-cad-suite/actions/workflows/build-and-release.yaml)
+[![build-and-release](https://github.com/FPGAwars/tools-verible/actions/workflows/build-and-release.yaml/badge.svg)](https://github.com/FPGAwars/tools-verible/actions/workflows/build-and-release.yaml)
+[![build-and-release](https://github.com/FPGAwars/tools-graphviz/actions/workflows/build-and-release.yml/badge.svg)](https://github.com/FPGAwars/tools-graphviz/actions/workflows/build-and-release.yml)
+[![build-and-release](https://github.com/FPGAwars/tools-drivers/actions/workflows/build-and-release.yaml/badge.svg)](https://github.com/FPGAwars/tools-drivers/actions/workflows/build-and-release.yaml)
 
 ![][linux-logo]&nbsp;&nbsp;&nbsp;![][macosx-logo]&nbsp;&nbsp;&nbsp;![][windows-logo]&nbsp;&nbsp;&nbsp;![][ubuntu-logo]&nbsp;&nbsp;&nbsp;![][raspbian-logo]
 

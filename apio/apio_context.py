@@ -458,6 +458,9 @@ class ApioContext:
         else:
             platform_id = ApioContext._get_system_platform_id()
 
+        # Stick to the naming conventions we use for boards, fpgas, etc.
+        platform_id = platform_id.replace("_", "-")
+
         # -- Verify it's valid. This can be a user error if the override
         # -- is invalid.
         if platform_id not in platforms.keys():
@@ -517,8 +520,8 @@ class ApioContext:
     @staticmethod
     def _get_system_platform_id() -> str:
         """Return a String with the current platform:
-        ex. linux_x86_64
-        ex. windows_amd64"""
+        ex. linux-x86-64
+        ex. windows-amd64"""
 
         # -- Get the platform: linux, windows, darwin
         type_ = platform.system().lower()

@@ -1,15 +1,16 @@
 // General config parameters.
 //
 {
-  // URL of the apio remote config file. The placeholder ${V} is replaced with
-  // apio's version.
+  // URL of the apio remote config file. The placeholder {V} is replaced at
+  // runtime with apio's version such as "0.9.7".
   //
-  // This value can be overridden for testing using the env var
-  // APIO_REMOTE_CONFIG_URL, including for reading from a local files.
+  // The value of the remote config field here can be overridden for testing
+  // using the env var APIO_REMOTE_CONFIG_URL, including for reading from
+  // a local file using the "file://" protocol spec.
 
-  // "remote-config": "https://github.com/FPGAwars/apio/raw/develop/remote-config/apio-${V}.jsonc"
+  "remote-config": "https://github.com/FPGAwars/apio/raw/develop/remote-config/apio-{V}.jsonc"
 
-  "remote-config": "https://github.com/zapta/apio-dev/raw/develop/remote-config/apio-${V}.jsonc"
+  // "remote-config": "https://github.com/zapta/apio/raw/develop/remote-config/apio-{V}.jsonc"
 
-  // "remote-config": "file:///projects/apio-dev/repo/remote-config/apio-0.9.6.jsonc"
+  // "remote-config": "file:///projects/apio-dev/repo/remote-config/apio-{V}.jsonc"
 }

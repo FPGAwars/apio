@@ -1,6 +1,6 @@
 // Remote config file for Apio 0.9.6
 //
-// See installer.py for the vars ${P}, ${V}, ${T}.
+// Supported vars (see installer.py for details):
 //
 //   ${PLATFORM}         - platform tag (from platforms.jsonc)
 //   ${YYYY-MM-DD}       - version as YYYY-MM-DD
