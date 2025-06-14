@@ -25,11 +25,8 @@
   * [apio fpgas](#apio-fpgas) - List available FPGA definitions.
   * [apio graph](#apio-graph) - Generate a visual graph of the code.
   * [apio info](#apio-info) - Apio's info and info.
-    * [apio info cli](#apio-info-cli) - Command line conventions.
     * [apio info colors](#apio-info-colors) - Colors table.
-    * [apio info files](#apio-info-files) - Apio project files types.
     * [apio info platforms](#apio-info-platforms) - Supported platforms.
-    * [apio info resources](#apio-info-resources) - Additional resources.
     * [apio info system](#apio-info-system) - Show system information.
   * [apio lint](#apio-lint) - Lint the source code.
   * [apio packages](#apio-packages) - Manage the apio packages.
@@ -690,38 +687,15 @@ Options:
 Usage: apio info [OPTIONS] COMMAND [ARGS]...
 
   The command group 'apio info' contains subcommands that provide
-  various information about Apio usage, Apio's installation, and your
-  system.
+  additional information about Apio and your system.
 
 Options:
   -h, --help  Show this message and exit.
 
-Documentation:
-  apio info cli        Command line conventions.
-  apio info files      Apio project files types.
-  apio info resources  Additional resources.
-
-Information:
+Subcommands:
   apio info platforms  Supported platforms.
   apio info system     Show system information.
   apio info colors     Colors table.
-
-```
-
-<br>
-
-### apio info cli
-
-```
-Usage: apio info cli [OPTIONS]
-
-  The command 'apio info cli' provides information the Apio's command
-  line conventions and features.
-  Examples:
-    apio info cli        # Shoe the cli documentation text.
-
-Options:
-  -h, --help  Show this message and exit.
 
 ```
 
@@ -756,24 +730,6 @@ Options:
 
 <br>
 
-### apio info files
-
-```
-Usage: apio info files [OPTIONS]
-
-  The command 'apio info files' provides information about the various
-  files types used in an Apio project.
-
-  Examples:
-    apio info files
-
-Options:
-  -h, --help  Show this message and exit.
-
-```
-
-<br>
-
 ### apio info platforms
 
 ```
@@ -788,24 +744,6 @@ Usage: apio info platforms [OPTIONS]
   [Advanced] The automatic platform ID detection of Apio can be overridden by
   defining a different platform ID using the APIO_PLATFORM environment
   variable.
-
-Options:
-  -h, --help  Show this message and exit.
-
-```
-
-<br>
-
-### apio info resources
-
-```
-Usage: apio info resources [OPTIONS]
-
-  The command 'apio info resources' provides information about apio
-  related online resources.
-
-  Examples:
-    apio info resources   # Provides resources information
 
 Options:
   -h, --help  Show this message and exit.

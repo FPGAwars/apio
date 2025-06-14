@@ -16,8 +16,6 @@ def test_apio_info(apio_runner: ApioRunner):
         # -- Execute "apio info"
         result = sb.invoke_apio_cmd(apio, ["info"])
         sb.assert_ok(result)
-        assert "Documentation:" in result.output
-        assert "Documentation:" in result.output
         assert "platforms" in result.output
 
         # -- Execute "apio info system"
@@ -49,15 +47,3 @@ def test_apio_info(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(apio, ["info", "system"])
         sb.assert_ok(result)
         assert result.output != cunstyle(result.output)  # Colored
-
-        # -- Execute "apio info cli"
-        result = sb.invoke_apio_cmd(apio, ["info", "cli"])
-        sb.assert_ok(result)
-        assert "This page describes the conventions" in cunstyle(result.output)
-        assert result.output != cunstyle(result.output)  # Colored.
-
-        # # -- Execute "apio info resources"
-        result = sb.invoke_apio_cmd(apio, ["info", "resources"])
-        assert result.exit_code == 0
-        assert "Apio documentation" in result.output
-        assert result.output != cunstyle(result.output)  # Colored.
