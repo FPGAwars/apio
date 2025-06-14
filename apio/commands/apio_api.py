@@ -309,7 +309,7 @@ def _scan_devices_cli(
 
 # -- Text in the rich-text format of the python rich library.
 APIO_API_HELP = """
-The command group 'apio apio' contains subcommands that that are intended \
+The command group 'apio api' contains subcommands that that are intended \
 to be used by tools and programs such as icestudio, rather than being used \
 directly by users.
 """
