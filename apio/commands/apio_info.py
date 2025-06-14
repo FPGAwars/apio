@@ -170,7 +170,7 @@ Examples:
   apio info colors --rich   # Same as above.
   apio info colors --click  # Click library output.
   apio info colors --print  # Python's print() output.
-  apio sys col -p             # Using shortcuts.[/code]
+  apio sys col -p           # Using shortcuts.[/code]
 """
 
 rich_option = click.option(
