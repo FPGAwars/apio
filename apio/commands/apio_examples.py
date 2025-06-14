@@ -204,8 +204,8 @@ def _fetch_cli(
 # -- Text in the rich-text format of the python rich library.
 APIO_EXAMPLES_HELP = """
 The command group 'apio examples' provides subcommands for listing and \
-fetching Apio-provided examples. Each example is a self-contained \
-mini-project that can be built and uploaded to an FPGA board.
+fetching Apio provided examples. Each example is a self contained \
+mini project that can be built and uploaded to an FPGA board.
 """
 
 

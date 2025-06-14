@@ -132,7 +132,7 @@ Examples:[code]
   apio packages update            # Update packages
   apio pack upd                   # Same, with shortcuts
   apio packages update --force    # Force reinstallation from scratch
-  apio packages update --verbose  # Provide additional info
+  apio packages update --verbose  # Provide additional info[/code]
 
 Adding the '--force' option forces the reinstallation of existing packages; \
 otherwise, packages that are already installed correctly remain unchanged.

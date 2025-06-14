@@ -516,8 +516,8 @@ Options:
 Usage: apio examples [OPTIONS] COMMAND [ARGS]...
 
   The command group 'apio examples' provides subcommands for listing and
-  fetching Apio-provided examples. Each example is a self-contained
-  mini-project that can be built and uploaded to an FPGA board.
+  fetching Apio provided examples. Each example is a self contained mini
+  project that can be built and uploaded to an FPGA board.
 
 Options:
   -h, --help  Show this message and exit.
@@ -735,13 +735,13 @@ Options:
 ```
 Usage: apio info platforms [OPTIONS]
 
-  The command 'apio info platforms' lists the platform IDs supported by Apio,
-  with the effective platform ID of your system highlighted.
+  The command 'apio info platforms' lists the platform IDs supported by
+  Apio, with the effective platform ID of your system highlighted.
 
-  [code]Examples:   apio info platforms   # List supported platform
-  ids.[/code]
+  Examples:
+    apio info platforms   # List supported platform ids.
 
-  [Advanced] The automatic platform ID detection of Apio can be overridden by
+  The automatic platform ID detection of Apio can be overridden by
   defining a different platform ID using the APIO_PLATFORM environment
   variable.
 

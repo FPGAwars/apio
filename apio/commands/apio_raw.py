@@ -41,7 +41,7 @@ Examples:[code]
   apio raw -v                         # Show apio env setting.
   apio raw -h                         # Show this help info.[/code]
 
-The '--' marker is used to separate between the arguments of the apio \
+The marker '--' is used to separate between the arguments of the apio \
 command itself and those of the executed command.
 """
 
