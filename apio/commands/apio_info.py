@@ -22,7 +22,7 @@ from apio.common.apio_console import PADDING, cout, cstyle, cprint
 # ------ apio info system
 
 # -- Text in the rich-text format of the python rich library.
-APIO_INFO_INFO_HELP = """
+APIO_INFO_SYSTEM_HELP = """
 The command 'apio info system' provides general information about your \
 system and Apio installation, which is useful for diagnosing Apio \
 installation issues.
@@ -41,7 +41,7 @@ environment variable 'APIO_HOME'.
     name="system",
     cls=ApioCommand,
     short_help="Show system information.",
-    help=APIO_INFO_INFO_HELP,
+    help=APIO_INFO_SYSTEM_HELP,
 )
 def _system_cli():
     """Implements the 'apio info system' command."""
@@ -89,20 +89,22 @@ def _system_cli():
 
 # ------ apio info platforms
 
+# -- Text in the rich-text format of the python rich library.
 APIO_INFO_PLATFORMS_HELP = """
 The command 'apio info platforms' lists the platform IDs supported by Apio, \
 with the effective platform ID of your system highlighted.
 
-[code]Examples:
+Examples:[code]
   apio info platforms   # List supported platform ids.[/code]
 
-[Advanced] The automatic platform ID detection of Apio can be overridden by \
+The automatic platform ID detection of Apio can be overridden by \
 defining a different platform ID using the APIO_PLATFORM environment variable.
 """
 
 
 @click.command(
     name="platforms",
+    cls=ApioCommand,
     short_help="Supported platforms.",
     help=APIO_INFO_PLATFORMS_HELP,
 )
