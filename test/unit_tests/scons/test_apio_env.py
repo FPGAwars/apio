@@ -2,7 +2,7 @@
 Tests of the scons ApioEnv.
 """
 
-from test.scons.testing import make_test_apio_env
+from test.unit_tests.scons.testing import make_test_apio_env
 from test.conftest import ApioRunner
 
 
