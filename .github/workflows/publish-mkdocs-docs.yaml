@@ -1,7 +1,7 @@
 # A periodic workflow to publish the apio mkDocs at /docs dir to the github
 # Pages of this repo.
 
-name: publish-docs
+name: publish-mkdocs-docs
 
 on:
   push:
@@ -23,7 +23,7 @@ permissions:
   contents: write
 
 jobs:
-  publish-docs:
+  publish-mkdocs-docs:
     runs-on: ubuntu-latest
 
     steps:
@@ -35,18 +35,18 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Install dependencies
+      - name: Install mkDocs tools
         run: |
           pip install mkdocs
           pip install  mkdocs-material
 
-      - name: Build site (strict mode)
+      - name: Build pages
         run: |
           mkdocs build --strict
 
-      - name: Deploy to GitHub Pages
+      - name: Publish to github Pages
         # Push also if no change.
         run: |
           mkdocs gh-deploy --force
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
