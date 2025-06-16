@@ -60,8 +60,8 @@ def on_exception(*, exit_code: int):
             try:
                 return function(*args, **kwargs)
             except Exception as exc:
-                # if util.is_debug():
-                traceback.print_tb(exc.__traceback__)
+                if util.is_debug():
+                    traceback.print_tb(exc.__traceback__)
 
                 if str(exc):
                     cerror(str(exc))
