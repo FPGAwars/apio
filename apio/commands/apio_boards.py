@@ -183,7 +183,7 @@ def _list_boards_docs_format(apio_ctx: ApioContext):
     cout("\n<!-- BEGIN generation by 'apio boards --docs' -->")
     cout("\n# Supported FPGA Boards")
     cout(
-        f"\n> Generated on {today}. For the updated list " "run `apio boards`."
+        f"\n> Generated on {today}. For the updated list run `apio boards`."
     )
     cout(
         "\n> Custom board definitions can be added in the "

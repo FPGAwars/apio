@@ -167,7 +167,7 @@ def _list_fpgas_docs_format(apio_ctx: ApioContext):
     cout("\n<!-- BEGIN generation by 'apio fpgas --docs' -->")
     cout("\n# Supported FPGAs")
     cout(
-        f"\n> Generated on {today}. For the updated list " "run `apio fpgas`."
+        f"\n> Generated on {today}. For the updated list run `apio fpgas`."
     )
     cout(
         "\n> Custom FPGAs definitions can be added in the "
