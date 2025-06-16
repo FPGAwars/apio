@@ -1,0 +1,137 @@
+/* Custom CSS definitions for Apio documentation. */
+
+/* Reduce table padding. */
+.md-typeset table td,
+.md-typeset table th {
+  padding: 0.5em 0.5em !important; /* smaller vertical and horizontal padding */
+}
+
+/* Set table font size to normal */
+.md-typeset table,
+.md-typeset table * {
+  font-size: inherit !important;
+}
+
+/* Style top-level sidebar items under active tab */
+.md-nav__item--section > .md-nav__link {
+  color: #d9534f !important; /* Red text */
+  font-weight: bold;
+  font-size: 1.05em;
+}
+
+/* Style the 'Home' link when href is '.' */
+.md-nav__link[href="."] {
+  color: #d9534f !important;
+  font-weight: bold;
+  font-size: 1.05em;
+}
+
+/* Apply borders to all table cells */
+.md-typeset table td,
+.md-typeset table th {
+  border: 1px solid #ccc;
+}
+
+/* Lighten table borders */
+.md-typeset table,
+.md-typeset table th,
+.md-typeset table td {
+  border-color: #f0f0f0 !important; /* very light gray close to white */
+}
+
+/* Also for inner borders */
+.md-typeset table th,
+.md-typeset table td {
+  border-bottom: 1px solid #f0f0f0 !important;
+  border-right: 1px solid #f0f0f0 !important;
+}
+
+/* Bold titles with dark gray color */
+.md-typeset h1,
+.md-typeset h2
+{
+  font-weight: 700; /* bold */
+  color: #444444; /* dark gray, not full black */
+}
+
+/* Bold titles with dark gray color */
+
+.md-typeset h3,
+.md-typeset h4,
+.md-typeset h5,
+.md-typeset h6 {
+  font-weight: 700; /* bold */
+  color: #666666; /* dark gray, not full black */
+}
+
+/* # title size */
+.md-typeset h1 {
+  font-size: 2em;  /* Default is ~1.8em, reduce as needed */
+}
+
+/* ## title size */
+.md-typeset h2 {
+  font-size: 1.4em;  /* Default is ~1.5em */
+  margin-top: 2.5em;   /* Add vertical space above */
+}
+
+/* ### title size */
+.md-typeset h3 {
+  font-size: 1.2em;  /* Default is ~1.25em */
+}
+
+/* #### title size */
+.md-typeset h4 {
+  font-size: 1.0em;    /* Default is ~1.1em */
+}
+
+
+/* Make horizontal rules thicker and darker */
+.md-typeset hr {
+  border: none; /* Remove default border */
+  border-top: 4px solid #cccccc; /* Darker, thicker top border */
+  margin: 1.5em 0; /* Optional: vertical spacing */
+}
+
+/* Bold text color */
+.md-typeset strong,
+.md-typeset b {
+  color: #777777;
+}
+
+/* Table header color */
+.md-typeset table th {
+  color: #555555 !important;
+  background-color: #e2eefc; /* Light gray background for header cells */
+}
+
+/* Make the code block text more visible */
+.md-typeset pre code {
+  font-family: "JetBrains Mono", "Roboto Mono", "DejaVu Sans Mono",
+    "Courier New", Courier, monospace !important;
+  font-weight: 500;
+  color: #1d8348; /* Nearly black for high visibility */
+  background-color: #eeeeee; /* Maintain contrast */
+}
+
+/* Make inline code text more visible */
+.md-typeset code {
+  font-family: "JetBrains Mono", "Roboto Mono", "DejaVu Sans Mono",
+    "Courier New", Courier, monospace !important;
+  font-weight: 500;
+  color: #1d8348; /* Nearly black for high visibility */
+  background-color: #eeeeee; /* Maintain contrast */
+  padding: 0.1em 0.3em; /* Optional: small padding for better appearance */
+  border-radius: 3px;    /* Optional: rounded corners */
+}
+
+/* Spacing before and after an horizontal line */
+.md-typeset hr {
+  margin-top: 4em;
+  margin-bottom: 2em;
+}
+
+/* Space at the bottom of each page */
+.md-main__inner {
+  padding-bottom: 5em;  /* Adjust value as needed */
+}

@@ -1,0 +1,83 @@
+# The project name.
+site_name: Apio Docs
+
+# The temporary directory with the generated site.
+site_dir: _site
+
+plugins:
+  - search
+
+extra_css:
+  - stylesheets/extra.css
+
+theme:
+  name: material
+
+  # This controls the behavior of the navigation.
+  features:
+    - navigation.sections # Enables second-level grouping
+    - navigation.expand # Expands all sections and subsections by default
+    - navigation.tabs
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+
+# Navigation tree
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Quick start: quick-start.md
+      - Video tutorial: video-tutorial.md
+      - System requirements: system-requirements.md
+      - Python-based installation: python-based-installation.md
+      - Standalone installation: standalone-installation.md
+      - Migrating from Apio 0.x.x: migrating-from-apio-0xx.md
+  - Apio Commands:
+      - Build Commands:
+          - apio build: cmd-apio-build.md
+          - apio upload: cmd-apio-upload.md
+          - apio clean: cmd-apio-clean.md
+      - Verification Commands:
+          - apio lint: cmd-apio-lint.md
+          - apio format: cmd-apio-format.md
+          - apio sim: cmd-apio-sim.md
+          - apio test: cmd-apio-test.md
+          - apio report: cmd-apio-report.md
+          - apio graph: cmd-apio-graph.md
+      - Setup Commands:
+          - apio create: cmd-apio-create.md
+          - apio preferences: cmd-apio-preferences.md
+          - apio packages: cmd-apio-packages.md
+          - apio drivers: cmd-apio-drivers.md
+          - apio devices: cmd-apio-devices.md
+      - Utility Commands:
+          - apio boards: cmd-apio-boards.md
+          - apio fpgas: cmd-apio-fpgas.md
+          - apio examples: cmd-apio-examples.md
+          - apio info: cmd-apio-info.md
+          - apio raw: cmd-apio-raw.md
+          - apio api: cmd-apio-api.md
+          - apio upgrade: cmd-apio-upgrade.md
+  - Apio Projects:
+      - Project structure: project-structure.md
+      - Project file apio.ini: project-file.md
+  - FPGA Boards:
+      - Supported boards: supported-boards.md
+      - Supported FPGAs: supported-fpgas.md
+      - Board drivers: board-drivers.md
+      - Custom boards: custom-boards.md
+  - Apio Examples:
+      - Using examples: using-examples.md
+      - Contributing examples: contributing-examples.md
+  - Apio Tips:
+      - Apio command line: command-line.md
+      - Using System Verilog: using-system-verilog.md
+      - Using testbenches: using-testbenches.md
+  - Apio Development:
+      - Apio repositories: apio-repositories.md
+      - Development environment: developement-environment.md
+      - Creating an Apio version: creating-apio-version.md
+      - Creating a package version: creating-package-version.md
+  - Help: help.md
