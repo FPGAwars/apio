@@ -61,6 +61,16 @@ def test_boards_custom_board(apio_runner: ApioRunner):
         assert "my_custom_board" in result.output
         assert "Total of 1 board" in result.output
 
+        # -- Execute "apio boards --docs"
+        # -- With the --docs flag we ignore the custom board.
+        result = sb.invoke_apio_cmd(apio, ["boards", "--docs"])
+        sb.assert_ok(result)
+        assert "Loading custom 'boards.jsonc'" not in result.output
+        assert "FPGA" in result.output
+        assert "alhambra-ii" in result.output
+        assert "my_custom_board" not in result.output
+        assert "Total of 1 board" not in result.output
+
 
 def test_boards_list_ok(apio_runner: ApioRunner):
     """Test normal board listing with the apio's boards.jsonc."""
@@ -86,6 +96,15 @@ def test_boards_list_ok(apio_runner: ApioRunner):
         sb.assert_ok(result)
         assert "Loading custom 'boards.jsonc'" not in result.output
         assert "FPGA-ID" in result.output
+        assert "alhambra-ii" in result.output
+        assert "my_custom_board" not in result.output
+        assert "Total of 1 board" not in result.output
+
+        # -- Run 'apio boards --docs'
+        result = sb.invoke_apio_cmd(apio, ["boards", "--docs"])
+        sb.assert_ok(result)
+        assert "Loading custom 'boards.jsonc'" not in result.output
+        assert "FPGA" in result.output
         assert "alhambra-ii" in result.output
         assert "my_custom_board" not in result.output
         assert "Total of 1 board" not in result.output
