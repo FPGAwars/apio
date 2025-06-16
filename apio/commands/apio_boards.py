@@ -239,10 +239,10 @@ Custom boards can be defined by placing a custom 'boards.jsonc' file in the \
 project directory, which will override Apio’s default 'boards.jsonc' file.
 
 Examples:[code]
-  apio boards                   # List all boards.
-  apio boards -v                # List with extra columns..
-  apio boards | grep ecp5       # Filter boards results.[/code]
-  apio boards --docs            # Generate a report for Apio docs.
+  apio boards                   # List all boards
+  apio boards -v                # List with extra columns
+  apio boards | grep ecp5       # Filter boards results
+  apio boards --docs            # Generate a report for Apio docs[/code]
 
 """
 

@@ -219,10 +219,10 @@ Usage: apio boards [OPTIONS]
   'boards.jsonc' file.
 
   Examples:
-    apio boards                   # List all boards.
-    apio boards -v                # List with extra columns..
-    apio boards | grep ecp5       # Filter boards results.
-    apio boards --docs            # Generate a report for Apio docs.
+    apio boards                   # List all boards
+    apio boards -v                # List with extra columns
+    apio boards | grep ecp5       # Filter boards results
+    apio boards --docs            # Generate a report for Apio docs
 
 Options:
   -v, --verbose           Show detailed output.
@@ -636,12 +636,14 @@ Usage: apio fpgas [OPTIONS]
   overriding Apio’s standard 'fpgas.jsonc' file.
 
   Examples:
-    apio fpgas               # List all fpgas.
-    apio fpgas -v            # List with extra columns.
-    apio fpgas | grep gowin  # Filter FPGA results.
+    apio fpgas                # List all fpgas
+    apio fpgas -v             # List with extra columns
+    apio fpgas | grep gowin   # Filter FPGA results
+    apio fpgas --docs         # Generate a report for Apio docs
 
 Options:
   -v, --verbose           Show detailed output.
+  --docs                  Format for Apio Docs.
   -p, --project-dir path  Set the root directory for the project.
   -h, --help              Show this message and exit.
 
