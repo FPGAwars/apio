@@ -135,6 +135,13 @@ def dst_option_gen(*, help: str):
 # -- Static options
 # ---------------------------
 
+docs_format_option = click.option(
+    "docs",  # Var name.
+    "--docs",
+    is_flag=True,
+    help="Format for Apio Docs.",
+    cls=cmd_util.ApioOption,
+)
 
 project_dir_option = click.option(
     "project_dir",  # Var name.

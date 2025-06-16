@@ -114,7 +114,7 @@ Utility commands:
 ```
 Usage: apio api [OPTIONS] COMMAND [ARGS]...
 
-  The command group 'apio apio' contains subcommands that that are
+  The command group 'apio api' contains subcommands that that are
   intended to be used by tools and programs such as icestudio, rather
   than being used directly by users.
 
@@ -219,12 +219,14 @@ Usage: apio boards [OPTIONS]
   'boards.jsonc' file.
 
   Examples:
-    apio boards                   # List all boards.
-    apio boards -v                # List with extra columns..
-    apio boards | grep ecp5       # Filter boards results.
+    apio boards                   # List all boards
+    apio boards -v                # List with extra columns
+    apio boards | grep ecp5       # Filter boards results
+    apio boards --docs            # Generate a report for Apio docs
 
 Options:
   -v, --verbose           Show detailed output.
+  --docs                  Format for Apio Docs.
   -p, --project-dir path  Set the root directory for the project.
   -h, --help              Show this message and exit.
 
@@ -634,12 +636,14 @@ Usage: apio fpgas [OPTIONS]
   overriding Apio’s standard 'fpgas.jsonc' file.
 
   Examples:
-    apio fpgas               # List all fpgas.
-    apio fpgas -v            # List with extra columns.
-    apio fpgas | grep gowin  # Filter FPGA results.
+    apio fpgas                # List all fpgas
+    apio fpgas -v             # List with extra columns
+    apio fpgas | grep gowin   # Filter FPGA results
+    apio fpgas --docs         # Generate a report for Apio docs
 
 Options:
   -v, --verbose           Show detailed output.
+  --docs                  Format for Apio Docs.
   -p, --project-dir path  Set the root directory for the project.
   -h, --help              Show this message and exit.
 
@@ -718,7 +722,7 @@ Usage: apio info colors [OPTIONS]
     apio info colors --rich   # Same as above.
     apio info colors --click  # Click library output.
     apio info colors --print  # Python's print() output.
-    apio sys col -p             # Using shortcuts.
+    apio sys col -p           # Using shortcuts.
 
 Options:
   -r, --rich   Output using the rich lib.
@@ -932,7 +936,7 @@ Usage: apio raw [OPTIONS] COMMAND
     apio raw -v                         # Show apio env setting.
     apio raw -h                         # Show this help info.
 
-  The '--' marker is used to separate between the arguments of the apio
+  The marker '--' is used to separate between the arguments of the apio
   command itself and those of the executed command.
 
 Options:

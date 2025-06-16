@@ -9,6 +9,7 @@
 
 import sys
 from pathlib import Path
+from datetime import date
 from dataclasses import dataclass
 from typing import List, Dict, Optional
 import click
@@ -47,8 +48,7 @@ class Entry:
         return (util.fpga_arch_sort_key(self.fpga_arch), self.board.lower())
 
 
-def list_boards(apio_ctx: ApioContext, verbose: bool):
-    """Prints all the available board definitions."""
+def _collect_board_entries(apio_ctx) -> List[Entry]:
 
     # pylint: disable=too-many-locals
 
@@ -57,7 +57,7 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
     examples_counts: Dict[str, int] = examples.count_examples_by_board()
 
     # -- Collect the boards info into a list of entires, one per board.
-    entries: List[Entry] = []
+    result: List[Entry] = []
     for board, board_info in apio_ctx.boards.items():
         fpga = board_info.get("fpga", "")
         fpga_info = apio_ctx.fpgas.get(fpga, {})
@@ -72,7 +72,7 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
         fpga_speed = fpga_info.get("speed", "")
         programmer = board_info.get("programmer", {}).get("type", "")
 
-        entries.append(
+        result.append(
             Entry(
                 board=board,
                 examples_count=examples_count,
@@ -89,7 +89,17 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
         )
 
     # -- Sort boards by our preferred order.
-    entries.sort(key=lambda x: x.sort_key())
+    result.sort(key=lambda x: x.sort_key())
+
+    # -- All done.
+    return result
+
+
+def _list_boards(apio_ctx: ApioContext, verbose: bool):
+    """Prints all the available board definitions."""
+
+    # -- Collect the boards info into a list of entires, one per board.
+    entries: List[Entry] = _collect_board_entries(apio_ctx)
 
     # -- Define the table.
     table = Table(
@@ -152,6 +162,71 @@ def list_boards(apio_ctx: ApioContext, verbose: bool):
             )
 
 
+def _list_boards_docs_format(apio_ctx: ApioContext):
+    """Output boards information in a format for Apio Docs."""
+
+    # -- Collect the boards info into a list of entires, one per board.
+    entries: List[Entry] = _collect_board_entries(apio_ctx)
+
+    # -- Determine column sizes
+    w1 = max(len("BOARD"), *(len(entry.board) for entry in entries))
+    w2 = max(len("SIZE"), *(len(entry.fpga_size) for entry in entries))
+    w3 = max(
+        len("DESCRIPTION"),
+        *(len(entry.board_description) for entry in entries),
+    )
+    w4 = max(len("FPGA"), *(len(entry.fpga_part_num) for entry in entries))
+
+    # -- Print page header
+
+    today = date.today().strftime("%B %-d, %Y")
+    cout("\n<!-- BEGIN generation by 'apio boards --docs' -->")
+    cout("\n# Supported FPGA Boards")
+    cout(f"\n> Generated on {today}. For the updated list run `apio boards`.")
+    cout(
+        "\n> Custom board definitions can be added in the "
+        "project directory."
+    )
+
+    # -- Add the rows, with separation line between architecture groups.
+    last_arch = None
+    for entry in entries:
+        # -- If switching architecture, add an horizontal separation line.
+        if last_arch != entry.fpga_arch:
+
+            cout(f"\n## {entry.fpga_arch.upper()} boards")
+
+            cout(
+                "\n| {0} | {1} | {2} | {3} |".format(
+                    "BOARD-ID".ljust(w1),
+                    "SIZE".ljust(w2),
+                    "DESCRIPTION".ljust(w3),
+                    "FPGA".ljust(w4),
+                )
+            )
+            cout(
+                "| {0} | {1} | {2} | {3} |".format(
+                    ":-".ljust(w1, "-"),
+                    ":-".ljust(w2, "-"),
+                    ":-".ljust(w3, "-"),
+                    ":-".ljust(w4, "-"),
+                )
+            )
+
+            last_arch = entry.fpga_arch
+
+        cout(
+            "| {0} | {1} | {2} | {3} |".format(
+                entry.board.ljust(w1),
+                entry.fpga_size.ljust(w2),
+                entry.board_description.ljust(w3),
+                entry.fpga_part_num.ljust(w4),
+            )
+        )
+
+    cout("\n<!-- END generation by 'apio boards --docs' -->\n")
+
+
 # ------------- apio boards
 
 
@@ -162,9 +237,10 @@ Custom boards can be defined by placing a custom 'boards.jsonc' file in the \
 project directory, which will override Apio’s default 'boards.jsonc' file.
 
 Examples:[code]
-  apio boards                   # List all boards.
-  apio boards -v                # List with extra columns..
-  apio boards | grep ecp5       # Filter boards results.[/code]
+  apio boards                   # List all boards
+  apio boards -v                # List with extra columns
+  apio boards | grep ecp5       # Filter boards results
+  apio boards --docs            # Generate a report for Apio docs[/code]
 
 """
 
@@ -176,24 +252,38 @@ Examples:[code]
     help=APIO_BOARDS_HELP,
 )
 @options.verbose_option
+@options.docs_format_option
 @options.project_dir_option
 def cli(
     # Options
     verbose: bool,
+    docs: bool,
     project_dir: Optional[Path],
 ):
     """Implements the 'boards' command which lists available board
     definitions."""
+
+    # -- Determine context scope. For docs output we want to ignore
+    # -- custom boards.
+    context_scope = (
+        ApioContextScope.NO_PROJECT
+        if docs
+        else ApioContextScope.PROJECT_OPTIONAL
+    )
 
     # -- Create the apio context. If the project exists, it's custom
     # -- boards.jsonc is also loaded.
     # -- We suppress the message with the env and board names since it's
     # -- not relevant for this command.
     apio_ctx = ApioContext(
-        scope=ApioContextScope.PROJECT_OPTIONAL,
+        scope=context_scope,
         project_dir_arg=project_dir,
         report_env=False,
     )
 
-    list_boards(apio_ctx, verbose)
+    if docs:
+        _list_boards_docs_format(apio_ctx)
+    else:
+        _list_boards(apio_ctx, verbose)
+
     sys.exit(0)

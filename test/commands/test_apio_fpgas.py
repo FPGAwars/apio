@@ -29,6 +29,16 @@ def test_fpgas_ok(apio_runner: ApioRunner):
         assert "ice40hx4k-tq144-8k" in result.output
         assert "my_custom_fpga" not in result.output
         assert "─────┐" in result.output  # Graphic table border
+        assert ":---" not in result.output  # Graphic table border
+
+        # -- Execute "apio fpgas --docs"
+        result = sb.invoke_apio_cmd(apio, ["fpgas", "--docs"])
+        sb.assert_ok(result)
+        assert "Loading custom 'fpgas.jsonc'" not in result.output
+        assert "ice40hx4k-tq144-8k" in result.output
+        assert "my_custom_fpga" not in result.output
+        assert "─────┐" not in result.output  # Graphic table border
+        assert ":---" in result.output  # Graphic table border
 
 
 def test_custom_fpga(apio_runner: ApioRunner):
@@ -52,3 +62,13 @@ def test_custom_fpga(apio_runner: ApioRunner):
         assert "ice40hx4k-tq144-8k" not in result.output
         assert "my_custom_fpga" in result.output
         assert "Total of 1 fpga" in result.output
+
+        # -- Execute "apio fpgas --docs"
+        # -- When running with --docs, 'apio boards' ignores custom fpgas.
+        result = sb.invoke_apio_cmd(apio, ["fpgas", "--docs"])
+        sb.assert_ok(result)
+        assert "Loading custom 'fpgas.jsonc'" not in result.output
+        assert "ice40hx4k-tq144-8k" in result.output
+        assert "my_custom_fpga" not in result.output
+        assert "─────┐" not in result.output  # Graphic table border
+        assert ":---" in result.output  # Graphic table border
