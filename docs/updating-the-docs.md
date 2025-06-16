@@ -41,6 +41,20 @@ mkdocs serve
 
 This enables live reloading in your browser.
 
+## Sending a Pull Request
+
+Before sending a pull request to the Apio repository, check the following on your forked repository:
+
+1.  The following workflows in the **Actions** tab of your fork repo completed successfully:
+
+    - **publish-mkdocs-docs**
+    - **pages-build-deployment**
+    - **monitor-apio-latest**
+    - **test**
+
+2.  The docs at `https://${user}.github.io/apio` are live and include
+    your changes (replace _${user}_ with the username of your fork repo).
+
 ## Publishing
 
 Documentation is automatically published when changes are pushed
@@ -53,18 +67,3 @@ workflow:
 
 The workflow updates the site on GitHub Pages via the `gh-pages`
 branch. You can monitor workflow runs in the repository's **Actions** tab.
-
-## Sending a Pull Request
-
-Before sending a pull request to the Apio repository, check the following on your forked repository:
-
-1.  The following workflows in the **Actions** tab of your fork repo completed successfully:
-
-    - **publish-mkdocs-docs**
-    - **pages-build-deployment**
-    - **monitor-apio-latest**
-    - **test**
-
-
-2.  The docs at `https://${user}.github.io/apio` are live and include
-    your changes (replace *${user}* with the username of your fork repo).
