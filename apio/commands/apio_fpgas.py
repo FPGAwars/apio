@@ -166,9 +166,7 @@ def _list_fpgas_docs_format(apio_ctx: ApioContext):
     today = date.today().strftime("%B %-d, %Y")
     cout("\n<!-- BEGIN generation by 'apio fpgas --docs' -->")
     cout("\n# Supported FPGAs")
-    cout(
-        f"\n> Generated on {today}. For the updated list run `apio fpgas`."
-    )
+    cout(f"\n> Generated on {today}. For the updated list run `apio fpgas`.")
     cout(
         "\n> Custom FPGAs definitions can be added in the "
         "project directory."

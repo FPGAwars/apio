@@ -182,9 +182,7 @@ def _list_boards_docs_format(apio_ctx: ApioContext):
     today = date.today().strftime("%B %-d, %Y")
     cout("\n<!-- BEGIN generation by 'apio boards --docs' -->")
     cout("\n# Supported FPGA Boards")
-    cout(
-        f"\n> Generated on {today}. For the updated list run `apio boards`."
-    )
+    cout(f"\n> Generated on {today}. For the updated list run `apio boards`.")
     cout(
         "\n> Custom board definitions can be added in the "
         "project directory."
