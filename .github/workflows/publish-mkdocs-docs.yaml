@@ -1,0 +1,52 @@
+# A periodic workflow to publish the apio mkDocs at /docs dir to the github
+# Pages of this repo.
+
+name: publish-mkdocs-docs
+
+on:
+  push:
+    # Only doc related files.
+    paths:
+      - "docs/**"
+      - "mkdocs.yml"
+      - ".github/workflows/publish-docs.yaml"
+
+  schedule:
+    # Every day at 10:00 UTC
+    - cron: "0 10 * * *"
+
+  # enables manual trigger via GitHub UI
+  workflow_dispatch:
+
+permissions:
+  #  Needed for mkDocs gh-deploy to push
+  contents: write
+
+jobs:
+  publish-mkdocs-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install mkDocs tools
+        run: |
+          pip install mkdocs
+          pip install  mkdocs-material
+
+      - name: Build pages
+        run: |
+          mkdocs build --strict
+
+      - name: Publish to github Pages
+        # Push also if no change.
+        run: |
+          mkdocs gh-deploy --force
+        env:
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
