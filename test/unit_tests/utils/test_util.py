@@ -1,5 +1,5 @@
 """
-Tests of scons_util.py
+Tests of util.py
 """
 
 import os
