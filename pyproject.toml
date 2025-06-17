@@ -5,11 +5,20 @@
 requires = ["flit_core >=2,<4"]
 build-backend = "flit_core.buildapi"
 
+[project.urls]
+"Homepage" = "https://github.com/fpgawars/apio"
+"Documentation" = "https://fpgawars.github.io/apio/"
+"Bugs Tracker" = "https://github.com/fpgawars/apio/issues"
+"Wiki" = "https://github.com/fpgawars/apio/wiki"
+"Discussions" = "https://github.com/fpgawars/apio/discussions"
+
 [tool.flit.metadata]
 module = "apio"
 author = "Jesus Arroyo"
 author-email = "jesus.jkhlg@gmail.com "
-home-page = "https://github.com/FPGAwars/apio"
+description = "Easy to use tools for FPGA programmings"
+home-page = "https://github.com/fpgawars/apio"
+description-file = "README.md"
 classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
@@ -19,7 +28,6 @@ classifiers=[
         'Natural Language :: English',
         'Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)',
 ]
-description-file = "README.md"
 requires-python = ">=3.11"
 requires = [
     'click==8.1.8',
@@ -43,7 +51,8 @@ requires = [
 ]
 
 [tool.flit.sdist]
-exclude = ["test-examples/"]
+# TODO: Revisit 'exclude`. What else we don't need in the package?
+exclude = ["test/"]
 
 [tool.flit.metadata.requires-extra]
 blackiceprog = ['blackiceprog==2.0.0']
