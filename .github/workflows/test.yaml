@@ -46,7 +46,6 @@ jobs:
         run: uname -a
 
       - name: Determine commit to use
-        id: commit_info
         run: |
           # Strip leading and trailing spaces
           sha="$(echo "${{ github.event.inputs.commit_sha }}" | xargs)"
