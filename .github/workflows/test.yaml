@@ -1,5 +1,3 @@
-# ...
-
 name: test
 
 on:
@@ -23,6 +21,10 @@ on:
           description: 'Verbose [false|true]'
           required: false
           default: 'false'
+        commit_sha:
+          description: '[Optional] commit SHA to test'
+          required: false
+          default: ''
 
 jobs:
     test:
@@ -43,8 +45,27 @@ jobs:
             - name: Show architecture
               run: uname -a
 
+            - name: Determine commit source
+              id: commit_info
+              run: |
+                # Strip leading and trailing spaces
+                sha="$(echo "${{ github.event.inputs.commit_sha }}" | xargs)"
+
+                # User specified commit SHA.
+                if [ -n "$sha" ]; then
+                  echo "COMMIT_SHA=$sha" >> $GITHUB_ENV
+                  echo "COMMIT_NOTE=Manual commit: $sha" >> $GITHUB_ENV
+
+                # Default behavior, use latest commit.
+                else
+                  echo "COMMIT_SHA=${{ github.sha }}" >> $GITHUB_ENV
+                  echo "COMMIT_NOTE=Latest commit: ${{ github.sha }}" >> $GITHUB_ENV
+                fi
+
             - name: Checkout sources
               uses: actions/checkout@v3
+              with:
+                ref: ${{env.COMMIT_SHA}}
 
             - name: Set up Python
               uses: actions/setup-python@v4
@@ -100,3 +121,7 @@ jobs:
                   # Run the tests
                   python -m tox --skip-missing-interpreters false -e lint,$pyver -- ${posargs}
 
+            - name: Add commit info to summary
+              run: |
+                echo "### Commit Info" >> $GITHUB_STEP_SUMMARY
+                echo "${COMMIT_NOTE}" >> $GITHUB_STEP_SUMMARY
