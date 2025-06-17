@@ -7,12 +7,12 @@
             "request": "launch",
             "program": "${workspaceFolder}/apio/__main__.py",
             "args": [
-                "api",
-                "test"
+                "info",
+                "system"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/test-examples/ice40/alhambra-ii/icestudio-ledon"
+            "cwd": "${workspaceFolder}/test/example_projects/ice40/alhambra-ii/icestudio-ledon"
         },
         {
             "name": "Attach remote debugger",
@@ -32,7 +32,7 @@
             "args": [
                 "-s",
                 "-vv",
-                "test/utils/test_ftdi_util.py::test_filter_ftdi_devices"
+                "test/unit_tests/utils/test_usb_util.py::test_device_summaries"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,

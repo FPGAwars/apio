@@ -1,4 +1,4 @@
-# Building a Project
+# Apio build
 
 The `apio build` command compiles the project's source files and
 generates a bitstream ready for upload to the FPGA.
@@ -26,7 +26,7 @@ apio build --verbose-pnr     # Verbose place and route info
 
 ## NOTES
 
-* Specify the top module using the `top-module` option in `apio.ini`.
-* Testbench files (`*_tb.v` and `*_tb.sv`) are ignored during build.
-* Running `apio build` before `apio upload` is usually unnecessary.
-* Run `apio clean` before building to force a full rebuild.
+- Specify the top module using the `top-module` option in `apio.ini`.
+- Testbench files (`*_tb.v` and `*_tb.sv`) are ignored during build.
+- Running `apio build` before `apio upload` is usually unnecessary.
+- Run `apio clean` before building to force a full rebuild.

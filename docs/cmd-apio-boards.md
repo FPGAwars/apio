@@ -11,6 +11,7 @@ The `apio boards` command lists the FPGA boards supported by Apio.
 apio boards                   # List all boards.
 apio boards -v                # List with extra columns.
 apio boards | grep ecp5       # Filter boards results.
+apio boards --docs            # Generate a report for Apio docs
 ```
 
 ## OPTIONS

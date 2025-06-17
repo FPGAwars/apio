@@ -77,7 +77,8 @@ nav:
       - Using testbenches: using-testbenches.md
   - Apio Development:
       - Apio repositories: apio-repositories.md
-      - Development environment: developement-environment.md
+      - Development environment: development-environment.md
+      - Updating the docs: updating-the-docs.md
       - Creating an Apio version: creating-apio-version.md
       - Creating a package version: creating-package-version.md
   - Help: help.md

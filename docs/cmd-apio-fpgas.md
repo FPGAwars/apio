@@ -9,9 +9,10 @@ The `apio fpgas` command lists FPGAs supported by Apio.
 ## EXAMPLES
 
 ```
-apio fpgas               # List all FPGAs.
-apio fpgas -v            # List with extra columns.
-apio fpgas | grep gowin  # Filter FPGA results.
+apio fpgas                 # List all FPGAs.
+apio fpgas -v              # List with extra columns.
+apio fpgas | grep gowin    # Filter FPGA results.
+apio boards --docs         # Generate a report for Apio docs
 ```
 
 ## OPTIONS
