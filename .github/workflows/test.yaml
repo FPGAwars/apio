@@ -45,25 +45,29 @@ jobs:
             - name: Show architecture
               run: uname -a
 
-            - name: Determine commit source
+            - name: Determine commit to use
               id: commit_info
               run: |
                 # Strip leading and trailing spaces
                 sha="$(echo "${{ github.event.inputs.commit_sha }}" | xargs)"
 
-                # Case 1: User specified commit SHA.
+                # User specified commit SHA.
                 if [ -n "$sha" ]; then
                   echo "COMMIT_SHA=$sha" >> $GITHUB_ENV
-                  echo "Using manual commit: $sha" >> $GITHUB_STEP_SUMMARY
-                  echo "Using manual commit: $sha"
-                  
-                # Case 2: Default behavior, use latest commit.
+                  echo "COMMIT_NOTE=Using manual commit" >> $GITHUB_ENV
+
+                # Default behavior, use latest commit.
                 else
                   echo "COMMIT_SHA=${{ github.sha }}" >> $GITHUB_ENV
-                  echo "Using latest commit: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
-                  echo "Using manual commit: $sha"
+                  echo "COMMIT_NOTE=Using latest commit" >> $GITHUB_ENV
                 fi
 
+            - name: Show selected commit
+              run: |
+                echo "$COMMIT_NOTE"
+                echo "Selected: $COMMIT_SHA"
+                echo "Latest:   ${{github.sha}}"
+                
             - name: Checkout sources
               uses: actions/checkout@v3
               with:
