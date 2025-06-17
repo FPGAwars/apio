@@ -7,6 +7,7 @@
 [![build-and-release](https://github.com/zapta/apio-dev-builds/actions/workflows/build-and-release.yaml/badge.svg)](https://github.com/zapta/apio-dev-builds/actions/workflows/build-and-release.yaml)
 [![monitor-apio-prod](https://github.com/FPGAwars/apio/actions/workflows/monitor-apio-prod.yaml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/monitor-apio-prod.yaml)
 [![monitor-apio-latest](https://github.com/FPGAwars/apio/actions/workflows/monitor-apio-latest.yaml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/monitor-apio-latest.yaml)
+[![publish-mkdocs-docs](https://github.com/FPGAwars/apio/actions/workflows/publish-mkdocs-docs.yaml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/publish-mkdocs-docs.yaml)
 
 [![build-and-release](https://github.com/FPGAwars/apio-examples/actions/workflows/build-and-release.yaml/badge.svg)](https://github.com/FPGAwars/apio-examples/actions/workflows/build-and-release.yaml)
 [![build-and-release](https://github.com/FPGAwars/tools-oss-cad-suite/actions/workflows/build-and-release.yaml/badge.svg)](https://github.com/FPGAwars/tools-oss-cad-suite/actions/workflows/build-and-release.yaml)
