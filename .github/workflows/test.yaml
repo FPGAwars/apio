@@ -8,122 +8,121 @@ on:
   # that the tests are still passing, despite potential changes in the github
   # dependencies.
   schedule:
-    - cron: '0 0 * * *'  # Runs daily at midnight UTC
+    - cron: "0 0 * * *" # Runs daily at midnight UTC
 
   # Can be launched manually in github actions tab.
-  workflow_dispatch:  # Allows manual trigger
+  workflow_dispatch: # Allows manual trigger
     inputs:
-        commit_sha:
-          description: '[Optional] commit SHA to test'
-          required: false
-          default: ''
-        remote_config_url:
-          description: 'APIO_REMOTE_CONFIG_URL override'
-          required: false
-          default: ''
-        verbose:
-          description: 'Verbose [false|true]'
-          required: false
-          default: 'false'
+      commit_sha:
+        description: "[Optional] commit SHA to test"
+        required: false
+        default: ""
+      remote_config_url:
+        description: "APIO_REMOTE_CONFIG_URL override"
+        required: false
+        default: ""
+      verbose:
+        description: "Verbose [false|true]"
+        required: false
+        default: "false"
 
 jobs:
-    test:
-        runs-on: ${{ matrix.os }}
+  test:
+    runs-on: ${{ matrix.os }}
 
-        defaults:
-          run:
-            shell: bash
+    defaults:
+      run:
+        shell: bash
 
-        strategy:
-            matrix:
-                # 'macos-latest' -> darwin apple silicon
-                # 'macos-13'     -> darwin intel x86
-                os: [ubuntu-22.04, macos-latest, macos-13, windows-latest]
-                python-version: ['3.11', '3.12', '3.13']
+    strategy:
+      matrix:
+        # 'macos-latest' -> darwin apple silicon
+        # 'macos-13'     -> darwin intel x86
+        os: [ubuntu-22.04, macos-latest, macos-13, windows-latest]
+        python-version: ["3.11", "3.12", "3.13"]
 
-        steps:
-            - name: Show architecture
-              run: uname -a
+    steps:
+      - name: Show architecture
+        run: uname -a
 
-            - name: Determine commit to use
-              id: commit_info
-              run: |
-                # Strip leading and trailing spaces
-                sha="$(echo "${{ github.event.inputs.commit_sha }}" | xargs)"
+      - name: Determine commit to use
+        id: commit_info
+        run: |
+          # Strip leading and trailing spaces
+          sha="$(echo "${{ github.event.inputs.commit_sha }}" | xargs)"
 
-                # User specified commit SHA.
-                if [ -n "$sha" ]; then
-                  echo "COMMIT_SHA=$sha" >> $GITHUB_ENV
-                  echo "COMMIT_NOTE=Using manual commit" >> $GITHUB_ENV
+          # User specified commit SHA.
+          if [ -n "$sha" ]; then
+            echo "COMMIT_SHA=$sha" >> $GITHUB_ENV
+            echo "COMMIT_NOTE=Using manual commit" >> $GITHUB_ENV
 
-                # Default behavior, use latest commit.
-                else
-                  echo "COMMIT_SHA=${{ github.sha }}" >> $GITHUB_ENV
-                  echo "COMMIT_NOTE=Using latest commit" >> $GITHUB_ENV
-                fi
+          # Default behavior, use latest commit.
+          else
+            echo "COMMIT_SHA=${{ github.sha }}" >> $GITHUB_ENV
+            echo "COMMIT_NOTE=Using latest commit" >> $GITHUB_ENV
+          fi
 
-            - name: Show selected commit
-              run: |
-                echo "$COMMIT_NOTE"
-                echo "Selected: $COMMIT_SHA"
-                echo "Latest:   ${{github.sha}}"
-                
-            - name: Checkout sources
-              uses: actions/checkout@v3
-              with:
-                ref: ${{env.COMMIT_SHA}}
+      - name: Show selected commit
+        run: |
+          echo "$COMMIT_NOTE"
+          echo "Selected: $COMMIT_SHA"
+          echo "Latest:   ${{github.sha}}"
 
-            - name: Set up Python
-              uses: actions/setup-python@v4
-              with:
-                  python-version: ${{ matrix.python-version }}
+      - name: Checkout sources
+        uses: actions/checkout@v3
+        with:
+          ref: ${{env.COMMIT_SHA}}
 
-            - name: Show python version
-              run: python --version
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
 
-            - name: Install dependencies
-              run: |
-                  make deps
+      - name: Show python version
+        run: python --version
 
-            - name: Maybe set APIO_REMOTE_CONFIG_URL
-              run: |
-                  # If the remote config url manual input was specified. pass
-                  # it via the env to the tested apio. This var passing is
-                  # enabled in tox.ini.
-                  if [ -n '${{inputs.remote_config_url}}' ]; then
-                      echo 'APIO_REMOTE_CONFIG_URL=${{inputs.remote_config_url}}' >> $GITHUB_ENV
-                      echo "Using APIO_REMOTE_CONFIG_URL"
-                  else
-                      echo "Not using APIO_REMOTE_CONFIG_URL"
-                  fi
+      - name: Install dependencies
+        run: |
+          make deps
 
-            - name: Run Tests
-              run: |
-                  # Convert py version such as '3.13' to 'py313' as required by tox.ini.
-                  pyver="py${{matrix.python-version}}"
-                  echo "pyver: [$pyver]"
-                  pyver=${pyver//./}
-                  echo "pyver: [$pyver]"
+      - name: Maybe set APIO_REMOTE_CONFIG_URL
+        run: |
+          # If the remote config url manual input was specified. pass
+          # it via the env to the tested apio. This var passing is
+          # enabled in tox.ini.
+          if [ -n '${{inputs.remote_config_url}}' ]; then
+              echo 'APIO_REMOTE_CONFIG_URL=${{inputs.remote_config_url}}' >> $GITHUB_ENV
+              echo "Using APIO_REMOTE_CONFIG_URL"
+          else
+              echo "Not using APIO_REMOTE_CONFIG_URL"
+          fi
 
-                  # Determine if we run in verbose mode. This can be enabled
-                  # in the github dashboard when running the workflow manuall.y.
-                  echo "Original verbose: [${{ github.event.inputs.verbose }}]"
-                  verbose="${{ github.event.inputs.verbose || 'false' }}"
-                  echo "Effective verbose: [${verbose}]"
-                  if [[ "$verbose" != "true" && "$verbose" != "false" ]]; then
-                      echo "Error: 'verbose' must be 'true' or 'false'."
-                      exit 1
-                  fi
+      - name: Run Tests
+        run: |
+          # Convert py version such as '3.13' to 'py313' as required by tox.ini.
+          pyver="py${{matrix.python-version}}"
+          echo "pyver: [$pyver]"
+          pyver=${pyver//./}
+          echo "pyver: [$pyver]"
 
-                  # Determine the posargs to pass to pytest.
-                  if [ "${verbose}" = "true" ]; then
-                    echo "Verbose mode ON"
-                    posargs="-s"
-                  else
-                    echo "Verbose mode OFF"
-                    posargs=""
-                  fi
+          # Determine if we run in verbose mode. This can be enabled
+          # in the github dashboard when running the workflow manuall.y.
+          echo "Original verbose: [${{ github.event.inputs.verbose }}]"
+          verbose="${{ github.event.inputs.verbose || 'false' }}"
+          echo "Effective verbose: [${verbose}]"
+          if [[ "$verbose" != "true" && "$verbose" != "false" ]]; then
+              echo "Error: 'verbose' must be 'true' or 'false'."
+              exit 1
+          fi
 
-                  # Run the tests
-                  python -m tox --skip-missing-interpreters false -e lint,$pyver -- ${posargs}
+          # Determine the posargs to pass to pytest.
+          if [ "${verbose}" = "true" ]; then
+            echo "Verbose mode ON"
+            posargs="-s"
+          else
+            echo "Verbose mode OFF"
+            posargs=""
+          fi
 
+          # Run the tests
+          python -m tox --skip-missing-interpreters false -e lint,$pyver -- ${posargs}
