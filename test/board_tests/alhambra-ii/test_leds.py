@@ -2,6 +2,14 @@
 Testing the ledon example on the alhambra-ii board. This test does not
 use a sandbox and doesn't install the apio packages, and therefore, apio
 is expected to be preinstalled.
+
+To test:
+
+1. Connect an Alhambra-ii board
+
+2. Run the following command from the repo root:
+
+   pytest -vv test/board_tests/alhambra-ii/test_leds.py
 """
 
 import os
@@ -19,15 +27,11 @@ from apio.commands.apio import cli as apio
 # -- Change to the folder where the ledon example is located
 # -----------------------------
 
-# -- Get the current working directory
-cwd = Path.cwd()
 
-# -- Create the new path
-ledon_dir = cwd / "test-examples" / "alhambra-ii" / "01-LEDs-buttons"
+# -- Change to test project's folder.
 
-# -- Change to the new folder!
+ledon_dir = Path("test/example_projects/ice40/alhambra-ii/icestudio-leds-buttons")
 os.chdir(ledon_dir)
-
 
 def test_ledon_clean():
     """Test the apio clean command"""
@@ -39,7 +43,7 @@ def test_ledon_clean():
 
     # -- It should return an exit code of 0: success
     assert result.exit_code == 0, result.output
-    assert "[SUCCESS]" in result.output
+    assert "Cleanup completed" in result.output or "Already clean" in result.output 
 
 
 def test_ledon_build():
@@ -83,4 +87,4 @@ def test_ledon_upload():
     # -- It should return an exit code of 0: success
     assert result.exit_code == 0, result.output
     assert "[SUCCESS]" in result.output
-    assert "iceprog" in result.output
+    assert "openFPGALoader" in result.output
