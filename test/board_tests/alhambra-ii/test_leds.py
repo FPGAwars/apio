@@ -30,8 +30,11 @@ from apio.commands.apio import cli as apio
 
 # -- Change to test project's folder.
 
-ledon_dir = Path("test/example_projects/ice40/alhambra-ii/icestudio-leds-buttons")
+ledon_dir = Path(
+    "test/example_projects/ice40/alhambra-ii/icestudio-leds-buttons"
+)
 os.chdir(ledon_dir)
+
 
 def test_ledon_clean():
     """Test the apio clean command"""
@@ -43,7 +46,10 @@ def test_ledon_clean():
 
     # -- It should return an exit code of 0: success
     assert result.exit_code == 0, result.output
-    assert "Cleanup completed" in result.output or "Already clean" in result.output 
+    assert (
+        "Cleanup completed" in result.output
+        or "Already clean" in result.output
+    )
 
 
 def test_ledon_build():
