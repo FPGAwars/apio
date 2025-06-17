@@ -55,6 +55,7 @@ jobs:
                 if [ -n "$sha" ]; then
                   echo "COMMIT_SHA=$sha" >> $GITHUB_ENV
                   echo "Using manual commit: $sha" >> $GITHUB_STEP_SUMMARY
+                  
                 # Case 2: Default behavior, use latest commit.
                 else
                   echo "COMMIT_SHA=${{ github.sha }}" >> $GITHUB_ENV
