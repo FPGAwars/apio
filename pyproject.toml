@@ -5,7 +5,7 @@
 requires = ["flit_core >=2,<4"]
 build-backend = "flit_core.buildapi"
 
-[project.urls]
+[tool.flit.metadata.urls]
 "Homepage" = "https://github.com/fpgawars/apio"
 "Documentation" = "https://fpgawars.github.io/apio/"
 "Bugs Tracker" = "https://github.com/fpgawars/apio/issues"
@@ -16,7 +16,6 @@ build-backend = "flit_core.buildapi"
 module = "apio"
 author = "Jesus Arroyo"
 author-email = "jesus.jkhlg@gmail.com "
-description = "Easy to use tools for FPGA programmings"
 home-page = "https://github.com/fpgawars/apio"
 description-file = "README.md"
 classifiers=[
