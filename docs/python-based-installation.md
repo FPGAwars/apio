@@ -11,8 +11,8 @@ Apio can be installed either as a Pip package that relies on a Python installati
 3. Install the latest Apio code by running the following command:
 
     ```
-    pip install --force-reinstall -U \
-      git+https://github.com/FPGAwars/apio.git@develop#egg=apio
+    pip install --force-reinstall \
+        -U git+https://github.com/FPGAwars/apio.git@develop#egg=apio
     ```
 
 4. Open a new shell window and type `apio system info` to test your installation.

@@ -105,6 +105,7 @@
         "protoc",
         "pwwang",
         "pylint",
+        "pymdownx",
         "Pypi",
         "pyserial",
         "pytest",
