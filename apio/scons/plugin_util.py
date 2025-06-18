@@ -281,9 +281,9 @@ def waves_target(
     name: str,
     vcd_file_target: NodeList,
     sim_config: SimulationConfig,
-    always_build: bool = False,
+    no_gtkwave: bool,
 ) -> List[Alias]:
-    """Construct a target to launch the QTWave signal viwer.
+    """Construct a target to launch the QTWave signal viewer.
     vcd_file_target is the simulator target that generated the vcd file
     with the signals. Returns the new targets.
     """
@@ -291,29 +291,39 @@ def waves_target(
     # -- Construct the commands list.
     commands = []
 
-    # -- On windows we need to setup the cache. This could be done once
-    # -- when the oss-cad-suite is installed but since we currently don't
-    # -- have a package setup mechanism, we do it here on each invocation.
-    # -- The time penalty is negligible.
-    # -- With the stock oss-cad-suite windows package, this is done in the
-    # -- environment.bat script.
-    if api_env.is_windows:
-        commands.append("gdk-pixbuf-query-loaders --update-cache")
-
-    # -- The actual wave viewer command.
-    commands.append(
-        "gtkwave {0} {1} {2}.gtkw".format(
-            '--rcvar "splash_disable on" --rcvar "do_initial_zoom_fit 1"',
-            vcd_file_target[0],
-            sim_config.testbench_name,
+    if no_gtkwave:
+        # -- User asked to skip gtkwave. The '@' suppresses the printing
+        # -- of the echo command itself.
+        commands.append(
+            "@echo 'Flag --no-gtkwave was found, skipping GTKWave.'"
         )
-    )
+
+    else:
+        # -- Normal pase, invoking gtkwave.
+
+        # -- On windows we need to setup the cache. This could be done once
+        # -- when the oss-cad-suite is installed but since we currently don't
+        # -- have a package setup mechanism, we do it here on each invocation.
+        # -- The time penalty is negligible.
+        # -- With the stock oss-cad-suite windows package, this is done in the
+        # -- environment.bat script.
+        if api_env.is_windows:
+            commands.append("gdk-pixbuf-query-loaders --update-cache")
+
+        # -- The actual wave viewer command.
+        commands.append(
+            "gtkwave {0} {1} {2}.gtkw".format(
+                '--rcvar "splash_disable on" --rcvar "do_initial_zoom_fit 1"',
+                vcd_file_target[0],
+                sim_config.testbench_name,
+            )
+        )
 
     target = api_env.alias(
         name,
         source=vcd_file_target,
         action=commands,
-        always_build=always_build,
+        always_build=True,
     )
 
     return target

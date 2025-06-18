@@ -36,7 +36,8 @@ used as the default testbench.
 Example:[code]
   apio sim                   # Simulate the default testbench.
   apio sim my_module_tb.v    # Simulate the specified testbench.
-  apio sim my_module_tb.sv   # Simulate the specified testbench.[/code]
+  apio sim my_module_tb.sv   # Simulate the specified testbench.
+  apio sim --no-gtkwave      # Simulate but skip GTKWave.[/code]
 
 [NOTE] Testbench specification is always the testbench file path relative to \
 the project directory, even if using the '--project-dir' option.
@@ -58,6 +59,15 @@ configuration so you don’t need to repeat it each time you run the \
 simulation.
 """
 
+no_gtkw_wave_option = click.option(
+    "no_gtkwave",  # Var name.
+    "-n",
+    "--no-gtkwave",
+    is_flag=True,
+    help="Skip GTKWave",
+    cls=cmd_util.ApioOption,
+)
+
 
 @click.command(
     name="sim",
@@ -69,6 +79,7 @@ simulation.
 @click.argument("testbench", nargs=1, required=False)
 @options.force_option_gen(help="Force simulation.")
 @options.env_option_gen()
+@no_gtkw_wave_option
 @options.project_dir_option
 def cli(
     _: click.Context,
@@ -77,6 +88,7 @@ def cli(
     # Options
     force: bool,
     env: Optional[str],
+    no_gtkwave: bool,
     project_dir: Optional[Path],
 ):
     """Implements the apio sim command. It simulates a single testbench
@@ -102,7 +114,9 @@ def cli(
             cout(f"Using default testbench: {testbench}", style=EMPH1)
 
     # -- Construct the scons sim params.
-    sim_params = SimParams(testbench=testbench, force_sim=force)
+    sim_params = SimParams(
+        testbench=testbench, force_sim=force, no_gtkwave=no_gtkwave
+    )
 
     # -- Simulate the project with the given parameters
     exit_code = scons.sim(sim_params)

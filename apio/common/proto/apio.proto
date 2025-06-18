@@ -146,6 +146,9 @@ message SimParams {
   // Force rerun of simulation, even if not change from previous
   // run.
   required bool force_sim = 2;
+
+  // Perform the simulation but skip opening GTKWave
+  required bool no_gtkwave = 3;
 }
 
 // Test target specific params. Originally called TestParams but this

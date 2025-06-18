@@ -405,6 +405,26 @@ def _test_project(
         assert "SUCCESS" in result.output
         assert getsize(sb.proj_dir / f"_build/default/{testbench}.out")
         assert getsize(sb.proj_dir / f"_build/default/{testbench}.vcd")
+        # -- For issue https://github.com/FPGAwars/apio/issues/557
+        assert "warning: Timing checks are not supported" not in result.output
+
+        # -- 'apio clean'
+        args = ["clean"] + proj_arg
+        result = sb.invoke_apio_cmd(apio, args)
+        sb.assert_ok(result)
+        assert "Cleanup completed" in result.output
+        assert not (sb.proj_dir / f"_build/default/{testbench}.out").exists()
+        assert not (sb.proj_dir / f"_build/default/{testbench}.vcd").exists()
+
+        # -- 'apio sim --no-gtkwave'
+        args = ["sim", "--no-gtkwave"] + proj_arg
+        result = sb.invoke_apio_cmd(apio, args)
+        sb.assert_ok(result)
+        assert "SUCCESS" in result.output
+        assert getsize(sb.proj_dir / f"_build/default/{testbench}.out")
+        assert getsize(sb.proj_dir / f"_build/default/{testbench}.vcd")
+        # -- For issue https://github.com/FPGAwars/apio/issues/557
+        assert "warning: Timing checks are not supported" not in result.output
 
         # -- 'apio clean'
         args = ["clean"] + proj_arg
@@ -423,6 +443,24 @@ def _test_project(
         assert getsize(sb.proj_dir / f"_build/default/{testbench}.vcd")
         # -- For issue https://github.com/FPGAwars/apio/issues/557
         assert "warning: Timing checks are not supported" not in result.output
+
+        # -- 'apio sim --no-gtkw <testbench-file>'
+        args = ["sim", "--no-gtkwave", testbench_file] + proj_arg
+        result = sb.invoke_apio_cmd(apio, args)
+        sb.assert_ok(result)
+        assert "SUCCESS" in result.output
+        assert getsize(sb.proj_dir / f"_build/default/{testbench}.out")
+        assert getsize(sb.proj_dir / f"_build/default/{testbench}.vcd")
+        # -- For issue https://github.com/FPGAwars/apio/issues/557
+        assert "warning: Timing checks are not supported" not in result.output
+
+        # -- 'apio clean'
+        args = ["clean"] + proj_arg
+        result = sb.invoke_apio_cmd(apio, args)
+        sb.assert_ok(result)
+        assert "Cleanup completed" in result.output
+        assert not (sb.proj_dir / f"_build/default/{testbench}.out").exists()
+        assert not (sb.proj_dir / f"_build/default/{testbench}.vcd").exists()
 
         # -- 'apio report'
         args = ["report"] + proj_arg

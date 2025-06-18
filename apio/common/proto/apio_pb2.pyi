@@ -154,12 +154,14 @@ class GraphParams(_message.Message):
     def __init__(self, output_type: _Optional[_Union[GraphOutputType, str]] = ..., top_module: _Optional[str] = ...) -> None: ...
 
 class SimParams(_message.Message):
-    __slots__ = ("testbench", "force_sim")
+    __slots__ = ("testbench", "force_sim", "no_gtkwave")
     TESTBENCH_FIELD_NUMBER: _ClassVar[int]
     FORCE_SIM_FIELD_NUMBER: _ClassVar[int]
+    NO_GTKWAVE_FIELD_NUMBER: _ClassVar[int]
     testbench: str
     force_sim: bool
-    def __init__(self, testbench: _Optional[str] = ..., force_sim: bool = ...) -> None: ...
+    no_gtkwave: bool
+    def __init__(self, testbench: _Optional[str] = ..., force_sim: bool = ..., no_gtkwave: bool = ...) -> None: ...
 
 class ApioTestParams(_message.Message):
     __slots__ = ("testbench",)
