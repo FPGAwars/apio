@@ -26,7 +26,7 @@ Apio testbench rules:
   
 * **Rule 3**: Compare expected values to actual values, and if they don't match, print an error message and call `$fatal` to exit.
   
-* **Rule 4**: Whenever you call `$fatal` in the testbench, first check the condition `ifndef INTERACTIVE_SIM` to skip `$fatal` if the condition is false.
+* **Rule 4**: Instead of `$fatal`, use ``if (!`APIO_SIM) $fatal``.
   
 * **Rule 5**: At the end of the testbench, print the message "End of simulation".
   
@@ -101,9 +101,7 @@ module Main_tb;
         $display("ERROR at toggle %0d: expected ROWS[1:0] = %b%b, got %b%b",
                  i, expected_toggle, ~expected_toggle, ROWS[1], ROWS[0]);
         tb_error = 1;
-`ifndef INTERACTIVE_SIM
-        $fatal;
-`endif
+        if (!`APIO_SIM) $fatal;
       end
       expected_toggle = ~expected_toggle;
       @(posedge CLK);

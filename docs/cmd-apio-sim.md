@@ -7,6 +7,18 @@ the default testbench using the `default-testbench` option in `apio.ini`.
 If this option is not set and there's only one testbench in the project,
 that file will be used.
 
+The `apio sim` command defines the macro `APIO_SIM=1`, which allows failed
+assertions to skip the `$fatal` call. This lets the simulation continue and
+display faulty signals in the GTKWave viewer.
+
+```
+# Instead of this
+$fatal;
+
+# Use this
+if (!`APIO_SIM) $fatal;
+```
+
 ## EXAMPLES
 
 ```
@@ -30,8 +42,6 @@ apio sim my_module_tb.sv   # Simulate the specified testbench
 - Avoid using the Verilog `$dumpfile()` function, as it can override the default name and location Apio assigns for the `.vcd` file.
 
 - Testbench paths must always be relative to the project directory, even when using `--project-dir`.
-
-- The `apio sim` command defines the `INTERACTIVE_SIM` macro, which can be used in your testbench to distinguish it from `apio test`. For instance, you might suppress certain errors during interactive simulation to inspect signals in GTKWave.
 
 - For a sample testbench that utilizes this macro, see the apio example `alhambra-ii/getting-started`.
 

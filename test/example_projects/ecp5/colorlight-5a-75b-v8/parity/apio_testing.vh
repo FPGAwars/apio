@@ -15,15 +15,12 @@
     end
 
 // Asserts that the value of 'signal' is 'value'. If not, it prints an error message and aborts
-// the simulation. When running under apio sim, the macro INTERACTIVE_SIM is defined
-// and the failed assertions does not exist to allow showing the sigmulation results
-// in the graphical window.
+// the simulation. When running under apio sim, skip $fatal so we can see the
+// faulty signals in GTKWave.
 `define EXPECT(signal, value) \
     if (signal !== (value)) begin \
         $display("*** ASSERTION FAILED in %m (clk_num=%0d): expected (signal == value), actual: 'h%h", (clk_num), (signal)); \
-        `ifndef INTERACTIVE_SIM \
-             $fatal; \
-        `endif \
+        if (!`APIO_SIM) $fatal; \
     end
 
 // Transition from clock low to clock high. Typically this is not
