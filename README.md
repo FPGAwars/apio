@@ -14,6 +14,7 @@
 [![build-and-release](https://github.com/FPGAwars/tools-verible/actions/workflows/build-and-release.yaml/badge.svg)](https://github.com/FPGAwars/tools-verible/actions/workflows/build-and-release.yaml)
 [![build-and-release](https://github.com/FPGAwars/tools-graphviz/actions/workflows/build-and-release.yml/badge.svg)](https://github.com/FPGAwars/tools-graphviz/actions/workflows/build-and-release.yml)
 [![build-and-release](https://github.com/FPGAwars/tools-drivers/actions/workflows/build-and-release.yaml/badge.svg)](https://github.com/FPGAwars/tools-drivers/actions/workflows/build-and-release.yaml)
+[![test](https://github.com/FPGAwars/apio-examples/actions/workflows/test.yaml/badge.svg)](https://github.com/FPGAwars/apio-examples/actions/workflows/test.yaml)
 
 ![][linux-logo]&nbsp;&nbsp;&nbsp;![][macosx-logo]&nbsp;&nbsp;&nbsp;![][windows-logo]&nbsp;&nbsp;&nbsp;![][ubuntu-logo]&nbsp;&nbsp;&nbsp;![][raspbian-logo]
 

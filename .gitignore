@@ -21,6 +21,7 @@ ice-build/
 ice-build/*
 _build/
 _dist/
+_site/
 htmlcov/
 _pytest-coverage/
 __pycache__/

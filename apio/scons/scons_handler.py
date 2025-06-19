@@ -341,7 +341,7 @@ class SconsHandler:
             "sim",
             sim_vcd_target,
             sim_config,
-            always_build=True,
+            no_gtkwave=sim_params.no_gtkwave,
         )
 
     def _register_test_target(self, synth_srcs, test_srcs):

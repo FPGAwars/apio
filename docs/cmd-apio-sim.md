@@ -20,6 +20,7 @@ apio sim my_module_tb.sv   # Simulate the specified testbench
 ```
 -f, --force             Force simulation
 -e, --env name          Use a named environment from apio.ini
+-n, --no-gtkwave        Skip GTKWave
 -p, --project-dir path  Specify the project root directory
 -h, --help              Show help message and exit
 ```

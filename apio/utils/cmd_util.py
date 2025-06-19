@@ -255,9 +255,9 @@ class ApioGroup(click.Group):
     def __init__(self, *args, **kwargs):
 
         # -- Consume the 'subgroups' arg.
-        self._subgroups: List[ApioSubgroup] = kwargs.pop("subgroups")
-        assert isinstance(self._subgroups, list)
-        assert isinstance(self._subgroups[0], ApioSubgroup)
+        self.subgroups: List[ApioSubgroup] = kwargs.pop("subgroups")
+        assert isinstance(self.subgroups, list)
+        assert isinstance(self.subgroups[0], ApioSubgroup)
 
         # -- Override the static variable of the BaseCommand class to point
         # -- to our custom ApioCmdContext. This causes the command to use
@@ -269,7 +269,7 @@ class ApioGroup(click.Group):
 
         # -- Register the commands of the subgroups as subcommands of this
         # -- group.
-        for subgroup in self._subgroups:
+        for subgroup in self.subgroups:
             for cmd in subgroup.commands:
                 self.add_command(cmd=cmd, name=cmd.name)
 
@@ -300,7 +300,7 @@ class ApioGroup(click.Group):
         # -- Get a flat list of all subcommand names.
         cmd_names = [
             cmd.name
-            for subgroup in self._subgroups
+            for subgroup in self.subgroups
             for cmd in subgroup.commands
         ]
 
@@ -308,7 +308,7 @@ class ApioGroup(click.Group):
         max_name_len = max(len(name) for name in cmd_names)
 
         # -- Generate the subcommands short help, grouped by subgroup.
-        for subgroup in self._subgroups:
+        for subgroup in self.subgroups:
             assert isinstance(subgroup, ApioSubgroup), subgroup
             formatter.write(f"{subgroup.title}:\n")
             # -- Print the commands that are in this subgroup.

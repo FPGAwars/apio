@@ -72,6 +72,7 @@ jobs:
                 apio lint
                 apio build
                 apio test
+                apio sim --no-gtkwave
                 apio graph
                 apio format
                 apio devices usb
@@ -101,6 +102,7 @@ jobs:
                 apio lint
                 apio build
                 apio test
+                apio sim --no-gtkwave
                 apio graph
                 apio format
                 apio devices usb
@@ -130,6 +132,7 @@ jobs:
                 apio lint
                 apio build
                 apio test
+                apio sim --no-gtkwave
                 apio graph
                 apio format
                 apio devices usb

@@ -18,9 +18,14 @@ theme:
     - navigation.sections # Enables second-level grouping
     - navigation.expand # Expands all sections and subsections by default
     - navigation.tabs
+    - content.code.copy # 'copy' button in code blocks
 
 markdown_extensions:
   - admonition
+  - pymdownx.extra
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.superfences
   - toc:
       permalink: true
 
