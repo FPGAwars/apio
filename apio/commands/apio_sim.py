@@ -46,13 +46,15 @@ the project directory, even if using the '--project-dir' option.
 testbenches, as this may override the default name and location Apio sets \
 for the generated .vcd file.
 
-The sim command defines the INTERACTIVE_SIM macro, which can be used in the \
-testbench to distinguish between 'apio test' and 'apio sim'. For example, \
-you can use this macro to ignore certain errors when running with 'apio sim' \
-and view the erroneous signals in GTKWave.
+The sim command defines the macro 'APIO_SIM=1' which can be used by \
+testbenches to skip `$fatal` statements to have the simulation continue and \
+generate signals for the GTKWave viewer.
 
-For a sample testbench that utilizes this macro, see the example at: \
-https://github.com/FPGAwars/apio-examples/tree/master/upduino31/testbench
+[code]# Instead of this
+$fatal;
+
+# Use this
+if (!`APIO_SIM) $fatal;[/code]
 
 [b][Hint][/b] When configuring the signals in GTKWave, save the \
 configuration so you don’t need to repeat it each time you run the \

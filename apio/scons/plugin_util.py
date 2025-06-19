@@ -249,7 +249,7 @@ def verilator_lint_action(
     # -- Construct the action
     action = (
         "verilator_bin --lint-only --quiet --bbox-unsup --timing "
-        "-Wno-TIMESCALEMOD -Wno-MULTITOP "
+        "-Wno-TIMESCALEMOD -Wno-MULTITOP -DAPIO_SIM=0 "
         "{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} $SOURCES"
     ).format(
         "-Wall" if lint_params.verilator_all else "",
@@ -458,6 +458,9 @@ def source_file_issue_action() -> FunctionAction:
     # A regex to identify "$dumpfile(" in testbenches.
     testbench_dumpfile_re = re.compile(r"[$]dumpfile\s*[(]")
 
+    # A regex to identify "INTERACTIVE_SIM" in testbenches
+    interactive_sim_re = re.compile(r"INTERACTIVE_SIM")
+
     def report_source_files_issues(
         source: List[File],
         target: List[Alias],
@@ -484,9 +487,13 @@ def source_file_issue_action() -> FunctionAction:
 
             # -- if contains $dumpfile, print a warning.
             if testbench_dumpfile_re.findall(file_text):
+                cwarning("Avoid using $dumpfile() in Apio testbenches.")
+
+            # -- if contains $dumpfile, print a warning.
+            if interactive_sim_re.findall(file_text):
                 cwarning(
-                    "Using $dumpfile() in apio "
-                    "testbenches is not recomanded."
+                    "The Apio macro `INTERACTIVE_SIM is deprecated. "
+                    "Use `APIO_SIM (0 or 1) instead."
                 )
 
     return Action(report_source_files_issues, "Scanning for issues.")
@@ -707,11 +714,13 @@ def iverilog_action(
     # -- Construct the action string.
     # -- The -g2012 is for system-verilog support.
     action = (
-        "iverilog -g2012 {0} -o $TARGET {1} {2} {3} {4} {5} {6} $SOURCES"
+        "iverilog -g2012 {0} -o $TARGET {1} {2} {3} {4} {5} {6} {7} $SOURCES"
     ).format(
         "-v" if verbose else "",
         f"-DVCD_OUTPUT={escaped_vcd_output_name}",
         get_define_flags(apio_env),
+        f"-DAPIO_SIM={int(is_interactive)}",
+        # 'INTERACTIVE_SIM is deprecated and will go away.
         "-DINTERACTIVE_SIM" if is_interactive else "",
         map_params(extra_params, "{}"),
         map_params(lib_dirs, '-I"{}"'),
