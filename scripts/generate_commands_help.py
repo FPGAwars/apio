@@ -13,14 +13,13 @@ def extract_command_list(node: dict, node_path: List[str]) -> list[List[str]]:
     result = [node_path]
 
     # -- Simple command, no children
-    if "groups" not in node:
+    if "commands" not in node:
         return result
 
-    for _, subgroup_dict in node["groups"].items():
-        for command, command_dict in subgroup_dict.items():
-            command_path = node_path + [command]
-            commands = extract_command_list(command_dict, command_path)
-            result.extend(commands)
+    for command, command_dict in node["commands"].items():
+        command_path = node_path + [command]
+        commands = extract_command_list(command_dict, command_path)
+        result.extend(commands)
 
     # result = sorted(result)
     return result
@@ -38,7 +37,7 @@ def get_commands_list() -> List[str]:
     )
 
     data = json.loads(result.stdout)
-    commands = extract_command_list(data["apio"], ["apio"])
+    commands = extract_command_list(data["commands"]["apio"], ["apio"])
 
     return commands
 

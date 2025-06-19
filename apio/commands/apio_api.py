@@ -249,18 +249,17 @@ def scan_children(cmd_cli) -> Dict:
     subgroups: List[ApioSubgroup] = cmd_cli.subgroups
 
     # -- Create the dict for the command subgroups.
-    subgroups_dict = {}
-    result["groups"] = subgroups_dict
+    subcommands_dict = {}
+    result["commands"] = subcommands_dict
 
-    # -- Iterate the subgroups and populate them.
+    # -- Iterate the subgroups and populate them. We flaten the subcommands
+    # -- group into a single list of commands.
     for subgroup in subgroups:
         assert isinstance(subgroup, ApioSubgroup), type(subgroup)
-        subgroup_dict = {}
         assert isinstance(subgroup.title, str), type(subgroup.title)
-        subgroups_dict[subgroup.title] = subgroup_dict
         for subcommand in subgroup.commands:
             subcommand_dict = scan_children(subcommand)
-            subgroup_dict[subcommand.name] = subcommand_dict
+            subcommands_dict[subcommand.name] = subcommand_dict
 
     # -- All done ok.
     return result
@@ -321,8 +320,9 @@ def _get_commands_cli(
     if timestamp:
         top_dict["timestamp"] = timestamp
 
-    top_cmd_dict = scan_children(top_cli)
-    top_dict["apio"] = top_cmd_dict
+    section_dict = {}
+    section_dict["apio"] = scan_children(top_cli)
+    top_dict["commands"] = section_dict
 
     # -- Write out
     write_as_json_doc(top_dict, output, force)

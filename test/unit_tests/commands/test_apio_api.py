@@ -69,8 +69,8 @@ def test_apio_api_get_commands(apio_runner: ApioRunner):
         data = json.loads(text)
         assert data["timestamp"] == "xyz"
         assert (
-            data["apio"]["groups"]["Utility commands"]["api"]["groups"][
-                "Subcommands"
-            ]["get-boards"]
+            data["commands"]["apio"]["commands"]["api"]["commands"][
+                "get-boards"
+            ]
             == {}
         )
