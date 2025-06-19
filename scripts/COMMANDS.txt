@@ -27,12 +27,16 @@ Usage: apio [OPTIONS] COMMAND [ARGS]...
   apio build -h
   apio drivers ftdi install -h
 
+  To check the apio version type:
+
+  apio --version
+
   For more information about the Apio project, visit the official Apio
   Wiki https://github.com/FPGAwars/apio/wiki/Apio
 
 Options:
-  --version   Show the version and exit.
-  -h, --help  Show this message and exit.
+  -v, --version  Show the version and exit.
+  -h, --help     Show this message and exit.
 
 Build commands:
   apio build        Synthesize the bitstream.

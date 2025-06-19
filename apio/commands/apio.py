@@ -119,6 +119,10 @@ its help text. For example:
 [code]apio build -h
 apio drivers ftdi install -h[/code]
 
+To check the apio version type:
+[code]
+apio --version[/code]
+
 For more information about the Apio project, visit the official Apio Wiki \
 https://github.com/FPGAwars/apio/wiki/Apio
 """
