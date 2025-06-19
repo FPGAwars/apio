@@ -7,8 +7,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/apio/__main__.py",
             "args": [
-                "info",
-                "system"
+                "api",
+                "get-commands"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
