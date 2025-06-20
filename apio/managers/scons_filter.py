@@ -181,11 +181,11 @@ class SconsFilter:
         line: str, patterns: List[Tuple[str, str]], default_color: str = None
     ) -> Optional[str]:
         """Assigns a color for a given line using a list of (regex, color)
-        pairs. Returns the color of the first matching regex or default_color
-        if none match.
+        pairs. Returns the color of the first matching regex (case
+        insensitive), or default_color if none match.
         """
         for regex, color in patterns:
-            if re.search(regex, line):
+            if re.search(regex, line, re.IGNORECASE):
                 return color
         return default_color
 
@@ -225,7 +225,10 @@ class SconsFilter:
         # pylint: disable=too-many-return-statements
         # pylint: disable=too-many-branches
 
-        # print(f"*** LINE: [{pipe_id}], [{repr(line)}], [{repr(terminator)}]")
+        # cout(
+        #     f"*** LINE: [{pipe_id}], [{repr(line)}], [{repr(terminator)}]",
+        #     style=INFO,
+        # )
 
         # -- Update the range detectors.
         in_pnr_verbose_range = self._pnr_detector.update(pipe_id, line)
@@ -242,7 +245,7 @@ class SconsFilter:
 
             # -- Assign line color.
             line_color = self._assign_line_color(
-                line.lower(),
+                line,
                 [
                     (r"^warning:", WARNING),
                     (r"^error:", ERROR),
@@ -367,11 +370,14 @@ class SconsFilter:
         if pipe_id == PipeId.STDOUT:
             # -- Default stdout line coloring.
             line_color = self._assign_line_color(
-                line.lower(),
+                line,
                 [
                     (r"is up to date", SUCCESS),
                     (r"^warning:", WARNING),
                     (r"^error:", ERROR),
+                    (r"[$]finish called", SUCCESS),
+                    (r"fatal: ", ERROR),
+                    (r"assertion failed", ERROR),
                 ],
             )
             self._output_line(line, line_color, terminator)
@@ -379,7 +385,7 @@ class SconsFilter:
 
         # Handling the rest of stderr the lines.
         line_color = self._assign_line_color(
-            line.lower(),
+            line,
             [
                 (r"^info:", INFO),
                 (r"^warning:", WARNING),

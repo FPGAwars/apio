@@ -466,7 +466,7 @@ def source_file_issue_action() -> FunctionAction:
         target: List[Alias],
         env: SConsEnvironment,
     ):
-        """The scanner function.."""
+        """The scanner function."""
 
         _ = (target, env)  # Unused
 
@@ -480,7 +480,8 @@ def source_file_issue_action() -> FunctionAction:
                 continue
 
             # -- Here the file is a testbench file.
-            cout(f"Testbench {file}", style=EMPH1)
+            cout()
+            cout(f"Testbench {file}", style=EMPH3)
 
             # -- Read the testbench file text.
             file_text = file.get_text_contents()
@@ -496,7 +497,9 @@ def source_file_issue_action() -> FunctionAction:
                     "Use `APIO_SIM (0 or 1) instead."
                 )
 
-    return Action(report_source_files_issues, "Scanning for issues.")
+    # -- Run the action but don't announce the action. We will print
+    # -- ourselves in report_source_files_issues.
+    return Action(report_source_files_issues, strfunction=None)
 
 
 def source_files(apio_env: ApioEnv) -> Tuple[List[str], List[str]]:

@@ -106,6 +106,10 @@ class AsyncPipe(Thread):
                 b: Optional[bytearray] = f.read(1)
                 assert len(b) <= 1
 
+                # ascii_char = b.decode('ascii')       # 'A'
+                # hex_value = b.hex()                  # '41'
+                # print(f"--- ASCII: {ascii_char}, HEX: 0x{hex_value}")
+
                 if not b:
                     # -- Handle EOF
                     if bfr or pending_cr:
