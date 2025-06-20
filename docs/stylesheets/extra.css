@@ -110,8 +110,9 @@
   font-family: "JetBrains Mono", "Roboto Mono", "DejaVu Sans Mono",
     "Courier New", Courier, monospace !important;
   font-weight: 500;
-  color: #1d8348; /* Nearly black for high visibility */
-  background-color: #eeeeee; /* Maintain contrast */
+  color: #166d3a; /* Nearly black for high visibility */
+  background-color: #f0f0f0; /* Maintain contrast */
+  line-height: 1.15 !important;  /* Default is ~1.5 */
 }
 
 /* Make inline code text more visible */
@@ -119,8 +120,8 @@
   font-family: "JetBrains Mono", "Roboto Mono", "DejaVu Sans Mono",
     "Courier New", Courier, monospace !important;
   font-weight: 500;
-  color: #1d8348; /* Nearly black for high visibility */
-  background-color: #eeeeee; /* Maintain contrast */
+  color: #166d3a; /* Nearly black for high visibility */
+  background-color: #f0f0f0; /* Maintain contrast */
   padding: 0.1em 0.3em; /* Optional: small padding for better appearance */
   border-radius: 3px;    /* Optional: rounded corners */
 }
