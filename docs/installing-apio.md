@@ -1,5 +1,4 @@
-# Standalone Apio Installation
-
+Installing Apio
 Apio can be installed in a few ways:
 
 - **Pip Package** - Apio is installed as a Python pip package. This requires having Python installed on your system. Available for macOS, Linux, and Windows.
