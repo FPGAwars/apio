@@ -172,5 +172,4 @@ Options:
 
 This concludes Apio's overview. We suggest continuing to the
 [Quick Start](quick-start.md) guide or jump to the
-[Python-based installation](python-based-installation.md) or
-[Standalone installation](standalone-installation.md) sections.
+[Installation](installing-apio.md) or
