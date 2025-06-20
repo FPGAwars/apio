@@ -10,7 +10,8 @@ Apio can be installed in a few ways:
 
 - **File Bundle** - This is a standalone file archive that, when uncompressed, contains all the necessary files. Available for macOS, Linux, and Windows.
 
-To install Apio, select the instructions for your desired platform and method from the Table of Contents in the side-bar.
+To install Apio, select your platform and preferred installation method from the Table of Contents in the sidebar.
+If the sidebar is not visible, scroll down to find the installation guide for your platform.
 
 ---
 
