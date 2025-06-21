@@ -14,9 +14,9 @@ If the sidebar is not visible, scroll down to find the installation guide for yo
 
 ---
 
-## macOS (Apple Silicon)
+## macOS Apple Silicon
 
-### Install using a Pip package <a id="mac-pip"></a>
+### Install using a Pip package <a id="mac-arm64-pip"></a>
 
 1. Verify that you have Python installed by running:
 
@@ -32,7 +32,7 @@ If the sidebar is not visible, scroll down to find the installation guide for yo
 
 3. [Optional] Add the Apio binary to your `$PATH` if necessary.
 
-### Install using an installer <a id="mac-installer"></a>
+### Install using an installer <a id="mac-arm64-installer"></a>
 
 1. Download the installer file **apio-darwin-arm64-[version]-[date]-installer.pkg** from the [latest release](https://github.com/FPGAwars/apio-dev-builds/releases).
 
@@ -52,7 +52,7 @@ If the sidebar is not visible, scroll down to find the installation guide for yo
 
    to verify your installation.
 
-### Install using a file bundle <a id="mac-bundle"></a>
+### Install using a file bundle <a id="mac-arm64-bundle"></a>
 
 1. Download the bundle file **apio-darwin-arm64-[version]-[date]-bundle.tgz** from the [latest release](https://github.com/FPGAwars/apio-dev-builds/releases).
 
@@ -78,9 +78,9 @@ If the sidebar is not visible, scroll down to find the installation guide for yo
 
 ---
 
-## Linux (x86_64)
+## macOS Intel Silicon
 
-### Install using a Pip package <a id="linux-pip"></a>
+### Install using a Pip package <a id="mac-x86-pip"></a>
 
 1. Verify that you have Python installed by running:
 
@@ -96,7 +96,28 @@ If the sidebar is not visible, scroll down to find the installation guide for yo
 
 3. [Optional] Add the Apio binary to your `$PATH` if necessary.
 
-### Install a Debian package <a id="linux-debian"></a>
+
+---
+
+## Linux X86-64
+
+### Install using a Pip package <a id="linux-x86-pip"></a>
+
+1. Verify that you have Python installed by running:
+
+   ```
+   python --version
+   ```
+
+2. Install Apio using pip:
+
+   ```
+   pip install --force-reinstall apio
+   ```
+
+3. [Optional] Add the Apio binary to your `$PATH` if necessary.
+
+### Install a Debian package <a id="linux-x86-debian"></a>
 
 1. Download the Debian package file **apio-linux-x86-64-[version]-[date]-debian.deb** from the [latest release](https://github.com/FPGAwars/apio-dev-builds/releases).
 
@@ -114,7 +135,7 @@ If the sidebar is not visible, scroll down to find the installation guide for yo
 
    to verify the installation.
 
-### Install using a file bundle <a id="linux-bundle"></a>
+### Install using a file bundle <a id="linux-x86-bundle"></a>
 
 1. Download the bundle file **apio-linux-x86-64-[version]-[date]-bundle.tgz** from the [latest release](https://github.com/FPGAwars/apio-dev-builds/releases).
 
@@ -134,7 +155,27 @@ If the sidebar is not visible, scroll down to find the installation guide for yo
 
 ---
 
-## Windows (x86_64)
+## Linux ARM-64
+
+### Install using a Pip package <a id="linux-arm64-pip"></a>
+
+1. Verify that you have Python installed by running:
+
+   ```
+   python --version
+   ```
+
+2. Install Apio using pip:
+
+   ```
+   pip install --force-reinstall apio
+   ```
+
+3. [Optional] Add the Apio binary to your `$PATH` if necessary.
+   
+---
+
+## Windows X86-64
 
 ### Install using a Pip package <a id="windows-pip"></a>
 
