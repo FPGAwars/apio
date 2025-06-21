@@ -16,14 +16,14 @@
 import re
 from enum import Enum
 from typing import List, Optional, Tuple
-from apio.common.apio_console import cout, cunstyle, cwrite
+from apio.common.apio_console import cout, cunstyle, cwrite, cstyle
 from apio.common.apio_styles import INFO, WARNING, SUCCESS, ERROR
 from apio.utils import util
 
 
 # -- Terminal cursor commands.
-CURSOR_UP = "\033[F"
-ERASE_LINE = "\033[K"
+# CURSOR_UP = "\033[F"
+# ERASE_LINE = "\033[K"
 
 # -- A regex to detect iverilog warnings we want to filter out, per
 # -- https://github.com/FPGAwars/apio/issues/557
@@ -132,27 +132,27 @@ class IVerilogRangeDetector(RangeDetector):
         return None
 
 
-class IceProgRangeDetector(RangeDetector):
-    """Implements a RangeDetector for the iceprog command output."""
+# class IceProgRangeDetector(RangeDetector):
+#     """Implements a RangeDetector for the iceprog command output."""
 
-    def __init__(self):
-        super().__init__()
-        # -- Indicates if the last line should be erased before printing the
-        # -- next one. This happens with interactive progress meters.
-        self.pending_erasure = False
+#     def __init__(self):
+#         super().__init__()
+#         # -- Indicates if the last line should be erased before printing the
+#         # -- next one. This happens with interactive progress meters.
+#         self.pending_erasure = False
 
-    def classify_line(self, pipe_id: PipeId, line: str) -> RangeEvents:
-        # -- Range start: A nextpnr command on stdout without
-        # -- the -q (quiet) flag.
-        if pipe_id == PipeId.STDOUT and line.startswith("iceprog"):
-            self.pending_erasure = False
-            return RangeEvents.START_AFTER
+#     def classify_line(self, pipe_id: PipeId, line: str) -> RangeEvents:
+#         # -- Range start: A nextpnr command on stdout without
+#         # -- the -q (quiet) flag.
+#         if pipe_id == PipeId.STDOUT and line.startswith("iceprog"):
+#             self.pending_erasure = False
+#             return RangeEvents.START_AFTER
 
-        # Range end: The end message of nextnpr.
-        if pipe_id == PipeId.STDERR and line.startswith("Bye."):
-            return RangeEvents.END_AFTER
+#         # Range end: The end message of nextnpr.
+#         if pipe_id == PipeId.STDERR and line.startswith("Bye."):
+#             return RangeEvents.END_AFTER
 
-        return None
+#         return None
 
 
 class SconsFilter:
@@ -165,8 +165,13 @@ class SconsFilter:
         self.colors_enabled = colors_enabled
         self._pnr_detector = PnrRangeDetector()
         self._iverilog_detector = IVerilogRangeDetector()
-        self._iceprog_detector = IceProgRangeDetector()
+        # self._iceprog_detector = IceProgRangeDetector()
         self._is_debug = util.is_debug()
+
+        # -- Acidulates string pieces until we write and flush them. This
+        # -- mechanism is used to display progress bar correctly, Writing the
+        # -- erasure string only when a new value is available.
+        self._output_bfr: str = ""
 
     def on_stdout_line(self, line: str, terminator: str) -> None:
         """Stdout pipe calls this on each line."""
@@ -189,19 +194,33 @@ class SconsFilter:
                 return color
         return default_color
 
-    @staticmethod
-    def _output_line(line: str, style: Optional[str], terminator: str) -> None:
+    def _output_line(
+        self, line: str, style: Optional[str], terminator: str
+    ) -> None:
         """Output a line. If a style is given, force that style, otherwise,
         pass on any color information it may have."""
-        if style:
-            cout(cunstyle(line), style=style, nl=False)
-        else:
-            cout(line, nl=False)
 
-        # -- Output the optional terminator. See AsyncPipe.__init__ for
-        # -- possible terminator values. It's important to get it correctly
-        # -- for progress bars which terminate with "\r" to stay on same line.
-        cwrite(terminator)
+        # -- Apply style if needed.
+        if style:
+            line_part = cstyle(cunstyle(line), style=style)
+        else:
+            line_part = line
+
+        # -- Append line + terminator to buffer.
+        self._output_bfr += line_part + terminator
+
+        # -- Determine if this is an eraser of a progress bar. If so, we
+        # -- don't write it out but wait to the next content first, to
+        # -- let the previous content time to be displayed. This is required
+        # -- because we buffer the lines for matching rather than outputing
+        # -- the individual bytes as they arrive, while preserving the
+        # -- the delays between content and erasers.
+        is_eraser = len(line.strip()) == 0 and terminator == "\r"
+
+        # -- Write and flush if needed.
+        if not is_eraser:
+            cwrite(self._output_bfr)
+            self._output_bfr = ""
 
     def _ignore_line(self, line: str) -> None:
         """Handle an ignored line. It's dumped if in debug mode."""
@@ -222,18 +241,16 @@ class SconsFilter:
         from other programs. See the PNR detector for an example.
         """
 
-        # pylint: disable=too-many-return-statements
-        # pylint: disable=too-many-branches
-
-        # cout(
-        #     f"*** LINE: [{pipe_id}], [{repr(line)}], [{repr(terminator)}]",
-        #     style=INFO,
-        # )
+        if util.is_debug():
+            cout(
+                f"*** LINE: [{pipe_id}], [{repr(line)}], [{repr(terminator)}]",
+                style=INFO,
+            )
 
         # -- Update the range detectors.
         in_pnr_verbose_range = self._pnr_detector.update(pipe_id, line)
         in_iverolog_range = self._iverilog_detector.update(pipe_id, line)
-        in_iceprog_range = self._iceprog_detector.update(pipe_id, line)
+        # in_iceprog_range = self._iceprog_detector.update(pipe_id, line)
 
         # -- Handle the line while in the nextpnr verbose log range.
         if pipe_id == PipeId.STDERR and in_pnr_verbose_range:
@@ -268,96 +285,96 @@ class SconsFilter:
             return
 
         # -- Special handling for iceprog line range.
-        if pipe_id == PipeId.STDERR and in_iceprog_range:
-            # -- Iceprog prints blank likes that are used as line erasers.
-            # -- We don't need them here.
-            if len(line) == 0:
-                self._ignore_line(line)
-                return
+        # if pipe_id == PipeId.STDERR and in_iceprog_range:
+        #     # -- Iceprog prints blank likes that are used as line erasers.
+        #     # -- We don't need them here.
+        #     if len(line) == 0:
+        #         self._ignore_line(line)
+        #         return
 
-            # -- If the last iceprog line was a to-be-erased line, erase it
-            # -- now and clear the flag.
-            if self._iceprog_detector.pending_erasure:
-                print(
-                    CURSOR_UP + ERASE_LINE,
-                    end="",
-                    flush=True,
-                )
-                self._iceprog_detector.pending_erasure = False
+        #     # -- If the last iceprog line was a to-be-erased line, erase it
+        #     # -- now and clear the flag.
+        #     if self._iceprog_detector.pending_erasure:
+        #         print(
+        #             CURSOR_UP + ERASE_LINE,
+        #             end="",
+        #             flush=True,
+        #         )
+        #         self._iceprog_detector.pending_erasure = False
 
-            # -- Determine if the current line should be erased before we will
-            # -- print the next line.
-            # --
-            # -- Match outputs like these "addr 0x001400  3%"
-            # -- Regular expression remainder:
-            # -- ^ --> Match the begining of the line
-            # -- \s --> Match one blank space
-            # -- [0-9A-F]+ one or more hexadecimal digit
-            # -- \d{1,2} one or two decimal digits
-            pattern = r"^addr\s0x[0-9A-F]+\s+\d{1,2}%"
+        #     # -- Determine if the current line should be erased before we
+        #     # -- print the next line.
+        #     # --
+        #     # -- Match outputs like these "addr 0x001400  3%"
+        #     # -- Regular expression remainder:
+        #     # -- ^ --> Match the beginning of the line
+        #     # -- \s --> Match one blank space
+        #     # -- [0-9A-F]+ one or more hexadecimal digit
+        #     # -- \d{1,2} one or two decimal digits
+        #     pattern = r"^addr\s0x[0-9A-F]+\s+\d{1,2}%"
 
-            # -- Calculate if there is a match!
-            match = re.search(pattern, line)
+        #     # -- Calculate if there is a match!
+        #     match = re.search(pattern, line)
 
-            # -- If the line is to be erased set the flag.
-            if match:
-                self._iceprog_detector.pending_erasure = True
+        #     # -- If the line is to be erased set the flag.
+        #     if match:
+        #         self._iceprog_detector.pending_erasure = True
 
-            # -- Determine line color by its content and print it.
-            line_color = self._assign_line_color(
-                line,
-                [
-                    (r"^done.", "green"),
-                    (r"^VERIFY OK", "green"),
-                ],
-            )
-            self._output_line(line, line_color, terminator)
-            return
+        #     # -- Determine line color by its content and print it.
+        #     line_color = self._assign_line_color(
+        #         line,
+        #         [
+        #             (r"^done.", "green"),
+        #             (r"^VERIFY OK", "green"),
+        #         ],
+        #     )
+        #     self._output_line(line, line_color, terminator)
+        #     return
 
         # -- Special handling for Fumo lines.
-        if pipe_id == PipeId.STDOUT:
-            pattern_fomu = r"^Download\s*\[=*"
-            match = re.search(pattern_fomu, line)
-            if match:
-                # -- Delete the previous line
-                #
-                # -- NOTE: If the progress line will scroll instead of
-                # -- overwriting each other, try to add erasure of a second
-                # -- line. This is due to the commit below which restored
-                # -- empty lines.
-                # -  Commit 93fc9bc4f3bfd21568e2d66f11976831467e3b97.
-                #
-                print(CURSOR_UP + ERASE_LINE, end="", flush=True)
-                cout(line, style=SUCCESS)
-                return
+        # if pipe_id == PipeId.STDOUT:
+        #     pattern_fomu = r"^Download\s*\[=*"
+        #     match = re.search(pattern_fomu, line)
+        #     if match:
+        #         # -- Delete the previous line
+        #         #
+        #         # -- NOTE: If the progress line will scroll instead of
+        #         # -- overwriting each other, try to add erasure of a second
+        #         # -- line. This is due to the commit below which restored
+        #         # -- empty lines.
+        #         # -  Commit 93fc9bc4f3bfd21568e2d66f11976831467e3b97.
+        #         #
+        #         print(CURSOR_UP + ERASE_LINE, end="", flush=True)
+        #         cout(line, style=SUCCESS)
+        #         return
 
         # -- Special handling for tinyprog lines.
-        if pipe_id == PipeId.STDERR:
-            # -- Check if the line correspond to an output of
-            # -- the tinyprog programmer (TinyFPGA board)
-            # -- Match outputs like these " 97%|█████████▋| "
-            # -- Regular expression remainder:
-            # -- \s --> Match one blank space
-            # -- \d{1,3} one, two or three decimal digits
-            pattern_tinyprog = r"\s\d{1,3}%\|█*"
+        # if pipe_id == PipeId.STDERR:
+        #     # -- Check if the line correspond to an output of
+        #     # -- the tinyprog programmer (TinyFPGA board)
+        #     # -- Match outputs like these " 97%|█████████▋| "
+        #     # -- Regular expression remainder:
+        #     # -- \s --> Match one blank space
+        #     # -- \d{1,3} one, two or three decimal digits
+        #     pattern_tinyprog = r"\s\d{1,3}%\|█*"
 
-            # -- Calculate if there is a match
-            match_tinyprog = re.search(pattern_tinyprog, line)
+        #     # -- Calculate if there is a match
+        #     match_tinyprog = re.search(pattern_tinyprog, line)
 
-            # -- Match all the progress bar lines except the
-            # -- initial one (when it is 0%)
-            if match_tinyprog and " 0%|" not in line:
-                # -- Delete the previous line.
-                #
-                # -- NOTE: If the progress line will scroll instead of
-                # -- overwriting each other, try to add erasure of a second
-                # -- line. This is due to the commit below which restored
-                # -- empty lines.
-                # -  Commit 93fc9bc4f3bfd21568e2d66f11976831467e3b97.
-                #
-                print(CURSOR_UP + ERASE_LINE, end="", flush=True)
-                cout(line)
-                return
+        #     # -- Match all the progress bar lines except the
+        #     # -- initial one (when it is 0%)
+        #     if match_tinyprog and " 0%|" not in line:
+        #         # -- Delete the previous line.
+        #         #
+        #         # -- NOTE: If the progress line will scroll instead of
+        #         # -- overwriting each other, try to add erasure of a second
+        #         # -- line. This is due to the commit below which restored
+        #         # -- empty lines.
+        #         # -  Commit 93fc9bc4f3bfd21568e2d66f11976831467e3b97.
+        #         #
+        #         print(CURSOR_UP + ERASE_LINE, end="", flush=True)
+        #         cout(line)
+        #         return
 
         # -- Special filter for https://github.com/FPGAwars/apio/issues/557
         if IVERILOG_TIMING_WARNING_REGEX.search(line):
