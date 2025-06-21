@@ -383,31 +383,23 @@ class SconsFilter:
             self._ignore_line(line)
             return
 
-        # -- Handling the rest of the stdout lines.
-        if pipe_id == PipeId.STDOUT:
-            # -- Default stdout line coloring.
-            line_color = self._assign_line_color(
-                line,
-                [
-                    (r"is up to date", SUCCESS),
-                    (r"^warning:", WARNING),
-                    (r"^error:", ERROR),
-                    (r"[$]finish called", SUCCESS),
-                    (r"fatal: ", ERROR),
-                    (r"assertion failed", ERROR),
-                ],
-            )
-            self._output_line(line, line_color, terminator)
-            return
-
-        # Handling the rest of stderr the lines.
+        # -- Handling the rest of the stdout and stdout lines.
         line_color = self._assign_line_color(
             line,
             [
+                # -- Info patterns
                 (r"^info:", INFO),
+                # -- Warning patterns
                 (r"^warning:", WARNING),
+                # -- Error patterns.
                 (r"^error:", ERROR),
+                (r"fatal: ", ERROR),
+                (r"assertion failed", ERROR),
+                # -- Success patterns
+                (r"is up to date", SUCCESS),
+                (r"[$]finish called", SUCCESS),
                 (r"^verify ok$", SUCCESS),
+                (r"^done$", SUCCESS),
             ],
         )
         self._output_line(line, line_color, terminator)
