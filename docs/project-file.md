@@ -152,7 +152,7 @@ avoided if possible.
 
 ```
 [env:default]
- programmer-cmd = iceprog -d i:0x${VID}:0x${PID} ${BIN_FILE}
+programmer-cmd = iceprog -d i:0x${VID}:0x${PID} ${BIN_FILE}
 ```
 
 The list of supported placeholders is available in the Apio
