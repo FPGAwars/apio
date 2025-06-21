@@ -264,7 +264,7 @@ def verilator_lint_action(
         map_params(lib_files, '"{}"'),
     )
 
-    return [source_file_issue_action(), action]
+    return [source_files_issue_scanner_action(), action]
 
 
 @dataclass(frozen=True)
@@ -451,7 +451,34 @@ def has_testbench_name(file_name: str) -> bool:
     return name.lower().endswith("_tb")
 
 
-def source_file_issue_action() -> FunctionAction:
+def announce_testbench_action() -> FunctionAction:
+    """Returns an action that prints a title with the testbench name."""
+
+    def announce_testbench(
+        source: List[File],
+        target: List[Alias],
+        env: SConsEnvironment,
+    ):
+        """The action function."""
+        _ = (target, env)  # Unused
+
+        # -- We expect to find exactly one testbench.
+        testbenches = [
+            file
+            for file in source
+            if (is_source_file(file.name) and has_testbench_name(file.name))
+        ]
+        assert len(testbenches) == 1, testbenches
+
+        # -- Announce it.
+        cout()
+        cout(f"Testbench {testbenches[0]}", style=EMPH3)
+
+    # -- Run the action but don't announce the action.
+    return Action(announce_testbench, strfunction=None)
+
+
+def source_files_issue_scanner_action() -> FunctionAction:
     """Returns a SCons action that scans the source files and print
     error or warning messages about issues it finds."""
 
@@ -478,10 +505,6 @@ def source_file_issue_action() -> FunctionAction:
                 file.name
             ):
                 continue
-
-            # -- Here the file is a testbench file.
-            cout()
-            cout(f"Testbench {file}", style=EMPH3)
 
             # -- Read the testbench file text.
             file_text = file.get_text_contents()

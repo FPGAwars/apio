@@ -21,7 +21,8 @@ from apio.scons.plugin_util import (
     SRC_SUFFIXES,
     verilator_lint_action,
     has_testbench_name,
-    source_file_issue_action,
+    announce_testbench_action,
+    source_files_issue_scanner_action,
     iverilog_action,
     basename,
     make_verilator_config_builder,
@@ -136,8 +137,10 @@ class PluginIce40(PluginBase):
 
             # Construct the actions list.
             action = [
+                # -- Print a testbench title.
+                announce_testbench_action(),
                 # -- Scan source files for issues.
-                source_file_issue_action(),
+                source_files_issue_scanner_action(),
                 # -- Perform the actual test or sim compilation.
                 iverilog_action(
                     apio_env,
