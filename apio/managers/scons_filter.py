@@ -407,6 +407,7 @@ class SconsFilter:
                 (r"^info:", INFO),
                 (r"^warning:", WARNING),
                 (r"^error:", ERROR),
+                (r"^verify ok$", SUCCESS),
             ],
         )
         self._output_line(line, line_color, terminator)
