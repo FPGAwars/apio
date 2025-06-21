@@ -48,7 +48,7 @@ having higher priority, and executes the command with the resolved set options.
 
 The `[apio]` section is optional and currently supports the following options
 
-### The `default-env` option
+### default-env
 
 This is an optional option that species the name of the default env. Without this option, the default option is the first one that is listed in `apio.ini`.
 
@@ -71,7 +71,7 @@ The `[env:name]` section defines a name build environment and every Apio project
 `[env:name]` section. For projects with a single env, it's common to call it `[env:default]`. Following is
 the list of options that can appear in an `[env:name]` section and/or in the `[common]` section.
 
-### The `board` option (REQUIRED)
+### board (required)
 
 The required `board` option specifies the ID of the board that is used in with this env.
 The board ID must be one of the board IDs that are listed by the command `apio boards` (e.g. `alhambra-ii`).
@@ -88,7 +88,7 @@ board.
 If your project contains a `boards.jsonc` file with custom board defintion, the
 board ID must be from that file.
 
-### The `default-testbench` option
+### default-testbench
 
 The optional `default-testbench` option is useful with Apio projects that contain more than one testbench and it allows to specify the testbench that `apio sim` should simulate by default if a no testbench is specified. The value of the option is the relative path
 to the testbench file from the project root dir.
@@ -98,7 +98,7 @@ to the testbench file from the project root dir.
 default-testbench = tests/main_tb.v
 ```
 
-### The `defines` option
+### defines
 
 The optional `defines` option allows to specify Verilog macros that are passed
 to verilog parsers such as Yosys and Iverilog.
@@ -128,7 +128,7 @@ defines =
     CLK_DIV=12_000_000
 ```
 
-### The `format-verible-options` option
+### format-verible-options
 
 The optional `format-verible-options` option allows to control the operation
 of the `apio format` command by specifying additional options to the
@@ -144,7 +144,7 @@ format-verible-options =
 For the list of the Verible formatter options, run the command `apio 
 raw -- verible-verilog-format --helpfull`
 
-### The `programmer-cmd` option
+### programmer-cmd
 
 he optional `programmer-cmd` option allows to override the programmer command
 used by the `apio upload` command. It is intended for special cases and should be
@@ -155,10 +155,13 @@ avoided if possible.
  programmer-cmd = iceprog -d i:0x${VID}:0x${PID} ${BIN_FILE}
 ```
 
-> The list of supported placeholders is available in the Apio
-> standard boards definitions files `boards.jsonc`.
+The list of supported placeholders is available in the Apio
+standard boards definitions files [boards.jsonc](https://github.com/FPGAwars/apio/blob/develop/apio/resources/programmers.jsonc). 
 
-### The `top-module option` (REQUIRED)
+> The placeholder `${BIN_FILE}` is not appended automatically to the
+programmer-cmd option and need to be added explicitly if needed.
+
+### top-module (required)
 
 The optional `top-module` option specifies the name of the top module of the
 design.
@@ -168,7 +171,7 @@ design.
 top-module = Blinky
 ```
 
-### The `yosys-synth-extra-options` option
+### yosys-synth-extra-options
 
 The optional `yosys-synth-extra-options` option allows adding options to the
 Yosys synth command used by the `apio build` command. In the example below, it adds the option `-dsp`,
