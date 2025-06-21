@@ -1,4 +1,4 @@
-"""DOC: TODO"""
+"""A manager class for dispatching the Apio SCONS targets."""
 
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
@@ -15,7 +15,7 @@ from functools import wraps
 from datetime import datetime
 from google.protobuf import text_format
 from apio.common import apio_console
-from apio.common.apio_console import cout, cerror, cstyle
+from apio.common.apio_console import cout, cerror, cstyle, cunstyle
 from apio.common.apio_styles import SUCCESS, ERROR, EMPH3
 from apio.utils import util, pkg_util
 from apio.apio_context import ApioContext
@@ -388,6 +388,11 @@ class SCons:
         # -- to execute the apio command)
         start_time = time.time()
 
+        # -- Subtracting 1 to avoid line overflow on windows, Observed with
+        # -- Windows 10 and cmd.exe shell.
+        if apio_ctx.is_windows:
+            terminal_width -= 1
+
         # -- Print a horizontal line
         cout("-" * terminal_width)
 
@@ -440,21 +445,27 @@ class SCons:
         # -- Calculate the time it took to execute the command
         duration = time.time() - start_time
 
-        # -- Summary
-        summary_text = f" Took {duration:.2f} seconds "
+        # -- Determine status message
+        if is_error:
+            styled_status = cstyle("ERROR", style=ERROR)
+        else:
+            styled_status = cstyle("SUCCESS", style=SUCCESS)
 
-        # -- Half line
-        half_line = "=" * int(((terminal_width - len(summary_text) - 10) / 2))
+        # -- Determine the summary text
+        summary = f"Took {duration:.2f} seconds"
 
-        # -- Status message
-        status = (
-            cstyle(" ERROR ", style=ERROR)
-            if is_error
-            else cstyle("SUCCESS", style=SUCCESS)
-        )
+        # -- Construct the entire message.
+        styled_msg = f" [{styled_status}] {summary} "
+        msg_len = len(cunstyle(styled_msg))
 
-        # -- Print the summary line.
-        cout(f"{half_line} [{status}]{summary_text}{half_line}")
+        # -- Determine the lengths of the paddings before and after
+        # -- the message. Should be correct for odd and even terminal
+        # -- widths.
+        pad1_len = (terminal_width - msg_len) // 2
+        pad2_len = terminal_width - pad1_len - msg_len
+
+        # -- Print the entire line.
+        cout(f"{'=' * pad1_len}{styled_msg}{'=' * pad2_len}")
 
         # -- Return the exit code
         return result.exit_code
