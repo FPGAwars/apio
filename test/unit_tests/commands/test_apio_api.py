@@ -74,3 +74,29 @@ def test_apio_api_get_commands(apio_runner: ApioRunner):
             ]
             == {}
         )
+
+
+def test_apio_api_get_system(apio_runner: ApioRunner):
+    """Test "apio api get-system" """
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Execute "apio api get-system -t xyz"  (stdout)
+        result = sb.invoke_apio_cmd(apio, ["api", "get-system", "-t", "xyz"])
+        sb.assert_ok(result)
+        assert "xyz" in result.output
+        assert '"apio-version"' in result.output
+        assert '"python-version"' in result.output
+
+        # -- Execute "apio api get-system -t xyz -s boards -o <dir>"  (file)
+        path = sb.proj_dir / "apio.json"
+        result = sb.invoke_apio_cmd(
+            apio, ["api", "get-system", "-t", "xyz", "-o", str(path)]
+        )
+        sb.assert_ok(result)
+
+        # -- Read and verify the file.
+        text = sb.read_file(path)
+        data = json.loads(text)
+        assert data["timestamp"] == "xyz"
+        assert data["system"]["remote-config-url"].endswith(".jsonc")
