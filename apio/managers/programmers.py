@@ -86,7 +86,7 @@ def _construct_programmer_cmd(
     # -- Construct the programmer cmd template for the board. It may or may not
     # -- contain ${} vars.
     cmd_template = _construct_cmd_template(apio_ctx)
-    if util.is_debug():
+    if util.is_debug(1):
         cout(f"Cmd template: [{cmd_template}]")
 
     # -- Resolved the mandatory ${BIN_FILE} to $SOURCE which will be replaced
@@ -97,7 +97,7 @@ def _construct_programmer_cmd(
     has_usb_vars = any(s in cmd_template for s in USB_VARS)
     has_serial_vars = any(s in cmd_template for s in SERIAL_VARS)
 
-    if util.is_debug():
+    if util.is_debug(1):
         cout(f"Template has usb vars: {has_usb_vars}]")
         cout(f"Template has serial vars: {has_serial_vars}]")
 
@@ -302,11 +302,11 @@ def _match_serial_device(
     for dev in matching:
         cout(f"- DEVICE {dev.summary()}")
 
-    if util.is_debug():
+    if util.is_debug(1):
         cout(f"Serial device filter: {serial_filter.summary()}")
         cout(f"Matching serial devices: {matching}")
 
-    if util.is_debug():
+    if util.is_debug(1):
         cout(f"Matching serial devices: {matching}")
 
     # -- Error if not exactly one match.
@@ -369,11 +369,11 @@ def _match_usb_device(
     for dev in matching:
         cout(f"- DEVICE {dev.summary()}")
 
-    if util.is_debug():
+    if util.is_debug(1):
         cout(f"USB device filter: {usb_filter.summary()}")
         cout(f"Matching USB devices: {matching}")
 
-    if util.is_debug():
+    if util.is_debug(1):
         cout(f"Matching usb devices: {matching}")
 
     # -- Error if not exactly one match.

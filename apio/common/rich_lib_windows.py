@@ -44,6 +44,7 @@ def get_workaround_params() -> RichLibWindowsParams:
         truecolor=rich.console._windows_console_features.truecolor,
     )
 
+    # -- An ad hoc is_debug() that avoids circular imports.
     if "APIO_DEBUG" in os.environ:
         print(f"Original RichLibWindowsParams: {result}")
 

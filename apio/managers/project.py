@@ -82,7 +82,7 @@ class Project:
 
         # pylint: disable=too-many-arguments
 
-        if util.is_debug():
+        if util.is_debug(1):
             cout()
             cout("Parsed [apio] section:", style=EMPH2)
             cout(f"  {apio_section}\n")
@@ -126,7 +126,7 @@ class Project:
             common_section=common_section,
             env_sections=env_sections,
         )
-        if util.is_debug():
+        if util.is_debug(1):
             cout("Selected env name:", style=EMPH2)
             cout(f"  {self.env_name}\n")
             cout("Expanded env options:", style=EMPH2)

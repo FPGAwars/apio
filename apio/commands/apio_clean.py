@@ -54,7 +54,7 @@ def _delete_candidates(candidates: List[str]):
     # pylint: disable=broad-exception-caught
 
     # -- Dump for debugging.
-    if util.is_debug():
+    if util.is_debug(1):
         cout(f"\nDeletion candidates: {candidates}")
 
     # -- Delete candidates that exists.

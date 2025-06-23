@@ -58,7 +58,7 @@ def scan_serial_devices() -> List[SerialDevice]:
     for port in list_port_info:
 
         # -- Dump for debugging.
-        if util.is_debug():
+        if util.is_debug(1):
             cout("Raw serial port:")
             cout(f"    Device: {port.device}")
             cout(f"    Hwid: {port.hwid}")
@@ -90,7 +90,7 @@ def scan_serial_devices() -> List[SerialDevice]:
     # -- Sort by port name, case insensitive.
     devices = sorted(devices, key=lambda d: d.port.lower())
 
-    if util.is_debug():
+    if util.is_debug(1):
         cout(f"Found {len(devices)} serial device:")
         for device in devices:
             cout(str(device))

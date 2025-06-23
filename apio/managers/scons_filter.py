@@ -166,7 +166,10 @@ class SconsFilter:
         self._pnr_detector = PnrRangeDetector()
         self._iverilog_detector = IVerilogRangeDetector()
         # self._iceprog_detector = IceProgRangeDetector()
-        self._is_debug = util.is_debug()
+
+        # -- We cache the values to avoid reevaluating sys env.
+        self._is_debug = util.is_debug(1)
+        self._is_verbose_debug = util.is_debug(3)
 
         # -- Acidulates string pieces until we write and flush them. This
         # -- mechanism is used to display progress bar correctly, Writing the
@@ -241,7 +244,7 @@ class SconsFilter:
         from other programs. See the PNR detector for an example.
         """
 
-        if util.is_debug():
+        if self._is_verbose_debug:
             cout(
                 f"*** LINE: [{pipe_id}], [{repr(line)}], [{repr(terminator)}]",
                 style=INFO,

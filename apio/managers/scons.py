@@ -1,4 +1,4 @@
-"""A manager class for dispatching the Apio SCONS targets."""
+"""A manager class for  to dispatch the Apio SCONS targets."""
 
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
@@ -60,7 +60,7 @@ def on_exception(*, exit_code: int):
             try:
                 return function(*args, **kwargs)
             except Exception as exc:
-                if util.is_debug():
+                if util.is_debug(1):
                     traceback.print_tb(exc.__traceback__)
 
                 if str(exc):
@@ -294,7 +294,7 @@ class SCons:
                     else FORCE_PIPE
                 ),
                 theme_name=apio_console.current_theme_name(),
-                is_debug=util.is_debug(),
+                debug_level=util.debug_level(),
                 yosys_path=oss_vars["YOSYS_LIB"],
                 trellis_path=oss_vars["TRELLIS"],
                 build_all_path=str(apio_ctx.build_all_path),
@@ -373,7 +373,7 @@ class SCons:
         # -- variables of the scons arg parser.
         pkg_util.set_env_for_packages(apio_ctx)
 
-        if util.is_debug():
+        if util.is_debug(1):
             cout("\nSCONS CALL:", style=EMPH3)
             cout(f"* command:       {scons_command}")
             cout(f"* variables:     {variables}")
@@ -400,7 +400,7 @@ class SCons:
         # -- https://scons.org/doc/2.4.1/HTML/scons-man.html
         debug_options = (
             ["--debug=explain,prepare,stacktrace", "--tree=all"]
-            if util.is_debug()
+            if util.is_debug(1)
             else []
         )
 

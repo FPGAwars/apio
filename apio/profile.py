@@ -52,7 +52,7 @@ class Profile:
         # -- Verify that we resolved all the placeholders.
         assert "%" not in self.remote_config_url, self.remote_config_url
 
-        if util.is_debug():
+        if util.is_debug(1):
             cout(f"Remote config url: {self.remote_config_url}")
 
         # ---- Set the default parameters
@@ -243,7 +243,7 @@ class Profile:
             json.dump(data, f, indent=4, sort_keys=True)
 
         # -- Dump for debugging.
-        if util.is_debug():
+        if util.is_debug(1):
             cout("Saved profile:", style=EMPH3)
             cout(json.dumps(data, indent=2))
 
@@ -307,7 +307,7 @@ class Profile:
                 f"Custom remote config: '{self.remote_config_url}'",
                 style=EMPH3,
             )
-        elif verbose or util.is_debug():
+        elif verbose or util.is_debug(1):
             cout(f"Remote config: '{self.remote_config_url}'")
 
         # -- Fetch the config text.
@@ -317,7 +317,7 @@ class Profile:
         cout("Remote config fetched ok.")
 
         # -- Print the file's content.
-        if util.is_debug():
+        if util.is_debug(1):
             cout(config_text)
 
         # -- Convert the jsonc to json by removing '//' comments.

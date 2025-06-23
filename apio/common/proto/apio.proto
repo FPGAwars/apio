@@ -85,8 +85,8 @@ message Environment {
   // The apio_console theme name.
   required string theme_name = 4;
 
-  // True if apio debug is enabled.
-  optional bool is_debug = 5 [default = false];
+  // The apio debug level. Value of 0 indicates no debug info.
+  required int32 debug_level = 5;
 
   // Paths to oss-cad-suite libraries.
   required string yosys_path = 6;

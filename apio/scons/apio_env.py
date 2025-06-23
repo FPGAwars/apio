@@ -58,7 +58,7 @@ class ApioEnv:
         ), "DefaultEnvironment already exists"
 
         # Extra info for debugging.
-        if self.is_debug:
+        if self.is_debug(2):
             cout(f"command_line_targets: {command_line_targets}")
             self.dump_env_vars()
 
@@ -67,10 +67,9 @@ class ApioEnv:
         """Returns True if we run on windows."""
         return self.params.environment.is_windows
 
-    @property
-    def is_debug(self):
+    def is_debug(self, level: int):
         """Returns true if we run in debug mode."""
-        return self.params.environment.is_debug
+        return self.params.environment.debug_level >= level
 
     def targeting(self, *target_names) -> bool:
         """Returns true if the any of the named target was specified in the

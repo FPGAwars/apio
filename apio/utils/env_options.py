@@ -27,14 +27,11 @@ APIO_HOME_DIR = "APIO_HOME_DIR"
 # -- of the platforms specified in resources/platforms.json.
 APIO_PLATFORM = "APIO_PLATFORM"
 
-# -- Env variable to enable printout of additional information for debugging.
-# -- It is not intended to change the logic of apio but just to provide
-# -- additional information about its internal behavior. Currently
-# -- it's used as a binary flag with existence indicating True and non
-# -- existence indicating False.
+# -- Env variable to enable printing of debug info, valid values are from 
+# -- 1 to 10 with 1 for minimal debug info and 10 for maximum.
 # --
-# -- Do not access it directly. For the apio process use util.is_debug() and
-# -- for the scons process use scons_util.is_debug().
+# -- Do not access it directly. For the apio process use util.is_debug(n) and
+# -- for the scons process use scons_util.is_debug(n).
 APIO_DEBUG = "APIO_DEBUG"
 
 # -- An env variable that if defined, contains an override url of the remote

@@ -377,21 +377,43 @@ def list_plurality(str_list: List[str], conjunction: str) -> str:
     return ", ".join(str_list[:-1]) + f", {conjunction} {str_list[-1]}"
 
 
-def is_debug() -> bool:
-    """Returns True if apio is in debug mode. Use it to enable printing of
-    debug information but not to modify the behavior of the code.
-    Also, all apio tests should be performed with debug disabled."""
-    return env_options.is_defined("APIO_DEBUG")
+def debug_level() -> int:
+    """Returns the current debug level, with 0 as 'off'."""
+
+    # -- We get a fresh value so it can be adjusted dynamically when needed.
+    level_str = env_options.get(env_options.APIO_DEBUG, "0")
+    try:
+        level_int = int(level_str)
+    except ValueError:
+        cerror(f"APIO_DEBUG value '{level_str}' is not an int.")
+        sys.exit(1)
+
+    # -- All done. We don't validate the value, assuming the user knows how
+    # -- to use it.
+    return level_int
 
 
-def debug_decorator(func):
+def is_debug(level: int) -> bool:
+    """Returns True if apio is in debug mode level 'level'  or higher. Use
+    it to enable printing of debug information but not to modify the behavior
+    of the code. Also, all apio tests should be performed with debug
+    disabled. Important debug information should be at level 1 while
+    less important or spammy should be at higher levels."""
+    # -- Sanity check. A failure is indicates a programming error.
+    assert isinstance(level, int), type(level)
+    assert 1 <= level <= 10, level
+
+    return debug_level() >= level
+
+
+def debug_decorator(func, level: int = 1):
     """A decorator for dumping the input and output of a function when
     APIO_DEBUG is defined.  Add it to functions and methods that you want
     to examine with APIO_DEBUG.
     """
 
     # -- We sample the debug flag upon start.
-    debug = is_debug()
+    debug = is_debug(level)
 
     @wraps(func)
     def outer(*args):
@@ -599,13 +621,13 @@ def subprocess_call(
 ) -> int:
     """A helper for running subprocess.call."""
 
-    if is_debug():
+    if is_debug(1):
         cout(f"subprocess_call: {cmd}")
 
     # -- Invoke the command.
     exit_code = subprocess.call(cmd, shell=shell)
 
-    if is_debug():
+    if is_debug(1):
         cout(f"subprocess_call: exit code is {exit_code}")
 
     # -- If ok, return.

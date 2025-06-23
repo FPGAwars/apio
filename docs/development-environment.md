@@ -55,14 +55,17 @@ Once you are ready to send a pull request from your forked repository, make sure
 
 ## Using `APIO_DEBUG` to Print Debug Information
 
-If the environment variable `APIO_DEBUG` is defined (regardless of its value), Apio emits internal debugging information that may be useful for debugging.
+Debug information can be printed by defining the env var `APIO_DEBUG` with an
+int value in the range 1 (minimal debug info) to 10 (verbose debug info).
 
 ```
 # Linux and Mac OSX
-export APIO_DEBUG=
+export APIO_DEBUG=1   # Minimal debug info
+export APIO_DEBUG=3   # More debug info
 
 # Windows
-set APIO_DEBUG=
+set APIO_DEBUG=1
+set APIO_DEBUG=3
 ```
 
 ## Debugging with Visual Studio Code

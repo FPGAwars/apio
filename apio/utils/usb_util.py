@@ -88,7 +88,7 @@ def _get_usb_str(
         s = s.split("\x00", 1)[0]
         return s
     except Exception as e:
-        if util.is_debug():
+        if util.is_debug(1):
             cout(f"Error getting USB string at index {index}: {e}")
         return default
 
@@ -110,7 +110,7 @@ def scan_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
         pattern = oss_dir / "lib" / f"lib{name}*"
         files = glob(str(pattern))
 
-        if util.is_debug():
+        if util.is_debug(1):
             cout("Apio find_library() call:")
             cout(f"   {name=}")
             cout(f"   {pattern=}")
@@ -142,7 +142,7 @@ def scan_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
     result: List[UsbDevice] = []
     for device in devices:
         # -- Print entire raw device info for debugging.
-        if util.is_debug():
+        if util.is_debug(1):
             cout()
             cout(str(device))
             cout()
@@ -188,7 +188,7 @@ def scan_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
         ),
     )
 
-    if util.is_debug():
+    if util.is_debug(1):
         cout(f"Found {len(result)} USB devices:")
         for device in result:
             cout(str(device))
