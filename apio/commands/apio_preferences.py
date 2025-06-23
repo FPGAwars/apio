@@ -15,7 +15,7 @@ from rich.table import Table
 from rich import box
 from apio.commands import options
 from apio.common import apio_themes
-from apio.common.apio_console import cout, cprint
+from apio.common.apio_console import cout, ctable
 from apio.common.apio_styles import BORDER, EMPH1, SUCCESS
 from apio.common.apio_themes import THEMES_TABLE, THEMES_NAMES, DEFAULT_THEME
 from apio.utils import cmd_util
@@ -84,7 +84,7 @@ def _list_preferences(apio_ctx: ApioContext):
 
     # -- Render table.
     cout()
-    cprint(table)
+    ctable(table)
 
 
 def _set_theme(apio_ctx: ApioContext, theme_name: str):

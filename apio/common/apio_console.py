@@ -238,49 +238,18 @@ def cout(
     cflush()
 
 
-# def cprint(
-#     rich_text: str, *, style: Optional[str] = None, highlight: bool = False
-# ) -> None:
-#     """Render the given rich text. Applying optional style and if enabled,
-#     highlighting semantic elements such as strings if enabled."""
-#     console().print(
-#         rich_text,
-#         highlight=highlight,
-#         style=style,
-#     )
-#     # console().file.flush()
-#     cflush()
-
-
-# def cprint(
-#     rich_text: str,
-#     # , *, style: Optional[str] = None, highlight: bool = False
-# ) -> None:
-#     """Render the given rich text. Applying optional style and if enabled,
-#     highlighting semantic elements such as strings if enabled."""
-#     console().print(
-#         rich_text,
-#         # highlight=highlight,
-#         # style=style,
-#     )
-#     # console().file.flush()
-#     cflush()
-
-
-def cprint(
-    rich_text: str,
-    # , *, style: Optional[str] = None, highlight: bool = False
-) -> None:
-    """Render the given rich text. Applying optional style and if enabled,
-    highlighting semantic elements such as strings if enabled."""
-    console().print(
-        rich_text,
-        # highlight=highlight,
-        # style=style,
-    )
-    # console().file.flush()
+def ctable(table: Table) -> None:
+    """Write out a Rich lib Table."""
+    assert isinstance(table, Table), type(table)
+    console().print(table)
     cflush()
-    # cout(rich_text)
+
+
+def cmarkdown(markdown_text: str) -> None:
+    """Write out a Rich markdown text."""
+    assert isinstance(markdown_text, str), type(markdown_text)
+    console().print(markdown_text)
+    cflush()
 
 
 def cwrite(s: str) -> None:

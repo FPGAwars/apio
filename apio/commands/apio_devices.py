@@ -14,7 +14,7 @@ from rich import box
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 from apio.managers import installer
-from apio.common.apio_console import cout, cprint
+from apio.common.apio_console import cout, ctable
 from apio.common.apio_styles import BORDER, SUCCESS, ERROR, EMPH3
 from apio.utils import serial_util, usb_util, util
 
@@ -68,7 +68,7 @@ def _list_usb_devices(apio_ctx: ApioContext) -> None:
 
     # -- Render the table.
     cout()
-    cprint(table)
+    ctable(table)
     cout(f"Found {util.plurality(devices, 'USB device')}", style=SUCCESS)
 
 
@@ -150,7 +150,7 @@ def _list_serial_devices(apio_ctx: ApioContext) -> None:
 
     # -- Render the table.
     cout()
-    cprint(table)
+    ctable(table)
     cout(f"Found {util.plurality(devices, 'device')}", style=SUCCESS)
 
 

@@ -10,7 +10,7 @@
 import click
 from rich.table import Table
 from rich import box
-from apio.common.apio_console import cout, cprint
+from apio.common.apio_console import cout, ctable
 from apio.common.apio_styles import INFO, BORDER, ERROR, SUCCESS
 from apio.managers import installer
 from apio.apio_context import ApioContext, ApioContextScope
@@ -78,7 +78,7 @@ def print_packages_report(apio_ctx: ApioContext, verbose: bool) -> None:
 
     # -- Render table.
     cout()
-    cprint(table)
+    ctable(table)
 
     # -- Define errors table.
     table = Table(
@@ -108,7 +108,7 @@ def print_packages_report(apio_ctx: ApioContext, verbose: bool) -> None:
     # -- Render the table, unless empty.
     if table.row_count:
         cout()
-        cprint(table)
+        ctable(table)
 
     # -- Print summary.
     cout()

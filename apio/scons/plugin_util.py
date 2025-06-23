@@ -29,7 +29,7 @@ from SCons.Node import NodeList
 from SCons.Node.Alias import Alias
 from apio.scons.apio_env import ApioEnv
 from apio.common.common_util import sort_files
-from apio.common.apio_console import cout, cerror, cwarning, cprint
+from apio.common.apio_console import cout, cerror, cwarning, ctable
 from apio.common.apio_styles import INFO, BORDER, EMPH1, EMPH2, EMPH3
 
 
@@ -592,7 +592,7 @@ def _print_pnr_utilization_report(report: Dict[str, any]):
 
     # -- Render the table
     cout()
-    cprint(table)
+    ctable(table)
 
 
 def _maybe_print_pnr_clocks_report(
@@ -630,7 +630,7 @@ def _maybe_print_pnr_clocks_report(
 
     # -- Render the table
     cout()
-    cprint(table)
+    ctable(table)
     return True
 
 

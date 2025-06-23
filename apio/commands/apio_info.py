@@ -16,7 +16,7 @@ from apio.utils import util, cmd_util
 from apio.utils.cmd_util import check_at_most_one_param
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
-from apio.common.apio_console import PADDING, cout, cstyle, cprint
+from apio.common.apio_console import PADDING, cout, cstyle, ctable
 
 
 # ------ apio info system
@@ -84,7 +84,7 @@ def _system_cli():
 
     # -- Render the table.
     cout()
-    cprint(table)
+    ctable(table)
 
 
 # ------ apio info platforms
@@ -151,7 +151,7 @@ def _platforms_cli():
 
     # -- Render the table.
     cout()
-    cprint(table)
+    ctable(table)
 
 
 # ------ apio info colors
