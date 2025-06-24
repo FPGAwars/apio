@@ -138,29 +138,27 @@ def test_apio_api_get_project(apio_runner: ApioRunner):
         text = sb.read_file(path)
         data = json.loads(text)
 
-        expected_text = """
-            {
-                "timestamp": "xyz",
-                "project": {
-                    "active-env": "default",
-                    "active_options": {
+        assert data == {
+            "timestamp": "xyz",
+            "project": {
+                "active-env": {
+                    "name": "default",
+                    "options": {
                         "board": "alhambra-ii",
-                        "top-module": "main"
+                        "top-module": "main",
                     },
-                    "envs": [
-                        "default"
-                    ],
-                    "synth-files": [
-                        "synth0.v",
-                        "tb_0.sv",
-                        "src1/synth1.sv",
-                        "src1/synth2.sv"
-                    ],
-                    "test-benches": [
-                        "src1/tb1_tb.sv"
-                    ]
-                }
-            }
-            """
-        expected = json.loads(expected_text)
-        assert data == expected
+                },
+                "envs": [
+                    "default",
+                ],
+                "synth-files": [
+                    "synth0.v",
+                    "tb_0.sv",
+                    "src1/synth1.sv",
+                    "src1/synth2.sv",
+                ],
+                "test-benches": [
+                    "src1/tb1_tb.sv",
+                ],
+            },
+        }

@@ -211,11 +211,14 @@ def _get_project_cli(
 
     section_dict = {}
 
-    synth_srcs, test_srcs = get_project_source_files()
+    active_env_dict = {}
+    active_env_dict["name"] = apio_ctx.project.env_name
+    active_env_dict["options"] = apio_ctx.project.env_options
+    section_dict["active-env"] = active_env_dict
 
-    section_dict["active-env"] = apio_ctx.project.env_name
-    section_dict["active_options"] = apio_ctx.project.env_options
     section_dict["envs"] = apio_ctx.project.env_names
+
+    synth_srcs, test_srcs = get_project_source_files()
     section_dict["synth-files"] = synth_srcs
     section_dict["test-benches"] = test_srcs
 
