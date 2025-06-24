@@ -1,4 +1,4 @@
-# Creating a New Project
+# Apio create
 
 The `apio create` command initializes a new `apio.ini` file. Use it to
 start a new Apio project.

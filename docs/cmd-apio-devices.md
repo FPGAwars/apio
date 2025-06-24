@@ -1,4 +1,4 @@
-# Listing Connected Devices
+# Apio devices
 
 The `apio devices` command group lists devices connected to your computer.
 It is mainly used for diagnosing connectivity or driver issues.
@@ -42,7 +42,7 @@ Example output
 
 ---
 
-# Listing devices serial
+# Apio devices serial
 
 The command `apio devices serial` displays the serial devices
 currently connected to your computer. It is useful for diagnosing FPGA

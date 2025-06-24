@@ -1,4 +1,4 @@
-# Listing FPGA Boards
+# Apio boards
 
 The `apio boards` command lists the FPGA boards supported by Apio.
 
