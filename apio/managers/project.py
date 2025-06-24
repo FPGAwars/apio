@@ -62,6 +62,13 @@ ENV_REQUIRED_OPTIONS = {
     "board",
 }
 
+# -- Options that are parsed as a multi line list (vs a simple str)
+LIST_OPTIONS = {
+    "defines",
+    "format-verible-options",
+    "yosys-synth-extra-options",
+}
+
 
 class Project:
     """An instance of this class holds the information from the project's
@@ -339,28 +346,39 @@ class Project:
 
         return result
 
-    def get(self, option: str, default: Any = None) -> Union[str, Any]:
+    def get_str_option(
+        self, option: str, default: Any = None
+    ) -> Union[str, Any]:
         """Lookup an env option value by name. Returns default if not found."""
+
         # -- If this fails, this is a programming error.
         assert option in ENV_OPTIONS, f"Invalid env option: [{option}]"
+        assert option not in LIST_OPTIONS, f"Not a str option: {option}"
 
         # -- Lookup with default
         return self.env_options.get(option, default)
 
-    def __getitem__(self, option: str) -> Optional[str]:
-        """Lookup an env option value by name using the [] operator. Returns
-        None if not found."""
-        return self.get(option, None)
+    # def __getitem__(self, option: str) -> Optional[str]:
+    #     """Lookup an env option value by name using the [] operator. Returns
+    #     None if not found."""
+    #     return self.get_str_option(option, None)
 
-    def get_as_lines_list(
+    def get_list_option(
         self, option: str, default: Any = None
     ) -> Union[List[str], Any]:
         """Lookup an env option value that has a line list format. Returns
         the list of non empty lines or default if no value. Option
         must be in OPTIONS."""
 
+        # -- If this fails, this is a programming error.
+        assert option in ENV_OPTIONS, f"Invalid env option: [{option}]"
+        assert option in LIST_OPTIONS, f"Not a list option: {option}"
+
+        # -- Lookup with default
+        # return self.env_options.get(option, default)
+
         # -- Get the raw value.
-        values = self.get(option, None)
+        values = self.env_options.get(option, None)
 
         # -- If not found, return default
         if values is None:

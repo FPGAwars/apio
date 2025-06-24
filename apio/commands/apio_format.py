@@ -93,7 +93,7 @@ def cli(
     )
 
     # -- Get the optional formatter options from apio.ini
-    cmd_options = apio_ctx.project.get_as_lines_list(
+    cmd_options = apio_ctx.project.get_list_option(
         "format-verible-options", default=[]
     )
 

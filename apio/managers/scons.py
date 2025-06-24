@@ -223,7 +223,7 @@ class SCons:
 
         # -- Get the project's board. It should be prevalidated when loading
         # -- the project, but we sanity check it again just in case.
-        board = project["board"]
+        board = project.get_str_option("board")
         assert board is not None, "Scons got a None board."
         assert board in apio_ctx.boards, f"Unknown board name [{board}]"
 
@@ -305,12 +305,12 @@ class SCons:
         result.apio_env_params.MergeFrom(
             ApioEnvParams(
                 env_name=apio_ctx.project.env_name,
-                board_id=project["board"],
-                top_module=project["top-module"],
-                defines=apio_ctx.project.get_as_lines_list(
+                board_id=project.get_str_option("board"),
+                top_module=project.get_str_option("top-module"),
+                defines=apio_ctx.project.get_list_option(
                     "defines", default=[]
                 ),
-                yosys_synth_extra_options=apio_ctx.project.get(
+                yosys_synth_extra_options=apio_ctx.project.get_list_option(
                     "yosys-synth-extra-options", None
                 ),
             )

@@ -124,8 +124,8 @@ class ApioEnvParams(_message.Message):
     board_id: str
     top_module: str
     defines: _containers.RepeatedScalarFieldContainer[str]
-    yosys_synth_extra_options: str
-    def __init__(self, env_name: _Optional[str] = ..., board_id: _Optional[str] = ..., top_module: _Optional[str] = ..., defines: _Optional[_Iterable[str]] = ..., yosys_synth_extra_options: _Optional[str] = ...) -> None: ...
+    yosys_synth_extra_options: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, env_name: _Optional[str] = ..., board_id: _Optional[str] = ..., top_module: _Optional[str] = ..., defines: _Optional[_Iterable[str]] = ..., yosys_synth_extra_options: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class LintParams(_message.Message):
     __slots__ = ("top_module", "verilator_all", "verilator_no_style", "verilator_no_warns", "verilator_warns")
