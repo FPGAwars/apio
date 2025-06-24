@@ -90,7 +90,7 @@ board ID must be from that file.
 
 ### default-testbench
 
-The optional `default-testbench` option is useful with Apio projects that contain more than one testbench and it allows to specify the testbench that `apio sim` should simulate by default if a no testbench is specified. The value of the option is the relative path
+The optional `default-testbench` string option is useful with Apio projects that contain more than one testbench and it allows to specify the testbench that `apio sim` should simulate by default if a no testbench is specified. The value of the option is the relative path
 to the testbench file from the project root dir.
 
 ```
@@ -100,7 +100,7 @@ default-testbench = tests/main_tb.v
 
 ### defines
 
-The optional `defines` option allows to specify Verilog macros that are passed
+The optional `defines` string list option allows to specify Verilog macros that are passed
 to verilog parsers such as Yosys and Iverilog.
 
 Each macro is specified in a separate lines and the marcors are passed to the
@@ -130,7 +130,7 @@ defines =
 
 ### format-verible-options
 
-The optional `format-verible-options` option allows to control the operation
+The optional `format-verible-options` string list option allows to control the operation
 of the `apio format` command by specifying additional options to the
 underlying Verible formatter.
 
@@ -146,7 +146,7 @@ raw -- verible-verilog-format --helpfull`
 
 ### programmer-cmd
 
-he optional `programmer-cmd` option allows to override the programmer command
+he optional `programmer-cmd` string option allows to override the programmer command
 used by the `apio upload` command. It is intended for special cases and should be
 avoided if possible.
 
@@ -163,7 +163,7 @@ programmer-cmd option and need to be added explicitly if needed.
 
 ### top-module (required)
 
-The optional `top-module` option specifies the name of the top module of the
+The optional `top-module` string option specifies the name of the top module of the
 design.
 
 ```
@@ -173,7 +173,7 @@ top-module = Blinky
 
 ### yosys-synth-extra-options
 
-The optional `yosys-synth-extra-options` option allows adding options to the
+The optional `yosys-synth-extra-options` string list option allows adding options to the
 Yosys synth command used by the `apio build` command. In the example below, it adds the option `-dsp`,
 which enables on some FPGAs the use of `DSP` cells to implement
 multiply operations. This is an advanced option that is
@@ -181,5 +181,7 @@ typically not needed.
 
 ```
 [env:default]
-yosys-synth-extra-options = -dsp
+yosys-synth-extra-options =
+    -dsp
+    -verbose
 ```
