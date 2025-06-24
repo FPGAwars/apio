@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Optional, Dict
 from apio.common.apio_console import cout, cerror, cwarning, cstyle
 from apio.common.apio_styles import INFO, EMPH1
+from apio.common.common_util import env_build_path
 from apio.profile import Profile
 from apio.utils import jsonc, util, env_options
 from apio.managers.project import Project, load_project_from_file
@@ -272,18 +273,11 @@ class ApioContext:
         return self._project
 
     @property
-    def build_all_path(self) -> str:
-        """Returns the relative path of the build root directory from the
-        project dir. Should be called only when has_project is True."""
-        assert self.has_project, "project(): project is not loaded"
-        return Path("_build")
-
-    @property
-    def build_env_path(self) -> str:
+    def env_build_path(self) -> str:
         """Returns the relative path of the current env build directory from
         the project dir. Should be called only when has_project is True."""
         assert self.has_project, "project(): project is not loaded"
-        return self.build_all_path / self.project.env_name
+        return env_build_path(self.project.env_name)
 
     def _load_resource(self, name: str, allow_custom: bool = False) -> dict:
         """Load the resources from a given jsonc file

@@ -47,8 +47,6 @@ environment {
   debug_level: 0
   yosys_path: "TBD"
   trellis_path: "TBD"
-  build_all_path: "TBD"
-  build_env_path: "TBD"
 }
 apio_env_params {
   env_name: "default"
@@ -84,8 +82,6 @@ environment {
   debug_level: 0
   yosys_path: "TBD"
   trellis_path: "TBD"
-  build_all_path: "TBD"
-  build_env_path: "TBD"
 }
 apio_env_params {
   env_name: "default"
@@ -132,8 +128,6 @@ def test_default_params(apio_runner: ApioRunner):
         expected.environment.trellis_path = str(
             sb.packages_dir / "oss-cad-suite/share/trellis"
         )
-        expected.environment.build_all_path = str(apio_ctx.build_all_path)
-        expected.environment.build_env_path = str(apio_ctx.build_env_path)
 
         # The field rich_lib_windows_params is too dynamic so we just assert
         # for its existence and remove it from the comparison.
@@ -187,8 +181,6 @@ def test_explicit_params(apio_runner: ApioRunner):
         expected.environment.trellis_path = str(
             sb.packages_dir / "oss-cad-suite/share/trellis"
         )
-        expected.environment.build_all_path = str(apio_ctx.build_all_path)
-        expected.environment.build_env_path = str(apio_ctx.build_env_path)
 
         # The field rich_lib_windows_params is too dynamic so we just assert
         # for its existence and remove it from the comparison.

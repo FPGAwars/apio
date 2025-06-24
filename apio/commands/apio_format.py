@@ -15,7 +15,7 @@ from typing import Tuple, List, Optional
 import click
 from apio.common.apio_console import cout, cerror, cstyle
 from apio.common.apio_styles import EMPH3, SUCCESS, INFO
-from apio.common.common_util import sort_files
+from apio.common.common_util import PROJECT_BUILD_PATH, sort_files
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.commands import options
 from apio.managers import installer
@@ -118,9 +118,7 @@ def cli(
             files.extend(glob("**/*" + ext, recursive=True))
 
         # -- Filter out files that are under the _build directory.
-        files = [
-            f for f in files if apio_ctx.build_all_path not in Path(f).parents
-        ]
+        files = [f for f in files if PROJECT_BUILD_PATH not in Path(f).parents]
 
         # -- Error if no file to format.
         if not files:

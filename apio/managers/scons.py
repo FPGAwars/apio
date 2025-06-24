@@ -297,8 +297,6 @@ class SCons:
                 debug_level=util.debug_level(),
                 yosys_path=oss_vars["YOSYS_LIB"],
                 trellis_path=oss_vars["TRELLIS"],
-                build_all_path=str(apio_ctx.build_all_path),
-                build_env_path=str(apio_ctx.build_env_path),
             )
         )
         assert result.environment.IsInitialized(), result
@@ -356,7 +354,7 @@ class SCons:
 
         # -- Pass the path to the proto params file. The path is relative
         # -- to the project root.
-        params_file_path = apio_ctx.build_env_path / "scons.params"
+        params_file_path = apio_ctx.env_build_path / "scons.params"
         variables += [f"params={str(params_file_path)}"]
 
         # -- Pass to the scons process the timestamp of the scons params we
@@ -428,7 +426,7 @@ class SCons:
         # -- directory. It will be cleaned up as part of 'apio cleanup'.
         # -- At this point, the project is the current directory, even if
         # -- the command used the --project-dir option.
-        os.makedirs(apio_ctx.build_env_path, exist_ok=True)
+        os.makedirs(apio_ctx.env_build_path, exist_ok=True)
         with open(params_file_path, "w", encoding="utf8") as f:
             f.write(text_format.MessageToString(scons_params))
 

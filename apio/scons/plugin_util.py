@@ -14,10 +14,9 @@ import sys
 import os
 import re
 import json
-from glob import glob
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Tuple, Dict, Optional, Union
+from typing import List, Dict, Optional, Union
 from rich.table import Table
 from rich import box
 from SCons import Scanner
@@ -28,13 +27,13 @@ from SCons.Script.SConscript import SConsEnvironment
 from SCons.Node import NodeList
 from SCons.Node.Alias import Alias
 from apio.scons.apio_env import ApioEnv
-from apio.common.common_util import sort_files
+from apio.common.common_util import (
+    has_testbench_name,
+    is_source_file,
+)
 from apio.common.apio_console import cout, cerror, cwarning, ctable
 from apio.common.apio_styles import INFO, BORDER, EMPH1, EMPH2, EMPH3
 
-
-# -- A list with the file extensions of the source files.
-SRC_SUFFIXES = [".v", ".sv"]
 
 TESTBENCH_HINT = "Testbench file names must end with '_tb.v' or '_tb.sv'."
 
@@ -347,7 +346,7 @@ def get_sim_config(
     """Returns a SimulationConfig for a sim command. 'testbench' is
     an optional testbench file name. 'synth_srcs' and 'test_srcs' are the
     all the project's synth and testbench files found in the project as
-    returne by source_files()."""
+    returned by get_project_source_files()."""
 
     # -- Handle the testbench file selection. The end result is a single
     # -- testbench file name in testbench that we simulate, or a fatal error.
@@ -383,7 +382,7 @@ def get_sim_config(
     # -- Construct a SimulationParams with all the synth files + the
     # -- testbench file.
     testbench_name = basename(testbench)
-    build_testbench_name = str(apio_env.build_env_path / testbench_name)
+    build_testbench_name = str(apio_env.env_build_path / testbench_name)
     srcs = synth_srcs + [testbench]
     return SimulationConfig(testbench_name, build_testbench_name, srcs)
 
@@ -398,7 +397,7 @@ def get_tests_configs(
     need to be run for a 'apio test' command. If testbench is empty,
     all the testbenches in test_srcs will be tested. Otherwise, only the
     testbench in testbench will be tested. synth_srcs and test_srcs are
-    source and test file lists as returned by source_files()."""
+    source and test file lists as returned by get_project_source_files()."""
     # List of testbenches to be tested.
 
     # -- Handle the testbench files selection. The end result is a list of one
@@ -426,29 +425,13 @@ def get_tests_configs(
     configs = []
     for tb in testbenches:
         testbench_name = basename(tb)
-        build_testbench_name = str(apio_env.build_env_path / testbench_name)
+        build_testbench_name = str(apio_env.env_build_path / testbench_name)
         srcs = synth_srcs + [tb]
         configs.append(
             SimulationConfig(testbench_name, build_testbench_name, srcs)
         )
 
     return configs
-
-
-def is_source_file(file_name: str) -> bool:
-    """Given a file name, determine by its extension if it's a verilog
-    source file (testbenches included)."""
-    _, ext = os.path.splitext(file_name)
-    return ext in SRC_SUFFIXES
-
-
-def has_testbench_name(file_name: str) -> bool:
-    """Given a file name, return true if it's base name indicates a
-    testbench. For example abc_tb.v or _build/abc_tb.out. The file extension
-    is ignored.
-    """
-    name, _ = os.path.splitext(file_name)
-    return name.lower().endswith("_tb")
 
 
 def announce_testbench_action() -> FunctionAction:
@@ -523,40 +506,6 @@ def source_files_issue_scanner_action() -> FunctionAction:
     # -- Run the action but don't announce the action. We will print
     # -- ourselves in report_source_files_issues.
     return Action(report_source_files_issues, strfunction=None)
-
-
-def source_files(apio_env: ApioEnv) -> Tuple[List[str], List[str]]:
-    """Get the list of source files in the directory tree under the current
-    directory, splitted into synth and testbench lists.
-    If source file has the suffix _tb it's is classified st a testbench,
-    otherwise as a synthesis file.
-    """
-    # -- Get a list of all source files in the project dir.
-    # -- Ideally we should use the scons env.Glob() method but it doesn't
-    # -- work with the recursive=True option. So we use the glob() function
-    # -- instead.
-    files: List[str] = []
-    for ext in SRC_SUFFIXES:
-        files.extend(glob(f"**/*{ext}", recursive=True))
-
-    # -- Sort the files by directory and then by file name.
-    files = sort_files(files)
-
-    # -- Split file names to synth files and testbench file lists
-    synth_srcs = []
-    test_srcs = []
-    for file in files:
-        if apio_env.build_all_path in Path(file).parents:
-            # -- Ignore source files from the _build directory.
-            continue
-        if has_testbench_name(file):
-            # -- Handle a testbench file.
-            test_srcs.append(file)
-        else:
-            # -- Handle a synthesis file.
-            synth_srcs.append(file)
-
-    return (synth_srcs, test_srcs)
 
 
 def _print_pnr_utilization_report(report: Dict[str, any]):

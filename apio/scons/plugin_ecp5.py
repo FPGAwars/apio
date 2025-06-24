@@ -15,10 +15,10 @@
 from pathlib import Path
 from SCons.Script import Builder
 from SCons.Builder import BuilderBase
+from apio.common.common_util import SRC_SUFFIXES
 from apio.scons.apio_env import ApioEnv
 from apio.scons.plugin_base import PluginBase, ArchPluginInfo
 from apio.scons.plugin_util import (
-    SRC_SUFFIXES,
     verilator_lint_action,
     has_testbench_name,
     announce_testbench_action,

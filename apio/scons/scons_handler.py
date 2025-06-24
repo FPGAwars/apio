@@ -14,6 +14,7 @@ import sys
 from pathlib import Path
 from SCons.Script import ARGUMENTS, COMMAND_LINE_TARGETS
 from google.protobuf import text_format
+from apio.common.common_util import get_project_source_files
 from apio.scons.plugin_ice40 import PluginIce40
 from apio.scons.plugin_ecp5 import PluginEcp5
 from apio.scons.plugin_gowin import PluginGowin
@@ -26,7 +27,6 @@ from apio.scons.plugin_util import (
     get_sim_config,
     get_tests_configs,
     waves_target,
-    source_files,
     report_action,
     get_programmer_cmd,
 )
@@ -403,7 +403,7 @@ class SconsHandler:
 
         # -- Collect the lists of the synthesizable files (e.g. "main.v") and a
         # -- testbench files (e.g. "main_tb.v")
-        synth_srcs, test_srcs = source_files(apio_env)
+        synth_srcs, test_srcs = get_project_source_files()
 
         # -- Sanity check that we don't call the scons to do cleanup. This is
         # -- handled directly by the 'apio clean' command.

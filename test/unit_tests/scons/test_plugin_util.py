@@ -5,7 +5,6 @@ Tests of the scons plugin_util.py functions.
 from os.path import isfile, exists, join
 from test.unit_tests.scons.testing import make_test_apio_env
 from test.conftest import ApioRunner
-from pathlib import Path
 import pytest
 from SCons.Node.FS import FS
 from pytest import LogCaptureFixture
@@ -15,9 +14,6 @@ from apio.common.proto.apio_pb2 import TargetParams, UploadParams
 from apio.scons.plugin_util import (
     get_constraint_file,
     verilog_src_scanner,
-    is_source_file,
-    has_testbench_name,
-    source_files,
     get_programmer_cmd,
     map_params,
     make_verilator_config_builder,
@@ -128,80 +124,6 @@ def test_verilog_src_scanner(apio_runner: ApioRunner):
         # -- Check the dependencies
         file_names = [f.path for f in dependency_files]
         assert file_names == sorted(core_dependencies + file_dependencies)
-
-
-def test_is_source_file():
-    """Tests the is_source_file() function."""
-
-    # -- Verilog and system-verilog source names,
-    assert is_source_file("aaa.v")
-    assert is_source_file("bbb/aaa.v")
-    assert is_source_file("bbb\\aaa.v")
-    assert is_source_file("aaatb.v")
-    assert is_source_file("aaa_tb.v")
-    assert is_source_file("aaa.sv")
-    assert is_source_file("bbb\\aaa.sv")
-    assert is_source_file("aaa_tb.sv")
-
-    # -- Non verilog source names, system-verilog included.
-    assert not is_source_file("aaatb.vv")
-    assert not is_source_file("aaatb.V")
-    assert not is_source_file("aaa_tb.vh")
-
-
-def test_has_testbench_name():
-    """Tests the test_is_testbench() function."""
-
-    # -- Testbench names
-    assert has_testbench_name("aaa_tb.v")
-    assert has_testbench_name("aaa_tb.out")
-    assert has_testbench_name("bbb/aaa_tb.v")
-    assert has_testbench_name("bbb\\aaa_tb.v")
-    assert has_testbench_name("aaa__tb.v")
-    assert has_testbench_name("Aaa__Tb.v")
-    assert has_testbench_name("bbb/aaa_tb.v")
-    assert has_testbench_name("bbb\\aaa_tb.v")
-
-    # -- Non testbench names.
-    assert not has_testbench_name("aaatb.v")
-    assert not has_testbench_name("aaa.v")
-
-
-def test_get_source_files(apio_runner):
-    """Tests the get_source_files() method."""
-
-    with apio_runner.in_sandbox():
-
-        apio_env = make_test_apio_env()
-
-        # -- Make files verilog src names (out of order)
-        Path("bbb.v").touch()
-        Path("aaa.sv").touch()
-
-        # -- Make files with testbench names (out of order)
-        Path("ccc_tb.v").touch()
-        Path("aaa_tb.sv").touch()
-
-        # -- Make files with non related names.
-        Path("ddd.vh").touch()
-        Path("eee.vlt").touch()
-
-        # -- Make files in subdirectories.
-        Path("subdir1").mkdir()
-        Path("subdir2").mkdir()
-        Path("subdir1/eee.v").touch()
-        Path("subdir2/eee_tb.v").touch()
-
-        # -- Invoked the tested method.
-        srcs, testbenches = source_files(apio_env)
-
-        # -- Verify results.
-        assert srcs == ["aaa.sv", "bbb.v", join("subdir1", "eee.v")]
-        assert testbenches == [
-            "aaa_tb.sv",
-            "ccc_tb.v",
-            join("subdir2", "eee_tb.v"),
-        ]
 
 
 def test_get_programmer_cmd():

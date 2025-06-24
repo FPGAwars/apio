@@ -16,10 +16,10 @@ from SCons.Action import Action
 from SCons.Script import Builder
 from apio.common.apio_console import cout
 from apio.common.apio_styles import SUCCESS
+from apio.common.common_util import SRC_SUFFIXES
 from apio.scons.apio_env import ApioEnv
 from apio.common.proto.apio_pb2 import GraphOutputType
 from apio.scons.plugin_util import (
-    SRC_SUFFIXES,
     verilog_src_scanner,
     get_constraint_file,
     get_define_flags,

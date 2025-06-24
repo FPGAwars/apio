@@ -7,6 +7,7 @@ from pathlib import Path
 from test.conftest import ApioRunner
 from pytest import LogCaptureFixture, raises
 from apio.apio_context import ApioContext, ApioContextScope
+from apio.common.common_util import PROJECT_BUILD_PATH
 
 
 def test_init(apio_runner: ApioRunner):
@@ -31,9 +32,9 @@ def test_init(apio_runner: ApioRunner):
         assert apio_ctx.home_dir == sb.home_dir
         assert apio_ctx.packages_dir == sb.packages_dir
 
-        # -- Verify build dirs
-        assert apio_ctx.build_all_path == Path("_build")
-        assert apio_ctx.build_env_path == Path("_build/default")
+        # -- Verify build dir
+        assert PROJECT_BUILD_PATH == Path("_build")
+        assert apio_ctx.env_build_path == Path("_build/default")
 
 
 def test_home_dir_with_a_bad_character(
