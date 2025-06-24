@@ -288,8 +288,8 @@ SUBGROUPS = [
     ApioSubgroup(
         "Subcommands",
         [
-            _platforms_cli,
             _system_cli,
+            _platforms_cli,
             _colors_cli,
         ],
     ),
