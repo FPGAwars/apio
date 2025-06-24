@@ -114,6 +114,9 @@ class Project:
             boards=boards,
         )
 
+        # -- Keep the names of all envs
+        self.env_names = list(env_sections.keys())
+
         # -- Determine the name of the active env.
         self.env_name = Project._determine_default_env_name(
             apio_section, env_sections, env_arg
