@@ -14,6 +14,7 @@ import re
 import configparser
 from collections import OrderedDict
 from pathlib import Path
+from types import NoneType
 from typing import Dict, Optional, Union, Any, List
 from configobj import ConfigObj
 from apio.utils import util
@@ -303,10 +304,11 @@ class Project:
     def _expand_env_options(
         env_name: str,
         common_section: Dict[str, str],
-        env_sections: Dict[str, Dict[str, str]],
+        env_sections: Dict[str, Dict[str, Union[str, List[str]]]],
     ) -> Dict[str, str]:
         """Expand the options of given env name. The given common and envs
-        sections are already validate.
+        sections are already validate. String options are returned as strings
+        and list options are returned as list of strings.
         """
 
         # -- Select the env section by name.
@@ -344,6 +346,14 @@ class Project:
                 style=INFO,
             )
 
+        # -- Convert the list options from strings to list.
+        for key, str_val in result.items():
+            if key in LIST_OPTIONS:
+                list_val = str_val.split("\n")
+                # -- Select the non empty items.
+                list_val = [x for x in list_val if x]
+                result[key] = list_val
+
         return result
 
     def get_str_option(
@@ -356,12 +366,13 @@ class Project:
         assert option not in LIST_OPTIONS, f"Not a str option: {option}"
 
         # -- Lookup with default
-        return self.env_options.get(option, default)
+        value = self.env_options.get(option, None)
 
-    # def __getitem__(self, option: str) -> Optional[str]:
-    #     """Lookup an env option value by name using the [] operator. Returns
-    #     None if not found."""
-    #     return self.get_str_option(option, None)
+        if value is None:
+            return default
+
+        assert isinstance(value, (str, NoneType))
+        return value
 
     def get_list_option(
         self, option: str, default: Any = None
@@ -374,25 +385,16 @@ class Project:
         assert option in ENV_OPTIONS, f"Invalid env option: [{option}]"
         assert option in LIST_OPTIONS, f"Not a list option: {option}"
 
-        # -- Lookup with default
-        # return self.env_options.get(option, default)
-
-        # -- Get the raw value.
-        values = self.env_options.get(option, None)
+        # -- Get the option values, it's is expected to be a list of str.
+        values_list = self.env_options.get(option, None)
 
         # -- If not found, return default
-        if values is None:
+        if values_list is None:
             return default
 
-        # -- Break the values to a list of lines. Each line is already
-        # -- right and left of white space by configparser and comments
-        # -- are removed.
-        values = values.split("\n")
-
-        # -- Select the non empty items.
-        values = [x for x in values if x]
-
-        return values
+        # -- Return the list
+        assert isinstance(values_list, list), values_list
+        return values_list
 
 
 def load_project_from_file(

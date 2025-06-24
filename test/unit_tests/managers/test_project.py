@@ -68,11 +68,11 @@ def test_all_options_env(apio_runner: ApioRunner, capsys: LogCaptureFixture):
     assert project.env_options == {
         "board": "alhambra-ii",
         "default-testbench": "main_tb.v",
-        "defines": "\naaa=111\nbbb=222",
-        "format-verible-options": "\n--aaa bbb\n--ccc ddd",
+        "defines": ["aaa=111", "bbb=222"],
+        "format-verible-options": ["--aaa bbb", "--ccc ddd"],
         "programmer-cmd": "iceprog ${VID}:${PID}",
         "top-module": "my_module",
-        "yosys-synth-extra-options": "-dsp -xyz",
+        "yosys-synth-extra-options": ["-dsp -xyz"],
     }
 
     # -- Try a few as dict lookup on the project object.
