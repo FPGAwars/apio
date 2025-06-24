@@ -27,7 +27,7 @@ APIO_HOME_DIR = "APIO_HOME_DIR"
 # -- of the platforms specified in resources/platforms.json.
 APIO_PLATFORM = "APIO_PLATFORM"
 
-# -- Env variable to enable printing of debug info, valid values are from 
+# -- Env variable to enable printing of debug info, valid values are from
 # -- 1 to 10 with 1 for minimal debug info and 10 for maximum.
 # --
 # -- Do not access it directly. For the apio process use util.is_debug(n) and
