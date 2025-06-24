@@ -1,17 +1,21 @@
 # Apio packages
 
+---
+
+## apio packages
+
 The command group `apio packages` provides commands to manage the
 installation of Apio packages. These are not Python packages, but collections of tools and data required by Apio.
 
 > The list of available packages depends on your operating system and may vary across platforms.
 
-## OPTIONS
+<h3>Options</h3>
 
 ```
 -h, --help  Show this message and exit.
 ```
 
-## SUBCOMMANDS
+<h3>Subcommands</h3>
 
 ```
 apio packages update
@@ -20,11 +24,11 @@ apio packages list
 
 ---
 
-# Apio preferences update
+## apio preferences update
 
 The `apio packages update` command updates installed packages to their latest versions.
 
-## EXAMPLES
+<h3>Examples</h3>
 
 ```
 apio packages update            # Update packages
@@ -33,7 +37,7 @@ apio packages update --force    # Force reinstallation from scratch
 apio packages update --verbose  # Provide additional info
 ```
 
-## OPTIONS
+<h3>Options</h3>
 
 ```
 -f, --force    Force reinstallation.
@@ -41,7 +45,7 @@ apio packages update --verbose  # Provide additional info
 -h, --help     Show this message and exit.
 ```
 
-## NOTES
+<h3>Notes</h3>
 
 - Adding the `--force` option forces the reinstallation of existing
   packages; otherwise, packages that are already installed correctly
@@ -52,17 +56,17 @@ apio packages update --verbose  # Provide additional info
 
 ---
 
-# Apio preferences list
+## apio preferences list
 
 The `apio packages list` command displays the available and installed Apio packages. The list may vary depending on your operating system.
 
-## EXAMPLES
+<h3>Examples</h3>
 
 ```
 apio packages list
 ```
 
-## OPTIONS
+<h3>Options</h3>
 
 ```
 -v, --verbose  Show detailed output.

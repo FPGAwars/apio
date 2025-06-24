@@ -1,8 +1,12 @@
 # Apio graph
 
+---
+
+## apio graph
+
 The `apio graph` command generates a graphical representation of the hardware design.
 
-## EXAMPLES
+<h3>Examples</h3>
 
 ```
 apio graph               # Generate an SVG file
@@ -12,7 +16,7 @@ apio graph --png         # Generate a PNG file
 apio graph -t my_module  # Graph the 'my_module' module
 ```
 
-## OPTIONS
+<h3>Options</h3>
 
 ```
 --svg                   Generate an SVG file (default)
@@ -25,12 +29,12 @@ apio graph -t my_module  # Graph the 'my_module' module
 -h, --help              Show help message and exit
 ```
 
-## NOTES
+<h3>Notes</h3>
 
 - On Windows, run `explorer _build/default/hardware.svg` to view the graph.
   If your environment name is different from `default`, adjust the path accordingly.
 - On macOS, use `open _build/default/hardware.svg`.
 
-## EXAMPLE OUTPUT
+<h3>Example output</h3>
 
 ![](assets/apio-graph.svg)

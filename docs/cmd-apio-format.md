@@ -1,12 +1,16 @@
 # Apio format
 
+---
+
+## apio format
+
 The `apio format` command formats project source files to ensure consistent
 style without changing their behavior. You can format specific files or let
 it format all project files by default.
 
 > File paths are always relative to the project directory, even when using `--project-dir`.
 
-## EXAMPLES
+<h3>Examples</h3>
 
 ```
 apio format                    # Format all source files.
@@ -14,7 +18,7 @@ apio format -v                 # Format all files with verbose output.
 apio format main.v main_tb.v   # Format the two files.
 ```
 
-## OPTIONS
+<h3>Options</h3>
 
 ```
 -e, --env name          Use a named environment from apio.ini

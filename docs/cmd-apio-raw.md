@@ -1,11 +1,15 @@
 # Apio raw
 
+---
+
+## apio raw
+
 The `apio raw` command bypasses Apio's usual workflow to run tools directly. It is intended for advanced users familiar with those tools.
 
 > Before execution, Apio temporarily modifies environment variables like `$PATH`
 > to make its packages accessible. Use the option `--verbose` to view these changes.
 
-## EXAMPLES
+<h3>Examples</h3>
 
 ```
 apio raw    -- yosys --version      # Show Yosys version
@@ -20,7 +24,7 @@ apio raw -h                         # Show help message
 > Use the `--` marker to separate Apio's own options from those passed
 > to the tool being run.
 
-## OPTIONS
+<h3>Options</h3>
 
 ```
 -v, --verbose  Show detailed output

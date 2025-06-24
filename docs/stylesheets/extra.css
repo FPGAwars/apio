@@ -71,7 +71,7 @@
 
 /* ## title size */
 .md-typeset h2 {
-  font-size: 1.4em;  /* Default is ~1.5em */
+  font-size: 1.8em;  /* Default is ~1.5em */
   margin-top: 1.6em;   /* Add vertical space above */
 }
 
@@ -128,7 +128,7 @@
 
 /* Spacing before and after an horizontal line */
 .md-typeset hr {
-  margin-top: 4em;
+  margin-top: 2em;
   margin-bottom: 2em;
 }
 

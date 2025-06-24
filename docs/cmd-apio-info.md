@@ -1,12 +1,16 @@
 # Apio info
 
+---
+
+## apio info
+
 The `apio info` command group displays additional information about Apio and your system.
 
-## OPTIONS
+<h3>Options</h3>
 
 `  -h, --help  Show this message and exit.`
 
-## SUBCOMMANDS
+<h3>Subcommands</h3>
 
 ```
   apio info platforms
@@ -16,19 +20,19 @@ The `apio info` command group displays additional information about Apio and you
 
 ---
 
-# Apio info platforms
+## apio info platforms
 
 The command `apio info platforms` lists the platform IDs supported by Apio and highlights your system's effective ID.
 
 > [Advanced] The automatic platform ID detection of Apio can be overridden by defining a different platform ID using the `APIO_PLATFORM` environment variable, though this is generally not recommended.
 
-## EXAMPLES
+<h3>Examples</h3>
 
 ```
 apio info platforms   # List supported platform IDs
 ```
 
-## OPTIONS
+<h3>Options</h3>
 
 ```
 -h, --help  Show this message and exit
@@ -36,19 +40,19 @@ apio info platforms   # List supported platform IDs
 
 ---
 
-# Apio info system
+## apio info system
 
 The `apio info system` command displays general information about your system and Apio installation. Useful for diagnosing setup or environment issues.
 
 > [Advanced] The default location of the Apio home directory—where it saves preferences and packages—is `.apio` under your home directory. This can be changed using the `APIO_HOME` environment variable.
 
-## EXAMPLES
+<h3>Examples</h3>
 
 ```
 apio info system   # Show system information
 ```
 
-## OPTIONS
+<h3>Options</h3>
 
 ```
 -h, --help  Show this message and exit
@@ -56,12 +60,12 @@ apio info system   # Show system information
 
 ---
 
-# Apio info colors
+## apio info colors
 
 The `apio info colors` command shows how ANSI colors are rendered on your system, which helps diagnose color-related issues.  
 It uses one of three output libraries: Rich, Click, or Python's built-in `print()`.
 
-## EXAMPLES
+<h3>Examples</h3>
 
 ```
 apio info colors          # Rich library output (default)
@@ -71,7 +75,7 @@ apio info colors --print  # Python's print() output
 apio sys col -p           # Using shortcut
 ```
 
-## OPTIONS
+<h3>Options</h3>
 
 ```
 -r, --rich   Output using the Rich library

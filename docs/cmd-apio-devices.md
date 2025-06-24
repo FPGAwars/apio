@@ -1,15 +1,19 @@
 # Apio devices
 
+---
+
+## apio devices
+
 The `apio devices` command group lists devices connected to your computer.
 It is mainly used for diagnosing connectivity or driver issues.
 
-## OPTIONS
+<h3>Options</h3>
 
 ```
 -h, --help  Show this message and exit.
 ```
 
-## SUBCOMMANDS
+<h3>Subcommands</h3>
 
 ```
 apio devices usb
@@ -18,19 +22,19 @@ apio devices serial
 
 ---
 
-# Apio devices usb
+## apio devices usb
 
 The command `apio devices usb` displays the USB devices currently
 connected to your computer. It is useful for diagnosing FPGA board
 connectivity issues.
 
-## EXAMPLES
+<h3>Examples</h3>
 
 ```
 apio devices usb    # List USB devices.
 ```
 
-## OPTIONS
+<h3>Options</h3>
 
 ```
 -h, --help  Show this message and exit.
@@ -42,25 +46,25 @@ Example output
 
 ---
 
-# Apio devices serial
+## apio devices serial
 
 The command `apio devices serial` displays the serial devices
 currently connected to your computer. It is useful for diagnosing FPGA
 board connectivity issues.
 
-## EXAMPLES
+<h3>Examples</h3>
 
 ```
 apio devices serial    # List serial devices.
 ```
 
-## OPTIONS
+<h3>Options</h3>
 
 ```
 -h, --help  Show this message and exit.
 ```
 
-## NOTES
+<h3>Notes</h3>
 
 - Devices like the FTDI FT2232 with multiple channels may appear as
   multiple entries—one per serial port.

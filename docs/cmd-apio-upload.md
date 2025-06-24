@@ -1,8 +1,12 @@
 # Apio upload
 
+---
+
+## apio upload
+
 The `apio upload` command builds the bitstream (like `apio build`) and uploads it to the FPGA board.
 
-## EXAMPLES
+<h3>Examples</h3>
 
 ```
 apio upload                            # Typical usage
@@ -10,7 +14,7 @@ apio upload -s /dev/cu.usbserial-1300  # Specify serial port
 apio upload -n FTXYA34Z                # Specify USB serial number
 ```
 
-## OPTIONS
+<h3>Options</h3>
 
 ```
 -s, --serial-port serial-port  Specify the serial port
@@ -20,7 +24,7 @@ apio upload -n FTXYA34Z                # Specify USB serial number
 -h, --help                     Show this help message and exit
 ```
 
-## NOTES
+<h3>Notes</h3>
 
 - In most cases, `apio upload` is enough to locate and program the FPGA board. Use the `--serial-port` or `--serial-num` options to select a specific board if multiple matching devices are connected.
 

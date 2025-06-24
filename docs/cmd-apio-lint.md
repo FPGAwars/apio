@@ -1,8 +1,12 @@
 # Apio lint
 
+---
+
+## apio lint
+
 The `apio lint` command checks the project's source files for errors, inconsistencies, and style violations using the `Verilator` tool included with Apio.
 
-## EXAMPLES
+<h3>Examples</h3>
 
 ```
 apio lint                # Lint the entire design
@@ -10,7 +14,7 @@ apio lint -t my_module   # Lint only 'my_module' and its dependencies
 apio lint --all          # Enable all warnings, including style warnings
 ```
 
-## OPTIONS
+<h3>Options</h3>
 
 ```
 --nostyle               Disable all style warnings

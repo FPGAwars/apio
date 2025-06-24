@@ -1,14 +1,18 @@
 # Apio drivers
 
+---
+
+## apio drivers
+
 The `apio drivers` command group installs and uninstalls drivers needed by some FPGA boards.
 
-## OPTIONS
+<h3>Options</h3>
 
 ```
 -h, --help  Show this message and exit.
 ```
 
-## SUBCOMMANDS
+<h3>Subcommands</h3>
 
 ```
 apio drivers install ftdi
@@ -19,17 +23,17 @@ apio drivers uninstall serial
 
 ---
 
-# Apio drivers install ftdi
+## apio drivers install ftdi
 
 The `apio drivers install ftdi` command installs the FTDI drivers required by some FPGA boards.
 
-## EXAMPLES
+<h3>Examples</h3>
 
 ```
 apio drivers install ftdi
 ```
 
-## OPTIONS
+<h3>Options</h3>
 
 ```
 -h, --help  Show this message and exit.
@@ -37,17 +41,17 @@ apio drivers install ftdi
 
 ---
 
-# Apio drivers uninstall ftdi
+## apio drivers uninstall ftdi
 
 The `apio drivers uninstall ftdi` command removes previously installed FTDI drivers.
 
-## EXAMPLES
+<h3>Examples</h3>
 
 ```
 apio drivers uninstall ftdi   # Uninstall FTDI drivers.
 ```
 
-## OPTIONS
+<h3>Options</h3>
 
 ```
 -h, --help  Show this message and exit.
@@ -55,17 +59,17 @@ apio drivers uninstall ftdi   # Uninstall FTDI drivers.
 
 ---
 
-# Apio drivers install serial
+## apio drivers install serial
 
 The `apio drivers install serial` command installs the serial drivers needed by certain FPGA boards.
 
-## EXAMPLES
+<h3>Examples</h3>
 
 ```
 apio drivers install serial  # Install serial drivers.
 ```
 
-## OPTIONS
+<h3>Options</h3>
 
 ```
 -h, --help  Show this message and exit.
@@ -73,17 +77,17 @@ apio drivers install serial  # Install serial drivers.
 
 ---
 
-# Apio drivers uninstall serial
+## apio drivers uninstall serial
 
 The `apio drivers uninstall serial` command removes previously installed serial drivers.
 
-## EXAMPLES
+<h3>Examples</h3>
 
 ```
 apio drivers uninstall serial    # Uninstall serial drivers.
 ```
 
-## OPTIONS
+<h3>Options</h3>
 
 ```
 -h, --help  Show this message and exit.
