@@ -110,6 +110,40 @@ def test_boards_list_ok(apio_runner: ApioRunner):
         assert "Total of 1 board" not in result.output
 
 
+def test_apio_api_get_examples(apio_runner: ApioRunner):
+    """Test "apio api get-examples" """
+
+    # -- If the option 'offline' is passed, the test is skip
+    # -- (This test is slow and requires internet connectivity)
+    if apio_runner.offline_flag:
+        pytest.skip("requires internet connection")
+
+    with apio_runner.in_sandbox(shared_home=True) as sb:
+
+        # -- Execute "apio api get-examples -t xyz"  (stdout)
+        result = sb.invoke_apio_cmd(apio, ["api", "get-examples", "-t", "xyz"])
+        sb.assert_ok(result)
+        assert "xyz" in result.output
+        assert '"alhambra-ii"' in result.output
+        assert '"blinky"' in result.output
+
+        # -- Execute "apio api get-examples -t xyz -s boards -o <dir>"  (file)
+        path = sb.proj_dir / "apio.json"
+        result = sb.invoke_apio_cmd(
+            apio, ["api", "get-examples", "-t", "xyz", "-o", str(path)]
+        )
+        sb.assert_ok(result)
+
+        # -- Read and verify the file.
+        text = sb.read_file(path)
+        data = json.loads(text)
+        assert data["timestamp"] == "xyz"
+        assert (
+            data["examples"]["alhambra-ii"]["blinky"]["description"]
+            == "Blinking led"
+        )
+
+
 def test_apio_api_scan_devices(apio_runner: ApioRunner):
     """Test "apio api scan-devices" """
 

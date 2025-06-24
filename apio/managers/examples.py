@@ -23,8 +23,8 @@ from apio.utils import util
 class ExampleInfo:
     """Information about a single example."""
 
-    board_dir_name: str
-    example_dir_name: str
+    board_name: str
+    example_name: str
     path: PosixPath
     description: str
     fpga_arch: str
@@ -34,7 +34,7 @@ class ExampleInfo:
     @property
     def name(self) -> str:
         """Returns the full id of the example."""
-        return self.board_dir_name + "/" + self.example_dir_name
+        return self.board_name + "/" + self.example_name
 
 
 class Examples:
@@ -110,8 +110,8 @@ class Examples:
 
                 # -- Append this example to the list.
                 example_info = ExampleInfo(
-                    board_dir_name=board_dir.name,
-                    example_dir_name=example_dir.name,
+                    board_name=board_dir.name,
+                    example_name=example_dir.name,
                     path=example_dir,
                     description=description,
                     fpga_arch=fpga_arch,
@@ -138,7 +138,7 @@ class Examples:
         # -- Count examples by board
         counts: Dict[str, int] = {}
         for example in examples:
-            board = example.board_dir_name
+            board = example.board_name
             old_count = counts.get(board, 0)
             counts[board] = old_count + 1
 
@@ -217,9 +217,7 @@ class Examples:
     def get_board_examples(self, board_name) -> List[ExampleInfo]:
         """Returns the list of examples with given board name."""
         return [
-            x
-            for x in self.get_examples_infos()
-            if x.board_dir_name == board_name
+            x for x in self.get_examples_infos() if x.board_name == board_name
         ]
 
     def copy_board_examples(self, board_name: str, dst_dir: Path):
@@ -283,7 +281,7 @@ class Examples:
         )
 
         for board_example in board_examples:
-            example_name = board_example.example_dir_name
+            example_name = board_example.example_name
             styled_name = cstyle(example_name, style=EMPH3)
             cout(f"Fetching {board_name}/{styled_name}")
             shutil.copytree(
