@@ -154,11 +154,11 @@ def test_apio_api_get_project(apio_runner: ApioRunner):
                 "synth-files": [
                     "synth0.v",
                     "tb_0.sv",
-                    "src1/synth1.sv",
-                    "src1/synth2.sv",
+                    f"src1{os.sep}synth1.sv",
+                    f"src1{os.sep}synth2.sv",
                 ],
                 "test-benches": [
-                    "src1/tb1_tb.sv",
+                    f"src1{os.sep}tb1_tb.sv",
                 ],
             },
         }
