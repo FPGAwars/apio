@@ -106,4 +106,4 @@ apio inf col -p           # Using shortcuts.
 
 <h3>Example output</h3>
 
-![](assets/apio-info-themes.png)
+<img src="/assets/apio-info-themes.png" style="width: 70%;">
