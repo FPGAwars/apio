@@ -119,6 +119,10 @@ its help text. For example:
 [code]apio build -h
 apio drivers ftdi install -h[/code]
 
+To check the apio version type:
+[code]
+apio --version[/code]
+
 For more information about the Apio project, visit the official Apio Wiki \
 https://github.com/FPGAwars/apio/wiki/Apio
 """
@@ -132,9 +136,9 @@ https://github.com/FPGAwars/apio/wiki/Apio
     short_help="Work with FPGAs with ease",
     context_settings=context_settings(),
 )
-# NOTE: Without the 'version' value, click has difficulty determining the
-# version when running under pyinstaller.
-@click.version_option(version=util.get_apio_version())
+# NOTE: Without this explicit version value, click has difficulty
+# determining the version when running under pyinstaller.
+@click.version_option(util.get_apio_version(), "-v", "--version")
 def cli():
     """The top level command group of apio commands"""
 

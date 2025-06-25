@@ -16,6 +16,7 @@ from rich.console import Console
 from rich.ansi import AnsiDecoder
 from rich.theme import Theme
 from rich.text import Text
+from rich.table import Table
 from apio.common import rich_lib_windows
 from apio.common.apio_styles import WARNING, ERROR, BORDER
 from apio.common.apio_themes import ApioTheme, THEMES_TABLE, DEFAULT_THEME
@@ -181,6 +182,19 @@ def cunstyle(text: str) -> str:
     return text_obj.plain
 
 
+def cflush() -> None:
+    """Flush the console output."""
+
+    # pylint: disable=protected-access
+
+    # -- Flush the console buffer to the output stream.
+    # -- NOTE: We couldn't find an official API for flushing
+    # -- THE console's buffer.
+    console()._check_buffer()
+    # -- Flush the output stream.
+    console().file.flush()
+
+
 def cout(
     *text_lines: str,
     style: Optional[str] = None,
@@ -193,15 +207,23 @@ def cout(
 
     for text_line in text_lines:
         # -- User is responsible to conversion to strings.
-        assert isinstance(text_line, str), type(text_line)
+        assert isinstance(text_line, (str, Table)), type(text_line)
 
         # -- If colors are off, strip potential coloring in the text.
         # -- This may be coloring that we received from the scons process.
         if not console().color_system:
             text_line = cunstyle(text_line)
 
-        # -- Write it out using the given style but without line break..
-        console().out(text_line, style=style, highlight=False, end=None)
+        # -- Write it out using the given style but without line break.
+        # -- We first convert it to Text as a workaround for
+        # -- https://github.com/Textualize/rich/discussions/3779.
+        console().print(
+            Text.from_ansi(text_line, style=style, end=None),
+            highlight=False,
+            end=None,
+        )
+
+        # console().file.flush()
 
         # -- If needed, write the line break. By writing the line break in
         # -- a separate call, we force the console().out() call above to
@@ -209,29 +231,37 @@ def cout(
         # -- caused an additional blank lines after a colored fatal error
         # -- messages from scons.
         if nl:
-            console().out("")
+            console().print("")
 
-    console().file.flush()
+    # console().file.flush()
+    # console()._check_buffer()
+    cflush()
 
 
-def cprint(
-    rich_text: str, *, style: Optional[str] = None, highlight: bool = False
-) -> None:
-    """Render the given rich text. Applying optional style and if enabled,
-    highlighting semantic elements such as strings if enabled."""
-    console().print(
-        rich_text,
-        highlight=highlight,
-        style=style,
-    )
-    console().file.flush()
+def ctable(table: Table) -> None:
+    """Write out a Rich lib Table."""
+    assert isinstance(table, Table), type(table)
+    console().print(table)
+    cflush()
+
+
+def cmarkdown(markdown_text: str) -> None:
+    """Write out a Rich markdown text."""
+    assert isinstance(markdown_text, str), type(markdown_text)
+    console().print(markdown_text)
+    cflush()
 
 
 def cwrite(s: str) -> None:
     """A low level output that doesn't do any formatting, style, line
     terminator and so on. Flushing is important"""
+    # -- Flush the existing console buffer and the output stream.
+    cflush()
+    # -- Write directly to the output stream, bypassing the
+    # -- console's buffer.
     console().file.write(s)
-    console().file.flush()
+    # -- Flush again.
+    cflush()
 
 
 def cerror(*text_lines: str) -> None:
@@ -242,7 +272,7 @@ def cerror(*text_lines: str) -> None:
     # -- Output the rest of the lines.
     for text_line in text_lines[1:]:
         console().out(text_line, highlight=False, style=ERROR)
-    console().file.flush()
+    cflush()
 
 
 def cwarning(*text_lines: str) -> None:
@@ -253,7 +283,7 @@ def cwarning(*text_lines: str) -> None:
     # -- Emit the rest of the lines
     for text_line in text_lines[1:]:
         console().out(text_line, highlight=False, style=WARNING)
-    console().file.flush()
+    cflush()
 
 
 class ConsoleCapture:
@@ -264,6 +294,7 @@ class ConsoleCapture:
         self._buffer = None
 
     def __enter__(self):
+        cflush()
         self._saved_file = console().file
         self._buffer = StringIO()
         console().file = self._buffer

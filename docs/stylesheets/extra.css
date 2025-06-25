@@ -67,11 +67,12 @@
 /* # title size */
 .md-typeset h1 {
   font-size: 2em;  /* Default is ~1.8em, reduce as needed */
+  margin-bottom: 1em;
 }
 
 /* ## title size */
 .md-typeset h2 {
-  font-size: 1.4em;  /* Default is ~1.5em */
+  font-size: 1.8em;  /* Default is ~1.5em */
   margin-top: 1.6em;   /* Add vertical space above */
 }
 
@@ -96,7 +97,7 @@
 /* Bold text color */
 .md-typeset strong,
 .md-typeset b {
-  color: #777777;
+  color: #555555;
 }
 
 /* Table header color */
@@ -110,8 +111,9 @@
   font-family: "JetBrains Mono", "Roboto Mono", "DejaVu Sans Mono",
     "Courier New", Courier, monospace !important;
   font-weight: 500;
-  color: #1d8348; /* Nearly black for high visibility */
-  background-color: #eeeeee; /* Maintain contrast */
+  color: #166d3a; /* Nearly black for high visibility */
+  background-color: #f0f0f0; /* Maintain contrast */
+  line-height: 1.15 !important;  /* Default is ~1.5 */
 }
 
 /* Make inline code text more visible */
@@ -119,15 +121,15 @@
   font-family: "JetBrains Mono", "Roboto Mono", "DejaVu Sans Mono",
     "Courier New", Courier, monospace !important;
   font-weight: 500;
-  color: #1d8348; /* Nearly black for high visibility */
-  background-color: #eeeeee; /* Maintain contrast */
+  color: #166d3a; /* Nearly black for high visibility */
+  background-color: #f0f0f0; /* Maintain contrast */
   padding: 0.1em 0.3em; /* Optional: small padding for better appearance */
   border-radius: 3px;    /* Optional: rounded corners */
 }
 
 /* Spacing before and after an horizontal line */
 .md-typeset hr {
-  margin-top: 4em;
+  margin-top: 2em;
   margin-bottom: 2em;
 }
 

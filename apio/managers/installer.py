@@ -44,7 +44,7 @@ def _construct_package_download_url(
         "${YYYY-MM-DD}": yyyy_mm_dd,
         "${YYYYMMDD}": yyyy_mm_dd.replace("-", ""),
     }
-    if util.is_debug():
+    if util.is_debug(1):
         cout(f"Package URL vars: {url_vars}")
 
     # -- Define the url parts.
@@ -59,20 +59,20 @@ def _construct_package_download_url(
         package_remote_config.release_file,
     ]
 
-    if util.is_debug():
+    if util.is_debug(1):
         cout(f"package url parts = {url_parts}")
 
     # -- Concatanate the URL parts.
     url = "".join(url_parts)
 
-    if util.is_debug():
+    if util.is_debug(1):
         cout(f"Combined package url: {url}")
 
     # -- Replace placeholders with values.
     for name, val in url_vars.items():
         url = url.replace(name, val)
 
-    if util.is_debug():
+    if util.is_debug(1):
         cout(f"Resolved package url: {url}")
 
     # -- All done.

@@ -39,12 +39,30 @@ def test_is_debug():
     """Tests the is_debug() function."""
 
     # -- Assuming APIO_DEBUG is not defined.
-    assert not is_debug()
+    assert not is_debug(1)
+    assert not is_debug(2)
+    assert not is_debug(3)
 
-    # -- Enter debug mode.
-    os.environ["APIO_DEBUG"] = ""
-    assert is_debug()
+    # -- Enter debug mode level 1.
+    os.environ["APIO_DEBUG"] = "1"
+    assert is_debug(1)
+    assert not is_debug(2)
+    assert not is_debug(3)
+
+    # -- Enter debug mode level 2.
+    os.environ["APIO_DEBUG"] = "2"
+    assert is_debug(1)
+    assert is_debug(2)
+    assert not is_debug(3)
+
+    # -- Enter debug mode level 3.
+    os.environ["APIO_DEBUG"] = "3"
+    assert is_debug(1)
+    assert is_debug(2)
+    assert is_debug(3)
 
     # -- Exit debug mode
     os.environ.pop("APIO_DEBUG")
-    assert not is_debug()
+    assert not is_debug(1)
+    assert not is_debug(2)
+    assert not is_debug(3)

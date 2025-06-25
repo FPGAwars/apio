@@ -1,17 +1,21 @@
 # Apio report
 
+---
+
+## apio report
+
 The `apio report` command provides resource utilization and timing
 information for the design. It helps identify bottlenecks and verify
 whether the design meets its target clock speed.
 
-## EXAMPLES
+<h3>Examples</h3>
 
 ```
 apio report            # Show report
 apio report --verbose  # Show detailed report
 ```
 
-## OPTIONS
+<h3>Options</h3>
 
 ```
 -e, --env name          Use a named environment from apio.ini
@@ -20,7 +24,7 @@ apio report --verbose  # Show detailed report
 -h, --help              Show help message and exit
 ```
 
-## EXAMPLE REPORT
+<h3>Example report</h3>
 
 ```
 FPGA Resource Utilization

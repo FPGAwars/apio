@@ -11,6 +11,7 @@
 on windows."""
 
 import sys
+import os
 import platform
 import rich.console
 from apio.common.proto.apio_pb2 import RichLibWindowsParams
@@ -42,6 +43,19 @@ def get_workaround_params() -> RichLibWindowsParams:
         vt=rich.console._windows_console_features.vt,
         truecolor=rich.console._windows_console_features.truecolor,
     )
+
+    # -- An ad hoc is_debug() that avoids circular imports.
+    if "APIO_DEBUG" in os.environ:
+        print(f"Original RichLibWindowsParams: {result}")
+
+    result = RichLibWindowsParams(
+        vt=True,
+        truecolor=True,
+    )
+
+    if "APIO_DEBUG" in os.environ:
+        print(f"Forced RichLibWindowsParams: {result}")
+
     assert result.IsInitialized(), result
     return result
 

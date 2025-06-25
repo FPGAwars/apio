@@ -44,7 +44,6 @@ class AsyncPipe(Thread):
         and terminator is one of:
             "\r"   (CR)
             "\n"   (LF)
-            "\r\r" (CR/LF)
             ""     (EOF)
         """
 
@@ -73,29 +72,22 @@ class AsyncPipe(Thread):
         Bfr is a bytes with the line's content, possibly empty.
         See __init__ for the description of terminator.
         """
-
         # -- Convert the line's bytes to a string. Replace invalid utf-8
         # -- chars with "�"
         line = bfr.decode("utf-8", errors="replace")
 
-        # -- Trim trailing space, leaving leading space to preserve
-        # -- indentation.
-        # line = line.rstrip()
-
-        # -- Append to the lines buffer.
+        # -- Append to the lines log buffer.
         self._lines_buffer.append(line)
 
         # -- Report back if caller passed a callback.
         if self.outcallback:
-            # self.outcallback(line, terminator)
             self.outcallback(line, terminator)
 
     def run(self):
         """DOC: TODO"""
-        # -- Indicate if a "\r" is pending for reporting.
-        pending_cr = False
 
-        # -- Collects the line's chars, excluding the terminators.
+        # -- Prepare a buffer for collecting the line chars, excluding
+        # -- its line terminator.
         bfr = bytearray()
 
         # -- We open in binary mode so we have access to the line terminators.
@@ -106,48 +98,26 @@ class AsyncPipe(Thread):
                 b: Optional[bytearray] = f.read(1)
                 assert len(b) <= 1
 
+                # -- Handle end of file
                 if not b:
-                    # -- Handle EOF
-                    if bfr or pending_cr:
-                        # -- Report if we have anything pending.
-                        terminator = "\r" if pending_cr else ""
-                        self._handle_incoming_line(bfr, terminator)
-                    # -- All done, exit
-                    break
+                    if bfr:
+                        self._handle_incoming_line(bfr, "")
+                    return
 
+                # -- Handle \r terminator
                 if b == b"\r":
-                    # -- Handle "\r"
-                    if not pending_cr:
-                        # -- Save the "\r" and continue.
-                        pending_cr = True
-                        continue
-                    # -- We got two consecutive "\r", report the first one.
                     self._handle_incoming_line(bfr, "\r")
-                    # -- Clear the line buffer, keep pending_cr True.
                     bfr.clear()
                     continue
 
+                # -- Handle \n terminator
                 if b == b"\n":
-                    # -- Handle "\n". We always report, with or without a
-                    # -- pending "\r"
-                    terminator = "\r\n" if pending_cr else "\n"
-                    self._handle_incoming_line(bfr, terminator)
-                    # -- Clear the line.
-                    pending_cr = False
+                    self._handle_incoming_line(bfr, "\n")
                     bfr.clear()
                     continue
 
-                # -- Else, handle a regular char.
-                if pending_cr:
-                    # -- We got a regular char after a "\r", with report
-                    # -- the line with "\r" terminator and clear the line.
-                    self._handle_incoming_line(bfr, "\r")
-                    pending_cr = False
-                    bfr.clear()
-                # -- Append the regular char to the buffer.
+                # -- Handle a regular character
                 bfr.append(b[0])
-
-        # -- All done.
 
     def close(self):
         """DOC: TODO"""
@@ -407,21 +377,43 @@ def list_plurality(str_list: List[str], conjunction: str) -> str:
     return ", ".join(str_list[:-1]) + f", {conjunction} {str_list[-1]}"
 
 
-def is_debug() -> bool:
-    """Returns True if apio is in debug mode. Use it to enable printing of
-    debug information but not to modify the behavior of the code.
-    Also, all apio tests should be performed with debug disabled."""
-    return env_options.is_defined("APIO_DEBUG")
+def debug_level() -> int:
+    """Returns the current debug level, with 0 as 'off'."""
+
+    # -- We get a fresh value so it can be adjusted dynamically when needed.
+    level_str = env_options.get(env_options.APIO_DEBUG, "0")
+    try:
+        level_int = int(level_str)
+    except ValueError:
+        cerror(f"APIO_DEBUG value '{level_str}' is not an int.")
+        sys.exit(1)
+
+    # -- All done. We don't validate the value, assuming the user knows how
+    # -- to use it.
+    return level_int
 
 
-def debug_decorator(func):
+def is_debug(level: int) -> bool:
+    """Returns True if apio is in debug mode level 'level'  or higher. Use
+    it to enable printing of debug information but not to modify the behavior
+    of the code. Also, all apio tests should be performed with debug
+    disabled. Important debug information should be at level 1 while
+    less important or spammy should be at higher levels."""
+    # -- Sanity check. A failure is indicates a programming error.
+    assert isinstance(level, int), type(level)
+    assert 1 <= level <= 10, level
+
+    return debug_level() >= level
+
+
+def debug_decorator(func, level: int = 1):
     """A decorator for dumping the input and output of a function when
     APIO_DEBUG is defined.  Add it to functions and methods that you want
     to examine with APIO_DEBUG.
     """
 
     # -- We sample the debug flag upon start.
-    debug = is_debug()
+    debug = is_debug(level)
 
     @wraps(func)
     def outer(*args):
@@ -629,13 +621,13 @@ def subprocess_call(
 ) -> int:
     """A helper for running subprocess.call."""
 
-    if is_debug():
+    if is_debug(1):
         cout(f"subprocess_call: {cmd}")
 
     # -- Invoke the command.
     exit_code = subprocess.call(cmd, shell=shell)
 
-    if is_debug():
+    if is_debug(1):
         cout(f"subprocess_call: exit code is {exit_code}")
 
     # -- If ok, return.

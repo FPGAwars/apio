@@ -7,8 +7,10 @@
 # -- License GPLv2
 """Implementation of 'apio info' command"""
 
+from typing import List
 import click
 from rich.table import Table
+from rich.text import Text
 from rich import box
 from rich.color import ANSI_COLOR_NAMES
 from apio.common.apio_styles import BORDER, EMPH1, EMPH3
@@ -16,7 +18,8 @@ from apio.utils import util, cmd_util
 from apio.utils.cmd_util import check_at_most_one_param
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
-from apio.common.apio_console import PADDING, cout, cstyle, cprint
+from apio.common.apio_console import PADDING, cout, cstyle, ctable
+from apio.common.apio_themes import THEMES_TABLE
 
 
 # ------ apio info system
@@ -84,7 +87,7 @@ def _system_cli():
 
     # -- Render the table.
     cout()
-    cprint(table)
+    ctable(table)
 
 
 # ------ apio info platforms
@@ -151,7 +154,7 @@ def _platforms_cli():
 
     # -- Render the table.
     cout()
-    cprint(table)
+    ctable(table)
 
 
 # ------ apio info colors
@@ -164,13 +167,13 @@ While the color name and styling is always handled by the Python Rich \
 library, the output is done via three different libraries, based on \
 the user's selection.
 
-[code]
-Examples:
+
+Examples:[code]
   apio info colors          # Rich library output (default)
   apio info colors --rich   # Same as above.
   apio info colors --click  # Click library output.
   apio info colors --print  # Python's print() output.
-  apio sys col -p           # Using shortcuts.[/code]
+  apio inf col -p           # Using shortcuts.[/code]
 """
 
 rich_option = click.option(
@@ -275,6 +278,81 @@ def _colors_cli(
     cout()
 
 
+# ------ apio info themes
+
+# -- Text in the rich-text format of the python rich library.
+APIO_INFO_THEMES_HELP = """
+The command 'apio info themes' shows the colors of the Apio themes. It can \
+be used to select the theme that works the best for you. Type  \
+'apio preferences -h' for information on our to select a theme.
+
+[code]
+Examples:
+  apio info themes          # Show themes colors
+  apio inf col -p           # Using shortcuts.[/code]
+"""
+
+
+@click.command(
+    name="themes",
+    cls=ApioCommand,
+    short_help="Show apio themes.",
+    help=APIO_INFO_THEMES_HELP,
+)
+def _themes_cli():
+    """Implements the 'apio info colors' command."""
+
+    # -- This initializes the output console.
+    ApioContext(scope=ApioContextScope.NO_PROJECT)
+
+    # -- Collect the list of apio list names.
+    style_names = set()
+    for theme_info in THEMES_TABLE.values():
+        style_names.update(list(theme_info.styles.keys()))
+    style_names = sorted(list(style_names), key=str.lower)
+
+    # -- Define the table.
+    table = Table(
+        show_header=True,
+        show_lines=True,
+        padding=PADDING,
+        box=box.SQUARE,
+        border_style=BORDER,
+        title="Apio Themes Style Colors",
+        title_justify="left",
+    )
+
+    # -- Add the table columns, one per theme.
+    for theme_name in THEMES_TABLE:
+        table.add_column(theme_name.upper(), no_wrap=True, justify="center")
+
+    # -- Append the table rows
+    for style_name in style_names:
+        row_values: List[Text] = []
+        for theme_name, theme_info in THEMES_TABLE.items():
+            # Get style
+            colors_enabled = theme_info.colors_enabled
+            if colors_enabled:
+                if style_name not in theme_info.styles:
+                    styled_text = Text("---")
+                else:
+                    styled_text = Text(
+                        style_name, style=theme_info.styles[style_name]
+                    )
+            else:
+                styled_text = Text(style_name)
+
+            # -- Apply the style
+            row_values.append(styled_text)
+
+        table.add_row(*row_values)
+
+    # -- Render the table.
+    cout()
+    ctable(table)
+    cout()
+
+
 # ------ apio info
 
 # -- Text in the rich-text format of the python rich library.
@@ -288,9 +366,10 @@ SUBGROUPS = [
     ApioSubgroup(
         "Subcommands",
         [
-            _platforms_cli,
             _system_cli,
+            _platforms_cli,
             _colors_cli,
+            _themes_cli,
         ],
     ),
 ]

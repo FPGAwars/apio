@@ -1,12 +1,16 @@
 # Apio fpgas
 
+---
+
+## apio fpgas
+
 The `apio fpgas` command lists FPGAs supported by Apio.
 
 > You can define custom FPGAs by placing a `fpgas.jsonc` file in the project directory,
 >  which overrides the default configuration, provided they are supported by the
 > underlying tools.
 
-## EXAMPLES
+<h3>Examples</h3>
 
 ```
 apio fpgas                 # List all FPGAs.
@@ -15,7 +19,7 @@ apio fpgas | grep gowin    # Filter FPGA results.
 apio boards --docs         # Generate a report for Apio docs
 ```
 
-## OPTIONS
+<h3>Options</h3>
 
 ```
 -v, --verbose           Show detailed output

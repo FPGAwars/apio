@@ -111,7 +111,7 @@ def cli(
     if not testbench:
         # -- If the option is not specified, testbench is set to None and
         # -- we issue an error message in the scons process.
-        testbench = apio_ctx.project.get("default-testbench", None)
+        testbench = apio_ctx.project.get_str_option("default-testbench", None)
         if testbench:
             cout(f"Using default testbench: {testbench}", style=EMPH1)
 

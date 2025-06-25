@@ -1,5 +1,9 @@
 # Apio sim
 
+---
+
+## apio sim
+
 The `apio sim` command runs a simulation for the default or specified
 testbench and displays the results in a GTKWave window. Testbench files
 should end with `_tb`, such as `main_tb.v` or `main_tb.sv`. You can set
@@ -19,7 +23,7 @@ $fatal;
 if (!`APIO_SIM) $fatal;
 ```
 
-## EXAMPLES
+<h3>Examples</h3>
 
 ```
 apio sim                   # Simulate the default testbench
@@ -27,7 +31,7 @@ apio sim my_module_tb.v    # Simulate the specified testbench
 apio sim my_module_tb.sv   # Simulate the specified testbench
 ```
 
-## OPTIONS
+<h3>Options</h3>
 
 ```
 -f, --force             Force simulation
@@ -37,7 +41,7 @@ apio sim my_module_tb.sv   # Simulate the specified testbench
 -h, --help              Show help message and exit
 ```
 
-#### NOTES
+<h3>Notes</h3>
 
 - Avoid using the Verilog `$dumpfile()` function, as it can override the default name and location Apio assigns for the `.vcd` file.
 
@@ -47,6 +51,6 @@ apio sim my_module_tb.sv   # Simulate the specified testbench
 
 - When configuring signals in GTKWave, save your setup so you don’t have to repeat it each time.
 
-EXAMPLE SIMULATION RESULTS
+<h3>Example simulation results</h3>
 
 ![](assets/sim-gtkwave.png)

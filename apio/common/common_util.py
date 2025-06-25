@@ -12,9 +12,23 @@ scons (child) process."""
 
 import os
 from pathlib import Path
-from typing import List, Union, Any
+from glob import glob
+from typing import List, Union, Any, Tuple
 import debugpy
 from apio.common.apio_styles import EMPH3, SUCCESS
+
+# -- A list with the file extensions of the source files.
+SRC_SUFFIXES = [".v", ".sv"]
+
+# -- The root dir of all the env build directory. Relative to the
+# -- project dir. 'ALL' to distinguish from individual env build dirs.
+PROJECT_BUILD_PATH = Path("_build")
+
+
+def env_build_path(env_name: str) -> Path:
+    """Given an env name, return a relative path from the project dir to the
+    env build dir."""
+    return PROJECT_BUILD_PATH / env_name
 
 
 def maybe_wait_for_remote_debugger(env_var_name: str):
@@ -55,9 +69,59 @@ def file_sort_key_func(f: Union[str, Path]) -> Any:
     return [parents, name]
 
 
+def is_source_file(file_name: str) -> bool:
+    """Given a file name, determine by its extension if it's a verilog
+    source file (testbenches included)."""
+    _, ext = os.path.splitext(file_name)
+    return ext in SRC_SUFFIXES
+
+
+def has_testbench_name(file_name: str) -> bool:
+    """Given a file name, return true if it's base name indicates a
+    testbench. For example abc_tb.v or _build/abc_tb.out. The file extension
+    is ignored.
+    """
+    name, _ = os.path.splitext(file_name)
+    return name.lower().endswith("_tb")
+
+
 def sort_files(files: List[str]) -> List[str]:
     """Sort a list of files by directory and then by file name.
     A new sorted list is returned.
     """
     # -- Sort the files by directory and then by file name.
     return sorted(files, key=file_sort_key_func)
+
+
+def get_project_source_files() -> Tuple[List[str], List[str]]:
+    """Get the list of source files in the directory tree under the current
+    directory, splitted into synth and testbench lists.
+    If source file has the suffix _tb it's is classified st a testbench,
+    otherwise as a synthesis file.
+    """
+    # -- Get a list of all source files in the project dir.
+    # -- Ideally we should use the scons env.Glob() method but it doesn't
+    # -- work with the recursive=True option. So we use the glob() function
+    # -- instead.
+    files: List[str] = []
+    for ext in SRC_SUFFIXES:
+        files.extend(glob(f"**/*{ext}", recursive=True))
+
+    # -- Sort the files by directory and then by file name.
+    files = sort_files(files)
+
+    # -- Split file names to synth files and testbench file lists
+    synth_srcs = []
+    test_srcs = []
+    for file in files:
+        if PROJECT_BUILD_PATH in Path(file).parents:
+            # -- Ignore source files from the _build directory.
+            continue
+        if has_testbench_name(file):
+            # -- Handle a testbench file.
+            test_srcs.append(file)
+        else:
+            # -- Handle a synthesis file.
+            synth_srcs.append(file)
+
+    return (synth_srcs, test_srcs)

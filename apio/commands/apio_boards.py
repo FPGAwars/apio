@@ -15,7 +15,7 @@ from typing import List, Dict, Optional
 import click
 from rich.table import Table
 from rich import box
-from apio.common.apio_console import cout, cprint
+from apio.common.apio_console import cout, ctable
 from apio.common.apio_styles import INFO
 from apio.common import apio_console
 from apio.common.apio_styles import BORDER, EMPH1
@@ -149,7 +149,7 @@ def _list_boards(apio_ctx: ApioContext, verbose: bool):
 
     # -- Render the table.
     cout()
-    cprint(table)
+    ctable(table)
 
     # -- Show the summary.
 

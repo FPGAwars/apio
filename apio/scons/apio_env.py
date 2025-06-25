@@ -11,13 +11,13 @@
 
 
 import os
-from pathlib import Path
 from typing import List, Optional
 from SCons.Script.SConscript import SConsEnvironment
 from SCons.Environment import BuilderWrapper
 import SCons.Defaults
 from apio.common.apio_console import cout
 from apio.common.apio_styles import EMPH3
+from apio.common.common_util import env_build_path
 from apio.common.proto.apio_pb2 import SconsParams
 
 
@@ -33,12 +33,8 @@ class ApioEnv:
         self.command_line_targets = command_line_targets
         self.params = scons_params
 
-        # -- Cache build paths
-        self.build_all_path = Path(self.params.environment.build_all_path)
-        self.build_env_path = Path(self.params.environment.build_env_path)
-
         # -- Create the base target.
-        self.target = str(self.build_env_path / "hardware")
+        self.target = str(self.env_build_path / "hardware")
 
         # -- Create the underlying scons env.
         self.scons_env = SConsEnvironment(ENV=os.environ, tools=[])
@@ -46,7 +42,7 @@ class ApioEnv:
         # -- Set the location of the scons incremental build database.
         # -- By default it would be stored in project root dir.
         self.scons_env.SConsignFile(
-            self.build_env_path.absolute() / "sconsign.dblite"
+            self.env_build_path.absolute() / "sconsign.dblite"
         )
 
         # -- Since we ae not using the default environment, make sure it was
@@ -58,19 +54,29 @@ class ApioEnv:
         ), "DefaultEnvironment already exists"
 
         # Extra info for debugging.
-        if self.is_debug:
+        if self.is_debug(2):
             cout(f"command_line_targets: {command_line_targets}")
             self.dump_env_vars()
+
+    @property
+    def env_name(self):
+        """Return the action apio env name for this invocation."""
+        return self.params.apio_env_params.env_name
+
+    @property
+    def env_build_path(self):
+        """Returns a relative path from the project dir to the env build
+        dir."""
+        return env_build_path(self.env_name)
 
     @property
     def is_windows(self):
         """Returns True if we run on windows."""
         return self.params.environment.is_windows
 
-    @property
-    def is_debug(self):
+    def is_debug(self, level: int):
         """Returns true if we run in debug mode."""
-        return self.params.environment.is_debug
+        return self.params.environment.debug_level >= level
 
     def targeting(self, *target_names) -> bool:
         """Returns true if the any of the named target was specified in the

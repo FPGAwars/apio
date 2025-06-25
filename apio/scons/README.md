@@ -9,7 +9,7 @@ As a result:
   debugger.
 
 ```
-# Linux and mac osx.
+# Linux and macOS.
 export APIO_SCONS_DEBUGGER=
 
 # Windows

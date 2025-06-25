@@ -96,26 +96,22 @@ class Verbosity(_message.Message):
     def __init__(self, all: bool = ..., synth: bool = ..., pnr: bool = ...) -> None: ...
 
 class Environment(_message.Message):
-    __slots__ = ("platform_id", "is_windows", "terminal_mode", "theme_name", "is_debug", "yosys_path", "trellis_path", "build_all_path", "build_env_path")
+    __slots__ = ("platform_id", "is_windows", "terminal_mode", "theme_name", "debug_level", "yosys_path", "trellis_path")
     PLATFORM_ID_FIELD_NUMBER: _ClassVar[int]
     IS_WINDOWS_FIELD_NUMBER: _ClassVar[int]
     TERMINAL_MODE_FIELD_NUMBER: _ClassVar[int]
     THEME_NAME_FIELD_NUMBER: _ClassVar[int]
-    IS_DEBUG_FIELD_NUMBER: _ClassVar[int]
+    DEBUG_LEVEL_FIELD_NUMBER: _ClassVar[int]
     YOSYS_PATH_FIELD_NUMBER: _ClassVar[int]
     TRELLIS_PATH_FIELD_NUMBER: _ClassVar[int]
-    BUILD_ALL_PATH_FIELD_NUMBER: _ClassVar[int]
-    BUILD_ENV_PATH_FIELD_NUMBER: _ClassVar[int]
     platform_id: str
     is_windows: bool
     terminal_mode: TerminalMode
     theme_name: str
-    is_debug: bool
+    debug_level: int
     yosys_path: str
     trellis_path: str
-    build_all_path: str
-    build_env_path: str
-    def __init__(self, platform_id: _Optional[str] = ..., is_windows: bool = ..., terminal_mode: _Optional[_Union[TerminalMode, str]] = ..., theme_name: _Optional[str] = ..., is_debug: bool = ..., yosys_path: _Optional[str] = ..., trellis_path: _Optional[str] = ..., build_all_path: _Optional[str] = ..., build_env_path: _Optional[str] = ...) -> None: ...
+    def __init__(self, platform_id: _Optional[str] = ..., is_windows: bool = ..., terminal_mode: _Optional[_Union[TerminalMode, str]] = ..., theme_name: _Optional[str] = ..., debug_level: _Optional[int] = ..., yosys_path: _Optional[str] = ..., trellis_path: _Optional[str] = ...) -> None: ...
 
 class ApioEnvParams(_message.Message):
     __slots__ = ("env_name", "board_id", "top_module", "defines", "yosys_synth_extra_options")
@@ -128,8 +124,8 @@ class ApioEnvParams(_message.Message):
     board_id: str
     top_module: str
     defines: _containers.RepeatedScalarFieldContainer[str]
-    yosys_synth_extra_options: str
-    def __init__(self, env_name: _Optional[str] = ..., board_id: _Optional[str] = ..., top_module: _Optional[str] = ..., defines: _Optional[_Iterable[str]] = ..., yosys_synth_extra_options: _Optional[str] = ...) -> None: ...
+    yosys_synth_extra_options: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, env_name: _Optional[str] = ..., board_id: _Optional[str] = ..., top_module: _Optional[str] = ..., defines: _Optional[_Iterable[str]] = ..., yosys_synth_extra_options: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class LintParams(_message.Message):
     __slots__ = ("top_module", "verilator_all", "verilator_no_style", "verilator_no_warns", "verilator_warns")

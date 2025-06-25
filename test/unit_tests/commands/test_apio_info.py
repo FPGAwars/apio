@@ -43,6 +43,13 @@ def test_apio_info(apio_runner: ApioRunner):
         assert "ANSI Colors [RICH mode]" in result.output
         assert "\x1b[31m  1 red                 \x1b[0m" in result.output
 
+        # -- Execute "apio info themes"
+        result = sb.invoke_apio_cmd(apio, ["info", "themes"])
+        assert result.exit_code == 0, result.output
+        assert result.output != cunstyle(result.output)  # Colored
+        assert "NO-COLORS" in result.output
+        assert "\x1b[1;38;5;88mapio.cmd_name\x1b[0m" in result.output
+
         # -- Execute "apio info system". It should not emit colors.
         result = sb.invoke_apio_cmd(apio, ["info", "system"])
         sb.assert_ok(result)

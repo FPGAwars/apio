@@ -6,7 +6,8 @@ In this page, we will go through the steps of creating, validating, and uploadin
 
 ## Step 1: Installing Apio
 
-The first step in using Apio is installing it. You can use either the [Python-based installation](python-based-installation.md) or the [Standalone installation](standalone-installation.md). When done, continue to step 2 below.
+The first step in using Apio is installing it, visit the [Installing Apio](installing-apio.md) page, choose your installation method, follow the installation
+instructions and continue in step 2 below.
 
 ---
 
@@ -128,4 +129,5 @@ The example now runs on the FPGA board, and two LEDs should be flashing alternat
 
 ---
 
-This concludes the Apio quick start guide. We suggest reviewing the [Video tutorial](video-tutorial.md) or going directly to the [Python-based installation](python-based-installation.md) or [Standalone installation](standalone-installation.md) sections.
+This concludes the Apio quick start guide. We suggest reviewing the [Video tutorial](video-tutorial.md) or going directly to the [Installing Apio](installing-apio.md) page to install your
+copy of Apio.

@@ -14,6 +14,7 @@ import re
 import configparser
 from collections import OrderedDict
 from pathlib import Path
+from types import NoneType
 from typing import Dict, Optional, Union, Any, List
 from configobj import ConfigObj
 from apio.utils import util
@@ -62,6 +63,13 @@ ENV_REQUIRED_OPTIONS = {
     "board",
 }
 
+# -- Options that are parsed as a multi line list (vs a simple str)
+LIST_OPTIONS = {
+    "defines",
+    "format-verible-options",
+    "yosys-synth-extra-options",
+}
+
 
 class Project:
     """An instance of this class holds the information from the project's
@@ -82,7 +90,7 @@ class Project:
 
         # pylint: disable=too-many-arguments
 
-        if util.is_debug():
+        if util.is_debug(1):
             cout()
             cout("Parsed [apio] section:", style=EMPH2)
             cout(f"  {apio_section}\n")
@@ -114,6 +122,9 @@ class Project:
             boards=boards,
         )
 
+        # -- Keep the names of all envs
+        self.env_names = list(env_sections.keys())
+
         # -- Determine the name of the active env.
         self.env_name = Project._determine_default_env_name(
             apio_section, env_sections, env_arg
@@ -126,7 +137,7 @@ class Project:
             common_section=common_section,
             env_sections=env_sections,
         )
-        if util.is_debug():
+        if util.is_debug(1):
             cout("Selected env name:", style=EMPH2)
             cout(f"  {self.env_name}\n")
             cout("Expanded env options:", style=EMPH2)
@@ -293,10 +304,11 @@ class Project:
     def _expand_env_options(
         env_name: str,
         common_section: Dict[str, str],
-        env_sections: Dict[str, Dict[str, str]],
+        env_sections: Dict[str, Dict[str, Union[str, List[str]]]],
     ) -> Dict[str, str]:
         """Expand the options of given env name. The given common and envs
-        sections are already validate.
+        sections are already validate. String options are returned as strings
+        and list options are returned as list of strings.
         """
 
         # -- Select the env section by name.
@@ -334,44 +346,55 @@ class Project:
                 style=INFO,
             )
 
+        # -- Convert the list options from strings to list.
+        for key, str_val in result.items():
+            if key in LIST_OPTIONS:
+                list_val = str_val.split("\n")
+                # -- Select the non empty items.
+                list_val = [x for x in list_val if x]
+                result[key] = list_val
+
         return result
 
-    def get(self, option: str, default: Any = None) -> Union[str, Any]:
+    def get_str_option(
+        self, option: str, default: Any = None
+    ) -> Union[str, Any]:
         """Lookup an env option value by name. Returns default if not found."""
+
         # -- If this fails, this is a programming error.
         assert option in ENV_OPTIONS, f"Invalid env option: [{option}]"
+        assert option not in LIST_OPTIONS, f"Not a str option: {option}"
 
         # -- Lookup with default
-        return self.env_options.get(option, default)
+        value = self.env_options.get(option, None)
 
-    def __getitem__(self, option: str) -> Optional[str]:
-        """Lookup an env option value by name using the [] operator. Returns
-        None if not found."""
-        return self.get(option, None)
+        if value is None:
+            return default
 
-    def get_as_lines_list(
+        assert isinstance(value, (str, NoneType))
+        return value
+
+    def get_list_option(
         self, option: str, default: Any = None
     ) -> Union[List[str], Any]:
         """Lookup an env option value that has a line list format. Returns
         the list of non empty lines or default if no value. Option
         must be in OPTIONS."""
 
-        # -- Get the raw value.
-        values = self.get(option, None)
+        # -- If this fails, this is a programming error.
+        assert option in ENV_OPTIONS, f"Invalid env option: [{option}]"
+        assert option in LIST_OPTIONS, f"Not a list option: {option}"
+
+        # -- Get the option values, it's is expected to be a list of str.
+        values_list = self.env_options.get(option, None)
 
         # -- If not found, return default
-        if values is None:
+        if values_list is None:
             return default
 
-        # -- Break the values to a list of lines. Each line is already
-        # -- right and left of white space by configparser and comments
-        # -- are removed.
-        values = values.split("\n")
-
-        # -- Select the non empty items.
-        values = [x for x in values if x]
-
-        return values
+        # -- Return the list
+        assert isinstance(values_list, list), values_list
+        return values_list
 
 
 def load_project_from_file(

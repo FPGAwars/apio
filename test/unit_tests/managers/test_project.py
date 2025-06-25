@@ -68,16 +68,16 @@ def test_all_options_env(apio_runner: ApioRunner, capsys: LogCaptureFixture):
     assert project.env_options == {
         "board": "alhambra-ii",
         "default-testbench": "main_tb.v",
-        "defines": "\naaa=111\nbbb=222",
-        "format-verible-options": "\n--aaa bbb\n--ccc ddd",
+        "defines": ["aaa=111", "bbb=222"],
+        "format-verible-options": ["--aaa bbb", "--ccc ddd"],
         "programmer-cmd": "iceprog ${VID}:${PID}",
         "top-module": "my_module",
-        "yosys-synth-extra-options": "-dsp -xyz",
+        "yosys-synth-extra-options": ["-dsp -xyz"],
     }
 
     # -- Try a few as dict lookup on the project object.
-    assert project["board"] == "alhambra-ii"
-    assert project["top-module"] == "my_module"
+    assert project.get_str_option("board") == "alhambra-ii"
+    assert project.get_str_option("top-module") == "my_module"
 
 
 def test_required_options_only_env(
@@ -105,6 +105,27 @@ def test_required_options_only_env(
         "Option 'top-module' is missing for env default, assuming 'main'"
         in stdout
     )
+
+
+def test_list_options(apio_runner: ApioRunner, capsys: LogCaptureFixture):
+    """Tests list optionss."""
+
+    project, _ = load_apio_ini(
+        apio_ini={
+            "[env:default]": {
+                "board": "alhambra-ii",
+                "yosys-synth-extra-options": "  k1=v1  k2=v2 \n\n k3=v3 \n\n",
+            }
+        },
+        env_arg=None,
+        apio_runner=apio_runner,
+        capsys=capsys,
+    )
+
+    assert project.get_list_option("yosys-synth-extra-options") == [
+        "k1=v1  k2=v2",
+        "k3=v3",
+    ]
 
 
 def test_legacy_board_name(apio_runner: ApioRunner, capsys: LogCaptureFixture):

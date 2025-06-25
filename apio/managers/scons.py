@@ -1,4 +1,4 @@
-"""DOC: TODO"""
+"""A manager class for  to dispatch the Apio SCONS targets."""
 
 # -*- coding: utf-8 -*-
 # -- This file is part of the Apio project
@@ -15,7 +15,7 @@ from functools import wraps
 from datetime import datetime
 from google.protobuf import text_format
 from apio.common import apio_console
-from apio.common.apio_console import cout, cerror, cstyle
+from apio.common.apio_console import cout, cerror, cstyle, cunstyle
 from apio.common.apio_styles import SUCCESS, ERROR, EMPH3
 from apio.utils import util, pkg_util
 from apio.apio_context import ApioContext
@@ -60,7 +60,7 @@ def on_exception(*, exit_code: int):
             try:
                 return function(*args, **kwargs)
             except Exception as exc:
-                if util.is_debug():
+                if util.is_debug(1):
                     traceback.print_tb(exc.__traceback__)
 
                 if str(exc):
@@ -223,7 +223,7 @@ class SCons:
 
         # -- Get the project's board. It should be prevalidated when loading
         # -- the project, but we sanity check it again just in case.
-        board = project["board"]
+        board = project.get_str_option("board")
         assert board is not None, "Scons got a None board."
         assert board in apio_ctx.boards, f"Unknown board name [{board}]"
 
@@ -294,11 +294,9 @@ class SCons:
                     else FORCE_PIPE
                 ),
                 theme_name=apio_console.current_theme_name(),
-                is_debug=util.is_debug(),
+                debug_level=util.debug_level(),
                 yosys_path=oss_vars["YOSYS_LIB"],
                 trellis_path=oss_vars["TRELLIS"],
-                build_all_path=str(apio_ctx.build_all_path),
-                build_env_path=str(apio_ctx.build_env_path),
             )
         )
         assert result.environment.IsInitialized(), result
@@ -307,12 +305,12 @@ class SCons:
         result.apio_env_params.MergeFrom(
             ApioEnvParams(
                 env_name=apio_ctx.project.env_name,
-                board_id=project["board"],
-                top_module=project["top-module"],
-                defines=apio_ctx.project.get_as_lines_list(
+                board_id=project.get_str_option("board"),
+                top_module=project.get_str_option("top-module"),
+                defines=apio_ctx.project.get_list_option(
                     "defines", default=[]
                 ),
-                yosys_synth_extra_options=apio_ctx.project.get(
+                yosys_synth_extra_options=apio_ctx.project.get_list_option(
                     "yosys-synth-extra-options", None
                 ),
             )
@@ -356,7 +354,7 @@ class SCons:
 
         # -- Pass the path to the proto params file. The path is relative
         # -- to the project root.
-        params_file_path = apio_ctx.build_env_path / "scons.params"
+        params_file_path = apio_ctx.env_build_path / "scons.params"
         variables += [f"params={str(params_file_path)}"]
 
         # -- Pass to the scons process the timestamp of the scons params we
@@ -373,7 +371,7 @@ class SCons:
         # -- variables of the scons arg parser.
         pkg_util.set_env_for_packages(apio_ctx)
 
-        if util.is_debug():
+        if util.is_debug(1):
             cout("\nSCONS CALL:", style=EMPH3)
             cout(f"* command:       {scons_command}")
             cout(f"* variables:     {variables}")
@@ -388,6 +386,11 @@ class SCons:
         # -- to execute the apio command)
         start_time = time.time()
 
+        # -- Subtracting 1 to avoid line overflow on windows, Observed with
+        # -- Windows 10 and cmd.exe shell.
+        if apio_ctx.is_windows:
+            terminal_width -= 1
+
         # -- Print a horizontal line
         cout("-" * terminal_width)
 
@@ -395,7 +398,7 @@ class SCons:
         # -- https://scons.org/doc/2.4.1/HTML/scons-man.html
         debug_options = (
             ["--debug=explain,prepare,stacktrace", "--tree=all"]
-            if util.is_debug()
+            if util.is_debug(1)
             else []
         )
 
@@ -423,7 +426,7 @@ class SCons:
         # -- directory. It will be cleaned up as part of 'apio cleanup'.
         # -- At this point, the project is the current directory, even if
         # -- the command used the --project-dir option.
-        os.makedirs(apio_ctx.build_env_path, exist_ok=True)
+        os.makedirs(apio_ctx.env_build_path, exist_ok=True)
         with open(params_file_path, "w", encoding="utf8") as f:
             f.write(text_format.MessageToString(scons_params))
 
@@ -440,21 +443,27 @@ class SCons:
         # -- Calculate the time it took to execute the command
         duration = time.time() - start_time
 
-        # -- Summary
-        summary_text = f" Took {duration:.2f} seconds "
+        # -- Determine status message
+        if is_error:
+            styled_status = cstyle("ERROR", style=ERROR)
+        else:
+            styled_status = cstyle("SUCCESS", style=SUCCESS)
 
-        # -- Half line
-        half_line = "=" * int(((terminal_width - len(summary_text) - 10) / 2))
+        # -- Determine the summary text
+        summary = f"Took {duration:.2f} seconds"
 
-        # -- Status message
-        status = (
-            cstyle(" ERROR ", style=ERROR)
-            if is_error
-            else cstyle("SUCCESS", style=SUCCESS)
-        )
+        # -- Construct the entire message.
+        styled_msg = f" [{styled_status}] {summary} "
+        msg_len = len(cunstyle(styled_msg))
 
-        # -- Print the summary line.
-        cout(f"{half_line} [{status}]{summary_text}{half_line}")
+        # -- Determine the lengths of the paddings before and after
+        # -- the message. Should be correct for odd and even terminal
+        # -- widths.
+        pad1_len = (terminal_width - msg_len) // 2
+        pad2_len = terminal_width - pad1_len - msg_len
+
+        # -- Print the entire line.
+        cout(f"{'=' * pad1_len}{styled_msg}{'=' * pad2_len}")
 
         # -- Return the exit code
         return result.exit_code

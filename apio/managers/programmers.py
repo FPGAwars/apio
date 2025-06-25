@@ -86,7 +86,7 @@ def _construct_programmer_cmd(
     # -- Construct the programmer cmd template for the board. It may or may not
     # -- contain ${} vars.
     cmd_template = _construct_cmd_template(apio_ctx)
-    if util.is_debug():
+    if util.is_debug(1):
         cout(f"Cmd template: [{cmd_template}]")
 
     # -- Resolved the mandatory ${BIN_FILE} to $SOURCE which will be replaced
@@ -97,13 +97,13 @@ def _construct_programmer_cmd(
     has_usb_vars = any(s in cmd_template for s in USB_VARS)
     has_serial_vars = any(s in cmd_template for s in SERIAL_VARS)
 
-    if util.is_debug():
+    if util.is_debug(1):
         cout(f"Template has usb vars: {has_usb_vars}]")
         cout(f"Template has serial vars: {has_serial_vars}]")
 
     # -- Can't have both serial and usb vars (OK to have none).
     if has_usb_vars and has_serial_vars:
-        board = apio_ctx.project["board"]
+        board = apio_ctx.project.get_str_option("board")
         cerror(
             f"The programmer cmd template of the board '{board}' has "
             "both usb and serial ${} vars. "
@@ -158,7 +158,7 @@ def _construct_cmd_template(apio_ctx: ApioContext) -> str:
 
     # -- If the project file a custom programmer command use it instead of the
     # -- standard definitions.
-    custom_template = apio_ctx.project.get("programmer-cmd")
+    custom_template = apio_ctx.project.get_str_option("programmer-cmd")
     if custom_template:
         cout("Using custom programmer cmd.")
         if BIN_FILE_VALUE in custom_template:
@@ -168,7 +168,7 @@ def _construct_cmd_template(apio_ctx: ApioContext) -> str:
             sys.exit(1)
         return custom_template
 
-    board = apio_ctx.project["board"]
+    board = apio_ctx.project.get_str_option("board")
     board_info = apio_ctx.boards[board]
 
     # -- Get the programmer type
@@ -270,7 +270,7 @@ def _match_serial_device(
     """
 
     # -- Get board info.
-    board = apio_ctx.project["board"]
+    board = apio_ctx.project.get_str_option("board")
     board_info = apio_ctx.boards[board]
 
     # -- Scan for all serial devices.
@@ -302,11 +302,11 @@ def _match_serial_device(
     for dev in matching:
         cout(f"- DEVICE {dev.summary()}")
 
-    if util.is_debug():
+    if util.is_debug(1):
         cout(f"Serial device filter: {serial_filter.summary()}")
         cout(f"Matching serial devices: {matching}")
 
-    if util.is_debug():
+    if util.is_debug(1):
         cout(f"Matching serial devices: {matching}")
 
     # -- Error if not exactly one match.
@@ -339,7 +339,7 @@ def _match_usb_device(
     """
 
     # -- Get the board info.
-    board = apio_ctx.project["board"]
+    board = apio_ctx.project.get_str_option("board")
     board_info = apio_ctx.boards[board]
 
     # -- Scan for all serial devices.
@@ -369,11 +369,11 @@ def _match_usb_device(
     for dev in matching:
         cout(f"- DEVICE {dev.summary()}")
 
-    if util.is_debug():
+    if util.is_debug(1):
         cout(f"USB device filter: {usb_filter.summary()}")
         cout(f"Matching USB devices: {matching}")
 
-    if util.is_debug():
+    if util.is_debug(1):
         cout(f"Matching usb devices: {matching}")
 
     # -- Error if not exactly one match.
@@ -405,7 +405,7 @@ def _check_device_presence(apio_ctx: ApioContext, scanner: _DeviceScanner):
     """
 
     # -- Get board info
-    board = apio_ctx.project["board"]
+    board = apio_ctx.project.get_str_option("board")
     board_info = apio_ctx.boards[board]
 
     # -- Get the optional "usb" section of the board.

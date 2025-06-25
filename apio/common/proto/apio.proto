@@ -85,19 +85,12 @@ message Environment {
   // The apio_console theme name.
   required string theme_name = 4;
 
-  // True if apio debug is enabled.
-  optional bool is_debug = 5 [default = false];
+  // The apio debug level. Value of 0 indicates no debug info.
+  required int32 debug_level = 5;
 
   // Paths to oss-cad-suite libraries.
   required string yosys_path = 6;
   required string trellis_path = 7;
-
-  // Build directories, relative to project dir.
-  // Examples:
-  //   build_all_path = "_build"
-  //   build_env_path = "_build/my-env"
-  required string build_all_path = 8;
-  required string build_env_path = 9;
 }
 
 // Information about the expanded active env from apio.ini.
@@ -111,7 +104,7 @@ message ApioEnvParams {
   // The optional values of 'defines' option in apio.ini.
   repeated string defines = 4;
   // The optional value of 'yosys-synth-extra-options' option in apio.ini.
-  optional string yosys_synth_extra_options = 5 [default = ""];
+  repeated string yosys_synth_extra_options = 5;
 }
 
 // Lint target specific params.

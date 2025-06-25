@@ -13,11 +13,16 @@
 //   ${SERIAL_PORT} - the serial port that the devices is connected it.
 //
 // USB device placeholders
-//   ${VID}        - the USB vendor ID.
-//   ${PID}        - the USB product ID.
-//   ${BUS}        - the USB bus number..
-//   ${DEV}        - the USB device address number.
-//   ${SERIAL_NUM} - the USB serial number string.
+//   ${VID}          - The USB vendor ID.
+//   ${PID}          - The USB product ID.
+//   ${BUS}          - The USB bus number..
+//   ${DEV}          - The USB device address number.
+//
+// SERIAL device placeholders
+//   ${SERIAL_NUM}   - The USB serial number string.
+//
+// Common placeholders
+//   ${BIN_FILE}     - The path to the bitstream file
 //
 // In addition, the placeholder ${BIN_FILE} is replaced by apio with the
 // path to the bitstream file. If it doesn't appear in the programmer command,

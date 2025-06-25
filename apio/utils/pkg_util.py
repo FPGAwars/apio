@@ -200,6 +200,7 @@ class PackageScanResults:
 
     def dump(self):
         """Dump the content of this object. For debugging."""
+        cout()
         cout("Package scan results:")
         cout(f"  Installed     {self.installed_ok_package_names}")
         cout(f"  bad version   {self.bad_version_package_names}")
@@ -302,7 +303,7 @@ def scan_packages(
             result.orphan_file_names.append(base_name)
 
     # -- Return results
-    if util.is_debug():
+    if util.is_debug(1):
         result.dump()
 
     return result

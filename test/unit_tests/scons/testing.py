@@ -30,11 +30,9 @@ verbosity {
 }
 environment {
   platform_id: "darwin-arm64"
-  is_debug: true
+  debug_level: 1
   yosys_path: "/Users/user/.apio/packages/oss-cad-suite/share/yosys"
   trellis_path: "/Users/user/.apio/packages/oss-cad-suite/share/trellis"
-  build_all_path: "_build"
-  build_env_path: "_build/default"
 }
 apio_env_params {
   env_name: "default"
@@ -86,7 +84,7 @@ def make_test_apio_env(
     targets: Optional[List[str]] = None,
     platform_id: str = None,
     is_windows: bool = None,
-    is_debug: bool = None,
+    debug_level: int = 0,
     target_params: TargetParams = None,
 ) -> ApioEnv:
     """Creates a fresh apio env for testing. The env is created
@@ -101,13 +99,14 @@ def make_test_apio_env(
     # -- Create default params.
     scons_params = make_test_scons_params()
 
+    # -- Set debug level
+    scons_params.environment.debug_level = debug_level
+
     # -- Apply user overrides.
     if platform_id is not None:
         scons_params.environment.platform_id = platform_id
     if is_windows is not None:
         scons_params.environment.is_windows = is_windows
-    if is_debug is not None:
-        scons_params.environment.is_debug = is_debug
     if target_params is not None:
         scons_params.target.MergeFrom(target_params)
 

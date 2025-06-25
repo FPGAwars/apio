@@ -12,5 +12,9 @@
 
   // "remote-config": "https://github.com/zapta/apio/raw/develop/remote-config/apio-{V}.jsonc"
 
-  // export APIO_REMOTE_CONFIG_URL="file:///projects/apio-dev/repo/remote-config/apio-{V}.jsonc"
 }
+
+// For local testing, before submitting a new remote config file
+//
+// export APIO_REMOTE_CONFIG_URL="file:///projects/apio-dev/repo/remote-config/apio-{V}.jsonc"
+

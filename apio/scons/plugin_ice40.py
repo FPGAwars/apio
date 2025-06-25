@@ -15,13 +15,14 @@
 from pathlib import Path
 from SCons.Script import Builder
 from SCons.Builder import BuilderBase
+from apio.common.common_util import SRC_SUFFIXES
 from apio.scons.apio_env import ApioEnv
 from apio.scons.plugin_base import PluginBase, ArchPluginInfo
 from apio.scons.plugin_util import (
-    SRC_SUFFIXES,
     verilator_lint_action,
     has_testbench_name,
-    source_file_issue_action,
+    announce_testbench_action,
+    source_files_issue_scanner_action,
     iverilog_action,
     basename,
     make_verilator_config_builder,
@@ -64,7 +65,7 @@ class PluginIce40(PluginBase):
                 "$SOURCES"
             ).format(
                 params.apio_env_params.top_module,
-                params.apio_env_params.yosys_synth_extra_options,
+                " ".join(params.apio_env_params.yosys_synth_extra_options),
                 "" if params.verbosity.all or params.verbosity.synth else "-q",
                 get_define_flags(apio_env),
             ),
@@ -136,8 +137,10 @@ class PluginIce40(PluginBase):
 
             # Construct the actions list.
             action = [
+                # -- Print a testbench title.
+                announce_testbench_action(),
                 # -- Scan source files for issues.
-                source_file_issue_action(),
+                source_files_issue_scanner_action(),
                 # -- Perform the actual test or sim compilation.
                 iverilog_action(
                     apio_env,

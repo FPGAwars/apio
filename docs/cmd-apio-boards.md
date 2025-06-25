@@ -1,11 +1,15 @@
-# Listing FPGA Boards
+# Apio boards
+
+---
+
+## apio boards
 
 The `apio boards` command lists the FPGA boards supported by Apio.
 
 > You can define custom boards by placing a `boards.jsonc` file with your
 > board definition in your project directory, which overrides Apio’s default `boards.jsonc`.
 
-## EXAMPLES
+<h3>Examples</h3>
 
 ```
 apio boards                   # List all boards.
@@ -14,7 +18,7 @@ apio boards | grep ecp5       # Filter boards results.
 apio boards --docs            # Generate a report for Apio docs
 ```
 
-## OPTIONS
+<h3>Options</h3>
 
 ```
 -v, --verbose           Show detailed output.

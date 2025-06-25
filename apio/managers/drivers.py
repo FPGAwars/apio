@@ -11,7 +11,7 @@ import shutil
 import subprocess
 from pathlib import Path
 from apio.utils import util
-from apio.common.apio_console import cout, cerror, cprint
+from apio.common.apio_console import cout, cerror, cmarkdown
 from apio.common.apio_styles import INFO, SUCCESS, EMPH1, EMPH3
 from apio.apio_context import ApioContext
 from apio.managers import installer
@@ -408,7 +408,7 @@ class Drivers:
 
             # -- Show messages for the user
             cout("", "Launching zadig.exe.")
-            cprint(FTDI_INSTALL_INSTRUCTIONS_WINDOWS)
+            cmarkdown(FTDI_INSTALL_INSTRUCTIONS_WINDOWS)
 
             # -- Execute zadig!
             # -- We execute it using os.system() rather than by
@@ -424,7 +424,7 @@ class Drivers:
         installer.install_missing_packages_on_the_fly(self.apio_ctx)
 
         cout("", "Launching the interactive Device Manager.")
-        cprint(FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS)
+        cmarkdown(FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS)
 
         # -- We launch the device manager using os.system() rather than with
         # -- util.exec_command() because util.exec_command() does not support
@@ -440,7 +440,7 @@ class Drivers:
         drivers_bin_dir = drivers_base_dir / "bin"
 
         cout("", "Launching the interactive Serial Installer.")
-        cprint(SERIAL_INSTALL_INSTRUCTIONS_WINDOWS)
+        cmarkdown(SERIAL_INSTALL_INSTRUCTIONS_WINDOWS)
 
         # -- We launch the device manager using os.system() rather than with
         # -- util.exec_command() because util.exec_command() does not support
@@ -456,7 +456,7 @@ class Drivers:
         installer.install_missing_packages_on_the_fly(self.apio_ctx)
 
         cout("", "Launching the interactive Device Manager.")
-        cprint(SERIAL_UNINSTALL_INSTRUCTIONS_WINDOWS)
+        cmarkdown(SERIAL_UNINSTALL_INSTRUCTIONS_WINDOWS)
 
         # -- We launch the device manager using os.system() rather than with
         # -- util.exec_command() because util.exec_command() does not support

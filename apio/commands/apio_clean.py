@@ -19,33 +19,10 @@ from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils import cmd_util, util
 from apio.common.apio_console import cout, cerror
 from apio.common.apio_styles import SUCCESS, ERROR
+from apio.common.common_util import PROJECT_BUILD_PATH
 
 
 # ----------- apio clean
-
-
-def _delete_dir_or_file(path):
-    """Delete a file or a dir with a given path."""
-
-    # pylint: disable=broad-exception-caught
-
-    assert os.path.exists(path), path
-
-    if os.path.isfile(path):
-        # -- Delete a file.
-        os.remove(path)
-    else:
-        # -- Delete a dir
-        # -- We asset that _build is in the path for safety.
-        assert "_build" in str(path), path
-        try:
-            shutil.rmtree(path)
-        except Exception as e:
-            cout(f"{e}", style=ERROR)
-            sys.exit(1)
-
-    assert not os.path.exists(path), path
-    cout(f"- Removed {path}")
 
 
 def _delete_candidates(candidates: List[str]):
@@ -54,7 +31,7 @@ def _delete_candidates(candidates: List[str]):
     # pylint: disable=broad-exception-caught
 
     # -- Dump for debugging.
-    if util.is_debug():
+    if util.is_debug(1):
         cout(f"\nDeletion candidates: {candidates}")
 
     # -- Delete candidates that exists.
@@ -69,6 +46,8 @@ def _delete_candidates(candidates: List[str]):
 
             # -- Delete a directory.
             elif os.path.isdir(path):
+                # -- Sanity check to make sure we don't delete the entire
+                # -- hard drive.
                 assert "_build" in str(path), path
                 shutil.rmtree(path)
                 item_deleted = True
@@ -145,7 +124,7 @@ def cli(
     candidates += glob("*_tb.out")
 
     # -- Clean the root build directory.
-    candidates.append(str(apio_ctx.build_all_path))
+    candidates.append(PROJECT_BUILD_PATH)
 
     # -- Clean and report.
     _delete_candidates(candidates)
