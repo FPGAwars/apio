@@ -4,6 +4,11 @@ on:
   # Run on each commit.
   push:
 
+  # Run on pull requests.
+  pull_request:
+    branches:
+      - develop
+
   # NOTE: We run the test daily, even if we don't push anything, to ensure
   # that the tests are still passing, despite potential changes in the github
   # dependencies.
