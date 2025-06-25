@@ -44,6 +44,7 @@ class PluginEcp5(PluginBase):
         self.database_path = trellis_path / "database"
         self.yosys_lib_dir = yosys_path / "ecp5"
         self.yosys_lib_file = yosys_path / "ecp5" / "cells_sim.v"
+        self.yosys_lib_exclude_file = yosys_path / "ecp5" / "cells_bb.v"
 
     def plugin_info(self) -> ArchPluginInfo:
         """Return plugin specific parameters."""
@@ -156,6 +157,7 @@ class PluginEcp5(PluginBase):
                     is_interactive=apio_env.targeting("sim"),
                     lib_dirs=[self.yosys_lib_dir],
                     lib_files=[self.yosys_lib_file],
+                    extra_params=["-D NOT_INCLUDES {}".format(self.yosys_lib_exclude_file)]
                 ),
             ]
             return action
