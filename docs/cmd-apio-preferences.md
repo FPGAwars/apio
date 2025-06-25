@@ -6,6 +6,8 @@
 
 The `apio preferences` command lets you view and manage user preferences. These settings are stored in the `profile.json` file in the Apio home directory (e.g. `~/.apio`) and apply to all Apio projects.
 
+> To review the available themes on your screen type `apio info themes`.
+
 <h3>Examples</h3>
 
 ```

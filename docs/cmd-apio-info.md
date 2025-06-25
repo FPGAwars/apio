@@ -16,6 +16,7 @@ The `apio info` command group displays additional information about Apio and you
   apio info platforms
   apio info system
   apio info colors
+  apio info themes
 ```
 
 ---
@@ -82,4 +83,23 @@ apio sys col -p           # Using shortcut
 -c, --click  Output using the Click library
 -p, --print  Output using Python's print()
 -h, --help   Show this message and exit
+```
+
+---
+
+## apio info themes
+
+The command `apio info themes` shows the colors of the Apio themes. It
+can be used to select the theme that works the best for you. Type
+`apio preferences -h` for information on our to select a theme.
+
+<h3>Examples</h3>
+```
+apio info themes          # Show themes colors
+apio inf col -p           # Using shortcuts.
+```
+
+<h3>Options</h3>
+```
+-h, --help  Show this message and exit.
 ```

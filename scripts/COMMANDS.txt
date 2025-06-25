@@ -748,6 +748,7 @@ Subcommands:
   apio info system     Show system information.
   apio info platforms  Supported platforms.
   apio info colors     Colors table.
+  apio info themes     Show apio themes.
 
 
 
@@ -769,7 +770,7 @@ Usage: apio info colors [OPTIONS]
     apio info colors --rich   # Same as above.
     apio info colors --click  # Click library output.
     apio info colors --print  # Python's print() output.
-    apio sys col -p           # Using shortcuts.
+    apio inf col -p           # Using shortcuts.
 
 Options:
   -r, --rich   Output using the rich lib.
@@ -817,6 +818,26 @@ Usage: apio info system [OPTIONS]
   saves preferences and packages, is in the '.apio' directory under the
   user home directory but can be changed using the system environment
   variable 'APIO_HOME'.
+
+Options:
+  -h, --help  Show this message and exit.
+
+
+
+--------------------------------------------
+
+apio info themes
+
+Usage: apio info themes [OPTIONS]
+
+  The command 'apio info themes' shows the colors of the Apio themes. It
+  can be used to select the theme that works the best for you. Type
+  'apio preferences -h' for information on our to select a theme.
+
+
+  Examples:
+    apio info themes          # Show themes colors
+    apio inf col -p           # Using shortcuts.
 
 Options:
   -h, --help  Show this message and exit.
