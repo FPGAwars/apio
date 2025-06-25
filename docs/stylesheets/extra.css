@@ -67,6 +67,7 @@
 /* # title size */
 .md-typeset h1 {
   font-size: 2em;  /* Default is ~1.8em, reduce as needed */
+  margin-bottom: 1em;
 }
 
 /* ## title size */

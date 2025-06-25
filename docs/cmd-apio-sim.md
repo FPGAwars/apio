@@ -41,7 +41,7 @@ apio sim my_module_tb.sv   # Simulate the specified testbench
 -h, --help              Show help message and exit
 ```
 
-##<h3>Notes</h3>
+<h3>Notes</h3>
 
 - Avoid using the Verilog `$dumpfile()` function, as it can override the default name and location Apio assigns for the `.vcd` file.
 
@@ -51,6 +51,6 @@ apio sim my_module_tb.sv   # Simulate the specified testbench
 
 - When configuring signals in GTKWave, save your setup so you don’t have to repeat it each time.
 
-EXAMPLE SIMULATION RESULTS
+<h3>Example simulation results</h3>
 
 ![](assets/sim-gtkwave.png)
