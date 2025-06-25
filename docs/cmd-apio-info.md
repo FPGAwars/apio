@@ -103,3 +103,7 @@ apio inf col -p           # Using shortcuts.
 ```
 -h, --help  Show this message and exit.
 ```
+
+<h3>Example output</h3>
+
+![](assets/apio-info-themes.png)
