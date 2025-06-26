@@ -145,7 +145,7 @@ class ApioSandbox:
 
             apio_result = ApioResult(
                 process_result.returncode,
-                process_result.stdout,
+                (process_result.stdout or "") + (process_result.stderr or ""),
                 None,
             )
 
