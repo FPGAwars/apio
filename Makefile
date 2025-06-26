@@ -64,6 +64,16 @@ test t:
 test-oldest to:	
 	python -m tox --skip-missing-interpreters false -e py39 -- --offline
 
+# Run tests while collecting test coverage report. Similar to 'make check;
+# but slower.
+#
+# Usage:
+#     make test-coverage
+#     make tc
+#
+.PHONY: test-coverage
+test-coverage tc:	
+	python -m tox --skip-missing-interpreters false -e py313 -- --cov --cov-report=html:_pytest-coverage
 
 # Tests and lint, single python version, all tests including online..
 # This is a thorough but slow test and sufficient for testing before 
