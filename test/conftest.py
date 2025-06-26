@@ -139,6 +139,7 @@ class ApioSandbox:
                 ]
                 + args,
                 capture_output=True,
+                encoding="utf-8",
                 text=True,
                 check=False,
             )
