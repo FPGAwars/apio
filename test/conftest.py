@@ -109,6 +109,10 @@ class ApioSandbox:
 
         print(f"\nInvoking apio command [{cli.name}], args={args}.")
 
+        # -- It's a good opportunity to flush the output so far.
+        sys.stdout.flush()
+        sys.stderr.flush()
+
         # -- Check that this sandbox is still alive.
         assert not self.expired, "Sandbox expired."
 
@@ -139,13 +143,14 @@ class ApioSandbox:
                 ]
                 + args,
                 capture_output=True,
+                encoding="utf-8",
                 text=True,
                 check=False,
             )
 
             apio_result = ApioResult(
                 process_result.returncode,
-                process_result.stdout,
+                (process_result.stdout or "") + (process_result.stderr or ""),
                 None,
             )
 
@@ -173,7 +178,7 @@ class ApioSandbox:
 
         # -- Restore system env. Since apio commands tend to change vars
         # -- such as PATH.
-        self.set_system_env(original_env)
+        self.restore_system_env(original_env)
 
         return apio_result
 
@@ -191,7 +196,7 @@ class ApioSandbox:
         # -- The word 'error' should NOT appear on the standard output
         assert "error" not in result.output.lower()
 
-    def set_system_env(self, new_vars: Dict[str, str]) -> None:
+    def restore_system_env(self, original_env: Dict[str, str]) -> None:
         """Overwrites the existing sys.environ with the given dict. Vars
         that are not in the dict are deleted and vars that have a different
         value in the dict is updated.  Can be called only within a
@@ -207,11 +212,11 @@ class ApioSandbox:
         print("\nRestoring os.environ:")
 
         # -- Construct the union of the env and the dict var names.
-        all_var_names = set(os.environ.keys()).union(new_vars.keys())
+        all_var_names = set(os.environ.keys()).union(original_env.keys())
         for name in all_var_names:
             # Get the env and dict values. None if doesn't exist.
             env_val = os.environ.get(name, None)
-            dict_val = new_vars.get(name, None)
+            dict_val = original_env.get(name, None)
             # -- If values are not the same, update the env.
             if env_val != dict_val:
                 print(f"  set ${name}={dict_val}  (was {env_val})")
@@ -221,7 +226,7 @@ class ApioSandbox:
                     os.environ[name] = dict_val
 
         # -- Sanity check. System env and the dict should be the same.
-        assert os.environ == new_vars
+        assert os.environ == original_env
 
     def write_file(
         self,
@@ -434,7 +439,7 @@ class ApioRunner:
             # -- exception.
 
             # -- Restore the original system env.
-            self._sandbox.set_system_env(original_env)
+            self._sandbox.restore_system_env(original_env)
 
             # -- Mark that we exited the sandbox. This expires the sandbox.
             self._sandbox = None
@@ -448,6 +453,10 @@ class ApioRunner:
             shutil.rmtree(sandbox_dir)
 
             print("\nSandbox deleted. ")
+
+            # -- Flush the output so far.
+            sys.stdout.flush()
+            sys.stderr.flush()
 
     @property
     def offline_flag(self) -> bool:

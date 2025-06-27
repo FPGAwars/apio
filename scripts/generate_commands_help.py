@@ -34,6 +34,7 @@ def get_commands_list() -> List[str]:
         capture_output=True,
         text=True,
         check=True,
+        encoding="utf-8",
     )
 
     data = json.loads(result.stdout)
@@ -57,6 +58,7 @@ def main():
             capture_output=True,
             text=True,
             check=True,
+            encoding="utf-8",
         )
 
         print("\n--------------------------------------------\n")

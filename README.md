@@ -3,38 +3,36 @@
 [![PyPI Version][pypi-image]][pypi-url]
 [![License][license-image]][license-url]
 
-[![test](https://github.com/FPGAwars/apio/actions/workflows/test.yaml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/test.yaml)
-[![build-and-release](https://github.com/zapta/apio-dev-builds/actions/workflows/build-and-release.yaml/badge.svg)](https://github.com/zapta/apio-dev-builds/actions/workflows/build-and-release.yaml)
-[![monitor-apio-prod](https://github.com/FPGAwars/apio/actions/workflows/monitor-apio-prod.yaml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/monitor-apio-prod.yaml)
-[![monitor-apio-latest](https://github.com/FPGAwars/apio/actions/workflows/monitor-apio-latest.yaml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/monitor-apio-latest.yaml)
-[![publish-mkdocs-docs](https://github.com/FPGAwars/apio/actions/workflows/publish-mkdocs-docs.yaml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/publish-mkdocs-docs.yaml)
 
-[![build-and-release](https://github.com/FPGAwars/apio-examples/actions/workflows/build-and-release.yaml/badge.svg)](https://github.com/FPGAwars/apio-examples/actions/workflows/build-and-release.yaml)
-[![build-and-release](https://github.com/FPGAwars/tools-oss-cad-suite/actions/workflows/build-and-release.yaml/badge.svg)](https://github.com/FPGAwars/tools-oss-cad-suite/actions/workflows/build-and-release.yaml)
-[![build-and-release](https://github.com/FPGAwars/tools-verible/actions/workflows/build-and-release.yaml/badge.svg)](https://github.com/FPGAwars/tools-verible/actions/workflows/build-and-release.yaml)
-[![build-and-release](https://github.com/FPGAwars/tools-graphviz/actions/workflows/build-and-release.yml/badge.svg)](https://github.com/FPGAwars/tools-graphviz/actions/workflows/build-and-release.yml)
-[![build-and-release](https://github.com/FPGAwars/tools-drivers/actions/workflows/build-and-release.yaml/badge.svg)](https://github.com/FPGAwars/tools-drivers/actions/workflows/build-and-release.yaml)
-[![test](https://github.com/FPGAwars/apio-examples/actions/workflows/test.yaml/badge.svg)](https://github.com/FPGAwars/apio-examples/actions/workflows/test.yaml)
+
+
+[![apio-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/test.yaml?label=apio-test)](https://github.com/fpgawars/apio/actions/workflows/test.yaml)
+[![apio-dev-build](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-dev-builds/build-and-release.yaml?label=apio-dev-build)](https://github.com/fpgawars/apio-dev-builds/actions/workflows/build-and-release.yaml)
+[![monitor-apio-prod](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/monitor-apio-prod.yaml?label=apio-prod-monitor)](https://github.com/fpgawars/apio/actions/workflows/monitor-apio-prod.yaml)
+[![monitor-apio-latest](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/monitor-apio-latest.yaml?label=apio-latest-monitor)](https://github.com/fpgawars/apio/actions/workflows/monitor-apio-latest.yaml)
+[![mkdocs-publishing](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/publish-mkdocs-docs.yaml?label=apio-mkdocs)](https://github.com/fpgawars/apio/actions/workflows/publish-mkdocs-docs.yaml)
+[![examples-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-examples/test.yaml?label=apio-xamples)](https://github.com/fpgawars/apio-examples/actions/workflows/test.yaml)
+[![oss-cad-suite-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-oss-cad-suite/build-and-release.yaml?label=apio-oss-cad-suite)](https://github.com/fpgawars/tools-oss-cad-suite/actions/workflows/build-and-release.yaml)
+[![verible-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-verible/build-and-release.yaml?label=apio-verible)](https://github.com/fpgawars/tools-verible/actions/workflows/build-and-release.yaml)
+[![graphviz-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-graphviz/build-and-release.yaml?label=apio-graphviz)](https://github.com/fpgawars/tools-graphviz/actions/workflows/build-and-release.yaml)
+[![drivers-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-drivers/build-and-release.yaml?label=apio-drivers)](https://github.com/fpgawars/tools-drivers/actions/workflows/build-and-release.yaml)
+
+
+
 
 ![][linux-logo]&nbsp;&nbsp;&nbsp;![][macosx-logo]&nbsp;&nbsp;&nbsp;![][windows-logo]&nbsp;&nbsp;&nbsp;![][ubuntu-logo]&nbsp;&nbsp;&nbsp;![][raspbian-logo]
 
 
 ## What is Apio?
 
-* Apio is an **extremely easy to use** toolbox for programming FPGAs in **Verilog** and **System Verilog**.
-* Apio is **easy to install**, no more dealing with 'toolcahins', licenses, scripts, and makefiles.
-* Apio runs on a wide range of platforms, **Linux, Windows, Mac, and more**.
-* Apio is **open source and free to use**.
-* Apio supports **all aspects of FPGA development cycles**, including building, simulation, testing, and uploading a design.
-* **Apio commands are very simple,** for example, ``apio build`` to build, ``apio test`` to test end ``apio upload`` to upload.
-* Apio can be used with **any text editor** and also **plays well with Visual Studio Code and github**.
-* Apio supports out of the **more than 80 boards** and **custom boards can be easily added**.
-* Apio provides out of the box tens of simple **project examples ready to build and upload**.
-* Apio currently supports the **ICE40** and **ECP5** FPGA architecture with **GOWIN** architecture in the works.
+Apio is a powerful yet **easy-to-use toolbox for FPGA development using Verilog and System Verilog**. It’s simple to install, no toolchains, licenses, or makefiles required, and works across **Linux, Windows, and macOS**. Apio is **open source, free to use**, and supports every stage of the FPGA workflow, **from simulating and testing, to building and programming the FPGA**, using simple commands such as `apio test`, `apio build`, and `apio upload` that do what you expect them to do. Apio integrates smoothly with any text editor and works great with Visual Studio Code and GitHub. It currently supports over **80 FPGA boards**, custom boards can be easily added, and it includes over 60 **ready-to-use example projects**. Apio currently supports the **ICE40, ECP5, and GOWIN** FPGA architectures.
+
+[Example] Simulation results using the command `apio sim`:
+![](docs/assets/sim-gtkwave.png)
 
 ## The Apio philosophy
 
-Apio makes **extremely easy** the process of working with **FPGAs**. Go from **scratch** to having a **blinky LED** in your FPGA board in minutes! This is because it is was designed for ease of use and uses only **Free/Libre Open Source Software** (FLOSS). Just install it and use it as you want.
+Apio was designed from the ground up to be **extremely easy to use** and use only **Free/Libre Open Source Software** (FLOSS). Just install it and use it as you like.
 
 
 In this animation you can see the whole process of testing the Blinky led circuit: Just type the command ``apio upload`` and the circuit will be synthesized, and uploaded into the FPGA
@@ -48,8 +46,7 @@ As the user **gh02t** said in this post on [Hacker-news](https://news.ycombinato
 
 ## Sample Apio Commands
 
-Below are typical apio commands that are used during the project developement cycle. The commands
-are simple and intuitive.
+Below are typical Apio commands used during the project development cycle. The commands are simple and intuitive.
 
 ```
 # Create a project
@@ -67,7 +64,7 @@ apio sim ledon_tb.v                  # Simulate the testbench and open a graphic
 
 ## Apio and higher level tools
 
-While many use Apio as a stand alone text based CLI toolbox, it can also be used with higher level graphical tools such as [Icestudio](https://icestudio.io/):
+While many use Apio as a stand alone text based CLI toolbox, it can also be used with higher level graphical tools such as its sister project [Icestudio](https://icestudio.io/):
 
 
 ![](https://github.com/FPGAwars/Apio-wiki/raw/main/wiki/Introduction/icestudio-example.png)
@@ -80,11 +77,14 @@ While many use Apio as a stand alone text based CLI toolbox, it can also be used
 [![Introduction to FPGA YouTube Series](https://raw.githubusercontent.com/ShawnHymel/introduction-to-fpga/main/images/Intro%20to%20FPGA%20Part%201_Thumbnail.png)](https://www.youtube.com/watch?v=lLg1AgA2Xoo&list=PLEBQazB0HUyT1WmMONxRZn9NmQ_9CIKhb)
 
 
-## Documentation
+## Resources
 
-* [Apio daily builds and installation guide](https://github.com/FPGAwars/apio-dev-builds)
+* [Apio Documentation](https://fpgawars.github.io/apio/)
+* [Getting started with Apio](https://fpgawars.github.io/apio/quick-start)
+* [Apio github repository](https://github.com/FPGAwars/apio)
+* [Apio package on PyPi](https://pypi.org/project/apio/)
+* [Apio daily builds](https://github.com/FPGAwars/apio-dev-builds)
 
-* [Apio Documentation Wiki](https://github.com/FPGAwars/apio/wiki)
 
 
 ## Authors
