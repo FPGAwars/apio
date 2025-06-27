@@ -3,17 +3,22 @@
 [![PyPI Version][pypi-image]][pypi-url]
 [![License][license-image]][license-url]
 
-[![test](https://github.com/FPGAwars/apio/actions/workflows/test.yaml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/test.yaml)
-[![build-and-release](https://github.com/zapta/apio-dev-builds/actions/workflows/build-and-release.yaml/badge.svg)](https://github.com/zapta/apio-dev-builds/actions/workflows/build-and-release.yaml)
-[![monitor-apio-prod](https://github.com/FPGAwars/apio/actions/workflows/monitor-apio-prod.yaml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/monitor-apio-prod.yaml)
-[![monitor-apio-latest](https://github.com/FPGAwars/apio/actions/workflows/monitor-apio-latest.yaml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/monitor-apio-latest.yaml)
-[![publish-mkdocs-docs](https://github.com/FPGAwars/apio/actions/workflows/publish-mkdocs-docs.yaml/badge.svg)](https://github.com/FPGAwars/apio/actions/workflows/publish-mkdocs-docs.yaml)
-[![build-and-release](https://github.com/FPGAwars/apio-examples/actions/workflows/build-and-release.yaml/badge.svg)](https://github.com/FPGAwars/apio-examples/actions/workflows/build-and-release.yaml)
-[![build-and-release](https://github.com/FPGAwars/tools-oss-cad-suite/actions/workflows/build-and-release.yaml/badge.svg)](https://github.com/FPGAwars/tools-oss-cad-suite/actions/workflows/build-and-release.yaml)
-[![build-and-release](https://github.com/FPGAwars/tools-verible/actions/workflows/build-and-release.yaml/badge.svg)](https://github.com/FPGAwars/tools-verible/actions/workflows/build-and-release.yaml)
-[![build-and-release](https://github.com/FPGAwars/tools-graphviz/actions/workflows/build-and-release.yml/badge.svg)](https://github.com/FPGAwars/tools-graphviz/actions/workflows/build-and-release.yml)
-[![build-and-release](https://github.com/FPGAwars/tools-drivers/actions/workflows/build-and-release.yaml/badge.svg)](https://github.com/FPGAwars/tools-drivers/actions/workflows/build-and-release.yaml)
-[![test](https://github.com/FPGAwars/apio-examples/actions/workflows/test.yaml/badge.svg)](https://github.com/FPGAwars/apio-examples/actions/workflows/test.yaml)
+
+
+
+[![apio-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/test.yaml?label=apio-test)](https://github.com/fpgawars/apio/actions/workflows/test.yaml)
+[![apio-dev-build](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-dev-builds/build-and-release.yaml?label=apio-dev-build)](https://github.com/fpgawars/apio-dev-builds/actions/workflows/build-and-release.yaml)
+[![monitor-apio-prod](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/monitor-apio-prod.yaml?label=apio-prod-monitor)](https://github.com/fpgawars/apio/actions/workflows/monitor-apio-prod.yaml)
+[![monitor-apio-latest](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/monitor-apio-latest.yaml?label=apio-latest-monitor)](https://github.com/fpgawars/apio/actions/workflows/monitor-apio-latest.yaml)
+[![mkdocs-publishing](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/publish-mkdocs-docs.yaml?label=apio-mkdocs)](https://github.com/fpgawars/apio/actions/workflows/publish-mkdocs-docs.yaml)
+[![oss-cad-suite-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-oss-cad-suite/build-and-release.yaml?label=apio-oss-cad-suite)](https://github.com/fpgawars/tools-oss-cad-suite/actions/workflows/build-and-release.yaml)
+[![verible-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-verible/build-and-release.yaml?label=apio-verible)](https://github.com/fpgawars/tools-verible/actions/workflows/build-and-release.yaml)
+[![graphviz-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-graphviz/build-and-release.yaml?label=apio-graphviz)](https://github.com/fpgawars/tools-graphviz/actions/workflows/build-and-release.yaml)
+[![drivers-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-drivers/build-and-release.yaml?label=apio-rivers)](https://github.com/fpgawars/tools-drivers/actions/workflows/build-and-release.yaml)
+[![examples-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-examples/test.yaml?label=apio-xamples)](https://github.com/fpgawars/apio-examples/actions/workflows/test.yaml)
+
+
+
 
 ![][linux-logo]&nbsp;&nbsp;&nbsp;![][macosx-logo]&nbsp;&nbsp;&nbsp;![][windows-logo]&nbsp;&nbsp;&nbsp;![][ubuntu-logo]&nbsp;&nbsp;&nbsp;![][raspbian-logo]
 
