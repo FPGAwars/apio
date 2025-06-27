@@ -1,12 +1,12 @@
 Installing Apio
 Apio can be installed in a few ways:
 
-| Method         | Description                                                   | Platforms             |
-| :------------- | :------------------------------------------------------------ | :-------------------- |
-| Pip package    | Installed using Python `pip` command. Requires Python.        | macOS, Linux, Windows |
-| Installer      | A standalone installation using an installer wizard.          | macOS, Windows        |
-| Debian package | A standalone installation using the `apt` package manager.    | Linux                 |
-| File bundle    | A standalone file archive with executables and support files. | macOS, Linux, Windows |
+| Method             | Description                                                   | Platforms             |
+| :----------------- | :------------------------------------------------------------ | :-------------------- |
+| **Pip package**    | Installed using Python `pip` command. Requires Python.        | macOS, Linux, Windows |
+| **Installer**      | A standalone installation using an installer wizard.          | macOS, Windows        |
+| **Debian package** | A standalone installation using the `apt` package manager.    | Linux                 |
+| **File bundle**    | A standalone file archive with executables and support files. | macOS, Linux, Windows |
 
 To install Apio, select your platform and preferred installation method from the Table of Contents in the sidebar.
 If the sidebar is not visible, scroll down to find the installation guide for your platform.
