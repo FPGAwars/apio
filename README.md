@@ -14,7 +14,7 @@
 [![oss-cad-suite-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-oss-cad-suite/build-and-release.yaml?label=apio-oss-cad-suite)](https://github.com/fpgawars/tools-oss-cad-suite/actions/workflows/build-and-release.yaml)
 [![verible-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-verible/build-and-release.yaml?label=apio-verible)](https://github.com/fpgawars/tools-verible/actions/workflows/build-and-release.yaml)
 [![graphviz-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-graphviz/build-and-release.yaml?label=apio-graphviz)](https://github.com/fpgawars/tools-graphviz/actions/workflows/build-and-release.yaml)
-[![drivers-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-drivers/build-and-release.yaml?label=apio-rivers)](https://github.com/fpgawars/tools-drivers/actions/workflows/build-and-release.yaml)
+[![drivers-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-drivers/build-and-release.yaml?label=apio-drivers)](https://github.com/fpgawars/tools-drivers/actions/workflows/build-and-release.yaml)
 [![examples-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-examples/test.yaml?label=apio-xamples)](https://github.com/fpgawars/apio-examples/actions/workflows/test.yaml)
 
 
