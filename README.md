@@ -56,7 +56,7 @@ apio sim ledon_tb.v                  # Simulate the testbench and open a graphic
 
 ## Apio and higher level tools
 
-While many use Apio as a stand alone text based CLI toolbox, it can also be used with higher level graphical tools such as [Icestudio](https://icestudio.io/):
+While many use Apio as a stand alone text based CLI toolbox, it can also be used with higher level graphical tools such as its sister project [Icestudio](https://icestudio.io/):
 
 
 ![](https://github.com/FPGAwars/Apio-wiki/raw/main/wiki/Introduction/icestudio-example.png)
