@@ -34,9 +34,9 @@ nav:
   - Home: index.md
   - Getting Started:
       - Quick start: quick-start.md
-      - Video tutorial: video-tutorial.md
       - System requirements: system-requirements.md
       - Installing Apio: installing-apio.md
+      - Video tutorial: video-tutorial.md
       - Migrating from Apio 0.x.x: migrating-from-apio-0xx.md
   - Apio Commands:
       - Build Commands:
