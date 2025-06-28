@@ -171,12 +171,12 @@ message TargetParams {
 // using piped output on windows.
 // See:  https://github.com/Textualize/rich/issues/3082
 //       https://github.com/Textualize/rich/issues/3625
-message RichLibWindowsParams {
-  // Copy of WindowsConsoleFeatures.vt.
-  required bool vt = 1;
-  // Copy of WindowsConsoleFeatures.truecolor.
-  required bool truecolor = 2;
-}
+// message RichLibWindowsParams {
+//   // Copy of WindowsConsoleFeatures.vt.
+//   required bool vt = 1;
+//   // Copy of WindowsConsoleFeatures.truecolor.
+//   required bool truecolor = 2;
+// }
 
 // The top level messages that is passed from the apio process to
 // the scons process.
@@ -205,5 +205,5 @@ message SconsParams {
   optional TargetParams target = 7;
 
   // Should be populated if an only if environment.is_windows is true.
-  optional RichLibWindowsParams rich_lib_windows_params = 8;
+  // optional RichLibWindowsParams rich_lib_windows_params = 8;
 }
