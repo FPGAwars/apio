@@ -10,8 +10,8 @@ build:
 
 python:
   install:
-    - requirements: requirements.txt
+    - requirements: docs-old-redirect/requirements.txt
 
 sphinx:
-  configuration: docs/conf.py
+  configuration: docs-old-redirect/docs/conf.py
 
