@@ -21,12 +21,12 @@
             "request": "launch",
             "program": "${workspaceFolder}/apio/__main__.py",
             "args": [
-                "api",
-                "get-commands"
+                "test",
+                "main_tb.sv"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/test/example_projects/ice40/alhambra-ii/icestudio-ledon"
+            "cwd": "/Users/user/work1"
         },
         {
             "name": "Attach remote debugger",
