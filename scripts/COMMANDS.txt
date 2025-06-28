@@ -760,23 +760,16 @@ Usage: apio info colors [OPTIONS]
 
   The command 'apio info colors' shows how ansi colors are rendered on
   the platform, and is typically used to diagnose color related issues.
-  While the color name and styling is always handled by the Python Rich
-  library, the output is done via three different libraries, based on
-  the user's selection.
 
+  The command shows the themes colors even if the current theme is
+  'no-colors'.
 
   Examples:
     apio info colors          # Rich library output (default)
-    apio info colors --rich   # Same as above.
-    apio info colors --click  # Click library output.
-    apio info colors --print  # Python's print() output.
     apio inf col -p           # Using shortcuts.
 
 Options:
-  -r, --rich   Output using the rich lib.
-  -c, --click  Output using the click lib.
-  -p, --print  Output using python's print().
-  -h, --help   Show this message and exit.
+  -h, --help  Show this message and exit.
 
 
 
@@ -833,6 +826,8 @@ Usage: apio info themes [OPTIONS]
   The command 'apio info themes' shows the colors of the Apio themes. It
   can be used to select the theme that works the best for you. Type
   'apio preferences -h' for information on our to select a theme.
+
+  The command shows colors even if the current theme is 'no-colors'.
 
 
   Examples:

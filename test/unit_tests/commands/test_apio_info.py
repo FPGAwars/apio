@@ -40,7 +40,7 @@ def test_apio_info(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(apio, ["info", "colors"])
         assert result.exit_code == 0, result.output
         assert result.output != cunstyle(result.output)  # Colored
-        assert "ANSI Colors [RICH mode]" in result.output
+        assert "ANSI Colors" in result.output
         assert "\x1b[31m  1 red                 \x1b[0m" in result.output
 
         # -- Execute "apio info themes"
