@@ -13,13 +13,20 @@ from rich.table import Table
 from rich.text import Text
 from rich import box
 from rich.color import ANSI_COLOR_NAMES
-from apio.common.apio_styles import BORDER, EMPH1, EMPH3
+from apio.common.apio_styles import BORDER, EMPH1, EMPH3, INFO
 from apio.utils import util, cmd_util
 from apio.utils.cmd_util import check_at_most_one_param
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
-from apio.common.apio_console import PADDING, cout, cstyle, ctable
-from apio.common.apio_themes import THEMES_TABLE
+from apio.common.apio_themes import THEMES_TABLE, THEME_LIGHT
+from apio.common.apio_console import (
+    PADDING,
+    cout,
+    cstyle,
+    ctable,
+    get_theme,
+    configure,
+)
 
 
 # ------ apio info system
@@ -251,6 +258,14 @@ def _colors_cli(
         assert 0 <= num <= 255
         lookup[num] = name
 
+    # -- Make sure the current theme supports colors, otherwise they will
+    # -- suppressed
+    if get_theme().colors_enabled:
+        saved_theme_name = None
+    else:
+        saved_theme_name = get_theme().name
+        configure(theme_name=THEME_LIGHT.name)
+
     # -- Print the table.
     num_rows = 64
     num_cols = 4
@@ -276,6 +291,10 @@ def _colors_cli(
         output_func(line)
 
     cout()
+
+    # -- Restore the original theme.
+    if saved_theme_name:
+        configure(theme_name=saved_theme_name)
 
 
 # ------ apio info themes
@@ -322,9 +341,17 @@ def _themes_cli():
         title_justify="left",
     )
 
+    # -- Get selected theme
+    selected_theme = get_theme()
+    selected_theme_name = selected_theme.name
+
     # -- Add the table columns, one per theme.
-    for theme_name in THEMES_TABLE:
-        table.add_column(theme_name.upper(), no_wrap=True, justify="center")
+    for theme_name, theme in THEMES_TABLE.items():
+        assert theme_name == theme.name
+        column_name = theme_name.upper()
+        if theme_name == selected_theme_name:
+            column_name = f"*{column_name}*"
+        table.add_column(column_name, no_wrap=True, justify="center")
 
     # -- Append the table rows
     for style_name in style_names:
@@ -347,9 +374,22 @@ def _themes_cli():
 
         table.add_row(*row_values)
 
+    # -- Make sure the current theme supports colors, otherwise they will
+    # -- suppressed
+    if get_theme().colors_enabled:
+        saved_theme_name = None
+    else:
+        saved_theme_name = get_theme().name
+        configure(theme_name=THEME_LIGHT.name)
+
     # -- Render the table.
     cout()
     ctable(table)
+
+    if saved_theme_name:
+        configure(theme_name=saved_theme_name)
+
+    cout("To change your theme use 'apio preferences -t ...'", style=INFO)
     cout()
 
 
