@@ -409,6 +409,7 @@ class SconsFilter:
                 (r"^warning:", WARNING),
                 # -- Error patterns.
                 (r"^error:", ERROR),
+                (r"fail: ", ERROR),
                 (r"fatal: ", ERROR),
                 (r"assertion failed", ERROR),
                 # -- Success patterns
