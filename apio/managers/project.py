@@ -411,7 +411,7 @@ def load_project_from_file(
     # -- Currently, apio.ini is still optional so we just warn.
     if not file_path.exists():
         cerror("Missing project file apio.ini.")
-        cout(f"Looked for a file at '{file_path}'", style=INFO)
+        cout(f"Expected a file at '{file_path.absolute()}'", style=INFO)
         sys.exit(1)
 
     # -- Read and parse the file.
