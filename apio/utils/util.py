@@ -36,7 +36,9 @@ class ApioException(Exception):
 
 
 class AsyncPipe(Thread):
-    """DOC: TODO"""
+    """A class that implements a pipe that calls back on each incoming line
+    from an internal thread. Used to process in real time scons output to
+    show its progress."""
 
     def __init__(self, line_callback=None):
         """If line_callback is not None, it is called for each line as
@@ -45,6 +47,9 @@ class AsyncPipe(Thread):
             "\r"   (CR)
             "\n"   (LF)
             ""     (EOF)
+
+        The callback is done from a private Python thread of this pipe so make
+        sure to have the proper locking and synchronization as needed.
         """
 
         Thread.__init__(self)

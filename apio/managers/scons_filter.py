@@ -14,6 +14,7 @@
 # when writing to a pipe.
 
 import re
+import threading
 from enum import Enum
 from typing import List, Optional, Tuple
 from apio.common.apio_console import cout, cunstyle, cwrite, cstyle
@@ -171,18 +172,30 @@ class SconsFilter:
         self._is_debug = util.is_debug(1)
         self._is_verbose_debug = util.is_debug(3)
 
-        # -- Acidulates string pieces until we write and flush them. This
+        # -- Accumulates string pieces until we write and flush them. This
         # -- mechanism is used to display progress bar correctly, Writing the
         # -- erasure string only when a new value is available.
         self._output_bfr: str = ""
 
+        # -- The stdout and stderr are called from independent threads, so we
+        # -- protect the handling method with this lock.
+        # --
+        # -- We don't protect the third thread which is main(). We hope that
+        # -- it doesn't any print console output while these two threads are
+        # -- active, otherwise it can mingle the output.
+        self._thread_lock = threading.Lock()
+
     def on_stdout_line(self, line: str, terminator: str) -> None:
-        """Stdout pipe calls this on each line."""
-        self.on_line(PipeId.STDOUT, line, terminator)
+        """Stdout pipe calls this on each line. Called from the stdout thread
+        in AsyncPipe."""
+        with self._thread_lock:
+            self.on_line(PipeId.STDOUT, line, terminator)
 
     def on_stderr_line(self, line: str, terminator: str) -> None:
-        """Stderr pipe calls this on each line."""
-        self.on_line(PipeId.STDERR, line, terminator)
+        """Stderr pipe calls this on each line. Called from the stderr thread
+        in AsyncPipe."""
+        with self._thread_lock:
+            self.on_line(PipeId.STDERR, line, terminator)
 
     @staticmethod
     def _assign_line_color(
