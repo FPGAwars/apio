@@ -9,6 +9,7 @@ import json
 import re
 import sys
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Dict, Optional
 from pathlib import Path
 import requests
@@ -212,10 +213,19 @@ class Profile:
         # -- Process the json file
         data = json.load(profile)
 
+        # -- Determine if the cached remote config is usable.
+        remote_config = data.get("remote-config", {})
+        config_apio_version = remote_config.get("metadata", {}).get(
+            "loaded-by", ""
+        )
+        config_usable = config_apio_version == util.get_apio_version()
+        if remote_config and not config_apio_version:
+            cout("Cached remote config is stale, will refresh it.", style=INFO)
+
         # -- Extract the fields
         self.preferences = data.get("preferences", {})
         self.packages = data.get("installed-packages", {})
-        self.remote_config = data.get("remote-config", {})
+        self.remote_config = remote_config if config_usable else {}
 
         # -- Indicate that the current remote config may be old.
         self.remote_config_fetched = False
@@ -333,6 +343,13 @@ class Profile:
             # -- Show the error and abort.
             cerror("Invalid remote config file", f"{exc}")
             sys.exit(1)
+
+        # -- Append remote config metadata
+        metadata_dict = {}
+        metadata_dict["loaded-by"] = util.get_apio_version()
+        metadata_dict["loaded-at"] = datetime.now().strftime("%Y-%m-%d-%H-%M")
+        metadata_dict["loaded-from"] = self.remote_config_url
+        remote_config["metadata"] = metadata_dict
 
         # -- Do some checks and fail if invalid. This is not an exhaustive
         # -- check.
