@@ -14,6 +14,7 @@
 # when writing to a pipe.
 
 import re
+import time
 import threading
 from enum import Enum
 from typing import List, Optional, Tuple
@@ -162,6 +163,8 @@ class SconsFilter:
     intereset, mutates and colors the lines where applicable, and print to
     stdout."""
 
+    # pylint: disable=too-many-instance-attributes
+
     def __init__(self, colors_enabled: bool):
         self.colors_enabled = colors_enabled
         self._pnr_detector = PnrRangeDetector()
@@ -184,6 +187,9 @@ class SconsFilter:
         # -- it doesn't any print console output while these two threads are
         # -- active, otherwise it can mingle the output.
         self._thread_lock = threading.Lock()
+
+        # -- Timer for measuring progress bar line interval
+        self._last_line_time = time.time_ns()
 
     def on_stdout_line(self, line: str, terminator: str) -> None:
         """Stdout pipe calls this on each line. Called from the stdout thread
@@ -214,7 +220,11 @@ class SconsFilter:
         self, line: str, style: Optional[str], terminator: str
     ) -> None:
         """Output a line. If a style is given, force that style, otherwise,
-        pass on any color information it may have."""
+        pass on any color information it may have. The implementation takes
+        into consideration progress bars such as when uploading with the
+        iceprog programmer. These progress bar require certain timing between
+        the chars to have sufficient time to display the text before erasing
+        it."""
 
         # -- Apply style if needed.
         if style:
@@ -222,21 +232,36 @@ class SconsFilter:
         else:
             line_part = line
 
-        # -- Append line + terminator to buffer.
-        self._output_bfr += line_part + terminator
+        # -- Get line conditions.
+        is_white = len(line.strip()) == 0
+        is_cr = terminator == "\r"
 
-        # -- Determine if this is an eraser of a progress bar. If so, we
-        # -- don't write it out but wait to the next content first, to
-        # -- let the previous content time to be displayed. This is required
-        # -- because we buffer the lines for matching rather than outputing
-        # -- the individual bytes as they arrive, while preserving the
-        # -- the delays between content and erasers.
-        is_eraser = len(line.strip()) == 0 and terminator == "\r"
+        if not is_cr:
+            # -- Terminator is EOF or \n. We flush everything.
+            self._output_bfr += line_part + terminator
+            leftover = ""
+            flush = True
+        elif is_white:
+            # -- Terminator is \r and line is white space (progress bar
+            # -- eraser). We queue and and wait for the updated text.
+            self._output_bfr += line_part + terminator
+            leftover = ""
+            flush = False
+        else:
+            # -- Terminator is \r and line has actual text, we flush it out
+            # -- but save queue the \r because on windows 10 cmd it clears the
+            # -- line(?)
+            self._output_bfr += line_part
+            leftover = terminator
+            flush = True
 
-        # -- Write and flush if needed.
-        if not is_eraser:
+        if flush:
+            # -- Flush the buffer and queue the optional leftover terminator.
             cwrite(self._output_bfr)
-            self._output_bfr = ""
+            self._output_bfr = leftover
+        else:
+            # -- We just queued. Should have no leftover here.
+            assert not leftover
 
     def _ignore_line(self, line: str) -> None:
         """Handle an ignored line. It's dumped if in debug mode."""
@@ -258,8 +283,12 @@ class SconsFilter:
         """
 
         if self._is_verbose_debug:
+            prev_time = self._last_line_time
+            self._last_line_time = time.time_ns()
+            elapsed_ms = (self._last_line_time - prev_time) / 1000000
             cout(
-                f"*** LINE: [{pipe_id}], [{repr(line)}], [{repr(terminator)}]",
+                f"*** LINE: [{elapsed_ms:.2f}] [{pipe_id}], [{repr(line)}], "
+                f"[{repr(terminator)}]",
                 style=INFO,
             )
 
