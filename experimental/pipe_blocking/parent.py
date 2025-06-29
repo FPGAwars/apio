@@ -92,7 +92,8 @@ def run_cmd(cmd: List[str]):
 
 # Adjust the iceprog command as needed. May need to set the shell envs based
 # on the setting info from 'apio raw -v'.
-# exit_code = run_cmd(["iceprog.exe", "-d", "d:2/7", "_build/default/hardware.bin"])
+# exit_code = run_cmd(["iceprog.exe", "-d", "d:2/7", "bitstream.bin"])
 
 exit_code = run_cmd(["python", "child.py"])
+
 print(f"{exit_code=}")
