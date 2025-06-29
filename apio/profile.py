@@ -62,7 +62,7 @@ class Profile:
         self.preferences = {}
 
         # -- Installed package versions
-        self.packages = {}
+        self.installed_packages = {}
 
         # -- A copy of remote config.
         self.remote_config = {}
@@ -79,10 +79,16 @@ class Profile:
         # -- Read the profile from file
         self.load()
 
-    def add_package(self, name: str, version: str):
+    def add_package(self, name: str, version: str, platform_id: str, url: str):
         """Add a package to the profile class"""
 
-        self.packages[name] = {"version": version}
+        self.installed_packages[name] = {
+            "version": version,
+            "platform": platform_id,
+            "loaded-by": util.get_apio_version(),
+            "loaded-at": datetime.now().strftime("%Y-%m-%d-%H-%M"),
+            "loaded-from": url,
+        }
         self._save()
 
     def set_preferences_theme(self, theme: str):
@@ -94,8 +100,8 @@ class Profile:
     def remove_package(self, name: str):
         """Remove a package from the profile file"""
 
-        if name in self.packages.keys():
-            del self.packages[name]
+        if name in self.installed_packages.keys():
+            del self.installed_packages[name]
             self._save()
 
     @staticmethod
@@ -129,18 +135,14 @@ class Profile:
         # -- Get the click context, if exists.
         return theme if theme else default
 
-    def get_package_installed_version(
-        self, package_name: str, default="0.0.0"
-    ) -> str:
-        """Return the installed version of the given package of default if
-        not installed."""
-
-        # -- If package is installed, return the installed version.
-        if package_name in self.packages:
-            return self.packages[package_name]["version"]
-
-        # -- Else, return the default value.
-        return default
+    def get_package_installed_info(self, package_name: str) -> Optional[str]:
+        """Return (package_version, platform_id) of the given installed
+        package. Values are replaced with "" if not installed or a value is
+        missing."""
+        package_info = self.installed_packages.get(package_name, {})
+        package_version = package_info.get("version", "")
+        platform_id = package_info.get("platform", "")
+        return (package_version, platform_id)
 
     def _check_remote_config(self, config: Dict):
         """Check that the package versions have the expected format YYYY.MM.DD
@@ -169,9 +171,8 @@ class Profile:
         verbose: bool = False,
     ) -> PackageRemoteConfig:
         """Given a package name, return the remote config information with the
-        version and fetch information.
-        If cached_config_ok is False, we make sure to use a fresh remote config
-        from this invocation of apio.
+        version and fetch information. If cached_config_ok is False, we make
+        sure to use a fresh remote config from this invocation of apio.
         """
         config = self._get_remote_config(
             cached_config_ok=cached_config_ok, verbose=verbose
@@ -224,7 +225,7 @@ class Profile:
 
         # -- Extract the fields
         self.preferences = data.get("preferences", {})
-        self.packages = data.get("installed-packages", {})
+        self.installed_packages = data.get("installed-packages", {})
         self.remote_config = remote_config if config_usable else {}
 
         # -- Indicate that the current remote config may be old.
@@ -243,14 +244,14 @@ class Profile:
         if self.preferences:
             data["preferences"] = self.preferences
 
-        if self.packages:
-            data["installed-packages"] = self.packages
+        if self.installed_packages:
+            data["installed-packages"] = self.installed_packages
         if self.remote_config:
             data["remote-config"] = self.remote_config
 
         # -- Write to profile file.
         with open(self._profile_path, "w", encoding="utf8") as f:
-            json.dump(data, f, indent=4, sort_keys=True)
+            json.dump(data, f, indent=4)
 
         # -- Dump for debugging.
         if util.is_debug(1):

@@ -207,7 +207,7 @@ def install_missing_packages_on_the_fly(apio_ctx: ApioContext) -> None:
     # -- installed ok, and not installed.
     # --
     # -- Get lists of installed and required packages.
-    installed_packages = apio_ctx.profile.packages
+    installed_packages = apio_ctx.profile.installed_packages
     required_packages_names = apio_ctx.platform_packages.keys()
 
     # -- Install any required package that is not installed.
@@ -283,19 +283,26 @@ def install_package(
     # -- nothing to do and we leave quietly.
     if not force_reinstall:
         # -- Get the version of the installed package, None if not installed.
-        installed_version = apio_ctx.profile.get_package_installed_version(
-            package_name, default=None
+        installed_version, package_platform_id = (
+            apio_ctx.profile.get_package_installed_info(package_name)
         )
 
         if verbose:
-            cout(f"Installed version: {installed_version}")
+            cout(
+                f"Installed version: {installed_version} "
+                f"({package_platform_id})"
+            )
 
         # -- If the installed and the target versions are the same then
         # -- nothing to do.
-        if target_version == installed_version:
+        if (
+            target_version == installed_version
+            and package_platform_id == apio_ctx.platform_id
+        ):
             if verbose:
                 cout(
-                    f"Version {target_version} is already installed",
+                    f"Version {target_version} ({package_platform_id}) "
+                    "already installed",
                     style=SUCCESS,
                 )
             return
@@ -307,7 +314,7 @@ def install_package(
         cout(pending_announcement)
         pending_announcement = True
 
-    cout(f"Fetching version {target_version}")
+    cout(f"Fetching version {target_version} ({apio_ctx.platform_id})")
 
     # -- Construct the download URL.
     download_url = _construct_package_download_url(
@@ -343,7 +350,9 @@ def install_package(
     local_package_file.unlink()
 
     # -- Add package to profile and save.
-    apio_ctx.profile.add_package(package_name, target_version)
+    apio_ctx.profile.add_package(
+        package_name, target_version, apio_ctx.platform_id, download_url
+    )
     # apio_ctx.profile.save()
 
     # -- Inform the user!

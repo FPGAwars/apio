@@ -28,7 +28,7 @@ def print_packages_report(apio_ctx: ApioContext, verbose: bool) -> None:
     )
 
     # -- Shortcuts to reduce clutter.
-    get_package_version = apio_ctx.profile.get_package_installed_version
+    get_package_version = apio_ctx.profile.get_package_installed_info
     get_package_info = apio_ctx.get_package_info
 
     table = Table(
@@ -43,14 +43,15 @@ def print_packages_report(apio_ctx: ApioContext, verbose: bool) -> None:
 
     table.add_column("PACKAGE NAME", no_wrap=True)
     table.add_column("VERSION", no_wrap=True)
+    table.add_column("PLATFORM", no_wrap=True)
     table.add_column("DESCRIPTION", no_wrap=True)
     table.add_column("STATUS", no_wrap=True)
 
     # -- Add raws for installed ok packages.
     for package_name in scan.installed_ok_package_names:
-        version = get_package_version(package_name)
+        version, platform_id = get_package_version(package_name)
         description = get_package_info(package_name)["description"]
-        table.add_row(package_name, version, description, "OK")
+        table.add_row(package_name, version, platform_id, description, "OK")
 
     # -- Add rows for uninstalled packages.
     for package_name in scan.uninstalled_package_names:
@@ -59,22 +60,25 @@ def print_packages_report(apio_ctx: ApioContext, verbose: bool) -> None:
             package_name, None, description, "Uninstalled", style=INFO
         )
 
-    # -- Add raws for installed with version mismatch packages.
+    # -- Add raws for installed with version or platform mismatch.
     for package_name in scan.bad_version_package_names:
-        version = get_package_version(package_name)
+        version, platform_id = get_package_version(package_name)
         description = get_package_info(package_name)["description"]
         table.add_row(
             package_name,
             version,
+            platform_id,
             description,
-            "Wrong version",
+            "Mismatch",
             style=ERROR,
         )
 
     # -- Add rows for broken packages.
     for package_name in scan.broken_package_names:
         description = get_package_info(package_name)["description"]
-        table.add_row(package_name, None, description, "Broken", style=ERROR)
+        table.add_row(
+            package_name, None, None, description, "Broken", style=ERROR
+        )
 
     # -- Render table.
     cout()
