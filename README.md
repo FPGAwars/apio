@@ -81,9 +81,9 @@ While many use Apio as a stand alone text based CLI toolbox, it can also be used
 
 * [Apio Documentation](https://fpgawars.github.io/apio/)
 * [Getting started with Apio](https://fpgawars.github.io/apio/quick-start)
-* [Apio github repository](https://github.com/FPGAwars/apio)
+* [Apio github repository](https://github.com/fpgawars/apio)
 * [Apio package on PyPi](https://pypi.org/project/apio/)
-* [Apio daily builds](https://github.com/FPGAwars/apio-dev-builds)
+* [Apio daily build](https://github.com/fpgawars/apio-dev-builds/releases)
 
 
 

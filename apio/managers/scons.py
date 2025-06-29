@@ -21,7 +21,6 @@ from apio.utils import util, pkg_util
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
 from apio.managers import installer
-from apio.common import rich_lib_windows
 from apio.common.proto.apio_pb2 import (
     FORCE_PIPE,
     FORCE_TERMINAL,
@@ -41,6 +40,8 @@ from apio.common.proto.apio_pb2 import (
     ApioTestParams,
     UploadParams,
 )
+
+# from apio.common import rich_lib_windows
 
 
 # W0703: Catching too general exception Exception (broad-except)
@@ -323,10 +324,10 @@ class SCons:
             assert result.target.IsInitialized(), result
 
         # -- If windows, populate the rich library workaround parameters.
-        if apio_ctx.is_windows:
-            result.rich_lib_windows_params.MergeFrom(
-                rich_lib_windows.get_workaround_params()
-            )
+        # if apio_ctx.is_windows:
+        #     result.rich_lib_windows_params.MergeFrom(
+        #         rich_lib_windows.get_workaround_params()
+        #     )
 
         # -- All done.
         assert result.IsInitialized(), result

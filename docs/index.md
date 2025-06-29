@@ -2,7 +2,7 @@
 
 ![](assets/apio-illustration.png)
 
-**Apio** is an **easy-to-install** and **easy-to-use** open-source application that simplifies FPGA development. It provides simple commands such as:
+**Apio** is an **easy-to-install** and **easy-to-use** open-source toolbox that simplifies FPGA development. It provides simple commands such as:
 
 - `apio lint` – to verify the code
 - `apio sim` – to simulate the design

@@ -63,25 +63,21 @@ apio info system   # Show system information
 
 ## apio info colors
 
-The `apio info colors` command shows how ANSI colors are rendered on your system, which helps diagnose color-related issues.  
-It uses one of three output libraries: Rich, Click, or Python's built-in `print()`.
+The `apio info colors` command shows how ANSI colors are rendered on your
+system, which helps diagnose color-related issues.  
+
+> The command shows colors even if the current theme is `no-colors`.
 
 <h3>Examples</h3>
 
 ```
 apio info colors          # Rich library output (default)
-apio info colors --rich   # Rich library output (same as above)
-apio info colors --click  # Click library output
-apio info colors --print  # Python's print() output
 apio sys col -p           # Using shortcut
 ```
 
 <h3>Options</h3>
 
 ```
--r, --rich   Output using the Rich library
--c, --click  Output using the Click library
--p, --print  Output using Python's print()
 -h, --help   Show this message and exit
 ```
 
@@ -92,6 +88,8 @@ apio sys col -p           # Using shortcut
 The command `apio info themes` shows the colors of the Apio themes. It
 can be used to select the theme that works the best for you. Type
 `apio preferences -h` for information on our to select a theme.
+
+> The command shows the themes colors even if the current theme is `no-colors`.
 
 <h3>Examples</h3>
 ```

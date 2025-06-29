@@ -14,6 +14,7 @@
 # when writing to a pipe.
 
 import re
+import threading
 from enum import Enum
 from typing import List, Optional, Tuple
 from apio.common.apio_console import cout, cunstyle, cwrite, cstyle
@@ -158,7 +159,7 @@ class IVerilogRangeDetector(RangeDetector):
 class SconsFilter:
     """Implements the filtering and printing of the stdout/err streams of the
     scons subprocess. Accepts a line one at a time, detects lines ranges of
-    intereset, mutates and colors the lines where applicable, and print to
+    interest, mutates and colors the lines where applicable, and print to
     stdout."""
 
     def __init__(self, colors_enabled: bool):
@@ -171,18 +172,30 @@ class SconsFilter:
         self._is_debug = util.is_debug(1)
         self._is_verbose_debug = util.is_debug(3)
 
-        # -- Acidulates string pieces until we write and flush them. This
+        # -- Accumulates string pieces until we write and flush them. This
         # -- mechanism is used to display progress bar correctly, Writing the
         # -- erasure string only when a new value is available.
         self._output_bfr: str = ""
 
+        # -- The stdout and stderr are called from independent threads, so we
+        # -- protect the handling method with this lock.
+        # --
+        # -- We don't protect the third thread which is main(). We hope that
+        # -- it doesn't any print console output while these two threads are
+        # -- active, otherwise it can mingle the output.
+        self._thread_lock = threading.Lock()
+
     def on_stdout_line(self, line: str, terminator: str) -> None:
-        """Stdout pipe calls this on each line."""
-        self.on_line(PipeId.STDOUT, line, terminator)
+        """Stdout pipe calls this on each line. Called from the stdout thread
+        in AsyncPipe."""
+        with self._thread_lock:
+            self.on_line(PipeId.STDOUT, line, terminator)
 
     def on_stderr_line(self, line: str, terminator: str) -> None:
-        """Stderr pipe calls this on each line."""
-        self.on_line(PipeId.STDERR, line, terminator)
+        """Stderr pipe calls this on each line. Called from the stderr thread
+        in AsyncPipe."""
+        with self._thread_lock:
+            self.on_line(PipeId.STDERR, line, terminator)
 
     @staticmethod
     def _assign_line_color(
@@ -201,7 +214,11 @@ class SconsFilter:
         self, line: str, style: Optional[str], terminator: str
     ) -> None:
         """Output a line. If a style is given, force that style, otherwise,
-        pass on any color information it may have."""
+        pass on any color information it may have. The implementation takes
+        into consideration progress bars such as when uploading with the
+        iceprog programmer. These progress bar require certain timing between
+        the chars to have sufficient time to display the text before erasing
+        it."""
 
         # -- Apply style if needed.
         if style:
@@ -209,21 +226,36 @@ class SconsFilter:
         else:
             line_part = line
 
-        # -- Append line + terminator to buffer.
-        self._output_bfr += line_part + terminator
+        # -- Get line conditions.
+        is_white = len(line.strip()) == 0
+        is_cr = terminator == "\r"
 
-        # -- Determine if this is an eraser of a progress bar. If so, we
-        # -- don't write it out but wait to the next content first, to
-        # -- let the previous content time to be displayed. This is required
-        # -- because we buffer the lines for matching rather than outputing
-        # -- the individual bytes as they arrive, while preserving the
-        # -- the delays between content and erasers.
-        is_eraser = len(line.strip()) == 0 and terminator == "\r"
+        if not is_cr:
+            # -- Terminator is EOF or \n. We flush everything.
+            self._output_bfr += line_part + terminator
+            leftover = ""
+            flush = True
+        elif is_white:
+            # -- Terminator is \r and line is white space (progress bar
+            # -- eraser). We queue and and wait for the updated text.
+            self._output_bfr += line_part + terminator
+            leftover = ""
+            flush = False
+        else:
+            # -- Terminator is \r and line has actual text, we flush it out
+            # -- but save queue the \r because on windows 10 cmd it clears the
+            # -- line(?)
+            self._output_bfr += line_part
+            leftover = terminator
+            flush = True
 
-        # -- Write and flush if needed.
-        if not is_eraser:
+        if flush:
+            # -- Flush the buffer and queue the optional leftover terminator.
             cwrite(self._output_bfr)
-            self._output_bfr = ""
+            self._output_bfr = leftover
+        else:
+            # -- We just queued. Should have no leftover here.
+            assert not leftover
 
     def _ignore_line(self, line: str) -> None:
         """Handle an ignored line. It's dumped if in debug mode."""
@@ -396,6 +428,7 @@ class SconsFilter:
                 (r"^warning:", WARNING),
                 # -- Error patterns.
                 (r"^error:", ERROR),
+                (r"fail: ", ERROR),
                 (r"fatal: ", ERROR),
                 (r"assertion failed", ERROR),
                 # -- Success patterns

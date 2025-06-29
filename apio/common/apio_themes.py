@@ -90,9 +90,8 @@ THEME_DARK = ApioTheme(
 THEME_NO_COLORS = ApioTheme(
     name="no-colors",
     colors_enabled=False,
-    # -- We need to have some styles so borrowing from the light theme
-    # -- but colors are disabled per the flag above.
-    styles=THEME_LIGHT.styles.copy(),
+    # -- A fake style table that is suppressed by the flag above.
+    styles={key: "" for key in THEME_LIGHT.styles},
 )
 
 # -- Mapping of theme name to theme object.

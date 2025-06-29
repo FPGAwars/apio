@@ -13,13 +13,19 @@ from rich.table import Table
 from rich.text import Text
 from rich import box
 from rich.color import ANSI_COLOR_NAMES
-from apio.common.apio_styles import BORDER, EMPH1, EMPH3
-from apio.utils import util, cmd_util
-from apio.utils.cmd_util import check_at_most_one_param
+from apio.common.apio_styles import BORDER, EMPH1, EMPH3, INFO
+from apio.utils import util
 from apio.apio_context import ApioContext, ApioContextScope
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
-from apio.common.apio_console import PADDING, cout, cstyle, ctable
-from apio.common.apio_themes import THEMES_TABLE
+from apio.common.apio_themes import THEMES_TABLE, THEME_LIGHT
+from apio.common.apio_console import (
+    PADDING,
+    cout,
+    cstyle,
+    ctable,
+    get_theme,
+    configure,
+)
 
 
 # ------ apio info system
@@ -162,46 +168,14 @@ def _platforms_cli():
 # -- Text in the rich-text format of the python rich library.
 APIO_INFO_COLORS_HELP = """
 The command 'apio info colors' shows how ansi colors are rendered on \
-the platform, and is typically used to diagnose color related issues. \
-While the color name and styling is always handled by the Python Rich \
-library, the output is done via three different libraries, based on \
-the user's selection.
+the platform, and is typically used to diagnose color related issues.
 
+The command shows the themes colors even if the current theme is 'no-colors'.
 
 Examples:[code]
   apio info colors          # Rich library output (default)
-  apio info colors --rich   # Same as above.
-  apio info colors --click  # Click library output.
-  apio info colors --print  # Python's print() output.
   apio inf col -p           # Using shortcuts.[/code]
 """
-
-rich_option = click.option(
-    "rich_",  # Var name.
-    "-r",
-    "--rich",
-    is_flag=True,
-    help="Output using the rich lib.",
-    cls=cmd_util.ApioOption,
-)
-
-click_option = click.option(
-    "click_",  # Var name.
-    "-c",
-    "--click",
-    is_flag=True,
-    help="Output using the click lib.",
-    cls=cmd_util.ApioOption,
-)
-
-print_option = click.option(
-    "print_",  # Var name.
-    "-p",
-    "--print",
-    is_flag=True,
-    help="Output using python's print().",
-    cls=cmd_util.ApioOption,
-)
 
 
 @click.command(
@@ -210,46 +184,25 @@ print_option = click.option(
     short_help="Colors table.",
     help=APIO_INFO_COLORS_HELP,
 )
-@click.pass_context
-@rich_option
-@click_option
-@print_option
-def _colors_cli(
-    cmd_ctx: click.Context,
-    # options
-    rich_: bool,
-    click_: bool,
-    print_: bool,
-):
+def _colors_cli():
     """Implements the 'apio info colors' command."""
 
-    # pylint: disable=too-many-locals
-
-    # -- Make pylint happy.
-    _ = (rich_,)
-
-    # -- Allow at most one of --click and --print.
-    check_at_most_one_param(cmd_ctx, ["rich_", "click_", "print_"])
-
-    # -- Select by output type.
-    if click_:
-        mode = "CLICK"
-        output_func = click.echo
-    elif print_:
-        mode = "PRINT"
-        output_func = print
-    else:
-        mode = "RICH"
-        output_func = cout
-
     # -- Print title.
-    cout("", f"ANSI Colors [{mode} mode]", "")
+    cout("", "ANSI Colors", "")
 
     # -- Create a reversed num->name map
     lookup = {}
     for name, num in ANSI_COLOR_NAMES.items():
         assert 0 <= num <= 255
         lookup[num] = name
+
+    # -- Make sure the current theme supports colors, otherwise they will
+    # -- suppressed
+    if get_theme().colors_enabled:
+        saved_theme_name = None
+    else:
+        saved_theme_name = get_theme().name
+        configure(theme_name=THEME_LIGHT.name)
 
     # -- Print the table.
     num_rows = 64
@@ -273,9 +226,13 @@ def _colors_cli(
         line = "   ".join(values)
 
         # -- Output the line.
-        output_func(line)
+        cout(line)
 
     cout()
+
+    # -- Restore the original theme.
+    if saved_theme_name:
+        configure(theme_name=saved_theme_name)
 
 
 # ------ apio info themes
@@ -285,6 +242,8 @@ APIO_INFO_THEMES_HELP = """
 The command 'apio info themes' shows the colors of the Apio themes. It can \
 be used to select the theme that works the best for you. Type  \
 'apio preferences -h' for information on our to select a theme.
+
+The command shows colors even if the current theme is 'no-colors'.
 
 [code]
 Examples:
@@ -322,9 +281,17 @@ def _themes_cli():
         title_justify="left",
     )
 
+    # -- Get selected theme
+    selected_theme = get_theme()
+    selected_theme_name = selected_theme.name
+
     # -- Add the table columns, one per theme.
-    for theme_name in THEMES_TABLE:
-        table.add_column(theme_name.upper(), no_wrap=True, justify="center")
+    for theme_name, theme in THEMES_TABLE.items():
+        assert theme_name == theme.name
+        column_name = theme_name.upper()
+        if theme_name == selected_theme_name:
+            column_name = f"*{column_name}*"
+        table.add_column(column_name, no_wrap=True, justify="center")
 
     # -- Append the table rows
     for style_name in style_names:
@@ -347,9 +314,22 @@ def _themes_cli():
 
         table.add_row(*row_values)
 
+    # -- Make sure the current theme supports colors, otherwise they will
+    # -- suppressed
+    if get_theme().colors_enabled:
+        saved_theme_name = None
+    else:
+        saved_theme_name = get_theme().name
+        configure(theme_name=THEME_LIGHT.name)
+
     # -- Render the table.
     cout()
     ctable(table)
+
+    if saved_theme_name:
+        configure(theme_name=saved_theme_name)
+
+    cout("To change your theme use 'apio preferences -t ...'", style=INFO)
     cout()
 
 

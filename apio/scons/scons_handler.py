@@ -71,10 +71,11 @@ class SconsHandler:
 
         # -- If running on windows, apply the lib library workaround
         if params.environment.is_windows:
-            assert params.HasField("rich_lib_windows_params"), params
-            rich_lib_windows.apply_workaround(params.rich_lib_windows_params)
-        else:
-            assert not params.HasField("rich_lib_windows_params"), params
+            # assert params.HasField("rich_lib_windows_params"), params
+            # rich_lib_windows.apply_workaround(params.rich_lib_windows_params)
+            rich_lib_windows.apply_workaround()
+        # else:
+        #     assert not params.HasField("rich_lib_windows_params"), params
 
         # -- Set terminal mode and theme to match the apio process.
         apio_console.configure(

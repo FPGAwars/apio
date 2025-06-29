@@ -87,6 +87,7 @@ def configure(
         # -- Used caller specified theme.
         assert theme_name in THEMES_TABLE, theme_name
         theme = THEMES_TABLE[theme_name]
+        assert theme.name == theme_name, theme
     elif _state:
         # -- Fall to theme name from state, if available.
         theme = _state.theme
@@ -337,3 +338,9 @@ def is_terminal():
 def cwidth():
     """Return the console width."""
     return console().width
+
+
+def get_theme() -> ApioTheme:
+    """Return the the current theme."""
+    check_apio_console_configured()
+    return _state.theme
