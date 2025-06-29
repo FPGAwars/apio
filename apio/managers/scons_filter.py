@@ -14,7 +14,6 @@
 # when writing to a pipe.
 
 import re
-import time
 import threading
 from enum import Enum
 from typing import List, Optional, Tuple
@@ -160,10 +159,8 @@ class IVerilogRangeDetector(RangeDetector):
 class SconsFilter:
     """Implements the filtering and printing of the stdout/err streams of the
     scons subprocess. Accepts a line one at a time, detects lines ranges of
-    intereset, mutates and colors the lines where applicable, and print to
+    interest, mutates and colors the lines where applicable, and print to
     stdout."""
-
-    # pylint: disable=too-many-instance-attributes
 
     def __init__(self, colors_enabled: bool):
         self.colors_enabled = colors_enabled
@@ -187,9 +184,6 @@ class SconsFilter:
         # -- it doesn't any print console output while these two threads are
         # -- active, otherwise it can mingle the output.
         self._thread_lock = threading.Lock()
-
-        # -- Timer for measuring progress bar line interval
-        self._last_line_time = time.time_ns()
 
     def on_stdout_line(self, line: str, terminator: str) -> None:
         """Stdout pipe calls this on each line. Called from the stdout thread
@@ -283,12 +277,8 @@ class SconsFilter:
         """
 
         if self._is_verbose_debug:
-            prev_time = self._last_line_time
-            self._last_line_time = time.time_ns()
-            elapsed_ms = (self._last_line_time - prev_time) / 1000000
             cout(
-                f"*** LINE: [{elapsed_ms:.2f}] [{pipe_id}], [{repr(line)}], "
-                f"[{repr(terminator)}]",
+                f"*** LINE: [{pipe_id}], [{repr(line)}], [{repr(terminator)}]",
                 style=INFO,
             )
 
