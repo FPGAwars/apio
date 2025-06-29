@@ -1,0 +1,98 @@
+# -----------------------------------------------------------------------------
+#- Alhambra II constraint file (.pcf)
+#- By Juan Gonzalez (Obijuan) and Jesus Arroyo Torrens
+#- May - 2018
+#- GPL license
+#- Repo: https://github.com/FPGAwars/Alhambra-II-FPGA
+# -----------------------------------------------------------------------------
+
+
+# ------------ User Leds ------------------------------------------------------
+set_io -nowarn LED0 45  # output
+set_io -nowarn LED1 44  # output
+set_io -nowarn LED2 43  # output
+set_io -nowarn LED3 42  # output
+set_io -nowarn LED4 41  # output
+set_io -nowarn LED5 39  # output
+set_io -nowarn LED6 38  # output
+set_io -nowarn LED7 37  # output
+
+# ------------ User push buttons ----------------------------------------------
+set_io -nowarn SW1 34  # input
+set_io -nowarn SW2 33  # input
+
+# ------------ 5v Digital I/O -------------------------------------------------
+
+# --- Top Female header
+#   ---------------------------------------   -------------------------------
+#  |  SCL SDA AR GND D13 D12 D11 D10 D9 D8 | | D7 D6  D5  D4  D3  D2  D1  D0 |
+#   ---------------------------------------   -------------------------------
+#
+#                     Male, 3 pin connectors
+#
+#               Gnd   *   *   *   *   *  *      *  *  *   *   *   *   *   * Gnd
+#               Vcc   *   *   *   *   *  *      *  *  *   *   *   *   *   * Vcc
+#               S     *   *   *   *   *  *      *  *  *   *   *   *   *   * S
+#
+#
+#                                                     Male, 3 pin connectors
+#                                                     *   *   *   *   *   *
+#                                                     *   *   *   *   *   *
+#                                                     *   *   *   *   *   *
+# --- Bottom female header
+#               -------------------------------     -------------------------
+#              |  x 5V  R 3v3 5vP  GND GND PWR |   | DD0 DD1 DD2 DD3 DD4 DD5 |
+#               -------------------------------     -------------------------
+
+# -- In top female header
+set_io -nowarn D13 64
+set_io -nowarn D12 63
+set_io -nowarn D11 21
+set_io -nowarn D10 22
+set_io -nowarn D9  19
+set_io -nowarn D8  20
+set_io -nowarn D7   9
+set_io -nowarn D6  10
+set_io -nowarn D5   7
+set_io -nowarn D4   8
+set_io -nowarn D3   3
+set_io -nowarn D2   4
+set_io -nowarn D1   1
+set_io -nowarn D0   2
+
+# -- In Bottom female header
+set_io -nowarn DD0 114
+set_io -nowarn DD1 115
+set_io -nowarn DD2 116
+set_io -nowarn DD3 117
+set_io -nowarn DD4 118
+set_io -nowarn DD5 119
+
+set_io -nowarn SDA 118
+set_io -nowarn SCL 119
+
+# -------------------------- I2C ADC ------------------------------------------
+set_io -nowarn ADC_SCL 84  # output
+set_io -nowarn ADC_SDA 83
+set_io -nowarn ADC_INT 90  # input
+
+# -------------------------- SYSTEM CLOCK -------------------------------------
+set_io -nowarn CLK 49  # input
+
+# -------------------------- FTDI ---------------------------------------------
+# --- FTDI 0:
+set_io -nowarn RES  66  # input
+set_io -nowarn DONE 65  # output
+set_io -nowarn SS   71  # output
+set_io -nowarn MISO 68  # input
+set_io -nowarn MOSI 67  # output
+set_io -nowarn SCK  70  # output
+#
+# --- FTDI 1: (Serial port)
+set_io -nowarn DCD 47  # output
+set_io -nowarn DSR 48  # output
+set_io -nowarn DTR 52  # input
+set_io -nowarn CTS 56  # output
+set_io -nowarn RTS 60  # input
+set_io -nowarn TX  61  # output
+set_io -nowarn RX  62  # input
