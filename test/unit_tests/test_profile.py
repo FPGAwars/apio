@@ -4,7 +4,7 @@ Tests of apio_profile.py
 
 import json
 from test.conftest import ApioRunner
-from apio.profile import Profile
+from apio.profile import Profile, get_datetime_stamp, datetime_stamp_diff_days
 from apio.utils import util
 from apio.apio_context import ApioContext, ApioContextScope
 
@@ -131,3 +131,31 @@ def test_profile_loading_config_stale(apio_runner: ApioRunner):
         assert profile.installed_packages == test_data["installed-packages"]
         assert profile.remote_config == {}  # Config rejected
         assert not profile.remote_config_fetched
+
+
+def test_datetime_stamp_diff_days():
+    """Test the datetime timestamp diff."""
+
+    ts_now = get_datetime_stamp()
+    assert datetime_stamp_diff_days(ts_now, ts_now) == 0
+
+    assert (
+        datetime_stamp_diff_days("2025-06-15-07-30", "2025-06-16-00-01") == 1
+    )
+
+    assert (
+        datetime_stamp_diff_days("2025-06-16-00-01", "2025-06-15-07-30") == -1
+    )
+
+    assert (
+        datetime_stamp_diff_days("2025-06-15-00-00", "2025-06-15-23-59") == 0
+    )
+
+    assert (
+        datetime_stamp_diff_days("2025-06-15-00-0x", "2025-06-15-23-59")
+        == None
+    )
+
+    assert (
+        datetime_stamp_diff_days("2025-06-15-20-15", "2025-06-20-00-01") == 5
+    )
