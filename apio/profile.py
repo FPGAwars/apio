@@ -134,10 +134,7 @@ class Profile:
         # -- A copy of remote config.
         self._cached_remote_config = {}
 
-        # -- We use this flag to make sure we fetch the config from the
-        # -- remote server no more than once, since it's not expected to change
-        # -- that often.
-        # self.remote_config_fetched = False
+
 
         # -- Get the profile path
         # -- Ex. '/home/obijuan/.apio'
@@ -159,19 +156,16 @@ class Profile:
 
         # -- Case 2 - A fresh config is required for the current command.
         if self._remote_config_policy == RemoteConfigPolicy.GET_FRESH:
-            self._fetch_and_update_remote_config(
-                error_is_fatal=True, verbose=False
-            )
+            self._fetch_and_update_remote_config(error_is_fatal=True)
             return
 
         # -- Case 3 - A fresh config is optional but there is no cached
         # -- config.
         assert self._remote_config_policy == RemoteConfigPolicy.CACHED_OK
         if not self._cached_remote_config:
-            cout("Saved remote config is not available.", style=INFO)
-            self._fetch_and_update_remote_config(
-                error_is_fatal=True, verbose=True
-            )
+            if util.is_debug(1):
+                cout("Saved remote config is not available.", style=INFO)
+            self._fetch_and_update_remote_config(error_is_fatal=True)
             return
 
         # -- Case 4 - May need to fetch a new config but can continue with
@@ -214,9 +208,7 @@ class Profile:
 
         # -- Fetch the new config if needed.
         if url_changed or time_expired or time_unexpected:
-            self._fetch_and_update_remote_config(
-                error_is_fatal=False, verbose=True
-            )
+            self._fetch_and_update_remote_config(error_is_fatal=False)
 
     def _check_config_enabled(self) -> None:
         """Check that the remote config is enabled for this invocation."""
@@ -308,9 +300,6 @@ class Profile:
         """
         self._check_config_enabled()
 
-        # config = self._fetch_remote_config_dict(verbose=verbose)
-        # config = self.remote_config
-
         # -- Extract package's remote config.
         package_config = self.remote_config["packages"][package_name]
         repo_name = package_config["repository"]["name"]
@@ -384,9 +373,7 @@ class Profile:
             cout("Saved profile:", style=EMPH3)
             cout(json.dumps(data, indent=2))
 
-    def _fetch_and_update_remote_config(
-        self, *, error_is_fatal: bool, verbose: bool
-    ) -> None:
+    def _fetch_and_update_remote_config(self, *, error_is_fatal: bool) -> None:
         """Returns the apio remote config JSON dict."""
 
         self._check_config_enabled()
@@ -394,17 +381,14 @@ class Profile:
         # -- Fetch the config text. Returns None if error_is_fatal=False and
         # -- fetch failed.
         config_text: Optional[str] = self._fetch_remote_config_text(
-            error_is_fatal=error_is_fatal, verbose=verbose
+            error_is_fatal=error_is_fatal
         )
 
         if config_text is None:
             assert not error_is_fatal
             return
 
-        # -- Here when download was ok.
-        # cout("Remote config fetched ok.")
-
-        # -- Print the file's content.
+        # -- Print the file's content for debugging
         if util.is_debug(1):
             cout(config_text)
 
@@ -446,7 +430,7 @@ class Profile:
         self._save()
 
         # Announce
-        if verbose:
+        if util.is_debug(1):
             cout("A fresh remote config was fetched and saved.", style=INFO)
 
     @staticmethod
@@ -484,16 +468,14 @@ class Profile:
         # -- All is ok.
         return True
 
-    def _fetch_remote_config_text(
-        self, error_is_fatal: bool, verbose: bool
-    ) -> Optional[str]:
+    def _fetch_remote_config_text(self, error_is_fatal: bool) -> Optional[str]:
         """Fetches and returns the apio remote config JSON text. In case
         of an error, returns None."""
 
         # pylint: disable=broad-exception-caught
 
         # -- Announce the remote config url
-        if verbose:
+        if util.is_debug(1):
             cout(
                 f"Fetching remote config from '{self.remote_config_url}'",
                 style=INFO,
