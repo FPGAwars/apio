@@ -214,9 +214,6 @@ class PackageScanResults:
 def package_version_ok(
     apio_ctx: ApioContext,
     package_name: str,
-    *,
-    cached_config_ok: bool,
-    verbose: bool,
 ) -> bool:
     """Return true if the package is both in profile and platform packages
     and its version in the profile meet the requirements in the
@@ -235,7 +232,7 @@ def package_version_ok(
 
     # -- Get the package remote config.
     package_config: PackageRemoteConfig = apio_ctx.profile.get_package_config(
-        package_name, cached_config_ok=cached_config_ok, verbose=verbose
+        package_name
     )
 
     # -- Compare to the required version. We expect the two version to be
@@ -243,9 +240,7 @@ def package_version_ok(
     return current_ver == package_config.release_version
 
 
-def scan_packages(
-    apio_ctx: ApioContext, *, cached_config_ok: bool, verbose: bool
-) -> PackageScanResults:
+def scan_packages(apio_ctx: ApioContext) -> PackageScanResults:
     """Scans the available and installed packages and returns
     the findings as a PackageScanResults object."""
 
@@ -267,12 +262,7 @@ def scan_packages(
         # -- Classify the package as one of four cases.
         in_profile = package_name in apio_ctx.profile.installed_packages
         has_dir = apio_ctx.get_package_dir(package_name).is_dir()
-        version_ok = package_version_ok(
-            apio_ctx,
-            package_name,
-            cached_config_ok=cached_config_ok,
-            verbose=verbose,
-        )
+        version_ok = package_version_ok(apio_ctx, package_name)
         if in_profile and has_dir:
             if version_ok:
                 # Case 1: Package installed ok.

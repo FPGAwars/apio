@@ -164,16 +164,12 @@ def _delete_package_dir(
     return dir_found
 
 
-def scan_and_fix_packages(
-    apio_ctx: ApioContext, cached_config_ok: bool, verbose=False
-) -> bool:
+def scan_and_fix_packages(apio_ctx: ApioContext) -> bool:
     """Scan the packages and fix if there are errors. Returns true
     if the packages are installed ok."""
 
     # -- Scan the packages.
-    scan = pkg_util.scan_packages(
-        apio_ctx, cached_config_ok=cached_config_ok, verbose=verbose
-    )
+    scan = pkg_util.scan_packages(apio_ctx)
 
     # -- If there are fixable errors, fix them.
     if scan.num_errors_to_fix() > 0:
@@ -194,9 +190,7 @@ def install_missing_packages_on_the_fly(apio_ctx: ApioContext) -> None:
     # -- Scan and fix broken package.
     # -- Since this is a on-the-fly operation, we don't require a fresh
     # -- remote config file for required packages versions.
-    installed_ok = scan_and_fix_packages(
-        apio_ctx, cached_config_ok=True, verbose=False
-    )
+    installed_ok = scan_and_fix_packages(apio_ctx)
 
     # -- If all the packages are installed, we are done.
     if installed_ok:
@@ -217,14 +211,11 @@ def install_missing_packages_on_the_fly(apio_ctx: ApioContext) -> None:
                 apio_ctx,
                 package_name=package_name,
                 force_reinstall=False,
-                cached_config_ok=False,
                 verbose=False,
             )
 
     # -- Here all packages should be ok but we check again just in case.
-    scan_results = pkg_util.scan_packages(
-        apio_ctx, cached_config_ok=False, verbose=False
-    )
+    scan_results = pkg_util.scan_packages(apio_ctx)
     if not scan_results.is_all_ok():
         cout(
             "Warning: packages issues detected. Use "
@@ -238,7 +229,6 @@ def install_package(
     *,
     package_name: str,
     force_reinstall: bool,
-    cached_config_ok: bool,
     verbose: bool,
 ) -> None:
     """Install a given package.
@@ -273,7 +263,7 @@ def install_package(
     # -- Get package remote config from the cache. Caller can refresh the
     # -- cache with the latest remote config if desired.
     package_config: PackageRemoteConfig = apio_ctx.profile.get_package_config(
-        package_name, cached_config_ok=cached_config_ok, verbose=verbose
+        package_name
     )
 
     # -- Get the version we should have.

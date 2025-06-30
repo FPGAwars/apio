@@ -174,7 +174,13 @@ class ApioContext:
             env_options.APIO_REMOTE_CONFIG_URL,
             default=self.config["remote-config"],
         )
-        self.profile = Profile(self.home_dir, remote_config_url, config_policy)
+        remote_config_ttl_days = self.config["remote-config-ttl-days"]
+        self.profile = Profile(
+            self.home_dir,
+            remote_config_url,
+            remote_config_ttl_days,
+            config_policy,
+        )
 
         # -- Read the platforms information.
         self.platforms = self._load_resource(PLATFORMS_JSONC)

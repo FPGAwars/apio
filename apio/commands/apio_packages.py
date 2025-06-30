@@ -19,13 +19,11 @@ from apio.commands import options
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
 
-def print_packages_report(apio_ctx: ApioContext, verbose: bool) -> None:
+def print_packages_report(apio_ctx: ApioContext) -> None:
     """A common function to print the state of the packages."""
 
     # -- Scan the packages
-    scan = pkg_util.scan_packages(
-        apio_ctx, cached_config_ok=False, verbose=verbose
-    )
+    scan = pkg_util.scan_packages(apio_ctx)
 
     # -- Shortcuts to reduce clutter.
     get_package_version = apio_ctx.profile.get_package_installed_info
@@ -168,13 +166,11 @@ def _update_cli(
         config_policy=RemoteConfigPolicy.GET_FRESH,
     )
 
-    cout(f"Platform id '{apio_ctx.platform_id}'")
+    # cout(f"Platform id '{apio_ctx.platform_id}'")
 
     # -- First thing, fix broken packages, if any. This forces fetching
     # -- of the latest remote config file.
-    installer.scan_and_fix_packages(
-        apio_ctx, cached_config_ok=False, verbose=verbose
-    )
+    installer.scan_and_fix_packages(apio_ctx)
 
     # -- Install the packages, one by one.
     for package in apio_ctx.platform_packages:
@@ -182,12 +178,11 @@ def _update_cli(
             apio_ctx,
             package_name=package,
             force_reinstall=force,
-            cached_config_ok=False,
             verbose=verbose,
         )
 
     # -- Scan the available and installed packages.
-    print_packages_report(apio_ctx, verbose=verbose)
+    print_packages_report(apio_ctx)
 
 
 # ------ apio packages list
@@ -209,20 +204,17 @@ Examples:[code]
     short_help="List apio packages.",
     help=APIO_PACKAGES_LIST_HELP,
 )
-@options.verbose_option
-def _list_cli(
-    # Options
-    verbose: bool,
-):
+# @options.verbose_option
+def _list_cli():
     """Implements the 'apio packages list' command."""
 
     apio_ctx = ApioContext(
         scope=ApioContextScope.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.GET_FRESH,
+        config_policy=RemoteConfigPolicy.CACHED_OK,
     )
 
     # -- Print packages report.
-    print_packages_report(apio_ctx, verbose=verbose)
+    print_packages_report(apio_ctx)
 
 
 # ------ apio packages (group)

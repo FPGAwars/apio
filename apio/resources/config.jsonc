@@ -1,6 +1,10 @@
 // General config parameters.
 //
 {
+  // How many days we keep a catched remote config before we fetch a new onw.
+  // Value of 1 means fetching once a day. 7 once every seven days, and so on.
+  "remote-config-ttl-days" : 1,
+
   // URL of the apio remote config file. The placeholder {V} is replaced at
   // runtime with apio's version such as "0.9.7".
   //
