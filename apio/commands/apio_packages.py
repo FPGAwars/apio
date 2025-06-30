@@ -13,7 +13,7 @@ from rich import box
 from apio.common.apio_console import cout, ctable
 from apio.common.apio_styles import INFO, BORDER, ERROR, SUCCESS
 from apio.managers import installer
-from apio.apio_context import ApioContext, ApioContextScope
+from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
 from apio.utils import pkg_util
 from apio.commands import options
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
@@ -163,7 +163,10 @@ def _update_cli(
 ):
     """Implements the 'apio packages update' command."""
 
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+    apio_ctx = ApioContext(
+        scope=ApioContextScope.NO_PROJECT,
+        config_policy=RemoteConfigPolicy.GET_FRESH,
+    )
 
     cout(f"Platform id '{apio_ctx.platform_id}'")
 
@@ -213,7 +216,10 @@ def _list_cli(
 ):
     """Implements the 'apio packages list' command."""
 
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+    apio_ctx = ApioContext(
+        scope=ApioContextScope.NO_PROJECT,
+        config_policy=RemoteConfigPolicy.GET_FRESH,
+    )
 
     # -- Print packages report.
     print_packages_report(apio_ctx, verbose=verbose)

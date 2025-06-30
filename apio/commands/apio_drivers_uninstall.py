@@ -10,7 +10,7 @@
 import sys
 import click
 from apio.managers.drivers import Drivers
-from apio.apio_context import ApioContext, ApioContextScope
+from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
 
@@ -36,7 +36,10 @@ def _ftdi_cli():
     """Implements the 'apio drivers uninstall ftdi' command."""
 
     # -- Create the apio context.
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+    apio_ctx = ApioContext(
+        scope=ApioContextScope.NO_PROJECT,
+        config_policy=RemoteConfigPolicy.CACHED_OK,
+    )
 
     # -- Create the drivers manager.
     drivers = Drivers(apio_ctx)
@@ -68,7 +71,10 @@ def _serial_cli():
     """Implements the 'apio drivers uninstall serial' command."""
 
     # -- Create the apio context.
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+    apio_ctx = ApioContext(
+        scope=ApioContextScope.NO_PROJECT,
+        config_policy=RemoteConfigPolicy.NO_CONFIG,
+    )
 
     # -- Create the drivers manager.
     drivers = Drivers(apio_ctx)

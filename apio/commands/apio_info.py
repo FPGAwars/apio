@@ -15,7 +15,7 @@ from rich import box
 from rich.color import ANSI_COLOR_NAMES
 from apio.common.apio_styles import BORDER, EMPH1, EMPH3, INFO
 from apio.utils import util
-from apio.apio_context import ApioContext, ApioContextScope
+from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 from apio.common.apio_themes import THEMES_TABLE, THEME_LIGHT
 from apio.common.apio_console import (
@@ -56,7 +56,10 @@ def _system_cli():
     """Implements the 'apio info system' command."""
 
     # Create the apio context.
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+    apio_ctx = ApioContext(
+        scope=ApioContextScope.NO_PROJECT,
+        config_policy=RemoteConfigPolicy.NO_CONFIG,
+    )
 
     # -- Define the table.
     table = Table(
@@ -121,7 +124,10 @@ def _platforms_cli():
     """Implements the 'apio info platforms' command."""
 
     # Create the apio context.
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+    apio_ctx = ApioContext(
+        scope=ApioContextScope.NO_PROJECT,
+        config_policy=RemoteConfigPolicy.NO_CONFIG,
+    )
 
     # -- Define the table.
     table = Table(
@@ -262,7 +268,10 @@ def _themes_cli():
     """Implements the 'apio info colors' command."""
 
     # -- This initializes the output console.
-    ApioContext(scope=ApioContextScope.NO_PROJECT)
+    ApioContext(
+        scope=ApioContextScope.NO_PROJECT,
+        config_policy=RemoteConfigPolicy.NO_CONFIG,
+    )
 
     # -- Collect the list of apio list names.
     style_names = set()

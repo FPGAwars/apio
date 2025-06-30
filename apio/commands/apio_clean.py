@@ -15,7 +15,7 @@ from typing import Optional, List
 from pathlib import Path
 import click
 from apio.commands import options
-from apio.apio_context import ApioContext, ApioContextScope
+from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
 from apio.utils import cmd_util, util
 from apio.common.apio_console import cout, cerror
 from apio.common.apio_styles import SUCCESS, ERROR
@@ -105,6 +105,7 @@ def cli(
     # -- not relevant for this command.
     apio_ctx = ApioContext(
         scope=ApioContextScope.PROJECT_REQUIRED,
+        config_policy=RemoteConfigPolicy.CACHED_OK,
         project_dir_arg=project_dir,
         report_env=False,
     )

@@ -4,7 +4,7 @@ Tests of apio_context.py
 
 import re
 from test.conftest import ApioRunner
-from apio.apio_context import ApioContext, ApioContextScope
+from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
 
 
 def lc_part_num(part_num: str) -> str:
@@ -19,7 +19,10 @@ def test_resources_references(apio_runner: ApioRunner):
     with apio_runner.in_sandbox():
 
         # -- Create an apio context so we can access the resources.
-        apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+        apio_ctx = ApioContext(
+            scope=ApioContextScope.NO_PROJECT,
+            config_policy=RemoteConfigPolicy.NO_CONFIG,
+        )
 
         unused_programmers = set(apio_ctx.programmers.keys())
 
@@ -64,7 +67,10 @@ def test_resources_names(apio_runner: ApioRunner):
     with apio_runner.in_sandbox():
 
         # -- Create an apio context so we can access the resources.
-        apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+        apio_ctx = ApioContext(
+            scope=ApioContextScope.NO_PROJECT,
+            config_policy=RemoteConfigPolicy.NO_CONFIG,
+        )
 
         for board in apio_ctx.boards.keys():
             assert board_name_regex.match(board), f"{board=}"
@@ -90,7 +96,10 @@ def test_fpga_definitions(apio_runner: ApioRunner):
     with apio_runner.in_sandbox():
 
         # -- Create an apio context so we can access the resources.
-        apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+        apio_ctx = ApioContext(
+            scope=ApioContextScope.NO_PROJECT,
+            config_policy=RemoteConfigPolicy.CACHED_OK,
+        )
 
         for fpga_id, fpga_info in apio_ctx.fpgas.items():
 

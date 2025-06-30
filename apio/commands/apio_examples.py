@@ -21,7 +21,7 @@ from apio.common.apio_styles import INFO, BORDER, EMPH1
 from apio.managers import installer
 from apio.managers.examples import Examples, ExampleInfo
 from apio.commands import options
-from apio.apio_context import ApioContext, ApioContextScope
+from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
 from apio.utils import util
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
@@ -127,7 +127,10 @@ def _list_cli(verbose: bool):
     """Implements the 'apio examples list' command group."""
 
     # -- Create the apio context.
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+    apio_ctx = ApioContext(
+        scope=ApioContextScope.NO_PROJECT,
+        config_policy=RemoteConfigPolicy.CACHED_OK,
+    )
 
     # --List all available examples.
     list_examples(apio_ctx, verbose)
@@ -167,7 +170,10 @@ def _fetch_cli(
     """Implements the 'apio examples fetch' command."""
 
     # -- Create the apio context.
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+    apio_ctx = ApioContext(
+        scope=ApioContextScope.NO_PROJECT,
+        config_policy=RemoteConfigPolicy.CACHED_OK,
+    )
 
     # -- Create the examples manager.
     examples = Examples(apio_ctx)

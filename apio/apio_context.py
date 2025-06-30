@@ -16,7 +16,7 @@ from typing import Optional, Dict
 from apio.common.apio_console import cout, cerror, cwarning, cstyle
 from apio.common.apio_styles import INFO, EMPH1
 from apio.common.common_util import env_build_path
-from apio.profile import Profile
+from apio.profile import Profile, RemoteConfigPolicy
 from apio.utils import jsonc, util, env_options
 from apio.managers.project import Project, load_project_from_file
 
@@ -88,6 +88,7 @@ class ApioContext:
         self,
         *,
         scope: ApioContextScope,
+        config_policy: RemoteConfigPolicy,
         project_dir_arg: Optional[Path] = None,
         env_arg: Optional[str] = None,
         report_env=True,
@@ -107,6 +108,8 @@ class ApioContext:
         If an apio.ini project is loaded, the method prints to the user the
         selected env and board, unless if report_env = False.
         """
+
+        # pylint: disable=too-many-arguments
 
         # -- Inform as soon as possible about the list of apio env options
         # -- that modify its default behavior.
@@ -171,7 +174,7 @@ class ApioContext:
             env_options.APIO_REMOTE_CONFIG_URL,
             default=self.config["remote-config"],
         )
-        self.profile = Profile(self.home_dir, remote_config_url)
+        self.profile = Profile(self.home_dir, remote_config_url, config_policy)
 
         # -- Read the platforms information.
         self.platforms = self._load_resource(PLATFORMS_JSONC)

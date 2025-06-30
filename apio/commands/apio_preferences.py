@@ -19,7 +19,7 @@ from apio.common.apio_console import cout, ctable
 from apio.common.apio_styles import BORDER, EMPH1, SUCCESS
 from apio.common.apio_themes import THEMES_TABLE, THEMES_NAMES, DEFAULT_THEME
 from apio.utils import cmd_util
-from apio.apio_context import ApioContext, ApioContextScope
+from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
 from apio.utils.cmd_util import ApioCommand
 
 # --- apio preferences
@@ -159,13 +159,19 @@ def cli(
 
     # -- Handle theme setting.
     if theme_name:
-        apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+        apio_ctx = ApioContext(
+            scope=ApioContextScope.NO_PROJECT,
+            config_policy=RemoteConfigPolicy.NO_CONFIG,
+        )
         _set_theme(apio_ctx, theme_name)
         sys.exit(0)
 
     # -- Handle preferences settings.
     if list_:
-        apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+        apio_ctx = ApioContext(
+            scope=ApioContextScope.NO_PROJECT,
+            config_policy=RemoteConfigPolicy.NO_CONFIG,
+        )
         _list_preferences(apio_ctx)
         sys.exit(0)
 

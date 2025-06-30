@@ -11,7 +11,7 @@ import sys
 import click
 from rich.table import Table
 from rich import box
-from apio.apio_context import ApioContext, ApioContextScope
+from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 from apio.managers import installer
 from apio.common.apio_console import cout, ctable
@@ -94,7 +94,10 @@ def _usb_cli():
     """Implements the 'apio devices usb' command."""
 
     # Create the apio context.
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+    apio_ctx = ApioContext(
+        scope=ApioContextScope.NO_PROJECT,
+        config_policy=RemoteConfigPolicy.CACHED_OK,
+    )
 
     # -- List all usb devices
     _list_usb_devices(apio_ctx)
@@ -182,7 +185,10 @@ def _serial_cli():
     """Implements the 'apio devices serial' command."""
 
     # Create the apio context.
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+    apio_ctx = ApioContext(
+        scope=ApioContextScope.NO_PROJECT,
+        config_policy=RemoteConfigPolicy.CACHED_OK,
+    )
 
     # -- List all connected serial devices
     _list_serial_devices(apio_ctx)

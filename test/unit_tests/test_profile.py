@@ -6,7 +6,7 @@ import json
 from test.conftest import ApioRunner
 from apio.profile import Profile, get_datetime_stamp, datetime_stamp_diff_days
 from apio.utils import util
-from apio.apio_context import ApioContext, ApioContextScope
+from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
 
 
 def get_test_data(loaded_by_apio_version: str, packages_platform_id: str):
@@ -17,7 +17,7 @@ def get_test_data(loaded_by_apio_version: str, packages_platform_id: str):
                 "version": "2025.06.13",
                 "platform-id": packages_platform_id,
                 "loaded-by": "0.9.7",
-                "loaded-at": "2025-06-29-14-48",
+                "loaded-at": "2025-01-29-14-48",
                 "loaded-from": (
                     "https://github.com/FPGAwars/apio-examples/"
                     "releases/download/2025-06-21/apio-examples-20250621.tgz"
@@ -27,7 +27,7 @@ def get_test_data(loaded_by_apio_version: str, packages_platform_id: str):
                 "version": "2025.06.21",
                 "platform-id": packages_platform_id,
                 "loaded-by": "0.9.7",
-                "loaded-at": "2025-06-29-14-48",
+                "loaded-at": "2025-01-29-14-48",
                 "loaded-from": (
                     "https://github.com/FPGAwars/apio-examples/"
                     "releases/download/2025-06-21/apio-examples-20250621.tgz"
@@ -37,7 +37,7 @@ def get_test_data(loaded_by_apio_version: str, packages_platform_id: str):
         "preferences": {"theme": "light"},
         "remote-config": {
             "metadata": {
-                "loaded-at": "2025-06-29-07-18",
+                "loaded-at": "2025-01-29-07-18",
                 "loaded-by": loaded_by_apio_version,
                 "loaded-from": (
                     "https://github.com/FPGAwars/apio/raw/develop/"
@@ -79,7 +79,10 @@ def test_profile_loading_config_ok(apio_runner: ApioRunner):
 
     with apio_runner.in_sandbox() as sb:
 
-        apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+        apio_ctx = ApioContext(
+            scope=ApioContextScope.NO_PROJECT,
+            config_policy=RemoteConfigPolicy.NO_CONFIG,
+        )
 
         # -- Write a test profile.json file.
         path = sb.home_dir / "profile.json"
@@ -95,7 +98,11 @@ def test_profile_loading_config_ok(apio_runner: ApioRunner):
         )
 
         # -- Read back the content.
-        profile = Profile(sb.home_dir, "http://fake-domain.com/config")
+        profile = Profile(
+            sb.home_dir,
+            "http://fake-domain.com/config",
+            RemoteConfigPolicy.CACHED_OK,
+        )
 
         # -- Verify
         assert profile.preferences == test_data["preferences"]
@@ -109,7 +116,10 @@ def test_profile_loading_config_stale(apio_runner: ApioRunner):
 
     with apio_runner.in_sandbox() as sb:
 
-        apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+        apio_ctx = ApioContext(
+            scope=ApioContextScope.NO_PROJECT,
+            config_policy=RemoteConfigPolicy.NO_CONFIG,
+        )
 
         # -- Write a test profile.json file. We set an old apio version
         # -- to cause the cached remote config to be classified as stale.
@@ -124,7 +134,11 @@ def test_profile_loading_config_stale(apio_runner: ApioRunner):
         )
 
         # -- Read back the content.
-        profile = Profile(sb.home_dir, "http://fake-domain.com/config")
+        profile = Profile(
+            sb.home_dir,
+            "http://fake-domain.com/config",
+            RemoteConfigPolicy.CACHED_OK,
+        )
 
         # -- Verify
         assert profile.preferences == test_data["preferences"]
@@ -153,7 +167,7 @@ def test_datetime_stamp_diff_days():
 
     assert (
         datetime_stamp_diff_days("2025-06-15-00-0x", "2025-06-15-23-59")
-        == None
+        is None
     )
 
     assert (
