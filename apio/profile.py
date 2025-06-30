@@ -16,7 +16,7 @@ from pathlib import Path
 import requests
 from apio.common import apio_console
 from apio.common.apio_console import cout, cerror, cwarning
-from apio.common.apio_styles import INFO, EMPH3, ERROR
+from apio.common.apio_styles import INFO, EMPH3
 from apio.utils import util, jsonc
 
 
@@ -134,8 +134,6 @@ class Profile:
         # -- A copy of remote config.
         self._cached_remote_config = {}
 
-
-
         # -- Get the profile path
         # -- Ex. '/home/obijuan/.apio'
         self._profile_path = home_dir / "profile.json"
@@ -188,21 +186,10 @@ class Profile:
         time_unexpected = days_since_last_fetch < 0
 
         # -- Announce a reason for the fetch. We announce at most one.
-        if url_changed:
+        if util.is_debug(1):
             cout(
-                "Remote config url changed.",
-                style=INFO,
-            )
-        elif time_expired:
-            cout(
-                f"Cached remote config is "
-                f"{util.plurality(days_since_last_fetch, 'day')} old.",
-                style=INFO,
-            )
-        elif time_unexpected:
-            cout(
-                f"Unexpected remote config cache age: "
-                f"{days_since_last_fetch} day(s).",
+                f"{days_since_last_fetch=}, {time_expired=}, "
+                f"{time_unexpected}, {url_changed=}",
                 style=INFO,
             )
 
@@ -335,16 +322,12 @@ class Profile:
             "loaded-by", ""
         )
         config_usable = config_apio_version == util.get_apio_version()
-        if remote_config and not config_apio_version:
-            cout("Cached remote config is stale, will refresh it.", style=INFO)
 
-        # -- Extract the fields
+        # -- Extract the fields. If remote config is of a different apio
+        # -- version, drop it.
         self.preferences = data.get("preferences", {})
         self.installed_packages = data.get("installed-packages", {})
         self._cached_remote_config = remote_config if config_usable else {}
-
-        # -- Indicate that the current remote config may be old.
-        # self.remote_config_fetched = False
 
     def _save(self):
         """Save the profile file"""
@@ -403,12 +386,15 @@ class Profile:
         except json.decoder.JSONDecodeError as exc:
 
             # -- Handle as a fatal error.
-            msg = "Invalid remote config file", f"{exc}"
+            msg = [
+                "Fetched a fresh remote config file but it failed to parse.",
+                f"{exc}",
+            ]
             if error_is_fatal:
-                cerror(msg)
+                cerror(*msg)
                 sys.exit(1)
             # -- Else, handle as a soft error
-            cwarning(msg)
+            cwarning(*msg)
             return
 
         # -- Append remote config metadata
@@ -492,7 +478,7 @@ class Profile:
                 # -- Since local config file can be fixed and doesn't depend
                 # -- on availability of a remote server, we make this a fatal
                 # -- error instead of returning None.
-                cout("Failed to load local config file.", str(e), style=ERROR)
+                cerror("Failed to read a local config file.", str(e))
                 sys.exit(1)
 
             # -- Local file read OK.
