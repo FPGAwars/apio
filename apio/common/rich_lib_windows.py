@@ -10,12 +10,9 @@
 """Functions to workaround the rich library bugs when stdout is piped out
 on windows."""
 
-# import os
 import sys
 import platform
 import rich.console
-
-# from apio.common.proto.apio_pb2 import RichLibWindowsParams
 
 
 def fix_windows_stdout_encoding() -> bool:
@@ -33,38 +30,9 @@ def fix_windows_stdout_encoding() -> bool:
     return False
 
 
-# def get_workaround_params() -> RichLibWindowsParams:
-#     """Called on the apio (parent) process side, when running on windows,
-#     to collect the parameters for the rich library workaround."""
-
-#     # For accessing rich.console._windows_console_features
-
-#     result = RichLibWindowsParams(
-#         vt=rich.console._windows_console_features.vt,
-#         truecolor=rich.console._windows_console_features.truecolor,
-#     )
-
-#     # -- An ad hoc is_debug() that avoids circular imports.
-#     if "APIO_DEBUG" in os.environ:
-#         print(f"Original RichLibWindowsParams: {result}")
-
-#     result = RichLibWindowsParams(
-#         vt=True,
-#         truecolor=True,
-#     )
-
-#     if "APIO_DEBUG" in os.environ:
-#         print(f"Forced RichLibWindowsParams: {result}")
-
-#     assert result.IsInitialized(), result
-#     return result
-
-
-# def apply_workaround(params: RichLibWindowsParams):
 def apply_workaround():
     """Called on the scons (child) process side, when running on windows,
     to apply the the workaround for the rich library."""
-    # assert params.IsInitialized, params
 
     # For accessing rich.console._windows_console_features
     # pylint: disable=protected-access
@@ -82,8 +50,5 @@ def apply_workaround():
     assert rich.console._windows_console_features is not None
 
     # -- Apply the patch.
-    # rich.console._windows_console_features.vt = params.vt
-    # rich.console._windows_console_features.truecolor = params.truecolor
-
     rich.console._windows_console_features.vt = True
     rich.console._windows_console_features.truecolor = True
