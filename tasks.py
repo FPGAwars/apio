@@ -1,8 +1,12 @@
 """Tasks definitions for the 'invoke' command."""
 
 # The 'invoke' pip packages is installed with apio.
-# To print available tasks:
-#   invoke -l
+# A few useful commands
+#   invoke --list        # Show available tasks
+#   invoke lint          # Lint the python code
+#   invoke test          # Run the offline tests (fast)
+#   invoke check         # Run lint and all the tests (slow)
+#   invoke install-apio  # Install to run 'apio' from the source code here.
 
 import sys
 import importlib.util
