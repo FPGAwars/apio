@@ -18,12 +18,12 @@ jobs:
             - name: Set up Python
               uses: actions/setup-python@v5
               with:
-                  python-version: "3.9"
+                  python-version: "3.13"
 
             # -- Install all the dependencies needed
-            - name: Install dependencies
-              run: |
-                  make deps
+            # - name: Install dependencies
+            #   run: |
+            #       make deps
 
             # -- Publish to Pypi!!
             - name: Publish to PyPi
@@ -31,4 +31,4 @@ jobs:
                   FLIT_USERNAME: ${{ secrets.PYPI_USERNAME }}
                   FLIT_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
               run: |
-                  make publish
+                  invoke publish

@@ -72,12 +72,12 @@ jobs:
           echo "Selected: $COMMIT_SHA"
           echo "Latest:   ${{github.sha}}"
 
-      - name: Checkout sources
+      - name: Checkout apio
         uses: actions/checkout@v3
         with:
           ref: ${{env.COMMIT_SHA}}
 
-      - name: Set up Python
+      - name: Install python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
@@ -85,9 +85,10 @@ jobs:
       - name: Show python version
         run: python --version
 
-      - name: Install dependencies
+      - name: Install dev tools
         run: |
-          make deps
+          pip install invoke
+          invoke deps
 
       - name: Maybe set APIO_REMOTE_CONFIG_URL
         run: |
@@ -101,6 +102,7 @@ jobs:
               echo "Not using APIO_REMOTE_CONFIG_URL"
           fi
 
+      # TODO: Move the logic here to an Invoke task and use it instead.
       - name: Run Tests
         run: |
           # Convert py version such as '3.13' to 'py313' as required by tox.ini.

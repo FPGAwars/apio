@@ -13,28 +13,57 @@
 
 import sys
 import importlib.util
+from importlib.metadata import version
 import subprocess
 from invoke import task
-from rich import print as out
 
 
 # -- NOTE: The first sentence of a task docstring is also its help string
 # -- which is printed when running 'invoke --list'.
 
+# -- Latest supported python version.
 LATEST_PYTHON = "py313"
 
 # -- The python interpreter that we currently use.
 PYTHON = sys.executable
 
 # -- Auto install packages that are not Apio dependencies but required here.
-modules = ["tox", "flit"]
-for module in modules:
-    if importlib.util.find_spec(module) is None:
-        out(f"[magenta]Auto installing package '{module}'.[/]")
-        subprocess.check_call([sys.executable, "-m", "pip", "install", module])
-    assert (
-        importlib.util.find_spec(module) is not None
-    ), f"'{module}' is not installed."
+
+deps = [
+    ("rich", "14.0.0"),
+    ("tox", "4.27.0"),
+    ("flit", "3.12.0"),
+]
+
+for module, required_version in deps:
+    if (
+        importlib.util.find_spec(module) is None
+        or version(module) != required_version
+    ):
+        print(f"\n*** Auto installing {module}@{required_version} ***")
+        subprocess.check_call(
+            [
+                sys.executable,
+                "-m",
+                "pip",
+                "install",
+                "--force-reinstall",
+                f"{module}=={required_version}",
+            ]
+        )
+    assert (importlib.util.find_spec(module) is not None) and (
+        version(module) == required_version
+    ), f"'{module}@{required_version}' is not installed."
+
+# -- Now that Rich is installed, we can import and use it.
+# pylint: disable=wrong-import-position
+from rich.console import Console  # noqa: E402
+
+console = Console()
+
+def out(*args, markup=False, highlight=False, **kwargs):
+    """A shortcut for Rich lib console.print()."""
+    console.print(*args, markup=markup, highlight=highlight, **kwargs)
 
 
 # ---------- Task 'lint' ----------
@@ -143,6 +172,13 @@ def install_apio_task(ctx):
     """Install apio package from source code."""
     cmd = f"{PYTHON} -m pip install -e ."
     ctx.run(cmd, pty=True)
+    ctx.run("apio --version", pty=True)
+    out(
+        "The source code here is now "
+        "installed as the 'apio' pip package.\n"
+        "Run 'apio' to test it.",
+        style="green bold",
+    )
 
 
 # ---------- Task 'uninstall-apio' ----------
@@ -151,5 +187,19 @@ def install_apio_task(ctx):
 @task(name="uninstall-apio", aliases=["ua"])
 def uninstall_apio_task(ctx):
     """Uninstall the apio package."""
-    cmd = f"{PYTHON} -m pip uninstall apio"
+    cmd = f"{PYTHON} -m pip uninstall -y apio"
     ctx.run(cmd, pty=True)
+    out("The'apio' pip package is uninstalled.", style="green bold")
+
+
+# ---------- Task 'install-deps' ----------
+
+
+@task(name="install-deps", aliases=["deps"])
+def install_deps_task(ctx):
+    """Install development tools. Since we do at at the top of this file
+    for every task, there is nothing to do here."""
+    _ = ctx
+    out("       required  installed")
+    for name, ver in deps:
+        out(f"{name:7s} {ver:9s} {version(name)}")
