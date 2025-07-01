@@ -193,6 +193,12 @@ Examples:[code]
 def _colors_cli():
     """Implements the 'apio info colors' command."""
 
+    # -- This initializes the output console.
+    ApioContext(
+        scope=ApioContextScope.NO_PROJECT,
+        config_policy=RemoteConfigPolicy.NO_CONFIG,
+    )
+
     # -- Print title.
     cout("", "ANSI Colors", "")
 

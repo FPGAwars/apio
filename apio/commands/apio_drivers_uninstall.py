@@ -73,7 +73,7 @@ def _serial_cli():
     # -- Create the apio context.
     apio_ctx = ApioContext(
         scope=ApioContextScope.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.NO_CONFIG,
+        config_policy=RemoteConfigPolicy.CACHED_OK,
     )
 
     # -- Create the drivers manager.
