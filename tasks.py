@@ -19,7 +19,7 @@ LATEST_PYTHON = "py313"
 # -- The python interpreter that we currently use.
 PYTHON = sys.executable
 
-# -- Auto the the package 'tox' if not already installed.
+# -- Auto install the package 'tox' if not already installed.
 if importlib.util.find_spec("tox") is None:
     out("[magenta]Auto installing the 'tox' package.[/]")
     subprocess.check_call([sys.executable, "-m", "pip", "install", "tox"])
