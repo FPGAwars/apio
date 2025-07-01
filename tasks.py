@@ -1,10 +1,11 @@
 """Tasks definitions for the 'invoke' command."""
 
-# The 'invoke' pip packages is installed with apio.
+# To install 'invoke' run: pip install invoke
+#
 # For more information see the Apio development guide at
 # https://fpgawars.github.io/apio/development-environment/
 #
-# A few useful commands
+# A few useful Invoke tasks
 #   invoke --list        # Show available tasks
 #   invoke lint          # Lint the python code
 #   invoke test          # Run the offline tests (fast)
