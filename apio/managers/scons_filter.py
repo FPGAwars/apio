@@ -170,7 +170,7 @@ class SconsFilter:
 
         # -- We cache the values to avoid reevaluating sys env.
         self._is_debug = util.is_debug(1)
-        self._is_verbose_debug = util.is_debug(3)
+        self._is_verbose_debug = util.is_debug(5)
 
         # -- Accumulates string pieces until we write and flush them. This
         # -- mechanism is used to display progress bar correctly, Writing the

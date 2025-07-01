@@ -23,7 +23,7 @@ from apio.common.common_util import get_project_source_files
 from apio.utils import cmd_util, usb_util, serial_util, util
 from apio.utils.usb_util import UsbDevice
 from apio.utils.serial_util import SerialDevice
-from apio.apio_context import ApioContext, ApioContextScope
+from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
 from apio.utils.cmd_util import (
     ApioGroup,
     ApioSubgroup,
@@ -116,7 +116,10 @@ def _get_system_cli(
 ):
     """Implements the 'apio apio get-system' command."""
 
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+    apio_ctx = ApioContext(
+        scope=ApioContextScope.NO_PROJECT,
+        config_policy=RemoteConfigPolicy.NO_CONFIG,
+    )
 
     # -- The top dict that we will emit as json.
     top_dict = {}
@@ -195,6 +198,7 @@ def _get_project_cli(
 
     apio_ctx = ApioContext(
         scope=ApioContextScope.PROJECT_REQUIRED,
+        config_policy=RemoteConfigPolicy.NO_CONFIG,
         project_dir_arg=project_dir,
         env_arg=env,
     )
@@ -266,7 +270,10 @@ def _get_boards_cli(
 
     # -- For now, the information is not in a project context. That may
     # -- change in the future.
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+    apio_ctx = ApioContext(
+        scope=ApioContextScope.NO_PROJECT,
+        config_policy=RemoteConfigPolicy.CACHED_OK,
+    )
 
     # -- The top dict that we will emit as json.
     top_dict = {}
@@ -346,7 +353,10 @@ def _get_fpgas_cli(
 
     # -- For now, the information is not in a project context. That may
     # -- change in the future.
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+    apio_ctx = ApioContext(
+        scope=ApioContextScope.NO_PROJECT,
+        config_policy=RemoteConfigPolicy.NO_CONFIG,
+    )
 
     # -- The top dict that we will emit as json.
     top_dict = {}
@@ -411,7 +421,10 @@ def _get_examples_cli(
 
     # -- For now, the information is not in a project context. That may
     # -- change in the future.
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+    apio_ctx = ApioContext(
+        scope=ApioContextScope.NO_PROJECT,
+        config_policy=RemoteConfigPolicy.CACHED_OK,
+    )
 
     # -- Get examples infos.
     examples: List[ExampleInfo] = Examples(apio_ctx).get_examples_infos()
@@ -539,7 +552,10 @@ def _get_commands_cli(
     assert top_cli.name == "apio", top_cli
 
     # -- This initializes the console, print active env vars, etc.
-    ApioContext(scope=ApioContextScope.NO_PROJECT)
+    ApioContext(
+        scope=ApioContextScope.NO_PROJECT,
+        config_policy=RemoteConfigPolicy.NO_CONFIG,
+    )
 
     # -- The top dict that we will emit as json.
     top_dict = {}
@@ -592,8 +608,12 @@ def _scan_devices_cli(
     """Implements the 'apio apio scan-devices' command."""
 
     # -- For now, the information is not in a project context. That may
-    # -- change in the future.
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+    # -- change in the future. We need the config since we use libusb from
+    # -- the packages.
+    apio_ctx = ApioContext(
+        scope=ApioContextScope.NO_PROJECT,
+        config_policy=RemoteConfigPolicy.CACHED_OK,
+    )
 
     # -- The top dict that we will emit as json.
     top_dict = {}

@@ -323,12 +323,6 @@ class SCons:
             result.target.MergeFrom(target_params)
             assert result.target.IsInitialized(), result
 
-        # -- If windows, populate the rich library workaround parameters.
-        # if apio_ctx.is_windows:
-        #     result.rich_lib_windows_params.MergeFrom(
-        #         rich_lib_windows.get_workaround_params()
-        #     )
-
         # -- All done.
         assert result.IsInitialized(), result
         return result

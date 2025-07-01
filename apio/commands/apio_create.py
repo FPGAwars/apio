@@ -14,7 +14,7 @@ import click
 from apio.common.apio_console import cerror
 from apio.utils import util, cmd_util
 from apio.commands import options
-from apio.apio_context import ApioContext, ApioContextScope
+from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
 from apio.managers.project import (
     DEFAULT_TOP_MODULE,
     create_project_file,
@@ -75,7 +75,10 @@ def cli(
         top_module = DEFAULT_TOP_MODULE
 
     # -- Create the apio context.
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+    apio_ctx = ApioContext(
+        scope=ApioContextScope.NO_PROJECT,
+        config_policy=RemoteConfigPolicy.NO_CONFIG,
+    )
 
     # -- Make sure the board exist.
     if board not in apio_ctx.boards:

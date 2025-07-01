@@ -19,7 +19,7 @@ from apio.common.apio_console import cout, ctable
 from apio.common.apio_styles import INFO
 from apio.common import apio_console
 from apio.common.apio_styles import BORDER, EMPH1
-from apio.apio_context import ApioContext, ApioContextScope
+from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
 from apio.utils import util, cmd_util
 from apio.commands import options
 from apio.managers.examples import Examples
@@ -275,11 +275,13 @@ def cli(
     )
 
     # -- Create the apio context. If the project exists, it's custom
-    # -- boards.jsonc is also loaded.
+    # -- boards.jsonc is also loaded. Config is required since we query
+    # -- the example package.
     # -- We suppress the message with the env and board names since it's
     # -- not relevant for this command.
     apio_ctx = ApioContext(
         scope=context_scope,
+        config_policy=RemoteConfigPolicy.CACHED_OK,
         project_dir_arg=project_dir,
         report_env=False,
     )

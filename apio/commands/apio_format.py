@@ -16,7 +16,7 @@ import click
 from apio.common.apio_console import cout, cerror, cstyle
 from apio.common.apio_styles import EMPH3, SUCCESS, INFO
 from apio.common.common_util import PROJECT_BUILD_PATH, sort_files
-from apio.apio_context import ApioContext, ApioContextScope
+from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
 from apio.commands import options
 from apio.managers import installer
 from apio.utils import util, pkg_util, cmd_util
@@ -88,6 +88,7 @@ def cli(
     # -- Create an apio context with a project object.
     apio_ctx = ApioContext(
         scope=ApioContextScope.PROJECT_REQUIRED,
+        config_policy=RemoteConfigPolicy.CACHED_OK,
         project_dir_arg=project_dir,
         env_arg=env,
     )

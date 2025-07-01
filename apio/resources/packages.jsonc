@@ -13,7 +13,7 @@
   },
   // "oss-cad-suite" package
   "oss-cad-suite": {
-    "description": "YosysHQ oss-cad-suite",
+    "description": "Yosys HQ oss-cad-suite",
     "env": {
       "path": [
         "%p/bin",

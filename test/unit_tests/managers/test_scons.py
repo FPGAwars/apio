@@ -10,7 +10,7 @@ from apio.common.proto.apio_pb2 import (
     TargetParams,
     LintParams,
 )
-from apio.apio_context import ApioContext, ApioContextScope
+from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
 from apio.managers.scons import SCons
 
 
@@ -109,7 +109,10 @@ def test_default_params(apio_runner: ApioRunner):
 
         # -- Setup a Scons object.
         sb.write_apio_ini(TEST_APIO_INI_DICT)
-        apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
+        apio_ctx = ApioContext(
+            scope=ApioContextScope.PROJECT_REQUIRED,
+            config_policy=RemoteConfigPolicy.NO_CONFIG,
+        )
         scons = SCons(apio_ctx)
 
         # -- Get the actual value.
@@ -127,18 +130,6 @@ def test_default_params(apio_runner: ApioRunner):
             sb.packages_dir / "oss-cad-suite/share/trellis"
         )
 
-        # The field rich_lib_windows_params is too dynamic so we just assert
-        # for its existence and remove it from the comparison.
-        # if apio_ctx.is_windows:
-        #     assert scons_params.HasField(
-        #         "rich_lib_windows_params"
-        #     ), scons_params
-        # else:
-        #     assert not scons_params.HasField(
-        #         "rich_lib_windows_params"
-        #     ), scons_params
-        # scons_params.ClearField("rich_lib_windows_params")
-
         # -- Compare actual to expected values.
         assert str(scons_params) == str(expected)
 
@@ -150,7 +141,10 @@ def test_explicit_params(apio_runner: ApioRunner):
 
         # -- Setup a Scons object.
         sb.write_apio_ini(TEST_APIO_INI_DICT)
-        apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
+        apio_ctx = ApioContext(
+            scope=ApioContextScope.PROJECT_REQUIRED,
+            config_policy=RemoteConfigPolicy.NO_CONFIG,
+        )
         scons = SCons(apio_ctx)
 
         # -- Get the actual value.
@@ -179,18 +173,6 @@ def test_explicit_params(apio_runner: ApioRunner):
         expected.environment.trellis_path = str(
             sb.packages_dir / "oss-cad-suite/share/trellis"
         )
-
-        # The field rich_lib_windows_params is too dynamic so we just assert
-        # for its existence and remove it from the comparison.
-        # if apio_ctx.is_windows:
-        #     assert scons_params.HasField(
-        #         "rich_lib_windows_params"
-        #     ), scons_params
-        # else:
-        #     assert not scons_params.HasField(
-        #         "rich_lib_windows_params"
-        #     ), scons_params
-        # scons_params.ClearField("rich_lib_windows_params")
 
         # -- Compare actual to expected values.
         assert str(scons_params) == str(expected)

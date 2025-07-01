@@ -5,7 +5,7 @@ Tests of the apio.managers.programmers.py module.
 from typing import List
 from test.conftest import ApioRunner
 from pytest import LogCaptureFixture, raises
-from apio.apio_context import ApioContext, ApioContextScope
+from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
 from apio.utils.usb_util import UsbDevice
 from apio.utils.serial_util import SerialDevice
 
@@ -108,7 +108,10 @@ def test_default_cmd_template(
             }
         )
 
-        apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
+        apio_ctx = ApioContext(
+            scope=ApioContextScope.PROJECT_REQUIRED,
+            config_policy=RemoteConfigPolicy.NO_CONFIG,
+        )
         programmer_cmd = _construct_cmd_template(apio_ctx)
 
         # -- Check result.
@@ -140,7 +143,10 @@ def test_custom_cmd_template(
             }
         )
 
-        apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
+        apio_ctx = ApioContext(
+            scope=ApioContextScope.PROJECT_REQUIRED,
+            config_policy=RemoteConfigPolicy.NO_CONFIG,
+        )
         programmer_cmd = _construct_cmd_template(apio_ctx)
 
         # -- Check the result.
@@ -169,7 +175,10 @@ def test_get_cmd_usb(apio_runner: ApioRunner, capsys: LogCaptureFixture):
         )
 
         # -- Construct the apio context.
-        apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
+        apio_ctx = ApioContext(
+            scope=ApioContextScope.PROJECT_REQUIRED,
+            config_policy=RemoteConfigPolicy.NO_CONFIG,
+        )
 
         # -- Create fake devices
         scanner = FakeDeviceScanner(
@@ -218,7 +227,10 @@ def test_get_cmd_usb_no_match(
         )
 
         # -- Construct the apio context.
-        apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
+        apio_ctx = ApioContext(
+            scope=ApioContextScope.PROJECT_REQUIRED,
+            config_policy=RemoteConfigPolicy.NO_CONFIG,
+        )
 
         # -- Create fake devices
         scanner = FakeDeviceScanner(
@@ -261,7 +273,10 @@ def test_get_cmd_usb_multiple_matches(
         )
 
         # -- Construct the apio context.
-        apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
+        apio_ctx = ApioContext(
+            scope=ApioContextScope.PROJECT_REQUIRED,
+            config_policy=RemoteConfigPolicy.NO_CONFIG,
+        )
 
         # -- Create fake devices
         scanner = FakeDeviceScanner(
@@ -309,7 +324,10 @@ def test_get_cmd_serial(apio_runner: ApioRunner, capsys: LogCaptureFixture):
         )
 
         # -- Construct the apio context.
-        apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
+        apio_ctx = ApioContext(
+            scope=ApioContextScope.PROJECT_REQUIRED,
+            config_policy=RemoteConfigPolicy.NO_CONFIG,
+        )
 
         # -- Create fake devices
         scanner = FakeDeviceScanner(
@@ -355,7 +373,10 @@ def test_get_cmd_serial_no_match(
         )
 
         # -- Construct the apio context.
-        apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
+        apio_ctx = ApioContext(
+            scope=ApioContextScope.PROJECT_REQUIRED,
+            config_policy=RemoteConfigPolicy.NO_CONFIG,
+        )
 
         # -- Create fake devices
         scanner = FakeDeviceScanner(
@@ -397,7 +418,10 @@ def test_get_cmd_serial_multiple_matches(
         )
 
         # -- Construct the apio context.
-        apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
+        apio_ctx = ApioContext(
+            scope=ApioContextScope.PROJECT_REQUIRED,
+            config_policy=RemoteConfigPolicy.NO_CONFIG,
+        )
 
         # -- Create fake devices
         scanner = FakeDeviceScanner(
@@ -446,7 +470,10 @@ def test_device_presence_ok(
         )
 
         # -- Construct the apio context.
-        apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
+        apio_ctx = ApioContext(
+            scope=ApioContextScope.PROJECT_REQUIRED,
+            config_policy=RemoteConfigPolicy.NO_CONFIG,
+        )
 
         # -- Create fake devices, with two matching devices.
         scanner = FakeDeviceScanner(
@@ -498,7 +525,10 @@ def test_device_presence_not_found(
         )
 
         # -- Construct the apio context.
-        apio_ctx = ApioContext(scope=ApioContextScope.PROJECT_REQUIRED)
+        apio_ctx = ApioContext(
+            scope=ApioContextScope.PROJECT_REQUIRED,
+            config_policy=RemoteConfigPolicy.NO_CONFIG,
+        )
 
         # -- Create fake devices, with two matching devices.
         scanner = FakeDeviceScanner(

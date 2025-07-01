@@ -13,22 +13,20 @@ from rich import box
 from apio.common.apio_console import cout, ctable
 from apio.common.apio_styles import INFO, BORDER, ERROR, SUCCESS
 from apio.managers import installer
-from apio.apio_context import ApioContext, ApioContextScope
+from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
 from apio.utils import pkg_util
 from apio.commands import options
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
 
-def print_packages_report(apio_ctx: ApioContext, verbose: bool) -> None:
+def print_packages_report(apio_ctx: ApioContext) -> None:
     """A common function to print the state of the packages."""
 
     # -- Scan the packages
-    scan = pkg_util.scan_packages(
-        apio_ctx, cached_config_ok=False, verbose=verbose
-    )
+    scan = pkg_util.scan_packages(apio_ctx)
 
     # -- Shortcuts to reduce clutter.
-    get_package_version = apio_ctx.profile.get_package_installed_version
+    get_package_version = apio_ctx.profile.get_package_installed_info
     get_package_info = apio_ctx.get_package_info
 
     table = Table(
@@ -43,14 +41,15 @@ def print_packages_report(apio_ctx: ApioContext, verbose: bool) -> None:
 
     table.add_column("PACKAGE NAME", no_wrap=True)
     table.add_column("VERSION", no_wrap=True)
+    table.add_column("PLATFORM", no_wrap=True)
     table.add_column("DESCRIPTION", no_wrap=True)
     table.add_column("STATUS", no_wrap=True)
 
     # -- Add raws for installed ok packages.
     for package_name in scan.installed_ok_package_names:
-        version = get_package_version(package_name)
+        version, platform_id = get_package_version(package_name)
         description = get_package_info(package_name)["description"]
-        table.add_row(package_name, version, description, "OK")
+        table.add_row(package_name, version, platform_id, description, "OK")
 
     # -- Add rows for uninstalled packages.
     for package_name in scan.uninstalled_package_names:
@@ -59,22 +58,25 @@ def print_packages_report(apio_ctx: ApioContext, verbose: bool) -> None:
             package_name, None, description, "Uninstalled", style=INFO
         )
 
-    # -- Add raws for installed with version mismatch packages.
+    # -- Add raws for installed with version or platform mismatch.
     for package_name in scan.bad_version_package_names:
-        version = get_package_version(package_name)
+        version, platform_id = get_package_version(package_name)
         description = get_package_info(package_name)["description"]
         table.add_row(
             package_name,
             version,
+            platform_id,
             description,
-            "Wrong version",
+            "Mismatch",
             style=ERROR,
         )
 
     # -- Add rows for broken packages.
     for package_name in scan.broken_package_names:
         description = get_package_info(package_name)["description"]
-        table.add_row(package_name, None, description, "Broken", style=ERROR)
+        table.add_row(
+            package_name, None, None, description, "Broken", style=ERROR
+        )
 
     # -- Render table.
     cout()
@@ -159,15 +161,16 @@ def _update_cli(
 ):
     """Implements the 'apio packages update' command."""
 
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+    apio_ctx = ApioContext(
+        scope=ApioContextScope.NO_PROJECT,
+        config_policy=RemoteConfigPolicy.GET_FRESH,
+    )
 
-    cout(f"Platform id '{apio_ctx.platform_id}'")
+    # cout(f"Platform id '{apio_ctx.platform_id}'")
 
     # -- First thing, fix broken packages, if any. This forces fetching
     # -- of the latest remote config file.
-    installer.scan_and_fix_packages(
-        apio_ctx, cached_config_ok=False, verbose=verbose
-    )
+    installer.scan_and_fix_packages(apio_ctx)
 
     # -- Install the packages, one by one.
     for package in apio_ctx.platform_packages:
@@ -175,12 +178,11 @@ def _update_cli(
             apio_ctx,
             package_name=package,
             force_reinstall=force,
-            cached_config_ok=False,
             verbose=verbose,
         )
 
     # -- Scan the available and installed packages.
-    print_packages_report(apio_ctx, verbose=verbose)
+    print_packages_report(apio_ctx)
 
 
 # ------ apio packages list
@@ -202,17 +204,17 @@ Examples:[code]
     short_help="List apio packages.",
     help=APIO_PACKAGES_LIST_HELP,
 )
-@options.verbose_option
-def _list_cli(
-    # Options
-    verbose: bool,
-):
+# @options.verbose_option
+def _list_cli():
     """Implements the 'apio packages list' command."""
 
-    apio_ctx = ApioContext(scope=ApioContextScope.NO_PROJECT)
+    apio_ctx = ApioContext(
+        scope=ApioContextScope.NO_PROJECT,
+        config_policy=RemoteConfigPolicy.CACHED_OK,
+    )
 
     # -- Print packages report.
-    print_packages_report(apio_ctx, verbose=verbose)
+    print_packages_report(apio_ctx)
 
 
 # ------ apio packages (group)

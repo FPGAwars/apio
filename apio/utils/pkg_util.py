@@ -214,9 +214,6 @@ class PackageScanResults:
 def package_version_ok(
     apio_ctx: ApioContext,
     package_name: str,
-    *,
-    cached_config_ok: bool,
-    verbose: bool,
 ) -> bool:
     """Return true if the package is both in profile and platform packages
     and its version in the profile meet the requirements in the
@@ -227,15 +224,15 @@ def package_version_ok(
         return False
 
     # -- If the current version is not available, the package is not installed.
-    current_ver = apio_ctx.profile.get_package_installed_version(
-        package_name, None
+    current_ver, package_platform_id = (
+        apio_ctx.profile.get_package_installed_info(package_name)
     )
-    if not current_ver:
+    if not current_ver or package_platform_id != apio_ctx.platform_id:
         return False
 
     # -- Get the package remote config.
     package_config: PackageRemoteConfig = apio_ctx.profile.get_package_config(
-        package_name, cached_config_ok=cached_config_ok, verbose=verbose
+        package_name
     )
 
     # -- Compare to the required version. We expect the two version to be
@@ -243,9 +240,7 @@ def package_version_ok(
     return current_ver == package_config.release_version
 
 
-def scan_packages(
-    apio_ctx: ApioContext, *, cached_config_ok: bool, verbose: bool
-) -> PackageScanResults:
+def scan_packages(apio_ctx: ApioContext) -> PackageScanResults:
     """Scans the available and installed packages and returns
     the findings as a PackageScanResults object."""
 
@@ -265,14 +260,9 @@ def scan_packages(
         platform_folder_names.add(package_name)
 
         # -- Classify the package as one of four cases.
-        in_profile = package_name in apio_ctx.profile.packages
+        in_profile = package_name in apio_ctx.profile.installed_packages
         has_dir = apio_ctx.get_package_dir(package_name).is_dir()
-        version_ok = package_version_ok(
-            apio_ctx,
-            package_name,
-            cached_config_ok=cached_config_ok,
-            verbose=verbose,
-        )
+        version_ok = package_version_ok(apio_ctx, package_name)
         if in_profile and has_dir:
             if version_ok:
                 # Case 1: Package installed ok.
@@ -289,7 +279,7 @@ def scan_packages(
 
     # -- Scan the packages ids that are registered in profile as installed
     # -- the ones that are not platform_packages as orphans.
-    for package_name in apio_ctx.profile.packages:
+    for package_name in apio_ctx.profile.installed_packages:
         if package_name not in apio_ctx.platform_packages:
             result.orphan_package_names.append(package_name)
 

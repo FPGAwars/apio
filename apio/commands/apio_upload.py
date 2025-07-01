@@ -14,7 +14,7 @@ import click
 from apio.managers.scons import SCons
 from apio.utils import cmd_util, pkg_util
 from apio.commands import options
-from apio.apio_context import ApioContext, ApioContextScope
+from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
 from apio.managers.programmers import construct_programmer_cmd
 from apio.common.proto.apio_pb2 import UploadParams
 
@@ -89,6 +89,7 @@ def cli(
     # -- Create a apio context.
     apio_ctx = ApioContext(
         scope=ApioContextScope.PROJECT_REQUIRED,
+        config_policy=RemoteConfigPolicy.CACHED_OK,
         project_dir_arg=project_dir,
         env_arg=env,
     )

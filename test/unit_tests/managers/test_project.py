@@ -8,7 +8,7 @@ from pytest import LogCaptureFixture
 import pytest
 from apio.managers.project import Project, ENV_OPTIONS
 from apio.common.apio_console import cunstyle
-from apio.apio_context import ApioContext, ApioContextScope
+from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
 
 # TODO: Add more tests.
 
@@ -29,6 +29,7 @@ def load_apio_ini(
         capsys.readouterr()  # Reset capture
         apio_ctx = ApioContext(
             scope=ApioContextScope.PROJECT_REQUIRED,
+            config_policy=RemoteConfigPolicy.NO_CONFIG,
             env_arg=env_arg,
         )
 
@@ -303,6 +304,7 @@ def error_tester(
         with pytest.raises(SystemExit) as e:
             ApioContext(
                 scope=ApioContextScope.PROJECT_REQUIRED,
+                config_policy=RemoteConfigPolicy.NO_CONFIG,
                 env_arg=env_arg,
             )
 
