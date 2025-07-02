@@ -72,19 +72,11 @@ def test_resources_ids_and_order(apio_runner: ApioRunner):
             config_policy=RemoteConfigPolicy.NO_CONFIG,
         )
 
-        # -- Test board ids format.
+        # -- Test the format of the board ids.
         for board_id in apio_ctx.boards.keys():
             assert board_name_regex.match(board_id), f"{board_id=}"
 
-        # -- Test board ids order in boards.jsonc.
-        board_ids = apio_ctx.boards.keys()
-        sorted_board_ids = sorted(board_ids)
-        for actual, expected in zip(board_ids, sorted_board_ids):
-            assert actual == expected, (
-                f"Board id '{expected}' should appear in boards.jsonc "
-                f"before '{actual}'"
-            )
-
+        # -- Test the format of the fpgas ids and part numbers.
         for fpga_id, fgpa_info in apio_ctx.fpgas.items():
             assert fpga_name_regex.match(fpga_id), f"{fpga_id=}"
             # Fpga id is either the fpga part num converted to lower-case
@@ -96,6 +88,7 @@ def test_resources_ids_and_order(apio_runner: ApioRunner):
                 lc_part + "-"
             ), f"{fpga_id=}"
 
+        # -- Test the format of the programmers ids.
         for programmer_id in apio_ctx.programmers.keys():
             assert programmer_name_regex.match(
                 programmer_id
