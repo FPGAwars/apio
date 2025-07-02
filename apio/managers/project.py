@@ -168,7 +168,7 @@ class Project:
         # -- a board, change the "board" option to the canonical name of that
         # -- board.
         for canonical_name, board_info in boards.items():
-            if board_name == board_info.get("legacy_name", None):
+            if board_name == board_info.get("legacy-name", None):
                 section_options["board"] = canonical_name
                 cwarning(
                     f"'Board {board_name}' was renamed to '{canonical_name}'. "
