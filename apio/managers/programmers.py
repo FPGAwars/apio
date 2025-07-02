@@ -150,14 +150,13 @@ def _report_unused_flag(flag_name: str, flag_value: str):
 
 def _construct_cmd_template(apio_ctx: ApioContext) -> str:
     """Construct a command template for the board.
-
-    Example of output strings:
-    "tinyprog --pyserial -c ${SERIAL_PORT} --program ${BIN_FILE}"
-    "iceprog -d i:0x${VID}:0x${PID} ${BIN_FILE}"
+    Example:
+       "openFPGAloader --verify -b ice40_generic --vid ${VID} --pid ${PID}
+       --busdev-num ${BUS}:${DEV} ${BIN_FILE}"
     """
 
-    # -- If the project file a custom programmer command use it instead of the
-    # -- standard definitions.
+    # -- If the project file has a custom programmer command use it instead
+    # -- of the standard definitions.
     custom_template = apio_ctx.project.get_str_option("programmer-cmd")
     if custom_template:
         cout("Using custom programmer cmd.")
@@ -168,45 +167,44 @@ def _construct_cmd_template(apio_ctx: ApioContext) -> str:
             sys.exit(1)
         return custom_template
 
+    # -- Here when using the standard command.
+
+    # -- Get the board definition from boards.jsonc.
     board = apio_ctx.project.get_str_option("board")
     board_info = apio_ctx.boards[board]
 
-    # -- Get the programmer type
-    # -- Ex. type: "tinyprog"
-    # -- Ex. type: "iceprog"
+    # -- Get the board's programmer id.
     board_programmer_info = board_info["programmer"]
     prog_type = board_programmer_info["type"]
 
-    # -- Get all the information for that type of programmer
-    # -- * command
-    # -- * arguments
-    # -- * pip package
+    # -- Get the programmer's definition from programmers.jsonc.
     programmer_info = apio_ctx.programmers[prog_type]
 
-    # -- Get the command (without arguments) to execute
-    # -- for programming the current board
-    # -- Ex. "tinyprog"
-    # -- Ex. "iceprog"
+    # -- Start building the template with the programmer binary name.
+    # -- E.g. "openFPGAloader".
     cmd_template = programmer_info["command"]
 
-    # -- Let's add the arguments for executing the programmer
+    # -- Append the optional args template from the programmer.
     args = programmer_info.get("args")
     if args:
         assert BIN_FILE_VALUE not in args, args
-        cmd_template += f" {args}"
+        cmd_template += " "
+        cmd_template += args
 
-    # -- Some tools need extra arguments
-    # -- (like dfu-util for example)
+    # -- Append the optional extra args template from the board.
     extra_args = board_programmer_info.get("extra_args")
     if extra_args:
         assert BIN_FILE_VALUE not in extra_args, extra_args
-        cmd_template += f" {extra_args}"
+        cmd_template += " "
+        cmd_template += extra_args
 
-    # -- If there is no placeholder for the bin file path, add it at the end
-    # -- of the command.
+    # -- Append the bitstream file placeholder if its' not already in the
+    # -- template.
     if BIN_FILE_VAR not in cmd_template:
-        cmd_template += f" {BIN_FILE_VAR}"
+        cmd_template += " "
+        cmd_template += BIN_FILE_VAR
 
+    # -- All done.
     return cmd_template
 
 
