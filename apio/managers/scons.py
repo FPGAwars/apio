@@ -16,7 +16,7 @@ from datetime import datetime
 from google.protobuf import text_format
 from apio.common import apio_console
 from apio.common.apio_console import cout, cerror, cstyle, cunstyle
-from apio.common.apio_styles import SUCCESS, ERROR, EMPH3
+from apio.common.apio_styles import SUCCESS, ERROR, EMPH3, INFO
 from apio.utils import util, pkg_util
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
@@ -66,6 +66,13 @@ def on_exception(*, exit_code: int):
 
                 if str(exc):
                     cerror(str(exc))
+
+                if not util.is_debug(1):
+                    cout(
+                        "Running with APIO_DEBUG=1 may provide "
+                        "additional diagnostic information.",
+                        style=INFO,
+                    )
                 return exit_code
 
         return wrapper
@@ -225,18 +232,25 @@ class SCons:
         # -- Get the project's board. It should be prevalidated when loading
         # -- the project, but we sanity check it again just in case.
         board = project.get_str_option("board")
-        assert board is not None, "Scons got a None board."
-        assert board in apio_ctx.boards, f"Unknown board name [{board}]"
+        assert board is not None, "Scons encountered a None board option."
 
-        # -- Get the project fpga id from the board info.
-        fpga_id = apio_ctx.boards.get(board).get("fpga-id")
-        assert fpga_id, "construct_scons_params(): fpga assertion failed."
-        assert fpga_id in apio_ctx.fpgas, (
-            f"construct_scons_params(): unknown fpga id [{fpga_id}].\n"
+        board_config = apio_ctx.boards.get(board)
+        assert board_config, f"Scons encountered an unknown board id: {board}"
+
+        # -- Get the project fpga id from the board info. These errors can be
+        # -- triggered by a user's custom boards.jsonc so error messages should
+        # -- be informative and user friendly.
+        fpga_id = board_config.get("fpga-id")
+        assert fpga_id, "Board definition has no 'fpga-id' value."
+
+        fpga_config = apio_ctx.fpgas.get(fpga_id)
+        assert fpga_config, (
+            f"Board definition has an unknown 'fpga-id': [{fpga_id}].\n"
             "Run `apio fpgas` for fpga ids."
         )
-        fpga_config = apio_ctx.fpgas.get(fpga_id)
-        fpga_arch = fpga_config["arch"]
+
+        fpga_arch = fpga_config.get("arch")
+        assert fpga_arch, "FPGA definition does not have an 'arch' value."
 
         # -- Populate the common values of FpgaInfo.
         result.fpga_info.MergeFrom(
