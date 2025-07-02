@@ -6,12 +6,6 @@
 # -- Author Jesús Arroyo
 # -- License GPLv2
 
-# TODO: Implement range detectors for Fumo, Tinyprog, and Iceprog, similar to
-# the pnr detector. This will avoid matching of output from other programs.
-
-# TODO: Use apio_console.is_terminal() to determine if the output goes to a
-# terminal or a pipe and have an alternative handling for the cursor commands
-# when writing to a pipe.
 
 import re
 import threading
@@ -21,10 +15,6 @@ from apio.common.apio_console import cout, cunstyle, cwrite, cstyle
 from apio.common.apio_styles import INFO, WARNING, SUCCESS, ERROR
 from apio.utils import util
 
-
-# -- Terminal cursor commands.
-# CURSOR_UP = "\033[F"
-# ERASE_LINE = "\033[K"
 
 # -- A regex to detect iverilog warnings we want to filter out, per
 # -- https://github.com/FPGAwars/apio/issues/557
@@ -131,29 +121,6 @@ class IVerilogRangeDetector(RangeDetector):
             return RangeEvents.END_BEFORE
 
         return None
-
-
-# class IceProgRangeDetector(RangeDetector):
-#     """Implements a RangeDetector for the iceprog command output."""
-
-#     def __init__(self):
-#         super().__init__()
-#         # -- Indicates if the last line should be erased before printing the
-#         # -- next one. This happens with interactive progress meters.
-#         self.pending_erasure = False
-
-#     def classify_line(self, pipe_id: PipeId, line: str) -> RangeEvents:
-#         # -- Range start: A nextpnr command on stdout without
-#         # -- the -q (quiet) flag.
-#         if pipe_id == PipeId.STDOUT and line.startswith("iceprog"):
-#             self.pending_erasure = False
-#             return RangeEvents.START_AFTER
-
-#         # Range end: The end message of nextnpr.
-#         if pipe_id == PipeId.STDERR and line.startswith("Bye."):
-#             return RangeEvents.END_AFTER
-
-#         return None
 
 
 class SconsFilter:
@@ -318,98 +285,6 @@ class SconsFilter:
             # -- Drop the line.
             self._ignore_line(line)
             return
-
-        # -- Special handling for iceprog line range.
-        # if pipe_id == PipeId.STDERR and in_iceprog_range:
-        #     # -- Iceprog prints blank likes that are used as line erasers.
-        #     # -- We don't need them here.
-        #     if len(line) == 0:
-        #         self._ignore_line(line)
-        #         return
-
-        #     # -- If the last iceprog line was a to-be-erased line, erase it
-        #     # -- now and clear the flag.
-        #     if self._iceprog_detector.pending_erasure:
-        #         print(
-        #             CURSOR_UP + ERASE_LINE,
-        #             end="",
-        #             flush=True,
-        #         )
-        #         self._iceprog_detector.pending_erasure = False
-
-        #     # -- Determine if the current line should be erased before we
-        #     # -- print the next line.
-        #     # --
-        #     # -- Match outputs like these "addr 0x001400  3%"
-        #     # -- Regular expression remainder:
-        #     # -- ^ --> Match the beginning of the line
-        #     # -- \s --> Match one blank space
-        #     # -- [0-9A-F]+ one or more hexadecimal digit
-        #     # -- \d{1,2} one or two decimal digits
-        #     pattern = r"^addr\s0x[0-9A-F]+\s+\d{1,2}%"
-
-        #     # -- Calculate if there is a match!
-        #     match = re.search(pattern, line)
-
-        #     # -- If the line is to be erased set the flag.
-        #     if match:
-        #         self._iceprog_detector.pending_erasure = True
-
-        #     # -- Determine line color by its content and print it.
-        #     line_color = self._assign_line_color(
-        #         line,
-        #         [
-        #             (r"^done.", "green"),
-        #             (r"^VERIFY OK", "green"),
-        #         ],
-        #     )
-        #     self._output_line(line, line_color, terminator)
-        #     return
-
-        # -- Special handling for Fumo lines.
-        # if pipe_id == PipeId.STDOUT:
-        #     pattern_fomu = r"^Download\s*\[=*"
-        #     match = re.search(pattern_fomu, line)
-        #     if match:
-        #         # -- Delete the previous line
-        #         #
-        #         # -- NOTE: If the progress line will scroll instead of
-        #         # -- overwriting each other, try to add erasure of a second
-        #         # -- line. This is due to the commit below which restored
-        #         # -- empty lines.
-        #         # -  Commit 93fc9bc4f3bfd21568e2d66f11976831467e3b97.
-        #         #
-        #         print(CURSOR_UP + ERASE_LINE, end="", flush=True)
-        #         cout(line, style=SUCCESS)
-        #         return
-
-        # -- Special handling for tinyprog lines.
-        # if pipe_id == PipeId.STDERR:
-        #     # -- Check if the line correspond to an output of
-        #     # -- the tinyprog programmer (TinyFPGA board)
-        #     # -- Match outputs like these " 97%|█████████▋| "
-        #     # -- Regular expression remainder:
-        #     # -- \s --> Match one blank space
-        #     # -- \d{1,3} one, two or three decimal digits
-        #     pattern_tinyprog = r"\s\d{1,3}%\|█*"
-
-        #     # -- Calculate if there is a match
-        #     match_tinyprog = re.search(pattern_tinyprog, line)
-
-        #     # -- Match all the progress bar lines except the
-        #     # -- initial one (when it is 0%)
-        #     if match_tinyprog and " 0%|" not in line:
-        #         # -- Delete the previous line.
-        #         #
-        #         # -- NOTE: If the progress line will scroll instead of
-        #         # -- overwriting each other, try to add erasure of a second
-        #         # -- line. This is due to the commit below which restored
-        #         # -- empty lines.
-        #         # -  Commit 93fc9bc4f3bfd21568e2d66f11976831467e3b97.
-        #         #
-        #         print(CURSOR_UP + ERASE_LINE, end="", flush=True)
-        #         cout(line)
-        #         return
 
         # -- Special filter for https://github.com/FPGAwars/apio/issues/557
         if IVERILOG_TIMING_WARNING_REGEX.search(line):

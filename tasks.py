@@ -208,6 +208,7 @@ def install_deps_task(ctx):
     for name, ver in deps:
         out(f"{name:7s} {ver:9s} {version(name)}")
 
+
 # ---------- Task 'docs-viewer' ----------
 
 
@@ -215,5 +216,3 @@ def install_deps_task(ctx):
 def install_docs_viewer_task(ctx):
     """Run a local http server to view the Apio docs."""
     ctx.run("mkdocs serve", pty=True)
-
-
