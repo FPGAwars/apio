@@ -379,6 +379,7 @@
       "product-regex": "^(Dual RS2232H)|(Lattice HW-USBN-2B)"
     }
   },
+  // https://www.crowdsupply.com/tinyfpga/tinyfpga-ex
   "tinyfpga-ex-rev1": {
     "legacy-name": "TinyFPGA-EX-rev1",
     "description": "TinyFPGA EX rev 1",
@@ -394,6 +395,7 @@
       "name-regex": "^TinyFPGA EX$"
     }
   },
+  // https://www.crowdsupply.com/tinyfpga/tinyfpga-ex
   "tinyfpga-ex-rev2": {
     "legacy-name": "TinyFPGA-EX-rev2",
     "description": "TinyFPGA EX rev 2",
@@ -409,8 +411,9 @@
       "name-regex": "^TinyFPGA EX$"
     }
   },
+  // https://radiona.org/ulx3s/
   "ulx3s-12f": {
-    "description": "ULX3S",
+    "description": "ULX3S 12K",
     "fpga-id": "lfe5u-12f-6bg381c",
     "programmer": {
       "id": "fujprog"
@@ -420,8 +423,9 @@
       "pid": "6015"
     }
   },
+  // https://radiona.org/ulx3s/
   "ulx3s-25f": {
-    "description": "ULX3S",
+    "description": "ULX3S 25K",
     "fpga-id": "lfe5u-25f-6bg381c",
     "programmer": {
       "id": "fujprog"
@@ -431,8 +435,9 @@
       "pid": "6015"
     }
   },
+  // https://radiona.org/ulx3s/
   "ulx3s-45f": {
-    "description": "ULX3S",
+    "description": "ULX3S 45K",
     "fpga-id": "lfe5u-45f-6bg381c",
     "programmer": {
       "id": "fujprog"
@@ -442,8 +447,9 @@
       "pid": "6015"
     }
   },
+  // https://radiona.org/ulx3s/
   "ulx3s-85f": {
-    "description": "ULX3S",
+    "description": "ULX3S 85K",
     "fpga-id": "lfe5u-85f-6bg381c",
     "programmer": {
       "id": "fujprog"
@@ -453,8 +459,9 @@
       "pid": "6015"
     }
   },
+  // https://orangecrab-fpga.github.io/orangecrab-hardware/
   "orangecrab-r02-25f": {
-    "description": "OrangeCrab r0.2",
+    "description": "OrangeCrab r0.2 25K",
     "fpga-id": "lfe5u-25f-6mg285c",
     "programmer": {
       "id": "dfu"
@@ -465,8 +472,9 @@
       "product-regex": "^OrangeCrab r0.2 DFU bootloader"
     }
   },
+  // https://orangecrab-fpga.github.io/orangecrab-hardware/
   "orangecrab-r02-85f": {
-    "description": "OrangeCrab r0.2",
+    "description": "OrangeCrab r0.2 85K",
     "fpga-id": "lfe5u-85f-6mg285c",
     "programmer": {
       "id": "dfu"
@@ -477,9 +485,10 @@
       "product-regex": "^OrangeCrab r0.2 DFU bootloader"
     }
   },
+  // https://butterstick-fpga.github.io/
   "butterstick-r10-2g-85k": {
     "legacy-name": "Butterstick-r10-2g-85k",
-    "description": "butterstick r1.0",
+    "description": "butterstick r1.0 DFU",
     "fpga-id": "lfe5um5g-85f-8bg381c",
     "programmer": {
       "id": "dfu",
@@ -491,24 +500,27 @@
       "product-regex": "^butterstick (dfu v1.1)"
     }
   },
+  // https://butterstick-fpga.github.io/
   "butterstick-r10-2g-85k-ft2232h": {
     "legacy-name": "Butterstick-r10-2g-85k_(FT2232H)",
-    "description": "butterstick r1.0",
+    "description": "butterstick r1.0 FT2232H",
     "fpga-id": "lfe5um5g-85f-8bg381c",
     "programmer": {
       "id": "openfpgaloader",
       "extra-args": "-c ft2232 -v --file-type bin"
     }
   },
+  // https://butterstick-fpga.github.io/
   "butterstick-r10-2g-85k-ft232h": {
     "legacy-name": "Butterstick-r10-2g-85k_(FT232H)",
-    "description": "butterstick r1.0",
+    "description": "butterstick r1.0 FT232H",
     "fpga-id": "lfe5um5g-85f-8bg381c",
     "programmer": {
       "id": "openfpgaloader",
       "extra-args": "-c ft232 -v --file-type bin"
     }
   },
+  // https://www.latticesemi.com/products/developmentboardsandkits/ecp5versadevelopmentkit
   "versa": {
     "description": "ECP5 Versa",
     "fpga-id": "lfe5um-45f-6bg381c",
@@ -521,6 +533,7 @@
       "product-regex": "^(USB <-> Serial Converter)|(Lattice ECP5 Versa Board)"
     }
   },
+  // https://alchitry.com/boards/cu/
   "alchitry-cu": {
     "legacy-name": "Alchitry-Cu",
     "description": "Alchitry Cu Development Board",
@@ -534,6 +547,7 @@
       "product-regex": "^Alchitry Cu"
     }
   },
+  // https://tomu.im/fomu.html
   "fomu": {
     "description": "Fomu",
     "fpga-id": "ice40up5k-uwg30",
