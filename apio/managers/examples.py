@@ -102,7 +102,7 @@ class Examples:
                 # -- Extract the fpga arch and part number, with "" as
                 # -- default value if not found.
                 board_info = self.apio_ctx.boards.get(board_dir.name, {})
-                fpga_id = board_info.get("fpga", "")
+                fpga_id = board_info.get("fpga-id", "")
                 fpga_info = self.apio_ctx.fpgas.get(fpga_id, {})
                 fpga_arch = fpga_info.get("arch", "")
                 fpga_part_num = fpga_info.get("part-num", "")

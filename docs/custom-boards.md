@@ -40,7 +40,7 @@ a variant of the `upduino31` board:
 {
   "upduino31c": {
     "name": "UPduino v3.1c",
-    "fpga": "ice40up5k-sg48",
+    "fpga-id": "ice40up5k-sg48",
     "programmer": {
       "id": "iceprog"
     },

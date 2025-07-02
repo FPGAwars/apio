@@ -15,7 +15,7 @@ CUSTOM_BOARDS = """
 {
   "my_custom_board": {
     "name": "My Custom Board v3.1c",
-    "fpga": "ice40up5k-sg48",
+    "fpga-id": "ice40up5k-sg48",
     "programmer": {
       "id": "iceprog"
     },

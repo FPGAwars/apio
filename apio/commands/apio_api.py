@@ -293,7 +293,7 @@ def _get_boards_cli(
 
         # -- Add board's fpga information.
         fpga_dict = {}
-        fpga_id = board_info.get("fpga", None)
+        fpga_id = board_info.get("fpga-id", None)
         fpga_info = apio_ctx.fpgas.get(fpga_id, {})
         fpga_dict["id"] = fpga_id
         fpga_dict["part-num"] = fpga_info.get("part-num", None)
