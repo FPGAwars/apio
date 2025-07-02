@@ -11,6 +11,7 @@
 #   invoke test          # Run the offline tests (fast)
 #   invoke check         # Run lint and all the tests (slow)
 #   invoke install-apio  # Install to run 'apio' from the source code here.
+#   invoke docs-viewer   # Run a local http server to view the Apio docs.
 
 import sys
 import importlib.util
@@ -34,6 +35,7 @@ deps = [
     ("rich", "14.0.0"),
     ("tox", "4.27.0"),
     ("flit", "3.12.0"),
+    ("mkdocs", "1.6.1"),
 ]
 
 for module, required_version in deps:
@@ -61,6 +63,7 @@ for module, required_version in deps:
 from rich.console import Console  # noqa: E402
 
 console = Console()
+
 
 def out(*args, markup=False, highlight=False, **kwargs):
     """A shortcut for Rich lib console.print()."""
@@ -204,3 +207,13 @@ def install_deps_task(ctx):
     out("       required  installed")
     for name, ver in deps:
         out(f"{name:7s} {ver:9s} {version(name)}")
+
+# ---------- Task 'docs-viewer' ----------
+
+
+@task(name="docs-viewer", aliases=["dv"])
+def install_docs_viewer_task(ctx):
+    """Run a local http server to view the Apio docs."""
+    ctx.run("mkdocs serve", pty=True)
+
+
