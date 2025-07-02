@@ -10,7 +10,6 @@ import sys
 import json
 import platform
 from enum import Enum
-from collections import OrderedDict
 from pathlib import Path
 from typing import Optional, Dict
 from apio.common.apio_console import cout, cerror, cwarning, cstyle
@@ -209,19 +208,6 @@ class ApioContext:
         # -- dir.
         self.programmers = self._load_resource(
             PROGRAMMERS_JSONC, allow_custom=True
-        )
-
-        # -- Sort resources for consistency and intuitiveness.
-        # --
-        # -- We don't sort the all_packages and platform_packages dictionaries
-        # -- because that will affect the order of the env path items.
-        # -- Instead we preserve the order from the packages.jsonc file.
-
-        self.boards = OrderedDict(
-            sorted(self.boards.items(), key=lambda t: t[0])
-        )
-        self.fpgas = OrderedDict(
-            sorted(self.fpgas.items(), key=lambda t: t[0])
         )
 
         # -- If we determined that we need to load the project, load the

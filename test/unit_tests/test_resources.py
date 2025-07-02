@@ -52,7 +52,7 @@ def test_resources_references(apio_runner: ApioRunner):
         assert not unused_programmers, unused_programmers
 
 
-def test_resources_names(apio_runner: ApioRunner):
+def test_resources_ids_and_order(apio_runner: ApioRunner):
     """Tests the formats of boards, fpgas, and programmers names."""
 
     # -- For boards we allow lower-case-0-9.
@@ -72,8 +72,18 @@ def test_resources_names(apio_runner: ApioRunner):
             config_policy=RemoteConfigPolicy.NO_CONFIG,
         )
 
-        for board in apio_ctx.boards.keys():
-            assert board_name_regex.match(board), f"{board=}"
+        # -- Test board ids format.
+        for board_id in apio_ctx.boards.keys():
+            assert board_name_regex.match(board_id), f"{board_id=}"
+
+        # -- Test board ids order in boards.jsonc.
+        board_ids = apio_ctx.boards.keys()
+        sorted_board_ids = sorted(board_ids)
+        for actual, expected in zip(board_ids, sorted_board_ids):
+            assert actual == expected, (
+                f"Board id '{expected}' should appear in boards.jsonc "
+                f"before '{actual}'"
+            )
 
         for fpga_id, fgpa_info in apio_ctx.fpgas.items():
             assert fpga_name_regex.match(fpga_id), f"{fpga_id=}"
@@ -86,8 +96,10 @@ def test_resources_names(apio_runner: ApioRunner):
                 lc_part + "-"
             ), f"{fpga_id=}"
 
-        for programmer in apio_ctx.programmers.keys():
-            assert programmer_name_regex.match(programmer), f"{programmer=}"
+        for programmer_id in apio_ctx.programmers.keys():
+            assert programmer_name_regex.match(
+                programmer_id
+            ), f"{programmer_id=}"
 
 
 def test_fpga_definitions(apio_runner: ApioRunner):
