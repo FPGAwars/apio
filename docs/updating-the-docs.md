@@ -36,7 +36,7 @@ referenced from `mkdocs.yml`.
 To start a local web server and preview changes as you edit:
 
 ```
-mkdocs serve
+invoke docs-viewer
 ```
 
 This enables live reloading in your browser.
