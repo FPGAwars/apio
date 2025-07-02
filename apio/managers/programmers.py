@@ -175,10 +175,10 @@ def _construct_cmd_template(apio_ctx: ApioContext) -> str:
 
     # -- Get the board's programmer id.
     board_programmer_info = board_info["programmer"]
-    prog_type = board_programmer_info["type"]
+    programmer_id = board_programmer_info["id"]
 
     # -- Get the programmer's definition from programmers.jsonc.
-    programmer_info = apio_ctx.programmers[prog_type]
+    programmer_info = apio_ctx.programmers[programmer_id]
 
     # -- Start building the template with the programmer binary name.
     # -- E.g. "openFPGAloader".

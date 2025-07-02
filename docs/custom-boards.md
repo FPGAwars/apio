@@ -42,7 +42,7 @@ a variant of the `upduino31` board:
     "name": "UPduino v3.1c",
     "fpga": "ice40up5k-sg48",
     "programmer": {
-      "type": "iceprog"
+      "id": "iceprog"
     },
     "usb": {
       "vid": "0403",

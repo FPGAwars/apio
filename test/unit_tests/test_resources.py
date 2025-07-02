@@ -33,20 +33,20 @@ def test_resources_references(apio_runner: ApioRunner):
             # -- Assert that required fields exist.
             assert "fpga" in board_info, board_msg
             assert "programmer" in board_info, board_msg
-            assert "type" in board_info["programmer"], board_msg
+            assert "id" in board_info["programmer"], board_msg
 
             # -- Check that the fpga exists.
             board_fpga = board_info["fpga"]
             assert apio_ctx.fpgas[board_fpga], board_msg
 
             # -- Check that the programmer exists.
-            board_programmer_type = board_info["programmer"]["type"]
-            assert apio_ctx.programmers[board_programmer_type], board_msg
+            board_programmer_id = board_info["programmer"]["id"]
+            assert apio_ctx.programmers[board_programmer_id], board_msg
 
             # -- Track unused programmers. Since a programmer may be used
             # -- by more than one board, it may already be removed.
-            if board_programmer_type in unused_programmers:
-                unused_programmers.remove(board_programmer_type)
+            if board_programmer_id in unused_programmers:
+                unused_programmers.remove(board_programmer_id)
 
         # -- We should end up with an empty set of unused programmers.
         assert not unused_programmers, unused_programmers

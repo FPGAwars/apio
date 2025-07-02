@@ -303,7 +303,7 @@ def _get_boards_cli(
 
         # -- Add board's programmer information.
         programmer_dict = {}
-        programmer_id = board_info.get("programmer", {}).get("type", None)
+        programmer_id = board_info.get("programmer", {}).get("id", None)
         programmer_dict["id"] = programmer_id
         board_dict["programmer"] = programmer_dict
 

@@ -70,7 +70,7 @@ def _collect_board_entries(apio_ctx) -> List[Entry]:
         fpga_type = fpga_info.get("type", "")
         fpga_pack = fpga_info.get("pack", "")
         fpga_speed = fpga_info.get("speed", "")
-        programmer = board_info.get("programmer", {}).get("type", "")
+        programmer_id = board_info.get("programmer", {}).get("id", "")
 
         result.append(
             Entry(
@@ -84,7 +84,7 @@ def _collect_board_entries(apio_ctx) -> List[Entry]:
                 fpga_type=fpga_type,
                 fpga_pack=fpga_pack,
                 fpga_speed=fpga_speed,
-                programmer=programmer,
+                programmer=programmer_id,
             )
         )
 
