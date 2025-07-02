@@ -119,7 +119,7 @@
     "fpga": "ice40hx4k-tq144-8k",
     "programmer": {
       "type": "iceprog",
-      "extra_args": "-I B"
+      "extra-args": "-I B"
     },
     "usb": {
       "vid": "0403",
@@ -223,7 +223,7 @@
     "fpga": "ice40hx4k-tq144-8k",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "--verify -b ice40_generic --vid ${VID} --pid ${PID} --busdev-num ${BUS}:${DEV}"
+      "extra-args": "--verify -b ice40_generic --vid ${VID} --pid ${PID} --busdev-num ${BUS}:${DEV}"
     },
     "usb": {
       "vid": "0403",
@@ -483,7 +483,7 @@
     "fpga": "lfe5um5g-85f-8bg381c",
     "programmer": {
       "type": "dfu",
-      "extra_args": "--reset"
+      "extra-args": "--reset"
     },
     "usb": {
       "vid": "1209",
@@ -497,7 +497,7 @@
     "fpga": "lfe5um5g-85f-8bg381c",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-c ft2232 -v --file-type bin"
+      "extra-args": "-c ft2232 -v --file-type bin"
     }
   },
   "butterstick-r10-2g-85k-ft232h": {
@@ -506,7 +506,7 @@
     "fpga": "lfe5um5g-85f-8bg381c",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-c ft232 -v --file-type bin"
+      "extra-args": "-c ft232 -v --file-type bin"
     }
   },
   "versa": {
@@ -600,7 +600,7 @@
     "fpga": "ice40up5k-sg48",
     "programmer": {
       "type": "dfu",
-      "extra_args": "--reset"
+      "extra-args": "--reset"
     },
     "usb": {
       "vid": "1209",
@@ -639,7 +639,7 @@
     "fpga": "lfe5u-25f-6bg381c",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-c ft2232 -v --file-type bin"
+      "extra-args": "-c ft2232 -v --file-type bin"
     }
   },
   "colorlight-5a-75b-v7": {
@@ -648,7 +648,7 @@
     "fpga": "lfe5u-25f-6bg256c",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-c ft2232 -v --file-type bin"
+      "extra-args": "-c ft2232 -v --file-type bin"
     }
   },
   "colorlight-5a-75b-v8": {
@@ -657,7 +657,7 @@
     "fpga": "lfe5u-25f-6bg256c",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-c ft2232 -v --file-type bin"
+      "extra-args": "-c ft2232 -v --file-type bin"
     }
   },
   "colorlight-5a-75e-v6": {
@@ -666,7 +666,7 @@
     "fpga": "lfe5u-25f-6bg256c",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-c ft2232 -v --file-type bin"
+      "extra-args": "-c ft2232 -v --file-type bin"
     }
   },
   "colorlight-5a-75e-v71-ft2232h": {
@@ -675,7 +675,7 @@
     "fpga": "lfe5u-25f-6bg256c",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-c ft2232 -v --file-type bin"
+      "extra-args": "-c ft2232 -v --file-type bin"
     }
   },
   "colorlight-5a-75e-v71-ft232h": {
@@ -684,7 +684,7 @@
     "fpga": "lfe5u-25f-6bg256c",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-c ft232 -v --file-type bin"
+      "extra-args": "-c ft232 -v --file-type bin"
     }
   },
   "colorlight-5a-75e-v71-usb-blaster": {
@@ -702,7 +702,7 @@
     "fpga": "lfe5u-25f-6bg381c",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-c ft2232 -v --file-type bin"
+      "extra-args": "-c ft2232 -v --file-type bin"
     }
   },
   "colorlight-i5-v7-0-ft232h": {
@@ -711,7 +711,7 @@
     "fpga": "lfe5u-25f-6bg381c",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-c ft232 -v --file-type bin"
+      "extra-args": "-c ft232 -v --file-type bin"
     }
   },
   "colorlight-i5-v7-0-usb-blaster": {
@@ -729,7 +729,7 @@
     "fpga": "lfe5u-25f-6bg256c",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-c ft2232 -v --file-type bin"
+      "extra-args": "-c ft2232 -v --file-type bin"
     }
   },
   "icesugar-pro-ft232h": {
@@ -738,7 +738,7 @@
     "fpga": "lfe5u-25f-6bg256c",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-c ft232 -v --file-type bin"
+      "extra-args": "-c ft232 -v --file-type bin"
     }
   },
   "icesugar-pro-usb-blaster": {
@@ -756,7 +756,7 @@
     "fpga": "lfe5u-25f-6bg381c",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-c ft2232 -v --file-type bin"
+      "extra-args": "-c ft2232 -v --file-type bin"
     }
   },
   "fleafpga-ohm-ft232h": {
@@ -765,7 +765,7 @@
     "fpga": "lfe5u-25f-6bg381c",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-c ft232 -v --file-type bin"
+      "extra-args": "-c ft232 -v --file-type bin"
     }
   },
   "fleafpga-ohm-usb-blaster": {
@@ -783,7 +783,7 @@
     "fpga": "lfe5u-12f-6bg256c",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-c ft2232 -v --file-type bin"
+      "extra-args": "-c ft2232 -v --file-type bin"
     }
   },
   "ecp5-mini-25": {
@@ -792,7 +792,7 @@
     "fpga": "lfe5u-25f-6bg256c",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-c ft2232 -v --file-type bin"
+      "extra-args": "-c ft2232 -v --file-type bin"
     }
   },
   "ecp5-evaluation-board": {
@@ -801,7 +801,7 @@
     "fpga": "lfe5um5g-85f-8bg381c",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-c ft2232 -v --file-type bin"
+      "extra-args": "-c ft2232 -v --file-type bin"
     }
   },
   "colorlight-i9-v7-2-ft2232h": {
@@ -810,7 +810,7 @@
     "fpga": "lfe5u-45f-6bg381c",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-c ft2232 -v --file-type bin"
+      "extra-args": "-c ft2232 -v --file-type bin"
     }
   },
   "colorlight-i9-v7-2-ft232h": {
@@ -819,7 +819,7 @@
     "fpga": "lfe5u-45f-6bg381c",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-c ft232 -v --file-type bin"
+      "extra-args": "-c ft232 -v --file-type bin"
     }
   },
   "colorlight-i9-v7-2-usb-blaster": {
@@ -849,7 +849,7 @@
     "fpga": "gw1n-lv1qn48c6-i5",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-b tangnano"
+      "extra-args": "-b tangnano"
     },
     "usb": {
       "vid": "0403",
@@ -861,7 +861,7 @@
     "fpga": "gw1nz-lv1qn48c6-i5",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-b tangnano1k -f"
+      "extra-args": "-b tangnano1k -f"
     },
     "usb": {
       "vid": "0403",
@@ -873,7 +873,7 @@
     "fpga": "gw1nsr-lv4cqn48pc7-i6",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-b tangnano4k -f"
+      "extra-args": "-b tangnano4k -f"
     },
     "usb": {
       "vid": "0403",
@@ -885,7 +885,7 @@
     "fpga": "gw1nr-lv9qn88pc6-i5",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-b tangnano9k -f"
+      "extra-args": "-b tangnano9k -f"
     },
     "usb": {
       "vid": "0403",
@@ -897,7 +897,7 @@
     "fpga": "gw2ar-lv18qn88c8-i7",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-b tangnano20k -f"
+      "extra-args": "-b tangnano20k -f"
     },
     "usb": {
       "vid": "0403",
@@ -917,7 +917,7 @@
     "fpga": "lfe5u-45f-6bg256c",
     "programmer": {
       "type": "openfpgaloader",
-      "extra_args": "-c ft2232 -v --file-type bin"
+      "extra-args": "-c ft2232 -v --file-type bin"
     }
   }
 }

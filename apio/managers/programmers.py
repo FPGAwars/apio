@@ -192,7 +192,7 @@ def _construct_cmd_template(apio_ctx: ApioContext) -> str:
         cmd_template += args
 
     # -- Append the optional extra args template from the board.
-    extra_args = board_programmer_info.get("extra_args")
+    extra_args = board_programmer_info.get("extra-args")
     if extra_args:
         assert BIN_FILE_VALUE not in extra_args, extra_args
         cmd_template += " "
