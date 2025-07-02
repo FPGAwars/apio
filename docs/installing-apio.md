@@ -196,7 +196,7 @@ To install Apio on Linux ARM-64 using a Pip package, follow these steps:
 
 To install Apio on Windows X86-64 using a Pip package, follow these steps:
 
-### Install using a Pip package <a id="windows-amd64-pip"></a>
+### Install using a Pip package <a id="windows-x86-64-pip"></a>
 
 1. Verify that you have Python installed by running:
 
@@ -212,7 +212,7 @@ To install Apio on Windows X86-64 using a Pip package, follow these steps:
 
 3. [Optional] Add the Apio binary to your `%PATH%` if necessary.
 
-### Install using an installer <a id="windows-amd64-installer"></a>
+### Install using an installer <a id="windows-x86-64-installer"></a>
 
 To install Apio on Windows X86-64 using an installer, follow these steps:
 
@@ -228,7 +228,7 @@ To install Apio on Windows X86-64 using an installer, follow these steps:
 
    to verify the installation.
 
-### Install using a file bundle <a id="windows-amd64-bundle"></a>
+### Install using a file bundle <a id="windows-x86-64-bundle"></a>
 
 To install Apio on Windows X86-64 using a file bundle, follow these steps:
 
