@@ -14,10 +14,13 @@
 #   invoke docs-viewer   # Run a local http server to view the Apio docs.
 
 import sys
-import importlib.util
-from importlib.metadata import version
+from typing import Optional
+from importlib.metadata import version, PackageNotFoundError
 import subprocess
 from invoke import task
+from invoke.context import Context
+
+# ========================== Helper definitions ===============================
 
 
 # -- NOTE: The first sentence of a task docstring is also its help string
@@ -29,21 +32,20 @@ LATEST_PYTHON = "py313"
 # -- The python interpreter that we currently use.
 PYTHON = sys.executable
 
-# -- Auto install packages that are not Apio dependencies but required here.
 
-deps = [
-    ("rich", "14.0.0"),
-    ("tox", "4.27.0"),
-    ("flit", "3.12.0"),
-    ("mkdocs", "1.6.1"),
-]
+def package_version(package_name: str) -> Optional[str]:
+    """Get the version of installed package or None if not installed."""
+    try:
+        return version(package_name)
+    except PackageNotFoundError:
+        return None
 
-for module, required_version in deps:
-    if (
-        importlib.util.find_spec(module) is None
-        or version(module) != required_version
-    ):
-        print(f"\n*** Auto installing {module}@{required_version} ***")
+
+def install_package(package_name: str, required_version: str) -> None:
+    """If the package/version is not installed then install it. Otherwise
+    do nothing."""
+    if package_version(package_name) != required_version:
+        print(f"\n*** Auto installing {package_name}@{required_version} ***")
         subprocess.check_call(
             [
                 sys.executable,
@@ -51,47 +53,74 @@ for module, required_version in deps:
                 "pip",
                 "install",
                 "--force-reinstall",
-                f"{module}=={required_version}",
+                f"{package_name}=={required_version}",
             ]
         )
-    assert (importlib.util.find_spec(module) is not None) and (
-        version(module) == required_version
-    ), f"'{module}@{required_version}' is not installed."
+    assert (
+        package_version(package_name) == required_version
+    ), f"Expected to find {package_name}=={required_version}"
+
+
+DEPENDENCIES = [
+    ("rich", "14.0.0"),
+    ("tox", "4.27.0"),
+    ("flit", "3.12.0"),
+    ("mkdocs-material", "9.6.14"),
+]
+
+
+def install_dependencies():
+    """Install any dependency that is missing or has a different version."""
+    for package_name, required_version in DEPENDENCIES:
+        install_package(package_name, required_version)
+
+
+# -- Make sure required python dependencies are installed.
+install_dependencies()
+
 
 # -- Now that Rich is installed, we can import and use it.
 # pylint: disable=wrong-import-position
 from rich.console import Console  # noqa: E402
 
+# -- For outputting via Rich. The regular rich.print() doesn't not allow to
+# -- disable markup.
 console = Console()
 
 
-def out(*args, markup=False, highlight=False, **kwargs):
+def msg(*args, markup=False, highlight=False, **kwargs):
     """A shortcut for Rich lib console.print()."""
     console.print(*args, markup=markup, highlight=highlight, **kwargs)
 
 
-# ---------- Task 'lint' ----------
+def announce_task(task_name: str) -> None:
+    """Prints a message saying that the task is starting."""
+    msg(f"Executing Apio task: {task_name}", style="magenta bold")
+
+
+# ===================== Tasks definitions start here ==========================
 
 
 @task(
     name="lint",
     aliases=["l"],
 )
-def lint_task(ctx):
+def lint_task(ctx: Context):
     """Lint only."""
+    announce_task("lint")
+    # -- NOTE: This also creates the local dir _site which we ignore. We
+    # -- don't know how to lint mkdocs without creating it.
     cmd = f"{PYTHON} -m tox -e lint"
     ctx.run(cmd, pty=True)
-
-
-# ---------- Task 'test' ----------
 
 
 @task(
     name="test",
     aliases=["t"],
 )
-def test_task(ctx):
+def test_task(ctx: Context):
     """Offline tests with the latest Python."""
+    announce_task("test")
     cmd = (
         f"{PYTHON} -m tox "
         "--skip-missing-interpreters false "
@@ -101,15 +130,13 @@ def test_task(ctx):
     ctx.run(cmd, pty=True)
 
 
-# ---------- Task 'check' ----------
-
-
 @task(
     name="check",
     aliases=["c"],
 )
-def check_task(ctx):
+def check_task(ctx: Context):
     """Lint and all tests using the latest Python."""
+    announce_task("check")
     cmd = (
         f"{PYTHON} -m tox "
         "--skip-missing-interpreters false "
@@ -118,28 +145,24 @@ def check_task(ctx):
     ctx.run(cmd, pty=True)
 
 
-# ---------- Task 'check-all' ----------
-
-
 @task(
     name="check-all",
     aliases=["ca"],
 )
-def check_all_task(ctx):
+def check_all_task(ctx: Context):
     """Lint and all tests using all Python versions."""
+    announce_task("check-all")
     cmd = f"{PYTHON} -m tox " "--skip-missing-interpreters false "
     ctx.run(cmd, pty=True)
-
-
-# ---------- Task 'test-coverage' ----------
 
 
 @task(
     name="test-coverage",
     aliases=["tc"],
 )
-def test_coverage_task(ctx):
+def test_coverage_task(ctx: Context):
     """Generate test coverage report."""
+    announce_task("test-coverage")
     cmd = (
         f"{PYTHON} -m tox --skip-missing-interpreters false "
         f"-e {LATEST_PYTHON} "
@@ -148,71 +171,60 @@ def test_coverage_task(ctx):
     ctx.run(cmd, pty=True)
 
 
-# ---------- Task 'publish-test' ----------
-
-
 @task(name="publish-test")
-def publish_test_task(ctx):
-    """Publish to test test Pypi."""
+def publish_test_task(ctx: Context):
+    """Publish to Pypi test instance."""
+    announce_task("publish-test")
     cmd = f"{PYTHON} -m flit publish --repository testpypi"
     ctx.run(cmd, pty=True)
 
 
-# ---------- Task 'publish' ----------
-
-
-@task(name="publish")
-def publish_task(ctx):
-    """Publish to ptod Pypi."""
+@task(name="publish-prod")
+def publish_task(ctx: Context):
+    """Publish to Pypi production instance."""
+    announce_task("publish-prod")
     cmd = f"{PYTHON} -m flit publish"
     ctx.run(cmd, pty=True)
 
 
-# ---------- Task 'install-apio' ----------
-
-
 @task(name="install-apio", aliases=["ia"])
-def install_apio_task(ctx):
+def install_apio_task(ctx: Context):
     """Install apio package from source code."""
+    announce_task("install-apio")
     cmd = f"{PYTHON} -m pip install -e ."
     ctx.run(cmd, pty=True)
     ctx.run("apio --version", pty=True)
-    out(
-        "The source code here is now "
+    msg(
+        "The source code of this repo is now "
         "installed as the 'apio' pip package.\n"
         "Run 'apio' to test it.",
-        style="green bold",
+        style="green",
     )
 
 
-# ---------- Task 'uninstall-apio' ----------
-
-
 @task(name="uninstall-apio", aliases=["ua"])
-def uninstall_apio_task(ctx):
+def uninstall_apio_task(ctx: Context):
     """Uninstall the apio package."""
+    announce_task("uninstall-apio")
     cmd = f"{PYTHON} -m pip uninstall -y apio"
     ctx.run(cmd, pty=True)
-    out("The'apio' pip package is uninstalled.", style="green bold")
-
-
-# ---------- Task 'install-deps' ----------
+    msg("The'apio' pip package is uninstalled.", style="green bold")
 
 
 @task(name="install-deps", aliases=["deps"])
-def install_deps_task(ctx):
+def install_deps_task(ctx: Context):
     """Install development tools. Since we do at at the top of this file
     for every task, there is nothing to do here."""
     _ = ctx
-    out("       required  installed")
-    for name, ver in deps:
-        out(f"{name:7s} {ver:9s} {version(name)}")
-
-
-# ---------- Task 'docs-viewer' ----------
+    announce_task("install-deps")
+    msg("       required  installed")
+    for name, ver in DEPENDENCIES:
+        msg(f"{name:7s} {ver:9s} {version(name)}")
 
 
 @task(name="docs-viewer", aliases=["dv"])
-def install_docs_viewer_task(ctx):
+def install_docs_viewer_task(ctx: Context):
     """Run a local http server to view the Apio docs."""
+    print(f"{type(ctx)=}")
+    announce_task("docs-viewer")
     ctx.run("mkdocs serve", pty=True)
