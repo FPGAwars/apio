@@ -205,7 +205,7 @@ To install Apio on Windows X86-64 using an installer, follow these steps:
 
         apio-windows-amd64-[version]-[date]-installer.exe
 
-2.  Double-click the installer and follow the instructions. If your system warns that the installer is not signed, click **More Info** and then **Run Anyway**.
+2.  Double-click the installer and follow the instructions. If your system warns you that the installer is not signed, click **More Info** and then **Run Anyway**.
 
 3.  In a **new command window**, run the following command to test your installation:
 
