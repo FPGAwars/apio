@@ -2,9 +2,7 @@
 
 [![PyPI Version][pypi-image]][pypi-url]
 [![License][license-image]][license-url]
-
-
-
+[![apio-test](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue)]()
 
 [![apio-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/test.yaml?label=apio-test)](https://github.com/fpgawars/apio/actions/workflows/test.yaml)
 [![apio-dev-build](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-dev-builds/build-and-release.yaml?label=apio-dev-build)](https://github.com/fpgawars/apio-dev-builds/actions/workflows/build-and-release.yaml)
