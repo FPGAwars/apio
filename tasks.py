@@ -15,9 +15,10 @@
 
 import sys
 import platform
-from typing import Optional
-from importlib.metadata import version, PackageNotFoundError
 import subprocess
+from subprocess import CompletedProcess
+from typing import Optional, List
+from importlib.metadata import version, PackageNotFoundError
 from invoke import task
 from invoke.context import Context
 
@@ -93,14 +94,23 @@ from rich.console import Console  # noqa: E402
 console = Console()
 
 
-def msg(*args, markup=False, highlight=False, **kwargs):
+def cout(*args, markup=False, highlight=False, **kwargs):
     """A shortcut for Rich lib console.print()."""
     console.print(*args, markup=markup, highlight=highlight, **kwargs)
 
 
 def announce_task(task_name: str) -> None:
     """Prints a message saying that the task is starting."""
-    msg(f"Executing Apio task: {task_name}", style="magenta bold")
+    cout(f"Executing Apio task: {task_name}", style="magenta bold")
+
+
+def run(cmd: List[str]) -> None:
+    """Run a command. Abort if it returns an error code."""
+    cout(f"{' '.join(cmd)}", style="cyan")
+    result: CompletedProcess = subprocess.run(cmd, check=False)
+    if result.returncode != 0:
+        cout("Command failed.", style="red bold")
+        sys.exit(1)
 
 
 # ===================== Tasks definitions start here ==========================
@@ -110,96 +120,112 @@ def announce_task(task_name: str) -> None:
     name="lint",
     aliases=["l"],
 )
-def lint_task(ctx: Context):
+def lint_task(_: Context):
     """Lint only."""
     announce_task("lint")
     # -- NOTE: This also creates the local dir _site which we ignore. We
     # -- don't know how to lint mkdocs without creating it.
-    cmd = f"{PYTHON} -m tox -e lint"
-    ctx.run(cmd, pty=PTY)
+    run([PYTHON, "-m", "tox", "-e", "lint"])
 
 
 @task(
     name="test",
     aliases=["t"],
 )
-def test_task(ctx: Context):
+def test_task(_: Context):
     """Offline tests with the latest Python."""
     announce_task("test")
-    cmd = (
-        f"{PYTHON} -m tox "
-        "--skip-missing-interpreters false "
-        f"-e {LATEST_PYTHON} "
-        "-- --offline"
+    run(
+        [
+            PYTHON,
+            "-m",
+            "tox",
+            "--skip-missing-interpreters",
+            "false",
+            "-e",
+            LATEST_PYTHON,
+            "--",
+            "--offline",
+        ]
     )
-    ctx.run(cmd, pty=PTY)
 
 
 @task(
     name="check",
     aliases=["c"],
 )
-def check_task(ctx: Context):
+def check_task(_: Context):
     """Lint and all tests using the latest Python."""
     announce_task("check")
-    cmd = (
-        f"{PYTHON} -m tox "
-        "--skip-missing-interpreters false "
-        f"-e lint,{LATEST_PYTHON}"
+    run(
+        [
+            PYTHON,
+            "-m",
+            "tox",
+            "--skip-missing-interpreters",
+            "false",
+            "-e",
+            f"lint,{LATEST_PYTHON}",
+        ]
     )
-    ctx.run(cmd, pty=PTY)
 
 
 @task(
     name="check-all",
     aliases=["ca"],
 )
-def check_all_task(ctx: Context):
+def check_all_task(_: Context):
     """Lint and all tests using all Python versions."""
     announce_task("check-all")
-    cmd = f"{PYTHON} -m tox " "--skip-missing-interpreters false "
-    ctx.run(cmd, pty=PTY)
+    run([PYTHON, "-m", "tox", "--skip-missing-interpreters", "false"])
 
 
 @task(
     name="test-coverage",
     aliases=["tc"],
 )
-def test_coverage_task(ctx: Context):
+def test_coverage_task(_: Context):
     """Generate test coverage report."""
     announce_task("test-coverage")
-    cmd = (
-        f"{PYTHON} -m tox --skip-missing-interpreters false "
-        f"-e {LATEST_PYTHON} "
-        "-- --cov --cov-report=html:_pytest-coverage"
+    run(
+        [
+            PYTHON,
+            "-m",
+            "tox",
+            "--skip-missing-interpreters",
+            "false",
+            "-e",
+            LATEST_PYTHON,
+            "--",
+            "--cov",
+            "--cov-report=html:_pytest-coverage",
+        ]
     )
-    ctx.run(cmd, pty=PTY)
 
 
+# -- This task has not been tested.
 @task(name="publish-test")
-def publish_test_task(ctx: Context):
+def publish_test_task(_: Context):
     """Publish to Pypi test instance."""
     announce_task("publish-test")
-    cmd = f"{PYTHON} -m flit publish --repository testpypi"
-    ctx.run(cmd, pty=PTY)
+    run([PYTHON, "-m", "flit", "publish", "--repository", "testpypi"])
 
 
+# -- This task has not been tested.
 @task(name="publish-prod")
-def publish_task(ctx: Context):
+def publish_task(_: Context):
     """Publish to Pypi production instance."""
     announce_task("publish-prod")
-    cmd = f"{PYTHON} -m flit publish"
-    ctx.run(cmd, pty=PTY)
+    run([PYTHON, "-m", "flit", "publish"])
 
 
 @task(name="install-apio", aliases=["ia"])
-def install_apio_task(ctx: Context):
+def install_apio_task(_: Context):
     """Install apio package from source code."""
     announce_task("install-apio")
-    cmd = f"{PYTHON} -m pip install -e ."
-    ctx.run(cmd, pty=PTY)
-    ctx.run("apio --version", pty=PTY)
-    msg(
+    run([PYTHON, "-m", "pip", "install", "-e", "."])
+    run(["apio", "--version"])
+    cout(
         "The source code of this repo is now "
         "installed as the 'apio' pip package.\n"
         "Run 'apio' to test it.",
@@ -208,28 +234,25 @@ def install_apio_task(ctx: Context):
 
 
 @task(name="uninstall-apio", aliases=["ua"])
-def uninstall_apio_task(ctx: Context):
+def uninstall_apio_task(_: Context):
     """Uninstall the apio package."""
     announce_task("uninstall-apio")
-    cmd = f"{PYTHON} -m pip uninstall -y apio"
-    ctx.run(cmd, pty=PTY)
-    msg("The'apio' pip package is uninstalled.", style="green bold")
+    run([PYTHON, "-m", "pip", "uninstall", "-y", "apio"])
+    cout("The'apio' pip package is uninstalled.", style="green bold")
 
 
 @task(name="install-deps", aliases=["deps"])
-def install_deps_task(ctx: Context):
+def install_deps_task(_: Context):
     """Install development tools. Since we do at at the top of this file
     for every task, there is nothing to do here."""
-    _ = ctx
     announce_task("install-deps")
-    msg("       required  installed")
+    cout("       required  installed")
     for name, ver in DEPENDENCIES:
-        msg(f"{name:7s} {ver:9s} {version(name)}")
+        cout(f"{name:7s} {ver:9s} {version(name)}")
 
 
 @task(name="docs-viewer", aliases=["dv"])
-def install_docs_viewer_task(ctx: Context):
+def install_docs_viewer_task(_: Context):
     """Run a local http server to view the Apio docs."""
-    print(f"{type(ctx)=}")
     announce_task("docs-viewer")
-    ctx.run("mkdocs serve", pty=PTY)
+    run(["mkdocs", "serve"])
