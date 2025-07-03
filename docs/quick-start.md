@@ -13,7 +13,7 @@ instructions and continue in step 2 below.
 
 ## Step 2: Creating an Apio project
 
-Let's make an empty directory and populate it with the example `alhambra-ii/getting-started`.
+At this stage you should have a functioning `apio` command. Let's make an empty directory and populate it with the example `alhambra-ii/getting-started`.
 
 > For more information about `apio examples`, type `apio examples -h`.
 
