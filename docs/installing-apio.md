@@ -41,9 +41,9 @@ To install Apio on macOS Apple Silicon using an installer, follow these steps:
 
         apio-darwin-arm64-[version]-[date]-installer.pkg
 
-2.  Run the following command to allow the unsigned installer to run:
+2.  Run the following command to allow the unsigned Apio installer to run:
 
-        xattr -d com.apple.quarantine apio-darwin-arm64-*-installer.pkg
+        xattr -d com.apple.quarantine apio-darwin-arm64-*-installer.pkg 2>&1 | grep -v "No such xattr"
 
 3.  Double-click on the installer file and follow the instructions.
 
@@ -63,17 +63,17 @@ follow these steps:
 
         apio-darwin-arm64-[version]-[date]-bundle.tgz
 
-2.  Double click on the bundle file to uncompress it and reveal the `apio` directory with the application files.
+2.  Run the following command to allow the unsigned Apio app to run.
 
-3.  While in the `apio` directory, run the following command to make the unsigned apio application runnable:
+        xattr -d com.apple.quarantine apio-darwin-arm64-*-bundle.tgz 2>&1 | grep -v "No such xattr"
 
-        sudo find . -exec xattr -d com.apple.quarantine {}  \; 2>&1 | grep -v "No such xattr"
+3.  **After you run the xattr command**, double click on the bundle file to uncompress it and reveal the `apio` directory with the application files.
 
 4.  While in the `apio` directory, run the following command to test your installation:
 
         ./apio
 
-5.  Move the `apio` directory to the location of your choosing and add it to your `$PATH`.
+5.  Move the `apio` directory to a location of your choosing and add it to your `$PATH`.
 
 ---
 
@@ -151,7 +151,7 @@ To install Apio on Linux X86-64 using a file bundle, follow these steps:
 
         ./apio
 
-4.  Move the `apio` directory to the location of your choosing and add it to your `$PATH`.
+4.  Move the `apio` directory to a location of your choosing and add it to your `$PATH`.
 
 ---
 
@@ -225,4 +225,4 @@ To install Apio on Windows X86-64 using a file bundle, follow these steps:
 
         .\apio
 
-4.  Move the `apio` directory to the location of your choosing and add it to your `%PATH$`.
+4.  Move the `apio` directory to a location of your choosing and add it to your `%PATH$`.
