@@ -27,7 +27,7 @@ follow these steps:
 
         pip install --force-reinstall apio
 
-3.  Open a **new command window** and run this to test your installation.
+3.  In a **new shell window**, run the following command to test your installation:
 
         apio
 
@@ -47,7 +47,7 @@ To install Apio on macOS Apple Silicon using an installer, follow these steps:
 
 3.  Double-click on the installer file and follow the instructions.
 
-4.  Run the following command in a **new command window** to test your installation:
+4.  In a **new shell window**, run the following command to test your installation:
 
         apio
 
@@ -63,19 +63,17 @@ follow these steps:
 
         apio-darwin-arm64-[version]-[date]-bundle.tgz
 
-2.  Uncompress the bundle file to reveal the `apio` directory with the application files.
+2.  Double click on the bundle file to uncompress it and reveal the `apio` directory with the application files.
 
-        tar -xzf apio-darwin-arm64-*-bundle.tgz
+3.  While in the `apio` directory, run the following command to make the unsigned apio application runnable:
 
-3.  Use the following command to activate the environment:
+        sudo find . -exec xattr -d com.apple.quarantine {}  \; 2>&1 | grep -v "No such xattr"
 
-        source ./activate
+4.  While in the `apio` directory, run the following command to test your installation:
 
-4.  Move the `apio` directory to a location of your choosing and add it to your `$PATH`.
+        ./apio
 
-5.  Run the following command in a **new command window** to test your installation:
-
-        apio
+5.  Move the `apio` directory to the location of your choosing and add it to your `$PATH`.
 
 ---
 
@@ -93,7 +91,7 @@ To install Apio on macOS Intel Silicon using a Pip package, follow these steps:
 
         pip install --force-reinstall apio
 
-3.  Run the following command in a **new command window** to test your installation:
+3.  In a **new shell window**, run the following command to test your installation:
 
         apio
 
@@ -115,7 +113,7 @@ To install Apio on Linux X86-64 using a Pip package, follow these steps:
 
         pip install --force-reinstall apio
 
-3.  Run the following command in a **new command window** to test your installation:
+3.  In a **new shell window**, run the following command to test your installation:
 
         apio
 
@@ -133,7 +131,7 @@ To install Apio on Linux X86-64 using a Debian package, follow these steps:
 
         sudo apt install ./apio-linux-x86-64-[version]-[date]-debian.deb
 
-3.  Run the following command in a **new command window** to test your installation:
+3.  In a **new shell window**, run the following command to test your installation:
 
         apio
 
@@ -149,11 +147,11 @@ To install Apio on Linux X86-64 using a file bundle, follow these steps:
 
         tar -xzf apio-darwin-arm64-*-bundle.tgz
 
-3.  Move the `apio` directory to a location of your choosing and add it to your `$PATH`.
+3.  While in the `apio` directory, run the following command to test your installation:
 
-4.  Run the following command in a **new command window** to test your installation:
+        ./apio
 
-        apio
+4.  Move the `apio` directory to the location of your choosing and add it to your `$PATH`.
 
 ---
 
@@ -171,7 +169,7 @@ To install Apio on Linux ARM-64 using a Pip package, follow these steps:
 
         pip install --force-reinstall apio
 
-3.  Run the following command in a **new command window** to test your installation:
+3.  In a **new shell window**, run the following command to test your installation:
 
         apio
 
@@ -193,7 +191,7 @@ To install Apio on Windows X86-64 using a Pip package, follow these steps:
 
         pip install --force-reinstall apio
 
-3.  Run the following command in a **new command window** to test your installation:
+3.  In a **new command window**, run the following command to test your installation:
 
         apio
 
@@ -209,7 +207,7 @@ To install Apio on Windows X86-64 using an installer, follow these steps:
 
 2.  Double-click the installer and follow the instructions. If your system warns that the installer is not signed, click **More Info** and then **Run Anyway**.
 
-3.  Run the following command in a **new command window** to test your installation:
+3.  In a **new command window**, run the following command to test your installation:
 
         apio
 
@@ -223,8 +221,8 @@ To install Apio on Windows X86-64 using a file bundle, follow these steps:
 
 2.  Uncompress the bundle to reveal the `apio` directory with the application files (right click on the .zip file and select Extract All).
 
-3.  Move the `apio` directory to a location of your choosing and add it to your `%PATH%`.
+3.  While in the `apio` directory, run the following command to test your installation:
 
-4.  Run the following command in a **new command window** to test your installation:
+        .\apio
 
-        apio
+4.  Move the `apio` directory to the location of your choosing and add it to your `%PATH$`.
