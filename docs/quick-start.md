@@ -6,8 +6,7 @@ In this page, we will go through the steps of creating, validating, and uploadin
 
 ## Step 1: Installing Apio
 
-The first step in using Apio is installing it, visit the [Installing Apio](installing-apio.md) page, choose your installation method, follow the installation
-instructions and continue in step 2 below.
+The first step in using Apio is installing it, visit the [Installing Apio](installing-apio.md) page, choose your installation method, follow the installation instructions and continue in step 2 below.
 
 ---
 
