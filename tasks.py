@@ -14,6 +14,7 @@
 #   invoke docs-viewer   # Run a local http server to view the Apio docs.
 
 import sys
+import platform
 from typing import Optional
 from importlib.metadata import version, PackageNotFoundError
 import subprocess
@@ -31,6 +32,10 @@ LATEST_PYTHON = "py313"
 
 # -- The python interpreter that we currently use.
 PYTHON = sys.executable
+
+# -- This has to do with the preservation of color from shell commands.
+# -- Not support on Windows. Need to be investigated mode.
+PTY = False if platform.system() == "Windows" else True
 
 
 def package_version(package_name: str) -> Optional[str]:
@@ -111,7 +116,7 @@ def lint_task(ctx: Context):
     # -- NOTE: This also creates the local dir _site which we ignore. We
     # -- don't know how to lint mkdocs without creating it.
     cmd = f"{PYTHON} -m tox -e lint"
-    ctx.run(cmd, pty=True)
+    ctx.run(cmd, pty=PTY)
 
 
 @task(
@@ -127,7 +132,7 @@ def test_task(ctx: Context):
         f"-e {LATEST_PYTHON} "
         "-- --offline"
     )
-    ctx.run(cmd, pty=True)
+    ctx.run(cmd, pty=PTY)
 
 
 @task(
@@ -142,7 +147,7 @@ def check_task(ctx: Context):
         "--skip-missing-interpreters false "
         f"-e lint,{LATEST_PYTHON}"
     )
-    ctx.run(cmd, pty=True)
+    ctx.run(cmd, pty=PTY)
 
 
 @task(
@@ -153,7 +158,7 @@ def check_all_task(ctx: Context):
     """Lint and all tests using all Python versions."""
     announce_task("check-all")
     cmd = f"{PYTHON} -m tox " "--skip-missing-interpreters false "
-    ctx.run(cmd, pty=True)
+    ctx.run(cmd, pty=PTY)
 
 
 @task(
@@ -168,7 +173,7 @@ def test_coverage_task(ctx: Context):
         f"-e {LATEST_PYTHON} "
         "-- --cov --cov-report=html:_pytest-coverage"
     )
-    ctx.run(cmd, pty=True)
+    ctx.run(cmd, pty=PTY)
 
 
 @task(name="publish-test")
@@ -176,7 +181,7 @@ def publish_test_task(ctx: Context):
     """Publish to Pypi test instance."""
     announce_task("publish-test")
     cmd = f"{PYTHON} -m flit publish --repository testpypi"
-    ctx.run(cmd, pty=True)
+    ctx.run(cmd, pty=PTY)
 
 
 @task(name="publish-prod")
@@ -184,7 +189,7 @@ def publish_task(ctx: Context):
     """Publish to Pypi production instance."""
     announce_task("publish-prod")
     cmd = f"{PYTHON} -m flit publish"
-    ctx.run(cmd, pty=True)
+    ctx.run(cmd, pty=PTY)
 
 
 @task(name="install-apio", aliases=["ia"])
@@ -192,8 +197,8 @@ def install_apio_task(ctx: Context):
     """Install apio package from source code."""
     announce_task("install-apio")
     cmd = f"{PYTHON} -m pip install -e ."
-    ctx.run(cmd, pty=True)
-    ctx.run("apio --version", pty=True)
+    ctx.run(cmd, pty=PTY)
+    ctx.run("apio --version", pty=PTY)
     msg(
         "The source code of this repo is now "
         "installed as the 'apio' pip package.\n"
@@ -207,7 +212,7 @@ def uninstall_apio_task(ctx: Context):
     """Uninstall the apio package."""
     announce_task("uninstall-apio")
     cmd = f"{PYTHON} -m pip uninstall -y apio"
-    ctx.run(cmd, pty=True)
+    ctx.run(cmd, pty=PTY)
     msg("The'apio' pip package is uninstalled.", style="green bold")
 
 
@@ -227,4 +232,4 @@ def install_docs_viewer_task(ctx: Context):
     """Run a local http server to view the Apio docs."""
     print(f"{type(ctx)=}")
     announce_task("docs-viewer")
-    ctx.run("mkdocs serve", pty=True)
+    ctx.run("mkdocs serve", pty=PTY)
