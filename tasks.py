@@ -35,7 +35,7 @@ PYTHON = sys.executable
 
 # -- This has to do with the preservation of color from shell commands.
 # -- Not support on Windows. Need to be investigated mode.
-PTY = False if platform.system() == "Windows" else True
+PTY = platform.system() != "Windows"
 
 
 def package_version(package_name: str) -> Optional[str]:
