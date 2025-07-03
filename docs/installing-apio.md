@@ -205,7 +205,7 @@ To install Apio on Windows X86-64 using an installer, follow these steps:
 
         apio-windows-amd64-[version]-[date]-installer.exe
 
-2.  Double-click the installer and follow the instructions. If your system warns you that the installer is not signed, click **More Info** and then **Run Anyway**.
+2.  Double-click the installer and follow the instructions. If your system warns you that the installer is an unrecognized app (aka unsigned or unknown publisher), click **More info** and then **Run anyway**.
 
 3.  In a **new command window**, run the following command to test your installation:
 
@@ -219,10 +219,10 @@ To install Apio on Windows X86-64 using a file bundle, follow these steps:
 
         apio-windows-amd64-[version]-[date]-bundle.zip
 
-2.  Uncompress the bundle to reveal the `apio` directory with the application files (right click on the .zip file and select Extract All).
+2.  Uncompress the bundle to reveal the `apio` directory with the application files.
 
-3.  While in the `apio` directory, run the following command to test your installation:
+3.  While in the `apio` directory, run the following command to test your installation (this will run `apio.exe`):
 
         .\apio
 
-4.  Move the `apio` directory to a location of your choosing and add it to your `%PATH$`.
+4.  Move the `apio` directory to a location of your choosing and add it to your `%PATH%`.
