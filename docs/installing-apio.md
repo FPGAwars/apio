@@ -1,4 +1,3 @@
-Installing Apio
 Apio can be installed in a few ways:
 
 | Method             | Description                                                   | Platforms             |
@@ -20,69 +19,63 @@ If the sidebar is not visible, scroll down to find the installation guide for yo
 To install Apio on macOS Apple Silicon using a Pip package,
 follow these steps:
 
-1. Verify that you have Python installed by running:
+1.  Verify that you have Python installed by running:
 
-   ```
-   python --version
-   ```
+        python --version
 
-2. Install Apio using pip:
+2.  Install Apio using pip:
 
-   ```
-   pip install --force-reinstall apio
-   ```
+        pip install --force-reinstall apio
 
-3. [Optional] Add the Apio binary to your `$PATH` if necessary.
+3.  Open a **new command window** and run this to test your installation.
+
+        apio
+
+> If necessary, add the directory of the installed `apio` binary to your `$PATH`.
 
 ### Install using an installer <a id="mac-arm64-installer"></a>
 
-To install Apio on macOS Apple Silicon using an installer,
-follow these steps:
+To install Apio on macOS Apple Silicon using an installer, follow these steps:
 
-1. Download the installer file **apio-darwin-arm64-[version]-[date]-installer.pkg** from the [latest release](https://github.com/FPGAwars/apio-dev-builds/releases).
+1.  From the [latest release](https://github.com/FPGAwars/apio-dev-builds/releases) download the installer file:
 
-2. Use the following command to allow the unsigned installer to run:
+        apio-darwin-arm64-[version]-[date]-installer.pkg
 
-   ```
-   xattr -d com.apple.quarantine apio-darwin-arm64-*-installer.pkg
-   ```
+2.  Run the following command to allow the unsigned installer to run:
 
-3. Double-click the installer file and follow the instructions.
+        xattr -d com.apple.quarantine apio-darwin-arm64-*-installer.pkg
 
-4. Open a **new shell** window and run:
+3.  Double-click on the installer file and follow the instructions.
 
-   ```
-   apio system info
-   ```
+4.  Run the following command in a **new command window** to test your installation:
 
-   to verify your installation.
+        apio
+
+> NOTE: The installer creates the file `/etc/paths.d/Apio` to export
+> automatically the path of the installed app.
 
 ### Install using a file bundle <a id="mac-arm64-bundle"></a>
 
 To install Apio on macOS Apple Silicon using a file bundle,
 follow these steps:
 
-1. Download the bundle file **apio-darwin-arm64-[version]-[date]-bundle.tgz** from the [latest release](https://github.com/FPGAwars/apio-dev-builds/releases).
+1.  From the [latest release](https://github.com/FPGAwars/apio-dev-builds/releases) download the file bundle:
 
-2. Uncompress the bundle file to create an `apio` directory with the application files.
+        apio-darwin-arm64-[version]-[date]-bundle.tgz
 
-3. Use the following command to activate the environment:
+2.  Uncompress the bundle file to reveal the `apio` directory with the application files.
 
-   ```
-   source ./activate
-   ```
+        tar -xzf apio-darwin-arm64-*-bundle.tgz
 
-4. [Optional] Move the `apio` directory to a location of your choosing.
+3.  Use the following command to activate the environment:
 
-5. [Optional] Add the `apio` directory to your `$PATH`.
+        source ./activate
 
-6. Open a **new shell** and run:
+4.  Move the `apio` directory to a location of your choosing and add it to your `$PATH`.
 
-   ```
-   apio
-   ```
+5.  Run the following command in a **new command window** to test your installation:
 
-   to test the installation.
+        apio
 
 ---
 
@@ -92,19 +85,19 @@ follow these steps:
 
 To install Apio on macOS Intel Silicon using a Pip package, follow these steps:
 
-1. Verify that you have Python installed by running:
+1.  Verify that you have Python installed by running:
 
-   ```
-   python --version
-   ```
+        python --version
 
-2. Install Apio using pip:
+2.  Install Apio using pip:
 
-   ```
-   pip install --force-reinstall apio
-   ```
+        pip install --force-reinstall apio
 
-3. [Optional] Add the Apio binary to your `$PATH` if necessary.
+3.  Run the following command in a **new command window** to test your installation:
+
+        apio
+
+> If necessary, add the directory of the installed `apio` binary to your `$PATH`.
 
 ---
 
@@ -114,59 +107,53 @@ To install Apio on Linux X86-64 using a Pip package, follow these steps:
 
 ### Install using a Pip package <a id="linux-x86-pip"></a>
 
-1. Verify that you have Python installed by running:
+1.  Verify that you have Python installed by running:
 
-   ```
-   python --version
-   ```
+        python --version
 
-2. Install Apio using pip:
+2.  Install Apio using pip:
 
-   ```
-   pip install --force-reinstall apio
-   ```
+        pip install --force-reinstall apio
 
-3. [Optional] Add the Apio binary to your `$PATH` if necessary.
+3.  Run the following command in a **new command window** to test your installation:
+
+        apio
+
+> If necessary, add the directory of the installed `apio` binary to your `$PATH`.
 
 ### Install a Debian package <a id="linux-x86-debian"></a>
 
 To install Apio on Linux X86-64 using a Debian package, follow these steps:
 
-1. Download the Debian package file **apio-linux-x86-64-[version]-[date]-debian.deb** from the [latest release](https://github.com/FPGAwars/apio-dev-builds/releases).
+1.  From the [latest release](https://github.com/FPGAwars/apio-dev-builds/releases) download the Debian package file:
 
-2. In the directory where you downloaded the package, install it using:
+        apio-linux-x86-64-[version]-[date]-debian.deb
 
-   ```
-   sudo apt install ./apio-linux-x86-64-[version]-[date]-debian.deb
-   ```
+2.  In the directory where you downloaded the package, install it using:
 
-3. Open a **new shell** and run:
+        sudo apt install ./apio-linux-x86-64-[version]-[date]-debian.deb
 
-   ```
-   apio
-   ```
+3.  Run the following command in a **new command window** to test your installation:
 
-   to verify the installation.
+        apio
 
 ### Install using a file bundle <a id="linux-x86-bundle"></a>
 
 To install Apio on Linux X86-64 using a file bundle, follow these steps:
 
-1. Download the bundle file **apio-linux-x86-64-[version]-[date]-bundle.tgz** from the [latest release](https://github.com/FPGAwars/apio-dev-builds/releases).
+1.  From the [latest release](https://github.com/FPGAwars/apio-dev-builds/releases) download the file bundle:
 
-2. Uncompress the bundle file to create an `apio` directory with the application files.
+        apio-linux-x86-64-[version]-[date]-bundle.tgz
 
-3. [Optional] Move the `apio` directory to a location of your choosing.
+2.  Uncompress the bundle file to reveal the `apio` directory with the application files.
 
-4. [Optional] Add the `apio` directory to your `$PATH`.
+        tar -xzf apio-darwin-arm64-*-bundle.tgz
 
-5. Open a **new shell** and run:
+3.  Move the `apio` directory to a location of your choosing and add it to your `$PATH`.
 
-   ```
-   apio
-   ```
+4.  Run the following command in a **new command window** to test your installation:
 
-   to test the installation.
+        apio
 
 ---
 
@@ -176,19 +163,19 @@ To install Apio on Linux ARM-64 using a Pip package, follow these steps:
 
 ### Install using a Pip package <a id="linux-arm64-pip"></a>
 
-1. Verify that you have Python installed by running:
+1.  Verify that you have Python installed by running:
 
-   ```
-   python --version
-   ```
+        python --version
 
-2. Install Apio using pip:
+2.  Install Apio using pip:
 
-   ```
-   pip install --force-reinstall apio
-   ```
+        pip install --force-reinstall apio
 
-3. [Optional] Add the Apio binary to your `$PATH` if necessary.
+3.  Run the following command in a **new command window** to test your installation:
+
+        apio
+
+> If necessary, add the directory of the installed `apio` binary to your `$PATH`.
 
 ---
 
@@ -198,52 +185,46 @@ To install Apio on Windows X86-64 using a Pip package, follow these steps:
 
 ### Install using a Pip package <a id="windows-x86-64-pip"></a>
 
-1. Verify that you have Python installed by running:
+1.  Verify that you have Python installed by running:
 
-   ```
-   python --version
-   ```
+        python --version
 
-2. Install Apio using pip:
+2.  Install Apio using pip:
 
-   ```
-   pip install --force-reinstall apio
-   ```
+        pip install --force-reinstall apio
 
-3. [Optional] Add the Apio binary to your `%PATH%` if necessary.
+3.  Run the following command in a **new command window** to test your installation:
+
+        apio
+
+> If necessary, add the directory of the installed `apio` binary to your `$PATH`.
 
 ### Install using an installer <a id="windows-x86-64-installer"></a>
 
 To install Apio on Windows X86-64 using an installer, follow these steps:
 
-1. Download the installer file **apio-windows-amd64-[version]-[date]-installer.exe** from the [latest release](https://github.com/FPGAwars/apio-dev-builds/releases).
+1.  From the [latest release](https://github.com/FPGAwars/apio-dev-builds/releases) download the installer file:
 
-2. Double-click the installer and follow the instructions. If your system warns that the installer is not signed, click **More Info** and then **Run Anyway**.
+        apio-windows-amd64-[version]-[date]-installer.exe
 
-3. Open a new shell and run:
+2.  Double-click the installer and follow the instructions. If your system warns that the installer is not signed, click **More Info** and then **Run Anyway**.
 
-   ```
-   apio
-   ```
+3.  Run the following command in a **new command window** to test your installation:
 
-   to verify the installation.
+        apio
 
 ### Install using a file bundle <a id="windows-x86-64-bundle"></a>
 
 To install Apio on Windows X86-64 using a file bundle, follow these steps:
 
-1. Download the bundle file **apio-windows-amd64-[version]-[date]-bundle.zip** from the [latest release](https://github.com/FPGAwars/apio-dev-builds/releases).
+1.  From the [latest release](https://github.com/FPGAwars/apio-dev-builds/releases) download the file bundle:
 
-2. Uncompress the bundle file to create an `apio` directory with the application files.
+        apio-windows-amd64-[version]-[date]-bundle.zip
 
-3. [Optional] Move the `apio` directory to a location of your choosing.
+2.  Uncompress the bundle to reveal the `apio` directory with the application files (right click on the .zip file and select Extract All).
 
-4. [Optional] Add the `apio` directory to your `%PATH%`.
+3.  Move the `apio` directory to a location of your choosing and add it to your `%PATH%`.
 
-5. Open a **new command window** and run:
+4.  Run the following command in a **new command window** to test your installation:
 
-   ```
-   apio
-   ```
-
-   to test the installation.
+        apio
