@@ -277,7 +277,7 @@ def cli(
     # -- Create the apio context. If the project exists, it's custom
     # -- boards.jsonc is also loaded. Config is required since we query
     # -- the example package.
-    # -- We suppress the message with the env and board names since it's
+    # -- We suppress the message with the env and board ids since it's
     # -- not relevant for this command.
     apio_ctx = ApioContext(
         scope=context_scope,

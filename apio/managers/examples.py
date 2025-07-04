@@ -23,7 +23,7 @@ from apio.utils import util
 class ExampleInfo:
     """Information about a single example."""
 
-    board_name: str
+    board_id: str
     example_name: str
     path: PosixPath
     description: str
@@ -34,7 +34,7 @@ class ExampleInfo:
     @property
     def name(self) -> str:
         """Returns the full id of the example."""
-        return self.board_name + "/" + self.example_name
+        return self.board_id + "/" + self.example_name
 
 
 class Examples:
@@ -110,7 +110,7 @@ class Examples:
 
                 # -- Append this example to the list.
                 example_info = ExampleInfo(
-                    board_name=board_dir.name,
+                    board_id=board_dir.name,
                     example_name=example_dir.name,
                     path=example_dir,
                     description=description,
@@ -138,7 +138,7 @@ class Examples:
         # -- Count examples by board
         counts: Dict[str, int] = {}
         for example in examples:
-            board = example.board_name
+            board = example.board_id
             old_count = counts.get(board, 0)
             counts[board] = old_count + 1
 
@@ -214,18 +214,16 @@ class Examples:
         # -- Inform the user.
         cout(f"Example '{example_name}' fetched successfully.", style=SUCCESS)
 
-    def get_board_examples(self, board_name) -> List[ExampleInfo]:
-        """Returns the list of examples with given board name."""
-        return [
-            x for x in self.get_examples_infos() if x.board_name == board_name
-        ]
+    def get_board_examples(self, board_id) -> List[ExampleInfo]:
+        """Returns the list of examples with given board id."""
+        return [x for x in self.get_examples_infos() if x.board_id == board_id]
 
-    def copy_board_examples(self, board_name: str, dst_dir: Path):
+    def copy_board_examples(self, board_id: str, dst_dir: Path):
         """Copy the example creating the folder
         Ex. The example alhambra-ii/ledon --> the folder alhambra-ii/ledon
         is created
           * INPUTS:
-            * board_name: e.g. 'alhambra-ii.
+            * board_id: e.g. 'alhambra-ii.
             * dst_dir: (optional) destination directory.
         """
 
@@ -236,27 +234,27 @@ class Examples:
         # dst_dir = util.resolve_project_dir(
         #     dst_dir, create_if_missing=True
         # )
-        board_examples: List[ExampleInfo] = self.get_board_examples(board_name)
+        board_examples: List[ExampleInfo] = self.get_board_examples(board_id)
 
         if not board_examples:
-            cerror(f"No examples for board '{board_name}.")
+            cerror(f"No examples for board '{board_id}.")
             cout(
                 "Run 'apio examples list' for the list of examples.",
-                "Expecting a board name such as 'alhambra-ii.",
+                "Expecting a board id such as 'alhambra-ii.",
                 style=INFO,
             )
             sys.exit(1)
 
         # -- Build the source example path (where the example was installed)
-        src_board_dir = self.examples_dir / board_name
+        src_board_dir = self.examples_dir / board_id
 
         # -- If the source example path is not a folder... it is an error
         if not src_board_dir.is_dir():
-            cerror(f"Examples for board [{board_name}] not found.")
+            cerror(f"Examples for board [{board_id}] not found.")
             cout(
                 "Run 'apio examples list' for the list of available "
                 "examples.",
-                "Expecting a board name such as 'alhambra-ii'.",
+                "Expecting a board id such as 'alhambra-ii'.",
                 style=INFO,
             )
             sys.exit(1)
@@ -277,13 +275,13 @@ class Examples:
 
         cout(
             f'Found {util.plurality(board_examples, "example")} '
-            f"for board '{board_name}'"
+            f"for board '{board_id}'"
         )
 
         for board_example in board_examples:
             example_name = board_example.example_name
             styled_name = cstyle(example_name, style=EMPH3)
-            cout(f"Fetching {board_name}/{styled_name}")
+            cout(f"Fetching {board_id}/{styled_name}")
             shutil.copytree(
                 src_board_dir / example_name,
                 dst_dir / example_name,

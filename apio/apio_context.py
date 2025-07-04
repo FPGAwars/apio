@@ -233,7 +233,7 @@ class ApioContext:
         # -- Env name string in color
         styled_env_name = cstyle(self.project.env_name, style=EMPH1)
 
-        # -- Board name string in color
+        # -- Board id string in color
         styled_board_id = cstyle(
             self.project.env_options["board"], style=EMPH1
         )

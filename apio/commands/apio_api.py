@@ -432,9 +432,9 @@ def _get_examples_cli(
     # -- Group examples by boards
     boards_examples: Dict[str, List[ExampleInfo]] = {}
     for example in examples:
-        board_examples = boards_examples.get(example.board_name, [])
+        board_examples = boards_examples.get(example.board_id, [])
         board_examples.append(example)
-        boards_examples[example.board_name] = board_examples
+        boards_examples[example.board_id] = board_examples
 
     # -- The top dict that we will emit as json.
     top_dict = {}

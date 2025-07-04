@@ -82,7 +82,7 @@ def cli(
 
     # -- Make sure the board exist.
     if board not in apio_ctx.boards:
-        cerror(f"Unknown board name '{board}'.")
+        cerror(f"Unknown board id '{board}'.")
         sys.exit(1)
 
     # -- Determine the new project directory. Create if needed.

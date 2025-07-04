@@ -33,9 +33,9 @@ def test_resources_references(apio_runner: ApioRunner):
 
         unused_programmers = set(apio_ctx.programmers.keys())
 
-        for board_name, board_info in apio_ctx.boards.items():
+        for board_id, board_info in apio_ctx.boards.items():
             # -- Prepare a context message for failing assertions.
-            board_msg = f"While testing board {board_name}"
+            board_msg = f"While testing board {board_id}"
 
             # -- Assert that required fields exist.
             assert "fpga-id" in board_info, board_msg
@@ -63,13 +63,13 @@ def test_resources_ids_and_order(apio_runner: ApioRunner):
     """Tests the formats of boards, fpgas, and programmers names."""
 
     # -- For boards we allow lower-case-0-9.
-    board_name_regex = re.compile(r"^[a-z][a-z0-9-]*$")
+    board_id_regex = re.compile(r"^[a-z][a-z0-9-]*$")
 
-    # -- For fpga names we allow lower-case-0-9.
-    fpga_name_regex = re.compile(r"^[a-z][a-z0-9-/]*$")
+    # -- For fpga ids we allow lower-case-0-9.
+    fpga_id_regex = re.compile(r"^[a-z][a-z0-9-/]*$")
 
-    # -- For programmer names we allow lower-case-0-9.
-    programmer_name_regex = re.compile(r"^[a-z][a-z0-9-]*$")
+    # -- For programmer ids we allow lower-case-0-9.
+    programmer_id_regex = re.compile(r"^[a-z][a-z0-9-]*$")
 
     with apio_runner.in_sandbox():
 
@@ -81,11 +81,11 @@ def test_resources_ids_and_order(apio_runner: ApioRunner):
 
         # -- Test the format of the board ids.
         for board_id in apio_ctx.boards.keys():
-            assert board_name_regex.match(board_id), f"{board_id=}"
+            assert board_id_regex.match(board_id), f"{board_id=}"
 
         # -- Test the format of the fpgas ids and part numbers.
         for fpga_id, fgpa_info in apio_ctx.fpgas.items():
-            assert fpga_name_regex.match(fpga_id), f"{fpga_id=}"
+            assert fpga_id_regex.match(fpga_id), f"{fpga_id=}"
             # Fpga id is either the fpga part num converted to lower-case
             # or its the lower-case part num with a suffix that starts with
             # '-'. E.g, for part num 'PART-NUM', the fpga id can be 'part-num'
@@ -97,7 +97,7 @@ def test_resources_ids_and_order(apio_runner: ApioRunner):
 
         # -- Test the format of the programmers ids.
         for programmer_id in apio_ctx.programmers.keys():
-            assert programmer_name_regex.match(
+            assert programmer_id_regex.match(
                 programmer_id
             ), f"{programmer_id=}"
 

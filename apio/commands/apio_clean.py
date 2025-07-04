@@ -101,7 +101,7 @@ def cli(
     """
 
     # -- Create the apio context.
-    # -- We suppress the message with the env and board names since it's
+    # -- We suppress the message with the env and board ids since it's
     # -- not relevant for this command.
     apio_ctx = ApioContext(
         scope=ApioContextScope.PROJECT_REQUIRED,
