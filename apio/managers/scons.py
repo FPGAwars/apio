@@ -243,30 +243,31 @@ class SCons:
 
         # - Populate the architecture specific values of result.fpga_info.
         fpga_arch = pr.fpga_info["arch"]
-        if fpga_arch == "ice40":
-            result.arch = ApioArch.ICE40
-            result.fpga_info.ice40.MergeFrom(
-                Ice40FpgaInfo(
-                    type=pr.fpga_info["type"], pack=pr.fpga_info["pack"]
+        match fpga_arch:
+            case "ice40":
+                result.arch = ApioArch.ICE40
+                result.fpga_info.ice40.MergeFrom(
+                    Ice40FpgaInfo(
+                        type=pr.fpga_info["type"], pack=pr.fpga_info["pack"]
+                    )
                 )
-            )
-        elif fpga_arch == "ecp5":
-            result.arch = ApioArch.ECP5
-            result.fpga_info.ecp5.MergeFrom(
-                Ecp5FpgaInfo(
-                    type=pr.fpga_info["type"],
-                    pack=pr.fpga_info["pack"],
-                    speed=pr.fpga_info["speed"],
+            case "ecp5":
+                result.arch = ApioArch.ECP5
+                result.fpga_info.ecp5.MergeFrom(
+                    Ecp5FpgaInfo(
+                        type=pr.fpga_info["type"],
+                        pack=pr.fpga_info["pack"],
+                        speed=pr.fpga_info["speed"],
+                    )
                 )
-            )
-        elif fpga_arch == "gowin":
-            result.arch = ApioArch.GOWIN
-            result.fpga_info.gowin.MergeFrom(
-                GowinFpgaInfo(family=pr.fpga_info["type"])
-            )
-        else:
-            cerror(f"Unexpected fpga_arch value {fpga_arch}")
-            sys.exit(1)
+            case "gowin":
+                result.arch = ApioArch.GOWIN
+                result.fpga_info.gowin.MergeFrom(
+                    GowinFpgaInfo(family=pr.fpga_info["type"])
+                )
+            case _:
+                cerror(f"Unexpected fpga_arch value {fpga_arch}")
+                sys.exit(1)
 
         # -- We are done populating The FpgaInfo params..
         assert result.fpga_info.IsInitialized(), result

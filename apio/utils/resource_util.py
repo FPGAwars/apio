@@ -20,7 +20,8 @@ class ProjectResources:
     programmer_info: Dict[str, Any]
 
 
-# -- A schema for validating the JSON board definitions in boards.jsonc.
+# -- JSON schema for validating board definitions in boards.jsonc.
+# -- The field 'description' is for information only.
 BOARD_SCHEMA = schema = {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
@@ -60,6 +61,8 @@ BOARD_SCHEMA = schema = {
     "additionalProperties": False,
 }
 
+# -- JSON schema for validating fpga definitions in fpga.jsonc.
+# -- The fields 'part-num' and 'size' are for information only.
 FPGA_SCHEMA = schema = {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
@@ -75,6 +78,7 @@ FPGA_SCHEMA = schema = {
     "additionalProperties": False,
 }
 
+# -- JSON schema for validating programmer definitions in programmers.jsonc.
 PROGRAMMER_SCHEMA = {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
@@ -100,6 +104,34 @@ def _validate_fpga_info(fpga_id: str, fpga_info: dict) -> None:
     except ValidationError as e:
         cerror(f"Invalid fpga definitions [{fpga_id}]: {e.message}")
         sys.exit(1)
+
+    # -- Architecture based validation. See scons.py for the architecture
+    # -- dependent use of the fields.
+    arch = fpga_info["arch"]
+    match arch:
+        # -- Special validation for ice40.
+        case "ice40":
+            if "pack" not in fpga_info:
+                cerror(f"Field 'pack' is missing in ice40 fpga '{fpga_id}'")
+                sys.exit(1)
+
+        # -- Special validation for ecp5
+        case "ecp5":
+            if "pack" not in fpga_info:
+                cerror(f"Field 'pack' is missing in ecp5 fpga '{fpga_id}'")
+                sys.exit(1)
+            if "speed" not in fpga_info:
+                cerror(f"Field 'pack' is missing in ecp5 fpga '{fpga_id}'")
+                sys.exit(1)
+
+        # -- Special validation for gowin.
+        case "gowin":
+            pass
+
+        # -- Unknown arch. Should not happen since the schema validates the
+        # -- arch field.
+        case _:
+            raise ValidationError(f"Unknown arch '{arch}' in fpga '{fpga_id}'")
 
 
 def _validate_programmer_info(
