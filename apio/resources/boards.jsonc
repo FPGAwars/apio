@@ -185,7 +185,7 @@
     "fpga-id": "lfe5u-25f-6bg256c",
     "programmer": {
       "id": "openfpgaloader",
-      "args": "-c usb-blaster -v --file-type bin"
+      "extra-args": "-c usb-blaster -v --file-type bin"
     }
   },
   "colorlight-i5-v7-0-ft2232h": {
@@ -212,7 +212,7 @@
     "fpga-id": "lfe5u-25f-6bg381c",
     "programmer": {
       "id": "openfpgaloader",
-      "args": "-c usb-blaster -v --file-type bin"
+      "extra-args": "-c usb-blaster -v --file-type bin"
     }
   },
   "colorlight-i9-v7-2-ft2232h": {
@@ -239,7 +239,7 @@
     "fpga-id": "lfe5u-45f-6bg381c",
     "programmer": {
       "id": "openfpgaloader",
-      "args": "-c usb-blaster -v --file-type bin"
+      "extra-args": "-c usb-blaster -v --file-type bin"
     }
   },
   "cynthion-r1-4": {
@@ -313,7 +313,7 @@
     "fpga-id": "lfe5u-25f-6bg381c",
     "programmer": {
       "id": "openfpgaloader",
-      "args": "-c usb-blaster -v --file-type bin"
+      "extra-args": "-c usb-blaster -v --file-type bin"
     }
   },
   // https://tomu.im/fomu.html
@@ -550,7 +550,7 @@
     "fpga-id": "lfe5u-25f-6bg256c",
     "programmer": {
       "id": "openfpgaloader",
-      "args": "-c usb-blaster -v --file-type bin"
+      "extra-args": "-c usb-blaster -v --file-type bin"
     }
   },
   // https://www.robotshop.com/products/devantech-icewerx-kit-ice40-hx8k-fpga-module
