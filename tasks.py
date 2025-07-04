@@ -73,6 +73,7 @@ DEPENDENCIES = [
     ("tox", "4.27.0"),
     ("flit", "3.12.0"),
     ("mkdocs-material", "9.6.14"),
+    ("pytest", "8.3.5"),
 ]
 
 
@@ -255,7 +256,7 @@ def install_deps_task(_: Context):
     announce_task("install-deps")
     cout("       required  installed")
     for name, ver in DEPENDENCIES:
-        cout(f"{name:7s} {ver:9s} {version(name)}")
+        cout(f"{name:17} {ver:9s} {version(name)}")
 
 
 @task(name="docs-viewer", aliases=["dv"])
