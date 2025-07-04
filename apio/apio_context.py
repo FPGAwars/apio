@@ -88,6 +88,25 @@ class ApioContext:
 
     # pylint: disable=too-many-instance-attributes
 
+    # -- List of allowed instance vars.
+    __slots__ = (
+        "scope",
+        "home_dir",
+        "config",
+        "profile",
+        "platforms",
+        "platform_id",
+        "all_packages",
+        "platform_packages",
+        "boards",
+        "fpgas",
+        "programmers",
+        "env_was_already_set",
+        "_project_dir",
+        "_project",
+        "_project_resources",
+    )
+
     def __init__(
         self,
         *,
