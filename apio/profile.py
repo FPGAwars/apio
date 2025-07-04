@@ -91,6 +91,17 @@ class Profile:
     ex. ~/.apio/profile.json
     """
 
+    # -- Only these instance vars are allowed.
+    __slots__ = (
+        "_profile_path",
+        "remote_config_url",
+        "remote_config_ttl_days",
+        "_remote_config_policy",
+        "_cached_remote_config",
+        "preferences",
+        "installed_packages",
+    )
+
     def __init__(
         self,
         home_dir: Path,

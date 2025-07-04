@@ -199,7 +199,7 @@ class ApioContext:
         # -- can it fetch the remote config on demand.
         remote_config_url = env_options.get(
             env_options.APIO_REMOTE_CONFIG_URL,
-            default=self.config["remote-config"],
+            default=self.config["remote-config-url"],
         )
         remote_config_ttl_days = self.config["remote-config-ttl-days"]
         self.profile = Profile(
