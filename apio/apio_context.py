@@ -22,6 +22,9 @@ from apio.utils.resource_util import (
     ProjectResources,
     collect_project_resources,
     validate_project_resources,
+    validate_config,
+    validate_platforms,
+    validate_packages,
 )
 
 
@@ -187,8 +190,9 @@ class ApioContext:
         # -- Determine apio home dir.
         self.home_dir: Path = util.resolve_home_dir()
 
-        # -- Read the config information
+        # -- Read and validate the config information
         self.config = self._load_resource(CONFIG_JSONC)
+        validate_config(self.config)
 
         # -- Profile information, from ~/.apio/profile.json. We provide it with
         # -- the remote config url template from distribution.jsonc such that
@@ -207,12 +211,14 @@ class ApioContext:
 
         # -- Read the platforms information.
         self.platforms = self._load_resource(PLATFORMS_JSONC)
+        validate_platforms(self.platforms)
 
         # -- Determine the platform_id for this APIO session.
         self.platform_id = self._determine_platform_id(self.platforms)
 
         # -- Read the apio packages information
         self.all_packages = self._load_resource(PACKAGES_JSONC)
+        validate_packages(self.all_packages)
 
         # -- Expand in place the env templates in all_packages.
         ApioContext._resolve_package_envs(self.all_packages, self.packages_dir)

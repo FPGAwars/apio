@@ -69,7 +69,7 @@ FPGA_SCHEMA = schema = {
     "required": ["part-num", "arch", "size", "type"],
     "properties": {
         "part-num": {"type": "string"},
-        "arch": {"type": "string", "pattern": "^ice40|ecp5|gowin$"},
+        "arch": {"type": "string", "enum": ["ice40", "ecp5", "gowin"]},
         "size": {"type": "string"},
         "type": {"type": "string"},
         "pack": {"type": "string"},
@@ -84,6 +84,68 @@ PROGRAMMER_SCHEMA = {
     "type": "object",
     "required": ["command", "args"],
     "properties": {"command": {"type": "string"}, "args": {"type": "string"}},
+    "additionalProperties": False,
+}
+
+# -- JSON schema for validating config.jsonc.
+CONFIG_SCHEMA = {
+    "type": "object",
+    "required": ["remote-config-ttl-days", "remote-config"],
+    "properties": {
+        "remote-config-ttl-days": {"type": "integer", "minimum": 0},
+        "remote-config": {"type": "string"},
+    },
+    "additionalProperties": False,
+}
+
+# -- JSON schema for validating platforms.jsonc.
+PLATFORMS_SCHEMA = {
+    "type": "object",
+    "patternProperties": {
+        "^[a-z]+(-[a-z0-9]+)+$": {  # matches keys like "darwin-arm64"
+            "type": "object",
+            "required": ["type", "variant"],
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": ["Mac OSX", "Linux", "Windows"],
+                },
+                "variant": {"type": "string"},
+            },
+            "additionalProperties": False,
+        }
+    },
+    "additionalProperties": False,
+}
+
+# -- JSON schema for validating packages.jsonc.
+PACKAGES_SCHEMA = {
+    "type": "object",
+    "patternProperties": {
+        "^[a-z0-9_-]+$": {  # package names like "oss-cad-suite"
+            "type": "object",
+            "required": ["description", "env"],
+            "properties": {
+                "description": {"type": "string"},
+                "restricted-to-platforms": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                },
+                "env": {
+                    "type": "object",
+                    "properties": {
+                        "path": {"type": "array", "items": {"type": "string"}},
+                        "vars": {
+                            "type": "object",
+                            "additionalProperties": {"type": "string"},
+                        },
+                    },
+                    "additionalProperties": False,
+                },
+            },
+            "additionalProperties": False,
+        }
+    },
     "additionalProperties": False,
 }
 
@@ -142,6 +204,33 @@ def _validate_programmer_info(
         validate(instance=programmer_info, schema=PROGRAMMER_SCHEMA)
     except ValidationError as e:
         cerror(f"Invalid programmer definition [{programmer_id}]: {e.message}")
+        sys.exit(1)
+
+
+def validate_config(config: dict) -> None:
+    """Check the config resource from config.jsonc."""
+    try:
+        validate(instance=config, schema=CONFIG_SCHEMA)
+    except ValidationError as e:
+        cerror(f"Invalid config: {e.message}")
+        sys.exit(1)
+
+
+def validate_platforms(platforms: dict) -> None:
+    """Check the platforms resource from platforms.jsonc."""
+    try:
+        validate(instance=platforms, schema=PLATFORMS_SCHEMA)
+    except ValidationError as e:
+        cerror(f"Invalid platforms resource: {e.message}")
+        sys.exit(1)
+
+
+def validate_packages(packages: dict) -> None:
+    """Check the packages resource from platforms.jsonc."""
+    try:
+        validate(instance=packages, schema=PACKAGES_SCHEMA)
+    except ValidationError as e:
+        cerror(f"Invalid packages resource: {e.message}")
         sys.exit(1)
 
 
