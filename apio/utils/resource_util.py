@@ -66,7 +66,7 @@ FPGA_SCHEMA = schema = {
     "required": ["part-num", "arch", "size", "type"],
     "properties": {
         "part-num": {"type": "string"},
-        "arch": {"type": "string"},
+        "arch": {"type": "string", "pattern": "^ice40|ecp5|gowin$"},
         "size": {"type": "string"},
         "type": {"type": "string"},
         "pack": {"type": "string"},
@@ -84,7 +84,7 @@ PROGRAMMER_SCHEMA = {
 }
 
 
-def validate_board_info(board_id: str, board_info: dict) -> None:
+def _validate_board_info(board_id: str, board_info: dict) -> None:
     """Check the given board info and raise a fatal error on any error."""
     try:
         validate(instance=board_info, schema=BOARD_SCHEMA)
@@ -93,7 +93,7 @@ def validate_board_info(board_id: str, board_info: dict) -> None:
         sys.exit(1)
 
 
-def validate_fpga_info(fpga_id: str, fpga_info: dict) -> None:
+def _validate_fpga_info(fpga_id: str, fpga_info: dict) -> None:
     """Check the given fpga info and raise a fatal error on any error."""
     try:
         validate(instance=fpga_info, schema=FPGA_SCHEMA)
@@ -102,7 +102,7 @@ def validate_fpga_info(fpga_id: str, fpga_info: dict) -> None:
         sys.exit(1)
 
 
-def validate_programmer_info(
+def _validate_programmer_info(
     programmer_id: str, programmer_info: dict
 ) -> None:
     """Check the given programmer info and raise a fatal error on any error."""
@@ -116,8 +116,55 @@ def validate_programmer_info(
 def validate_project_resources(res: ProjectResources) -> None:
     """Check the resources of the current project. Exit with an error
     message on any error."""
-    validate_board_info(res.board_id, res.board_info)
-    validate_fpga_info(res.fpga_id, res.fpga_info)
-    validate_programmer_info(res.programmer_id, res.programmer_info)
+    _validate_board_info(res.board_id, res.board_info)
+    _validate_fpga_info(res.fpga_id, res.fpga_info)
+    _validate_programmer_info(res.programmer_id, res.programmer_info)
 
     # TODO: Add here additional check.
+
+
+def collect_project_resources(
+    board_id: str, boards: dict, fpgas: dict, programmers: dict
+) -> ProjectResources:
+    """Collect and validate the resources used by a project. Since the
+    resources may be custom resources defined by the user, we need to
+    have a user friendly error handling and reporting."""
+
+    # -- Get the info.
+    board_info = boards.get(board_id, None)
+    if board_info is None:
+        cerror(f"Unknown board id '{board_id}'.")
+        sys.exit(1)
+
+    # -- Get fpga id and info.
+    fpga_id = board_info.get("fpga-id", None)
+    if fpga_id is None:
+        cerror(f"Board '{board_id}' has no 'fpga-id' field.")
+        sys.exit(1)
+    fpga_info = fpgas.get(fpga_id, None)
+    if fpga_info is None:
+        cerror(f"Unknown fpga id '{fpga_id}'.")
+        sys.exit(1)
+
+    # -- Get programmer id and info.
+    programmer_id = board_info.get("programmer", {}).get("id", None)
+    if programmer_id is None:
+        cerror(f"Board '{board_id}' has no 'programmer.id'.")
+        sys.exit(1)
+    programmer_info = programmers.get(programmer_id, None)
+    if programmer_info is None:
+        cerror(f"Unknown programmer id '{programmer_id}'.")
+        sys.exit(1)
+
+    # -- Create the project resources bundle.
+    project_resources = ProjectResources(
+        board_id,
+        board_info,
+        fpga_id,
+        fpga_info,
+        programmer_id,
+        programmer_info,
+    )
+
+    # -- All done
+    return project_resources

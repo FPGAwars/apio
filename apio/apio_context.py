@@ -18,6 +18,11 @@ from apio.common.common_util import env_build_path
 from apio.profile import Profile, RemoteConfigPolicy
 from apio.utils import jsonc, util, env_options
 from apio.managers.project import Project, load_project_from_file
+from apio.utils.resource_util import (
+    ProjectResources,
+    collect_project_resources,
+    validate_project_resources,
+)
 
 
 # ---------- RESOURCES
@@ -213,14 +218,27 @@ class ApioContext:
         # -- If we determined that we need to load the project, load the
         # -- apio.ini data.
         self._project: Optional[Project] = None
+        self._project_resources: ProjectResources = None
+
         if self._project_dir:
+            # -- Load the project object
             self._project = load_project_from_file(
                 self._project_dir, env_arg, self.boards
             )
             assert self.has_project, "init(): project not loaded"
-            # -- Inform the user if needed.
+            # -- Inform the user about the active env, if needed..
             if report_env:
                 self.report_env()
+            # -- Collect and validate the project resources.
+            # -- The project is already validated to have the required "board.
+            self._project_resources = collect_project_resources(
+                self._project.get_str_option("board"),
+                self.boards,
+                self.fpgas,
+                self.programmers,
+            )
+            # -- Validate the project resources.
+            validate_project_resources(self._project_resources)
         else:
             assert not self.has_project, "init(): project loaded"
 
@@ -266,6 +284,14 @@ class ApioContext:
         # -- Failure here is a programming error, not a user error.
         assert self.has_project, "project(): project is not loaded"
         return self._project
+
+    @property
+    def project_resources(self) -> ProjectResources:
+        """Return the project resources. Should be called only if
+        has_project() is True."""
+        # -- Failure here is a programming error, not a user error.
+        assert self.has_project, "project(): project is not loaded"
+        return self._project_resources
 
     @property
     def env_build_path(self) -> str:

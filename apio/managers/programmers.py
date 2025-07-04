@@ -167,34 +167,22 @@ def _construct_cmd_template(apio_ctx: ApioContext) -> str:
             sys.exit(1)
         return custom_template
 
+    pr = apio_ctx.project_resources
     # -- Here when using the standard command.
 
-    # -- Get the board definition from boards.jsonc.
-    board = apio_ctx.project.get_str_option("board")
-    board_info = apio_ctx.boards[board]
-
-    # -- Get the board's programmer id.
-    board_programmer_info = board_info["programmer"]
-    programmer_id = board_programmer_info["id"]
-
-    # -- Get the programmer's definition from programmers.jsonc.
-    programmer_info = apio_ctx.programmers[programmer_id]
-
     # -- Start building the template with the programmer binary name.
-    # -- E.g. "openFPGAloader".
-    cmd_template = programmer_info["command"]
+    # -- E.g. "openFPGAloader". "command" is a validated required field.
+    cmd_template = pr.programmer_info["command"]
 
     # -- Append the optional args template from the programmer.
-    args = programmer_info.get("args")
+    args = pr.programmer_info.get("args", "")
     if args:
-        assert BIN_FILE_VALUE not in args, args
         cmd_template += " "
         cmd_template += args
 
     # -- Append the optional extra args template from the board.
-    extra_args = board_programmer_info.get("extra-args")
+    extra_args = pr.board_info["programmer"].get("extra-args", "")
     if extra_args:
-        assert BIN_FILE_VALUE not in extra_args, extra_args
         cmd_template += " "
         cmd_template += extra_args
 
@@ -267,15 +255,14 @@ def _match_serial_device(
     device. Exits with an error if none or multiple matching devices.
     """
 
-    # -- Get board info.
-    board = apio_ctx.project.get_str_option("board")
-    board_info = apio_ctx.boards[board]
+    # -- Get project resources
+    pr = apio_ctx.project_resources
 
     # -- Scan for all serial devices.
     all_devices: List[SerialDevice] = scanner.get_serial_devices()
 
     # -- Get board optional usb constraints
-    usb_info = board_info.get("usb", {})
+    usb_info = pr.board_info.get("usb", {})
 
     # -- Construct a device filter.
     serial_filter = SerialDeviceFilter()
@@ -336,15 +323,14 @@ def _match_usb_device(
     device. Exits with an error if none or multiple matching devices.
     """
 
-    # -- Get the board info.
-    board = apio_ctx.project.get_str_option("board")
-    board_info = apio_ctx.boards[board]
+    # -- Get project resources.
+    pr = apio_ctx.project_resources
 
     # -- Scan for all serial devices.
     all_devices: List[UsbDevice] = scanner.get_usb_devices()
 
     # -- Get board optional usb constraints
-    usb_info = board_info.get("usb", {})
+    usb_info = pr.board_info.get("usb", {})
 
     # -- Construct a device filter.
     usb_filter = UsbDeviceFilter()
@@ -402,12 +388,11 @@ def _check_device_presence(apio_ctx: ApioContext, scanner: _DeviceScanner):
     Returns if OK, exits with an error otherwise.
     """
 
-    # -- Get board info
-    board = apio_ctx.project.get_str_option("board")
-    board_info = apio_ctx.boards[board]
+    # -- Get project resources.
+    pr = apio_ctx.project_resources
 
     # -- Get the optional "usb" section of the board.
-    usb_info: Dict[str, str] = board_info.get("usb", None)
+    usb_info: Dict[str, str] = pr.board_info.get("usb", None)
 
     # -- If no "usb" section there are no constrained to check. We don't
     # -- even check that any usb device exists.

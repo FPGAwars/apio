@@ -5,11 +5,11 @@ Tests of apio_context.py
 import re
 from test.conftest import ApioRunner
 from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
-from apio.utils.resources_util import (
-    ProjectResources,
-    validate_board_info,
-    validate_fpga_info,
-    validate_programmer_info,
+from apio.utils.resource_util import (
+    _validate_board_info,
+    _validate_fpga_info,
+    _validate_programmer_info,
+    collect_project_resources,
     validate_project_resources,
 )
 
@@ -111,29 +111,22 @@ def test_resources_validation(apio_runner: ApioRunner):
             config_policy=RemoteConfigPolicy.CACHED_OK,
         )
 
-        for board_id, board_info in apio_ctx.boards.items():
-            validate_board_info(board_id, board_info)
-
         for fpga_id, fpga_info in apio_ctx.fpgas.items():
-            validate_fpga_info(fpga_id, fpga_info)
+            _validate_fpga_info(fpga_id, fpga_info)
 
         for programmer_id, programmer_info in apio_ctx.programmers.items():
-            validate_programmer_info(programmer_id, programmer_info)
+            _validate_programmer_info(programmer_id, programmer_info)
 
-        # Now tests matching board/fpga/programmer as a project
         for board_id, board_info in apio_ctx.boards.items():
-            fpga_id = board_info["fpga-id"]
-            fpga_info = apio_ctx.fpgas[fpga_id]
-            programmer_id = board_info["programmer"]["id"]
-            programmer_info = apio_ctx.programmers[programmer_id]
-            project_resources = ProjectResources(
-                board_id=board_id,
-                board_info=board_info,
-                fpga_id=fpga_id,
-                fpga_info=fpga_info,
-                programmer_id=programmer_id,
-                programmer_info=programmer_info,
+            _validate_board_info(board_id, board_info)
+
+            # -- Collect project resources for this board. This tests that
+            # -- the references are ok.
+            project_resources = collect_project_resources(
+                board_id, apio_ctx.boards, apio_ctx.fpgas, apio_ctx.programmers
             )
+
+            # -- Validate the project resources.
             validate_project_resources(project_resources)
 
 
