@@ -129,7 +129,7 @@ To install Apio on Linux X86-64 using a Debian package, follow these steps:
 
 2.  In the directory where you downloaded the package, install it using:
 
-        sudo apt install ./apio-linux-x86-64-[version]-[date]-debian.deb
+        sudo dpkg -i ./apio-linux-x86-64-[version]-[date]-debian.deb
 
 3.  In a **new shell window**, run the following command to test your installation:
 
