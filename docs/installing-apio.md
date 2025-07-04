@@ -145,7 +145,7 @@ To install Apio on Linux X86-64 using a file bundle, follow these steps:
 
 2.  Uncompress the bundle file to reveal the `apio` directory with the application files.
 
-        tar -xzf apio-darwin-arm64-*-bundle.tgz
+        tar -xzf apio-linux-x86-64-*-bundle.tgz
 
 3.  While in the `apio` directory, run the following command to test your installation:
 
