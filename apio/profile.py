@@ -487,10 +487,10 @@ class Profile:
         # -- Here is the normal case where the config url is not of a local
         # -- file but at a remote URL.
 
-        # -- Fetch the remote config. With timeout = 5, this failed a few times
-        # -- on github workflow tests so increased to 10.
+        # -- Fetch the remote config. With timeout = 10, this failed a
+        # -- few times on github workflow tests so increased to 25.
         resp: requests.Response = requests.get(
-            self.remote_config_url, timeout=10
+            self.remote_config_url, timeout=25
         )
 
         # -- Exit if http error.
