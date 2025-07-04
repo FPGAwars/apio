@@ -75,8 +75,8 @@ def days_between_datetime_stamps(
         return default
 
     # -- Round to beginning of day.
-    day1 = datetime1.replace(hour=0, minute=0, second=0, microsecond=0)
-    day2 = datetime2.replace(hour=0, minute=0, second=0, microsecond=0)
+    day1 = datetime(datetime1.year, datetime1.month, datetime1.day)
+    day2 = datetime(datetime2.year, datetime2.month, datetime2.day)
 
     # -- Compute the diff in days.
     delta_days: int = (day2 - day1).days
