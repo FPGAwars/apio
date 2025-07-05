@@ -5,6 +5,13 @@ Tests of apio_context.py
 import re
 from test.conftest import ApioRunner
 from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
+from apio.utils.resource_util import (
+    _validate_board_info,
+    _validate_fpga_info,
+    _validate_programmer_info,
+    collect_project_resources,
+    validate_project_resources,
+)
 
 
 def lc_part_num(part_num: str) -> str:
@@ -26,43 +33,43 @@ def test_resources_references(apio_runner: ApioRunner):
 
         unused_programmers = set(apio_ctx.programmers.keys())
 
-        for board_name, board_info in apio_ctx.boards.items():
+        for board_id, board_info in apio_ctx.boards.items():
             # -- Prepare a context message for failing assertions.
-            board_msg = f"While testing board {board_name}"
+            board_msg = f"While testing board {board_id}"
 
             # -- Assert that required fields exist.
-            assert "fpga" in board_info, board_msg
+            assert "fpga-id" in board_info, board_msg
             assert "programmer" in board_info, board_msg
-            assert "type" in board_info["programmer"], board_msg
+            assert "id" in board_info["programmer"], board_msg
 
             # -- Check that the fpga exists.
-            board_fpga = board_info["fpga"]
-            assert apio_ctx.fpgas[board_fpga], board_msg
+            board_fpga_id = board_info["fpga-id"]
+            assert apio_ctx.fpgas[board_fpga_id], board_msg
 
             # -- Check that the programmer exists.
-            board_programmer_type = board_info["programmer"]["type"]
-            assert apio_ctx.programmers[board_programmer_type], board_msg
+            board_programmer_id = board_info["programmer"]["id"]
+            assert apio_ctx.programmers[board_programmer_id], board_msg
 
             # -- Track unused programmers. Since a programmer may be used
             # -- by more than one board, it may already be removed.
-            if board_programmer_type in unused_programmers:
-                unused_programmers.remove(board_programmer_type)
+            if board_programmer_id in unused_programmers:
+                unused_programmers.remove(board_programmer_id)
 
         # -- We should end up with an empty set of unused programmers.
         assert not unused_programmers, unused_programmers
 
 
-def test_resources_names(apio_runner: ApioRunner):
+def test_resources_ids_and_order(apio_runner: ApioRunner):
     """Tests the formats of boards, fpgas, and programmers names."""
 
     # -- For boards we allow lower-case-0-9.
-    board_name_regex = re.compile(r"^[a-z][a-z0-9-]*$")
+    board_id_regex = re.compile(r"^[a-z][a-z0-9-]*$")
 
-    # -- For fpga names we allow lower-case-0-9.
-    fpga_name_regex = re.compile(r"^[a-z][a-z0-9-/]*$")
+    # -- For fpga ids we allow lower-case-0-9.
+    fpga_id_regex = re.compile(r"^[a-z][a-z0-9-/]*$")
 
-    # -- For programmer names we allow lower-case-0-9.
-    programmer_name_regex = re.compile(r"^[a-z][a-z0-9-]*$")
+    # -- For programmer ids we allow lower-case-0-9.
+    programmer_id_regex = re.compile(r"^[a-z][a-z0-9-]*$")
 
     with apio_runner.in_sandbox():
 
@@ -72,11 +79,13 @@ def test_resources_names(apio_runner: ApioRunner):
             config_policy=RemoteConfigPolicy.NO_CONFIG,
         )
 
-        for board in apio_ctx.boards.keys():
-            assert board_name_regex.match(board), f"{board=}"
+        # -- Test the format of the board ids.
+        for board_id in apio_ctx.boards.keys():
+            assert board_id_regex.match(board_id), f"{board_id=}"
 
+        # -- Test the format of the fpgas ids and part numbers.
         for fpga_id, fgpa_info in apio_ctx.fpgas.items():
-            assert fpga_name_regex.match(fpga_id), f"{fpga_id=}"
+            assert fpga_id_regex.match(fpga_id), f"{fpga_id=}"
             # Fpga id is either the fpga part num converted to lower-case
             # or its the lower-case part num with a suffix that starts with
             # '-'. E.g, for part num 'PART-NUM', the fpga id can be 'part-num'
@@ -86,8 +95,39 @@ def test_resources_names(apio_runner: ApioRunner):
                 lc_part + "-"
             ), f"{fpga_id=}"
 
-        for programmer in apio_ctx.programmers.keys():
-            assert programmer_name_regex.match(programmer), f"{programmer=}"
+        # -- Test the format of the programmers ids.
+        for programmer_id in apio_ctx.programmers.keys():
+            assert programmer_id_regex.match(
+                programmer_id
+            ), f"{programmer_id=}"
+
+
+def test_resources_validation(apio_runner: ApioRunner):
+    """Validate resources against a schema."""
+    with apio_runner.in_sandbox():
+
+        apio_ctx = ApioContext(
+            scope=ApioContextScope.NO_PROJECT,
+            config_policy=RemoteConfigPolicy.CACHED_OK,
+        )
+
+        for fpga_id, fpga_info in apio_ctx.fpgas.items():
+            _validate_fpga_info(fpga_id, fpga_info)
+
+        for programmer_id, programmer_info in apio_ctx.programmers.items():
+            _validate_programmer_info(programmer_id, programmer_info)
+
+        for board_id, board_info in apio_ctx.boards.items():
+            _validate_board_info(board_id, board_info)
+
+            # -- Collect project resources for this board. This tests that
+            # -- the references are ok.
+            project_resources = collect_project_resources(
+                board_id, apio_ctx.boards, apio_ctx.fpgas, apio_ctx.programmers
+            )
+
+            # -- Validate the project resources.
+            validate_project_resources(project_resources)
 
 
 def test_fpga_definitions(apio_runner: ApioRunner):

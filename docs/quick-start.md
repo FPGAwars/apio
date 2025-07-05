@@ -6,14 +6,13 @@ In this page, we will go through the steps of creating, validating, and uploadin
 
 ## Step 1: Installing Apio
 
-The first step in using Apio is installing it, visit the [Installing Apio](installing-apio.md) page, choose your installation method, follow the installation
-instructions and continue in step 2 below.
+The first step in using Apio is installing it, visit the [Installing Apio](installing-apio.md) page, choose your installation method, follow the installation instructions and continue in step 2 below.
 
 ---
 
 ## Step 2: Creating an Apio project
 
-Let's make an empty directory and populate it with the example `alhambra-ii/getting-started`.
+At this stage you should have a functioning `apio` command. Let's make an empty directory and populate it with the example `alhambra-ii/getting-started`.
 
 > For more information about `apio examples`, type `apio examples -h`.
 

@@ -5,11 +5,12 @@ from apio.commands.apio import cli as apio
 
 CUSTOM_FPGAS = """
 {
-  "my_custom_fpga": {
+  "ice40hx4k-tq144-8k": {
+    "part-num": "MY-CUSTOM_PART-NUM",
     "arch": "ice40",
-    "type": "lp1k",
-    "size": "1k",
-    "pack": "swg16tr"
+    "size": "8k",
+    "type": "hx8k",
+    "pack": "tq144:4k"
   }
 }
 """
@@ -59,8 +60,7 @@ def test_custom_fpga(apio_runner: ApioRunner):
         # -- Note: pytest sees the piped version of the command's output.
         # -- Run 'apio build' | cat' to reproduce it.
         assert "Loading custom 'fpgas.jsonc'" in result.output
-        assert "ice40hx4k-tq144-8k" not in result.output
-        assert "my_custom_fpga" in result.output
+        assert "MY-CUSTOM_PART-NUM" in result.output
         assert "Total of 1 fpga" in result.output
 
         # -- Execute "apio fpgas --docs"

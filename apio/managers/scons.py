@@ -16,7 +16,7 @@ from datetime import datetime
 from google.protobuf import text_format
 from apio.common import apio_console
 from apio.common.apio_console import cout, cerror, cstyle, cunstyle
-from apio.common.apio_styles import SUCCESS, ERROR, EMPH3
+from apio.common.apio_styles import SUCCESS, ERROR, EMPH3, INFO
 from apio.utils import util, pkg_util
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
@@ -66,6 +66,13 @@ def on_exception(*, exit_code: int):
 
                 if str(exc):
                     cerror(str(exc))
+
+                if not util.is_debug(1):
+                    cout(
+                        "Running with APIO_DEBUG=1 may provide "
+                        "additional diagnostic information.",
+                        style=INFO,
+                    )
                 return exit_code
 
         return wrapper
@@ -222,56 +229,45 @@ class SCons:
         assert apio_ctx.has_project, "Scons encountered a missing project."
         project = apio_ctx.project
 
-        # -- Get the project's board. It should be prevalidated when loading
-        # -- the project, but we sanity check it again just in case.
-        board = project.get_str_option("board")
-        assert board is not None, "Scons got a None board."
-        assert board in apio_ctx.boards, f"Unknown board name [{board}]"
-
-        # -- Get the project fpga id from the board info.
-        fpga_id = apio_ctx.boards.get(board).get("fpga")
-        assert fpga_id, "construct_scons_params(): fpga assertion failed."
-        assert fpga_id in apio_ctx.fpgas, (
-            f"construct_scons_params(): unknown fpga id [{fpga_id}].\n"
-            "Run `apio fpgas` for fpga ids."
-        )
-        fpga_config = apio_ctx.fpgas.get(fpga_id)
-        fpga_arch = fpga_config["arch"]
+        # -- Get the project resource.s
+        pr = apio_ctx.project_resources
 
         # -- Populate the common values of FpgaInfo.
         result.fpga_info.MergeFrom(
             FpgaInfo(
-                fpga_id=fpga_id,
-                part_num=fpga_config["part-num"],
-                size=fpga_config["size"],
+                fpga_id=pr.fpga_id,
+                part_num=pr.fpga_info["part-num"],
+                size=pr.fpga_info["size"],
             )
         )
 
         # - Populate the architecture specific values of result.fpga_info.
-        if fpga_arch == "ice40":
-            result.arch = ApioArch.ICE40
-            result.fpga_info.ice40.MergeFrom(
-                Ice40FpgaInfo(
-                    type=fpga_config["type"], pack=fpga_config["pack"]
+        fpga_arch = pr.fpga_info["arch"]
+        match fpga_arch:
+            case "ice40":
+                result.arch = ApioArch.ICE40
+                result.fpga_info.ice40.MergeFrom(
+                    Ice40FpgaInfo(
+                        type=pr.fpga_info["type"], pack=pr.fpga_info["pack"]
+                    )
                 )
-            )
-        elif fpga_arch == "ecp5":
-            result.arch = ApioArch.ECP5
-            result.fpga_info.ecp5.MergeFrom(
-                Ecp5FpgaInfo(
-                    type=fpga_config["type"],
-                    pack=fpga_config["pack"],
-                    speed=fpga_config["speed"],
+            case "ecp5":
+                result.arch = ApioArch.ECP5
+                result.fpga_info.ecp5.MergeFrom(
+                    Ecp5FpgaInfo(
+                        type=pr.fpga_info["type"],
+                        pack=pr.fpga_info["pack"],
+                        speed=pr.fpga_info["speed"],
+                    )
                 )
-            )
-        elif fpga_arch == "gowin":
-            result.arch = ApioArch.GOWIN
-            result.fpga_info.gowin.MergeFrom(
-                GowinFpgaInfo(family=fpga_config["type"])
-            )
-        else:
-            cerror(f"Unexpected fpga_arch value {fpga_arch}")
-            sys.exit(1)
+            case "gowin":
+                result.arch = ApioArch.GOWIN
+                result.fpga_info.gowin.MergeFrom(
+                    GowinFpgaInfo(family=pr.fpga_info["type"])
+                )
+            case _:
+                cerror(f"Unexpected fpga_arch value {fpga_arch}")
+                sys.exit(1)
 
         # -- We are done populating The FpgaInfo params..
         assert result.fpga_info.IsInitialized(), result
@@ -306,7 +302,7 @@ class SCons:
         result.apio_env_params.MergeFrom(
             ApioEnvParams(
                 env_name=apio_ctx.project.env_name,
-                board_id=project.get_str_option("board"),
+                board_id=pr.board_id,
                 top_module=project.get_str_option("top-module"),
                 defines=apio_ctx.project.get_list_option(
                     "defines", default=[]

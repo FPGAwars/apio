@@ -293,7 +293,7 @@ def _get_boards_cli(
 
         # -- Add board's fpga information.
         fpga_dict = {}
-        fpga_id = board_info.get("fpga", None)
+        fpga_id = board_info.get("fpga-id", None)
         fpga_info = apio_ctx.fpgas.get(fpga_id, {})
         fpga_dict["id"] = fpga_id
         fpga_dict["part-num"] = fpga_info.get("part-num", None)
@@ -303,7 +303,7 @@ def _get_boards_cli(
 
         # -- Add board's programmer information.
         programmer_dict = {}
-        programmer_id = board_info.get("programmer", {}).get("type", None)
+        programmer_id = board_info.get("programmer", {}).get("id", None)
         programmer_dict["id"] = programmer_id
         board_dict["programmer"] = programmer_dict
 
@@ -432,9 +432,9 @@ def _get_examples_cli(
     # -- Group examples by boards
     boards_examples: Dict[str, List[ExampleInfo]] = {}
     for example in examples:
-        board_examples = boards_examples.get(example.board_name, [])
+        board_examples = boards_examples.get(example.board_id, [])
         board_examples.append(example)
-        boards_examples[example.board_name] = board_examples
+        boards_examples[example.board_id] = board_examples
 
     # -- The top dict that we will emit as json.
     top_dict = {}

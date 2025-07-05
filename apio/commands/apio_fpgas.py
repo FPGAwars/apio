@@ -49,16 +49,16 @@ def _collect_fpgas_entries(apio_ctx: ApioContext) -> List[Entry]:
     # -- Collect a sparse dict with fpga ids to board count.
     boards_counts: Dict[str, int] = {}
     for board_info in apio_ctx.boards.values():
-        fpga = board_info.get("fpga", None)
-        if fpga:
-            old_count = boards_counts.get(fpga, 0)
-            boards_counts[fpga] = old_count + 1
+        fpga_id = board_info.get("fpga-id", None)
+        if fpga_id:
+            old_count = boards_counts.get(fpga_id, 0)
+            boards_counts[fpga_id] = old_count + 1
 
     # -- Collect all entries.
     result: List[Entry] = []
-    for fpga, fpga_info in apio_ctx.fpgas.items():
+    for fpga_id, fpga_info in apio_ctx.fpgas.items():
         # -- Construct the Entry for this fpga.
-        board_count = boards_counts.get(fpga, 0)
+        board_count = boards_counts.get(fpga_id, 0)
         fpga_arch = fpga_info.get("arch", "")
         fpga_part_num = fpga_info.get("part-num", "")
         fpga_size = fpga_info.get("size", "")
@@ -68,7 +68,7 @@ def _collect_fpgas_entries(apio_ctx: ApioContext) -> List[Entry]:
         # -- Append to the list
         result.append(
             Entry(
-                fpga=fpga,
+                fpga=fpga_id,
                 board_count=board_count,
                 fpga_arch=fpga_arch,
                 fpga_part_num=fpga_part_num,
@@ -257,7 +257,7 @@ def cli(
 
     # -- Create the apio context. If project dir has a fpgas.jsonc file,
     # -- it will be loaded instead of the apio's standard file.
-    # -- We suppress the message with the env and board names since it's
+    # -- We suppress the message with the env and board ids since it's
     # -- not relevant for this command.
     apio_ctx = ApioContext(
         scope=context_scope,

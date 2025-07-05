@@ -129,9 +129,9 @@ def test_list_options(apio_runner: ApioRunner, capsys: LogCaptureFixture):
     ]
 
 
-def test_legacy_board_name(apio_runner: ApioRunner, capsys: LogCaptureFixture):
-    """Tests with 'board' option having a legacy board name. It should
-    be converted to the canonical board name"""
+def test_legacy_board_id(apio_runner: ApioRunner, capsys: LogCaptureFixture):
+    """Tests with 'board' option having a legacy board id. It should
+    be converted to the canonical board id"""
 
     project, stdout = load_apio_ini(
         apio_ini={
@@ -317,7 +317,7 @@ def error_tester(
 def test_validation_errors(apio_runner: ApioRunner, capsys: LogCaptureFixture):
     """Tests the validation of apio.ini errors."""
 
-    # -- Unknown board name.
+    # -- Unknown board id.
     error_tester(
         env_arg=None,
         apio_ini={
@@ -325,7 +325,7 @@ def test_validation_errors(apio_runner: ApioRunner, capsys: LogCaptureFixture):
                 "board": "no-such-board",
             }
         },
-        expected_error="Error: Unknown board name 'no-such-board' in apio.ini",
+        expected_error="Error: Unknown board id 'no-such-board' in apio.ini",
         apio_runner=apio_runner,
         capsys=capsys,
     )

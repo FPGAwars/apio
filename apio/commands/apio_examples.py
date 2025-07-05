@@ -57,7 +57,7 @@ def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
     # -- Get list of examples.
     entries: List[ExampleInfo] = Examples(apio_ctx).get_examples_infos()
 
-    # -- Sort boards by case insensitive board name.
+    # -- Sort boards by case insensitive board id.
     entries.sort(key=examples_sort_key)
 
     # -- Define the table.
@@ -189,12 +189,12 @@ def _fetch_cli(
     if not match:
         cerror(f"Invalid example specification '{example}.")
         cout(
-            "Expecting board-name or board/example-name, e.g. "
+            "Expecting board-id or board/example-name, e.g. "
             "'alhambra-ii' or 'alhambra-ii/blinky.",
             style=INFO,
         )
         sys.exit(1)
-    board_name: str = match.group(1)
+    board_id: str = match.group(1)
     example_name: Optional[str] = match.group(2)
 
     if example_name:
@@ -202,7 +202,7 @@ def _fetch_cli(
         examples.copy_example_files(example, dst_dir_path)
     else:
         # -- Copy the directories of the board's examples.
-        examples.copy_board_examples(board_name, dst_dir_path)
+        examples.copy_board_examples(board_id, dst_dir_path)
 
 
 # ---- apio examples

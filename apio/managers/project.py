@@ -108,9 +108,9 @@ class Project:
                 sys.exit(1)
 
         # -- Patch legacy board ids in the common and env sections.
-        Project._patch_legacy_board_name(common_section, boards)
+        Project._patch_legacy_board_id(common_section, boards)
         for section_options in env_sections.values():
-            Project._patch_legacy_board_name(section_options, boards)
+            Project._patch_legacy_board_id(section_options, boards)
 
         # -- Validate the apio.ini sections. We prefer to perform as much
         # -- validation as possible before we expand the env because the env
@@ -144,34 +144,34 @@ class Project:
             cout(f"  {self.env_options}\n")
 
     @staticmethod
-    def _patch_legacy_board_name(
+    def _patch_legacy_board_id(
         section_options: Dict[str, Dict[str, str]], boards: Dict[str, Dict]
     ) -> Optional[str]:
-        """Temporary patching of old board names to new in an env or common
-        section. If there is a "board" option with a legacy board name,
+        """Temporary patching of old board ids to new in an env or common
+        section. If there is a "board" option with a legacy board id,
         then change it to the board's canonical name. Otherwise, leave the
         options as are."""
 
         # -- Get the value of the "board" option.
-        board_name = section_options.get("board", None)
+        board_id = section_options.get("board", None)
 
         # -- Nothing to do if no "board" option.
-        if board_name is None:
+        if board_id is None:
             return
 
-        # -- Nothing to do if board_name is in the boards dict. It's
-        # -- a good (new style) board name.
-        if board_name in boards:
+        # -- Nothing to do if board_id is in the boards dict. It's
+        # -- a good (new style) board id.
+        if board_id in boards:
             return
 
-        # -- Iterate the boards and if board_name matches the legacy name of
+        # -- Iterate the boards and if board_id matches the legacy name of
         # -- a board, change the "board" option to the canonical name of that
         # -- board.
-        for canonical_name, board_info in boards.items():
-            if board_name == board_info.get("legacy_name", None):
-                section_options["board"] = canonical_name
+        for canonical_id, board_info in boards.items():
+            if board_id == board_info.get("legacy-name", None):
+                section_options["board"] = canonical_id
                 cwarning(
-                    f"'Board {board_name}' was renamed to '{canonical_name}'. "
+                    f"'Board {board_id}' was renamed to '{canonical_id}'. "
                     "Please update apio.ini."
                 )
                 return
@@ -260,9 +260,9 @@ class Project:
                 sys.exit(1)
 
         # -- If 'board' option exists, verify that the board exists.
-        board_name = section_options.get("board", None)
-        if board_name is not None and board_name not in boards:
-            cerror(f"Unknown board name '{board_name}' in apio.ini.")
+        board_id = section_options.get("board", None)
+        if board_id is not None and board_id not in boards:
+            cerror(f"Unknown board id '{board_id}' in apio.ini.")
             sys.exit(1)
 
     @staticmethod
@@ -489,7 +489,7 @@ def load_project_from_file(
 
 def create_project_file(
     project_dir: Path,
-    board_name: str,
+    board_id: str,
     top_module: str,
 ):
     """Creates a new basic apio project file. Exits on any error."""
@@ -510,7 +510,7 @@ def create_project_file(
     config = ConfigObj(str(ini_path))
     config.initial_comment = TOP_COMMENT.split("\n")
     config[section_name] = {}
-    config[section_name]["board"] = board_name
+    config[section_name]["board"] = board_id
     config[section_name]["top-module"] = top_module
 
     config.write()

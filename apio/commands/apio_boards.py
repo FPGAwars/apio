@@ -36,7 +36,7 @@ class Entry:
     board_description: str
     fpga_arch: str
     fpga_size: str
-    fpga: str
+    fpga_id: str
     fpga_part_num: str
     fpga_type: str
     fpga_pack: str
@@ -59,8 +59,8 @@ def _collect_board_entries(apio_ctx) -> List[Entry]:
     # -- Collect the boards info into a list of entires, one per board.
     result: List[Entry] = []
     for board, board_info in apio_ctx.boards.items():
-        fpga = board_info.get("fpga", "")
-        fpga_info = apio_ctx.fpgas.get(fpga, {})
+        fpga_id = board_info.get("fpga-id", "")
+        fpga_info = apio_ctx.fpgas.get(fpga_id, {})
 
         examples_count = "   " + str(examples_counts.get(board, ""))
         board_description = board_info.get("description", "")
@@ -70,7 +70,7 @@ def _collect_board_entries(apio_ctx) -> List[Entry]:
         fpga_type = fpga_info.get("type", "")
         fpga_pack = fpga_info.get("pack", "")
         fpga_speed = fpga_info.get("speed", "")
-        programmer = board_info.get("programmer", {}).get("type", "")
+        programmer_id = board_info.get("programmer", {}).get("id", "")
 
         result.append(
             Entry(
@@ -79,12 +79,12 @@ def _collect_board_entries(apio_ctx) -> List[Entry]:
                 board_description=board_description,
                 fpga_arch=fpga_arch,
                 fpga_size=fpga_size,
-                fpga=fpga,
+                fpga_id=fpga_id,
                 fpga_part_num=fpga_part_num,
                 fpga_type=fpga_type,
                 fpga_pack=fpga_pack,
                 fpga_speed=fpga_speed,
-                programmer=programmer,
+                programmer=programmer_id,
             )
         )
 
@@ -140,7 +140,7 @@ def _list_boards(apio_ctx: ApioContext, verbose: bool):
         values.append(entry.fpga_arch)
         values.append(str(entry.fpga_size))
         if verbose:
-            values.append(entry.fpga)
+            values.append(entry.fpga_id)
         values.append(entry.fpga_part_num)
         values.append(entry.programmer)
 
@@ -277,7 +277,7 @@ def cli(
     # -- Create the apio context. If the project exists, it's custom
     # -- boards.jsonc is also loaded. Config is required since we query
     # -- the example package.
-    # -- We suppress the message with the env and board names since it's
+    # -- We suppress the message with the env and board ids since it's
     # -- not relevant for this command.
     apio_ctx = ApioContext(
         scope=context_scope,

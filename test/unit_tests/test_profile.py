@@ -127,7 +127,6 @@ def test_profile_loading_config_ok(apio_runner: ApioRunner):
         assert profile.preferences == test_data["preferences"]
         assert profile.installed_packages == test_data["installed-packages"]
         assert profile.remote_config == test_data["remote-config"]
-        # assert not profile.remote_config_fetched
 
 
 def test_profile_loading_config_stale_version(apio_runner: ApioRunner):

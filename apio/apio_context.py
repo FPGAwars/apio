@@ -10,7 +10,6 @@ import sys
 import json
 import platform
 from enum import Enum
-from collections import OrderedDict
 from pathlib import Path
 from typing import Optional, Dict
 from apio.common.apio_console import cout, cerror, cwarning, cstyle
@@ -19,6 +18,14 @@ from apio.common.common_util import env_build_path
 from apio.profile import Profile, RemoteConfigPolicy
 from apio.utils import jsonc, util, env_options
 from apio.managers.project import Project, load_project_from_file
+from apio.utils.resource_util import (
+    ProjectResources,
+    collect_project_resources,
+    validate_project_resources,
+    validate_config,
+    validate_platforms,
+    validate_packages,
+)
 
 
 # ---------- RESOURCES
@@ -83,6 +90,25 @@ class ApioContext:
     """Apio context. Class for accessing apio resources and configurations."""
 
     # pylint: disable=too-many-instance-attributes
+
+    # -- List of allowed instance vars.
+    __slots__ = (
+        "scope",
+        "home_dir",
+        "config",
+        "profile",
+        "platforms",
+        "platform_id",
+        "all_packages",
+        "platform_packages",
+        "boards",
+        "fpgas",
+        "programmers",
+        "env_was_already_set",
+        "_project_dir",
+        "_project",
+        "_project_resources",
+    )
 
     def __init__(
         self,
@@ -164,15 +190,16 @@ class ApioContext:
         # -- Determine apio home dir.
         self.home_dir: Path = util.resolve_home_dir()
 
-        # -- Read the config information
+        # -- Read and validate the config information
         self.config = self._load_resource(CONFIG_JSONC)
+        validate_config(self.config)
 
         # -- Profile information, from ~/.apio/profile.json. We provide it with
         # -- the remote config url template from distribution.jsonc such that
         # -- can it fetch the remote config on demand.
         remote_config_url = env_options.get(
             env_options.APIO_REMOTE_CONFIG_URL,
-            default=self.config["remote-config"],
+            default=self.config["remote-config-url"],
         )
         remote_config_ttl_days = self.config["remote-config-ttl-days"]
         self.profile = Profile(
@@ -184,12 +211,14 @@ class ApioContext:
 
         # -- Read the platforms information.
         self.platforms = self._load_resource(PLATFORMS_JSONC)
+        validate_platforms(self.platforms)
 
         # -- Determine the platform_id for this APIO session.
         self.platform_id = self._determine_platform_id(self.platforms)
 
         # -- Read the apio packages information
         self.all_packages = self._load_resource(PACKAGES_JSONC)
+        validate_packages(self.all_packages)
 
         # -- Expand in place the env templates in all_packages.
         ApioContext._resolve_package_envs(self.all_packages, self.packages_dir)
@@ -211,30 +240,30 @@ class ApioContext:
             PROGRAMMERS_JSONC, allow_custom=True
         )
 
-        # -- Sort resources for consistency and intuitiveness.
-        # --
-        # -- We don't sort the all_packages and platform_packages dictionaries
-        # -- because that will affect the order of the env path items.
-        # -- Instead we preserve the order from the packages.jsonc file.
-
-        self.boards = OrderedDict(
-            sorted(self.boards.items(), key=lambda t: t[0])
-        )
-        self.fpgas = OrderedDict(
-            sorted(self.fpgas.items(), key=lambda t: t[0])
-        )
-
         # -- If we determined that we need to load the project, load the
         # -- apio.ini data.
         self._project: Optional[Project] = None
+        self._project_resources: ProjectResources = None
+
         if self._project_dir:
+            # -- Load the project object
             self._project = load_project_from_file(
                 self._project_dir, env_arg, self.boards
             )
             assert self.has_project, "init(): project not loaded"
-            # -- Inform the user if needed.
+            # -- Inform the user about the active env, if needed..
             if report_env:
                 self.report_env()
+            # -- Collect and validate the project resources.
+            # -- The project is already validated to have the required "board.
+            self._project_resources = collect_project_resources(
+                self._project.get_str_option("board"),
+                self.boards,
+                self.fpgas,
+                self.programmers,
+            )
+            # -- Validate the project resources.
+            validate_project_resources(self._project_resources)
         else:
             assert not self.has_project, "init(): project loaded"
 
@@ -247,7 +276,7 @@ class ApioContext:
         # -- Env name string in color
         styled_env_name = cstyle(self.project.env_name, style=EMPH1)
 
-        # -- Board name string in color
+        # -- Board id string in color
         styled_board_id = cstyle(
             self.project.env_options["board"], style=EMPH1
         )
@@ -280,6 +309,14 @@ class ApioContext:
         # -- Failure here is a programming error, not a user error.
         assert self.has_project, "project(): project is not loaded"
         return self._project
+
+    @property
+    def project_resources(self) -> ProjectResources:
+        """Return the project resources. Should be called only if
+        has_project() is True."""
+        # -- Failure here is a programming error, not a user error.
+        assert self.has_project, "project(): project is not loaded"
+        return self._project_resources
 
     @property
     def env_build_path(self) -> str:

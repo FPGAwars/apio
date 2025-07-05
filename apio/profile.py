@@ -75,8 +75,8 @@ def days_between_datetime_stamps(
         return default
 
     # -- Round to beginning of day.
-    day1 = datetime1.replace(hour=0, minute=0, second=0, microsecond=0)
-    day2 = datetime2.replace(hour=0, minute=0, second=0, microsecond=0)
+    day1 = datetime(datetime1.year, datetime1.month, datetime1.day)
+    day2 = datetime(datetime2.year, datetime2.month, datetime2.day)
 
     # -- Compute the diff in days.
     delta_days: int = (day2 - day1).days
@@ -90,6 +90,17 @@ class Profile:
     """Class for managing the apio profile file
     ex. ~/.apio/profile.json
     """
+
+    # -- Only these instance vars are allowed.
+    __slots__ = (
+        "_profile_path",
+        "remote_config_url",
+        "remote_config_ttl_days",
+        "_remote_config_policy",
+        "_cached_remote_config",
+        "preferences",
+        "installed_packages",
+    )
 
     def __init__(
         self,
@@ -487,10 +498,10 @@ class Profile:
         # -- Here is the normal case where the config url is not of a local
         # -- file but at a remote URL.
 
-        # -- Fetch the remote config. With timeout = 5, this failed a few times
-        # -- on github workflow tests so increased to 10.
+        # -- Fetch the remote config. With timeout = 10, this failed a
+        # -- few times on github workflow tests so increased to 25.
         resp: requests.Response = requests.get(
-            self.remote_config_url, timeout=10
+            self.remote_config_url, timeout=25
         )
 
         # -- Exit if http error.

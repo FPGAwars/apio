@@ -14,10 +14,10 @@ from apio.commands.apio import cli as apio
 CUSTOM_BOARDS = """
 {
   "my_custom_board": {
-    "name": "My Custom Board v3.1c",
-    "fpga": "ice40up5k-sg48",
+    "description": "My description",
+    "fpga-id": "ice40up5k-sg48",
     "programmer": {
-      "type": "iceprog"
+      "id": "iceprog"
     },
     "usb": {
       "vid": "0403",
@@ -239,8 +239,8 @@ def test_utilities(apio_runner: ApioRunner):
         assert "YOSYS_LIB" in result.output
 
 
-def test_project_with_legacy_board_name(apio_runner: ApioRunner):
-    """Test a project that uses a legacy board name."""
+def test_project_with_legacy_board_id(apio_runner: ApioRunner):
+    """Test a project that uses a legacy board id."""
 
     # -- If the option 'offline' is passed, the test is skip
     # -- (This test is slow and requires internet connectivity)
@@ -262,7 +262,7 @@ def test_project_with_legacy_board_name(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(apio, ["build"])
         sb.assert_ok(result)
 
-        # -- Modify the apio.ini to have the legacy board name
+        # -- Modify the apio.ini to have the legacy board id
         sb.write_apio_ini(
             {
                 "[env:default]": {
