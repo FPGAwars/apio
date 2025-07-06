@@ -904,8 +904,7 @@ Usage: apio packages list [OPTIONS]
     apio packages list
 
 Options:
-  -v, --verbose  Show detailed output.
-  -h, --help     Show this message and exit.
+  -h, --help  Show this message and exit.
 
 
 
