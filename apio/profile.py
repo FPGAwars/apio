@@ -6,7 +6,6 @@
 """Manage the apio profile file"""
 
 import json
-import re
 import sys
 from enum import Enum
 from dataclasses import dataclass
@@ -14,10 +13,69 @@ from datetime import datetime
 from typing import Dict, Optional, Any, List
 from pathlib import Path
 import requests
+from jsonschema import validate
+from jsonschema.exceptions import ValidationError
 from apio.common import apio_console
 from apio.common.apio_console import cout
 from apio.common.apio_styles import INFO, EMPH3, ERROR
 from apio.utils import util, jsonc
+
+# -- JSON schema for validating a remote config file.
+REMOTE_CONFIG_SCHEMA = {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "required": ["packages"],
+    "properties": {
+        # -- Packages
+        "packages": {
+            "type": "object",
+            "patternProperties": {
+                "^.*$": {
+                    "type": "object",
+                    "required": ["repository", "release"],
+                    "properties": {
+                        # -- Repository
+                        "repository": {
+                            "type": "object",
+                            "required": ["organization", "name"],
+                            "properties": {
+                                # -- Repo organization. e.g. "fpgawars"
+                                "organization": {"type": "string"},
+                                # -- Repo name, e.g. 'examples'
+                                "name": {"type": "string"},
+                            },
+                            "additionalProperties": False,
+                        },
+                        # -- Release.
+                        "release": {
+                            "type": "object",
+                            "required": [
+                                "version",
+                                "release-tag",
+                                "package-file",
+                            ],
+                            "properties": {
+                                # -- Version
+                                "version": {
+                                    "type": "string",
+                                    "pattern": r"^\d{4}\.\d{2}\.\d{2}$",
+                                },
+                                # -- Release tag
+                                "release-tag": {"type": "string"},
+                                # -- Package file
+                                "package-file": {"type": "string"},
+                            },
+                            "additionalProperties": False,
+                        },
+                    },
+                    "additionalProperties": False,
+                }
+            },
+            "additionalProperties": False,
+        }
+    },
+    "additionalProperties": False,
+}
 
 
 class RemoteConfigPolicy(Enum):
@@ -501,28 +559,20 @@ class Profile:
         cout("Fetched the latest Apio remote config file.")
 
     def _check_downloaded_remote_config(
-        self, config: Dict, error_is_fatal: bool
+        self, remote_config: Dict, error_is_fatal: bool
     ) -> bool:
-        """Check that the package versions have the expected format YYYY.MM.DD
-        so we can transform them to the tag YYYYY-MM-DD. Fatal error if not.
-        """
-        pattern = r"^[0-9]{4}[.][0-9]{2}[.][0-9]{2}$"
-        for package_id, package_info in config["packages"].items():
-            version = package_info["release"]["version"]
-            if not re.match(pattern, version):
-                self._handle_config_refresh_failure(
-                    msg=[
-                        f"Invalid version '{version}' in package "
-                        f"'{package_id}' remote config.",
-                        "Package versions should have the format "
-                        "YYYY.MM.DD, e.g. 2025.06.15.",
-                    ],
-                    error_is_fatal=error_is_fatal,
-                )
+        """Check the downloaded remote config has a valid structure."""
+        try:
+            validate(instance=remote_config, schema=REMOTE_CONFIG_SCHEMA)
+        except ValidationError as e:
+            # -- Error.
+            msg = ["Fetched remote config failed validation.", str(e)]
+            self._handle_config_refresh_failure(
+                msg=msg, error_is_fatal=error_is_fatal
+            )
+            return False
 
-                return False
-
-        # -- All is ok.
+        # -- Ok.
         return True
 
     def _fetch_remote_config_text(self, error_is_fatal: bool) -> Optional[str]:
