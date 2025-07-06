@@ -29,7 +29,7 @@ classifiers=[
 ]
 requires-python = ">=3.11"
 requires = [
-    'click==8.1.8',
+    'click==8.2.1',
     'colorama==0.4.6',
     'configobj==5.0.9',
     'debugpy==1.8.11',

@@ -8,6 +8,7 @@
 
 
 import click
+from click.exceptions import NoArgsIsHelpError
 from apio.utils.cmd_util import ApioSubgroup, ApioGroup
 from apio.utils import util
 
@@ -88,6 +89,12 @@ def context_settings():
     the alias -h to --help. This applies also to all the sub
     commands such as apio build.
     """
+
+    # -- This causes no args help commands such as 'apio' to return
+    # -- error code 0 instead of 2.
+    # -- Per https://tinyurl.com/click-help-no-args-error
+    NoArgsIsHelpError.exit_code = 0
+
     # Per https://click.palletsprojects.com/en/8.1.x/documentation/
     #     #help-parameter-customization
     return {"help_option_names": ["-h", "--help"]}
