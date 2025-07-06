@@ -12,7 +12,7 @@
   // config is not available.
   //
   // To force an immediate config fetch, user can run 'apio packages update'.
-  "remote-config-retry-minutes": 60,
+  "remote-config-retry-minutes": 30,
 
   // URL of the apio remote config file. The placeholder {V} is replaced at
   // runtime with apio's version such as "0.9.7".
