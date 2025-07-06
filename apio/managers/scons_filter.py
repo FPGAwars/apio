@@ -16,11 +16,12 @@ from apio.common.apio_styles import INFO, WARNING, SUCCESS, ERROR
 from apio.utils import util
 
 
-# -- A regex to detect iverilog warnings we want to filter out, per
+# -- A regex to detect iverilog warnings we want to filter out, per issues
+# -- below. Using .* instead of dir separator to cover linux and windows.
 # -- https://github.com/FPGAwars/apio/issues/557
 # -- https://github.com/FPGAwars/apio/issues/530
 IVERILOG_TIMING_WARNING_REGEX = re.compile(
-    r"oss-cad-suite/share/yosys.*warning.*Timing checks are not supported",
+    r"oss-cad-suite.*share.*yosys.*warning.*Timing checks are not supported",
     re.IGNORECASE,
 )
 
