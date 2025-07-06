@@ -10,6 +10,8 @@
   // fall back to the cached config, and does not apply to cases where a
   // fresh config is required, e.g. by 'apio packages update' or if a cached
   // config is not available.
+  //
+  // To force an immediate config fetch, user can run 'apio packages update'.
   "remote-config-retry-minutes": 60,
 
   // URL of the apio remote config file. The placeholder {V} is replaced at
