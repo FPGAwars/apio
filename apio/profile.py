@@ -15,7 +15,7 @@ from typing import Dict, Optional, Any, List
 from pathlib import Path
 import requests
 from apio.common import apio_console
-from apio.common.apio_console import cout, cerror
+from apio.common.apio_console import cout
 from apio.common.apio_styles import INFO, EMPH3, ERROR
 from apio.utils import util, jsonc
 
@@ -548,9 +548,11 @@ class Profile:
             except Exception as e:
                 # -- Since local config file can be fixed and doesn't depend
                 # -- on availability of a remote server, we make this a fatal
-                # -- error instead of returning None.
-                cerror("Failed to read a local config file.", str(e))
-                sys.exit(1)
+                # -- error instead of a soft error.
+                self._handle_config_refresh_failure(
+                    msg=["Failed to read a local config file.", str(e)],
+                    error_is_fatal=True,
+                )
 
             # -- Local file read OK.
             return file_text
