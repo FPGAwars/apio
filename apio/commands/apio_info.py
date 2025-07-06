@@ -47,7 +47,7 @@ def construct_remote_config_status_str(apio_ctx: ApioContext) -> str:
         # -- Determine cache age in days, if possible.
         if config_days is not None:
             config_status.append(
-                f"Cached {util.plurality(config_days, "day")} ago"
+                f"Cached {util.plurality(config_days, 'day')} ago"
             )
         else:
             config_status.append("Cached")
