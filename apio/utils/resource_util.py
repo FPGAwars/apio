@@ -90,9 +90,14 @@ PROGRAMMER_SCHEMA = {
 # -- JSON schema for validating config.jsonc.
 CONFIG_SCHEMA = {
     "type": "object",
-    "required": ["remote-config-ttl-days", "remote-config-url"],
+    "required": [
+        "remote-config-ttl-days",
+        "remote-config-retry-minutes",
+        "remote-config-url",
+    ],
     "properties": {
-        "remote-config-ttl-days": {"type": "integer", "minimum": 0},
+        "remote-config-ttl-days": {"type": "integer", "minimum": 1},
+        "remote-config-retry-minutes": {"type": "integer", "minimum": 0},
         "remote-config-url": {"type": "string"},
     },
     "additionalProperties": False,

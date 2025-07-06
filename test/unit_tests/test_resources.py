@@ -6,6 +6,9 @@ import re
 from test.conftest import ApioRunner
 from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
 from apio.utils.resource_util import (
+    validate_config,
+    validate_packages,
+    validate_platforms,
     _validate_board_info,
     _validate_fpga_info,
     _validate_programmer_info,
@@ -102,7 +105,7 @@ def test_resources_ids_and_order(apio_runner: ApioRunner):
             ), f"{programmer_id=}"
 
 
-def test_resources_validation(apio_runner: ApioRunner):
+def test_resources_are_valid(apio_runner: ApioRunner):
     """Validate resources against a schema."""
     with apio_runner.in_sandbox():
 
@@ -110,6 +113,10 @@ def test_resources_validation(apio_runner: ApioRunner):
             scope=ApioContextScope.NO_PROJECT,
             config_policy=RemoteConfigPolicy.CACHED_OK,
         )
+
+        validate_config(apio_ctx.config)
+        validate_packages(apio_ctx.all_packages)
+        validate_platforms(apio_ctx.platforms)
 
         for fpga_id, fpga_info in apio_ctx.fpgas.items():
             _validate_fpga_info(fpga_id, fpga_info)

@@ -1,9 +1,16 @@
 // General config parameters.
 //
 {
-  // How many days we keep a catched remote config before we fetch a new onw.
+  // How many days we keep a cached remote config before we fetch a new onw.
   // Value of 1 means fetching once a day. 7 once every seven days, and so on.
   "remote-config-ttl-days" : 1,
+
+  // The time period in minutes after a config fetch failure until the next
+  // try. This applies only for optional remote config fetch where Apio can
+  // fall back to the cached config, and does not apply to cases where a
+  // fresh config is required, e.g. by 'apio packages update' or if a cached
+  // config is not available.
+  "remote-config-retry-minutes": 60,
 
   // URL of the apio remote config file. The placeholder {V} is replaced at
   // runtime with apio's version such as "0.9.7".

@@ -19,10 +19,6 @@ from apio.common.apio_console import cout, cerror
 from apio.common.apio_styles import INFO, EMPH3, ERROR
 from apio.utils import util, jsonc
 
-# -- Time in minutes before retrying fetching a remote config file after
-# -- a soft failure.
-REMOTE_CONFIG_RETRY_MINUTES = 60
-
 
 class RemoteConfigPolicy(Enum):
     """Represents possible requirements from the remote config."""
@@ -117,11 +113,14 @@ class Profile:
     ex. ~/.apio/profile.json
     """
 
+    # pylint: disable=too-many-instance-attributes
+
     # -- Only these instance vars are allowed.
     __slots__ = (
         "_profile_path",
         "remote_config_url",
         "remote_config_ttl_days",
+        "remote_config_retry_minutes",
         "_remote_config_policy",
         "_cached_remote_config",
         "preferences",
@@ -133,14 +132,22 @@ class Profile:
         home_dir: Path,
         remote_config_url_template: str,
         remote_config_ttl_days: int,
+        remote_config_retry_minutes: int,
         remote_config_policy: RemoteConfigPolicy,
     ):
         """remote_config_url_template is a url string with a "{V}"
         placeholder for the apio version such as "0.9.6."""
 
+        # pylint: disable=too-many-arguments
+        # pylint: disable=too-many-positional-arguments
+
         # -- Sanity check
         assert isinstance(remote_config_ttl_days, int)
         assert 0 < remote_config_ttl_days <= 30
+
+        # -- Sanity check
+        assert isinstance(remote_config_retry_minutes, int)
+        assert 0 < remote_config_retry_minutes <= (60 * 24)
 
         # -- Resolve and cache the remote config url. We replace any {V} with
         # -- the apio version such as "0.9.6".
@@ -151,11 +158,14 @@ class Profile:
         # -- Save remote url ttl setting.
         self.remote_config_ttl_days = remote_config_ttl_days
 
+        # -- Save the remote config fetch retry minutes.
+        self.remote_config_retry_minutes = remote_config_retry_minutes
+
         # -- Save remote config policy.
         self._remote_config_policy = remote_config_policy
 
         # -- Verify that we resolved all the placeholders.
-        assert "%" not in self.remote_config_url, self.remote_config_url
+        assert "{" not in self.remote_config_url, self.remote_config_url
 
         if util.is_debug(1):
             cout(f"Remote config url: {self.remote_config_url}")
@@ -220,8 +230,7 @@ class Profile:
         days_since_last_fetch = days_between_datetime_stamps(
             last_fetch_timestamp, datetime_stamp_now, default=99999
         )
-        time_expired = days_since_last_fetch >= self.remote_config_ttl_days
-        time_unexpected = days_since_last_fetch < 0
+        time_valid = 0 <= days_since_last_fetch < self.remote_config_ttl_days
 
         # -- Determine if we already tried recently to refresh this config and
         # -- failed.
@@ -232,21 +241,22 @@ class Profile:
             refresh_failure_timestamp, datetime_stamp_now, default=99999
         )
         refresh_failed_recently = (
-            0 <= minutes_since_refresh_failure < REMOTE_CONFIG_RETRY_MINUTES
+            0
+            <= minutes_since_refresh_failure
+            < self.remote_config_retry_minutes
         )
 
         # -- Dump info for debugging.
         if util.is_debug(1):
             cout(
-                f"{days_since_last_fetch=}, {time_expired=}, "
-                f"{time_unexpected}, {url_changed=}",
+                f"{days_since_last_fetch=}, {time_valid=}, {url_changed=}",
                 f"{minutes_since_refresh_failure=}, "
                 f"{refresh_failed_recently=}",
                 style=EMPH3,
             )
 
         # -- Fetch the new config if needed.
-        if url_changed or time_expired or time_unexpected:
+        if url_changed or not time_valid:
             if not refresh_failed_recently:
                 self._fetch_and_update_remote_config(error_is_fatal=False)
 
