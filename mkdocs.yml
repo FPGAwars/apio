@@ -82,6 +82,8 @@ nav:
   - Apio Development:
       - Apio repositories: apio-repositories.md
       - Development environment: development-environment.md
+      - Apio's terminology: terminology.md
+      - Typical command execution: typical-command-execution.md
       - Updating the docs: updating-the-docs.md
       - Creating an Apio version: creating-apio-version.md
       - Creating a package version: creating-package-version.md
