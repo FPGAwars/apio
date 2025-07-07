@@ -20,7 +20,7 @@ from pathlib import Path
 from click.testing import CliRunner
 
 # -- Entry point for apio's top level command.
-from apio.commands.apio import cli as apio
+from apio.commands.apio import apio_top_cli as apio
 
 
 # -------------------------------------------

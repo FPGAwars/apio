@@ -1,7 +1,7 @@
 """Test for the "apio upload" command."""
 
 from test.conftest import ApioRunner
-from apio.commands.apio import cli as apio
+from apio.commands.apio import apio_top_cli as apio
 
 
 def test_upload_without_apio_ini(apio_runner: ApioRunner):

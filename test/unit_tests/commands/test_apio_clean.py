@@ -3,7 +3,7 @@
 import os
 from pathlib import Path
 from test.conftest import ApioRunner
-from apio.commands.apio import cli as apio
+from apio.commands.apio import apio_top_cli as apio
 
 
 def test_clean(apio_runner: ApioRunner):

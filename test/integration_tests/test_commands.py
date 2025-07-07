@@ -9,7 +9,7 @@ from pathlib import Path
 import json
 from test.conftest import ApioRunner
 import pytest
-from apio.commands.apio import cli as apio
+from apio.commands.apio import apio_top_cli as apio
 
 CUSTOM_BOARDS = """
 {

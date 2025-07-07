@@ -23,12 +23,15 @@ def main():
         # Invoke the scons main function.
         scons_main()
 
-    # -- Else, this is a normal apio invocation. Call the top level click
-    # -- command. We import apio only in this case.
+    # -- Else, this is a normal apio invocation. Call the top level Apio's
+    # -- Click command. We import apio only in this case.
     else:
-        from apio.commands.apio import cli as apio
+        from apio.commands.apio import apio_top_cli
 
-        apio()
+        # -- Due to the Click decorations of apio_top_cli() and the Click
+        # -- magic, this function is not really invoked but Click dispatches
+        # -- it to its subcommands that was selected by the user command line.
+        apio_top_cli()
 
 
 if __name__ == "__main__":
