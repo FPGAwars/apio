@@ -16,16 +16,6 @@ from apio.common.apio_styles import INFO, WARNING, SUCCESS, ERROR
 from apio.utils import util
 
 
-# -- A regex to detect iverilog warnings we want to filter out, per issues
-# -- below. Using .* instead of dir separator to cover linux and windows.
-# -- https://github.com/FPGAwars/apio/issues/557
-# -- https://github.com/FPGAwars/apio/issues/530
-IVERILOG_TIMING_WARNING_REGEX = re.compile(
-    r"oss-cad-suite.*share.*yosys.*warning.*Timing checks are not supported",
-    re.IGNORECASE,
-)
-
-
 class PipeId(Enum):
     """Represent the two output streams from the scons subprocess."""
 
@@ -108,21 +98,6 @@ class PnrRangeDetector(RangeDetector):
             return RangeEvents.END_AFTER
 
         return None
-
-
-# class IVerilogRangeDetector(RangeDetector):
-#     """Implements a RangeDetector for the iverolog command output."""
-
-#     def classify_line(self, pipe_id: PipeId, line: str) -> RangeEvents:
-#         # -- Range start: an iverolog command on stdout.
-#         if pipe_id == PipeId.STDOUT and line.startswith("iverilog"):
-#             return RangeEvents.START_AFTER
-
-#         # Range end: The end message of nextnpr.
-#         if pipe_id == PipeId.STDOUT and line.startswith("gtkwave"):
-#             return RangeEvents.END_BEFORE
-
-#         return None
 
 
 class SconsFilter:
@@ -276,25 +251,6 @@ class SconsFilter:
                 ],
             )
             self._output_line(line, line_color, terminator)
-            return
-
-        # -- Special handling of iverilog lines. We drop warning line spam
-        # -- per Per https://github.com/FPGAwars/apio/issues/530
-        # if (
-        #     in_iverolog_range
-        #     and pipe_id == PipeId.STDERR
-        #     and "cells_sim.v" in line
-        #     and "Timing checks are not supported" in line
-        # ):
-        #     # -- Drop the line.
-        #     self._ignore_line(line)
-        #     return
-
-        # -- Special filter for https://github.com/FPGAwars/apio/issues/557
-        if IVERILOG_TIMING_WARNING_REGEX.search(line):
-            # -- Ignore this line.
-            # cout(line, style=WARNING)
-            self._ignore_line(line)
             return
 
         # -- Handling the rest of the stdout and stdout lines.
