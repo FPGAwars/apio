@@ -15,7 +15,7 @@ import click
 from apio.utils import cmd_util
 from apio.managers.scons import SCons
 from apio.commands import options
-from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
+from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 from apio.common.proto.apio_pb2 import Verbosity
 
 # ------------ apio build
@@ -68,7 +68,7 @@ def cli(
 
     # -- Create the apio context.
     apio_ctx = ApioContext(
-        scope=ApioContextScope.PROJECT_REQUIRED,
+        project_policy=ProjectPolicy.PROJECT_REQUIRED,
         config_policy=RemoteConfigPolicy.CACHED_OK,
         project_dir_arg=project_dir,
         env_arg=env,

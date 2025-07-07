@@ -19,7 +19,7 @@ from apio.common.apio_console import cout, ctable
 from apio.common.apio_styles import INFO
 from apio.common import apio_console
 from apio.common.apio_styles import BORDER, EMPH1
-from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
+from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 from apio.utils import util, cmd_util
 from apio.commands import options
 from apio.managers.examples import Examples
@@ -266,12 +266,10 @@ def cli(
     """Implements the 'boards' command which lists available board
     definitions."""
 
-    # -- Determine context scope. For docs output we want to ignore
-    # -- custom boards.
-    context_scope = (
-        ApioContextScope.NO_PROJECT
-        if docs
-        else ApioContextScope.PROJECT_OPTIONAL
+    # -- Determine project policy for the apio context. For docs output we
+    # -- want to ignore custom boards.
+    project_policy = (
+        ProjectPolicy.NO_PROJECT if docs else ProjectPolicy.PROJECT_OPTIONAL
     )
 
     # -- Create the apio context. If the project exists, it's custom
@@ -280,7 +278,7 @@ def cli(
     # -- We suppress the message with the env and board ids since it's
     # -- not relevant for this command.
     apio_ctx = ApioContext(
-        scope=context_scope,
+        project_policy=project_policy,
         config_policy=RemoteConfigPolicy.CACHED_OK,
         project_dir_arg=project_dir,
         report_env=False,

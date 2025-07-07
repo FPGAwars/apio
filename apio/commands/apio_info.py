@@ -15,7 +15,7 @@ from rich import box
 from rich.color import ANSI_COLOR_NAMES
 from apio.common.apio_styles import BORDER, EMPH1, EMPH3, INFO
 from apio.utils import util
-from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
+from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 from apio.common.apio_themes import THEMES_TABLE, THEME_LIGHT
 from apio.profile import get_datetime_stamp, days_between_datetime_stamps
@@ -91,7 +91,7 @@ def _system_cli():
     # -- Create the apio context. We use 'cached_ok' to cause the config
     # -- to be loaded so we can report it.
     apio_ctx = ApioContext(
-        scope=ApioContextScope.NO_PROJECT,
+        project_policy=ProjectPolicy.NO_PROJECT,
         config_policy=RemoteConfigPolicy.CACHED_OK,
     )
 
@@ -166,7 +166,7 @@ def _platforms_cli():
 
     # Create the apio context.
     apio_ctx = ApioContext(
-        scope=ApioContextScope.NO_PROJECT,
+        project_policy=ProjectPolicy.NO_PROJECT,
         config_policy=RemoteConfigPolicy.NO_CONFIG,
     )
 
@@ -236,7 +236,7 @@ def _colors_cli():
 
     # -- This initializes the output console.
     ApioContext(
-        scope=ApioContextScope.NO_PROJECT,
+        project_policy=ProjectPolicy.NO_PROJECT,
         config_policy=RemoteConfigPolicy.NO_CONFIG,
     )
 
@@ -316,7 +316,7 @@ def _themes_cli():
 
     # -- This initializes the output console.
     ApioContext(
-        scope=ApioContextScope.NO_PROJECT,
+        project_policy=ProjectPolicy.NO_PROJECT,
         config_policy=RemoteConfigPolicy.NO_CONFIG,
     )
 

@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 from test.conftest import ApioRunner
 from pytest import LogCaptureFixture, raises
-from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
+from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 from apio.common.common_util import PROJECT_BUILD_PATH
 
 
@@ -20,7 +20,7 @@ def test_init(apio_runner: ApioRunner):
 
         # -- Default init.
         apio_ctx = ApioContext(
-            scope=ApioContextScope.PROJECT_REQUIRED,
+            project_policy=ProjectPolicy.PROJECT_REQUIRED,
             config_policy=RemoteConfigPolicy.NO_CONFIG,
         )
 
@@ -56,7 +56,7 @@ def test_home_dir_with_a_bad_character(
             # -- Initialize an apio context. It should exit with an error.
             with raises(SystemExit) as e:
                 ApioContext(
-                    scope=ApioContextScope.NO_PROJECT,
+                    project_policy=ProjectPolicy.NO_PROJECT,
                     config_policy=RemoteConfigPolicy.NO_CONFIG,
                 )
             assert e.value.code == 1
@@ -80,7 +80,7 @@ def test_home_dir_with_relative_path(
         # -- Initialize an apio context. It should exit with an error.
         with raises(SystemExit) as e:
             ApioContext(
-                scope=ApioContextScope.NO_PROJECT,
+                project_policy=ProjectPolicy.NO_PROJECT,
                 config_policy=RemoteConfigPolicy.NO_CONFIG,
             )
         assert e.value.code == 1

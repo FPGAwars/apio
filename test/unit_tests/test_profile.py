@@ -11,7 +11,7 @@ from apio.profile import (
     days_between_datetime_stamps,
 )
 from apio.utils import util
-from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
+from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 
 TEST_REMOTE_CONFIG_URL = (
     "https://github.com/FPGAwars/apio/raw/develop/"
@@ -98,7 +98,7 @@ def test_profile_loading_config_ok(apio_runner: ApioRunner):
     with apio_runner.in_sandbox() as sb:
 
         apio_ctx = ApioContext(
-            scope=ApioContextScope.NO_PROJECT,
+            project_policy=ProjectPolicy.NO_PROJECT,
             config_policy=RemoteConfigPolicy.NO_CONFIG,
         )
 
@@ -137,7 +137,7 @@ def test_profile_loading_config_stale_version(apio_runner: ApioRunner):
     with apio_runner.in_sandbox() as sb:
 
         apio_ctx = ApioContext(
-            scope=ApioContextScope.NO_PROJECT,
+            project_policy=ProjectPolicy.NO_PROJECT,
             config_policy=RemoteConfigPolicy.NO_CONFIG,
         )
 

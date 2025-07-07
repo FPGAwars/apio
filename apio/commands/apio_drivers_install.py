@@ -10,7 +10,7 @@
 import sys
 import click
 from apio.managers.drivers import Drivers
-from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
+from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
 
@@ -37,7 +37,7 @@ def _ftdi_cli():
 
     # -- Create the apio context.
     apio_ctx = ApioContext(
-        scope=ApioContextScope.NO_PROJECT,
+        project_policy=ProjectPolicy.NO_PROJECT,
         config_policy=RemoteConfigPolicy.CACHED_OK,
     )
 
@@ -72,7 +72,7 @@ def _serial_cli():
 
     # -- Create the apio context.
     apio_ctx = ApioContext(
-        scope=ApioContextScope.NO_PROJECT,
+        project_policy=ProjectPolicy.NO_PROJECT,
         config_policy=RemoteConfigPolicy.NO_CONFIG,
     )
 

@@ -21,7 +21,7 @@ from apio.common.apio_styles import INFO, BORDER, EMPH1
 from apio.managers import installer
 from apio.managers.examples import Examples, ExampleInfo
 from apio.commands import options
-from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
+from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 from apio.utils import util
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
@@ -128,7 +128,7 @@ def _list_cli(verbose: bool):
 
     # -- Create the apio context.
     apio_ctx = ApioContext(
-        scope=ApioContextScope.NO_PROJECT,
+        project_policy=ProjectPolicy.NO_PROJECT,
         config_policy=RemoteConfigPolicy.CACHED_OK,
     )
 
@@ -171,7 +171,7 @@ def _fetch_cli(
 
     # -- Create the apio context.
     apio_ctx = ApioContext(
-        scope=ApioContextScope.NO_PROJECT,
+        project_policy=ProjectPolicy.NO_PROJECT,
         config_policy=RemoteConfigPolicy.CACHED_OK,
     )
 
