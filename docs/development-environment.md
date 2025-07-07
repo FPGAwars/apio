@@ -10,6 +10,8 @@ pip install --force-reinstall -U git+https://github.com/FPGAwars/apio.git@develo
 
 > For a specific commit, replace `develop` with the commit's SHA.
 
+The rest of the page describes the settings for the Apio development environment.
+
 ## Fork the Apio repository
 
 The first step in developing for Apio is to fork the [Apio repository](https://github.com/FPGAwars/apio). This will allow you to run the GitHub test workflow before submitting your pull request. In the rest of this document, we assume that you have forked the Apio repository and cloned it locally on your computer.
