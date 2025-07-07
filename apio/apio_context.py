@@ -202,10 +202,14 @@ class ApioContext:
             default=self.config["remote-config-url"],
         )
         remote_config_ttl_days = self.config["remote-config-ttl-days"]
+        remote_config_retry_minutes = self.config[
+            "remote-config-retry-minutes"
+        ]
         self.profile = Profile(
             self.home_dir,
             remote_config_url,
             remote_config_ttl_days,
+            remote_config_retry_minutes,
             config_policy,
         )
 

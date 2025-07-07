@@ -6,18 +6,76 @@
 """Manage the apio profile file"""
 
 import json
-import re
 import sys
 from enum import Enum
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, Optional, Any
+from typing import Dict, Optional, Any, List
 from pathlib import Path
 import requests
+from jsonschema import validate
+from jsonschema.exceptions import ValidationError
 from apio.common import apio_console
-from apio.common.apio_console import cout, cerror, cwarning
-from apio.common.apio_styles import INFO, EMPH3
+from apio.common.apio_console import cout
+from apio.common.apio_styles import INFO, EMPH3, ERROR
 from apio.utils import util, jsonc
+
+# -- JSON schema for validating a remote config file.
+REMOTE_CONFIG_SCHEMA = {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "required": ["packages"],
+    "properties": {
+        # -- Packages
+        "packages": {
+            "type": "object",
+            "patternProperties": {
+                "^.*$": {
+                    "type": "object",
+                    "required": ["repository", "release"],
+                    "properties": {
+                        # -- Repository
+                        "repository": {
+                            "type": "object",
+                            "required": ["organization", "name"],
+                            "properties": {
+                                # -- Repo organization. e.g. "fpgawars"
+                                "organization": {"type": "string"},
+                                # -- Repo name, e.g. 'examples'
+                                "name": {"type": "string"},
+                            },
+                            "additionalProperties": False,
+                        },
+                        # -- Release.
+                        "release": {
+                            "type": "object",
+                            "required": [
+                                "version",
+                                "release-tag",
+                                "package-file",
+                            ],
+                            "properties": {
+                                # -- Version
+                                "version": {
+                                    "type": "string",
+                                    "pattern": r"^\d{4}\.\d{2}\.\d{2}$",
+                                },
+                                # -- Release tag
+                                "release-tag": {"type": "string"},
+                                # -- Package file
+                                "package-file": {"type": "string"},
+                            },
+                            "additionalProperties": False,
+                        },
+                    },
+                    "additionalProperties": False,
+                }
+            },
+            "additionalProperties": False,
+        }
+    },
+    "additionalProperties": False,
+}
 
 
 class RemoteConfigPolicy(Enum):
@@ -86,16 +144,41 @@ def days_between_datetime_stamps(
     return delta_days
 
 
+def minutes_between_datetime_stamps(
+    ts1: str, ts2: str, default: Any
+) -> Optional[int]:
+    """Return the number of minutes from ts1 to ts2 or default if any of
+    the timestamps is invalid."""
+
+    # -- The parsing format.
+    fmt = "%Y-%m-%d-%H-%M"
+
+    # -- Convert to timedates
+    try:
+        datetime1 = datetime.strptime(ts1, fmt)
+        datetime2 = datetime.strptime(ts2, fmt)
+    except ValueError:
+        return default
+
+    # -- Calculate the diff in minutes.
+    delta_minutes = int((datetime2 - datetime1).total_seconds() / 60)
+    assert isinstance(delta_minutes, int), type(delta_minutes)
+    return delta_minutes
+
+
 class Profile:
     """Class for managing the apio profile file
     ex. ~/.apio/profile.json
     """
+
+    # pylint: disable=too-many-instance-attributes
 
     # -- Only these instance vars are allowed.
     __slots__ = (
         "_profile_path",
         "remote_config_url",
         "remote_config_ttl_days",
+        "remote_config_retry_minutes",
         "_remote_config_policy",
         "_cached_remote_config",
         "preferences",
@@ -107,14 +190,22 @@ class Profile:
         home_dir: Path,
         remote_config_url_template: str,
         remote_config_ttl_days: int,
+        remote_config_retry_minutes: int,
         remote_config_policy: RemoteConfigPolicy,
     ):
         """remote_config_url_template is a url string with a "{V}"
         placeholder for the apio version such as "0.9.6."""
 
+        # pylint: disable=too-many-arguments
+        # pylint: disable=too-many-positional-arguments
+
         # -- Sanity check
         assert isinstance(remote_config_ttl_days, int)
         assert 0 < remote_config_ttl_days <= 30
+
+        # -- Sanity check
+        assert isinstance(remote_config_retry_minutes, int)
+        assert 0 < remote_config_retry_minutes <= (60 * 24)
 
         # -- Resolve and cache the remote config url. We replace any {V} with
         # -- the apio version such as "0.9.6".
@@ -125,11 +216,14 @@ class Profile:
         # -- Save remote url ttl setting.
         self.remote_config_ttl_days = remote_config_ttl_days
 
+        # -- Save the remote config fetch retry minutes.
+        self.remote_config_retry_minutes = remote_config_retry_minutes
+
         # -- Save remote config policy.
         self._remote_config_policy = remote_config_policy
 
         # -- Verify that we resolved all the placeholders.
-        assert "%" not in self.remote_config_url, self.remote_config_url
+        assert "{" not in self.remote_config_url, self.remote_config_url
 
         if util.is_debug(1):
             cout(f"Remote config url: {self.remote_config_url}")
@@ -169,7 +263,7 @@ class Profile:
             return
 
         # -- Case 3 - A fresh config is optional but there is no cached
-        # -- config.
+        # -- config so practically it's required.
         assert self._remote_config_policy == RemoteConfigPolicy.CACHED_OK
         if not self._cached_remote_config:
             if util.is_debug(1):
@@ -190,23 +284,39 @@ class Profile:
         url_changed = last_fetch_url != self.remote_config_url
 
         # -- Determine if there is time related reason to fetch a new config.
+        datetime_stamp_now = get_datetime_stamp()
         days_since_last_fetch = days_between_datetime_stamps(
-            last_fetch_timestamp, get_datetime_stamp(), default=99999
+            last_fetch_timestamp, datetime_stamp_now, default=99999
         )
-        time_expired = days_since_last_fetch >= self.remote_config_ttl_days
-        time_unexpected = days_since_last_fetch < 0
+        time_valid = 0 <= days_since_last_fetch < self.remote_config_ttl_days
 
-        # -- Announce a reason for the fetch. We announce at most one.
+        # -- Determine if we already tried recently to refresh this config and
+        # -- failed.
+        refresh_failure_timestamp = cashed_config_metadata.get(
+            "refresh-failure-on", ""
+        )
+        minutes_since_refresh_failure = minutes_between_datetime_stamps(
+            refresh_failure_timestamp, datetime_stamp_now, default=99999
+        )
+        refresh_failed_recently = (
+            0
+            <= minutes_since_refresh_failure
+            < self.remote_config_retry_minutes
+        )
+
+        # -- Dump info for debugging.
         if util.is_debug(1):
             cout(
-                f"{days_since_last_fetch=}, {time_expired=}, "
-                f"{time_unexpected}, {url_changed=}",
-                style=INFO,
+                f"{days_since_last_fetch=}, {time_valid=}, {url_changed=}",
+                f"{minutes_since_refresh_failure=}, "
+                f"{refresh_failed_recently=}",
+                style=EMPH3,
             )
 
         # -- Fetch the new config if needed.
-        if url_changed or time_expired or time_unexpected:
-            self._fetch_and_update_remote_config(error_is_fatal=False)
+        if url_changed or not time_valid:
+            if not refresh_failed_recently:
+                self._fetch_and_update_remote_config(error_is_fatal=False)
 
     def _check_config_enabled(self) -> None:
         """Check that the remote config is enabled for this invocation."""
@@ -367,6 +477,28 @@ class Profile:
             cout("Saved profile:", style=EMPH3)
             cout(json.dumps(data, indent=2))
 
+    def _handle_config_refresh_failure(
+        self, *, msg: List[str], error_is_fatal: bool
+    ):
+        """Called to handle a failure of a remote config refresh."""
+        # -- Handle hard error.
+        if error_is_fatal:
+            cout(*msg, style=ERROR)
+            sys.exit(1)
+
+        # -- Handle soft error. We can continue with a cached config.
+        # -- Sanity check, a cached config exists.
+        assert self._cached_remote_config, "No cached remote config"
+
+        # -- Print the soft warning.
+        cout(*msg, style=INFO)
+        cout("Will try again at a latter time.", style=INFO)
+
+        # -- Memorize the time of the attempt so we don't retry too often.
+        metadata = self._cached_remote_config["metadata"]
+        metadata["refresh-failure-on"] = get_datetime_stamp()
+        self._save()
+
     def _fetch_and_update_remote_config(self, *, error_is_fatal: bool) -> None:
         """Returns the apio remote config JSON dict."""
 
@@ -379,6 +511,8 @@ class Profile:
         )
 
         if config_text is None:
+            # -- Sanity check, If error_is_fatal, _fetch_remote_config_text()
+            # -- wouldn't return with None.
             assert not error_is_fatal
             return
 
@@ -395,74 +529,50 @@ class Profile:
 
         # -- Handle parsing error.
         except json.decoder.JSONDecodeError as exc:
-
-            # -- Handle as a fatal error.
-            msg = [
-                "Fetched a fresh remote config file but it failed to parse.",
-                f"{exc}",
-            ]
-            if error_is_fatal:
-                cerror(*msg)
-                sys.exit(1)
-            # -- Else, handle as a soft error
-            cwarning(*msg)
+            self._handle_config_refresh_failure(
+                msg=[
+                    "Failed to parse the latest Apio remote config file.",
+                    f"{exc}",
+                ],
+                error_is_fatal=error_is_fatal,
+            )
             return
 
-        # -- Append remote config metadata
+        # -- Do some checks and fail if invalid. This is not an exhaustive
+        # -- check.
+        ok = self._check_downloaded_remote_config(
+            remote_config, error_is_fatal=error_is_fatal
+        )
+        if not ok:
+            return
+
+        # -- Append remote config metadata. This also clear the
+        # -- "refresh-failure-on" field if exists.
         metadata_dict = {}
         metadata_dict["loaded-by"] = util.get_apio_version()
         metadata_dict["loaded-at"] = get_datetime_stamp()
         metadata_dict["loaded-from"] = self.remote_config_url
         remote_config["metadata"] = metadata_dict
 
-        # -- Do some checks and fail if invalid. This is not an exhaustive
-        # -- check.
-        ok = self._check_remote_config(
-            remote_config, error_is_fatal=error_is_fatal
-        )
-        if not ok:
-            return
-
         self._cached_remote_config = remote_config
         self._save()
+        cout("Fetched the latest Apio remote config file.")
 
-        # Announce
-        if util.is_debug(1):
-            cout("A fresh remote config was fetched and saved.", style=INFO)
+    def _check_downloaded_remote_config(
+        self, remote_config: Dict, error_is_fatal: bool
+    ) -> bool:
+        """Check the downloaded remote config has a valid structure."""
+        try:
+            validate(instance=remote_config, schema=REMOTE_CONFIG_SCHEMA)
+        except ValidationError as e:
+            # -- Error.
+            msg = ["Fetched remote config failed validation.", str(e)]
+            self._handle_config_refresh_failure(
+                msg=msg, error_is_fatal=error_is_fatal
+            )
+            return False
 
-    @staticmethod
-    def _check_remote_config(config: Dict, error_is_fatal: bool) -> bool:
-        """Check that the package versions have the expected format YYYY.MM.DD
-        so we can transform them to the tag YYYYY-MM-DD. Fatal error if not.
-        """
-        pattern = r"^[0-9]{4}[.][0-9]{2}[.][0-9]{2}$"
-        for package_id, package_info in config["packages"].items():
-            version = package_info["release"]["version"]
-            if not re.match(pattern, version):
-                msg = (
-                    f"Invalid version '{version}' in package "
-                    f"'{package_id}' remote config."
-                )
-                hint = (
-                    "Package versions should have the format "
-                    "YYYY.MM.DD, e.g. 2025.06.15."
-                )
-
-                # -- Handle as a fatal error.
-                if error_is_fatal:
-                    cerror(msg)
-                    cout(
-                        hint,
-                        style=INFO,
-                    )
-                    sys.exit(1)
-
-                # -- Handle as a soft error
-                cwarning(msg)
-                cout(hint, style=INFO)
-                return False
-
-        # -- All is ok.
+        # -- Ok.
         return True
 
     def _fetch_remote_config_text(self, error_is_fatal: bool) -> Optional[str]:
@@ -488,9 +598,11 @@ class Profile:
             except Exception as e:
                 # -- Since local config file can be fixed and doesn't depend
                 # -- on availability of a remote server, we make this a fatal
-                # -- error instead of returning None.
-                cerror("Failed to read a local config file.", str(e))
-                sys.exit(1)
+                # -- error instead of a soft error.
+                self._handle_config_refresh_failure(
+                    msg=["Failed to read a local config file.", str(e)],
+                    error_is_fatal=True,
+                )
 
             # -- Local file read OK.
             return file_text
@@ -500,27 +612,23 @@ class Profile:
 
         # -- Fetch the remote config. With timeout = 10, this failed a
         # -- few times on github workflow tests so increased to 25.
-        resp: requests.Response = requests.get(
-            self.remote_config_url, timeout=25
-        )
-
-        # -- Exit if http error.
-        if resp.status_code != 200:
-            msg = (
-                "Downloading apio remote config file failed, "
-                f"error code {resp.status_code}"
+        try:
+            resp: requests.Response = requests.get(
+                self.remote_config_url, timeout=25
             )
-            hint = f"URL {self.remote_config_url}"
 
-            # -- Handle as a fatal error.
-            if error_is_fatal:
-                cerror(msg)
-                cout(hint, style=INFO)
-                sys.exit(1)
+        except Exception as e:
+            if util.is_debug(1):
+                cout(str(e))
 
-            # -- Else, handle as a soft error.
-            cwarning(msg)
-            cout(hint, style=INFO)
+            self._handle_config_refresh_failure(
+                msg=[
+                    "Downloading of the latest Apio remote config "
+                    "file failed.",
+                    self.remote_config_url,
+                ],
+                error_is_fatal=error_is_fatal,
+            )
             return None
 
         # -- Done ok.

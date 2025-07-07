@@ -16,14 +16,6 @@ from apio.common.apio_styles import INFO, WARNING, SUCCESS, ERROR
 from apio.utils import util
 
 
-# -- A regex to detect iverilog warnings we want to filter out, per
-# -- https://github.com/FPGAwars/apio/issues/557
-IVERILOG_TIMING_WARNING_REGEX = re.compile(
-    r"oss-cad-suite/share/yosys.*warning.*Timing checks are not supported",
-    re.IGNORECASE,
-)
-
-
 class PipeId(Enum):
     """Represent the two output streams from the scons subprocess."""
 
@@ -108,21 +100,6 @@ class PnrRangeDetector(RangeDetector):
         return None
 
 
-class IVerilogRangeDetector(RangeDetector):
-    """Implements a RangeDetector for the iverolog command output."""
-
-    def classify_line(self, pipe_id: PipeId, line: str) -> RangeEvents:
-        # -- Range start: an iverolog command on stdout.
-        if pipe_id == PipeId.STDOUT and line.startswith("iverilog"):
-            return RangeEvents.START_AFTER
-
-        # Range end: The end message of nextnpr.
-        if pipe_id == PipeId.STDOUT and line.startswith("gtkwave"):
-            return RangeEvents.END_BEFORE
-
-        return None
-
-
 class SconsFilter:
     """Implements the filtering and printing of the stdout/err streams of the
     scons subprocess. Accepts a line one at a time, detects lines ranges of
@@ -132,7 +109,8 @@ class SconsFilter:
     def __init__(self, colors_enabled: bool):
         self.colors_enabled = colors_enabled
         self._pnr_detector = PnrRangeDetector()
-        self._iverilog_detector = IVerilogRangeDetector()
+
+        # self._iverilog_detector = IVerilogRangeDetector()
         # self._iceprog_detector = IceProgRangeDetector()
 
         # -- We cache the values to avoid reevaluating sys env.
@@ -251,7 +229,8 @@ class SconsFilter:
 
         # -- Update the range detectors.
         in_pnr_verbose_range = self._pnr_detector.update(pipe_id, line)
-        in_iverolog_range = self._iverilog_detector.update(pipe_id, line)
+
+        # in_iverolog_range = self._iverilog_detector.update(pipe_id, line)
         # in_iceprog_range = self._iceprog_detector.update(pipe_id, line)
 
         # -- Handle the line while in the nextpnr verbose log range.
@@ -272,25 +251,6 @@ class SconsFilter:
                 ],
             )
             self._output_line(line, line_color, terminator)
-            return
-
-        # -- Special handling of iverilog lines. We drop warning line spam
-        # -- per Per https://github.com/FPGAwars/apio/issues/530
-        if (
-            in_iverolog_range
-            and pipe_id == PipeId.STDERR
-            and "cells_sim.v" in line
-            and "Timing checks are not supported" in line
-        ):
-            # -- Drop the line.
-            self._ignore_line(line)
-            return
-
-        # -- Special filter for https://github.com/FPGAwars/apio/issues/557
-        if IVERILOG_TIMING_WARNING_REGEX.search(line):
-            # -- Ignore this line.
-            # cout(line, style=WARNING)
-            self._ignore_line(line)
             return
 
         # -- Handling the rest of the stdout and stdout lines.

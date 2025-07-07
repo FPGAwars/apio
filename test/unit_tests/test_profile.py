@@ -120,6 +120,7 @@ def test_profile_loading_config_ok(apio_runner: ApioRunner):
             sb.home_dir,
             TEST_REMOTE_CONFIG_URL,
             5,  # TTL in days
+            60,  # Remote config retry mins.
             RemoteConfigPolicy.CACHED_OK,
         )
 
@@ -160,6 +161,7 @@ def test_profile_loading_config_stale_version(apio_runner: ApioRunner):
             sb.home_dir,
             TEST_REMOTE_CONFIG_URL,
             5,  # TTL in days
+            60,  # Remote config retry mins.
             RemoteConfigPolicy.CACHED_OK,
         )
 

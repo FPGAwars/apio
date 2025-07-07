@@ -18,6 +18,7 @@ from apio.utils import util
 from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 from apio.common.apio_themes import THEMES_TABLE, THEME_LIGHT
+from apio.profile import get_datetime_stamp, days_between_datetime_stamps
 from apio.common.apio_console import (
     PADDING,
     cout,
@@ -29,6 +30,38 @@ from apio.common.apio_console import (
 
 
 # ------ apio info system
+
+
+def construct_remote_config_status_str(apio_ctx: ApioContext) -> str:
+    """Query the apio profile and construct a short string indicating the
+    status of the cached remote config."""
+    config = apio_ctx.profile.remote_config
+    metadata = config.get("metadata", {})
+    timestamp_now = get_datetime_stamp()
+    config_status = []
+    # -- Handle the case of a having a cached config.
+    if config:
+        config_days = days_between_datetime_stamps(
+            metadata.get("loaded-at", ""), timestamp_now, None
+        )
+        # -- Determine cache age in days, if possible.
+        if config_days is not None:
+            config_status.append(
+                f"Cached {util.plurality(config_days, 'day')} ago"
+            )
+        else:
+            config_status.append("Cached")
+        # -- Indicate if there is a sign of a failed refresh attempt.
+        if "refresh-failure-on" in metadata:
+            config_status.append("refresh failed.")
+    # -- Handle the case of not having a cached config.
+    else:
+        config_status.append("Not cached")
+
+    # -- Concatenate and return.
+    config_status = ", ".join(config_status)
+    return config_status
+
 
 # -- Text in the rich-text format of the python rich library.
 APIO_INFO_SYSTEM_HELP = """
@@ -55,10 +88,11 @@ environment variable 'APIO_HOME'.
 def _system_cli():
     """Implements the 'apio info system' command."""
 
-    # Create the apio context.
+    # -- Create the apio context. We use 'cached_ok' to cause the config
+    # -- to be loaded so we can report it.
     apio_ctx = ApioContext(
         scope=ApioContextScope.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.NO_CONFIG,
+        config_policy=RemoteConfigPolicy.CACHED_OK,
     )
 
     # -- Define the table.
@@ -86,6 +120,9 @@ def _system_cli():
     table.add_row("Apio packages", str(apio_ctx.packages_dir))
     table.add_row("Remote config URL", apio_ctx.profile.remote_config_url)
     table.add_row(
+        "Remote config status", construct_remote_config_status_str(apio_ctx)
+    )
+    table.add_row(
         "Veriable formatter",
         str(apio_ctx.packages_dir / "verible/bin/verible-verilog-format"),
     )
@@ -97,6 +134,10 @@ def _system_cli():
     # -- Render the table.
     cout()
     ctable(table)
+    cout(
+        "To force a remote config refresh, run 'apio packages update'.",
+        style=INFO,
+    )
 
 
 # ------ apio info platforms

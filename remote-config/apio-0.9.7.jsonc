@@ -13,23 +13,24 @@
     // -- Examples
     "examples": {
       "repository": {
-        "organization": "FPGAwars",
+        "organization": "fpgawars",
         "name": "apio-examples"
       },
       "release": {
-        "version": "2025.06.21",
+        "version": "2025.07.07",
         "release-tag": "${YYYY-MM-DD}",
         "package-file": "apio-examples-${YYYYMMDD}.tgz"
       }
     },
-    // -- Yosys HQ suite
+    // -- OSS cad suite
     "oss-cad-suite": {
       "repository": {
-        "organization": "FPGAwars",
+        // "organization": "fpgawars",
+        "organization": "zapta",
         "name": "tools-oss-cad-suite"
       },
       "release": {
-        "version": "2025.06.13",
+        "version": "2025.07.07",
         "release-tag": "${YYYY-MM-DD}",
         "package-file": "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.tgz"
       }
@@ -37,7 +38,7 @@
     // -- Graphviz
     "graphviz": {
       "repository": {
-        "organization": "FPGAwars",
+        "organization": "fpgawars",
         "name": "tools-graphviz"
       },
       "release": {
@@ -49,7 +50,7 @@
     // -- Verible
     "verible": {
       "repository": {
-        "organization": "FPGAwars",
+        "organization": "fpgawars",
         "name": "tools-verible"
       },
       "release": {
@@ -61,7 +62,7 @@
     // -- Drivers
     "drivers": {
       "repository": {
-        "organization": "FPGAwars",
+        "organization": "fpgawars",
         "name": "tools-drivers"
       },
       "release": {
