@@ -80,7 +80,7 @@ def on_exception(*, exit_code: int):
     return decorator
 
 
-class SCons:
+class SConsManager:
     """Class for managing the scons tools"""
 
     def __init__(self, apio_ctx: ApioContext):

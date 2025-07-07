@@ -11,7 +11,7 @@ from apio.common.proto.apio_pb2 import (
     LintParams,
 )
 from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
-from apio.managers.scons import SCons
+from apio.managers.scons_manager import SConsManager
 
 
 TEST_APIO_INI_DICT = {
@@ -113,7 +113,7 @@ def test_default_params(apio_runner: ApioRunner):
             project_policy=ProjectPolicy.PROJECT_REQUIRED,
             config_policy=RemoteConfigPolicy.NO_CONFIG,
         )
-        scons = SCons(apio_ctx)
+        scons = SConsManager(apio_ctx)
 
         # -- Get the actual value.
         scons_params = scons.construct_scons_params()
@@ -145,7 +145,7 @@ def test_explicit_params(apio_runner: ApioRunner):
             project_policy=ProjectPolicy.PROJECT_REQUIRED,
             config_policy=RemoteConfigPolicy.NO_CONFIG,
         )
-        scons = SCons(apio_ctx)
+        scons = SConsManager(apio_ctx)
 
         # -- Get the actual value.
         target_params = TargetParams(

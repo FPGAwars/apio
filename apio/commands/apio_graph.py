@@ -11,7 +11,7 @@ import sys
 from typing import Optional
 from pathlib import Path
 import click
-from apio.managers.scons import SCons
+from apio.managers.scons_manager import SConsManager
 from apio.commands import options
 from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 from apio.utils import cmd_util
@@ -107,7 +107,7 @@ def cli(
     )
 
     # -- Create the scons manager.
-    scons = SCons(apio_ctx)
+    scons = SConsManager(apio_ctx)
 
     # -- Determine the output type.
     if pdf:

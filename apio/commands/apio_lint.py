@@ -10,7 +10,7 @@ import sys
 from typing import Optional
 from pathlib import Path
 import click
-from apio.managers.scons import SCons
+from apio.managers.scons_manager import SConsManager
 from apio.utils import util
 from apio.utils import cmd_util
 from apio.commands import options
@@ -105,7 +105,7 @@ def cli(
     )
 
     # -- Create the scons manager.
-    scons = SCons(apio_ctx)
+    scons = SConsManager(apio_ctx)
 
     # -- Convert the comma separated args values to python lists
     no_warns_list = util.split(nowarn, ",", strip=True, keep_empty=False)

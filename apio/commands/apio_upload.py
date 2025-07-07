@@ -11,7 +11,7 @@ import sys
 from typing import Optional
 from pathlib import Path
 import click
-from apio.managers.scons import SCons
+from apio.managers.scons_manager import SConsManager
 from apio.utils import cmd_util, pkg_util
 from apio.commands import options
 from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
@@ -106,7 +106,7 @@ def cli(
     upload_params = UploadParams(programmer_cmd=programmer_cmd)
 
     # -- Create the scons manager
-    scons = SCons(apio_ctx)
+    scons = SConsManager(apio_ctx)
 
     # Run scons: upload command
     exit_code = scons.upload(upload_params)
