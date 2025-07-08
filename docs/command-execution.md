@@ -2,7 +2,7 @@ This page describes the operations performed during the execution of a typical A
 
 The command we chose is `apio build` because it demonstrates most of the key concepts in Apio's design.
 
-## The examples command
+## The example command
 
 We are using the command `apio build` with the Apio example `alhambra-ii/blinky`.
 
