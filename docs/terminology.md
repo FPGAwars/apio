@@ -62,7 +62,7 @@
 - **Rich** - A third-party Python library for managing Apio's terminal output, including
   colored text and data tables.
 
-- **SCons** - A third-party Python build tool used to run Apio project operations
+- **SCons** - A third-party Python 'make' like build tool used to run Apio project operations
   incrementally. SCons prevents redundant operations such as repeating Yosys
   synthesis or Nextpnr place-and-route. Apio invokes SCons as a subprocess
   only for tasks requiring incremental builds.

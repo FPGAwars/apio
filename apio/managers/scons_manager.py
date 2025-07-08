@@ -421,6 +421,9 @@ class SConsManager:
         with open(params_file_path, "w", encoding="utf8") as f:
             f.write(text_format.MessageToString(scons_params))
 
+        if util.is_debug(1):
+            cout(f"\nFull scons command: {cmd}\n\n")
+
         # -- Execute the scons builder!
         result = util.exec_command(
             cmd,
