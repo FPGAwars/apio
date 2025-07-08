@@ -317,6 +317,23 @@ def error_tester(
 def test_validation_errors(apio_runner: ApioRunner, capsys: LogCaptureFixture):
     """Tests the validation of apio.ini errors."""
 
+    # -- No [env:name] section.
+    error_tester(
+        env_arg=None,
+        apio_ini={
+            "[common]": {
+                "board": "alhambra-ii",
+                "top-module": "main",
+            }
+        },
+        expected_error=(
+            "Error: Project file 'apio.ini' should have at "
+            "least one [env:name] section."
+        ),
+        apio_runner=apio_runner,
+        capsys=capsys,
+    )
+
     # -- Unknown board id.
     error_tester(
         env_arg=None,
