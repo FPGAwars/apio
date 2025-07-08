@@ -191,7 +191,7 @@ class Project:
         # -- Validate the env sections.
         if not env_sections:
             cerror(
-                f"Project file 'apio.ini' should have at least one "
+                "Project file 'apio.ini' should have at least one "
                 "[env:name] section."
             )
             sys.exit(1)
