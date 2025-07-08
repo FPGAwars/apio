@@ -556,7 +556,7 @@ class Profile:
 
         self._cached_remote_config = remote_config
         self._save()
-        cout("Fetched the latest Apio remote config file.")
+        # cout("Fetched the latest Apio remote config file.")
 
     def _check_downloaded_remote_config(
         self, remote_config: Dict, error_is_fatal: bool
@@ -582,11 +582,7 @@ class Profile:
         # pylint: disable=broad-exception-caught
 
         # -- Announce the remote config url
-        if util.is_debug(1):
-            cout(
-                f"Fetching remote config from '{self.remote_config_url}'",
-                style=INFO,
-            )
+        cout(f"Fetching '{self.remote_config_url}'")
 
         # -- If the URL has a file protocol, read from the file. This
         # -- is used mostly for testing of a new package version.
@@ -624,8 +620,7 @@ class Profile:
             self._handle_config_refresh_failure(
                 msg=[
                     "Downloading of the latest Apio remote config "
-                    "file failed.",
-                    self.remote_config_url,
+                    "file failed."
                 ],
                 error_is_fatal=error_is_fatal,
             )

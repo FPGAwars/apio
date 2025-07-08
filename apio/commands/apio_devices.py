@@ -11,7 +11,7 @@ import sys
 import click
 from rich.table import Table
 from rich import box
-from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
+from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 from apio.managers import installer
 from apio.common.apio_console import cout, ctable
@@ -95,7 +95,7 @@ def _usb_cli():
 
     # Create the apio context.
     apio_ctx = ApioContext(
-        scope=ApioContextScope.NO_PROJECT,
+        project_policy=ProjectPolicy.NO_PROJECT,
         config_policy=RemoteConfigPolicy.CACHED_OK,
     )
 
@@ -186,7 +186,7 @@ def _serial_cli():
 
     # Create the apio context.
     apio_ctx = ApioContext(
-        scope=ApioContextScope.NO_PROJECT,
+        project_policy=ProjectPolicy.NO_PROJECT,
         config_policy=RemoteConfigPolicy.CACHED_OK,
     )
 

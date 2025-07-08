@@ -80,7 +80,7 @@ def on_exception(*, exit_code: int):
     return decorator
 
 
-class SCons:
+class SConsManager:
     """Class for managing the scons tools"""
 
     def __init__(self, apio_ctx: ApioContext):
@@ -420,6 +420,9 @@ class SCons:
         os.makedirs(apio_ctx.env_build_path, exist_ok=True)
         with open(params_file_path, "w", encoding="utf8") as f:
             f.write(text_format.MessageToString(scons_params))
+
+        if util.is_debug(1):
+            cout(f"\nFull scons command: {cmd}\n\n")
 
         # -- Execute the scons builder!
         result = util.exec_command(

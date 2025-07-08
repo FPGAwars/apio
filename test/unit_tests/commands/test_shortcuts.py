@@ -1,7 +1,7 @@
 """Test command shortcuts."""
 
 from test.conftest import ApioRunner
-from apio.commands.apio import cli as apio
+from apio.commands.apio import apio_top_cli as apio
 
 
 def test_command_shortcuts(apio_runner: ApioRunner):

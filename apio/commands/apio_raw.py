@@ -13,7 +13,7 @@ from typing import Tuple, List
 import click
 from apio.common.apio_console import cout
 from apio.common.apio_styles import SUCCESS, ERROR
-from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
+from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 from apio.commands import options
 from apio.utils import cmd_util, pkg_util
 from apio.utils.cmd_util import ApioCommand
@@ -73,7 +73,7 @@ def cli(
     # -- Using config and packages because we want the binaries in the apio
     # -- packages to be available for the 'apio raw' command.
     apio_ctx = ApioContext(
-        scope=ApioContextScope.NO_PROJECT,
+        project_policy=ProjectPolicy.NO_PROJECT,
         config_policy=RemoteConfigPolicy.CACHED_OK,
     )
 

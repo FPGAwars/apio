@@ -11,9 +11,9 @@ import sys
 from typing import Optional
 from pathlib import Path
 import click
-from apio.managers.scons import SCons
+from apio.managers.scons_manager import SConsManager
 from apio.commands import options
-from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
+from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 from apio.utils import cmd_util
 from apio.common.proto.apio_pb2 import GraphOutputType, GraphParams, Verbosity
 
@@ -100,14 +100,14 @@ def cli(
 
     # -- Create the apio context.
     apio_ctx = ApioContext(
-        scope=ApioContextScope.PROJECT_REQUIRED,
+        project_policy=ProjectPolicy.PROJECT_REQUIRED,
         config_policy=RemoteConfigPolicy.CACHED_OK,
         project_dir_arg=project_dir,
         env_arg=env,
     )
 
     # -- Create the scons manager.
-    scons = SCons(apio_ctx)
+    scons = SConsManager(apio_ctx)
 
     # -- Determine the output type.
     if pdf:

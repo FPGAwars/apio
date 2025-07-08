@@ -23,7 +23,7 @@ from apio.common.common_util import get_project_source_files
 from apio.utils import cmd_util, usb_util, serial_util, util
 from apio.utils.usb_util import UsbDevice
 from apio.utils.serial_util import SerialDevice
-from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
+from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 from apio.utils.cmd_util import (
     ApioGroup,
     ApioSubgroup,
@@ -117,7 +117,7 @@ def _get_system_cli(
     """Implements the 'apio apio get-system' command."""
 
     apio_ctx = ApioContext(
-        scope=ApioContextScope.NO_PROJECT,
+        project_policy=ProjectPolicy.NO_PROJECT,
         config_policy=RemoteConfigPolicy.NO_CONFIG,
     )
 
@@ -197,7 +197,7 @@ def _get_project_cli(
     """Implements the 'apio apio get-project' command."""
 
     apio_ctx = ApioContext(
-        scope=ApioContextScope.PROJECT_REQUIRED,
+        project_policy=ProjectPolicy.PROJECT_REQUIRED,
         config_policy=RemoteConfigPolicy.NO_CONFIG,
         project_dir_arg=project_dir,
         env_arg=env,
@@ -271,7 +271,7 @@ def _get_boards_cli(
     # -- For now, the information is not in a project context. That may
     # -- change in the future.
     apio_ctx = ApioContext(
-        scope=ApioContextScope.NO_PROJECT,
+        project_policy=ProjectPolicy.NO_PROJECT,
         config_policy=RemoteConfigPolicy.CACHED_OK,
     )
 
@@ -354,7 +354,7 @@ def _get_fpgas_cli(
     # -- For now, the information is not in a project context. That may
     # -- change in the future.
     apio_ctx = ApioContext(
-        scope=ApioContextScope.NO_PROJECT,
+        project_policy=ProjectPolicy.NO_PROJECT,
         config_policy=RemoteConfigPolicy.NO_CONFIG,
     )
 
@@ -422,7 +422,7 @@ def _get_examples_cli(
     # -- For now, the information is not in a project context. That may
     # -- change in the future.
     apio_ctx = ApioContext(
-        scope=ApioContextScope.NO_PROJECT,
+        project_policy=ProjectPolicy.NO_PROJECT,
         config_policy=RemoteConfigPolicy.CACHED_OK,
     )
 
@@ -553,7 +553,7 @@ def _get_commands_cli(
 
     # -- This initializes the console, print active env vars, etc.
     ApioContext(
-        scope=ApioContextScope.NO_PROJECT,
+        project_policy=ProjectPolicy.NO_PROJECT,
         config_policy=RemoteConfigPolicy.NO_CONFIG,
     )
 
@@ -611,7 +611,7 @@ def _scan_devices_cli(
     # -- change in the future. We need the config since we use libusb from
     # -- the packages.
     apio_ctx = ApioContext(
-        scope=ApioContextScope.NO_PROJECT,
+        project_policy=ProjectPolicy.NO_PROJECT,
         config_policy=RemoteConfigPolicy.CACHED_OK,
     )
 

@@ -5,7 +5,7 @@ from os.path import isfile, exists
 from typing import Dict
 from test.conftest import ApioRunner
 from configobj import ConfigObj
-from apio.commands.apio import cli as apio
+from apio.commands.apio import apio_top_cli as apio
 
 
 def _check_ini_file(apio_ini: Path, expected_vars: Dict[str, str]) -> None:

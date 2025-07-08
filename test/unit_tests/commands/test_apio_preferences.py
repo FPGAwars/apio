@@ -3,7 +3,7 @@
 import re
 from test.conftest import ApioRunner
 from apio.common.apio_console import cunstyle
-from apio.commands.apio import cli as apio
+from apio.commands.apio import apio_top_cli as apio
 
 
 def test_colors_on_off(apio_runner: ApioRunner):

@@ -11,10 +11,10 @@ import sys
 from typing import Optional
 from pathlib import Path
 import click
-from apio.managers.scons import SCons
+from apio.managers.scons_manager import SConsManager
 from apio.utils import cmd_util, pkg_util
 from apio.commands import options
-from apio.apio_context import ApioContext, ApioContextScope, RemoteConfigPolicy
+from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 from apio.managers.programmers import construct_programmer_cmd
 from apio.common.proto.apio_pb2 import UploadParams
 
@@ -88,7 +88,7 @@ def cli(
 
     # -- Create a apio context.
     apio_ctx = ApioContext(
-        scope=ApioContextScope.PROJECT_REQUIRED,
+        project_policy=ProjectPolicy.PROJECT_REQUIRED,
         config_policy=RemoteConfigPolicy.CACHED_OK,
         project_dir_arg=project_dir,
         env_arg=env,
@@ -106,7 +106,7 @@ def cli(
     upload_params = UploadParams(programmer_cmd=programmer_cmd)
 
     # -- Create the scons manager
-    scons = SCons(apio_ctx)
+    scons = SConsManager(apio_ctx)
 
     # Run scons: upload command
     exit_code = scons.upload(upload_params)

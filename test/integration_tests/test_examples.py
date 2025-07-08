@@ -6,7 +6,7 @@ import os
 from os.path import getsize
 from test.conftest import ApioRunner
 import pytest
-from apio.commands.apio import cli as apio
+from apio.commands.apio import apio_top_cli as apio
 
 
 def test_examples(apio_runner: ApioRunner):

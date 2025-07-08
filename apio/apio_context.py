@@ -73,16 +73,15 @@ PROGRAMMERS_JSONC = "programmers.jsonc"
 CONFIG_JSONC = "config.jsonc"
 
 
-class ApioContextScope(Enum):
-    """Represents the possible scopes of ApioContext creations."""
+class ProjectPolicy(Enum):
+    """Represents the possible context policies regarding loading apio.ini.
+    and project related information."""
 
-    # -- Apio.ini and optional custom resource files are not loaded.
+    # -- Project information is not loaded.
     NO_PROJECT = 1
-    # -- If project dir contains a file named apio.ini then the project
-    # -- and optional custom resources are loaded.
+    # -- Project information is loaded if apio.ini is found.
     PROJECT_OPTIONAL = 2
-    # -- Project dir must contain the apio.ini file and it is always loaded
-    # -- together with optional custom resource files.
+    # -- Apio.ini is required and project information must be loaded.
     PROJECT_REQUIRED = 3
 
 
@@ -93,7 +92,7 @@ class ApioContext:
 
     # -- List of allowed instance vars.
     __slots__ = (
-        "scope",
+        "project_policy",
         "home_dir",
         "config",
         "profile",
@@ -113,7 +112,7 @@ class ApioContext:
     def __init__(
         self,
         *,
-        scope: ApioContextScope,
+        project_policy: ProjectPolicy,
         config_policy: RemoteConfigPolicy,
         project_dir_arg: Optional[Path] = None,
         env_arg: Optional[str] = None,
@@ -121,15 +120,15 @@ class ApioContext:
     ):
         """Initializes the ApioContext object.
 
-        'scope' controls the loading of the project (apio.ini and
+        'project_policy' controls the loading of the project (apio.ini and
         optional custom resource files.)
 
         'project_dir_arg' is an optional user specification of the project dir.
-        Must be None if scope is NO_PROJECT.
+        Must be None if project_policy is NO_PROJECT.
 
         'env_arg' is an optional command line option value that select the
-        apio.ini env if the project is loaded. it makes sense only when scope
-        is PROJECT_REQUIRED (enforced by an assertion).
+        apio.ini env if the project is loaded. it makes sense only when
+        project_policy is PROJECT_REQUIRED (enforced by an assertion).
 
         If an apio.ini project is loaded, the method prints to the user the
         selected env and board, unless if report_env = False.
@@ -152,14 +151,16 @@ class ApioContext:
                     f"is deprecated, please use ${env_options.APIO_HOME}.",
                 )
 
-        # -- Store the scope
-        assert isinstance(scope, ApioContextScope), "Not an ApioContextScope"
-        self.scope = scope
+        # -- Store the project_policy
+        assert isinstance(
+            project_policy, ProjectPolicy
+        ), "Not an ApioContextScope"
+        self.project_policy = project_policy
 
-        # -- Sanity check, env_arg makes sense only when scope is
+        # -- Sanity check, env_arg makes sense only when project_policy is
         # -- PROJECT_REQUIRED.
         if env_arg is not None:
-            assert scope == ApioContextScope.PROJECT_REQUIRED
+            assert project_policy == ProjectPolicy.PROJECT_REQUIRED
 
         # -- A flag to indicate if the system env was already set in this
         # -- apio session. Used to avoid multiple repeated settings that
@@ -169,11 +170,11 @@ class ApioContext:
         # -- Determine if we need to load the project, and if so, set
         # -- self._project_dir to the project dir, otherwise, leave it None.
         self._project_dir: Path = None
-        if scope == ApioContextScope.PROJECT_REQUIRED:
+        if project_policy == ProjectPolicy.PROJECT_REQUIRED:
             self._project_dir = util.user_directory_or_cwd(
                 project_dir_arg, description="Project", must_exist=True
             )
-        elif scope == ApioContextScope.PROJECT_OPTIONAL:
+        elif project_policy == ProjectPolicy.PROJECT_OPTIONAL:
             project_dir = util.user_directory_or_cwd(
                 project_dir_arg, description="Project", must_exist=False
             )
@@ -181,11 +182,11 @@ class ApioContext:
                 self._project_dir = project_dir
         else:
             assert (
-                scope == ApioContextScope.NO_PROJECT
-            ), f"Unexpected scope: {scope}"
+                project_policy == ProjectPolicy.NO_PROJECT
+            ), f"Unexpected project policy: {project_policy}"
             assert (
                 project_dir_arg is None
-            ), "project_dir_arg specified for scope None"
+            ), "project_dir_arg specified for project policy None"
 
         # -- Determine apio home dir.
         self.home_dir: Path = util.resolve_home_dir()

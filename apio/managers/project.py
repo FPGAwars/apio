@@ -189,6 +189,13 @@ class Project:
         Project._validate_env_section("[common]", common_section, boards)
 
         # -- Validate the env sections.
+        if not env_sections:
+            cerror(
+                f"Project file 'apio.ini' should have at least one "
+                "[env:name] section."
+            )
+            sys.exit(1)
+
         for env_name, section_options in env_sections.items():
             # -- Validate env name format.
             if not ENV_NAME_REGEX.match(env_name):
