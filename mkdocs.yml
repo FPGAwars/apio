@@ -79,6 +79,7 @@ nav:
       - Apio command line: command-line.md
       - Using System Verilog: using-system-verilog.md
       - Using testbenches: using-testbenches.md
+      - Additional tools: additional-tools.md
   - Apio Development:
       - Apio repositories: apio-repositories.md
       - Development environment: development-environment.md
