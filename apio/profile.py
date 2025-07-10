@@ -614,13 +614,11 @@ class Profile:
             )
 
         except Exception as e:
-            if util.is_debug(1):
-                cout(str(e))
-
             self._handle_config_refresh_failure(
                 msg=[
                     "Downloading of the latest Apio remote config "
-                    "file failed."
+                    "file failed.",
+                    str(e),
                 ],
                 error_is_fatal=error_is_fatal,
             )
