@@ -106,7 +106,7 @@ class PluginEcp5(PluginBase):
                 apio_env.target + ".pnr",
                 self.constrain_file(),
                 "" if params.verbosity.all or params.verbosity.pnr else "-q",
-                " ".join(params.apio_env_params.pnr_extra_options),
+                " ".join(params.apio_env_params.nextpnr_extra_options),
             ),
             suffix=".config",
             src_suffix=".json",

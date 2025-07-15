@@ -52,7 +52,7 @@ def test_all_options_env(apio_runner: ApioRunner, capsys: LogCaptureFixture):
             "programmer-cmd": "iceprog ${VID}:${PID}",
             "top-module": "my_module",
             "yosys-synth-extra-options": "-dsp -xyz",
-            "pnr-extra-options": "--freq 13",
+            "nextpnr-extra-options": "--freq 13",
         }
     }
 
@@ -75,7 +75,7 @@ def test_all_options_env(apio_runner: ApioRunner, capsys: LogCaptureFixture):
         "programmer-cmd": "iceprog ${VID}:${PID}",
         "top-module": "my_module",
         "yosys-synth-extra-options": ["-dsp -xyz"],
-        "pnr-extra-options": ["--freq 13"],
+        "nextpnr-extra-options": ["--freq 13"],
     }
 
     # -- Try a few as dict lookup on the project object.
@@ -118,7 +118,7 @@ def test_list_options(apio_runner: ApioRunner, capsys: LogCaptureFixture):
             "[env:default]": {
                 "board": "alhambra-ii",
                 "yosys-synth-extra-options": "  k1=v1  k2=v2 \n\n k3=v3 \n\n",
-                "pnr-extra-options": "  k5=v5  k6=v6 \n\n k7=v7 \n\n",
+                "nextpnr-extra-options": "  k5=v5  k6=v6 \n\n k7=v7 \n\n",
             }
         },
         env_arg=None,
@@ -131,7 +131,7 @@ def test_list_options(apio_runner: ApioRunner, capsys: LogCaptureFixture):
         "k3=v3",
     ]
 
-    assert project.get_list_option("pnr-extra-options") == [
+    assert project.get_list_option("nextpnr-extra-options") == [
         "k5=v5  k6=v6",
         "k7=v7",
     ]

@@ -144,17 +144,17 @@ format-verible-options =
 For the list of the Verible formatter options, run the command `apio 
 raw -- verible-verilog-format --helpfull`
 
-### pnr-extra-options
+### nextpnr-extra-options
 
-The optional `pnr-extra-options` string list option allows adding options to the
-place-and-route command such as `nextpnr` that used by the `apio build` command.
+The optional `nextpnr-extra-options` string list option allows adding options to the
+place-and-route nextpnr command that used by the `apio build` command.
 In the example below, it adds the option `--freq 50` to indicates the target
 clock speed. If multiple options are specified, each should be on its own line.
 This is an advanced option that is typically not needed.
 
 ```
 [env:default]
-pnr-extra-options =
+nextpnr-extra-options =
     --freq 50
 ```
 

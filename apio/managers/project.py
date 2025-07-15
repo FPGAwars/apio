@@ -56,7 +56,7 @@ ENV_OPTIONS = {
     "programmer-cmd",
     "top-module",
     "yosys-synth-extra-options",
-    "pnr-extra-options",
+    "nextpnr-extra-options",
 }
 
 # -- The subset ENV_OPTIONS that is required.
@@ -69,7 +69,7 @@ LIST_OPTIONS = {
     "defines",
     "format-verible-options",
     "yosys-synth-extra-options",
-    "pnr-extra-options",
+    "nextpnr-extra-options",
 }
 
 
