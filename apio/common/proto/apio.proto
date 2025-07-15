@@ -105,6 +105,8 @@ message ApioEnvParams {
   repeated string defines = 4;
   // The optional value of 'yosys-synth-extra-options' option in apio.ini.
   repeated string yosys_synth_extra_options = 5;
+  // The optional value of 'pnr-extra-options' option in apio.ini.
+  repeated string pnr_extra_options = 6;
 }
 
 // Lint target specific params.

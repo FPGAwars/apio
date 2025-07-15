@@ -22,6 +22,7 @@ TEST_APIO_INI_DICT = {
         "top-module": "my_module",
         "format-verible-options": "\n  --aaa bbb\n  --ccc ddd",
         "yosys-synth-extra-options": "-dsp -xyz",
+        "pnr-extra-options": "--freq 13",
     }
 }
 
@@ -53,6 +54,7 @@ apio_env_params {
   board_id: "alhambra-ii"
   top_module: "my_module"
   yosys_synth_extra_options: "-dsp -xyz"
+  pnr_extra_options: "--freq 13"
 }
 """
 
@@ -87,6 +89,7 @@ apio_env_params {
   board_id: "alhambra-ii"
   top_module: "my_module"
   yosys_synth_extra_options: "-dsp -xyz"
+  pnr_extra_options: "--freq 13"
 }
 target {
   lint {

@@ -98,7 +98,7 @@ class PluginEcp5(PluginBase):
             action=(
                 "nextpnr-ecp5 --{0} --package {1} --speed {2} "
                 "--json $SOURCE --textcfg $TARGET "
-                "--report {3} --lpf {4} {5} --timing-allow-fail --force"
+                "--report {3} --lpf {4} {5} {6} --timing-allow-fail --force"
             ).format(
                 params.fpga_info.ecp5.type,
                 params.fpga_info.ecp5.pack,
@@ -106,6 +106,7 @@ class PluginEcp5(PluginBase):
                 apio_env.target + ".pnr",
                 self.constrain_file(),
                 "" if params.verbosity.all or params.verbosity.pnr else "-q",
+                " ".join(params.apio_env_params.pnr_extra_options),
             ),
             suffix=".config",
             src_suffix=".json",

@@ -144,6 +144,20 @@ format-verible-options =
 For the list of the Verible formatter options, run the command `apio 
 raw -- verible-verilog-format --helpfull`
 
+### pnr-extra-options
+
+The optional `pnr-extra-options` string list option allows adding options to the
+place-and-route command such as `nextpnr` that used by the `apio build` command.
+In the example below, it adds the option `--freq 50` to indicates the target
+clock speed. If multiple options are specified, each should be on its own line.
+This is an advanced option that is typically not needed.
+
+```
+[env:default]
+pnr-extra-options =
+    --freq 50
+```
+
 ### programmer-cmd
 
 he optional `programmer-cmd` string option allows to override the programmer command
@@ -156,10 +170,10 @@ programmer-cmd = iceprog -d i:0x${VID}:0x${PID} ${BIN_FILE}
 ```
 
 The list of supported placeholders is available in the Apio
-standard boards definitions files [boards.jsonc](https://github.com/FPGAwars/apio/blob/develop/apio/resources/programmers.jsonc). 
+standard boards definitions files [boards.jsonc](https://github.com/FPGAwars/apio/blob/develop/apio/resources/programmers.jsonc).
 
 > The placeholder `${BIN_FILE}` is not appended automatically to the
-programmer-cmd option and need to be added explicitly if needed.
+> programmer-cmd option and need to be added explicitly if needed.
 
 ### top-module (required)
 

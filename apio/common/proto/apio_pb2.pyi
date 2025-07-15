@@ -114,18 +114,20 @@ class Environment(_message.Message):
     def __init__(self, platform_id: _Optional[str] = ..., is_windows: bool = ..., terminal_mode: _Optional[_Union[TerminalMode, str]] = ..., theme_name: _Optional[str] = ..., debug_level: _Optional[int] = ..., yosys_path: _Optional[str] = ..., trellis_path: _Optional[str] = ...) -> None: ...
 
 class ApioEnvParams(_message.Message):
-    __slots__ = ("env_name", "board_id", "top_module", "defines", "yosys_synth_extra_options")
+    __slots__ = ("env_name", "board_id", "top_module", "defines", "yosys_synth_extra_options", "pnr_extra_options")
     ENV_NAME_FIELD_NUMBER: _ClassVar[int]
     BOARD_ID_FIELD_NUMBER: _ClassVar[int]
     TOP_MODULE_FIELD_NUMBER: _ClassVar[int]
     DEFINES_FIELD_NUMBER: _ClassVar[int]
     YOSYS_SYNTH_EXTRA_OPTIONS_FIELD_NUMBER: _ClassVar[int]
+    PNR_EXTRA_OPTIONS_FIELD_NUMBER: _ClassVar[int]
     env_name: str
     board_id: str
     top_module: str
     defines: _containers.RepeatedScalarFieldContainer[str]
     yosys_synth_extra_options: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, env_name: _Optional[str] = ..., board_id: _Optional[str] = ..., top_module: _Optional[str] = ..., defines: _Optional[_Iterable[str]] = ..., yosys_synth_extra_options: _Optional[_Iterable[str]] = ...) -> None: ...
+    pnr_extra_options: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, env_name: _Optional[str] = ..., board_id: _Optional[str] = ..., top_module: _Optional[str] = ..., defines: _Optional[_Iterable[str]] = ..., yosys_synth_extra_options: _Optional[_Iterable[str]] = ..., pnr_extra_options: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class LintParams(_message.Message):
     __slots__ = ("top_module", "verilator_all", "verilator_no_style", "verilator_no_warns", "verilator_warns")

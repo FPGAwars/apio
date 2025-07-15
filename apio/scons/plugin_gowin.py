@@ -93,13 +93,14 @@ class PluginGowin(PluginBase):
             action=(
                 "nextpnr-himbaechel --device {0} --json $SOURCE "
                 "--write $TARGET --report {1} --vopt family={2} "
-                "--vopt cst={3} {4}"
+                "--vopt cst={3} {4} {5}"
             ).format(
                 params.fpga_info.part_num,
                 apio_env.target + ".pnr",
                 params.fpga_info.gowin.family,
                 self.constrain_file(),
                 "" if params.verbosity.all or params.verbosity.pnr else "-q",
+                " ".join(params.apio_env_params.pnr_extra_options),
             ),
             suffix=".pnr.json",
             src_suffix=".json",

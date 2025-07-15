@@ -37,8 +37,6 @@ rm -f apio_pb2.py
 rm -f apio_pb2.pyi
 rm -f $tmp_file
 
-
-
 # Generate new
 python -m grpc_tools.protoc \
   -I. \
@@ -49,7 +47,8 @@ python -m grpc_tools.protoc \
 patch_proto apio_pb2.py
 patch_proto apio_pb2.pyi
 
-
+# All done OK
+echo "All done"
 
 
 
