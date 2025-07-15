@@ -158,6 +158,9 @@ nextpnr-extra-options =
     --freq 50
 ```
 
+> Some architectures use variants of nextpnr such as
+> `nextpnr-ecp4` or `nextpnr-himbaechel`. This option applies to them as well.
+
 ### programmer-cmd
 
 he optional `programmer-cmd` string option allows to override the programmer command
