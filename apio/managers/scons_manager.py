@@ -310,6 +310,9 @@ class SConsManager:
                 yosys_synth_extra_options=apio_ctx.project.get_list_option(
                     "yosys-synth-extra-options", None
                 ),
+                nextpnr_extra_options=apio_ctx.project.get_list_option(
+                    "nextpnr-extra-options", None
+                ),
             )
         )
         assert result.apio_env_params.IsInitialized(), result

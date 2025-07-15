@@ -86,6 +86,10 @@ class PnrRangeDetector(RangeDetector):
 
         # -- Range start: A nextpnr command on stdout without
         # -- the -q (quiet) flag.
+        # --
+        # -- IMPORTANT: Each of the supported architecture has a different
+        # -- nextpnr command, including 'nextpnr', 'nextpnr-ecp5', and
+        # -- 'nextpnr-himbaechel'.
         if (
             pipe_id == PipeId.STDOUT
             and line.startswith("nextpnr")
