@@ -8,7 +8,6 @@ Apio defines the Verilog macro when running `apio sim` and does not define it wh
 
 Make sure that your testbenches do not call `$dumpfile()` and instead let Apio set the desired location for the generated signal files. Failing to do so may result in Apio being unable to find the file when opening the GTKWave signal viewer or when cleaning the project.
 
-
 ## Example simulation results of a testbench
 
 These results were generated using a testbench and the command `apio sim`.
@@ -16,25 +15,31 @@ These results were generated using a testbench and the command `apio sim`.
 ![](assets/sim-gtkwave.png)
 
 ## Instructions for AI
+
 One way to write testbenches is to provide the tested module and instructions to an AI engine and ask it to generate the testbench code. The rules below can be copy-pasted into the AI prompt to inform it of Apio's requirements.
 
 Apio testbench rules:
 
-* **Rule 1**: Use `$dumpvars()` with the testbench module name as an argument.
-  
-* **Rule 2**: Do not use `$dumpfile()`.
-  
-* **Rule 3**: Compare expected values to actual values, and if they don't match, print an error message and call `$fatal` to exit.
-  
-* **Rule 4**: Instead of `$fatal`, use ``if (!`APIO_SIM) $fatal``.
-  
-* **Rule 5**: At the end of the testbench, print the message "End of simulation".
-  
-* **Rule 6**: Create in the testbench a boolean signal called `tb_error` with the initial value of 0 and the comment "Set to high on first error", and set it to 1 each time an actual value does not match the expected value.
+- **Rule 1**: Define at the top of the file an assertion macro called `EXPECT_EQ`
+  that compares and actual and expected values. If the values do not match, print
+  an error messages with the expected and actual values as well as the file name
+  and line number, and exit using `$fatal`.
+
+- **Rule 2**: Use a boolean signal called `assertion_err` initialized to 0 and
+  set it to 1 when an assertion fails.
+
+- **Rule 3**: Any time you use `$fatal`, qualify it with `` if (!`APIO_SIM) $fatal ``.
+
+- **Rule 4**: At the end of the testbench, print the message "End of simulation".
+
+- **Rule 5**: Use `$dumpvars()` with the testbench module name as an argument.
+
+- **Rule 6**: Do not use `$dumpfile()`.
 
 ## Example
 
 We gave this module text to ChatGPT and asked it to generate a testbench based on the rules.
+
 ```
 module Main #(
     parameter integer N = 3_000_000
@@ -67,45 +72,63 @@ endmodule
 The provided testbench:
 
 ```
+`timescale 1ns / 1ps
+
+// Rule 1: EXPECT_EQ macro
+`define EXPECT_EQ(actual, expected) \
+  if ((actual) !== (expected)) begin \
+    $display("ERROR at %s:%0d: expected %s = %0b but got %0b", \
+             `__FILE__, `__LINE__, `"actual`", expected, actual); \
+    assertion_err = 1; \
+    if (!`APIO_SIM) $fatal; \
+  end
+
 module Main_tb;
 
   reg CLK = 0;
   wire [7:0] ROWS;
   wire [3:0] COLS;
 
-  // Clock generation: 12MHz clock -> 83.33ns period
-  always #41 CLK = ~CLK;
+  // Rule 2: assertion error flag
+  reg assertion_err = 0;
 
-  // Instantiate the DUT (Device Under Test)
-  Main #(.N(6)) dut (
+  // Clock generation: 12MHz -> 83.33ns period -> 41.67ns half-period
+  always #42 CLK = ~CLK;
+
+  // Instantiate the DUT
+  Main #(.N(4)) dut (
     .CLK(CLK),
     .ROWS(ROWS),
     .COLS(COLS)
   );
 
-  // Set to high on first error
-  reg tb_error = 0;
-
   initial begin
-    $dumpvars(0, Main_tb);
+    $dumpvars(0, Main_tb); // Rule 5
 
-    integer i;
-    reg expected_toggle;
+    // Wait for stable CLK
+    repeat (2) @(posedge CLK);
 
-    expected_toggle = 0;
+    // Check initial COLS value
+    `EXPECT_EQ(COLS, 4'b1110);
 
-    // Wait for a few toggle events
-    for (i = 0; i < 10; i = i + 1) begin
-      wait (ROWS[1] != ROWS[0]);
-      if (ROWS[1] !== expected_toggle || ROWS[0] !== ~expected_toggle) begin
-        $display("ERROR at toggle %0d: expected ROWS[1:0] = %b%b, got %b%b",
-                 i, expected_toggle, ~expected_toggle, ROWS[1], ROWS[0]);
-        tb_error = 1;
-        if (!`APIO_SIM) $fatal;
-      end
-      expected_toggle = ~expected_toggle;
-      @(posedge CLK);
+    // Test alternating ROWS behavior
+    repeat (4) begin
+      reg [7:0] expected_rows;
+
+      expected_rows = {6'b111111, 1'b0, 1'b1}; // toggle = 0
+      repeat (4) @(posedge CLK); // wait for N cycles
+      `EXPECT_EQ(ROWS, expected_rows);
+
+      expected_rows = {6'b111111, 1'b1, 1'b0}; // toggle = 1
+      repeat (4) @(posedge CLK);
+      `EXPECT_EQ(ROWS, expected_rows);
     end
 
-    $display("End of simulation");
+    #100;
+
+    $display("End of simulation"); // Rule 4
+    $finish;
+  end
+
+endmodule
 ```
