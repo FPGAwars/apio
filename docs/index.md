@@ -2,6 +2,13 @@
 
 ![](assets/apio-illustration.png)
 
+!!! note
+    NOTE: This documentation is for Apio 1.0.0 and later. For
+    documentation of Apio 0.9.5 and older please see
+    <https://github.com/FPGAwars/apio/wiki>
+
+<br>
+
 **Apio** is an **easy-to-install** and **easy-to-use** open-source toolbox that simplifies FPGA development. It provides simple commands such as:
 
 - `apio lint` – to verify the code
