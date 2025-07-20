@@ -612,13 +612,24 @@ class Profile:
             resp: requests.Response = requests.get(
                 self.remote_config_url, timeout=25
             )
-
+            error_msg = None
         except Exception as e:
+            error_msg = str(e)
+
+        # -- Error codes such as 404 don't cause an exception so we handle
+        # -- them here seperatly.
+        if (error_msg is None) and (resp.status_code != 200):
+            error_msg = (
+                f"Expected HTTP status code 200, got {resp.status_code}."
+            )
+
+        # -- If an error was found then handle it.
+        if error_msg is not None:
             self._handle_config_refresh_failure(
                 msg=[
                     "Downloading of the latest Apio remote config "
                     "file failed.",
-                    str(e),
+                    error_msg,
                 ],
                 error_is_fatal=error_is_fatal,
             )
