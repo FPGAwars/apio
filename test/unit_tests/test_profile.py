@@ -13,14 +13,19 @@ from apio.profile import (
 from apio.utils import util
 from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 
-TEST_REMOTE_CONFIG_URL = (
-    "https://github.com/FPGAwars/apio/raw/develop/"
-    f"remote-config/apio-{util.get_apio_version()}.jsonc"
-)
+
+def get_remote_config_url(apio_ctx: ApioContext) -> str:
+    """Returns a test remote config URL."""
+    url = apio_ctx.config["remote-config-url"]
+    url = url.replace("{V}", util.get_apio_version())
+    return url
 
 
 def get_test_data(
-    loaded_by_apio_version: str, packages_platform_id: str, loaded_at_days: int
+    apio_ctx: ApioContext,
+    loaded_by_apio_version: str,
+    packages_platform_id: str,
+    loaded_at_days: int,
 ):
     """Returns a fake profile.json content. 'loaded_at_days' is the value of
     the remote config "loaded-at" relative to today in days."""
@@ -36,7 +41,7 @@ def get_test_data(
                 "loaded-by": "0.9.7",
                 "loaded-at": "2025-01-29-14-48",
                 "loaded-from": (
-                    "https://github.com/FPGAwars/apio-examples/"
+                    "https://github.com/fpgawars/apio-examples/"
                     "releases/download/2025-06-21/apio-examples-20250621.tgz"
                 ),
             },
@@ -46,7 +51,7 @@ def get_test_data(
                 "loaded-by": "0.9.7",
                 "loaded-at": "2025-01-29-14-48",
                 "loaded-from": (
-                    "https://github.com/FPGAwars/apio-examples/"
+                    "https://github.com/fpgawars/apio-examples/"
                     "releases/download/2025-06-21/apio-examples-20250621.tgz"
                 ),
             },
@@ -56,10 +61,7 @@ def get_test_data(
             "metadata": {
                 "loaded-at": loaded_at_stamp,
                 "loaded-by": loaded_by_apio_version,
-                "loaded-from": (
-                    "https://github.com/FPGAwars/apio/raw/develop/"
-                    "remote-config/apio-0.9.7.jsonc"
-                ),
+                "loaded-from": get_remote_config_url(apio_ctx),
             },
             "packages": {
                 "drivers": {
@@ -72,7 +74,7 @@ def get_test_data(
                     },
                     "repository": {
                         "name": "tools-drivers",
-                        "organization": "FPGAwars",
+                        "organization": "fpgawars",
                     },
                 },
                 "examples": {
@@ -83,7 +85,7 @@ def get_test_data(
                     },
                     "repository": {
                         "name": "apio-examples",
-                        "organization": "FPGAwars",
+                        "organization": "fpgawars",
                     },
                 },
             },
@@ -105,7 +107,7 @@ def test_profile_loading_config_ok(apio_runner: ApioRunner):
         # -- Write a test profile.json file.
         path = sb.home_dir / "profile.json"
         test_data = get_test_data(
-            util.get_apio_version(), apio_ctx.platform_id, 0
+            apio_ctx, util.get_apio_version(), apio_ctx.platform_id, 0
         )
         sb.write_file(
             path,
@@ -118,7 +120,7 @@ def test_profile_loading_config_ok(apio_runner: ApioRunner):
         # -- Read back the content.
         profile = Profile(
             sb.home_dir,
-            TEST_REMOTE_CONFIG_URL,
+            get_remote_config_url(apio_ctx),
             5,  # TTL in days
             60,  # Remote config retry mins.
             RemoteConfigPolicy.CACHED_OK,
@@ -146,7 +148,9 @@ def test_profile_loading_config_stale_version(apio_runner: ApioRunner):
         path = sb.home_dir / "profile.json"
         original_loaded_by = "0.9.6"
         assert original_loaded_by != util.get_apio_version()
-        test_data = get_test_data(original_loaded_by, apio_ctx.platform_id, 0)
+        test_data = get_test_data(
+            apio_ctx, original_loaded_by, apio_ctx.platform_id, 0
+        )
 
         sb.write_file(
             path,
@@ -159,7 +163,7 @@ def test_profile_loading_config_stale_version(apio_runner: ApioRunner):
         # -- Read back the content.
         profile = Profile(
             sb.home_dir,
-            TEST_REMOTE_CONFIG_URL,
+            get_remote_config_url(apio_ctx),
             5,  # TTL in days
             60,  # Remote config retry mins.
             RemoteConfigPolicy.CACHED_OK,
