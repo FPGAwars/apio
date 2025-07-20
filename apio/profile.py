@@ -617,7 +617,7 @@ class Profile:
             error_msg = str(e)
 
         # -- Error codes such as 404 don't cause an exception so we handle
-        # -- them here seperatly.
+        # -- them here separately.
         if (error_msg is None) and (resp.status_code != 200):
             error_msg = (
                 f"Expected HTTP status code 200, got {resp.status_code}."
