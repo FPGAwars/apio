@@ -8,9 +8,9 @@
 
 
 
-> NOTE: You can skip this Apio's overview and jump directly to the
-> [Quick Start](quick-start.md) guide or or to the
-> [installation instructions](installing-apio.md).
+> NOTE: If you want to skip this overview of Apio, We recommend continuing with the
+[Quick Start](quick-start.md) guide or jumping directly to the
+[installation instructions](installing-apio.md).
 
 **Apio** is an **easy-to-install** and **easy-to-use** open-source toolbox that simplifies FPGA development. It provides simple commands such as:
 
@@ -180,6 +180,6 @@ Options:
 
 ---
 
-This concludes Apio's overview. We suggest continuing to the
-[Quick Start](quick-start.md) guide or jump directly to the
+This concludes the short overview of Apio. We recommend continuing with the
+[Quick Start](quick-start.md) guide or jumping directly to the
 [installation instructions](installing-apio.md).
