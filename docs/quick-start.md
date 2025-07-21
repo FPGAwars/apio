@@ -128,5 +128,5 @@ The example now runs on the FPGA board, and two LEDs should be flashing alternat
 
 ---
 
-This concludes the Apio quick start guide. We suggest reviewing the [Video tutorial](video-tutorial.md) or going directly to the [Installing Apio](installing-apio.md) page to install your
-copy of Apio.
+This concludes the Apio quick start guide, we suggest continuing to the [Video tutorial](video-tutorial.md)
+or go ahead and start your own Apio project.
