@@ -28,7 +28,7 @@ follow these steps:
 
 2.  Install Apio using pip:
 
-        pip install --force-reinstall apio
+        pip install --force-reinstall -U git+https://github.com/fpgawars/apio.git@develop
 
 3.  In a **new shell window**, run the following command to test your installation:
 
@@ -40,7 +40,7 @@ follow these steps:
 
 To install Apio on macOS Apple Silicon using an installer, follow these steps:
 
-1.  From the [latest release](https://github.com/FPGAwars/apio-dev-builds/releases) download the installer file:
+1.  From the [latest release](https://github.com/fpgawars/apio-dev-builds/releases) download the installer file:
 
         apio-darwin-arm64-[version]-[date]-installer.pkg
 
@@ -62,7 +62,7 @@ To install Apio on macOS Apple Silicon using an installer, follow these steps:
 To install Apio on macOS Apple Silicon using a file bundle,
 follow these steps:
 
-1.  From the [latest release](https://github.com/FPGAwars/apio-dev-builds/releases) download the file bundle:
+1.  From the [latest release](https://github.com/fpgawars/apio-dev-builds/releases) download the file bundle:
 
         apio-darwin-arm64-[version]-[date]-bundle.tgz
 
@@ -92,7 +92,7 @@ To install Apio on macOS Intel Silicon using a Pip package, follow these steps:
 
 2.  Install Apio using pip:
 
-        pip install --force-reinstall apio
+        pip install --force-reinstall -U git+https://github.com/fpgawars/apio.git@develop
 
 3.  In a **new shell window**, run the following command to test your installation:
 
@@ -114,7 +114,7 @@ To install Apio on Linux X86-64 using a Pip package, follow these steps:
 
 2.  Install Apio using pip:
 
-        pip install --force-reinstall apio
+        pip install --force-reinstall -U git+https://github.com/fpgawars/apio.git@develop
 
 3.  In a **new shell window**, run the following command to test your installation:
 
@@ -126,7 +126,7 @@ To install Apio on Linux X86-64 using a Pip package, follow these steps:
 
 To install Apio on Linux X86-64 using a Debian package, follow these steps:
 
-1.  From the [latest release](https://github.com/FPGAwars/apio-dev-builds/releases) download the Debian package file:
+1.  From the [latest release](https://github.com/fpgawars/apio-dev-builds/releases) download the Debian package file:
 
         apio-linux-x86-64-[version]-[date]-debian.deb
 
@@ -142,7 +142,7 @@ To install Apio on Linux X86-64 using a Debian package, follow these steps:
 
 To install Apio on Linux X86-64 using a file bundle, follow these steps:
 
-1.  From the [latest release](https://github.com/FPGAwars/apio-dev-builds/releases) download the file bundle:
+1.  From the [latest release](https://github.com/fpgawars/apio-dev-builds/releases) download the file bundle:
 
         apio-linux-x86-64-[version]-[date]-bundle.tgz
 
@@ -170,7 +170,7 @@ To install Apio on Linux ARM-64 using a Pip package, follow these steps:
 
 2.  Install Apio using pip:
 
-        pip install --force-reinstall apio
+        pip install --force-reinstall -U git+https://github.com/fpgawars/apio.git@develop
 
 3.  In a **new shell window**, run the following command to test your installation:
 
@@ -192,7 +192,7 @@ To install Apio on Windows X86-64 using a Pip package, follow these steps:
 
 2.  Install Apio using pip:
 
-        pip install --force-reinstall apio
+        pip install --force-reinstall -U git+https://github.com/fpgawars/apio.git@develop
 
 3.  In a **new command window**, run the following command to test your installation:
 
@@ -204,7 +204,7 @@ To install Apio on Windows X86-64 using a Pip package, follow these steps:
 
 To install Apio on Windows X86-64 using an installer, follow these steps:
 
-1.  From the [latest release](https://github.com/FPGAwars/apio-dev-builds/releases) download the installer file:
+1.  From the [latest release](https://github.com/fpgawars/apio-dev-builds/releases) download the installer file:
 
         apio-windows-amd64-[version]-[date]-installer.exe
 
@@ -221,7 +221,7 @@ To install Apio on Windows X86-64 using an installer, follow these steps:
 
 To install Apio on Windows X86-64 using a file bundle, follow these steps:
 
-1.  From the [latest release](https://github.com/FPGAwars/apio-dev-builds/releases) download the file bundle:
+1.  From the [latest release](https://github.com/fpgawars/apio-dev-builds/releases) download the file bundle:
 
         apio-windows-amd64-[version]-[date]-bundle.zip
 
