@@ -1,10 +1,10 @@
-# Additional tools
+# Raw tools
 
 The `apio raw` command provides access to additional tools that are included
 in the apio packages, for example, in the `oss-cad-suite` package from the
 YosysHQ project.
 
-This page describes several additional tools available in Apio. The list is not exhaustive.
+This page describes several such raw tools that are available in Apio. This list is not exhaustive.
 
 > If you encounter a useful tool in the apio packages that is not listed
 > here please please file an issue in the
