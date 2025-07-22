@@ -29,9 +29,23 @@ apio raw -- icepll -i 12 -o 48 -q -m -f pll.v
 apio format pll.v
 ```
 
-> The Apio example `alhambra/pll` demonstrates a complete project that uses
-> an ICE40 PLL. The `pll.v` file in the example includes unused signal references added to satisfy `apio lint`.
-> This issue is tracked at <https://github.com/FPGAwars/apio/issues/669>.
+The Apio example `alhambra/pll` demonstrates a `pll.v` module that
+was generated with this command.
+
+> Per [Apio issue 669](https://github.com/FPGAwars/apio/issues/669),
+> the generated module does not pass `apio lint` because it
+> doesn't specify the unused PLL signals. As a workaround, manually add the following
+> signals to the PLL instantiation in `pll.v`:
+
+```
+.PLLOUTGLOBAL(),
+.EXTFEEDBACK(),
+.LATCHINPUTVALUE(),
+.SDO(),
+.SDI(),
+.SCLK(),
+.DYNAMICDELAY()
+```
 
 ---
 
@@ -52,9 +66,24 @@ apio raw -- ecppll -i 25 -o 120 -f pll.v
 apio format pll.v
 ```
 
-> The Apio example `colorlight-5a-75b-v8/pll` demonstrates a complete project that uses
-> an ECP5 PLL. The `pll.v` file in the example includes unused signal references added to satisfy `apio lint`.
-> This issue is tracked at <https://github.com/FPGAwars/apio/issues/670>.
+The Apio example `colorlight-5a-75b-v8/pll` demonstrates a `pll.v` module that
+was generated with this command.
+
+> Per [Apio issue 670](https://github.com/FPGAwars/apio/issues/669),
+> the generated module does not pass `apio lint` because it
+> doesn't specify the unused PLL signals. As a workaround, manually add the following
+> signals to the PLL instantiation in `pll.v`:
+
+```
+.ENCLKOS(),
+.ENCLKOS2(),
+.ENCLKOS3(),
+.CLKOS(),
+.CLKOS2(),
+.CLKOS3(),
+.INTLOCK(),
+.REFCLK()
+```
 
 ---
 
@@ -75,15 +104,14 @@ apio raw -- gowin_pll -d "GW1NR-9 C6/I5" -i 27 -o 75 -f pll.v
 apio format pll.v
 ```
 
-> The Apio example `sipeed-tang-nano-9k/pll` demonstrates a complete project that uses
-> an GOWIN PLL. The `pll.v` file of the example includes unused signal references added to satisfy `apio lint`.
-> This is tracked in issue <>.
+The Apio example `sipeed-tang-nano-9k/pll` demonstrates a `pll.v` module that
+was generated with this command.
 
 ---
 
 ## Zadig (Windows only)
 
-Zadig is a third party Windows tool that allow to manage and replace USB 
+Zadig is a third party Windows tool that allow to manage and replace USB
 device drivers. Zadig is used by Apio to install and uninstall FPGA boards
 drivers on windows but can also be used independently using the command
 
@@ -99,8 +127,7 @@ verible verilog diff is a command line tool that finds the semantic differences
 between verilog files.
 
 Get help text.
+
 ```
 apio raw -- verible-verilog-diff --helpfull
 ```
-
-
