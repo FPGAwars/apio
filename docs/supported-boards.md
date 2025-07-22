@@ -69,6 +69,7 @@
 | colorlight-i9-v7-2-ft2232h        | 45k  | ColorLight-i9               | LFE5U-45F-6BG381C    |
 | colorlight-i9-v7-2-ft232h         | 45k  | ColorLight-i9               | LFE5U-45F-6BG381C    |
 | colorlight-i9-v7-2-usb-blaster    | 45k  | ColorLight-i9               | LFE5U-45F-6BG381C    |
+| colorlight-i9-v7-2-cmsis-dap      | 45k  | ColorLight-i9               | LFE5U-45F-6BG381C    |
 | cynthion-r1-4                     | 12k  | Cynthion r1.4               | LFE5U-12F-6BG256C    |
 | ecp5-evaluation-board             | 85k  | ECP5-Evaluation-Board       | LFE5UM5G-85F-8BG381C |
 | ecp5-mini-12                      | 12k  | ECP5-Mini-12                | LFE5U-12F-6BG256C    |
