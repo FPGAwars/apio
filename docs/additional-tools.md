@@ -29,11 +29,9 @@ apio raw -- icepll -i 12 -o 48 -q -m -f pll.v
 apio format pll.v
 ```
 
-> The Apio example alhambra-ii/pll shows a complete project that uses
-> an ICE40 PLL.
-
-> The Apio example alhambra/pll shows a complete project that uses
-> an ICE40 PLL. The `pll.v` file includes unused signal references added to satisfy `apio lint`.
+> The Apio example `alhambra/pll` demonstrates a complete project that uses
+> an ICE40 PLL. The `pll.v` file in the example includes unused signal references added to satisfy `apio lint`.
+> This issue is tracked at <https://github.com/FPGAwars/apio/issues/669>.
 
 ---
 
@@ -54,8 +52,9 @@ apio raw -- ecppll -i 25 -o 120 -f pll.v
 apio format pll.v
 ```
 
-> The Apio example colorlight-5a-75b-v8/pll shows a complete project that uses
-> an ECP5 PLL. The `pll.v` file includes unused signal references added to satisfy `apio lint`.
+> The Apio example `colorlight-5a-75b-v8/pll` demonstrates a complete project that uses
+> an ECP5 PLL. The `pll.v` file in the example includes unused signal references added to satisfy `apio lint`.
+> This issue is tracked at <https://github.com/FPGAwars/apio/issues/670>.
 
 ---
 
@@ -76,8 +75,9 @@ apio raw -- gowin_pll -d "GW1NR-9 C6/I5" -i 27 -o 75 -f pll.v
 apio format pll.v
 ```
 
-> The Apio example sipeed-tang-nano-9k/pll shows a complete project that uses
-> an GOWIN PLL. The `pll.v` file includes unused signal references added to satisfy `apio lint`.
+> The Apio example `sipeed-tang-nano-9k/pll` demonstrates a complete project that uses
+> an GOWIN PLL. The `pll.v` file of the example includes unused signal references added to satisfy `apio lint`.
+> This is tracked in issue <>.
 
 ---
 
