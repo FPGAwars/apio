@@ -242,6 +242,15 @@
       "extra-args": "-c usb-blaster -v --file-type bin"
     }
   },
+  "colorlight-i9-v7-2-cmsis-dap": {
+    "legacy-name": "ColorLight-i9-v7.2_(CMSIS-DAP)",
+    "description": "ColorLight-i9",
+    "fpga-id": "lfe5u-45f-6bg381c",
+    "programmer": {
+      "id": "openfpgaloader",
+      "extra-args": "-c cmsisdap -v --file-type bin"
+    }
+  },
   "cynthion-r1-4": {
     "legacy-name": "Cynthion-r1.4",
     "description": "Cynthion r1.4",
