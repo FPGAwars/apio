@@ -39,7 +39,7 @@ format-verible-options =
 ```
 
 For a full list of Verible formatter flags, refer to the documentation
-page online or use the command `apio raw -- verible-verilog-format --helpful`.
+page online or use the command `apio raw -- verible-verilog-format --helpfull`.
 
 <h3>Protecting code</h3>
 
