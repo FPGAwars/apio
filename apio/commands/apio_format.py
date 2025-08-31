@@ -56,7 +56,7 @@ Verible formatter directives:
 // verilog_format: on[/code]
 
 For a full list of Verible formatter flags, refer to the documentation page \
-online or use the command 'apio raw -- verible-verilog-format --helpful'.
+online or use the command 'apio raw -- verible-verilog-format --helpfull'.
 """
 
 # -- File types that the format support. 'sv' indicates System Verilog

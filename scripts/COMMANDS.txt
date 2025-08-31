@@ -664,7 +664,7 @@ Usage: apio format [OPTIONS] [FILES]...
 
   For a full list of Verible formatter flags, refer to the documentation
   page online or use the command 'apio raw -- verible-verilog-format
-  --helpful'.
+  --helpfull'.
 
 Options:
   -e, --env name          Set the apio.ini env.
