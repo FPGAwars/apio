@@ -325,6 +325,15 @@
       "extra-args": "-c usb-blaster -v --file-type bin"
     }
   },
+  "icepi-zero": {
+    "legacy-name": "Icepi Zero",
+    "description": "Icepi Zero",
+    "fpga-id": "lfe5u-25f-6bg256c",
+    "programmer": {
+      "id": "openfpgaloader",
+      "extra-args": "-c ft231X  --pins=7:3:5:6 -v --file-type bin"
+    }
+  },
   // https://tomu.im/fomu.html
   "fomu": {
     "description": "Fomu",

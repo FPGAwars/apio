@@ -77,6 +77,7 @@
 | fleafpga-ohm-ft2232h              | 25k  | FleaFPGA-Ohm\_(FT2232H)     | LFE5U-25F-6BG381C    |
 | fleafpga-ohm-ft232h               | 25k  | FleaFPGA-Ohm\_(FT232H)      | LFE5U-25F-6BG381C    |
 | fleafpga-ohm-usb-blaster          | 25k  | FleaFPGA-Ohm\_(USB-Blaster) | LFE5U-25F-6BG381C    |
+| icepi-zero                        | 25k  | Icepi Zero                  | LFE5U-25F-6BG256C    |
 | icesugar-pro-ft2232h              | 25k  | ColorLight-i5               | LFE5U-25F-6BG256C    |
 | icesugar-pro-ft232h               | 25k  | ColorLight-i5               | LFE5U-25F-6BG256C    |
 | icesugar-pro-usb-blaster          | 25k  | ColorLight-i5               | LFE5U-25F-6BG256C    |
