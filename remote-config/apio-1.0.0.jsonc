@@ -17,7 +17,7 @@
         "name": "apio-examples"
       },
       "release": {
-        "version": "2025.07.11",
+        "version": "2025.09.23",
         "release-tag": "${YYYY-MM-DD}",
         "package-file": "apio-examples-${YYYYMMDD}.tgz"
       }
