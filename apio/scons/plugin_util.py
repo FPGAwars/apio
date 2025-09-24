@@ -728,6 +728,7 @@ def make_verilator_config_builder(lib_path: Path):
     for rule in [
         "COMBDLY",
         "WIDTHEXPAND",
+        "SPECIFYIGN",
         "PINMISSING",
         "ASSIGNIN",
         "WIDTHTRUNC",

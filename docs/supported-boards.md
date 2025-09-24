@@ -1,8 +1,10 @@
+Active env options [APIO_REMOTE_CONFIG_URL].
+
 <!-- BEGIN generation by 'apio boards --docs' -->
 
 # Supported FPGA Boards
 
-> Generated on June 15, 2025. For the updated list run `apio boards`.
+> Generated on September 23, 2025. For the updated list run `apio boards`.
 
 > Custom board definitions can be added in the project directory.
 
@@ -53,9 +55,9 @@
 
 | BOARD-ID                          | SIZE | DESCRIPTION                 | FPGA                 |
 | :-------------------------------- | :--- | :-------------------------- | :------------------- |
-| butterstick-r10-2g-85k            | 85k  | butterstick r1.0            | LFE5UM5G-85F-8BG381C |
-| butterstick-r10-2g-85k-ft2232h    | 85k  | butterstick r1.0            | LFE5UM5G-85F-8BG381C |
-| butterstick-r10-2g-85k-ft232h     | 85k  | butterstick r1.0            | LFE5UM5G-85F-8BG381C |
+| butterstick-r10-2g-85k            | 85k  | butterstick r1.0 DFU        | LFE5UM5G-85F-8BG381C |
+| butterstick-r10-2g-85k-ft2232h    | 85k  | butterstick r1.0 FT2232H    | LFE5UM5G-85F-8BG381C |
+| butterstick-r10-2g-85k-ft232h     | 85k  | butterstick r1.0 FT232H     | LFE5UM5G-85F-8BG381C |
 | colorlight-5a-75b-v61             | 25k  | ColorLight-5A-75B-V61       | LFE5U-25F-6BG381C    |
 | colorlight-5a-75b-v7              | 25k  | ColorLight-5A-75B-V7        | LFE5U-25F-6BG256C    |
 | colorlight-5a-75b-v8              | 25k  | ColorLight-5A-75B-V8        | LFE5U-25F-6BG256C    |
@@ -66,10 +68,10 @@
 | colorlight-i5-v7-0-ft2232h        | 25k  | ColorLight-i5               | LFE5U-25F-6BG381C    |
 | colorlight-i5-v7-0-ft232h         | 25k  | ColorLight-i5               | LFE5U-25F-6BG381C    |
 | colorlight-i5-v7-0-usb-blaster    | 25k  | ColorLight-i5               | LFE5U-25F-6BG381C    |
+| colorlight-i9-v7-2-cmsis-dap      | 45k  | ColorLight-i9               | LFE5U-45F-6BG381C    |
 | colorlight-i9-v7-2-ft2232h        | 45k  | ColorLight-i9               | LFE5U-45F-6BG381C    |
 | colorlight-i9-v7-2-ft232h         | 45k  | ColorLight-i9               | LFE5U-45F-6BG381C    |
 | colorlight-i9-v7-2-usb-blaster    | 45k  | ColorLight-i9               | LFE5U-45F-6BG381C    |
-| colorlight-i9-v7-2-cmsis-dap      | 45k  | ColorLight-i9               | LFE5U-45F-6BG381C    |
 | cynthion-r1-4                     | 12k  | Cynthion r1.4               | LFE5U-12F-6BG256C    |
 | ecp5-evaluation-board             | 85k  | ECP5-Evaluation-Board       | LFE5UM5G-85F-8BG381C |
 | ecp5-mini-12                      | 12k  | ECP5-Mini-12                | LFE5U-12F-6BG256C    |
@@ -82,14 +84,14 @@
 | icesugar-pro-ft232h               | 25k  | ColorLight-i5               | LFE5U-25F-6BG256C    |
 | icesugar-pro-usb-blaster          | 25k  | ColorLight-i5               | LFE5U-25F-6BG256C    |
 | mimas-ecp5-mini                   | 45k  | Mimas ECP5 Mini             | LFE5U-45F-6BG256C    |
-| orangecrab-r02-25f                | 25k  | OrangeCrab r0.2             | LFE5U-25F-6MG285C    |
-| orangecrab-r02-85f                | 85k  | OrangeCrab r0.2             | LFE5U-85F-6MG285C    |
+| orangecrab-r02-25f                | 25k  | OrangeCrab r0.2 25K         | LFE5U-25F-6MG285C    |
+| orangecrab-r02-85f                | 85k  | OrangeCrab r0.2 85K         | LFE5U-85F-6MG285C    |
 | tinyfpga-ex-rev1                  | 85k  | TinyFPGA EX rev 1           | LFE5U-85F-6MG285C    |
 | tinyfpga-ex-rev2                  | 85k  | TinyFPGA EX rev 2           | LFE5UM5G-85F-8MG285C |
-| ulx3s-12f                         | 12k  | ULX3S                       | LFE5U-12F-6BG381C    |
-| ulx3s-25f                         | 25k  | ULX3S                       | LFE5U-25F-6BG381C    |
-| ulx3s-45f                         | 45k  | ULX3S                       | LFE5U-45F-6BG381C    |
-| ulx3s-85f                         | 85k  | ULX3S                       | LFE5U-85F-6BG381C    |
+| ulx3s-12f                         | 12k  | ULX3S 12K                   | LFE5U-12F-6BG381C    |
+| ulx3s-25f                         | 25k  | ULX3S 25K                   | LFE5U-25F-6BG381C    |
+| ulx3s-45f                         | 45k  | ULX3S 45K                   | LFE5U-45F-6BG381C    |
+| ulx3s-85f                         | 85k  | ULX3S 85K                   | LFE5U-85F-6BG381C    |
 | versa                             | 45k  | ECP5 Versa                  | LFE5UM-45F-6BG381C   |
 
 ## GOWIN boards

@@ -146,6 +146,7 @@
         "verible",
         "verilator",
         "verilog",
+        "wireshape",
         "yosys",
         "Zadig"
     ]

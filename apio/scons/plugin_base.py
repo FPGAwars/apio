@@ -124,9 +124,10 @@ class PluginBase:
 
         return Builder(
             # See https://tinyurl.com/yosys-sv-graph
+            # For -wireshape see https://github.com/YosysHQ/yosys/pull/4252
             action=(
                 'yosys -p "read_verilog -sv $SOURCES; show -format dot'
-                ' -colors 1 -prefix {0} {1}" {2} {3}'
+                ' -colors 1 -wireshape plaintext -prefix {0} {1}" {2} {3}'
             ).format(
                 apio_env.target,
                 top_module,

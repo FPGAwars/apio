@@ -7,6 +7,7 @@
 #
 # A few useful Invoke tasks
 #   invoke --list        # Show available tasks
+#   invoke -l            # Show available tasks
 #   invoke lint          # Lint the python code
 #   invoke test          # Run the offline tests (fast)
 #   invoke check         # Run lint and all the tests (slow)

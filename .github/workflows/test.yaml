@@ -22,6 +22,11 @@ on:
         description: "[Optional] commit SHA to test"
         required: false
         default: ""
+      # By default the test uses the config file from github/apio. To test a
+      # new version of the remote config before checking it into github/apio,
+      # set this URL manually this var in the github workflow run page to
+      # point to the new version on your own origin repo. E.g.
+      # https://raw.githubusercontent.com/zapta/apio/refs/heads/develop/remote-config/apio-1.0.0.jsonc
       remote_config_url:
         description: "APIO_REMOTE_CONFIG_URL override"
         required: false
