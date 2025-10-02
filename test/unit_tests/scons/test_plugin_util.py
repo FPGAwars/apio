@@ -32,14 +32,18 @@ def test_get_constraint_file(
         # -- If not .pcf files, should assume main name + extension and
         # -- inform the user about it.
         capsys.readouterr()  # Reset capture
-        result = get_constraint_file(apio_env, ".pcf", "my_main")
+        with pytest.raises(SystemExit) as e:
+            result = get_constraint_file(apio_env, ".pcf")
         captured = capsys.readouterr()
-        assert "assuming 'my_main.pcf'" in cunstyle(captured.out)
-        assert result == "my_main.pcf"
+        assert e.value.code == 1
+        assert (
+            "Error: No constrain file '*.pcf' found, expected exactly one"
+            in cunstyle(captured.out)
+        )
 
         # -- If a single .pcf file, return it.
         sb.write_file("pinout.pcf", "content")
-        result = get_constraint_file(apio_env, ".pcf", "my_main")
+        result = get_constraint_file(apio_env, ".pcf")
         captured = capsys.readouterr()
         assert captured.out == ""
         assert result == "pinout.pcf"
@@ -48,7 +52,7 @@ def test_get_constraint_file(
         sb.write_file("other.pcf", "content")
         capsys.readouterr()  # Reset capture
         with pytest.raises(SystemExit) as e:
-            result = get_constraint_file(apio_env, ".pcf", "my_main")
+            result = get_constraint_file(apio_env, ".pcf")
         captured = capsys.readouterr()
         assert e.value.code == 1
         assert "Error: Found multiple '*.pcf'" in cunstyle(captured.out)

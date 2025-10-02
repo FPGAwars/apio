@@ -59,14 +59,11 @@ class PluginBase:
         """Finds and returns the constrain file path."""
         # -- Keep short references.
         apio_env = self.apio_env
-        params = apio_env.params
 
         # -- On first call, determine and cache.
         if self._constrain_file is None:
             self._constrain_file = get_constraint_file(
-                apio_env,
-                self.plugin_info().constrains_file_ext,
-                params.apio_env_params.top_module,
+                apio_env, self.plugin_info().constrains_file_ext
             )
         return self._constrain_file
 
