@@ -64,18 +64,13 @@ def map_params(params: Optional[List[Union[str, Path]]], fmt: str) -> str:
     return " ".join(mapped_params)
 
 
-def get_constraint_file(
-    apio_env: ApioEnv, file_ext: str, top_module: str
-) -> str:
+def get_constraint_file(apio_env: ApioEnv, file_ext: str) -> str:
     """Returns the name of the constrain file to use.
 
-    env is the sconstrution environment.
+    env is the sconstruction environment.
 
     file_ext is a string with the constrained file extension.
     E.g. ".pcf" for ice40.
-
-    top_module is the top module name. It's is used to construct the
-    default file name.
 
     Returns the file name if found or a default name otherwise otherwise.
     """
@@ -84,9 +79,8 @@ def get_constraint_file(
     n = len(files)
     # Case 1: No matching files.
     if n == 0:
-        result = f"{top_module.lower()}{file_ext}"
-        cwarning(f"No {file_ext} constraints file, assuming '{result}'.")
-        return result
+        cerror(f"No constrain file '*{file_ext}' found, expected exactly one.")
+        sys.exit(1)
     # Case 2: Exactly one file found.
     if n == 1:
         result = str(files[0])
