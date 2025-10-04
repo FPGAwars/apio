@@ -48,7 +48,7 @@ class PluginBase:
         # -- Scanner for verilog source files.
         self.verilog_src_scanner = verilog_src_scanner(apio_env)
 
-        # -- A laceholder for the constrain file name.
+        # -- A placeholder for the constraint file name.
         self._constrain_file: str = None
 
     def plugin_info(self) -> ArchPluginInfo:
@@ -56,7 +56,7 @@ class PluginBase:
         raise NotImplementedError("Implement in subclass.")
 
     def constrain_file(self) -> str:
-        """Finds and returns the constrain file path."""
+        """Finds and returns the constraint file path."""
         # -- Keep short references.
         apio_env = self.apio_env
 
