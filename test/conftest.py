@@ -1,21 +1,24 @@
 """Pytest TEST configuration file"""
 
 import sys
+import json
 import subprocess
 from subprocess import CompletedProcess
 from dataclasses import dataclass
 import shutil
 import tempfile
 import contextlib
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import List, Union, cast, Optional
 from typing import Dict, Any
 import os
+from urllib.parse import urlparse
 import pytest
 from click.testing import CliRunner, Result
 from apio import __main__
 from apio.common import apio_console
 from apio.common.proto.apio_pb2 import FORCE_PIPE, FORCE_TERMINAL
+from apio.utils import jsonc
 
 
 # -- Debug mode on/off
@@ -356,6 +359,57 @@ class ApioRunner:
             shutil.rmtree(self._shared_apio_home)
             self._shared_apio_home = None
 
+    @staticmethod
+    def _get_local_config_url() -> str:
+        """Returns a file:/ URL to the remote config file in the local depot.
+        This is used to set APIO_REMOTE_CONFIG_URL for testing to make sure
+        we test with the latest remote config in this change rather than with
+        the published remote config.
+        """
+
+        # -- Read apio/resources/config.jsonc so we can extract the remote
+        # -- config file name template to construct the local URL.
+        this_file_path = Path(__file__).resolve()
+        config_file_path = (
+            this_file_path.parent.parent / "apio/resources/config.jsonc"
+        )
+
+        with config_file_path.open(encoding="utf8") as file:
+            # -- Read the json with comments file
+            jsonc_text: str = file.read()
+
+        # -- Convert the jsonc to json by removing '//' comments.
+        json_text: str = jsonc.to_json(jsonc_text)
+
+        # -- Parse the json format!
+        json_data: dict = json.loads(json_text)
+
+        # -- Get the original remote config url.
+        url_str: str = json_data["remote-config-url"]
+
+        # -- Extract the file name part. E.g. 'apio-{V}.jsonc. The '{V}' marker
+        # -- is a place holder for the apio version which we don't resolve
+        # -- here.
+        config_file_path = urlparse(url_str).path
+        config_file_name = PurePosixPath(config_file_path).name
+        print(f"Config-file-name = {config_file_name}")
+
+        # -- Construct the path of the config file in this repo. We compute it
+        # -- based on the path of this conftest.py python file.
+        local_config_file = os.path.normpath(
+            os.path.join(
+                os.path.abspath(__file__),
+                "..",
+                "..",
+                "remote-config",
+                config_file_name,
+            )
+        )
+        # -- Convert the file path to a URL with a 'file://' form.
+        local_config_url = "file://" + str(local_config_file)
+
+        return local_config_url
+
     @property
     def sandbox(self) -> Optional[ApioSandbox]:
         """Returns the sandbox object or None if not in a sandbox."""
@@ -421,6 +475,15 @@ class ApioRunner:
         # -- Set the system env vars to inform ApioContext what are the
         # -- home and packages dirs.
         os.environ["APIO_HOME"] = str(home_dir)
+
+        local_config_url = self._get_local_config_url()
+        print(f"Local config url: {local_config_url}")
+
+        # Sanity check to detect conflicts from prior URL settings.
+        assert os.environ.get("APIO_REMOTE_CONFIG_URL") is None
+
+        # Set the URL in the environment
+        os.environ["APIO_REMOTE_CONFIG_URL"] = local_config_url
 
         # -- Reset the apio console, since we run multiple sandboxes in the
         # -- same process.
