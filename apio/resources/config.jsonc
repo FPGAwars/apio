@@ -22,16 +22,7 @@
   // a local file using the "file://" protocol spec.
 
   "remote-config-url": "https://github.com/fpgawars/apio/raw/develop/remote-config/apio-{V}.jsonc"
-
-  // "remote-config-url": "https://github.com/zapta/apio/raw/develop/remote-config/apio-{V}.jsonc"
 }
 
-// For local testing, before submitting a new remote config file
-//
-// export APIO_REMOTE_CONFIG_URL="file:///projects/apio-dev/repo/remote-config/apio-{V}.jsonc"
-
-// For using the remote config from zapta/apio (during transition)
-//
-// export APIO_REMOTE_CONFIG_URL="https://github.com/zapta/apio/raw/develop/remote-config/apio-{V}.jsonc"
 
 
