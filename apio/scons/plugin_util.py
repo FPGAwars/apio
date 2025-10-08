@@ -79,7 +79,9 @@ def get_constraint_file(apio_env: ApioEnv, file_ext: str) -> str:
     n = len(files)
     # Case 1: No matching files.
     if n == 0:
-        cerror(f"No constraint file '*{file_ext}' found, expected exactly one.")
+        cerror(
+            f"No constraint file '*{file_ext}' found, expected exactly one."
+        )
         sys.exit(1)
     # Case 2: Exactly one file found.
     if n == 1:
