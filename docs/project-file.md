@@ -100,12 +100,12 @@ architecture, for example `.lpf` for ICE40 architecture.
 ; ICE40 board.
 [env:env1]
 board = alhambra-ii
-constrain-file = alhambra-ii.lpf
+constraint-file = alhambra-ii.lpf
 
 ; Gowin board.
 [env:env2]
 board = sipeed-tang-nano-9k
-constrain-file = tang-nano-9k.cst
+constraint-file = tang-nano-9k.cst
 ```
 
 ### default-testbench
