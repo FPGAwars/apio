@@ -29,8 +29,7 @@ def test_get_constraint_file(
 
         apio_env = make_test_apio_env()
 
-        # -- If not .pcf files, should assume main name + extension and
-        # -- inform the user about it.
+        # -- If not .pcf files, should print an error and exit.
         capsys.readouterr()  # Reset capture
         with pytest.raises(SystemExit) as e:
             result = get_constraint_file(apio_env, ".pcf")
@@ -56,6 +55,40 @@ def test_get_constraint_file(
         captured = capsys.readouterr()
         assert e.value.code == 1
         assert "Error: Found multiple '*.pcf'" in cunstyle(captured.out)
+
+        # -- If the user specified a valid file then return it.
+        apio_env.params.apio_env_params.constraint_file = "xyz.pcf"
+        capsys.readouterr()  # Reset capture
+        result = get_constraint_file(apio_env, ".pcf")
+        captured = capsys.readouterr()
+        assert captured.out == ""
+        assert result == "xyz.pcf"
+
+        # -- If the user specified a constrain file with an extension that
+        # -- doesn't match the architecture, exit with an error
+        apio_env.params.apio_env_params.constraint_file = "xyz.bad"
+        capsys.readouterr()  # Reset capture
+        with pytest.raises(SystemExit) as e:
+            result = get_constraint_file(apio_env, ".pcf")
+        captured = capsys.readouterr()
+        assert e.value.code == 1
+        assert (
+            "Constraint file 'xyz.bad' should have the extension '.pcf'"
+            in cunstyle(captured.out)
+        )
+
+        # -- If the user specified a constrain file with forbidden char,
+        # -- exit with an error
+        apio_env.params.apio_env_params.constraint_file = "a/xyz.pcf"
+        capsys.readouterr()  # Reset capture
+        with pytest.raises(SystemExit) as e:
+            result = get_constraint_file(apio_env, ".pcf")
+        captured = capsys.readouterr()
+        assert e.value.code == 1
+        assert (
+            "Constrain filename 'a/xyz.pcf' contains an illegal character: '/'"
+            in cunstyle(captured.out)
+        )
 
 
 def test_verilog_src_scanner(apio_runner: ApioRunner):

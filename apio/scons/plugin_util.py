@@ -74,20 +74,48 @@ def get_constraint_file(apio_env: ApioEnv, file_ext: str) -> str:
 
     Returns the file name if found or a default name otherwise otherwise.
     """
-    # Files in alphabetical order.
+    # -- If the user specified a 'constraint-file' in apio.ini then use it.
+    user_specified = apio_env.params.apio_env_params.constraint_file
+    if user_specified:
+        # -- Check for proper extension for this architecture.
+        if not user_specified.endswith(file_ext):
+            cerror(
+                f"Constraint file '{user_specified}' should have "
+                f"the extension '{file_ext}'."
+            )
+            sys.exit(1)
+        # -- Check for valid chars only, e.g. dir separators are not allowed.
+        # -- This must be a simple file name that is expected to be found in
+        # -- the root directory of the project.
+        forbidden_chars = '<>:"/\\|?*\0'
+        for c in user_specified:
+            if c in forbidden_chars:
+                cerror(
+                    f"Constrain filename '{user_specified}' contains an "
+                    f"illegal character: '{c}'"
+                )
+                sys.exit(1)
+
+        return user_specified
+
+    # -- No user specified constraint file, try to look for it.
+    # --
+    # -- Get existing files in alphabetical order. We search only in the root
+    # -- directory of the project.
     files = apio_env.scons_env.Glob(f"*{file_ext}")
     n = len(files)
-    # Case 1: No matching files.
+
+    # -- Case 1: No matching constrain files.
     if n == 0:
         cerror(
             f"No constraint file '*{file_ext}' found, expected exactly one."
         )
         sys.exit(1)
-    # Case 2: Exactly one file found.
+    # -- Case 2: Exactly one constrain file found.
     if n == 1:
         result = str(files[0])
         return result
-    # Case 3: Multiple matching files.
+    # -- Case 3: Multiple matching constrain files.
     cerror(
         f"Found multiple '*{file_ext}' "
         "constraint files, expecting exactly one."
