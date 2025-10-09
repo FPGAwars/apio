@@ -31,7 +31,7 @@ from invoke.context import Context
 # -- which is printed when running 'invoke --list'.
 
 # -- Latest supported python version.
-LATEST_PYTHON = "py313"
+LATEST_PYTHON = "py314"
 
 # -- The python interpreter that we currently use.
 PYTHON = sys.executable

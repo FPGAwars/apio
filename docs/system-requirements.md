@@ -1,6 +1,6 @@
 # Apio System Requirements
 
-> The information on this page was last updated in June 2025.
+> The information on this page was last updated in October 2025.
 
 ## Operating System Requirements
 
@@ -24,6 +24,7 @@ These requirements apply only when installing Apio as a Pip package (Python-base
 
 | Python Version | Status      |
 | :------------- | :---------- |
-| 3.13.x         | Recommended |
+| 3.14.x         | Recommended |
+| 3.13.x         | Supported   |
 | 3.12.x         | Supported   |
 | 3.11.x         | Supported   |
