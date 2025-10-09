@@ -35,7 +35,9 @@ APIO_PLATFORM = "APIO_PLATFORM"
 APIO_DEBUG = "APIO_DEBUG"
 
 # -- An env variable that if defined, contains an override url of the remote
-# -- config file defined in apio/resources/config.jsonc.
+# -- config file defined in apio/resources/config.jsonc. During automated
+# -- tests, it is overridden to point to the local copy of the remote config
+# -- file.
 #
 # Examples:
 #   file:///projects/apio-dev/repo/remote-config/apio-0.9.7.jsonc

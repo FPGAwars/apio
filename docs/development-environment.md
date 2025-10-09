@@ -110,16 +110,8 @@ Since Apio launches Scons as a subprocess, **debugging the Scons code requires a
 3. From the command line, run the Apio command that invokes the Scons subprocess (e.g., `apio build`).
 4. In the VSC debugger, start the target `Attach remote debugger`.
 
-## Override Apio remote config for testing
+## Apio remote config during testing
 
-Apio retrieves its package information from a remote config `.jsonc` file whose URL is stored in `api/resources/config.jsonc`. For testing, it may be useful to override it and point to an alternative config file. This can be done by defining the `APIO_REMOTE_CONFIG_URL` variable.
-
-Examples:
-
-```
-export APIO_REMOTE_CONFIG_URL="https://github.com/FPGAwars/apio/raw/develop/remote-config/apio-{V}.jsonc"
-
-export APIO_REMOTE_CONFIG_URL="file:///projects/apio-dev/repo/remote-config/apio-{V}.jsonc"
-
-export APIO_REMOTE_CONFIG_URL="file:///tmp/my-config-file.jsonc"
+Apio retrieves its package information from a remote config `.jsonc` file whose URL is stored in `apio/resources/config.jsonc`. During automated testing it is overridden to point
+to the local copy of the config file in case it was modified in the local repository.
 ```

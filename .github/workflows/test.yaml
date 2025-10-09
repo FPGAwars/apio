@@ -22,15 +22,6 @@ on:
         description: "[Optional] commit SHA to test"
         required: false
         default: ""
-      # By default the test uses the config file from github/apio. To test a
-      # new version of the remote config before checking it into github/apio,
-      # set this URL manually this var in the github workflow run page to
-      # point to the new version on your own origin repo. E.g.
-      # https://raw.githubusercontent.com/zapta/apio/refs/heads/develop/remote-config/apio-1.0.0.jsonc
-      remote_config_url:
-        description: "APIO_REMOTE_CONFIG_URL override"
-        required: false
-        default: ""
       verbose:
         description: "Verbose [false|true]"
         required: false
@@ -94,18 +85,6 @@ jobs:
         run: |
           pip install invoke
           invoke deps
-
-      - name: Maybe set APIO_REMOTE_CONFIG_URL
-        run: |
-          # If the remote config url manual input was specified. pass
-          # it via the env to the tested apio. This var passing is
-          # enabled in tox.ini.
-          if [ -n '${{inputs.remote_config_url}}' ]; then
-              echo 'APIO_REMOTE_CONFIG_URL=${{inputs.remote_config_url}}' >> $GITHUB_ENV
-              echo "Using APIO_REMOTE_CONFIG_URL"
-          else
-              echo "Not using APIO_REMOTE_CONFIG_URL"
-          fi
 
       # TODO: Move the logic here to an Invoke task and use it instead.
       - name: Run Tests

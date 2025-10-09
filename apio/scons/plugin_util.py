@@ -65,7 +65,7 @@ def map_params(params: Optional[List[Union[str, Path]]], fmt: str) -> str:
 
 
 def get_constraint_file(apio_env: ApioEnv, file_ext: str) -> str:
-    """Returns the name of the constrain file to use.
+    """Returns the name of the constraint file to use.
 
     env is the sconstruction environment.
 
@@ -79,7 +79,9 @@ def get_constraint_file(apio_env: ApioEnv, file_ext: str) -> str:
     n = len(files)
     # Case 1: No matching files.
     if n == 0:
-        cerror(f"No constrain file '*{file_ext}' found, expected exactly one.")
+        cerror(
+            f"No constraint file '*{file_ext}' found, expected exactly one."
+        )
         sys.exit(1)
     # Case 2: Exactly one file found.
     if n == 1:
@@ -88,7 +90,7 @@ def get_constraint_file(apio_env: ApioEnv, file_ext: str) -> str:
     # Case 3: Multiple matching files.
     cerror(
         f"Found multiple '*{file_ext}' "
-        "constrain files, expecting exactly one."
+        "constraint files, expecting exactly one."
     )
     sys.exit(1)
 

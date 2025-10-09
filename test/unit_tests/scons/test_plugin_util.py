@@ -37,7 +37,7 @@ def test_get_constraint_file(
         captured = capsys.readouterr()
         assert e.value.code == 1
         assert (
-            "Error: No constrain file '*.pcf' found, expected exactly one"
+            "Error: No constraint file '*.pcf' found, expected exactly one"
             in cunstyle(captured.out)
         )
 
