@@ -88,7 +88,7 @@ board.
 If your project contains a `boards.jsonc` file with custom board definition, the
 board ID must be from that file.
 
-### constraint-file (optional)
+### constraint-file
 
 The optional `constraint-file` option allows to specify the constraint file
 (aka pinout file) and to use different constraint file for different envs. Its
