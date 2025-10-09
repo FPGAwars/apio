@@ -313,6 +313,9 @@ class SConsManager:
                 nextpnr_extra_options=apio_ctx.project.get_list_option(
                     "nextpnr-extra-options", None
                 ),
+                constraint_file=apio_ctx.project.get_str_option(
+                    "constraint-file", None
+                ),
             )
         )
         assert result.apio_env_params.IsInitialized(), result

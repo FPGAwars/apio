@@ -74,20 +74,34 @@ def get_constraint_file(apio_env: ApioEnv, file_ext: str) -> str:
 
     Returns the file name if found or a default name otherwise otherwise.
     """
-    # Files in alphabetical order.
+    # -- If the user specified a 'constraint-file' in apio.ini then use it.
+    user_specified = apio_env.params.apio_env_params.constraint_file
+    if user_specified:
+        if not user_specified.endswith(file_ext):
+            cerror(
+                f"Constraint file '{user_specified}' should have "
+                f"the extension '{file_ext}'."
+            )
+        return user_specified
+
+    # -- No user specified constraint file, try to look for it.
+    # --
+    # -- Get existing files in alphabetical order. We search only in the root
+    # -- directory of the project.
     files = apio_env.scons_env.Glob(f"*{file_ext}")
     n = len(files)
-    # Case 1: No matching files.
+
+    # -- Case 1: No matching constrain files.
     if n == 0:
         cerror(
             f"No constraint file '*{file_ext}' found, expected exactly one."
         )
         sys.exit(1)
-    # Case 2: Exactly one file found.
+    # -- Case 2: Exactly one constrain file found.
     if n == 1:
         result = str(files[0])
         return result
-    # Case 3: Multiple matching files.
+    # -- Case 3: Multiple matching constrain files.
     cerror(
         f"Found multiple '*{file_ext}' "
         "constraint files, expecting exactly one."

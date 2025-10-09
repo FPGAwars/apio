@@ -53,6 +53,7 @@ def test_all_options_env(apio_runner: ApioRunner, capsys: LogCaptureFixture):
             "top-module": "my_module",
             "yosys-synth-extra-options": "-dsp -xyz",
             "nextpnr-extra-options": "--freq 13",
+            "constraint-file": "pinout.lpf",
         }
     }
 
@@ -76,11 +77,13 @@ def test_all_options_env(apio_runner: ApioRunner, capsys: LogCaptureFixture):
         "top-module": "my_module",
         "yosys-synth-extra-options": ["-dsp -xyz"],
         "nextpnr-extra-options": ["--freq 13"],
+        "constraint-file": "pinout.lpf",
     }
 
     # -- Try a few as dict lookup on the project object.
     assert project.get_str_option("board") == "alhambra-ii"
     assert project.get_str_option("top-module") == "my_module"
+    assert project.get_str_option("constraint-file") == "pinout.lpf"
 
 
 def test_required_options_only_env(
