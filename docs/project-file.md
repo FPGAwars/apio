@@ -85,8 +85,28 @@ Apio uses the board ID to determine information such as the FPGA part
 number and the programmer command to use to upload the design to the
 board.
 
-If your project contains a `boards.jsonc` file with custom board defintion, the
+If your project contains a `boards.jsonc` file with custom board definition, the
 board ID must be from that file.
+
+### constraint-file (optional)
+
+The optional `constraint-file` option allows to specify the constraint file
+(aka pinout file) and to use different constraint file for different envs. Its
+value is a simple file name that is expected to find in the root directory of
+the project. The constraint file extension must be the one expected by the
+architecture, for example `.lpf` for ICE40 architecture.
+
+```
+; ICE40 board.
+[env:env1]
+board = alhambra-ii
+constrain-file = alhambra-ii.lpf
+
+; Gowin board.
+[env:env2]
+board = sipeed-tang-nano-9k
+constrain-file = tang-nano-9k.cst
+```
 
 ### default-testbench
 
