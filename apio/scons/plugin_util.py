@@ -77,11 +77,25 @@ def get_constraint_file(apio_env: ApioEnv, file_ext: str) -> str:
     # -- If the user specified a 'constraint-file' in apio.ini then use it.
     user_specified = apio_env.params.apio_env_params.constraint_file
     if user_specified:
+        # -- Check for proper extension for this architecture.
         if not user_specified.endswith(file_ext):
             cerror(
                 f"Constraint file '{user_specified}' should have "
                 f"the extension '{file_ext}'."
             )
+            sys.exit(1)
+        # -- Check for valid chars only, e.g. dir separators are not allowed.
+        # -- This must be a simple file name that is expected to be found in
+        # -- the root directory of the project.
+        forbidden_chars = '<>:"/\\|?*\0'
+        for c in user_specified:
+            if c in forbidden_chars:
+                cerror(
+                    f"Constrain filename '{user_specified}' contains an "
+                    f"illegal character: '{c}'"
+                )
+                sys.exit(1)
+
         return user_specified
 
     # -- No user specified constraint file, try to look for it.
