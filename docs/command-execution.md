@@ -124,7 +124,7 @@ apio_env_params {
 Once the SCons manager creates and saves the parameters file `scons.params`, it invokes the SCons processor, which runs as a subprocess.
 
 ```
-/Library/Frameworks/Python.framework/Versions/3.13/bin/python3
+<python-interpreter-path>
    -m SCons
    -Q build
    -f /Volumes/projects/apio-dev/repo/apio/scons/SConstruct
