@@ -1,6 +1,5 @@
 [![][apio-logo]][wiki]
 
-[![PyPI Version][pypi-image]][pypi-url]
 [![License][license-image]][license-url]
 [![apio-test](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue)]()
 
