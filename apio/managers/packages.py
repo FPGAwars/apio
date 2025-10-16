@@ -9,7 +9,7 @@ Used by the 'apio packages' command.
 
 import sys
 import os
-from typing import Dict, List, Callable, Tuple
+from typing import Dict, List
 from pathlib import Path
 from dataclasses import dataclass
 import shutil
@@ -40,28 +40,6 @@ class PackagesContext:
     platform_id: str
     # -- Same as ApioContext.packages_dir
     packages_dir: str
-
-
-@dataclass(frozen=True)
-class EnvMutations:
-    """Contains mutations to the system env."""
-
-    # -- PATH items to add.
-    paths: List[str]
-    # -- Vars name/value paris.
-    vars: List[Tuple[str, str]]
-
-
-@dataclass(frozen=True)
-class _PackageDesc:
-    """Represents an entry in the packages table."""
-
-    # -- Package folder name. E.g. "tools-oss-cad-suite"
-    folder_name: str
-    # -- True if the package is available for the current platform.
-    platform_match: bool
-    # -- A function to set the env for this package.
-    env_func: Callable[[Path], EnvMutations]
 
 
 def _construct_package_download_url(
@@ -430,110 +408,6 @@ def _fix_packages(apio_ctx: ApioContext, scan: "PackageScanResults") -> None:
         assert "packages" in str(file_path).lower(), dir_path
         # -- Delete.
         file_path.unlink()
-
-
-def _get_env_mutations_for_packages(apio_ctx: ApioContext) -> EnvMutations:
-    """Collects the env mutation for each of the defined packages,
-    in the order they are defined."""
-
-    result = EnvMutations([], [])
-    for _, package_config in apio_ctx.platform_packages.items():
-        # -- Get the json 'env' section. We require it, even if it's empty,
-        # -- for clarity reasons.
-        assert "env" in package_config
-        package_env = package_config["env"]
-
-        # -- Collect the path values.
-        path_list = package_env.get("path", [])
-        result.paths.extend(path_list)
-
-        # -- Collect the env vars (name, value) pairs.
-        vars_section = package_env.get("vars", {})
-        for var_name, var_value in vars_section.items():
-            result.vars.append((var_name, var_value))
-
-    return result
-
-
-def _dump_env_mutations(
-    apio_ctx: ApioContext, mutations: EnvMutations
-) -> None:
-    """Dumps a user friendly representation of the env mutations."""
-    cout("Environment settings:", style=EMPH3)
-
-    # -- Print PATH mutations.
-    windows = apio_ctx.is_windows
-    for p in reversed(mutations.paths):
-        styled_name = cstyle("PATH", style=EMPH3)
-        if windows:
-            cout(f"set {styled_name}={p};%PATH%")
-        else:
-            cout(f'{styled_name}="{p}:$PATH"')
-
-    # -- Print vars mutations.
-    for name, val in mutations.vars:
-        styled_name = cstyle(name, style=EMPH3)
-        if windows:
-            cout(f"set {styled_name}={val}")
-        else:
-            cout(f'{styled_name}="{val}"')
-
-
-def _apply_env_mutations(mutations: EnvMutations) -> None:
-    """Apply a given set of env mutations, while preserving their order."""
-
-    # -- Apply the path mutations, while preserving order.
-    old_val = os.environ["PATH"]
-    items = mutations.paths + [old_val]
-    new_val = os.pathsep.join(items)
-    os.environ["PATH"] = new_val
-
-    # -- Apply the vars mutations, while preserving order.
-    for name, value in mutations.vars:
-        os.environ[name] = value
-
-
-# -- A static flag that is used to make sure we set the env only once.
-# -- This is to avoid extending the $PATH variable multiple time with the
-# -- same directories.
-__ENV_ALREADY_SET_FLAG = False
-
-
-def set_env_for_packages(
-    apio_ctx: ApioContext, *, quiet: bool = False, verbose: bool = False
-) -> None:
-    """Sets the environment variables for using all the that are
-    available for this platform, even if currently not installed.
-
-    The function sets the environment only on first call and in latter calls
-    skips the operation silently.
-
-    If quite is set, no output is printed. When verbose is set, additional
-    output such as the env vars mutations are printed, otherwise, a minimal
-    information is printed to make the user aware that they commands they
-    see are executed in a modified env settings.
-    """
-
-    # -- If this fails, this is a programming error. Quiet and verbose
-    # -- cannot be combined.
-    assert not (quiet and verbose), "Can't have both quite and verbose."
-
-    # -- Collect the env mutations for all packages.
-    mutations = _get_env_mutations_for_packages(apio_ctx)
-
-    if verbose:
-        _dump_env_mutations(apio_ctx, mutations)
-
-    # -- If this is the first call in this apio invocation, apply the
-    # -- mutations. These mutations are temporary for the lifetime of this
-    # -- process and does not affect the user's shell environment.
-    # -- The mutations are also inherited by child processes such as the
-    # -- scons processes.
-    if not apio_ctx.env_was_already_set:
-        _apply_env_mutations(mutations)
-        apio_ctx.env_was_already_set = True
-        if not verbose and not quiet:
-            cout("Setting shell vars.")
 
 
 @dataclass

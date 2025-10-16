@@ -366,7 +366,7 @@ class SConsManager:
         # -- We set the env variables also for a command such as 'clean'
         # -- which doesn't use the packages, to satisfy the required env
         # -- variables of the scons arg parser.
-        packages.set_env_for_packages(apio_ctx)
+        apio_ctx.set_env_for_packages()
 
         if util.is_debug(1):
             cout("\nSCONS CALL:", style=EMPH3)

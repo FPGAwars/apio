@@ -6,14 +6,16 @@
 # -- Author Jesús Arroyo
 # -- License GPLv2
 
+import os
 import sys
 import json
 import platform
+from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Optional, Dict
+from typing import List, Optional, Dict, Tuple
 from apio.common.apio_console import cout, cerror, cwarning, cstyle
-from apio.common.apio_styles import INFO, EMPH1
+from apio.common.apio_styles import EMPH3, INFO, EMPH1
 from apio.common.common_util import env_build_path
 from apio.profile import Profile, RemoteConfigPolicy
 from apio.utils import jsonc, util, env_options
@@ -71,6 +73,16 @@ PROGRAMMERS_JSONC = "programmers.jsonc"
 # -----------------------------------------
 # -- General config information.
 CONFIG_JSONC = "config.jsonc"
+
+
+@dataclass(frozen=True)
+class EnvMutations:
+    """Contains mutations to the system env."""
+
+    # -- PATH items to add.
+    paths: List[str]
+    # -- Vars name/value paris.
+    vars: List[Tuple[str, str]]
 
 
 class ProjectPolicy(Enum):
@@ -601,3 +613,95 @@ class ApioContext:
     def is_windows(self) -> bool:
         """Returns True iff platform_id indicates windows."""
         return util.is_windows(self.platform_id)
+
+    def _get_env_mutations_for_packages(self) -> EnvMutations:
+        """Collects the env mutation for each of the defined packages,
+        in the order they are defined."""
+
+        result = EnvMutations([], [])
+        for _, package_config in self.platform_packages.items():
+            # -- Get the json 'env' section. We require it, even if it's empty,
+            # -- for clarity reasons.
+            assert "env" in package_config
+            package_env = package_config["env"]
+
+            # -- Collect the path values.
+            path_list = package_env.get("path", [])
+            result.paths.extend(path_list)
+
+            # -- Collect the env vars (name, value) pairs.
+            vars_section = package_env.get("vars", {})
+            for var_name, var_value in vars_section.items():
+                result.vars.append((var_name, var_value))
+
+        return result
+
+    def _dump_env_mutations(self, mutations: EnvMutations) -> None:
+        """Dumps a user friendly representation of the env mutations."""
+        cout("Environment settings:", style=EMPH3)
+
+        # -- Print PATH mutations.
+        windows = self.is_windows
+        for p in reversed(mutations.paths):
+            styled_name = cstyle("PATH", style=EMPH3)
+            if windows:
+                cout(f"set {styled_name}={p};%PATH%")
+            else:
+                cout(f'{styled_name}="{p}:$PATH"')
+
+        # -- Print vars mutations.
+        for name, val in mutations.vars:
+            styled_name = cstyle(name, style=EMPH3)
+            if windows:
+                cout(f"set {styled_name}={val}")
+            else:
+                cout(f'{styled_name}="{val}"')
+
+    def _apply_env_mutations(self, mutations: EnvMutations) -> None:
+        """Apply a given set of env mutations, while preserving their order."""
+
+        # -- Apply the path mutations, while preserving order.
+        old_val = os.environ["PATH"]
+        items = mutations.paths + [old_val]
+        new_val = os.pathsep.join(items)
+        os.environ["PATH"] = new_val
+
+        # -- Apply the vars mutations, while preserving order.
+        for name, value in mutations.vars:
+            os.environ[name] = value
+
+    def set_env_for_packages(
+        self, *, quiet: bool = False, verbose: bool = False
+    ) -> None:
+        """Sets the environment variables for using all the that are
+        available for this platform, even if currently not installed.
+
+        The function sets the environment only on first call and in latter
+        calls skips the operation silently.
+
+        If quite is set, no output is printed. When verbose is set, additional
+        output such as the env vars mutations are printed, otherwise, a minimal
+        information is printed to make the user aware that they commands they
+        see are executed in a modified env settings.
+        """
+
+        # -- If this fails, this is a programming error. Quiet and verbose
+        # -- cannot be combined.
+        assert not (quiet and verbose), "Can't have both quite and verbose."
+
+        # -- Collect the env mutations for all packages.
+        mutations = self._get_env_mutations_for_packages()
+
+        if verbose:
+            self._dump_env_mutations(mutations)
+
+        # -- If this is the first call in this apio invocation, apply the
+        # -- mutations. These mutations are temporary for the lifetime of this
+        # -- process and does not affect the user's shell environment.
+        # -- The mutations are also inherited by child processes such as the
+        # -- scons processes.
+        if not self.env_was_already_set:
+            self._apply_env_mutations(mutations)
+            self.env_was_already_set = True
+            if not verbose and not quiet:
+                cout("Setting shell vars.")

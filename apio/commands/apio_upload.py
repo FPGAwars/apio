@@ -12,7 +12,6 @@ from typing import Optional
 from pathlib import Path
 import click
 from apio.managers.scons_manager import SConsManager
-from apio.managers import packages
 from apio.utils import cmd_util
 from apio.commands import options
 from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
@@ -96,7 +95,7 @@ def cli(
     )
 
     # -- Set the shell env.
-    packages.set_env_for_packages(apio_ctx)
+    apio_ctx.set_env_for_packages()
 
     # -- Get the programmer command.
     programmer_cmd = construct_programmer_cmd(

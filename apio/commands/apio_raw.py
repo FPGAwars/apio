@@ -83,7 +83,7 @@ def cli(
 
     # -- Set the env for packages. If verbose, also dumping the env changes
     # -- in a user friendly way.
-    packages.set_env_for_packages(apio_ctx, quiet=not verbose, verbose=verbose)
+    apio_ctx.set_env_for_packages(quiet=not verbose, verbose=verbose)
 
     # -- If no command, we are done.
     if not cmd:

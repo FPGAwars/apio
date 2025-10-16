@@ -104,7 +104,7 @@ def cli(
 
     # -- Prepare the packages for use.
     packages.install_missing_packages_on_the_fly(apio_ctx)
-    packages.set_env_for_packages(apio_ctx, quiet=not verbose)
+    apio_ctx.set_env_for_packages(quiet=not verbose)
 
     # -- Convert the tuple with file names into a list.
     files: List[str] = list(files)
