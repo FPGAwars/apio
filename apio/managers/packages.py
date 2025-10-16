@@ -146,7 +146,8 @@ def _delete_package_dir(
     """Delete the directory of the package with given name.  Returns
     True if the packages existed. Exits with an error message on error."""
 
-    package_dir = apio_ctx.get_package_dir(package_name)
+    # package_dir = apio_ctx.get_package_dir(package_name)
+    package_dir = apio_ctx.packages_dir / package_name
 
     dir_found = package_dir.is_dir()
     if dir_found:

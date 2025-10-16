@@ -12,7 +12,7 @@ from rich.table import Table
 from rich import box
 from apio.common.apio_console import cout, ctable
 from apio.common.apio_styles import INFO, BORDER, ERROR, SUCCESS
-from apio.managers import installer
+from apio.managers import packages
 from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 from apio.utils import pkg_util
 from apio.commands import options
@@ -170,11 +170,11 @@ def _update_cli(
 
     # -- First thing, fix broken packages, if any. This forces fetching
     # -- of the latest remote config file.
-    installer.scan_and_fix_packages(apio_ctx)
+    packages.scan_and_fix_packages(apio_ctx)
 
     # -- Install the packages, one by one.
     for package in apio_ctx.platform_packages:
-        installer.install_package(
+        packages.install_package(
             apio_ctx,
             package_name=package,
             force_reinstall=force,

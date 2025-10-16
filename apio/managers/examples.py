@@ -15,7 +15,7 @@ from typing import Optional, List, Dict
 from apio.common.apio_console import cout, cstyle, cerror
 from apio.common.apio_styles import INFO, SUCCESS, EMPH3
 from apio.apio_context import ApioContext
-from apio.managers import installer
+from apio.managers import packages
 from apio.utils import util
 
 
@@ -71,7 +71,7 @@ class Examples:
         Returns null if an error."""
 
         # -- Check that the example package is installed
-        installer.install_missing_packages_on_the_fly(self.apio_ctx)
+        packages.install_missing_packages_on_the_fly(self.apio_ctx)
 
         # -- Collect the examples home dir each board.
         boards_dirs: List[PosixPath] = []
@@ -130,7 +130,7 @@ class Examples:
         that have no examples are not included in the dictionary."""
 
         # -- Make sure that the examples package is installed.
-        installer.install_missing_packages_on_the_fly(self.apio_ctx)
+        packages.install_missing_packages_on_the_fly(self.apio_ctx)
 
         # -- Get list of examples.
         examples: List[ExampleInfo] = self.get_examples_infos()
@@ -164,7 +164,7 @@ class Examples:
         """
 
         # -- Check that the examples package is installed.
-        installer.install_missing_packages_on_the_fly(self.apio_ctx)
+        packages.install_missing_packages_on_the_fly(self.apio_ctx)
 
         # Check that the example name exists.
         example_info: ExampleInfo = self.lookup_example_info(example_name)
@@ -228,7 +228,7 @@ class Examples:
         """
 
         # -- Check that the examples package is installed.
-        installer.install_missing_packages_on_the_fly(self.apio_ctx)
+        packages.install_missing_packages_on_the_fly(self.apio_ctx)
 
         # -- Get the working dir (current or given)
         # dst_dir = util.resolve_project_dir(

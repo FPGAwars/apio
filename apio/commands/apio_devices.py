@@ -13,7 +13,7 @@ from rich.table import Table
 from rich import box
 from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
-from apio.managers import installer
+from apio.managers import packages
 from apio.common.apio_console import cout, ctable
 from apio.common.apio_styles import BORDER, SUCCESS, ERROR, EMPH3
 from apio.utils import serial_util, usb_util, util
@@ -26,7 +26,7 @@ def _list_usb_devices(apio_ctx: ApioContext) -> None:
     """Lists the connected USB devices in table format."""
 
     # -- We need the packages for the 'libusb' backend.
-    installer.install_missing_packages_on_the_fly(apio_ctx)
+    packages.install_missing_packages_on_the_fly(apio_ctx)
 
     devices = usb_util.scan_usb_devices(apio_ctx=apio_ctx)
 
@@ -111,7 +111,7 @@ def _list_serial_devices(apio_ctx: ApioContext) -> None:
     """Lists the connected serial devices in table format."""
 
     # -- We need the packages for the 'libusb' backend.
-    installer.install_missing_packages_on_the_fly(apio_ctx)
+    packages.install_missing_packages_on_the_fly(apio_ctx)
 
     devices = serial_util.scan_serial_devices()
 

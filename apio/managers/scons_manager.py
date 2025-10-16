@@ -20,7 +20,7 @@ from apio.common.apio_styles import SUCCESS, ERROR, EMPH3, INFO
 from apio.utils import util, pkg_util
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
-from apio.managers import installer
+from apio.managers import packages
 from apio.common.proto.apio_pb2 import (
     FORCE_PIPE,
     FORCE_TERMINAL,
@@ -361,7 +361,7 @@ class SConsManager:
         # -- If the apio packages are required for this command, install them
         # -- if needed.
         if uses_packages:
-            installer.install_missing_packages_on_the_fly(apio_ctx)
+            packages.install_missing_packages_on_the_fly(apio_ctx)
 
         # -- We set the env variables also for a command such as 'clean'
         # -- which doesn't use the packages, to satisfy the required env

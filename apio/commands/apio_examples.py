@@ -18,7 +18,7 @@ from apio.common.apio_console import cerror
 from apio.common import apio_console
 from apio.common.apio_console import cout, ctable
 from apio.common.apio_styles import INFO, BORDER, EMPH1
-from apio.managers import installer
+from apio.managers import packages
 from apio.managers.examples import Examples, ExampleInfo
 from apio.commands import options
 from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
@@ -52,7 +52,7 @@ def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
     code, 0 if ok, non zero otherwise."""
 
     # -- Make sure that the examples package is installed.
-    installer.install_missing_packages_on_the_fly(apio_ctx)
+    packages.install_missing_packages_on_the_fly(apio_ctx)
 
     # -- Get list of examples.
     entries: List[ExampleInfo] = Examples(apio_ctx).get_examples_infos()

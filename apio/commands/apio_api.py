@@ -15,7 +15,7 @@ import json
 from pathlib import Path
 import click
 from apio.commands import options
-from apio.managers import installer
+from apio.managers import packages
 from apio.managers.examples import Examples, ExampleInfo
 from apio.common.apio_console import cout, cerror
 from apio.common.apio_styles import INFO
@@ -623,7 +623,7 @@ def _scan_devices_cli(
         top_dict["timestamp"] = timestamp
 
     # -- We need the packages for the 'libusb' backend.
-    installer.install_missing_packages_on_the_fly(apio_ctx)
+    packages.install_missing_packages_on_the_fly(apio_ctx)
 
     usb_devices: List[UsbDevice] = usb_util.scan_usb_devices(apio_ctx)
 

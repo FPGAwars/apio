@@ -18,7 +18,7 @@ from apio.common.apio_styles import EMPH3, SUCCESS, INFO
 from apio.common.common_util import PROJECT_BUILD_PATH, sort_files
 from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 from apio.commands import options
-from apio.managers import installer
+from apio.managers import packages
 from apio.utils import util, pkg_util, cmd_util
 
 
@@ -103,7 +103,7 @@ def cli(
         cmd_options.append("--verbose")
 
     # -- Prepare the packages for use.
-    installer.install_missing_packages_on_the_fly(apio_ctx)
+    packages.install_missing_packages_on_the_fly(apio_ctx)
     pkg_util.set_env_for_packages(apio_ctx, quiet=not verbose)
 
     # -- Convert the tuple with file names into a list.

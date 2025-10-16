@@ -17,7 +17,7 @@ from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 from apio.commands import options
 from apio.utils import cmd_util, pkg_util
 from apio.utils.cmd_util import ApioCommand
-from apio.managers import installer
+from apio.managers import packages
 
 
 # ----------- apio raw
@@ -79,7 +79,7 @@ def cli(
 
     # -- If needed, install missing packages.
     if cmd:
-        installer.install_missing_packages_on_the_fly(apio_ctx)
+        packages.install_missing_packages_on_the_fly(apio_ctx)
 
     # -- Set the env for packages. If verbose, also dumping the env changes
     # -- in a user friendly way.
