@@ -525,7 +525,7 @@ class ApioContext:
         all_packages: Dict[str, Dict],
         platform_id: str,
         platforms: Dict[str, Dict],
-    ):
+    ) -> Dict:
         """Given a dictionary with the packages.jsonc packages infos,
         returns subset dictionary with packages that are available for
         'platform_id'.

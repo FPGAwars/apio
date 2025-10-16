@@ -8,7 +8,9 @@ Used by the 'apio packages' command.
 """
 
 import sys
+from typing import Dict
 from pathlib import Path
+from dataclasses import dataclass
 import shutil
 from apio.common.apio_console import cout, cerror, cstyle
 from apio.common.apio_styles import WARNING, ERROR, SUCCESS, EMPH3
@@ -16,7 +18,27 @@ from apio.apio_context import ApioContext
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
 from apio.utils import util, pkg_util
-from apio.profile import PackageRemoteConfig
+from apio.profile import Profile, PackageRemoteConfig
+
+
+@dataclass(frozen=True)
+class PackagesContext:
+    """Context for package managements operations.
+    This class provides the information needed for package management
+    operations. This is a subset of the information contained by ApioContext
+    and we use it, instead of passing the ApioContext, because we need to
+    perform package management operations (e.g. updating packages) before
+    the ApioContext object is fully initialized.
+    """
+
+    # -- Same as ApioContext.profile
+    profile: Profile
+    # -- Same as ApioContext.platform_packages
+    platform_packages: Dict
+    # -- Same as ApioContext.platform_id
+    platform_id: str
+    # -- Same as ApioContext.packages_dir
+    packages_dir: str
 
 
 def _construct_package_download_url(
