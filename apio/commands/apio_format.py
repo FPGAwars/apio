@@ -19,7 +19,7 @@ from apio.common.common_util import PROJECT_BUILD_PATH, sort_files
 from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 from apio.commands import options
 from apio.managers import packages
-from apio.utils import util, pkg_util, cmd_util
+from apio.utils import util, cmd_util
 
 
 # -------------- apio format
@@ -104,7 +104,7 @@ def cli(
 
     # -- Prepare the packages for use.
     packages.install_missing_packages_on_the_fly(apio_ctx)
-    pkg_util.set_env_for_packages(apio_ctx, quiet=not verbose)
+    packages.set_env_for_packages(apio_ctx, quiet=not verbose)
 
     # -- Convert the tuple with file names into a list.
     files: List[str] = list(files)

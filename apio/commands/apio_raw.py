@@ -15,7 +15,7 @@ from apio.common.apio_console import cout
 from apio.common.apio_styles import SUCCESS, ERROR
 from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 from apio.commands import options
-from apio.utils import cmd_util, pkg_util
+from apio.utils import cmd_util
 from apio.utils.cmd_util import ApioCommand
 from apio.managers import packages
 
@@ -83,7 +83,7 @@ def cli(
 
     # -- Set the env for packages. If verbose, also dumping the env changes
     # -- in a user friendly way.
-    pkg_util.set_env_for_packages(apio_ctx, quiet=not verbose, verbose=verbose)
+    packages.set_env_for_packages(apio_ctx, quiet=not verbose, verbose=verbose)
 
     # -- If no command, we are done.
     if not cmd:

@@ -17,7 +17,7 @@ from google.protobuf import text_format
 from apio.common import apio_console
 from apio.common.apio_console import cout, cerror, cstyle, cunstyle
 from apio.common.apio_styles import SUCCESS, ERROR, EMPH3, INFO
-from apio.utils import util, pkg_util
+from apio.utils import util
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
 from apio.managers import packages
@@ -366,7 +366,7 @@ class SConsManager:
         # -- We set the env variables also for a command such as 'clean'
         # -- which doesn't use the packages, to satisfy the required env
         # -- variables of the scons arg parser.
-        pkg_util.set_env_for_packages(apio_ctx)
+        packages.set_env_for_packages(apio_ctx)
 
         if util.is_debug(1):
             cout("\nSCONS CALL:", style=EMPH3)

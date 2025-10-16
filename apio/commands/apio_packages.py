@@ -14,7 +14,6 @@ from apio.common.apio_console import cout, ctable
 from apio.common.apio_styles import INFO, BORDER, ERROR, SUCCESS
 from apio.managers import packages
 from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
-from apio.utils import pkg_util
 from apio.commands import options
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
@@ -23,7 +22,7 @@ def print_packages_report(apio_ctx: ApioContext) -> None:
     """A common function to print the state of the packages."""
 
     # -- Scan the packages
-    scan = pkg_util.scan_packages(apio_ctx)
+    scan = packages.scan_packages(apio_ctx)
 
     # -- Shortcuts to reduce clutter.
     get_package_version = apio_ctx.profile.get_package_installed_info
