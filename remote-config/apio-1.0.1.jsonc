@@ -9,9 +9,9 @@
 // NOTE: Github has a cache propagation of about 1 min between the
 // time this file is submitted and until it's available for download.
 {
-  "definitions": {
+  "packages": {
     // -- Definitions
-    "examples": {
+    "definitions": {
       "repository": {
         "organization": "zapta",  // TODO: Change to fpgawars
         "name": "apio-definitions"
@@ -19,10 +19,9 @@
       "release": {
         "version": "2025.10.15",
         "release-tag": "${YYYY-MM-DD}",
-        "package-file": "apio-examples-${YYYYMMDD}.tgz"
+        "package-file": "apio-definitions-${YYYYMMDD}.tgz"
       }
     },
-   "packages": {
     // -- Examples
     "examples": {
       "repository": {
