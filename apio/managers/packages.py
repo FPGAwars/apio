@@ -518,6 +518,8 @@ def scan_packages(packages_ctx: PackagesContext) -> PackageScanResults:
 
     # pylint: disable=too-many-branches
 
+    assert isinstance(packages_ctx, PackagesContext)
+
     # Initialize the result with empty data.
     result = PackageScanResults([], [], [], [], [], [], [])
 

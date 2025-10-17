@@ -116,19 +116,19 @@ def _system_cli():
     table.add_row(
         "Apio Python package", str(util.get_path_in_apio_package(""))
     )
-    table.add_row("Apio home", str(apio_ctx.home_dir))
-    table.add_row("Apio packages", str(apio_ctx.packages_dir))
+    table.add_row("Apio home dir", str(apio_ctx.apio_home_dir))
+    table.add_row("Apio packages dir", str(apio_ctx.apio_packages_dir))
     table.add_row("Remote config URL", apio_ctx.profile.remote_config_url)
     table.add_row(
         "Remote config status", construct_remote_config_status_str(apio_ctx)
     )
     table.add_row(
         "Veriable formatter",
-        str(apio_ctx.packages_dir / "verible/bin/verible-verilog-format"),
+        str(apio_ctx.apio_packages_dir / "verible/bin/verible-verilog-format"),
     )
     table.add_row(
         "Veriable language server",
-        str(apio_ctx.packages_dir / "verible/bin/verible-verilog-ls"),
+        str(apio_ctx.apio_packages_dir / "verible/bin/verible-verilog-ls"),
     )
 
     # -- Render the table.

@@ -32,8 +32,8 @@ def test_init(apio_runner: ApioRunner):
         assert apio_ctx.project_dir.samefile(sb.proj_dir)
 
         # -- Verify context's home and packages dirs.
-        assert apio_ctx.home_dir == sb.home_dir
-        assert apio_ctx.packages_dir == sb.packages_dir
+        assert apio_ctx.apio_home_dir == sb.home_dir
+        assert apio_ctx.apio_packages_dir == sb.packages_dir
 
         # -- Verify build dir
         assert PROJECT_BUILD_PATH == Path("_build")

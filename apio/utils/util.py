@@ -490,25 +490,24 @@ def get_apio_version() -> str:
     return f"{ver[0]}.{ver[1]}.{ver[2]}"
 
 
-def _check_home_dir(home_dir: Path):
-    """Check the path that was specified in APIO_HOME. Exit with an
-    error message if it doesn't comply with apio's requirements.
-    """
+def _check_apio_dir(apio_dir: Path, desc: str, env_var: str):
+    """Checks the apio home dir or packages dir path for the apio
+    requirements."""
 
     # Sanity check. If this fails, it's a programming error.
     assert isinstance(
-        home_dir, Path
-    ), f"Error: home_dir is no a Path: {type(home_dir)}, {home_dir}"
+        apio_dir, Path
+    ), f"Error: {desc} is no a Path: {type(apio_dir)}, {apio_dir}"
 
     # -- The path should be absolute, see discussion here:
     # -- https://github.com/FPGAwars/apio/issues/522
-    if not home_dir.is_absolute():
+    if not apio_dir.is_absolute():
         cerror(
-            "Apio home dir should be an absolute path " f"[{str(home_dir)}].",
+            f"Apio {desc} should be an absolute path " f"[{str(apio_dir)}].",
         )
         cout(
-            "You can use the system env var APIO_HOME to set "
-            "a different apio home dir.",
+            f"You can use the system env var {env_var} to set "
+            f"a different apio {desc}.",
             style=INFO,
         )
         sys.exit(1)
@@ -516,17 +515,17 @@ def _check_home_dir(home_dir: Path):
     # -- We have problem with spaces and non ascii character above value
     # -- 127, so we allow only ascii characters in the range [33, 127].
     # -- See here https://github.com/FPGAwars/apio/issues/515
-    for ch in str(home_dir):
+    for ch in str(apio_dir):
         if ord(ch) < 33 or ord(ch) > 127:
             cerror(
-                f"Unsupported character [{ch}] in apio home dir: "
-                f"[{str(home_dir)}].",
+                f"Unsupported character [{ch}] in apio {desc}: "
+                f"[{str(apio_dir)}].",
             )
             cout(
                 "Only the ASCII characters in the range 33 to 127 are "
                 "allowed. You can use the\n"
-                "system env var 'APIO_HOME' to set a different apio"
-                "home dir.",
+                f"system env var '{env_var}' to set a different apio"
+                f"{desc}.",
                 style=INFO,
             )
             sys.exit(1)
@@ -536,8 +535,7 @@ def resolve_home_dir() -> Path:
     """Get the absolute apio home dir. This is the apio folder where the
     profile is located and the packages are installed.
     The apio home dir can be overridden using the APIO_HOME environment
-    variable or in the /etc/apio.json file (in
-    Debian). If not set, the user_home/.apio folder is used by default:
+    variable. If not set, the user_home/.apio folder is used by default:
     Ej. Linux:  /home/obijuan/.apio
     If the folders does not exist, they are created
     """
@@ -545,7 +543,7 @@ def resolve_home_dir() -> Path:
     # -- Get the optional apio home env.
     apio_home_dir_env = env_options.get(env_options.APIO_HOME, default=None)
 
-    # -- If the env vars specified an home dir then process it.
+    # -- If the env vars specified an home dir then use it.
     if apio_home_dir_env:
         # -- Expand user home '~' marker, if exists.
         apio_home_dir_env = os.path.expanduser(apio_home_dir_env)
@@ -558,7 +556,7 @@ def resolve_home_dir() -> Path:
         home_dir = Path.home() / ".apio"
 
     # -- Verify that the home dir meets apio's requirements.
-    _check_home_dir(home_dir)
+    _check_apio_dir(home_dir, "home dir", "APIO_HOME")
 
     # -- Create the folder if it does not exist
     try:
@@ -569,6 +567,54 @@ def resolve_home_dir() -> Path:
 
     # Return the home_dir as a Path
     return home_dir
+
+
+def resolve_packages_dir(apio_home_dir: Path) -> Path:
+    """Get the absolute apio packages dir. This is the apio folder where the
+    packages are installed. The default apio packages dir can be overridden
+    using the APIO_PACKAGES environment variable. If not set,
+    the <apio-home>/packages folder is used by default:
+    Ej. Linux:  /home/obijuan/.apio/packages
+    If the folders does not exist, they are created
+    """
+
+    # -- Get the optional apio packages env.
+    apio_packages_dir_env = env_options.get(
+        env_options.APIO_PACKAGES, default=None
+    )
+
+    # -- If the env vars specified an packages dir then use it.
+    if apio_packages_dir_env:
+        # -- Verify that the env variable contains 'packages' to make sure we
+        # -- don't clobber system directories.
+        if "packages" not in apio_packages_dir_env:
+            cerror(
+                "Apio packages dir APIO_PACKAGES should include the "
+                "string 'packages'."
+            )
+            sys.exit(1)
+        # -- Expand user home '~' marker, if exists.
+        apio_packages_dir_env = os.path.expanduser(apio_packages_dir_env)
+        # -- Expand varas such as $HOME or %HOME% on windows.
+        apio_packages_dir_env = os.path.expandvars(apio_packages_dir_env)
+        # -- Convert string to path.
+        packages_dir = Path(apio_packages_dir_env)
+    else:
+        # -- Else, use the default <home_dir>/packages.
+        packages_dir = apio_home_dir / "packages"
+
+    # -- Verify that the home dir meets apio's requirements.
+    _check_apio_dir(packages_dir, "packages dir", "APIO_PACKAGES")
+
+    # -- Create the folder if it does not exist
+    # try:
+    #     packages_dir.mkdir(parents=True, exist_ok=True)
+    # except PermissionError:
+    #     cerror(f"No usable packages directory {packages_dir}")
+    #     sys.exit(1)
+
+    # Return the packages as a Path
+    return packages_dir
 
 
 def split(

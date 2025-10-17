@@ -22,7 +22,7 @@ def print_packages_report(apio_ctx: ApioContext) -> None:
     """A common function to print the state of the packages."""
 
     # -- Scan the packages
-    scan = packages.scan_packages(apio_ctx)
+    scan = packages.scan_packages(apio_ctx.packages_context)
 
     # -- Shortcuts to reduce clutter.
     get_package_version = apio_ctx.profile.get_package_installed_info
@@ -174,7 +174,7 @@ def _update_cli(
     # -- Install the packages, one by one.
     for package in apio_ctx.platform_packages:
         packages.install_package(
-            apio_ctx,
+            apio_ctx.packages_context,
             package_name=package,
             force_reinstall=force,
             verbose=verbose,

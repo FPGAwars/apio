@@ -106,7 +106,8 @@ class ApioContext:
     # -- List of allowed instance vars.
     __slots__ = (
         "project_policy",
-        "home_dir",
+        "apio_home_dir",
+        "apio_packages_dir",
         "config",
         "profile",
         "platforms",
@@ -195,8 +196,11 @@ class ApioContext:
                 project_dir_arg is None
             ), "project_dir_arg specified for project policy None"
 
-        # -- Determine apio home dir.
-        self.home_dir: Path = util.resolve_home_dir()
+        # -- Determine apio home and packages dirs
+        self.apio_home_dir: Path = util.resolve_home_dir()
+        self.apio_packages_dir: Path = util.resolve_packages_dir(
+            self.apio_home_dir
+        )
 
         # -- Read and validate the config information
         self.config = self._load_resource(CONFIG_JSONC)
@@ -214,7 +218,7 @@ class ApioContext:
             "remote-config-retry-minutes"
         ]
         self.profile = Profile(
-            self.home_dir,
+            self.apio_home_dir,
             remote_config_url,
             remote_config_ttl_days,
             remote_config_retry_minutes,
@@ -233,7 +237,9 @@ class ApioContext:
         validate_packages(self.all_packages)
 
         # -- Expand in place the env templates in all_packages.
-        ApioContext._resolve_package_envs(self.all_packages, self.packages_dir)
+        ApioContext._resolve_package_envs(
+            self.all_packages, self.apio_packages_dir
+        )
 
         # The subset of packages that are applicable to this platform.
         self.platform_packages = self._select_packages_for_platform(
@@ -300,11 +306,6 @@ class ApioContext:
 
         # -- Report.
         cout(f"Using env {styled_env_name} ({styled_board_id})")
-
-    @property
-    def packages_dir(self):
-        """Returns the directory hat contains the installed apio packages."""
-        return self.home_dir / "packages"
 
     @property
     def has_project(self):
@@ -494,12 +495,12 @@ class ApioContext:
     def get_package_dir(self, package_name: str) -> Path:
         """Returns the root path of a package with given name."""
 
-        return self.packages_dir / package_name
+        return self.apio_packages_dir / package_name
 
     def get_tmp_dir(self, create: bool = True) -> Path:
         """Return the tmp dir under the apio home dir. If 'create' is true
         create the dir and its parents if they do not exist."""
-        tmp_dir = self.home_dir / "tmp"
+        tmp_dir = self.apio_home_dir / "tmp"
         if create:
             tmp_dir.mkdir(parents=True, exist_ok=True)
         return tmp_dir
@@ -540,7 +541,7 @@ class ApioContext:
             profile=self.profile,
             platform_packages=self.platform_packages,
             platform_id=self.platform_id,
-            packages_dir=self.packages_dir,
+            packages_dir=self.apio_packages_dir,
         )
 
     @staticmethod
