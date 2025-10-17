@@ -20,6 +20,7 @@ from apio.common.common_util import env_build_path
 from apio.profile import Profile, RemoteConfigPolicy
 from apio.utils import jsonc, util, env_options
 from apio.managers.project import Project, load_project_from_file
+from apio.managers.packages import PackagesContext
 from apio.utils.resource_util import (
     ProjectResources,
     collect_project_resources,
@@ -531,6 +532,16 @@ class ApioContext:
 
         # -- All done ok.
         return platform_id
+
+    def packages_context(self) -> PackagesContext:
+        """Return a PackagesContext with info extracted from this
+        ApioContext."""
+        return PackagesContext(
+            profile=self.profile,
+            platform_packages=self.platform_packages,
+            platform_id=self.platform_id,
+            packages_dir=self.packages_dir,
+        )
 
     @staticmethod
     def _select_packages_for_platform(

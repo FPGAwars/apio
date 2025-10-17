@@ -41,6 +41,13 @@ class PackagesContext:
     # -- Same as ApioContext.packages_dir
     packages_dir: str
 
+    def __post_init__(self):
+        """Assert that all fields initialized to actual values."""
+        assert self.profile
+        assert self.platform_packages
+        assert self.platform_id
+        assert self.packages_dir
+
 
 def _construct_package_download_url(
     apio_ctx: ApioContext,
