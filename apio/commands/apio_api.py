@@ -623,7 +623,7 @@ def _scan_devices_cli(
         top_dict["timestamp"] = timestamp
 
     # -- We need the packages for the 'libusb' backend.
-    packages.install_missing_packages_on_the_fly(apio_ctx)
+    packages.install_missing_packages_on_the_fly(apio_ctx.packages_context)
 
     usb_devices: List[UsbDevice] = usb_util.scan_usb_devices(apio_ctx)
 

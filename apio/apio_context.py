@@ -533,6 +533,7 @@ class ApioContext:
         # -- All done ok.
         return platform_id
 
+    @property
     def packages_context(self) -> PackagesContext:
         """Return a PackagesContext with info extracted from this
         ApioContext."""

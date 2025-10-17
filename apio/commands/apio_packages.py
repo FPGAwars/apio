@@ -169,7 +169,7 @@ def _update_cli(
 
     # -- First thing, fix broken packages, if any. This forces fetching
     # -- of the latest remote config file.
-    packages.scan_and_fix_packages(apio_ctx)
+    packages.scan_and_fix_packages(apio_ctx.packages_context)
 
     # -- Install the packages, one by one.
     for package in apio_ctx.platform_packages:

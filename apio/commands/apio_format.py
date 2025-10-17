@@ -103,7 +103,7 @@ def cli(
         cmd_options.append("--verbose")
 
     # -- Prepare the packages for use.
-    packages.install_missing_packages_on_the_fly(apio_ctx)
+    packages.install_missing_packages_on_the_fly(apio_ctx.packages_context)
     apio_ctx.set_env_for_packages(quiet=not verbose)
 
     # -- Convert the tuple with file names into a list.

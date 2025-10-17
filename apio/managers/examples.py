@@ -71,7 +71,9 @@ class Examples:
         Returns null if an error."""
 
         # -- Check that the example package is installed
-        packages.install_missing_packages_on_the_fly(self.apio_ctx)
+        packages.install_missing_packages_on_the_fly(
+            self.apio_ctx.packages_context
+        )
 
         # -- Collect the examples home dir each board.
         boards_dirs: List[PosixPath] = []
@@ -130,7 +132,9 @@ class Examples:
         that have no examples are not included in the dictionary."""
 
         # -- Make sure that the examples package is installed.
-        packages.install_missing_packages_on_the_fly(self.apio_ctx)
+        packages.install_missing_packages_on_the_fly(
+            self.apio_ctx.packages_context
+        )
 
         # -- Get list of examples.
         examples: List[ExampleInfo] = self.get_examples_infos()
@@ -164,7 +168,9 @@ class Examples:
         """
 
         # -- Check that the examples package is installed.
-        packages.install_missing_packages_on_the_fly(self.apio_ctx)
+        packages.install_missing_packages_on_the_fly(
+            self.apio_ctx.packages_context
+        )
 
         # Check that the example name exists.
         example_info: ExampleInfo = self.lookup_example_info(example_name)
@@ -228,7 +234,9 @@ class Examples:
         """
 
         # -- Check that the examples package is installed.
-        packages.install_missing_packages_on_the_fly(self.apio_ctx)
+        packages.install_missing_packages_on_the_fly(
+            self.apio_ctx.packages_context
+        )
 
         # -- Get the working dir (current or given)
         # dst_dir = util.resolve_project_dir(

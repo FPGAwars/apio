@@ -79,7 +79,7 @@ def cli(
 
     # -- If needed, install missing packages.
     if cmd:
-        packages.install_missing_packages_on_the_fly(apio_ctx)
+        packages.install_missing_packages_on_the_fly(apio_ctx.packages_context)
 
     # -- Set the env for packages. If verbose, also dumping the env changes
     # -- in a user friendly way.

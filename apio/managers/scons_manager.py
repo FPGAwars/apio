@@ -361,7 +361,9 @@ class SConsManager:
         # -- If the apio packages are required for this command, install them
         # -- if needed.
         if uses_packages:
-            packages.install_missing_packages_on_the_fly(apio_ctx)
+            packages.install_missing_packages_on_the_fly(
+                apio_ctx.packages_context
+            )
 
         # -- We set the env variables also for a command such as 'clean'
         # -- which doesn't use the packages, to satisfy the required env

@@ -26,7 +26,7 @@ def _list_usb_devices(apio_ctx: ApioContext) -> None:
     """Lists the connected USB devices in table format."""
 
     # -- We need the packages for the 'libusb' backend.
-    packages.install_missing_packages_on_the_fly(apio_ctx)
+    packages.install_missing_packages_on_the_fly(apio_ctx.packages_context)
 
     devices = usb_util.scan_usb_devices(apio_ctx=apio_ctx)
 
@@ -111,7 +111,7 @@ def _list_serial_devices(apio_ctx: ApioContext) -> None:
     """Lists the connected serial devices in table format."""
 
     # -- We need the packages for the 'libusb' backend.
-    packages.install_missing_packages_on_the_fly(apio_ctx)
+    packages.install_missing_packages_on_the_fly(apio_ctx.packages_context)
 
     devices = serial_util.scan_serial_devices()
 
