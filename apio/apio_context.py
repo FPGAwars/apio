@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from typing import List, Optional, Dict, Tuple
-from apio.common.apio_console import cout, cerror, cwarning, cstyle
+from apio.common.apio_console import cout, cerror, cstyle
 from apio.common.apio_styles import EMPH3, INFO, EMPH1
 from apio.common.common_util import env_build_path
 from apio.profile import Profile, RemoteConfigPolicy
@@ -158,12 +158,6 @@ class ApioContext:
                 f"Active env options [{', '.join(defined_env_options)}].",
                 style=INFO,
             )
-
-            if env_options.APIO_HOME_DIR in defined_env_options:
-                cwarning(
-                    f"Env variable ${env_options.APIO_HOME_DIR} "
-                    f"is deprecated, please use ${env_options.APIO_HOME}.",
-                )
 
         # -- Store the project_policy
         assert isinstance(

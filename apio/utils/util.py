@@ -542,14 +542,8 @@ def resolve_home_dir() -> Path:
     If the folders does not exist, they are created
     """
 
-    # -- Try the env vars, by decreasing order of importance.
-    for var in [
-        env_options.APIO_HOME,
-        env_options.APIO_HOME_DIR,
-    ]:
-        apio_home_dir_env = env_options.get(var, default=None)
-        if apio_home_dir_env:
-            break
+    # -- Get the optional apio home env.
+    apio_home_dir_env = env_options.get(env_options.APIO_HOME, default=None)
 
     # -- If the env vars specified an home dir then process it.
     if apio_home_dir_env:

@@ -19,9 +19,6 @@ from typing import List
 # -- specified, the 'packages' directory with the individual packages.
 APIO_HOME = "APIO_HOME"
 
-# -- Deprecated. Use APIO HOME instead.
-APIO_HOME_DIR = "APIO_HOME_DIR"
-
 # -- Env variable to override the platform id that is determined automatically
 # -- from the system properties. If specified, the value should match one
 # -- of the platforms specified in resources/platforms.json.
@@ -50,7 +47,6 @@ APIO_REMOTE_CONFIG_URL = "APIO_REMOTE_CONFIG_URL"
 # -- List of all supported env options.
 _SUPPORTED_APIO_VARS = [
     APIO_HOME,
-    APIO_HOME_DIR,  # Deprecated
     APIO_PLATFORM,
     APIO_DEBUG,
     APIO_REMOTE_CONFIG_URL,
