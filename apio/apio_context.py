@@ -602,17 +602,17 @@ class ApioContext:
     @property
     def is_linux(self) -> bool:
         """Returns True iff platform_id indicates linux."""
-        return util.is_linux(self.platform_id)
+        return "linux" in self.platform_id
 
     @property
     def is_darwin(self) -> bool:
         """Returns True iff platform_id indicates Mac OSX."""
-        return util.is_darwin(self.platform_id)
+        return "darwin" in self.platform_id
 
     @property
     def is_windows(self) -> bool:
         """Returns True iff platform_id indicates windows."""
-        return util.is_windows(self.platform_id)
+        return "windows" in self.platform_id
 
     def _get_env_mutations_for_packages(self) -> EnvMutations:
         """Collects the env mutation for each of the defined packages,

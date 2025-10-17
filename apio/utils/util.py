@@ -661,18 +661,3 @@ def pushd(target_dir: Path):
         yield
     finally:
         os.chdir(prev_dir)
-
-
-def is_linux(platform_id: str) -> bool:
-    """Returns True iff platform_id indicates linux."""
-    return "linux" in platform_id
-
-
-def is_darwin(platform_id: str) -> bool:
-    """Returns True iff platform_id indicates Mac OSX."""
-    return "darwin" in platform_id
-
-
-def is_windows(platform_id: str) -> bool:
-    """Returns True iff platform_id indicates windows."""
-    return "windows" in platform_id
