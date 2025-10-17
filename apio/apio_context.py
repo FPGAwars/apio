@@ -21,6 +21,7 @@ from apio.profile import Profile, RemoteConfigPolicy
 from apio.utils import jsonc, util, env_options
 from apio.managers.project import Project, load_project_from_file
 from apio.managers.packages import PackagesContext
+from apio.managers import packages
 from apio.utils.resource_util import (
     ProjectResources,
     collect_project_resources,
@@ -245,6 +246,11 @@ class ApioContext:
         self.platform_packages = self._select_packages_for_platform(
             self.all_packages, self.platform_id, self.platforms
         )
+
+        # -- Install missing packages. At this point, the
+        # -- fields that are required by self.packages_context are already
+        # -- initialized.
+        packages.install_missing_packages_on_the_fly(self.packages_context)
 
         # -- Read the boards information. Allow override files in project dir.
         self.boards = self._load_resource(BOARDS_JSONC, allow_custom=True)
