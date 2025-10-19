@@ -5,17 +5,11 @@ Test different "apio" commands
 import os
 from os.path import getsize
 from test.conftest import ApioRunner
-import pytest
 from apio.commands.apio import apio_top_cli as apio
 
 
 def test_examples(apio_runner: ApioRunner):
     """Tests the listing and fetching apio examples."""
-
-    # -- If the option 'offline' is passed, the test is skip
-    # -- (This test is slow and requires internet connectivity)
-    if apio_runner.offline_flag:
-        pytest.skip("requires internet connection")
 
     with apio_runner.in_sandbox() as sb:
 

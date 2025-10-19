@@ -5,8 +5,7 @@ from apio.commands.apio import apio_top_cli as apio
 
 
 def test_build_without_apio_ini(apio_runner: ApioRunner):
-    """Tests build with various valid and invalid apio variation, all tests
-    are offline and without any apio package installed."""
+    """Tests build command with no apio.ini."""
 
     with apio_runner.in_sandbox() as sb:
 
@@ -17,8 +16,7 @@ def test_build_without_apio_ini(apio_runner: ApioRunner):
 
 
 def test_build_with_apio_ini(apio_runner: ApioRunner):
-    """Tests build with various valid and invalid apio variation, all tests
-    are offline and without any apio package installed."""
+    """Test build command with apio.ini."""
 
     with apio_runner.in_sandbox() as sb:
 

@@ -2,17 +2,14 @@
 
 from os import listdir, rename
 from test.conftest import ApioRunner
-import pytest
 from apio.commands.apio import apio_top_cli as apio
 
 
 def test_packages(apio_runner: ApioRunner):
     """Tests listing, installation and uninstallation of packages."""
 
-    # -- If the option 'offline' is passed, the test is skip
-    # -- (This test is slow and requires internet connectivity)
-    if apio_runner.offline_flag:
-        pytest.skip("requires internet connection")
+    # -- This is a slow test. Skip it if running with --fast-only flag.
+    apio_runner.skip_test_if_fast_only()
 
     with apio_runner.in_sandbox() as sb:
 

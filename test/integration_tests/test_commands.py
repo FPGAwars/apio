@@ -1,6 +1,5 @@
 """
-Test different "apio" commands. These tests use installed apio packages
-and are slower than the offline tests at test/commands.
+Test various "apio" commands.
 """
 
 import os
@@ -8,7 +7,6 @@ from os.path import getsize
 from pathlib import Path
 import json
 from test.conftest import ApioRunner
-import pytest
 from apio.commands.apio import apio_top_cli as apio
 
 CUSTOM_BOARDS = """
@@ -31,11 +29,6 @@ CUSTOM_BOARDS = """
 
 def test_boards_custom_board(apio_runner: ApioRunner):
     """Test boards listing with a custom boards.jsonc file."""
-
-    # -- If the option 'offline' is passed, the test is skip
-    # -- (This test is slow and requires internet connectivity)
-    if apio_runner.offline_flag:
-        pytest.skip("requires internet connection")
 
     with apio_runner.in_sandbox() as sb:
 
@@ -75,11 +68,6 @@ def test_boards_custom_board(apio_runner: ApioRunner):
 def test_boards_list_ok(apio_runner: ApioRunner):
     """Test normal board listing with the apio's boards.jsonc."""
 
-    # -- If the option 'offline' is passed, the test is skip
-    # -- (This test is slow and requires internet connectivity)
-    if apio_runner.offline_flag:
-        pytest.skip("requires internet connection")
-
     with apio_runner.in_sandbox() as sb:
 
         # -- Run 'apio boards'
@@ -113,11 +101,6 @@ def test_boards_list_ok(apio_runner: ApioRunner):
 def test_apio_api_get_examples(apio_runner: ApioRunner):
     """Test "apio api get-examples" """
 
-    # -- If the option 'offline' is passed, the test is skip
-    # -- (This test is slow and requires internet connectivity)
-    if apio_runner.offline_flag:
-        pytest.skip("requires internet connection")
-
     with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio api get-examples -t xyz"  (stdout)
@@ -147,10 +130,8 @@ def test_apio_api_get_examples(apio_runner: ApioRunner):
 def test_apio_api_scan_devices(apio_runner: ApioRunner):
     """Test "apio api scan-devices" """
 
-    # -- If the option 'offline' is passed, the test is skip
-    # -- (This test is slow and requires internet connectivity)
-    if apio_runner.offline_flag:
-        pytest.skip("requires internet connection")
+    # -- This is a slow test. Skip it if running with --fast-only flag.
+    apio_runner.skip_test_if_fast_only()
 
     with apio_runner.in_sandbox() as sb:
 
@@ -187,10 +168,8 @@ def test_apio_api_scan_devices(apio_runner: ApioRunner):
 def test_apio_devices(apio_runner: ApioRunner):
     """Test "apio devices usb|serial" """
 
-    # -- If the option 'offline' is passed, the test is skip
-    # -- (This test is slow and requires internet connectivity)
-    if apio_runner.offline_flag:
-        pytest.skip("requires internet connection")
+    # -- This is a slow test. Skip it if running with --fast-only flag.
+    apio_runner.skip_test_if_fast_only()
 
     with apio_runner.in_sandbox() as sb:
 
@@ -214,10 +193,8 @@ def test_apio_devices(apio_runner: ApioRunner):
 def test_utilities(apio_runner: ApioRunner):
     """Tests apio utility commands."""
 
-    # -- If the option 'offline' is passed, the test is skip
-    # -- (This test is slow and requires internet connectivity)
-    if apio_runner.offline_flag:
-        pytest.skip("requires internet connection")
+    # -- This is a slow test. Skip it if running with --fast-only flag.
+    apio_runner.skip_test_if_fast_only()
 
     with apio_runner.in_sandbox() as sb:
 
@@ -242,10 +219,8 @@ def test_utilities(apio_runner: ApioRunner):
 def test_project_with_legacy_board_id(apio_runner: ApioRunner):
     """Test a project that uses a legacy board id."""
 
-    # -- If the option 'offline' is passed, the test is skip
-    # -- (This test is slow and requires internet connectivity)
-    if apio_runner.offline_flag:
-        pytest.skip("requires internet connection")
+    # -- This is a slow test. Skip it if running with --fast-only flag.
+    apio_runner.skip_test_if_fast_only()
 
     # -- We shared the apio home with the other tests in this file to speed
     # -- up apio package installation. Tests should not mutate the shared home
@@ -284,10 +259,8 @@ def test_project_with_legacy_board_id(apio_runner: ApioRunner):
 def test_files_order(apio_runner: ApioRunner):
     """Tests that source files are sorted in apio build command."""
 
-    # -- If the option 'offline' is passed, the test is skip
-    # -- (This test is slow and requires internet connectivity)
-    if apio_runner.offline_flag:
-        pytest.skip("requires internet connection")
+    # -- This is a slow test. Skip it if running with --fast-only flag.
+    apio_runner.skip_test_if_fast_only()
 
     with apio_runner.in_sandbox() as sb:
 
@@ -342,10 +315,8 @@ def _test_project(
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-statements
 
-    # -- If the option 'offline' is passed, the test is skip
-    # -- (This test is slow and requires internet connectivity)
-    if apio_runner.offline_flag:
-        pytest.skip("requires internet connection")
+    # -- This is a slow test. Skip it if running with --fast-only flag.
+    apio_runner.skip_test_if_fast_only()
 
     # -- Extract the base name of the testbench file
     testbench, _ = os.path.splitext(testbench_file)

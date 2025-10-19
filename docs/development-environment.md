@@ -56,7 +56,9 @@ During debugging, it is sometimes useful to run quick partial tests before runni
 # Run linters only
 invoke lint
 
-# Run offline tests only. These are tests that don't fetch remote Apio packages.
+# Run the fast tests only and skip the rest. Note that even in fast mode,
+# the first test may require to fill in the packages cache which may take
+# a minute or two.
 invoke test
 
 # Run a single test file with verbose info

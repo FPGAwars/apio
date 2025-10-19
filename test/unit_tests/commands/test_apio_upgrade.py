@@ -1,17 +1,11 @@
 """Test for the "apio upgrade" command."""
 
 from test.conftest import ApioRunner
-import pytest
 from apio.commands.apio import apio_top_cli as apio
 
 
 def test_upgrade(apio_runner: ApioRunner):
     """Test "apio upgrade" """
-
-    # -- If the option 'offline' is passed, the test is skip
-    # -- (apio upgrade uses internet)
-    if apio_runner.offline_flag:
-        pytest.skip("requires internet connection")
 
     with apio_runner.in_sandbox() as sb:
 

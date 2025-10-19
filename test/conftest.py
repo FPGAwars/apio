@@ -28,19 +28,19 @@ DEBUG = True
 SANDBOX_MARKER = "apio-sandbox"
 
 
-# -- This function is called by pytest. It adds the pytest --offline flag
-# -- which is is passed to tests that ask for it using the fixture
-# -- 'offline_flag' below.
+# -- This function is called by pytest. It adds the pytest --fast-only flag
+# -- which is is passed to tests such that slow tests can skip.
 # --
 # -- More info: https://docs.pytest.org/en/7.1.x/example/simple.html
 def pytest_addoption(parser: pytest.Parser):
-    """Register the --offline command line option when invoking pytest"""
+    """Register the --fast-only command line option when invoking pytest"""
 
-    # -- Option: --offline
-    # -- It is used by the function test that requires
-    # -- internet connection for testing
+    # -- Option: --fast-only
+    # -- It causes slow tests to skip. Note that even in fast mode, the
+    # -- first test may need to update the packages cache which may take
+    # -- a minute or two.
     parser.addoption(
-        "--offline", action="store_true", help="Run tests in offline mode"
+        "--fast-only", action="store_true", help="Run only the fast tests."
     )
 
 
@@ -330,14 +330,6 @@ class ApioSandbox:
         }
         self.write_apio_ini(default_apio_ini)
 
-    @property
-    def offline_flag(self):
-        """Returns True if pytest was invoked with --offline to skip
-        tests that require internet connectivity and are slower in general."""
-
-        assert not self.expired, "Trying to use an expired sandbox"
-        return self._apio_runner.offline_flag
-
 
 class ApioRunner:
     """Apio commands test helper. Provides an apio sandbox functionality
@@ -533,11 +525,13 @@ class ApioRunner:
             sys.stdout.flush()
             sys.stderr.flush()
 
-    @property
-    def offline_flag(self) -> bool:
-        """Returns True if pytest was invoked with --offline to skip
-        tests that require internet connectivity and are slower in general."""
-        return self._request.config.getoption("--offline")
+    def skip_test_if_fast_only(self):
+        """The calling test is skipped if running in --fast-only mode.
+        Should be called from slow tests. The fast/slow classification of tests
+        should be done after the packages cache was filled (automatically).
+        """
+        if self._request.config.getoption("--fast-only"):
+            pytest.skip("slow test")
 
 
 @pytest.fixture(scope="module")

@@ -9,7 +9,7 @@
 #   invoke --list        # Show available tasks
 #   invoke -l            # Show available tasks
 #   invoke lint          # Lint the python code
-#   invoke test          # Run the offline tests (fast)
+#   invoke test          # Run only the fast tests, skip the rest.
 #   invoke check         # Run lint and all the tests (slow)
 #   invoke install-apio  # Install to run 'apio' from the source code here.
 #   invoke docs-viewer   # Run a local http server to view the Apio docs.
@@ -139,7 +139,7 @@ def lint_task(ctx: Context):
     aliases=["t"],
 )
 def test_task(ctx: Context):
-    """Offline tests with the latest Python."""
+    """Fast tests only, using the latest Python."""
     announce_task("test")
     run(
         ctx,
@@ -152,7 +152,7 @@ def test_task(ctx: Context):
             "-e",
             LATEST_PYTHON,
             "--",
-            "--offline",
+            "--fast-only",
         ],
     )
 
