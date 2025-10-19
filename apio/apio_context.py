@@ -150,6 +150,7 @@ class ApioContext:
         """
 
         # pylint: disable=too-many-arguments
+        # pylint: disable=too-many-statements
 
         # -- Inform as soon as possible about the list of apio env options
         # -- that modify its default behavior.
@@ -203,8 +204,12 @@ class ApioContext:
             self.apio_home_dir
         )
 
+        # -- Get the jsonc source dirs.
+        resources_dir = util.get_path_in_apio_package(RESOURCES_DIR)
+        definitions_dir = self.apio_packages_dir / "definitions"
+
         # -- Read and validate the config information
-        self.config = self._load_resource(CONFIG_JSONC)
+        self.config = self._load_resource(CONFIG_JSONC, resources_dir)
         validate_config(self.config)
 
         # -- Profile information, from ~/.apio/profile.json. We provide it with
@@ -228,14 +233,14 @@ class ApioContext:
         )
 
         # -- Read the platforms information.
-        self.platforms = self._load_resource(PLATFORMS_JSONC)
+        self.platforms = self._load_resource(PLATFORMS_JSONC, resources_dir)
         validate_platforms(self.platforms)
 
         # -- Determine the platform_id for this APIO session.
         self.platform_id = self._determine_platform_id(self.platforms)
 
         # -- Read the apio packages information
-        self.all_packages = self._load_resource(PACKAGES_JSONC)
+        self.all_packages = self._load_resource(PACKAGES_JSONC, resources_dir)
         validate_packages(self.all_packages)
 
         # -- Expand in place the env templates in all_packages.
@@ -256,15 +261,19 @@ class ApioContext:
         )
 
         # -- Read the boards information. Allow override files in project dir.
-        self.boards = self._load_resource(BOARDS_JSONC, allow_custom=True)
+        self.boards = self._load_resource(
+            BOARDS_JSONC, definitions_dir, self._project_dir
+        )
 
         # -- Read the FPGAs information. Allow override files in project dir.
-        self.fpgas = self._load_resource(FPGAS_JSONC, allow_custom=True)
+        self.fpgas = self._load_resource(
+            FPGAS_JSONC, definitions_dir, self._project_dir
+        )
 
         # -- Read the programmers information. Allow override files in project
         # -- dir.
         self.programmers = self._load_resource(
-            PROGRAMMERS_JSONC, allow_custom=True
+            PROGRAMMERS_JSONC, definitions_dir, self._project_dir
         )
 
         # -- If we determined that we need to load the project, load the
@@ -347,33 +356,22 @@ class ApioContext:
         assert self.has_project, "project(): project is not loaded"
         return env_build_path(self.project.env_name)
 
-    def _load_resource(self, name: str, allow_custom: bool = False) -> dict:
-        """Load the resources from a given jsonc file
-        * INPUTS:
-          * Name: Name of the jsonc file
-            Use the following constants:
-              * PACKAGES_JSONC
-              * BOARD_JSONC
-              * FPGAS_JSONC
-              * PROGRAMMERS_JSONC
-              * CONFIG_JSONC
-            * Allow_custom: if true, look first in the project dir for
-              a project specific resource file of same name.
-        * OUTPUT: A dictionary with the jsonc file data
-          In case of error it raises an exception and finish
+    def _load_resource(
+        self, name: str, standard_dir: Path, custom_dir: Optional[Path] = None
+    ) -> dict:
+        """Load a jsonc file. Try first from custom_dir, if given, and then
+        from standard dir. This method is called for resource files in
+        apio/resources and definitions files in the definitions packages.
         """
-        # -- Try loading a custom resource file from the project directory.
-        # -- Since this method is called in an early stage of __init__(), we
-        # -- can't use the abstracted self.project_dir.
-        if self._project_dir:
-            filepath = self._project_dir / name
+        # -- First try to load from custom dir.
+        if custom_dir:
+            filepath = custom_dir / name
             if filepath.exists():
-                if allow_custom:
-                    cout(f"Loading custom '{name}'.")
-                    return self._load_resource_file(filepath)
+                cout(f"Loading custom '{name}'.")
+                return self._load_resource_file(filepath)
 
-        # -- Load the stock resource file from the APIO package.
-        filepath = util.get_path_in_apio_package(RESOURCES_DIR) / name
+        # -- Else, load from the default dir.
+        filepath = standard_dir / name
         return self._load_resource_file(filepath)
 
     @staticmethod
