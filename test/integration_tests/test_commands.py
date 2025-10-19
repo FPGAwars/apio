@@ -37,7 +37,7 @@ def test_boards_custom_board(apio_runner: ApioRunner):
     if apio_runner.offline_flag:
         pytest.skip("requires internet connection")
 
-    with apio_runner.in_sandbox(shared_home=True) as sb:
+    with apio_runner.in_sandbox() as sb:
 
         # -- Write an apio.ini file.
         sb.write_apio_ini(
@@ -80,7 +80,7 @@ def test_boards_list_ok(apio_runner: ApioRunner):
     if apio_runner.offline_flag:
         pytest.skip("requires internet connection")
 
-    with apio_runner.in_sandbox(shared_home=True) as sb:
+    with apio_runner.in_sandbox() as sb:
 
         # -- Run 'apio boards'
         result = sb.invoke_apio_cmd(apio, ["boards"])
@@ -118,7 +118,7 @@ def test_apio_api_get_examples(apio_runner: ApioRunner):
     if apio_runner.offline_flag:
         pytest.skip("requires internet connection")
 
-    with apio_runner.in_sandbox(shared_home=True) as sb:
+    with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio api get-examples -t xyz"  (stdout)
         result = sb.invoke_apio_cmd(apio, ["api", "get-examples", "-t", "xyz"])
@@ -152,7 +152,7 @@ def test_apio_api_scan_devices(apio_runner: ApioRunner):
     if apio_runner.offline_flag:
         pytest.skip("requires internet connection")
 
-    with apio_runner.in_sandbox(shared_home=True) as sb:
+    with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio api scan-devices -t xyz". We run it in a
         # -- subprocess such that it releases the libusb1 file it uses.
@@ -192,7 +192,7 @@ def test_apio_devices(apio_runner: ApioRunner):
     if apio_runner.offline_flag:
         pytest.skip("requires internet connection")
 
-    with apio_runner.in_sandbox(shared_home=True) as sb:
+    with apio_runner.in_sandbox() as sb:
 
         # -- Execute "apio devices usb". We run it in a
         # -- subprocess such that it releases the libusb1 file it uses.
@@ -219,7 +219,7 @@ def test_utilities(apio_runner: ApioRunner):
     if apio_runner.offline_flag:
         pytest.skip("requires internet connection")
 
-    with apio_runner.in_sandbox(shared_home=True) as sb:
+    with apio_runner.in_sandbox() as sb:
 
         # -- Run 'apio upgrade'
         result = sb.invoke_apio_cmd(apio, ["upgrade"])
@@ -250,7 +250,7 @@ def test_project_with_legacy_board_id(apio_runner: ApioRunner):
     # -- We shared the apio home with the other tests in this file to speed
     # -- up apio package installation. Tests should not mutate the shared home
     # -- to avoid cross-interference between tests in this file.
-    with apio_runner.in_sandbox(shared_home=True) as sb:
+    with apio_runner.in_sandbox() as sb:
 
         # -- Fetch an example of a board that has a legacy name.
         result = sb.invoke_apio_cmd(
@@ -289,7 +289,7 @@ def test_files_order(apio_runner: ApioRunner):
     if apio_runner.offline_flag:
         pytest.skip("requires internet connection")
 
-    with apio_runner.in_sandbox(shared_home=True) as sb:
+    with apio_runner.in_sandbox() as sb:
 
         # -- Fetch a working example.
         result = sb.invoke_apio_cmd(
@@ -353,7 +353,7 @@ def _test_project(
     # -- We shared the apio home with the other tests in this file to speed
     # -- up apio package installation. Tests should not mutate the shared home
     # -- to avoid cross-interference between tests in this file.
-    with apio_runner.in_sandbox(shared_home=True) as sb:
+    with apio_runner.in_sandbox() as sb:
 
         # -- If testing from a remote dir, step out of the proj dir, and
         # -- use -p proj_dir arg.

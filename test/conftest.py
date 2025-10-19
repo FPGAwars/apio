@@ -439,11 +439,9 @@ class ApioRunner:
         return self._sandbox
 
     @contextlib.contextmanager
-    def in_sandbox(self, shared_home: bool = False):
+    def in_sandbox(self):
         """Create an apio sandbox context manager that delete the temp dir
-        and restore the system env upon exist. Shared_home indicates if the
-        sandbox uses a unique apio shared home directory or shares it with
-        other sandboxes in the same apio_runner scope that set it to True.
+        and restore the system env upon exist.
 
         Upon return, the current directory is proj_dir.
         """
@@ -467,21 +465,8 @@ class ApioRunner:
         proj_dir.mkdir()
         os.chdir(proj_dir)
 
-        # -- Determine if we use a shared home or a unique home for this
-        # -- sandbox.
-        if shared_home:
-            # -- Using a shared home. If first time, create and save the path.
-            if self._shared_apio_home is None:
-                self._shared_apio_home = (
-                    Path(tempfile.mkdtemp(prefix=SANDBOX_MARKER + "-"))
-                    / "shared-apio-home"
-                )
-            # -- Use the shared home. It's common to all the sandboxes with
-            # -- this instance of ApioRunner fixture.
-            home_dir = self._shared_apio_home
-        else:
-            # -- Using a home dir unique to this sandbox.
-            home_dir = sandbox_dir / "apio-home"
+        # -- Determine the project home dir.
+        home_dir = sandbox_dir / "apio-home"
 
         if DEBUG:
             print()
