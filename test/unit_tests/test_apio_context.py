@@ -21,7 +21,7 @@ def test_init(apio_runner: ApioRunner):
         # -- Default init.
         apio_ctx = ApioContext(
             project_policy=ProjectPolicy.PROJECT_REQUIRED,
-            config_policy=RemoteConfigPolicy.NO_CONFIG,
+            config_policy=RemoteConfigPolicy.CACHED_OK,
         )
 
         assert apio_ctx.has_project
@@ -57,7 +57,7 @@ def test_home_dir_with_a_bad_character(
             with raises(SystemExit) as e:
                 ApioContext(
                     project_policy=ProjectPolicy.NO_PROJECT,
-                    config_policy=RemoteConfigPolicy.NO_CONFIG,
+                    config_policy=RemoteConfigPolicy.CACHED_OK,
                 )
             assert e.value.code == 1
             assert (
@@ -81,7 +81,7 @@ def test_home_dir_with_relative_path(
         with raises(SystemExit) as e:
             ApioContext(
                 project_policy=ProjectPolicy.NO_PROJECT,
-                config_policy=RemoteConfigPolicy.NO_CONFIG,
+                config_policy=RemoteConfigPolicy.CACHED_OK,
             )
         assert e.value.code == 1
         assert (

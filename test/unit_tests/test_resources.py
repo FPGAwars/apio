@@ -31,7 +31,7 @@ def test_resources_references(apio_runner: ApioRunner):
         # -- Create an apio context so we can access the resources.
         apio_ctx = ApioContext(
             project_policy=ProjectPolicy.NO_PROJECT,
-            config_policy=RemoteConfigPolicy.NO_CONFIG,
+            config_policy=RemoteConfigPolicy.CACHED_OK,
         )
 
         unused_programmers = set(apio_ctx.programmers.keys())
@@ -79,7 +79,7 @@ def test_resources_ids_and_order(apio_runner: ApioRunner):
         # -- Create an apio context so we can access the resources.
         apio_ctx = ApioContext(
             project_policy=ProjectPolicy.NO_PROJECT,
-            config_policy=RemoteConfigPolicy.NO_CONFIG,
+            config_policy=RemoteConfigPolicy.CACHED_OK,
         )
 
         # -- Test the format of the board ids.

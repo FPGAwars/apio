@@ -209,7 +209,9 @@ def scan_and_fix_packages(packages_ctx: PackagesContext) -> bool:
     return scan.packages_installed_ok()
 
 
-def install_missing_packages_on_the_fly(packages_ctx: PackagesContext) -> None:
+def install_missing_packages_on_the_fly(
+    packages_ctx: PackagesContext, verbose=False
+) -> None:
     """Install on the fly any missing packages. Does not print a thing if
     all packages are already ok. This function is intended for on demand
     package fetching by commands such as apio build, and thus is allowed
@@ -239,7 +241,7 @@ def install_missing_packages_on_the_fly(packages_ctx: PackagesContext) -> None:
                 packages_ctx,
                 package_name=package_name,
                 force_reinstall=False,
-                verbose=False,
+                verbose=verbose,
             )
 
     # -- Here all packages should be ok but we check again just in case.
@@ -566,6 +568,11 @@ def scan_packages(packages_ctx: PackagesContext) -> PackageScanResults:
             if base_name not in platform_folder_names:
                 result.orphan_dir_names.append(base_name)
         else:
+            # -- Skip the packages installed file, so we don't consider it as
+            # -- an orphan file.
+            # TODO Make this a const.
+            if base_name == "installed_packages.json":
+                continue
             result.orphan_file_names.append(base_name)
 
     # -- Return results

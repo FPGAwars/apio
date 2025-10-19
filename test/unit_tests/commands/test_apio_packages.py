@@ -20,4 +20,4 @@ def test_packages(apio_runner: ApioRunner):
 
         # -- Execute "apio packages list"
         result = sb.invoke_apio_cmd(apio, ["packages", "list"])
-        sb.assert_ok(result)
+        assert result.exit_code == 0

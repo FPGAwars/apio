@@ -29,7 +29,7 @@ def load_apio_ini(
         capsys.readouterr()  # Reset capture
         apio_ctx = ApioContext(
             project_policy=ProjectPolicy.PROJECT_REQUIRED,
-            config_policy=RemoteConfigPolicy.NO_CONFIG,
+            config_policy=RemoteConfigPolicy.CACHED_OK,
             env_arg=env_arg,
         )
 
@@ -315,7 +315,7 @@ def error_tester(
         with pytest.raises(SystemExit) as e:
             ApioContext(
                 project_policy=ProjectPolicy.PROJECT_REQUIRED,
-                config_policy=RemoteConfigPolicy.NO_CONFIG,
+                config_policy=RemoteConfigPolicy.CACHED_OK,
                 env_arg=env_arg,
             )
 

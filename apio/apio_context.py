@@ -20,6 +20,7 @@ from apio.common.common_util import env_build_path
 from apio.profile import Profile, RemoteConfigPolicy
 from apio.utils import jsonc, util, env_options
 from apio.managers.project import Project, load_project_from_file
+from apio.managers import packages
 from apio.managers.packages import PackagesContext
 from apio.utils.resource_util import (
     ProjectResources,
@@ -219,6 +220,7 @@ class ApioContext:
         ]
         self.profile = Profile(
             self.apio_home_dir,
+            self.apio_packages_dir,
             remote_config_url,
             remote_config_ttl_days,
             remote_config_retry_minutes,
@@ -249,7 +251,9 @@ class ApioContext:
         # -- Install missing packages. At this point, the
         # -- fields that are required by self.packages_context are already
         # -- initialized.
-        # packages.install_missing_packages_on_the_fly(self.packages_context)
+        packages.install_missing_packages_on_the_fly(
+            self.packages_context, verbose=False
+        )
 
         # -- Read the boards information. Allow override files in project dir.
         self.boards = self._load_resource(BOARDS_JSONC, allow_custom=True)
@@ -450,13 +454,13 @@ class ApioContext:
 
     @staticmethod
     def _resolve_package_envs(
-        packages: Dict[str, Dict], packages_dir: Path
+        packages_: Dict[str, Dict], packages_dir: Path
     ) -> None:
         """Resolve in place the path and var value templates in the
         given packages dictionary. For example, %p is replaced with
         the package's absolute path."""
 
-        for package_name, package_config in packages.items():
+        for package_name, package_config in packages_.items():
 
             # -- Get the package root dir.
             package_path = packages_dir / package_name

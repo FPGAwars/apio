@@ -114,7 +114,7 @@ def test_default_params(apio_runner: ApioRunner):
         sb.write_apio_ini(TEST_APIO_INI_DICT)
         apio_ctx = ApioContext(
             project_policy=ProjectPolicy.PROJECT_REQUIRED,
-            config_policy=RemoteConfigPolicy.NO_CONFIG,
+            config_policy=RemoteConfigPolicy.CACHED_OK,
         )
         scons = SConsManager(apio_ctx)
 
@@ -146,7 +146,7 @@ def test_explicit_params(apio_runner: ApioRunner):
         sb.write_apio_ini(TEST_APIO_INI_DICT)
         apio_ctx = ApioContext(
             project_policy=ProjectPolicy.PROJECT_REQUIRED,
-            config_policy=RemoteConfigPolicy.NO_CONFIG,
+            config_policy=RemoteConfigPolicy.CACHED_OK,
         )
         scons = SConsManager(apio_ctx)
 

@@ -13,7 +13,6 @@ from rich.table import Table
 from rich import box
 from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
-from apio.managers import packages
 from apio.common.apio_console import cout, ctable
 from apio.common.apio_styles import BORDER, SUCCESS, ERROR, EMPH3
 from apio.utils import serial_util, usb_util, util
@@ -24,9 +23,6 @@ from apio.utils import serial_util, usb_util, util
 
 def _list_usb_devices(apio_ctx: ApioContext) -> None:
     """Lists the connected USB devices in table format."""
-
-    # -- We need the packages for the 'libusb' backend.
-    packages.install_missing_packages_on_the_fly(apio_ctx.packages_context)
 
     devices = usb_util.scan_usb_devices(apio_ctx=apio_ctx)
 
@@ -107,11 +103,8 @@ def _usb_cli():
 # -- apio devices serial
 
 
-def _list_serial_devices(apio_ctx: ApioContext) -> None:
+def _list_serial_devices() -> None:
     """Lists the connected serial devices in table format."""
-
-    # -- We need the packages for the 'libusb' backend.
-    packages.install_missing_packages_on_the_fly(apio_ctx.packages_context)
 
     devices = serial_util.scan_serial_devices()
 
@@ -184,14 +177,15 @@ such as 'Alhambra II' set by the device manufacturer.
 def _serial_cli():
     """Implements the 'apio devices serial' command."""
 
-    # Create the apio context.
-    apio_ctx = ApioContext(
+    # -- Create the apio context. We create it for consistency though
+    # -- we don't use .t
+    _ = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
         config_policy=RemoteConfigPolicy.CACHED_OK,
     )
 
     # -- List all connected serial devices
-    _list_serial_devices(apio_ctx)
+    _list_serial_devices()
     sys.exit(0)
 
 

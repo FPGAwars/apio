@@ -161,7 +161,7 @@ def cli(
     if theme_name:
         apio_ctx = ApioContext(
             project_policy=ProjectPolicy.NO_PROJECT,
-            config_policy=RemoteConfigPolicy.NO_CONFIG,
+            config_policy=RemoteConfigPolicy.CACHED_OK,
         )
         _set_theme(apio_ctx, theme_name)
         sys.exit(0)
@@ -170,7 +170,7 @@ def cli(
     if list_:
         apio_ctx = ApioContext(
             project_policy=ProjectPolicy.NO_PROJECT,
-            config_policy=RemoteConfigPolicy.NO_CONFIG,
+            config_policy=RemoteConfigPolicy.CACHED_OK,
         )
         _list_preferences(apio_ctx)
         sys.exit(0)

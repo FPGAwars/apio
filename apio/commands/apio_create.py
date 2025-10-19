@@ -77,7 +77,7 @@ def cli(
     # -- Create the apio context.
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.NO_CONFIG,
+        config_policy=RemoteConfigPolicy.CACHED_OK,
     )
 
     # -- Make sure the board exist.

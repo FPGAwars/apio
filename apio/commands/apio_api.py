@@ -15,7 +15,8 @@ import json
 from pathlib import Path
 import click
 from apio.commands import options
-from apio.managers import packages
+
+# from apio.managers import packages
 from apio.managers.examples import Examples, ExampleInfo
 from apio.common.apio_console import cout, cerror
 from apio.common.apio_styles import INFO
@@ -118,7 +119,7 @@ def _get_system_cli(
 
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.NO_CONFIG,
+        config_policy=RemoteConfigPolicy.CACHED_OK,
     )
 
     # -- The top dict that we will emit as json.
@@ -198,7 +199,7 @@ def _get_project_cli(
 
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.PROJECT_REQUIRED,
-        config_policy=RemoteConfigPolicy.NO_CONFIG,
+        config_policy=RemoteConfigPolicy.CACHED_OK,
         project_dir_arg=project_dir,
         env_arg=env,
     )
@@ -355,7 +356,7 @@ def _get_fpgas_cli(
     # -- change in the future.
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.NO_CONFIG,
+        config_policy=RemoteConfigPolicy.CACHED_OK,
     )
 
     # -- The top dict that we will emit as json.
@@ -554,7 +555,7 @@ def _get_commands_cli(
     # -- This initializes the console, print active env vars, etc.
     ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.NO_CONFIG,
+        config_policy=RemoteConfigPolicy.CACHED_OK,
     )
 
     # -- The top dict that we will emit as json.
@@ -623,7 +624,7 @@ def _scan_devices_cli(
         top_dict["timestamp"] = timestamp
 
     # -- We need the packages for the 'libusb' backend.
-    packages.install_missing_packages_on_the_fly(apio_ctx.packages_context)
+    # packages.install_missing_packages_on_the_fly(apio_ctx.packages_context)
 
     usb_devices: List[UsbDevice] = usb_util.scan_usb_devices(apio_ctx)
 

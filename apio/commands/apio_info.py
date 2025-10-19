@@ -167,7 +167,7 @@ def _platforms_cli():
     # Create the apio context.
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.NO_CONFIG,
+        config_policy=RemoteConfigPolicy.CACHED_OK,
     )
 
     # -- Define the table.
@@ -237,7 +237,7 @@ def _colors_cli():
     # -- This initializes the output console.
     ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.NO_CONFIG,
+        config_policy=RemoteConfigPolicy.CACHED_OK,
     )
 
     # -- Print title.
@@ -317,7 +317,7 @@ def _themes_cli():
     # -- This initializes the output console.
     ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.NO_CONFIG,
+        config_policy=RemoteConfigPolicy.CACHED_OK,
     )
 
     # -- Collect the list of apio list names.

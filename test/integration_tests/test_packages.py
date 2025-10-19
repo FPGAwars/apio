@@ -16,24 +16,27 @@ def test_packages(apio_runner: ApioRunner):
 
     with apio_runner.in_sandbox() as sb:
 
+        # -- Clear packages
+        sb.clear_packages()
+        assert not sb.packages_dir.exists()
+
         # -- Run 'apio packages list'
         result = sb.invoke_apio_cmd(apio, ["packages", "list"])
         assert result.exit_code == 0
+        assert "Package 'examples' installed successfully" in result.output
+        assert (
+            "Package 'oss-cad-suite' installed successfully" in result.output
+        )
         assert "examples" in result.output
         assert "oss-cad-suite" in result.output
-
-        # -- Packages dir doesn't exist yet.
-        assert not sb.packages_dir.exists()
 
         # -- Run 'apio packages update'.
         # -- Both 'examples' and 'oss-cad-suite' should exist, and
         # -- possibly others, depending on the platform.
         result = sb.invoke_apio_cmd(apio, ["packages", "update"])
         sb.assert_ok(result)
-        assert "Package 'examples' installed successfully" in result.output
-        assert (
-            "Package 'oss-cad-suite' installed successfully" in result.output
-        )
+        assert "All Apio packages are installed OK" in result.output
+        assert listdir(sb.packages_dir / "definitions")
         assert listdir(sb.packages_dir / "examples/alhambra-ii")
         assert listdir(sb.packages_dir / "oss-cad-suite/bin")
 

@@ -63,11 +63,22 @@ class ApioSandbox:
         sandbox_dir: Path,
         proj_dir: Path,
         home_dir: Path,
+        packages_dir_: Path,
     ):
+
+        # pylint: disable=too-many-arguments
+        # pylint: disable=too-many-positional-arguments
+
+        assert isinstance(sandbox_dir, Path)
+        assert isinstance(proj_dir, Path)
+        assert isinstance(home_dir, Path)
+        assert isinstance(packages_dir_, Path)
+
         self._apio_runner = apio_runner_
         self._sandbox_dir = sandbox_dir
         self._proj_dir = proj_dir
         self._home_dir = home_dir
+        self._packages_dir = packages_dir_
         self._click_runner = CliRunner()
 
     @property
@@ -98,7 +109,14 @@ class ApioSandbox:
     @property
     def packages_dir(self) -> Path:
         """Returns the sandbox's apio packages dir."""
-        return self.home_dir / "packages"
+        return self._packages_dir
+
+    def clear_packages(self):
+        """Clear the packages cache, in case a test needs a clean start."""
+        # -- Sanity check the path and delete.
+        assert "packages" in str(self.packages_dir).lower()
+        shutil.rmtree(self.packages_dir)
+        assert not self.packages_dir.exists()
 
     def invoke_apio_cmd(
         self,
@@ -336,6 +354,11 @@ class ApioRunner:
         print("*** creating ApioRunner")
         assert isinstance(request, pytest.FixtureRequest)
 
+        # -- Get a pytest directory for the apio packages cache. This will
+        # -- avoid reloading packages by each apio invocation.
+        cache = request.config.cache
+        self._packages_dir = cache.mkdir("apio-cached-packages")
+
         # -- A CliRunner instance that is used for creating temp directories
         # -- and to invoke apio commands.
         self._request = request
@@ -466,15 +489,19 @@ class ApioRunner:
             print(f"       sandbox dir       : {str(sandbox_dir)}")
             print(f"       apio proj dir     : {str(proj_dir)}")
             print(f"       apio home dir     : {str(home_dir)}")
+            print(f"       apio packages dir : {str(self._packages_dir)}")
             print()
 
         # -- Register a sandbox objet to indicate that we are in a sandbox.
         assert self._sandbox is None
-        self._sandbox = ApioSandbox(self, sandbox_dir, proj_dir, home_dir)
+        self._sandbox = ApioSandbox(
+            self, sandbox_dir, proj_dir, home_dir, self._packages_dir
+        )
 
         # -- Set the system env vars to inform ApioContext what are the
         # -- home and packages dirs.
         os.environ["APIO_HOME"] = str(home_dir)
+        os.environ["APIO_PACKAGES"] = str(self._packages_dir)
 
         local_config_url = self._get_local_config_url()
         print(f"Local config url: {local_config_url}")
@@ -535,4 +562,5 @@ def apio_runner(request):
     home with other tests in the same file, if we choose to do so,
     to reused previously installed packages.
     """
+    assert isinstance(request, pytest.FixtureRequest)
     return ApioRunner(request)

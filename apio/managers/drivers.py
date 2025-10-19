@@ -14,7 +14,7 @@ from apio.utils import util
 from apio.common.apio_console import cout, cerror, cmarkdown
 from apio.common.apio_styles import INFO, SUCCESS, EMPH1, EMPH3
 from apio.apio_context import ApioContext
-from apio.managers import packages
+
 
 # -- Style shortcuts
 E1 = f"[{EMPH1}]"
@@ -381,10 +381,6 @@ class Drivers:
         return 0
 
     def _ftdi_install_windows(self) -> int:
-        # -- Check that the required packages are installed.
-        packages.install_missing_packages_on_the_fly(
-            self.apio_ctx.packages_context
-        )
 
         # -- Get the drivers apio package base folder
         drivers_base_dir = self.apio_ctx.get_package_dir("drivers")
@@ -423,9 +419,9 @@ class Drivers:
 
     def _ftdi_uninstall_windows(self) -> int:
         # -- Check that the required packages exist.
-        packages.install_missing_packages_on_the_fly(
-            self.apio_ctx.packages_context
-        )
+        # packages.install_missing_packages_on_the_fly(
+        #     self.apio_ctx.packages_context
+        # )
 
         cout("", "Launching the interactive Device Manager.")
         cmarkdown(FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS)
@@ -437,10 +433,6 @@ class Drivers:
         return exit_code
 
     def _serial_install_windows(self) -> int:
-        # -- Check that the required packages exist.
-        packages.install_missing_packages_on_the_fly(
-            self.apio_ctx.packages_context
-        )
 
         drivers_base_dir = self.apio_ctx.get_package_dir("drivers")
         drivers_bin_dir = drivers_base_dir / "bin"
@@ -458,10 +450,6 @@ class Drivers:
         return exit_code
 
     def _serial_uninstall_windows(self) -> int:
-        # -- Check that the required packages exist.
-        packages.install_missing_packages_on_the_fly(
-            self.apio_ctx.packages_context
-        )
 
         cout("", "Launching the interactive Device Manager.")
         cmarkdown(SERIAL_UNINSTALL_INSTRUCTIONS_WINDOWS)
