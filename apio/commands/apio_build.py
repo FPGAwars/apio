@@ -11,12 +11,16 @@ import sys
 from typing import Optional
 from pathlib import Path
 import click
-
 from apio.utils import cmd_util
 from apio.managers.scons_manager import SConsManager
 from apio.commands import options
-from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 from apio.common.proto.apio_pb2 import Verbosity
+from apio.apio_context import (
+    ApioContext,
+    PackagesPolicy,
+    ProjectPolicy,
+    RemoteConfigPolicy,
+)
 
 # ------------ apio build
 
@@ -69,7 +73,8 @@ def cli(
     # -- Create the apio context.
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.PROJECT_REQUIRED,
-        config_policy=RemoteConfigPolicy.CACHED_OK,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
         project_dir_arg=project_dir,
         env_arg=env,
     )

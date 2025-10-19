@@ -11,7 +11,12 @@ from apio.profile import (
     days_between_datetime_stamps,
 )
 from apio.utils import util
-from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
+from apio.apio_context import (
+    ApioContext,
+    PackagesPolicy,
+    ProjectPolicy,
+    RemoteConfigPolicy,
+)
 
 
 def get_remote_config_url(apio_ctx: ApioContext) -> str:
@@ -78,7 +83,8 @@ def test_profile_loading_config_ok(apio_runner: ApioRunner):
 
         apio_ctx = ApioContext(
             project_policy=ProjectPolicy.NO_PROJECT,
-            config_policy=RemoteConfigPolicy.CACHED_OK,
+            remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+            packages_policy=PackagesPolicy.ENSURE_PACKAGES,
         )
 
         # -- Write a test profile.json file.
@@ -116,7 +122,8 @@ def test_profile_loading_config_stale_version(apio_runner: ApioRunner):
 
         apio_ctx = ApioContext(
             project_policy=ProjectPolicy.NO_PROJECT,
-            config_policy=RemoteConfigPolicy.CACHED_OK,
+            remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+            packages_policy=PackagesPolicy.ENSURE_PACKAGES,
         )
 
         # -- Write a test profile.json file. We set an old apio version

@@ -78,6 +78,24 @@ CONFIG_JSONC = "config.jsonc"
 
 
 @dataclass(frozen=True)
+class ApioDefinitions:
+    """Contains the apio definitions in the form of json dictionaries."""
+
+    # -- A json dir with the content of boards.jsonc
+    boards: dict
+    # -- A json dir with the content of fpgas.jsonc
+    fpgas: dict
+    # -- A json dir with the content of programmers.jsonc.
+    programmers: dict
+
+    def __post_init__(self):
+        """Assert that all fields initialized to actual values."""
+        assert self.boards
+        assert self.fpgas
+        assert self.programmers
+
+
+@dataclass(frozen=True)
 class EnvMutations:
     """Contains mutations to the system env."""
 
@@ -99,6 +117,19 @@ class ProjectPolicy(Enum):
     PROJECT_REQUIRED = 3
 
 
+class PackagesPolicy(Enum):
+    """Represents the possible context policies regarding loading apio.ini.
+    and project related information."""
+
+    # -- Do not change the package state, they may exist or not, updated or
+    # -- not. This policy requires project policy NO_PROJECT and with it,
+    # -- the definitions are not loaded.
+    IGNORE_PACKAGES = 1
+    # -- Normal policy, verify that the packages are installed correctly and
+    # -- update them if needed.
+    ENSURE_PACKAGES = 2
+
+
 class ApioContext:
     """Apio context. Class for accessing apio resources and configurations."""
 
@@ -115,28 +146,27 @@ class ApioContext:
         "platform_id",
         "all_packages",
         "platform_packages",
-        "boards",
-        "fpgas",
-        "programmers",
         "env_was_already_set",
         "_project_dir",
         "_project",
         "_project_resources",
+        "_definitions",
     )
 
     def __init__(
         self,
         *,
         project_policy: ProjectPolicy,
-        config_policy: RemoteConfigPolicy,
+        remote_config_policy: RemoteConfigPolicy,
+        packages_policy: PackagesPolicy,
         project_dir_arg: Optional[Path] = None,
         env_arg: Optional[str] = None,
         report_env=True,
     ):
         """Initializes the ApioContext object.
 
-        'project_policy' controls the loading of the project (apio.ini and
-        optional custom resource files.)
+        'project_policy', 'config_policy', and 'packages_policy' are modifiers
+        that controls the initialization of the context.
 
         'project_dir_arg' is an optional user specification of the project dir.
         Must be None if project_policy is NO_PROJECT.
@@ -151,6 +181,15 @@ class ApioContext:
 
         # pylint: disable=too-many-arguments
         # pylint: disable=too-many-statements
+        # pylint: disable=too-many-locals
+
+        # -- Sanity check the policies.
+        assert isinstance(project_policy, ProjectPolicy)
+        assert isinstance(remote_config_policy, RemoteConfigPolicy)
+        assert isinstance(packages_policy, PackagesPolicy)
+
+        if packages_policy == PackagesPolicy.IGNORE_PACKAGES:
+            assert project_policy == ProjectPolicy.NO_PROJECT
 
         # -- Inform as soon as possible about the list of apio env options
         # -- that modify its default behavior.
@@ -206,7 +245,6 @@ class ApioContext:
 
         # -- Get the jsonc source dirs.
         resources_dir = util.get_path_in_apio_package(RESOURCES_DIR)
-        definitions_dir = self.apio_packages_dir / "definitions"
 
         # -- Read and validate the config information
         self.config = self._load_resource(CONFIG_JSONC, resources_dir)
@@ -229,7 +267,7 @@ class ApioContext:
             remote_config_url,
             remote_config_ttl_days,
             remote_config_retry_minutes,
-            config_policy,
+            remote_config_policy,
         )
 
         # -- Read the platforms information.
@@ -253,28 +291,33 @@ class ApioContext:
             self.all_packages, self.platform_id, self.platforms
         )
 
-        # -- Install missing packages. At this point, the
-        # -- fields that are required by self.packages_context are already
-        # -- initialized.
-        packages.install_missing_packages_on_the_fly(
-            self.packages_context, verbose=False
-        )
+        # -- Case 1: IGNORE_PACKAGES
+        if packages_policy == PackagesPolicy.IGNORE_PACKAGES:
+            self._definitions = None
 
-        # -- Read the boards information. Allow override files in project dir.
-        self.boards = self._load_resource(
-            BOARDS_JSONC, definitions_dir, self._project_dir
-        )
+        # -- Case 2: ENSURE_PACKAGES
+        else:
+            assert packages_policy == PackagesPolicy.ENSURE_PACKAGES
 
-        # -- Read the FPGAs information. Allow override files in project dir.
-        self.fpgas = self._load_resource(
-            FPGAS_JSONC, definitions_dir, self._project_dir
-        )
+            # -- Install missing packages. At this point, the fields that are
+            # -- required by self.packages_context are already initialized.
+            packages.install_missing_packages_on_the_fly(
+                self.packages_context, verbose=False
+            )
 
-        # -- Read the programmers information. Allow override files in project
-        # -- dir.
-        self.programmers = self._load_resource(
-            PROGRAMMERS_JSONC, definitions_dir, self._project_dir
-        )
+            # -- Load the definitions from the definitions file with possible
+            # -- override by the optional project file.
+            definitions_dir = self.apio_packages_dir / "definitions"
+            boards = self._load_resource(
+                BOARDS_JSONC, definitions_dir, self._project_dir
+            )
+            fpgas = self._load_resource(
+                FPGAS_JSONC, definitions_dir, self._project_dir
+            )
+            programmers = self._load_resource(
+                PROGRAMMERS_JSONC, definitions_dir, self._project_dir
+            )
+            self._definitions = ApioDefinitions(boards, fpgas, programmers)
 
         # -- If we determined that we need to load the project, load the
         # -- apio.ini data.
@@ -348,6 +391,27 @@ class ApioContext:
         # -- Failure here is a programming error, not a user error.
         assert self.has_project, "project(): project is not loaded"
         return self._project_resources
+
+    @property
+    def definitions(self) -> ApioDefinitions:
+        """Return apio definitions."""
+        assert self._definitions, "Apio context as no definitions"
+        return self._definitions
+
+    @property
+    def boards(self) -> dict:
+        """Returns the apio board definitions"""
+        return self.definitions.boards
+
+    @property
+    def fpgas(self) -> dict:
+        """Returns the apio fpgas definitions"""
+        return self.definitions.fpgas
+
+    @property
+    def programmers(self) -> dict:
+        """Returns the apio programmers definitions"""
+        return self.definitions.programmers
 
     @property
     def env_build_path(self) -> str:

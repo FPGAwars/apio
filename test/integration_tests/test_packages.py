@@ -20,10 +20,11 @@ def test_packages(apio_runner: ApioRunner):
         # -- Run 'apio packages list'
         result = sb.invoke_apio_cmd(apio, ["packages", "list"])
         assert result.exit_code == 0
-        assert "Package 'examples' installed successfully" in result.output
         assert (
-            "Package 'oss-cad-suite' installed successfully" in result.output
+            "Run 'apio packages update' to update the packages."
+            in result.output
         )
+        assert "definitions" in result.output
         assert "examples" in result.output
         assert "oss-cad-suite" in result.output
 

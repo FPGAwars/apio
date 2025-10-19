@@ -13,9 +13,14 @@ from rich import box
 from apio.common.apio_console import cout, ctable
 from apio.common.apio_styles import INFO, BORDER, ERROR, SUCCESS
 from apio.managers import packages
-from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 from apio.commands import options
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
+from apio.apio_context import (
+    ApioContext,
+    ProjectPolicy,
+    RemoteConfigPolicy,
+    PackagesPolicy,
+)
 
 
 def print_packages_report(apio_ctx: ApioContext) -> None:
@@ -162,7 +167,8 @@ def _update_cli(
 
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.GET_FRESH,
+        remote_config_policy=RemoteConfigPolicy.GET_FRESH,
+        packages_policy=PackagesPolicy.IGNORE_PACKAGES,
     )
 
     # cout(f"Platform id '{apio_ctx.platform_id}'")
@@ -209,7 +215,8 @@ def _list_cli():
 
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.CACHED_OK,
+        remote_config_policy=RemoteConfigPolicy.GET_FRESH,
+        packages_policy=PackagesPolicy.IGNORE_PACKAGES,
     )
 
     # -- Print packages report.

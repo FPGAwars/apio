@@ -19,10 +19,15 @@ from apio.common.apio_console import cout, ctable
 from apio.common.apio_styles import INFO
 from apio.common import apio_console
 from apio.common.apio_styles import BORDER, EMPH1
-from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 from apio.utils import util, cmd_util
 from apio.commands import options
 from apio.managers.examples import Examples
+from apio.apio_context import (
+    ApioContext,
+    PackagesPolicy,
+    ProjectPolicy,
+    RemoteConfigPolicy,
+)
 
 
 @dataclass(frozen=True)
@@ -279,7 +284,8 @@ def cli(
     # -- not relevant for this command.
     apio_ctx = ApioContext(
         project_policy=project_policy,
-        config_policy=RemoteConfigPolicy.CACHED_OK,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
         project_dir_arg=project_dir,
         report_env=False,
     )

@@ -15,7 +15,12 @@ from rich import box
 from rich.color import ANSI_COLOR_NAMES
 from apio.common.apio_styles import BORDER, EMPH1, EMPH3, INFO
 from apio.utils import util
-from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
+from apio.apio_context import (
+    ApioContext,
+    PackagesPolicy,
+    ProjectPolicy,
+    RemoteConfigPolicy,
+)
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 from apio.common.apio_themes import THEMES_TABLE, THEME_LIGHT
 from apio.profile import get_datetime_stamp, days_between_datetime_stamps
@@ -92,7 +97,8 @@ def _system_cli():
     # -- to be loaded so we can report it.
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.CACHED_OK,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
 
     # -- Define the table.
@@ -167,7 +173,8 @@ def _platforms_cli():
     # Create the apio context.
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.CACHED_OK,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
 
     # -- Define the table.
@@ -237,7 +244,8 @@ def _colors_cli():
     # -- This initializes the output console.
     ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.CACHED_OK,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
 
     # -- Print title.
@@ -317,7 +325,8 @@ def _themes_cli():
     # -- This initializes the output console.
     ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.CACHED_OK,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
 
     # -- Collect the list of apio list names.

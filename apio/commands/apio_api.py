@@ -24,7 +24,12 @@ from apio.common.common_util import get_project_source_files
 from apio.utils import cmd_util, usb_util, serial_util, util
 from apio.utils.usb_util import UsbDevice
 from apio.utils.serial_util import SerialDevice
-from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
+from apio.apio_context import (
+    ApioContext,
+    PackagesPolicy,
+    ProjectPolicy,
+    RemoteConfigPolicy,
+)
 from apio.utils.cmd_util import (
     ApioGroup,
     ApioSubgroup,
@@ -119,7 +124,8 @@ def _get_system_cli(
 
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.CACHED_OK,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
 
     # -- The top dict that we will emit as json.
@@ -199,7 +205,8 @@ def _get_project_cli(
 
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.PROJECT_REQUIRED,
-        config_policy=RemoteConfigPolicy.CACHED_OK,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
         project_dir_arg=project_dir,
         env_arg=env,
     )
@@ -273,7 +280,8 @@ def _get_boards_cli(
     # -- change in the future.
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.CACHED_OK,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
 
     # -- The top dict that we will emit as json.
@@ -356,7 +364,8 @@ def _get_fpgas_cli(
     # -- change in the future.
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.CACHED_OK,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
 
     # -- The top dict that we will emit as json.
@@ -424,7 +433,8 @@ def _get_examples_cli(
     # -- change in the future.
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.CACHED_OK,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
 
     # -- Get examples infos.
@@ -555,7 +565,8 @@ def _get_commands_cli(
     # -- This initializes the console, print active env vars, etc.
     ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.CACHED_OK,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
 
     # -- The top dict that we will emit as json.
@@ -613,7 +624,8 @@ def _scan_devices_cli(
     # -- the packages.
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.CACHED_OK,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
 
     # -- The top dict that we will emit as json.
