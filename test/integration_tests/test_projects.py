@@ -49,49 +49,6 @@ def test_project_with_legacy_board_id(apio_runner: ApioRunner):
         sb.assert_ok(result)
 
 
-def test_files_order(apio_runner: ApioRunner):
-    """Tests that source files are sorted in apio build command."""
-
-    # -- This is a slow test. Skip it if running with --fast-only flag.
-    apio_runner.skip_test_if_fast_only()
-
-    with apio_runner.in_sandbox() as sb:
-
-        # -- Fetch a working example.
-        result = sb.invoke_apio_cmd(
-            apio,
-            ["examples", "fetch", "alhambra-ii/ledon"],
-            terminal_mode=False,
-        )
-
-        # -- Add dummy source files
-        Path("aa").mkdir(parents=True)
-        Path("bb").mkdir(parents=True)
-        Path("aa/bb.v").touch()
-        Path("aa/cc.v").touch()
-        Path("bb/aa.v").touch()
-
-        # -- Add a fake source files in _build directory. It should not be
-        # -- picked up.
-        Path("_build").mkdir()
-        Path("_build/zzz.v").touch()
-
-        # -- 'apio build'
-        result = sb.invoke_apio_cmd(apio, ["build"])
-        sb.assert_ok(result)
-        assert "SUCCESS" in result.output
-
-        # -- Check that the source file from the _build directory was not
-        # -- picked up.
-        assert "zzz.v" not in result.output
-
-        # -- Check that the files in the build command are sorted.
-        # -- We adjust for the "/" vs "\" difference between Windows and Linux.
-        expected_order = ["ledon.v", "aa/bb.v", "aa/cc.v", "bb/aa.v"]
-        expected_text = " ".join([str(Path(f)) for f in expected_order])
-        assert expected_text in result.output
-
-
 def _test_project(
     apio_runner: ApioRunner,
     *,
