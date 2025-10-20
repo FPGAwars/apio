@@ -84,7 +84,7 @@ jobs:
       - name: Install dev tools
         run: |
           pip install invoke
-          invoke deps
+          invoke install-deps
 
       # TODO: Move the logic here to an Invoke task and use it instead.
       - name: Run Tests
