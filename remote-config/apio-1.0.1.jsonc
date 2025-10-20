@@ -13,11 +13,11 @@
     // -- Definitions
     "definitions": {
       "repository": {
-        "organization": "zapta",  // TODO: Change to fpgawars
+        "organization": "fpgawars",
         "name": "apio-definitions"
       },
       "release": {
-        "version": "2025.10.15",
+        "version": "2025.10.20",
         "release-tag": "${YYYY-MM-DD}",
         "package-file": "apio-definitions-${YYYYMMDD}.tgz"
       }
