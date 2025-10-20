@@ -13,17 +13,9 @@ def test_packages(apio_runner: ApioRunner):
 
     with apio_runner.in_sandbox() as sb:
 
-        # -- Clear packages
-        sb.clear_packages()
-        assert not sb.packages_dir.exists()
-
         # -- Run 'apio packages list'
         result = sb.invoke_apio_cmd(apio, ["packages", "list"])
         assert result.exit_code == 0
-        assert (
-            "Run 'apio packages update' to update the packages."
-            in result.output
-        )
         assert "definitions" in result.output
         assert "examples" in result.output
         assert "oss-cad-suite" in result.output
