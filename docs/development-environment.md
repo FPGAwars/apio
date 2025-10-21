@@ -47,7 +47,8 @@ From this point on, when you run `apio`, it will run the source code in your clo
 Before creating a commit, test your code locally by running this in the repo root directory:
 
 ```shell
-invoke check
+invoke test
+invoke t   # Shortcut, same as above.
 ```
 
 During debugging, it is sometimes useful to run quick partial tests before running `invoke check`. Here are some examples:
@@ -55,11 +56,13 @@ During debugging, it is sometimes useful to run quick partial tests before runni
 ```shell
 # Run linters only
 invoke lint
+invoke l   # Shortcut, same as above.
 
 # Run the fast tests only and skip the rest. Note that even in fast mode,
 # the first test may require to fill in the packages cache which may take
 # a minute or two.
-invoke test
+invoke test-fast
+invoke tf   # Shortcut, same as above.
 
 # Run a single test file with verbose info
 pytest -vv -s test/managers/test_project.py
@@ -68,12 +71,27 @@ pytest -vv -s test/managers/test_project.py
 pytest -vv -s test/managers/test_project.py::test_first_env_is_default
 ```
 
+## Clearing the pytest cache
+
+The Apio pytest use a shared cache for the downloaded apio packages to speed
+up the tests, otherwise, almost each test would require to download the
+packages from scratch. The cache is persisted across test invocations to
+minimize the tests initialization time. To start a test session from scratch,
+clear the pytest cache using the following command:
+
+```shell
+# Clear the pytest test cache. This is seldom requires.
+invoke clear-cache
+invoke cc   # Shortcut, same as above.
+```
+
 ## Generate a test coverage report.
 
 You can generate a report with the line by line coverage of the tests by running
 
-```
+```shell
 invoke coverage-report
+invoke cr   # Shortcut, same as above.
 ```
 
 This will update the page `_pytest-coverage/index.html` with the latest coverage information.

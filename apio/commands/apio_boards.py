@@ -188,12 +188,16 @@ def _list_boards_docs_format(apio_ctx: ApioContext):
     cout("\n<!-- BEGIN generation by 'apio boards --docs' -->")
     cout("\n# Supported FPGA Boards")
     cout(
-        f"\n> Generated on {today_str}. For the updated list "
-        "run `apio boards`."
+        f"\nThis markdown page was generated on {today_str} using the command "
+        f"\n\n```\napio boards --docs > supported-boards.md\n```"
+        "\nFor the updated list of supported FPGA boards run the command "
+        " `apio boards`."
     )
     cout(
-        "\n> Custom board definitions can be added in the "
-        "project directory."
+        "\n> Custom board definitions can be added in the project directory "
+        "and new board definitions can be contributed in the "
+        "[apio-definitions](https://github.com/FPGAwars/apio-definitions/"
+        "tree/main/definitions) repository."
     )
 
     # -- Add the rows, with separation line between architecture groups.

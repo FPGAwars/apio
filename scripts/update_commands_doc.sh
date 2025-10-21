@@ -8,6 +8,6 @@ rm -f $output
 
 echo "Generating $output ..."
 
-python ./generate_commands_help.py > $output
+python ./scripts/generate_commands_help.py > $output
 
 echo "$output updated"

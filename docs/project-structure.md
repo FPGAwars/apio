@@ -39,6 +39,12 @@ my-project/
 - Source files and testbenches can reside in the root directory or in any subdirectory.
 - Testbenches' GTKWave state files (`.gtkw`) should reside in the same directory as their respective testbenches.
 
+## Custom definitions
+
+The apio definitions files `boards.jsonc`, `fpga.jsonc`, and `programmers.jsonc` can be overridden
+by placing files with same names at the project's top directory. This allows debugging
+and testing custom boards that are not included yet in the Apio's `definitions` package.
+
 ## Output files
 
 Apio commands write their output to the directory `_build/<env>` under the project root directory, where `<env>` is the active environment name from `apio.ini`. For example, when building for an environment called `default`, the output directory is `_build/default`. The example below shows the results of the `apio build` command, including the ICE40 bitstream file `hardware.bin` and intermediate files created during the build.

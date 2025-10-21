@@ -24,7 +24,7 @@ apio packages list
 
 ---
 
-## apio preferences update
+## apio packages update
 
 The `apio packages update` command updates installed packages to their latest versions.
 
@@ -56,7 +56,7 @@ apio packages update --verbose  # Provide additional info
 
 ---
 
-## apio preferences list
+## apio packages list
 
 The `apio packages list` command displays the available and installed Apio packages. The list may vary depending on your operating system.
 

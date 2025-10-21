@@ -1,10 +1,17 @@
+
 <!-- BEGIN generation by 'apio fpgas --docs' -->
 
 # Supported FPGAs
 
-> Generated on June 15, 2025. For the updated list run `apio fpgas`.
+This markdown page was generated on October 20, 2025 using the command 
 
-> Custom FPGAs definitions can be added in the project directory.
+```
+apio fpgas --docs > supported-fpgas.md
+```
+For the updated list of supported FPGAs run the command  `apio fpgas`.
+
+> Custom FPGAs definitions can be added in the project directory and new FPGAs definitions can be contributed in the 
+[apio-definitions](https://github.com/FPGAwars/apio-definitions/tree/main/definitions) repository.
 
 ## ICE40 FPGAs
 

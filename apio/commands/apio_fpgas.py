@@ -172,11 +172,16 @@ def _list_fpgas_docs_format(apio_ctx: ApioContext):
     cout("\n<!-- BEGIN generation by 'apio fpgas --docs' -->")
     cout("\n# Supported FPGAs")
     cout(
-        f"\n> Generated on {today_str}. For the updated list run `apio fpgas`."
+        f"\nThis markdown page was generated on {today_str} using the command "
+        f"\n\n```\napio fpgas --docs > supported-fpgas.md\n```"
+        "\nFor the updated list of supported FPGAs run the command "
+        " `apio fpgas`."
     )
     cout(
-        "\n> Custom FPGAs definitions can be added in the "
-        "project directory."
+        "\n> Custom FPGAs definitions can be added in the project directory "
+        "and new FPGAs definitions can be contributed in the "
+        "[apio-definitions](https://github.com/FPGAwars/apio-definitions/"
+        "tree/main/definitions) repository."
     )
 
     # -- Add the rows, with separation line between architecture groups.

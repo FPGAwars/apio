@@ -1,12 +1,17 @@
-Active env options [APIO_REMOTE_CONFIG_URL].
-
 <!-- BEGIN generation by 'apio boards --docs' -->
 
 # Supported FPGA Boards
 
-> Generated on September 23, 2025. For the updated list run `apio boards`.
+This markdown page was generated on October 20, 2025 using the command
 
-> Custom board definitions can be added in the project directory.
+```
+apio boards --docs > supported-boards.md
+```
+
+For the updated list of supported FPGA boards run the command `apio boards`.
+
+> Custom board definitions can be added in the project directory and new board definitions can be contributed in the
+> [apio-definitions](https://github.com/FPGAwars/apio-definitions/tree/main/definitions) repository.
 
 ## ICE40 boards
 
