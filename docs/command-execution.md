@@ -45,16 +45,20 @@ Most Apio commands begin by creating an `ApioContext` instance, which provides a
 apio_ctx = ApioContext(
     project_policy=ProjectPolicy.PROJECT_REQUIRED,
     config_policy=RemoteConfigPolicy.CACHED_OK,
+    packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     project_dir_arg=project_dir,
     env_arg=env,
 )
 ```
 
-The instantiation is governed by two configuration enum values, `ProjectPolicy` and `RemoteConfigPolicy`, which the `apio build` command specifies as follows:
+The instantiation is governed by three configuration enum values, `ProjectPolicy`, `RemoteConfigPolicy` and `PackagesPolicy`, which the `apio build` command specifies as follows:
 
 The project policy is `PROJECT_REQUIRED`, which means an `apio.ini` file is required and that project-related information, such as resolved `apio.ini` environment variables and options, will be loaded.
 
 The remote config policy is `CACHED_OK`, indicating that using remote config information cached in the `~/.apio/profile.json` file is acceptable. The context creation logic may try to fetch a fresh config if the cached one is too old but will fall back to the cached version if needed.
+
+The packages policy is `ENSURE_PACKAGES` which cause the ApioContext initialization to ensure that the apio
+packages are installed properly, fixing and downloading them if necessary.
 
 > The expiration time of the cached remote config is controlled by a parameter in the resource file `apio/resources/config.jsonc`.
 

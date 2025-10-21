@@ -28,19 +28,19 @@ DEBUG = True
 SANDBOX_MARKER = "apio-sandbox"
 
 
-# -- This function is called by pytest. It adds the pytest --offline flag
-# -- which is is passed to tests that ask for it using the fixture
-# -- 'offline_flag' below.
+# -- This function is called by pytest. It adds the pytest --fast-only flag
+# -- which is is passed to tests such that slow tests can skip.
 # --
 # -- More info: https://docs.pytest.org/en/7.1.x/example/simple.html
 def pytest_addoption(parser: pytest.Parser):
-    """Register the --offline command line option when invoking pytest"""
+    """Register the --fast-only command line option when invoking pytest"""
 
-    # -- Option: --offline
-    # -- It is used by the function test that requires
-    # -- internet connection for testing
+    # -- Option: --fast-only
+    # -- It causes slow tests to skip. Note that even in fast mode, the
+    # -- first test may need to update the packages cache which may take
+    # -- a minute or two.
     parser.addoption(
-        "--offline", action="store_true", help="Run tests in offline mode"
+        "--fast-only", action="store_true", help="Run only the fast tests."
     )
 
 
@@ -63,11 +63,22 @@ class ApioSandbox:
         sandbox_dir: Path,
         proj_dir: Path,
         home_dir: Path,
+        packages_dir_: Path,
     ):
+
+        # pylint: disable=too-many-arguments
+        # pylint: disable=too-many-positional-arguments
+
+        assert isinstance(sandbox_dir, Path)
+        assert isinstance(proj_dir, Path)
+        assert isinstance(home_dir, Path)
+        assert isinstance(packages_dir_, Path)
+
         self._apio_runner = apio_runner_
         self._sandbox_dir = sandbox_dir
         self._proj_dir = proj_dir
         self._home_dir = home_dir
+        self._packages_dir = packages_dir_
         self._click_runner = CliRunner()
 
     @property
@@ -98,7 +109,14 @@ class ApioSandbox:
     @property
     def packages_dir(self) -> Path:
         """Returns the sandbox's apio packages dir."""
-        return self.home_dir / "packages"
+        return self._packages_dir
+
+    def clear_packages(self):
+        """Clear the packages cache, in case a test needs a clean start."""
+        # -- Sanity check the path and delete.
+        assert "packages" in str(self.packages_dir).lower()
+        shutil.rmtree(self.packages_dir)
+        assert not self.packages_dir.exists()
 
     def invoke_apio_cmd(
         self,
@@ -312,14 +330,6 @@ class ApioSandbox:
         }
         self.write_apio_ini(default_apio_ini)
 
-    @property
-    def offline_flag(self):
-        """Returns True if pytest was invoked with --offline to skip
-        tests that require internet connectivity and are slower in general."""
-
-        assert not self.expired, "Trying to use an expired sandbox"
-        return self._apio_runner.offline_flag
-
 
 class ApioRunner:
     """Apio commands test helper. Provides an apio sandbox functionality
@@ -335,6 +345,11 @@ class ApioRunner:
     def __init__(self, request: pytest.FixtureRequest):
         print("*** creating ApioRunner")
         assert isinstance(request, pytest.FixtureRequest)
+
+        # -- Get a pytest directory for the apio packages cache. This will
+        # -- avoid reloading packages by each apio invocation.
+        cache = request.config.cache
+        self._packages_dir = cache.mkdir("apio-cached-packages")
 
         # -- A CliRunner instance that is used for creating temp directories
         # -- and to invoke apio commands.
@@ -416,11 +431,9 @@ class ApioRunner:
         return self._sandbox
 
     @contextlib.contextmanager
-    def in_sandbox(self, shared_home: bool = False):
+    def in_sandbox(self):
         """Create an apio sandbox context manager that delete the temp dir
-        and restore the system env upon exist. Shared_home indicates if the
-        sandbox uses a unique apio shared home directory or shares it with
-        other sandboxes in the same apio_runner scope that set it to True.
+        and restore the system env upon exist.
 
         Upon return, the current directory is proj_dir.
         """
@@ -444,21 +457,8 @@ class ApioRunner:
         proj_dir.mkdir()
         os.chdir(proj_dir)
 
-        # -- Determine if we use a shared home or a unique home for this
-        # -- sandbox.
-        if shared_home:
-            # -- Using a shared home. If first time, create and save the path.
-            if self._shared_apio_home is None:
-                self._shared_apio_home = (
-                    Path(tempfile.mkdtemp(prefix=SANDBOX_MARKER + "-"))
-                    / "shared-apio-home"
-                )
-            # -- Use the shared home. It's common to all the sandboxes with
-            # -- this instance of ApioRunner fixture.
-            home_dir = self._shared_apio_home
-        else:
-            # -- Using a home dir unique to this sandbox.
-            home_dir = sandbox_dir / "apio-home"
+        # -- Determine the project home dir.
+        home_dir = sandbox_dir / "apio-home"
 
         if DEBUG:
             print()
@@ -466,15 +466,19 @@ class ApioRunner:
             print(f"       sandbox dir       : {str(sandbox_dir)}")
             print(f"       apio proj dir     : {str(proj_dir)}")
             print(f"       apio home dir     : {str(home_dir)}")
+            print(f"       apio packages dir : {str(self._packages_dir)}")
             print()
 
         # -- Register a sandbox objet to indicate that we are in a sandbox.
         assert self._sandbox is None
-        self._sandbox = ApioSandbox(self, sandbox_dir, proj_dir, home_dir)
+        self._sandbox = ApioSandbox(
+            self, sandbox_dir, proj_dir, home_dir, self._packages_dir
+        )
 
         # -- Set the system env vars to inform ApioContext what are the
         # -- home and packages dirs.
         os.environ["APIO_HOME"] = str(home_dir)
+        os.environ["APIO_PACKAGES"] = str(self._packages_dir)
 
         local_config_url = self._get_local_config_url()
         print(f"Local config url: {local_config_url}")
@@ -521,11 +525,13 @@ class ApioRunner:
             sys.stdout.flush()
             sys.stderr.flush()
 
-    @property
-    def offline_flag(self) -> bool:
-        """Returns True if pytest was invoked with --offline to skip
-        tests that require internet connectivity and are slower in general."""
-        return self._request.config.getoption("--offline")
+    def skip_test_if_fast_only(self):
+        """The calling test is skipped if running in --fast-only mode.
+        Should be called from slow tests. The fast/slow classification of tests
+        should be done after the packages cache was filled (automatically).
+        """
+        if self._request.config.getoption("--fast-only"):
+            pytest.skip("slow test")
 
 
 @pytest.fixture(scope="module")
@@ -535,4 +541,5 @@ def apio_runner(request):
     home with other tests in the same file, if we choose to do so,
     to reused previously installed packages.
     """
+    assert isinstance(request, pytest.FixtureRequest)
     return ApioRunner(request)

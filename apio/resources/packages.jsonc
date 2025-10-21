@@ -6,6 +6,11 @@
 //
 // TODO: Delete "file_name" and "extension". They move to the remote config.
 {
+  // "definitions" package
+  "definitions": {
+    "description": "Apio definitions",
+    "env": {}
+  },
   // "examples" package
   "examples": {
     "description": "Apio project examples",

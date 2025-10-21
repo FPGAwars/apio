@@ -15,12 +15,17 @@ import os
 from typing import List
 
 # -- Env variable to override the apio home dir ~/.apio. If specified,
-# -- it will contains the profile.json file and if APIO_PACKAGES_DIR is not
+# -- it contains the profile.json file and if APIO_PACKAGES is not
 # -- specified, the 'packages' directory with the individual packages.
+# -- This env variable is used in testing to have an isolated home for each
+# -- test.
 APIO_HOME = "APIO_HOME"
 
-# -- Deprecated. Use APIO HOME instead.
-APIO_HOME_DIR = "APIO_HOME_DIR"
+# -- Env variable to override the apio packages dir <apio_home>/packages.
+# -- it contains the apio packages loaded from github. If specified, the
+# -- path must must contains the string 'packages' for safety. This env
+# -- variable used in testing to share downloaded packages across tests.
+APIO_PACKAGES = "APIO_PACKAGES"
 
 # -- Env variable to override the platform id that is determined automatically
 # -- from the system properties. If specified, the value should match one
@@ -50,7 +55,7 @@ APIO_REMOTE_CONFIG_URL = "APIO_REMOTE_CONFIG_URL"
 # -- List of all supported env options.
 _SUPPORTED_APIO_VARS = [
     APIO_HOME,
-    APIO_HOME_DIR,  # Deprecated
+    APIO_PACKAGES,
     APIO_PLATFORM,
     APIO_DEBUG,
     APIO_REMOTE_CONFIG_URL,

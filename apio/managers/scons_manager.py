@@ -17,10 +17,9 @@ from google.protobuf import text_format
 from apio.common import apio_console
 from apio.common.apio_console import cout, cerror, cstyle, cunstyle
 from apio.common.apio_styles import SUCCESS, ERROR, EMPH3, INFO
-from apio.utils import util, pkg_util
+from apio.utils import util
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
-from apio.managers import installer
 from apio.common.proto.apio_pb2 import (
     FORCE_PIPE,
     FORCE_TERMINAL,
@@ -103,11 +102,7 @@ class SConsManager:
         )
 
         # -- Run the scons process.
-        return self._run(
-            "graph",
-            scons_params=scons_params,
-            uses_packages=True,
-        )
+        return self._run("graph", scons_params=scons_params)
 
     @on_exception(exit_code=1)
     def lint(self, lint_params: LintParams) -> int:
@@ -120,7 +115,7 @@ class SConsManager:
         )
 
         # -- Run the scons process.
-        return self._run("lint", scons_params=scons_params, uses_packages=True)
+        return self._run("lint", scons_params=scons_params)
 
     @on_exception(exit_code=1)
     def sim(self, sim_params: SimParams) -> int:
@@ -133,11 +128,7 @@ class SConsManager:
         )
 
         # -- Run the scons process.
-        return self._run(
-            "sim",
-            scons_params=scons_params,
-            uses_packages=True,
-        )
+        return self._run("sim", scons_params=scons_params)
 
     @on_exception(exit_code=1)
     def test(self, test_params: ApioTestParams) -> int:
@@ -150,11 +141,7 @@ class SConsManager:
         )
 
         # -- Run the scons process.
-        return self._run(
-            "test",
-            scons_params=scons_params,
-            uses_packages=True,
-        )
+        return self._run("test", scons_params=scons_params)
 
     @on_exception(exit_code=1)
     def build(self, verbosity: Verbosity) -> int:
@@ -165,11 +152,7 @@ class SConsManager:
         scons_params = self.construct_scons_params(verbosity=verbosity)
 
         # -- Run the scons process.
-        return self._run(
-            "build",
-            scons_params=scons_params,
-            uses_packages=True,
-        )
+        return self._run("build", scons_params=scons_params)
 
     @on_exception(exit_code=1)
     def report(self, verbosity: Verbosity) -> int:
@@ -180,9 +163,7 @@ class SConsManager:
         scons_params = self.construct_scons_params(verbosity=verbosity)
 
         # -- Run the scons process.
-        return self._run(
-            "report", scons_params=scons_params, uses_packages=True
-        )
+        return self._run("report", scons_params=scons_params)
 
     @on_exception(exit_code=1)
     def upload(self, upload_params: UploadParams) -> int:
@@ -196,11 +177,7 @@ class SConsManager:
         )
 
         # -- Execute Scons for uploading!
-        exit_code = self._run(
-            "upload",
-            scons_params=scons_params,
-            uses_packages=True,
-        )
+        exit_code = self._run("upload", scons_params=scons_params)
 
         return exit_code
 
@@ -329,13 +306,7 @@ class SConsManager:
         assert result.IsInitialized(), result
         return result
 
-    def _run(
-        self,
-        scons_command: str,
-        *,
-        scons_params: SconsParams = None,
-        uses_packages: bool,
-    ):
+    def _run(self, scons_command: str, *, scons_params: SconsParams = None):
         """Invoke an scons subprocess."""
 
         # pylint: disable=too-many-locals
@@ -358,21 +329,15 @@ class SConsManager:
         # -- pass via a file. This is for verification purposes only.
         variables += [f"timestamp={scons_params.timestamp}"]
 
-        # -- If the apio packages are required for this command, install them
-        # -- if needed.
-        if uses_packages:
-            installer.install_missing_packages_on_the_fly(apio_ctx)
-
         # -- We set the env variables also for a command such as 'clean'
         # -- which doesn't use the packages, to satisfy the required env
         # -- variables of the scons arg parser.
-        pkg_util.set_env_for_packages(apio_ctx)
+        apio_ctx.set_env_for_packages()
 
         if util.is_debug(1):
             cout("\nSCONS CALL:", style=EMPH3)
             cout(f"* command:       {scons_command}")
             cout(f"* variables:     {variables}")
-            cout(f"* uses packages: {uses_packages}")
             cout(f"* scons params: \n{scons_params}")
             cout()
 

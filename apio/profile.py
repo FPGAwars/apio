@@ -81,14 +81,12 @@ REMOTE_CONFIG_SCHEMA = {
 class RemoteConfigPolicy(Enum):
     """Represents possible requirements from the remote config."""
 
-    # -- Config is not being used in this Apio invocation.
-    NO_CONFIG = 1
     # -- Config is being used but can be a cached value, as long that it's
     # -- not too old.
-    CACHED_OK = 2
+    CACHED_OK = 1
     # -- Config is being used and a fresh copy is that was fetch in this
     # -- invocation of Apio is required.
-    GET_FRESH = 3
+    GET_FRESH = 2
 
 
 @dataclass(frozen=True)
@@ -176,6 +174,7 @@ class Profile:
     # -- Only these instance vars are allowed.
     __slots__ = (
         "_profile_path",
+        "_packages_index_path",
         "remote_config_url",
         "remote_config_ttl_days",
         "remote_config_retry_minutes",
@@ -188,6 +187,7 @@ class Profile:
     def __init__(
         self,
         home_dir: Path,
+        packages_dir: Path,
         remote_config_url_template: str,
         remote_config_ttl_days: int,
         remote_config_retry_minutes: int,
@@ -239,12 +239,19 @@ class Profile:
         # -- A copy of remote config.
         self._cached_remote_config = {}
 
-        # -- Get the profile path
-        # -- Ex. '/home/obijuan/.apio'
+        # -- Cache the profile file path
+        # -- Ex. '/home/obijuan/.apio/profile.json'
         self._profile_path = home_dir / "profile.json"
+
+        # -- Cache the packages index file path
+        # -- Ex. '/home/obijuan/.apio/packages/installed_packages.json'
+        self._packages_index_path = packages_dir / "installed_packages.json"
 
         # -- Read the profile from file, if exists.
         self._load_profile_file()
+
+        # -- Read the installed packages file, if exists.
+        self._load_installed_packages_file()
 
         # -- Apply config policy
         self._apply_remote_config_policy()
@@ -253,16 +260,12 @@ class Profile:
         """Called after loading the profile file, to apply the remote config
         policy for this invocation."""
 
-        # -- Case 1 - Remote config not used at all.
-        if self._remote_config_policy == RemoteConfigPolicy.NO_CONFIG:
-            return
-
-        # -- Case 2 - A fresh config is required for the current command.
+        # -- Case 1: A fresh config is required for the current command.
         if self._remote_config_policy == RemoteConfigPolicy.GET_FRESH:
             self._fetch_and_update_remote_config(error_is_fatal=True)
             return
 
-        # -- Case 3 - A fresh config is optional but there is no cached
+        # -- Case 2: A fresh config is optional but there is no cached
         # -- config so practically it's required.
         assert self._remote_config_policy == RemoteConfigPolicy.CACHED_OK
         if not self._cached_remote_config:
@@ -271,7 +274,7 @@ class Profile:
             self._fetch_and_update_remote_config(error_is_fatal=True)
             return
 
-        # -- Case 4 - May need to fetch a new config but can continue with
+        # -- Case 3: May need to fetch a new config but can continue with
         # -- the cached config in case of a fetch failure.
         #
         # -- Get the cached config metadata.
@@ -318,25 +321,16 @@ class Profile:
             if not refresh_failed_recently:
                 self._fetch_and_update_remote_config(error_is_fatal=False)
 
-    def _check_config_enabled(self) -> None:
-        """Check that the remote config is enabled for this invocation."""
-        if self._remote_config_policy == RemoteConfigPolicy.NO_CONFIG:
-            # -- This is a programming error.
-            raise ValueError(
-                f"Remote config not available, initialized "
-                f"with context {self._remote_config_policy}"
-            )
-
     @property
     def remote_config(self) -> Dict:
         """Returns the remote config that is applicable for this invocation.
         Should not called if the context was initialized with NO_CONFIG."""
-        self._check_config_enabled()
         return self._cached_remote_config
 
     def add_package(self, name: str, version: str, platform_id: str, url: str):
         """Add a package to the profile class"""
 
+        # -- Updated the installed package data.
         self.installed_packages[name] = {
             "version": version,
             "platform": platform_id,
@@ -344,7 +338,8 @@ class Profile:
             "loaded-at": get_datetime_stamp(),
             "loaded-from": url,
         }
-        self._save()
+        # self._save()
+        self._save_installed_packages()
 
     def set_preferences_theme(self, theme: str):
         """Set prefer theme name."""
@@ -357,7 +352,8 @@ class Profile:
 
         if name in self.installed_packages.keys():
             del self.installed_packages[name]
-            self._save()
+            # self._save()
+            self._save_installed_packages()
 
     @staticmethod
     def apply_color_preferences():
@@ -406,7 +402,6 @@ class Profile:
         """Given a package name, return the remote config information with the
         version and fetch information.
         """
-        self._check_config_enabled()
 
         # -- Extract package's remote config.
         package_config = self.remote_config["packages"][package_name]
@@ -450,10 +445,21 @@ class Profile:
         self.installed_packages = data.get("installed-packages", {})
         self._cached_remote_config = remote_config if config_usable else {}
 
+    def _load_installed_packages_file(self):
+        """Load the installed packages index file if exists, e.g.
+        /home/obijuan/.apio/packages/installed_packages.json)
+        """
+
+        if self._packages_index_path.exists():
+
+            # -- Read the file as a json dict.
+            with open(self._packages_index_path, "r", encoding="utf8") as f:
+                self.installed_packages = json.load(f)
+
     def _save(self):
         """Save the profile file"""
 
-        # -- Create the profile folder, if it does not exist yet
+        # -- Create the enclosing folder, if it does not exist yet
         path = self._profile_path.parent
         if not path.exists():
             path.mkdir()
@@ -463,8 +469,6 @@ class Profile:
         if self.preferences:
             data["preferences"] = self.preferences
 
-        if self.installed_packages:
-            data["installed-packages"] = self.installed_packages
         if self._cached_remote_config:
             data["remote-config"] = self._cached_remote_config
 
@@ -476,6 +480,23 @@ class Profile:
         if util.is_debug(1):
             cout("Saved profile:", style=EMPH3)
             cout(json.dumps(data, indent=2))
+
+    def _save_installed_packages(self):
+        """Save the installed packages file"""
+
+        # -- Create the enclosing folder, if it does not exist yet
+        path = self._packages_index_path.parent
+        if not path.exists():
+            path.mkdir()
+
+        # -- Write to profile file.
+        with open(self._packages_index_path, "w", encoding="utf8") as f:
+            json.dump(self.installed_packages, f, indent=4)
+
+        # -- Dump for debugging.
+        if util.is_debug(1):
+            cout("Saved installed packages index:", style=EMPH3)
+            cout(json.dumps(self.installed_packages, indent=2))
 
     def _handle_config_refresh_failure(
         self, *, msg: List[str], error_is_fatal: bool
@@ -501,8 +522,6 @@ class Profile:
 
     def _fetch_and_update_remote_config(self, *, error_is_fatal: bool) -> None:
         """Returns the apio remote config JSON dict."""
-
-        self._check_config_enabled()
 
         # -- Fetch the config text. Returns None if error_is_fatal=False and
         # -- fetch failed.
@@ -556,7 +575,6 @@ class Profile:
 
         self._cached_remote_config = remote_config
         self._save()
-        # cout("Fetched the latest Apio remote config file.")
 
     def _check_downloaded_remote_config(
         self, remote_config: Dict, error_is_fatal: bool

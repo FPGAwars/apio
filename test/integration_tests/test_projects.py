@@ -1,256 +1,24 @@
 """
-Test different "apio" commands. These tests use installed apio packages
-and are slower than the offline tests at test/commands.
+Test various "apio" commands.
 """
 
 import os
 from os.path import getsize
 from pathlib import Path
-import json
 from test.conftest import ApioRunner
-import pytest
 from apio.commands.apio import apio_top_cli as apio
-
-CUSTOM_BOARDS = """
-{
-  "my_custom_board": {
-    "description": "My description",
-    "fpga-id": "ice40up5k-sg48",
-    "programmer": {
-      "id": "iceprog"
-    },
-    "usb": {
-      "vid": "0403",
-      "pid": "6010",
-      "product-regex": "^My Custom Board"
-    }
-  }
-}
-"""
-
-
-def test_boards_custom_board(apio_runner: ApioRunner):
-    """Test boards listing with a custom boards.jsonc file."""
-
-    # -- If the option 'offline' is passed, the test is skip
-    # -- (This test is slow and requires internet connectivity)
-    if apio_runner.offline_flag:
-        pytest.skip("requires internet connection")
-
-    with apio_runner.in_sandbox(shared_home=True) as sb:
-
-        # -- Write an apio.ini file.
-        sb.write_apio_ini(
-            {
-                "[env:default]": {
-                    "board": "my_custom_board",
-                    "top-module": "main",
-                }
-            }
-        )
-
-        # -- Write a custom boards.jsonc file in the project's directory.
-        sb.write_file("boards.jsonc", CUSTOM_BOARDS)
-
-        # -- Execute "apio boards"
-        result = sb.invoke_apio_cmd(apio, ["boards"])
-        sb.assert_ok(result)
-        # -- Note: pytest sees the piped version of the command's output.
-        assert "Loading custom 'boards.jsonc'" in result.output
-        assert "alhambra-ii" not in result.output
-        assert "my_custom_board" in result.output
-        assert "Total of 1 board" in result.output
-
-        # -- Execute "apio boards --docs"
-        # -- With the --docs flag we ignore the custom board.
-        result = sb.invoke_apio_cmd(apio, ["boards", "--docs"])
-        sb.assert_ok(result)
-        assert "Loading custom 'boards.jsonc'" not in result.output
-        assert "FPGA" in result.output
-        assert "alhambra-ii" in result.output
-        assert "my_custom_board" not in result.output
-        assert "Total of 1 board" not in result.output
-
-
-def test_boards_list_ok(apio_runner: ApioRunner):
-    """Test normal board listing with the apio's boards.jsonc."""
-
-    # -- If the option 'offline' is passed, the test is skip
-    # -- (This test is slow and requires internet connectivity)
-    if apio_runner.offline_flag:
-        pytest.skip("requires internet connection")
-
-    with apio_runner.in_sandbox(shared_home=True) as sb:
-
-        # -- Run 'apio boards'
-        result = sb.invoke_apio_cmd(apio, ["boards"])
-        sb.assert_ok(result)
-        assert "Loading custom 'boards.jsonc'" not in result.output
-        assert "FPGA-ID" not in result.output
-        assert "alhambra-ii" in result.output
-        assert "my_custom_board" not in result.output
-        assert "Total of 1 board" not in result.output
-
-        # -- Run 'apio boards -v'
-        result = sb.invoke_apio_cmd(apio, ["boards", "-v"])
-        sb.assert_ok(result)
-        assert "Loading custom 'boards.jsonc'" not in result.output
-        assert "FPGA-ID" in result.output
-        assert "alhambra-ii" in result.output
-        assert "my_custom_board" not in result.output
-        assert "Total of 1 board" not in result.output
-
-        # -- Run 'apio boards --docs'
-        result = sb.invoke_apio_cmd(apio, ["boards", "--docs"])
-        sb.assert_ok(result)
-        assert "Loading custom 'boards.jsonc'" not in result.output
-        assert "FPGA" in result.output
-        assert "alhambra-ii" in result.output
-        assert "my_custom_board" not in result.output
-        assert "Total of 1 board" not in result.output
-
-
-def test_apio_api_get_examples(apio_runner: ApioRunner):
-    """Test "apio api get-examples" """
-
-    # -- If the option 'offline' is passed, the test is skip
-    # -- (This test is slow and requires internet connectivity)
-    if apio_runner.offline_flag:
-        pytest.skip("requires internet connection")
-
-    with apio_runner.in_sandbox(shared_home=True) as sb:
-
-        # -- Execute "apio api get-examples -t xyz"  (stdout)
-        result = sb.invoke_apio_cmd(apio, ["api", "get-examples", "-t", "xyz"])
-        sb.assert_ok(result)
-        assert "xyz" in result.output
-        assert '"alhambra-ii"' in result.output
-        assert '"blinky"' in result.output
-
-        # -- Execute "apio api get-examples -t xyz -s boards -o <dir>"  (file)
-        path = sb.proj_dir / "apio.json"
-        result = sb.invoke_apio_cmd(
-            apio, ["api", "get-examples", "-t", "xyz", "-o", str(path)]
-        )
-        sb.assert_ok(result)
-
-        # -- Read and verify the file.
-        text = sb.read_file(path)
-        data = json.loads(text)
-        assert data["timestamp"] == "xyz"
-        assert (
-            data["examples"]["alhambra-ii"]["blinky"]["description"]
-            == "Blinking led"
-        )
-
-
-def test_apio_api_scan_devices(apio_runner: ApioRunner):
-    """Test "apio api scan-devices" """
-
-    # -- If the option 'offline' is passed, the test is skip
-    # -- (This test is slow and requires internet connectivity)
-    if apio_runner.offline_flag:
-        pytest.skip("requires internet connection")
-
-    with apio_runner.in_sandbox(shared_home=True) as sb:
-
-        # -- Execute "apio api scan-devices -t xyz". We run it in a
-        # -- subprocess such that it releases the libusb1 file it uses.
-        result = sb.invoke_apio_cmd(
-            apio, ["api", "scan-devices", "-t", "xyz"], in_subprocess=True
-        )
-        sb.assert_ok(result)
-
-        assert "xyz" in result.output
-        assert "usb-devices" in result.output
-        assert "serial-devices" in result.output
-
-        # -- Execute "apio api get-boards -t xyz -s boards -o <dir>"  (file)
-        path = sb.proj_dir / "apio.json"
-
-        result = sb.invoke_apio_cmd(
-            apio,
-            ["api", "scan-devices", "-t", "xyz", "-o", str(path)],
-            in_subprocess=True,
-        )
-        sb.assert_ok(result)
-
-        # -- Read and verify the output file. Since we don't know what
-        # -- devices the platform has, we just check for the section keys.
-        text = sb.read_file(path)
-        data = json.loads(text)
-        assert data["timestamp"] == "xyz"
-        assert "usb-devices" in data
-        assert "serial-devices" in data
-
-
-def test_apio_devices(apio_runner: ApioRunner):
-    """Test "apio devices usb|serial" """
-
-    # -- If the option 'offline' is passed, the test is skip
-    # -- (This test is slow and requires internet connectivity)
-    if apio_runner.offline_flag:
-        pytest.skip("requires internet connection")
-
-    with apio_runner.in_sandbox(shared_home=True) as sb:
-
-        # -- Execute "apio devices usb". We run it in a
-        # -- subprocess such that it releases the libusb1 file it uses.
-        result = sb.invoke_apio_cmd(
-            apio, ["devices", "usb"], in_subprocess=True
-        )
-        sb.assert_ok(result)
-        print(result.output)
-
-        # -- Execute "apio devices serial". We run it in a
-        # -- subprocess such that it releases the libusb1 file it uses.
-        result = sb.invoke_apio_cmd(
-            apio, ["devices", "serial"], in_subprocess=True
-        )
-        sb.assert_ok(result)
-        print(result.output)
-
-
-def test_utilities(apio_runner: ApioRunner):
-    """Tests apio utility commands."""
-
-    # -- If the option 'offline' is passed, the test is skip
-    # -- (This test is slow and requires internet connectivity)
-    if apio_runner.offline_flag:
-        pytest.skip("requires internet connection")
-
-    with apio_runner.in_sandbox(shared_home=True) as sb:
-
-        # -- Run 'apio upgrade'
-        result = sb.invoke_apio_cmd(apio, ["upgrade"])
-        sb.assert_ok(result)
-        assert "Latest Apio stable version" in result.output
-
-        # -- Run 'apio raw  "nextpnr-ice40 --help"'
-        result = sb.invoke_apio_cmd(
-            apio, ["raw", "--", "nextpnr-ice40", "--help"]
-        )
-        sb.assert_ok(result)
-
-        # -- Run 'apio raw -v'
-        result = sb.invoke_apio_cmd(apio, ["raw", "-v"])
-        sb.assert_ok(result)
-        assert "Environment settings:" in result.output
-        assert "YOSYS_LIB" in result.output
 
 
 def test_project_with_legacy_board_id(apio_runner: ApioRunner):
     """Test a project that uses a legacy board id."""
 
-    # -- If the option 'offline' is passed, the test is skip
-    # -- (This test is slow and requires internet connectivity)
-    if apio_runner.offline_flag:
-        pytest.skip("requires internet connection")
+    # -- This is a slow test. Skip it if running with --fast-only flag.
+    apio_runner.skip_test_if_fast_only()
 
     # -- We shared the apio home with the other tests in this file to speed
     # -- up apio package installation. Tests should not mutate the shared home
     # -- to avoid cross-interference between tests in this file.
-    with apio_runner.in_sandbox(shared_home=True) as sb:
+    with apio_runner.in_sandbox() as sb:
 
         # -- Fetch an example of a board that has a legacy name.
         result = sb.invoke_apio_cmd(
@@ -281,51 +49,6 @@ def test_project_with_legacy_board_id(apio_runner: ApioRunner):
         sb.assert_ok(result)
 
 
-def test_files_order(apio_runner: ApioRunner):
-    """Tests that source files are sorted in apio build command."""
-
-    # -- If the option 'offline' is passed, the test is skip
-    # -- (This test is slow and requires internet connectivity)
-    if apio_runner.offline_flag:
-        pytest.skip("requires internet connection")
-
-    with apio_runner.in_sandbox(shared_home=True) as sb:
-
-        # -- Fetch a working example.
-        result = sb.invoke_apio_cmd(
-            apio,
-            ["examples", "fetch", "alhambra-ii/ledon"],
-            terminal_mode=False,
-        )
-
-        # -- Add dummy source files
-        Path("aa").mkdir(parents=True)
-        Path("bb").mkdir(parents=True)
-        Path("aa/bb.v").touch()
-        Path("aa/cc.v").touch()
-        Path("bb/aa.v").touch()
-
-        # -- Add a fake source files in _build directory. It should not be
-        # -- picked up.
-        Path("_build").mkdir()
-        Path("_build/zzz.v").touch()
-
-        # -- 'apio build'
-        result = sb.invoke_apio_cmd(apio, ["build"])
-        sb.assert_ok(result)
-        assert "SUCCESS" in result.output
-
-        # -- Check that the source file from the _build directory was not
-        # -- picked up.
-        assert "zzz.v" not in result.output
-
-        # -- Check that the files in the build command are sorted.
-        # -- We adjust for the "/" vs "\" difference between Windows and Linux.
-        expected_order = ["ledon.v", "aa/bb.v", "aa/cc.v", "bb/aa.v"]
-        expected_text = " ".join([str(Path(f)) for f in expected_order])
-        assert expected_text in result.output
-
-
 def _test_project(
     apio_runner: ApioRunner,
     *,
@@ -342,10 +65,8 @@ def _test_project(
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-statements
 
-    # -- If the option 'offline' is passed, the test is skip
-    # -- (This test is slow and requires internet connectivity)
-    if apio_runner.offline_flag:
-        pytest.skip("requires internet connection")
+    # -- This is a slow test. Skip it if running with --fast-only flag.
+    apio_runner.skip_test_if_fast_only()
 
     # -- Extract the base name of the testbench file
     testbench, _ = os.path.splitext(testbench_file)
@@ -353,7 +74,7 @@ def _test_project(
     # -- We shared the apio home with the other tests in this file to speed
     # -- up apio package installation. Tests should not mutate the shared home
     # -- to avoid cross-interference between tests in this file.
-    with apio_runner.in_sandbox(shared_home=True) as sb:
+    with apio_runner.in_sandbox() as sb:
 
         # -- If testing from a remote dir, step out of the proj dir, and
         # -- use -p proj_dir arg.

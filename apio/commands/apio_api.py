@@ -15,7 +15,8 @@ import json
 from pathlib import Path
 import click
 from apio.commands import options
-from apio.managers import installer
+
+# from apio.managers import packages
 from apio.managers.examples import Examples, ExampleInfo
 from apio.common.apio_console import cout, cerror
 from apio.common.apio_styles import INFO
@@ -23,7 +24,12 @@ from apio.common.common_util import get_project_source_files
 from apio.utils import cmd_util, usb_util, serial_util, util
 from apio.utils.usb_util import UsbDevice
 from apio.utils.serial_util import SerialDevice
-from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
+from apio.apio_context import (
+    ApioContext,
+    PackagesPolicy,
+    ProjectPolicy,
+    RemoteConfigPolicy,
+)
 from apio.utils.cmd_util import (
     ApioGroup,
     ApioSubgroup,
@@ -118,7 +124,8 @@ def _get_system_cli(
 
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.NO_CONFIG,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
 
     # -- The top dict that we will emit as json.
@@ -137,14 +144,14 @@ def _get_system_cli(
     section_dict["apio-python_package"] = str(
         util.get_path_in_apio_package("")
     )
-    section_dict["apio-home"] = str(apio_ctx.home_dir)
-    section_dict["apio-packages"] = str(apio_ctx.packages_dir)
+    section_dict["apio-home-dir"] = str(apio_ctx.apio_home_dir)
+    section_dict["apio-packages-dir"] = str(apio_ctx.apio_packages_dir)
     section_dict["remote-config-url"] = apio_ctx.profile.remote_config_url
     section_dict["verible-formatter"] = str(
-        apio_ctx.packages_dir / "verible/bin/verible-verilog-format"
+        apio_ctx.apio_packages_dir / "verible/bin/verible-verilog-format"
     )
     section_dict["verible-language-server"] = str(
-        apio_ctx.packages_dir / "verible/bin/verible-verilog-ls"
+        apio_ctx.apio_packages_dir / "verible/bin/verible-verilog-ls"
     )
 
     # -- Add section
@@ -198,7 +205,8 @@ def _get_project_cli(
 
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.PROJECT_REQUIRED,
-        config_policy=RemoteConfigPolicy.NO_CONFIG,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
         project_dir_arg=project_dir,
         env_arg=env,
     )
@@ -272,7 +280,8 @@ def _get_boards_cli(
     # -- change in the future.
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.CACHED_OK,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
 
     # -- The top dict that we will emit as json.
@@ -355,7 +364,8 @@ def _get_fpgas_cli(
     # -- change in the future.
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.NO_CONFIG,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
 
     # -- The top dict that we will emit as json.
@@ -423,7 +433,8 @@ def _get_examples_cli(
     # -- change in the future.
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.CACHED_OK,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
 
     # -- Get examples infos.
@@ -554,7 +565,8 @@ def _get_commands_cli(
     # -- This initializes the console, print active env vars, etc.
     ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.NO_CONFIG,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
 
     # -- The top dict that we will emit as json.
@@ -612,7 +624,8 @@ def _scan_devices_cli(
     # -- the packages.
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.CACHED_OK,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
 
     # -- The top dict that we will emit as json.
@@ -623,7 +636,7 @@ def _scan_devices_cli(
         top_dict["timestamp"] = timestamp
 
     # -- We need the packages for the 'libusb' backend.
-    installer.install_missing_packages_on_the_fly(apio_ctx)
+    # packages.install_missing_packages_on_the_fly(apio_ctx.packages_context)
 
     usb_devices: List[UsbDevice] = usb_util.scan_usb_devices(apio_ctx)
 

@@ -13,12 +13,15 @@ from typing import Tuple, List
 import click
 from apio.common.apio_console import cout
 from apio.common.apio_styles import SUCCESS, ERROR
-from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
+from apio.apio_context import (
+    ApioContext,
+    PackagesPolicy,
+    ProjectPolicy,
+    RemoteConfigPolicy,
+)
 from apio.commands import options
-from apio.utils import cmd_util, pkg_util
+from apio.utils import cmd_util
 from apio.utils.cmd_util import ApioCommand
-from apio.managers import installer
-
 
 # ----------- apio raw
 
@@ -74,16 +77,13 @@ def cli(
     # -- packages to be available for the 'apio raw' command.
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.CACHED_OK,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
-
-    # -- If needed, install missing packages.
-    if cmd:
-        installer.install_missing_packages_on_the_fly(apio_ctx)
 
     # -- Set the env for packages. If verbose, also dumping the env changes
     # -- in a user friendly way.
-    pkg_util.set_env_for_packages(apio_ctx, quiet=not verbose, verbose=verbose)
+    apio_ctx.set_env_for_packages(quiet=not verbose, verbose=verbose)
 
     # -- If no command, we are done.
     if not cmd:

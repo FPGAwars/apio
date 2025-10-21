@@ -162,3 +162,69 @@ def test_apio_api_get_project(apio_runner: ApioRunner):
                 ],
             },
         }
+
+
+def test_apio_api_get_examples(apio_runner: ApioRunner):
+    """Test "apio api get-examples" """
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Execute "apio api get-examples -t xyz"  (stdout)
+        result = sb.invoke_apio_cmd(apio, ["api", "get-examples", "-t", "xyz"])
+        sb.assert_ok(result)
+        assert "xyz" in result.output
+        assert '"alhambra-ii"' in result.output
+        assert '"blinky"' in result.output
+
+        # -- Execute "apio api get-examples -t xyz -s boards -o <dir>"  (file)
+        path = sb.proj_dir / "apio.json"
+        result = sb.invoke_apio_cmd(
+            apio, ["api", "get-examples", "-t", "xyz", "-o", str(path)]
+        )
+        sb.assert_ok(result)
+
+        # -- Read and verify the file.
+        text = sb.read_file(path)
+        data = json.loads(text)
+        assert data["timestamp"] == "xyz"
+        assert (
+            data["examples"]["alhambra-ii"]["blinky"]["description"]
+            == "Blinking led"
+        )
+
+
+def test_apio_api_scan_devices(apio_runner: ApioRunner):
+    """Test "apio api scan-devices" """
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Execute "apio api scan-devices -t xyz". We run it in a
+        # -- subprocess such that it releases the libusb1 file it uses.
+        # -- This also means that it's not included in the pytest test
+        # -- coverage report.
+        result = sb.invoke_apio_cmd(
+            apio, ["api", "scan-devices", "-t", "xyz"], in_subprocess=True
+        )
+        sb.assert_ok(result)
+
+        assert "xyz" in result.output
+        assert "usb-devices" in result.output
+        assert "serial-devices" in result.output
+
+        # -- Execute "apio api get-boards -t xyz -s boards -o <dir>"  (file)
+        path = sb.proj_dir / "apio.json"
+
+        result = sb.invoke_apio_cmd(
+            apio,
+            ["api", "scan-devices", "-t", "xyz", "-o", str(path)],
+            in_subprocess=True,
+        )
+        sb.assert_ok(result)
+
+        # -- Read and verify the output file. Since we don't know what
+        # -- devices the platform has, we just check for the section keys.
+        text = sb.read_file(path)
+        data = json.loads(text)
+        assert data["timestamp"] == "xyz"
+        assert "usb-devices" in data
+        assert "serial-devices" in data

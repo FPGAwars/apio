@@ -18,7 +18,12 @@ from rich import box
 from apio.common import apio_console
 from apio.common.apio_console import cout, ctable
 from apio.common.apio_styles import INFO, BORDER, EMPH1
-from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
+from apio.apio_context import (
+    ApioContext,
+    PackagesPolicy,
+    ProjectPolicy,
+    RemoteConfigPolicy,
+)
 from apio.utils import util, cmd_util
 from apio.commands import options
 
@@ -167,11 +172,16 @@ def _list_fpgas_docs_format(apio_ctx: ApioContext):
     cout("\n<!-- BEGIN generation by 'apio fpgas --docs' -->")
     cout("\n# Supported FPGAs")
     cout(
-        f"\n> Generated on {today_str}. For the updated list run `apio fpgas`."
+        f"\nThis markdown page was generated on {today_str} using the command "
+        f"\n\n```\napio fpgas --docs > supported-fpgas.md\n```"
+        "\nFor the updated list of supported FPGAs run the command "
+        " `apio fpgas`."
     )
     cout(
-        "\n> Custom FPGAs definitions can be added in the "
-        "project directory."
+        "\n> Custom FPGAs definitions can be added in the project directory "
+        "and new FPGAs definitions can be contributed in the "
+        "[apio-definitions](https://github.com/FPGAwars/apio-definitions/"
+        "tree/main/definitions) repository."
     )
 
     # -- Add the rows, with separation line between architecture groups.
@@ -259,7 +269,8 @@ def cli(
     # -- not relevant for this command.
     apio_ctx = ApioContext(
         project_policy=project_policy,
-        config_policy=RemoteConfigPolicy.NO_CONFIG,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
         project_dir_arg=project_dir,
         report_env=False,
     )

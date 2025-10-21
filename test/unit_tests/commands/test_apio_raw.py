@@ -23,3 +23,15 @@ def test_raw(apio_runner: ApioRunner):
         assert "Environment settings:" in result.output
         assert "PATH" in result.output
         assert "YOSYS_LIB" in result.output
+
+        # -- Run 'apio raw  "nextpnr-ice40 --help"'
+        result = sb.invoke_apio_cmd(
+            apio, ["raw", "--", "nextpnr-ice40", "--help"]
+        )
+        sb.assert_ok(result)
+
+        # -- Run 'apio raw -v'
+        result = sb.invoke_apio_cmd(apio, ["raw", "-v"])
+        sb.assert_ok(result)
+        assert "Environment settings:" in result.output
+        assert "YOSYS_LIB" in result.output

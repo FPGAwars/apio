@@ -19,10 +19,15 @@ from apio.common.apio_console import cout, ctable
 from apio.common.apio_styles import INFO
 from apio.common import apio_console
 from apio.common.apio_styles import BORDER, EMPH1
-from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
 from apio.utils import util, cmd_util
 from apio.commands import options
 from apio.managers.examples import Examples
+from apio.apio_context import (
+    ApioContext,
+    PackagesPolicy,
+    ProjectPolicy,
+    RemoteConfigPolicy,
+)
 
 
 @dataclass(frozen=True)
@@ -183,12 +188,16 @@ def _list_boards_docs_format(apio_ctx: ApioContext):
     cout("\n<!-- BEGIN generation by 'apio boards --docs' -->")
     cout("\n# Supported FPGA Boards")
     cout(
-        f"\n> Generated on {today_str}. For the updated list "
-        "run `apio boards`."
+        f"\nThis markdown page was generated on {today_str} using the command "
+        f"\n\n```\napio boards --docs > supported-boards.md\n```"
+        "\nFor the updated list of supported FPGA boards run the command "
+        " `apio boards`."
     )
     cout(
-        "\n> Custom board definitions can be added in the "
-        "project directory."
+        "\n> Custom board definitions can be added in the project directory "
+        "and new board definitions can be contributed in the "
+        "[apio-definitions](https://github.com/FPGAwars/apio-definitions/"
+        "tree/main/definitions) repository."
     )
 
     # -- Add the rows, with separation line between architecture groups.
@@ -279,7 +288,8 @@ def cli(
     # -- not relevant for this command.
     apio_ctx = ApioContext(
         project_policy=project_policy,
-        config_policy=RemoteConfigPolicy.CACHED_OK,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
         project_dir_arg=project_dir,
         report_env=False,
     )

@@ -45,7 +45,7 @@ apio info platforms   # List supported platform IDs
 
 The `apio info system` command displays general information about your system and Apio installation. Useful for diagnosing setup or environment issues.
 
-> [Advanced] The default location of the Apio home directory—where it saves preferences and packages—is `.apio` under your home directory. This can be changed using the `APIO_HOME` environment variable.
+> [Advanced] The default location of the Apio home directory, where it saves preferences and packages, is `.apio` under your home directory. This can be changed using the `APIO_HOME` environment variable. The location of the packages directory can be set using the `APIO_PACKAGES` environment variable.
 
 <h3>Examples</h3>
 

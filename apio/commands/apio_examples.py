@@ -18,10 +18,14 @@ from apio.common.apio_console import cerror
 from apio.common import apio_console
 from apio.common.apio_console import cout, ctable
 from apio.common.apio_styles import INFO, BORDER, EMPH1
-from apio.managers import installer
 from apio.managers.examples import Examples, ExampleInfo
 from apio.commands import options
-from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
+from apio.apio_context import (
+    ApioContext,
+    PackagesPolicy,
+    ProjectPolicy,
+    RemoteConfigPolicy,
+)
 from apio.utils import util
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 
@@ -50,9 +54,6 @@ def examples_sort_key(entry: ExampleInfo) -> Any:
 def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
     """Print all the examples available. Return a process exit
     code, 0 if ok, non zero otherwise."""
-
-    # -- Make sure that the examples package is installed.
-    installer.install_missing_packages_on_the_fly(apio_ctx)
 
     # -- Get list of examples.
     entries: List[ExampleInfo] = Examples(apio_ctx).get_examples_infos()
@@ -129,7 +130,8 @@ def _list_cli(verbose: bool):
     # -- Create the apio context.
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.CACHED_OK,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
 
     # --List all available examples.
@@ -172,7 +174,8 @@ def _fetch_cli(
     # -- Create the apio context.
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        config_policy=RemoteConfigPolicy.CACHED_OK,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
 
     # -- Create the examples manager.

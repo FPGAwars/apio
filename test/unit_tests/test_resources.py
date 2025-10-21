@@ -4,7 +4,12 @@ Tests of apio_context.py
 
 import re
 from test.conftest import ApioRunner
-from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
+from apio.apio_context import (
+    ApioContext,
+    PackagesPolicy,
+    ProjectPolicy,
+    RemoteConfigPolicy,
+)
 from apio.utils.resource_util import (
     validate_config,
     validate_packages,
@@ -31,7 +36,8 @@ def test_resources_references(apio_runner: ApioRunner):
         # -- Create an apio context so we can access the resources.
         apio_ctx = ApioContext(
             project_policy=ProjectPolicy.NO_PROJECT,
-            config_policy=RemoteConfigPolicy.NO_CONFIG,
+            remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+            packages_policy=PackagesPolicy.ENSURE_PACKAGES,
         )
 
         unused_programmers = set(apio_ctx.programmers.keys())
@@ -79,7 +85,8 @@ def test_resources_ids_and_order(apio_runner: ApioRunner):
         # -- Create an apio context so we can access the resources.
         apio_ctx = ApioContext(
             project_policy=ProjectPolicy.NO_PROJECT,
-            config_policy=RemoteConfigPolicy.NO_CONFIG,
+            remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+            packages_policy=PackagesPolicy.ENSURE_PACKAGES,
         )
 
         # -- Test the format of the board ids.
@@ -111,7 +118,8 @@ def test_resources_are_valid(apio_runner: ApioRunner):
 
         apio_ctx = ApioContext(
             project_policy=ProjectPolicy.NO_PROJECT,
-            config_policy=RemoteConfigPolicy.CACHED_OK,
+            remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+            packages_policy=PackagesPolicy.ENSURE_PACKAGES,
         )
 
         validate_config(apio_ctx.config)
@@ -145,7 +153,8 @@ def test_fpga_definitions(apio_runner: ApioRunner):
         # -- Create an apio context so we can access the resources.
         apio_ctx = ApioContext(
             project_policy=ProjectPolicy.NO_PROJECT,
-            config_policy=RemoteConfigPolicy.CACHED_OK,
+            remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+            packages_policy=PackagesPolicy.ENSURE_PACKAGES,
         )
 
         for fpga_id, fpga_info in apio_ctx.fpgas.items():

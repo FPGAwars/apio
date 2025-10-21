@@ -6,8 +6,11 @@
 
 The `apio boards` command lists the FPGA boards supported by Apio.
 
-> You can define custom boards by placing a `boards.jsonc` file with your
-> board definition in your project directory, which overrides Apio’s default `boards.jsonc`.
+You can define custom boards by placing a `boards.jsonc` file with your
+board definition in your project directory, which overrides Apio’s default `boards.jsonc`.
+
+> The apio board definitions are included in the apio 'definition' package
+> that is updated periodically. 
 
 <h3>Examples</h3>
 

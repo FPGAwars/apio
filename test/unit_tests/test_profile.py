@@ -11,7 +11,12 @@ from apio.profile import (
     days_between_datetime_stamps,
 )
 from apio.utils import util
-from apio.apio_context import ApioContext, ProjectPolicy, RemoteConfigPolicy
+from apio.apio_context import (
+    ApioContext,
+    PackagesPolicy,
+    ProjectPolicy,
+    RemoteConfigPolicy,
+)
 
 
 def get_remote_config_url(apio_ctx: ApioContext) -> str:
@@ -24,7 +29,6 @@ def get_remote_config_url(apio_ctx: ApioContext) -> str:
 def get_test_data(
     apio_ctx: ApioContext,
     loaded_by_apio_version: str,
-    packages_platform_id: str,
     loaded_at_days: int,
 ):
     """Returns a fake profile.json content. 'loaded_at_days' is the value of
@@ -34,28 +38,6 @@ def get_test_data(
     assert isinstance(loaded_at_stamp, str)
 
     return {
-        "installed-packages": {
-            "drivers": {
-                "version": "2025.06.13",
-                "platform-id": packages_platform_id,
-                "loaded-by": "0.9.7",
-                "loaded-at": "2025-01-29-14-48",
-                "loaded-from": (
-                    "https://github.com/fpgawars/apio-examples/"
-                    "releases/download/2025-06-21/apio-examples-20250621.tgz"
-                ),
-            },
-            "examples": {
-                "version": "2025.06.21",
-                "platform-id": packages_platform_id,
-                "loaded-by": "0.9.7",
-                "loaded-at": "2025-01-29-14-48",
-                "loaded-from": (
-                    "https://github.com/fpgawars/apio-examples/"
-                    "releases/download/2025-06-21/apio-examples-20250621.tgz"
-                ),
-            },
-        },
         "preferences": {"theme": "light"},
         "remote-config": {
             "metadata": {
@@ -101,25 +83,26 @@ def test_profile_loading_config_ok(apio_runner: ApioRunner):
 
         apio_ctx = ApioContext(
             project_policy=ProjectPolicy.NO_PROJECT,
-            config_policy=RemoteConfigPolicy.NO_CONFIG,
+            remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+            packages_policy=PackagesPolicy.ENSURE_PACKAGES,
         )
 
         # -- Write a test profile.json file.
         path = sb.home_dir / "profile.json"
-        test_data = get_test_data(
-            apio_ctx, util.get_apio_version(), apio_ctx.platform_id, 0
-        )
+        test_data = get_test_data(apio_ctx, util.get_apio_version(), 0)
         sb.write_file(
             path,
             json.dumps(
                 test_data,
                 indent=2,
             ),
+            exists_ok=True,
         )
 
         # -- Read back the content.
         profile = Profile(
             sb.home_dir,
+            sb.packages_dir,
             get_remote_config_url(apio_ctx),
             5,  # TTL in days
             60,  # Remote config retry mins.
@@ -128,7 +111,6 @@ def test_profile_loading_config_ok(apio_runner: ApioRunner):
 
         # -- Verify
         assert profile.preferences == test_data["preferences"]
-        assert profile.installed_packages == test_data["installed-packages"]
         assert profile.remote_config == test_data["remote-config"]
 
 
@@ -140,7 +122,8 @@ def test_profile_loading_config_stale_version(apio_runner: ApioRunner):
 
         apio_ctx = ApioContext(
             project_policy=ProjectPolicy.NO_PROJECT,
-            config_policy=RemoteConfigPolicy.NO_CONFIG,
+            remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+            packages_policy=PackagesPolicy.ENSURE_PACKAGES,
         )
 
         # -- Write a test profile.json file. We set an old apio version
@@ -148,9 +131,7 @@ def test_profile_loading_config_stale_version(apio_runner: ApioRunner):
         path = sb.home_dir / "profile.json"
         original_loaded_by = "0.9.6"
         assert original_loaded_by != util.get_apio_version()
-        test_data = get_test_data(
-            apio_ctx, original_loaded_by, apio_ctx.platform_id, 0
-        )
+        test_data = get_test_data(apio_ctx, original_loaded_by, 0)
 
         sb.write_file(
             path,
@@ -158,11 +139,13 @@ def test_profile_loading_config_stale_version(apio_runner: ApioRunner):
                 test_data,
                 indent=2,
             ),
+            exists_ok=True,
         )
 
         # -- Read back the content.
         profile = Profile(
             sb.home_dir,
+            sb.packages_dir,
             get_remote_config_url(apio_ctx),
             5,  # TTL in days
             60,  # Remote config retry mins.
@@ -172,7 +155,7 @@ def test_profile_loading_config_stale_version(apio_runner: ApioRunner):
         # -- Verify. Remote config should be a fresh one, loaded by this
         # -- apio version.
         assert profile.preferences == test_data["preferences"]
-        assert profile.installed_packages == test_data["installed-packages"]
+        # assert profile.installed_packages == test_data["installed-packages"]
         assert (
             profile.remote_config["metadata"]["loaded-by"]
             == util.get_apio_version()

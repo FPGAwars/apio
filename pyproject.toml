@@ -47,7 +47,7 @@ requires = [
     'apollo_fpga==1.1.1',
     'protobuf==5.29.3',
     'rich==14.0.0',
-    'invoke==2.2.0'
+    'invoke==2.2.1'
 ]
 
 [tool.flit.sdist]

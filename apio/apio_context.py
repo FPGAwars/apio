@@ -6,18 +6,22 @@
 # -- Author Jesús Arroyo
 # -- License GPLv2
 
+import os
 import sys
 import json
 import platform
+from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Optional, Dict
-from apio.common.apio_console import cout, cerror, cwarning, cstyle
-from apio.common.apio_styles import INFO, EMPH1
+from typing import List, Optional, Dict, Tuple
+from apio.common.apio_console import cout, cerror, cstyle
+from apio.common.apio_styles import EMPH3, INFO, EMPH1
 from apio.common.common_util import env_build_path
 from apio.profile import Profile, RemoteConfigPolicy
 from apio.utils import jsonc, util, env_options
 from apio.managers.project import Project, load_project_from_file
+from apio.managers import packages
+from apio.managers.packages import PackagesContext
 from apio.utils.resource_util import (
     ProjectResources,
     collect_project_resources,
@@ -73,6 +77,34 @@ PROGRAMMERS_JSONC = "programmers.jsonc"
 CONFIG_JSONC = "config.jsonc"
 
 
+@dataclass(frozen=True)
+class ApioDefinitions:
+    """Contains the apio definitions in the form of json dictionaries."""
+
+    # -- A json dir with the content of boards.jsonc
+    boards: dict
+    # -- A json dir with the content of fpgas.jsonc
+    fpgas: dict
+    # -- A json dir with the content of programmers.jsonc.
+    programmers: dict
+
+    def __post_init__(self):
+        """Assert that all fields initialized to actual values."""
+        assert self.boards
+        assert self.fpgas
+        assert self.programmers
+
+
+@dataclass(frozen=True)
+class EnvMutations:
+    """Contains mutations to the system env."""
+
+    # -- PATH items to add.
+    paths: List[str]
+    # -- Vars name/value paris.
+    vars: List[Tuple[str, str]]
+
+
 class ProjectPolicy(Enum):
     """Represents the possible context policies regarding loading apio.ini.
     and project related information."""
@@ -85,6 +117,19 @@ class ProjectPolicy(Enum):
     PROJECT_REQUIRED = 3
 
 
+class PackagesPolicy(Enum):
+    """Represents the possible context policies regarding loading apio.ini.
+    and project related information."""
+
+    # -- Do not change the package state, they may exist or not, updated or
+    # -- not. This policy requires project policy NO_PROJECT and with it,
+    # -- the definitions are not loaded.
+    IGNORE_PACKAGES = 1
+    # -- Normal policy, verify that the packages are installed correctly and
+    # -- update them if needed.
+    ENSURE_PACKAGES = 2
+
+
 class ApioContext:
     """Apio context. Class for accessing apio resources and configurations."""
 
@@ -93,35 +138,35 @@ class ApioContext:
     # -- List of allowed instance vars.
     __slots__ = (
         "project_policy",
-        "home_dir",
+        "apio_home_dir",
+        "apio_packages_dir",
         "config",
         "profile",
         "platforms",
         "platform_id",
         "all_packages",
         "platform_packages",
-        "boards",
-        "fpgas",
-        "programmers",
         "env_was_already_set",
         "_project_dir",
         "_project",
         "_project_resources",
+        "_definitions",
     )
 
     def __init__(
         self,
         *,
         project_policy: ProjectPolicy,
-        config_policy: RemoteConfigPolicy,
+        remote_config_policy: RemoteConfigPolicy,
+        packages_policy: PackagesPolicy,
         project_dir_arg: Optional[Path] = None,
         env_arg: Optional[str] = None,
         report_env=True,
     ):
         """Initializes the ApioContext object.
 
-        'project_policy' controls the loading of the project (apio.ini and
-        optional custom resource files.)
+        'project_policy', 'config_policy', and 'packages_policy' are modifiers
+        that controls the initialization of the context.
 
         'project_dir_arg' is an optional user specification of the project dir.
         Must be None if project_policy is NO_PROJECT.
@@ -135,6 +180,16 @@ class ApioContext:
         """
 
         # pylint: disable=too-many-arguments
+        # pylint: disable=too-many-statements
+        # pylint: disable=too-many-locals
+
+        # -- Sanity check the policies.
+        assert isinstance(project_policy, ProjectPolicy)
+        assert isinstance(remote_config_policy, RemoteConfigPolicy)
+        assert isinstance(packages_policy, PackagesPolicy)
+
+        if packages_policy == PackagesPolicy.IGNORE_PACKAGES:
+            assert project_policy == ProjectPolicy.NO_PROJECT
 
         # -- Inform as soon as possible about the list of apio env options
         # -- that modify its default behavior.
@@ -144,12 +199,6 @@ class ApioContext:
                 f"Active env options [{', '.join(defined_env_options)}].",
                 style=INFO,
             )
-
-            if env_options.APIO_HOME_DIR in defined_env_options:
-                cwarning(
-                    f"Env variable ${env_options.APIO_HOME_DIR} "
-                    f"is deprecated, please use ${env_options.APIO_HOME}.",
-                )
 
         # -- Store the project_policy
         assert isinstance(
@@ -188,11 +237,17 @@ class ApioContext:
                 project_dir_arg is None
             ), "project_dir_arg specified for project policy None"
 
-        # -- Determine apio home dir.
-        self.home_dir: Path = util.resolve_home_dir()
+        # -- Determine apio home and packages dirs
+        self.apio_home_dir: Path = util.resolve_home_dir()
+        self.apio_packages_dir: Path = util.resolve_packages_dir(
+            self.apio_home_dir
+        )
+
+        # -- Get the jsonc source dirs.
+        resources_dir = util.get_path_in_apio_package(RESOURCES_DIR)
 
         # -- Read and validate the config information
-        self.config = self._load_resource(CONFIG_JSONC)
+        self.config = self._load_resource(CONFIG_JSONC, resources_dir)
         validate_config(self.config)
 
         # -- Profile information, from ~/.apio/profile.json. We provide it with
@@ -207,43 +262,62 @@ class ApioContext:
             "remote-config-retry-minutes"
         ]
         self.profile = Profile(
-            self.home_dir,
+            self.apio_home_dir,
+            self.apio_packages_dir,
             remote_config_url,
             remote_config_ttl_days,
             remote_config_retry_minutes,
-            config_policy,
+            remote_config_policy,
         )
 
         # -- Read the platforms information.
-        self.platforms = self._load_resource(PLATFORMS_JSONC)
+        self.platforms = self._load_resource(PLATFORMS_JSONC, resources_dir)
         validate_platforms(self.platforms)
 
         # -- Determine the platform_id for this APIO session.
         self.platform_id = self._determine_platform_id(self.platforms)
 
         # -- Read the apio packages information
-        self.all_packages = self._load_resource(PACKAGES_JSONC)
+        self.all_packages = self._load_resource(PACKAGES_JSONC, resources_dir)
         validate_packages(self.all_packages)
 
         # -- Expand in place the env templates in all_packages.
-        ApioContext._resolve_package_envs(self.all_packages, self.packages_dir)
+        ApioContext._resolve_package_envs(
+            self.all_packages, self.apio_packages_dir
+        )
 
         # The subset of packages that are applicable to this platform.
         self.platform_packages = self._select_packages_for_platform(
             self.all_packages, self.platform_id, self.platforms
         )
 
-        # -- Read the boards information. Allow override files in project dir.
-        self.boards = self._load_resource(BOARDS_JSONC, allow_custom=True)
+        # -- Case 1: IGNORE_PACKAGES
+        if packages_policy == PackagesPolicy.IGNORE_PACKAGES:
+            self._definitions = None
 
-        # -- Read the FPGAs information. Allow override files in project dir.
-        self.fpgas = self._load_resource(FPGAS_JSONC, allow_custom=True)
+        # -- Case 2: ENSURE_PACKAGES
+        else:
+            assert packages_policy == PackagesPolicy.ENSURE_PACKAGES
 
-        # -- Read the programmers information. Allow override files in project
-        # -- dir.
-        self.programmers = self._load_resource(
-            PROGRAMMERS_JSONC, allow_custom=True
-        )
+            # -- Install missing packages. At this point, the fields that are
+            # -- required by self.packages_context are already initialized.
+            packages.install_missing_packages_on_the_fly(
+                self.packages_context, verbose=False
+            )
+
+            # -- Load the definitions from the definitions file with possible
+            # -- override by the optional project file.
+            definitions_dir = self.apio_packages_dir / "definitions"
+            boards = self._load_resource(
+                BOARDS_JSONC, definitions_dir, self._project_dir
+            )
+            fpgas = self._load_resource(
+                FPGAS_JSONC, definitions_dir, self._project_dir
+            )
+            programmers = self._load_resource(
+                PROGRAMMERS_JSONC, definitions_dir, self._project_dir
+            )
+            self._definitions = ApioDefinitions(boards, fpgas, programmers)
 
         # -- If we determined that we need to load the project, load the
         # -- apio.ini data.
@@ -290,11 +364,6 @@ class ApioContext:
         cout(f"Using env {styled_env_name} ({styled_board_id})")
 
     @property
-    def packages_dir(self):
-        """Returns the directory hat contains the installed apio packages."""
-        return self.home_dir / "packages"
-
-    @property
     def has_project(self):
         """Returns True if the project is loaded."""
         return self._project is not None
@@ -324,39 +393,49 @@ class ApioContext:
         return self._project_resources
 
     @property
+    def definitions(self) -> ApioDefinitions:
+        """Return apio definitions."""
+        assert self._definitions, "Apio context as no definitions"
+        return self._definitions
+
+    @property
+    def boards(self) -> dict:
+        """Returns the apio board definitions"""
+        return self.definitions.boards
+
+    @property
+    def fpgas(self) -> dict:
+        """Returns the apio fpgas definitions"""
+        return self.definitions.fpgas
+
+    @property
+    def programmers(self) -> dict:
+        """Returns the apio programmers definitions"""
+        return self.definitions.programmers
+
+    @property
     def env_build_path(self) -> str:
         """Returns the relative path of the current env build directory from
         the project dir. Should be called only when has_project is True."""
         assert self.has_project, "project(): project is not loaded"
         return env_build_path(self.project.env_name)
 
-    def _load_resource(self, name: str, allow_custom: bool = False) -> dict:
-        """Load the resources from a given jsonc file
-        * INPUTS:
-          * Name: Name of the jsonc file
-            Use the following constants:
-              * PACKAGES_JSONC
-              * BOARD_JSONC
-              * FPGAS_JSONC
-              * PROGRAMMERS_JSONC
-              * CONFIG_JSONC
-            * Allow_custom: if true, look first in the project dir for
-              a project specific resource file of same name.
-        * OUTPUT: A dictionary with the jsonc file data
-          In case of error it raises an exception and finish
+    def _load_resource(
+        self, name: str, standard_dir: Path, custom_dir: Optional[Path] = None
+    ) -> dict:
+        """Load a jsonc file. Try first from custom_dir, if given, and then
+        from standard dir. This method is called for resource files in
+        apio/resources and definitions files in the definitions packages.
         """
-        # -- Try loading a custom resource file from the project directory.
-        # -- Since this method is called in an early stage of __init__(), we
-        # -- can't use the abstracted self.project_dir.
-        if self._project_dir:
-            filepath = self._project_dir / name
+        # -- First try to load from custom dir.
+        if custom_dir:
+            filepath = custom_dir / name
             if filepath.exists():
-                if allow_custom:
-                    cout(f"Loading custom '{name}'.")
-                    return self._load_resource_file(filepath)
+                cout(f"Loading custom '{name}'.")
+                return self._load_resource_file(filepath)
 
-        # -- Load the stock resource file from the APIO package.
-        filepath = util.get_path_in_apio_package(RESOURCES_DIR) / name
+        # -- Else, load from the default dir.
+        filepath = standard_dir / name
         return self._load_resource_file(filepath)
 
     @staticmethod
@@ -437,13 +516,13 @@ class ApioContext:
 
     @staticmethod
     def _resolve_package_envs(
-        packages: Dict[str, Dict], packages_dir: Path
+        packages_: Dict[str, Dict], packages_dir: Path
     ) -> None:
         """Resolve in place the path and var value templates in the
         given packages dictionary. For example, %p is replaced with
         the package's absolute path."""
 
-        for package_name, package_config in packages.items():
+        for package_name, package_config in packages_.items():
 
             # -- Get the package root dir.
             package_path = packages_dir / package_name
@@ -482,12 +561,12 @@ class ApioContext:
     def get_package_dir(self, package_name: str) -> Path:
         """Returns the root path of a package with given name."""
 
-        return self.packages_dir / package_name
+        return self.apio_packages_dir / package_name
 
     def get_tmp_dir(self, create: bool = True) -> Path:
         """Return the tmp dir under the apio home dir. If 'create' is true
         create the dir and its parents if they do not exist."""
-        tmp_dir = self.home_dir / "tmp"
+        tmp_dir = self.apio_home_dir / "tmp"
         if create:
             tmp_dir.mkdir(parents=True, exist_ok=True)
         return tmp_dir
@@ -520,12 +599,23 @@ class ApioContext:
         # -- All done ok.
         return platform_id
 
+    @property
+    def packages_context(self) -> PackagesContext:
+        """Return a PackagesContext with info extracted from this
+        ApioContext."""
+        return PackagesContext(
+            profile=self.profile,
+            platform_packages=self.platform_packages,
+            platform_id=self.platform_id,
+            packages_dir=self.apio_packages_dir,
+        )
+
     @staticmethod
     def _select_packages_for_platform(
         all_packages: Dict[str, Dict],
         platform_id: str,
         platforms: Dict[str, Dict],
-    ):
+    ) -> Dict:
         """Given a dictionary with the packages.jsonc packages infos,
         returns subset dictionary with packages that are available for
         'platform_id'.
@@ -601,3 +691,95 @@ class ApioContext:
     def is_windows(self) -> bool:
         """Returns True iff platform_id indicates windows."""
         return "windows" in self.platform_id
+
+    def _get_env_mutations_for_packages(self) -> EnvMutations:
+        """Collects the env mutation for each of the defined packages,
+        in the order they are defined."""
+
+        result = EnvMutations([], [])
+        for _, package_config in self.platform_packages.items():
+            # -- Get the json 'env' section. We require it, even if it's empty,
+            # -- for clarity reasons.
+            assert "env" in package_config
+            package_env = package_config["env"]
+
+            # -- Collect the path values.
+            path_list = package_env.get("path", [])
+            result.paths.extend(path_list)
+
+            # -- Collect the env vars (name, value) pairs.
+            vars_section = package_env.get("vars", {})
+            for var_name, var_value in vars_section.items():
+                result.vars.append((var_name, var_value))
+
+        return result
+
+    def _dump_env_mutations(self, mutations: EnvMutations) -> None:
+        """Dumps a user friendly representation of the env mutations."""
+        cout("Environment settings:", style=EMPH3)
+
+        # -- Print PATH mutations.
+        windows = self.is_windows
+        for p in reversed(mutations.paths):
+            styled_name = cstyle("PATH", style=EMPH3)
+            if windows:
+                cout(f"set {styled_name}={p};%PATH%")
+            else:
+                cout(f'{styled_name}="{p}:$PATH"')
+
+        # -- Print vars mutations.
+        for name, val in mutations.vars:
+            styled_name = cstyle(name, style=EMPH3)
+            if windows:
+                cout(f"set {styled_name}={val}")
+            else:
+                cout(f'{styled_name}="{val}"')
+
+    def _apply_env_mutations(self, mutations: EnvMutations) -> None:
+        """Apply a given set of env mutations, while preserving their order."""
+
+        # -- Apply the path mutations, while preserving order.
+        old_val = os.environ["PATH"]
+        items = mutations.paths + [old_val]
+        new_val = os.pathsep.join(items)
+        os.environ["PATH"] = new_val
+
+        # -- Apply the vars mutations, while preserving order.
+        for name, value in mutations.vars:
+            os.environ[name] = value
+
+    def set_env_for_packages(
+        self, *, quiet: bool = False, verbose: bool = False
+    ) -> None:
+        """Sets the environment variables for using all the that are
+        available for this platform, even if currently not installed.
+
+        The function sets the environment only on first call and in latter
+        calls skips the operation silently.
+
+        If quite is set, no output is printed. When verbose is set, additional
+        output such as the env vars mutations are printed, otherwise, a minimal
+        information is printed to make the user aware that they commands they
+        see are executed in a modified env settings.
+        """
+
+        # -- If this fails, this is a programming error. Quiet and verbose
+        # -- cannot be combined.
+        assert not (quiet and verbose), "Can't have both quite and verbose."
+
+        # -- Collect the env mutations for all packages.
+        mutations = self._get_env_mutations_for_packages()
+
+        if verbose:
+            self._dump_env_mutations(mutations)
+
+        # -- If this is the first call in this apio invocation, apply the
+        # -- mutations. These mutations are temporary for the lifetime of this
+        # -- process and does not affect the user's shell environment.
+        # -- The mutations are also inherited by child processes such as the
+        # -- scons processes.
+        if not self.env_was_already_set:
+            self._apply_env_mutations(mutations)
+            self.env_was_already_set = True
+            if not verbose and not quiet:
+                cout("Setting shell vars.")

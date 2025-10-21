@@ -3,8 +3,8 @@
 Apio uses definitions of FPGA devices, FPGA programmers, and
 FPGA boards to simplify the setup of new projects. The diagram below
 illustrates the relationship between these definitions and Apio's operation,
-as well as the names of their respective definition files located in the
-[Apio resources directory](https://github.com/FPGAwars/apio/tree/develop/apio/resources).
+as well as the names of their respective definition files in the apio 
+`definitions` packages
 
 <br>
 
@@ -20,16 +20,16 @@ directory of your project. These replacement files should:
   `programmers.jsonc`, or `boards.jsonc`).
 - Include only the specific FPGA, programmer, or board definitions you need.
 
-## Resource Files
+## Definition Files
 
-| Resource File       | Contains               | Keyed By        |
+| Definition File       | Contains               | Keyed By        |
 | :------------------ | :--------------------- | :-------------- |
 | `fpgas.jsonc`       | FPGA definitions       | `fpga-id`       |
 | `programmers.jsonc` | Programmer definitions | `programmer-id` |
 | `boards.jsonc`      | Board definitions      | `board-id`      |
 
 > If you believe your custom definition may be useful to others,
-> consider submitting a pull request to the appropriate Apio resource file.
+> consider submitting a pull request to the [apio-definitions](https://github.com/FPGAwars/apio-definitions/tree/main/definitions) repository.
 
 ## Example: Custom `boards.jsonc`
 

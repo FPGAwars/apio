@@ -9,12 +9,15 @@
 #   invoke --list        # Show available tasks
 #   invoke -l            # Show available tasks
 #   invoke lint          # Lint the python code
-#   invoke test          # Run the offline tests (fast)
+#   invoke test          # Run only the fast tests, skip the rest.
 #   invoke check         # Run lint and all the tests (slow)
 #   invoke install-apio  # Install to run 'apio' from the source code here.
 #   invoke docs-viewer   # Run a local http server to view the Apio docs.
 
 import sys
+from pathlib import Path
+from glob import glob
+import shutil
 import platform
 import subprocess
 from subprocess import CompletedProcess
@@ -122,10 +125,7 @@ def run(ctx: Context, cmd: List[str]) -> None:
 # ===================== Tasks definitions start here ==========================
 
 
-@task(
-    name="lint",
-    aliases=["l"],
-)
+@task(name="lint", aliases=["l"])
 def lint_task(ctx: Context):
     """Lint only."""
     announce_task("lint")
@@ -134,13 +134,10 @@ def lint_task(ctx: Context):
     run(ctx, [PYTHON, "-m", "tox", "-e", "lint"])
 
 
-@task(
-    name="test",
-    aliases=["t"],
-)
-def test_task(ctx: Context):
-    """Offline tests with the latest Python."""
-    announce_task("test")
+@task(name="test-fast", aliases=["tf"])
+def test_fast_task(ctx: Context):
+    """Run fast tests only, using the latest Python."""
+    announce_task("test-fast")
     run(
         ctx,
         [
@@ -152,18 +149,15 @@ def test_task(ctx: Context):
             "-e",
             LATEST_PYTHON,
             "--",
-            "--offline",
+            "--fast-only",
         ],
     )
 
 
-@task(
-    name="check",
-    aliases=["c"],
-)
+@task(name="test", aliases=["t"])
 def check_task(ctx: Context):
-    """Lint and all tests using the latest Python."""
-    announce_task("check")
+    """Lint and run all tests using the latest Python."""
+    announce_task("test")
     run(
         ctx,
         [
@@ -178,20 +172,14 @@ def check_task(ctx: Context):
     )
 
 
-@task(
-    name="check-all",
-    aliases=["ca"],
-)
+@task(name="test-all", aliases=["ta"])
 def check_all_task(ctx: Context):
-    """Lint and all tests using all Python versions."""
-    announce_task("check-all")
+    """Lint and run all tests using all Python versions."""
+    announce_task("test-all")
     run(ctx, [PYTHON, "-m", "tox", "--skip-missing-interpreters", "false"])
 
 
-@task(
-    name="test-coverage",
-    aliases=["tc"],
-)
+@task(name="test-coverage", aliases=["tc"])
 def test_coverage_task(ctx: Context):
     """Generate test coverage report."""
     announce_task("test-coverage")
@@ -212,8 +200,29 @@ def test_coverage_task(ctx: Context):
     )
 
 
+@task(name="clear-cache", aliases=["cc"])
+def clear_cache_task(_: Context):
+    """Clear the pytest cache."""
+    announce_task("clear-pytest-cache")
+    repo_root = Path(__file__).resolve().parent
+    assert isinstance(repo_root, Path)
+
+    pytest_caches = glob(str(repo_root / ".pytest_cache"))
+    pytest_caches = pytest_caches + glob(
+        str(repo_root / ".tox/*/.pytest_cache")
+    )
+
+    if not pytest_caches:
+        print("Pytest cache is cleared.")
+        return
+
+    for cache_dir in pytest_caches:
+        print(f"Deleting {cache_dir}")
+        shutil.rmtree(cache_dir)
+
+
 # -- This task has not been tested.
-@task(name="publish-test")
+@task(name="publish-test", aliases=["pt"])
 def publish_test_task(ctx: Context):
     """Publish to Pypi test instance."""
     announce_task("publish-test")
@@ -221,7 +230,7 @@ def publish_test_task(ctx: Context):
 
 
 # -- This task has not been tested.
-@task(name="publish-prod")
+@task(name="publish-prod", aliases=["pd"])
 def publish_task(ctx: Context):
     """Publish to Pypi production instance."""
     announce_task("publish-prod")
@@ -250,7 +259,7 @@ def uninstall_apio_task(ctx: Context):
     cout("The'apio' pip package is uninstalled.", style="green bold")
 
 
-@task(name="install-deps", aliases=["deps"])
+@task(name="install-deps", aliases=["id"])
 def install_deps_task(_: Context):
     """Install development tools. Since we do at at the top of this file
     for every task, there is nothing to do here."""

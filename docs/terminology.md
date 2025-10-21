@@ -1,8 +1,13 @@
 - **APIO_DEBUG** - An environment variable that enables debug output during command execution.
   Accepts values from 1 to 10, where 10 is the most verbose.
 
-- **Apio home** - The directory where Apio stores its packages and profile file. Defaults to
-  `~/.apio`, but can be changed using the `APIO_HOME` environment variable.
+- **Apio home** - The directory where Apio stores its profile file. Defaults to
+  `~/.apio`, but can be changed using the `APIO_HOME` environment variable as done
+  during the automated tests.
+
+  - **Apio packages dir** - The directory where Apio stores its installed packages. Defaults to
+  `~/.apio/packages`, but can be changed using the `APIO_PACKAGES` environment variable as done
+  during the automated tests.
 
 - **ApioContext** - A key Apio class instantiated at the start of each command. It provides
   access to Apio's resources and project and profile information.
