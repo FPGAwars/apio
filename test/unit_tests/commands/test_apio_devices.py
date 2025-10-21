@@ -24,6 +24,8 @@ def test_apio_devices(apio_runner: ApioRunner):
 
         # -- Execute "apio devices usb". We run it in a
         # -- subprocess such that it releases the libusb1 file it uses.
+        # -- This also means that it's not included in the pytest test
+        # -- coverage report.
         result = sb.invoke_apio_cmd(
             apio, ["devices", "usb"], in_subprocess=True
         )
@@ -32,6 +34,8 @@ def test_apio_devices(apio_runner: ApioRunner):
 
         # -- Execute "apio devices serial". We run it in a
         # -- subprocess such that it releases the libusb1 file it uses.
+        # -- This also means that it's not included in the pytest test
+        # -- coverage report.
         result = sb.invoke_apio_cmd(
             apio, ["devices", "serial"], in_subprocess=True
         )

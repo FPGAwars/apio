@@ -200,6 +200,8 @@ def test_apio_api_scan_devices(apio_runner: ApioRunner):
 
         # -- Execute "apio api scan-devices -t xyz". We run it in a
         # -- subprocess such that it releases the libusb1 file it uses.
+        # -- This also means that it's not included in the pytest test
+        # -- coverage report.
         result = sb.invoke_apio_cmd(
             apio, ["api", "scan-devices", "-t", "xyz"], in_subprocess=True
         )
