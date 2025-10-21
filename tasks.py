@@ -9,12 +9,14 @@
 #   invoke --list        # Show available tasks
 #   invoke -l            # Show available tasks
 #   invoke lint          # Lint the python code
-#   invoke test          # Run only the fast tests, skip the rest.
-#   invoke check         # Run lint and all the tests (slow)
+#   invoke test-fast     # Run only the fast tests, skip the rest.
+#   invoke test       .  # Run lint and all the tests (slow)
 #   invoke install-apio  # Install to run 'apio' from the source code here.
 #   invoke docs-viewer   # Run a local http server to view the Apio docs.
+#   invoke test-coverage # Collect and show test coverage.
 
 import sys
+import webbrowser
 from pathlib import Path
 from glob import glob
 import shutil
@@ -110,6 +112,12 @@ def announce_task(task_name: str) -> None:
     cout(f"Executing Apio task: {task_name}", style="magenta bold")
 
 
+def get_repo_root() -> Path:
+    """Return the root of the local apio github repository."""
+    # -- Return the directory that contains this file.
+    return Path(__file__).resolve().parent
+
+
 def run(ctx: Context, cmd: List[str]) -> None:
     """Run a command. Abort if it returns an error code."""
     dry_run: bool = ctx.config.run.dry
@@ -199,12 +207,31 @@ def test_coverage_task(ctx: Context):
         ],
     )
 
+    # -- Open a browser to show the results.
+    default_browser = webbrowser.get()
+    coverage_path = get_repo_root / "_pytest_coverage" / "index.html"
+    default_browser.open(str(coverage_path))
+
+
+@task(name="view-coverage", aliases=["vc"])
+def view_coverage_task(_: Context):
+    """View test coverage from a previous run of 'test-coverage'."""
+    announce_task("view-coverage")
+
+    # -- Path of coverage entry page.
+    file_path = get_repo_root() / "_pytest-coverage" / "index.html"
+    file_uri = file_path.resolve().as_uri()
+
+    # -- Open in default browser.
+    default_browser = webbrowser.get()
+    default_browser.open(file_uri)
+
 
 @task(name="clear-cache", aliases=["cc"])
 def clear_cache_task(_: Context):
     """Clear the pytest cache."""
     announce_task("clear-pytest-cache")
-    repo_root = Path(__file__).resolve().parent
+    repo_root = get_repo_root()
     assert isinstance(repo_root, Path)
 
     pytest_caches = glob(str(repo_root / ".pytest_cache"))
