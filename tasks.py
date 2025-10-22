@@ -119,6 +119,7 @@ def get_repo_root() -> Path:
 
 
 def open_test_coverage_viewer() -> None:
+    """Open a browser to view the test coverage results entry page."""
     file_path = get_repo_root() / "_pytest-coverage" / "index.html"
     file_uri = file_path.resolve().as_uri()
 
