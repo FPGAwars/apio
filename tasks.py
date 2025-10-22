@@ -118,6 +118,15 @@ def get_repo_root() -> Path:
     return Path(__file__).resolve().parent
 
 
+def open_test_coverage_viewer() -> None:
+    file_path = get_repo_root() / "_pytest-coverage" / "index.html"
+    file_uri = file_path.resolve().as_uri()
+
+    # -- Open in default browser.
+    default_browser = webbrowser.get()
+    default_browser.open(file_uri)
+
+
 def run(ctx: Context, cmd: List[str]) -> None:
     """Run a command. Abort if it returns an error code."""
     dry_run: bool = ctx.config.run.dry
@@ -208,9 +217,7 @@ def test_coverage_task(ctx: Context):
     )
 
     # -- Open a browser to show the results.
-    default_browser = webbrowser.get()
-    coverage_path = get_repo_root / "_pytest_coverage" / "index.html"
-    default_browser.open(str(coverage_path))
+    open_test_coverage_viewer()
 
 
 @task(name="view-coverage", aliases=["vc"])
@@ -218,13 +225,7 @@ def view_coverage_task(_: Context):
     """View test coverage from a previous run of 'test-coverage'."""
     announce_task("view-coverage")
 
-    # -- Path of coverage entry page.
-    file_path = get_repo_root() / "_pytest-coverage" / "index.html"
-    file_uri = file_path.resolve().as_uri()
-
-    # -- Open in default browser.
-    default_browser = webbrowser.get()
-    default_browser.open(file_uri)
+    open_test_coverage_viewer()
 
 
 @task(name="clear-cache", aliases=["cc"])
