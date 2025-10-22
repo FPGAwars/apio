@@ -36,6 +36,9 @@ class ApioEnv:
         # -- Create the base target.
         self.target = str(self.env_build_path / "hardware")
 
+        # -- Create the target for the graph files (.dot, .svg, etc)
+        self.graph_target = str(self.env_build_path / "graph")
+
         # -- Create the underlying scons env.
         self.scons_env = SConsEnvironment(ENV=os.environ, tools=[])
 

@@ -39,8 +39,8 @@ hardware.vlt
 hardware.bit
 hardware.config
 hardware.pnr
-hardware.dot
-hardware.svg
+graph.dot
+graph.svg
 *.out
 *.vcd
 .DS_Store

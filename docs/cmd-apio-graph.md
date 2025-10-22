@@ -31,9 +31,9 @@ apio graph -t my_module  # Graph the 'my_module' module
 
 <h3>Notes</h3>
 
-- On Windows, run `explorer _build/default/hardware.svg` to view the graph.
+- On Windows, run `explorer _build/default/graph.svg` to view the graph.
   If your environment name is different from `default`, adjust the path accordingly.
-- On macOS, use `open _build/default/hardware.svg`.
+- On macOS, use `open _build/default/graph.svg`.
 
 <h3>Example output</h3>
 
