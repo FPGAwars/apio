@@ -228,7 +228,7 @@ class SconsHandler:
 
         dot_target = apio_env.builder_target(
             builder_id=YOSYS_DOT_BUILDER,
-            target=apio_env.target,
+            target=apio_env.graph_target,
             sources=synth_srcs,
             always_build=True,
         )
@@ -239,7 +239,7 @@ class SconsHandler:
         )
         graphviz_target = apio_env.builder_target(
             builder_id=GRAPHVIZ_RENDERER_BUILDER,
-            target=apio_env.target,
+            target=apio_env.graph_target,
             sources=dot_target,
             always_build=True,
         )

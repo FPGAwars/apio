@@ -126,7 +126,7 @@ class PluginBase:
                 'yosys -p "read_verilog -sv $SOURCES; show -format dot'
                 ' -colors 1 -wireshape plaintext -prefix {0} {1}" {2} {3}'
             ).format(
-                apio_env.target,
+                apio_env.graph_target,
                 top_module,
                 "" if params.verbosity.all else "-q",
                 get_define_flags(apio_env),
@@ -161,7 +161,9 @@ class PluginBase:
         def completion_action(source, target, env):  # noqa
             """Action function that prints a completion message."""
             _ = (source, target, env)  # Unused
-            cout(f"Generated {apio_env.target}.{type_str}", style=SUCCESS)
+            cout(
+                f"Generated {apio_env.graph_target}.{type_str}", style=SUCCESS
+            )
 
         actions = [
             f"dot -T{type_str} $SOURCES -o $TARGET",

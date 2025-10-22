@@ -231,8 +231,8 @@ def _test_project(
         result = sb.invoke_apio_cmd(apio, args)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
-        assert getsize(sb.proj_dir / "_build/default/hardware.dot")
-        assert getsize(sb.proj_dir / "_build/default/hardware.svg")
+        assert getsize(sb.proj_dir / "_build/default/graph.dot")
+        assert getsize(sb.proj_dir / "_build/default/graph.svg")
 
         # -- 'apio clean'
         assert Path(sb.proj_dir / "_build/default").exists()

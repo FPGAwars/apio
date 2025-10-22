@@ -61,8 +61,8 @@ Examples:[code]
   apio graph -t my_module  # Graph my_module module.[/code]
 
 
-[b][Hint][/b] On Windows, type 'explorer _build/default/hardware.svg' to view \
-the graph, and on Mac OS type 'open _build/default/hardware.svg' (if your \
+[b][Hint][/b] On Windows, type 'explorer _build/default/graph.svg' to view \
+the graph, and on Mac OS type 'open _build/default/graph.svg' (if your \
 env is different than 'default' change the commands accordingly).
 """
 

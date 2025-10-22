@@ -83,7 +83,7 @@ jobs:
                 cd _build/default
                 ls -al hardware.bin
                 ls -al hardware.pnr
-                ls -al hardware.svg
+                ls -al graph.svg
                 ls -al util/ticker_tb.vcd
 
             - name: Test ECP5 project
@@ -113,7 +113,7 @@ jobs:
                 cd _build/default
                 ls -al hardware.bit
                 ls -al hardware.pnr
-                ls -al hardware.svg
+                ls -al graph.svg
                 ls -al ledon_tb.vcd
 
             - name: Test GOWIN project
@@ -143,6 +143,6 @@ jobs:
                 cd _build/default
                 ls -al hardware.fs
                 ls -al hardware.pnr
-                ls -al hardware.svg
+                ls -al graph.svg
                 ls -al blinky_tb.vcd
 

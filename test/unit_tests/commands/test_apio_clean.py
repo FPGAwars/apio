@@ -98,7 +98,7 @@ def test_clean_no_build(apio_runner: ApioRunner):
 
 def test_clean_legacy_files(apio_runner: ApioRunner):
     """Tests that 'apio clean' deletes also legacy files that may have been
-    left in the project dir.
+    left in the project dir by apio version before 1.x.x.
     """
 
     with apio_runner.in_sandbox() as sb:
