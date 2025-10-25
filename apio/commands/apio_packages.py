@@ -59,7 +59,7 @@ def print_packages_report(apio_ctx: ApioContext) -> None:
     for package_name in scan.uninstalled_package_names:
         description = get_package_info(package_name)["description"]
         table.add_row(
-            package_name, None, description, "Uninstalled", style=INFO
+            package_name, None, None, description, "Uninstalled", style=INFO
         )
 
     # -- Add raws for installed with version or platform mismatch.
