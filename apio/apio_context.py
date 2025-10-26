@@ -546,7 +546,7 @@ class ApioContext:
                     val_template, package_path
                 )
 
-    def get_package_info(self, package_name: str) -> str:
+    def get_platform_package_info(self, package_name: str) -> str:
         """Returns the information of the package with given name.
         The information is a JSON dict originated at packages.json().
         Exits with an error message if the package is not defined.

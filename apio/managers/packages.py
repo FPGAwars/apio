@@ -304,7 +304,7 @@ def install_package(
     if not force_reinstall:
         # -- Get the version of the installed package, None if not installed.
         installed_version, package_platform_id = (
-            packages_ctx.profile.get_package_installed_info(package_name)
+            packages_ctx.profile.get_installed_package_info(package_name)
         )
 
         if verbose:
@@ -499,7 +499,7 @@ def package_version_ok(
 
     # -- If the current version is not available, the package is not installed.
     current_ver, package_platform_id = (
-        packages_ctx.profile.get_package_installed_info(package_name)
+        packages_ctx.profile.get_installed_package_info(package_name)
     )
     if not current_ver or package_platform_id != packages_ctx.platform_id:
         return False
