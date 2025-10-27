@@ -145,7 +145,7 @@ class ApioContext:
         "platforms",
         "platform_id",
         "all_packages",
-        "platform_packages",
+        "required_packages",
         "env_was_already_set",
         "_project_dir",
         "_project",
@@ -287,7 +287,7 @@ class ApioContext:
         )
 
         # The subset of packages that are applicable to this platform.
-        self.platform_packages = self._select_packages_for_platform(
+        self.required_packages = self._select_required_packages_for_platform(
             self.all_packages, self.platform_id, self.platforms
         )
 
@@ -546,12 +546,12 @@ class ApioContext:
                     val_template, package_path
                 )
 
-    def get_platform_package_info(self, package_name: str) -> str:
+    def get_required_package_info(self, package_name: str) -> str:
         """Returns the information of the package with given name.
         The information is a JSON dict originated at packages.json().
         Exits with an error message if the package is not defined.
         """
-        package_info = self.platform_packages.get(package_name, None)
+        package_info = self.required_packages.get(package_name, None)
         if package_info is None:
             cerror(f"Unknown package '{package_name}'")
             sys.exit(1)
@@ -605,13 +605,13 @@ class ApioContext:
         ApioContext."""
         return PackagesContext(
             profile=self.profile,
-            platform_packages=self.platform_packages,
+            required_packages=self.required_packages,
             platform_id=self.platform_id,
             packages_dir=self.apio_packages_dir,
         )
 
     @staticmethod
-    def _select_packages_for_platform(
+    def _select_required_packages_for_platform(
         all_packages: Dict[str, Dict],
         platform_id: str,
         platforms: Dict[str, Dict],
@@ -636,17 +636,17 @@ class ApioContext:
             # -- Get the list of platforms ids on which this package is
             # -- available. The package is available on all platforms unless
             # -- restricted by the ""restricted-to-platforms" field.
-            available_on_platforms = package_info.get(
+            required_for_platforms = package_info.get(
                 "restricted-to-platforms", platforms.keys()
             )
 
             # -- Sanity check that all platform ids are valid. If fails it's
             # -- a programming error.
-            for p in available_on_platforms:
+            for p in required_for_platforms:
                 assert p in platforms.keys(), platform
 
             # -- If available for 'platform_id', add it.
-            if platform_id in available_on_platforms:
+            if platform_id in required_for_platforms:
                 filtered_packages[package_name] = all_packages[package_name]
 
         # -- Return the subset dict with the packages for 'platform_id'.
@@ -697,7 +697,7 @@ class ApioContext:
         in the order they are defined."""
 
         result = EnvMutations([], [])
-        for _, package_config in self.platform_packages.items():
+        for _, package_config in self.required_packages.items():
             # -- Get the json 'env' section. We require it, even if it's empty,
             # -- for clarity reasons.
             assert "env" in package_config

@@ -31,7 +31,7 @@ def print_packages_report(apio_ctx: ApioContext) -> None:
 
     # -- Shortcuts to reduce clutter.
     get_installed_package_info = apio_ctx.profile.get_installed_package_info
-    get_platform_package_info = apio_ctx.get_platform_package_info
+    get_required_package_info = apio_ctx.get_required_package_info
 
     table = Table(
         show_header=True,
@@ -49,15 +49,15 @@ def print_packages_report(apio_ctx: ApioContext) -> None:
     table.add_column("DESCRIPTION", no_wrap=True)
     table.add_column("STATUS", no_wrap=True)
 
-    # -- Add rows for platform packages installed ok.
+    # -- Add rows for required packages installed ok.
     for package_name in scan.installed_ok_package_names:
         version, platform_id = get_installed_package_info(package_name)
-        description = get_platform_package_info(package_name)["description"]
+        description = get_required_package_info(package_name)["description"]
         table.add_row(package_name, version, platform_id, description, "OK")
 
     # -- Add rows for uninstalled packages.
     for package_name in scan.uninstalled_package_names:
-        description = get_platform_package_info(package_name)["description"]
+        description = get_required_package_info(package_name)["description"]
         table.add_row(
             package_name, None, None, description, "Uninstalled", style=INFO
         )
@@ -65,7 +65,7 @@ def print_packages_report(apio_ctx: ApioContext) -> None:
     # -- Add raws for installed with version or platform mismatch.
     for package_name in scan.bad_version_package_names:
         version, platform_id = get_installed_package_info(package_name)
-        description = get_platform_package_info(package_name)["description"]
+        description = get_required_package_info(package_name)["description"]
         table.add_row(
             package_name,
             version,
@@ -77,7 +77,7 @@ def print_packages_report(apio_ctx: ApioContext) -> None:
 
     # -- Add rows for broken packages.
     for package_name in scan.broken_package_names:
-        description = get_platform_package_info(package_name)["description"]
+        description = get_required_package_info(package_name)["description"]
         table.add_row(
             package_name, None, None, description, "Broken", style=ERROR
         )
@@ -178,7 +178,7 @@ def _update_cli(
     packages.scan_and_fix_packages(apio_ctx.packages_context)
 
     # -- Install the packages, one by one.
-    for package in apio_ctx.platform_packages:
+    for package in apio_ctx.required_packages:
         packages.install_package(
             apio_ctx.packages_context,
             package_name=package,
