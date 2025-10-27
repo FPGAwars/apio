@@ -7,6 +7,8 @@
 # -- License GPLv2
 """Implementation of 'apio packages' command"""
 
+from typing import Dict
+from dataclasses import dataclass
 import click
 from rich.table import Table
 from rich import box
@@ -21,6 +23,18 @@ from apio.apio_context import (
     RemoteConfigPolicy,
     PackagesPolicy,
 )
+
+
+@dataclass(frozen=True)
+class RequiredPackageRow:
+    """Information of a row of a required package."""
+
+    # -- Package name
+    name: str
+    # -- The status column text value.
+    status: str
+    # -- The style to use for the row.
+    style: str
 
 
 def print_packages_report(apio_ctx: ApioContext) -> None:
@@ -49,21 +63,43 @@ def print_packages_report(apio_ctx: ApioContext) -> None:
     table.add_column("DESCRIPTION", no_wrap=True)
     table.add_column("STATUS", no_wrap=True)
 
-    # -- Add rows for required packages installed ok.
-    for package_name in scan.installed_ok_package_names:
-        version, platform_id = get_installed_package_info(package_name)
-        description = get_required_package_info(package_name)["description"]
-        table.add_row(package_name, version, platform_id, description, "OK")
+    required_packages_rows: Dict[RequiredPackageRow] = {}
 
-    # -- Add rows for uninstalled packages.
-    for package_name in scan.uninstalled_package_names:
-        description = get_required_package_info(package_name)["description"]
-        table.add_row(
-            package_name, None, None, description, "Uninstalled", style=INFO
+    # -- Collect rows of required packages that are installed OK.
+    for package_name in scan.installed_ok_package_names:
+        assert package_name not in required_packages_rows
+        required_packages_rows[package_name] = RequiredPackageRow(
+            package_name, "OK", None
         )
 
-    # -- Add raws for installed with version or platform mismatch.
+    # -- Collect rows of required packages that are uninstalled.
+    for package_name in scan.uninstalled_package_names:
+        assert package_name not in required_packages_rows
+        required_packages_rows[package_name] = RequiredPackageRow(
+            package_name, "Uninstalled", INFO
+        )
+
+    # -- Collect rows of required packages have version or platform mismatch.
     for package_name in scan.bad_version_package_names:
+        assert package_name not in required_packages_rows
+        required_packages_rows[package_name] = RequiredPackageRow(
+            package_name, "Mismatch", ERROR
+        )
+
+    # -- Collect rows of required packages that are broken.
+    for package_name in scan.broken_package_names:
+        assert package_name not in required_packages_rows
+        required_packages_rows[package_name] = RequiredPackageRow(
+            package_name, "Broken", ERROR
+        )
+
+    # -- Add the required packages rows to the table, in the order that they
+    # -- are statically defined in the remote config file.
+    assert set(required_packages_rows.keys()) == (
+        apio_ctx.required_packages.keys()
+    )
+    for package_name in apio_ctx.required_packages:
+        row_info = required_packages_rows[package_name]
         version, platform_id = get_installed_package_info(package_name)
         description = get_required_package_info(package_name)["description"]
         table.add_row(
@@ -71,15 +107,8 @@ def print_packages_report(apio_ctx: ApioContext) -> None:
             version,
             platform_id,
             description,
-            "Mismatch",
-            style=ERROR,
-        )
-
-    # -- Add rows for broken packages.
-    for package_name in scan.broken_package_names:
-        description = get_required_package_info(package_name)["description"]
-        table.add_row(
-            package_name, None, None, description, "Broken", style=ERROR
+            row_info.status,
+            style=row_info.style,
         )
 
     # -- Render table.

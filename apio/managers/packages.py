@@ -9,9 +9,9 @@ Used by the 'apio packages' command.
 
 import sys
 import os
+from dataclasses import dataclass
 from typing import Dict, List
 from pathlib import Path
-from dataclasses import dataclass
 import shutil
 from apio.common.apio_console import cout, cerror, cstyle
 from apio.common.apio_styles import WARNING, ERROR, SUCCESS, EMPH3
