@@ -16,6 +16,27 @@ from apio.common.apio_styles import INFO, WARNING, SUCCESS, ERROR
 from apio.utils import util
 
 
+# -- A table with line coloring rules. If a line matches any regex, it gets
+# -- The style of the first regex it matches.
+LINE_COLORING_TABLE = [
+    # -- Info patterns
+    (r"^info:", INFO),
+    # -- Warning patterns
+    (r"^warning:", WARNING),
+    # -- Error patterns.
+    (r"^error:", ERROR),
+    (r"fail: ", ERROR),
+    (r"fatal: ", ERROR),
+    (r"^fatal error:", ERROR),
+    (r"assertion failed", ERROR),
+    # -- Success patterns
+    (r"is up to date", SUCCESS),
+    (r"[$]finish called", SUCCESS),
+    (r"^verify ok$", SUCCESS),
+    (r"^done$", SUCCESS),
+]
+
+
 class PipeId(Enum):
     """Represent the two output streams from the scons subprocess."""
 
@@ -234,47 +255,15 @@ class SconsFilter:
         # -- Update the range detectors.
         in_pnr_verbose_range = self._pnr_detector.update(pipe_id, line)
 
-        # in_iverolog_range = self._iverilog_detector.update(pipe_id, line)
-        # in_iceprog_range = self._iceprog_detector.update(pipe_id, line)
+        # -- Remove the 'Info: ' prefix. Nextpnr write a long log where
+        # -- each line starts with "Info: "
+        if (
+            pipe_id == PipeId.STDERR
+            and in_pnr_verbose_range
+            and line.startswith("Info: ")
+        ):
+            line = line[6:]
 
-        # -- Handle the line while in the nextpnr verbose log range.
-        if pipe_id == PipeId.STDERR and in_pnr_verbose_range:
-
-            # -- Remove the 'Info: ' prefix. Nextpnr write a long log where
-            # -- each line starts with "Info: "
-            if line.startswith("Info: "):
-                line = line[6:]
-
-            # -- Assign line color.
-            line_color = self._assign_line_color(
-                line,
-                [
-                    (r"^warning:", WARNING),
-                    (r"^error:", ERROR),
-                    (r"^fatal error:", ERROR),
-                ],
-            )
-            self._output_line(line, line_color, terminator)
-            return
-
-        # -- Handling the rest of the stdout and stdout lines.
-        line_color = self._assign_line_color(
-            line,
-            [
-                # -- Info patterns
-                (r"^info:", INFO),
-                # -- Warning patterns
-                (r"^warning:", WARNING),
-                # -- Error patterns.
-                (r"^error:", ERROR),
-                (r"fail: ", ERROR),
-                (r"fatal: ", ERROR),
-                (r"assertion failed", ERROR),
-                # -- Success patterns
-                (r"is up to date", SUCCESS),
-                (r"[$]finish called", SUCCESS),
-                (r"^verify ok$", SUCCESS),
-                (r"^done$", SUCCESS),
-            ],
-        )
+        # -- Output the line in the appropriate style.
+        line_color = self._assign_line_color(line, LINE_COLORING_TABLE)
         self._output_line(line, line_color, terminator)
