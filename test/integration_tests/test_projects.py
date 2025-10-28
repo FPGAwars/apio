@@ -110,6 +110,8 @@ def _test_project(
         result = sb.invoke_apio_cmd(apio, args)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
+        assert "yosys -p" in result.output
+
         assert getsize(sb.proj_dir / "_build/default" / bitstream)
 
         # -- 'apio build' (no change)
@@ -117,7 +119,7 @@ def _test_project(
         result = sb.invoke_apio_cmd(apio, args)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
-        assert "yosys" not in result.output
+        assert "yosys -p" not in result.output
 
         # -- Modify apio.ini
         apio_ini_lines = sb.read_file(
@@ -132,7 +134,7 @@ def _test_project(
         result = sb.invoke_apio_cmd(apio, args)
         sb.assert_ok(result)
         assert "SUCCESS" in result.output
-        assert "yosys" in result.output
+        assert "yosys -p" in result.output
 
         # -- 'apio lint'
         args = ["lint"] + proj_arg
