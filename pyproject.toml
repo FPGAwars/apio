@@ -70,7 +70,7 @@ target-version = ['py311']
 
 [tool.coverage.run]
 omit = [
-    "apio/common/proto/apio_pb2.py",  
+    "apio/common/proto/apio_pb2.py",
     "apio/common/proto/apio_pb2.pyi",
 ]
 
