@@ -70,8 +70,8 @@ nav:
   - FPGA Boards:
       - Supported boards: supported-boards.md
       - Supported FPGAs: supported-fpgas.md
-      - Board drivers: board-drivers.md
       - Custom boards: custom-boards.md
+      - Board drivers: board-drivers.md
   - Apio Examples:
       - Using examples: using-examples.md
       - Contributing examples: contributing-examples.md
