@@ -2,21 +2,24 @@
 Tests of the scons plugin_util.py functions.
 """
 
+import re
 from os.path import isfile, exists, join
 from test.unit_tests.scons.testing import make_test_apio_env
 from test.conftest import ApioRunner
 import pytest
 from SCons.Node.FS import FS
+from SCons.Action import FunctionAction
 from pytest import LogCaptureFixture
 from apio.common.apio_console import cunstyle
 from apio.common import apio_console
-from apio.common.proto.apio_pb2 import TargetParams, UploadParams
+from apio.common.proto.apio_pb2 import TargetParams, UploadParams, LintParams
 from apio.scons.plugin_util import (
     get_constraint_file,
     verilog_src_scanner,
     get_programmer_cmd,
     map_params,
     make_verilator_config_builder,
+    verilator_lint_action,
 )
 
 
@@ -218,3 +221,81 @@ def test_make_verilator_config_builder(apio_runner: ApioRunner):
         text = sb.read_file("hardware.vlt")
         assert "verilator_config" in text, text
         assert "lint_off -rule COMBDLY" in text, text
+
+
+def test_verilator_lint_action_min(apio_runner: ApioRunner):
+    """Tests the verilator_lint_action() function with minimal params."""
+
+    with apio_runner.in_sandbox():
+
+        # -- Create apio scons env.
+        apio_env = make_test_apio_env(
+            targets=["lint"], target_params=TargetParams(lint=LintParams())
+        )
+
+        # -- Call the tested function with minimal args.
+        action = verilator_lint_action(
+            apio_env, extra_params=None, lib_dirs=None, lib_files=None
+        )
+
+        # -- The return action is a list of two steps, a function to call and
+        # -- a string with a command.
+        assert isinstance(action, list)
+        assert len(action) == 2
+        assert isinstance(action[0], FunctionAction)
+        assert isinstance(action[1], str)
+
+        # -- Collapse consecutive spaces in the string.
+        normalized_cmd = re.sub(r"\s+", " ", action[1])
+        # -- Verify the string
+        assert (
+            "verilator_bin --lint-only --quiet --bbox-unsup --timing "
+            "-Wno-TIMESCALEMOD -Wno-MULTITOP -DAPIO_SIM=0 --top-module main "
+            "_build/default/hardware.vlt $SOURCES" == normalized_cmd
+        )
+
+
+def test_verilator_lint_action_max(apio_runner: ApioRunner):
+    """Tests the verilator_lint_action() function with maximal params."""
+
+    with apio_runner.in_sandbox():
+
+        # -- Create apio scons env.
+        apio_env = make_test_apio_env(
+            targets=["lint"],
+            target_params=TargetParams(
+                lint=LintParams(
+                    top_module="my_top_module",
+                    verilator_all=True,
+                    verilator_no_style=True,
+                    verilator_no_warns=["aa", "bb"],
+                    verilator_warns=["cc", "dd"],
+                )
+            ),
+        )
+
+        # -- Call the tested function with minimal args.
+        action = verilator_lint_action(
+            apio_env,
+            extra_params=["param1", "param2"],
+            lib_dirs=["dir1", "dir2"],
+            lib_files=["file1", "file2"],
+        )
+
+        # -- The return action is a list of two steps, a function to call and
+        # -- a string with a command.
+        assert isinstance(action, list)
+        assert len(action) == 2
+        assert isinstance(action[0], FunctionAction)
+        assert isinstance(action[1], str)
+
+        # -- Collapse consecutive spaces in the string.
+        normalized_cmd = re.sub(r"\s+", " ", action[1])
+        # -- Verify the string
+        assert (
+            "verilator_bin --lint-only --quiet --bbox-unsup --timing "
+            "-Wno-TIMESCALEMOD -Wno-MULTITOP -DAPIO_SIM=0 -Wall -Wno-style "
+            "-Wno-aa -Wno-bb -Wwarn-cc -Wwarn-dd --top-module my_top_module "
+            'param1 param2 -I"dir1" -I"dir2" _build/default/hardware.vlt '
+            '"file1" "file2" $SOURCES' == normalized_cmd
+        )
