@@ -1,4 +1,5 @@
 import os
+import sys
 import subprocess
 from pathlib import Path
 
@@ -15,7 +16,7 @@ def launch_child():
     os.chdir("..")
 
     # -- Run the scons subprocess
-    subprocess.run(["python", "-m", "SCons", "-f", sconst_path])
+    subprocess.run([sys.executable, "-m", "SCons", "-f", sconst_path])
     print("*** Parent: back from child.")
 
 
