@@ -15,7 +15,7 @@ def launch_child():
     os.chdir("/tmp")
 
     # -- Run the scons subprocess
-    subprocess.run([sys.executable, "-m", "SCons", "-f", sconst_path])
+    subprocess.run([sys.executable, "-m", "SCons", "-f", sconst_path, "build"])
 
     proc = subprocess.Popen(
         [sys.executable, "-m", "SCons", "-f", sconst_path],
@@ -26,9 +26,10 @@ def launch_child():
 
     stdout, stderr = proc.communicate()
 
-    assert proc.returncode == 0
-
-    # print(stdout)
-    # print(stderr)
+    assert proc.returncode == 0, proc.returncode
 
     print("*** Parent: back from child.")
+
+
+if __name__ == "__main__":
+    launch_child()
