@@ -1,7 +1,6 @@
 import os
 import sys
 import subprocess
-from pathlib import Path
 
 
 def launch_child():
@@ -33,9 +32,3 @@ def launch_child():
     # print(stderr)
 
     print("*** Parent: back from child.")
-
-
-def called_from_scons():
-    """Called from SConstruct to print a message"""
-    print("*** Child: called from scons")
-    print(f"*** Child: current dir: {os.getcwd()}")

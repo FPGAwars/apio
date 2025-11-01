@@ -1,4 +1,4 @@
-import foo
+import scons_helper
 
-foo.called_from_scons()
+scons_helper.called_from_scons()
 
