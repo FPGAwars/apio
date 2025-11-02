@@ -199,7 +199,7 @@ class ApioSandbox:
 
         # -- Restore system env. Since apio commands tend to change vars
         # -- such as PATH.
-        self.restore_system_env(original_env)
+        self.restore_system_env(original_env, "apio-command")
 
         return apio_result
 
@@ -217,7 +217,9 @@ class ApioSandbox:
         # -- The word 'error' should NOT appear on the standard output
         assert "error" not in result.output.lower()
 
-    def restore_system_env(self, original_env: Dict[str, str]) -> None:
+    def restore_system_env(
+        self, original_env: Dict[str, str], scope: str
+    ) -> None:
         """Overwrites the existing sys.environ with the given dict. Vars
         that are not in the dict are deleted and vars that have a different
         value in the dict is updated.  Can be called only within a
@@ -230,7 +232,7 @@ class ApioSandbox:
         # -- os.environ since a simple dict doesn't update the underlying
         # -- system env when it's mutated.
 
-        print("\nRestoring os.environ:")
+        print(f"\nRestoring os.environ ({scope} scope):")
 
         # -- Construct the union of the env and the dict var names.
         all_var_names = set(os.environ.keys()).union(original_env.keys())
@@ -480,6 +482,14 @@ class ApioRunner:
         os.environ["APIO_HOME"] = str(home_dir)
         os.environ["APIO_PACKAGES"] = str(self._packages_dir)
 
+        # os.environ["COVERAGE_PROCESS_START"] = str(
+        #     Path(__file__).resolve().parent.parent / ".coveragerc"
+        # )
+
+        # os.environ["COVERAGE_FILE"] = str(
+        #     Path(__file__).resolve().parent.parent / ".coverage"
+        # )
+
         local_config_url = self._get_local_config_url()
         print(f"Local config url: {local_config_url}")
 
@@ -506,7 +516,7 @@ class ApioRunner:
             # -- exception.
 
             # -- Restore the original system env.
-            self._sandbox.restore_system_env(original_env)
+            self._sandbox.restore_system_env(original_env, "sandbox")
 
             # -- Mark that we exited the sandbox. This expires the sandbox.
             self._sandbox = None
