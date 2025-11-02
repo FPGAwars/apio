@@ -178,82 +178,66 @@ class CommandResult:
     exit_code: Optional[int] = None  # Exit code, 0 = OK.
 
 
-def exec_command(*args, **kwargs) -> CommandResult:
-    """Execute the given command.
+def exec_command(
+    cmd: List[str], stdout: AsyncPipe, stderr: AsyncPipe
+) -> CommandResult:
+    """Execute the given command using async stdout/stderr..
 
     NOTE: When running on windows, this function does not support
-    privilege elevation, to achieve that, use os.system() instead.
+    privilege elevation, to achieve that, use os.system() instead, as
+    done in drivers.py
 
     INPUTS:
-     *args: List with the command and its arguments to execute
-     **kwargs: Key arguments when calling subprocess.Popen()
-       * stdout
-       * stdin
-       * shell
+        cmd:    list of command token (strings)
+        stdout: the AsyncPipe to use for stdout
+        stderr: the AsyncPipe to use for stderr.
 
-    OUTPUT: A dictionary with the following properties:
-      * out: String with the output
-      * err: String with the error output
-      * returncode: Number with the code returned by the command
-        * 0: Sucess
-        * Another number different from 0: Error!
-
-    Example:  exec_command(['scons', '-Q', '-c', '-f', 'SConstruct'])
+    OUTPUT:
+        A CommandResult with the command results.
     """
 
-    # -- Set the default arguments to pass to subprocess.Popen()
-    # -- for executing the command
-    flags = {
-        # -- Capture the command output
-        "stdout": subprocess.PIPE,
-        "stderr": subprocess.PIPE,
-        # -- Execute it directly, without using the shell
-        "shell": False,
-    }
+    # -- Sanity check.
+    assert isinstance(cmd, list)
+    assert isinstance(cmd[0], str)
+    assert isinstance(stdout, AsyncPipe)
+    assert isinstance(stderr, AsyncPipe)
 
-    # -- Include the flags given by the user
-    # -- It overrides the default flags
-    flags.update(kwargs)
-
-    # -- Execute the command!
+    # -- Execute the command
     try:
-        with subprocess.Popen(*args, **flags) as proc:
+        with subprocess.Popen(
+            cmd, stdout=stdout, stderr=stderr, shell=False
+        ) as proc:
 
-            # -- Run the command.
+            # -- Wait for completion.
             out_text, err_text = proc.communicate()
+
+            # -- Get status code.
             exit_code = proc.returncode
 
-            # -- Close the pipes
-            for std in ("stdout", "stderr"):
-                if isinstance(flags[std], AsyncPipe):
-                    flags[std].close()
+            # -- Close the async pipes.
+            stdout.close()
+            stderr.close()
 
     # -- User has pressed the Ctrl-C for aborting the command
     except KeyboardInterrupt:
         cerror("Aborted by user")
-        # NOTE: If using here sys.exit(1), apio requires pressing ctl-c twice
-        # when running 'apio sim'. This form of exist is more direct and
-        # 'hard'.
+        # -- NOTE: If using here sys.exit(1), apio requires pressing ctl-c
+        # -- twice when running 'apio sim'. This form of exit is more direct
+        # -- and harder.
         os._exit(1)
 
     # -- The command does not exist!
     except FileNotFoundError:
-        cerror("Command not found:", args)
+        cerror("Command not found:", cmd)
         sys.exit(1)
 
-    # -- If stdout pipe is an AsyncPipe, extract its text.
-    pipe = flags["stdout"]
-    if isinstance(pipe, AsyncPipe):
-        lines = pipe.get_buffer()
-        text = "\n".join(lines)
-        out_text = text
+    # -- Extract stdout text
+    lines = stdout.get_buffer()
+    out_text = "\n".join(lines)
 
-    # -- If stderr pipe is an AsyncPipe, extract its text.
-    pipe = flags["stderr"]
-    if isinstance(pipe, AsyncPipe):
-        lines = pipe.get_buffer()
-        text = "\n".join(lines)
-        err_text = text
+    # -- Extract stderr text
+    lines = stderr.get_buffer()
+    err_text = "\n".join(lines)
 
     # -- All done.
     result = CommandResult(out_text, err_text, exit_code)
