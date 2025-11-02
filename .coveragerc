@@ -1,0 +1,21 @@
+[run]
+parallel = true
+branch = true
+patch = subprocess
+data_file = .coverage
+source =
+    apio/
+    test/
+
+
+[paths]
+source =
+    apio/
+    test/
+
+
+[report]
+omit =
+    */apio/common/proto/*
+
+
