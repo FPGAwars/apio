@@ -89,7 +89,7 @@ class RangeDetector:
 
     def classify_line(
         self, pipe_id: PipeId, line: str
-    ) -> Optional[RangeEvents]:
+    ) -> Optional[RangeEvents]:  # pragma: no cover
         """Tests if the next stdout/err line affects the range begin/end.
         Subclasses should implement this with the necessary logic for the
         range that is being detected.

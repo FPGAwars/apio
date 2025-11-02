@@ -51,7 +51,7 @@ class PluginBase:
         # -- A placeholder for the constraint file name.
         self._constrain_file: str = None
 
-    def plugin_info(self) -> ArchPluginInfo:
+    def plugin_info(self) -> ArchPluginInfo:  # pragma: no cover
         """Return plugin specific parameters."""
         raise NotImplementedError("Implement in subclass.")
 
@@ -67,19 +67,19 @@ class PluginBase:
             )
         return self._constrain_file
 
-    def synth_builder(self) -> BuilderBase:
+    def synth_builder(self) -> BuilderBase:  # pragma: no cover
         """Creates and returns the synth builder."""
         raise NotImplementedError("Implement in subclass.")
 
-    def pnr_builder(self) -> BuilderBase:
+    def pnr_builder(self) -> BuilderBase:  # pragma: no cover
         """Creates and returns the pnr builder."""
         raise NotImplementedError("Implement in subclass.")
 
-    def bitstream_builder(self) -> BuilderBase:
+    def bitstream_builder(self) -> BuilderBase:  # pragma: no cover
         """Creates and returns the bitstream builder."""
         raise NotImplementedError("Implement in subclass.")
 
-    def testbench_compile_builder(self) -> BuilderBase:
+    def testbench_compile_builder(self) -> BuilderBase:  # pragma: no cover
         """Creates and returns the testbench compile builder."""
         raise NotImplementedError("Implement in subclass.")
 
@@ -179,10 +179,10 @@ class PluginBase:
 
         return graphviz_builder
 
-    def lint_config_builder(self) -> BuilderBase:
+    def lint_config_builder(self) -> BuilderBase:  # pragma: no cover
         """Creates and returns the lint config builder."""
         raise NotImplementedError("Implement in subclass.")
 
-    def lint_builder(self) -> BuilderBase:
+    def lint_builder(self) -> BuilderBase:  # pragma: no cover
         """Creates and returns the lint builder."""
         raise NotImplementedError("Implement in subclass.")
