@@ -255,8 +255,8 @@ def verilator_lint_action(
             SConsEnvironment,
         ],
         None,
-    ],
-    str,
+    ]
+    | str,
 ]:
     """Construct an verilator scons action.
     * extra_params: Optional additional arguments.
