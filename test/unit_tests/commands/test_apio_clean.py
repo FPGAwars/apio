@@ -32,7 +32,7 @@ def test_clean(apio_runner: ApioRunner):
 
         result = sb.invoke_apio_cmd(apio, ["clean"])
 
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "Removed _build" in result.output
         assert not Path("_build").exists()
 
@@ -71,7 +71,7 @@ def test_clean_from_remote_dir(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(
             apio, ["clean", "--project-dir", str(proj_dir)]
         )
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "Removed _build" in result.output
         os.chdir(proj_dir)
         assert not Path("_build").exists()
@@ -87,7 +87,7 @@ def test_clean_no_build(apio_runner: ApioRunner):
         assert not Path("_build").exists()
 
         result = sb.invoke_apio_cmd(apio, ["clean"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "Removed" not in result.output
         assert "Already clean" in result.output
 
@@ -116,7 +116,7 @@ def test_clean_legacy_files(apio_runner: ApioRunner):
             assert Path(legacy_file).exists()
 
         result = sb.invoke_apio_cmd(apio, ["clean"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
 
         for legacy_file in legacy_files:
             assert f"Removed {legacy_file}" in result.output

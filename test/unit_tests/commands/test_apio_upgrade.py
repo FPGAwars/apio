@@ -11,5 +11,5 @@ def test_upgrade(apio_runner: ApioRunner):
 
         # -- Execute "apio upgrade"
         result = sb.invoke_apio_cmd(apio, ["upgrade"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "Latest Apio stable version" in result.output

@@ -109,7 +109,7 @@ def test_files_order(apio_runner: ApioRunner):
 
         # -- 'apio build'
         result = sb.invoke_apio_cmd(apio, ["build"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "SUCCESS" in result.output
 
         # -- Check that the source file from the _build directory was not

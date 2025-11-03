@@ -12,6 +12,6 @@ def test_drivers(apio_runner: ApioRunner):
 
         # -- Execute "apio drivers"
         result = sb.invoke_apio_cmd(apio, ["drivers"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "apio drivers install" in cunstyle(result.output)
         assert "apio drivers uninstall" in cunstyle(result.output)

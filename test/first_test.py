@@ -14,4 +14,4 @@ def test_fill_packages_cache(apio_runner: ApioRunner):
 
         # -- Execute "apio packages"
         result = sb.invoke_apio_cmd(apio, ["packages", "update"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)

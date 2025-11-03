@@ -18,7 +18,7 @@ def test_apio_api_get_boards(apio_runner: ApioRunner):
 
         # -- Execute "apio api get-boards -t xyz"  (stdout)
         result = sb.invoke_apio_cmd(apio, ["api", "get-boards", "-t", "xyz"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "xyz" in result.output
         assert "alhambra-ii" in result.output
 
@@ -27,7 +27,7 @@ def test_apio_api_get_boards(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(
             apio, ["api", "get-boards", "-t", "xyz", "-o", str(path)]
         )
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
 
         # -- Read and verify the file.
         text = sb.read_file(path)
@@ -52,7 +52,7 @@ def test_apio_api_get_fpgas(apio_runner: ApioRunner):
 
         # -- Execute "apio api get-fpgas -t xyz"  (stdout)
         result = sb.invoke_apio_cmd(apio, ["api", "get-fpgas", "-t", "xyz"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "xyz" in result.output
         assert "ice40hx4k-tq144-8k" in result.output
 
@@ -61,7 +61,7 @@ def test_apio_api_get_fpgas(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(
             apio, ["api", "get-fpgas", "-t", "xyz", "-o", str(path)]
         )
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
 
         # -- Read and verify the file.
         text = sb.read_file(path)
@@ -83,7 +83,7 @@ def test_apio_api_get_programmers(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(
             apio, ["api", "get-programmers", "-t", "xyz"]
         )
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "xyz" in result.output
         assert "openfpgaloader" in result.output
 
@@ -92,7 +92,7 @@ def test_apio_api_get_programmers(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(
             apio, ["api", "get-programmers", "-t", "xyz", "-o", str(path)]
         )
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
 
         # -- Read and verify the file.
         text = sb.read_file(path)
@@ -111,7 +111,7 @@ def test_apio_api_get_commands(apio_runner: ApioRunner):
 
         # -- Execute "apio api get-commands -t xyz"  (stdout)
         result = sb.invoke_apio_cmd(apio, ["api", "get-commands", "-t", "xyz"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "xyz" in result.output
         assert '"apio"' in result.output
         assert '"api"' in result.output
@@ -122,7 +122,7 @@ def test_apio_api_get_commands(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(
             apio, ["api", "get-commands", "-t", "xyz", "-o", str(path)]
         )
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
 
         # -- Read and verify the file.
         text = sb.read_file(path)
@@ -143,7 +143,7 @@ def test_apio_api_get_system(apio_runner: ApioRunner):
 
         # -- Execute "apio api get-system -t xyz"  (stdout)
         result = sb.invoke_apio_cmd(apio, ["api", "get-system", "-t", "xyz"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "xyz" in result.output
         assert '"apio-version"' in result.output
         assert '"python-version"' in result.output
@@ -153,7 +153,7 @@ def test_apio_api_get_system(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(
             apio, ["api", "get-system", "-t", "xyz", "-o", str(path)]
         )
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
 
         # -- Read and verify the file.
         text = sb.read_file(path)
@@ -180,7 +180,7 @@ def test_apio_api_get_project(apio_runner: ApioRunner):
 
         # -- Execute "apio api get-project -t xyz"  (stdout)
         result = sb.invoke_apio_cmd(apio, ["api", "get-project", "-t", "xyz"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert '"default"' in result.output
         assert '"envs"' in result.output
         # assert '"apio-version"' in result.output
@@ -191,7 +191,7 @@ def test_apio_api_get_project(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(
             apio, ["api", "get-project", "-t", "xyz", "-o", str(path)]
         )
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
 
         # -- Read and verify the file.
         text = sb.read_file(path)
@@ -230,7 +230,7 @@ def test_apio_api_get_examples(apio_runner: ApioRunner):
 
         # -- Execute "apio api get-examples -t xyz"  (stdout)
         result = sb.invoke_apio_cmd(apio, ["api", "get-examples", "-t", "xyz"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "xyz" in result.output
         assert '"alhambra-ii"' in result.output
         assert '"blinky"' in result.output
@@ -240,7 +240,7 @@ def test_apio_api_get_examples(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(
             apio, ["api", "get-examples", "-t", "xyz", "-o", str(path)]
         )
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
 
         # -- Read and verify the file.
         text = sb.read_file(path)
@@ -264,7 +264,7 @@ def test_apio_api_scan_devices(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(
             apio, ["api", "scan-devices", "-t", "xyz"], in_subprocess=True
         )
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
 
         assert "xyz" in result.output
         assert "usb-devices" in result.output
@@ -278,7 +278,7 @@ def test_apio_api_scan_devices(apio_runner: ApioRunner):
             ["api", "scan-devices", "-t", "xyz", "-o", str(path)],
             in_subprocess=True,
         )
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
 
         # -- Read and verify the output file. Since we don't know what
         # -- devices the platform has, we just check for the section keys.

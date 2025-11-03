@@ -41,7 +41,7 @@ def test_boards_custom_board(apio_runner: ApioRunner):
 
         # -- Execute "apio boards"
         result = sb.invoke_apio_cmd(apio, ["boards"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         # -- Note: pytest sees the piped version of the command's output.
         assert "Loading custom 'boards.jsonc'" in result.output
         assert "alhambra-ii" not in result.output
@@ -51,7 +51,7 @@ def test_boards_custom_board(apio_runner: ApioRunner):
         # -- Execute "apio boards --docs"
         # -- With the --docs flag we ignore the custom board.
         result = sb.invoke_apio_cmd(apio, ["boards", "--docs"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "Loading custom 'boards.jsonc'" not in result.output
         assert "FPGA" in result.output
         assert "alhambra-ii" in result.output
@@ -66,7 +66,7 @@ def test_boards_list_ok(apio_runner: ApioRunner):
 
         # -- Run 'apio boards'
         result = sb.invoke_apio_cmd(apio, ["boards"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "Loading custom 'boards.jsonc'" not in result.output
         assert "FPGA-ID" not in result.output
         assert "alhambra-ii" in result.output
@@ -75,7 +75,7 @@ def test_boards_list_ok(apio_runner: ApioRunner):
 
         # -- Run 'apio boards -v'
         result = sb.invoke_apio_cmd(apio, ["boards", "-v"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "Loading custom 'boards.jsonc'" not in result.output
         assert "FPGA-ID" in result.output
         assert "alhambra-ii" in result.output
@@ -84,7 +84,7 @@ def test_boards_list_ok(apio_runner: ApioRunner):
 
         # -- Run 'apio boards --docs'
         result = sb.invoke_apio_cmd(apio, ["boards", "--docs"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "Loading custom 'boards.jsonc'" not in result.output
         assert "FPGA" in result.output
         assert "alhambra-ii" in result.output

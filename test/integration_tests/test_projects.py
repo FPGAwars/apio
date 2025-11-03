@@ -24,11 +24,11 @@ def test_project_with_legacy_board_id(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(
             apio, ["examples", "fetch", "ice40-hx8k/leds"]
         )
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
 
         # -- Run 'apio build'
         result = sb.invoke_apio_cmd(apio, ["build"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
 
         # -- Modify the apio.ini to have the legacy board id
         sb.write_apio_ini(
@@ -42,11 +42,11 @@ def test_project_with_legacy_board_id(apio_runner: ApioRunner):
 
         # -- Run 'apio clean'
         result = sb.invoke_apio_cmd(apio, ["clean"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
 
         # -- Run 'apio build' again. It should also succeed.
         result = sb.invoke_apio_cmd(apio, ["build"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
 
 
 def _test_project(
@@ -97,7 +97,7 @@ def _test_project(
         # -- 'apio examples fetch <example> -d <proj_dir>'
         args = ["examples", "fetch", example] + dst_arg
         result = sb.invoke_apio_cmd(apio, args)
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert f"Copying {example} example files" in result.output
         assert "fetched successfully" in result.output
         assert getsize(sb.proj_dir / "apio.ini")
@@ -108,7 +108,7 @@ def _test_project(
         # -- 'apio build'
         args = ["build"] + proj_arg
         result = sb.invoke_apio_cmd(apio, args)
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "SUCCESS" in result.output
         assert "yosys -p" in result.output
 
@@ -117,7 +117,7 @@ def _test_project(
         # -- 'apio build' (no change)
         args = ["build"] + proj_arg
         result = sb.invoke_apio_cmd(apio, args)
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "SUCCESS" in result.output
         assert "yosys -p" not in result.output
 
@@ -132,33 +132,33 @@ def _test_project(
         # -- Apio.ini modification should triggers a new build.
         args = ["build"] + proj_arg
         result = sb.invoke_apio_cmd(apio, args)
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "SUCCESS" in result.output
         assert "yosys -p" in result.output
 
         # -- 'apio lint'
         args = ["lint"] + proj_arg
         result = sb.invoke_apio_cmd(apio, args)
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "SUCCESS" in result.output
         assert getsize(sb.proj_dir / "_build/default/hardware.vlt")
 
         # -- 'apio format'
         args = ["format"] + proj_arg
         result = sb.invoke_apio_cmd(apio, args)
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
 
         # -- 'apio format <testbench-file>'
         # -- This tests the project relative specification even when
         # -- the option --project-dir is used.
         args = ["format", testbench_file] + proj_arg
         result = sb.invoke_apio_cmd(apio, args)
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
 
         # -- 'apio test'
         args = ["test"] + proj_arg
         result = sb.invoke_apio_cmd(apio, args)
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "SUCCESS" in result.output
         assert getsize(sb.proj_dir / f"_build/default/{testbench}.out")
         assert getsize(sb.proj_dir / f"_build/default/{testbench}.vcd")
@@ -168,7 +168,7 @@ def _test_project(
         # -- 'apio clean'
         args = ["clean"] + proj_arg
         result = sb.invoke_apio_cmd(apio, args)
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "Cleanup completed" in result.output
         assert not (sb.proj_dir / f"_build/default/{testbench}.out").exists()
         assert not (sb.proj_dir / f"_build/default/{testbench}.vcd").exists()
@@ -176,7 +176,7 @@ def _test_project(
         # -- 'apio sim --no-gtkwave'
         args = ["sim", "--no-gtkwave"] + proj_arg
         result = sb.invoke_apio_cmd(apio, args)
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "SUCCESS" in result.output
         assert getsize(sb.proj_dir / f"_build/default/{testbench}.out")
         assert getsize(sb.proj_dir / f"_build/default/{testbench}.vcd")
@@ -186,7 +186,7 @@ def _test_project(
         # -- 'apio clean'
         args = ["clean"] + proj_arg
         result = sb.invoke_apio_cmd(apio, args)
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "Cleanup completed" in result.output
         assert not (sb.proj_dir / f"_build/default/{testbench}.out").exists()
         assert not (sb.proj_dir / f"_build/default/{testbench}.vcd").exists()
@@ -194,7 +194,7 @@ def _test_project(
         # -- 'apio test <testbench-file>'
         args = ["test", testbench_file] + proj_arg
         result = sb.invoke_apio_cmd(apio, args)
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "SUCCESS" in result.output
         assert getsize(sb.proj_dir / f"_build/default/{testbench}.out")
         assert getsize(sb.proj_dir / f"_build/default/{testbench}.vcd")
@@ -204,7 +204,7 @@ def _test_project(
         # -- 'apio sim --no-gtkw <testbench-file>'
         args = ["sim", "--no-gtkwave", testbench_file] + proj_arg
         result = sb.invoke_apio_cmd(apio, args)
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "SUCCESS" in result.output
         assert getsize(sb.proj_dir / f"_build/default/{testbench}.out")
         assert getsize(sb.proj_dir / f"_build/default/{testbench}.vcd")
@@ -214,7 +214,7 @@ def _test_project(
         # -- 'apio clean'
         args = ["clean"] + proj_arg
         result = sb.invoke_apio_cmd(apio, args)
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "Cleanup completed" in result.output
         assert not (sb.proj_dir / f"_build/default/{testbench}.out").exists()
         assert not (sb.proj_dir / f"_build/default/{testbench}.vcd").exists()
@@ -222,7 +222,7 @@ def _test_project(
         # -- 'apio report'
         args = ["report"] + proj_arg
         result = sb.invoke_apio_cmd(apio, args)
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "SUCCESS" in result.output
         assert report_item in result.output
         assert "─────┐" in result.output  # Graphical table border
@@ -231,7 +231,7 @@ def _test_project(
         # -- 'apio graph'
         args = ["graph"] + proj_arg
         result = sb.invoke_apio_cmd(apio, args)
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "SUCCESS" in result.output
         assert getsize(sb.proj_dir / "_build/default/graph.dot")
         assert getsize(sb.proj_dir / "_build/default/graph.svg")
@@ -240,7 +240,7 @@ def _test_project(
         assert Path(sb.proj_dir / "_build/default").exists()
         args = ["clean"] + proj_arg
         result = sb.invoke_apio_cmd(apio, args)
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "Cleanup completed" in result.output
         assert not Path(sb.proj_dir / "_build/default").exists()
 

@@ -207,7 +207,7 @@ class ApioSandbox:
     # -- lower case.
     _DEFAULT_BAD_WORDS = ["error"]
 
-    def assert_ok(
+    def assert_result_ok(
         self,
         result: ApioResult,
         bad_words: List[str] | Tuple[str] = tuple(_DEFAULT_BAD_WORDS),

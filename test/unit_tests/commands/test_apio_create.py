@@ -43,7 +43,7 @@ def test_create(apio_runner: ApioRunner):
 
         # -- Execute "apio create --board alhambra-ii"
         result = sb.invoke_apio_cmd(apio, ["create", "--board", "alhambra-ii"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "was created successfully." in result.output
         _check_ini_file(
             apio_ini, {"board": "alhambra-ii", "top-module": "main"}
@@ -71,7 +71,7 @@ def test_create(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(
             apio, ["create", "--board", "alhambra-ii", "-p", "aa/bb"]
         )
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "was created successfully." in result.output
         _check_ini_file(
             Path("aa/bb") / apio_ini,

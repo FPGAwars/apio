@@ -23,7 +23,7 @@ def test_fpgas_ok(apio_runner: ApioRunner):
 
         # -- Execute "apio fpgas"
         result = sb.invoke_apio_cmd(apio, ["fpgas"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         # -- Note: pytest sees the piped version of the command's output.
         # -- Run 'apio fpgas' | cat' to reproduce it.
         assert "Loading custom 'fpgas.jsonc'" not in result.output
@@ -34,7 +34,7 @@ def test_fpgas_ok(apio_runner: ApioRunner):
 
         # -- Execute "apio fpgas --docs"
         result = sb.invoke_apio_cmd(apio, ["fpgas", "--docs"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "Loading custom 'fpgas.jsonc'" not in result.output
         assert "ice40hx4k-tq144-8k" in result.output
         assert "my_custom_fpga" not in result.output
@@ -56,7 +56,7 @@ def test_custom_fpga(apio_runner: ApioRunner):
 
         # -- Execute "apio boards"
         result = sb.invoke_apio_cmd(apio, ["fpgas"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         # -- Note: pytest sees the piped version of the command's output.
         # -- Run 'apio build' | cat' to reproduce it.
         assert "Loading custom 'fpgas.jsonc'" in result.output
@@ -66,7 +66,7 @@ def test_custom_fpga(apio_runner: ApioRunner):
         # -- Execute "apio fpgas --docs"
         # -- When running with --docs, 'apio boards' ignores custom fpgas.
         result = sb.invoke_apio_cmd(apio, ["fpgas", "--docs"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "Loading custom 'fpgas.jsonc'" not in result.output
         assert "ice40hx4k-tq144-8k" in result.output
         assert "my_custom_fpga" not in result.output

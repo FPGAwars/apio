@@ -12,7 +12,7 @@ def test_devices(apio_runner: ApioRunner):
 
         # -- Execute "apio devices"
         result = sb.invoke_apio_cmd(apio, ["devices"])
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         assert "apio devices usb" in cunstyle(result.output)
         assert "apio devices serial" in cunstyle(result.output)
 
@@ -29,7 +29,7 @@ def test_apio_devices(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(
             apio, ["devices", "usb"], in_subprocess=True
         )
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         print(result.output)
 
         # -- Execute "apio devices serial". We run it in a
@@ -39,5 +39,5 @@ def test_apio_devices(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(
             apio, ["devices", "serial"], in_subprocess=True
         )
-        sb.assert_ok(result)
+        sb.assert_result_ok(result)
         print(result.output)
