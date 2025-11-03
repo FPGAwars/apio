@@ -14,11 +14,11 @@
 #   invoke install-apio  # Install to run 'apio' from the source code here.
 #   invoke docs-viewer   # Run a local http server to view the Apio docs.
 #   invoke test-coverage # Collect and show test coverage.
+#   invoke clean         # Clean project.
 
 import sys
 import webbrowser
 from pathlib import Path
-from glob import glob
 import shutil
 import platform
 import subprocess
@@ -245,25 +245,48 @@ def view_coverage_task(_: Context):
     open_test_coverage_viewer()
 
 
-@task(name="clear-cache", aliases=["cc"])
-def clear_cache_task(_: Context):
-    """Clear the pytest cache."""
-    announce_task("clear-pytest-cache")
-    repo_root = get_repo_root()
-    assert isinstance(repo_root, Path)
+@task(name="clean", aliases=["c"])
+def clean_task(_: Context):
+    """Clean caches, artifacts, and temporary files."""
+    announce_task("clean")
+    r = get_repo_root()
+    assert isinstance(r, Path)
 
-    pytest_caches = glob(str(repo_root / ".pytest_cache"))
-    pytest_caches = pytest_caches + glob(
-        str(repo_root / ".tox/*/.pytest_cache")
-    )
+    # -- Collect items to delete.
+    items = []
+    # -- Place .tox before __pycache__ so it will be deleted at once
+    # -- with all its __pycache__ files.
+    items.extend(r.glob(".tox"))
+    items.extend(r.rglob("__pycache__"))
+    items.extend(r.glob(".coverage"))
+    items.extend(r.glob("htmlcov"))
+    items.extend(r.glob("_pytest_coverage"))
+    items.extend(r.glob(".coverage.*"))
 
-    if not pytest_caches:
-        print("Pytest cache is cleared.")
+    if not items:
+        print("Already clean")
         return
 
-    for cache_dir in pytest_caches:
-        print(f"Deleting {cache_dir}")
-        shutil.rmtree(cache_dir)
+    print("Deleting:")
+
+    for item in items:
+        # -- Item must be strictly under root.
+        assert str(item).startswith(str(r))
+        assert not str(r).startswith(str(item))
+
+        # -- E.g. if we hit a __pycache__ under .tox but already deleted
+        # -- tox.
+        if not item.exists():
+            continue
+
+        # -- Item exists, delete it.
+        description = str(item.relative_to(r))
+        if item.is_dir():
+            print(f"[d] {description}")
+            shutil.rmtree(item)
+        else:
+            print(f"[f] {str(description)}")
+            item.unlink(missing_ok=False)
 
 
 # -- This task has not been tested.
