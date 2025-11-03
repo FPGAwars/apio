@@ -168,6 +168,7 @@ def test_fast_task(ctx: Context):
             LATEST_PYTHON,
             "--",
             "--fast-only",
+            "--durations=10",
         ],
     )
 
@@ -186,6 +187,8 @@ def check_task(ctx: Context):
             "false",
             "-e",
             f"lint,{LATEST_PYTHON}",
+            "--",
+            "--durations=10",
         ],
     )
 
@@ -194,7 +197,16 @@ def check_task(ctx: Context):
 def check_all_task(ctx: Context):
     """Lint and run all tests using all Python versions."""
     announce_task("test-all")
-    run(ctx, [PYTHON, "-m", "tox", "--skip-missing-interpreters", "false"])
+    run(
+        ctx,
+        [
+            PYTHON,
+            "-m",
+            "tox",
+            "--skip-missing-interpreters",
+            "false",
+        ],
+    )
 
 
 @task(name="test-coverage", aliases=["tc"])
