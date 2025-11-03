@@ -9,8 +9,7 @@ import shutil
 import tempfile
 import contextlib
 from pathlib import Path, PurePosixPath
-from typing import List, Union, cast, Optional
-from typing import Dict, Any
+from typing import List, Union, cast, Optional, Dict, Any, Tuple
 import os
 from urllib.parse import urlparse
 from pprint import pprint
@@ -204,8 +203,19 @@ class ApioSandbox:
 
         return apio_result
 
-    def assert_ok(self, result: ApioResult):
-        """Check if apio command results where ok"""
+    # -- List of default bad words for assert_ok(). All words should be
+    # -- lower case.
+    _DEFAULT_BAD_WORDS = ["error"]
+
+    def assert_ok(
+        self,
+        result: ApioResult,
+        bad_words: List[str] | Tuple[str] = tuple(_DEFAULT_BAD_WORDS),
+    ):
+        """Check if apio command results where ok. Bad words is an optional
+        list of lower case strings strings if found in the lower case version
+        of the output text, trigger an error. The default is a tuple and not
+        a list to avoid pylint warning about unsafe default value"""
 
         assert isinstance(result, ApioResult)
 
@@ -215,8 +225,11 @@ class ApioSandbox:
         # -- There should be no exceptions raised
         assert not result.exception
 
-        # -- The word 'error' should NOT appear on the standard output
-        assert "error" not in result.output.lower()
+        # -- Check for bad words.
+        lower_case_output = result.output.lower()
+        for bad_word in bad_words:
+            assert bad_word.islower(), bad_word
+            assert bad_word not in lower_case_output, bad_word
 
     def restore_system_env(
         self, original_env: Dict[str, str], scope: str
@@ -486,14 +499,6 @@ class ApioRunner:
         # -- home and packages dirs.
         os.environ["APIO_HOME"] = str(home_dir)
         os.environ["APIO_PACKAGES"] = str(self._packages_dir)
-
-        # os.environ["COVERAGE_PROCESS_START"] = str(
-        #     Path(__file__).resolve().parent.parent / ".coveragerc"
-        # )
-
-        # os.environ["COVERAGE_FILE"] = str(
-        #     Path(__file__).resolve().parent.parent / ".coverage"
-        # )
 
         local_config_url = self._get_local_config_url()
         print(f"Local config url: {local_config_url}")

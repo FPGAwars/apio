@@ -52,7 +52,8 @@ def test_colors_on_off(apio_runner: ApioRunner):
 
         # -- Execute "apio preferences --colors".
         result = sb.invoke_apio_cmd(apio, ["preferences", "--colors"])
-        assert result.exit_code == 0
+        # -- It's normal to have 'error' in the output test.
+        sb.assert_ok(result, bad_words=[])
         assert result.output != cunstyle(result.output)  # Colored..
         # -- Ideally we would like to have this assertion enabled but
         # -- when running on github workflows we sometimes get different

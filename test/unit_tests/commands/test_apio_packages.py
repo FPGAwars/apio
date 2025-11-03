@@ -21,7 +21,7 @@ def test_packages(apio_runner: ApioRunner):
 
         # -- Execute "apio packages list"
         result = sb.invoke_apio_cmd(apio, ["packages", "list"])
-        assert result.exit_code == 0
+        sb.assert_ok(result)
 
 
 def test_packages_slow(apio_runner: ApioRunner):
@@ -34,7 +34,7 @@ def test_packages_slow(apio_runner: ApioRunner):
 
         # -- Run 'apio packages list'
         result = sb.invoke_apio_cmd(apio, ["packages", "list"])
-        assert result.exit_code == 0
+        sb.assert_ok(result)
         assert "definitions" in result.output
         assert "examples" in result.output
         assert "oss-cad-suite" in result.output

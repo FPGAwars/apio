@@ -20,7 +20,7 @@ def test_apio_info(apio_runner: ApioRunner):
 
         # -- Execute "apio info system"
         result = sb.invoke_apio_cmd(apio, ["info", "system"])
-        assert result.exit_code == 0, result.output
+        sb.assert_ok(result)
         assert "Platform id" in result.output
         # -- The these env options are set by the apio text fixture. We
         # -- relax the expression to allow additional env vars that are
@@ -31,21 +31,22 @@ def test_apio_info(apio_runner: ApioRunner):
 
         # -- Execute "apio info platforms"
         result = sb.invoke_apio_cmd(apio, ["info", "platforms"])
-        assert result.exit_code == 0, result.output
+        sb.assert_ok(result)
         assert "darwin-arm64" in result.output
         assert "Mac OSX" in result.output
         assert "ARM 64 bit (Apple Silicon)" in result.output
 
         # -- Execute "apio info colors"
         result = sb.invoke_apio_cmd(apio, ["info", "colors"])
-        assert result.exit_code == 0, result.output
+        sb.assert_ok(result)
         assert result.output != cunstyle(result.output)  # Colored
         assert "ANSI Colors" in result.output
         assert "\x1b[31m  1 red                 \x1b[0m" in result.output
 
         # -- Execute "apio info themes"
         result = sb.invoke_apio_cmd(apio, ["info", "themes"])
-        assert result.exit_code == 0, result.output
+        # -- It's normal to have 'error' in the output text.
+        sb.assert_ok(result, bad_words=[])
         assert result.output != cunstyle(result.output)  # Colored
         assert "NO-COLORS" in result.output
         assert "apio.cmd_name\x1b[0m" in result.output
