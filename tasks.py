@@ -213,6 +213,7 @@ def test_coverage_task(ctx: Context):
             LATEST_PYTHON,
             "--",
             "--cov=apio",
+            "--cov={envsitepackagesdir}/apio",
             "--cov=test",
             "--cov-config=.coveragerc",
             "--cov-append",
