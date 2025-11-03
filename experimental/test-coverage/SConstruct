@@ -1,4 +1,0 @@
-import scons_helper
-
-
-scons_helper.called_from_scons()

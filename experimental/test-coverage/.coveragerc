@@ -1,5 +1,0 @@
-[run]
-patch = subprocess
-parallel = true
-source = .
-
