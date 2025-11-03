@@ -13,6 +13,7 @@ from typing import List, Union, cast, Optional
 from typing import Dict, Any
 import os
 from urllib.parse import urlparse
+from pprint import pprint
 import pytest
 from click.testing import CliRunner, Result
 from apio import __main__
@@ -347,6 +348,10 @@ class ApioRunner:
     def __init__(self, request: pytest.FixtureRequest):
         print("*** creating ApioRunner")
         assert isinstance(request, pytest.FixtureRequest)
+
+        print("\nOriginal env:")
+        pprint(dict(os.environ), width=80, sort_dicts=True)
+        print()
 
         # -- Get a pytest directory for the apio packages cache. This will
         # -- avoid reloading packages by each apio invocation.

@@ -14,8 +14,6 @@ source =
     test/
 
 
-[report]
-omit =
-    */apio/common/proto/*
-
-
+# [report]
+# omit =
+#     */apio/common/proto/*

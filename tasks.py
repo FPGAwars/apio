@@ -79,7 +79,7 @@ DEPENDENCIES = [
     ("tox", "4.27.0"),
     ("flit", "3.12.0"),
     ("mkdocs-material", "9.6.14"),
-    ("pytest", "8.3.5"),
+    ("pytest", "8.4.2"),
 ]
 
 
@@ -212,7 +212,10 @@ def test_coverage_task(ctx: Context):
             "-e",
             LATEST_PYTHON,
             "--",
-            "--cov",
+            "--cov=apio",
+            "--cov=test",
+            "--cov-config=.coveragerc",
+            "--cov-append",
             "--cov-report=html:_pytest-coverage",
         ],
     )
