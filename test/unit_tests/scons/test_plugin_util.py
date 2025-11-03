@@ -3,6 +3,7 @@ Tests of the scons plugin_util.py functions.
 """
 
 import re
+import os
 from os.path import isfile, exists, join
 from test.unit_tests.scons.testing import make_test_apio_env
 from test.conftest import ApioRunner
@@ -247,11 +248,13 @@ def test_verilator_lint_action_min(apio_runner: ApioRunner):
 
         # -- Collapse consecutive spaces in the string.
         normalized_cmd = re.sub(r"\s+", " ", action[1])
+
         # -- Verify the string
         assert (
             "verilator_bin --lint-only --quiet --bbox-unsup --timing "
             "-Wno-TIMESCALEMOD -Wno-MULTITOP -DAPIO_SIM=0 --top-module main "
-            "_build/default/hardware.vlt $SOURCES" == normalized_cmd
+            f"_build{os.sep}default{os.sep}hardware.vlt $SOURCES"
+            == normalized_cmd
         )
 
 
@@ -296,6 +299,7 @@ def test_verilator_lint_action_max(apio_runner: ApioRunner):
             "verilator_bin --lint-only --quiet --bbox-unsup --timing "
             "-Wno-TIMESCALEMOD -Wno-MULTITOP -DAPIO_SIM=0 -Wall -Wno-style "
             "-Wno-aa -Wno-bb -Wwarn-cc -Wwarn-dd --top-module my_top_module "
-            'param1 param2 -I"dir1" -I"dir2" _build/default/hardware.vlt '
+            'param1 param2 -I"dir1" -I"dir2" '
+            f"_build{os.sep}default{os.sep}hardware.vlt "
             '"file1" "file2" $SOURCES' == normalized_cmd
         )
