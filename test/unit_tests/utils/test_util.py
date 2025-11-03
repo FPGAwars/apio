@@ -3,8 +3,10 @@ Tests of util.py
 """
 
 import os
+from pathlib import Path
+from test.conftest import ApioRunner
 import pytest
-from apio.utils.util import plurality, list_plurality, is_debug
+from apio.utils.util import plurality, list_plurality, is_debug, pushd
 
 # TODO: Add more tests.
 
@@ -66,3 +68,28 @@ def test_is_debug():
     assert not is_debug(1)
     assert not is_debug(2)
     assert not is_debug(3)
+
+
+def test_pushd(apio_runner: ApioRunner):
+    """Test the pushd context manager."""
+
+    with apio_runner.in_sandbox() as sb:
+        # -- Define dir 1.
+        dir1 = sb.proj_dir
+        assert dir1.is_dir()
+
+        # -- Define dir 2
+        dir2 = dir1 / "dir2"
+        assert dir2.resolve() != dir1.resolve()
+        dir2.mkdir()
+
+        # -- Change to dir1
+        os.chdir(dir1)
+        assert Path.cwd().resolve() == dir1.resolve()
+
+        # -- Pushd to dir 2
+        with pushd(dir2):
+            assert Path.cwd().resolve() == dir2.resolve()
+
+        # -- Back from pushd to dir1
+        assert Path.cwd().resolve() == dir1.resolve()
