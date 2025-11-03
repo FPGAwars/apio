@@ -3,8 +3,8 @@ Tests of the apio.managers.programmers.py module.
 """
 
 from typing import List
-from tests.conftest import ApioRunner
 from pytest import LogCaptureFixture, raises
+from tests.conftest import ApioRunner
 from apio.apio_context import (
     ApioContext,
     PackagesPolicy,

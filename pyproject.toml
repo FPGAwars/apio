@@ -52,7 +52,7 @@ requires = [
 
 [tool.flit.sdist]
 # TODO: Revisit 'exclude`. What else we don't need in the package?
-exclude = ["test/"]
+exclude = ["tests/"]
 
 [tool.flit.metadata.requires-extra]
 blackiceprog = ['blackiceprog==2.0.0']

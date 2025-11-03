@@ -5,12 +5,12 @@ Tests of the scons plugin_util.py functions.
 import re
 import os
 from os.path import isfile, exists, join
-from tests.unit_tests.scons.testing import make_test_apio_env
-from tests.conftest import ApioRunner
 import pytest
 from SCons.Node.FS import FS
 from SCons.Action import FunctionAction
 from pytest import LogCaptureFixture
+from tests.unit_tests.scons.testing import make_test_apio_env
+from tests.conftest import ApioRunner
 from apio.common.apio_console import cunstyle
 from apio.common import apio_console
 from apio.common.proto.apio_pb2 import TargetParams, UploadParams, LintParams

@@ -10,7 +10,7 @@ data_file = .coverage
 ; Limit the coverage to these directories.
 source =
     apio/
-    test/
+    tests/
 
 
 [paths]

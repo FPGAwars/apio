@@ -4,8 +4,8 @@ Tests of util.py
 
 import os
 from pathlib import Path
-from tests.conftest import ApioRunner
 import pytest
+from tests.conftest import ApioRunner
 from apio.utils.util import plurality, list_plurality, is_debug, pushd
 
 # TODO: Add more tests.

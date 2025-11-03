@@ -3,8 +3,8 @@
 from pathlib import Path
 from os.path import isfile, exists
 from typing import Dict
-from tests.conftest import ApioRunner
 from configobj import ConfigObj
+from tests.conftest import ApioRunner
 from apio.commands.apio import apio_top_cli as apio
 
 

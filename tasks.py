@@ -226,7 +226,7 @@ def test_coverage_task(ctx: Context):
             "--",
             "--cov=apio",
             "--cov={envsitepackagesdir}/apio",
-            "--cov=test",
+            "--cov=tests",
             "--cov-config=.coveragerc",
             "--cov-append",
             "--cov-report=html:_pytest-coverage",

@@ -3,9 +3,9 @@ Tests of project.py
 """
 
 from typing import Dict, Optional, Tuple
-from tests.conftest import ApioRunner
 from pytest import LogCaptureFixture
 import pytest
+from tests.conftest import ApioRunner
 from apio.managers.project import Project, ENV_OPTIONS
 from apio.common.apio_console import cunstyle
 from apio.apio_context import (

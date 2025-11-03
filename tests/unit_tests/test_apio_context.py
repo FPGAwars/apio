@@ -4,8 +4,8 @@ Tests of apio_context.py
 
 import os
 from pathlib import Path
-from tests.conftest import ApioRunner
 from pytest import LogCaptureFixture, raises
+from tests.conftest import ApioRunner
 from apio.apio_context import (
     ApioContext,
     PackagesPolicy,
