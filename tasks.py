@@ -254,14 +254,16 @@ def clean_task(_: Context):
 
     # -- Collect items to delete.
     items = []
-    # -- Place .tox before __pycache__ so it will be deleted at once
-    # -- with all its __pycache__ files.
+    # -- Collect top level items first so they will be deleted first.
     items.extend(r.glob(".tox"))
-    items.extend(r.rglob("__pycache__"))
+    items.extend(r.glob("_site"))
+    items.extend(r.glob(".pytest_cache"))
     items.extend(r.glob(".coverage"))
     items.extend(r.glob("htmlcov"))
-    items.extend(r.glob("_pytest_coverage"))
+    items.extend(r.glob("_pytest-coverage"))
     items.extend(r.glob(".coverage.*"))
+    # -- Collect nested items
+    items.extend(r.rglob("__pycache__"))
 
     if not items:
         print("Already clean")
