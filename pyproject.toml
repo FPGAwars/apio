@@ -45,21 +45,20 @@ requires = [
     'icefunprog==2.0.3',
     'apycula==0.15',
     'apollo_fpga==1.1.1',
-    'protobuf==5.29.3',
+    'protobuf==6.33.0',
     'rich==14.0.0',
     'invoke==2.2.1'
 ]
 
 [tool.flit.sdist]
 # TODO: Revisit 'exclude`. What else we don't need in the package?
-exclude = ["test/"]
+exclude = ["tests/"]
 
 [tool.flit.metadata.requires-extra]
 blackiceprog = ['blackiceprog==2.0.0']
 litterbox = ['litterbox==0.2.2']
 tinyfpgab = ['tinyfpgab==1.1.0']
 icefunprog = ['icefunprog==2.0.3']
-
 
 [tool.flit.scripts]
 apio = "apio.__main__:main"

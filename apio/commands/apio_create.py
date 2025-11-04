@@ -62,7 +62,7 @@ complete and buildable project. To create complete projects, refer to the \
 )
 @click.pass_context
 @board_option
-@options.top_module_option_gen(help="Set the top level module name.")
+@options.top_module_option_gen(short_help="Set the top level module name.")
 @options.project_dir_option
 def cli(
     _: click.Context,

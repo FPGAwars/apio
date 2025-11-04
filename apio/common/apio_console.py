@@ -18,7 +18,7 @@ from rich.theme import Theme
 from rich.text import Text
 from rich.table import Table
 from apio.common import rich_lib_windows
-from apio.common.apio_styles import WARNING, ERROR, BORDER
+from apio.common.apio_styles import WARNING, ERROR
 from apio.common.apio_themes import ApioTheme, THEMES_TABLE, DEFAULT_THEME
 from apio.common.proto.apio_pb2 import (
     TerminalMode,
@@ -323,11 +323,6 @@ def docs_text(
     """A wrapper around Console.print that is specialized for rendering
     help and docs."""
     console().print(rich_text, highlight=True, width=width, end=end)
-
-
-def docs_rule(width: int = DOCS_WIDTH):
-    """Print a docs horizontal separator."""
-    cout("─" * width, style=BORDER)
 
 
 def is_terminal():

@@ -1,0 +1,28 @@
+; Config file for pytest coverage. Run using
+; 'invoke test-coverage' or in short 'invoke tc'.
+
+[run]
+parallel = true
+patch = subprocess
+branch = true
+; A reference to this file.
+data_file = .coverage
+; Limit the coverage to these directories.
+source =
+    apio/
+    tests/
+
+
+[paths]
+; Merge files these two aliases. Coverage of modules that are used by
+; the scons subprocess may appear in the site-packages/apio instead of
+; apio directly.
+apio =
+    apio
+    .tox/*/lib/python*/site-packages/apio
+
+
+[report]
+; Do not report coverage of the proto generated stubs.
+omit =
+   */apio/common/proto/*

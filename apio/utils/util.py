@@ -11,9 +11,7 @@
 
 import sys
 import os
-import traceback
 from contextlib import contextmanager
-from functools import wraps
 from enum import Enum
 from dataclasses import dataclass
 from typing import Optional, Any, Tuple, List
@@ -23,7 +21,7 @@ from pathlib import Path
 import apio
 from apio.utils import env_options
 from apio.common.apio_console import cout, cerror
-from apio.common.apio_styles import INFO, ERROR, EMPH3
+from apio.common.apio_styles import INFO
 
 
 # ----------------------------------------
@@ -180,82 +178,66 @@ class CommandResult:
     exit_code: Optional[int] = None  # Exit code, 0 = OK.
 
 
-def exec_command(*args, **kwargs) -> CommandResult:
-    """Execute the given command.
+def exec_command(
+    cmd: List[str], stdout: AsyncPipe, stderr: AsyncPipe
+) -> CommandResult:
+    """Execute the given command using async stdout/stderr..
 
     NOTE: When running on windows, this function does not support
-    privilege elevation, to achieve that, use os.system() instead.
+    privilege elevation, to achieve that, use os.system() instead, as
+    done in drivers.py
 
     INPUTS:
-     *args: List with the command and its arguments to execute
-     **kwargs: Key arguments when calling subprocess.Popen()
-       * stdout
-       * stdin
-       * shell
+        cmd:    list of command token (strings)
+        stdout: the AsyncPipe to use for stdout
+        stderr: the AsyncPipe to use for stderr.
 
-    OUTPUT: A dictionary with the following properties:
-      * out: String with the output
-      * err: String with the error output
-      * returncode: Number with the code returned by the command
-        * 0: Sucess
-        * Another number different from 0: Error!
-
-    Example:  exec_command(['scons', '-Q', '-c', '-f', 'SConstruct'])
+    OUTPUT:
+        A CommandResult with the command results.
     """
 
-    # -- Set the default arguments to pass to subprocess.Popen()
-    # -- for executing the command
-    flags = {
-        # -- Capture the command output
-        "stdout": subprocess.PIPE,
-        "stderr": subprocess.PIPE,
-        # -- Execute it directly, without using the shell
-        "shell": False,
-    }
+    # -- Sanity check.
+    assert isinstance(cmd, list)
+    assert isinstance(cmd[0], str)
+    assert isinstance(stdout, AsyncPipe)
+    assert isinstance(stderr, AsyncPipe)
 
-    # -- Include the flags given by the user
-    # -- It overrides the default flags
-    flags.update(kwargs)
-
-    # -- Execute the command!
+    # -- Execute the command
     try:
-        with subprocess.Popen(*args, **flags) as proc:
+        with subprocess.Popen(
+            cmd, stdout=stdout, stderr=stderr, shell=False
+        ) as proc:
 
-            # -- Run the command.
+            # -- Wait for completion.
             out_text, err_text = proc.communicate()
+
+            # -- Get status code.
             exit_code = proc.returncode
 
-            # -- Close the pipes
-            for std in ("stdout", "stderr"):
-                if isinstance(flags[std], AsyncPipe):
-                    flags[std].close()
+            # -- Close the async pipes.
+            stdout.close()
+            stderr.close()
 
     # -- User has pressed the Ctrl-C for aborting the command
     except KeyboardInterrupt:
         cerror("Aborted by user")
-        # NOTE: If using here sys.exit(1), apio requires pressing ctl-c twice
-        # when running 'apio sim'. This form of exist is more direct and
-        # 'hard'.
+        # -- NOTE: If using here sys.exit(1), apio requires pressing ctl-c
+        # -- twice when running 'apio sim'. This form of exit is more direct
+        # -- and harder.
         os._exit(1)
 
     # -- The command does not exist!
     except FileNotFoundError:
-        cerror("Command not found:", args)
+        cerror("Command not found:", cmd)
         sys.exit(1)
 
-    # -- If stdout pipe is an AsyncPipe, extract its text.
-    pipe = flags["stdout"]
-    if isinstance(pipe, AsyncPipe):
-        lines = pipe.get_buffer()
-        text = "\n".join(lines)
-        out_text = text
+    # -- Extract stdout text
+    lines = stdout.get_buffer()
+    out_text = "\n".join(lines)
 
-    # -- If stderr pipe is an AsyncPipe, extract its text.
-    pipe = flags["stderr"]
-    if isinstance(pipe, AsyncPipe):
-        lines = pipe.get_buffer()
-        text = "\n".join(lines)
-        err_text = text
+    # -- Extract stderr text
+    lines = stderr.get_buffer()
+    err_text = "\n".join(lines)
 
     # -- All done.
     result = CommandResult(out_text, err_text, exit_code)
@@ -302,31 +284,6 @@ def user_directory_or_cwd(
     # -- Case 2: Using current directory.
     # -- We prefer the relative path "." over the absolute path Path.cwd().
     return Path(".")
-
-
-def get_bin_dir() -> Path:
-    """Get the Apio executable Path"""
-
-    # E1101: Instance of 'module' has no '__file__' member (no-member)
-    # pylint: disable=no-member
-
-    # -- Get the apio main module
-    main_mod = sys.modules["__main__"]
-
-    # -- Get the full path of the apio executable file
-    exec_filename = Path(main_mod.__file__)
-
-    # -- Get its parent directory
-    bin_dir = exec_filename.parent
-
-    # -- Special case for Windows + virtualenv
-    # In this case the main file is: venv/Scripts/apio.exe/__main__.py!
-    # This is not good because venv/Scripts/apio.exe is not a directory
-    # So here we go with the workaround:
-    if bin_dir.suffix == ".exe":
-        return bin_dir.parent
-
-    return bin_dir
 
 
 def get_python_version() -> str:
@@ -409,73 +366,6 @@ def is_debug(level: int) -> bool:
     assert 1 <= level <= 10, level
 
     return debug_level() >= level
-
-
-def debug_decorator(func, level: int = 1):
-    """A decorator for dumping the input and output of a function when
-    APIO_DEBUG is defined.  Add it to functions and methods that you want
-    to examine with APIO_DEBUG.
-    """
-
-    # -- We sample the debug flag upon start.
-    debug = is_debug(level)
-
-    @wraps(func)
-    def outer(*args):
-
-        if debug:
-            # -- Print the arguments
-            cout(
-                f"\n>>> Function {os.path.basename(func.__code__.co_filename)}"
-                f"/{func.__name__}() BEGIN",
-                style=EMPH3,
-            )
-            cout("    * Arguments:")
-            for arg in args:
-
-                # -- Print all the key,values if it is a dictionary
-                if isinstance(arg, dict):
-                    cout("        * Dict:")
-                    for key, value in arg.items():
-                        cout(f"          * {key}: {value}")
-
-                # -- Print the plain argument if it is not a dictionary
-                else:
-                    cout(f"        * {arg}")
-            cout()
-
-        # -- Call the function, dump exceptions, if any.
-        try:
-            result = func(*args)
-        except Exception:
-            if debug:
-                cout(traceback.format_exc())
-            raise
-
-        if debug:
-            # -- Print its output
-            cout("     Returns: ")
-
-            # -- The return object always is a tuple
-            if isinstance(result, tuple):
-
-                # -- Print all the values in the tuple
-                for value in result:
-                    cout(f"      * {value}")
-
-            # -- But just in case it is not a tuple (because of an error...)
-            else:
-                cout(f"      * No tuple: {result}")
-
-            cout(
-                f"<<< Function {os.path.basename(func.__code__.co_filename)}"
-                f"/{func.__name__}() END\n",
-                style=EMPH3,
-            )
-
-        return result
-
-    return outer
 
 
 def get_apio_version() -> str:
@@ -659,18 +549,14 @@ def fpga_arch_sort_key(fpga_arch: str) -> Any:
 
 def subprocess_call(
     cmd: List[str],
-    shell: bool = False,
-    exit_on_error: bool = False,
-    failure_msg: str = None,
-    failure_msg_style: str = ERROR,
 ) -> int:
-    """A helper for running subprocess.call."""
+    """A helper for running subprocess.call. Exit if an error."""
 
     if is_debug(1):
         cout(f"subprocess_call: {cmd}")
 
     # -- Invoke the command.
-    exit_code = subprocess.call(cmd, shell=shell)
+    exit_code = subprocess.call(cmd, shell=False)
 
     if is_debug(1):
         cout(f"subprocess_call: exit code is {exit_code}")
@@ -679,17 +565,9 @@ def subprocess_call(
     if exit_code == 0:
         return exit_code
 
-    # -- Print the messages
+    # -- Here when error
     cerror(f"Command failed: {cmd}")
-    if failure_msg:
-        cout(failure_msg, style=failure_msg_style)
-
-    # -- Exit if requested.
-    if exit_on_error:
-        sys.exit(1)
-
-    # -- Return with the error code.
-    return exit_code
+    sys.exit(1)
 
 
 @contextmanager

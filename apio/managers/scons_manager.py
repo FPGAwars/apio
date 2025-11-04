@@ -102,7 +102,7 @@ class SConsManager:
         )
 
         # -- Run the scons process.
-        return self._run("graph", scons_params=scons_params)
+        return self._run_scons_subprocess("graph", scons_params=scons_params)
 
     @on_exception(exit_code=1)
     def lint(self, lint_params: LintParams) -> int:
@@ -115,7 +115,7 @@ class SConsManager:
         )
 
         # -- Run the scons process.
-        return self._run("lint", scons_params=scons_params)
+        return self._run_scons_subprocess("lint", scons_params=scons_params)
 
     @on_exception(exit_code=1)
     def sim(self, sim_params: SimParams) -> int:
@@ -128,7 +128,7 @@ class SConsManager:
         )
 
         # -- Run the scons process.
-        return self._run("sim", scons_params=scons_params)
+        return self._run_scons_subprocess("sim", scons_params=scons_params)
 
     @on_exception(exit_code=1)
     def test(self, test_params: ApioTestParams) -> int:
@@ -141,7 +141,7 @@ class SConsManager:
         )
 
         # -- Run the scons process.
-        return self._run("test", scons_params=scons_params)
+        return self._run_scons_subprocess("test", scons_params=scons_params)
 
     @on_exception(exit_code=1)
     def build(self, verbosity: Verbosity) -> int:
@@ -152,7 +152,7 @@ class SConsManager:
         scons_params = self.construct_scons_params(verbosity=verbosity)
 
         # -- Run the scons process.
-        return self._run("build", scons_params=scons_params)
+        return self._run_scons_subprocess("build", scons_params=scons_params)
 
     @on_exception(exit_code=1)
     def report(self, verbosity: Verbosity) -> int:
@@ -163,7 +163,7 @@ class SConsManager:
         scons_params = self.construct_scons_params(verbosity=verbosity)
 
         # -- Run the scons process.
-        return self._run("report", scons_params=scons_params)
+        return self._run_scons_subprocess("report", scons_params=scons_params)
 
     @on_exception(exit_code=1)
     def upload(self, upload_params: UploadParams) -> int:
@@ -177,7 +177,9 @@ class SConsManager:
         )
 
         # -- Execute Scons for uploading!
-        exit_code = self._run("upload", scons_params=scons_params)
+        exit_code = self._run_scons_subprocess(
+            "upload", scons_params=scons_params
+        )
 
         return exit_code
 
@@ -306,7 +308,9 @@ class SConsManager:
         assert result.IsInitialized(), result
         return result
 
-    def _run(self, scons_command: str, *, scons_params: SconsParams = None):
+    def _run_scons_subprocess(
+        self, scons_command: str, *, scons_params: SconsParams = None
+    ):
         """Invoke an scons subprocess."""
 
         # pylint: disable=too-many-locals

@@ -49,12 +49,23 @@ pdf_option = click.option(
     cls=cmd_util.ApioOption,
 )
 
+no_viewer_option = click.option(
+    "no_viewer",  # Var name.
+    "-n",
+    "--no-viewer",
+    is_flag=True,
+    help="Do not open graph viewer.",
+    cls=cmd_util.ApioOption,
+)
+
 # -- Text in the rich-text format of the python rich library.
 APIO_GRAPH_HELP = """
-The command 'apio graph' generates a graphical representation of the design.
+The command 'apio graph' generates a graphical representation of the design \
+and then opens it in a graphical viewer.
 
 Examples:[code]
-  apio graph               # Generate a svg file.
+  apio graph               # Generate a svg file (default).
+  apio graph --no-viewer   # Suppress the graphical viewer.
   apio graph --svg         # Generate a svg file.
   apio graph --pdf         # Generate a pdf file.
   apio graph --png         # Generate a png file.
@@ -79,7 +90,10 @@ env is different than 'default' change the commands accordingly).
 @pdf_option
 @options.env_option_gen()
 @options.project_dir_option
-@options.top_module_option_gen(help="Set the name of the top module to graph.")
+@options.top_module_option_gen(
+    short_help="Set the name of the top module to graph."
+)
+@no_viewer_option
 @options.verbose_option
 def cli(
     cmd_ctx: click.Context,
@@ -89,8 +103,9 @@ def cli(
     pdf: bool,
     env: Optional[str],
     project_dir: Optional[Path],
-    verbose: bool,
     top_module: str,
+    no_viewer: bool,
+    verbose: bool,
 ):
     """Implements the apio graph command."""
 
@@ -124,7 +139,10 @@ def cli(
         output_type = GraphOutputType.SVG
 
     # -- Construct the command info.
-    graph_params = GraphParams(output_type=output_type)
+    graph_params = GraphParams(
+        output_type=output_type,
+        open_viewer=not no_viewer,
+    )
     if top_module:
         graph_params.top_module = top_module
 

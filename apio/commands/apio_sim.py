@@ -84,7 +84,7 @@ no_gtkw_wave_option = click.option(
 )
 @click.pass_context
 @click.argument("testbench", nargs=1, required=False)
-@options.force_option_gen(help="Force simulation.")
+@options.force_option_gen(short_help="Force simulation.")
 @options.env_option_gen()
 @no_gtkw_wave_option
 @options.project_dir_option

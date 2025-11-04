@@ -1,14 +1,12 @@
 
-# pylint: disable=C0114, C0115, C0301, C0411
-# pylint: disable=E0245, E0602, E1139
-# pylint: disable=R0913, R0801, R0917
-# pylint: disable=W0223, W0613, W0622
+# pylint: disable=all
 
 from google.protobuf.internal import containers as _containers
 from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Mapping, Optional as _Optional, Union as _Union
+from collections.abc import Iterable as _Iterable, Mapping as _Mapping
+from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
@@ -146,12 +144,14 @@ class LintParams(_message.Message):
     def __init__(self, top_module: _Optional[str] = ..., verilator_all: bool = ..., verilator_no_style: bool = ..., verilator_no_warns: _Optional[_Iterable[str]] = ..., verilator_warns: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class GraphParams(_message.Message):
-    __slots__ = ("output_type", "top_module")
+    __slots__ = ("output_type", "top_module", "open_viewer")
     OUTPUT_TYPE_FIELD_NUMBER: _ClassVar[int]
     TOP_MODULE_FIELD_NUMBER: _ClassVar[int]
+    OPEN_VIEWER_FIELD_NUMBER: _ClassVar[int]
     output_type: GraphOutputType
     top_module: str
-    def __init__(self, output_type: _Optional[_Union[GraphOutputType, str]] = ..., top_module: _Optional[str] = ...) -> None: ...
+    open_viewer: bool
+    def __init__(self, output_type: _Optional[_Union[GraphOutputType, str]] = ..., top_module: _Optional[str] = ..., open_viewer: bool = ...) -> None: ...
 
 class SimParams(_message.Message):
     __slots__ = ("testbench", "force_sim", "no_gtkwave")

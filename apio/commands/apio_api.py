@@ -113,7 +113,7 @@ Examples:[code]
 # @click.pass_context
 @timestamp_option
 @output_option
-@options.force_option_gen(help="Overwrite output file.")
+@options.force_option_gen(short_help="Overwrite output file.")
 def _get_system_cli(
     # Options
     timestamp: str,
@@ -192,7 +192,7 @@ Examples:[code]
 @options.project_dir_option
 @timestamp_option
 @output_option
-@options.force_option_gen(help="Overwrite output file.")
+@options.force_option_gen(short_help="Overwrite output file.")
 def _get_project_cli(
     # Options
     env: str,
@@ -267,7 +267,7 @@ Examples:[code]
 )
 @timestamp_option
 @output_option
-@options.force_option_gen(help="Overwrite output file.")
+@options.force_option_gen(short_help="Overwrite output file.")
 def _get_boards_cli(
     # Options
     timestamp: str,
@@ -351,7 +351,7 @@ Examples:[code]
 )
 @timestamp_option
 @output_option
-@options.force_option_gen(help="Overwrite output file.")
+@options.force_option_gen(short_help="Overwrite output file.")
 def _get_fpgas_cli(
     # Options
     timestamp: str,
@@ -420,7 +420,7 @@ Examples:[code]
 )
 @timestamp_option
 @output_option
-@options.force_option_gen(help="Overwrite output file.")
+@options.force_option_gen(short_help="Overwrite output file.")
 def _get_programmers_cli(
     # Options
     timestamp: str,
@@ -481,7 +481,7 @@ Examples:[code]
 )
 @timestamp_option
 @output_option
-@options.force_option_gen(help="Overwrite output file.")
+@options.force_option_gen(short_help="Overwrite output file.")
 def _get_examples_cli(
     # Options
     timestamp: str,
@@ -603,7 +603,7 @@ Examples:[code]
 @click.pass_context
 @timestamp_option
 @output_option
-@options.force_option_gen(help="Overwrite output file.")
+@options.force_option_gen(short_help="Overwrite output file.")
 def _get_commands_cli(
     # Click context
     cmd_ctx: ApioCmdContext,
@@ -671,7 +671,7 @@ Examples:[code]
 )
 @timestamp_option
 @output_option
-@options.force_option_gen(help="Overwrite output file.")
+@options.force_option_gen(short_help="Overwrite output file.")
 def _scan_devices_cli(
     # Options
     timestamp: str,

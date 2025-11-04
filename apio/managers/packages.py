@@ -9,9 +9,9 @@ Used by the 'apio packages' command.
 
 import sys
 import os
+from dataclasses import dataclass
 from typing import Dict, List
 from pathlib import Path
-from dataclasses import dataclass
 import shutil
 from apio.common.apio_console import cout, cerror, cstyle
 from apio.common.apio_styles import WARNING, ERROR, SUCCESS, EMPH3
@@ -33,8 +33,8 @@ class PackagesContext:
 
     # -- Same as ApioContext.profile
     profile: Profile
-    # -- Same as ApioContext.platform_packages
-    platform_packages: Dict
+    # -- Same as ApioContext.required_packages
+    required_packages: Dict
     # -- Same as ApioContext.platform_id
     platform_id: str
     # -- Same as ApioContext.packages_dir
@@ -43,7 +43,7 @@ class PackagesContext:
     def __post_init__(self):
         """Assert that all fields initialized to actual values."""
         assert self.profile
-        assert self.platform_packages
+        assert self.required_packages
         assert self.platform_id
         assert self.packages_dir
 
@@ -232,7 +232,7 @@ def install_missing_packages_on_the_fly(
     # --
     # -- Get lists of installed and required packages.
     installed_packages = packages_ctx.profile.installed_packages
-    required_packages_names = packages_ctx.platform_packages.keys()
+    required_packages_names = packages_ctx.required_packages.keys()
 
     # -- Install any required package that is not installed.
     for package_name in required_packages_names:
@@ -277,7 +277,7 @@ def install_package(
 
     # -- Caller is responsible to check check that package name is valid
     # -- on this platform.
-    assert package_name in packages_ctx.platform_packages, package_name
+    assert package_name in packages_ctx.required_packages, package_name
 
     # -- Set up installation announcement
     pending_announcement = cstyle(
@@ -304,7 +304,7 @@ def install_package(
     if not force_reinstall:
         # -- Get the version of the installed package, None if not installed.
         installed_version, package_platform_id = (
-            packages_ctx.profile.get_package_installed_info(package_name)
+            packages_ctx.profile.get_installed_package_info(package_name)
         )
 
         if verbose:
@@ -424,22 +424,22 @@ def _fix_packages(
 class PackageScanResults:
     """Represents results of packages scan."""
 
-    # -- Normal and Error. Packages in platform_packages that are installed
+    # -- Normal and Error. Packages in required_packages that are installed
     # -- regardless if the version matches or not.
     installed_ok_package_names: List[str]
-    # -- Error. Packages in platform_packages that are installed but with
+    # -- Error. Packages in required_packages that are installed but with
     # -- version mismatch.
     bad_version_package_names: List[str]
-    # -- Normal. Packages in platform_packages that are uninstalled properly.
+    # -- Normal. Packages in required_packages that are uninstalled properly.
     uninstalled_package_names: List[str]
-    # -- Error. Packages in platform_packages with broken installation. E.g,
+    # -- Error. Packages in required_packages with broken installation. E.g,
     # -- registered in profile but package directory is missing.
     broken_package_names: List[str]
     # -- Error. Packages that are marked in profile as registered but are not
-    # -- in platform_packages.
+    # -- in required_packages.
     orphan_package_names: List[str]
     # -- Error. Basenames of directories in packages dir that don't match
-    # -- folder_name of packages in platform_packages.
+    # -- folder_name of packages in required_packages.
     orphan_dir_names: List[str]
     # -- Error. Basenames of all files in packages directory. That directory is
     # -- expected to contain only directories for packages.a
@@ -489,17 +489,17 @@ def package_version_ok(
     packages_ctx: PackagesContext,
     package_name: str,
 ) -> bool:
-    """Return true if the package is both in profile and platform packages
+    """Return true if the package is both in profile and required packages
     and its version in the profile meet the requirements in the
     config.jsonc file. Otherwise return false."""
 
     # If this package is not applicable to this platform, return False.
-    if package_name not in packages_ctx.platform_packages:
+    if package_name not in packages_ctx.required_packages:
         return False
 
     # -- If the current version is not available, the package is not installed.
     current_ver, package_platform_id = (
-        packages_ctx.profile.get_package_installed_info(package_name)
+        packages_ctx.profile.get_installed_package_info(package_name)
     )
     if not current_ver or package_platform_id != packages_ctx.platform_id:
         return False
@@ -529,9 +529,9 @@ def scan_packages(packages_ctx: PackagesContext) -> PackageScanResults:
     # -- all the packages for this platform.
     platform_folder_names = set()
 
-    # -- Scan packages ids in platform_packages and populate
+    # -- Scan packages ids in required_packages and populate
     # -- the installed/uninstall/broken packages lists.
-    for package_name in packages_ctx.platform_packages.keys():
+    for package_name in packages_ctx.required_packages.keys():
         # -- Collect package's folder names in a set. For a later use.
         platform_folder_names.add(package_name)
 
@@ -556,9 +556,9 @@ def scan_packages(packages_ctx: PackagesContext) -> PackageScanResults:
             result.broken_package_names.append(package_name)
 
     # -- Scan the packages ids that are registered in profile as installed
-    # -- the ones that are not platform_packages as orphans.
+    # -- the ones that are not required_packages as orphans.
     for package_name in packages_ctx.profile.installed_packages:
-        if package_name not in packages_ctx.platform_packages:
+        if package_name not in packages_ctx.required_packages:
             result.orphan_package_names.append(package_name)
 
     # -- Scan the packages directory and identify orphan dirs and files.

@@ -14,11 +14,11 @@
 #   invoke install-apio  # Install to run 'apio' from the source code here.
 #   invoke docs-viewer   # Run a local http server to view the Apio docs.
 #   invoke test-coverage # Collect and show test coverage.
+#   invoke clean         # Clean project.
 
 import sys
 import webbrowser
 from pathlib import Path
-from glob import glob
 import shutil
 import platform
 import subprocess
@@ -79,7 +79,7 @@ DEPENDENCIES = [
     ("tox", "4.27.0"),
     ("flit", "3.12.0"),
     ("mkdocs-material", "9.6.14"),
-    ("pytest", "8.3.5"),
+    ("pytest", "8.4.2"),
 ]
 
 
@@ -168,6 +168,7 @@ def test_fast_task(ctx: Context):
             LATEST_PYTHON,
             "--",
             "--fast-only",
+            "--durations=10",
         ],
     )
 
@@ -186,6 +187,8 @@ def check_task(ctx: Context):
             "false",
             "-e",
             f"lint,{LATEST_PYTHON}",
+            "--",
+            "--durations=10",
         ],
     )
 
@@ -194,7 +197,16 @@ def check_task(ctx: Context):
 def check_all_task(ctx: Context):
     """Lint and run all tests using all Python versions."""
     announce_task("test-all")
-    run(ctx, [PYTHON, "-m", "tox", "--skip-missing-interpreters", "false"])
+    run(
+        ctx,
+        [
+            PYTHON,
+            "-m",
+            "tox",
+            "--skip-missing-interpreters",
+            "false",
+        ],
+    )
 
 
 @task(name="test-coverage", aliases=["tc"])
@@ -212,7 +224,11 @@ def test_coverage_task(ctx: Context):
             "-e",
             LATEST_PYTHON,
             "--",
-            "--cov",
+            "--cov=apio",
+            "--cov={envsitepackagesdir}/apio",
+            "--cov=tests",
+            "--cov-config=.coveragerc",
+            "--cov-append",
             "--cov-report=html:_pytest-coverage",
         ],
     )
@@ -229,25 +245,51 @@ def view_coverage_task(_: Context):
     open_test_coverage_viewer()
 
 
-@task(name="clear-cache", aliases=["cc"])
-def clear_cache_task(_: Context):
-    """Clear the pytest cache."""
-    announce_task("clear-pytest-cache")
-    repo_root = get_repo_root()
-    assert isinstance(repo_root, Path)
+@task(name="clean", aliases=["c"])
+def clean_task(_: Context):
+    """Clean caches, artifacts, and temporary files."""
+    announce_task("clean")
+    r = get_repo_root()
+    assert isinstance(r, Path)
 
-    pytest_caches = glob(str(repo_root / ".pytest_cache"))
-    pytest_caches = pytest_caches + glob(
-        str(repo_root / ".tox/*/.pytest_cache")
-    )
+    # -- Collect items to delete.
+    items = []
+    # -- Collect top level items first so they will be deleted first.
+    items.extend(r.glob(".tox"))
+    items.extend(r.glob("_site"))
+    items.extend(r.glob("_build"))
+    items.extend(r.glob(".pytest_cache"))
+    items.extend(r.glob(".coverage"))
+    items.extend(r.glob("htmlcov"))
+    items.extend(r.glob("_pytest-coverage"))
+    items.extend(r.glob(".coverage.*"))
+    # -- Collect nested items
+    items.extend(r.rglob("__pycache__"))
 
-    if not pytest_caches:
-        print("Pytest cache is cleared.")
+    if not items:
+        print("Already clean")
         return
 
-    for cache_dir in pytest_caches:
-        print(f"Deleting {cache_dir}")
-        shutil.rmtree(cache_dir)
+    print("Deleting:")
+
+    for item in items:
+        # -- Item must be strictly under root.
+        assert str(item).startswith(str(r))
+        assert not str(r).startswith(str(item))
+
+        # -- E.g. if we hit a __pycache__ under .tox but already deleted
+        # -- tox.
+        if not item.exists():
+            continue
+
+        # -- Item exists, delete it.
+        description = str(item.relative_to(r))
+        if item.is_dir():
+            print(f"[d] {description}")
+            shutil.rmtree(item)
+        else:
+            print(f"[f] {str(description)}")
+            item.unlink(missing_ok=False)
 
 
 # -- This task has not been tested.

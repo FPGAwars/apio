@@ -10,7 +10,7 @@ import sys
 from enum import Enum
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, Optional, Any, List
+from typing import Dict, Optional, Any, List, Tuple
 from pathlib import Path
 import requests
 from jsonschema import validate
@@ -386,7 +386,7 @@ class Profile:
         # -- Get the click context, if exists.
         return theme if theme else default
 
-    def get_package_installed_info(self, package_name: str) -> Optional[str]:
+    def get_installed_package_info(self, package_name: str) -> Tuple[str, str]:
         """Return (package_version, platform_id) of the given installed
         package. Values are replaced with "" if not installed or a value is
         missing."""

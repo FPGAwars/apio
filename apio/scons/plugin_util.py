@@ -16,7 +16,7 @@ import re
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Dict, Optional, Union
+from typing import List, Dict, Optional, Union, Callable
 from rich.table import Table
 from rich import box
 from SCons import Scanner
@@ -247,11 +247,23 @@ def verilator_lint_action(
     extra_params: List[str] = None,
     lib_dirs: List[Path] = None,
     lib_files: List[Path] = None,
-) -> str:
-    """Construct an verilator scons action string.
+) -> List[
+    Callable[
+        [
+            List[File],
+            List[Alias],
+            SConsEnvironment,
+        ],
+        None,
+    ]
+    | str,
+]:
+    """Construct an verilator scons action.
     * extra_params: Optional additional arguments.
     * libs_dirs: Optional directories for include search.
     * lib_files: Optional additional files to include.
+    Returns an action in a form of a list with two steps, a function to call
+    and a string command.
     """
 
     # -- Sanity checks
