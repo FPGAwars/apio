@@ -174,7 +174,7 @@ class PluginBase:
             # -- If requested, convert the file to URI and open it in the
             # -- default browser.
             if graph_params.open_viewer:
-                cout("Opening graph viewer")
+                cout("Opening default browser")
                 file_path = Path(target_file.get_abspath())
                 file_uri = file_path.resolve().as_uri()
                 default_browser = webbrowser.get()
