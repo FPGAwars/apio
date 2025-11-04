@@ -60,8 +60,8 @@ no_viewer_option = click.option(
 
 # -- Text in the rich-text format of the python rich library.
 APIO_GRAPH_HELP = """
-The command 'apio graph' generates a graphical representation of the design
-and open it in a graphical viewer.
+The command 'apio graph' generates a graphical representation of the design \
+and then opens it in a graphical viewer.
 
 Examples:[code]
   apio graph               # Generate a svg file (default).
