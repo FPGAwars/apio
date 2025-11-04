@@ -12,4 +12,4 @@ Apio definitions are stored in the Apio `definitions` repository at [https://git
 
 > Note that your contribution will be available to users only after Apio
 > will be configured remotely to use the new version of the `definitions`
-> package.
+> package. The Apio remote configuration are served from [https://github.com/FPGAwars/apio/tree/develop/remote-config](https://github.com/FPGAwars/apio/tree/develop/remote-config)
