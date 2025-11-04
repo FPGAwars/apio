@@ -144,12 +144,14 @@ class LintParams(_message.Message):
     def __init__(self, top_module: _Optional[str] = ..., verilator_all: bool = ..., verilator_no_style: bool = ..., verilator_no_warns: _Optional[_Iterable[str]] = ..., verilator_warns: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class GraphParams(_message.Message):
-    __slots__ = ("output_type", "top_module")
+    __slots__ = ("output_type", "top_module", "open_viewer")
     OUTPUT_TYPE_FIELD_NUMBER: _ClassVar[int]
     TOP_MODULE_FIELD_NUMBER: _ClassVar[int]
+    OPEN_VIEWER_FIELD_NUMBER: _ClassVar[int]
     output_type: GraphOutputType
     top_module: str
-    def __init__(self, output_type: _Optional[_Union[GraphOutputType, str]] = ..., top_module: _Optional[str] = ...) -> None: ...
+    open_viewer: bool
+    def __init__(self, output_type: _Optional[_Union[GraphOutputType, str]] = ..., top_module: _Optional[str] = ..., open_viewer: bool = ...) -> None: ...
 
 class SimParams(_message.Message):
     __slots__ = ("testbench", "force_sim", "no_gtkwave")

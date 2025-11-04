@@ -132,6 +132,7 @@ enum GraphOutputType {
 message GraphParams {
   required GraphOutputType output_type = 1;
   optional string top_module = 2;
+  required bool open_viewer = 3;
 }
 
 // Sim target specific params.

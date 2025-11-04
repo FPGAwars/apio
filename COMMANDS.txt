@@ -732,10 +732,12 @@ apio graph
 Usage: apio graph [OPTIONS]
 
   The command 'apio graph' generates a graphical representation of the
-  design.
+  design
+  and open it in a graphical viewer.
 
   Examples:
-    apio graph               # Generate a svg file.
+    apio graph               # Generate a svg file (default).
+    apio graph --no-viewer   # Suppress the graphical viewer.
     apio graph --svg         # Generate a svg file.
     apio graph --pdf         # Generate a pdf file.
     apio graph --png         # Generate a png file.
@@ -743,8 +745,8 @@ Usage: apio graph [OPTIONS]
 
 
   [Hint] On Windows, type 'explorer _build/default/graph.svg' to view
-  the graph, and on Mac OS type 'open _build/default/graph.svg' (if
-  your env is different than 'default' change the commands accordingly).
+  the graph, and on Mac OS type 'open _build/default/graph.svg' (if your
+  env is different than 'default' change the commands accordingly).
 
 Options:
   --svg                   Generate a svg file (default).
@@ -753,6 +755,7 @@ Options:
   -e, --env name          Set the apio.ini env.
   -p, --project-dir path  Set the root directory for the project.
   -t, --top-module name   Set the name of the top module to graph.
+  -n, --no-viewer         Do not open graph viewer.
   -v, --verbose           Show detailed output.
   -h, --help              Show this message and exit.
 

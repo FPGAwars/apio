@@ -228,8 +228,8 @@ def _test_project(
         assert "─────┐" in result.output  # Graphical table border
         assert getsize(sb.proj_dir / "_build/default/hardware.pnr")
 
-        # -- 'apio graph'
-        args = ["graph"] + proj_arg
+        # -- 'apio graph -n'
+        args = ["graph", "-n"] + proj_arg
         result = sb.invoke_apio_cmd(apio, args)
         sb.assert_result_ok(result)
         assert "SUCCESS" in result.output

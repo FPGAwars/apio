@@ -72,7 +72,7 @@ jobs:
                 apio build
                 apio test
                 apio sim --no-gtkwave
-                apio graph
+                apio graph -n
                 apio format
                 apio devices usb
                 apio devices serial
@@ -102,7 +102,7 @@ jobs:
                 apio build
                 apio test
                 apio sim --no-gtkwave
-                apio graph
+                apio graph -n
                 apio format
                 apio devices usb
                 apio devices serial
@@ -132,7 +132,7 @@ jobs:
                 apio build
                 apio test
                 apio sim --no-gtkwave
-                apio graph
+                apio graph -n
                 apio format
                 apio devices usb
                 apio devices serial
