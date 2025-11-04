@@ -25,11 +25,8 @@ from apio.utils import cmd_util
 # ----------------------------------
 
 
-def env_option_gen(*, help: str = "Set the apio.ini env."):
+def env_option_gen(*, short_help: str = "Set the apio.ini env."):
     """Generate an --env option with given help text."""
-
-    # W0622: Redefining built-in 'help'
-    # pylint: disable=redefined-builtin
 
     return click.option(
         "env",  # Var name.
@@ -38,67 +35,55 @@ def env_option_gen(*, help: str = "Set the apio.ini env."):
         type=str,
         default=None,
         metavar="name",
-        help=help,
+        help=short_help,
         cls=cmd_util.ApioOption,
     )
 
 
-def all_option_gen(*, help: str):
+def all_option_gen(*, short_help: str):
     """Generate an --all option with given help text."""
-
-    # W0622: Redefining built-in 'help'
-    # pylint: disable=redefined-builtin
 
     return click.option(
         "all_",  # Var name. Deconflicting from Python'g builtin 'all'.
         "-a",
         "--all",
         is_flag=True,
-        help=help,
+        help=short_help,
         cls=cmd_util.ApioOption,
     )
 
 
-def force_option_gen(*, help: str):
+def force_option_gen(*, short_help: str):
     """Generate a --force option with given help text."""
-
-    # W0622: Redefining built-in 'help'
-    # pylint: disable=redefined-builtin
 
     return click.option(
         "force",  # Var name
         "-f",
         "--force",
         is_flag=True,
-        help=help,
+        help=short_help,
         cls=cmd_util.ApioOption,
     )
 
 
-def list_option_gen(*, help: str):
+def list_option_gen(*, short_help: str):
     """Generate a --list option with given help text."""
-
-    # W0622: Redefining built-in 'help'
-    # pylint: disable=redefined-builtin
 
     return click.option(
         "list_",  # Var name. Deconflicting from python builtin 'list'.
         "-l",
         "--list",
         is_flag=True,
-        help=help,
+        help=short_help,
         cls=cmd_util.ApioOption,
     )
 
 
 def top_module_option_gen(
     *,
-    help: str = "Set the top level module name.",
+    short_help: str = "Set the top level module name.",
 ):
     """Generate a --top-module option with given help text."""
-
-    # W0622: Redefining built-in 'help'
-    # pylint: disable=redefined-builtin
 
     return click.option(
         "top_module",  # Var name.
@@ -107,16 +92,13 @@ def top_module_option_gen(
         type=str,
         metavar="name",
         # deprecated=deprecated,
-        help=help,
+        help=short_help,
         cls=cmd_util.ApioOption,
     )
 
 
-def dst_option_gen(*, help: str):
+def dst_option_gen(*, short_help: str):
     """Generate a --dst option with given help text."""
-
-    # W0622: Redefining built-in 'help'
-    # pylint: disable=redefined-builtin
 
     dst_option = click.option(
         "dst",  # Var name.
@@ -124,7 +106,7 @@ def dst_option_gen(*, help: str):
         "--dst",
         type=Path,
         metavar="path",
-        help=help,
+        help=short_help,
         cls=cmd_util.ApioOption,
     )
 

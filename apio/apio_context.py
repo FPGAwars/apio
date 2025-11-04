@@ -101,8 +101,8 @@ class EnvMutations:
 
     # -- PATH items to add.
     paths: List[str]
-    # -- Vars name/value paris.
-    vars: List[Tuple[str, str]]
+    # -- Vars name/value pairs.
+    vars_list: List[Tuple[str, str]]
 
 
 class ProjectPolicy(Enum):
@@ -710,7 +710,7 @@ class ApioContext:
             # -- Collect the env vars (name, value) pairs.
             vars_section = package_env.get("vars", {})
             for var_name, var_value in vars_section.items():
-                result.vars.append((var_name, var_value))
+                result.vars_list.append((var_name, var_value))
 
         return result
 
@@ -728,7 +728,7 @@ class ApioContext:
                 cout(f'{styled_name}="{p}:$PATH"')
 
         # -- Print vars mutations.
-        for name, val in mutations.vars:
+        for name, val in mutations.vars_list:
             styled_name = cstyle(name, style=EMPH3)
             if windows:
                 cout(f"set {styled_name}={val}")
@@ -745,7 +745,7 @@ class ApioContext:
         os.environ["PATH"] = new_val
 
         # -- Apply the vars mutations, while preserving order.
-        for name, value in mutations.vars:
+        for name, value in mutations.vars_list:
             os.environ[name] = value
 
     def set_env_for_packages(

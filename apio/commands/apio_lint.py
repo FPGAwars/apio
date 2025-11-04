@@ -78,10 +78,10 @@ Examples:[code]
 @nowarn_option
 @warn_option
 @options.all_option_gen(
-    help="Enable all warnings, including code style warnings."
+    short_help="Enable all warnings, including code style warnings."
 )
 @options.top_module_option_gen(
-    help="Restrict linting to this module and its dependencies."
+    short_help="Restrict linting to this module and its dependencies."
 )
 @options.env_option_gen()
 @options.project_dir_option

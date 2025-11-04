@@ -79,7 +79,9 @@ env is different than 'default' change the commands accordingly).
 @pdf_option
 @options.env_option_gen()
 @options.project_dir_option
-@options.top_module_option_gen(help="Set the name of the top module to graph.")
+@options.top_module_option_gen(
+    short_help="Set the name of the top module to graph."
+)
 @options.verbose_option
 def cli(
     cmd_ctx: click.Context,

@@ -185,7 +185,7 @@ added to the examples package.
     short_help="Update apio packages.",
     help=APIO_PACKAGES_UPDATE_HELP,
 )
-@options.force_option_gen(help="Force reinstallation.")
+@options.force_option_gen(short_help="Force reinstallation.")
 @options.verbose_option
 def _update_cli(
     # Options

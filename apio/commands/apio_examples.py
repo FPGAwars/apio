@@ -162,7 +162,7 @@ Examples:[code]
     help=APIO_EXAMPLES_FETCH_HELP,
 )
 @click.argument("example", metavar="EXAMPLE", nargs=1, required=True)
-@options.dst_option_gen(help="Set a different destination directory.")
+@options.dst_option_gen(short_help="Set a different destination directory.")
 def _fetch_cli(
     # Arguments
     example: str,
