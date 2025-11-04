@@ -257,6 +257,7 @@ def clean_task(_: Context):
     # -- Collect top level items first so they will be deleted first.
     items.extend(r.glob(".tox"))
     items.extend(r.glob("_site"))
+    items.extend(r.glob("_build"))
     items.extend(r.glob(".pytest_cache"))
     items.extend(r.glob(".coverage"))
     items.extend(r.glob("htmlcov"))
