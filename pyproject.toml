@@ -60,19 +60,12 @@ litterbox = ['litterbox==0.2.2']
 tinyfpgab = ['tinyfpgab==1.1.0']
 icefunprog = ['icefunprog==2.0.3']
 
-
 [tool.flit.scripts]
 apio = "apio.__main__:main"
 
 [tool.black]
 line-length = 79
 target-version = ['py311']
-
-[tool.coverage.run]
-omit = [
-    "apio/common/proto/apio_pb2.py",
-    "apio/common/proto/apio_pb2.pyi",
-]
 
 # NOTE: For pylint control see .pylintrc in this directory.
 # It allows controls that pyproject.toml doesn't support.
