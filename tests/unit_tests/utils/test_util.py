@@ -3,10 +3,18 @@ Tests of util.py
 """
 
 import os
+import sys
 from pathlib import Path
 import pytest
+from pytest import raises
 from tests.conftest import ApioRunner
-from apio.utils.util import plurality, list_plurality, is_debug, pushd
+from apio.utils.util import (
+    plurality,
+    list_plurality,
+    is_debug,
+    pushd,
+    subprocess_call,
+)
 
 # TODO: Add more tests.
 
@@ -93,3 +101,35 @@ def test_pushd(apio_runner: ApioRunner):
 
         # -- Back from pushd to dir1
         assert Path.cwd().resolve() == dir1.resolve()
+
+
+def test_subprocess_call(apio_runner: ApioRunner):
+    """Test subprocess_call()."""
+
+    with apio_runner.in_sandbox():
+
+        # -- Test a successful subprocess
+        file1 = Path("file1")
+        assert not file1.exists()
+        subprocess_call(
+            [
+                sys.executable,
+                "-c",
+                f'import pathlib; pathlib.Path("{str(file1)}").'
+                'write_text("content1")',
+            ]
+        )
+        assert file1.is_file()
+        assert file1.read_text(encoding="utf-8") == "content1"
+
+        # -- Test a failing subprocess
+        with raises(SystemExit) as e:
+            subprocess_call(
+                [
+                    sys.executable,
+                    "-c",
+                    "import sys; sys.exit(7)",
+                ]
+            )
+            # -- Apio exits with 1, regardless of the subprocess error status.
+            assert e.value.code == 1

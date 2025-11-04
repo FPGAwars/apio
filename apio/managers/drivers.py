@@ -233,15 +233,14 @@ class Drivers:
         if not self.ftdi_rules_system_path.exists():
 
             # -- The file does not exist. Copy!
-            # -- Execute the cmd: sudo cp src_file target_file
+            # -- Execute the cmd: sudo cp src_file target_file, exit on error.
             util.subprocess_call(
                 [
                     "sudo",
                     "cp",
                     str(self.ftdi_rules_local_path),
                     str(self.ftdi_rules_system_path),
-                ],
-                exit_on_error=True,
+                ]
             )
 
             # -- Execute the commands for reloading the udev system
@@ -289,15 +288,14 @@ class Drivers:
             group_added = self._add_dialout_group_linux()
 
             # -- The file does not exist. Copy!
-            # -- Execute the cmd: sudo cp src_file target_file
+            # -- Execute the cmd: sudo cp src_file target_file, exit on error.
             util.subprocess_call(
                 [
                     "sudo",
                     "cp",
                     str(self.serial_rules_local_path),
                     str(self.serial_rules_system_path),
-                ],
-                exit_on_error=True,
+                ]
             )
 
             # -- Execute the commands for reloading the udev system
