@@ -6,10 +6,10 @@ name: publish-docs
 on:
   push:
     # Run on push if doc related files change.
-    paths:
-      - "docs/**"
-      - "mkdocs.yml"
-      - ".github/workflows/publish-docs.yaml"
+    #paths:
+    #  - "docs/**"
+    #  - "mkdocs.yml"
+    #  - ".github/workflows/publish-docs.yaml"
 
   schedule:
     # Every day at 10:00 UTC
@@ -74,7 +74,7 @@ jobs:
 
       - name: Run test coverage
         run: |
-          invoke test-coverage
+          invoke test-coverage --no-viewer
 
       - name: Move test coverage to site
         run: |
