@@ -59,6 +59,7 @@ def package_version(package_name: str) -> Optional[str]:
 def install_package(package_name: str, required_version: str) -> None:
     """If the package/version is not installed then install it. Otherwise
     do nothing."""
+    # -- Update if needed.
     if package_version(package_name) != required_version:
         print(f"\n*** Auto installing {package_name}@{required_version} ***")
         subprocess.check_call(
@@ -71,6 +72,8 @@ def install_package(package_name: str, required_version: str) -> None:
                 f"{package_name}=={required_version}",
             ]
         )
+
+    # -- Verify.
     assert (
         package_version(package_name) == required_version
     ), f"Expected to find {package_name}=={required_version}"
