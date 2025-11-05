@@ -52,17 +52,15 @@ jobs:
 
       - name: Generate boards page
         run: |
-          # ls docs/supported-boards.md
-          # apio boards --docs > docs/supported-boards.md
-          # cat docs/supported-boards.md
-          apio boards --docs
+          ls docs/supported-boards.md
+          apio boards --docs > docs/supported-boards.md
+          cat docs/supported-boards.md
 
       - name: Generate fpgas page
         run: |
-          # ls docs/supported-fpgas.md
-          # apio fpgas --docs > docs/supported-fpgas.md
-          # cat docs/supported-fpgas.md
-          apio fpgas --docs
+          ls docs/supported-fpgas.md
+          apio fpgas --docs > docs/supported-fpgas.md
+          cat docs/supported-fpgas.md
 
       - name: Build mkDocs pages
         run: |
