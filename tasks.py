@@ -3,7 +3,7 @@
 # To install 'invoke' run: pip install invoke
 #
 # For more information see the Apio development guide at
-# https://fpgawars.github.io/apio/development-environment/
+# https://fpgawars.github.io/apio/docs/development-environment/
 #
 # A few useful Invoke tasks
 #   invoke --list        # Show available tasks
@@ -236,10 +236,10 @@ def test_coverage_task(ctx: Context, no_viewer=False):
 
     # -- Open a browser to show the results.
     if not no_viewer:
-      print("Opening default browser")
-      open_test_coverage_viewer()
+        print("Opening default browser")
+        open_test_coverage_viewer()
     else:
-      print("User requested no viewer.")
+        print("User requested no viewer.")
 
 
 @task(name="view-coverage", aliases=["vc"])

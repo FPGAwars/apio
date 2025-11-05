@@ -96,6 +96,9 @@ This will update the page `_pytest-coverage/index.html` with the latest coverage
 
 > The directory `_pytest-coverage` is ignored by git and is not checked in with apio.
 
+The test coverage is also published online at the [Test Coverage Report](../coverage) each
+time a new commit is checked in.
+
 ## Confirm that the test workflow passes
 
 Once you are ready to send a pull request from your forked repository, make sure that the test workflow completed successfully. You can find it in the Actions tab of your forked repo.
