@@ -45,16 +45,28 @@ jobs:
           pip install mkdocs
           pip install  mkdocs-material
 
-      - name: Build pages
+      - name: Build mkDocs pages
         run: |
-          mkdocs build --strict --site-dir site
+          mkdocs build --strict --site-dir site/docs
 
-      # - name: Publish to github Pages
-      #   # Push also if no change.
-      #   run: |
-      #     mkdocs gh-deploy --force
-      #   env:
-      #     GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Add redirector from root dir to docs
+        run: |  
+          cat > site/index.html <<'EOF'
+          <!DOCTYPE html>
+          <html><head>
+            <meta http-equiv="refresh" content="0; url=docs/">
+            <link rel="canonical" href="https://${{ github.repositoryUrl }}/docs/">
+            <title>Redirecting…</title>
+            <style>
+              body{font-family:system-ui;background:#fff;color:#333;text-align:center;padding:5rem}
+              a{color:#0366d6;text-decoration:none;font-weight:600}
+            </style>
+          </head>
+          <body>
+            <p>📚 Docs loading… <a href="docs/">click here if not automatic</a></p>
+          </body></html>
+          EOF
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

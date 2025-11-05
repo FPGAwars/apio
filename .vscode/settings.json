@@ -121,6 +121,7 @@
         "pytest",
         "pyxx",
         "readmemh",
+        "redirector",
         "scons",
         "sconsign",
         "sconstruct",
