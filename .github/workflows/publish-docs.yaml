@@ -21,6 +21,7 @@ on:
 jobs:
   publish-mkdocs-docs:
     runs-on: ubuntu-latest
+    environment: github-pages
 
     permissions:
       contents: write
