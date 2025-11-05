@@ -30,6 +30,8 @@ Test it by listing the available tasks
 invoke --list
 ```
 
+> HINT: You can use the shortcut `inv` instead of `invoke`.
+
 ## Install your cloned Apio
 
 The easiest way to develop Apio is to install its source code from your local repo as the Pip `apio` package. This will allow you to test your edited code by running `apio` from the command line.
