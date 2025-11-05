@@ -158,6 +158,10 @@ def _list_fpgas(apio_ctx: ApioContext, verbose: bool):
 def _list_fpgas_docs_format(apio_ctx: ApioContext):
     """Output fpgas information in a format for Apio Docs."""
 
+    # -- Get the version of the 'definitions' package use. At this point it's
+    # -- expected to be installed.
+    def_version, _ = apio_ctx.profile.get_installed_package_info("definitions")
+
     # -- Collect the fpagas info into a list of entires, one per fpga.
     entries: List[Entry] = _collect_fpgas_entries(apio_ctx)
 
@@ -172,10 +176,9 @@ def _list_fpgas_docs_format(apio_ctx: ApioContext):
     cwrite("\n<!-- BEGIN generation by 'apio fpgas --docs' -->\n")
     cwrite("\n# Supported FPGAs\n")
     cwrite(
-        f"\nThis markdown page was generated on {today_str} using the command "
+        f"\nThis markdown page was generated automatically from `definitions` "
+        f"package version `{def_version}` on {today_str}, using the command"
         f"\n\n```\napio fpgas --docs > supported-fpgas.md\n```"
-        "\nFor the updated list of supported FPGAs run the command "
-        " `apio fpgas`.\n"
     )
     cwrite(
         "\n> Custom FPGAs definitions can be added in the project directory "

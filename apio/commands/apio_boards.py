@@ -170,6 +170,10 @@ def _list_boards(apio_ctx: ApioContext, verbose: bool):
 def _list_boards_docs_format(apio_ctx: ApioContext):
     """Output boards information in a format for Apio Docs."""
 
+    # -- Get the version of the 'definitions' package use. At this point it's
+    # -- expected to be installed.
+    def_version, _ = apio_ctx.profile.get_installed_package_info("definitions")
+
     # -- Collect the boards info into a list of entires, one per board.
     entries: List[Entry] = _collect_board_entries(apio_ctx)
 
@@ -188,10 +192,9 @@ def _list_boards_docs_format(apio_ctx: ApioContext):
     cwrite("\n<!-- BEGIN generation by 'apio boards --docs' -->\n")
     cwrite("\n# Supported FPGA Boards\n")
     cwrite(
-        f"\nThis markdown page was generated on {today_str} using the command "
+        f"\nThis markdown page was generated automatically from `definitions` "
+        f"package version `{def_version}` on {today_str}, using the command:"
         f"\n\n```\napio boards --docs > supported-boards.md\n```"
-        "\nFor the updated list of supported FPGA boards run the command "
-        " `apio boards`.\n"
     )
     cwrite(
         "\n> Custom board definitions can be added in the project directory "
