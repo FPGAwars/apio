@@ -16,7 +16,7 @@ import click
 from rich.table import Table
 from rich import box
 from apio.common import apio_console
-from apio.common.apio_console import cout, ctable
+from apio.common.apio_console import cout, ctable, cwrite
 from apio.common.apio_styles import INFO, BORDER, EMPH1
 from apio.apio_context import (
     ApioContext,
@@ -169,19 +169,19 @@ def _list_fpgas_docs_format(apio_ctx: ApioContext):
     # -- Print page header
     today = date.today()
     today_str = f"{today.strftime('%B')} {today.day}, {today.year}"
-    cout("\n<!-- BEGIN generation by 'apio fpgas --docs' -->")
-    cout("\n# Supported FPGAs")
-    cout(
+    cwrite("\n<!-- BEGIN generation by 'apio fpgas --docs' -->\n")
+    cwrite("\n# Supported FPGAs\n")
+    cwrite(
         f"\nThis markdown page was generated on {today_str} using the command "
         f"\n\n```\napio fpgas --docs > supported-fpgas.md\n```"
         "\nFor the updated list of supported FPGAs run the command "
-        " `apio fpgas`."
+        " `apio fpgas`.\n"
     )
-    cout(
+    cwrite(
         "\n> Custom FPGAs definitions can be added in the project directory "
         "and new FPGAs definitions can be contributed in the "
         "[apio-definitions](https://github.com/FPGAwars/apio-definitions/"
-        "tree/main/definitions) repository."
+        "tree/main/definitions) repository.\n"
     )
 
     # -- Add the rows, with separation line between architecture groups.
@@ -190,17 +190,17 @@ def _list_fpgas_docs_format(apio_ctx: ApioContext):
         # -- If switching architecture, add an horizontal separation line.
         if last_arch != entry.fpga_arch:
 
-            cout(f"\n## {entry.fpga_arch.upper()} FPGAs")
+            cwrite(f"\n## {entry.fpga_arch.upper()} FPGAs\n")
 
-            cout(
-                "\n| {0} | {1} | {2} |".format(
+            cwrite(
+                "\n| {0} | {1} | {2} |\n".format(
                     "FPGA-ID".ljust(w1),
                     "SIZE".ljust(w2),
                     "PART-NUM".ljust(w3),
                 )
             )
-            cout(
-                "| {0} | {1} | {2} |".format(
+            cwrite(
+                "| {0} | {1} | {2} |\n".format(
                     ":-".ljust(w1, "-"),
                     ":-".ljust(w2, "-"),
                     ":-".ljust(w3, "-"),
@@ -209,15 +209,15 @@ def _list_fpgas_docs_format(apio_ctx: ApioContext):
 
             last_arch = entry.fpga_arch
 
-        cout(
-            "| {0} | {1} | {2} |".format(
+        cwrite(
+            "| {0} | {1} | {2} |\n".format(
                 entry.fpga.ljust(w1),
                 entry.fpga_size.ljust(w2),
                 entry.fpga_part_num.ljust(w3),
             )
         )
 
-    cout("\n<!-- END generation by 'apio fpgas --docs' -->\n")
+    cwrite("\n<!-- END generation by 'apio fpgas --docs' -->\n\n")
 
 
 # -------- apio fpgas

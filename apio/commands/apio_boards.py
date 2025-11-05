@@ -15,7 +15,7 @@ from typing import List, Dict, Optional
 import click
 from rich.table import Table
 from rich import box
-from apio.common.apio_console import cout, ctable
+from apio.common.apio_console import cout, ctable, cwrite
 from apio.common.apio_styles import INFO
 from apio.common import apio_console
 from apio.common.apio_styles import BORDER, EMPH1
@@ -185,19 +185,19 @@ def _list_boards_docs_format(apio_ctx: ApioContext):
     # -- Print page header
     today = date.today()
     today_str = f"{today.strftime('%B')} {today.day}, {today.year}"
-    cout("\n<!-- BEGIN generation by 'apio boards --docs' -->")
-    cout("\n# Supported FPGA Boards")
-    cout(
+    cwrite("\n<!-- BEGIN generation by 'apio boards --docs' -->\n")
+    cwrite("\n# Supported FPGA Boards\n")
+    cwrite(
         f"\nThis markdown page was generated on {today_str} using the command "
         f"\n\n```\napio boards --docs > supported-boards.md\n```"
         "\nFor the updated list of supported FPGA boards run the command "
-        " `apio boards`."
+        " `apio boards`.\n"
     )
-    cout(
+    cwrite(
         "\n> Custom board definitions can be added in the project directory "
         "and new board definitions can be contributed in the "
         "[apio-definitions](https://github.com/FPGAwars/apio-definitions/"
-        "tree/main/definitions) repository."
+        "tree/main/definitions) repository.\n"
     )
 
     # -- Add the rows, with separation line between architecture groups.
@@ -208,16 +208,16 @@ def _list_boards_docs_format(apio_ctx: ApioContext):
 
             cout(f"\n## {entry.fpga_arch.upper()} boards")
 
-            cout(
-                "\n| {0} | {1} | {2} | {3} |".format(
+            cwrite(
+                "\n| {0} | {1} | {2} | {3} |\n".format(
                     "BOARD-ID".ljust(w1),
                     "SIZE".ljust(w2),
                     "DESCRIPTION".ljust(w3),
                     "FPGA".ljust(w4),
                 )
             )
-            cout(
-                "| {0} | {1} | {2} | {3} |".format(
+            cwrite(
+                "| {0} | {1} | {2} | {3} |\n".format(
                     ":-".ljust(w1, "-"),
                     ":-".ljust(w2, "-"),
                     ":-".ljust(w3, "-"),
@@ -227,8 +227,8 @@ def _list_boards_docs_format(apio_ctx: ApioContext):
 
             last_arch = entry.fpga_arch
 
-        cout(
-            "| {0} | {1} | {2} | {3} |".format(
+        cwrite(
+            "| {0} | {1} | {2} | {3} |\n".format(
                 entry.board.ljust(w1),
                 entry.fpga_size.ljust(w2),
                 entry.board_description.ljust(w3),
@@ -236,7 +236,7 @@ def _list_boards_docs_format(apio_ctx: ApioContext):
             )
         )
 
-    cout("\n<!-- END generation by 'apio boards --docs' -->\n")
+    cwrite("\n<!-- END generation by 'apio boards --docs' -->\n\n")
 
 
 # ------------- apio boards
