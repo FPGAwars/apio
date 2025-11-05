@@ -5,7 +5,7 @@ name: publish-docs
 
 on:
   push:
-    # Only doc related files.
+    # Run on push if doc related files change.
     paths:
       - "docs/**"
       - "mkdocs.yml"
@@ -15,16 +15,17 @@ on:
     # Every day at 10:00 UTC
     - cron: "0 10 * * *"
 
-  # enables manual trigger via GitHub UI
+  # Enables manual trigger via GitHub UI
   workflow_dispatch:
-
-permissions:
-  #  Needed for mkDocs gh-deploy to push
-  contents: write
 
 jobs:
   publish-mkdocs-docs:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
 
     steps:
       - name: Checkout repository
@@ -42,11 +43,19 @@ jobs:
 
       - name: Build pages
         run: |
-          mkdocs build --strict
+          mkdocs build --strict --site-dir site
 
-      - name: Publish to github Pages
-        # Push also if no change.
-        run: |
-          mkdocs gh-deploy --force
-        env:
-          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      # - name: Publish to github Pages
+      #   # Push also if no change.
+      #   run: |
+      #     mkdocs gh-deploy --force
+      #   env:
+      #     GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
