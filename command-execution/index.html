@@ -1,0 +1,2579 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../terminology/">
+      
+      
+        <link rel="next" href="../updating-the-docs/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.23">
+    
+    
+      
+        <title>Command execution - Apio 1.x.x Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.84d31ad4.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#the-example-command" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Apio 1.x.x Documentation" class="md-header__button md-logo" aria-label="Apio 1.x.x Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Apio 1.x.x Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Command execution
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../quick-start/" class="md-tabs__link">
+          
+  
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../cmd-apio-build/" class="md-tabs__link">
+          
+  
+  
+  Apio Commands
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../project-structure/" class="md-tabs__link">
+          
+  
+  
+  Apio Projects
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../supported-boards/" class="md-tabs__link">
+          
+  
+  
+  FPGA Boards
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../using-examples/" class="md-tabs__link">
+          
+  
+  
+  Apio Examples
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../command-line/" class="md-tabs__link">
+          
+  
+  
+  Apio Tips
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../apio-repositories/" class="md-tabs__link">
+          
+  
+  
+  Apio Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../help/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Help
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Apio 1.x.x Documentation" class="md-nav__button md-logo" aria-label="Apio 1.x.x Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Apio 1.x.x Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quick start
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../system-requirements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    System requirements
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installing-apio/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installing Apio
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../video-tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Video tutorial
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migrating-from-apio-0xx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Migrating from Apio 0.x.x
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Apio Commands
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Apio Commands
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Build Commands
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            Build Commands
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-build/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio build
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-upload/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio upload
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-clean/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio clean
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Verification Commands
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            Verification Commands
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-lint/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio lint
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-format/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio format
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-sim/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio sim
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio test
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio report
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-graph/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio graph
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Setup Commands
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            Setup Commands
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-create/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio create
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-preferences/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio preferences
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-packages/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio packages
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-drivers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio drivers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-devices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio devices
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Utility Commands
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            Utility Commands
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-boards/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio boards
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-fpgas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio fpgas
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio examples
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-info/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio info
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-raw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio raw
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio api
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-upgrade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio upgrade
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Apio Projects
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Apio Projects
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project-structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Project structure
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project-file/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Project file apio.ini
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    FPGA Boards
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            FPGA Boards
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../supported-boards/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Supported boards
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../supported-fpgas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Supported FPGAs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../custom-boards/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Custom boards
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing-definitions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contributing definitions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../board-drivers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Board drivers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Apio Examples
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Apio Examples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../using-examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Using examples
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing-examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contributing examples
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Apio Tips
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Apio Tips
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../command-line/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Apio command line
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../using-system-verilog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Using System Verilog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../using-testbenches/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Using testbenches
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../raw-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Raw tools
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Apio Development
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Apio Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../apio-repositories/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Apio repositories
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development-environment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Development environment
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../terminology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Apio's terminology
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Command execution
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Command execution
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-example-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      The example command
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-starting-the-apio-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Starting the Apio process
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-dispatching-the-build-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Dispatching the 'build' command
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-creating-an-apiocontext" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Creating an ApioContext
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-invoking-the-scons-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Invoking the SCons manager
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-creating-the-scons-parameters-proto" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Creating the SCons parameters proto
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-invoking-the-scons-subprocess" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Invoking the scons subprocess
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-executing-sconstruct" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. Executing SConstruct
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-scons-subprocess-initialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      8. SCons subprocess initialization
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-defining-scons-targets-and-builders" class="md-nav__link">
+    <span class="md-ellipsis">
+      9. Defining SCons targets and builders
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-scons-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      10. SCons execution
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-scons-output-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      11. SCons output filter
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../updating-the-docs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Updating the docs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../creating-apio-version/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Creating an Apio version
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../creating-package-version/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Creating a package version
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../help/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Help
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-example-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      The example command
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-starting-the-apio-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Starting the Apio process
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-dispatching-the-build-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Dispatching the 'build' command
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-creating-an-apiocontext" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Creating an ApioContext
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-invoking-the-scons-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Invoking the SCons manager
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-creating-the-scons-parameters-proto" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Creating the SCons parameters proto
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-invoking-the-scons-subprocess" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Invoking the scons subprocess
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-executing-sconstruct" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. Executing SConstruct
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-scons-subprocess-initialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      8. SCons subprocess initialization
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-defining-scons-targets-and-builders" class="md-nav__link">
+    <span class="md-ellipsis">
+      9. Defining SCons targets and builders
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-scons-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      10. SCons execution
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-scons-output-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      11. SCons output filter
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>Command execution</h1>
+
+<p>This page describes the operations performed during the execution of a typical Apio command, with the goal of outlining the principles of how Apio works.</p>
+<p>The command we chose is <code>apio build</code> because it demonstrates most of the key concepts in Apio's design.</p>
+<h2 id="the-example-command">The example command<a class="headerlink" href="#the-example-command" title="Permanent link">&para;</a></h2>
+<p>We are using the command <code>apio build</code> with the Apio example <code>alhambra-ii/blinky</code>.</p>
+<p>Creating the project:</p>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>test-project
+<span class="nb">cd</span><span class="w"> </span>test-project
+apio<span class="w"> </span>examples<span class="w"> </span>fetch<span class="w"> </span>alhambra-ii/blinky
+</code></pre></div>
+<p>Running the example:</p>
+<div class="highlight"><pre><span></span><code>apio<span class="w"> </span>clean
+apio<span class="w"> </span>build
+</code></pre></div>
+<h2 id="1-starting-the-apio-process">1. Starting the Apio process<a class="headerlink" href="#1-starting-the-apio-process" title="Permanent link">&para;</a></h2>
+<p>To be compatible with PyInstaller, Apio has a single entry point in <code>apio/__main__.py</code>, which is used for two kinds of invocations: as the main Apio command and as the SCons subprocess.</p>
+<p>When <code>main()</code> starts for the <code>apio build</code> command, it examines the command line passed to it, determines that this is not an invocation as a SCons subprocess, and calls the Apio top-level Click command function <code>apio_top_cli()</code>.</p>
+<h2 id="2-dispatching-the-build-command">2. Dispatching the 'build' command<a class="headerlink" href="#2-dispatching-the-build-command" title="Permanent link">&para;</a></h2>
+<p>The function <code>apio_top_cli()</code> is decorated with <code>@apio.group</code>, indicating that it is a 'group' Click command containing subcommands listed in the <code>subgroups</code> attribute of the decorator.</p>
+<p>When <code>apio_top_cli()</code> is called from <code>main()</code>, Click magic is invoked behind the scenes, eventually causing the invocation of the function <code>cli()</code> in <code>apio_build.py</code>, which handles the <code>build</code> command under the top-level <code>apio</code> command.</p>
+<blockquote>
+<p>Click also passes to the build handler values of options it may find on the command line such as <code>--verbose</code>, but this is not the case with our simple example where the command line is just <code>apio build</code>.</p>
+<p>The <code>@click.command()</code> decoration of the <code>build</code> handler indicates that it is an actual command that performs work rather than a group that contains subcommands.</p>
+</blockquote>
+<h2 id="3-creating-an-apiocontext">3. Creating an ApioContext<a class="headerlink" href="#3-creating-an-apiocontext" title="Permanent link">&para;</a></h2>
+<p>Most Apio commands begin by creating an <code>ApioContext</code> instance, which provides access to project settings, the user profile, configuration, and resources.</p>
+<div class="highlight"><pre><span></span><code><span class="n">apio_ctx</span> <span class="o">=</span> <span class="n">ApioContext</span><span class="p">(</span>
+    <span class="n">project_policy</span><span class="o">=</span><span class="n">ProjectPolicy</span><span class="o">.</span><span class="n">PROJECT_REQUIRED</span><span class="p">,</span>
+    <span class="n">config_policy</span><span class="o">=</span><span class="n">RemoteConfigPolicy</span><span class="o">.</span><span class="n">CACHED_OK</span><span class="p">,</span>
+    <span class="n">packages_policy</span><span class="o">=</span><span class="n">PackagesPolicy</span><span class="o">.</span><span class="n">ENSURE_PACKAGES</span><span class="p">,</span>
+    <span class="n">project_dir_arg</span><span class="o">=</span><span class="n">project_dir</span><span class="p">,</span>
+    <span class="n">env_arg</span><span class="o">=</span><span class="n">env</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>The instantiation is governed by three configuration enum values, <code>ProjectPolicy</code>, <code>RemoteConfigPolicy</code> and <code>PackagesPolicy</code>, which the <code>apio build</code> command specifies as follows:</p>
+<p>The project policy is <code>PROJECT_REQUIRED</code>, which means an <code>apio.ini</code> file is required and that project-related information, such as resolved <code>apio.ini</code> environment variables and options, will be loaded.</p>
+<p>The remote config policy is <code>CACHED_OK</code>, indicating that using remote config information cached in the <code>~/.apio/profile.json</code> file is acceptable. The context creation logic may try to fetch a fresh config if the cached one is too old but will fall back to the cached version if needed.</p>
+<p>The packages policy is <code>ENSURE_PACKAGES</code> which cause the ApioContext initialization to ensure that the apio
+packages are installed properly, fixing and downloading them if necessary.</p>
+<blockquote>
+<p>The expiration time of the cached remote config is controlled by a parameter in the resource file <code>apio/resources/config.jsonc</code>.</p>
+<p>Instantiating the <code>ApioContext</code> also initializes the console output in <code>apio_console.py</code> with the color and theme preferences from the profile file.</p>
+</blockquote>
+<h2 id="4-invoking-the-scons-manager">4. Invoking the SCons manager<a class="headerlink" href="#4-invoking-the-scons-manager" title="Permanent link">&para;</a></h2>
+<p>Once the <code>apio build</code> command has created the <code>ApioContext</code> instance, it is ready to start performing the command-specific logic. In this case, it creates an Apio <code>SConsManager</code> instance and calls its <code>build()</code> method with the values of the <code>apio build</code> command line options.</p>
+<div class="highlight"><pre><span></span><code><span class="n">scons</span> <span class="o">=</span> <span class="n">SConsManager</span><span class="p">(</span><span class="n">apio_ctx</span><span class="p">)</span>
+
+<span class="n">exit_code</span> <span class="o">=</span> <span class="n">scons</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+    <span class="n">Verbosity</span><span class="p">(</span><span class="nb">all</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">synth</span><span class="o">=</span><span class="n">verbose_synth</span><span class="p">,</span> <span class="n">pnr</span><span class="o">=</span><span class="n">verbose_pnr</span><span class="p">)</span>
+<span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p>The class <code>SConsManager</code> has a dedicated method for each Apio command that needs to invoke the SCons subprocess; in this case, we use the <code>build()</code> method to invoke the build functionality of the SCons subprocess.</p>
+</blockquote>
+<h2 id="5-creating-the-scons-parameters-proto">5. Creating the SCons parameters proto<a class="headerlink" href="#5-creating-the-scons-parameters-proto" title="Permanent link">&para;</a></h2>
+<p>To invoke the SCons subprocess, the SConsManager collects the parameters needed for that specific SCons target, populates a protocol buffer of type <code>SconsParams</code>, and serializes it in text mode into a file called <code>scons.params</code> in the build directory for the SCons subprocess to find and deserialize.</p>
+<blockquote>
+<p>The SCons manager passes parameters such as <code>fpga_id</code> in the protocol buffer because the <code>ApioContext</code> class is not used in the SCons subprocess, only in the parent Apio process.</p>
+<p>The <code>timestamp</code> is also passed in the SCons command line to verify that the SCons subprocess picked the correct params file.</p>
+<p>Running Apio with <code>APIO_DEBUG=3</code> provides a detailed list of the parameters passed to the SCons subprocess.</p>
+</blockquote>
+<p>Sample <code>scons.params</code> file</p>
+<div class="highlight"><pre><span></span><code><span class="n">timestamp</span><span class="o">:</span><span class="w"> </span><span class="s">&quot;07174143800&quot;</span>
+<span class="n">arch</span><span class="o">:</span><span class="w"> </span><span class="n">ICE40</span>
+<span class="n">fpga_info</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">fpga_id</span><span class="o">:</span><span class="w"> </span><span class="s">&quot;ice40hx4k-tq144-8k&quot;</span>
+<span class="w">  </span><span class="n">part_num</span><span class="o">:</span><span class="w"> </span><span class="s">&quot;ICE40HX4K-TQ144&quot;</span>
+<span class="w">  </span><span class="n">size</span><span class="o">:</span><span class="w"> </span><span class="s">&quot;8k&quot;</span>
+<span class="w">  </span><span class="n">ice40</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">type</span><span class="o">:</span><span class="w"> </span><span class="s">&quot;hx8k&quot;</span>
+<span class="w">    </span><span class="n">pack</span><span class="o">:</span><span class="w"> </span><span class="s">&quot;tq144:4k&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="n">verbosity</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">all</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">  </span><span class="n">synth</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">  </span><span class="n">pnr</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="p">}</span>
+<span class="n">environment</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">platform_id</span><span class="o">:</span><span class="w"> </span><span class="s">&quot;darwin-arm64&quot;</span>
+<span class="w">  </span><span class="n">is_windows</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">  </span><span class="n">terminal_mode</span><span class="o">:</span><span class="w"> </span><span class="n">FORCE_TERMINAL</span>
+<span class="w">  </span><span class="n">theme_name</span><span class="o">:</span><span class="w"> </span><span class="s">&quot;light&quot;</span>
+<span class="w">  </span><span class="n">debug_level</span><span class="o">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">  </span><span class="n">yosys_path</span><span class="o">:</span><span class="w"> </span><span class="s">&quot;/Users/user/.apio/packages/oss-cad-suite/share/yosys&quot;</span>
+<span class="w">  </span><span class="n">trellis_path</span><span class="o">:</span><span class="w"> </span><span class="s">&quot;/Users/user/.apio/packages/oss-cad-suite/share/trellis&quot;</span>
+<span class="p">}</span>
+<span class="n">apio_env_params</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">env_name</span><span class="o">:</span><span class="w"> </span><span class="s">&quot;default&quot;</span>
+<span class="w">  </span><span class="n">board_id</span><span class="o">:</span><span class="w"> </span><span class="s">&quot;alhambra-ii&quot;</span>
+<span class="w">  </span><span class="n">top_module</span><span class="o">:</span><span class="w"> </span><span class="s">&quot;Test&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="6-invoking-the-scons-subprocess">6. Invoking the scons subprocess<a class="headerlink" href="#6-invoking-the-scons-subprocess" title="Permanent link">&para;</a></h2>
+<p>Once the SCons manager creates and saves the parameters file <code>scons.params</code>, it invokes the SCons processor, which runs as a subprocess.</p>
+<div class="highlight"><pre><span></span><code>&lt;python-interpreter-path&gt;
+   -m SCons
+   -Q build
+   -f /Volumes/projects/apio-dev/repo/apio/scons/SConstruct
+   params=_build/default/scons.params
+   timestamp=07175539149
+</code></pre></div>
+<p>The first arguments specify the Python interpreter that runs the Apio process. When running as a PyInstaller binary, this is replaced with the Apio binary since a Python interpreter is not used. In this case, the condition in the <code>__main__.py</code> module detects that this is a SCons invocation and calls the SCons main.</p>
+<p>The flag <code>-f</code> specifies the landing SConstruct script and contains the path to a copy of the file <code>/apio/scons/SConstruct</code> in this Apio repository.</p>
+<p><code>params</code> passes the file <code>scons.params</code> with the SCons parameters, and <code>timestamp</code> is the same value set in the params file.</p>
+<h2 id="7-executing-sconstruct">7. Executing SConstruct<a class="headerlink" href="#7-executing-sconstruct" title="Permanent link">&para;</a></h2>
+<p>When the SCons subprocess is invoked, it lands in <code>apio/scons/SConstruct</code>, which is an SCons script file. The functionality in the <code>SConstruct</code> script is minimal, as it immediately switches to plain Python code by invoking the Apio SCons handler <code>SConsHandler.start()</code>.</p>
+<blockquote>
+<p>The SConstruct file also contains the subprocess rendezvous point, where a remote VCS debugger is attached when debugging the SCons subprocess.</p>
+</blockquote>
+<h2 id="8-scons-subprocess-initialization">8. SCons subprocess initialization<a class="headerlink" href="#8-scons-subprocess-initialization" title="Permanent link">&para;</a></h2>
+<p>When the static method <code>SConsHandler.start()</code> is called, it initializes the SCons subprocess by performing these steps:</p>
+<ol>
+<li>
+<p>Deserializing the protocol buffer parameters from <code>scons.proto</code>.</p>
+</li>
+<li>
+<p>Initializing the text console output in <code>apio_console.py</code> with the color preferences and theme.</p>
+</li>
+<li>
+<p>Creating an <code>ApioEnv</code> object, which contains the SCons invocation context and is passed around, similar to the <code>ApioContext</code> in the parent Apio process.</p>
+</li>
+<li>
+<p>Instantiating an architecture plugin object for the current architecture; in our example, it's a <code>PluginIce40</code> instance.</p>
+</li>
+<li>
+<p>Creating an <code>SConsHandler</code> instance with the Apio environment and plugin and calling its <code>execute()</code> method.</p>
+</li>
+</ol>
+<blockquote>
+<p>The <code>ApioEnv</code>, which is Apio-specific, should not be confused with the standard SCons <code>SConsEnvironment</code> class.</p>
+</blockquote>
+<h2 id="9-defining-scons-targets-and-builders">9. Defining SCons targets and builders<a class="headerlink" href="#9-defining-scons-targets-and-builders" title="Permanent link">&para;</a></h2>
+<p>When the <code>execute()</code> method of the <code>SConsHandler</code> instance is invoked, it dispatches a target registration method for the requested target. In our example of <code>apio build</code>, it dispatches this:</p>
+<div class="highlight"><pre><span></span><code>if target == &quot;build&quot;:
+   self._register_build_target(synth_srcs)
+</code></pre></div>
+<p>The <code>_register_build_target()</code> method adds to the SCons environment definitions of targets, builders, and dependencies to perform the build operation. The method uses the selected architecture plugin; in our case, <code>PluginIce40</code> generates definitions that are architecture-specific.</p>
+<p>In our example, targets and builders perform these operations:</p>
+<ul>
+<li>
+<p>A <code>yosys</code> command to synthesize the design.</p>
+</li>
+<li>
+<p>A <code>nextpnr-ice40</code> command for the place-and-route operation.</p>
+</li>
+<li>
+<p>An <code>icepack</code> command to generate the bitstream file.</p>
+</li>
+</ul>
+<h2 id="10-scons-execution">10. SCons execution<a class="headerlink" href="#10-scons-execution" title="Permanent link">&para;</a></h2>
+<p>When the <code>SConsHandler</code> completes adding the targets, builders, and dependencies to the SCons environment, it returns, which also causes an exit from the <code>SConstruct</code> script. This triggers automatic execution of the commands by SCons. When SCons completes the execution, the SCons subprocess exits, and the execution of <code>apio build</code> is completed.</p>
+<h2 id="11-scons-output-filter">11. SCons output filter<a class="headerlink" href="#11-scons-output-filter" title="Permanent link">&para;</a></h2>
+<p>While the SCons subprocess is running, its stdout and stderr outputs are piped to the <code>scons_filter.py</code> module in the parent Apio process. That module receives the SCons subprocess output in real time and outputs it to the console while modifying certain lines, for example, adding green or red colors to lines that indicate success or failure.</p>
+<blockquote>
+<p>The <code>scons_filter.py</code> module also contains logic to correctly handle progress bars and progress counters from FPGA programming utilities executed by the SCons subprocess. These progress trackers require special considerations because they are timing-dependent and use the '\r' terminators.</p>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections", "navigation.expand", "navigation.tabs", "content.code.copy"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>

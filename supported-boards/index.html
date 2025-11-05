@@ -1,0 +1,2802 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../project-file/">
+      
+      
+        <link rel="next" href="../supported-fpgas/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.23">
+    
+    
+      
+        <title>Supported boards - Apio 1.x.x Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.84d31ad4.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#supported-fpga-boards" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Apio 1.x.x Documentation" class="md-header__button md-logo" aria-label="Apio 1.x.x Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Apio 1.x.x Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Supported boards
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../quick-start/" class="md-tabs__link">
+          
+  
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../cmd-apio-build/" class="md-tabs__link">
+          
+  
+  
+  Apio Commands
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../project-structure/" class="md-tabs__link">
+          
+  
+  
+  Apio Projects
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  FPGA Boards
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../using-examples/" class="md-tabs__link">
+          
+  
+  
+  Apio Examples
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../command-line/" class="md-tabs__link">
+          
+  
+  
+  Apio Tips
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../apio-repositories/" class="md-tabs__link">
+          
+  
+  
+  Apio Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../help/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Help
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Apio 1.x.x Documentation" class="md-nav__button md-logo" aria-label="Apio 1.x.x Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Apio 1.x.x Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quick start
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../system-requirements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    System requirements
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installing-apio/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installing Apio
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../video-tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Video tutorial
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migrating-from-apio-0xx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Migrating from Apio 0.x.x
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Apio Commands
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Apio Commands
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Build Commands
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            Build Commands
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-build/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio build
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-upload/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio upload
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-clean/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio clean
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Verification Commands
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            Verification Commands
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-lint/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio lint
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-format/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio format
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-sim/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio sim
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio test
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio report
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-graph/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio graph
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Setup Commands
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            Setup Commands
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-create/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio create
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-preferences/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio preferences
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-packages/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio packages
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-drivers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio drivers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-devices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio devices
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Utility Commands
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            Utility Commands
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-boards/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio boards
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-fpgas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio fpgas
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio examples
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-info/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio info
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-raw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio raw
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio api
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cmd-apio-upgrade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    apio upgrade
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Apio Projects
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Apio Projects
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project-structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Project structure
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project-file/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Project file apio.ini
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    FPGA Boards
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            FPGA Boards
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Supported boards
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Supported boards
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ice40-boards" class="md-nav__link">
+    <span class="md-ellipsis">
+      ICE40 boards
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ecp5-boards" class="md-nav__link">
+    <span class="md-ellipsis">
+      ECP5 boards
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gowin-boards" class="md-nav__link">
+    <span class="md-ellipsis">
+      GOWIN boards
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../supported-fpgas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Supported FPGAs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../custom-boards/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Custom boards
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing-definitions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contributing definitions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../board-drivers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Board drivers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Apio Examples
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Apio Examples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../using-examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Using examples
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing-examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contributing examples
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Apio Tips
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Apio Tips
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../command-line/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Apio command line
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../using-system-verilog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Using System Verilog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../using-testbenches/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Using testbenches
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../raw-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Raw tools
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Apio Development
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Apio Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../apio-repositories/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Apio repositories
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development-environment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Development environment
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../terminology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Apio's terminology
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../command-execution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Command execution
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../updating-the-docs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Updating the docs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../creating-apio-version/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Creating an Apio version
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../creating-package-version/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Creating a package version
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../help/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Help
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ice40-boards" class="md-nav__link">
+    <span class="md-ellipsis">
+      ICE40 boards
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ecp5-boards" class="md-nav__link">
+    <span class="md-ellipsis">
+      ECP5 boards
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gowin-boards" class="md-nav__link">
+    <span class="md-ellipsis">
+      GOWIN boards
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<!-- BEGIN generation by 'apio boards --docs' -->
+
+<h1 id="supported-fpga-boards">Supported FPGA Boards<a class="headerlink" href="#supported-fpga-boards" title="Permanent link">&para;</a></h1>
+<p>This markdown page was generated on October 20, 2025 using the command</p>
+<div class="highlight"><pre><span></span><code>apio boards --docs &gt; supported-boards.md
+</code></pre></div>
+<p>For the updated list of supported FPGA boards run the command <code>apio boards</code>.</p>
+<blockquote>
+<p>Custom board definitions can be added in the project directory and new board definitions can be contributed in the
+<a href="https://github.com/FPGAwars/apio-definitions/tree/main/definitions">apio-definitions</a> repository.</p>
+</blockquote>
+<h2 id="ice40-boards">ICE40 boards<a class="headerlink" href="#ice40-boards" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">BOARD-ID</th>
+<th style="text-align: left;">SIZE</th>
+<th style="text-align: left;">DESCRIPTION</th>
+<th style="text-align: left;">FPGA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">alchitry-cu</td>
+<td style="text-align: left;">8k</td>
+<td style="text-align: left;">Alchitry Cu Development Board</td>
+<td style="text-align: left;">ICE40HX8K-CB132</td>
+</tr>
+<tr>
+<td style="text-align: left;">alhambra-ii</td>
+<td style="text-align: left;">8k</td>
+<td style="text-align: left;">Alhambra II</td>
+<td style="text-align: left;">ICE40HX4K-TQ144</td>
+</tr>
+<tr>
+<td style="text-align: left;">arice1</td>
+<td style="text-align: left;">5k</td>
+<td style="text-align: left;">ARiCE v1</td>
+<td style="text-align: left;">ICE40UP5K-SG48</td>
+</tr>
+<tr>
+<td style="text-align: left;">blackice</td>
+<td style="text-align: left;">8k</td>
+<td style="text-align: left;">BlackIce</td>
+<td style="text-align: left;">ICE40HX4K-TQ144</td>
+</tr>
+<tr>
+<td style="text-align: left;">blackice-ii</td>
+<td style="text-align: left;">8k</td>
+<td style="text-align: left;">BlackIce II</td>
+<td style="text-align: left;">ICE40HX4K-TQ144</td>
+</tr>
+<tr>
+<td style="text-align: left;">blackice-mx</td>
+<td style="text-align: left;">8k</td>
+<td style="text-align: left;">BlackIce MX</td>
+<td style="text-align: left;">ICE40HX4K-TQ144</td>
+</tr>
+<tr>
+<td style="text-align: left;">edu-ciaa-fpga</td>
+<td style="text-align: left;">8k</td>
+<td style="text-align: left;">EDU-CIAA-FPGA</td>
+<td style="text-align: left;">ICE40HX4K-TQ144</td>
+</tr>
+<tr>
+<td style="text-align: left;">fomu</td>
+<td style="text-align: left;">5k</td>
+<td style="text-align: left;">Fomu</td>
+<td style="text-align: left;">ICE40UP5K-UWG30</td>
+</tr>
+<tr>
+<td style="text-align: left;">fpga101</td>
+<td style="text-align: left;">5k</td>
+<td style="text-align: left;">FPGA 101 - Workshop Badge</td>
+<td style="text-align: left;">ICE40UP5K-SG48</td>
+</tr>
+<tr>
+<td style="text-align: left;">go-board</td>
+<td style="text-align: left;">1k</td>
+<td style="text-align: left;">The Go Board</td>
+<td style="text-align: left;">ICE40HX1K-VQ100</td>
+</tr>
+<tr>
+<td style="text-align: left;">ice40-hx1k-evb</td>
+<td style="text-align: left;">1k</td>
+<td style="text-align: left;">ICE40HX1K-EVB</td>
+<td style="text-align: left;">ICE40HX1K-VQ100</td>
+</tr>
+<tr>
+<td style="text-align: left;">ice40-hx8k</td>
+<td style="text-align: left;">8k</td>
+<td style="text-align: left;">iCE40-HX8K Breakout Board</td>
+<td style="text-align: left;">ICE40HX8K-CT256</td>
+</tr>
+<tr>
+<td style="text-align: left;">ice40-hx8k-evb</td>
+<td style="text-align: left;">8k</td>
+<td style="text-align: left;">iCE40HX8K-EVB</td>
+<td style="text-align: left;">ICE40HX8K-CT256</td>
+</tr>
+<tr>
+<td style="text-align: left;">ice40-ul1k-breakout</td>
+<td style="text-align: left;">1k</td>
+<td style="text-align: left;">iCE40-UL1K UltraLite Breakout</td>
+<td style="text-align: left;">ICE40UL1K-CM36A</td>
+</tr>
+<tr>
+<td style="text-align: left;">ice40-up5k</td>
+<td style="text-align: left;">5k</td>
+<td style="text-align: left;">iCE40 UltraPlus Breakout</td>
+<td style="text-align: left;">ICE40UP5K-SG48</td>
+</tr>
+<tr>
+<td style="text-align: left;">iceblink40-hx1k</td>
+<td style="text-align: left;">1k</td>
+<td style="text-align: left;">iCEblink40-HX1K Eval Kit</td>
+<td style="text-align: left;">ICE40HX1K-VQ100</td>
+</tr>
+<tr>
+<td style="text-align: left;">icebreaker</td>
+<td style="text-align: left;">5k</td>
+<td style="text-align: left;">iCEBreaker</td>
+<td style="text-align: left;">ICE40UP5K-SG48</td>
+</tr>
+<tr>
+<td style="text-align: left;">icebreaker-bitsy0</td>
+<td style="text-align: left;">5k</td>
+<td style="text-align: left;">iCEBreaker bitsy</td>
+<td style="text-align: left;">ICE40UP5K-SG48</td>
+</tr>
+<tr>
+<td style="text-align: left;">icebreaker-bitsy1</td>
+<td style="text-align: left;">5k</td>
+<td style="text-align: left;">iCEBreaker bitsy</td>
+<td style="text-align: left;">ICE40UP5K-SG48</td>
+</tr>
+<tr>
+<td style="text-align: left;">icefun</td>
+<td style="text-align: left;">8k</td>
+<td style="text-align: left;">iceFUN</td>
+<td style="text-align: left;">ICE40HX8K-CB132</td>
+</tr>
+<tr>
+<td style="text-align: left;">icestick</td>
+<td style="text-align: left;">1k</td>
+<td style="text-align: left;">iCEstick Eval Kit</td>
+<td style="text-align: left;">ICE40HX1K-TQ144</td>
+</tr>
+<tr>
+<td style="text-align: left;">icesugar-1-5</td>
+<td style="text-align: left;">5k</td>
+<td style="text-align: left;">iCESugar v1.5</td>
+<td style="text-align: left;">ICE40UP5K-SG48</td>
+</tr>
+<tr>
+<td style="text-align: left;">icesugar-nano</td>
+<td style="text-align: left;">1k</td>
+<td style="text-align: left;">iCESugar-nano</td>
+<td style="text-align: left;">ICE40LP1K-CM36</td>
+</tr>
+<tr>
+<td style="text-align: left;">icewerx</td>
+<td style="text-align: left;">8k</td>
+<td style="text-align: left;">iceWerx</td>
+<td style="text-align: left;">ICE40HX8K-CB132</td>
+</tr>
+<tr>
+<td style="text-align: left;">icezum</td>
+<td style="text-align: left;">1k</td>
+<td style="text-align: left;">Icezum Alhambra</td>
+<td style="text-align: left;">ICE40HX1K-TQ144</td>
+</tr>
+<tr>
+<td style="text-align: left;">kefir</td>
+<td style="text-align: left;">8k</td>
+<td style="text-align: left;">Kéfir I iCE40-HX4K</td>
+<td style="text-align: left;">ICE40HX4K-TQ144</td>
+</tr>
+<tr>
+<td style="text-align: left;">odt-icyblue-feather</td>
+<td style="text-align: left;">4k</td>
+<td style="text-align: left;">ODT_IcyBlue_Feather</td>
+<td style="text-align: left;">ICE5LP4K-SG48</td>
+</tr>
+<tr>
+<td style="text-align: left;">ok-ice40pro</td>
+<td style="text-align: left;">5k</td>
+<td style="text-align: left;">OK-iCE40Pro</td>
+<td style="text-align: left;">ICE40UP5K-SG48</td>
+</tr>
+<tr>
+<td style="text-align: left;">pi-sicle</td>
+<td style="text-align: left;">8k</td>
+<td style="text-align: left;">Pi-sicle</td>
+<td style="text-align: left;">ICE40HX4K-TQ144</td>
+</tr>
+<tr>
+<td style="text-align: left;">pico-ice</td>
+<td style="text-align: left;">5k</td>
+<td style="text-align: left;">pico-ice</td>
+<td style="text-align: left;">ICE40UP5K-SG48</td>
+</tr>
+<tr>
+<td style="text-align: left;">thetamachines-eth4k</td>
+<td style="text-align: left;">8k</td>
+<td style="text-align: left;">Theta Machines ETH4K</td>
+<td style="text-align: left;">ICE40HX4K-TQ144</td>
+</tr>
+<tr>
+<td style="text-align: left;">tinyfpga-b2</td>
+<td style="text-align: left;">8k</td>
+<td style="text-align: left;">TinyFPGA B2</td>
+<td style="text-align: left;">ICE40LP8K-CM81</td>
+</tr>
+<tr>
+<td style="text-align: left;">tinyfpga-bx</td>
+<td style="text-align: left;">8k</td>
+<td style="text-align: left;">TinyFPGA BX</td>
+<td style="text-align: left;">ICE40LP8K-CM81</td>
+</tr>
+<tr>
+<td style="text-align: left;">upduino</td>
+<td style="text-align: left;">5k</td>
+<td style="text-align: left;">UPDuino v1.0</td>
+<td style="text-align: left;">ICE40UP5K-SG48</td>
+</tr>
+<tr>
+<td style="text-align: left;">upduino2</td>
+<td style="text-align: left;">5k</td>
+<td style="text-align: left;">UPDuino v2.0</td>
+<td style="text-align: left;">ICE40UP5K-SG48</td>
+</tr>
+<tr>
+<td style="text-align: left;">upduino21</td>
+<td style="text-align: left;">5k</td>
+<td style="text-align: left;">UPduino v2.1</td>
+<td style="text-align: left;">ICE40UP5K-SG48</td>
+</tr>
+<tr>
+<td style="text-align: left;">upduino3</td>
+<td style="text-align: left;">5k</td>
+<td style="text-align: left;">UPduino v3.0</td>
+<td style="text-align: left;">ICE40UP5K-SG48</td>
+</tr>
+<tr>
+<td style="text-align: left;">upduino31</td>
+<td style="text-align: left;">5k</td>
+<td style="text-align: left;">UPduino v3.1</td>
+<td style="text-align: left;">ICE40UP5K-SG48</td>
+</tr>
+</tbody>
+</table>
+<h2 id="ecp5-boards">ECP5 boards<a class="headerlink" href="#ecp5-boards" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">BOARD-ID</th>
+<th style="text-align: left;">SIZE</th>
+<th style="text-align: left;">DESCRIPTION</th>
+<th style="text-align: left;">FPGA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">butterstick-r10-2g-85k</td>
+<td style="text-align: left;">85k</td>
+<td style="text-align: left;">butterstick r1.0 DFU</td>
+<td style="text-align: left;">LFE5UM5G-85F-8BG381C</td>
+</tr>
+<tr>
+<td style="text-align: left;">butterstick-r10-2g-85k-ft2232h</td>
+<td style="text-align: left;">85k</td>
+<td style="text-align: left;">butterstick r1.0 FT2232H</td>
+<td style="text-align: left;">LFE5UM5G-85F-8BG381C</td>
+</tr>
+<tr>
+<td style="text-align: left;">butterstick-r10-2g-85k-ft232h</td>
+<td style="text-align: left;">85k</td>
+<td style="text-align: left;">butterstick r1.0 FT232H</td>
+<td style="text-align: left;">LFE5UM5G-85F-8BG381C</td>
+</tr>
+<tr>
+<td style="text-align: left;">colorlight-5a-75b-v61</td>
+<td style="text-align: left;">25k</td>
+<td style="text-align: left;">ColorLight-5A-75B-V61</td>
+<td style="text-align: left;">LFE5U-25F-6BG381C</td>
+</tr>
+<tr>
+<td style="text-align: left;">colorlight-5a-75b-v7</td>
+<td style="text-align: left;">25k</td>
+<td style="text-align: left;">ColorLight-5A-75B-V7</td>
+<td style="text-align: left;">LFE5U-25F-6BG256C</td>
+</tr>
+<tr>
+<td style="text-align: left;">colorlight-5a-75b-v8</td>
+<td style="text-align: left;">25k</td>
+<td style="text-align: left;">ColorLight-5A-75B-V8</td>
+<td style="text-align: left;">LFE5U-25F-6BG256C</td>
+</tr>
+<tr>
+<td style="text-align: left;">colorlight-5a-75e-v6</td>
+<td style="text-align: left;">25k</td>
+<td style="text-align: left;">ColorLight-5A-75E-V6</td>
+<td style="text-align: left;">LFE5U-25F-6BG256C</td>
+</tr>
+<tr>
+<td style="text-align: left;">colorlight-5a-75e-v71-ft2232h</td>
+<td style="text-align: left;">25k</td>
+<td style="text-align: left;">ColorLight-5A-75E-V71</td>
+<td style="text-align: left;">LFE5U-25F-6BG256C</td>
+</tr>
+<tr>
+<td style="text-align: left;">colorlight-5a-75e-v71-ft232h</td>
+<td style="text-align: left;">25k</td>
+<td style="text-align: left;">ColorLight-5A-75E-V71</td>
+<td style="text-align: left;">LFE5U-25F-6BG256C</td>
+</tr>
+<tr>
+<td style="text-align: left;">colorlight-5a-75e-v71-usb-blaster</td>
+<td style="text-align: left;">25k</td>
+<td style="text-align: left;">ColorLight-5A-75E-V71</td>
+<td style="text-align: left;">LFE5U-25F-6BG256C</td>
+</tr>
+<tr>
+<td style="text-align: left;">colorlight-i5-v7-0-ft2232h</td>
+<td style="text-align: left;">25k</td>
+<td style="text-align: left;">ColorLight-i5</td>
+<td style="text-align: left;">LFE5U-25F-6BG381C</td>
+</tr>
+<tr>
+<td style="text-align: left;">colorlight-i5-v7-0-ft232h</td>
+<td style="text-align: left;">25k</td>
+<td style="text-align: left;">ColorLight-i5</td>
+<td style="text-align: left;">LFE5U-25F-6BG381C</td>
+</tr>
+<tr>
+<td style="text-align: left;">colorlight-i5-v7-0-usb-blaster</td>
+<td style="text-align: left;">25k</td>
+<td style="text-align: left;">ColorLight-i5</td>
+<td style="text-align: left;">LFE5U-25F-6BG381C</td>
+</tr>
+<tr>
+<td style="text-align: left;">colorlight-i9-v7-2-cmsis-dap</td>
+<td style="text-align: left;">45k</td>
+<td style="text-align: left;">ColorLight-i9</td>
+<td style="text-align: left;">LFE5U-45F-6BG381C</td>
+</tr>
+<tr>
+<td style="text-align: left;">colorlight-i9-v7-2-ft2232h</td>
+<td style="text-align: left;">45k</td>
+<td style="text-align: left;">ColorLight-i9</td>
+<td style="text-align: left;">LFE5U-45F-6BG381C</td>
+</tr>
+<tr>
+<td style="text-align: left;">colorlight-i9-v7-2-ft232h</td>
+<td style="text-align: left;">45k</td>
+<td style="text-align: left;">ColorLight-i9</td>
+<td style="text-align: left;">LFE5U-45F-6BG381C</td>
+</tr>
+<tr>
+<td style="text-align: left;">colorlight-i9-v7-2-usb-blaster</td>
+<td style="text-align: left;">45k</td>
+<td style="text-align: left;">ColorLight-i9</td>
+<td style="text-align: left;">LFE5U-45F-6BG381C</td>
+</tr>
+<tr>
+<td style="text-align: left;">cynthion-r1-4</td>
+<td style="text-align: left;">12k</td>
+<td style="text-align: left;">Cynthion r1.4</td>
+<td style="text-align: left;">LFE5U-12F-6BG256C</td>
+</tr>
+<tr>
+<td style="text-align: left;">ecp5-evaluation-board</td>
+<td style="text-align: left;">85k</td>
+<td style="text-align: left;">ECP5-Evaluation-Board</td>
+<td style="text-align: left;">LFE5UM5G-85F-8BG381C</td>
+</tr>
+<tr>
+<td style="text-align: left;">ecp5-mini-12</td>
+<td style="text-align: left;">12k</td>
+<td style="text-align: left;">ECP5-Mini-12</td>
+<td style="text-align: left;">LFE5U-12F-6BG256C</td>
+</tr>
+<tr>
+<td style="text-align: left;">ecp5-mini-25</td>
+<td style="text-align: left;">25k</td>
+<td style="text-align: left;">ECP5-Mini-12</td>
+<td style="text-align: left;">LFE5U-25F-6BG256C</td>
+</tr>
+<tr>
+<td style="text-align: left;">fleafpga-ohm-ft2232h</td>
+<td style="text-align: left;">25k</td>
+<td style="text-align: left;">FleaFPGA-Ohm_(FT2232H)</td>
+<td style="text-align: left;">LFE5U-25F-6BG381C</td>
+</tr>
+<tr>
+<td style="text-align: left;">fleafpga-ohm-ft232h</td>
+<td style="text-align: left;">25k</td>
+<td style="text-align: left;">FleaFPGA-Ohm_(FT232H)</td>
+<td style="text-align: left;">LFE5U-25F-6BG381C</td>
+</tr>
+<tr>
+<td style="text-align: left;">fleafpga-ohm-usb-blaster</td>
+<td style="text-align: left;">25k</td>
+<td style="text-align: left;">FleaFPGA-Ohm_(USB-Blaster)</td>
+<td style="text-align: left;">LFE5U-25F-6BG381C</td>
+</tr>
+<tr>
+<td style="text-align: left;">icepi-zero</td>
+<td style="text-align: left;">25k</td>
+<td style="text-align: left;">Icepi Zero</td>
+<td style="text-align: left;">LFE5U-25F-6BG256C</td>
+</tr>
+<tr>
+<td style="text-align: left;">icesugar-pro-ft2232h</td>
+<td style="text-align: left;">25k</td>
+<td style="text-align: left;">ColorLight-i5</td>
+<td style="text-align: left;">LFE5U-25F-6BG256C</td>
+</tr>
+<tr>
+<td style="text-align: left;">icesugar-pro-ft232h</td>
+<td style="text-align: left;">25k</td>
+<td style="text-align: left;">ColorLight-i5</td>
+<td style="text-align: left;">LFE5U-25F-6BG256C</td>
+</tr>
+<tr>
+<td style="text-align: left;">icesugar-pro-usb-blaster</td>
+<td style="text-align: left;">25k</td>
+<td style="text-align: left;">ColorLight-i5</td>
+<td style="text-align: left;">LFE5U-25F-6BG256C</td>
+</tr>
+<tr>
+<td style="text-align: left;">mimas-ecp5-mini</td>
+<td style="text-align: left;">45k</td>
+<td style="text-align: left;">Mimas ECP5 Mini</td>
+<td style="text-align: left;">LFE5U-45F-6BG256C</td>
+</tr>
+<tr>
+<td style="text-align: left;">orangecrab-r02-25f</td>
+<td style="text-align: left;">25k</td>
+<td style="text-align: left;">OrangeCrab r0.2 25K</td>
+<td style="text-align: left;">LFE5U-25F-6MG285C</td>
+</tr>
+<tr>
+<td style="text-align: left;">orangecrab-r02-85f</td>
+<td style="text-align: left;">85k</td>
+<td style="text-align: left;">OrangeCrab r0.2 85K</td>
+<td style="text-align: left;">LFE5U-85F-6MG285C</td>
+</tr>
+<tr>
+<td style="text-align: left;">tinyfpga-ex-rev1</td>
+<td style="text-align: left;">85k</td>
+<td style="text-align: left;">TinyFPGA EX rev 1</td>
+<td style="text-align: left;">LFE5U-85F-6MG285C</td>
+</tr>
+<tr>
+<td style="text-align: left;">tinyfpga-ex-rev2</td>
+<td style="text-align: left;">85k</td>
+<td style="text-align: left;">TinyFPGA EX rev 2</td>
+<td style="text-align: left;">LFE5UM5G-85F-8MG285C</td>
+</tr>
+<tr>
+<td style="text-align: left;">ulx3s-12f</td>
+<td style="text-align: left;">12k</td>
+<td style="text-align: left;">ULX3S 12K</td>
+<td style="text-align: left;">LFE5U-12F-6BG381C</td>
+</tr>
+<tr>
+<td style="text-align: left;">ulx3s-25f</td>
+<td style="text-align: left;">25k</td>
+<td style="text-align: left;">ULX3S 25K</td>
+<td style="text-align: left;">LFE5U-25F-6BG381C</td>
+</tr>
+<tr>
+<td style="text-align: left;">ulx3s-45f</td>
+<td style="text-align: left;">45k</td>
+<td style="text-align: left;">ULX3S 45K</td>
+<td style="text-align: left;">LFE5U-45F-6BG381C</td>
+</tr>
+<tr>
+<td style="text-align: left;">ulx3s-85f</td>
+<td style="text-align: left;">85k</td>
+<td style="text-align: left;">ULX3S 85K</td>
+<td style="text-align: left;">LFE5U-85F-6BG381C</td>
+</tr>
+<tr>
+<td style="text-align: left;">versa</td>
+<td style="text-align: left;">45k</td>
+<td style="text-align: left;">ECP5 Versa</td>
+<td style="text-align: left;">LFE5UM-45F-6BG381C</td>
+</tr>
+</tbody>
+</table>
+<h2 id="gowin-boards">GOWIN boards<a class="headerlink" href="#gowin-boards" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">BOARD-ID</th>
+<th style="text-align: left;">SIZE</th>
+<th style="text-align: left;">DESCRIPTION</th>
+<th style="text-align: left;">FPGA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">sipeed-tang-nano</td>
+<td style="text-align: left;">1k</td>
+<td style="text-align: left;">Sipeed Tang Nano</td>
+<td style="text-align: left;">GW1N-LV1QN48C6/I5</td>
+</tr>
+<tr>
+<td style="text-align: left;">sipeed-tang-nano-1k</td>
+<td style="text-align: left;">1k</td>
+<td style="text-align: left;">Sipeed Tang Nano 1k</td>
+<td style="text-align: left;">GW1NZ-LV1QN48C6/I5</td>
+</tr>
+<tr>
+<td style="text-align: left;">sipeed-tang-nano-20k</td>
+<td style="text-align: left;">20k</td>
+<td style="text-align: left;">Sipeed Tang Nano 20k</td>
+<td style="text-align: left;">GW2AR-LV18QN88C8/I7</td>
+</tr>
+<tr>
+<td style="text-align: left;">sipeed-tang-nano-4k</td>
+<td style="text-align: left;">4k</td>
+<td style="text-align: left;">Sipeed Tang Nano 4k</td>
+<td style="text-align: left;">GW1NSR-LV4CQN48PC7/I6</td>
+</tr>
+<tr>
+<td style="text-align: left;">sipeed-tang-nano-9k</td>
+<td style="text-align: left;">9k</td>
+<td style="text-align: left;">Sipeed Tang Nano 9k</td>
+<td style="text-align: left;">GW1NR-LV9QN88PC6/I5</td>
+</tr>
+</tbody>
+</table>
+<!-- END generation by 'apio boards --docs' -->
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections", "navigation.expand", "navigation.tabs", "content.code.copy"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>
