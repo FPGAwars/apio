@@ -176,8 +176,8 @@ def _list_fpgas_docs_format(apio_ctx: ApioContext):
     cwrite("\n<!-- BEGIN generation by 'apio fpgas --docs' -->\n")
     cwrite("\n# Supported FPGAs\n")
     cwrite(
-        f"\nThis markdown page was generated automatically from `definitions` "
-        f"package version `{def_version}` on {today_str}, using the command"
+        f"\nThis markdown page was generated on {today_str} from version "
+        f"{def_version} of the Apio definitions package using the command:"
         f"\n\n```\napio fpgas --docs > supported-fpgas.md\n```"
     )
     cwrite(
