@@ -210,8 +210,9 @@ def check_all_task(ctx: Context):
 
 
 @task(name="test-coverage", aliases=["tc"])
-def test_coverage_task(ctx: Context):
-    """Generate test coverage report."""
+def test_coverage_task(ctx: Context, no_viewer=False):
+    """Generate test coverage report. Use --no-viewer or -n to suppress
+    opening the default browser as viewer."""
     announce_task("test-coverage")
     run(
         ctx,
@@ -234,7 +235,11 @@ def test_coverage_task(ctx: Context):
     )
 
     # -- Open a browser to show the results.
-    open_test_coverage_viewer()
+    if not no_viewer:
+      print("Opening default browser")
+      open_test_coverage_viewer()
+    else:
+      print("User requested no viewer.")
 
 
 @task(name="view-coverage", aliases=["vc"])
