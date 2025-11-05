@@ -30,6 +30,8 @@ Test it by listing the available tasks
 invoke --list
 ```
 
+> HINT: You can use the shortcut `inv` instead of `invoke`.
+
 ## Install your cloned Apio
 
 The easiest way to develop Apio is to install its source code from your local repo as the Pip `apio` package. This will allow you to test your edited code by running `apio` from the command line.
@@ -95,6 +97,9 @@ invoke cr   # Shortcut, same as above.
 This will update the page `_pytest-coverage/index.html` with the latest coverage information.
 
 > The directory `_pytest-coverage` is ignored by git and is not checked in with apio.
+
+The test coverage is also published online at the [Test Coverage Report](../../coverage) each
+time a new commit is checked in.
 
 ## Confirm that the test workflow passes
 

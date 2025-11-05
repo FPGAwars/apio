@@ -3,7 +3,7 @@
 # To install 'invoke' run: pip install invoke
 #
 # For more information see the Apio development guide at
-# https://fpgawars.github.io/apio/development-environment/
+# https://fpgawars.github.io/apio/docs/development-environment/
 #
 # A few useful Invoke tasks
 #   invoke --list        # Show available tasks
@@ -15,6 +15,8 @@
 #   invoke docs-viewer   # Run a local http server to view the Apio docs.
 #   invoke test-coverage # Collect and show test coverage.
 #   invoke clean         # Clean project.
+
+#  NOTE: The shortcut 'inv' can be used instead of 'invoke'.
 
 import sys
 import webbrowser
@@ -57,6 +59,7 @@ def package_version(package_name: str) -> Optional[str]:
 def install_package(package_name: str, required_version: str) -> None:
     """If the package/version is not installed then install it. Otherwise
     do nothing."""
+    # -- Update if needed.
     if package_version(package_name) != required_version:
         print(f"\n*** Auto installing {package_name}@{required_version} ***")
         subprocess.check_call(
@@ -69,6 +72,8 @@ def install_package(package_name: str, required_version: str) -> None:
                 f"{package_name}=={required_version}",
             ]
         )
+
+    # -- Verify.
     assert (
         package_version(package_name) == required_version
     ), f"Expected to find {package_name}=={required_version}"
@@ -210,8 +215,9 @@ def check_all_task(ctx: Context):
 
 
 @task(name="test-coverage", aliases=["tc"])
-def test_coverage_task(ctx: Context):
-    """Generate test coverage report."""
+def test_coverage_task(ctx: Context, no_viewer=False):
+    """Generate test coverage report. Use --no-viewer or -n to suppress
+    opening the default browser as viewer."""
     announce_task("test-coverage")
     run(
         ctx,
@@ -234,7 +240,11 @@ def test_coverage_task(ctx: Context):
     )
 
     # -- Open a browser to show the results.
-    open_test_coverage_viewer()
+    if not no_viewer:
+        print("Opening default browser")
+        open_test_coverage_viewer()
+    else:
+        print("User requested no viewer.")
 
 
 @task(name="view-coverage", aliases=["vc"])
@@ -335,7 +345,7 @@ def install_deps_task(_: Context):
     """Install development tools. Since we do at at the top of this file
     for every task, there is nothing to do here."""
     announce_task("install-deps")
-    cout("       required  installed")
+    cout(f"{'':17} {'required':9s} {'installed'}")
     for name, ver in DEPENDENCIES:
         cout(f"{name:17} {ver:9s} {version(name)}")
 

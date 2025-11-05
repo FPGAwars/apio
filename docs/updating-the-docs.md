@@ -1,8 +1,11 @@
 # Updating Apio Docs
 
 Apio documentation is written in Markdown and published using the `mkdocs`
-tool at <https://fpgawars.github.io/apio>. The rest of this page explains
+tool at <https://fpgawars.github.io/apio/docs>. The rest of this page explains
 how to update and preview the documentation.
+
+> NOTE: The Apio github workflow that publishes the Apio docs, also publishes the
+> test coverage report at <https://fpgawars.github.io/apio/coverage>
 
 ## Installing MkDocs
 
@@ -52,7 +55,7 @@ Before sending a pull request to the Apio repository, check the following on you
     - **monitor-apio-latest**
     - **test**
 
-2.  The docs at `https://${user}.github.io/apio` are live and include
+2.  The docs at `https://${user}.github.io/apio/docs` are live and include
     your changes (replace _${user}_ with the username of your fork repo).
 
 ## Publishing

@@ -23,7 +23,7 @@
 ![][linux-logo]&nbsp;&nbsp;&nbsp;![][macosx-logo]&nbsp;&nbsp;&nbsp;![][windows-logo]&nbsp;&nbsp;&nbsp;![][ubuntu-logo]&nbsp;&nbsp;&nbsp;![][raspbian-logo]
 
 
-**TL;DR**, Apio is an easy to use toolbox for FPGA development. For q quick start, visit the [Getting started with Apio](https://fpgawars.github.io/apio/quick-start) page.
+**TL;DR**, Apio is an easy to use toolbox for FPGA development. For q quick start, visit the [Getting started with Apio](https://fpgawars.github.io/apio/docs/quick-start) page.
 
 ## What is Apio?
 
@@ -81,12 +81,12 @@ While many use Apio as a stand alone text based CLI toolbox, it can also be used
 
 ## Resources
 
-* [Apio Documentation](https://fpgawars.github.io/apio/)
-* [Getting started with Apio](https://fpgawars.github.io/apio/quick-start)
+* [Apio Documentation](https://fpgawars.github.io/apio/docs/)
+* [Getting started with Apio](https://fpgawars.github.io/apio/docs/quick-start)
 * [Apio github repository](https://github.com/fpgawars/apio)
 * [Apio package on PyPi](https://pypi.org/project/apio/)
 * [Apio daily build](https://github.com/fpgawars/apio-dev-builds/releases)
-
+* [Apio Test Coverage Report](https://fpgawars.github.io/apio/coverage/)
 
 
 ## Authors

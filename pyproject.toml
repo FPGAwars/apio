@@ -7,7 +7,7 @@ build-backend = "flit_core.buildapi"
 
 [tool.flit.metadata.urls]
 "Homepage" = "https://github.com/fpgawars/apio"
-"Documentation" = "https://fpgawars.github.io/apio"
+"Documentation" = "https://fpgawars.github.io/apio/docs"
 "Bugs Tracker" = "https://github.com/fpgawars/apio/issues"
 "Wiki" = "https://github.com/fpgawars/apio/wiki"
 "Discussions" = "https://github.com/fpgawars/apio/discussions"
