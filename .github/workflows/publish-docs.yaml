@@ -40,6 +40,11 @@ jobs:
         with:
           python-version: "3.14"
 
+      - name: Install dev tools
+        run: |
+          pip install invoke
+          invoke install-deps
+
       - name: Install mkDocs tools
         run: |
           pip install mkdocs
@@ -49,9 +54,8 @@ jobs:
         run: |
           mkdocs build --strict --site-dir site/docs
 
-
       - name: Add redirector from root dir to docs
-        run: |  
+        run: |
           cat > site/index.html <<'EOF'
           <!DOCTYPE html>
           <html><head>
@@ -68,7 +72,16 @@ jobs:
           </body></html>
           EOF
 
-      - name: Upload artifact
+      - name: Run test coverage
+        run: |
+          invoke test-coverage
+
+      - name: Move test coverage to site
+        run: |
+          ls -al
+          mv _pytest-coverage site/coverage
+
+      - name: Upload new site
         uses: actions/upload-pages-artifact@v3
         with:
           path: site
