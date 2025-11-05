@@ -193,7 +193,7 @@ def _list_boards_docs_format(apio_ctx: ApioContext):
     cwrite("\n# Supported FPGA Boards\n")
     cwrite(
         f"\nThis markdown page was generated on {today_str} from version "
-        f"{def_version} of the Apio definitions package using the command:"
+        f"`{def_version}` of the Apio definitions package using the command:"
         f"\n\n```\napio boards --docs > supported-boards.md\n```"
     )
     cwrite(
