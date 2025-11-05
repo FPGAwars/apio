@@ -1,7 +1,7 @@
 # A periodic workflow to publish the apio mkDocs at /docs dir to the github
 # Pages of this repo.
 
-name: publish-mkdocs-docs
+name: publish-docs
 
 on:
   push:
