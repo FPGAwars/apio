@@ -51,16 +51,16 @@ jobs:
           apio packages update
 
       # Overwrite boards page placeholder with actual content.
-      - name: Generate boards page
-        run: |
-          [ -f docs/supported-boards.md ] || exit 1
-          apio boards --docs > docs/supported-boards.md
+      # - name: Generate boards page
+      #   run: |
+      #     [ -f docs/supported-boards.md ] || exit 1
+      #     apio boards --docs > docs/supported-boards.md
 
         # Overwrite fpgas page placeholder with actual content.
-      - name: Generate fpgas page
-        run: |
-          [ -f docs/supported-fpgas.md ] || exit 1
-          apio fpgas --docs > docs/supported-fpgas.md
+      # - name: Generate fpgas page
+      #   run: |
+      #     [ -f docs/supported-fpgas.md ] || exit 1
+      #     apio fpgas --docs > docs/supported-fpgas.md
 
       - name: Build mkDocs pages
         run: |
