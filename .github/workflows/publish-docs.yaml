@@ -21,6 +21,9 @@ on:
 jobs:
   publish-mkdocs-docs:
     runs-on: ubuntu-latest
+    # NOTE: Make sure the github-pages environment ifn the github repo
+    # dashboard lists 'develop' as an allowable branch. Otherwise
+    # this workflow will fail.
     environment: github-pages
 
     permissions:
