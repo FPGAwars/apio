@@ -32,7 +32,7 @@ jobs:
       id-token: write
 
     steps:
-      - name: Checkout repository
+      - name: Checkout apio repository
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -45,10 +45,21 @@ jobs:
           pip install invoke
           invoke install-deps
 
-      - name: Install mkDocs tools
+      - name: Install apio
         run: |
-          pip install mkdocs
-          pip install  mkdocs-material
+          invoke install-apio
+
+      # Overwrite boards page placeholder with actual content.
+      - name: Generate boards page
+        run: |
+          [ -f docs/supported-boards.md ] || exit 1
+          apio boards --docs > docs/supported-boards.md
+
+        # Overwrite fpgas page placeholder with actual content.
+      - name: Generate fpgas page
+        run: |
+          [ -f docs/supported-fpgas.md ] || exit 1
+          apio fpgas --docs > docs/supported-fpgas.md
 
       - name: Build mkDocs pages
         run: |
