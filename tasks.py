@@ -16,6 +16,8 @@
 #   invoke test-coverage # Collect and show test coverage.
 #   invoke clean         # Clean project.
 
+#  NOTE: The shortcut 'inv' can be used instead of 'invoke'.
+
 import sys
 import webbrowser
 from pathlib import Path
@@ -340,7 +342,7 @@ def install_deps_task(_: Context):
     """Install development tools. Since we do at at the top of this file
     for every task, there is nothing to do here."""
     announce_task("install-deps")
-    cout("       required  installed")
+    cout(f"{'':17} {'required':9s} {'installed'}")
     for name, ver in DEPENDENCIES:
         cout(f"{name:17} {ver:9s} {version(name)}")
 
