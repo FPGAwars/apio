@@ -7,7 +7,7 @@
 [![apio-dev-build](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-dev-builds/build-and-release.yaml?label=apio-dev-build)](https://github.com/fpgawars/apio-dev-builds/actions/workflows/build-and-release.yaml)
 [![monitor-apio-prod](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/monitor-apio-prod.yaml?label=apio-prod-monitor)](https://github.com/fpgawars/apio/actions/workflows/monitor-apio-prod.yaml)
 [![monitor-apio-latest](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/monitor-apio-latest.yaml?label=apio-latest-monitor)](https://github.com/fpgawars/apio/actions/workflows/monitor-apio-latest.yaml)
-[![mkdocs-publishing](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/publish-mkdocs-docs.yaml?label=apio-mkdocs)](https://github.com/fpgawars/apio/actions/workflows/publish-mkdocs-docs.yaml)
+[![docs-publishing](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/publish-docs.yaml?label=apio-docs)](https://github.com/fpgawars/apio/actions/workflows/publish-docs.yaml)
 [![examples-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-examples/test.yaml?label=apio-examples-test)](https://github.com/fpgawars/apio-examples/actions/workflows/test.yaml)
 [![examples-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-examples/build-and-release.yaml?label=apio-examples-build)](https://github.com/fpgawars/apio-examples/actions/workflows/build-and-release.yaml)
 [![definitions-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-definitions/test.yaml?label=apio-definitions-test)](https://github.com/fpgawars/apio-definitions/actions/workflows/test.yaml)

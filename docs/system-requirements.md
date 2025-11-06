@@ -2,19 +2,21 @@
 
 > The information on this page was last updated in October 2025.
 
-## Operating System Requirements
+## Operating System
 
-Apio is supported on the following operating systems (also known as platforms):
+Apio is tested on the following platforms (as of Nov 2025):
 
-| Apio Platform Code | Description             | Versions                     |
-| :----------------- | :---------------------- | :--------------------------- |
-| darwin_arm64       | macOS (Apple Silicon)   | macOS 12 and above           |
-| darwin_x86_64      | macOS (Intel)           | macOS 12 and above           |
-| linux_x86_64       | Linux x86 64-bit        | Tested with Ubuntu LTS 24.04 |
-| linux_aarch64      | Linux ARM 64-bit        |                              |
-| windows_amd64      | Windows x86 64-bit      | Windows 10 and above         |
+| Apio Platform Code | Description           | Tested Github Versions |
+| :----------------- | :-------------------- | :--------------------- |
+| darwin_arm64       | macOS (Apple Silicon) | macos-latest           |
+| darwin_x86_64      | macOS (Intel)         | macos-15-intel         |
+| linux_x86_64       | Linux x86 64-bit      | ubuntu-22.04           |
+| linux_aarch64      | Linux ARM 64-bit      | (not tested)           |
+| windows_amd64      | Windows x86 64-bit    | windows-latest         |
 
-## Python Requirements
+> The tested version are set in the Apio github test workflow.
+
+## Python
 
 These requirements apply only when installing Apio as a Pip package (Python-based installation).
 

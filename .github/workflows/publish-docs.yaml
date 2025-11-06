@@ -48,7 +48,6 @@ jobs:
       - name: Install apio
         run: |
           invoke install-apio
-          apio packages update
 
       - name: Generate boards page
         run: |

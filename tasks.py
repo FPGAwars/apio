@@ -323,6 +323,7 @@ def install_apio_task(ctx: Context):
     """Install apio package from source code."""
     announce_task("install-apio")
     run(ctx, [PYTHON, "-m", "pip", "install", "-e", "."])
+    run(ctx, ["apio", "packages", "update"])
     run(ctx, ["apio", "--version"])
     cout(
         "The source code of this repo is now "
