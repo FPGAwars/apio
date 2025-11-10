@@ -62,6 +62,7 @@ Utility commands:
   apio boards       List available board definitions.
   apio fpgas        List available FPGA definitions.
   apio examples     List and fetch apio examples.
+  apio docs         Show Apio documentation.
   apio info         Apio's info and info.
   apio raw          Execute commands directly from the Apio packages.
   apio api          Apio programmatic interface.
@@ -469,6 +470,27 @@ Options:
 
 --------------------------------------------
 
+apio docs
+
+Usage: apio docs [OPTIONS]
+
+  The command 'apio docs' opens the Apio documentation using the user's
+  default browser. The command accept an optional page name that allows
+  to land directly at a specified documentation page.
+
+
+  Examples:
+    apio docs                     # Open the docs.
+    apio docs -p cmd-apio-build   # Land at the build command doc.
+
+Options:
+  -p, --page page-id  Land on a specific doc page
+  -h, --help          Show this message and exit.
+
+
+
+--------------------------------------------
+
 apio drivers
 
 Usage: apio drivers [OPTIONS] COMMAND [ARGS]...
@@ -732,8 +754,7 @@ apio graph
 Usage: apio graph [OPTIONS]
 
   The command 'apio graph' generates a graphical representation of the
-  design
-  and open it in a graphical viewer.
+  design and then opens it in a graphical viewer.
 
   Examples:
     apio graph               # Generate a svg file (default).

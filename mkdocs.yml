@@ -60,6 +60,7 @@ nav:
           - apio boards: cmd-apio-boards.md
           - apio fpgas: cmd-apio-fpgas.md
           - apio examples: cmd-apio-examples.md
+          - apio docs: cmd-apio-docs.md
           - apio info: cmd-apio-info.md
           - apio raw: cmd-apio-raw.md
           - apio api: cmd-apio-api.md
