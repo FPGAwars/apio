@@ -6,7 +6,8 @@ Apio uses GitHub repositories under the `FPGAwars` organization for its source c
 | :------------------------------------------------------------------------------ | :---------------------- | :-------- |
 | [FPGAwars/apio](https://github.com/FPGAwars/apio)                               | Apio main repo.         | All       |
 | [FPGAwars/apio-dev-builds](https://github.com/FPGAwars/apio-dev-builds)         | Apio daily builds       | All       |
-| [FPGAwars/apio-definitions](https://github.com/FPGAwars/apio-definitions)             | Package `definitions`      | All       |
+| [FPGAwars/apio-vscode](https://github.com/FPGAwars/apio-vscode)                 | Apio VSCode extension   | All       |
+| [FPGAwars/apio-definitions](https://github.com/FPGAwars/apio-definitions)       | Package `definitions`   | All       |
 | [FPGAwars/apio-examples](https://github.com/FPGAwars/apio-examples)             | Package `examples`      | All       |
 | [FPGAwars/tools-oss-cad-suite](https://github.com/FPGAwars/tools-oss-cad-suite) | Package `oss-cad-suite` | All       |
 | [FPGAwars/tools-verible](https://github.com/FPGAwars/tools-verible)             | Package `verible`       | All       |
