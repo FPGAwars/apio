@@ -41,7 +41,7 @@ Examples:[code]
   apio raw    -- yosys                # Yosys interactive mode.
   apio raw    -- icepll -i 12 -o 30   # Calc ICE PLL.
   apio raw    -- which yosys          # Lookup a command.
-  apio raw    -- bash                 # Open a shell with Apio env setting.
+  apio raw    -- bash                 # Open a shell with Apio's env.
   apio raw -v                         # Show apio env setting.
   apio raw -h                         # Show this help info.[/code]
 
