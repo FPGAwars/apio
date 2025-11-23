@@ -9,6 +9,7 @@
 
 import sys
 import subprocess
+import shlex
 from typing import Tuple, List
 import click
 from apio.common.apio_console import cout
@@ -24,6 +25,37 @@ from apio.utils import cmd_util
 from apio.utils.cmd_util import ApioCommand
 
 # ----------- apio raw
+
+
+def run_command_with_possible_elevation(
+    apio_ctx: ApioContext, arg_list: List[str]
+) -> int:
+    """
+    Runs a command and returns its exit code.
+    On Windows: allows UAC elevation (like os.system), e.g. for zadig.
+    On macOS/Linux: runs directly
+    Never raises — always returns an int (even on catastrophic errors.
+    """
+    if not arg_list:
+        return 0  # nothing to run
+
+    try:
+        if apio_ctx.is_windows:
+            cmd_line = " ".join(shlex.quote(arg) for arg in arg_list)
+            return subprocess.call(["cmd.exe", "/c", cmd_line], shell=False)
+
+        # Mac and linux.
+        return subprocess.call(arg_list, shell=False)
+
+    # Specific common errors — give user-friendly feedback
+    except FileNotFoundError:
+        cout(f"Error: Command not found → {arg_list[0]}", style=ERROR)
+        return 127
+
+    except PermissionError:
+        cout(f"Error: Permission denied → {arg_list[0]}", style=ERROR)
+        return 126
+
 
 # -- Text in the rich-text format of the python rich library.
 APIO_RAW_HELP = """
@@ -99,11 +131,12 @@ def cli(
         cout(f"\n---- Executing {cmd}:")
 
     # -- Invoke the command.
-    try:
-        exit_code = subprocess.call(cmd, shell=False)
-    except FileNotFoundError as e:
-        cout(f"{e}", style=ERROR)
-        sys.exit(1)
+    # try:
+    # exit_code = subprocess.call(cmd, shell=False)
+    exit_code = run_command_with_possible_elevation(apio_ctx, cmd)
+    # except FileNotFoundError as e:
+    #     cout(f"{e}", style=ERROR)
+    #     sys.exit(1)
 
     if verbose:
         cout("----\n")
