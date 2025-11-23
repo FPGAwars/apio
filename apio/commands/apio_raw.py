@@ -12,8 +12,8 @@ import subprocess
 import shlex
 from typing import Tuple, List
 import click
-from apio.common.apio_console import cout
-from apio.common.apio_styles import SUCCESS, ERROR
+from apio.common.apio_console import cout, cerror
+from apio.common.apio_styles import SUCCESS, ERROR, INFO
 from apio.apio_context import (
     ApioContext,
     PackagesPolicy,
@@ -77,7 +77,7 @@ Examples:[code]
   apio raw -v                         # Show apio env setting.
   apio raw -h                         # Show this help info.[/code]
 
-The marker '--' is used to separate between the arguments of the apio \
+The marker '--' must separate between the arguments of the apio \
 command itself and those of the executed command.
 """
 
@@ -102,6 +102,41 @@ def cli(
     """Implements the apio raw command which executes user
     specified commands from apio installed tools.
     """
+
+    # -- If the user specifies a raw command, verify that the '--' separator
+    # -- exists and that all the command tokens were specified after it.
+    # -- Ideally Click should be able to validate it but it doesn't (?).
+    if cmd:
+
+        # -- Locate the first '--' in argv. None if not found.
+        dd_index = next((i for i, x in enumerate(sys.argv) if x == "--"), None)
+
+        # -- If the '--' separator was not specified this is an error.
+        if dd_index is None:
+            cerror("The raw command separator '--' was not found.")
+            cout(
+                "The raw command should be specified after a '--' separator.",
+                "Type 'apio raw -h' for details.",
+                style=INFO,
+            )
+            sys.exit(1)
+
+        # -- Number of command tokens after the "--"
+        n_after = len(sys.argv) - dd_index - 1
+
+        # -- Command tokens that where specified before the '--'
+        tokens_before = list(cmd)[: len(cmd) - n_after]
+
+        # -- Should have no command tokens before the "--"
+        if tokens_before:
+            cerror(f"Invalid arguments: {tokens_before}.")
+            cout(
+                "Did you mean to have them after the '--' separator?",
+                "See 'apio raw -h' for details.",
+                style=INFO,
+            )
+            sys.exit(1)
+
     # -- At lease one of -v and cmd should be specified.
     cmd_util.check_at_least_one_param(cmd_ctx, ["verbose", "cmd"])
 

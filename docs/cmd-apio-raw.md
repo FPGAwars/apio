@@ -22,8 +22,8 @@ apio raw -v                         # Show Apio environment settings
 apio raw -h                         # Show help message
 ```
 
-> Use the `--` marker to separate Apio's own options from those passed
-> to the tool being run.
+> If a command is specified, it must be prefixed with the `--` marker to
+> distinguish it from the apio command args.
 
 <h3>Options</h3>
 
