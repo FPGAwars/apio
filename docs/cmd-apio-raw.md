@@ -18,6 +18,7 @@ apio raw    -- yosys                # Start Yosys in interactive mode
 apio raw    -- icepll -i 12 -o 30   # Calculate ICE PLL parameters
 apio raw    -- which yosys          # Locate yosys in the path
 apio raw    -- bash                 # Open a shell with Apio's env.
+apio raw    -- zadig                # Run Zadig (on Windows).
 apio raw -v                         # Show Apio environment settings
 apio raw -h                         # Show help message
 ```

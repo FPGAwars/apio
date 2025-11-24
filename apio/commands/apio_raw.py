@@ -74,6 +74,7 @@ Examples:[code]
   apio raw    -- icepll -i 12 -o 30   # Calc ICE PLL.
   apio raw    -- which yosys          # Lookup a command.
   apio raw    -- bash                 # Open a shell with Apio's env.
+  apio raw    -- zadig                # Run Zadig (on Windows).
   apio raw -v                         # Show apio env setting.
   apio raw -h                         # Show this help info.[/code]
 
