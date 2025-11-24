@@ -25,25 +25,11 @@ from apio.utils import cmd_util
 # -- Text in the rich-text format of the python rich library.
 APIO_DOCS_HELP = """
 The command 'apio docs' opens the Apio documentation using the user's \
-default browser. The command accept an optional page name that allows \
-to land directly at a specified documentation page.
-
+default browser.
 
 Examples:[code]
-  apio docs                     # Open the docs.
-  apio docs -p cmd-apio-build   # Land at the build command doc.[/code]
+  apio docs         # Open the docs.
 """
-
-
-option_page = click.option(
-    "page",  # Var name.
-    "-p",
-    "--page",
-    type=str,
-    metavar="page-id",
-    help="Land on a specific doc page",
-    cls=cmd_util.ApioOption,
-)
 
 
 @click.command(
@@ -52,11 +38,7 @@ option_page = click.option(
     short_help="Show Apio documentation.",
     help=APIO_DOCS_HELP,
 )
-@option_page
-def cli(
-    # Arguments
-    page: str,
-):
+def cli():
     """Implements the docs command which opens the apio documentation in
     the default browser.
     """
@@ -69,8 +51,6 @@ def cli(
     )
 
     url = "https://fpgawars.github.io/apio/docs"
-    if page:
-        url = url + "/" + page
 
     cout(f"URL: {url}")
     cout("Opening default browser")
