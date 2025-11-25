@@ -148,9 +148,11 @@ def print_packages_report(apio_ctx: ApioContext) -> bool:
         cout()
         ctable(table)
 
-    # -- Print summary.
+    # -- Scan packages again and print a summary.
+    packages_ok = scan.is_all_ok()
+
     cout()
-    if scan.is_all_ok():
+    if packages_ok:
         cout("All Apio packages are installed OK.", style=SUCCESS)
     else:
         cout(
@@ -158,7 +160,9 @@ def print_packages_report(apio_ctx: ApioContext) -> bool:
             style=INFO,
         )
 
-    return scan.is_all_ok()
+    # -- Return with the current packages status. Normally it should be
+    # -- True for OK since we fixed and updated the packages.
+    return packages_ok
 
 
 # ------ apio packages update
