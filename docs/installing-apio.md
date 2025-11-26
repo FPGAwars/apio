@@ -43,7 +43,7 @@ To install Apio on macOS Apple Silicon using an installer, follow these steps:
 
 2.  Run the following command to allow the unsigned Apio installer to run:
 
-        xattr -d com.apple.quarantine apio-darwin-arm64-*-installer.pkg 2>&1 | grep -v "No such xattr"
+        xattr -c apio-darwin-arm64-*-installer.pkg
 
 3.  Double-click on the installer file and follow the instructions.
 
@@ -65,7 +65,7 @@ follow these steps:
 
 2.  Run the following command to allow the unsigned Apio app to run.
 
-        xattr -d com.apple.quarantine apio-darwin-arm64-*-bundle.tgz 2>&1 | grep -v "No such xattr"
+        xattr -c apio-darwin-arm64-*-bundle.tgz
 
 3.  **After you run the xattr command**, double click on the bundle file to uncompress it and reveal the `apio` directory with the application files.
 
