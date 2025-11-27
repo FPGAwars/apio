@@ -77,8 +77,12 @@ def write_as_json_doc(top_dict: Dict, output_flag: str, force_flag: bool):
             cout("Use the --force option to allow overwriting.", style=INFO)
             sys.exit(1)
 
-        # -- Make parent dirs if missing.
-        os.makedirs(os.path.dirname(output_flag), exist_ok=True)
+        # -- if there file path contains a parent dir, make
+        # -- sure it exists. If output_flag is just a file name such
+        # -- as 'foo.json', we don nothing.
+        dirname = os.path.dirname(output_flag)
+        if dirname:
+            os.makedirs(dirname, exist_ok=True)
 
         # -- Write to file.
         with open(output_flag, "w", encoding="utf-8") as f:
