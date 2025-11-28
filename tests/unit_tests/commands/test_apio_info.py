@@ -36,6 +36,20 @@ def test_apio_info(apio_runner: ApioRunner):
         assert "Mac OSX" in result.output
         assert "ARM 64 bit (Apple Silicon)" in result.output
 
+        # -- Execute "apio info commands"
+        result = sb.invoke_apio_cmd(apio, ["info", "commands"])
+        sb.assert_result_ok(result)
+        assert " build " in cunstyle(result.output)
+        assert "Synthesize the bitstream." in result.output
+        assert "[build](cmd-apio-build.md)" not in result.output
+
+        # -- Execute "apio info commands --docs"
+        result = sb.invoke_apio_cmd(apio, ["info", "commands", "--docs"])
+        sb.assert_result_ok(result)
+        assert "[build](cmd-apio-build.md)" in result.output
+        assert "Synthesize the bitstream." in result.output
+        assert " build " not in cunstyle(result.output)
+
         # -- Execute "apio info colors"
         result = sb.invoke_apio_cmd(apio, ["info", "colors"])
         sb.assert_result_ok(result)

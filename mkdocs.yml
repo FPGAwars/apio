@@ -39,32 +39,29 @@ nav:
       - Video tutorial: video-tutorial.md
       - Migrating from Apio 0.x.x: migrating-from-apio-0xx.md
   - Apio Commands:
-      - Build Commands:
-          - apio build: cmd-apio-build.md
-          - apio upload: cmd-apio-upload.md
-          - apio clean: cmd-apio-clean.md
-      - Verification Commands:
-          - apio lint: cmd-apio-lint.md
-          - apio format: cmd-apio-format.md
-          - apio sim: cmd-apio-sim.md
-          - apio test: cmd-apio-test.md
-          - apio report: cmd-apio-report.md
-          - apio graph: cmd-apio-graph.md
-      - Setup Commands:
-          - apio create: cmd-apio-create.md
-          - apio preferences: cmd-apio-preferences.md
-          - apio packages: cmd-apio-packages.md
-          - apio drivers: cmd-apio-drivers.md
-          - apio devices: cmd-apio-devices.md
-      - Utility Commands:
-          - apio boards: cmd-apio-boards.md
-          - apio fpgas: cmd-apio-fpgas.md
-          - apio examples: cmd-apio-examples.md
-          - apio docs: cmd-apio-docs.md
-          - apio info: cmd-apio-info.md
-          - apio raw: cmd-apio-raw.md
-          - apio api: cmd-apio-api.md
-          - apio upgrade: cmd-apio-upgrade.md
+      - Commands list: commands-list.md
+      - apio api: cmd-apio-api.md
+      - apio boards: cmd-apio-boards.md
+      - apio build: cmd-apio-build.md
+      - apio clean: cmd-apio-clean.md
+      - apio create: cmd-apio-create.md
+      - apio devices: cmd-apio-devices.md
+      - apio docs: cmd-apio-docs.md
+      - apio drivers: cmd-apio-drivers.md
+      - apio examples: cmd-apio-examples.md
+      - apio format: cmd-apio-format.md
+      - apio fpgas: cmd-apio-fpgas.md
+      - apio graph: cmd-apio-graph.md
+      - apio info: cmd-apio-info.md
+      - apio lint: cmd-apio-lint.md
+      - apio packages: cmd-apio-packages.md
+      - apio preferences: cmd-apio-preferences.md
+      - apio raw: cmd-apio-raw.md
+      - apio report: cmd-apio-report.md
+      - apio sim: cmd-apio-sim.md
+      - apio test: cmd-apio-test.md
+      - apio upgrade: cmd-apio-upgrade.md
+      - apio upload: cmd-apio-upload.md
   - Apio Projects:
       - Project structure: project-structure.md
       - Project file apio.ini: project-file.md

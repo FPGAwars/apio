@@ -8,13 +8,15 @@
 """Implementation of 'apio info' command"""
 
 from typing import List
+from datetime import date
 import click
 from rich.table import Table
 from rich.text import Text
 from rich import box
 from rich.color import ANSI_COLOR_NAMES
-from apio.common.apio_styles import BORDER, EMPH1, EMPH3, INFO
+from apio.common.apio_styles import BORDER, EMPH1, EMPH2, EMPH3, INFO
 from apio.utils import util
+from apio.commands import options
 from apio.apio_context import (
     ApioContext,
     PackagesPolicy,
@@ -27,6 +29,7 @@ from apio.profile import get_datetime_stamp, days_between_datetime_stamps
 from apio.common.apio_console import (
     PADDING,
     cout,
+    cwrite,
     cstyle,
     ctable,
     get_theme,
@@ -320,7 +323,7 @@ Examples:
     help=APIO_INFO_THEMES_HELP,
 )
 def _themes_cli():
-    """Implements the 'apio info colors' command."""
+    """Implements the 'apio info themes' command."""
 
     # -- This initializes the output console.
     ApioContext(
@@ -398,6 +401,145 @@ def _themes_cli():
     cout()
 
 
+# ------ apio info commands
+
+
+def _list_boards_table_format(commands):
+    """Format and output the commands table. 'commands' is a sorted
+    list of [command_name, command_description]
+    """
+    # -- Generate the table.
+    table = Table(
+        show_header=True,
+        show_lines=True,
+        padding=PADDING,
+        box=box.SQUARE,
+        border_style=BORDER,
+        title="Apio commands",
+        title_justify="left",
+    )
+
+    table.add_column("APIO COMMAND", no_wrap=True, min_width=20, style=EMPH2)
+    table.add_column("DESCRIPTION", no_wrap=True)
+
+    for cmd in commands:
+        table.add_row(cmd[0], cmd[1])
+
+    # -- Render the table.
+    cout()
+    ctable(table)
+
+
+def _list_boards_docs_format(commands):
+    """Format and output the commands markdown doc. 'commands' is a sorted
+    list of [command_name, command_description]
+    """
+
+    header1 = "APIO COMMAND"
+    header2 = "DESCRIPTION"
+
+    # -- Replace the command names with markdown link to the command doc page.
+    tagged_commands = [
+        [f"[{c[0]}](cmd-apio-{c[0]}.md)", c[1]] for c in commands
+    ]
+
+    # -- Determine column sizes
+    w1 = max(len(header1), *(len(cmd[0]) for cmd in tagged_commands))
+    w2 = max(len(header2), *(len(cmd[1]) for cmd in tagged_commands))
+
+    # -- Print page header
+    today = date.today()
+    today_str = f"{today.strftime('%B')} {today.day}, {today.year}"
+    cwrite("\n<!-- BEGIN generation by 'apio commands --docs' -->\n")
+    cwrite("\n# Apio commands\n")
+    cwrite(
+        f"\nThis markdown page was generated automatically on {today_str}.\n\n"
+    )
+
+    # -- Table header
+    cwrite(
+        "| {0} | {1} |\n".format(
+            header1.ljust(w1),
+            header2.ljust(w2),
+        )
+    )
+
+    cwrite(
+        "| {0} | {1} |\n".format(
+            "-" * w1,
+            "-" * w2,
+        )
+    )
+
+    # -- Add the rows
+    for tagged_cmd in tagged_commands:
+        cwrite(
+            "| {0} | {1} |\n".format(
+                tagged_cmd[0].ljust(w1),
+                tagged_cmd[1].ljust(w2),
+            )
+        )
+
+    # -- All done.
+    cwrite("\n<!-- END generation by 'apio commands --docs' -->\n\n")
+
+
+# -- Text in the rich-text format of the python rich library.
+APIO_INFO_COMMANDS_HELP = """
+The command 'apio info commands' lists the the available apio commands \
+in a table format. If the option '--docs' is specified, the command outputs \
+the list as a markdown document that is used to automatically update the \
+Apio documentation.
+
+Examples:[code]
+  apio info commands
+  apio info commands --docs > docs/commands-list.md[/code]
+"""
+
+
+@click.command(
+    name="commands",
+    cls=ApioCommand,
+    short_help="Show apio commands.",
+    help=APIO_INFO_COMMANDS_HELP,
+)
+@options.docs_format_option
+def _commands_cli(
+    # Options
+    docs,
+):
+    """Implements the 'apio info commands' command."""
+
+    # -- We perform this lazy cyclic import here to allow the two modules
+    # -- to initialize properly without a cyclic import.
+    #
+    # pylint: disable=import-outside-toplevel
+    # pylint: disable=cyclic-import
+    from apio.commands import apio as apio_main
+
+    # -- This initializes the output console.
+    ApioContext(
+        project_policy=ProjectPolicy.NO_PROJECT,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.IGNORE_PACKAGES,
+    )
+
+    # -- Collect commands as a list of <name, description>
+    commands = []
+    for subgroup in apio_main.SUBGROUPS:
+        for cmd in subgroup.commands:
+            commands.append([cmd.name, cmd.get_short_help_str()])
+
+    # -- Sort the commands list alphabetically.
+    commands.sort()
+
+    # -- Generate the output
+    if docs:
+        _list_boards_docs_format(commands)
+    else:
+        _list_boards_table_format(commands)
+
+
 # ------ apio info
 
 # -- Text in the rich-text format of the python rich library.
@@ -415,6 +557,7 @@ SUBGROUPS = [
             _platforms_cli,
             _colors_cli,
             _themes_cli,
+            _commands_cli,
         ],
     ),
 ]

@@ -28,8 +28,18 @@ The command 'apio docs' opens the Apio documentation using the user's \
 default browser.
 
 Examples:[code]
-  apio docs         # Open the docs.
+  apio docs              # Open the apio docs.
+  apio docs --commands   # Land on the commands list page.
 """
+
+commands_option = click.option(
+    "commands",  # Var name.
+    "-c",
+    "--commands",
+    is_flag=True,
+    help="Show the commands page.",
+    cls=cmd_util.ApioOption,
+)
 
 
 @click.command(
@@ -38,7 +48,11 @@ Examples:[code]
     short_help="Show Apio documentation.",
     help=APIO_DOCS_HELP,
 )
-def cli():
+@commands_option
+def cli(
+    # Options
+    commands,
+):
     """Implements the docs command which opens the apio documentation in
     the default browser.
     """
@@ -51,6 +65,9 @@ def cli():
     )
 
     url = "https://fpgawars.github.io/apio/docs"
+
+    if commands:
+        url += "/commands-list"
 
     cout(f"URL: {url}")
     cout("Opening default browser")
