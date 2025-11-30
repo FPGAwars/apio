@@ -1,5 +1,8 @@
 #!/usr/bin/env bash 
 
+# The python script below requires apio to be installed as a python package.
+invoke install-apio
+
 # Run to update COMMANDS.txt with the latest apio commands help text.
 
 output="COMMANDS.txt"
