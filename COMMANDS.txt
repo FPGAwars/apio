@@ -62,6 +62,7 @@ Utility commands:
   apio boards       List available board definitions.
   apio fpgas        List available FPGA definitions.
   apio examples     List and fetch apio examples.
+  apio docs         Show Apio documentation.
   apio info         Apio's info and info.
   apio raw          Execute commands directly from the Apio packages.
   apio api          Apio programmatic interface.
@@ -258,7 +259,6 @@ Usage: apio api get-system [OPTIONS]
   The command 'apio api get-system' exports information about apio and
   the underlying system as a JSON foc.  It is similar to the command
   'apio info system' which is intended for human consumption.
-
 
   The optional flag '--timestamp' allows the caller to embed in the JSON
   document a known timestamp that allows to verify that the JSON
@@ -464,6 +464,25 @@ Usage: apio devices usb [OPTIONS]
 
 Options:
   -h, --help  Show this message and exit.
+
+
+
+--------------------------------------------
+
+apio docs
+
+Usage: apio docs [OPTIONS]
+
+  The command 'apio docs' opens the Apio documentation using the user's
+  default browser.
+
+  Examples:
+    apio docs              # Open the apio docs.
+    apio docs --commands   # Land on the commands list page.
+
+Options:
+  -c, --commands  Show the commands page.
+  -h, --help      Show this message and exit.
 
 
 
@@ -732,8 +751,7 @@ apio graph
 Usage: apio graph [OPTIONS]
 
   The command 'apio graph' generates a graphical representation of the
-  design
-  and open it in a graphical viewer.
+  design and then opens it in a graphical viewer.
 
   Examples:
     apio graph               # Generate a svg file (default).
@@ -778,6 +796,7 @@ Subcommands:
   apio info platforms  Supported platforms.
   apio info colors     Colors table.
   apio info themes     Show apio themes.
+  apio info commands   Show apio commands.
 
 
 
@@ -798,6 +817,27 @@ Usage: apio info colors [OPTIONS]
     apio inf col -p           # Using shortcuts.
 
 Options:
+  -h, --help  Show this message and exit.
+
+
+
+--------------------------------------------
+
+apio info commands
+
+Usage: apio info commands [OPTIONS]
+
+  The command 'apio info commands' lists the the available apio commands
+  in a table format. If the option '--docs' is specified, the command
+  outputs the list as a markdown document that is used to automatically
+  update the Apio documentation.
+
+  Examples:
+    apio info commands
+    apio info commands --docs > docs/commands-list.md
+
+Options:
+  --docs      Format for Apio Docs.
   -h, --help  Show this message and exit.
 
 
@@ -1016,10 +1056,12 @@ Usage: apio raw [OPTIONS] COMMAND
     apio raw    -- yosys                # Yosys interactive mode.
     apio raw    -- icepll -i 12 -o 30   # Calc ICE PLL.
     apio raw    -- which yosys          # Lookup a command.
+    apio raw    -- bash                 # Open a shell with Apio's env.
+    apio raw    -- zadig                # Run Zadig (on Windows).
     apio raw -v                         # Show apio env setting.
     apio raw -h                         # Show this help info.
 
-  The marker '--' is used to separate between the arguments of the apio
+  The marker '--' must separate between the arguments of the apio
   command itself and those of the executed command.
 
 Options:

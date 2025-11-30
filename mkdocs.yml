@@ -39,31 +39,29 @@ nav:
       - Video tutorial: video-tutorial.md
       - Migrating from Apio 0.x.x: migrating-from-apio-0xx.md
   - Apio Commands:
-      - Build Commands:
-          - apio build: cmd-apio-build.md
-          - apio upload: cmd-apio-upload.md
-          - apio clean: cmd-apio-clean.md
-      - Verification Commands:
-          - apio lint: cmd-apio-lint.md
-          - apio format: cmd-apio-format.md
-          - apio sim: cmd-apio-sim.md
-          - apio test: cmd-apio-test.md
-          - apio report: cmd-apio-report.md
-          - apio graph: cmd-apio-graph.md
-      - Setup Commands:
-          - apio create: cmd-apio-create.md
-          - apio preferences: cmd-apio-preferences.md
-          - apio packages: cmd-apio-packages.md
-          - apio drivers: cmd-apio-drivers.md
-          - apio devices: cmd-apio-devices.md
-      - Utility Commands:
-          - apio boards: cmd-apio-boards.md
-          - apio fpgas: cmd-apio-fpgas.md
-          - apio examples: cmd-apio-examples.md
-          - apio info: cmd-apio-info.md
-          - apio raw: cmd-apio-raw.md
-          - apio api: cmd-apio-api.md
-          - apio upgrade: cmd-apio-upgrade.md
+      - Commands list: commands-list.md
+      - api: cmd-apio-api.md
+      - boards: cmd-apio-boards.md
+      - build: cmd-apio-build.md
+      - clean: cmd-apio-clean.md
+      - create: cmd-apio-create.md
+      - devices: cmd-apio-devices.md
+      - docs: cmd-apio-docs.md
+      - drivers: cmd-apio-drivers.md
+      - examples: cmd-apio-examples.md
+      - format: cmd-apio-format.md
+      - fpgas: cmd-apio-fpgas.md
+      - graph: cmd-apio-graph.md
+      - info: cmd-apio-info.md
+      - lint: cmd-apio-lint.md
+      - packages: cmd-apio-packages.md
+      - preferences: cmd-apio-preferences.md
+      - raw: cmd-apio-raw.md
+      - report: cmd-apio-report.md
+      - sim: cmd-apio-sim.md
+      - test: cmd-apio-test.md
+      - upgrade: cmd-apio-upgrade.md
+      - upload: cmd-apio-upload.md
   - Apio Projects:
       - Project structure: project-structure.md
       - Project file apio.ini: project-file.md
@@ -78,6 +76,7 @@ nav:
       - Contributing examples: contributing-examples.md
   - Apio Tips:
       - Apio command line: command-line.md
+      - Using Apio with VSCode: apio-vscode.md
       - Using System Verilog: using-system-verilog.md
       - Using testbenches: using-testbenches.md
       - Raw tools: raw-tools.md

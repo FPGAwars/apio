@@ -61,6 +61,12 @@ jobs:
           apio fpgas --docs > docs/supported-fpgas.md
           cat docs/supported-fpgas.md
 
+      - name: Generate commands list page
+        run: |
+          ls docs/commands-list.md
+          apio info commands --docs > docs/commands-list.md
+          cat docs/commands-list.md
+
       - name: Build mkDocs pages
         run: |
           mkdocs build --strict --site-dir site/docs

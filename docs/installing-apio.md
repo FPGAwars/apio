@@ -39,11 +39,11 @@ To install Apio on macOS Apple Silicon using an installer, follow these steps:
 
 1.  From the [latest release](https://github.com/fpgawars/apio-dev-builds/releases) download the installer file:
 
-        apio-darwin-arm64-[version]-[date]-installer.pkg
+        apio-darwin-arm64-[date]-installer.pkg
 
 2.  Run the following command to allow the unsigned Apio installer to run:
 
-        xattr -d com.apple.quarantine apio-darwin-arm64-*-installer.pkg 2>&1 | grep -v "No such xattr"
+        xattr -c apio-darwin-arm64-*-installer.pkg
 
 3.  Double-click on the installer file and follow the instructions.
 
@@ -61,11 +61,11 @@ follow these steps:
 
 1.  From the [latest release](https://github.com/fpgawars/apio-dev-builds/releases) download the file bundle:
 
-        apio-darwin-arm64-[version]-[date]-bundle.tgz
+        apio-darwin-arm64-[date]-bundle.tgz
 
 2.  Run the following command to allow the unsigned Apio app to run.
 
-        xattr -d com.apple.quarantine apio-darwin-arm64-*-bundle.tgz 2>&1 | grep -v "No such xattr"
+        xattr -c apio-darwin-arm64-*-bundle.tgz
 
 3.  **After you run the xattr command**, double click on the bundle file to uncompress it and reveal the `apio` directory with the application files.
 
@@ -125,11 +125,11 @@ To install Apio on Linux X86-64 using a Debian package, follow these steps:
 
 1.  From the [latest release](https://github.com/fpgawars/apio-dev-builds/releases) download the Debian package file:
 
-        apio-linux-x86-64-[version]-[date]-debian.deb
+        apio-linux-x86-64-[date]-debian.deb
 
 2.  In the directory where you downloaded the package, install it using:
 
-        sudo dpkg -i ./apio-linux-x86-64-[version]-[date]-debian.deb
+        sudo dpkg -i ./apio-linux-x86-64-[date]-debian.deb
 
 3.  In a **new shell window**, run the following command to test your installation:
 
@@ -141,7 +141,7 @@ To install Apio on Linux X86-64 using a file bundle, follow these steps:
 
 1.  From the [latest release](https://github.com/fpgawars/apio-dev-builds/releases) download the file bundle:
 
-        apio-linux-x86-64-[version]-[date]-bundle.tgz
+        apio-linux-x86-64-[date]-bundle.tgz
 
 2.  Uncompress the bundle file to reveal the `apio` directory with the application files.
 
@@ -203,7 +203,7 @@ To install Apio on Windows X86-64 using an installer, follow these steps:
 
 1.  From the [latest release](https://github.com/fpgawars/apio-dev-builds/releases) download the installer file:
 
-        apio-windows-amd64-[version]-[date]-installer.exe
+        apio-windows-amd64-[date]-installer.exe
 
 2.  Right click on the installer file, select `properties`, check the `Unblock` checkbox and press OK. This will
     allow you to run the unsigned installer.
@@ -220,7 +220,7 @@ To install Apio on Windows X86-64 using a file bundle, follow these steps:
 
 1.  From the [latest release](https://github.com/fpgawars/apio-dev-builds/releases) download the file bundle:
 
-        apio-windows-amd64-[version]-[date]-bundle.zip
+        apio-windows-amd64-[date]-bundle.zip
 
 2.  Right click on the bundle file , select `properties`, check the `Unblock` checkbox and press OK. This will
     allow you to run the the unsigned Apio app.

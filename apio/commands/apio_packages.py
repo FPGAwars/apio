@@ -7,12 +7,13 @@
 # -- License GPLv2
 """Implementation of 'apio packages' command"""
 
+import sys
 from typing import Dict
 from dataclasses import dataclass
 import click
 from rich.table import Table
 from rich import box
-from apio.common.apio_console import cout, ctable
+from apio.common.apio_console import cout, ctable, cerror
 from apio.common.apio_styles import INFO, BORDER, ERROR, SUCCESS
 from apio.managers import packages
 from apio.commands import options
@@ -37,8 +38,10 @@ class RequiredPackageRow:
     style: str
 
 
-def print_packages_report(apio_ctx: ApioContext) -> None:
-    """A common function to print the state of the packages."""
+def print_packages_report(apio_ctx: ApioContext) -> bool:
+    """A common function to print the state of the packages.
+    Returns True if the packages are OK.
+    """
 
     # -- Scan the packages
     scan = packages.scan_packages(apio_ctx.packages_context)
@@ -145,15 +148,21 @@ def print_packages_report(apio_ctx: ApioContext) -> None:
         cout()
         ctable(table)
 
-    # -- Print summary.
+    # -- Scan packages again and print a summary.
+    packages_ok = scan.is_all_ok()
+
     cout()
-    if scan.is_all_ok():
+    if packages_ok:
         cout("All Apio packages are installed OK.", style=SUCCESS)
     else:
         cout(
             "Run 'apio packages update' to update the packages.",
             style=INFO,
         )
+
+    # -- Return with the current packages status. Normally it should be
+    # -- True for OK since we fixed and updated the packages.
+    return packages_ok
 
 
 # ------ apio packages update
@@ -215,8 +224,23 @@ def _update_cli(
             verbose=verbose,
         )
 
-    # -- Scan the available and installed packages.
-    print_packages_report(apio_ctx)
+    # -- If verbose, print a full report.
+    if verbose:
+        package_ok = print_packages_report(apio_ctx)
+        sys.exit(0 if package_ok else 1)
+
+    # -- When not in verbose mode, we run a scan and print a short status.
+    scan = packages.scan_packages(apio_ctx.packages_context)
+    if not scan.is_all_ok():
+        cerror("Failed to update some packages.")
+        cout(
+            "Run 'apio packages list' to view the packages.",
+            style=INFO,
+        )
+        sys.exit(1)
+
+    # -- Here when packages are ok.
+    cout("All Apio packages are installed OK.", style=SUCCESS)
 
 
 # ------ apio packages list
@@ -249,7 +273,8 @@ def _list_cli():
     )
 
     # -- Print packages report.
-    print_packages_report(apio_ctx)
+    packages_ok = print_packages_report(apio_ctx)
+    sys.exit(0 if packages_ok else 1)
 
 
 # ------ apio packages (group)

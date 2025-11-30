@@ -17,6 +17,7 @@ The `apio info` command group displays additional information about Apio and you
   apio info system
   apio info colors
   apio info themes
+  apio info commands
 ```
 
 ---
@@ -64,7 +65,7 @@ apio info system   # Show system information
 ## apio info colors
 
 The `apio info colors` command shows how ANSI colors are rendered on your
-system, which helps diagnose color-related issues.  
+system, which helps diagnose color-related issues.
 
 > The command shows colors even if the current theme is `no-colors`.
 
@@ -105,3 +106,22 @@ apio inf col -p           # Using shortcuts.
 <h3>Example output</h3>
 
 ![](assets/apio-info-themes.png)
+
+## apio info commands
+
+The command `apio info commands` lists the the available apio commands
+in a table format. If the option `--docs` is specified, the command
+outputs the list as a markdown document that is used to automatically
+update the Apio documentation.
+
+<h3>Examples</h3>
+```
+apio info commands
+apio info commands --docs > docs/commands-list.md
+```
+
+<h3>Options</h3>
+```
+--docs      Format for Apio Docs.
+-h, --help  Show this message and exit.
+```

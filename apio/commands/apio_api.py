@@ -77,6 +77,14 @@ def write_as_json_doc(top_dict: Dict, output_flag: str, force_flag: bool):
             cout("Use the --force option to allow overwriting.", style=INFO)
             sys.exit(1)
 
+        # -- if there file path contains a parent dir, make
+        # -- sure it exists. If output_flag is just a file name such
+        # -- as 'foo.json', we don nothing.
+        dirname = os.path.dirname(output_flag)
+        if dirname:
+            os.makedirs(dirname, exist_ok=True)
+
+        # -- Write to file.
         with open(output_flag, "w", encoding="utf-8") as f:
             f.write(text)
     else:
@@ -92,7 +100,6 @@ APIO_API_GET_SYSTEM_HELP = """
 The command 'apio api get-system' exports information about apio and \
 the underlying system as a JSON foc.  It is similar to the command \
 'apio info system' which is intended for human consumption.
-
 
 The optional flag '--timestamp' allows the caller to embed in the JSON \
 document a known timestamp that allows to verify that the JSON document \

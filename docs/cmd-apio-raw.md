@@ -17,12 +17,14 @@ apio raw -v -- yosys --version      # Verbose output
 apio raw    -- yosys                # Start Yosys in interactive mode
 apio raw    -- icepll -i 12 -o 30   # Calculate ICE PLL parameters
 apio raw    -- which yosys          # Locate yosys in the path
+apio raw    -- bash                 # Open a shell with Apio's env.
+apio raw    -- zadig                # Run Zadig (on Windows).
 apio raw -v                         # Show Apio environment settings
 apio raw -h                         # Show help message
 ```
 
-> Use the `--` marker to separate Apio's own options from those passed
-> to the tool being run.
+> If a command is specified, it must be prefixed with the `--` marker to
+> distinguish it from the apio command args.
 
 <h3>Options</h3>
 
