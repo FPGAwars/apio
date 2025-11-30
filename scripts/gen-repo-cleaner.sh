@@ -7,8 +7,18 @@
 
 set -euo pipefail
 
-# Edit this once
-REPO="zapta/apio-vscode"
+# ------------------------------------------------------------
+# Usage: ./repo-cleaner-gen.sh <owner/repo>
+# Example: ./repo-cleaner-gen.sh zapta/apio-vscode
+# ------------------------------------------------------------
+
+if [[ $# -ne 1 ]]; then
+  echo "Error: Please provide exactly one argument: owner/repo"
+  echo "Example: $0 zapta/apio-vscode"
+  exit 1
+fi
+
+REPO="$1"
 
 cat <<EOF
 #!/usr/bin/env bash
