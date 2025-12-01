@@ -54,18 +54,6 @@ def _construct_package_download_url(
 ) -> str:
     """Construct the download URL for the given package name and version."""
 
-    # -- Convert the version to "YYYY-MM-DD"
-    # -- Move to a function in util.py.
-    # version_tokens = target_version.split(".")
-    # assert len(version_tokens) == 3, version_tokens
-    # yyyy_mm_dd = (
-    #     f"{int(version_tokens[0]):04d}"
-    #     + "-"
-    #     + f"{int(version_tokens[1]):02d}"
-    #     + "-"
-    #     + f"{int(version_tokens[2]):02d}"
-    # )
-
     # -- Create vars mapping.
     url_vars = {
         "${PLATFORM}": packages_ctx.platform_id,
