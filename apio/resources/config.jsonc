@@ -20,10 +20,11 @@
   // The value of the remote config field here can be overridden for testing
   // using the env var APIO_REMOTE_CONFIG_URL, including for reading from
   // a local file using the "file://" protocol spec.
+  //
+  // For testing using the remote config at zapta:
+  // export APIO_REMOTE_CONFIG_URL="https://github.com/zapta/apio/raw/develop/remote-config/apio-{V}.jsonc"
 
-  // "remote-config-url": "https://github.com/fpgawars/apio/raw/develop/remote-config/apio-{V}.jsonc"
-
-  "remote-config-url": "https://github.com/zapta/apio/raw/develop/remote-config/apio-{V}.jsonc"
+  "remote-config-url": "https://github.com/fpgawars/apio/raw/develop/remote-config/apio-{V}.jsonc"
 }
 
 
