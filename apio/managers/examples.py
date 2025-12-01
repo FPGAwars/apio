@@ -47,23 +47,28 @@ class Examples:
         # -- Folder where the example packages was installed
         self.examples_dir = apio_ctx.get_package_dir("examples")
 
-    def is_dir_empty(self, path: Path) -> bool:
-        """Return true if the given dir is empty, ignoring hidden entry.
-        That is, the dir may contain only hidden entries.
-        We use this relaxed criteria of emptiness to avoid user confusion.
-        We could use glob.glob() but in python 3.10 and earlier it doesn't
-        have the 'include_hidden' argument.
+    def check_dst_dir_is_empty(self, path: Path):
+        """Check that the destination directory at the path is empty. If not,
+        print an error and exit.
         """
+
         # -- Check prerequisites.
         assert path.is_dir(), f"Not a dir: {path}"
 
-        # -- Iterate directory entries
-        for name in os.listdir(path):
-            # -- If not a hidden entry, answer is no.
-            if not name.startswith("."):
-                return False
-        # -- Non hidden entries not found. Directory is empty.
-        return True
+        # -- Get the dir content,  including hidden entries.
+        dir_content: List[str] = os.listdir(path)
+
+        # -- We don't care about macOS
+        ignore_list = [".DS_Store"]
+        dir_content = [f for f in dir_content if f not in ignore_list]
+
+        # -- Error if not empty.
+        if dir_content:
+            cerror(
+                f"Destination directory '{str(path)}' "
+                f"is not empty (e.g, '{dir_content[0]}')."
+            )
+            sys.exit(1)
 
     def get_examples_infos(self) -> List[ExampleInfo]:
         """Scans the examples and returns a list of ExampleInfos.
@@ -173,13 +178,8 @@ class Examples:
 
         # -- Prepare an empty destination directory. To avoid confusion,
         # -- we ignore hidden files and directory.
-        if dst_dir_path.is_dir():
-            if not self.is_dir_empty(dst_dir_path):
-                cerror(
-                    f"Destination directory '{str(dst_dir_path)}' "
-                    "is not empty."
-                )
-                sys.exit(1)
+        if dst_dir_path.exists():
+            self.check_dst_dir_is_empty(dst_dir_path)
         else:
             dst_dir_path.mkdir(parents=True, exist_ok=False)
 
@@ -246,13 +246,8 @@ class Examples:
             )
             sys.exit(1)
 
-        if dst_dir.is_dir():
-            # -- To avoid confusion from the user, we ignore hidden files.
-            if not self.is_dir_empty(dst_dir):
-                cerror(
-                    f"Destination directory '{str(dst_dir)}' " "is not empty."
-                )
-                sys.exit(1)
+        if dst_dir.exists():
+            self.check_dst_dir_is_empty(dst_dir)
         else:
             cout(f"Creating directory {dst_dir}.")
             dst_dir.mkdir(parents=True, exist_ok=False)
