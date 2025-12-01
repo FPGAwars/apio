@@ -50,28 +50,26 @@ class PackagesContext:
 
 def _construct_package_download_url(
     packages_ctx: PackagesContext,
-    target_version: str,
     package_remote_config: PackageRemoteConfig,
 ) -> str:
     """Construct the download URL for the given package name and version."""
 
     # -- Convert the version to "YYYY-MM-DD"
     # -- Move to a function in util.py.
-    version_tokens = target_version.split(".")
-    assert len(version_tokens) == 3, version_tokens
-    yyyy_mm_dd = (
-        f"{int(version_tokens[0]):04d}"
-        + "-"
-        + f"{int(version_tokens[1]):02d}"
-        + "-"
-        + f"{int(version_tokens[2]):02d}"
-    )
+    # version_tokens = target_version.split(".")
+    # assert len(version_tokens) == 3, version_tokens
+    # yyyy_mm_dd = (
+    #     f"{int(version_tokens[0]):04d}"
+    #     + "-"
+    #     + f"{int(version_tokens[1]):02d}"
+    #     + "-"
+    #     + f"{int(version_tokens[2]):02d}"
+    # )
 
     # -- Create vars mapping.
     url_vars = {
         "${PLATFORM}": packages_ctx.platform_id,
-        "${YYYY-MM-DD}": yyyy_mm_dd,
-        "${YYYYMMDD}": yyyy_mm_dd.replace("-", ""),
+        "${YYYYMMDD}": package_remote_config.release_tag.replace("-", ""),
     }
     if util.is_debug(1):
         cout(f"Package URL vars: {url_vars}")
@@ -91,7 +89,7 @@ def _construct_package_download_url(
     if util.is_debug(1):
         cout(f"package url parts = {url_parts}")
 
-    # -- Concatanate the URL parts.
+    # -- Concatenate the URL parts.
     url = "".join(url_parts)
 
     if util.is_debug(1):
@@ -338,7 +336,7 @@ def install_package(
 
     # -- Construct the download URL.
     download_url = _construct_package_download_url(
-        packages_ctx, target_version, package_config
+        packages_ctx, package_config
     )
     if verbose:
         cout(f"Download URL: {download_url}")

@@ -1,4 +1,9 @@
 {
+    "files.exclude": {
+        ".tox": true,
+        ".pytest_cache": true,
+        "**/__pycache__": true,
+    },
     "python.testing.pytestArgs": [
         "test"
     ],
