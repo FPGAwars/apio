@@ -19,13 +19,6 @@ from apio.apio_context import (
 )
 
 
-def get_remote_config_url(apio_ctx: ApioContext) -> str:
-    """Returns a test remote config URL."""
-    url = apio_ctx.config["remote-config-url"]
-    url = url.replace("{V}", util.get_apio_version())
-    return url
-
-
 def get_test_data(
     apio_ctx: ApioContext,
     loaded_by_apio_version: str,
@@ -43,7 +36,7 @@ def get_test_data(
             "metadata": {
                 "loaded-at": loaded_at_stamp,
                 "loaded-by": loaded_by_apio_version,
-                "loaded-from": get_remote_config_url(apio_ctx),
+                "loaded-from": apio_ctx.profile.remote_config_url,
             },
             "packages": {
                 "drivers": {
@@ -103,7 +96,7 @@ def test_profile_loading_config_ok(apio_runner: ApioRunner):
         profile = Profile(
             sb.home_dir,
             sb.packages_dir,
-            get_remote_config_url(apio_ctx),
+            apio_ctx.profile.remote_config_url,
             5,  # TTL in days
             60,  # Remote config retry mins.
             RemoteConfigPolicy.CACHED_OK,
@@ -146,7 +139,7 @@ def test_profile_loading_config_stale_version(apio_runner: ApioRunner):
         profile = Profile(
             sb.home_dir,
             sb.packages_dir,
-            get_remote_config_url(apio_ctx),
+            apio_ctx.profile.remote_config_url,
             5,  # TTL in days
             60,  # Remote config retry mins.
             RemoteConfigPolicy.CACHED_OK,
