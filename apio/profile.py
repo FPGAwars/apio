@@ -405,7 +405,7 @@ class Profile:
         repo_name = package_config["repository"]["name"]
         repo_organization = package_config["repository"]["organization"]
         release_tag = package_config["release"]["tag"]
-        release_version = release_tag.replace("-", "")
+        release_version = release_tag.replace("-", ".")
         release_file = package_config["release"]["package"]
 
         return PackageRemoteConfig(
