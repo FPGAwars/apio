@@ -2,84 +2,77 @@
 //
 // Supported vars (see installer.py for details):
 //
-//   ${PLATFORM}         - platform tag (from platforms.jsonc)
-//   ${YYYY-MM-DD}       - version as YYYY-MM-DD
-//   ${YYYYMMDD}         - version as YYYYMMDD
+//   ${PLATFORM}         - platform id (from platforms.jsonc)
+//   ${YYYYMMDD}         - the YYYY-MM_DD tag converted to YYYYMMDD
 //
 // NOTE: Github has a cache propagation of about 1 min between the
 // time this file is submitted and until it's available for download.
 {
   "packages": {
-    // -- Definitions
+    // -- Definitions package
     "definitions": {
       "repository": {
         "organization": "fpgawars",
         "name": "apio-definitions"
       },
       "release": {
-        "version": "2025.10.20",
-        "release-tag": "${YYYY-MM-DD}",
-        "package-file": "apio-definitions-${YYYYMMDD}.tgz"
+        "tag": "2025-10-20",
+        "package": "apio-definitions-${YYYYMMDD}.tgz"
       }
     },
-    // -- Examples
+    // -- Examples package
     "examples": {
       "repository": {
         "organization": "fpgawars",
         "name": "apio-examples"
       },
       "release": {
-        "version": "2025.12.01",
-        "release-tag": "${YYYY-MM-DD}",
-        "package-file": "apio-examples-${YYYYMMDD}.tgz"
+        "tag": "2025-12-01",
+        "package": "apio-examples-${YYYYMMDD}.tgz"
       }
     },
-    // -- OSS cad suite
+    // -- OSS Cad Suite package (Yosys)
     "oss-cad-suite": {
       "repository": {
         "organization": "fpgawars",
         "name": "tools-oss-cad-suite"
       },
       "release": {
-        "version": "2025.09.24",
-        "release-tag": "${YYYY-MM-DD}",
-        "package-file": "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.tgz"
+        "tag": "2025-09-24",
+        "package": "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
-    // -- Graphviz
+    // -- Graphviz package
     "graphviz": {
       "repository": {
         "organization": "fpgawars",
         "name": "tools-graphviz"
       },
       "release": {
-        "version": "2025.06.13",
-        "release-tag": "${YYYY-MM-DD}",
-        "package-file": "apio-graphviz-${PLATFORM}-${YYYYMMDD}.tgz"
+        "tag": "2025-06-13",
+        "package": "apio-graphviz-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
-    // -- Verible
+    // -- Verible package
     "verible": {
       "repository": {
         "organization": "fpgawars",
         "name": "tools-verible"
       },
       "release": {
-        "version": "2025.06.13",
-        "release-tag": "${YYYY-MM-DD}",
-        "package-file": "apio-verible-${PLATFORM}-${YYYYMMDD}.tgz"
+        "tag": "2025-06-13",
+        "package": "apio-verible-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
-    // -- Drivers
+    // -- Drivers package
     "drivers": {
       "repository": {
         "organization": "fpgawars",
         "name": "tools-drivers"
       },
       "release": {
-        "version": "2025.06.13",
-        "release-tag": "${YYYY-MM-DD}",
-        "package-file": "apio-drivers-${PLATFORM}-${YYYYMMDD}.tgz"
+        "tag": "2025-06-13",
+        "package": "apio-drivers-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     }
   }
