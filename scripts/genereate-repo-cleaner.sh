@@ -7,8 +7,18 @@
 
 set -euo pipefail
 
-# Edit this once
-REPO="zapta/apio-vscode"
+# ------------------------------------------------------------
+# Usage: ./repo-cleaner-gen.sh <owner/repo>
+# Example: ./repo-cleaner-gen.sh zapta/apio-vscode
+# ------------------------------------------------------------
+
+if [[ $# -ne 1 ]]; then
+  echo "Error: Please provide exactly one argument: owner/repo"
+  echo "Example: $0 zapta/apio-vscode"
+  exit 1
+fi
+
+REPO="$1"
 
 cat <<EOF
 #!/usr/bin/env bash
@@ -31,22 +41,33 @@ delete_tag() {
 echo "DRY RUN — No deletions will happen until you uncomment the lines below"
 echo "Repo: \$REPO"
 echo "========================================================================"
+echo
+echo "# 1. Releases + their tags (release first, then tag)"
+echo
+
 EOF
 
-# Releases — commented out
-echo
-echo "# Releases (uncomment to delete)"
+# Step 1: For every release → delete release + tag (in that order)
 gh release list --repo "$REPO" --limit 1000 --json tagName -q '.[].tagName' |
   sort -V |
   while read -r tag; do
-    [[ -n "$tag" ]] && echo "# delete_release \"$tag\""
+    [[ -n "$tag" ]] || continue
+    echo "# delete_release \"$tag\"; delete_tag \"$tag\""
   done
 
-# Tags — commented out
+# Step 2: All tags that are NOT attached to any release
+cat <<'EOF'
+
 echo
-echo "# All Git tags (uncomment to delete)"
-gh api "repos/$REPO/tags?per_page=100" --paginate --jq '.[].name' |
-  sort -V |
+echo "# 2. Orphaned / unused tags (no associated release)"
+echo
+
+EOF
+
+# Get all tags without a release
+comm -23 \
+  <(gh api "repos/$REPO/tags?per_page=100" --paginate --jq '.[].name' | sort -u) \
+  <(gh release list --repo "$REPO" --limit 1000 --json tagName -q '.[].tagName' | sort -u) |
   while read -r tag; do
     [[ -n "$tag" ]] && echo "# delete_tag \"$tag\""
   done
@@ -55,4 +76,3 @@ cat <<'EOF'
 
 echo
 EOF
-
