@@ -1,4 +1,9 @@
 {
+    "files.exclude": {
+        ".tox": true,
+        ".pytest_cache": true,
+        "**/__pycache__": true,
+    },
     "python.testing.pytestArgs": [
         "test"
     ],
@@ -61,12 +66,14 @@
         "FGPA",
         "fomu",
         "fpgas",
+        "fpgawars",
         "ftdi",
         "FTDIUSB",
         "Fumo",
         "GENCODE",
         "González",
         "gowin",
+        "graphviz",
         "gtkwave",
         "helpfull",
         "htmlcov",

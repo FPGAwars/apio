@@ -1,7 +1,8 @@
-[![][apio-logo]][wiki]
+![][apio-logo]
 
 [![License][license-image]][license-url]
-[![apio-test](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue)]()
+[![python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue)](https://github.com/FPGAwars/apio)
+[![](https://img.shields.io/badge/VS%20Code-compatible-blue?logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=FPGAwars.apio)
 
 [![apio-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/test.yaml?label=apio-test)](https://github.com/fpgawars/apio/actions/workflows/test.yaml)
 [![apio-dev-build](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-dev-builds/build-and-release.yaml?label=apio-dev-build)](https://github.com/fpgawars/apio-dev-builds/actions/workflows/build-and-release.yaml)

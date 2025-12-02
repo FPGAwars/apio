@@ -1,0 +1,79 @@
+// Remote config file for Apio 1.0.2
+//
+// Supported vars (see installer.py for details):
+//
+//   ${PLATFORM}         - platform id (from platforms.jsonc)
+//   ${YYYYMMDD}         - the YYYY-MM_DD tag converted to YYYYMMDD
+//
+// NOTE: Github has a cache propagation of about 1 min between the
+// time this file is submitted and until it's available for download.
+{
+  "packages": {
+    // -- Definitions package
+    "definitions": {
+      "repository": {
+        "organization": "fpgawars",
+        "name": "apio-definitions"
+      },
+      "release": {
+        "tag": "2025-10-20",
+        "package": "apio-definitions-${YYYYMMDD}.tgz"
+      }
+    },
+    // -- Examples package
+    "examples": {
+      "repository": {
+        "organization": "fpgawars",
+        "name": "apio-examples"
+      },
+      "release": {
+        "tag": "2025-12-01",
+        "package": "apio-examples-${YYYYMMDD}.tgz"
+      }
+    },
+    // -- OSS Cad Suite package (Yosys)
+    "oss-cad-suite": {
+      "repository": {
+        "organization": "fpgawars",
+        "name": "tools-oss-cad-suite"
+      },
+      "release": {
+        "tag": "2025-09-24",
+        "package": "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.tgz"
+      }
+    },
+    // -- Graphviz package
+    "graphviz": {
+      "repository": {
+        "organization": "fpgawars",
+        "name": "tools-graphviz"
+      },
+      "release": {
+        "tag": "2025-06-13",
+        "package": "apio-graphviz-${PLATFORM}-${YYYYMMDD}.tgz"
+      }
+    },
+    // -- Verible package
+    "verible": {
+      "repository": {
+        "organization": "fpgawars",
+        "name": "tools-verible"
+      },
+      "release": {
+        "tag": "2025-06-13",
+        "package": "apio-verible-${PLATFORM}-${YYYYMMDD}.tgz"
+      }
+    },
+    // -- Drivers package
+    "drivers": {
+      "repository": {
+        "organization": "fpgawars",
+        "name": "tools-drivers"
+      },
+      "release": {
+        "tag": "2025-06-13",
+        "package": "apio-drivers-${PLATFORM}-${YYYYMMDD}.tgz"
+      }
+    }
+  }
+}

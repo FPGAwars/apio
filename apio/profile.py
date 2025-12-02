@@ -50,20 +50,17 @@ REMOTE_CONFIG_SCHEMA = {
                         "release": {
                             "type": "object",
                             "required": [
-                                "version",
-                                "release-tag",
-                                "package-file",
+                                "tag",
+                                "package",
                             ],
                             "properties": {
-                                # -- Version
-                                "version": {
+                                # -- Tag
+                                "tag": {
                                     "type": "string",
-                                    "pattern": r"^\d{4}\.\d{2}\.\d{2}$",
+                                    "pattern": r"^\d{4}\-\d{2}\-\d{2}$",
                                 },
-                                # -- Release tag
-                                "release-tag": {"type": "string"},
-                                # -- Package file
-                                "package-file": {"type": "string"},
+                                # -- Package
+                                "package": {"type": "string"},
                             },
                             "additionalProperties": False,
                         },
@@ -407,9 +404,9 @@ class Profile:
         package_config = self.remote_config["packages"][package_name]
         repo_name = package_config["repository"]["name"]
         repo_organization = package_config["repository"]["organization"]
-        release_version = package_config["release"]["version"]
-        release_tag = package_config["release"]["release-tag"]
-        release_file = package_config["release"]["package-file"]
+        release_tag = package_config["release"]["tag"]
+        release_version = release_tag.replace("-", ".")
+        release_file = package_config["release"]["package"]
 
         return PackageRemoteConfig(
             repo_name=repo_name,
