@@ -6,14 +6,14 @@ name: publish-docs
 on:
   push:
     # Run on push if doc related files change.
-    #paths:
-    #  - "docs/**"
-    #  - "mkdocs.yml"
-    #  - ".github/workflows/publish-docs.yaml"
+    paths:
+     - "docs/**"
+     - "mkdocs.yml"
+     - ".github/workflows/publish-docs.yaml"
 
+  # Run daily at UTC midnight.
   schedule:
-    # Every day at 10:00 UTC
-    - cron: "0 10 * * *"
+    - cron: "0 0 * * *"
 
   # Enables manual trigger via GitHub UI
   workflow_dispatch:
