@@ -9,11 +9,9 @@ on:
     branches:
       - develop
 
-  # NOTE: We run the test daily, even if we don't push anything, to ensure
-  # that the tests are still passing, despite potential changes in the github
-  # dependencies.
+  # Run daily at UTC midnight.
   schedule:
-    - cron: "0 0 * * *" # Runs daily at midnight UTC
+    - cron: "0 0 * * *"
 
   # Can be launched manually in github actions tab.
   workflow_dispatch: # Allows manual trigger
