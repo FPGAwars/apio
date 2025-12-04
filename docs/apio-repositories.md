@@ -15,3 +15,31 @@ Apio uses GitHub repositories under the `FPGAwars` organization for its source c
 | [FPGAwars/tools-drivers](https://github.com/FPGAwars/tools-drivers)             | Package `drivers`       | Windows   |
 
 For easier tracking and maintenance, all bug reports and discussions are consolidated in the main Apio repository: [fpgawars/apio](https://github.com/fpgawars/apio), which also serves as the project’s homepage.
+
+## Daily build workflows
+
+The Apio repositories contain build workflows, typically at `.github/workflows/build-and-release.yaml` which builds the content of the repo and publish it as a temporary **pre-release** that is deleted after a few days.
+
+- To make a release permanent, edit it in the Github dashboard and turn off the **Set as a pre-release** checkbox.
+
+- To make an permanent release the official latest release, edit it in the Github dashboard and check the **Set as the latest release** checkbox.
+
+Note that declaring a release permanent and the latest doesn't necessary make it used, and in most cases it needs to be 'published' as outlined in the table
+
+| Build type                                          | Publishing                                                                                                                                                                          |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Apio packages such as 'examples' or 'oss-cad-suite' | • Update the packages versions in the relevant [apio remote config files](https://github.com/FPGAwars/apio/tree/develop/remote-config) for the new packages to be picked up.                                                                                       |
+| Apio                                                | • Publish in the various 'markets' such as PyPi. <br> <br> • Update the Apio build version in the Apio VSCode [constants.js](https://github.com/FPGAwars/apio-vscode/blob/main/constants.js) file to have the new apio version picked up by the VSCode extension. |
+| Apio VSCode extension                               | • Publish in the VSCode market.                                                                                                                                                     |
+
+
+# Guidelines for daily build workflows
+
+1. Each repo should build it's own stuff.
+4. The build workflow should not be triggered by a push but only daily on cron, and manually from the github dashboard.
+2. An automatic daily build should create a new **pre-release** with name and tag `yyyy-mm-dd` (based on current UTC time).
+3. The daily build should run on cron at midnight UTC (`cron: "0 0 * * *"`) to reduce the chance of overwriting a manual build with same date.
+3. Only a few N pre-releases should be kept (use automatic cleanup in the build daily workflow).
+5. If the build workflow deals with binaries (e.g. verible or oss-cad-suite packages), it should run virus scan (e.g. ClamAV).
+6. The builds should be from the latest commit of the repo (down the road we can add manual sha overrides).
+
