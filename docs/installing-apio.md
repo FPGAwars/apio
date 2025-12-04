@@ -5,6 +5,7 @@ To install Apio, select your desired method from the Instructions column below a
 
 | Method        | Description                                                                                                                                     | Instructions                                                                                                                                                                                           |
 | :------------ | :---------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **VSCode**       | Using the official Apio extension for [Visual Studio Code](https://code.visualstudio.com). Visual Studio Code is the recommended IDE for Apio users. | [macOS&nbsp;Apple&nbsp;Silicon](#mac-arm64-vscode) <br> [Linux X86-64](#linux-x86-vscode) <br> [Windows](#windows-x86-64-vscode) |
 | **Pip**       | Installation using the Python `pip` command. This method requires [Python](https://www.python.org/downloads) to be preinstalled on your system. | [macOS&nbsp;Apple&nbsp;Silicon](#mac-arm64-pip) <br> [macOS Intel Silicon](#mac-x86-pip) <br> [Linux X86-64](#linux-x86-pip) <br> [Linux ARM-64](#linux-arm64-pip) <br> [Windows](#windows-x86-64-pip) |
 | **Installer** | Installation using an installer wizard.                                                                                                         | [macOS&nbsp;Apple&nbsp;Silicon](#mac-arm64-installer) <br>[Windows](#windows-x86-64-installer)                                                                                                         |
 | **Debian**    | Installation using a Debian package and the `dpkg` package manager.                                                                             | [Linux X86-64](#linux-x86-debian)                                                                                                                                                                      |
@@ -13,6 +14,21 @@ To install Apio, select your desired method from the Instructions column below a
 ---
 
 ## macOS Apple Silicon
+
+### Install using the Apio VSCode extension <a id="mac-arm64-vscode"></a>
+
+To install Apio on macOS Apple Silicon using the Apio VSCode extension,
+follow these steps:
+
+1.  If you don't already have Visual Studio Code install, install it from <https://code.visualstudio.com>.
+
+2.  From the [latest release](https://github.com/FPGAwars/apio-vscode/releases) download the `.vsix` file.
+
+3.  In the VSCode Extension tab, click on the menu `...`, select `Install from VSIX..` and select the `.vsix` file you downloaded.
+
+This will add the Apio extension tab with all the necessary Apio's functionality.
+
+<br>
 
 ### Install using a Pip package <a id="mac-arm64-pip"></a>
 
@@ -32,6 +48,8 @@ follow these steps:
         apio
 
 > If necessary, add the directory of the installed `apio` binary to your `$PATH`.
+
+<br>
 
 ### Install using an installer <a id="mac-arm64-installer"></a>
 
@@ -53,6 +71,8 @@ To install Apio on macOS Apple Silicon using an installer, follow these steps:
 
 > NOTE: The installer creates the file `/etc/paths.d/Apio` to export
 > automatically the path of the installed app.
+
+<br>
 
 ### Install using a file bundle <a id="mac-arm64-bundle"></a>
 
@@ -101,9 +121,24 @@ To install Apio on macOS Intel Silicon using a Pip package, follow these steps:
 
 ## Linux X86-64
 
-To install Apio on Linux X86-64 using a Pip package, follow these steps:
+### Install using the Apio VSCode extension <a id="linux-x86-vscode"></a>
+
+To install Apio on Linux X86-64 using the Apio VSCode extension,
+follow these steps:
+
+1.  If you don't already have Visual Studio Code install, install it from <https://code.visualstudio.com>.
+
+2.  From the [latest release](https://github.com/FPGAwars/apio-vscode/releases) download the `.vsix` file.
+
+3.  In the VSCode Extension tab, click on the menu `...`, select `Install from VSIX..` and select the `.vsix` file you downloaded.
+
+This will add the Apio extension tab with all the necessary Apio's functionality.
+
+<br>
 
 ### Install using a Pip package <a id="linux-x86-pip"></a>
+
+To install Apio on Linux X86-64 using a Pip package, follow these steps:
 
 1.  Verify that you have Python installed by running:
 
@@ -118,6 +153,8 @@ To install Apio on Linux X86-64 using a Pip package, follow these steps:
         apio
 
 > If necessary, add the directory of the installed `apio` binary to your `$PATH`.
+
+<br>
 
 ### Install a Debian package <a id="linux-x86-debian"></a>
 
@@ -134,6 +171,8 @@ To install Apio on Linux X86-64 using a Debian package, follow these steps:
 3.  In a **new shell window**, run the following command to test your installation:
 
         apio
+
+<br>
 
 ### Install using a file bundle <a id="linux-x86-bundle"></a>
 
@@ -179,6 +218,21 @@ To install Apio on Linux ARM-64 using a Pip package, follow these steps:
 
 ## Windows X86-64
 
+### Install using the Apio VSCode extension <a id="windows-x86-64-vscode"></a>
+
+To install Apio on Windows X86-64 using the Apio VSCode extension,
+follow these steps:
+
+1.  If you don't already have Visual Studio Code install, install it from <https://code.visualstudio.com>.
+
+2.  From the [latest release](https://github.com/FPGAwars/apio-vscode/releases) download the `.vsix` file.
+
+3.  In the VSCode Extension tab, click on the menu `...`, select `Install from VSIX..` and select the `.vsix` file you downloaded.
+
+This will add the Apio extension tab with all the necessary Apio's functionality.
+
+<br>
+
 ### Install using a Pip package <a id="windows-x86-64-pip"></a>
 
 To install Apio on Windows X86-64 using a Pip package, follow these steps:
@@ -197,6 +251,8 @@ To install Apio on Windows X86-64 using a Pip package, follow these steps:
 
 > If necessary, add the directory of the installed `apio` binary to your `$PATH`.
 
+<br>
+
 ### Install using an installer <a id="windows-x86-64-installer"></a>
 
 To install Apio on Windows X86-64 using an installer, follow these steps:
@@ -213,6 +269,8 @@ To install Apio on Windows X86-64 using an installer, follow these steps:
 4.  In a **new command window**, run the following command to test your installation:
 
         apio
+
+<br>
 
 ### Install using a file bundle <a id="windows-x86-64-bundle"></a>
 

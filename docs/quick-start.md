@@ -8,6 +8,9 @@ In this page, we will go through the steps of creating, validating, and uploadin
 
 The first step in using Apio is installing it, visit the [Installing Apio](installing-apio.md) page, choose your installation method, follow the installation instructions and continue in step 2 below.
 
+> If you installed Apio using its VSCode extension, you can use the `TOOLS -> misc -> apio shell` function
+to open an Apio that accepts the commands below, or use instead the extension's commands and buttons (recommended).
+
 ---
 
 ## Step 2: Creating an Apio project
