@@ -590,8 +590,7 @@ class ApioContext:
         if platform_id not in platforms.keys():
             cerror(f"Unknown platform id: [{platform_id}]")
             cout(
-                "For the list of supported platforms "
-                "type 'apio system platforms'.",
+                "See Apio's documentation for supported platforms.",
                 style=INFO,
             )
             sys.exit(1)

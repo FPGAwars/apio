@@ -29,13 +29,13 @@ REPO="$REPO"
 delete_release() {
   local tag="\$1"
   echo "Deleting release: \$tag"
-  gh release delete "\$tag" --yes --repo "\$REPO" 2>/dev/null || echo "  → Release already gone or not found"
+  gh release delete "\$tag" --yes --repo "\$REPO" 2>/dev/null || echo "  → Release already gone or not accessible"
 }
 
 delete_tag() {
   local tag="\$1"
   echo "Deleting tag: \$tag"
-  gh api --method DELETE "/repos/\$REPO/git/refs/tags/\$tag" --silent 2>/dev/null || echo "  → Tag already gone or not found"
+  gh api --method DELETE "/repos/\$REPO/git/refs/tags/\$tag" --silent 2>/dev/null || echo "  → Tag already gone or not accessible"
 }
 
 delete_release_and_tag() {
