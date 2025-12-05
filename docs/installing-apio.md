@@ -1,7 +1,11 @@
-> This page explains how to install Apio for end users.
-> If you’re an Apio developer, see the [Apio Development Environment](development-environment.md) page.
+# Installing Apio
 
-To install Apio, select your desired method from the Instructions column below and follow the instructions.
+!!! warning "Important – December 2025"
+
+    **Do not** run `pip install apio` because this currently installs the **old and unsupported** Apio **0.9.5**.
+    Please follow the instructions below to install the current, supported **Apio 1.x.x** series instead.
+
+To install Apio, select your desired method from the table below and click on your platform type in the instructions column. Note that not all methods are available to all platform.
 
 | Method        | Description                                                                                                                                     | Instructions                                                                                                                                                                                           |
 | :------------ | :---------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
