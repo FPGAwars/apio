@@ -14,17 +14,19 @@
   // To force an immediate config fetch, user can run 'apio packages update'.
   "remote-config-retry-minutes": 60,
 
-  // URL of the apio remote config file. The placeholder {V} is replaced at
-  // runtime with apio's version such as "0.9.7".
+  // URL of the apio remote config file. The placeholder {major} and {minor}
+  // are replaced with Apio's major and minor version number with no zero
+  // padding. For example, for apio 1.12.3, {major} is "1" and {minor} is "12".
+  //
   //
   // The value of the remote config field here can be overridden for testing
   // using the env var APIO_REMOTE_CONFIG_URL, including for reading from
   // a local file using the "file://" protocol spec.
   //
   // For testing using the remote config at zapta:
-  // export APIO_REMOTE_CONFIG_URL="https://github.com/zapta/apio/raw/develop/remote-config/apio-{V}.jsonc"
+  // export APIO_REMOTE_CONFIG_URL="https://github.com/zapta/apio/raw/develop/remote-config/apio-{{major}.{minor}.x.jsonc"
 
-  "remote-config-url": "https://github.com/fpgawars/apio/raw/develop/remote-config/apio-{V}.jsonc"
+  "remote-config-url": "https://github.com/fpgawars/apio/raw/develop/remote-config/apio-{major}.{minor}.x.jsonc"
 }
 
 

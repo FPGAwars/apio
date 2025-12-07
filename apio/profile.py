@@ -190,8 +190,9 @@ class Profile:
         remote_config_retry_minutes: int,
         remote_config_policy: RemoteConfigPolicy,
     ):
-        """remote_config_url_template is a url string with a "{V}"
-        placeholder for the apio version such as "0.9.6."""
+        """remote_config_url_template is a url string with the
+        placeholder {major} and {minor} for the apio's major and minor
+        version. '"""
 
         # pylint: disable=too-many-arguments
         # pylint: disable=too-many-positional-arguments
@@ -204,11 +205,14 @@ class Profile:
         assert isinstance(remote_config_retry_minutes, int)
         assert 0 < remote_config_retry_minutes <= (60 * 24)
 
-        # -- Resolve and cache the remote config url. We replace any {V} with
-        # -- the apio version such as "0.9.6".
-        self.remote_config_url = remote_config_url_template.replace(
-            "{V}", util.get_apio_version()
-        )
+        # -- Resolve and cache the remote config url. Replaced the placeholders
+        # -- with the major and minor versions of apio. Path version is
+        # -- not used.
+        ver_tuple = util.get_apio_version_tuple()
+        url = remote_config_url_template
+        url = url.replace("{major}", str(ver_tuple[0]))
+        url = url.replace("{minor}", str(ver_tuple[1]))
+        self.remote_config_url = url
 
         # -- Save remote url ttl setting.
         self.remote_config_ttl_days = remote_config_ttl_days
@@ -331,7 +335,7 @@ class Profile:
         self.installed_packages[name] = {
             "version": version,
             "platform": platform_id,
-            "loaded-by": util.get_apio_version(),
+            "loaded-by": util.get_apio_version_str(),
             "loaded-at": get_datetime_stamp(),
             "loaded-from": url,
         }
@@ -434,7 +438,7 @@ class Profile:
         config_apio_version = remote_config.get("metadata", {}).get(
             "loaded-by", ""
         )
-        config_usable = config_apio_version == util.get_apio_version()
+        config_usable = config_apio_version == util.get_apio_version_str()
 
         # -- Extract the fields. If remote config is of a different apio
         # -- version, drop it.
@@ -565,7 +569,7 @@ class Profile:
         # -- Append remote config metadata. This also clear the
         # -- "refresh-failure-on" field if exists.
         metadata_dict = {}
-        metadata_dict["loaded-by"] = util.get_apio_version()
+        metadata_dict["loaded-by"] = util.get_apio_version_str()
         metadata_dict["loaded-at"] = get_datetime_stamp()
         metadata_dict["loaded-from"] = self.remote_config_url
         remote_config["metadata"] = metadata_dict

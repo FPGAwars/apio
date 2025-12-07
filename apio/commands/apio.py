@@ -147,7 +147,7 @@ https://github.com/FPGAwars/apio/wiki/Apio
 )
 # NOTE: Without this explicit version value, click has difficulty
 # determining the version when running under pyinstaller.
-@click.version_option(util.get_apio_version(), "-v", "--version")
+@click.version_option(util.get_apio_version_str(), "-v", "--version")
 def apio_top_cli():
     """The top level command group of apio commands"""
 
