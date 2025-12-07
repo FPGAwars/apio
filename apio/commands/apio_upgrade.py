@@ -92,7 +92,7 @@ def cli(_: click.Context):
 
     # -- Get the current apio version from the python package installed
     # -- on the system
-    current_version = util.get_apio_version()
+    current_version = util.get_apio_version_str()
 
     # -- Get the latest stable version published at Pypi
     latest_version = get_pypi_latest_version()

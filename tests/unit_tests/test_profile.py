@@ -82,7 +82,7 @@ def test_profile_loading_config_ok(apio_runner: ApioRunner):
 
         # -- Write a test profile.json file.
         path = sb.home_dir / "profile.json"
-        test_data = get_test_data(apio_ctx, util.get_apio_version(), 0)
+        test_data = get_test_data(apio_ctx, util.get_apio_version_str(), 0)
         sb.write_file(
             path,
             json.dumps(
@@ -123,7 +123,7 @@ def test_profile_loading_config_stale_version(apio_runner: ApioRunner):
         # -- to cause the cached remote config to be classified as stale.
         path = sb.home_dir / "profile.json"
         original_loaded_by = "0.9.6"
-        assert original_loaded_by != util.get_apio_version()
+        assert original_loaded_by != util.get_apio_version_str()
         test_data = get_test_data(apio_ctx, original_loaded_by, 0)
 
         sb.write_file(
@@ -151,7 +151,7 @@ def test_profile_loading_config_stale_version(apio_runner: ApioRunner):
         # assert profile.installed_packages == test_data["installed-packages"]
         assert (
             profile.remote_config["metadata"]["loaded-by"]
-            == util.get_apio_version()
+            == util.get_apio_version_str()
         )
 
 

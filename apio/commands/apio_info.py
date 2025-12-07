@@ -119,7 +119,7 @@ def _system_cli():
     table.add_column("VALUE", no_wrap=True, style=EMPH1)
 
     # -- Add rows
-    table.add_row("Apio version", util.get_apio_version())
+    table.add_row("Apio version", util.get_apio_version_str())
     table.add_row("Python version", util.get_python_version())
     table.add_row("Platform id", apio_ctx.platform_id)
     table.add_row(

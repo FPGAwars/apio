@@ -368,15 +368,23 @@ def is_debug(level: int) -> bool:
     return debug_level() >= level
 
 
-def get_apio_version() -> str:
-    """Returns the version of the apio package."""
+def get_apio_version_tuple() -> Tuple[int]:
+    """Returns the version of the apio package as tuple of 3 ints."""
     # -- Apio's version is defined in the __init__.py file of the apio package.
     # -- Using the version from a file in the apio package rather than from
     # -- the pip metadata makes apio more self contained, for example when
     # -- installing with pyinstaller rather than with pip.
     ver: Tuple[int] = apio.VERSION
     assert len(ver) == 3, ver
-    # -- Format the tuple of three ints as a string such as "0.9.83"
+    assert isinstance(ver[0], int)
+    assert isinstance(ver[1], int)
+    assert isinstance(ver[2], int)
+    return ver
+
+
+def get_apio_version_str() -> str:
+    """Returns the version of the apio package as a string like "1.22.3"."""
+    ver: Tuple[int] = get_apio_version_tuple()
     return f"{ver[0]}.{ver[1]}.{ver[2]}"
 
 

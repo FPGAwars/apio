@@ -422,9 +422,9 @@ class ApioRunner:
         # -- Get the original remote config url.
         url_str: str = json_data["remote-config-url"]
 
-        # -- Extract the file name part. E.g. 'apio-{V}.jsonc. The '{V}' marker
-        # -- is a place holder for the apio version which we don't resolve
-        # -- here.
+        # -- Extract the file name part. E.g. 'apio-{major}.{minor}.x.jsonc'.
+        # -- The {major} and {minor} are placeholders for apio's major and
+        # -- minor version number which we don't resolve here.
         config_file_path = urlparse(url_str).path
         config_file_name = PurePosixPath(config_file_path).name
         print(f"Config-file-name = {config_file_name}")
