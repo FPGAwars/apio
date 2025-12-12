@@ -4,12 +4,12 @@ To install Apio IDE, follow these steps
 
 1. If you don't have already Visual Studio Code install, download and install it from its [official site](https://code.visualstudio.com/download)
 1. Start Visual Studio Code.
-1. In the Extension tab on the left, search and install the extension `fpgawars.apio1.
+1. In the Extension tab on the left, search and install the extension `fpgawars.apio1` (**Apio FPGA**).
 1. This concludes the installation of the Apio IDE. The screenshot below shows the components of the Apio IDE.
 
 
-> HINT: Once you will start using the Apio IDE, Apio CORE will be installed automatically in the `.apio/bin` directory under your home
-> directory. You can add that directory to your `PATH` if you want to use Apio CORE also outside of VS Code by typing `apio ...` commands.
+> HINT: Once you start using Apio IDE, it will automatically install the Apio CORE in the `.apio/bin` directory under your home
+> directory. You can add that directory to your `PATH` if you want to use the Apio CORE `apio ...` commands also outside of VS Code.
 
 <br>
 ![](assets/apio-vscode-window.png)
