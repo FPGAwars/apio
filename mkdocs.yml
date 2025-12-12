@@ -77,7 +77,6 @@ nav:
       - Contributing examples: contributing-examples.md
   - Apio Tips:
       - Apio command line: command-line.md
-      - Using Apio with VSCode: apio-vscode.md
       - Using System Verilog: using-system-verilog.md
       - Using testbenches: using-testbenches.md
       - Raw tools: raw-tools.md
