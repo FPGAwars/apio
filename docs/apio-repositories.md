@@ -6,7 +6,7 @@ Apio uses GitHub repositories under the `FPGAwars` organization for its source c
 | :------------------------------------------------------------------------------ | :---------------------- | :-------- |
 | [FPGAwars/apio](https://github.com/FPGAwars/apio)                               | Apio main repo.         | All       |
 | [FPGAwars/apio-dev-builds](https://github.com/FPGAwars/apio-dev-builds)         | Apio daily builds       | All       |
-| [FPGAwars/apio-vscode](https://github.com/FPGAwars/apio-vscode)                 | Apio VSCode extension   | All       |
+| [FPGAwars/apio-vscode](https://github.com/FPGAwars/apio-vscode)                 | Apio VS Code extension   | All       |
 | [FPGAwars/apio-definitions](https://github.com/FPGAwars/apio-definitions)       | Package `definitions`   | All       |
 | [FPGAwars/apio-examples](https://github.com/FPGAwars/apio-examples)             | Package `examples`      | All       |
 | [FPGAwars/tools-oss-cad-suite](https://github.com/FPGAwars/tools-oss-cad-suite) | Package `oss-cad-suite` | All       |
@@ -29,8 +29,8 @@ Note that declaring a release permanent and the latest doesn't necessary make it
 | Build type                                          | Publishing                                                                                                                                                                          |
 | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Apio packages such as 'examples' or 'oss-cad-suite' | • Update the packages versions in the relevant [apio remote config files](https://github.com/FPGAwars/apio/tree/develop/remote-config) for the new packages to be picked up.                                                                                       |
-| Apio                                                | • Publish in the various 'markets' such as PyPi. <br> <br> • Update the Apio build version in the Apio VSCode [constants.js](https://github.com/FPGAwars/apio-vscode/blob/main/constants.js) file to have the new apio version picked up by the VSCode extension. |
-| Apio VSCode extension                               | • Publish in the VSCode market.                                                                                                                                                     |
+| Apio                                                | • Publish in the various 'markets' such as PyPi. <br> <br> • Update the Apio build version in the Apio VS Code [constants.js](https://github.com/FPGAwars/apio-vscode/blob/main/constants.js) file to have the new apio version picked up by the VS Code extension. |
+| Apio VS Code extension                               | • Publish in the VS Code market.                                                                                                                                                     |
 
 
 # Guidelines for daily build workflows

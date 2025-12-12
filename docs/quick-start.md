@@ -1,6 +1,6 @@
 ---
 hide:
-  - toc    # Suppress TOC, doesn't not work well with tabs.
+  - toc # Suppress TOC, doesn't not work well with tabs.
 ---
 
 # Apio quick start
@@ -35,7 +35,7 @@ Select below your desired Apio flavor:
 
     ## Step 2: Create a new Apio project
 
-    At this stage you should have a functioning apio extension in VSCode. Let's create
+    At this stage you should have a functioning apio extension in VS Code. Let's create
     a sample project with one of Apio's example project.
 
     * Select the Apio extension icon from the extension bar.
@@ -45,7 +45,7 @@ Select below your desired Apio flavor:
         * Example: **getting-started**
         * Project Folder: specify the full path of a non exiting directory under your home dir.
     * Select **Submit**.
-    * Apio will perform the necessary setup, will create the new project in the directory you specified, and will open it in VSCode.
+    * Apio will perform the necessary setup, will create the new project in the directory you specified, and will open it in VS Code.
 
     The main files in this Apio project are:
 
@@ -61,9 +61,9 @@ Select below your desired Apio flavor:
 
     ## Step 3: Verify the source code
 
-    Click on the Apio's **Lint** button at the bottom of the VSCode windows.
+    Click on the Apio's **Lint** button at the bottom of the VS Code windows.
 
-    > HINT: You can explore the Apio buttons at the status bar of VSCode by hovering them until a short
+    > HINT: You can explore the Apio buttons at the status bar of VS Code by hovering them until a short
     > help text appears.
     > HINT: The functionality of the Apio buttons is also available via the Apio commands in the left side bar.
 
@@ -72,7 +72,7 @@ Select below your desired Apio flavor:
     ## Step 4: Simulate the design
 
     To simulate the design, click on **Simulate** Apio button at the bottom
-    of the VSCode windows.  This will run a simulation of the testbench and will shows its results in a graphical GTKWAVE window.
+    of the VS Code windows.  This will run a simulation of the testbench and will shows its results in a graphical GTKWAVE window.
 
     > HINT: The file `main_tb.gtkw` contains the GTKWAVE configuration, and you want save it each time you make changes in GTKWAVE that you want to keep for next runs.
 
@@ -83,16 +83,16 @@ Select below your desired Apio flavor:
 
     ## Step 5: Run the project tests
 
-    To run the tests included in the project click on the Apio **Test** button at the bottom 
-    of the VSCode windows. This will run all the testbenches it finds in the project in batch mode without a graphical view like `apio sim`. The test command will command fails if any of the testbenches has an error or exits with the `$fatal` function, typically due to a failing assertion.
+    To run the tests included in the project click on the Apio **Test** button at the bottom
+    of the VS Code windows. This will run all the testbenches it finds in the project in batch mode without a graphical view like `apio sim`. The test command will command fails if any of the testbenches has an error or exits with the `$fatal` function, typically due to a failing assertion.
 
     ---
 
     ## Step 6: Program the FPGA board
 
     In this step, we build the project and upload it to the FPGA board. With some systems and boards, this requires driver installation using the **TOOLS → drivers** commands in the Apio extension in the left side
-    bar, while others work out of the box. 
-    
+    bar, while others work out of the box.
+
     To test if the board is accessible, try to list it with the **TOOLS → devices → usb** command (or **TOOLS → devices → serial** for serial boards)..
 
     ```
@@ -109,7 +109,7 @@ Select below your desired Apio flavor:
 
     We are in luck; the device's manufacturer and description strings are listed correctly, which means that the device is accessible to Apio and doesn't require an additional driver. We are ready to program the FPGA.
 
-    Use the Apio **Upload** button to build the project if necessary and then uploading it 
+    Use the Apio **Upload** button to build the project if necessary and then uploading it
     to the board.
 
     ```
@@ -127,7 +127,6 @@ Select below your desired Apio flavor:
     ```
 
     The example now runs on the FPGA board, and two LEDs should be flashing alternately.
-
 
 === "Apio CORE"
 
@@ -253,7 +252,6 @@ Select below your desired Apio flavor:
     ```
 
     The example now runs on the FPGA board, and two LEDs should be flashing alternately.
-
 
 ---
 
