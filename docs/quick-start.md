@@ -7,10 +7,12 @@ hide:
 
 In this page, we will go through the steps of creating, validating, and uploading a design to an FPGA board. We will use the Alhambra-ii FPGA board, but the process is the same for all supported boards.
 
-Apio comes in two flavors that have different user interfaces but provide the same functionality.
-We recommend using using Visual Studio Code with Apio IDE because of the rich functionality
-that Visual Studio Code provide such as Verilog syntax coloring or Github integration but
-both flavors will allow you to design for FPGAs with easy.
+Apio comes in two flavors, **Apio IDE** which integrates Apio with Visual Studio Code and **Apio CORE** which
+provides a standalone command line interface. Both flavors provide the same core functionality and but
+APIO IDE allow to use the rich functionality of Visual Studio Code such a Verilog syntax coloring
+and Github integration.
+
+> Hint: Installing Apio IDE provides also the full command line functionality of Apio CORE.
 
 |                              | Apio IDE (Preferred) | Apio CORE           |
 | ---------------------------- | -------------------- | ------------------- |
