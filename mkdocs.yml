@@ -35,7 +35,8 @@ nav:
   - Getting Started:
       - Quick start: quick-start.md
       - System requirements: system-requirements.md
-      - Installing Apio: installing-apio.md
+      - Installing Apio IDE: installing-apio-ide.md
+      - Installing Apio CORE: installing-apio-core.md
       - Video tutorial: video-tutorial.md
       - Migrating from Apio 0.x.x: migrating-from-apio-0xx.md
   - Apio Commands:

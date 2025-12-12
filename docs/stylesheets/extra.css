@@ -137,3 +137,11 @@
 .md-main__inner {
   padding-bottom: 5em;  /* Adjust value as needed */
 }
+
+
+/* Larger tabs title text (within a page) */
+.md-typeset .tabbed-labels > label {
+    font-size: 1.15rem !important;   /* reduced from 1.25rem → looks cleaner and less bulky */
+    font-weight: 600 !important;
+    padding: 0.75rem 1.3rem !important;   /* tightened padding a bit to match */
+}

@@ -9,8 +9,7 @@
 
 
 > NOTE: If you want to skip this overview of Apio, We recommend continuing with the
-[Quick Start](quick-start.md) guide or jumping directly to the
-[installation instructions](installing-apio.md).
+[Quick Start](quick-start.md) guide.
 
 **Apio** is an **easy-to-install** and **easy-to-use** open-source toolbox that simplifies FPGA development. It provides simple commands such as:
 
@@ -18,7 +17,7 @@
 - `apio sim` – to simulate the design
 - `apio upload` – to build the design and program the FPGA board
 
-Apio runs on macOS, Linux, and Windows, and currently supports:
+Apio runs on macOS, Linux, and Windows, comes in two flavours for command line and for IDE integration and currently supports:
 
 - 3 FPGA architectures
 - 70+ FPGAs
@@ -181,5 +180,4 @@ Options:
 ---
 
 This concludes the short overview of Apio. We recommend continuing with the
-[Quick Start](quick-start.md) guide or jumping directly to the
-[installation instructions](installing-apio.md).
+[Quick Start](quick-start.md) guide.
