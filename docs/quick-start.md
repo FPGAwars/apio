@@ -29,7 +29,7 @@ Select below your desired Apio flavor:
 
     ## Step 1: Install Apio IDE
 
-    The first step in using Apio is installing it, visit the [Installing Apio IDE](installing-apio-ide.md) page, follow the installation instructions, and continue with step 2 below.
+    The first step in using Apio IDE is installing the Apio VS Code extension, visit the [Installing Apio IDE](installing-apio-ide.md) page, follow the installation instructions, and continue with step 2 below.
 
     ---
 
