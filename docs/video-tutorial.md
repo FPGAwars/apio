@@ -4,7 +4,7 @@
 
 <br>
 
-> The Apio 0.6.5 commands used in the video series differ slightly from the enhanced set of Apio 1.x.x commands. For details, see the [Apio 1.x.x command differences](migrating-from-apio-0xx.md#know-the-new-commands).
+> The Apio 0.6.5 commands used in the video series differ slightly from the enhanced set of Apio 1.x.x commands. For details, see the [Apio 1.x.x command differences](migrating-from-apio-0.9.5.md#know-the-new-commands) between Apio 0.x and 1.x.
 
 <br>
 

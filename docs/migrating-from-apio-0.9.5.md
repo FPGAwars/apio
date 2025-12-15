@@ -1,10 +1,10 @@
-# Migrating from Apio 0.x.x
+# Migrating from Apio 0.9.5
 
-Apio 1.x.x introduces many improvements compared to Apio 0.x.x. Many of the changes were done in a backward compatible way, but some do require user attention. On this page, we outline the main changes from a compatibility point of view to help users migrate their projects successfully to Apio 1.x.x.
+Apio 1.x.x introduces many improvements compared to Apio 0.9.5. Many of the changes were done in a backward compatible way, but some do require user attention. On this page, we outline the main changes from a compatibility point of view to help users migrate their projects successfully to Apio 1.x.x.
 
-## Uninstall Apio 0.x.x
+## Uninstall Apio 0.9.5
 
-It is recommended to first delete Apio 0.x.x before installing Apio 1.x.x. The steps to do so are:
+It is recommended to first delete Apio 0.9.5 before installing Apio 1.x.x. The steps to do so are:
 
 1. Delete the Apio Python package `pip uninstall apio`
 
@@ -28,7 +28,7 @@ Remove from your testbenches all calls to the Verilog function `$dumpfile()`. Th
 
 The hierarchy and names of some Apio commands were changed in Apio 1.x.x, and the table below will help you migrate from the old to the new commands. You can also use the `-h` option for detailed information on any command level, for example `apio -h`, `apio devices -h`, and `apio devices usb -h`.
 
-| Apio 0.x.x                   | Apio 1.x.x                  | Comments                     |
+| Apio 0.9.5                   | Apio 1.x.x                  | Comments                     |
 | :--------------------------- | :-------------------------- | :--------------------------- |
 | `apio boards --fpga`         | `apio fpgas`                | List supported FPGAs         |
 | `apio boards --list`         | `apio boards`               | List supported boards        |
