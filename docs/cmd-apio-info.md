@@ -122,6 +122,6 @@ apio info commands --docs > docs/commands-list.md
 
 <h3>Options</h3>
 ```
---docs      Format for Apio Docs.
+-d, --docs  Format for Apio Docs.
 -h, --help  Show this message and exit.
 ```

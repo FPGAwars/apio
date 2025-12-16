@@ -26,6 +26,7 @@ apio boards --docs         # Generate a report for Apio docs
 
 ```
 -v, --verbose           Show detailed output
+-d, --docs              Format for Apio Docs.
 -p, --project-dir path  Specify the project root directory
 -h, --help              Show help message and exit
 ```

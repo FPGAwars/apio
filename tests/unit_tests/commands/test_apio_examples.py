@@ -24,6 +24,12 @@ def test_examples(apio_runner: ApioRunner):
         assert "alhambra-ii/ledon" in result.output
         assert "Turning on a led" in result.output
 
+        # -- 'apio examples list --docs'
+        result = sb.invoke_apio_cmd(apio, ["examples", "list", "--docs"])
+        sb.assert_result_ok(result)
+        assert "alhambra-ii/ledon" in result.output
+        assert "Turning on a led" in result.output
+
         # -- 'apio examples fetch alhambra-ii/ledon' (colors off)
         result = sb.invoke_apio_cmd(
             apio,
