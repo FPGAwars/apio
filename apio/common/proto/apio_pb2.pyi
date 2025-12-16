@@ -156,16 +156,16 @@ class GraphParams(_message.Message):
     def __init__(self, output_type: _Optional[_Union[GraphOutputType, str]] = ..., top_module: _Optional[str] = ..., open_viewer: bool = ...) -> None: ...
 
 class SimParams(_message.Message):
-    __slots__ = ("testbench", "force_sim", "no_gtkwave", "verbose")
+    __slots__ = ("testbench", "force_sim", "no_gtkwave", "detach_gtkwave")
     TESTBENCH_FIELD_NUMBER: _ClassVar[int]
     FORCE_SIM_FIELD_NUMBER: _ClassVar[int]
     NO_GTKWAVE_FIELD_NUMBER: _ClassVar[int]
-    VERBOSE_FIELD_NUMBER: _ClassVar[int]
+    DETACH_GTKWAVE_FIELD_NUMBER: _ClassVar[int]
     testbench: str
     force_sim: bool
     no_gtkwave: bool
-    verbose: bool
-    def __init__(self, testbench: _Optional[str] = ..., force_sim: bool = ..., no_gtkwave: bool = ..., verbose: bool = ...) -> None: ...
+    detach_gtkwave: bool
+    def __init__(self, testbench: _Optional[str] = ..., force_sim: bool = ..., no_gtkwave: bool = ..., detach_gtkwave: bool = ...) -> None: ...
 
 class ApioTestParams(_message.Message):
     __slots__ = ("testbench",)

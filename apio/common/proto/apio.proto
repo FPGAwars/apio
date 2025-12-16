@@ -152,10 +152,9 @@ message SimParams {
   // Perform the simulation but skip opening GTKWave
   required bool no_gtkwave = 3;
 
-  // If true, apio waits for the gtkwave window to get closed and until then
-  // show the stdout/err from the gtkwave app. Otherwise gtkwave runs
-  // detach and its output is sent to dev/null.
-  required bool verbose = 4;
+  // If true, gtkwave is launched as a independent app and apio continues
+  // without waiting for it to close.
+  required bool detach_gtkwave = 4;
 }
 
 // Test target specific params. Originally called TestParams but this

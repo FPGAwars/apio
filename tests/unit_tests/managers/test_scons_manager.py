@@ -53,6 +53,7 @@ environment {
   debug_level: 0
   yosys_path: "TBD"
   trellis_path: "TBD"
+  scons_shell_id: ""
 }
 apio_env_params {
   env_name: "default"
@@ -88,6 +89,7 @@ environment {
   debug_level: 0
   yosys_path: "TBD"
   trellis_path: "TBD"
+  scons_shell_id: ""
 }
 apio_env_params {
   env_name: "default"
@@ -138,6 +140,7 @@ def test_default_params(apio_runner: ApioRunner):
         expected.environment.trellis_path = str(
             sb.packages_dir / "oss-cad-suite/share/trellis"
         )
+        expected.environment.scons_shell_id = apio_ctx.scons_shell_id
 
         # -- Compare actual to expected values.
         assert str(scons_params) == str(expected)
@@ -183,6 +186,7 @@ def test_explicit_params(apio_runner: ApioRunner):
         expected.environment.trellis_path = str(
             sb.packages_dir / "oss-cad-suite/share/trellis"
         )
+        expected.environment.scons_shell_id = apio_ctx.scons_shell_id
 
         # -- Compare actual to expected values.
         assert str(scons_params) == str(expected)

@@ -353,12 +353,12 @@ def gtkwave_target(
             sim_config.testbench_name,
         )
 
-        # -- Handle the normal case where we run it as a detached process, not
-        # -- waiting for it completion and ignoring its output.
+        # -- Handle the case where gtkwave is run as a detached app, not
+        # -- waiting for it to close and not showing its output.
         # --
         # -- TODO: Consider to refine using the scons_shell_id value, e.g.
         # -- to distinguish between cmd.exe and powershell on windows.
-        if not sim_params.verbose:
+        if sim_params.detach_gtkwave:
             if api_env.is_windows:
                 gtkwave_cmd = 'start /b "" ' + gtkwave_cmd + " >NUL 2>&1"
             else:

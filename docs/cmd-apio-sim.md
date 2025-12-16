@@ -26,9 +26,11 @@ if (!`APIO_SIM) $fatal;
 <h3>Examples</h3>
 
 ```
-apio sim                   # Simulate the default testbench
-apio sim my_module_tb.v    # Simulate the specified testbench
-apio sim my_module_tb.sv   # Simulate the specified testbench
+apio sim                   # Simulate the default testbench.
+apio sim my_module_tb.v    # Simulate the specified testbench.
+apio sim my_module_tb.sv   # Simulate the specified testbench.
+apio sim --no-gtkwave      # Simulate but skip GTKWave.
+apio sim --detach          # Launch and forget gtkwave.
 ```
 
 <h3>Options</h3>
@@ -37,6 +39,7 @@ apio sim my_module_tb.sv   # Simulate the specified testbench
 -f, --force             Force simulation
 -e, --env name          Use a named environment from apio.ini
 -n, --no-gtkwave        Skip GTKWave
+-d, --detach            Launch and forget GTKWave.
 -p, --project-dir path  Specify the project root directory
 -h, --help              Show help message and exit
 ```
