@@ -127,6 +127,8 @@ def _system_cli():
     table.add_row("Python executable", sys.executable)
     table.add_row("Platform id", apio_ctx.platform_id)
     table.add_row("Scons shell id", apio_ctx.scons_shell_id)
+    table.add_row("VSCode debugger", str(util.is_under_vscode_debugger()))
+    table.add_row("Pyinstaller", str(util.is_pyinstaller_app()))
     table.add_row(
         "Apio Python package", str(util.get_path_in_apio_package(""))
     )

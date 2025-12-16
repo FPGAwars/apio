@@ -21,8 +21,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/apio/__main__.py",
             "args": [
-                "sim",
-                "--detach"
+                "api",
+                "get-system"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,

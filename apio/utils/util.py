@@ -598,8 +598,8 @@ def is_pyinstaller_app() -> bool:
 
 def is_under_vscode_debugger() -> bool:
     """Returns true if running under VSCode debugger."""
-    return (
-        "debugpy" in sys.modules
-        or os.environ.get("TERM_PROGRAM") == "vscode"
-        or os.environ.get("DEBUGPY_RUNNING")
-    )
+    # if os.environ.get("TERM_PROGRAM") == "vscode":
+    #     return True
+    if os.environ.get("DEBUGPY_RUNNING"):
+        return True
+    return False
