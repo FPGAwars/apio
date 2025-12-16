@@ -144,6 +144,7 @@ class ApioContext:
         "profile",
         "platforms",
         "platform_id",
+        "default_shell_id",
         "all_packages",
         "required_packages",
         "env_was_already_set",
@@ -276,6 +277,12 @@ class ApioContext:
 
         # -- Determine the platform_id for this APIO session.
         self.platform_id = self._determine_platform_id(self.platforms)
+
+        # -- Determine the default shell ID. This is the shell that scons will
+        # -- use to run commands.
+        self.default_shell_id = self._determine_default_shell_id(
+            self.platform_id
+        )
 
         # -- Read the apio packages information
         self.all_packages = self._load_resource(PACKAGES_JSONC, resources_dir)
@@ -597,6 +604,41 @@ class ApioContext:
 
         # -- All done ok.
         return platform_id
+
+    @staticmethod
+    def _determine_default_shell_id(platform_id: str) -> str:
+        """
+        Returns a simplified string name of the shell that SCons will use
+        for executing shell-dependent commands. See code below for possible
+        values.
+        """
+
+        # pylint: disable=too-many-return-statements
+
+        # -- Handle windows.
+        if platform_id == "windows":
+            comspec = os.environ.get("COMSPEC", "").lower()
+            if "powershell.exe" in comspec or "pwsh.exe" in comspec:
+                return "powershell"
+            if "cmd.exe" in comspec:
+                return "cmd"
+            return "unknown"
+
+        # -- Handle macOS, Linux, etc.
+        shell_path = os.environ.get("SHELL", "").lower()
+        if "bash" in shell_path:
+            return "bash"
+        if "zsh" in shell_path:
+            return "zsh"
+        if "fish" in shell_path:
+            return "fish"
+        if "dash" in shell_path:
+            return "dash"
+        if "ksh" in shell_path:
+            return "ksh"
+        if "csh" in shell_path or "tcsh" in shell_path:
+            return "cshell"
+        return "unknown"
 
     @property
     def packages_context(self) -> PackagesContext:
