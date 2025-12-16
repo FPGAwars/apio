@@ -67,6 +67,12 @@ jobs:
           apio info commands --docs > docs/commands-list.md
           cat docs/commands-list.md
 
+      - name: Generate examples list page
+        run: |
+          ls docs/apio-examples.md
+          apio examples list --docs > docs/apio-examples.md
+          cat docs/apio-examples.md
+
       - name: Build mkDocs pages
         run: |
           mkdocs build --strict --site-dir site/docs

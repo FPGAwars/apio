@@ -73,6 +73,7 @@ nav:
       - Contributing definitions: contributing-definitions.md
       - Board drivers: board-drivers.md
   - Apio Examples:
+      - Apio examples: apio-examples.md
       - Using examples: using-examples.md
       - Contributing examples: contributing-examples.md
   - Apio Tips:

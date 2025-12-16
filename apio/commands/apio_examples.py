@@ -9,6 +9,7 @@
 
 import sys
 import re
+from datetime import date
 from pathlib import Path
 from typing import List, Any, Optional
 import click
@@ -16,7 +17,7 @@ from rich.table import Table
 from rich import box
 from apio.common.apio_console import cerror
 from apio.common import apio_console
-from apio.common.apio_console import cout, ctable
+from apio.common.apio_console import cout, ctable, cwrite
 from apio.common.apio_styles import INFO, BORDER, EMPH1
 from apio.managers.examples import Examples, ExampleInfo
 from apio.commands import options
@@ -117,14 +118,92 @@ def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
             )
 
 
+def list_examples_docs_format(apio_ctx: ApioContext):
+    """Output examples information in a format for Apio Docs."""
+
+    # -- Get the version of the 'definitions' package use. At this point it's
+    # -- expected to be installed.
+    def_version, _ = apio_ctx.profile.get_installed_package_info("definitions")
+
+    # -- Get list of examples.
+    entries: List[ExampleInfo] = Examples(apio_ctx).get_examples_infos()
+
+    # -- Sort boards by case insensitive board id.
+    entries.sort(key=examples_sort_key)
+
+    # -- Determine column sizes
+    w1 = max(len("EXAMPLE"), *(len(entry.name) for entry in entries))
+    w2 = max(len("PART-NUM"), *(len(entry.fpga_part_num) for entry in entries))
+    w3 = max(len("SIZE"), *(len(entry.fpga_size) for entry in entries))
+    w4 = max(
+        len("DESCRIPTION"),
+        *(len(entry.description) for entry in entries),
+    )
+
+    # -- Print page header
+    today = date.today()
+    today_str = f"{today.strftime('%B')} {today.day}, {today.year}"
+    cwrite("\n<!-- BEGIN generation by 'apio examples list --docs' -->\n")
+    cwrite("\n# Apio Examples\n")
+    cwrite(
+        f"\nThis markdown page was generated automatically on {today_str} "
+        f"from version `{def_version}` of the Apio definitions package.\n"
+    )
+    cwrite(
+        "\n> Apio project examples can be submitted to the "
+        "[apio-examples](https://github.com/FPGAwars/apio-examples) Github "
+        "repository.\n"
+    )
+
+    # -- Add the rows, with separation line between architecture groups.
+    last_arch = None
+    for entry in entries:
+        # -- If switching architecture, add an horizontal separation line.
+        if last_arch != entry.fpga_arch:
+
+            cout(f"\n## {entry.fpga_arch.upper()} examples")
+
+            cwrite(
+                "\n| {0} | {1} | {2} | {3} |\n".format(
+                    "EXAMPLE".ljust(w1),
+                    "PART-NUM".ljust(w2),
+                    "SIZE".ljust(w3),
+                    "DESCRIPTION".ljust(w4),
+                )
+            )
+            cwrite(
+                "| {0} | {1} | {2} | {3} |\n".format(
+                    ":-".ljust(w1, "-"),
+                    ":-".ljust(w2, "-"),
+                    ":-".ljust(w3, "-"),
+                    ":-".ljust(w4, "-"),
+                )
+            )
+
+            last_arch = entry.fpga_arch
+
+        # -- Write the entry
+        cwrite(
+            "| {0} | {1} | {2} | {3} |\n".format(
+                entry.name.ljust(w1),
+                entry.fpga_part_num.ljust(w2),
+                entry.fpga_size.ljust(w3),
+                entry.description.ljust(w4),
+            )
+        )
+
+    cwrite("\n<!-- END generation by 'apio examples list --docs' -->\n\n")
+
+
 @click.command(
     name="list",
     cls=ApioCommand,
     short_help="List the available apio examples.",
     help=APIO_EXAMPLES_LIST_HELP,
 )
+@options.docs_format_option
 @options.verbose_option
-def _list_cli(verbose: bool):
+def _list_cli(docs: bool, verbose: bool):
     """Implements the 'apio examples list' command group."""
 
     # -- Create the apio context.
@@ -134,8 +213,11 @@ def _list_cli(verbose: bool):
         packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
 
-    # --List all available examples.
-    list_examples(apio_ctx, verbose)
+    # -- List the examples.
+    if docs:
+        list_examples_docs_format(apio_ctx)
+    else:
+        list_examples(apio_ctx, verbose)
 
 
 # ---- apio examples fetch
