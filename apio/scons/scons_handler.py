@@ -26,7 +26,7 @@ from apio.common import rich_lib_windows
 from apio.scons.plugin_util import (
     get_sim_config,
     get_tests_configs,
-    waves_target,
+    gtkwave_target,
     report_action,
     get_programmer_cmd,
 )
@@ -333,7 +333,7 @@ class SconsHandler:
         )
 
         # -- The top level "sim" target.
-        waves_target(
+        gtkwave_target(
             apio_env,
             "sim",
             sim_vcd_target,

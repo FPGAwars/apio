@@ -311,7 +311,7 @@ class SimulationConfig:
     srcs: List[str]  # List of source files to compile.
 
 
-def waves_target(
+def gtkwave_target(
     api_env: ApioEnv,
     name: str,
     vcd_file_target: NodeList,
