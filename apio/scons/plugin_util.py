@@ -27,6 +27,7 @@ from SCons.Script.SConscript import SConsEnvironment
 from SCons.Node import NodeList
 from SCons.Node.Alias import Alias
 from apio.scons.apio_env import ApioEnv
+from apio.common.proto.apio_pb2 import SimParams
 from apio.common.common_util import (
     has_testbench_name,
     is_source_file,
@@ -316,7 +317,7 @@ def gtkwave_target(
     name: str,
     vcd_file_target: NodeList,
     sim_config: SimulationConfig,
-    no_gtkwave: bool,
+    sim_params: SimParams,
 ) -> List[Alias]:
     """Construct a target to launch the QTWave signal viewer.
     vcd_file_target is the simulator target that generated the vcd file
@@ -326,7 +327,7 @@ def gtkwave_target(
     # -- Construct the commands list.
     commands = []
 
-    if no_gtkwave:
+    if sim_params.no_gtkwave:
         # -- User asked to skip gtkwave. The '@' suppresses the printing
         # -- of the echo command itself.
         commands.append(
@@ -346,13 +347,24 @@ def gtkwave_target(
             commands.append("gdk-pixbuf-query-loaders --update-cache")
 
         # -- The actual wave viewer command.
-        commands.append(
-            "gtkwave {0} {1} {2}.gtkw".format(
-                '--rcvar "splash_disable on" --rcvar "do_initial_zoom_fit 1"',
-                vcd_file_target[0],
-                sim_config.testbench_name,
-            )
+        gtkwave_cmd = "gtkwave {0} {1} {2}.gtkw".format(
+            '--rcvar "splash_disable on" --rcvar "do_initial_zoom_fit 1"',
+            vcd_file_target[0],
+            sim_config.testbench_name,
         )
+
+        # -- Handle the normal case where we run it as a detached process, not
+        # -- waiting for it completion and ignoring its output.
+        # --
+        # -- TODO: Consider to refine using the scons_shell_id value, e.g.
+        # -- to distinguish between cmd.exe and powershell on windows.
+        if not sim_params.verbose:
+            if api_env.is_windows:
+                gtkwave_cmd = 'start /b "" ' + gtkwave_cmd + " >NUL 2>&1"
+            else:
+                gtkwave_cmd = gtkwave_cmd + " > /dev/null 2>&1 &"
+
+        commands.append(gtkwave_cmd)
 
     target = api_env.alias(
         name,

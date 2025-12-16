@@ -18,7 +18,13 @@ from apio.common.common_util import get_project_source_files
 from apio.scons.plugin_ice40 import PluginIce40
 from apio.scons.plugin_ecp5 import PluginEcp5
 from apio.scons.plugin_gowin import PluginGowin
-from apio.common.proto.apio_pb2 import SconsParams, ICE40, ECP5, GOWIN
+from apio.common.proto.apio_pb2 import (
+    SimParams,
+    SconsParams,
+    ICE40,
+    ECP5,
+    GOWIN,
+)
 from apio.common import apio_console
 from apio.scons.apio_env import ApioEnv
 from apio.scons.plugin_base import PluginBase
@@ -302,7 +308,7 @@ class SconsHandler:
         assert params.target.HasField("sim")
 
         # -- Get values.
-        sim_params = params.target.sim
+        sim_params: SimParams = params.target.sim
         testbench = sim_params.testbench  # Optional.
 
         # -- Collect information for sim.
@@ -338,7 +344,7 @@ class SconsHandler:
             "sim",
             sim_vcd_target,
             sim_config,
-            no_gtkwave=sim_params.no_gtkwave,
+            sim_params,
         )
 
     def _register_test_target(self, synth_srcs, test_srcs):
