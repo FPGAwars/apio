@@ -16,7 +16,7 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Run apio",
+            "name": "Run apio command",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/apio/__main__.py",
@@ -26,7 +26,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "/Users/user/work1"
+            "cwd": "/Users/user/work"
         },
         {
             "name": "Attach remote debugger",
