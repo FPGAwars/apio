@@ -94,7 +94,7 @@ class Verbosity(_message.Message):
     def __init__(self, all: bool = ..., synth: bool = ..., pnr: bool = ...) -> None: ...
 
 class Environment(_message.Message):
-    __slots__ = ("platform_id", "is_windows", "terminal_mode", "theme_name", "debug_level", "yosys_path", "trellis_path")
+    __slots__ = ("platform_id", "is_windows", "terminal_mode", "theme_name", "debug_level", "yosys_path", "trellis_path", "scons_shell_id")
     PLATFORM_ID_FIELD_NUMBER: _ClassVar[int]
     IS_WINDOWS_FIELD_NUMBER: _ClassVar[int]
     TERMINAL_MODE_FIELD_NUMBER: _ClassVar[int]
@@ -102,6 +102,7 @@ class Environment(_message.Message):
     DEBUG_LEVEL_FIELD_NUMBER: _ClassVar[int]
     YOSYS_PATH_FIELD_NUMBER: _ClassVar[int]
     TRELLIS_PATH_FIELD_NUMBER: _ClassVar[int]
+    SCONS_SHELL_ID_FIELD_NUMBER: _ClassVar[int]
     platform_id: str
     is_windows: bool
     terminal_mode: TerminalMode
@@ -109,7 +110,8 @@ class Environment(_message.Message):
     debug_level: int
     yosys_path: str
     trellis_path: str
-    def __init__(self, platform_id: _Optional[str] = ..., is_windows: bool = ..., terminal_mode: _Optional[_Union[TerminalMode, str]] = ..., theme_name: _Optional[str] = ..., debug_level: _Optional[int] = ..., yosys_path: _Optional[str] = ..., trellis_path: _Optional[str] = ...) -> None: ...
+    scons_shell_id: str
+    def __init__(self, platform_id: _Optional[str] = ..., is_windows: bool = ..., terminal_mode: _Optional[_Union[TerminalMode, str]] = ..., theme_name: _Optional[str] = ..., debug_level: _Optional[int] = ..., yosys_path: _Optional[str] = ..., trellis_path: _Optional[str] = ..., scons_shell_id: _Optional[str] = ...) -> None: ...
 
 class ApioEnvParams(_message.Message):
     __slots__ = ("env_name", "board_id", "top_module", "defines", "yosys_synth_extra_options", "nextpnr_extra_options", "constraint_file")
@@ -154,14 +156,16 @@ class GraphParams(_message.Message):
     def __init__(self, output_type: _Optional[_Union[GraphOutputType, str]] = ..., top_module: _Optional[str] = ..., open_viewer: bool = ...) -> None: ...
 
 class SimParams(_message.Message):
-    __slots__ = ("testbench", "force_sim", "no_gtkwave")
+    __slots__ = ("testbench", "force_sim", "no_gtkwave", "verbose")
     TESTBENCH_FIELD_NUMBER: _ClassVar[int]
     FORCE_SIM_FIELD_NUMBER: _ClassVar[int]
     NO_GTKWAVE_FIELD_NUMBER: _ClassVar[int]
+    VERBOSE_FIELD_NUMBER: _ClassVar[int]
     testbench: str
     force_sim: bool
     no_gtkwave: bool
-    def __init__(self, testbench: _Optional[str] = ..., force_sim: bool = ..., no_gtkwave: bool = ...) -> None: ...
+    verbose: bool
+    def __init__(self, testbench: _Optional[str] = ..., force_sim: bool = ..., no_gtkwave: bool = ..., verbose: bool = ...) -> None: ...
 
 class ApioTestParams(_message.Message):
     __slots__ = ("testbench",)

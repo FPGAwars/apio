@@ -273,6 +273,7 @@ class SConsManager:
                 debug_level=util.debug_level(),
                 yosys_path=oss_vars["YOSYS_LIB"],
                 trellis_path=oss_vars["TRELLIS"],
+                scons_shell_id=apio_ctx.scons_shell_id,
             )
         )
         assert result.environment.IsInitialized(), result

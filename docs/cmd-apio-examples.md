@@ -40,6 +40,7 @@ apio examples list                     # List all examples
 apio examples list  -v                 # Verbose output
 apio examples list | grep alhambra-ii  # Filter for alhambra-ii examples
 apio examples list | grep -i blink     # Filter for blinking examples
+apio examples list --docs              # Use Apio docs format.
 ```
 
 <h3>Options</h3>

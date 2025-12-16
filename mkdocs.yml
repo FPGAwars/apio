@@ -38,7 +38,7 @@ nav:
       - Installing Apio IDE: installing-apio-ide.md
       - Installing Apio CORE: installing-apio-core.md
       - Video tutorial: video-tutorial.md
-      - Migrating from Apio 0.x.x: migrating-from-apio-0xx.md
+      - Migrating from Apio 0.9.5: migrating-from-apio-0.9.5.md
   - Apio Commands:
       - Commands list: commands-list.md
       - api: cmd-apio-api.md
@@ -73,6 +73,7 @@ nav:
       - Contributing definitions: contributing-definitions.md
       - Board drivers: board-drivers.md
   - Apio Examples:
+      - Apio examples: apio-examples.md
       - Using examples: using-examples.md
       - Contributing examples: contributing-examples.md
   - Apio Tips:

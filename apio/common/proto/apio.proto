@@ -91,6 +91,10 @@ message Environment {
   // Paths to oss-cad-suite libraries.
   required string yosys_path = 6;
   required string trellis_path = 7;
+
+  // The default shell id. This is the shell that scons
+  // is expected to use. See ApioContext for values.
+  required string scons_shell_id = 8;
 }
 
 // Information about the expanded active env from apio.ini.
@@ -147,6 +151,11 @@ message SimParams {
 
   // Perform the simulation but skip opening GTKWave
   required bool no_gtkwave = 3;
+
+  // If true, apio waits for the gtkwave window to get closed and until then
+  // show the stdout/err from the gtkwave app. Otherwise gtkwave runs
+  // detach and its output is sent to dev/null.
+  required bool verbose = 4;
 }
 
 // Test target specific params. Originally called TestParams but this

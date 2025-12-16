@@ -1,8 +1,18 @@
 {
     "files.exclude": {
-        ".tox": true,
+        ".tox/**": true,
         ".pytest_cache": true,
-        "**/__pycache__": true,
+        "**/__pycache__": true
+    },
+    "search.exclude": {
+        ".tox/**": true,
+        ".pytest_cache": true,
+        "**/__pycache__": true
+    },
+    "files.watcherExclude": {
+        ".tox/**": true,
+        ".pytest_cache": true,
+        "**/__pycache__": true
     },
     "python.testing.pytestArgs": [
         "test"
@@ -44,8 +54,10 @@
         "cmarkdown",
         "colorlight",
         "COMBDLY",
+        "comspec",
         "cout",
         "cprint",
+        "cshell",
         "cstyle",
         "ctable",
         "cunstyle",
@@ -75,6 +87,7 @@
         "González",
         "gowin",
         "graphviz",
+        "gtkw",
         "gtkwave",
         "helpfull",
         "htmlcov",
@@ -141,6 +154,7 @@
         "Sucess",
         "synthesizable",
         "targetes",
+        "tcsh",
         "testbench",
         "testbenches",
         "testpypi",

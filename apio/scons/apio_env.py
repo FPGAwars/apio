@@ -81,6 +81,16 @@ class ApioEnv:
         """Returns true if we run in debug mode."""
         return self.params.environment.debug_level >= level
 
+    @property
+    def platform_id(self):
+        """Returns the platform id."""
+        return self.params.environment.platform_id
+
+    @property
+    def scons_shell_id(self):
+        """Returns the shell id that scons is expected to use.."""
+        return self.params.environment.scons_shell_id
+
     def targeting(self, *target_names) -> bool:
         """Returns true if the any of the named target was specified in the
         scons command line."""

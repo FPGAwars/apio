@@ -193,7 +193,7 @@ programmer-cmd = iceprog -d i:0x${VID}:0x${PID} ${BIN_FILE}
 ```
 
 The list of supported placeholders is available in the Apio
-standard boards definitions files [boards.jsonc](https://github.com/FPGAwars/apio/blob/develop/apio/resources/programmers.jsonc).
+standard boards definitions files [programmers.jsonc](https://github.com/FPGAwars/apio-definitions/blob/main/definitions/programmers.jsonc).
 
 > The placeholder `${BIN_FILE}` is not appended automatically to the
 > programmer-cmd option and need to be added explicitly if needed.

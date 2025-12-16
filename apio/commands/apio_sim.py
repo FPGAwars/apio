@@ -42,14 +42,20 @@ Example:[code]
   apio sim                   # Simulate the default testbench.
   apio sim my_module_tb.v    # Simulate the specified testbench.
   apio sim my_module_tb.sv   # Simulate the specified testbench.
-  apio sim --no-gtkwave      # Simulate but skip GTKWave.[/code]
-
-[NOTE] Testbench specification is always the testbench file path relative to \
-the project directory, even if using the '--project-dir' option.
+  apio sim --no-gtkwave      # Simulate but skip GTKWave.
+  apio sim --verbose         # Show gtkwave output.[/code]
 
 [IMPORTANT] Avoid using the Verilog '$dumpfile()' function in your \
 testbenches, as this may override the default name and location Apio sets \
 for the generated .vcd file.
+
+[NOTE] Testbench specification is always the testbench file path relative to \
+the project directory, even if using the '--project-dir' option.
+
+[NOTE] Normally apio launches the GTKWave app as a detached process and \
+continues its operation. If --verbose is specified, GTKWave is launched \
+as a subprocess and is output is shown in the Apio terminal while Apio \
+is waiting.
 
 The sim command defines the macro 'APIO_SIM=1' which can be used by \
 testbenches to skip `$fatal` statements to have the simulation continue and \
@@ -88,6 +94,7 @@ no_gtkw_wave_option = click.option(
 @options.env_option_gen()
 @no_gtkw_wave_option
 @options.project_dir_option
+@options.verbose_option
 def cli(
     _: click.Context,
     # Arguments
@@ -97,10 +104,14 @@ def cli(
     env: Optional[str],
     no_gtkwave: bool,
     project_dir: Optional[Path],
+    verbose,
 ):
     """Implements the apio sim command. It simulates a single testbench
     file and shows graphically the signal graphs.
     """
+
+    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-positional-arguments
 
     # -- Create the apio context.
     apio_ctx = ApioContext(
@@ -124,7 +135,10 @@ def cli(
 
     # -- Construct the scons sim params.
     sim_params = SimParams(
-        testbench=testbench, force_sim=force, no_gtkwave=no_gtkwave
+        testbench=testbench,
+        force_sim=force,
+        no_gtkwave=no_gtkwave,
+        verbose=verbose,
     )
 
     # -- Simulate the project with the given parameters
