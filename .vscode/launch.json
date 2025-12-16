@@ -21,8 +21,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/apio/__main__.py",
             "args": [
-                "test",
-                "main_tb.sv"
+                "sim",
+                "--detach"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,

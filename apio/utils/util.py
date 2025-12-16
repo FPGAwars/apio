@@ -587,3 +587,19 @@ def pushd(target_dir: Path):
         yield
     finally:
         os.chdir(prev_dir)
+
+
+def is_pyinstaller_app() -> bool:
+    """Return true if this is a pyinstaller packaged app.
+    Base on https://pyinstaller.org/en/stable/runtime-information.html
+    """
+    return getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS")
+
+
+def is_under_vscode_debugger() -> bool:
+    """Returns true if running under VSCode debugger."""
+    return (
+        "debugpy" in sys.modules
+        or os.environ.get("TERM_PROGRAM") == "vscode"
+        or os.environ.get("DEBUGPY_RUNNING")
+    )
