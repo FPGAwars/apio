@@ -43,7 +43,8 @@ Examples:[code]
   apio examples list                     # List all examples
   apio examples list  -v                 # More verbose output.
   apio examples list | grep alhambra-ii  # Show alhambra-ii examples.
-  apio examples list | grep -i blink     # Show blinking examples.[/code]
+  apio examples list | grep -i blink     # Show blinking examples.
+  apio examples list --docs              # Use Apio docs format.[/code]
 """
 
 
@@ -133,9 +134,7 @@ def list_examples_docs_format(apio_ctx: ApioContext):
 
     # -- Determine column sizes
     w1 = max(len("EXAMPLE"), *(len(entry.name) for entry in entries))
-    w2 = max(len("PART-NUM"), *(len(entry.fpga_part_num) for entry in entries))
-    w3 = max(len("SIZE"), *(len(entry.fpga_size) for entry in entries))
-    w4 = max(
+    w2 = max(
         len("DESCRIPTION"),
         *(len(entry.description) for entry in entries),
     )
@@ -164,19 +163,15 @@ def list_examples_docs_format(apio_ctx: ApioContext):
             cout(f"\n## {entry.fpga_arch.upper()} examples")
 
             cwrite(
-                "\n| {0} | {1} | {2} | {3} |\n".format(
+                "\n| {0} | {1} |\n".format(
                     "EXAMPLE".ljust(w1),
-                    "PART-NUM".ljust(w2),
-                    "SIZE".ljust(w3),
-                    "DESCRIPTION".ljust(w4),
+                    "DESCRIPTION".ljust(w2),
                 )
             )
             cwrite(
-                "| {0} | {1} | {2} | {3} |\n".format(
+                "| {0} | {1} |\n".format(
                     ":-".ljust(w1, "-"),
                     ":-".ljust(w2, "-"),
-                    ":-".ljust(w3, "-"),
-                    ":-".ljust(w4, "-"),
                 )
             )
 
@@ -184,11 +179,9 @@ def list_examples_docs_format(apio_ctx: ApioContext):
 
         # -- Write the entry
         cwrite(
-            "| {0} | {1} | {2} | {3} |\n".format(
+            "| {0} | {1} |\n".format(
                 entry.name.ljust(w1),
-                entry.fpga_part_num.ljust(w2),
-                entry.fpga_size.ljust(w3),
-                entry.description.ljust(w4),
+                entry.description.ljust(w2),
             )
         )
 
