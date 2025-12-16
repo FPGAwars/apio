@@ -320,7 +320,7 @@ Usage: apio boards [OPTIONS]
 
 Options:
   -v, --verbose           Show detailed output.
-  --docs                  Format for Apio Docs.
+  -d, --docs              Format for Apio Docs.
   -p, --project-dir path  Set the root directory for the project.
   -h, --help              Show this message and exit.
 
@@ -668,7 +668,7 @@ Usage: apio examples list [OPTIONS]
     apio examples list --docs              # Use Apio docs format.
 
 Options:
-  --docs         Format for Apio Docs.
+  -d, --docs     Format for Apio Docs.
   -v, --verbose  Show detailed output.
   -h, --help     Show this message and exit.
 
@@ -740,7 +740,7 @@ Usage: apio fpgas [OPTIONS]
 
 Options:
   -v, --verbose           Show detailed output.
-  --docs                  Format for Apio Docs.
+  -d, --docs              Format for Apio Docs.
   -p, --project-dir path  Set the root directory for the project.
   -h, --help              Show this message and exit.
 
@@ -839,7 +839,7 @@ Usage: apio info commands [OPTIONS]
     apio info commands --docs > docs/commands-list.md
 
 Options:
-  --docs      Format for Apio Docs.
+  -d, --docs  Format for Apio Docs.
   -h, --help  Show this message and exit.
 
 
@@ -878,7 +878,10 @@ Usage: apio info system [OPTIONS]
   Examples:
     apio info system   # System info.
 
-  [Advanced] The default location of the Apio home directory, where apio
+  [NOTE] For programmatic access to this information use 'apio api
+  get-system'.
+
+  [ADVANCED] The default location of the Apio home directory, where apio
   saves preferences and packages, is in the '.apio' directory under the
   user home directory but can be changed using the system environment
   variable 'APIO_HOME'.

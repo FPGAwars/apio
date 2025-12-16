@@ -26,7 +26,7 @@ The `apio info` command group displays additional information about Apio and you
 
 The command `apio info platforms` lists the platform IDs supported by Apio and highlights your system's effective ID.
 
-> [Advanced] The automatic platform ID detection of Apio can be overridden by defining a different platform ID using the `APIO_PLATFORM` environment variable, though this is generally not recommended.
+> [ADVANCED] The automatic platform ID detection of Apio can be overridden by defining a different platform ID using the `APIO_PLATFORM` environment variable, though this is generally not recommended.
 
 <h3>Examples</h3>
 
@@ -46,7 +46,11 @@ apio info platforms   # List supported platform IDs
 
 The `apio info system` command displays general information about your system and Apio installation. Useful for diagnosing setup or environment issues.
 
-> [Advanced] The default location of the Apio home directory, where it saves preferences and packages, is `.apio` under your home directory. This can be changed using the `APIO_HOME` environment variable. The location of the packages directory can be set using the `APIO_PACKAGES` environment variable.
+
+> [NOTE] For programmatic access to this information use `apio api get-system`.
+
+
+> [ADVANCED] The default location of the Apio home directory, where it saves preferences and packages, is `.apio` under your home directory. This can be changed using the `APIO_HOME` environment variable. The location of the packages directory can be set using the `APIO_PACKAGES` environment variable.
 
 <h3>Examples</h3>
 

@@ -7,6 +7,7 @@
 # -- License GPLv2
 """Implementation of 'apio info' command"""
 
+import sys
 from typing import List
 from datetime import date
 import click
@@ -80,7 +81,9 @@ installation issues.
 Examples:[code]
   apio info system   # System info.[/code]
 
-[b][Advanced][/b] The default location of the Apio home directory, \
+[NOTE] For programmatic access to this information use 'apio api get-system'.
+
+[ADVANCED] The default location of the Apio home directory, \
 where apio saves preferences and packages, is in the '.apio' directory \
 under the user home directory but can be changed using the system \
 environment variable 'APIO_HOME'.
@@ -121,6 +124,7 @@ def _system_cli():
     # -- Add rows
     table.add_row("Apio version", util.get_apio_version_str())
     table.add_row("Python version", util.get_python_version())
+    table.add_row("Python executable", sys.executable)
     table.add_row("Platform id", apio_ctx.platform_id)
     table.add_row("Scons shell id", apio_ctx.scons_shell_id)
     table.add_row(
