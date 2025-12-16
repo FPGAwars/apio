@@ -614,7 +614,7 @@ class ApioContext:
         # pylint: disable=too-many-return-statements
 
         # -- Handle windows.
-        if platform_id == "windows":
+        if "windows" in platform_id:
             comspec = os.environ.get("COMSPEC", "").lower()
             if "powershell.exe" in comspec or "pwsh.exe" in comspec:
                 return "powershell"
