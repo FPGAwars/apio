@@ -144,7 +144,7 @@ class ApioContext:
         "profile",
         "platforms",
         "platform_id",
-        "default_shell_id",
+        "scons_shell_id",
         "all_packages",
         "required_packages",
         "env_was_already_set",
@@ -278,11 +278,9 @@ class ApioContext:
         # -- Determine the platform_id for this APIO session.
         self.platform_id = self._determine_platform_id(self.platforms)
 
-        # -- Determine the default shell ID. This is the shell that scons will
-        # -- use to run commands.
-        self.default_shell_id = self._determine_default_shell_id(
-            self.platform_id
-        )
+        # -- Determine the shell id that scons will use.
+        # -- See _determine_scons_shell_id() for possible values.
+        self.scons_shell_id = self._determine_scons_shell_id(self.platform_id)
 
         # -- Read the apio packages information
         self.all_packages = self._load_resource(PACKAGES_JSONC, resources_dir)
@@ -606,7 +604,7 @@ class ApioContext:
         return platform_id
 
     @staticmethod
-    def _determine_default_shell_id(platform_id: str) -> str:
+    def _determine_scons_shell_id(platform_id: str) -> str:
         """
         Returns a simplified string name of the shell that SCons will use
         for executing shell-dependent commands. See code below for possible
