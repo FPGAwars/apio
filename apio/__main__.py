@@ -35,13 +35,25 @@ def main():
     # -- See https://github.com/orgs/pyinstaller/discussions/9023.
     # --
     # -- In this case argv goes through these stages
-    # -- Original:            <binary> -m apio --scons ...
-    # -- Here (apio module):  <binary> --scons ...
-    # -- Scons see:           <binary> ...
-    if sys.argv[1] == "--scons":
+    # -- Original:                 <binary> -m apio --scons ...
+    # -- Under python:             <binary> --scons ...
+    # -- Under pyinstaller:        <binary> -m apio --scons ...
+    # -- After fixing for scons:   <binary> ...
+    # --
+    # -- Notice that the -m apio args are automatically removed by the
+    # -- python interpreter but are preserved by the pyinstaller, hence
+    # -- the two cases.
+    python_scons = sys.argv[1:2] == ["--scons"]
+    pyinstaller_scons = sys.argv[1:4] == ["-m", "apio", "--scons"]
+
+    if debug_enabled:
+        print(f"Apio main(): {python_scons=}")
+        print(f"Apio main(): {pyinstaller_scons=}")
+
+    if python_scons or pyinstaller_scons:
 
         if debug_enabled:
-            print("Apio main(): scons process started")
+            print("Apio main(): this is an scons process")
 
         # -- Since scons_main() doesn't return, we use this handler to print
         # -- an exit message for debugging.
@@ -59,8 +71,15 @@ def main():
         # -- You can place a breakpoint for example at SconsHandler.start().
         maybe_wait_for_remote_debugger("APIO_SCONS_DEBUGGER")
 
-        # -- Drop the "--scons" arg.
-        sys.argv[1:] = sys.argv[2:]
+        # -- Drop the scons trigger args
+        if python_scons:
+            # -- Case 1: Using a python interpreter which already dropped
+            # -- the ["-m", "apio"].  Dropping just ["--scons"]
+            sys.argv[1:] = sys.argv[2:]
+        else:
+            # -- Case 2: Using pyinstaller which preserved the ["-m", "apio"].
+            # -- Dropping ["-m", "apio", "--scons"]
+            sys.argv[1:] = sys.argv[4:]
 
         if debug_enabled:
             print(f"Apio main(): scons fixed argv: {sys.argv}")
@@ -72,7 +91,7 @@ def main():
     # -- Handle the case of a normal apio invocation.
     else:
         if debug_enabled:
-            print("Apio main(): apio process started")
+            print("Apio main(): this is an apio process")
 
         # -- Since apio_top_cli() doesn't return, we use this handler to print
         # -- an exit message for debugging.
