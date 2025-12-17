@@ -45,16 +45,12 @@ def maybe_wait_for_remote_debugger(env_var_name: str):
         debugpy.listen(port)
         print(
             "Attach Visual Studio Code python remote python debugger "
-            f"to port {port}.",
-            style=EMPH3,
+            f"to port {port}."
         )
         # -- Block until the debugger connects.
         debugpy.wait_for_client()
         # -- Here the remote debugger is attached and the program continues.
-        print(
-            "Remote debugger is attached, program continues...",
-            style=SUCCESS,
-        )
+        print("Remote debugger is attached, program continues...")
 
 
 def file_sort_key_func(f: Union[str, Path]) -> Any:
