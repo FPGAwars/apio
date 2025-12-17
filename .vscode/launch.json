@@ -16,7 +16,7 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Run apio command",
+            "name": "Apio run command",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/apio/__main__.py",
@@ -30,18 +30,7 @@
             "subProcess": false
         },
         {
-            "name": "Attach remote debugger",
-            "type": "debugpy",
-            "request": "attach",
-            "connect": {
-                "host": "localhost",
-                "port": 5678
-            },
-            "justMyCode": false,
-            "subProcess": false
-        },
-        {
-            "name": "Run apio test",
+            "name": "Apio run test",
             "type": "debugpy",
             "request": "launch",
             "module": "pytest",
@@ -53,6 +42,17 @@
             "console": "integratedTerminal",
             "justMyCode": false,
             "cwd": "${workspaceFolder}",
+            "subProcess": false
+        },
+        {
+            "name": "Apio remote debugger",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "justMyCode": false,
             "subProcess": false
         },
     ]
