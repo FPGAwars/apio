@@ -37,7 +37,8 @@ def main():
     # -- Scons see:           <binary> ...
     if sys.argv[1] == "--scons":
 
-        print("SCons process started")
+        if debug_enabled:
+            print("SCons process started")
 
         # -- Since scons_main() doesn't return, we use this handler to print
         # -- an exit message for debugging.
@@ -57,7 +58,8 @@ def main():
 
     # -- Handle the case of a normal apio invocation.
     else:
-        print("Apio process started")
+        if debug_enabled:
+            print("Apio process started")
 
         # -- Since apio_top_cli() doesn't return, we use this handler to print
         # -- an exit message for debugging.
