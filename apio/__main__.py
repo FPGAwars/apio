@@ -23,6 +23,9 @@ def on_exit(msg):
 def main():
     """Apio starting point."""
 
+    if debug_enabled:
+        print(f"Apio main(): original argv: {sys.argv}")
+
     # pylint: disable=import-outside-toplevel
 
     # -- Handle the case of the scons subprocess. Because we also use
@@ -38,11 +41,11 @@ def main():
     if sys.argv[1] == "--scons":
 
         if debug_enabled:
-            print("SCons process started")
+            print("Apio main(): scons process started")
 
         # -- Since scons_main() doesn't return, we use this handler to print
         # -- an exit message for debugging.
-        atexit.register(on_exit, "SCons process exit")
+        atexit.register(on_exit, "Apio main(): scons process exit")
 
         # -- Import and initialize scons only when running the scons
         # -- subprocess.
@@ -60,7 +63,7 @@ def main():
         sys.argv[1:] = sys.argv[2:]
 
         if debug_enabled:
-            print(sys.argv)
+            print(f"Apio main(): scons fixed argv: {sys.argv}")
 
         # -- Invoke the scons main function. It gets the modified argv from sys
         # -- and doesn't return.
@@ -69,11 +72,11 @@ def main():
     # -- Handle the case of a normal apio invocation.
     else:
         if debug_enabled:
-            print("Apio process started")
+            print("Apio main(): apio process started")
 
         # -- Since apio_top_cli() doesn't return, we use this handler to print
         # -- an exit message for debugging.
-        atexit.register(on_exit, "Apio process exit")
+        atexit.register(on_exit, "Apio main(): apio process exit")
 
         # -- Import the apio CLI only when running the apio process
         # -- (as opposed to the scons sub process).
