@@ -543,8 +543,8 @@ def announce_testbench_action() -> FunctionAction:
     """Returns an action that prints a title with the testbench name."""
 
     def announce_testbench(
-        source: List[File],
         target: List[Alias],
+        source: List[File],
         env: SConsEnvironment,
     ):
         """The action function."""
@@ -577,8 +577,8 @@ def source_files_issue_scanner_action() -> FunctionAction:
     interactive_sim_re = re.compile(r"INTERACTIVE_SIM")
 
     def report_source_files_issues(
-        source: List[File],
         target: List[Alias],
+        source: List[File],
         env: SConsEnvironment,
     ):
         """The scanner function."""
@@ -721,8 +721,8 @@ def report_action(clk_name_index: int, verbose: bool) -> FunctionAction:
     indicates if the --verbose flag was invoked."""
 
     def print_pnr_report(
-        source: List[File],
         target: List[Alias],
+        source: List[File],
         env: SConsEnvironment,
     ):
         """Action function. Loads the pnr json report and print in a user
