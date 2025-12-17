@@ -26,7 +26,8 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "/Users/user/work"
+            "cwd": "/Users/user/work",
+            "subProcess": false
         },
         {
             "name": "Attach remote debugger",
@@ -37,6 +38,7 @@
                 "port": 5678
             },
             "justMyCode": false,
+            "subProcess": false
         },
         {
             "name": "Run apio test",
@@ -50,7 +52,8 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}",
+            "subProcess": false
         },
     ]
 }

@@ -369,30 +369,20 @@ class SConsManager:
             else []
         )
 
-        # -- Determine how we want to invoke the scons subprocess. With
-        # -- VS Code debugger, invoking the standard way with -m SCons stopped
-        # -- working circa Dec 2025 so we apply a workaround.
+        # -- Construct the scons command line.
         # --
         # -- sys.executable is resolved to the full path of the python
         # -- interpreter or to apio if running from a pyinstall setup.
         # -- See https://github.com/orgs/pyinstaller/discussions/9023 for more
         # -- information.
         # --
-        # -- We use -m SCons also for non pyinstaller deployment in case
-        # -- the scons binary is not on the PATH.
-        # --
-        if util.is_under_vscode_debugger():
-            cout(
-                "Adapted the scons launch command for the VSCode debugger.",
-                style=INFO,
-            )
-            scons_launcher = ["scons"]
-        else:
-            scons_launcher = [sys.executable, "-m", "SCons"]
-
-        # -- Construct the scons command line.
+        # -- We use exec -m SCons instead of scones also for non pyinstaller
+        # -- deployment in case the scons binary is not on the PATH.
         cmd = (
-            scons_launcher + ["-Q", scons_command] + debug_options + variables
+            [sys.executable, "-m", "SCons"]
+            + ["-Q", scons_command]
+            + debug_options
+            + variables
         )
 
         # -- An output filter that manipulates the scons stdout/err lines as
