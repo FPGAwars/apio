@@ -44,13 +44,23 @@ def main():
         # -- an exit message for debugging.
         atexit.register(on_exit, "SCons process exit")
 
-        # -- Drop the "--scons" arg.
-        sys.argv[1:] = sys.argv[2:]
-        print(sys.argv)
-
         # -- Import and initialize scons only when running the scons
         # -- subprocess.
         from SCons.Script.Main import main as scons_main
+        from apio.common.common_util import maybe_wait_for_remote_debugger
+
+        # -- If system env var APIO_SCONS_DEBUGGER is defined, regardless of
+        # -- its value, we wait on a remote debugger to be attached, e.g.
+        # -- from Visual Studio Code.
+        # --
+        # -- You can place a breakpoint for example at SconsHandler.start().
+        maybe_wait_for_remote_debugger("APIO_SCONS_DEBUGGER")
+
+        # -- Drop the "--scons" arg.
+        sys.argv[1:] = sys.argv[2:]
+
+        if debug_enabled:
+            print(sys.argv)
 
         # -- Invoke the scons main function. It gets the modified argv from sys
         # -- and doesn't return.

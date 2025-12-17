@@ -7,12 +7,5 @@
 # -- License GPLv2
 
 from apio.scons.scons_handler import SconsHandler
-from apio.common.common_util import maybe_wait_for_remote_debugger
 
-
-# -- If system env var APIO_SCONS_DEBUGGER is defined, regardless of its value,
-# -- we wait on a remote debugger to be attached, e.g. from Visual Studio Code.
-maybe_wait_for_remote_debugger("APIO_SCONS_DEBUGGER")
-
-# -- Service this scons request.
 SconsHandler.start()

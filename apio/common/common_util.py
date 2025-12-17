@@ -11,6 +11,7 @@
 scons (child) process."""
 
 import os
+import sys
 from pathlib import Path
 from glob import glob
 from typing import List, Union, Any, Tuple
@@ -51,6 +52,10 @@ def maybe_wait_for_remote_debugger(env_var_name: str):
             "Attach Visual Studio Code python remote python debugger "
             f"to port {port}."
         )
+        # -- Make sure the messages to the user are flushed.
+        sys.stdout.flush()
+        sys.stderr.flush()
+
         # -- Block until the debugger connects.
         debugpy.wait_for_client()
         # -- Here the remote debugger is attached and the program continues.
