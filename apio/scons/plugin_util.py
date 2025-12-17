@@ -324,13 +324,13 @@ def gtkwave_target(
     with the signals. Returns the new targets.
     """
 
-    # -- Construct the commands list.
-    commands = []
+    # -- Construct the actions list.
+    actions = []
 
     if sim_params.no_gtkwave:
         # -- User asked to skip gtkwave. The '@' suppresses the printing
         # -- of the echo command itself.
-        commands.append(
+        actions.append(
             "@echo 'Flag --no-gtkwave was found, skipping GTKWave.'"
         )
 
@@ -344,7 +344,7 @@ def gtkwave_target(
         # -- With the stock oss-cad-suite windows package, this is done in the
         # -- environment.bat script.
         if api_env.is_windows:
-            commands.append("gdk-pixbuf-query-loaders --update-cache")
+            actions.append("gdk-pixbuf-query-loaders --update-cache")
 
         # -- The actual wave viewer command.
         gtkwave_cmd = "gtkwave {0} {1} {2}.gtkw".format(
@@ -364,12 +364,12 @@ def gtkwave_target(
             else:
                 gtkwave_cmd = gtkwave_cmd + " > /dev/null 2>&1 &"
 
-        commands.append(gtkwave_cmd)
+        actions.append(gtkwave_cmd)
 
     target = api_env.alias(
         name,
         source=vcd_file_target,
-        action=commands,
+        action=actions,
         always_build=True,
     )
 
