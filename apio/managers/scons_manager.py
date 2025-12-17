@@ -379,7 +379,7 @@ class SConsManager:
         # -- We use exec -m SCons instead of scones also for non pyinstaller
         # -- deployment in case the scons binary is not on the PATH.
         cmd = (
-            [sys.executable, "-m", "SCons"]
+            [sys.executable, "-m", "apio", "--scons"]
             + ["-Q", scons_command]
             + debug_options
             + variables

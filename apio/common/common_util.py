@@ -15,7 +15,6 @@ from pathlib import Path
 from glob import glob
 from typing import List, Union, Any, Tuple
 import debugpy
-from apio.common.apio_styles import EMPH3, SUCCESS
 
 # -- A list with the file extensions of the source files.
 SRC_SUFFIXES = [".v", ".sv"]

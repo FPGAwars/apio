@@ -2,6 +2,22 @@
 """Apio starting point."""
 
 import sys
+import os
+import atexit
+
+# -- Since this module is used also as the entry point for the scons
+# -- subprocess, we don't add here dependency on util.py and use a light
+# -- weight debug env var detection.
+# -- Set APIO_DEBUG=1 to enable.
+debug_enabled = int(os.environ.get("APIO_DEBUG", "0")) > 0
+
+
+def on_exit(msg):
+    """Prints a debug message on process exit. The msg string is passed
+    from the handler registrations below.
+    """
+    if debug_enabled:
+        print(msg)
 
 
 def main():
@@ -9,28 +25,52 @@ def main():
 
     # pylint: disable=import-outside-toplevel
 
-    # -- Handle the case in which we run under pyinstaller and the pyinstaller
-    # -- program was invoked to run the scons subprocess. This case doesn't
-    # -- happen when running as a standard pip package.
-    # -- See https://github.com/orgs/pyinstaller/discussions/9023 for details.
-    if sys.argv[1:3] == ["-m", "SCons"]:
-        # -- Drop the "-m SCons" args.
-        sys.argv[1:] = sys.argv[3:]
-        # -- We import and initialize scons only when running the scons
+    # -- Handle the case of the scons subprocess. Because we also use
+    # -- pyinstaller, without standard pip packages, we can't simply invoke
+    # -- the 'scons' binary so we invoke the SCons module from the apio main.
+    # -- See more details at:
+    # -- See https://github.com/orgs/pyinstaller/discussions/9023.
+    # --
+    # -- In this case argv goes through these stages
+    # -- Original:            <binary> -m apio --scons ...
+    # -- Here (apio module):  <binary> --scons ...
+    # -- Scons see:           <binary> ...
+    if sys.argv[1] == "--scons":
+
+        print("SCons process started")
+
+        # -- Since scons_main() doesn't return, we use this handler to print
+        # -- an exit message for debugging.
+        atexit.register(on_exit, "SCons process exit")
+
+        # -- Drop the "--scons" arg.
+        sys.argv[1:] = sys.argv[2:]
+        print(sys.argv)
+
+        # -- Import and initialize scons only when running the scons
         # -- subprocess.
         from SCons.Script.Main import main as scons_main
 
-        # Invoke the scons main function.
+        # -- Invoke the scons main function. It gets the modified argv from sys
+        # -- and doesn't return.
         scons_main()
 
-    # -- Else, this is a normal apio invocation. Call the top level Apio's
-    # -- Click command. We import apio only in this case.
+    # -- Handle the case of a normal apio invocation.
     else:
+        print("Apio process started")
+
+        # -- Since apio_top_cli() doesn't return, we use this handler to print
+        # -- an exit message for debugging.
+        atexit.register(on_exit, "Apio process exit")
+
+        # -- Import the apio CLI only when running the apio process
+        # -- (as opposed to the scons sub process).
         from apio.commands.apio import apio_top_cli
 
         # -- Due to the Click decorations of apio_top_cli() and the Click
         # -- magic, this function is not really invoked but Click dispatches
         # -- it to its subcommands that was selected by the user command line.
+        # -- This function call doesn't return.
         apio_top_cli()
 
 
