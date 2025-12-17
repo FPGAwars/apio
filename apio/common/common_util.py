@@ -39,6 +39,11 @@ def maybe_wait_for_remote_debugger(env_var_name: str):
         # NOTE: This function may be called before apio_console.py is
         # initialized, so we use print() instead of cout().
         print(f"Env var '{env_var_name}' was detected.")
+        print(
+            "Setting PYDEVD_DISABLE_FILE_VALIDATION=1 to disable frozen "
+            "modules warning."
+        )
+        os.environ["PYDEVD_DISABLE_FILE_VALIDATION"] = "1"
         port = 5678
         print(f"Apio SCons for remote debugger on port localhost:{port}.")
         debugpy.listen(port)
