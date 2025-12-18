@@ -320,7 +320,7 @@ Usage: apio boards [OPTIONS]
 
 Options:
   -v, --verbose           Show detailed output.
-  --docs                  Format for Apio Docs.
+  -d, --docs              Format for Apio Docs.
   -p, --project-dir path  Set the root directory for the project.
   -h, --help              Show this message and exit.
 
@@ -665,8 +665,10 @@ Usage: apio examples list [OPTIONS]
     apio examples list  -v                 # More verbose output.
     apio examples list | grep alhambra-ii  # Show alhambra-ii examples.
     apio examples list | grep -i blink     # Show blinking examples.
+    apio examples list --docs              # Use Apio docs format.
 
 Options:
+  -d, --docs     Format for Apio Docs.
   -v, --verbose  Show detailed output.
   -h, --help     Show this message and exit.
 
@@ -738,7 +740,7 @@ Usage: apio fpgas [OPTIONS]
 
 Options:
   -v, --verbose           Show detailed output.
-  --docs                  Format for Apio Docs.
+  -d, --docs              Format for Apio Docs.
   -p, --project-dir path  Set the root directory for the project.
   -h, --help              Show this message and exit.
 
@@ -837,7 +839,7 @@ Usage: apio info commands [OPTIONS]
     apio info commands --docs > docs/commands-list.md
 
 Options:
-  --docs      Format for Apio Docs.
+  -d, --docs  Format for Apio Docs.
   -h, --help  Show this message and exit.
 
 
@@ -876,7 +878,10 @@ Usage: apio info system [OPTIONS]
   Examples:
     apio info system   # System info.
 
-  [Advanced] The default location of the Apio home directory, where apio
+  [NOTE] For programmatic access to this information use 'apio api
+  get-system'.
+
+  [ADVANCED] The default location of the Apio home directory, where apio
   saves preferences and packages, is in the '.apio' directory under the
   user home directory but can be changed using the system environment
   variable 'APIO_HOME'.
@@ -1112,14 +1117,15 @@ Usage: apio sim [OPTIONS] [TESTBENCH]
     apio sim my_module_tb.v    # Simulate the specified testbench.
     apio sim my_module_tb.sv   # Simulate the specified testbench.
     apio sim --no-gtkwave      # Simulate but skip GTKWave.
-
-  [NOTE] Testbench specification is always the testbench file path
-  relative to the project directory, even if using the '--project-dir'
-  option.
+    apio sim --detach          # Launch and forget gtkwave.
 
   [IMPORTANT] Avoid using the Verilog '$dumpfile()' function in your
   testbenches, as this may override the default name and location Apio
   sets for the generated .vcd file.
+
+  [NOTE] Testbench specification is always the testbench file path
+  relative to the project directory, even if using the '--project-dir'
+  option.
 
   The sim command defines the macro 'APIO_SIM=1' which can be used by
   testbenches to skip `$fatal` statements to have the simulation
@@ -1138,6 +1144,7 @@ Options:
   -f, --force             Force simulation.
   -e, --env name          Set the apio.ini env.
   -n, --no-gtkwave        Skip GTKWave
+  -d, --detach            Launch and forget GTKWave.
   -p, --project-dir path  Set the root directory for the project.
   -h, --help              Show this message and exit.
 

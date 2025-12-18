@@ -47,6 +47,7 @@ apio examples list --docs              # Use Apio docs format.
 
 ```
 -v, --verbose  Show detailed output.
+-d, --docs     Format for Apio Docs.
 -h, --help     Show this message and exit.
 ```
 

@@ -129,7 +129,7 @@ class PluginIce40(PluginBase):
 
         # -- We use a generator because we need a different action
         # -- string for sim and test.
-        def action_generator(source, target, env, for_signature):
+        def action_generator(target, source, env, for_signature):
             _ = (source, env, for_signature)  # Unused
             # Extract testbench name from target file name.
             testbench_file = str(target[0])

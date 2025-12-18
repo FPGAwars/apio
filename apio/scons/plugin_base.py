@@ -12,11 +12,14 @@
 
 from pathlib import Path
 from dataclasses import dataclass
+from typing import List
 import webbrowser
 from SCons.Builder import BuilderBase
 from SCons.Action import Action
 from SCons.Script import Builder
 from SCons.Node.FS import File
+from SCons.Script.SConscript import SConsEnvironment
+from SCons.Node.Alias import Alias
 from apio.common.apio_console import cout
 from apio.common.apio_styles import SUCCESS
 from apio.common.common_util import SRC_SUFFIXES
@@ -161,11 +164,14 @@ class PluginBase:
         type_str = type_map[graph_params.output_type]
         assert type_str, f"Unexpected graph type {graph_params.output_type}"
 
-        def completion_action(source, target, env):  # noqa
+        def completion_action(
+            target: List[Alias],
+            source: List[File],
+            env: SConsEnvironment,
+        ):  # noqa
             """Action function that prints a completion message and if
             requested, open a viewer on the output file.."""
-            _ = source  # Unused
-            _ = env  # Unused
+            _ = (source, env)  # Unused
             # -- Get the rendered file.
             target_file: File = target[0]
             assert isinstance(target_file, File)

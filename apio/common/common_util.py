@@ -11,11 +11,11 @@
 scons (child) process."""
 
 import os
+import sys
 from pathlib import Path
 from glob import glob
 from typing import List, Union, Any, Tuple
 import debugpy
-from apio.common.apio_styles import EMPH3, SUCCESS
 
 # -- A list with the file extensions of the source files.
 SRC_SUFFIXES = [".v", ".sv"]
@@ -40,21 +40,26 @@ def maybe_wait_for_remote_debugger(env_var_name: str):
         # NOTE: This function may be called before apio_console.py is
         # initialized, so we use print() instead of cout().
         print(f"Env var '{env_var_name}' was detected.")
+        print(
+            "Setting PYDEVD_DISABLE_FILE_VALIDATION=1 to disable frozen "
+            "modules warning."
+        )
+        os.environ["PYDEVD_DISABLE_FILE_VALIDATION"] = "1"
         port = 5678
         print(f"Apio SCons for remote debugger on port localhost:{port}.")
         debugpy.listen(port)
         print(
             "Attach Visual Studio Code python remote python debugger "
-            f"to port {port}.",
-            style=EMPH3,
+            f"to port {port}."
         )
+        # -- Make sure the messages to the user are flushed.
+        sys.stdout.flush()
+        sys.stderr.flush()
+
         # -- Block until the debugger connects.
         debugpy.wait_for_client()
         # -- Here the remote debugger is attached and the program continues.
-        print(
-            "Remote debugger is attached, program continues...",
-            style=SUCCESS,
-        )
+        print("Remote debugger is attached, program continues...")
 
 
 def file_sort_key_func(f: Union[str, Path]) -> Any:

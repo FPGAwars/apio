@@ -43,7 +43,7 @@ Example:[code]
   apio sim my_module_tb.v    # Simulate the specified testbench.
   apio sim my_module_tb.sv   # Simulate the specified testbench.
   apio sim --no-gtkwave      # Simulate but skip GTKWave.
-  apio sim --verbose         # Show gtkwave output.[/code]
+  apio sim --detach          # Launch and forget gtkwave.[/code]
 
 [IMPORTANT] Avoid using the Verilog '$dumpfile()' function in your \
 testbenches, as this may override the default name and location Apio sets \
@@ -51,11 +51,6 @@ for the generated .vcd file.
 
 [NOTE] Testbench specification is always the testbench file path relative to \
 the project directory, even if using the '--project-dir' option.
-
-[NOTE] Normally apio launches the GTKWave app as a detached process and \
-continues its operation. If --verbose is specified, GTKWave is launched \
-as a subprocess and is output is shown in the Apio terminal while Apio \
-is waiting.
 
 The sim command defines the macro 'APIO_SIM=1' which can be used by \
 testbenches to skip `$fatal` statements to have the simulation continue and \
@@ -81,6 +76,15 @@ no_gtkw_wave_option = click.option(
     cls=cmd_util.ApioOption,
 )
 
+detach_option = click.option(
+    "detach",  # Var name.
+    "-d",
+    "--detach",
+    is_flag=True,
+    help="Launch and forget GTKWave.",
+    cls=cmd_util.ApioOption,
+)
+
 
 @click.command(
     name="sim",
@@ -93,8 +97,8 @@ no_gtkw_wave_option = click.option(
 @options.force_option_gen(short_help="Force simulation.")
 @options.env_option_gen()
 @no_gtkw_wave_option
+@detach_option
 @options.project_dir_option
-@options.verbose_option
 def cli(
     _: click.Context,
     # Arguments
@@ -103,8 +107,8 @@ def cli(
     force: bool,
     env: Optional[str],
     no_gtkwave: bool,
+    detach: bool,
     project_dir: Optional[Path],
-    verbose,
 ):
     """Implements the apio sim command. It simulates a single testbench
     file and shows graphically the signal graphs.
@@ -138,7 +142,7 @@ def cli(
         testbench=testbench,
         force_sim=force,
         no_gtkwave=no_gtkwave,
-        verbose=verbose,
+        detach_gtkwave=detach,
     )
 
     # -- Simulate the project with the given parameters

@@ -119,6 +119,7 @@ def dst_option_gen(*, short_help: str):
 
 docs_format_option = click.option(
     "docs",  # Var name.
+    "-d",
     "--docs",
     is_flag=True,
     help="Format for Apio Docs.",

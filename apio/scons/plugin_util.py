@@ -14,6 +14,7 @@ import sys
 import os
 import re
 import json
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Dict, Optional, Union, Callable
@@ -312,6 +313,61 @@ class SimulationConfig:
     srcs: List[str]  # List of source files to compile.
 
 
+def detached_action(api_env: ApioEnv, cmd: List[str]) -> Action:
+    """
+    Launch the given command, given as a list of tokens, in a detached
+    (non blocking) mode.
+    """
+
+    def action_func(
+        target: List[Alias], source: List[File], env: SConsEnvironment
+    ):
+        """A call back function to perform the detached command invocation."""
+
+        # -- Make the linter happy
+        # pylint: disable=consider-using-with
+        _ = (target, source, env)
+
+        # -- NOTE: To debug these Popen operations, comment out the stdout=
+        # -- and stderr= lines to see the output and error messages from the
+        # -- commands.
+
+        # -- Handle the case of Window.
+        if api_env.is_windows:
+            creationflags = (
+                subprocess.DETACHED_PROCESS
+                | subprocess.CREATE_NEW_PROCESS_GROUP
+            )
+            subprocess.Popen(
+                cmd,
+                creationflags=creationflags,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                close_fds=True,
+                shell=False,
+            )
+            return 0
+
+        # -- Handle the rest (macOS and Linux)
+        subprocess.Popen(
+            cmd,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            close_fds=True,
+            start_new_session=True,
+            shell=False,
+        )
+        return 0
+
+    # -- Create the command display string that will be shown to the user.
+    cmd_str: str = subprocess.list2cmdline(cmd)
+    display_str: str = "[detached] " + cmd_str
+
+    # -- Create the action and return.
+    action = Action(action_func, display_str)
+    return action
+
+
 def gtkwave_target(
     api_env: ApioEnv,
     name: str,
@@ -324,13 +380,13 @@ def gtkwave_target(
     with the signals. Returns the new targets.
     """
 
-    # -- Construct the commands list.
-    commands = []
+    # -- Construct the list of actions.
+    actions = []
 
     if sim_params.no_gtkwave:
         # -- User asked to skip gtkwave. The '@' suppresses the printing
         # -- of the echo command itself.
-        commands.append(
+        actions.append(
             "@echo 'Flag --no-gtkwave was found, skipping GTKWave.'"
         )
 
@@ -344,32 +400,33 @@ def gtkwave_target(
         # -- With the stock oss-cad-suite windows package, this is done in the
         # -- environment.bat script.
         if api_env.is_windows:
-            commands.append("gdk-pixbuf-query-loaders --update-cache")
+            actions.append("gdk-pixbuf-query-loaders --update-cache")
 
         # -- The actual wave viewer command.
-        gtkwave_cmd = "gtkwave {0} {1} {2}.gtkw".format(
-            '--rcvar "splash_disable on" --rcvar "do_initial_zoom_fit 1"',
-            vcd_file_target[0],
-            sim_config.testbench_name,
-        )
+        gtkwave_cmd = [
+            "gtkwave",
+            "--rcvar",
+            "splash_disable on",
+            "--rcvar",
+            "do_initial_zoom_fit 1",
+            str(vcd_file_target[0]),
+            sim_config.testbench_name + ".gtkw",
+        ]
 
-        # -- Handle the normal case where we run it as a detached process, not
-        # -- waiting for it completion and ignoring its output.
-        # --
-        # -- TODO: Consider to refine using the scons_shell_id value, e.g.
-        # -- to distinguish between cmd.exe and powershell on windows.
-        if not sim_params.verbose:
-            if api_env.is_windows:
-                gtkwave_cmd = 'start /b "" ' + gtkwave_cmd + " >NUL 2>&1"
-            else:
-                gtkwave_cmd = gtkwave_cmd + " > /dev/null 2>&1 &"
+        # -- Handle the case where gtkwave is run as a detached app, not
+        # -- waiting for it to close and not showing its output.
+        if sim_params.detach_gtkwave:
+            gtkwave_action = detached_action(api_env, gtkwave_cmd)
+        else:
+            gtkwave_action = subprocess.list2cmdline(gtkwave_cmd)
 
-        commands.append(gtkwave_cmd)
+        actions.append(gtkwave_action)
 
+    # -- Define a target with the action(s) we created.
     target = api_env.alias(
         name,
         source=vcd_file_target,
-        action=commands,
+        action=actions,
         always_build=True,
     )
 
@@ -486,8 +543,8 @@ def announce_testbench_action() -> FunctionAction:
     """Returns an action that prints a title with the testbench name."""
 
     def announce_testbench(
-        source: List[File],
         target: List[Alias],
+        source: List[File],
         env: SConsEnvironment,
     ):
         """The action function."""
@@ -520,8 +577,8 @@ def source_files_issue_scanner_action() -> FunctionAction:
     interactive_sim_re = re.compile(r"INTERACTIVE_SIM")
 
     def report_source_files_issues(
-        source: List[File],
         target: List[Alias],
+        source: List[File],
         env: SConsEnvironment,
     ):
         """The scanner function."""
@@ -664,8 +721,8 @@ def report_action(clk_name_index: int, verbose: bool) -> FunctionAction:
     indicates if the --verbose flag was invoked."""
 
     def print_pnr_report(
-        source: List[File],
         target: List[Alias],
+        source: List[File],
         env: SConsEnvironment,
     ):
         """Action function. Loads the pnr json report and print in a user

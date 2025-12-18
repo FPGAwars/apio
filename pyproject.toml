@@ -32,7 +32,7 @@ requires = [
     'click==8.2.1',
     'colorama==0.4.6',
     'configobj==5.0.9',
-    'debugpy==1.8.11',
+    'debugpy==1.8.19',
     'packaging==25.0',
     'pyserial==3.5',
     'requests==2.32.4',
