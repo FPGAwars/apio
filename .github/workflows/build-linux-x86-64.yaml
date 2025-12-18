@@ -1,0 +1,206 @@
+name: build-linux-x86-64
+
+on:
+  workflow_call:
+    inputs:
+      python_version:
+        required: true
+        type: string
+
+jobs:
+  build:
+    # As of Nov 2025, using here ubuntu-latest results in ubuntu 24.04.03
+    # which uses glibc 2.39 which results in library mismatch on older
+    # ubuntu with glibc 2.39. That's why we limit to 22.04 which should
+    # be forward compatible with 24.04.03.
+    runs-on: ubuntu-22.04
+
+    defaults:
+      run:
+        shell: bash # Set Bash as the default shell
+
+    steps:
+      - name: Check architecture
+        run: |
+          uname
+          uname -m
+          if [[ "$(uname)" != "Linux" || "$(uname -m)" != "x86_64" ]]; then
+            exit 1
+          fi
+
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+
+      - name: Download build-info.json artifact from main job
+        uses: actions/download-artifact@v4
+        with:
+          name: build-info
+          merge-multiple: true
+          path: _artifacts
+
+      - name: Move build info
+        run: |
+          find _artifacts
+          mv _artifacts/build-info.json .
+          cat -n build-info.json
+
+      - name: Add platform info to the build info
+        run: |
+          jq '. + {"target-platform": "linux-x86-64"}' \
+              build-info.json > \
+              tmp.json && mv tmp.json build-info.json
+          cat -n build-info.json
+
+      - name: Format build info
+        run: |
+          npm install -g json-align
+          json-align --in-place --spaces 2 build-info.json
+          cat -n build-info.json
+
+      - name: Set env vars from the build info
+        run: |
+          VARS=(
+            "APIO_REPO        apio-repo"
+            "APIO_COMMIT      apio-commit"
+            "RELEASE_VERSION  apio-version"
+            "RELEASE_TAG      release-tag"
+            "PACKAGE_TAG      package-tag"
+          )
+
+          for pair in "${VARS[@]}"; do
+            read var key <<< "$pair"
+            value=$(jq -r --arg k "$key" '.[$k]'  build-info.json)
+            echo "$var=$value"
+            echo "$var=$value" >> "$GITHUB_ENV"
+          done
+
+      - name: Install python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python_version }}
+
+      - name: Checkout the apio repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{env.APIO_REPO}}
+          ref: ${{env.APIO_COMMIT}}
+          path: _apio-repo
+          fetch-depth: 0
+
+      - name: Pip install apio
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e _apio-repo
+
+      - name: Pip install pyinstaller
+        run: |
+          pip install pyinstaller
+
+      - name: Set up working directories
+        run: |
+          mkdir _work
+          mkdir _dist
+          pwd
+          ls -la .
+
+      - name: Run pyinstaller
+        run: |
+          pyinstaller \
+            --log-level=DEBUG \
+            --workpath _work \
+            --distpath _dist \
+            .github/workflows/resources/apio-pyinstaller.spec
+          echo "_dist:"
+          ls -al _dist
+          echo "_dist/apio:"
+          ls -al _dist/apio
+
+      - name: Show symlinks
+        run: |
+          # Per the link below, _dist may contain symlinks that
+          # we need to propagate all the way.
+          # https://github.com/orgs/pyinstaller/discussions/9166
+          echo "Searching for symlinks:"
+          find _dist -type l
+
+      - name: Add the build info file
+        run: |
+          cp build-info.json _dist/apio/BUILD-INFO.json
+          cat -n _dist/apio/BUILD-INFO.json
+
+      - name: Add the LICENSE file
+        run: |
+          cp _apio-repo/LICENSE _dist/apio
+          cat _dist/apio/LICENSE
+
+      - name: Add the 'readme' file
+        run: |
+          cat <<EOF > _dist/apio/README.txt
+          This is the Apio file bundle for Linux x86-64.
+
+          For installation instructions see
+          https://fpgawars.github.io/apio/installing-apio/#linux-x86-bundle
+
+          For bundle information see BUILD-INFO.json.
+          EOF
+
+      - name: List the bundle files
+        run: |
+          find _dist
+
+      # We use .tgz and not .zip to preserve symlinks.
+      - name: Compress the pyinstaller bundle
+        run: |
+          pushd _dist
+          bundle="apio-linux-x86-64-${PACKAGE_TAG}-bundle.tgz"
+          # zip -r -y ../${bundle} apio
+          tar zcf ../${bundle} apio
+          popd
+          ls -al
+
+      - name: Populate the debian package
+        run: |
+          mkdir _debian
+
+          # -- /opt/apio
+          mkdir -p _debian/opt/apio
+          # We mv instead of cp to preserve symlinks.
+          mv _dist/apio/apio _debian/opt/apio
+          mv _dist/apio/_internal _debian/opt/apio
+
+          # /usr/local/bin
+          mkdir -p _debian/usr/local/bin
+          pushd _debian/usr/local/bin
+          ln -s ../../../opt/apio/apio apio
+          popd
+
+          # Package control file
+          mkdir _debian/DEBIAN
+          control="_debian/DEBIAN/control"
+          sed "s/\[RELEASE_VERSION\]/${RELEASE_VERSION}/g" .github/workflows/resources/linux/control.template > ${control}
+
+          # Show info
+          find _debian
+          cat -n ${control}
+
+      - name: Set permissions for debian control file
+        run: find _debian/DEBIAN -type f -exec chmod 644 {} \;
+
+      - name: Build .deb package
+        run: |
+          dpkg-deb --build --root-owner-group _debian "apio-linux-x86-64-${PACKAGE_TAG}-debian.deb"
+          ls -l
+
+      - name: Export the pyinstaller archive as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: error
+          name: "apio-linux-x86-64-bundle"
+          path: "apio-linux-x86-64-${{env.PACKAGE_TAG}}-bundle.tgz"
+
+      - name: Export the installer file as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: error
+          name: "apio-linux-x86-64-debian"
+          path: "apio-linux-x86-64-${{env.PACKAGE_TAG}}-debian.deb"
