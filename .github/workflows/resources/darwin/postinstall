@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# This script is executied at the end of the package installation to 
+# set the path to the apio binary.
+
+# Try to use the destination package var, or use default if not specified.
+if [ -n "$DSTROOT" ]; then
+    dst_root="$DSTROOT"
+else
+    dst_root="/Applications"
+fi
+
+apio_path="${dst_root}/Apio"
+apio_path_file="/etc/paths.d/Apio"
+
+# date > /Users/user/apio.installer.postinstall.log
+# env >> /Users/user/apio.installer.postinstall.log
+
+# Write the path. New shells will have it in the PATH.
+echo "${apio_path}" > "${apio_path_file}"
+

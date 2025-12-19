@@ -1,0 +1,326 @@
+name: build-and-release
+
+on:
+  # Runs daily at UTC midnight to minimize risk of overstepping
+  # manual builds of same date.
+  schedule:
+    - cron: "0 0 * * *"
+
+  # Allow manual activations.
+  workflow_dispatch:
+    inputs:
+      apio_repo:
+        description: "[Optional] Apio source repo (this repo)"
+        required: false
+      apio_branch:
+        description: "[Optional] Apio source branch (develop)"
+        required: false
+      commit_sha:
+        description: "[Optional] Apio source commit SHA to build (latest)"
+        required: false
+
+permissions:
+  # Allow release creation
+  contents: write
+
+env:
+  # Python version to use (e.g. for pyinstaller binary)
+  PYTHON_VERSION: "3.14"
+
+  # Apio github repo to use.
+  APIO_REPO: ${{github.event.inputs.apio_repo || github.repository}}
+
+  # Apio repo branch to use.
+  APIO_BRANCH: ${{github.event.inputs.apio_branch || 'develop'}}
+
+  # Is set later.
+  RELEASE_TAG: ""
+  PACKAGE_TAG: ""
+  BRANCH: ""
+  APIO_COMMIT: ""
+
+jobs:
+  # ----- Parameters collection job
+
+  prepare:
+    runs-on: ubuntu-latest
+
+    outputs:
+      python_version: ${{ steps.set-output.outputs.python_version }}
+
+    steps:
+      - name: Checkout this repo (for builder)
+        uses: actions/checkout@v4
+
+      - name: Checkout apio repo (for source)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{env.APIO_REPO}}
+          ref: ${{env.BRANCH}}
+          path: apio-repo
+          fetch-depth: 0
+
+      - name: Determine Apio source commit to use
+        run: |
+          apio_latest_commit=$(git -C apio-repo rev-parse HEAD)
+          echo "APIO_LATEST_COMMIT=$apio_latest_commit" >> $GITHUB_ENV
+
+          # Strip leading and trailing spaces
+          sha="$(echo "${{github.event.inputs.commit_sha}}" | xargs)"
+
+          # User specified commit SHA.
+          if [ -n "$sha" ]; then
+            echo "APIO_COMMIT=$sha" >> $GITHUB_ENV
+            echo "COMMIT_NOTE=Using manual Apio commit" >> $GITHUB_ENV
+
+          # Default behavior, use latest commit.
+          else
+            echo "APIO_COMMIT=$apio_latest_commit" >> $GITHUB_ENV
+            echo "COMMIT_NOTE=Using latest Apio commit" >> $GITHUB_ENV
+          fi
+
+      - name: Checkout selected Apio source commit
+        run: |
+          git -C apio-repo fetch origin
+          git -C apio-repo checkout "$APIO_COMMIT"
+
+          echo "$COMMIT_NOTE"
+          echo "Selected: $APIO_COMMIT"
+          echo "Latest:   $APIO_LATEST_COMMIT"
+          echo "Current:  $(git -C apio-repo rev-parse HEAD)"
+
+      - name: Install python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{env.PYTHON_VERSION}}
+
+      # We install apio from the source repo so we can get its version number.
+      - name: Pip install apio
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e apio-repo
+
+      # Create the build configuration that we will pass to the other jobs.
+      - name: Create build info
+        run: |
+          # Collect values
+          builder_commit=$(git rev-parse HEAD)
+          apio_commit=$(git -C apio-repo rev-parse HEAD)
+          apio_branch=$(git -C apio-repo rev-parse --abbrev-ref HEAD)
+          apio_version="$(pip show apio | grep Version: | cut -d ' ' -f2)"
+          release_tag="$(date +'%Y-%m-%d')"
+          package_tag="${release_tag//-/}"
+
+          # Generate build-info.json
+          cat > build-info.json <<EOF
+          {
+            "package-name":  "apio",
+            "description" : "FPGA design tool",
+            "apio-repo":  "${{env.APIO_REPO}}",
+            "requested-apio-commit" : "${{github.event.inputs.commit_sha}}",
+            "apio-commit":  "$apio_commit",
+            "apio-branch":  "$apio_branch",
+            "apio-version": "$apio_version",
+            "release-tag":  "$release_tag",
+            "package-tag":  "$package_tag",
+            "build-time":  "$(date +'%Y-%m-%d %H:%M:%S %Z')",
+            "builder-repo":  "${{github.repository}}",
+            "builder-workflow":  "${{ github.workflow }}",
+            "builder-commit":  "$builder_commit",
+            "workflow-run-id":  "${{github.run_id}}",
+            "workflow-run-number": "${{github.run_number}}"
+          }
+          EOF
+
+          cat -n build-info.json
+
+      - name: Format build info
+        run: |
+          npm install -g json-align
+          json-align --in-place --spaces 2 build-info.json
+          cat -n build-info.json
+
+      - name: Upload the build info artifact
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: error
+          name: build-info
+          path: build-info.json
+
+      - name: Set python version output
+        id: set-output
+        run: |
+          echo "python_version=${{env.PYTHON_VERSION}}" >> $GITHUB_OUTPUT
+
+  # ----- Children build jobs
+
+  # We dispatch separate child workflows because each pyinstaller builder needs to
+  # run on it's target architecture.
+
+  build-darwin-arm64:
+    needs: prepare
+    uses: ./.github/workflows/build-darwin-arm64.yaml
+    secrets: inherit
+    with:
+      python_version: ${{ needs.prepare.outputs.python_version }}
+
+  build-linux-x86-64:
+    needs: prepare
+    uses: ./.github/workflows/build-linux-x86-64.yaml
+    secrets: inherit
+    with:
+      python_version: ${{ needs.prepare.outputs.python_version }}
+
+  build-windows-amd64:
+    needs: prepare
+    uses: ./.github/workflows/build-windows-amd64.yaml
+    secrets: inherit
+    with:
+      python_version: ${{ needs.prepare.outputs.python_version }}
+
+  # # ----- Release creation job
+
+  release:
+    needs:
+      [prepare, build-darwin-arm64, build-linux-x86-64, build-windows-amd64]
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      # - name: Checkout this repo
+      #   uses: actions/checkout@v4
+
+      - name: Download the artifacts
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          path: _artifacts
+
+      # Repo: https://github.com/Cisco-Talos/clamav
+      # Home: https://www.clamav.net/
+      - name: Install anti virus (ClamAV)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clamav clamav-daemon
+
+      - name: Update virus signatures
+        run: |
+          sudo systemctl stop clamav-freshclam || true
+          sudo freshclam --verbose
+
+      - name: Display clamav version (app/database)
+        run: clamscan --version
+
+      # Scans recursively inside the .tgz packages.
+      # See : https://linux.die.net/man/1/clamscan
+      # To check a suspected file for viruses upload to
+      # https://www.virustotal.com/gui/home/upload
+      - name: Scan the packages for viruses
+        run: |
+          clamscan -r --verbose --scan-archive=yes _artifacts/apio-*.*
+
+      - name: Move build info
+        run: |
+          find _artifacts
+          mv _artifacts/build-info.json .
+          cat -n build-info.json
+
+      - name: Set env vars from the build info
+        run: |
+          VARS=(
+            "APIO_REPO        apio-repo"
+            "APIO_COMMIT      apio-commit"
+            "APIO_VERSION  apio-version"
+            "RELEASE_TAG      release-tag"
+            "PACKAGE_TAG      package-tag"
+          )
+
+          for pair in "${VARS[@]}"; do
+            read var key <<< "$pair"
+            value=$(jq -r --arg k "$key" '.[$k]'  build-info.json)
+            echo "$var=$value"
+            echo "$var=$value" >> "$GITHUB_ENV"
+          done
+
+      # Summary for the run page.
+      - name: Prepare run summary
+        run: |
+          cat  > RUN-SUMMARY.txt <<EOF
+          Build info:
+          \`\`\`
+          $(tr -d '",{}' < build-info.json)
+          \`\`\`
+
+          [Cutoff commit](https://github.com/${{env.APIO_REPO}}/commit/${{env.APIO_COMMIT}})
+          EOF
+
+          ls -al
+          cat -n $out
+
+      - name: Add summary to run
+        run: |
+          cat RUN-SUMMARY.txt >> $GITHUB_STEP_SUMMARY
+
+      # Notes for the release page.
+      - name: Prepare release text
+        run: |
+          cat  > RELEASE-BODY.txt <<EOF
+          This is the daily build of the Apio \`develop\` branch.
+
+          > This build repository keeps only the last N releases so make sure
+          > to keep a copy of releases you want to preserve.
+
+          Build info:
+          \`\`\`
+          $(tr -d '",{}' < build-info.json)
+          \`\`\`
+
+          Additional resources:
+          * [Installation instructions](https://fpgawars.github.io/apio/docs/quick-start)
+          * [Official Apio releases](https://github.com/FPGAwars/apio/releases)
+          EOF
+
+          cat -n $out
+
+      # Delete old pre-releases, keeps all releases.
+      - name: Delete old pre-releases
+        uses: sgpublic/delete-release-action@v1.2
+        with:
+          # Keep all stable releases .
+          release-drop: false
+          # Delete old pre-releases, keep the newest 10 (excluding the absolute latest)
+          pre-release-drop: true
+          pre-release-keep-count: 5
+          pre-release-drop-tag: true # Also delete tags of deleted pre-releases
+          # Keep all drafts.
+          draft-drop: false
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Delete existing tag and release (if present)
+        uses: dev-drprasad/delete-tag-and-release@v1.1
+        with:
+          tag_name: ${{env.RELEASE_TAG}}
+          delete_release: true # Deletes release + assets
+          github_token: ${{ github.token }}
+
+      - name: Create GitHub pre-release
+        uses: softprops/action-gh-release@v2.2.2
+        with:
+          tag_name: ${{env.RELEASE_TAG}}
+          name: ${{env.RELEASE_TAG}}
+          body_path: RELEASE-BODY.txt
+          prerelease: true
+          preserve_order: true
+          fail_on_unmatched_files: true
+          # We intensionally list explicitly all the expected files.
+          files: |
+            build-info.json
+            _artifacts/apio-darwin-arm64-${{env.PACKAGE_TAG}}-bundle.tgz
+            _artifacts/apio-darwin-arm64-${{env.PACKAGE_TAG}}-installer.pkg
+            _artifacts/apio-linux-x86-64-${{env.PACKAGE_TAG}}-bundle.tgz
+            _artifacts/apio-linux-x86-64-${{env.PACKAGE_TAG}}-debian.deb
+            _artifacts/apio-windows-amd64-${{env.PACKAGE_TAG}}-bundle.zip
+            _artifacts/apio-windows-amd64-${{env.PACKAGE_TAG}}-installer.exe

@@ -1,0 +1,212 @@
+name: build-darwin-arm64
+
+on:
+  workflow_call:
+    inputs:
+      python_version:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    defaults:
+      run:
+        shell: bash # Set Bash as the default shell
+
+    steps:
+      - name: Check architecture
+        run: |
+          uname
+          uname -m
+          if [[ "$(uname)" != "Darwin" || "$(uname -m)" != "arm64" ]]; then
+            exit 1
+          fi
+
+      - name: Checkout this repo (for builder)
+        uses: actions/checkout@v4
+
+      - name: Download build-info.json artifact from main job
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          name: build-info
+          path: _artifacts
+
+      - name: Move build info
+        run: |
+          find _artifacts
+          mv _artifacts/build-info.json .
+          cat -n build-info.json
+
+      - name: Add platform info to build info.
+        run: |
+          jq '. + {"target-platform": "darwin-arm64"}' \
+              build-info.json > \
+              tmp.json && mv tmp.json build-info.json
+          cat -n build-info.json
+
+      - name: Format build info
+        run: |
+          npm install -g json-align
+          json-align --in-place --spaces 2 build-info.json
+          cat -n build-info.json
+
+      - name: Set env vars from the build info
+        run: |
+          VARS=(
+            "APIO_REPO        apio-repo"
+            "APIO_COMMIT      apio-commit"
+            "RELEASE_VERSION  apio-version"
+            "RELEASE_TAG      release-tag"
+            "PACKAGE_TAG      package-tag"
+          )
+
+          for pair in "${VARS[@]}"; do
+            read var key <<< "$pair"
+            value=$(jq -r --arg k "$key" '.[$k]'  build-info.json)
+            echo "$var=$value"
+            echo "$var=$value" >> "$GITHUB_ENV"
+          done
+
+      - name: Install python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python_version }}
+
+      - name: Checkout apio repo (for source)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{env.APIO_REPO}}
+          ref: ${{env.APIO_COMMIT}}
+          path: _apio-repo
+          fetch-depth: 0
+
+      - name: Pip install apio
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e _apio-repo
+
+      - name: Pip install pyinstaller
+        run: |
+          pip install pyinstaller
+
+      - name: Set up working directories
+        run: |
+          mkdir _work
+          mkdir _dist
+          mkdir _scripts
+          pwd
+          ls -la .
+
+      - name: Run pyinstaller
+        run: |
+          pyinstaller \
+            --log-level=DEBUG \
+            --workpath _work \
+            --distpath _dist \
+            .github/workflows/resources/apio-pyinstaller.spec
+          echo "_dist:"
+          ls -al _dist
+          echo "_dist/apio:"
+          ls -al _dist/apio
+
+      - name: Show symlinks
+        run: |
+          # Per the link below, _dist may contain symlinks that
+          # we need to propagate all the way.
+          # https://github.com/orgs/pyinstaller/discussions/9166
+          echo "Searching for symlinks:"
+          find _dist -type l
+
+      - name: Add the build info file
+        run: |
+          cp build-info.json _dist/apio/BUILD-INFO.json
+          cat -n _dist/apio/BUILD-INFO.json
+
+      - name: Add the LICENSE file
+        run: |
+          cp _apio-repo/LICENSE _dist/apio
+          cat _dist/apio/LICENSE
+
+      - name: Add the 'readme' file
+        run: |
+          cat <<EOF > _dist/apio/README.txt
+          This is the Apio file bundle for macOS arm64.
+
+          For installation instructions see
+          https://fpgawars.github.io/apio/installing-apio/#mac-arm64-bundle
+
+          For bundle information see BUILD-INFO.json.
+          EOF
+
+      - name: List the bundle files
+        run: |
+          find _dist
+
+      # We use .tgz and not .zip to preserve symlinks.
+      - name: Compress the pyinstaller bundle
+        run: |
+          pushd _dist
+          bundle="apio-darwin-arm64-${PACKAGE_TAG}-bundle.tgz"
+          tar zcf ../${bundle} apio
+          popd
+          ls -al
+
+      - name: Delete the readme files
+        run: |
+          rm _dist/apio/README.txt
+          echo "_dist/apio:"
+          ls -al _dist/apio
+
+      # This sets the app name in /Applications
+      - name: Rename apio to Apio
+        run: |
+          mv _dist/apio _dist/Apio
+          echo "_dist:"
+          ls -al _dist
+
+      - name: Create installer postinstall scripts
+        run: |
+          cp .github/workflows/resources/darwin/postinstall _scripts/postinstall
+          chmod 755 _scripts/postinstall
+          echo "_scripts:"
+          ls -al _scripts
+          echo "_scripts/postinstall:"
+          cat -n _scripts/postinstall
+
+      - name: Run pkgbuild
+        run: |
+          pkgbuild --root _dist \
+                   --install-location /Applications \
+                   --identifier "io.github.fpgawars.apio" \
+                   --version "${RELEASE_VERSION}" \
+                   --scripts _scripts \
+                   --ownership recommended \
+                   apio-component.pkg
+          pwd
+          ls -al
+
+      - name: Run productbuild
+        run: |
+          productbuild --resources .github/workflows/resources/darwin \
+                       --distribution .github/workflows/resources/darwin/distribution.xml \
+                       --package-path . \
+                       "apio-darwin-arm64-${PACKAGE_TAG}-installer.pkg"
+          pwd
+          ls -al
+
+      - name: Export the pyinstaller bundle as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: error
+          name: "apio-darwin-arm64-bundle"
+          path: "apio-darwin-arm64-${{env.PACKAGE_TAG}}-bundle.tgz"
+
+      - name: Export the installer file as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: error
+          name: "apio-darwin-arm64-installer"
+          path: "apio-darwin-arm64-${{env.PACKAGE_TAG}}-installer.pkg"
