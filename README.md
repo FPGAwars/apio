@@ -5,10 +5,10 @@
 [![](https://img.shields.io/badge/VS%20Code-compatible-blue?logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=FPGAwars.apio)
 
 [![apio-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/test.yaml?label=apio-test)](https://github.com/fpgawars/apio/actions/workflows/test.yaml)
-[![apio-dev-build](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-dev-builds/build-and-release.yaml?label=apio-dev-build)](https://github.com/fpgawars/apio-dev-builds/actions/workflows/build-and-release.yaml)
+[![apio-build](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/build-and-release.yaml?label=apio-build)](https://github.com/fpgawars/apio/actions/workflows/build-and-release.yaml)
+[![docs-publishing](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/publish-docs.yaml?label=apio-docs)](https://github.com/fpgawars/apio/actions/workflows/publish-docs.yaml)
 [![monitor-apio-prod](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/monitor-apio-prod.yaml?label=apio-prod-monitor)](https://github.com/fpgawars/apio/actions/workflows/monitor-apio-prod.yaml)
 [![monitor-apio-latest](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/monitor-apio-latest.yaml?label=apio-latest-monitor)](https://github.com/fpgawars/apio/actions/workflows/monitor-apio-latest.yaml)
-[![docs-publishing](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/publish-docs.yaml?label=apio-docs)](https://github.com/fpgawars/apio/actions/workflows/publish-docs.yaml)
 [![vscode-build](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-vscode/build-and-release.yaml?label=vscode-build)](https://github.com/fpgawars/apio-vscode/actions/workflows/build-and-release.yaml)
 [![vscode-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-vscode/test.yaml?label=vscode-test)](https://github.com/fpgawars/apio-vscode/actions/workflows/test.yaml)
 [![examples-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-examples/test.yaml?label=apio-examples-test)](https://github.com/fpgawars/apio-examples/actions/workflows/test.yaml)
@@ -88,7 +88,7 @@ While many use Apio as a stand alone text based CLI toolbox, it can also be used
 * [Getting started with Apio](https://fpgawars.github.io/apio/docs/quick-start)
 * [Apio github repository](https://github.com/fpgawars/apio)
 * [Apio package on PyPi](https://pypi.org/project/apio/)
-* [Apio daily build](https://github.com/fpgawars/apio-dev-builds/releases)
+* [Apio daily build](https://github.com/fpgawars/apio/releases)
 * [Apio Test Coverage Report](https://fpgawars.github.io/apio/coverage/)
 
 
