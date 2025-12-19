@@ -269,8 +269,8 @@ jobs:
           cat  > RELEASE-BODY.txt <<EOF
           This is the daily build of the Apio \`develop\` branch.
 
-          > This build repository keeps only the last N releases so make sure
-          > to keep a copy of releases you want to preserve.
+          > This repository keeps only the last 5 pre-releases so to preserve
+          > a release, check off its's pre-release [] checkbox.
 
           Build info:
           \`\`\`

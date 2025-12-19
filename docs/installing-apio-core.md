@@ -22,7 +22,7 @@ To install Apio CORE, select your desired method from the table below and click 
 
 To install Apio CORE on macOS Apple Silicon using an installer, follow these steps:
 
-1.  From the [latest release](https://github.com/fpgawars/apio-dev-builds/releases) download the installer file:
+1.  From the [latest release](https://github.com/fpgawars/apio/releases) download the installer file:
 
         apio-darwin-arm64-[date]-installer.pkg
 
@@ -46,7 +46,7 @@ To install Apio CORE on macOS Apple Silicon using an installer, follow these ste
 To install Apio CORE on macOS Apple Silicon using a file bundle,
 follow these steps:
 
-1.  From the [latest release](https://github.com/fpgawars/apio-dev-builds/releases) download the file bundle:
+1.  From the [latest release](https://github.com/fpgawars/apio/releases) download the file bundle:
 
         apio-darwin-arm64-[date]-bundle.tgz
 
@@ -115,7 +115,7 @@ To install Apio CORE on macOS Intel Silicon using a Pip package, follow these st
 
 To install Apio CORE on Linux X86-64 using a Debian package, follow these steps:
 
-1.  From the [latest release](https://github.com/fpgawars/apio-dev-builds/releases) download the Debian package file:
+1.  From the [latest release](https://github.com/fpgawars/apio/releases) download the Debian package file:
 
         apio-linux-x86-64-[date]-debian.deb
 
@@ -133,7 +133,7 @@ To install Apio CORE on Linux X86-64 using a Debian package, follow these steps:
 
 To install Apio CORE on Linux X86-64 using a file bundle, follow these steps:
 
-1.  From the [latest release](https://github.com/fpgawars/apio-dev-builds/releases) download the file bundle:
+1.  From the [latest release](https://github.com/fpgawars/apio/releases) download the file bundle:
 
         apio-linux-x86-64-[date]-bundle.tgz
 
@@ -201,7 +201,7 @@ To install Apio CORE on Linux ARM-64 using a Pip package, follow these steps:
 
 To install Apio CORE on Windows X86-64 using an installer, follow these steps:
 
-1.  From the [latest release](https://github.com/fpgawars/apio-dev-builds/releases) download the installer file:
+1.  From the [latest release](https://github.com/fpgawars/apio/releases) download the installer file:
 
         apio-windows-amd64-[date]-installer.exe
 
@@ -220,7 +220,7 @@ To install Apio CORE on Windows X86-64 using an installer, follow these steps:
 
 To install Apio CORE on Windows X86-64 using a file bundle, follow these steps:
 
-1.  From the [latest release](https://github.com/fpgawars/apio-dev-builds/releases) download the file bundle:
+1.  From the [latest release](https://github.com/fpgawars/apio/releases) download the file bundle:
 
         apio-windows-amd64-[date]-bundle.zip
 
