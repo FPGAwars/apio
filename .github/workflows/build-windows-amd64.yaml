@@ -24,7 +24,7 @@ jobs:
             exit 1
           fi
 
-      - name: Checkout this repo
+      - name: Checkout this repo (for builder)
         uses: actions/checkout@v4
 
       - name: Download build-info.json artifact from main job
@@ -75,7 +75,7 @@ jobs:
         with:
           python-version: ${{ inputs.python_version }}
 
-      - name: Checkout the apio repo
+      - name: Checkout apio repo (for source)
         uses: actions/checkout@v4
         with:
           repository: ${{env.APIO_REPO}}

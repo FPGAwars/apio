@@ -16,7 +16,7 @@ on:
         description: "[Optional] Apio source branch (develop)"
         required: false
       commit_sha:
-        description: "[Optional] Apio commit SHA to build (latest)"
+        description: "[Optional] Apio source commit SHA to build (latest)"
         required: false
 
 permissions:
@@ -36,6 +36,8 @@ env:
   # Is set later.
   RELEASE_TAG: ""
   PACKAGE_TAG: ""
+  BRANCH: ""
+  APIO_COMMIT: ""
 
 jobs:
   # ----- Parameters collection job
@@ -47,10 +49,10 @@ jobs:
       python_version: ${{ steps.set-output.outputs.python_version }}
 
     steps:
-      - name: Checkout this repo
+      - name: Checkout this repo (for builder)
         uses: actions/checkout@v4
 
-      - name: Checkout the apio repo
+      - name: Checkout apio repo (for source)
         uses: actions/checkout@v4
         with:
           repository: ${{env.APIO_REPO}}
@@ -58,7 +60,7 @@ jobs:
           path: apio-repo
           fetch-depth: 0
 
-      - name: Determine Apio commit to use
+      - name: Determine Apio source commit to use
         run: |
           apio_latest_commit=$(git -C apio-repo rev-parse HEAD)
           echo "APIO_LATEST_COMMIT=$apio_latest_commit" >> $GITHUB_ENV
@@ -77,7 +79,7 @@ jobs:
             echo "COMMIT_NOTE=Using latest Apio commit" >> $GITHUB_ENV
           fi
 
-      - name: Check selected Apio commit
+      - name: Checkout selected Apio source commit
         run: |
           git -C apio-repo fetch origin
           git -C apio-repo checkout "$APIO_COMMIT"
@@ -92,7 +94,7 @@ jobs:
         with:
           python-version: ${{env.PYTHON_VERSION}}
 
-      # We install apio so we can get its version number.
+      # We install apio from the source repo so we can get its version number.
       - name: Pip install apio
         run: |
           python -m pip install --upgrade pip
@@ -187,8 +189,8 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout this repo
-        uses: actions/checkout@v4
+      # - name: Checkout this repo
+      #   uses: actions/checkout@v4
 
       - name: Download the artifacts
         uses: actions/download-artifact@v4
