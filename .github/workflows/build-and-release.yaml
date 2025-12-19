@@ -124,9 +124,9 @@ jobs:
             "release-tag":  "$release_tag",
             "package-tag":  "$package_tag",
             "build-time":  "$(date +'%Y-%m-%d %H:%M:%S %Z')",
-            "build-repo":  "${{github.repository}}",
-            "build-commit":  "$builder_commit",
-            "build-workflow":  "${{ github.workflow }}",
+            "builder-repo":  "${{github.repository}}",
+            "builder-workflow":  "${{ github.workflow }}",
+            "builder-commit":  "$builder_commit",
             "workflow-run-id":  "${{github.run_id}}",
             "workflow-run-number": "${{github.run_number}}"
           }
