@@ -299,12 +299,23 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
-      - name: Delete existing tag and release (if present)
-        uses: dev-drprasad/delete-tag-and-release@v1.1
-        with:
-          tag_name: ${{env.RELEASE_TAG}}
-          delete_release: true # Deletes release + assets
-          github_token: ${{ github.token }}
+      - name: Delete same tag pre-release if exist.
+        run: |
+          # Status values:
+          #   "false" - exists and is a release exists
+          #   "true"  - exists and is a pre-release
+          #   ""      - doesn't exist
+          status=$(gh release view "$RELEASE_TAG" --json isPrerelease -q .isPrerelease  || true)
+          echo "Status is [$status]"
+          if [[ "$status" == "false" ]]; then
+            echo "Error: A stable release (non pre-release) already exists for tag $RELEASE_TAG."
+            exit 1
+          elif [[ "$status" == "true" ]]; then
+            echo "Deleting existing pre-release and tag $RELEASE_TAG."
+            gh release delete "$RELEASE_TAG" --yes --cleanup-tag
+          fi
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Create GitHub pre-release
         uses: softprops/action-gh-release@v2.2.2
