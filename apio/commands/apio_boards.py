@@ -197,7 +197,7 @@ def _list_boards_docs_format(apio_ctx: ApioContext):
     )
     cwrite(
         "\n> Custom board definitions can be added in the project directory "
-        "and new board definitions can be contributed in the "
+        "can latter be contributed to Apio in the "
         "[apio-definitions](https://github.com/FPGAwars/apio-definitions/"
         "tree/main/definitions) repository.\n"
     )

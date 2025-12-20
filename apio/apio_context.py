@@ -432,16 +432,25 @@ class ApioContext:
         from standard dir. This method is called for resource files in
         apio/resources and definitions files in the definitions packages.
         """
-        # -- First try to load from custom dir.
+
+        # -- Load the standard definition as a json dict.
+        filepath = standard_dir / name
+        result = self._load_resource_file(filepath)
+
+        # -- If there is a project specific override file, apply it on
+        # -- top of the standard apio definition dict.
         if custom_dir:
             filepath = custom_dir / name
             if filepath.exists():
+                # -- Load the override json dict.
                 cout(f"Loading custom '{name}'.")
-                return self._load_resource_file(filepath)
+                override = self._load_resource_file(filepath)
+                # -- Apply the override. Entries in override replace same
+                # -- key entries in result or if unique are added.
+                result.update(override)
 
-        # -- Else, load from the default dir.
-        filepath = standard_dir / name
-        return self._load_resource_file(filepath)
+        # -- All done.
+        return result
 
     @staticmethod
     def _load_resource_file(filepath: Path) -> dict:
@@ -480,12 +489,7 @@ class ApioContext:
         # -- It should never occur unless a developer has
         # -- made a mistake when changing the jsonc file
         except json.decoder.JSONDecodeError as exc:
-
-            # -- Display Main error
-            cerror("Invalid .jsonc file", f"{exc}")
-            cout(f"File: {filepath}", style=INFO)
-
-            # -- Abort!
+            cerror(f"'{filepath}' has bad format", f"{exc}")
             sys.exit(1)
 
         # -- Return the object for the resource

@@ -60,12 +60,6 @@ During debugging, it is sometimes useful to run quick partial tests before runni
 invoke lint
 invoke l   # Shortcut, same as above.
 
-# Run the fast tests only and skip the rest. Note that even in fast mode,
-# the first test may require to fill in the packages cache which may take
-# a minute or two.
-invoke test-fast
-invoke tf   # Shortcut, same as above.
-
 # Run a single test file with verbose info
 pytest -vv -s test/managers/test_project.py
 

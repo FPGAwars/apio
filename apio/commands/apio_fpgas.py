@@ -181,7 +181,7 @@ def _list_fpgas_docs_format(apio_ctx: ApioContext):
     )
     cwrite(
         "\n> Custom FPGAs definitions can be added in the project directory "
-        "and new FPGAs definitions can be contributed in the "
+        "and can latter be contributed in the "
         "[apio-definitions](https://github.com/FPGAwars/apio-definitions/"
         "tree/main/definitions) repository.\n"
     )

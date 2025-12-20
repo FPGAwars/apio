@@ -28,22 +28,6 @@ DEBUG = True
 SANDBOX_MARKER = "apio-sandbox"
 
 
-# -- This function is called by pytest. It adds the pytest --fast-only flag
-# -- which is is passed to tests such that slow tests can skip.
-# --
-# -- More info: https://docs.pytest.org/en/7.1.x/example/simple.html
-def pytest_addoption(parser: pytest.Parser):
-    """Register the --fast-only command line option when invoking pytest"""
-
-    # -- Option: --fast-only
-    # -- It causes slow tests to skip. Note that even in fast mode, the
-    # -- first test may need to update the packages cache which may take
-    # -- a minute or two.
-    parser.addoption(
-        "--fast-only", action="store_true", help="Run only the fast tests."
-    )
-
-
 @dataclass(frozen=True)
 class ApioResult:
     """Represent the outcome of an apio invocation."""
@@ -544,14 +528,6 @@ class ApioRunner:
             # -- Flush the output so far.
             sys.stdout.flush()
             sys.stderr.flush()
-
-    def skip_test_if_fast_only(self):
-        """The calling test is skipped if running in --fast-only mode.
-        Should be called from slow tests. The fast/slow classification of tests
-        should be done after the packages cache was filled (automatically).
-        """
-        if self._request.config.getoption("--fast-only"):
-            pytest.skip("slow test")
 
 
 @pytest.fixture(scope="module")

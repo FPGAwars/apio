@@ -83,9 +83,6 @@ def test_build_with_env_arg_error(apio_runner: ApioRunner):
 def test_files_order(apio_runner: ApioRunner):
     """Tests that source files are sorted in apio build command."""
 
-    # -- This is a slow test. Skip it if running with --fast-only flag.
-    apio_runner.skip_test_if_fast_only()
-
     with apio_runner.in_sandbox() as sb:
 
         # -- Fetch a working example.

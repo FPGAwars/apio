@@ -9,8 +9,7 @@
 #   invoke --list        # Show available tasks
 #   invoke -l            # Show available tasks
 #   invoke lint          # Lint the python code
-#   invoke test-fast     # Run only the fast tests, skip the rest.
-#   invoke test       .  # Run lint and all the tests (slow)
+#   invoke test       .  # Run lint and all the tests
 #   invoke install-apio  # Install to run 'apio' from the source code here.
 #   invoke docs-viewer   # Run a local http server to view the Apio docs.
 #   invoke test-coverage # Collect and show test coverage.
@@ -155,27 +154,6 @@ def lint_task(ctx: Context):
     # -- NOTE: This also creates the local dir _site which we ignore. We
     # -- don't know how to lint mkdocs without creating it.
     run(ctx, [PYTHON, "-m", "tox", "-e", "lint"])
-
-
-@task(name="test-fast", aliases=["tf"])
-def test_fast_task(ctx: Context):
-    """Run fast tests only, using the latest Python."""
-    announce_task("test-fast")
-    run(
-        ctx,
-        [
-            PYTHON,
-            "-m",
-            "tox",
-            "--skip-missing-interpreters",
-            "false",
-            "-e",
-            LATEST_PYTHON,
-            "--",
-            "--fast-only",
-            "--durations=10",
-        ],
-    )
 
 
 @task(name="test", aliases=["t"])
