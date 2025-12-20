@@ -52,6 +52,12 @@ jobs:
       - name: Checkout this repo (for builder)
         uses: actions/checkout@v4
 
+      - name: List builder repo
+        run: |
+          set -ex
+          pwd
+          ls -al
+
       - name: Checkout apio repo (for source)
         uses: actions/checkout@v4
         with:
@@ -192,6 +198,15 @@ jobs:
       # - name: Checkout this repo
       #   uses: actions/checkout@v4
 
+      - name: Checkout this repo (for builder)
+        uses: actions/checkout@v4
+
+      - name: List builder repo
+        run: |
+          set -ex
+          pwd
+          ls -al
+
       - name: Download the artifacts
         uses: actions/download-artifact@v4
         with:
@@ -257,7 +272,7 @@ jobs:
           EOF
 
           ls -al
-          cat -n $out
+          cat -n RUN-SUMMARY.txt 
 
       - name: Add summary to run
         run: |
@@ -279,10 +294,9 @@ jobs:
 
           Additional resources:
           * [Installation instructions](https://fpgawars.github.io/apio/docs/quick-start)
-          * [Official Apio releases](https://github.com/FPGAwars/apio/releases)
           EOF
 
-          cat -n $out
+          cat -n RELEASE-BODY.txt 
 
       # Delete old pre-releases, keeps all releases.
       - name: Delete old pre-releases
@@ -301,18 +315,21 @@ jobs:
 
       - name: Delete same tag pre-release if exist.
         run: |
-          # Status values:
-          #   "false" - exists and is a release exists
-          #   "true"  - exists and is a pre-release
-          #   ""      - doesn't exist
-          status=$(gh release view "$RELEASE_TAG" --json isPrerelease -q .isPrerelease  || true)
-          echo "Status is [$status]"
-          if [[ "$status" == "false" ]]; then
+          set -e
+          gh release list --limit 100
+          output=$(gh release view "$RELEASE_TAG" --json name,tagName,isDraft,isImmutable,isPrerelease 2>&1 || true)
+          echo $output
+          if [[ "$output" == "release not found" ]]; then
+            echo "Release $RELEASE_TAG does not exist, safe to continue."
+          elif [[ "$(echo "$output" | jq -r '.isPrerelease')" == "true" ]]; then
+            echo "Release $RELEASE_TAG exists and is a pre-release, deleting."
+            gh release delete "$RELEASE_TAG" --yes --cleanup-tag
+          elif [[ "$(echo "$output" | jq -r '.isPrerelease')" == "false" ]]; then
             echo "Error: A stable release (non pre-release) already exists for tag $RELEASE_TAG."
             exit 1
-          elif [[ "$status" == "true" ]]; then
-            echo "Deleting existing pre-release and tag $RELEASE_TAG."
-            gh release delete "$RELEASE_TAG" --yes --cleanup-tag
+          else
+            echo "Error determining if release $RELEASE_TAG exists"
+            exit 1
           fi
         env:
           GITHUB_TOKEN: ${{ github.token }}
