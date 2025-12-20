@@ -27,9 +27,6 @@ def test_packages(apio_runner: ApioRunner):
 def test_packages_slow(apio_runner: ApioRunner):
     """Tests listing, installation and uninstallation of packages."""
 
-    # -- This is a slow test. Skip it if running with --fast-only flag.
-    apio_runner.skip_test_if_fast_only()
-
     with apio_runner.in_sandbox() as sb:
 
         # -- Run 'apio packages list'

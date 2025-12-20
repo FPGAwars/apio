@@ -12,9 +12,6 @@ from apio.commands.apio import apio_top_cli as apio
 def test_project_with_legacy_board_id(apio_runner: ApioRunner):
     """Test a project that uses a legacy board id."""
 
-    # -- This is a slow test. Skip it if running with --fast-only flag.
-    apio_runner.skip_test_if_fast_only()
-
     # -- We shared the apio home with the other tests in this file to speed
     # -- up apio package installation. Tests should not mutate the shared home
     # -- to avoid cross-interference between tests in this file.
@@ -64,9 +61,6 @@ def _test_project(
 
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-statements
-
-    # -- This is a slow test. Skip it if running with --fast-only flag.
-    apio_runner.skip_test_if_fast_only()
 
     # -- Extract the base name of the testbench file
     testbench, _ = os.path.splitext(testbench_file)
