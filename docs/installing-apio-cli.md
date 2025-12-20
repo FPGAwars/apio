@@ -1,11 +1,11 @@
-# Installing Apio CORE
+# Installing Apio CLI
 
 !!! warning "Important – December 2025"
 
     **Do not** run `pip install apio` because this currently installs the **old and unsupported** Apio **0.9.5**.
     Please follow the instructions below to install the current, supported **Apio 1.x.x** series instead.
 
-To install Apio CORE, select your desired method from the table below and click on your platform type in the instructions column. Note that not all methods are available to all platform.
+To install Apio CLI, select your desired method from the table below and click on your platform type in the instructions column. Note that not all methods are available to all platform.
 
 | Method        | Description                                                                                                                                     | Instructions                                                                                                                                                                                           |
 | :------------ | :---------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -20,7 +20,7 @@ To install Apio CORE, select your desired method from the table below and click 
 
 ### Install using an installer <a id="mac-arm64-installer"></a>
 
-To install Apio CORE on macOS Apple Silicon using an installer, follow these steps:
+To install Apio CLI on macOS Apple Silicon using an installer, follow these steps:
 
 1.  From the [latest release](https://github.com/fpgawars/apio/releases) download the installer file:
 
@@ -43,7 +43,7 @@ To install Apio CORE on macOS Apple Silicon using an installer, follow these ste
 
 ### Install using a file bundle <a id="mac-arm64-bundle"></a>
 
-To install Apio CORE on macOS Apple Silicon using a file bundle,
+To install Apio CLI on macOS Apple Silicon using a file bundle,
 follow these steps:
 
 1.  From the [latest release](https://github.com/fpgawars/apio/releases) download the file bundle:
@@ -66,7 +66,7 @@ follow these steps:
 
 ### Install using a Pip package <a id="mac-arm64-pip"></a>
 
-To install Apio CORE on macOS Apple Silicon using a Pip package,
+To install Apio CLI on macOS Apple Silicon using a Pip package,
 follow these steps:
 
 1.  Verify that you have Python installed by running:
@@ -89,7 +89,7 @@ follow these steps:
 
 ### Install using a Pip package <a id="mac-x86-pip"></a>
 
-To install Apio CORE on macOS Intel Silicon using a Pip package, follow these steps:
+To install Apio CLI on macOS Intel Silicon using a Pip package, follow these steps:
 
 1.  Verify that you have Python installed by running:
 
@@ -109,11 +109,9 @@ To install Apio CORE on macOS Intel Silicon using a Pip package, follow these st
 
 ## Linux X86-64
 
-
-
 ### Install a Debian package <a id="linux-x86-debian"></a>
 
-To install Apio CORE on Linux X86-64 using a Debian package, follow these steps:
+To install Apio CLI on Linux X86-64 using a Debian package, follow these steps:
 
 1.  From the [latest release](https://github.com/fpgawars/apio/releases) download the Debian package file:
 
@@ -131,7 +129,7 @@ To install Apio CORE on Linux X86-64 using a Debian package, follow these steps:
 
 ### Install using a file bundle <a id="linux-x86-bundle"></a>
 
-To install Apio CORE on Linux X86-64 using a file bundle, follow these steps:
+To install Apio CLI on Linux X86-64 using a file bundle, follow these steps:
 
 1.  From the [latest release](https://github.com/fpgawars/apio/releases) download the file bundle:
 
@@ -151,7 +149,7 @@ To install Apio CORE on Linux X86-64 using a file bundle, follow these steps:
 
 ### Install using a Pip package <a id="linux-x86-pip"></a>
 
-To install Apio CORE on Linux X86-64 using a Pip package, follow these steps:
+To install Apio CLI on Linux X86-64 using a Pip package, follow these steps:
 
 1.  Verify that you have Python installed by running:
 
@@ -171,11 +169,9 @@ To install Apio CORE on Linux X86-64 using a Pip package, follow these steps:
 
 ## Linux ARM-64
 
-
 ### Install using a Pip package <a id="linux-arm64-pip"></a>
 
-To install Apio CORE on Linux ARM-64 using a Pip package, follow these steps:
-
+To install Apio CLI on Linux ARM-64 using a Pip package, follow these steps:
 
 1.  Verify that you have Python installed by running:
 
@@ -195,11 +191,9 @@ To install Apio CORE on Linux ARM-64 using a Pip package, follow these steps:
 
 ## Windows X86-64
 
-
-
 ### Install using an installer <a id="windows-x86-64-installer"></a>
 
-To install Apio CORE on Windows X86-64 using an installer, follow these steps:
+To install Apio CLI on Windows X86-64 using an installer, follow these steps:
 
 1.  From the [latest release](https://github.com/fpgawars/apio/releases) download the installer file:
 
@@ -218,7 +212,7 @@ To install Apio CORE on Windows X86-64 using an installer, follow these steps:
 
 ### Install using a file bundle <a id="windows-x86-64-bundle"></a>
 
-To install Apio CORE on Windows X86-64 using a file bundle, follow these steps:
+To install Apio CLI on Windows X86-64 using a file bundle, follow these steps:
 
 1.  From the [latest release](https://github.com/fpgawars/apio/releases) download the file bundle:
 
@@ -234,12 +228,12 @@ To install Apio CORE on Windows X86-64 using a file bundle, follow these steps:
         .\apio
 
 5.  Move the `apio` directory to a location of your choosing and add it to your `%PATH%`.
-   
+
 <br>
 
 ### Install using a Pip package <a id="windows-x86-64-pip"></a>
 
-To install Apio CORE on Windows X86-64 using a Pip package, follow these steps:
+To install Apio CLI on Windows X86-64 using a Pip package, follow these steps:
 
 1.  Verify that you have Python installed by running:
 
@@ -254,4 +248,3 @@ To install Apio CORE on Windows X86-64 using a Pip package, follow these steps:
         apio
 
 > If necessary, add the directory of the installed `apio` binary to your `$PATH`.
-
