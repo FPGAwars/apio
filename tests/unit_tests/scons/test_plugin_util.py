@@ -39,28 +39,31 @@ def test_get_constraint_file(
             result = get_constraint_file(apio_env, ".pcf")
         captured = capsys.readouterr()
         assert e.value.code == 1
-        assert (
-            "Error: No constraint file '*.pcf' found, expected exactly one"
-            in cunstyle(captured.out)
-        )
+        assert "No constraint file '*.pcf' found" in cunstyle(captured.out)
 
-        # -- If a single .pcf file, return it.
-        sb.write_file("pinout.pcf", "content")
+        # -- If a single .pcf file, return it. Constraint file can also be
+        # -- in subdirectories as we test here
+        file1 = os.path.join("lib", "pinout.pcf")
+        sb.write_file(file1, "content1")
         result = get_constraint_file(apio_env, ".pcf")
         captured = capsys.readouterr()
         assert captured.out == ""
-        assert result == "pinout.pcf"
+        assert result == file1
 
         # -- If there is more than one, exit with an error message.
-        sb.write_file("other.pcf", "content")
+        file2 = "other.pcf"
+        sb.write_file(file2, "content2")
         capsys.readouterr()  # Reset capture
         with pytest.raises(SystemExit) as e:
             result = get_constraint_file(apio_env, ".pcf")
         captured = capsys.readouterr()
         assert e.value.code == 1
-        assert "Error: Found multiple '*.pcf'" in cunstyle(captured.out)
+        assert "Error: Found 2 constraint files '*.pcf'" in cunstyle(
+            captured.out
+        )
 
-        # -- If the user specified a valid file then return it.
+        # -- If the user specified a valid file then return it, regardless
+        # -- if it exists or not.
         apio_env.params.apio_env_params.constraint_file = "xyz.pcf"
         capsys.readouterr()  # Reset capture
         result = get_constraint_file(apio_env, ".pcf")
@@ -68,8 +71,7 @@ def test_get_constraint_file(
         assert captured.out == ""
         assert result == "xyz.pcf"
 
-        # -- If the user specified a constrain file with an extension that
-        # -- doesn't match the architecture, exit with an error
+        # -- File extension should match the architecture.
         apio_env.params.apio_env_params.constraint_file = "xyz.bad"
         capsys.readouterr()  # Reset capture
         with pytest.raises(SystemExit) as e:
@@ -77,20 +79,31 @@ def test_get_constraint_file(
         captured = capsys.readouterr()
         assert e.value.code == 1
         assert (
-            "Constraint file 'xyz.bad' should have the extension '.pcf'"
+            "Constraint file should have the extension '.pcf': xyz.bad"
             in cunstyle(captured.out)
         )
 
-        # -- If the user specified a constrain file with forbidden char,
-        # -- exit with an error
-        apio_env.params.apio_env_params.constraint_file = "a/xyz.pcf"
+        # -- Path under _build is not allowed.
+        apio_env.params.apio_env_params.constraint_file = "_build/xyz.pcf"
         capsys.readouterr()  # Reset capture
         with pytest.raises(SystemExit) as e:
             result = get_constraint_file(apio_env, ".pcf")
         captured = capsys.readouterr()
         assert e.value.code == 1
         assert (
-            "Constrain filename 'a/xyz.pcf' contains an illegal character: '/'"
+            "Error: Constraint file should not be under _build: _build/xyz.pcf"
+            in cunstyle(captured.out)
+        )
+
+        # -- Path should not contain '../
+        apio_env.params.apio_env_params.constraint_file = "a/../xyz.pcf"
+        capsys.readouterr()  # Reset capture
+        with pytest.raises(SystemExit) as e:
+            result = get_constraint_file(apio_env, ".pcf")
+        captured = capsys.readouterr()
+        assert e.value.code == 1
+        assert (
+            "Error: Constraint file path should not contain '..': a/../xyz.pcf"
             in cunstyle(captured.out)
         )
 

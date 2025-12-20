@@ -92,9 +92,14 @@ board ID must be from that file.
 
 The optional `constraint-file` option allows to specify the constraint file
 (aka pinout file) and to use different constraint file for different envs. Its
-value is a simple file name that is expected to find in the root directory of
-the project. The constraint file extension must be the one expected by the
-architecture, for example `.lpf` for ICE40 architecture.
+value is a relative path to a constraint file under the project's root. 
+The constraint file extension must be the one expected by the
+FPGA architecture, for example `.lpf` for ICE40 architecture.
+
+If `constraint-file` is not specified and the project directory tree 
+contains exactly one file with the expected extension, that files is used
+automatically as the constraint file, otherwise Apio exists with an error
+message.
 
 ```
 ; ICE40 board.
@@ -105,7 +110,7 @@ constraint-file = alhambra-ii.lpf
 ; Gowin board.
 [env:env2]
 board = sipeed-tang-nano-9k
-constraint-file = tang-nano-9k.cst
+constraint-file = board1/tang-nano-9k.cst
 ```
 
 ### default-testbench

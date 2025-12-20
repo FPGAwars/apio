@@ -7,21 +7,21 @@ hide:
 
 In this page, we will go through the steps of creating, validating, and uploading a design to an FPGA board. We will use the Alhambra-ii FPGA board, but the process is the same for all supported boards.
 
-Apio comes in two flavors, **Apio IDE** which integrates Apio with Visual Studio Code and **Apio CORE** which
+Apio comes in two flavors, **Apio IDE** which integrates Apio with Visual Studio Code and **Apio CLI** which
 provides a standalone command line interface. Both flavors provide the same core functionality and but
 APIO IDE allow to use the rich functionality of Visual Studio Code such a Verilog syntax coloring
 and Github integration.
 
-> Hint: Installing Apio IDE provides also the full command line functionality of Apio CORE.
+> Hint: Installing Apio IDE provides also the full command line functionality of Apio CLI.
 
-|                              | Apio IDE (Preferred) | Apio CORE           |
-| ---------------------------- | -------------------- | ------------------- |
-| Environment                  | Visual Studio Code   | Shell commands      |
-| Rich IDE                     | Yes                  | No                  |
-| Command line interface       | Yes                  | Yes                 |
-| Menu and buttons             | Yes                  | No                  |
-| Full Apio CORE functionality | Yes                  | Yes                 |
-| Delivery method              | Extension            | Package / Installer |
+|                             | Apio IDE           | Apio CLI            |
+| --------------------------- | ------------------ | ------------------- |
+| Environment                 | Visual Studio Code | Shell commands      |
+| Rich IDE                    | Yes                | No                  |
+| Command line interface      | Yes                | Yes                 |
+| Menu and buttons            | Yes                | No                  |
+| Full Apio CLI functionality | Yes                | Yes                 |
+| Delivery method             | Extension          | Package / Installer |
 
 Select below your desired Apio flavor:
 
@@ -128,11 +128,11 @@ Select below your desired Apio flavor:
 
     The example now runs on the FPGA board, and two LEDs should be flashing alternately.
 
-=== "Apio CORE"
+=== "Apio CLI"
 
-    ## Step 1: Installing Apio CORE
+    ## Step 1: Installing Apio CLI
 
-    The first step in using Apio CORE is installing it, visit the [Installing Apio CORE](installing-apio-core.md) page, choose your installation method, follow the installation instructions and continue in step 2 below.
+    The first step in using Apio CLI is installing it, visit the [Installing Apio CLI](installing-apio-cli.md) page, choose your installation method, follow the installation instructions and continue in step 2 below.
 
     ---
 

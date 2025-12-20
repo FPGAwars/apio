@@ -6,13 +6,13 @@
 
 Apio is tested on the following platforms (as of Nov 2025):
 
-| Apio Platform Code | Description           | Tested Github Versions | Apio IDE | Apio CORE |
-| :----------------- | :-------------------- | :--------------------- | -------- | --------- |
-| darwin_arm64       | macOS (Apple Silicon) | macos-latest           | YES      | YES       |
-| darwin_x86_64      | macOS (Intel)         | macos-15-intel         |        | YES       |
-| linux_x86_64       | Linux x86 64-bit      | ubuntu-22.04           | YES      | YES       |
-| linux_aarch64      | Linux ARM 64-bit      | (not tested)           |        | YES       |
-| windows_amd64      | Windows x86 64-bit    | windows-latest         | YES      | YES       |
+| Apio Platform Code | Description           | Tested Github Versions | Apio IDE | Apio CLI |
+| :----------------- | :-------------------- | :--------------------- | -------- | -------- |
+| darwin_arm64       | macOS (Apple Silicon) | macos-latest           | YES      | YES      |
+| darwin_x86_64      | macOS (Intel)         | macos-15-intel         |          | YES      |
+| linux_x86_64       | Linux x86 64-bit      | ubuntu-22.04           | YES      | YES      |
+| linux_aarch64      | Linux ARM 64-bit      | (not tested)           |          | YES      |
+| windows_amd64      | Windows x86 64-bit    | windows-latest         | YES      | YES      |
 
 > The tested version are set in the Apio github test workflow.
 
