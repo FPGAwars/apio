@@ -10,6 +10,7 @@
 """Helper functions for apio scons plugins."""
 
 
+from glob import glob
 import sys
 import os
 import re
@@ -30,6 +31,7 @@ from SCons.Node.Alias import Alias
 from apio.scons.apio_env import ApioEnv
 from apio.common.proto.apio_pb2 import SimParams
 from apio.common.common_util import (
+    PROJECT_BUILD_PATH,
     has_testbench_name,
     is_source_file,
 )
@@ -74,53 +76,75 @@ def get_constraint_file(apio_env: ApioEnv, file_ext: str) -> str:
     file_ext is a string with the constrained file extension.
     E.g. ".pcf" for ice40.
 
-    Returns the file name if found or a default name otherwise otherwise.
+    Returns the file name if found or exit with an error otherwise.
     """
+
     # -- If the user specified a 'constraint-file' in apio.ini then use it.
     user_specified = apio_env.params.apio_env_params.constraint_file
+
     if user_specified:
-        # -- Check for proper extension for this architecture.
-        if not user_specified.endswith(file_ext):
+        path = Path(user_specified)
+        # -- Path should be relative.
+        if path.is_absolute():
+            cerror(f"Constraint file path is not relative: {user_specified}")
+            sys.exit(1)
+        # -- Constrain file extension should match the architecture.
+        if path.suffix != file_ext:
             cerror(
-                f"Constraint file '{user_specified}' should have "
-                f"the extension '{file_ext}'."
+                f"Constraint file should have the extension '{file_ext}': "
+                f"{user_specified}."
             )
             sys.exit(1)
-        # -- Check for valid chars only, e.g. dir separators are not allowed.
-        # -- This must be a simple file name that is expected to be found in
-        # -- the root directory of the project.
-        forbidden_chars = '<>:"/\\|?*\0'
-        for c in user_specified:
-            if c in forbidden_chars:
+        # -- File should not be under _build
+        if PROJECT_BUILD_PATH in path.parents:
+            cerror(
+                f"Constraint file should not be under {PROJECT_BUILD_PATH}: "
+                f"{user_specified}."
+            )
+            sys.exit(1)
+        # -- Path should not contain '..' to avoid traveling outside of the
+        # -- project and coming back.
+        for part in path.parts:
+            if part == "..":
                 cerror(
-                    f"Constrain filename '{user_specified}' contains an "
-                    f"illegal character: '{c}'"
+                    f"Constraint file path should not contain '..': "
+                    f"{user_specified}."
                 )
                 sys.exit(1)
 
+        # -- Constrain file looks good.
         return user_specified
 
-    # -- No user specified constraint file, try to look for it.
-    # --
-    # -- Get existing files in alphabetical order. We search only in the root
-    # -- directory of the project.
-    files = apio_env.scons_env.Glob(f"*{file_ext}")
-    n = len(files)
+    # -- No user specified constraint file, we will try to look for it
+    # -- in the project tree.
+    glob_files: List[str] = glob(f"**/*{file_ext}", recursive=True)
+
+    # -- Exclude files that are under _build
+    filtered_files: List[str] = [
+        f for f in glob_files if PROJECT_BUILD_PATH not in Path(f).parents
+    ]
+
+    # -- Handle by file count.
+    n = len(filtered_files)
 
     # -- Case 1: No matching constrain files.
     if n == 0:
-        cerror(
-            f"No constraint file '*{file_ext}' found, expected exactly one."
-        )
+        cerror(f"No constraint file '*{file_ext}' found.")
         sys.exit(1)
+
     # -- Case 2: Exactly one constrain file found.
     if n == 1:
-        result = str(files[0])
+        result = str(filtered_files[0])
         return result
+
     # -- Case 3: Multiple matching constrain files.
     cerror(
-        f"Found multiple '*{file_ext}' "
-        "constraint files, expecting exactly one."
+        f"Found {n} constraint files '*{file_ext}' "
+        "in the project tree, which one to use?"
+    )
+    cout(
+        "Use the apio.ini constraint-file option to specify the desired file.",
+        style=INFO,
     )
     sys.exit(1)
 
