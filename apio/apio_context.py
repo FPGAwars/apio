@@ -489,12 +489,7 @@ class ApioContext:
         # -- It should never occur unless a developer has
         # -- made a mistake when changing the jsonc file
         except json.decoder.JSONDecodeError as exc:
-
-            # -- Display Main error
-            cerror("Invalid .jsonc file", f"{exc}")
-            cout(f"File: {filepath}", style=INFO)
-
-            # -- Abort!
+            cerror(f"'{filepath}' has bad format", f"{exc}")
             sys.exit(1)
 
         # -- Return the object for the resource
