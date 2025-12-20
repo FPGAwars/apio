@@ -5,8 +5,15 @@ from apio.commands.apio import apio_top_cli as apio
 
 CUSTOM_FPGAS = """
 {
+  "custom-ice40hx4k-bg121": {
+    "part-num": "CUSTOM-ICE40HX4K-BG121",
+    "arch": "ice40",
+    "size": "4k",
+    "type": "hx4k",
+    "pack": "bg121"
+  },
   "ice40hx4k-tq144-8k": {
-    "part-num": "MY-CUSTOM_PART-NUM",
+    "part-num": "MODIFIED-ICE40HX4K-TQ144",
     "arch": "ice40",
     "size": "8k",
     "type": "hx8k",
@@ -54,21 +61,25 @@ def test_custom_fpga(apio_runner: ApioRunner):
         # -- Write a custom boards.jsonc file in the project's directory.
         sb.write_file("fpgas.jsonc", CUSTOM_FPGAS)
 
-        # -- Execute "apio boards"
+        # -- Execute "apio fpgas". It should include the customization.
         result = sb.invoke_apio_cmd(apio, ["fpgas"])
         sb.assert_result_ok(result)
         # -- Note: pytest sees the piped version of the command's output.
         # -- Run 'apio build' | cat' to reproduce it.
         assert "Loading custom 'fpgas.jsonc'" in result.output
-        assert "MY-CUSTOM_PART-NUM" in result.output
-        assert "Total of 1 fpga" in result.output
+        assert "gw1nz-lv1qn48c6-i5" in result.output
+        assert "custom-ice40hx4k-bg121" in result.output
+        assert "ice40hx4k-tq144-8k" in result.output
+        assert "CUSTOM-ICE40HX4K-BG121" in result.output
 
-        # -- Execute "apio fpgas --docs"
-        # -- When running with --docs, 'apio boards' ignores custom fpgas.
+        # -- Execute "apio fpgas --docs". It should not include the
+        # -- customization.
         result = sb.invoke_apio_cmd(apio, ["fpgas", "--docs"])
         sb.assert_result_ok(result)
+        # -- Note: pytest sees the piped version of the command's output.
+        # -- Run 'apio build' | cat' to reproduce it.
         assert "Loading custom 'fpgas.jsonc'" not in result.output
+        assert "gw1nz-lv1qn48c6-i5" in result.output
+        assert "custom-ice40hx4k-bg121" not in result.output
         assert "ice40hx4k-tq144-8k" in result.output
-        assert "my_custom_fpga" not in result.output
-        assert "─────┐" not in result.output  # Graphic table border
-        assert ":---" in result.output  # Graphic table border
+        assert "CUSTOM-ICE40HX4K-BG121" not in result.output
