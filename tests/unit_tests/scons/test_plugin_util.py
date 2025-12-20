@@ -41,16 +41,18 @@ def test_get_constraint_file(
         assert e.value.code == 1
         assert "No constraint file '*.pcf' found" in cunstyle(captured.out)
 
-        # -- If a single .pcf file, return it. Even if it's in a sub
-        # -- directory.
-        sb.write_file("lib/pinout.pcf", "content")
+        # -- If a single .pcf file, return it. Constraint file can also be
+        # -- in subdirectories as we test here
+        file1 = os.path.join("lib", "pinout.pcf")
+        sb.write_file(file1, "content1")
         result = get_constraint_file(apio_env, ".pcf")
         captured = capsys.readouterr()
         assert captured.out == ""
-        assert result == "lib/pinout.pcf"
+        assert result == file1
 
         # -- If there is more than one, exit with an error message.
-        sb.write_file("other.pcf", "content")
+        file2 = "other.pcf"
+        sb.write_file(file2, "content2")
         capsys.readouterr()  # Reset capture
         with pytest.raises(SystemExit) as e:
             result = get_constraint_file(apio_env, ".pcf")
@@ -60,7 +62,8 @@ def test_get_constraint_file(
             captured.out
         )
 
-        # -- If the user specified a valid file then return it.
+        # -- If the user specified a valid file then return it, regardless
+        # -- if it exists or not.
         apio_env.params.apio_env_params.constraint_file = "xyz.pcf"
         capsys.readouterr()  # Reset capture
         result = get_constraint_file(apio_env, ".pcf")
