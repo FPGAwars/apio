@@ -1,5 +1,5 @@
 Package: apio 
-Version: [RELEASE_VERSION]
+Version: [APIO_VERSION]
 Section: electronic
 Priority: optional
 Architecture: amd64

@@ -6,19 +6,25 @@ Apio uses GitHub repositories under the `FPGAwars` organization for its source c
 
 | Repository                                                      | Application | Comments          |
 | :-------------------------------------------------------------- | :---------- | :---------------- |
-| [FPGAwars/apio](https://github.com/FPGAwars/apio)               | Apio CLI    | Command line tool |
-| [FPGAwars/apio-vscode](https://github.com/FPGAwars/apio-vscode) | Apio IDE    | Vs Code extension |
+| [fpgawars/apio](https://github.com/fpgawars/apio)               | Apio CLI    | Command line tool |
+| [fpgawars/apio-vscode](https://github.com/fpgawars/apio-vscode) | Apio IDE    | Vs Code extension |
 
 **Apio packages**
 
 | Repository                                                                      | Package name    | Comments     |
 | :------------------------------------------------------------------------------ | :-------------- | :----------- |
-| [FPGAwars/apio-definitions](https://github.com/FPGAwars/apio-definitions)       | `definitions`   |              |
-| [FPGAwars/tools-drivers](https://github.com/FPGAwars/tools-drivers)             | `drivers`       | Windows only |
-| [FPGAwars/apio-examples](https://github.com/FPGAwars/apio-examples)             | `examples`      |              |
-| [FPGAwars/tools-graphviz](https://github.com/FPGAwars/tools-graphviz)           | `graphviz`      | Windows only |
-| [FPGAwars/tools-oss-cad-suite](https://github.com/FPGAwars/tools-oss-cad-suite) | `oss-cad-suite` |              |
-| [FPGAwars/tools-verible](https://github.com/FPGAwars/tools-verible)             | `verible`       |              |
+| [fpgawars/apio-definitions](https://github.com/fpgawars/apio-definitions)       | `definitions`   |              |
+| [fpgawars/tools-drivers](https://github.com/fpgawars/tools-drivers)             | `drivers`       | Windows only |
+| [fpgawars/apio-examples](https://github.com/fpgawars/apio-examples)             | `examples`      |              |
+| [fpgawars/tools-graphviz](https://github.com/fpgawars/tools-graphviz)           | `graphviz`      | Windows only |
+| [fpgawars/tools-oss-cad-suite](https://github.com/fpgawars/tools-oss-cad-suite) | `oss-cad-suite` |              |
+| [fpgawars/tools-verible](https://github.com/fpgawars/tools-verible)             | `verible`       |              |
+
+**Utilities**
+
+| Repository                                                            | Description                                           |
+| :-------------------------------------------------------------------- | :---------------------------------------------------- |
+| [fpgawars/apio-workflows](https://github.com/fpgawars/apio-workflows) | Provides common functionalities for Apio's workflows. |
 
 For easier tracking and maintenance, all bug reports and discussions are consolidated in the main Apio repository: [fpgawars/apio](https://github.com/fpgawars/apio), which also serves as the project’s homepage.
 
@@ -34,8 +40,8 @@ Note that declaring a release permanent and the latest doesn't necessary make it
 
 | Build type                                          | Publishing                                                                                                                                                                                                                                                          |
 | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Apio packages such as 'examples' or 'oss-cad-suite' | • Update the packages versions in the relevant [apio remote config files](https://github.com/FPGAwars/apio/tree/develop/remote-config) for the new packages to be picked up.                                                                                        |
-| Apio                                                | • Publish in the various 'markets' such as PyPi. <br> <br> • Update the Apio build version in the Apio VS Code [constants.js](https://github.com/FPGAwars/apio-vscode/blob/main/constants.js) file to have the new apio version picked up by the VS Code extension. |
+| Apio packages such as 'examples' or 'oss-cad-suite' | • Update the packages versions in the relevant [apio remote config files](https://github.com/fpgawars/apio/tree/develop/remote-config) for the new packages to be picked up.                                                                                        |
+| Apio                                                | • Publish in the various 'markets' such as PyPi. <br> <br> • Update the Apio build version in the Apio VS Code [constants.js](https://github.com/fpgawars/apio-vscode/blob/main/constants.js) file to have the new apio version picked up by the VS Code extension. |
 | Apio VS Code extension                              | • Publish in the VS Code market.                                                                                                                                                                                                                                    |
 
 # Guidelines for daily build workflows

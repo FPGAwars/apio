@@ -2,10 +2,13 @@ name: build-darwin-arm64
 
 on:
   workflow_call:
-    inputs:
-      python_version:
-        required: true
-        type: string
+
+env:
+  # These are set later.
+  PYTHON_VERSION: ""
+  APIO_REPO: ""
+  APIO_COMMIT: ""
+  PACKAGE_TAG: ""
 
 jobs:
   build:
@@ -16,13 +19,11 @@ jobs:
         shell: bash # Set Bash as the default shell
 
     steps:
-      - name: Check architecture
-        run: |
-          uname
-          uname -m
-          if [[ "$(uname)" != "Darwin" || "$(uname -m)" != "arm64" ]]; then
-            exit 1
-          fi
+      - name: Check required platform
+        uses: fpgawars/apio-workflows/.github/actions/check-platform@main
+        with:
+          os: darwin
+          arch: arm64
 
       - name: Checkout this repo (for builder)
         uses: actions/checkout@v4
@@ -40,40 +41,35 @@ jobs:
           mv _artifacts/build-info.json .
           cat -n build-info.json
 
-      - name: Add platform info to build info.
-        run: |
-          jq '. + {"target-platform": "darwin-arm64"}' \
-              build-info.json > \
-              tmp.json && mv tmp.json build-info.json
-          cat -n build-info.json
+      - name: Add platform info to build info json file
+        uses: fpgawars/apio-workflows/.github/actions/write-to-json-file@main
+        with:
+          json-file: build-info.json
+          key: target-platform
+          value: darwin-arm64
 
-      - name: Format build info
-        run: |
-          npm install -g json-align
-          json-align --in-place --spaces 2 build-info.json
-          cat -n build-info.json
+      - name: Format build info json file
+        uses: fpgawars/apio-workflows/.github/actions/format-json-file@main
+        with:
+          json-file: build-info.json
 
-      - name: Set env vars from the build info
-        run: |
-          VARS=(
-            "APIO_REPO        apio-repo"
-            "APIO_COMMIT      apio-commit"
-            "RELEASE_VERSION  apio-version"
-            "RELEASE_TAG      release-tag"
-            "PACKAGE_TAG      package-tag"
-          )
+      - name: Set env vars from JSON
+        uses: fpgawars/apio-workflows/.github/actions/set-env-from-json@main
+        with:
+          json-file: build-info.json
+          mappings: >-
+            PYTHON_VERSION   python-version
+            APIO_REPO        apio-repo
+            APIO_COMMIT      apio-commit
+            APIO_VERSION     apio-version
+            RELEASE_TAG      release-tag
+            PACKAGE_TAG      package-tag
 
-          for pair in "${VARS[@]}"; do
-            read var key <<< "$pair"
-            value=$(jq -r --arg k "$key" '.[$k]'  build-info.json)
-            echo "$var=$value"
-            echo "$var=$value" >> "$GITHUB_ENV"
-          done
-
+      # -- This is the python that will be included in pyinstaller.
       - name: Install python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ inputs.python_version }}
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Checkout apio repo (for source)
         uses: actions/checkout@v4
@@ -181,7 +177,7 @@ jobs:
           pkgbuild --root _dist \
                    --install-location /Applications \
                    --identifier "io.github.fpgawars.apio" \
-                   --version "${RELEASE_VERSION}" \
+                   --version "${APIO_VERSION}" \
                    --scripts _scripts \
                    --ownership recommended \
                    apio-component.pkg
