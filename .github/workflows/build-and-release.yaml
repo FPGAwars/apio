@@ -52,11 +52,23 @@ jobs:
       - name: Checkout this repo (for builder)
         uses: actions/checkout@v4
 
-      - name: List builder repo
-        run: |
-          set -ex
-          pwd
-          ls -al
+
+      - name: Get release and package tags
+        uses: fpgawars/apio-workflows/.github/actions/get-release-and-package-tags@main
+        with:
+          release-tag-var: RELEASE_TAG
+          package-tag-var: PACKAGE_TAG
+
+      - name: Ensure no conflicting release
+        uses: fpgawars/apio-workflows/.github/actions/ensure-no-conflicting-release@main
+        with:
+          release-tag: ${{ env.RELEASE_TAG }}
+
+      # - name: List builder repo
+      #   run: |
+      #     set -ex
+      #     pwd
+      #     ls -al
 
       - name: Checkout apio repo (for source)
         uses: actions/checkout@v4
@@ -114,8 +126,9 @@ jobs:
           apio_commit=$(git -C apio-repo rev-parse HEAD)
           apio_branch=$(git -C apio-repo rev-parse --abbrev-ref HEAD)
           apio_version="$(pip show apio | grep Version: | cut -d ' ' -f2)"
-          release_tag="$(date +'%Y-%m-%d')"
-          package_tag="${release_tag//-/}"
+
+          # release_tag="$(date +'%Y-%m-%d')"
+          # package_tag="${release_tag//-/}"
 
           # Generate build-info.json
           cat > build-info.json <<EOF
@@ -127,8 +140,8 @@ jobs:
             "apio-commit":  "$apio_commit",
             "apio-branch":  "$apio_branch",
             "apio-version": "$apio_version",
-            "release-tag":  "$release_tag",
-            "package-tag":  "$package_tag",
+            "release-tag":  "$RELEASE_TAG",
+            "package-tag":  "$PACKAGE_TAG",
             "build-time":  "$(date +'%Y-%m-%d %H:%M:%S %Z')",
             "builder-repo":  "${{github.repository}}",
             "builder-workflow":  "${{ github.workflow }}",
@@ -140,11 +153,16 @@ jobs:
 
           cat -n build-info.json
 
-      - name: Format build info
-        run: |
-          npm install -g json-align
-          json-align --in-place --spaces 2 build-info.json
-          cat -n build-info.json
+      # - name: Format build info
+      #   run: |
+      #     npm install -g json-align
+      #     json-align --in-place --spaces 2 build-info.json
+      #     cat -n build-info.json
+
+      - name: Format build info json file in-place
+        uses: fpgawars/apio-workflows/.github/actions/format-json-file@main
+        with:
+          json-file: build-info.json
 
       - name: Upload the build info artifact
         uses: actions/upload-artifact@v4
@@ -201,11 +219,11 @@ jobs:
       - name: Checkout this repo (for builder)
         uses: actions/checkout@v4
 
-      - name: List builder repo
-        run: |
-          set -ex
-          pwd
-          ls -al
+      # - name: List builder repo
+      #   run: |
+      #     set -ex
+      #     pwd
+      #     ls -al
 
       - name: Download the artifacts
         uses: actions/download-artifact@v4
@@ -215,26 +233,32 @@ jobs:
 
       # Repo: https://github.com/Cisco-Talos/clamav
       # Home: https://www.clamav.net/
-      - name: Install anti virus (ClamAV)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y clamav clamav-daemon
+      # - name: Install anti virus (ClamAV)
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y clamav clamav-daemon
 
-      - name: Update virus signatures
-        run: |
-          sudo systemctl stop clamav-freshclam || true
-          sudo freshclam --verbose
+      # - name: Update virus signatures
+      #   run: |
+      #     sudo systemctl stop clamav-freshclam || true
+      #     sudo freshclam --verbose
 
-      - name: Display clamav version (app/database)
-        run: clamscan --version
+      # - name: Display clamav version (app/database)
+      #   run: clamscan --version
 
       # Scans recursively inside the .tgz packages.
       # See : https://linux.die.net/man/1/clamscan
       # To check a suspected file for viruses upload to
       # https://www.virustotal.com/gui/home/upload
+      # - name: Scan the packages for viruses
+      #   run: |
+      #     clamscan -r --verbose --scan-archive=yes _artifacts/apio-*.*
+
       - name: Scan the packages for viruses
-        run: |
-          clamscan -r --verbose --scan-archive=yes _artifacts/apio-*.*
+        uses: fpgawars/apio-workflows/.github/actions/scan-files-for-viruses@main
+        with:
+          file-patterns: |
+            _artifacts/apio-*.*
 
       - name: Move build info
         run: |
@@ -242,22 +266,33 @@ jobs:
           mv _artifacts/build-info.json .
           cat -n build-info.json
 
-      - name: Set env vars from the build info
-        run: |
-          VARS=(
-            "APIO_REPO        apio-repo"
-            "APIO_COMMIT      apio-commit"
-            "APIO_VERSION  apio-version"
-            "RELEASE_TAG      release-tag"
-            "PACKAGE_TAG      package-tag"
-          )
+      # - name: Set env vars from the build info
+      #   run: |
+      #     VARS=(
+      #       "APIO_REPO        apio-repo"
+      #       "APIO_COMMIT      apio-commit"
+      #       "APIO_VERSION     apio-version"
+      #       "RELEASE_TAG      release-tag"
+      #       "PACKAGE_TAG      package-tag"
+      #     )
 
-          for pair in "${VARS[@]}"; do
-            read var key <<< "$pair"
-            value=$(jq -r --arg k "$key" '.[$k]'  build-info.json)
-            echo "$var=$value"
-            echo "$var=$value" >> "$GITHUB_ENV"
-          done
+      #     for pair in "${VARS[@]}"; do
+      #       read var key <<< "$pair"
+      #       value=$(jq -r --arg k "$key" '.[$k]'  build-info.json)
+      #       echo "$var=$value"
+      #       echo "$var=$value" >> "$GITHUB_ENV"
+      #     done
+
+      - name: Set environment variables from JSON
+        uses: fpgawars/apio-workflows/.github/actions/set-env-from-json@main
+        with:
+          json-file: build-info.json
+          mappings: |
+            APIO_REPO     apio-repo
+            APIO_COMMIT   apio-commit
+            APIO_VERSION  apio-version
+            RELEASE_TAG   release-tag
+            PACKAGE_TAG   package-tag
 
       # Summary for the run page.
       - name: Prepare run summary
@@ -298,41 +333,50 @@ jobs:
 
           cat -n RELEASE-BODY.txt 
 
-      # Delete old pre-releases, keeps all releases.
-      - name: Delete old pre-releases
-        uses: sgpublic/delete-release-action@v1.2
-        with:
-          # Keep all stable releases .
-          release-drop: false
-          # Delete old pre-releases, keep the newest 10 (excluding the absolute latest)
-          pre-release-drop: true
-          pre-release-keep-count: 5
-          pre-release-drop-tag: true # Also delete tags of deleted pre-releases
-          # Keep all drafts.
-          draft-drop: false
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
 
-      - name: Delete same tag pre-release if exist.
-        run: |
-          set -e
-          gh release list --limit 100
-          output=$(gh release view "$RELEASE_TAG" --json name,tagName,isDraft,isImmutable,isPrerelease 2>&1 || true)
-          echo $output
-          if [[ "$output" == "release not found" ]]; then
-            echo "Release $RELEASE_TAG does not exist, safe to continue."
-          elif [[ "$(echo "$output" | jq -r '.isPrerelease')" == "true" ]]; then
-            echo "Release $RELEASE_TAG exists and is a pre-release, deleting."
-            gh release delete "$RELEASE_TAG" --yes --cleanup-tag
-          elif [[ "$(echo "$output" | jq -r '.isPrerelease')" == "false" ]]; then
-            echo "Error: A stable release (non pre-release) already exists for tag $RELEASE_TAG."
-            exit 1
-          else
-            echo "Error determining if release $RELEASE_TAG exists"
-            exit 1
-          fi
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+      - name: Cleanup old pre-releases
+        uses: fpgawars/apio-workflows/.github/actions/cleanup-old-prereleases@main
+
+      # # Delete old pre-releases, keeps all releases.
+      # - name: Delete old pre-releases
+      #   uses: sgpublic/delete-release-action@v1.2
+      #   with:
+      #     # Keep all stable releases .
+      #     release-drop: false
+      #     # Delete old pre-releases, keep the newest 10 (excluding the absolute latest)
+      #     pre-release-drop: true
+      #     pre-release-keep-count: 5
+      #     pre-release-drop-tag: true # Also delete tags of deleted pre-releases
+      #     # Keep all drafts.
+      #     draft-drop: false
+      #   env:
+      #     GITHUB_TOKEN: ${{ github.token }}
+
+      # - name: Delete same tag pre-release if exist.
+      #   run: |
+      #     set -e
+      #     gh release list --limit 100
+      #     output=$(gh release view "$RELEASE_TAG" --json name,tagName,isDraft,isImmutable,isPrerelease 2>&1 || true)
+      #     echo $output
+      #     if [[ "$output" == "release not found" ]]; then
+      #       echo "Release $RELEASE_TAG does not exist, safe to continue."
+      #     elif [[ "$(echo "$output" | jq -r '.isPrerelease')" == "true" ]]; then
+      #       echo "Release $RELEASE_TAG exists and is a pre-release, deleting."
+      #       gh release delete "$RELEASE_TAG" --yes --cleanup-tag
+      #     elif [[ "$(echo "$output" | jq -r '.isPrerelease')" == "false" ]]; then
+      #       echo "Error: A stable release (non pre-release) already exists for tag $RELEASE_TAG."
+      #       exit 1
+      #     else
+      #       echo "Error determining if release $RELEASE_TAG exists"
+      #       exit 1
+      #     fi
+      #   env:
+      #     GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Ensure no conflicting release (again)
+        uses: fpgawars/apio-workflows/.github/actions/ensure-no-conflicting-release@main
+        with:
+          release-tag: ${{ env.RELEASE_TAG }}
 
       - name: Create GitHub pre-release
         uses: softprops/action-gh-release@v2.2.2
