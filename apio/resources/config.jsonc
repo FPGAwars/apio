@@ -24,7 +24,7 @@
   // a local file using the "file://" protocol spec.
   //
   // For testing using the remote config at zapta:
-  // export APIO_REMOTE_CONFIG_URL="https://github.com/zapta/apio/raw/develop/remote-config/apio-{{major}.{minor}.x.jsonc"
+  // export APIO_REMOTE_CONFIG_URL="https://github.com/zapta/apio/raw/develop/remote-config/apio-{major}.{minor}.x.jsonc"
   //
   // For testing using the local remote config
   // export APIO_REMOTE_CONFIG_URL="file:///projects/apio-dev/repo/remote-config/apio-{major}.{minor}.x.jsonc"
