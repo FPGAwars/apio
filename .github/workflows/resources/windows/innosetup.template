@@ -1,10 +1,10 @@
 ; Config file for building Apio's InnoSetup installer.
-; [RELEASE_VERSION] is a placeholder.
+; [APIO_VERSION] is a placeholder.
 
 [Setup]
 ChangesEnvironment=yes
 AppName=Apio
-AppVersion=[RELEASE_VERSION]
+AppVersion=[APIO_VERSION]
 DefaultDirName={commonpf}\Apio
 ArchitecturesInstallIn64BitMode=x64
 DefaultGroupName=Apio
