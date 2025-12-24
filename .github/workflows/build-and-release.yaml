@@ -76,7 +76,7 @@ jobs:
       - name: Determine Apio source commit to use
         run: |
           apio_latest_commit=$(git -C apio-repo rev-parse HEAD)
-          
+
           echo "APIO_LATEST_COMMIT=$apio_latest_commit"
           echo "APIO_LATEST_COMMIT=$apio_latest_commit" >> $GITHUB_ENV
 
@@ -294,15 +294,29 @@ jobs:
         with:
           release-tag: ${{ env.RELEASE_TAG }}
 
+      # - name: Create GitHub pre-release
+      #   uses: softprops/action-gh-release@v2.2.2
+      #   with:
+      #     tag_name: ${{env.RELEASE_TAG}}
+      #     name: ${{env.RELEASE_TAG}}
+      #     body_path: RELEASE-BODY.txt
+      #     prerelease: true
+      #     preserve_order: true
+      #     fail_on_unmatched_files: true
+      #     # We intensionally list explicitly all the expected files.
+      #     files: |
+      #       _artifacts/apio-darwin-arm64-${{env.PACKAGE_TAG}}-bundle.tgz
+      #       _artifacts/apio-darwin-arm64-${{env.PACKAGE_TAG}}-installer.pkg
+      #       _artifacts/apio-linux-x86-64-${{env.PACKAGE_TAG}}-bundle.tgz
+      #       _artifacts/apio-linux-x86-64-${{env.PACKAGE_TAG}}-debian.deb
+      #       _artifacts/apio-windows-amd64-${{env.PACKAGE_TAG}}-bundle.zip
+      #       _artifacts/apio-windows-amd64-${{env.PACKAGE_TAG}}-installer.exe
+
       - name: Create GitHub pre-release
-        uses: softprops/action-gh-release@v2.2.2
+        uses: fpgawars/apio-workflows/.github/actions/create-pre-release@main
         with:
-          tag_name: ${{env.RELEASE_TAG}}
-          name: ${{env.RELEASE_TAG}}
+          release_tag: ${{ env.RELEASE_TAG }}
           body_path: RELEASE-BODY.txt
-          prerelease: true
-          preserve_order: true
-          fail_on_unmatched_files: true
           # We intensionally list explicitly all the expected files.
           files: |
             _artifacts/apio-darwin-arm64-${{env.PACKAGE_TAG}}-bundle.tgz
