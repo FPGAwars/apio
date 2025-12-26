@@ -5,10 +5,10 @@ If you just want to quickly test the latest development version of Apio,
 install Python and run the following command:
 
 ```
-pip install --force-reinstall -U git+https://github.com/FPGAwars/apio.git@develop
+pip install --force-reinstall -U git+https://github.com/FPGAwars/apio.git@main
 ```
 
-> For a specific commit, replace `develop` with the commit's SHA.
+> For a specific commit, replace `main` with the commit's SHA.
 
 The rest of the page describes the settings for the Apio development environment.
 
@@ -98,7 +98,7 @@ The test coverage is also published online at the [Test Coverage Report](https:/
 
 Once you are ready to send a pull request from your forked repository, make sure that the test workflow completed successfully. You can find it in the Actions tab of your forked repo.
 
-> The test workflow tests the `develop` branch, so if you worked on your own branch, merge it with `develop` first.
+> The test workflow tests the `main` branch, so if you worked on your own branch, merge it with `main` first.
 
 ## Using `APIO_DEBUG` to print verbose debug information
 

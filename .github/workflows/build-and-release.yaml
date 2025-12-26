@@ -13,7 +13,7 @@ on:
         description: "[Optional] Apio source repo (this repo)"
         required: false
       apio_branch:
-        description: "[Optional] Apio source branch (develop)"
+        description: "[Optional] Apio source branch (main)"
         required: false
       commit_sha:
         description: "[Optional] Apio source commit SHA to build (latest)"
@@ -31,7 +31,7 @@ env:
   APIO_REPO: ${{github.event.inputs.apio_repo || github.repository}}
 
   # Apio repo branch to use.
-  APIO_TARGET_BRANCH: ${{github.event.inputs.apio_branch || 'develop'}}
+  APIO_TARGET_BRANCH: ${{github.event.inputs.apio_branch || 'main'}}
 
   # These are set later.
   RELEASE_TAG: ""
@@ -270,7 +270,7 @@ jobs:
       - name: Prepare release text
         run: |
           cat  > RELEASE-BODY.txt <<EOF
-          This is the daily build of the Apio \`develop\` branch.
+          This is the daily build of the Apio \`$APIO_TARGET_BRANCH\` branch.
 
           > This repository keeps only the last 5 pre-releases so to preserve
           > a release, check off its's pre-release [] checkbox.

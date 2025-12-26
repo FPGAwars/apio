@@ -21,7 +21,7 @@ Things to pay attention to:
 
 - Determine the increment level, patch, minor, or major.
 - Setting the new apio version in `apio/__init__`.
-- Creating a `.jsonc` remote config file at https://github.com/FPGAwars/apio/tree/develop/remote-config with the desired package versions.
+- Creating a `.jsonc` remote config file at https://github.com/FPGAwars/apio/tree/main/remote-config with the desired package versions.
 - Waiting for the next daily apio build and make sure the build is green (use its apio commit as the cutoff commit)
 - Making sure that the apio test workflows are green for the cutoff commit.
 - Creating a new release in the apio repo and adding to it the build files from the build repo.

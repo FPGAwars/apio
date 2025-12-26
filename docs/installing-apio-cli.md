@@ -75,7 +75,7 @@ follow these steps:
 
 2.  Install Apio using pip:
 
-        pip install --force-reinstall -U git+https://github.com/fpgawars/apio.git@develop
+        pip install --force-reinstall -U git+https://github.com/fpgawars/apio.git@main
 
 3.  In a **new shell window**, run the following command to test your installation:
 
@@ -97,7 +97,7 @@ To install Apio CLI on macOS Intel Silicon using a Pip package, follow these ste
 
 2.  Install Apio using pip:
 
-        pip install --force-reinstall -U git+https://github.com/fpgawars/apio.git@develop
+        pip install --force-reinstall -U git+https://github.com/fpgawars/apio.git@main
 
 3.  In a **new shell window**, run the following command to test your installation:
 
@@ -157,7 +157,7 @@ To install Apio CLI on Linux X86-64 using a Pip package, follow these steps:
 
 2.  Install Apio using pip:
 
-        pip install --force-reinstall -U git+https://github.com/fpgawars/apio.git@develop
+        pip install --force-reinstall -U git+https://github.com/fpgawars/apio.git@main
 
 3.  In a **new shell window**, run the following command to test your installation:
 
@@ -179,7 +179,7 @@ To install Apio CLI on Linux ARM-64 using a Pip package, follow these steps:
 
 2.  Install Apio using pip:
 
-        pip install --force-reinstall -U git+https://github.com/fpgawars/apio.git@develop
+        pip install --force-reinstall -U git+https://github.com/fpgawars/apio.git@main
 
 3.  In a **new shell window**, run the following command to test your installation:
 
@@ -241,7 +241,7 @@ To install Apio CLI on Windows X86-64 using a Pip package, follow these steps:
 
 2.  Install Apio using pip:
 
-        pip install --force-reinstall -U git+https://github.com/fpgawars/apio.git@develop
+        pip install --force-reinstall -U git+https://github.com/fpgawars/apio.git@main
 
 3.  In a **new command window**, run the following command to test your installation:
 
