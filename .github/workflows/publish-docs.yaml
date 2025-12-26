@@ -4,12 +4,10 @@
 name: publish-docs
 
 on:
+  # Run on any push to branch 'main'
   push:
-    # Run on push if doc related files change.
-    paths:
-     - "docs/**"
-     - "mkdocs.yml"
-     - ".github/workflows/publish-docs.yaml"
+    branches:
+      - main
 
   # Run daily at UTC midnight.
   schedule:
