@@ -4,12 +4,10 @@
 name: publish-docs
 
 on:
+  # Run on any push to branch 'main'
   push:
-    # Run on push if doc related files change.
-    paths:
-     - "docs/**"
-     - "mkdocs.yml"
-     - ".github/workflows/publish-docs.yaml"
+    branches:
+      - main
 
   # Run daily at UTC midnight.
   schedule:
@@ -21,10 +19,12 @@ on:
 jobs:
   publish-mkdocs-docs:
     runs-on: ubuntu-latest
-    # NOTE: Make sure the github-pages environment ifn the github repo
+    # TODO: Revisit this and if still needed, improve comment.
+    #
+    # NOTE: Make sure the github-pages environment in the github repo
     # dashboard lists 'develop' as an allowable branch. Otherwise
     # this workflow will fail.
-    environment: github-pages
+    # environment: github-pages
 
     permissions:
       contents: write
