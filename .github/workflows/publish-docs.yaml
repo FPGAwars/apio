@@ -19,12 +19,8 @@ on:
 jobs:
   publish-mkdocs-docs:
     runs-on: ubuntu-latest
-    # TODO: Revisit this and if still needed, improve comment.
-    #
-    # NOTE: Make sure the github-pages environment in the github repo
-    # dashboard lists 'develop' as an allowable branch. Otherwise
-    # this workflow will fail.
-    # environment: github-pages
+
+    environment: github-pages
 
     permissions:
       contents: write
