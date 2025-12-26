@@ -16,7 +16,7 @@
         "name": "apio-definitions"
       },
       "release": {
-        "tag": "2025-10-20",
+        "tag": "2025-12-26",
         "package": "apio-definitions-${YYYYMMDD}.tgz"
       }
     },
@@ -27,7 +27,7 @@
         "name": "apio-examples"
       },
       "release": {
-        "tag": "2025-12-23",
+        "tag": "2025-12-26",
         "package": "apio-examples-${YYYYMMDD}.tgz"
       }
     },
@@ -38,7 +38,7 @@
         "name": "tools-oss-cad-suite"
       },
       "release": {
-        "tag": "2025-09-24",
+        "tag": "2025-12-26",
         "package": "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
@@ -49,7 +49,7 @@
         "name": "tools-graphviz"
       },
       "release": {
-        "tag": "2025-06-13",
+        "tag": "2025-12-26",
         "package": "apio-graphviz-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
@@ -60,7 +60,7 @@
         "name": "tools-verible"
       },
       "release": {
-        "tag": "2025-06-13",
+        "tag": "2025-12-26",
         "package": "apio-verible-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
@@ -71,7 +71,7 @@
         "name": "tools-drivers"
       },
       "release": {
-        "tag": "2025-06-13",
+        "tag": "2025-12-26",
         "package": "apio-drivers-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     }
