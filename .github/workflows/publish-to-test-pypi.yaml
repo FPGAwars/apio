@@ -1,0 +1,91 @@
+name: publish-to-test-pypi
+
+on:
+  # Manual activation.
+  workflow_dispatch:
+
+jobs:
+  publish-to-test-pypi:
+    runs-on: ubuntu-latest
+
+    env:
+      # These are set later.
+      BASE_VERSION: ""
+      TIMESTAMP: ""
+      DYNAMIC_VERSION: ""
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create backup of original apio/__init__.py
+        run: |
+          cp apio/__init__.py apio/__init__.py.backup
+          echo "Backup created as apio/__init__.py.backup"
+          cat -n apio/__init__.py.backup
+
+      - name: Extract original version from apio/__init__.py
+        shell: python -u {0}
+        run: |
+          import os
+          import sys
+
+          # Add repository root to the workflow step Python path
+          repo_root = os.getcwd()
+          sys.path.insert(0, repo_root)
+
+          # Get original version.
+          import apio
+          original_version = apio.__version__
+
+          # Export original version to the workflow env
+          with open(os.environ["GITHUB_ENV"], "a") as env_file:
+               print(f"ORIGINAL_VERSION={original_version}")
+               env_file.write(f"ORIGINAL_VERSION={original_version}\n")
+
+      # - name: Extract base version from apio/__init__.py
+      #   run: |
+      #     BASE_VERSION=$(grep '^__version__ =' apio/__init__.py | sed -E 's/^__version__\s*=\s*"([^"]+)".*/\1/')
+      #     echo "BASE_VERSION=$BASE_VERSION" >> $GITHUB_ENV
+      #     echo "Base version detected: $BASE_VERSION"
+
+      - name: Generate dynamic version with timestamp
+        run: |
+          TIMESTAMP=$(date -u +%Y%m%d%H%M%S)
+          echo "TIMESTAMP=$TIMESTAMP"
+          echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
+
+          DYNAMIC_VERSION="${ORIGINAL_VERSION}.dev${TIMESTAMP}"
+          echo "DYNAMIC_VERSION=$DYNAMIC_VERSION" 
+          echo "DYNAMIC_VERSION=$DYNAMIC_VERSION" >> $GITHUB_ENV
+
+      - name: Update __version__ in apio/__init__.py
+        run: |
+          sed -i "s/^__version__ = .*/__version__ = \"$DYNAMIC_VERSION\"/" apio/__init__.py
+          echo "Version updated to ${{ env.DYNAMIC_VERSION }}"
+          cat -n apio/__init__.py
+
+      - name: Verify changes with diff
+        run: |
+          diff apio/__init__.py.backup apio/__init__.py || true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install build tool
+        run: python -m pip install --upgrade pip build
+
+      - name: Build package distributions
+        run: |
+          # Creates dist/*.tar.gz and dist/*.whl from pyproject.toml
+          python -m build
+
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          # Using an API TOKEN that was generated once in Test Pypi and is
+          # stored as a secret in this repo.
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
