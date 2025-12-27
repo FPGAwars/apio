@@ -12,7 +12,7 @@ jobs:
             - name: Checkout sources
               uses: actions/checkout@v4
               with:
-                ref: master
+                ref: main
 
             # -- Install and and configure python
             - name: Set up Python
