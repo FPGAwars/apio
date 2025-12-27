@@ -18,11 +18,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Create backup of original apio/__init__.py
-        run: |
-          cp apio/__init__.py apio/__init__.py.backup
-          echo "Backup created as apio/__init__.py.backup"
-          cat -n apio/__init__.py.backup
+      # - name: Create backup of original apio/__init__.py
+      #   run: |
+      #     cp apio/__init__.py apio/__init__.py.backup
+      #     echo "Backup created as apio/__init__.py.backup"
+      #     cat -n apio/__init__.py.backup
 
       - name: Extract original version from apio/__init__.py
         shell: python -u {0}
@@ -65,9 +65,9 @@ jobs:
           echo "Version updated to ${{ env.DYNAMIC_VERSION }}"
           cat -n apio/__init__.py
 
-      - name: Verify changes with diff
-        run: |
-          diff apio/__init__.py.backup apio/__init__.py || true
+      # - name: Verify changes with diff
+      #   run: |
+      #     diff apio/__init__.py.backup apio/__init__.py || true
 
       - name: Set up Python
         uses: actions/setup-python@v5
