@@ -280,22 +280,6 @@ def clean_task(_: Context):
             item.unlink(missing_ok=False)
 
 
-# -- This task has not been tested.
-@task(name="publish-test", aliases=["pt"])
-def publish_test_task(ctx: Context):
-    """Publish to Pypi test instance."""
-    announce_task("publish-test")
-    run(ctx, [PYTHON, "-m", "flit", "publish", "--repository", "testpypi"])
-
-
-# -- This task has not been tested.
-@task(name="publish-prod", aliases=["pd"])
-def publish_task(ctx: Context):
-    """Publish to Pypi production instance."""
-    announce_task("publish-prod")
-    run(ctx, [PYTHON, "-m", "flit", "publish"])
-
-
 @task(name="install-apio", aliases=["ia"])
 def install_apio_task(ctx: Context):
     """Install apio package from source code."""
