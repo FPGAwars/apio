@@ -1,7 +1,7 @@
 # A periodic workflow to test that the latest dev version is functional.
 # It's not a through test by any means, more like a sanity test.
 
-name: monitor-apio-prod
+name: monitor-apio-pypi
 
 on:
   # Run on commit.
@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
 
 jobs:
-    monitor:
+    monitor-apio-pypi:
         runs-on: ${{ matrix.os }}
 
         defaults:
@@ -48,11 +48,13 @@ jobs:
 
             - name: Load apio packages (slow)
               run: |
-                apio install --all
+                # apio install --all
+                apio packages update 
 
             - name: Show apio info
               run: |
-                apio system --info
+                # apio system --info
+                apio info system
 
             - name: Test ICE40 project
               run: |
@@ -62,21 +64,24 @@ jobs:
                 # Create a project
                 mkdir ice40_project
                 cd ice40_project
-                apio examples --files Alhambra-II/Blinky
-                ls -al
+                apio examples fetch alhambra-ii/bcd-counter
+                find .
 
                 # Run a few command
-                # apio lint
-                apio verify
+                apio lint
                 apio build
-                apio time
-                apio system --lsftdi
-                apio system --lsusb
-                apio system --lsserial
+                apio test
+                apio sim --no-gtkwave
+                apio graph -n
+                apio format
+                apio devices usb
+                apio devices serial
 
                 find .
 
                 # Check that a few files exists (fails if not)
+                cd _build/default
                 ls -al hardware.bin
-                ls -al hardware.rpt
-                ls -al hardware.out
+                ls -al hardware.pnr
+                ls -al graph.svg
+                ls -al util/ticker_tb.vcd
