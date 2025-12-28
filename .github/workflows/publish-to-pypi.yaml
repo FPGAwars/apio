@@ -1,29 +1,64 @@
 name: publish-to-pypi
 
 # Manual activation
-on: [workflow_dispatch]
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Release tag, e.g. 2025-12-10"
+        required: true
+        type: string
 
 jobs:
   # -- Publish a new Apio release
   publish:
     runs-on: ubuntu-22.04
     steps:
+      - name: Validate release tag is stable
+        run: |
+          TAG="${{ inputs.release_tag }}"
+          RELEASE_JSON=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG")
+
+          # Dump RELEASE_JSON for debugging.
+          echo $RELEASE_JSON | cat -n
+
+          # Check if release exists
+          if echo "$RELEASE_JSON" | grep -q "Not Found"; then
+            echo "::error ::Release tag $TAG does not exist"
+            exit 1
+          fi
+
+          # Extract draft and prerelease flags
+          DRAFT=$(echo "$RELEASE_JSON" | jq -r '.draft')
+          PRERELEASE=$(echo "$RELEASE_JSON" | jq -r '.prerelease')
+
+          if [ "$DRAFT" = "true" ]; then
+            echo "::error ::Release $TAG is a draft"
+            exit 1
+          fi
+
+          if [ "$PRERELEASE" = "true" ]; then
+            echo "::error ::Release $TAG is a prerelease"
+            exit 1
+          fi
+
+          echo "Release $TAG is stable (non pre-release or draft)"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       # -- Checkout the main branch
-      - name: Checkout sources
+      - name: Checkout at release ${{ inputs.release_tag }}
         uses: actions/checkout@v4
         with:
-          ref: main
+          # Checks out the exact tag entered by the user
+          ref: ${{ inputs.release_tag }}
 
       # -- Install and and configure python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.13"
-
-      # -- Install all the dependencies needed
-      # - name: Install dependencies
-      #   run: |
-      #       make deps
 
       # -- Install dependencies.
       - name: Install dependencies
