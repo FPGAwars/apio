@@ -48,6 +48,7 @@ Licensed under [GPL 2.0](http://opensource.org/licenses/GPL-2.0) and [Creative C
 
 <!-- Badges and URLs -->
 
+[apio-logo]: https://raw.githubusercontent.com/FPGAwars/apio/refs/heads/main/media/icon.png
 [license-image]: http://img.shields.io/:license-gpl-blue.svg
 [license-url]: (http://opensource.org/licenses/GPL-2.0)
 [linux-logo]: https://raw.githubusercontent.com/FPGAwars/Apio-wiki/refs/heads/main/wiki/Logos/linux.png
