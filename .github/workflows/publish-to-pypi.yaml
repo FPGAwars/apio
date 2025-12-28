@@ -17,11 +17,8 @@ jobs:
       - name: Validate release tag is stable
         run: |
           TAG="${{ inputs.release_tag }}"
-          RELEASE_JSON=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG")
-
-          # Dump RELEASE_JSON for debugging.
-          echo $RELEASE_JSON | cat -n
+          URL="https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG"
+          RELEASE_JSON=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$URL")
 
           # Check if release exists
           if echo "$RELEASE_JSON" | grep -q "Not Found"; then
@@ -29,17 +26,20 @@ jobs:
             exit 1
           fi
 
+          # Dump RELEASE_JSON for debugging.
+          echo $RELEASE_JSON | jq .
+
           # Extract draft and prerelease flags
           DRAFT=$(echo "$RELEASE_JSON" | jq -r '.draft')
           PRERELEASE=$(echo "$RELEASE_JSON" | jq -r '.prerelease')
 
           if [ "$DRAFT" = "true" ]; then
-            echo "::error ::Release $TAG is a draft"
+            echo "::error ::Release $TAG is a draft, must be stable."
             exit 1
           fi
 
           if [ "$PRERELEASE" = "true" ]; then
-            echo "::error ::Release $TAG is a prerelease"
+            echo "::error ::Release $TAG is a prerelease, must be stable."
             exit 1
           fi
 
