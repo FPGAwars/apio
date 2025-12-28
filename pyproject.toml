@@ -17,7 +17,7 @@ module = "apio"
 author = "Jesus Arroyo"
 author-email = "jesus.jkhlg@gmail.com "
 home-page = "https://github.com/fpgawars/apio"
-description-file = "README.md"
+description-file = "README-PYPI.md"
 classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
