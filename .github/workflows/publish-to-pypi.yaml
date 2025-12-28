@@ -2,43 +2,54 @@ name: publish-to-pypi
 
 # Manual activation
 on: [workflow_dispatch]
-    
+
 jobs:
-    # -- Publish a new Apio release
-    publish: 
-        runs-on: ubuntu-22.04
-        steps: 
-            # -- Checkout the main branch
-            - name: Checkout sources
-              uses: actions/checkout@v4
-              with:
-                ref: main
+  # -- Publish a new Apio release
+  publish:
+    runs-on: ubuntu-22.04
+    steps:
+      # -- Checkout the main branch
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          ref: main
 
-            # -- Install and and configure python
-            - name: Set up Python
-              uses: actions/setup-python@v5
-              with:
-                  python-version: "3.13"
+      # -- Install and and configure python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
 
-            # -- Install all the dependencies needed
-            # - name: Install dependencies
-            #   run: |
-            #       make deps
+      # -- Install all the dependencies needed
+      # - name: Install dependencies
+      #   run: |
+      #       make deps
 
-            # -- Install dependencies.
-            - name: Install dependencies
-              run: python -m pip install --upgrade pip build flit
+      # -- Install dependencies.
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip build flit
 
-            - name: Build package distributions
-              run: |
-                # Creates dist/*.tar.gz and dist/*.whl from pyproject.toml
-                python -m build
+      - name: Build package distributions
+        run: |
+          # Creates dist/*.tar.gz and dist/*.whl from pyproject.toml
+          python -m build
 
-            # -- Publish to Pypi!!
-            - name: Publish to PyPi
-              env:
-                  FLIT_USERNAME: ${{ secrets.PYPI_USERNAME }}
-                  FLIT_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-              run: |
-                  # invoke publish
-                  flit publish
+      # -- Publish to Pypi!!
+      - name: Publish to PyPi
+        env:
+          # TODO: As of Dec 27 2025, PYPI_USERNAME and PYPI_PASSWORD
+          # contain a token rather than the actual username and
+          # password (good security). We copied PYPI_PASSWORD to
+          # PYPI_API_TOKEN and use a literal "__token__" instead
+          # of PYPI_USERNAME. Once this new configuration publishes
+          # successfully, the two secrets PYPI_USERNAME and PYPI_PASSWORD
+          # should be deleted for clarity.
+          #
+          # FLIT_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          # FLIT_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+
+          FLIT_USERNAME: __token__
+          FLIT_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          # invoke publish
+          flit publish
