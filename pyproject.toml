@@ -17,7 +17,9 @@ module = "apio"
 author = "Jesus Arroyo"
 author-email = "jesus.jkhlg@gmail.com "
 home-page = "https://github.com/fpgawars/apio"
-description-file = "README-PYPI.md"
+# For convinience, we use the same readme file for the github repo
+# and for PyPi. Can split them if needed.
+description-file = "README.md"
 classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
