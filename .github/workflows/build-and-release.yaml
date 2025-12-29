@@ -60,10 +60,11 @@ jobs:
           release-tag-var: RELEASE_TAG
           package-tag-var: PACKAGE_TAG
 
-      - name: Ensure no conflicting release
+      - name: Early check for no conflicting release
         uses: fpgawars/apio-workflows/.github/actions/ensure-no-conflicting-release@main
         with:
           release-tag: ${{ env.RELEASE_TAG }}
+          just-check: true
 
       - name: Checkout apio repo (for source)
         uses: actions/checkout@v4
@@ -293,8 +294,6 @@ jobs:
         uses: fpgawars/apio-workflows/.github/actions/ensure-no-conflicting-release@main
         with:
           release-tag: ${{ env.RELEASE_TAG }}
-
-      
 
       - name: Create GitHub pre-release
         uses: fpgawars/apio-workflows/.github/actions/create-pre-release@main
