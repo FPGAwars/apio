@@ -1,13 +1,9 @@
-![][apio-cli-banner]
+![apio-cli-banner](media/apio-cli-banner.png)
 
-[![License][license-image]][license-url]
+[![license](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue)](https://github.com/FPGAwars/apio)
 
-![][linux-logo]&nbsp;&nbsp;&nbsp;![][macosx-logo]&nbsp;&nbsp;&nbsp;![][windows-logo]&nbsp;&nbsp;&nbsp;![][raspbian-logo]
-
-
-<details>
-<summary>Status badges</summary>
+![linux](media/linux-logo.png)&nbsp;&nbsp;&nbsp;![macos](media/macosx-logo.png)&nbsp;&nbsp;&nbsp;![windows](media/windows-logo.png)&nbsp;&nbsp;&nbsp;![raspberry-pi](media/raspbian-logo.png)
 
 [![apio-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/test.yaml?label=apio-test)](https://github.com/fpgawars/apio/actions/workflows/test.yaml)
 [![apio-build](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/build-and-release.yaml?label=apio-build)](https://github.com/fpgawars/apio/actions/workflows/build-and-release.yaml)
@@ -23,10 +19,7 @@
 [![graphviz-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-graphviz/build-and-release.yaml?label=apio-graphviz-build)](https://github.com/fpgawars/tools-graphviz/actions/workflows/build-and-release.yaml)
 [![drivers-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-drivers/build-and-release.yaml?label=apio-drivers-build)](https://github.com/fpgawars/tools-drivers/actions/workflows/build-and-release.yaml)
 
-</details>
-
 ---
-
 
 Apio CLI is an easy to install and use command-line tool for FPGA design from A to Z. For a quick start, visit the [Getting started with Apio](https://fpgawars.github.io/apio/docs/quick-start) guide.
 
@@ -36,12 +29,11 @@ Simulation example:
 
 ![GTKWave screenshot](media/sim-gtkwave.png)
 
-
 ## Description
 
 Apio CLI is a powerful yet easy-to-use command line tool for FPGA development using Verilog and System Verilog. It’s simple to install, no toolchains, licenses, or makefiles required, and works across Linux, Windows, and macOS. Apio CLI is 100% open source, and free to use.
 
-Apio CLI supports every stage of the FPGA workflow, from simulating and testing, to building and programming the FPGA, using simple commands such as `apio test`, `apio build`, and `apio upload` that do what you expect them to do. 
+Apio CLI supports every stage of the FPGA workflow, from simulating and testing, to building and programming the FPGA, using simple commands such as `apio test`, `apio build`, and `apio upload` that do what you expect them to do.
 
 Apio CLI currently supports over 80 FPGA boards, custom boards can be easily added, and it includes over 60 ready-to-use example projects. Apio CLI currently supports the ICE40, ECP5, and GOWIN FPGA architectures.
 
@@ -53,7 +45,7 @@ Apio CLI currently supports over 80 FPGA boards, custom boards can be easily add
 4. `apio sim` - simulate the design and show signals.
 5. `apio upload` - program the FPGA board.
 
-![][apio-cli-animation]
+![apio-cli-animation](media/apio-cli-animation.gif)
 
 ## Apio CLI in the media
 
@@ -85,15 +77,3 @@ As the user **gh02t** said in this post on [Hacker-news](https://news.ycombinato
 ## License
 
 Licensed under [GPL 2.0](http://opensource.org/licenses/GPL-2.0) and [Creative Commons Attribution-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-sa/4.0/).
-
-<!-- Badges and URLs -->
-
-[apio-cli-banner]: https://raw.githubusercontent.com/FPGAwars/apio/refs/heads/main/media/apio-cli-banner.png
-[apio-cli-animation]: https://raw.githubusercontent.com/FPGAwars/apio/refs/heads/main/media/apio-cli-animation.gif
-[license-image]: http://img.shields.io/:license-gpl-blue.svg
-[license-url]: (http://opensource.org/licenses/GPL-2.0)
-[linux-logo]: https://raw.githubusercontent.com/FPGAwars/Apio-wiki/refs/heads/main/wiki/Logos/linux.png
-[macosx-logo]: https://raw.githubusercontent.com/FPGAwars/Apio-wiki/refs/heads/main/wiki/Logos/macosx.png
-[windows-logo]: https://raw.githubusercontent.com/FPGAwars/Apio-wiki/refs/heads/main/wiki/Logos/windows.png
-[ubuntu-logo]: https://raw.githubusercontent.com/FPGAwars/Apio-wiki/refs/heads/main/wiki/Logos/ubuntu.png
-[raspbian-logo]: https://raw.githubusercontent.com/FPGAwars/Apio-wiki/refs/heads/main/wiki/Logos/raspbian.png
