@@ -38,6 +38,12 @@ As the user **gh02t** said in this post on [Hacker-news](https://news.ycombinato
 - [Getting started with Apio](https://fpgawars.github.io/apio/docs/quick-start)
 - [Apio CLI github repository](https://github.com/fpgawars/apio)
 
+## Credits
+* Apio CLI [contributors](https://github.com/FPGAwars/apio/graphs/contributors).
+* Apio CLI uses open source tools including [Yosys](https://www.yosyshq.com), [Click](https://pypi.org/project/click), [Scons](https://pypi.org/project/SCons), [GTKWave](https://gtkwave.sourceforge.net), and [Python](https://www.python.org/downloads).
+* APIO was inspired by [PlatformIO](https://github.com/platformio/platformio).
+* [BQ](https://www.bq.com) sponsored this project from 02/2016 to 11/2016. Thanks.
+
 ## License
 
 Licensed under [GPL 2.0](http://opensource.org/licenses/GPL-2.0) and [Creative Commons Attribution-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-sa/4.0/).
