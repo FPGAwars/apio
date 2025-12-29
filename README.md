@@ -3,7 +3,8 @@
 [![License][license-image]][license-url]
 [![python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue)](https://github.com/FPGAwars/apio)
 
-![][linux-logo]&nbsp;&nbsp;&nbsp;![][macosx-logo]&nbsp;&nbsp;&nbsp;![][windows-logo]&nbsp;&nbsp;&nbsp;![][raspbian-logo]
+![linux](media/linux-logo.png)&nbsp;&nbsp;&nbsp;![macos](media/macosx-logo.png)&nbsp;&nbsp;&nbsp;![windows](media/windows-logo.png)&nbsp;&nbsp;&nbsp;![raspberry-pi](media/raspbian-logo.png)
+
 
 
 <details>
@@ -86,14 +87,13 @@ As the user **gh02t** said in this post on [Hacker-news](https://news.ycombinato
 
 Licensed under [GPL 2.0](http://opensource.org/licenses/GPL-2.0) and [Creative Commons Attribution-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-sa/4.0/).
 
-<!-- Badges and URLs -->
+<!-- URL shortcuts -->
 
 [apio-cli-banner]: https://raw.githubusercontent.com/FPGAwars/apio/refs/heads/main/media/apio-cli-banner.png
+
 [apio-cli-animation]: https://raw.githubusercontent.com/FPGAwars/apio/refs/heads/main/media/apio-cli-animation.gif
+
 [license-image]: http://img.shields.io/:license-gpl-blue.svg
+
 [license-url]: (http://opensource.org/licenses/GPL-2.0)
-[linux-logo]: https://raw.githubusercontent.com/FPGAwars/Apio-wiki/refs/heads/main/wiki/Logos/linux.png
-[macosx-logo]: https://raw.githubusercontent.com/FPGAwars/Apio-wiki/refs/heads/main/wiki/Logos/macosx.png
-[windows-logo]: https://raw.githubusercontent.com/FPGAwars/Apio-wiki/refs/heads/main/wiki/Logos/windows.png
-[ubuntu-logo]: https://raw.githubusercontent.com/FPGAwars/Apio-wiki/refs/heads/main/wiki/Logos/ubuntu.png
-[raspbian-logo]: https://raw.githubusercontent.com/FPGAwars/Apio-wiki/refs/heads/main/wiki/Logos/raspbian.png
+
