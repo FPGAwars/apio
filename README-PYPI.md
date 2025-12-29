@@ -39,9 +39,9 @@ As the user **gh02t** said in this post on [Hacker-news](https://news.ycombinato
 - [Apio CLI github repository](https://github.com/fpgawars/apio)
 
 ## Credits
-* Apio CLI [contributors](https://github.com/FPGAwars/apio/graphs/contributors).
+* Apio CLI was inspired by [PlatformIO](https://github.com/platformio/platformio) and was originally  created by [Jesús Arroyo Torrens](https://github.com/Jesus89) in February 2016.
+* Thanks to all the Apio CLI [contributors](https://github.com/FPGAwars/apio/graphs/contributors) over the years.
 * Apio CLI uses open source tools including [Yosys](https://www.yosyshq.com), [Click](https://pypi.org/project/click), [Scons](https://pypi.org/project/SCons), [GTKWave](https://gtkwave.sourceforge.net), and [Python](https://www.python.org/downloads).
-* APIO was inspired by [PlatformIO](https://github.com/platformio/platformio).
 * [BQ](https://www.bq.com) sponsored this project from 02/2016 to 11/2016. Thanks.
 
 ## License
