@@ -3,7 +3,7 @@
 [![License][license-image]][license-url]
 [![python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue)](https://github.com/FPGAwars/apio)
 
-![][linux-logo]&nbsp;&nbsp;&nbsp;![][macosx-logo]&nbsp;&nbsp;&nbsp;![][windows-logo]&nbsp;&nbsp;&nbsp;![][ubuntu-logo]&nbsp;&nbsp;&nbsp;![][raspbian-logo]
+![][linux-logo]&nbsp;&nbsp;&nbsp;![][macosx-logo]&nbsp;&nbsp;&nbsp;![][windows-logo]&nbsp;&nbsp;&nbsp;![][raspbian-logo]
 
 
 <details>
@@ -28,7 +28,10 @@
 ---
 
 
-Apio CLI is an easy to install and use command-line tool for FPGA design. For a quick start, visit the [Getting started with Apio](https://fpgawars.github.io/apio/docs/quick-start) guide.
+Apio CLI is an easy to install and use command-line tool for FPGA design from A to Z. For a quick start, visit the [Getting started with Apio](https://fpgawars.github.io/apio/docs/quick-start) guide.
+
+![GTKWave screenshot](media/sim-gtkwave.png)
+
 
 ## Description
 
