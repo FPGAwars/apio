@@ -30,6 +30,10 @@
 
 Apio CLI is an easy to install and use command-line tool for FPGA design from A to Z. For a quick start, visit the [Getting started with Apio](https://fpgawars.github.io/apio/docs/quick-start) guide.
 
+<br>
+
+Simulation example:
+
 ![GTKWave screenshot](media/sim-gtkwave.png)
 
 
