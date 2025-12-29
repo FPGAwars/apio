@@ -1,6 +1,4 @@
-
 ![][apio-cli-banner]
-
 
 [![License][license-image]][license-url]
 
@@ -11,28 +9,18 @@
 **TL;DR**, Apio CLI is an easy to use command line tool for FPGA development. For q quick start, visit the [Getting started with Apio](https://fpgawars.github.io/apio/docs/quick-start) page.
 
 ## Description
+
 Apio CLI is a powerful yet easy-to-use command line tool for FPGA development using Verilog and System Verilog. It’s simple to install, no toolchains, licenses, or makefiles required, and works across Linux, Windows, and macOS. Apio CLI is 100% open source, free to use, and supports every stage of the FPGA workflow, from simulating and testing, to building and programming the FPGA, using simple commands such as `apio test`, `apio build`, and `apio upload` that do what you expect them to do. Apio CLI currently supports over 80 FPGA boards, custom boards can be easily added, and it includes over 60 ready-to-use example projects. Apio CLI currently supports the ICE40, ECP5, and GOWIN FPGA architectures.
 
-Example project fetch build, report, sim and upload:
+## Sample Apio session
+
+1. `apio examples fetch alhambra-ii/getting-started` - fetch an example.
+2. `apio build` - build the project.
+3. `apio report` - report utilization and max clock speed.
+4. `apio sim` - simulate the design and show signals.
+5. `apio upload` - program the FPGA board.
+
 ![][apio-cli-animation]
-
-## Sample Apio CLI Commands
-
-Below are typical Apio CLI commands used during the project development cycle. The commands are simple and intuitive.
-
-```
-# Create a project
-apio examples -f alhambra-ii/ledon   # Fetch the files of an example
-
-# Build
-apio build                           # Build the project
-apio upload                          # Upload the design to the FPGA board
-
-# Verification
-apio lint                            # Inspect the source code for issues.
-apio test                            # Run the testbench
-apio sim ledon_tb.v                  # Simulate the testbench and open a graphical viewer.
-```
 
 ## Apio CLI in the media
 
