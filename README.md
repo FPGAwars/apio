@@ -5,9 +5,6 @@
 
 ![linux](media/linux-logo.png)&nbsp;&nbsp;&nbsp;![macos](media/macosx-logo.png)&nbsp;&nbsp;&nbsp;![windows](media/windows-logo.png)&nbsp;&nbsp;&nbsp;![raspberry-pi](media/raspbian-logo.png)
 
-<details>
-<summary>Status badges</summary>
-
 [![apio-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/test.yaml?label=apio-test)](https://github.com/fpgawars/apio/actions/workflows/test.yaml)
 [![apio-build](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/build-and-release.yaml?label=apio-build)](https://github.com/fpgawars/apio/actions/workflows/build-and-release.yaml)
 [![docs-publishing](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/publish-docs.yaml?label=apio-docs)](https://github.com/fpgawars/apio/actions/workflows/publish-docs.yaml)
@@ -21,8 +18,6 @@
 [![verible-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-verible/build-and-release.yaml?label=apio-verible-build)](https://github.com/fpgawars/tools-verible/actions/workflows/build-and-release.yaml)
 [![graphviz-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-graphviz/build-and-release.yaml?label=apio-graphviz-build)](https://github.com/fpgawars/tools-graphviz/actions/workflows/build-and-release.yaml)
 [![drivers-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-drivers/build-and-release.yaml?label=apio-drivers-build)](https://github.com/fpgawars/tools-drivers/actions/workflows/build-and-release.yaml)
-
-</details>
 
 ---
 
