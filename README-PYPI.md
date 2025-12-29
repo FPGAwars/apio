@@ -28,6 +28,10 @@ Apio CLI is a powerful yet easy-to-use command line tool for FPGA development us
 
 [![Introduction to FPGA YouTube Series](https://raw.githubusercontent.com/ShawnHymel/introduction-to-fpga/main/images/Intro%20to%20FPGA%20Part%201_Thumbnail.png)](https://www.youtube.com/watch?v=lLg1AgA2Xoo&list=PLEBQazB0HUyT1WmMONxRZn9NmQ_9CIKhb)
 
+
+As the user **gh02t** said in this post on [Hacker-news](https://news.ycombinator.com/item?id=17912510):
+> Apio is a command line tool that automates installing the toolchain for your FPGA and running it. It just simplifies things, you don't have to use it if you'd rather call the individual tools for synthesis, P&R, simulation etc. It'd be reasonable to think of it as akin to a very smart Makefile combined with an automatic package manager, specialized to FPGAs (it's based on PlatformIO). It's nice when you're still kind of getting oriented, because you don't need to know how to set up and invoke the different tools... just call `apio build` or `apio sim`
+
 ## Resources
 
 - [Apio CLI Documentation](https://fpgawars.github.io/apio/docs/)
