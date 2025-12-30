@@ -150,7 +150,7 @@ jobs:
         run: |
           # The github window bash doesn't have 'zip' so we use powershell instead.
           Push-Location _dist
-          $bundle = "apio-windows-amd64-${{env.PACKAGE_TAG}}-bundle.zip"
+          $bundle = "apio-cli-windows-amd64-${{env.PACKAGE_TAG}}-bundle.zip"
           Compress-Archive -Path apio -DestinationPath ../${bundle}
           Pop-Location
           Get-ChildItem -Force
@@ -171,19 +171,19 @@ jobs:
       - name: Rename innosetup installer
         run: |
           ls -al
-          mv innosetup-installer.exe "apio-windows-amd64-${PACKAGE_TAG}-installer.exe"
+          mv innosetup-installer.exe "apio-cli-windows-amd64-${PACKAGE_TAG}-installer.exe"
           ls -al
 
       - name: Export the pyinstaller bundle as an artifact
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error
-          name: "apio-windows-amd64-bundle"
-          path: "apio-windows-amd64-${{env.PACKAGE_TAG}}-bundle.zip"
+          name: "apio-cli-windows-amd64-bundle"
+          path: "apio-cli-windows-amd64-${{env.PACKAGE_TAG}}-bundle.zip"
 
       - name: Export the installer file as an artifact
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error
-          name: "apio-windows-amd64-installer"
-          path: "apio-windows-amd64-${{env.PACKAGE_TAG}}-installer.exe"
+          name: "apio-cli-windows-amd64-installer"
+          path: "apio-cli-windows-amd64-${{env.PACKAGE_TAG}}-installer.exe"
