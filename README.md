@@ -1,3 +1,7 @@
+<!--
+This README page is optimized for its appearance in the github repo rather than for the PyPi listing.
+-->
+
 ![apio-cli-banner](media/apio-cli-banner.png)
 
 [![license](https://img.shields.io/badge/License-GPL%202.0-blue.svg)](LICENSE)
@@ -18,6 +22,9 @@
 [![verible-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-verible/build-and-release.yaml?label=apio-verible-build)](https://github.com/fpgawars/tools-verible/actions/workflows/build-and-release.yaml)
 [![graphviz-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-graphviz/build-and-release.yaml?label=apio-graphviz-build)](https://github.com/fpgawars/tools-graphviz/actions/workflows/build-and-release.yaml)
 [![drivers-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-drivers/build-and-release.yaml?label=apio-drivers-build)](https://github.com/fpgawars/tools-drivers/actions/workflows/build-and-release.yaml)
+[![ide-build](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-vscode/build-and-release.yaml?label=ide-build)](https://github.com/fpgawars/apio-vscode/actions/workflows/build-and-release.yaml)
+[![ide-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-vscode/test.yaml?label=ide-test)](https://github.com/fpgawars/apio-vscode/actions/workflows/test.yaml)
+[![apio-backup](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-workflows/backup-apio-repos.yaml?label=apio-backup)](https://github.com/fpgawars/apio-workflows/actions/workflows/backup-apio-repos.yaml)
 
 ---
 
