@@ -63,9 +63,9 @@ jobs:
           json-file: build-info.json
           mappings: >-
             PYTHON_VERSION   python-version
-            APIO_REPO        apio-repo
-            APIO_COMMIT      apio-commit
-            APIO_VERSION     apio-version
+            APIO_REPO        apio-cli-repo
+            APIO_COMMIT      apio-cli-commit
+            APIO_VERSION     apio-cli-version
             RELEASE_TAG      release-tag
             PACKAGE_TAG      package-tag
 

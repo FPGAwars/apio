@@ -135,13 +135,10 @@ jobs:
       - name: Create build info
         run: |
           # Collect values
-          # builder_commit=$(git rev-parse HEAD)
-          # apio_commit=$(git -C apio-repo rev-parse HEAD)
-          # apio_branch=$(git -C apio-repo rev-parse --abbrev-ref HEAD)
-
-          # apio_version="$(pip show apio | grep Version: | cut -d ' ' -f2)"
-          # release_tag="$(date +'%Y-%m-%d')"
-          # package_tag="${release_tag//-/}"
+          REQUESTED_COMMIT="${{ github.event.inputs.commit_sha }}"
+          if [ -z "$REQUESTED_COMMIT" ]; then
+            REQUESTED_COMMIT="(none)"
+          fi
 
           # Generate build-info.json
           cat > build-info.json <<EOF
@@ -149,10 +146,10 @@ jobs:
             "package-name":  "apio",
             "description" : "FPGA design tool",
             "python-version" : "$PYTHON_VERSION",
-            "apio-repo":  "${{env.APIO_REPO}}",
-            "requested-apio-commit" : "${{github.event.inputs.commit_sha}}",
-            "apio-commit":  "$APIO_COMMIT",
-            "apio-version": "$APIO_VERSION",
+            "apio-cli-repo":  "${{env.APIO_REPO}}",
+            "requested-commit" : "${REQUESTED_COMMIT}",
+            "apio-cli-commit":  "$APIO_COMMIT",
+            "apio-cli-version": "$APIO_VERSION",
             "release-tag":  "$RELEASE_TAG",
             "package-tag":  "$PACKAGE_TAG",
             "build-time":  "$(date +'%Y-%m-%d %H:%M:%S %Z')",
@@ -236,9 +233,9 @@ jobs:
         with:
           json-file: build-info.json
           mappings: >-
-            APIO_REPO     apio-repo
-            APIO_COMMIT   apio-commit
-            APIO_VERSION  apio-version
+            APIO_REPO     apio-cli-repo
+            APIO_COMMIT   apio-cli-commit
+            APIO_VERSION  apio-cli-version
             RELEASE_TAG   release-tag
             PACKAGE_TAG   package-tag
 
@@ -248,22 +245,55 @@ jobs:
           input-json: build-info.json
           output-text: build-info.txt
 
-      # Summary for the run page.
-      - name: Prepare run summary
+      - name: Create assets markdown table
+        run: |
+          # The common prefix of the assets urls
+          URL_PREFIX="https://github.com/${{ github.repository }}/releases/download/$RELEASE_TAG"
+          echo "URL_PREFIX=${URL_PREFIX}"
+
+          # Write the table to a file.
+          cat << EOF > "assets-table.md"
+
+          ### Apio CLI installers
+
+          | System | Architecture | Installer type | Package |
+          | :--- | :--- | :--- | :--- |
+          | MacOS | Apple Silicon | Wizard | [apio-cli-darwin-arm64-${PACKAGE_TAG}-installer.pkg](${URL_PREFIX}/apio-cli-darwin-arm64-${PACKAGE_TAG}-installer.pkg) |
+          | Linux | X86 64 bit | Debian package | [apio-cli-linux-x86-64-${PACKAGE_TAG}-debian.deb](${URL_PREFIX}/apio-cli-linux-x86-64-${PACKAGE_TAG}-debian.deb) |
+          | Windows | X86 64 bit | Wizard | [apio-cli-windows-amd64-${PACKAGE_TAG}-installer.exe](${URL_PREFIX}/apio-cli-windows-amd64-${PACKAGE_TAG}-installer.exe) |
+
+          <br>
+
+          ### Apio CLI file bundles
+
+          | System | Architecture | Package |
+          | :--- | :--- | :--- |
+          | MacOS | Apple Silicon | [apio-cli-darwin-arm64-${PACKAGE_TAG}-bundle.tgz](${URL_PREFIX}/apio-cli-darwin-arm64-${PACKAGE_TAG}-bundle.tgz) |
+          | Linux | X86 64 bit | [apio-cli-linux-x86-64-${PACKAGE_TAG}-bundle.tgz](${URL_PREFIX}/apio-cli-linux-x86-64-${PACKAGE_TAG}-bundle.tgz) |
+          | Windows | X86 64 bit | [apio-cli-windows-amd64-${PACKAGE_TAG}-bundle.zip](${URL_PREFIX}/apio-cli-windows-amd64-${PACKAGE_TAG}-bundle.zip) |
+          EOF
+
+          cat -n "assets-table.md"
+
+      # # Summary for the run page.
+      - name: Prepare workflow run summary
         run: |
           cat  > RUN-SUMMARY.txt <<EOF
+
           Build info:
           \`\`\`
           $(cat build-info.txt)
           \`\`\`
 
-          [Cutoff commit](https://github.com/${{env.APIO_REPO}}/commit/${{env.APIO_COMMIT}})
+          - [Apio CLI cutoff commit](https://github.com/${APIO_REPO}/commit/${APIO_COMMIT})
+
+          - [Generated release](https://github.com/${{ github.repository }}/releases/tag/${RELEASE_TAG})
           EOF
 
           ls -al
           cat -n RUN-SUMMARY.txt
 
-      - name: Add summary to run
+      - name: Post workflow run summary
         run: |
           cat RUN-SUMMARY.txt >> $GITHUB_STEP_SUMMARY
 
@@ -271,18 +301,29 @@ jobs:
       - name: Prepare release text
         run: |
           cat  > RELEASE-BODY.txt <<EOF
-          This is the daily build of the Apio \`$APIO_TARGET_BRANCH\` branch.
 
-          > This repository keeps only the last 5 pre-releases so to preserve
-          > a release, check off its's pre-release [] checkbox.
+          > NOTE: This daily release was created as a pre-release and will be deleted
+          > after 5 days unless if it's marked as a stable release. To mark it as a
+          > stable release, open it for editing and turn off the  `pre-release`checkbox.
 
-          Build info:
+          <br>
+
+          **IMPORTANT:** To install Apio CLI from the files below, make sure to follow the
+          [Apio CLI installation guide](https://fpgawars.github.io/apio/docs/installing-apio-cli)
+          because additional manual steps may be required for a successful installation.
+
+          <br>
+
+          $(cat assets-table.md)
+
+          <br>
+
+          ### Build info
+
           \`\`\`
           $(cat build-info.txt)
           \`\`\`
 
-          Additional resources:
-          * [Installation instructions](https://fpgawars.github.io/apio/docs/quick-start)
           EOF
 
           cat -n RELEASE-BODY.txt
