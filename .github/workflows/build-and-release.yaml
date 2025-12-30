@@ -308,8 +308,9 @@ jobs:
 
           <br>
 
-          **IMPORTANT:** To install Apio CLI from the files below, follow the Apio CLI installation at
-          <https://fpgawars.github.io/apio/docs/installing-apio-cli> because additional manual steps may be required.
+          **IMPORTANT:** To install Apio CLI from the files below, make sure to follow the
+          [Apio CLI installation guide](https://fpgawars.github.io/apio/docs/installing-apio-cli)
+          because additional manual steps may be required for a successful installation.
 
           <br>
 
