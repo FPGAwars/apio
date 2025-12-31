@@ -17,8 +17,6 @@ env:
   # The Python version of the pyinstaller binaries.
   PYTHON_VERSION: "3.14"
 
-  # Apio github repo to use.
-  # APIO_REPO: ${{github.event.inputs.apio_repo || github.repository}}
 
   # Apio repo branch to use.
   APIO_TARGET_BRANCH: ${{github.event.inputs.apio_branch || 'main'}}
@@ -170,6 +168,7 @@ jobs:
           json-file: build-info.json
           mappings: >-
             APIO_VERSION  apio-cli-version
+            REPO_COMMIT   repo-commit
             RELEASE_TAG   release-tag
             PACKAGE_TAG   package-tag
 
@@ -217,7 +216,7 @@ jobs:
           $(cat build-info.txt)
           \`\`\`
 
-          - [Apio CLI cutoff commit](https://github.com/${APIO_REPO}/commit/${APIO_COMMIT})
+          - [Apio CLI cutoff commit](https:/github.com/${{ github.repository }}/commit/${REPO_COMMIT})
 
           - [Generated release](https://github.com/${{ github.repository }}/releases/tag/${RELEASE_TAG})
           EOF
