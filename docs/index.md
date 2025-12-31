@@ -1,15 +1,13 @@
 #
 
-![](assets/apio-illustration.png)
+![](assets/apio-cli-banner.png)
 
-> NOTE: This documentation is for Apio 1.0.0 and later. For
-> documentation of Apio 0.9.5 and older, see
-> <https://github.com/FPGAwars/apio/wiki>
-
-
+> NOTE: This documentation applies to Apio CLI version 1.0.0 and later.
+> Earlier versions have been deprecated, and users are encouraged to upgrade
+> to the latest Apio CLI.
 
 > NOTE: If you want to skip this overview of Apio, We recommend continuing with the
-[Quick Start](quick-start.md) guide.
+> [Quick Start](quick-start.md) guide.
 
 **Apio** is an **easy-to-install** and **easy-to-use** open-source toolbox that simplifies FPGA development. It provides simple commands such as:
 
