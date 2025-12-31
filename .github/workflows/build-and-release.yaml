@@ -216,7 +216,7 @@ jobs:
           $(cat build-info.txt)
           \`\`\`
 
-          - [Apio CLI cutoff commit](https:/github.com/${{ github.repository }}/commit/${REPO_COMMIT})
+          - [Apio CLI cutoff commit](https://github.com/${{ github.repository }}/commit/${REPO_COMMIT})
 
           - [Generated release](https://github.com/${{ github.repository }}/releases/tag/${RELEASE_TAG})
           EOF
