@@ -118,12 +118,12 @@ jobs:
       #     repo-dir: .
       #     commit-var: APIO_COMMIT
 
-      - name: Get builder repo info
+      - name: Get repo info
         uses: fpgawars/apio-workflows/.github/actions/get-repo-info@main
         with:
           repo-dir: .
-          branch-var: APIO_CLI_BRANCH
-          commit-var: APIO_CLI_COMMIT
+          branch-var: REPO_BRANCH
+          commit-var: REPO_COMMIT
 
       - name: Get Apio version
         uses: fpgawars/apio-workflows/.github/actions/get-apio-version@main
