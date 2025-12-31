@@ -25,8 +25,8 @@ jobs:
           os: darwin
           arch: arm64
 
-      - name: Checkout this repo (for builder)
-        uses: actions/checkout@v4
+      # - name: Checkout this repo (for builder)
+      #   uses: actions/checkout@v4
 
       - name: Download build-info.json artifact from main job
         uses: actions/download-artifact@v4
@@ -58,26 +58,26 @@ jobs:
         with:
           json-file: build-info.json
           mappings: >-
-            PYTHON_VERSION   python-version
-            APIO_REPO        apio-cli-repo
-            APIO_COMMIT      apio-cli-commit
+            PYTHON_VERSION   apio-python-version
+            APIO_REPO        repo
+            APIO_COMMIT      repo-commit
             APIO_VERSION     apio-cli-version
             RELEASE_TAG      release-tag
             PACKAGE_TAG      package-tag
 
       # -- This is the python that will be included in pyinstaller.
-      - name: Install python
+      - name: Install python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Checkout apio repo (for source)
+      # We checkout the repo into a subdirectory not to step on build-info.json.
+      - name: Checkout this repo
         uses: actions/checkout@v4
         with:
           repository: ${{env.APIO_REPO}}
           ref: ${{env.APIO_COMMIT}}
           path: _apio-repo
-          fetch-depth: 0
 
       - name: Pip install apio
         run: |
@@ -88,7 +88,7 @@ jobs:
         run: |
           pip install pyinstaller
 
-      - name: Set up working directories
+      - name: Setup working directories
         run: |
           mkdir _work
           mkdir _dist
@@ -102,7 +102,7 @@ jobs:
             --log-level=DEBUG \
             --workpath _work \
             --distpath _dist \
-            .github/workflows/resources/apio-pyinstaller.spec
+            _apio-repo/.github/workflows/resources/apio-pyinstaller.spec
           echo "_dist:"
           ls -al _dist
           echo "_dist/apio:"
@@ -123,6 +123,7 @@ jobs:
 
       - name: Add the LICENSE file
         run: |
+          # cp _apio-repo/LICENSE _dist/apio
           cp _apio-repo/LICENSE _dist/apio
           cat _dist/apio/LICENSE
 
@@ -165,7 +166,7 @@ jobs:
 
       - name: Create installer postinstall scripts
         run: |
-          cp .github/workflows/resources/darwin/postinstall _scripts/postinstall
+          cp _apio-repo/.github/workflows/resources/darwin/postinstall _scripts/postinstall
           chmod 755 _scripts/postinstall
           echo "_scripts:"
           ls -al _scripts
@@ -186,8 +187,8 @@ jobs:
 
       - name: Run productbuild
         run: |
-          productbuild --resources .github/workflows/resources/darwin \
-                       --distribution .github/workflows/resources/darwin/distribution.xml \
+          productbuild --resources _apio-repo/.github/workflows/resources/darwin \
+                       --distribution _apio-repo/.github/workflows/resources/darwin/distribution.xml \
                        --package-path . \
                        "apio-cli-darwin-arm64-${PACKAGE_TAG}-installer.pkg"
           pwd

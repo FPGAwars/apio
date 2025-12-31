@@ -29,8 +29,8 @@ jobs:
           os: linux
           arch: x86_64
 
-      - name: Checkout this repo (for builder)
-        uses: actions/checkout@v4
+      # - name: Checkout this repo (for builder)
+      #   uses: actions/checkout@v4
 
       - name: Download build-info.json artifact from main job
         uses: actions/download-artifact@v4
@@ -62,26 +62,26 @@ jobs:
         with:
           json-file: build-info.json
           mappings: >-
-            PYTHON_VERSION   python-version
-            APIO_REPO        apio-cli-repo
-            APIO_COMMIT      apio-cli-commit
+            PYTHON_VERSION   apio-python-version
+            APIO_REPO        repo
+            APIO_COMMIT      repo-commit
             APIO_VERSION     apio-cli-version
             RELEASE_TAG      release-tag
             PACKAGE_TAG      package-tag
 
       # -- This is the python that will be included in pyinstaller.
-      - name: Install python
+      - name: Install python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Checkout apio repo (for source)
+      # We checkout the repo into a subdirectory not to step on build-info.json.
+      - name: Checkout apio repo
         uses: actions/checkout@v4
         with:
           repository: ${{env.APIO_REPO}}
           ref: ${{env.APIO_COMMIT}}
           path: _apio-repo
-          fetch-depth: 0
 
       - name: Pip install apio
         run: |
@@ -92,7 +92,7 @@ jobs:
         run: |
           pip install pyinstaller
 
-      - name: Set up working directories
+      - name: Setup working directories
         run: |
           mkdir _work
           mkdir _dist
@@ -105,7 +105,7 @@ jobs:
             --log-level=DEBUG \
             --workpath _work \
             --distpath _dist \
-            .github/workflows/resources/apio-pyinstaller.spec
+            _apio-repo/.github/workflows/resources/apio-pyinstaller.spec
           echo "_dist:"
           ls -al _dist
           echo "_dist/apio:"
@@ -173,7 +173,7 @@ jobs:
           # Package control file
           mkdir _debian/DEBIAN
           control="_debian/DEBIAN/control"
-          sed "s/\[APIO_VERSION\]/${APIO_VERSION}/g" .github/workflows/resources/linux/control.template > ${control}
+          sed "s/\[APIO_VERSION\]/${APIO_VERSION}/g" _apio-repo/.github/workflows/resources/linux/control.template > ${control}
 
           # Show info
           find _debian

@@ -8,16 +8,6 @@ on:
 
   # Allow manual activations.
   workflow_dispatch:
-    inputs:
-      apio_repo:
-        description: "[Optional] Apio source repo (this repo)"
-        required: false
-      apio_branch:
-        description: "[Optional] Apio source branch (main)"
-        required: false
-      commit_sha:
-        description: "[Optional] Apio source commit SHA to build (latest)"
-        required: false
 
 permissions:
   # Allow release creation
@@ -27,8 +17,6 @@ env:
   # The Python version of the pyinstaller binaries.
   PYTHON_VERSION: "3.14"
 
-  # Apio github repo to use.
-  APIO_REPO: ${{github.event.inputs.apio_repo || github.repository}}
 
   # Apio repo branch to use.
   APIO_TARGET_BRANCH: ${{github.event.inputs.apio_branch || 'main'}}
@@ -66,96 +54,42 @@ jobs:
           release-tag: ${{ env.RELEASE_TAG }}
           just-check: true
 
-      - name: Checkout apio repo (for source)
-        uses: actions/checkout@v4
-        with:
-          repository: ${{env.APIO_REPO}}
-          ref: ${{env.APIO_TARGET_BRANCH}}
-          path: apio-repo
-          fetch-depth: 0
-
-      - name: Determine Apio source commit to use
-        run: |
-          apio_latest_commit=$(git -C apio-repo rev-parse HEAD)
-
-          echo "APIO_LATEST_COMMIT=$apio_latest_commit"
-          echo "APIO_LATEST_COMMIT=$apio_latest_commit" >> $GITHUB_ENV
-
-          # Strip leading and trailing spaces
-          sha="$(echo "${{github.event.inputs.commit_sha}}" | xargs)"
-
-          # User specified commit SHA.
-          if [ -n "$sha" ]; then
-            echo "APIO_TARGET_COMMIT=$sha"
-            echo "APIO_TARGET_COMMIT=$sha" >> $GITHUB_ENV
-
-            echo "COMMIT_NOTE=Using manual Apio commit"
-            echo "COMMIT_NOTE=Using manual Apio commit" >> $GITHUB_ENV
-
-          # Default behavior, use latest commit.
-          else
-            echo "APIO_TARGET_COMMIT=$apio_latest_commit"
-            echo "APIO_TARGET_COMMIT=$apio_latest_commit" >> $GITHUB_ENV
-
-            echo "COMMIT_NOTE=Using latest Apio commit"
-            echo "COMMIT_NOTE=Using latest Apio commit" >> $GITHUB_ENV
-          fi
-
-      # Now that we know what SHA we need, we can select it from the
-      # apio repo we fetched earlier.
-      - name: Checkout selected Apio source commit
-        run: |
-          git -C apio-repo fetch origin
-          git -C apio-repo checkout "$APIO_TARGET_COMMIT"
-
-          echo "$COMMIT_NOTE"
-          echo "Selected: $APIO_TARGET_COMMIT"
-          echo "Latest:   $APIO_LATEST_COMMIT"
-
-      - name: Get apio repo info
-        uses: fpgawars/apio-workflows/.github/actions/get-repo-info@main
-        with:
-          repo-dir: apio-repo
-          commit-var: APIO_COMMIT
-
-      - name: Get builder repo info
+      - name: Get repo info
         uses: fpgawars/apio-workflows/.github/actions/get-repo-info@main
         with:
           repo-dir: .
-          branch-var: BUILDER_BRANCH
-          commit-var: BUILDER_COMMIT
+          branch-var: REPO_BRANCH
+          commit-var: REPO_COMMIT
 
       - name: Get Apio version
         uses: fpgawars/apio-workflows/.github/actions/get-apio-version@main
         with:
-          apio-repo-root: apio-repo
+          apio-repo-root: .
           env-var-name: APIO_VERSION
 
       # Create the build configuration that we will pass to the other jobs.
       - name: Create build info
         run: |
-          # Collect values
-          REQUESTED_COMMIT="${{ github.event.inputs.commit_sha }}"
-          if [ -z "$REQUESTED_COMMIT" ]; then
-            REQUESTED_COMMIT="(none)"
-          fi
+          # # Collect values
+          # REQUESTED_COMMIT="${{ github.event.inputs.commit_sha }}"
+          # if [ -z "$REQUESTED_COMMIT" ]; then
+          #   REQUESTED_COMMIT="(none)"
+          # fi
 
           # Generate build-info.json
           cat > build-info.json <<EOF
           {
-            "package-name":  "apio",
-            "description" : "FPGA design tool",
-            "python-version" : "$PYTHON_VERSION",
-            "apio-cli-repo":  "${{env.APIO_REPO}}",
-            "requested-commit" : "${REQUESTED_COMMIT}",
-            "apio-cli-commit":  "$APIO_COMMIT",
+            "package-name":  "apio-cli",
+            "description" : "Command-line FPGA design suite",
             "apio-cli-version": "$APIO_VERSION",
+            "apio-python-version" : "$PYTHON_VERSION",
+            "repo":  "${{github.repository}}",
+            "repo-branch":  "${REPO_BRANCH}",
+            "repo-commit":  "${REPO_COMMIT}",
             "release-tag":  "$RELEASE_TAG",
             "package-tag":  "$PACKAGE_TAG",
             "build-time":  "$(date +'%Y-%m-%d %H:%M:%S %Z')",
-            "builder-repo":  "${{github.repository}}",
             "builder-workflow":  "${{ github.workflow }}",
-            "builder-commit":  "$BUILDER_COMMIT",
             "workflow-run-id":  "${{github.run_id}}",
             "workflow-run-number": "${{github.run_number}}"
           }
@@ -233,9 +167,8 @@ jobs:
         with:
           json-file: build-info.json
           mappings: >-
-            APIO_REPO     apio-cli-repo
-            APIO_COMMIT   apio-cli-commit
             APIO_VERSION  apio-cli-version
+            REPO_COMMIT   repo-commit
             RELEASE_TAG   release-tag
             PACKAGE_TAG   package-tag
 
@@ -273,7 +206,7 @@ jobs:
 
           cat -n "assets-table.md"
 
-      # # Summary for the run page.
+      # Summary for the workflow run page.
       - name: Prepare workflow run summary
         run: |
           cat  > RUN-SUMMARY.txt <<EOF
@@ -283,7 +216,7 @@ jobs:
           $(cat build-info.txt)
           \`\`\`
 
-          - [Apio CLI cutoff commit](https://github.com/${APIO_REPO}/commit/${APIO_COMMIT})
+          - [Apio CLI cutoff commit](https://github.com/${{ github.repository }}/commit/${REPO_COMMIT})
 
           - [Generated release](https://github.com/${{ github.repository }}/releases/tag/${RELEASE_TAG})
           EOF
