@@ -75,13 +75,13 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      # We checkout the repo into a subdirectory not to step on build-info.json.
       - name: Checkout apio repo
         uses: actions/checkout@v4
         with:
           repository: ${{env.APIO_REPO}}
           ref: ${{env.APIO_COMMIT}}
           path: _apio-repo
-          # fetch-depth: 0
 
       - name: Pip install apio
         run: |

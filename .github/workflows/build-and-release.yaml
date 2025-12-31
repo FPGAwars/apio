@@ -8,16 +8,6 @@ on:
 
   # Allow manual activations.
   workflow_dispatch:
-    # inputs:
-    #   apio_repo:
-    #     description: "[Optional] Apio source repo (this repo)"
-    #     required: false
-    #   apio_branch:
-    #     description: "[Optional] Apio source branch (main)"
-    #     required: false
-    #   commit_sha:
-    #     description: "[Optional] Apio source commit SHA to build (latest)"
-    #     required: false
 
 permissions:
   # Allow release creation
@@ -65,58 +55,6 @@ jobs:
         with:
           release-tag: ${{ env.RELEASE_TAG }}
           just-check: true
-
-      # - name: Checkout apio repo (for source)
-      #   uses: actions/checkout@v4
-      #   with:
-      #     repository: ${{env.APIO_REPO}}
-      #     ref: ${{env.APIO_TARGET_BRANCH}}
-      #     path: apio-repo
-      #     fetch-depth: 0
-
-      # - name: Determine Apio source commit to use
-      #   run: |
-      #     apio_latest_commit=$(git -C apio-repo rev-parse HEAD)
-
-      #     echo "APIO_LATEST_COMMIT=$apio_latest_commit"
-      #     echo "APIO_LATEST_COMMIT=$apio_latest_commit" >> $GITHUB_ENV
-
-      #     # Strip leading and trailing spaces
-      #     sha="$(echo "${{github.event.inputs.commit_sha}}" | xargs)"
-
-      #     # User specified commit SHA.
-      #     if [ -n "$sha" ]; then
-      #       echo "APIO_TARGET_COMMIT=$sha"
-      #       echo "APIO_TARGET_COMMIT=$sha" >> $GITHUB_ENV
-
-      #       echo "COMMIT_NOTE=Using manual Apio commit"
-      #       echo "COMMIT_NOTE=Using manual Apio commit" >> $GITHUB_ENV
-
-      #     # Default behavior, use latest commit.
-      #     else
-      #       echo "APIO_TARGET_COMMIT=$apio_latest_commit"
-      #       echo "APIO_TARGET_COMMIT=$apio_latest_commit" >> $GITHUB_ENV
-
-      #       echo "COMMIT_NOTE=Using latest Apio commit"
-      #       echo "COMMIT_NOTE=Using latest Apio commit" >> $GITHUB_ENV
-      #     fi
-
-      # Now that we know what SHA we need, we can select it from the
-      # apio repo we fetched earlier.
-      # - name: Checkout selected Apio source commit
-      #   run: |
-      #     git -C apio-repo fetch origin
-      #     git -C apio-repo checkout "$APIO_TARGET_COMMIT"
-
-      #     echo "$COMMIT_NOTE"
-      #     echo "Selected: $APIO_TARGET_COMMIT"
-      #     echo "Latest:   $APIO_LATEST_COMMIT"
-
-      # - name: Get apio repo info
-      #   uses: fpgawars/apio-workflows/.github/actions/get-repo-info@main
-      #   with:
-      #     repo-dir: .
-      #     commit-var: APIO_COMMIT
 
       - name: Get repo info
         uses: fpgawars/apio-workflows/.github/actions/get-repo-info@main
