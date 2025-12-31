@@ -146,7 +146,7 @@ jobs:
             "package-name":  "apio-cli",
             "description" : "Command-line FPGA design suite",
             "apio-cli-version": "$APIO_VERSION",
-            "python-version" : "$PYTHON_VERSION",
+            "apio-python-version" : "$PYTHON_VERSION",
             "repo":  "${{github.repository}}",
             "repo-branch":  "${REPO_BRANCH}",
             "repo-commit":  "${REPO_COMMIT}",
