@@ -312,11 +312,10 @@ jobs:
           > * (optional) Add release notes.
           > * Click `Update Release` button to save your changes.
 
-          ### IMPORTANT 
-          To install Apio CLI from the files below, please follow
-          the [Apio CLI installation guide](https://fpgawars.github.io/apio/docs/installing-apio-cli), \
-          as additional manual steps may be required
-          for a successful installation.
+          ### Installation
+          To install Apio CLI from the files below, please follow \
+          the [Apio CLI installation guide](https://fpgawars.github.io/apio/docs/installing-apio-cli),
+          as additional manual steps may be required for a successful installation.
 
           $(cat assets-table.md)
 
