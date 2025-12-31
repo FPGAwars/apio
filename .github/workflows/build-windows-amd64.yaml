@@ -76,13 +76,13 @@ jobs:
         with:
           repository: ${{env.APIO_REPO}}
           ref: ${{env.APIO_COMMIT}}
-          path: _apio-repo
-          fetch-depth: 0
+          # path: _apio-repo
+          # fetch-depth: 0
 
       - name: Pip install apio
         run: |
           python -m pip install --upgrade pip
-          pip install -e _apio-repo
+          pip install -e .
 
       - name: Pip install pyinstaller
         run: |
@@ -127,7 +127,7 @@ jobs:
 
       - name: Add the LICENSE file
         run: |
-          cp _apio-repo/LICENSE _dist/apio
+          cp LICENSE _dist/apio
           cat _dist/apio/LICENSE
 
       - name: Add the 'readme' file
