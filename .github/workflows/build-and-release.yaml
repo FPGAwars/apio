@@ -300,7 +300,7 @@ jobs:
         run: |
           cat  > RELEASE-BODY.txt <<EOF
 
-          > ### PRE-RELEASE NOTE
+          > ### Pre-release note
           >
           > This daily release was created as a pre-release and
           > will be deleted after 5 days unless if it's marked as a stable release. To make
