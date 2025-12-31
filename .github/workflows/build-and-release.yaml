@@ -262,8 +262,6 @@ jobs:
           | Linux | X86 64 bit | Debian package | [apio-cli-linux-x86-64-${PACKAGE_TAG}-debian.deb](${URL_PREFIX}/apio-cli-linux-x86-64-${PACKAGE_TAG}-debian.deb) |
           | Windows | X86 64 bit | Wizard | [apio-cli-windows-amd64-${PACKAGE_TAG}-installer.exe](${URL_PREFIX}/apio-cli-windows-amd64-${PACKAGE_TAG}-installer.exe) |
 
-          <br>
-
           ### Apio CLI file bundles
 
           | System | Architecture | Package |
@@ -302,21 +300,25 @@ jobs:
         run: |
           cat  > RELEASE-BODY.txt <<EOF
 
-          > NOTE: This daily release was created as a pre-release and will be deleted
-          > after 5 days unless if it's marked as a stable release. To mark it as a
-          > stable release, open it for editing and turn off the  `pre-release`checkbox.
+          > ### PRE-RELEASE NOTE
+          >
+          > This daily release was created as a pre-release and
+          > will be deleted after 5 days unless if it's marked as a stable release. To make
+          > this a  stable release, do the following:
+          > * Open the release for editing.
+          > * Turn off the `Set as a pre-release` checkbox below.
+          > * (optional) Turn on the `Set as the latest release` checkbox.
+          > * Remove this pre-release note.
+          > * (optional) Add release notes.
+          > * Click `Update Release` button to save your changes.
 
-          <br>
-
-          **IMPORTANT:** To install Apio CLI from the files below, make sure to follow the
-          [Apio CLI installation guide](https://fpgawars.github.io/apio/docs/installing-apio-cli)
-          because additional manual steps may be required for a successful installation.
-
-          <br>
+          ### IMPORTANT 
+          To install Apio CLI from the files below, please follow
+          the [Apio CLI installation guide](https://fpgawars.github.io/apio/docs/installing-apio-cli), \
+          as additional manual steps may be required
+          for a successful installation.
 
           $(cat assets-table.md)
-
-          <br>
 
           ### Build info
 
