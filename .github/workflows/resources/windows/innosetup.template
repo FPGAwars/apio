@@ -38,6 +38,6 @@ begin
     Result[0] := ExpandConstant('{app}');
 end;
 
-#include ".github/workflows/resources/windows/modpath.iss"
+#include "_apio-repo/.github/workflows/resources/windows/modpath.iss"
 
 
