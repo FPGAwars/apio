@@ -35,11 +35,10 @@ nav:
   - Getting Started:
       - Quick start: quick-start.md
       - System requirements: system-requirements.md
-      - Installing Apio IDE: installing-apio-ide.md
       - Installing Apio CLI: installing-apio-cli.md
       - Video tutorial: video-tutorial.md
       - Migrating from Apio 0.9.5: migrating-from-apio-0.9.5.md
-  - Apio Commands:
+  - Apio CLI Commands:
       - Commands list: commands-list.md
       - api: cmd-apio-api.md
       - boards: cmd-apio-boards.md
@@ -66,6 +65,7 @@ nav:
   - Apio Projects:
       - Project structure: project-structure.md
       - Project file apio.ini: project-file.md
+      - Using System Verilog: using-system-verilog.md
   - FPGA Boards:
       - Supported boards: supported-boards.md
       - Supported FPGAs: supported-fpgas.md
@@ -76,17 +76,14 @@ nav:
       - Apio examples: apio-examples.md
       - Using examples: using-examples.md
       - Contributing examples: contributing-examples.md
-  - Apio Tips:
-      - Apio command line: command-line.md
-      - Using System Verilog: using-system-verilog.md
+  - Apio CLI Tips:
+      - Apio CLI command line: command-line.md
       - Using testbenches: using-testbenches.md
       - Raw tools: raw-tools.md
-  - Apio Development:
+  - Apio CLI Development:
       - Apio repositories: apio-repositories.md
       - Development environment: development-environment.md
-      - Apio's terminology: terminology.md
+      - Apio terminology: terminology.md
       - Command execution: command-execution.md
-      - Updating the docs: updating-the-docs.md
-      - Creating an Apio version: creating-apio-version.md
-      - Creating a package version: creating-package-version.md
+      - Updating Apio CLI docs: updating-the-docs.md
   - Help: help.md
