@@ -75,15 +75,15 @@ def construct_remote_config_status_str(apio_ctx: ApioContext) -> str:
 # -- Text in the rich-text format of the python rich library.
 APIO_INFO_SYSTEM_HELP = """
 The command 'apio info system' provides general information about your \
-system and Apio installation, which is useful for diagnosing Apio \
-installation issues.
+system and Apio CLI installation, which is useful for diagnosing Apio \
+CLI installation issues.
 
 Examples:[code]
   apio info system   # System info.[/code]
 
 [NOTE] For programmatic access to this information use 'apio api get-system'.
 
-[ADVANCED] The default location of the Apio home directory, \
+[ADVANCED] The default location of the Apio CLI home directory, \
 where apio saves preferences and packages, is in the '.apio' directory \
 under the user home directory but can be changed using the system \
 environment variable 'APIO_HOME'.
@@ -442,7 +442,7 @@ def _list_boards_docs_format(commands):
     list of [command_name, command_description]
     """
 
-    header1 = "APIO COMMAND"
+    header1 = "COMMAND"
     header2 = "DESCRIPTION"
 
     # -- Replace the command names with markdown link to the command doc page.
@@ -458,7 +458,7 @@ def _list_boards_docs_format(commands):
     today = date.today()
     today_str = f"{today.strftime('%B')} {today.day}, {today.year}"
     cwrite("\n<!-- BEGIN generation by 'apio commands --docs' -->\n")
-    cwrite("\n# Apio commands\n")
+    cwrite("\n# Apio CLI commands\n")
     cwrite(
         f"\nThis markdown page was generated automatically on {today_str}.\n\n"
     )
