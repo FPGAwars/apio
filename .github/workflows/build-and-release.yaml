@@ -239,11 +239,11 @@ jobs:
           > will be deleted after 5 days unless if it's marked as a stable release. To make
           > this a  stable release, do the following:
           > * Open the release for editing.
-          > * Turn off the `Set as a pre-release` checkbox below.
-          > * (optional) Turn on the `Set as the latest release` checkbox.
+          > * Turn off the \`Set as a pre-release\` checkbox below.
+          > * (optional) Turn on the \`Set as the latest release\` checkbox.
           > * Remove this pre-release note.
           > * (optional) Add release notes.
-          > * Click `Update Release` button to save your changes.
+          > * Click \`Update Release\` button to save your changes.
 
           ### Installation
           To install Apio CLI from the files below, please follow \
