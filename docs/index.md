@@ -2,35 +2,38 @@
 
 ![](assets/apio-cli-banner.png)
 
-> NOTE: This documentation applies to Apio CLI version 1.0.0 and later.
+> NOTES: This documentation applies to Apio CLI version 1.0.0 and later.
 > Earlier versions have been deprecated, and users are encouraged to upgrade
 > to the latest Apio CLI.
-
-> NOTE: If you want to skip this overview of Apio, We recommend continuing with the
+>
+> NOTE: If you want to skip this overview of Apio CLI, We recommend continuing with the
 > [Quick Start](quick-start.md) guide.
+>
+> NOTE: If you prefer working in an IDE, you want to take a look at [Apio IDE](https://marketplace.visualstudio.com/items?itemName=fpgawars.apio) which brings all the functionality
+> of Apio CLI to the Microsoft Visual Studio Code IDE.
 
-**Apio** is an **easy-to-install** and **easy-to-use** open-source toolbox that simplifies FPGA development. It provides simple commands such as:
+**Apio CLI** is an **easy-to-install** and **easy-to-use** open-source command-line toolbox that simplifies FPGA development. It provides simple commands such as:
 
 - `apio lint` – to verify the code
 - `apio sim` – to simulate the design
 - `apio upload` – to build the design and program the FPGA board
 
-Apio runs on macOS, Linux, and Windows, comes in two flavours for command line and for IDE integration and currently supports:
+Apio CLI runs on macOS, Linux, and Windows, and currently supports:
 
 - 3 FPGA architectures
-- 70+ FPGAs
-- 70+ FPGA boards
+- 80+ FPGAs
+- 80+ FPGA boards
 
 …and the list continues to grow.
 
-This page offers a showcase of some of Apio's features, detailed further in the sidebar sections. After reviewing this introduction, we recommend starting with the [Quick start](quick-start.md) section.
+This page offers a showcase of some of Apio CLI's features, detailed further in the sidebar sections. After reviewing this introduction, we recommend starting with the [Quick start](quick-start.md) section.
 
 > - The examples here use the Alhambra-II FPGA board, though other supported boards should work similarly.
 > - Some logs in the examples below have been truncated for clarity.
 
 ## Apio project examples
 
-Currently there are 60+ project examples that are included with Apio. To list them, run the following command:
+Currently there are 60+ project examples that are included with Apio CLI. To list them, run the following command:
 
 ```
 $ apio examples
@@ -76,7 +79,7 @@ example$ apio upload
 
 And Voilà! - the design is now running on the FPGA board.
 
-## Analyzing utilization and speed.
+## Utilization and speed report.
 
 To check how many FPGA resources the design uses and how fast it can run, use the `apio report` command
 
@@ -156,6 +159,24 @@ VCD info: dumpfile _build/default/main_tb.vcd opened for output.
 main_tb.v:47: $finish called at 966000 (1ps)
 ```
 
+## Programming the FPGA board
+
+The command `apio upload` builds the project if needed and upload the generated bitstream to the FPGA board.
+
+```
+$ apio upload
+...
+Selecting USB device:
+- FILTER [VID=0403, PID=6010, REGEX="^Alhambra II.*"]
+- DEVICE [0403:6010, 0:3], [AlhambraBits] [Alhambra II v1.0A] []
+...
+Erasing: [==================================================] 100.00%
+Writing: [==================================================] 100.00%
+Reading: [==================================================] 100.00%
+
+Done
+```
+
 ## Commands help
 
 Every apio command accepts the `--help` or `-h` flag, which prints a short description of the command. When a command has multiple levels, the help flag can be used at any level, for example: `apio -h`, `apio examples -h`, and `apio examples list -h`.
@@ -177,5 +198,5 @@ Options:
 
 ---
 
-This concludes the short overview of Apio. We recommend continuing with the
+This concludes the short overview of Apio CLI. We recommend continuing with the
 [Quick Start](quick-start.md) guide.

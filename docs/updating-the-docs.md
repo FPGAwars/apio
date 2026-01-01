@@ -1,10 +1,9 @@
-# Updating Apio Docs
 
-Apio documentation is written in Markdown and published using the `mkdocs`
+Apio CLI documentation is written in Markdown and published using the `mkdocs`
 tool at <https://fpgawars.github.io/apio/docs>. The rest of this page explains
 how to update and preview the documentation.
 
-> NOTE: The Apio github workflow that publishes the Apio docs, also publishes the
+> NOTE: The Apio CLI github workflow that publishes the Apio CLI docs, also publishes the
 > test coverage report at <https://fpgawars.github.io/apio/coverage>
 
 ## Installing MkDocs
@@ -31,7 +30,7 @@ directory.
 
 ## Stylesheets
 
-Apio's custom styles are defined in `docs/stylesheets/extra.css`, which is
+Apio CLI's custom styles are defined in `docs/stylesheets/extra.css`, which is
 referenced from `mkdocs.yml`.
 
 ## Previewing Local Changes
@@ -46,7 +45,7 @@ This enables live reloading in your browser.
 
 ## Sending a Pull Request
 
-Before sending a pull request to the Apio repository, check the following on your forked repository:
+Before sending a pull request to the Apio CLI repository, check the following on your forked repository:
 
 1.  The following workflows in the **Actions** tab of your fork repo completed successfully:
 
