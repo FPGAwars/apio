@@ -8,10 +8,10 @@
   // The time period in minutes after a config fetch failure until the next
   // try. This applies only for optional remote config fetch where Apio can
   // fall back to the cached config, and does not apply to cases where a
-  // fresh config is required, e.g. by 'apio packages update' or if a cached
+  // fresh config is required, e.g. by 'apio packages install' or if a cached
   // config is not available.
   //
-  // To force an immediate config fetch, user can run 'apio packages update'.
+  // To force an immediate config fetch, user can run 'apio packages install'.
   "remote-config-retry-minutes": 60,
 
   // URL of the apio remote config file. The placeholder {major} and {minor}

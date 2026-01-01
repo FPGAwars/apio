@@ -36,7 +36,7 @@ The hierarchy and names of some Apio CLI commands were changed in Apio CLI 1.x.x
 | `apio examples --files`      | `apio examples fetch`       | Fetch an example             |
 | `apio examples --list`       | `apio examples list`        | List examples                |
 | `apio init`                  | `apio create`               | Create an apio.ini file      |
-| `apio install --all`         | `apio packages update`      | Install Apio CLI packages    |
+| `apio install --all`         | `apio packages install`     | Install Apio CLI packages    |
 | `apio install --list`        | `apio packages list`        | List installed apio packages |
 | `apio system --lsftdi`       | `apio devices usb`          | List FTDI and USB devices    |
 | `apio system --lsserial`     | `apio devices serial`       | List serial ports            |

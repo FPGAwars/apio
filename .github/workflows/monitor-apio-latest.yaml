@@ -50,7 +50,7 @@ jobs:
 
             - name: Load apio packages (slow)
               run: |
-                apio packages update -v
+                apio packages install -v
 
             - name: Show apio info
               run: |
