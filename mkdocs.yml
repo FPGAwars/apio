@@ -1,5 +1,5 @@
 # The project name.
-site_name: Apio 1.x.x Documentation
+site_name: Apio CLI Documentation
 
 # The temporary directory with the generated site.
 site_dir: _site
