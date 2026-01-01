@@ -872,8 +872,8 @@ apio info system
 Usage: apio info system [OPTIONS]
 
   The command 'apio info system' provides general information about your
-  system and Apio installation, which is useful for diagnosing Apio
-  installation issues.
+  system and Apio CLI installation, which is useful for diagnosing Apio
+  CLI installation issues.
 
   Examples:
     apio info system   # System info.
@@ -881,10 +881,10 @@ Usage: apio info system [OPTIONS]
   [NOTE] For programmatic access to this information use 'apio api
   get-system'.
 
-  [ADVANCED] The default location of the Apio home directory, where apio
-  saves preferences and packages, is in the '.apio' directory under the
-  user home directory but can be changed using the system environment
-  variable 'APIO_HOME'.
+  [ADVANCED] The default location of the Apio CLI home directory, where
+  apio saves preferences and packages, is in the '.apio' directory under
+  the user home directory but can be changed using the system
+  environment variable 'APIO_HOME'.
 
 Options:
   -h, --help  Show this message and exit.
@@ -959,8 +959,39 @@ Options:
   -h, --help  Show this message and exit.
 
 Subcommands:
-  apio packages update  Update apio packages.
-  apio packages list    List apio packages.
+  apio packages install  Install apio packages.
+  apio packages list     List apio packages.
+
+
+
+--------------------------------------------
+
+apio packages install
+
+Usage: apio packages install [OPTIONS]
+
+  The command 'apio packages install' installs the installed Apio
+  packages  to their latest requirements.
+
+  Examples:
+    apio packages install            # Install packages
+    apio pack upd                    # Same, with shortcuts
+    apio packages install --force    # Force reinstallation from scratch
+    apio packages install --verbose  # Provide additional info
+
+  Adding the '--force' option forces the reinstallation of existing
+  packages; otherwise, packages that are already installed correctly
+  remain unchanged.
+
+  It is highly recommended to run the 'apio packages install' once in a
+  while because it check the Apio remote server for the latest packages
+  versions which may included fixes and enhancements such as new
+  examples that were added to the examples package.
+
+Options:
+  -f, --force    Force reinstallation.
+  -v, --verbose  Show detailed output.
+  -h, --help     Show this message and exit.
 
 
 
@@ -979,37 +1010,6 @@ Usage: apio packages list [OPTIONS]
 
 Options:
   -h, --help  Show this message and exit.
-
-
-
---------------------------------------------
-
-apio packages update
-
-Usage: apio packages update [OPTIONS]
-
-  The command 'apio packages update' updates the installed Apio packages
-  to their latest requirements.
-
-  Examples:
-    apio packages update            # Update packages
-    apio pack upd                   # Same, with shortcuts
-    apio packages update --force    # Force reinstallation from scratch
-    apio packages update --verbose  # Provide additional info
-
-  Adding the '--force' option forces the reinstallation of existing
-  packages; otherwise, packages that are already installed correctly
-  remain unchanged.
-
-  It is highly recommended to run the 'apio packages update' once in a
-  while because it check the Apio remote server for the latest packages
-  versions which may included fixes and enhancements such as new
-  examples that were added to the examples package.
-
-Options:
-  -f, --force    Force reinstallation.
-  -v, --verbose  Show detailed output.
-  -h, --help     Show this message and exit.
 
 
 

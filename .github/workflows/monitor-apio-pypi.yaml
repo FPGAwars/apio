@@ -49,7 +49,7 @@ jobs:
             - name: Load apio packages (slow)
               run: |
                 # apio install --all
-                apio packages update 
+                apio packages install 
 
             - name: Show apio info
               run: |

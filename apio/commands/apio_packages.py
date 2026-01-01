@@ -156,32 +156,32 @@ def print_packages_report(apio_ctx: ApioContext) -> bool:
         cout("All Apio packages are installed OK.", style=SUCCESS)
     else:
         cout(
-            "Run 'apio packages update' to update the packages.",
+            "Run 'apio packages install' to install the packages.",
             style=INFO,
         )
 
     # -- Return with the current packages status. Normally it should be
-    # -- True for OK since we fixed and updated the packages.
+    # -- True for OK since we fixed and installed the packages.
     return packages_ok
 
 
-# ------ apio packages update
+# ------ apio packages install
 
 # -- Text in the rich-text format of the python rich library.
-APIO_PACKAGES_UPDATE_HELP = """
-The command 'apio packages update' updates the installed Apio packages  \
+APIO_PACKAGES_INSTALL_HELP = """
+The command 'apio packages install' installs the installed Apio packages  \
 to their latest requirements.
 
 Examples:[code]
-  apio packages update            # Update packages
-  apio pack upd                   # Same, with shortcuts
-  apio packages update --force    # Force reinstallation from scratch
-  apio packages update --verbose  # Provide additional info[/code]
+  apio packages install            # Install packages
+  apio pack upd                    # Same, with shortcuts
+  apio packages install --force    # Force reinstallation from scratch
+  apio packages install --verbose  # Provide additional info[/code]
 
 Adding the '--force' option forces the reinstallation of existing packages; \
 otherwise, packages that are already installed correctly remain unchanged.
 
-It is highly recommended to run the 'apio packages update' once in a while \
+It is highly recommended to run the 'apio packages install' once in a while \
 because it check the Apio remote server for the latest packages versions \
 which may included fixes and enhancements such as new examples that were \
 added to the examples package.
@@ -189,19 +189,19 @@ added to the examples package.
 
 
 @click.command(
-    name="update",
+    name="install",
     cls=ApioCommand,
-    short_help="Update apio packages.",
-    help=APIO_PACKAGES_UPDATE_HELP,
+    short_help="Install apio packages.",
+    help=APIO_PACKAGES_INSTALL_HELP,
 )
 @options.force_option_gen(short_help="Force reinstallation.")
 @options.verbose_option
-def _update_cli(
+def _install_cli(
     # Options
     force: bool,
     verbose: bool,
 ):
-    """Implements the 'apio packages update' command."""
+    """Implements the 'apio packages install' command."""
 
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
@@ -232,7 +232,7 @@ def _update_cli(
     # -- When not in verbose mode, we run a scan and print a short status.
     scan = packages.scan_packages(apio_ctx.packages_context)
     if not scan.is_all_ok():
-        cerror("Failed to update some packages.")
+        cerror("Failed to install some packages.")
         cout(
             "Run 'apio packages list' to view the packages.",
             style=INFO,
@@ -296,7 +296,7 @@ SUBGROUPS = [
     ApioSubgroup(
         "Subcommands",
         [
-            _update_cli,
+            _install_cli,
             _list_cli,
         ],
     )

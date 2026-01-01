@@ -18,23 +18,23 @@ installation of Apio packages. These are not Python packages, but collections of
 <h3>Subcommands</h3>
 
 ```
-apio packages update
+apio packages install
 apio packages list
 ```
 
 ---
 
-## apio packages update
+## apio packages install
 
-The `apio packages update` command updates installed packages to their latest versions.
+The `apio packages install` command installs installed packages to their latest versions.
 
 <h3>Examples</h3>
 
 ```
-apio packages update            # Update packages
-apio pack upd                   # Same, with shortcuts
-apio packages update --force    # Force reinstallation from scratch
-apio packages update --verbose  # Provide additional info
+apio packages install            # Install packages
+apio pack upd                    # Same, with shortcuts
+apio packages install --force    # Force reinstallation from scratch
+apio packages install --verbose  # Provide additional info
 ```
 
 <h3>Options</h3>
@@ -51,8 +51,8 @@ apio packages update --verbose  # Provide additional info
   packages; otherwise, packages that are already installed correctly
   remain unchanged.
 
-- It is recommended to run the 'apio packages update' once in a
-  while because it checks the Apio remote server for updated packages with potential fixes and new examples.
+- It is recommended to run the 'apio packages install' once in a
+  while because it checks the Apio remote server for installed packages with potential fixes and new examples.
 
 ---
 

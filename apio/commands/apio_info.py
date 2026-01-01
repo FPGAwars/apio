@@ -151,7 +151,7 @@ def _system_cli():
     cout()
     ctable(table)
     cout(
-        "To force a remote config refresh, run 'apio packages update'.",
+        "To force a remote config refresh, run 'apio packages install'.",
         style=INFO,
     )
 
