@@ -48,12 +48,10 @@ jobs:
 
             - name: Load apio packages (slow)
               run: |
-                # apio install --all
-                apio packages install 
+                apio packages update
 
             - name: Show apio info
               run: |
-                # apio system --info
                 apio info system
 
             - name: Test ICE40 project
