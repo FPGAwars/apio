@@ -4,7 +4,7 @@ This README page is optimized for its appearance in the github repo rather than 
 
 ![apio-cli-banner](media/apio-cli-banner.png)
 
-[![license](https://img.shields.io/badge/License-GPL%202.0-blue.svg)](LICENSE)
+[![license](https://img.shields.io/badge/License-GPL%202.0-blue.svg)](https://github.com/FPGAwars/apio/blob/main/LICENSE)
 [![python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue)](https://pypi.org/project/apio)
 
 ![linux](media/linux-logo.png)&nbsp;&nbsp;&nbsp;![macos](media/macosx-logo.png)&nbsp;&nbsp;&nbsp;![windows](media/windows-logo.png)&nbsp;&nbsp;&nbsp;![raspberry-pi](media/raspbian-logo.png)
