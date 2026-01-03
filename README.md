@@ -25,6 +25,7 @@ This README page is optimized for its appearance in the github repo rather than 
 [![ide-build](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-vscode/build-and-release.yaml?label=ide-build)](https://github.com/fpgawars/apio-vscode/actions/workflows/build-and-release.yaml)
 [![ide-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-vscode/test.yaml?label=ide-test)](https://github.com/fpgawars/apio-vscode/actions/workflows/test.yaml)
 [![apio-backup](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-workflows/backup-apio-repos.yaml?label=apio-backup)](https://github.com/fpgawars/apio-workflows/actions/workflows/backup-apio-repos.yaml)
+[![workflows-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-workflows/test.yaml?label=workflows-test)](https://github.com/fpgawars/apio-workflows/actions/workflows/test.yaml)
 
 ---
 
