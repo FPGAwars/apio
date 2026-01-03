@@ -5,7 +5,7 @@ name: monitor-apio-pypi
 
 on:
   # Run on commit.
-  # push:
+  push:
 
   # Run every 6 hours
   schedule:
