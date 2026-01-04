@@ -120,6 +120,11 @@ jobs:
     uses: ./.github/workflows/build-darwin-arm64.yaml
     secrets: inherit
 
+  build-darwin-x86-64:
+    needs: prepare
+    uses: ./.github/workflows/build-darwin-x86-64.yaml
+    secrets: inherit
+
   build-linux-x86-64:
     needs: prepare
     uses: ./.github/workflows/build-linux-x86-64.yaml
@@ -134,7 +139,7 @@ jobs:
 
   release:
     needs:
-      [prepare, build-darwin-arm64, build-linux-x86-64, build-windows-amd64]
+      [prepare, build-darwin-arm64, prepare, build-darwin-x86-64, build-linux-x86-64, build-windows-amd64]
 
     runs-on: ubuntu-latest
     permissions:
@@ -279,6 +284,8 @@ jobs:
           files: |
             _artifacts/apio-cli-darwin-arm64-${{env.PACKAGE_TAG}}-bundle.tgz
             _artifacts/apio-cli-darwin-arm64-${{env.PACKAGE_TAG}}-installer.pkg
+            _artifacts/apio-cli-darwin-x86-64-${{env.PACKAGE_TAG}}-bundle.tgz
+            _artifacts/apio-cli-darwin-x86-64-${{env.PACKAGE_TAG}}-installer.pkg
             _artifacts/apio-cli-linux-x86-64-${{env.PACKAGE_TAG}}-bundle.tgz
             _artifacts/apio-cli-linux-x86-64-${{env.PACKAGE_TAG}}-debian.deb
             _artifacts/apio-cli-windows-amd64-${{env.PACKAGE_TAG}}-bundle.zip
