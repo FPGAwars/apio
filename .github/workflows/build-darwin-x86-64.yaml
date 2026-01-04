@@ -23,7 +23,7 @@ jobs:
         uses: fpgawars/apio-workflows/.github/actions/check-platform@main
         with:
           os: darwin
-          arch: x86-64
+          arch: x86_64
 
       # - name: Checkout this repo (for builder)
       #   uses: actions/checkout@v4
