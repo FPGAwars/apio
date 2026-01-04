@@ -6,7 +6,7 @@ from typing import Dict, Optional, Tuple
 from pytest import LogCaptureFixture
 import pytest
 from tests.conftest import ApioRunner
-from apio.managers.project import Project, ENV_OPTIONS
+from apio.managers.project import Project, ENV_OPTIONS_SPEC
 from apio.common.apio_console import cunstyle
 from apio.apio_context import (
     ApioContext,
@@ -46,6 +46,13 @@ def load_apio_ini(
         )
 
 
+def test_env_options_specs():
+    """Tests the option spec keys match options specs names"""
+
+    for name, env_options_spec in ENV_OPTIONS_SPEC.items():
+        assert name == env_options_spec.name
+
+
 def test_all_options_env(apio_runner: ApioRunner, capsys: LogCaptureFixture):
     """Tests an apio.ini with all options"""
 
@@ -64,7 +71,7 @@ def test_all_options_env(apio_runner: ApioRunner, capsys: LogCaptureFixture):
     }
 
     # -- Make sure we covered all the options.
-    assert len(apio_ini["[env:default]"]) == len(ENV_OPTIONS)
+    assert len(apio_ini["[env:default]"]) == len(ENV_OPTIONS_SPEC)
 
     project, _ = load_apio_ini(
         apio_ini=apio_ini,
@@ -97,10 +104,11 @@ def test_required_options_only_env(
 ):
     """Tests a minimal apio.ini with required only options."""
 
-    project, stdout = load_apio_ini(
+    project, _ = load_apio_ini(
         apio_ini={
             "[env:default]": {
                 "board": "alhambra-ii",
+                "top-module": "main",
             }
         },
         env_arg=None,
@@ -113,10 +121,6 @@ def test_required_options_only_env(
         "board": "alhambra-ii",
         "top-module": "main",
     }
-    assert (
-        "Option 'top-module' is missing for env default, assuming 'main'"
-        in stdout
-    )
 
 
 def test_list_options(apio_runner: ApioRunner, capsys: LogCaptureFixture):
@@ -126,6 +130,7 @@ def test_list_options(apio_runner: ApioRunner, capsys: LogCaptureFixture):
         apio_ini={
             "[env:default]": {
                 "board": "alhambra-ii",
+                "top-module": "my_top_module",
                 "yosys-synth-extra-options": "  k1=v1  k2=v2 \n\n k3=v3 \n\n",
                 "nextpnr-extra-options": "  k5=v5  k6=v6 \n\n k7=v7 \n\n",
             }
@@ -180,6 +185,7 @@ def test_legacy_apio_ini(apio_runner: ApioRunner, capsys: LogCaptureFixture):
         apio_ini={
             "[env]": {
                 "board": "alhambra-ii",
+                "top-module": "main",
             }
         },
         env_arg=None,
@@ -371,6 +377,7 @@ def test_validation_errors(apio_runner: ApioRunner, capsys: LogCaptureFixture):
         apio_ini={
             "[env:Default]": {
                 "board": "alhambra-ii",
+                "top-module": "main",
             }
         },
         expected_error="Error: Invalid env name 'Default'",
@@ -384,6 +391,7 @@ def test_validation_errors(apio_runner: ApioRunner, capsys: LogCaptureFixture):
         apio_ini={
             "[env: default]": {
                 "board": "alhambra-ii",
+                "top-module": "main",
             }
         },
         expected_error="Error: Invalid env name ' default'",
@@ -400,6 +408,7 @@ def test_validation_errors(apio_runner: ApioRunner, capsys: LogCaptureFixture):
             },
             "[env:default]": {
                 "board": "alhambra-ii",
+                "top-module": "main",
             },
         },
         expected_error="Error: Env 'no-such-env' not found in apio.ini",
@@ -423,7 +432,10 @@ def test_validation_errors(apio_runner: ApioRunner, capsys: LogCaptureFixture):
     error_tester(
         env_arg="no-such-env",
         apio_ini={
-            "[env:default]": {"board": "alhambra-ii"},
+            "[env:default]": {
+                "board": "alhambra-ii",
+                "top-module": "main",
+            },
         },
         expected_error="Error: Env 'no-such-env' not found in apio.ini",
         apio_runner=apio_runner,
@@ -434,7 +446,10 @@ def test_validation_errors(apio_runner: ApioRunner, capsys: LogCaptureFixture):
     error_tester(
         env_arg="Default",
         apio_ini={
-            "[env:default]": {"board": "alhambra-ii"},
+            "[env:default]": {
+                "board": "alhambra-ii",
+                "top-module": "main",
+            },
         },
         expected_error="Error: Invalid --env value 'Default'",
         apio_runner=apio_runner,
