@@ -192,11 +192,15 @@ jobs:
           # Write the table to a file.
           cat << EOF > "assets-table.md"
 
+          > NOTE: The installer and files bundle release below for Darwin Intel Silicon (x86-64) are not
+          > tested yet as of Jan 2026.
+
           ### Apio CLI installers
 
           | System | Architecture | Installer type | Package |
           | :--- | :--- | :--- | :--- |
           | MacOS | Apple Silicon | Wizard | [apio-cli-darwin-arm64-${PACKAGE_TAG}-installer.pkg](${URL_PREFIX}/apio-cli-darwin-arm64-${PACKAGE_TAG}-installer.pkg) |
+          | MacOS | Intel Silicon | Wizard | [apio-cli-darwin-x86-64-${PACKAGE_TAG}-installer.pkg](${URL_PREFIX}/apio-cli-darwin-x86-64-${PACKAGE_TAG}-installer.pkg) |
           | Linux | X86 64 bit | Debian package | [apio-cli-linux-x86-64-${PACKAGE_TAG}-debian.deb](${URL_PREFIX}/apio-cli-linux-x86-64-${PACKAGE_TAG}-debian.deb) |
           | Windows | X86 64 bit | Wizard | [apio-cli-windows-amd64-${PACKAGE_TAG}-installer.exe](${URL_PREFIX}/apio-cli-windows-amd64-${PACKAGE_TAG}-installer.exe) |
 
@@ -205,6 +209,7 @@ jobs:
           | System | Architecture | Package |
           | :--- | :--- | :--- |
           | MacOS | Apple Silicon | [apio-cli-darwin-arm64-${PACKAGE_TAG}-bundle.tgz](${URL_PREFIX}/apio-cli-darwin-arm64-${PACKAGE_TAG}-bundle.tgz) |
+          | MacOS | Intel Silicon | [apio-cli-darwin-x86-64-${PACKAGE_TAG}-bundle.tgz](${URL_PREFIX}/apio-cli-darwin-x86-64-${PACKAGE_TAG}-bundle.tgz) |
           | Linux | X86 64 bit | [apio-cli-linux-x86-64-${PACKAGE_TAG}-bundle.tgz](${URL_PREFIX}/apio-cli-linux-x86-64-${PACKAGE_TAG}-bundle.tgz) |
           | Windows | X86 64 bit | [apio-cli-windows-amd64-${PACKAGE_TAG}-bundle.zip](${URL_PREFIX}/apio-cli-windows-amd64-${PACKAGE_TAG}-bundle.zip) |
           EOF

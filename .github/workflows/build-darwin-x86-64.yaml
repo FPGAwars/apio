@@ -1,3 +1,8 @@
+# TODO: If this build workflow will end up very close to that of Darwin ARM64,
+# consider to merge them into a single workflow that uses a matrix to create
+# a job instance for each of the two architectures. For now we keep them
+# separate until the recently added X86 version will get stabilized.
+
 name: build-darwin-x86-64
 
 on:
