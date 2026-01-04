@@ -362,7 +362,7 @@ class ApioContext:
 
         # -- Board id string in color
         styled_board_id = cstyle(
-            self.project.env_options["board"], style=EMPH1
+            self.project.get_str_option("board"), style=EMPH1
         )
 
         # -- Report.

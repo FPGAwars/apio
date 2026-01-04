@@ -120,6 +120,11 @@ jobs:
     uses: ./.github/workflows/build-darwin-arm64.yaml
     secrets: inherit
 
+  build-darwin-x86-64:
+    needs: prepare
+    uses: ./.github/workflows/build-darwin-x86-64.yaml
+    secrets: inherit
+
   build-linux-x86-64:
     needs: prepare
     uses: ./.github/workflows/build-linux-x86-64.yaml
@@ -134,7 +139,7 @@ jobs:
 
   release:
     needs:
-      [prepare, build-darwin-arm64, build-linux-x86-64, build-windows-amd64]
+      [prepare, build-darwin-arm64, prepare, build-darwin-x86-64, build-linux-x86-64, build-windows-amd64]
 
     runs-on: ubuntu-latest
     permissions:
@@ -187,11 +192,15 @@ jobs:
           # Write the table to a file.
           cat << EOF > "assets-table.md"
 
+          > NOTE: The installer and files bundle release below for Darwin Intel Silicon (x86-64) are not
+          > tested yet as of Jan 2026.
+
           ### Apio CLI installers
 
           | System | Architecture | Installer type | Package |
           | :--- | :--- | :--- | :--- |
           | MacOS | Apple Silicon | Wizard | [apio-cli-darwin-arm64-${PACKAGE_TAG}-installer.pkg](${URL_PREFIX}/apio-cli-darwin-arm64-${PACKAGE_TAG}-installer.pkg) |
+          | MacOS | Intel Silicon | Wizard | [apio-cli-darwin-x86-64-${PACKAGE_TAG}-installer.pkg](${URL_PREFIX}/apio-cli-darwin-x86-64-${PACKAGE_TAG}-installer.pkg) |
           | Linux | X86 64 bit | Debian package | [apio-cli-linux-x86-64-${PACKAGE_TAG}-debian.deb](${URL_PREFIX}/apio-cli-linux-x86-64-${PACKAGE_TAG}-debian.deb) |
           | Windows | X86 64 bit | Wizard | [apio-cli-windows-amd64-${PACKAGE_TAG}-installer.exe](${URL_PREFIX}/apio-cli-windows-amd64-${PACKAGE_TAG}-installer.exe) |
 
@@ -200,6 +209,7 @@ jobs:
           | System | Architecture | Package |
           | :--- | :--- | :--- |
           | MacOS | Apple Silicon | [apio-cli-darwin-arm64-${PACKAGE_TAG}-bundle.tgz](${URL_PREFIX}/apio-cli-darwin-arm64-${PACKAGE_TAG}-bundle.tgz) |
+          | MacOS | Intel Silicon | [apio-cli-darwin-x86-64-${PACKAGE_TAG}-bundle.tgz](${URL_PREFIX}/apio-cli-darwin-x86-64-${PACKAGE_TAG}-bundle.tgz) |
           | Linux | X86 64 bit | [apio-cli-linux-x86-64-${PACKAGE_TAG}-bundle.tgz](${URL_PREFIX}/apio-cli-linux-x86-64-${PACKAGE_TAG}-bundle.tgz) |
           | Windows | X86 64 bit | [apio-cli-windows-amd64-${PACKAGE_TAG}-bundle.zip](${URL_PREFIX}/apio-cli-windows-amd64-${PACKAGE_TAG}-bundle.zip) |
           EOF
@@ -279,6 +289,8 @@ jobs:
           files: |
             _artifacts/apio-cli-darwin-arm64-${{env.PACKAGE_TAG}}-bundle.tgz
             _artifacts/apio-cli-darwin-arm64-${{env.PACKAGE_TAG}}-installer.pkg
+            _artifacts/apio-cli-darwin-x86-64-${{env.PACKAGE_TAG}}-bundle.tgz
+            _artifacts/apio-cli-darwin-x86-64-${{env.PACKAGE_TAG}}-installer.pkg
             _artifacts/apio-cli-linux-x86-64-${{env.PACKAGE_TAG}}-bundle.tgz
             _artifacts/apio-cli-linux-x86-64-${{env.PACKAGE_TAG}}-debian.deb
             _artifacts/apio-cli-windows-amd64-${{env.PACKAGE_TAG}}-bundle.zip

@@ -11,10 +11,10 @@
 
 import sys
 import re
+from dataclasses import dataclass
 import configparser
 from collections import OrderedDict
 from pathlib import Path
-from types import NoneType
 from typing import Dict, Optional, Union, Any, List
 from configobj import ConfigObj
 from apio.utils import util
@@ -47,30 +47,52 @@ APIO_OPTIONS = [
 ]
 
 
-# -- All env options.
-ENV_OPTIONS = {
-    "board",
-    "default-testbench",
-    "defines",
-    "format-verible-options",
-    "programmer-cmd",
-    "top-module",
-    "yosys-synth-extra-options",
-    "nextpnr-extra-options",
-    "constraint-file",
-}
+@dataclass(frozen=True)
+class EnvOptionSpec:
+    """Specifies a single apio.ini env option which can appear in an
+    env section or the common section."""
 
-# -- The subset ENV_OPTIONS that is required.
-ENV_REQUIRED_OPTIONS = {
-    "board",
-}
+    name: str
+    is_required: bool = False
+    is_list: bool = False
 
-# -- Options that are parsed as a multi line list (vs a simple str)
-LIST_OPTIONS = {
-    "defines",
-    "format-verible-options",
-    "yosys-synth-extra-options",
-    "nextpnr-extra-options",
+
+# -- Specification of the env options which can appear in env sections
+# -- or the common section of apio.ini.
+ENV_OPTIONS_SPEC = {
+    "board": EnvOptionSpec(
+        name="board",
+        is_required=True,
+    ),
+    "top-module": EnvOptionSpec(
+        name="top-module",
+        is_required=True,
+    ),
+    "default-testbench": EnvOptionSpec(
+        name="default-testbench",
+    ),
+    "defines": EnvOptionSpec(
+        name="defines",
+        is_list=True,
+    ),
+    "format-verible-options": EnvOptionSpec(
+        name="format-verible-options",
+        is_list=True,
+    ),
+    "programmer-cmd": EnvOptionSpec(
+        name="programmer-cmd",
+    ),
+    "yosys-synth-extra-options": EnvOptionSpec(
+        name="yosys-synth-extra-options",
+        is_list=True,
+    ),
+    "nextpnr-extra-options": EnvOptionSpec(
+        name="nextpnr-extra-options",
+        is_list=True,
+    ),
+    "constraint-file": EnvOptionSpec(
+        name="constraint-file",
+    ),
 }
 
 
@@ -135,10 +157,12 @@ class Project:
 
         # -- Expand and selected env options. This is also patches default
         # -- values and validates the results.
-        self.env_options = Project._expand_env_options(
-            env_name=self.env_name,
-            common_section=common_section,
-            env_sections=env_sections,
+        self.env_options: Dict[str, Union[str, List[str]]] = (
+            Project._parse_env_options(
+                env_name=self.env_name,
+                common_section=common_section,
+                env_sections=env_sections,
+            )
         )
         if util.is_debug(1):
             cout("Selected env name:", style=EMPH2)
@@ -262,7 +286,7 @@ class Project:
 
         # -- Check that there are no unknown options.
         for option in section_options:
-            if option not in ENV_OPTIONS:
+            if option not in ENV_OPTIONS_SPEC:
                 cerror(
                     f"Unknown option '{option}' in {section_title} "
                     "section of apio.ini."
@@ -311,11 +335,11 @@ class Project:
         return env_name
 
     @staticmethod
-    def _expand_env_options(
+    def _parse_env_options(
         env_name: str,
         common_section: Dict[str, str],
         env_sections: Dict[str, Dict[str, Union[str, List[str]]]],
-    ) -> Dict[str, str]:
+    ) -> Dict[str, Union[str, List[str]]]:
         """Expand the options of given env name. The given common and envs
         sections are already validate. String options are returned as strings
         and list options are returned as list of strings.
@@ -327,7 +351,7 @@ class Project:
         # -- Create an empty result dict.
         # -- We will insert to it the relevant options by the oder they appear
         # -- in apio.ini.
-        result: Dict[str, str] = {}
+        result: Dict[str, Union[str, List[str]]] = {}
 
         # -- Add common options that are not in env section
         for name, val in common_section.items():
@@ -339,30 +363,22 @@ class Project:
             result[name] = val
 
         # -- check that all the required options exist.
-        for option in ENV_REQUIRED_OPTIONS:
-            if option not in result:
+        for option_spec in ENV_OPTIONS_SPEC.values():
+            if option_spec.is_required and option_spec.name not in result:
                 cerror(
-                    f"Missing required option '{option}' "
+                    f"Missing required option '{option_spec.name}' "
                     f"for env '{env_name}'."
                 )
                 sys.exit(1)
 
-        # -- If top-module was not specified, fill in the default value.
-        if "top-module" not in result:
-            result["top-module"] = DEFAULT_TOP_MODULE
-            cout(
-                f"Option 'top-module' is missing for env {env_name}, "
-                f"assuming '{DEFAULT_TOP_MODULE}'.",
-                style=INFO,
-            )
-
         # -- Convert the list options from strings to list.
-        for key, str_val in result.items():
-            if key in LIST_OPTIONS:
+        for name, str_val in result.items():
+            option_spec: EnvOptionSpec = ENV_OPTIONS_SPEC.get(name)
+            if option_spec.is_list:
                 list_val = str_val.split("\n")
                 # -- Select the non empty items.
                 list_val = [x for x in list_val if x]
-                result[key] = list_val
+                result[name] = list_val
 
         return result
 
@@ -372,8 +388,9 @@ class Project:
         """Lookup an env option value by name. Returns default if not found."""
 
         # -- If this fails, this is a programming error.
-        assert option in ENV_OPTIONS, f"Invalid env option: [{option}]"
-        assert option not in LIST_OPTIONS, f"Not a str option: {option}"
+        option_spec: EnvOptionSpec = ENV_OPTIONS_SPEC.get(option, None)
+        assert option_spec, f"Invalid env option: [{option}]"
+        assert not option_spec.is_list, f"Not a simple str option: {option}"
 
         # -- Lookup with default
         value = self.env_options.get(option, None)
@@ -381,7 +398,7 @@ class Project:
         if value is None:
             return default
 
-        assert isinstance(value, (str, NoneType))
+        assert isinstance(value, str)
         return value
 
     def get_list_option(
@@ -392,8 +409,9 @@ class Project:
         must be in OPTIONS."""
 
         # -- If this fails, this is a programming error.
-        assert option in ENV_OPTIONS, f"Invalid env option: [{option}]"
-        assert option in LIST_OPTIONS, f"Not a list option: {option}"
+        option_spec: EnvOptionSpec = ENV_OPTIONS_SPEC.get(option, None)
+        assert option_spec, f"Invalid env option: [{option}]"
+        assert option_spec.is_list, f"Not a list option: {option}"
 
         # -- Get the option values, it's is expected to be a list of str.
         values_list = self.env_options.get(option, None)

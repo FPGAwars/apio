@@ -1,0 +1,214 @@
+# TODO: If this build workflow will end up very close to that of Darwin ARM64,
+# consider to merge them into a single workflow that uses a matrix to create
+# a job instance for each of the two architectures. For now we keep them
+# separate until the recently added X86 version will get stabilized.
+
+name: build-darwin-x86-64
+
+on:
+  workflow_call:
+
+env:
+  # These are set later.
+  PYTHON_VERSION: ""
+  APIO_REPO: ""
+  APIO_COMMIT: ""
+  PACKAGE_TAG: ""
+
+jobs:
+  build:
+    runs-on: macos-15-intel
+
+    defaults:
+      run:
+        shell: bash # Set Bash as the default shell
+
+    steps:
+      - name: Check required platform
+        uses: fpgawars/apio-workflows/.github/actions/check-platform@main
+        with:
+          os: darwin
+          arch: x86_64
+
+      # - name: Checkout this repo (for builder)
+      #   uses: actions/checkout@v4
+
+      - name: Download build-info.json artifact from main job
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          name: build-info
+          path: _artifacts
+
+      - name: Move build info
+        run: |
+          find _artifacts
+          mv _artifacts/build-info.json .
+          cat -n build-info.json
+
+      - name: Add platform info to build info json file
+        uses: fpgawars/apio-workflows/.github/actions/write-to-json-file@main
+        with:
+          json-file: build-info.json
+          key: target-platform
+          value: darwin-x86-64
+
+      - name: Format build info json file
+        uses: fpgawars/apio-workflows/.github/actions/format-json-file@main
+        with:
+          json-file: build-info.json
+
+      - name: Set env vars from JSON
+        uses: fpgawars/apio-workflows/.github/actions/set-env-from-json@main
+        with:
+          json-file: build-info.json
+          mappings: >-
+            PYTHON_VERSION   apio-python-version
+            APIO_REPO        repo
+            APIO_COMMIT      repo-commit
+            APIO_VERSION     apio-cli-version
+            RELEASE_TAG      release-tag
+            PACKAGE_TAG      package-tag
+
+      # -- This is the python that will be included in pyinstaller.
+      - name: Install python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      # We checkout the repo into a subdirectory not to step on build-info.json.
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{env.APIO_REPO}}
+          ref: ${{env.APIO_COMMIT}}
+          path: _apio-repo
+
+      - name: Pip install apio
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e _apio-repo
+
+      - name: Pip install pyinstaller
+        run: |
+          pip install pyinstaller
+
+      - name: Setup working directories
+        run: |
+          mkdir _work
+          mkdir _dist
+          mkdir _scripts
+          pwd
+          ls -la .
+
+      - name: Run pyinstaller
+        run: |
+          pyinstaller \
+            --log-level=DEBUG \
+            --workpath _work \
+            --distpath _dist \
+            _apio-repo/.github/workflows/resources/apio-pyinstaller.spec
+          echo "_dist:"
+          ls -al _dist
+          echo "_dist/apio:"
+          ls -al _dist/apio
+
+      - name: Show symlinks
+        run: |
+          # Per the link below, _dist may contain symlinks that
+          # we need to propagate all the way.
+          # https://github.com/orgs/pyinstaller/discussions/9166
+          echo "Searching for symlinks:"
+          find _dist -type l
+
+      - name: Add the build info file
+        run: |
+          cp build-info.json _dist/apio/BUILD-INFO.json
+          cat -n _dist/apio/BUILD-INFO.json
+
+      - name: Add the LICENSE file
+        run: |
+          # cp _apio-repo/LICENSE _dist/apio
+          cp _apio-repo/LICENSE _dist/apio
+          cat _dist/apio/LICENSE
+
+      - name: Add the 'readme' file
+        run: |
+          cat <<EOF > _dist/apio/README.txt
+          This is the Apio file bundle for macOS x86-64.
+
+          For installation instructions see
+          https://fpgawars.github.io/apio/installing-apio/#mac-x86-64-bundle
+
+          For bundle information see BUILD-INFO.json.
+          EOF
+
+      - name: List the bundle files
+        run: |
+          find _dist
+
+      # We use .tgz and not .zip to preserve symlinks.
+      - name: Compress the pyinstaller bundle
+        run: |
+          pushd _dist
+          bundle="apio-cli-darwin-x86-64-${PACKAGE_TAG}-bundle.tgz"
+          tar zcf ../${bundle} apio
+          popd
+          ls -al
+
+      - name: Delete the readme files
+        run: |
+          rm _dist/apio/README.txt
+          echo "_dist/apio:"
+          ls -al _dist/apio
+
+      # This sets the app name in /Applications
+      - name: Rename apio to Apio
+        run: |
+          mv _dist/apio _dist/Apio
+          echo "_dist:"
+          ls -al _dist
+
+      - name: Create installer postinstall scripts
+        run: |
+          cp _apio-repo/.github/workflows/resources/darwin/postinstall _scripts/postinstall
+          chmod 755 _scripts/postinstall
+          echo "_scripts:"
+          ls -al _scripts
+          echo "_scripts/postinstall:"
+          cat -n _scripts/postinstall
+
+      - name: Run pkgbuild
+        run: |
+          pkgbuild --root _dist \
+                   --install-location /Applications \
+                   --identifier "io.github.fpgawars.apio" \
+                   --version "${APIO_VERSION}" \
+                   --scripts _scripts \
+                   --ownership recommended \
+                   apio-component.pkg
+          pwd
+          ls -al
+
+      - name: Run productbuild
+        run: |
+          productbuild --resources _apio-repo/.github/workflows/resources/darwin \
+                       --distribution _apio-repo/.github/workflows/resources/darwin/distribution.xml \
+                       --package-path . \
+                       "apio-cli-darwin-x86-64-${PACKAGE_TAG}-installer.pkg"
+          pwd
+          ls -al
+
+      - name: Export the pyinstaller bundle as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: error
+          name: "apio-cli-darwin-x86-64-bundle"
+          path: "apio-cli-darwin-x86-64-${{env.PACKAGE_TAG}}-bundle.tgz"
+
+      - name: Export the installer file as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: error
+          name: "apio-cli-darwin-x86-64-installer"
+          path: "apio-cli-darwin-x86-64-${{env.PACKAGE_TAG}}-installer.pkg"

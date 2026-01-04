@@ -109,6 +109,7 @@ def test_default_cmd_template(
             {
                 "[env:default]": {
                     "board": "alhambra-ii",
+                    "top-module": "main",
                 }
             }
         )
@@ -144,6 +145,7 @@ def test_custom_cmd_template(
             {
                 "[env:default]": {
                     "board": "alhambra-ii",
+                    "top-module": "main",
                     "programmer-cmd": "my template ${VID} ${PID}",
                 }
             }
@@ -172,6 +174,7 @@ def test_get_cmd_usb(apio_runner: ApioRunner, capsys: LogCaptureFixture):
             {
                 "[env:default]": {
                     "board": "alhambra-ii",
+                    "top-module": "main",
                     "programmer-cmd": (
                         "my-programmer --bus ${BUS} --dev ${DEV} "
                         "--vid ${VID} --pid ${PID} "
@@ -229,6 +232,7 @@ def test_get_cmd_usb_no_match(
             {
                 "[env:default]": {
                     "board": "alhambra-ii",
+                    "top-module": "main",
                     "programmer-cmd": "my-programmer ${VID} ${PID}",
                 }
             }
@@ -276,6 +280,7 @@ def test_get_cmd_usb_multiple_matches(
             {
                 "[env:default]": {
                     "board": "alhambra-ii",
+                    "top-module": "main",
                     "programmer-cmd": "my-programmer ${VID} ${PID}",
                 }
             }
@@ -328,6 +333,7 @@ def test_get_cmd_serial(apio_runner: ApioRunner, capsys: LogCaptureFixture):
             {
                 "[env:default]": {
                     "board": "icefun",
+                    "top-module": "main",
                     "programmer-cmd": "my-programmer --port ${SERIAL_PORT}",
                 }
             }
@@ -378,6 +384,7 @@ def test_get_cmd_serial_no_match(
             {
                 "[env:default]": {
                     "board": "icefun",
+                    "top-module": "main",
                     "programmer-cmd": "my-programmer --port ${SERIAL_PORT}",
                 }
             }
@@ -424,6 +431,7 @@ def test_get_cmd_serial_multiple_matches(
             {
                 "[env:default]": {
                     "board": "icefun",
+                    "top-module": "main",
                     "programmer-cmd": "my-programmer --port ${SERIAL_PORT}",
                 }
             }
@@ -476,6 +484,7 @@ def test_device_presence_ok(
             {
                 "[env:default]": {
                     "board": "alhambra-ii",
+                    "top-module": "main",
                     # -- The command has no serial or usb vars.
                     "programmer-cmd": "my programmer command ${BIN_FILE}",
                 }
@@ -532,6 +541,7 @@ def test_device_presence_not_found(
             {
                 "[env:default]": {
                     "board": "alhambra-ii",
+                    "top-module": "main",
                     # -- The command has no serial or usb vars.
                     "programmer-cmd": "my programmer command ${BIN_FILE}",
                 }
