@@ -84,4 +84,6 @@ As the user **gh02t** said in this post on [Hacker-news](https://news.ycombinato
 
 ## License
 
-Licensed under [GPL 2.0](http://opensource.org/licenses/GPL-2.0) and [Creative Commons Attribution-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-sa/4.0/).
+The Apio project itself is licensed under the GNU General Public License version 3.0 (GPL-3.0).
+Pre-built packages may include third-party tools and components, which are subject to their
+respective license terms.
