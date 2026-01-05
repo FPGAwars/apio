@@ -2,30 +2,34 @@
 This README page is optimized for its appearance in the github repo rather than for the PyPi listing.
 -->
 
+<!-- Page banner -->
 ![apio-cli-banner](media/apio-cli-banner.png)
 
+<!-- Attributes badges -->
 [![license](https://img.shields.io/badge/License-GPL%202.0-blue.svg)](https://github.com/FPGAwars/apio/blob/main/LICENSE)
 [![python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue)](https://pypi.org/project/apio)
 
+<!-- Platforms badges -->
 ![linux](media/linux-logo.png)&nbsp;&nbsp;&nbsp;![macos](media/macosx-logo.png)&nbsp;&nbsp;&nbsp;![windows](media/windows-logo.png)&nbsp;&nbsp;&nbsp;![raspberry-pi](media/raspbian-logo.png)
 
-[![apio-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/test.yaml?label=apio-test)](https://github.com/fpgawars/apio/actions/workflows/test.yaml)
-[![apio-build](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/build-and-release.yaml?label=apio-build)](https://github.com/fpgawars/apio/actions/workflows/build-and-release.yaml)
-[![docs-publishing](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/publish-docs.yaml?label=apio-docs)](https://github.com/fpgawars/apio/actions/workflows/publish-docs.yaml)
-[![monitor-apio-pypi](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/monitor-apio-pypi.yaml?label=apio-pypi-monitor)](https://github.com/fpgawars/apio/actions/workflows/monitor-apio-pypi.yaml)
-[![monitor-apio-latest](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/monitor-apio-latest.yaml?label=apio-latest-monitor)](https://github.com/fpgawars/apio/actions/workflows/monitor-apio-latest.yaml)
-[![examples-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-examples/test.yaml?label=apio-examples-test)](https://github.com/fpgawars/apio-examples/actions/workflows/test.yaml)
-[![examples-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-examples/build-and-release.yaml?label=apio-examples-build)](https://github.com/fpgawars/apio-examples/actions/workflows/build-and-release.yaml)
-[![definitions-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-definitions/test.yaml?label=apio-definitions-test)](https://github.com/fpgawars/apio-definitions/actions/workflows/test.yaml)
-[![definitions-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-definitions/build-and-release.yaml?label=apio-definitions-build)](https://github.com/fpgawars/apio-definitions/actions/workflows/build-and-release.yaml)
-[![oss-cad-suite-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-oss-cad-suite/build-and-release.yaml?label=apio-cad-suite-build)](https://github.com/fpgawars/tools-oss-cad-suite/actions/workflows/build-and-release.yaml)
-[![verible-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-verible/build-and-release.yaml?label=apio-verible-build)](https://github.com/fpgawars/tools-verible/actions/workflows/build-and-release.yaml)
-[![graphviz-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-graphviz/build-and-release.yaml?label=apio-graphviz-build)](https://github.com/fpgawars/tools-graphviz/actions/workflows/build-and-release.yaml)
-[![drivers-build-and-release](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-drivers/build-and-release.yaml?label=apio-drivers-build)](https://github.com/fpgawars/tools-drivers/actions/workflows/build-and-release.yaml)
-[![ide-build](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-vscode/build-and-release.yaml?label=ide-build)](https://github.com/fpgawars/apio-vscode/actions/workflows/build-and-release.yaml)
+<!-- Status badges -->
+[![cli-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/test.yaml?label=cli-test)](https://github.com/fpgawars/apio/actions/workflows/test.yaml)
+[![cli-build](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/build-and-release.yaml?label=cli-build)](https://github.com/fpgawars/apio/actions/workflows/build-and-release.yaml)
+[![cli-docs](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/publish-docs.yaml?label=cli-docs)](https://github.com/fpgawars/apio/actions/workflows/publish-docs.yaml)
+[![cli-pypi-monitor](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/monitor-apio-pypi.yaml?label=cli-pypi-monitor)](https://github.com/fpgawars/apio/actions/workflows/monitor-apio-pypi.yaml)
+[![cli-latest-monitor](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/monitor-apio-latest.yaml?label=cli-latest-monitor)](https://github.com/fpgawars/apio/actions/workflows/monitor-apio-latest.yaml)
 [![ide-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-vscode/test.yaml?label=ide-test)](https://github.com/fpgawars/apio-vscode/actions/workflows/test.yaml)
-[![apio-backup](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-workflows/backup-apio-repos.yaml?label=apio-backup)](https://github.com/fpgawars/apio-workflows/actions/workflows/backup-apio-repos.yaml)
+[![ide-build](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-vscode/build-and-release.yaml?label=ide-build)](https://github.com/fpgawars/apio-vscode/actions/workflows/build-and-release.yaml)
+[![examples-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-examples/test.yaml?label=examples-test)](https://github.com/fpgawars/apio-examples/actions/workflows/test.yaml)
+[![examples-build](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-examples/build-and-release.yaml?label=examples-build)](https://github.com/fpgawars/apio-examples/actions/workflows/build-and-release.yaml)
+[![definitions-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-definitions/test.yaml?label=definitions-test)](https://github.com/fpgawars/apio-definitions/actions/workflows/test.yaml)
+[![definitions-build](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-definitions/build-and-release.yaml?label=definitions-build)](https://github.com/fpgawars/apio-definitions/actions/workflows/build-and-release.yaml)
+[![oss-cad-suite-build](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-oss-cad-suite/build-and-release.yaml?label=oss-cad-suite-build)](https://github.com/fpgawars/tools-oss-cad-suite/actions/workflows/build-and-release.yaml)
+[![verible-build](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-verible/build-and-release.yaml?label=verible-build)](https://github.com/fpgawars/tools-verible/actions/workflows/build-and-release.yaml)
+[![graphviz-build](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-graphviz/build-and-release.yaml?label=graphviz-build)](https://github.com/fpgawars/tools-graphviz/actions/workflows/build-and-release.yaml)
+[![drivers-build](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-drivers/build-and-release.yaml?label=drivers-build)](https://github.com/fpgawars/tools-drivers/actions/workflows/build-and-release.yaml)
 [![workflows-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-workflows/test.yaml?label=workflows-test)](https://github.com/fpgawars/apio-workflows/actions/workflows/test.yaml)
+[![apio-backup](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-workflows/backup-apio-repos.yaml?label=apio-backup)](https://github.com/fpgawars/apio-workflows/actions/workflows/backup-apio-repos.yaml)
 
 ---
 
