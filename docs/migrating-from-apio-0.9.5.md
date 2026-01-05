@@ -17,7 +17,7 @@ Apio CLI 1.x.x requires a project file called `apio.ini` in the directory of eac
 ```
 [env:default]
 board = <board>
-main-module = <my-module>
+top-module = <my-module>
 ```
 
 ## Delete calls to the verilog function `$dumpfile()`.
