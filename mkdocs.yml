@@ -83,7 +83,8 @@ nav:
   - Apio CLI Development:
       - Apio repositories: apio-repositories.md
       - Development environment: development-environment.md
-      - Apio terminology: terminology.md
       - Command execution: command-execution.md
-      - Updating Apio CLI docs: updating-the-docs.md
+      - Release process: release-process.md
+      - Updating these docs: updating-the-docs.md
+      - Apio terminology: terminology.md
   - Help: help.md
