@@ -16,7 +16,7 @@ to end users consists of the following steps:
 3. Mark the release as "latest" to indicate it is the current stable version for the repository (this by itself does not changed the published version).
 4. Publish the release to make it accessible to users (publishing procedures vary by repository).
 
-## Apio Package
+## Apio Packages
 
 This section describes the release process for Apio packages, such as `definitions` and `oss-cad-suite`.
 
