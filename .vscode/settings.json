@@ -167,6 +167,7 @@
         "pyxx",
         "rankdir",
         "readmemh",
+        "realpath",
         "recursesubdirs",
         "redirector",
         "scons",
