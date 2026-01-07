@@ -93,7 +93,7 @@ class PluginBase:
         """Creates and returns the testbench run builder."""
 
         # -- Sanity checks
-        assert self.apio_env.targeting("sim", "test")
+        assert self.apio_env.targeting_one_of("sim", "test")
         assert self.apio_env.params.target.HasField(
             "sim"
         ) or self.apio_env.params.target.HasField("test")
@@ -109,7 +109,7 @@ class PluginBase:
         only when serving the graph command."""
 
         # -- Sanity checks
-        assert self.apio_env.targeting("graph")
+        assert self.apio_env.targeting_one_of("graph")
         assert self.apio_env.params.target.HasField("graph")
 
         # -- Shortcuts.
@@ -147,7 +147,7 @@ class PluginBase:
         be called only when serving the graph command."""
 
         # -- Sanity checks.
-        assert self.apio_env.targeting("graph")
+        assert self.apio_env.targeting_one_of("graph")
         assert self.apio_env.params.target.HasField("graph")
 
         # -- Shortcuts.

@@ -91,7 +91,7 @@ class ApioEnv:
         """Returns the shell id that scons is expected to use.."""
         return self.params.environment.scons_shell_id
 
-    def targeting(self, *target_names) -> bool:
+    def targeting_one_of(self, *target_names) -> bool:
         """Returns true if the any of the named target was specified in the
         scons command line."""
         for target_name in target_names:

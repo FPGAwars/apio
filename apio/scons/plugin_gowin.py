@@ -128,7 +128,7 @@ class PluginGowin(PluginBase):
         params = apio_env.params
 
         # -- Sanity checks
-        assert apio_env.targeting("sim", "test")
+        assert apio_env.targeting_one_of("sim", "test")
         assert params.target.HasField("sim") or params.target.HasField("test")
 
         # -- We use a generator because we need a different action
@@ -151,7 +151,7 @@ class PluginGowin(PluginBase):
                     apio_env,
                     verbose=params.verbosity.all,
                     vcd_output_name=testbench_name,
-                    is_interactive=apio_env.targeting("sim"),
+                    is_interactive=apio_env.targeting_one_of("sim"),
                     lib_dirs=[self.yosys_lib_dir],
                     lib_files=[self.yosys_lib_file],
                 ),
@@ -172,7 +172,7 @@ class PluginGowin(PluginBase):
         """Creates and returns the lint config builder."""
 
         # -- Sanity checks
-        assert self.apio_env.targeting("lint")
+        assert self.apio_env.targeting_one_of("lint")
 
         # -- Make the builder.
         return make_verilator_config_builder(self.yosys_lib_dir)
