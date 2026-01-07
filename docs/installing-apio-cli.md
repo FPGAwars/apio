@@ -2,12 +2,12 @@
 
 To install Apio CLI, select your desired method from the table below and click on your platform type in the instructions column. Note that not all methods are available to all platform.
 
-| Method        | Description                                                                                                                                     | Instructions                                                                                                                                                                                           |
-| :------------ | :---------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Installer** | Installation using an installer wizard.                                                                                                         | [macOS&nbsp;Apple&nbsp;Silicon](#mac-arm64-installer) <br>[Windows](#windows-x86-64-installer)                                                                                                         |
-| **Debian**    | Installation using a Debian package and the `dpkg` package manager.                                                                             | [Linux X86-64](#linux-x86-debian)                                                                                                                                                                      |
-| **Bundle**    | Installation using a file archive that contains all the necessary files to run Apio.                                                            | [macOS Apple Silicon](#mac-arm64-bundle) <br> [Linux X86-64](#linux-x86-bundle) <br> [Windows](#windows-x86-64-bundle)                                                                                 |
-| **Pip**       | Installation using the Python `pip` command. This method requires [Python](https://www.python.org/downloads) to be preinstalled on your system. | [macOS&nbsp;Apple&nbsp;Silicon](#mac-arm64-pip) <br> [macOS Intel Silicon](#mac-x86-pip) <br> [Linux X86-64](#linux-x86-pip) <br> [Linux ARM-64](#linux-arm64-pip) <br> [Windows](#windows-x86-64-pip) |
+| Method        | Description                                                                                                                                     | Instructions                                                                                                                                                                                                               |
+| :------------ | :---------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Installer** | Installation using an installer wizard.                                                                                                         | [macOS&nbsp;Apple&nbsp;Silicon](#mac-arm64-installer) <br>[macOS&nbsp;Intel&nbsp;Silicon](#mac-x86-installer) <br>[Windows](#windows-x86-64-installer)                                                                     |
+| **Debian**    | Installation using a Debian package and the `dpkg` package manager.                                                                             | [Linux&nbsp;X86-64](#linux-x86-debian)                                                                                                                                                                                     |
+| **Bundle**    | Installation using a file archive that contains all the necessary files to run Apio.                                                            | [macOS&nbsp;Apple&nbsp;Silicon](#mac-arm64-bundle) <br> [macOS&nbsp;Intel&nbsp;Silicon](#mac-x86-bundle) <br> [Linux&nbsp;X86-64](#linux-x86-bundle) <br> [Windows](#windows-x86-64-bundle)                                |
+| **Pip**       | Installation using the Python `pip` command. This method requires [Python](https://www.python.org/downloads) to be preinstalled on your system. | [macOS&nbsp;Apple&nbsp;Silicon](#mac-arm64-pip) <br> [macOS&nbsp;Intel&nbsp;Silicon](#mac-x86-pip) <br> [Linux&nbsp;X86-64](#linux-x86-pip) <br> [Linux&nbsp;ARM-64](#linux-arm64-pip) <br> [Windows](#windows-x86-64-pip) |
 
 ---
 
@@ -81,6 +81,52 @@ follow these steps:
 ---
 
 ## macOS Intel Silicon
+
+### Install using an installer <a id="mac-x86-installer"></a>
+
+To install Apio CLI on macOS Intel Silicon using an installer, follow these steps:
+
+1.  From the [latest release](https://github.com/fpgawars/apio/releases) download the installer file:
+
+        apio-cli-darwin-x86-64-[date]-installer.pkg
+
+2.  Run the following command to allow the unsigned Apio installer to run:
+
+        xattr -c apio-cli-darwin-x86-64-*-installer.pkg
+
+3.  Double-click on the installer file and follow the instructions.
+
+4.  In a **new shell window**, run the following command to test your installation:
+
+        apio
+
+> NOTE: The installer creates the file `/etc/paths.d/Apio` to export
+> automatically the path of the installed app.
+
+<br>
+
+### Install using a file bundle <a id="mac-x86-bundle"></a>
+
+To install Apio CLI on macOS Intel Silicon using a file bundle,
+follow these steps:
+
+1.  From the [latest release](https://github.com/fpgawars/apio/releases) download the file bundle:
+
+        apio-cli-darwin-x86-64-[date]-bundle.tgz
+
+2.  Run the following command to allow the unsigned Apio app to run.
+
+        xattr -c apio-cli-darwin-x86-64-*-bundle.tgz
+
+3.  **After you run the xattr command**, double click on the bundle file to uncompress it and reveal the `apio` directory with the application files.
+
+4.  While in the `apio` directory, run the following command to test your installation:
+
+        ./apio
+
+5.  Move the `apio` directory to a location of your choosing and add it to your `$PATH`.
+
+<br>
 
 ### Install using a Pip package <a id="mac-x86-pip"></a>
 

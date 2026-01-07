@@ -192,9 +192,6 @@ jobs:
           # Write the table to a file.
           cat << EOF > "assets-table.md"
 
-          > NOTE: The installer and files bundle release below for Darwin Intel Silicon (x86-64) are not
-          > tested yet as of Jan 2026.
-
           ### Apio CLI installers
 
           | System | Architecture | Installer type | Package |
