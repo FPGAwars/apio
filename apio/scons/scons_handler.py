@@ -117,7 +117,7 @@ class SconsHandler:
         plugin = self.arch_plugin
 
         # -- Sanity check
-        assert apio_env.targeting("build", "upload", "report")
+        assert apio_env.targeting_one_of("build", "upload", "report")
 
         # -- Synth builder and target.
         apio_env.builder(SYNTH_BUILDER, plugin.synth_builder())
@@ -155,7 +155,7 @@ class SconsHandler:
         plugin = self.arch_plugin
 
         # -- Sanity check
-        assert apio_env.targeting("build")
+        assert apio_env.targeting_one_of("build")
 
         # -- Register the common targets for synth, pnr, and bitstream.
         self._register_common_targets(synth_srcs)
@@ -179,7 +179,7 @@ class SconsHandler:
         plugin_info = self.arch_plugin.plugin_info()
 
         # -- Sanity check
-        assert apio_env.targeting("upload")
+        assert apio_env.targeting_one_of("upload")
 
         # -- Register the common targets for synth, pnr, and bitstream.
         self._register_common_targets(synth_srcs)
@@ -200,7 +200,7 @@ class SconsHandler:
         plugin_info = self.arch_plugin.plugin_info()
 
         # -- Sanity check
-        assert apio_env.targeting("report")
+        assert apio_env.targeting_one_of("report")
 
         # -- Register the common targets for synth, pnr, and bitstream.
         self._register_common_targets(synth_srcs)
@@ -226,7 +226,7 @@ class SconsHandler:
         plugin = self.arch_plugin
 
         # -- Sanity check
-        assert apio_env.targeting("graph")
+        assert apio_env.targeting_one_of("graph")
         assert params.target.HasField("graph")
 
         # -- Create the .dot generation builder and target.
@@ -266,7 +266,7 @@ class SconsHandler:
         plugin = self.arch_plugin
 
         # -- Sanity check
-        assert apio_env.targeting("lint")
+        assert apio_env.targeting_one_of("lint")
         assert params.target.HasField("lint")
 
         # -- Create the builder and target of the config file creation.
@@ -304,7 +304,7 @@ class SconsHandler:
         plugin = self.arch_plugin
 
         # -- Sanity check
-        assert apio_env.targeting("sim")
+        assert apio_env.targeting_one_of("sim")
         assert params.target.HasField("sim")
 
         # -- Get values.
@@ -356,7 +356,7 @@ class SconsHandler:
         plugin = self.arch_plugin
 
         # -- Sanity check
-        assert apio_env.targeting("test")
+        assert apio_env.targeting_one_of("test")
         assert params.target.HasField("test")
 
         # -- Collect the test related values.

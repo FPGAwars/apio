@@ -35,12 +35,12 @@ def test_env_platform_id():
     assert env.is_windows
 
 
-def test_targeting():
-    """Test the targeting() method."""
+def test_targeting_one_if():
+    """Test the targeting_one_if() method."""
 
     # -- The test env targets 'build'.
     apio_env = make_test_apio_env()
 
-    assert apio_env.targeting("build")
-    assert apio_env.targeting("upload", "build")
-    assert not apio_env.targeting("upload")
+    assert apio_env.targeting_one_of("build")
+    assert apio_env.targeting_one_of("upload", "build")
+    assert not apio_env.targeting_one_of("upload")

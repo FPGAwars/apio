@@ -39,6 +39,15 @@ class ApioEnv:
         # -- Create the target for the graph files (.dot, .svg, etc)
         self.graph_target = str(self.env_build_path / "graph")
 
+        # -- Initialized the scons default environment with no tools even
+        # -- though we don't use it. This is to avoid the issue reported
+        # -- at https://github.com/FPGAwars/apio/issues/802 in which scons
+        # -- triggers a gcc installation dialog box on MacOs.
+        #
+        # -- Note that DefaultEnvironment is a funny function that replaces
+        # -- itself with _fetch_DefaultEnvironment() after the first call.
+        SCons.Defaults.DefaultEnvironment(ENV=os.environ, tools=[])
+
         # -- Create the underlying scons env.
         self.scons_env = SConsEnvironment(ENV=os.environ, tools=[])
 
@@ -47,14 +56,6 @@ class ApioEnv:
         self.scons_env.SConsignFile(
             self.env_build_path.absolute() / "sconsign.dblite"
         )
-
-        # -- Since we ae not using the default environment, make sure it was
-        # -- not used unintentionally, e.g. in tests that run create multiple
-        # -- scons env in the same session.
-        # --
-        assert (
-            SCons.Defaults._default_env is None
-        ), "DefaultEnvironment already exists"
 
         # Extra info for debugging.
         if self.is_debug(2):
@@ -91,7 +92,7 @@ class ApioEnv:
         """Returns the shell id that scons is expected to use.."""
         return self.params.environment.scons_shell_id
 
-    def targeting(self, *target_names) -> bool:
+    def targeting_one_of(self, *target_names) -> bool:
         """Returns true if the any of the named target was specified in the
         scons command line."""
         for target_name in target_names:

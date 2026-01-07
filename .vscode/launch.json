@@ -45,7 +45,7 @@
             "subProcess": false
         },
         {
-            "name": "Apio remote debugger",
+            "name": "Apio Scons remote debugger",
             "type": "debugpy",
             "request": "attach",
             "connect": {

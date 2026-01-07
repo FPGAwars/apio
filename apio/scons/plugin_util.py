@@ -293,7 +293,7 @@ def verilator_lint_action(
     """
 
     # -- Sanity checks
-    assert apio_env.targeting("lint")
+    assert apio_env.targeting_one_of("lint")
     assert apio_env.params.target.HasField("lint")
 
     # -- Keep short references.
