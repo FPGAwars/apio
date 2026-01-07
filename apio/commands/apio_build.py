@@ -89,6 +89,3 @@ def cli(
 
     # -- Done!
     sys.exit(exit_code)
-
-
-# Advanced notes: https://github.com/FPGAwars/apio/wiki/Commands#apio-build
