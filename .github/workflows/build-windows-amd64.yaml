@@ -174,6 +174,17 @@ jobs:
           mv innosetup-installer.exe "apio-cli-windows-amd64-${PACKAGE_TAG}-installer.exe"
           ls -al
 
+      # -- Now that we are done with the file bundle directory
+      # -- let's test it.
+      - name: Uninstall all pip packages (including apio)
+        uses: fpgawars/apio-workflows/.github/actions/uninstall-all-pip-packages@main
+
+      - name: Test Apio file bundle
+        uses: ./_apio-repo/.github/actions/test-apio-bundle
+        with:
+          apio-bundle-dir: _dist/Apio
+          work-dir-name: _work_dir
+
       - name: Export the pyinstaller bundle as an artifact
         uses: actions/upload-artifact@v4
         with:

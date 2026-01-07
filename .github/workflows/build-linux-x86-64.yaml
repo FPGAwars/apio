@@ -158,7 +158,7 @@ jobs:
         run: |
           mkdir _debian
 
-          # -- /opt/apio
+          # -- /opt/apio. We mv rather than cp to maintain internal symlinks.
           mkdir -p _debian/opt/apio
           # We mv instead of cp to preserve symlinks.
           mv _dist/apio/apio _debian/opt/apio
@@ -186,6 +186,17 @@ jobs:
         run: |
           dpkg-deb --build --root-owner-group _debian "apio-cli-linux-x86-64-${PACKAGE_TAG}-debian.deb"
           ls -l
+
+      # -- Now that we are done with the file bundle directory
+      # -- let's test it.
+      - name: Uninstall all pip packages (including apio)
+        uses: fpgawars/apio-workflows/.github/actions/uninstall-all-pip-packages@main
+
+      - name: Test Apio file bundle
+        uses: ./_apio-repo/.github/actions/test-apio-bundle
+        with:
+          apio-bundle-dir: _debian/opt/apio
+          work-dir-name: _work_dir
 
       - name: Export the pyinstaller archive as an artifact
         uses: actions/upload-artifact@v4

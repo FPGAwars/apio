@@ -1,0 +1,88 @@
+name: 'Test Apio File Bundle'
+description: 'Tests an Apio file bundle by installing packages and running basic commands in a temporary project'
+
+inputs:
+  apio-bundle-dir:
+    description: 'Relative path to the apio file bundle directory (e.g., apio)'
+    required: true
+  work-dir-name:
+    description: 'Name of the temporary working directory to create for testing'
+    required: true
+    default: 'test_project'
+
+runs:
+  using: 'composite'
+  steps:
+    # - name: Run Apio bundle test
+    #   shell: bash
+    #   run: |
+    #     # Resolve the absolute path of the apio bundle directory
+    #     apio_abs_dir="$(realpath "${{ inputs.apio-bundle-dir }}")"
+    #     echo "Adding to PATH (this step only): $apio_abs_dir"
+    #     export PATH="$PATH:$apio_abs_dir"
+
+    #     # Create and enter the test project directory
+    #     mkdir -p "${{ inputs.work-dir-name }}"
+    #     cd "${{ inputs.work-dir-name }}"
+
+    #     # Fetch an example project
+    #     apio example fetch alhambra-ii/getting-started
+    #     ls -al
+
+    #     # Enable command tracing for better debugging
+    #     set -x
+
+    #     # Install required packages
+    #     apio packages install
+
+    #     # Show system information
+    #     apio info system
+
+    #     # Run basic Apio commands
+    #     apio build
+    #     apio clean
+    #     apio lint
+    #     apio report
+    #   env:
+    #     # Ensure apio commands are available
+    #     PATH: ${{ env.PATH }}
+
+    - name: Test file bundle apio bin
+      shell: bash
+      run: |
+        # Enable command tracing
+        set -x
+
+        # Get a path to the apio bin in the bundle
+        ls -al "${{ inputs.apio-bundle-dir }}"
+        apio_bin="$(realpath "${{ inputs.apio-bundle-dir }}/apio")"
+        echo "apio_bin=$apio_bin"
+
+        # Create and enter the test directory
+        mkdir -p "${{ inputs.work-dir-name }}"
+        cd "${{ inputs.work-dir-name }}"
+
+        # Set a custom empty apio home.
+        export APIO_HOME_DIR="$(realpath _apio_home)"
+        echo "APIO_HOME_DIR=${APIO_HOME}"
+
+        # Make and change to the project dir
+        mkdir _project
+        cd _project
+
+        # Get packages
+        ${apio_bin} packages install
+
+        # Fetch a project
+        ${apio_bin} example fetch alhambra-ii/getting-started
+        ls -al
+
+        # Get system info
+        ${apio_bin} info system
+
+        # Run a few commands
+        ${apio_bin} build
+        ${apio_bin} clean
+        ${apio_bin} lint
+        ${apio_bin} report
+
