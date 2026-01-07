@@ -132,8 +132,7 @@ To check the apio version type:
 [code]
 apio --version[/code]
 
-For more information about the Apio project, visit the official Apio Wiki \
-https://github.com/FPGAwars/apio/wiki/Apio
+For the full Apio CLI documentation visit https://fpgawars.github.io/apio/docs
 """
 
 
