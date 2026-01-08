@@ -75,7 +75,7 @@ Apio repositories use the branch `main` as the main branch. Avoid other names su
 
 ## Daily build workflows
 
-The Apio repositories contain build workflows, typically at `.github/workflows/build-and-release.yaml` which builds the content of the repo and publish it as a temporary **pre-release** that is deleted after a few days.
+The Apio repositories contain build workflows, typically at `.github/workflows/build-pre-release.yaml` which builds the content of the repo and publish it as a temporary **pre-release** that is deleted after a few days.
 
 - To make a release permanent, edit it in the Github dashboard and turn off the **Set as a pre-release** checkbox.
 

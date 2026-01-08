@@ -1,4 +1,4 @@
-name: build-and-release
+name: build-pre-release
 
 on:
   # Runs daily at UTC midnight to minimize risk of overstepping

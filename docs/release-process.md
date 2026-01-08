@@ -1,6 +1,6 @@
 ## Background
 
-Apio GitHub repositories utilize `build-and-release` workflows that automatically
+Apio GitHub repositories utilize `build-pre-release` workflows that automatically
 generate daily pre-releases based on the current content of each repository.
 This includes pre-releases for packages such as `oss-cad-suite` and end-user
 applications such as the Apio CLI and Apio IDE.
