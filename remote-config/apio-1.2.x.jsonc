@@ -27,7 +27,7 @@
         "name": "apio-examples"
       },
       "release": {
-        "tag": "2025-12-26",
+        "tag": "2026-01-10",
         "package": "apio-examples-${YYYYMMDD}.tgz"
       }
     },
