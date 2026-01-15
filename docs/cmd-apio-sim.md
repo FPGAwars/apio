@@ -11,6 +11,13 @@ the default testbench using the `default-testbench` option in `apio.ini`.
 If this option is not set and there's only one testbench in the project,
 that file will be used.
 
+If the testbench doesn't have a matching user-saved `.gtkw`
+file, `apio sim` creates it automatically on each run to to have
+GTKWave displaying the testbench signals. To customize the presentation of the
+signals, modify them in GTKWave and save your configuration using the
+`File > Write Save File` menu command. The `apio sim` command will never
+overwrite a `.gtkw` files that were saved in this way.
+
 The `apio sim` command defines the macro `APIO_SIM=1`, which allows failed
 assertions to skip the `$fatal` call. This lets the simulation continue and
 display faulty signals in the GTKWave viewer.
