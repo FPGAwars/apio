@@ -330,11 +330,16 @@ def verilator_lint_action(
 
 @dataclass(frozen=True)
 class SimulationConfig:
-    """Simulation parameters, for sim and test commands."""
+    """Simulation parameters, used by  sim and test commands."""
 
-    testbench_name: str  # The testbench name, without the 'v' suffix.
+    testbench_path: str  # The relative testbench file path.
     build_testbench_name: str  # testbench_name prefixed by build dir.
     srcs: List[str]  # List of source files to compile.
+
+    @property
+    def testbench_name(self) -> str:
+        """The testbench path without the file extension."""
+        return basename(self.testbench_path)
 
 
 def detached_action(api_env: ApioEnv, cmd: List[str]) -> Action:
@@ -513,7 +518,7 @@ def get_sim_config(
     testbench_name = basename(testbench)
     build_testbench_name = str(apio_env.env_build_path / testbench_name)
     srcs = synth_srcs + [testbench]
-    return SimulationConfig(testbench_name, build_testbench_name, srcs)
+    return SimulationConfig(testbench, build_testbench_name, srcs)
 
 
 def get_tests_configs(
@@ -556,9 +561,7 @@ def get_tests_configs(
         testbench_name = basename(tb)
         build_testbench_name = str(apio_env.env_build_path / testbench_name)
         srcs = synth_srcs + [tb]
-        configs.append(
-            SimulationConfig(testbench_name, build_testbench_name, srcs)
-        )
+        configs.append(SimulationConfig(tb, build_testbench_name, srcs))
 
     return configs
 
