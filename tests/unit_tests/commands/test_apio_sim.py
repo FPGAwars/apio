@@ -5,10 +5,7 @@ from apio.commands.apio import apio_top_cli as apio
 
 
 def test_sim(apio_runner: ApioRunner):
-    """Test: apio sim
-    when no apio.ini file is given
-    No additional parameters are given
-    """
+    """Test apio sim without apio.ini. Should fail."""
 
     with apio_runner.in_sandbox() as sb:
 
