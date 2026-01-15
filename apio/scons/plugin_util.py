@@ -394,7 +394,7 @@ def detached_action(api_env: ApioEnv, cmd: List[str]) -> Action:
 
 def gtkwave_target(
     api_env: ApioEnv,
-    name: str,
+    target_name: str,  # 'sim'
     vcd_file_target: NodeList,
     sim_config: SimulationConfig,
     sim_params: SimParams,
@@ -415,7 +415,7 @@ def gtkwave_target(
         )
 
     else:
-        # -- Normal pase, invoking gtkwave.
+        # -- Normal case, invoking gtkwave.
 
         # -- On windows we need to setup the cache. This could be done once
         # -- when the oss-cad-suite is installed but since we currently don't
@@ -448,7 +448,7 @@ def gtkwave_target(
 
     # -- Define a target with the action(s) we created.
     target = api_env.alias(
-        name,
+        target_name,
         source=vcd_file_target,
         action=actions,
         always_build=True,
