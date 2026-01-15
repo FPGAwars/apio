@@ -37,6 +37,7 @@ from apio.common.common_util import (
 )
 from apio.common.apio_console import cout, cerror, cwarning, ctable
 from apio.common.apio_styles import INFO, BORDER, EMPH1, EMPH2, EMPH3
+from apio.scons import gtkwave_util
 
 
 TESTBENCH_HINT = "Testbench file names must end with '_tb.v' or '_tb.sv'."
@@ -431,6 +432,26 @@ def gtkwave_target(
         if api_env.is_windows:
             actions.append("gdk-pixbuf-query-loaders --update-cache")
 
+        # -- If needed, generate default .gtkw file to make sure the top level
+        # -- signals are shown by default.
+        gtkw_path: str = sim_config.testbench_name + ".gtkw"
+        vcd_path = str(vcd_file_target[0])
+
+        def create_default_gtkw_file(
+            target: List[Alias], source: List[File], env: SConsEnvironment
+        ):
+            """The action function to generate the default .gtkw file."""
+            _ = (target, source, env)  # Unused.
+            cout(f"Generating default {gtkw_path}")
+            gtkwave_util.create_gtkwave_file(
+                sim_config.testbench_path, vcd_path, gtkw_path
+            )
+
+        if gtkwave_util.is_user_gtkw_file(gtkw_path):
+            cout(f"Found user saved {gtkw_path}")
+        else:
+            actions.append(Action(create_default_gtkw_file, strfunction=None))
+
         # -- The actual wave viewer command.
         gtkwave_cmd = [
             "gtkwave",
@@ -438,8 +459,8 @@ def gtkwave_target(
             "splash_disable on",
             "--rcvar",
             "do_initial_zoom_fit 1",
-            str(vcd_file_target[0]),
-            sim_config.testbench_name + ".gtkw",
+            vcd_path,
+            gtkw_path,
         ]
 
         # -- Handle the case where gtkwave is run as a detached app, not

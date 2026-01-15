@@ -4,6 +4,7 @@
 
 import re
 import sys
+from datetime import datetime
 from typing import Tuple
 from pathlib import Path
 from vcdvcd import VCDVCD
@@ -16,14 +17,19 @@ def _get_gtkw_file_header(testbench_path: Path) -> str:
     """Return a header string for the auto generated .gtkw file. 'testbench'
     is the relative path of the testbench file."""
 
+    # -- Normalized path with '/', even on windows.
+    tb_path_posix = Path(testbench_path).as_posix()
+
     lines = [
-        "# GTKWave display configuration for "
-        + f"'apio sim {testbench_path.as_posix()}.",
-        f"# {GTKW_AUTO_FILE_MARKER}.",
-        "# DO NOT EDIT IT MANUALLY.",
-        "# To customize this file, run 'apio sim "
-        + f"{testbench_path.as_posix()}'",
-        "# and save the file from GTKWave",
+        f"# GTKWave display configuration for 'apio sim {tb_path_posix}'",
+        f"# {GTKW_AUTO_FILE_MARKER}. DO NOT EDIT IT MANUALLY!",
+        f"# To customize this file, run 'apio sim {tb_path_posix}'",
+        "# and save the file from GTKWave.",
+        "",
+        "[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI",
+        f"[*] {datetime.now().strftime('%a %b %d %H:%M:%S %Y')}",
+        "",
+        "[*]",
     ]
 
     return "\n".join(lines) + "\n"
@@ -46,14 +52,14 @@ def _signal_sort_key(s: str) -> Tuple[int, str]:
 
 
 def create_gtkwave_file(
-    testbench_path: Path, vcd_path: Path, gtkw_path: Path
+    testbench_path: str, vcd_path: str, gtkw_path: str
 ) -> None:
     """Generates a GTKWave configuration file from a VCD file.
 
     Args:
-        testbench_path (Path): Path to the simulated testbench.
-        vcd_path (Path): Path to the input VCD file.
-        gtkw_path (Path): Path to the output GTKWave configuration file.
+        testbench_path (str): Path to the simulated testbench.
+        vcd_path (str): Path to the input VCD file.
+        gtkw_path (str): Path to the output GTKWave configuration file.
     """
 
     # -- Pattern for top levels signals. E.g. 'testbench.CLK'.
@@ -80,7 +86,7 @@ def create_gtkwave_file(
             f.write(signal + "\n")
 
 
-def is_user_gtkw_file(gtkw_path: Path) -> bool:
+def is_user_gtkw_file(gtkw_path: str) -> bool:
     """Test if the given .gtkw file exists and contains user's saved
     GTKWave display configuration."""
 
@@ -89,12 +95,13 @@ def is_user_gtkw_file(gtkw_path: Path) -> bool:
     assert gtkw_path.endswith(".gtkw")
 
     # -- If doesn't exist than now.
-    if not gtkw_path.exists():
+    if not Path(gtkw_path).exists():
         return False
 
     # -- File exists, test the content.
     try:
-        with gtkw_path.open("r", encoding="utf-8", errors="replace") as f:
+        # with gtkw_path.open("r", encoding="utf-8", errors="replace") as f:
+        with open(gtkw_path, "r", encoding="utf-8", errors="replace") as f:
             for line in f:
                 if GTKW_AUTO_FILE_MARKER in line:
                     # -- File contains the apio auto marker. Not a user file.
@@ -104,7 +111,7 @@ def is_user_gtkw_file(gtkw_path: Path) -> bool:
 
     except Exception as e:
         cerror(
-            f"Failed to scan existing .gtkw file {gtkw_path}.",
+            f"Failed to scan existing .gtkw file {gtkw_path}",
             f"{type(e).__name__}: {e}",
         )
         sys.exit(1)
