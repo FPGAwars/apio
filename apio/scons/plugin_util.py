@@ -37,6 +37,7 @@ from apio.common.common_util import (
 )
 from apio.common.apio_console import cout, cerror, cwarning, ctable
 from apio.common.apio_styles import INFO, BORDER, EMPH1, EMPH2, EMPH3
+from apio.scons import gtkwave_util
 
 
 TESTBENCH_HINT = "Testbench file names must end with '_tb.v' or '_tb.sv'."
@@ -330,11 +331,16 @@ def verilator_lint_action(
 
 @dataclass(frozen=True)
 class SimulationConfig:
-    """Simulation parameters, for sim and test commands."""
+    """Simulation parameters, used by  sim and test commands."""
 
-    testbench_name: str  # The testbench name, without the 'v' suffix.
+    testbench_path: str  # The relative testbench file path.
     build_testbench_name: str  # testbench_name prefixed by build dir.
     srcs: List[str]  # List of source files to compile.
+
+    @property
+    def testbench_name(self) -> str:
+        """The testbench path without the file extension."""
+        return basename(self.testbench_path)
 
 
 def detached_action(api_env: ApioEnv, cmd: List[str]) -> Action:
@@ -394,7 +400,7 @@ def detached_action(api_env: ApioEnv, cmd: List[str]) -> Action:
 
 def gtkwave_target(
     api_env: ApioEnv,
-    name: str,
+    target_name: str,  # 'sim'
     vcd_file_target: NodeList,
     sim_config: SimulationConfig,
     sim_params: SimParams,
@@ -407,6 +413,27 @@ def gtkwave_target(
     # -- Construct the list of actions.
     actions = []
 
+    # -- If needed, generate default .gtkw file to make sure the top level
+    # -- signals are shown by default.
+    gtkw_path: str = sim_config.testbench_name + ".gtkw"
+    vcd_path = str(vcd_file_target[0])
+
+    def create_default_gtkw_file(
+        target: List[Alias], source: List[File], env: SConsEnvironment
+    ):
+        """The action function to generate the default .gtkw file."""
+        _ = (target, source, env)  # Unused.
+        cout(f"Generating default {gtkw_path}")
+        gtkwave_util.create_gtkwave_file(
+            sim_config.testbench_path, vcd_path, gtkw_path
+        )
+
+    if gtkwave_util.is_user_gtkw_file(gtkw_path):
+        cout(f"Found user saved {gtkw_path}")
+    else:
+        actions.append(Action(create_default_gtkw_file, strfunction=None))
+
+    # -- Skip or execute gtkwave.
     if sim_params.no_gtkwave:
         # -- User asked to skip gtkwave. The '@' suppresses the printing
         # -- of the echo command itself.
@@ -415,7 +442,7 @@ def gtkwave_target(
         )
 
     else:
-        # -- Normal pase, invoking gtkwave.
+        # -- Normal case, invoking gtkwave.
 
         # -- On windows we need to setup the cache. This could be done once
         # -- when the oss-cad-suite is installed but since we currently don't
@@ -433,8 +460,8 @@ def gtkwave_target(
             "splash_disable on",
             "--rcvar",
             "do_initial_zoom_fit 1",
-            str(vcd_file_target[0]),
-            sim_config.testbench_name + ".gtkw",
+            vcd_path,
+            gtkw_path,
         ]
 
         # -- Handle the case where gtkwave is run as a detached app, not
@@ -448,7 +475,7 @@ def gtkwave_target(
 
     # -- Define a target with the action(s) we created.
     target = api_env.alias(
-        name,
+        target_name,
         source=vcd_file_target,
         action=actions,
         always_build=True,
@@ -513,7 +540,7 @@ def get_sim_config(
     testbench_name = basename(testbench)
     build_testbench_name = str(apio_env.env_build_path / testbench_name)
     srcs = synth_srcs + [testbench]
-    return SimulationConfig(testbench_name, build_testbench_name, srcs)
+    return SimulationConfig(testbench, build_testbench_name, srcs)
 
 
 def get_tests_configs(
@@ -556,9 +583,7 @@ def get_tests_configs(
         testbench_name = basename(tb)
         build_testbench_name = str(apio_env.env_build_path / testbench_name)
         srcs = synth_srcs + [tb]
-        configs.append(
-            SimulationConfig(testbench_name, build_testbench_name, srcs)
-        )
+        configs.append(SimulationConfig(tb, build_testbench_name, srcs))
 
     return configs
 

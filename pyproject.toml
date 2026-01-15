@@ -49,6 +49,7 @@ requires = [
     'apollo_fpga==1.1.1',
     'protobuf==6.33.0',
     'rich==14.0.0',
+    'vcdvcd==2.6.0',
     'invoke==2.2.1'
 ]
 

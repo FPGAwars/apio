@@ -52,6 +52,13 @@ for the generated .vcd file.
 [NOTE] Testbench specification is always the testbench file path relative to \
 the project directory, even if using the '--project-dir' option.
 
+[NOTE] If the testbench doesn't have a matching user-saved '.gtkw' file, \
+'apio sim' creates it automatically on each run to to have GTKWave displaying \
+the testbench signals. To customize the presentation of the signals, modify \
+them in GTKWave and save your configuration using the \
+'File > Write Save File' menu command. The 'apio sim' command will never \
+overwrite a '.gtkw' files that were saved in this way.
+
 The sim command defines the macro 'APIO_SIM=1' which can be used by \
 testbenches to skip `$fatal` statements to have the simulation continue and \
 generate signals for the GTKWave viewer.
