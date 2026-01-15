@@ -4,7 +4,6 @@
 
 import re
 import sys
-from datetime import datetime
 from typing import Tuple
 from pathlib import Path
 from vcdvcd import VCDVCD
@@ -27,7 +26,6 @@ def _get_gtkw_file_header(testbench_path: Path) -> str:
         "# and save the file from GTKWave.",
         "",
         "[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI",
-        f"[*] {datetime.now().strftime('%a %b %d %H:%M:%S %Y')}",
         "",
         "[*]",
     ]
