@@ -56,6 +56,14 @@ jobs:
           # Checks out the exact tag entered by the user
           ref: ${{ inputs.release_tag }}
 
+      - name: Set apio release info
+        uses: ./.github/actions/set-apio-release-info
+        with:
+          repo_path: .
+          platform_id: generic
+          release_type: pypi
+          release_tag: ${{ inputs.release_tag }}
+
       # -- Install and and configure python
       - name: Set up Python
         uses: actions/setup-python@v5

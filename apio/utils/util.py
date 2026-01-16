@@ -368,13 +368,13 @@ def is_debug(level: int) -> bool:
     return debug_level() >= level
 
 
-def get_apio_release_version_tuple() -> Tuple[int]:
+def get_apio_version_tuple() -> Tuple[int]:
     """Returns the version of the apio package as tuple of 3 ints."""
     # -- Apio's version is defined in the __init__.py file of the apio package.
     # -- Using the version from a file in the apio package rather than from
     # -- the pip metadata makes apio more self contained, for example when
     # -- installing with pyinstaller rather than with pip.
-    ver: Tuple[int] = apio.RELEASE_VERSION
+    ver: Tuple[int] = apio.APIO_VERSION
     assert len(ver) == 3, ver
     assert isinstance(ver[0], int)
     assert isinstance(ver[1], int)
@@ -382,42 +382,22 @@ def get_apio_release_version_tuple() -> Tuple[int]:
     return ver
 
 
-def get_apio_release_version_str() -> str:
+def get_apio_version_str() -> str:
     """Returns the version of the apio package as a string like "1.22.3"."""
-    ver: Tuple[int] = get_apio_release_version_tuple()
+    ver: Tuple[int] = get_apio_version_tuple()
     return f"{ver[0]}.{ver[1]}.{ver[2]}"
 
 
-def get_apio_release_date_tuple() -> Tuple[int]:
-    """Returns the version release date of the apio package as tuple
-    of 3 ints."""
-    date: Tuple[int] = apio.RELEASE_DATE
-    assert len(date) == 3, date
-    assert isinstance(date[0], int)
-    assert isinstance(date[1], int)
-    assert isinstance(date[2], int)
-    return date
-
-
-def get_apio_release_date_str() -> str:
-    """Returns the release date of the apio package as a string
-    like "2026-01-16"."""
-    date: Tuple[int] = get_apio_release_date_tuple()
-    return f"{date[0]:04d}-{date[1]:02d}-{date[2]:02d}"
-
-
-def get_apio_release_version_and_date_str() -> str:
-    """Return a string with a combination of apio version and date."""
-    ver_str = get_apio_release_version_str()
-    date_str = get_apio_release_date_str()
-    return f"{ver_str} ({date_str})"
+def get_apio_release_info() -> str:
+    """Returns the release info string."""
+    return apio.RELEASE_INFO
 
 
 def get_apio_version_message() -> str:
     """Returns the string to show on `apio --version`."""
-    ver_str = get_apio_release_version_str()
-    date_str = get_apio_release_date_str()
-    return f"Apio CLI {ver_str} ({date_str})"
+    ver_str = get_apio_version_str()
+    release_str = get_apio_release_info() or "no release info"
+    return f"Apio CLI version {ver_str} ({release_str})"
 
 
 def _check_apio_dir(apio_dir: Path, desc: str, env_var: str):

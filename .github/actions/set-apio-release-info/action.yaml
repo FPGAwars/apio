@@ -1,0 +1,68 @@
+# .github/actions/set-apio-release-info/action.yml
+name: "Set Apio RELEASE_INFO"
+description: "Sets the RELEASE_INFO string with repo name, release type and tag"
+
+inputs:
+  repo_path:
+    description: "Relative path from the current working directory to the file containing RELEASE_INFO (e.g. apio/__init__.py)"
+    required: true
+
+  platform_id:
+    description: 'The underlying platform id (e.g. "darwin-arm64")'
+    required: true
+
+  release_type:
+    description: 'The type of release (e.g. "pypi", "pyinstaller")'
+    required: true
+
+  release_tag:
+    description: 'The release tag/date (e.g. "2026-01-16")'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Show original __init__.py
+      shell: bash
+      run: |
+        set -x
+        cat -n "${{inputs.repo_path}}/apio/__init__.py"
+
+    - name: Set RELEASE_INFO using Python
+      shell: python
+      run: |
+        from pathlib import Path
+        import re
+
+        target_file = Path("${{ inputs.repo_path }}") / "apio" / "__init__.py"
+
+        if not target_file.is_file():
+            print(f"Error: File not found: {target_file.resolve()}")
+            exit(1)
+
+        platform_id = "${{ inputs.platform_id }}"
+        release_type = "${{ inputs.release_type }}"
+        release_tag  = "${{ inputs.release_tag }}"
+
+        new_value = f'"{platform_id}-{release_type}-{release_tag}"'
+        new_line  = f'RELEASE_INFO = {new_value}'
+
+        content = target_file.read_text(encoding="utf-8")
+
+        # Permissive pattern: matches RELEASE_INFO = "anything" or 'anything'
+        pattern = r'RELEASE_INFO\s*=\s*(?:"[^"]*"|\'[^\']*\')'
+
+        match = re.search(pattern, content)
+        if not match:
+            print(f"Warning: No RELEASE_INFO string found in {target_file} - no change made")
+        else:
+            old_match = match.group(0)
+            updated = re.sub(pattern, new_line, content, count=1)
+            target_file.write_text(updated, encoding="utf-8")
+            print(f"Replaced '{old_match}' with '{new_line}' in {target_file}")
+
+    - name: Show updated __init__.py
+      shell: bash
+      run: |
+        set -x
+        cat -n "${{inputs.repo_path}}/apio/__init__.py"

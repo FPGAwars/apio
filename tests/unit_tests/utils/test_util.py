@@ -9,6 +9,7 @@ import pytest
 from pytest import raises
 from tests.conftest import ApioRunner
 from apio.utils.util import (
+    get_apio_release_info,
     plurality,
     list_plurality,
     is_debug,
@@ -17,6 +18,14 @@ from apio.utils.util import (
 )
 
 # TODO: Add more tests.
+
+
+def test_release_info():
+    """Tests that the release info placeholder is empty. This value
+    is set on the fly by build and publishing github workflows."""
+    version_info = get_apio_release_info()
+    assert isinstance(version_info, str)
+    assert version_info == ""
 
 
 def test_pluraliry():

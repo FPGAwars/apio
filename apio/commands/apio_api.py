@@ -145,8 +145,8 @@ def _get_system_cli(
     section_dict = {}
 
     # -- Add fields.
-    section_dict["apio-cli-version"] = util.get_apio_release_version_str()
-    section_dict["apio-cli-date"] = util.get_apio_release_date_str()
+    section_dict["apio-cli-version"] = util.get_apio_version_str()
+    section_dict["release-info"] = util.get_apio_release_info()
     section_dict["python-version"] = util.get_python_version()
     section_dict["python-executable"] = sys.executable
     section_dict["platform-id"] = apio_ctx.platform_id
