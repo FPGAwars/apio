@@ -66,7 +66,6 @@ Utility commands:
   apio info         Apio's info and info.
   apio raw          Execute commands directly from the Apio packages.
   apio api          Apio programmatic interface.
-  apio upgrade      Check the latest Apio version.
 
 
 
@@ -1193,23 +1192,6 @@ Options:
   -e, --env name          Set the apio.ini env.
   -p, --project-dir path  Set the root directory for the project.
   -h, --help              Show this message and exit.
-
-
-
---------------------------------------------
-
-apio upgrade
-
-Usage: apio upgrade [OPTIONS]
-
-  The command 'apio upgrade' checks for the version of the latest Apio
-  release and provides upgrade directions if necessary.
-
-  Examples:
-    apio upgrade
-
-Options:
-  -h, --help  Show this message and exit.
 
 
 

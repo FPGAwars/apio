@@ -34,7 +34,6 @@ from apio.commands import (
     apio_report,
     apio_sim,
     apio_test,
-    apio_upgrade,
     apio_upload,
 )
 
@@ -80,7 +79,6 @@ SUBGROUPS = [
             apio_info.cli,
             apio_raw.cli,
             apio_api.cli,
-            apio_upgrade.cli,
         ],
     ),
 ]
