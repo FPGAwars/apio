@@ -26,7 +26,7 @@ def test_apio_cmd(apio_runner: ApioRunner):
         # -- Run 'apio --version'
         result = sb.invoke_apio_cmd(apio, ["--version"])
         sb.assert_result_ok(result)
-        assert "apio, version" in result.output
+        assert "Apio CLI " in result.output
 
         # -- Run 'apio badcommand'
         result = sb.invoke_apio_cmd(apio, ["badcommand"])
