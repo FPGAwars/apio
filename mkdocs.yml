@@ -60,7 +60,6 @@ nav:
       - report: cmd-apio-report.md
       - sim: cmd-apio-sim.md
       - test: cmd-apio-test.md
-      - upgrade: cmd-apio-upgrade.md
       - upload: cmd-apio-upload.md
   - Apio Projects:
       - Project structure: project-structure.md
