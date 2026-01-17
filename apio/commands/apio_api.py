@@ -150,6 +150,7 @@ def _get_system_cli(
     section_dict["python-version"] = util.get_python_version()
     section_dict["python-executable"] = sys.executable
     section_dict["platform-id"] = apio_ctx.platform_id
+    section_dict["platform-info"] = util.get_platform_info()
     section_dict["scons-shell-id"] = apio_ctx.scons_shell_id
     section_dict["vscode-debugger"] = str(
         util.is_under_vscode_debugger()
