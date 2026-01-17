@@ -146,10 +146,11 @@ For the full Apio CLI documentation visit https://fpgawars.github.io/apio/docs
 # determining the version when running under pyinstaller.
 @click.version_option(
     # -- Param 'version' (str). We use the custom message below instead.
-    None,
+    util.get_apio_version_str(),
     # -- Param '*param_decls. The version option names.
-    *["-v", "--version"],
-    # -- Param 'message', the final string to display.
+    "-v",
+    "--version",
+    # -- Param 'message', the final string to display for apio --version.
     message=util.get_apio_version_message(),
 )
 def apio_top_cli():

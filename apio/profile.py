@@ -208,7 +208,7 @@ class Profile:
         # -- Resolve and cache the remote config url. Replaced the placeholders
         # -- with the major and minor versions of apio. Path version is
         # -- not used.
-        ver_tuple = util.get_apio_release_version_tuple()
+        ver_tuple = util.get_apio_version_tuple()
         url = remote_config_url_template
         url = url.replace("{major}", str(ver_tuple[0]))
         url = url.replace("{minor}", str(ver_tuple[1]))
@@ -335,7 +335,7 @@ class Profile:
         self.installed_packages[name] = {
             "version": version,
             "platform": platform_id,
-            "loaded-by": util.get_apio_release_version_str(),
+            "loaded-by": util.get_apio_version_str(),
             "loaded-at": get_datetime_stamp(),
             "loaded-from": url,
         }
@@ -438,9 +438,7 @@ class Profile:
         config_apio_version = remote_config.get("metadata", {}).get(
             "loaded-by", ""
         )
-        config_usable = (
-            config_apio_version == util.get_apio_release_version_str()
-        )
+        config_usable = config_apio_version == util.get_apio_version_str()
 
         # -- Extract the fields. If remote config is of a different apio
         # -- version, drop it.
@@ -571,7 +569,7 @@ class Profile:
         # -- Append remote config metadata. This also clear the
         # -- "refresh-failure-on" field if exists.
         metadata_dict = {}
-        metadata_dict["loaded-by"] = util.get_apio_release_version_str()
+        metadata_dict["loaded-by"] = util.get_apio_version_str()
         metadata_dict["loaded-at"] = get_datetime_stamp()
         metadata_dict["loaded-from"] = self.remote_config_url
         remote_config["metadata"] = metadata_dict
