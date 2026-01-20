@@ -249,6 +249,11 @@ def _get_project_cli(
     section_dict["synth-files"] = synth_srcs
     section_dict["test-benches"] = test_srcs
 
+    pr = apio_ctx.project_resources
+    section_dict["board"] = pr.board_info
+    section_dict["fpga"] = pr.fpga_info
+    section_dict["programmer"] = pr.programmer_info
+
     # -- Add section
     top_dict["project"] = section_dict
 

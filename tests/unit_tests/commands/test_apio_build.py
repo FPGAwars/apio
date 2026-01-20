@@ -81,7 +81,7 @@ def test_build_with_env_arg_error(apio_runner: ApioRunner):
 
 
 def test_files_order(apio_runner: ApioRunner):
-    """Tests that source files are sorted in apio build command."""
+    """Tests that source files are sorted by the apio build command."""
 
     with apio_runner.in_sandbox() as sb:
 
