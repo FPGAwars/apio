@@ -218,6 +218,7 @@ def test_apio_api_get_project(apio_runner: ApioRunner):
                     f"src1{os.sep}tb1_tb.sv",
                 ],
                 "board": {
+                    "id": "alhambra-ii",
                     "description": "Alhambra II",
                     "fpga-id": "ice40hx4k-tq144-8k",
                     "programmer": {
@@ -233,6 +234,7 @@ def test_apio_api_get_project(apio_runner: ApioRunner):
                     },
                 },
                 "fpga": {
+                    "id": "ice40hx4k-tq144-8k",
                     "arch": "ice40",
                     "pack": "tq144:4k",
                     "part-num": "ICE40HX4K-TQ144",
@@ -240,6 +242,7 @@ def test_apio_api_get_project(apio_runner: ApioRunner):
                     "type": "hx8k",
                 },
                 "programmer": {
+                    "id": "openfpgaloader",
                     "args": "",
                     "command": "openFPGALoader",
                 },
