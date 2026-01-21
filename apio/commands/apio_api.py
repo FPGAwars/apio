@@ -250,9 +250,18 @@ def _get_project_cli(
     section_dict["test-benches"] = test_srcs
 
     pr = apio_ctx.project_resources
-    section_dict["board"] = pr.board_info
-    section_dict["fpga"] = pr.fpga_info
-    section_dict["programmer"] = pr.programmer_info
+
+    board_dict = {"id": pr.board_id}
+    board_dict.update(pr.board_info)
+    section_dict["board"] = board_dict
+
+    fpga_dict = {"id": pr.fpga_id}
+    fpga_dict.update(pr.fpga_info)
+    section_dict["fpga"] = fpga_dict
+
+    programmer_dict = {"id": pr.programmer_id}
+    programmer_dict.update(pr.programmer_info)
+    section_dict["programmer"] = programmer_dict
 
     # -- Add section
     top_dict["project"] = section_dict
