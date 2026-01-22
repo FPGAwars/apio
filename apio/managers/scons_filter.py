@@ -23,6 +23,7 @@ LINE_COLORING_TABLE = [
     (r"^info:", INFO),
     # -- Warning patterns
     (r"^warning:", WARNING),
+    (r"%warning-", WARNING),  # Lint/Verilator
     # -- Error patterns.
     (r"^error:", ERROR),
     (r"fail: ", ERROR),
