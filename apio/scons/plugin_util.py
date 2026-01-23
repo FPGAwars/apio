@@ -330,7 +330,7 @@ def verilator_lint_action(
 
 
 @dataclass(frozen=True)
-class SimulationConfig:
+class ApioSimConfig:
     """Simulation parameters, used by  sim and test commands."""
 
     testbench_path: str  # The relative testbench file path.
@@ -402,7 +402,7 @@ def gtkwave_target(
     api_env: ApioEnv,
     target_name: str,  # 'sim'
     vcd_file_target: NodeList,
-    sim_config: SimulationConfig,
+    sim_config: ApioSimConfig,
     sim_params: SimParams,
 ) -> List[Alias]:
     """Construct a target to launch the QTWave signal viewer.
@@ -493,12 +493,12 @@ def check_valid_testbench_name(testbench: str) -> None:
         sys.exit(1)
 
 
-def get_sim_config(
+def get_apio_sim_config(
     apio_env: ApioEnv,
     testbench: str,
     synth_srcs: List[str],
     test_srcs: List[str],
-) -> SimulationConfig:
+) -> ApioSimConfig:
     """Returns a SimulationConfig for a sim command. 'testbench' is
     an optional testbench file name. 'synth_srcs' and 'test_srcs' are the
     all the project's synth and testbench files found in the project as
@@ -540,7 +540,7 @@ def get_sim_config(
     testbench_name = basename(testbench)
     build_testbench_name = str(apio_env.env_build_path / testbench_name)
     srcs = synth_srcs + [testbench]
-    return SimulationConfig(testbench, build_testbench_name, srcs)
+    return ApioSimConfig(testbench, build_testbench_name, srcs)
 
 
 def get_tests_configs(
@@ -548,7 +548,7 @@ def get_tests_configs(
     testbench: str,
     synth_srcs: List[str],
     test_srcs: list[str],
-) -> List[SimulationConfig]:
+) -> List[ApioSimConfig]:
     """Return a list of SimulationConfigs for each of the testbenches that
     need to be run for a 'apio test' command. If testbench is empty,
     all the testbenches in test_srcs will be tested. Otherwise, only the
@@ -583,7 +583,7 @@ def get_tests_configs(
         testbench_name = basename(tb)
         build_testbench_name = str(apio_env.env_build_path / testbench_name)
         srcs = synth_srcs + [tb]
-        configs.append(SimulationConfig(tb, build_testbench_name, srcs))
+        configs.append(ApioSimConfig(tb, build_testbench_name, srcs))
 
     return configs
 
