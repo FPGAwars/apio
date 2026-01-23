@@ -30,12 +30,12 @@ from apio.scons.apio_env import ApioEnv
 from apio.scons.plugin_base import PluginBase
 from apio.common import rich_lib_windows
 from apio.scons.plugin_util import (
-    get_apio_sim_config,
-    get_tests_configs,
+    get_apio_sim_testbench_info,
+    get_apio_test_testbenches_infos,
     gtkwave_target,
     report_action,
     get_programmer_cmd,
-    ApioSimConfig,
+    TestbenchInfo,
 )
 from apio.common.apio_console import cerror, cout
 
@@ -313,7 +313,7 @@ class SconsHandler:
         testbench = sim_params.testbench  # Optional.
 
         # -- Collect information for sim.
-        sim_config: ApioSimConfig = get_apio_sim_config(
+        testbench_info: TestbenchInfo = get_apio_sim_testbench_info(
             apio_env, testbench, synth_srcs, test_srcs
         )
 
@@ -325,8 +325,8 @@ class SconsHandler:
 
         sim_out_target = apio_env.builder_target(
             builder_id=TESTBENCH_COMPILE_BUILDER,
-            target=sim_config.build_testbench_name,
-            sources=sim_config.srcs,
+            target=testbench_info.build_testbench_name,
+            sources=testbench_info.srcs,
             always_build=sim_params.force_sim,
         )
 
@@ -336,7 +336,7 @@ class SconsHandler:
 
         sim_vcd_target = apio_env.builder_target(
             builder_id=TESTBENCH_RUN_BUILDER,
-            target=sim_config.build_testbench_name,
+            target=testbench_info.build_testbench_name,
             sources=[sim_out_target],
             always_build=sim_params,
         )
@@ -346,7 +346,7 @@ class SconsHandler:
             apio_env,
             "sim",
             sim_vcd_target,
-            sim_config,
+            testbench_info,
             sim_params,
         )
 
@@ -364,7 +364,7 @@ class SconsHandler:
 
         # -- Collect the test related values.
         test_params = params.target.test
-        tests_configs = get_tests_configs(
+        testbenches_infos = get_apio_test_testbenches_infos(
             apio_env, test_params.testbench, synth_srcs, test_srcs
         )
 
@@ -376,20 +376,20 @@ class SconsHandler:
 
         # -- Create targets for each testbench we are testing.
         tests_targets = []
-        for test_config in tests_configs:
+        for testbench_info in testbenches_infos:
 
             # -- Create the compilation target.
             test_out_target = apio_env.builder_target(
                 builder_id=TESTBENCH_COMPILE_BUILDER,
-                target=test_config.build_testbench_name,
-                sources=test_config.srcs,
+                target=testbench_info.build_testbench_name,
+                sources=testbench_info.srcs,
                 always_build=True,
             )
 
             # -- Create the simulation target.
             test_vcd_target = apio_env.builder_target(
                 builder_id=TESTBENCH_RUN_BUILDER,
-                target=test_config.build_testbench_name,
+                target=testbench_info.build_testbench_name,
                 sources=[test_out_target],
                 always_build=True,
             )

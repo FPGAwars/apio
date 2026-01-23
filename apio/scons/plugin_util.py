@@ -330,8 +330,9 @@ def verilator_lint_action(
 
 
 @dataclass(frozen=True)
-class ApioSimConfig:
-    """Simulation parameters, used by  sim and test commands."""
+class TestbenchInfo:
+    """Testbench simulation parameters, used by apio sim and apio test
+    commands."""
 
     testbench_path: str  # The relative testbench file path.
     build_testbench_name: str  # testbench_name prefixed by build dir.
@@ -400,9 +401,9 @@ def detached_action(api_env: ApioEnv, cmd: List[str]) -> Action:
 
 def gtkwave_target(
     api_env: ApioEnv,
-    target_name: str,  # 'sim'
+    target_name: str,  # always 'sim'
     vcd_file_target: NodeList,
-    sim_config: ApioSimConfig,
+    testbench_info: TestbenchInfo,
     sim_params: SimParams,
 ) -> List[Alias]:
     """Construct a target to launch the QTWave signal viewer.
@@ -415,7 +416,7 @@ def gtkwave_target(
 
     # -- If needed, generate default .gtkw file to make sure the top level
     # -- signals are shown by default.
-    gtkw_path: str = sim_config.testbench_name + ".gtkw"
+    gtkw_path: str = testbench_info.testbench_name + ".gtkw"
     vcd_path = str(vcd_file_target[0])
 
     def create_default_gtkw_file(
@@ -425,7 +426,7 @@ def gtkwave_target(
         _ = (target, source, env)  # Unused.
         cout(f"Generating default {gtkw_path}")
         gtkwave_util.create_gtkwave_file(
-            sim_config.testbench_path, vcd_path, gtkw_path
+            testbench_info.testbench_path, vcd_path, gtkw_path
         )
 
     if gtkwave_util.is_user_gtkw_file(gtkw_path):
@@ -493,12 +494,12 @@ def check_valid_testbench_name(testbench: str) -> None:
         sys.exit(1)
 
 
-def get_apio_sim_config(
+def get_apio_sim_testbench_info(
     apio_env: ApioEnv,
     testbench: str,
     synth_srcs: List[str],
     test_srcs: List[str],
-) -> ApioSimConfig:
+) -> TestbenchInfo:
     """Returns a SimulationConfig for a sim command. 'testbench' is
     an optional testbench file name. 'synth_srcs' and 'test_srcs' are the
     all the project's synth and testbench files found in the project as
@@ -540,15 +541,15 @@ def get_apio_sim_config(
     testbench_name = basename(testbench)
     build_testbench_name = str(apio_env.env_build_path / testbench_name)
     srcs = synth_srcs + [testbench]
-    return ApioSimConfig(testbench, build_testbench_name, srcs)
+    return TestbenchInfo(testbench, build_testbench_name, srcs)
 
 
-def get_tests_configs(
+def get_apio_test_testbenches_infos(
     apio_env: ApioEnv,
     testbench: str,
     synth_srcs: List[str],
     test_srcs: list[str],
-) -> List[ApioSimConfig]:
+) -> List[TestbenchInfo]:
     """Return a list of SimulationConfigs for each of the testbenches that
     need to be run for a 'apio test' command. If testbench is empty,
     all the testbenches in test_srcs will be tested. Otherwise, only the
@@ -583,7 +584,7 @@ def get_tests_configs(
         testbench_name = basename(tb)
         build_testbench_name = str(apio_env.env_build_path / testbench_name)
         srcs = synth_srcs + [tb]
-        configs.append(ApioSimConfig(tb, build_testbench_name, srcs))
+        configs.append(TestbenchInfo(tb, build_testbench_name, srcs))
 
     return configs
 
