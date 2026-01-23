@@ -654,7 +654,7 @@ def source_files_issue_scanner_action() -> FunctionAction:
                 )
                 cout(
                     "Do not use $dumpfile(...) in your Apio testbenches.",
-                    "Let Apio configure automatically the proper location of "
+                    "Let Apio configure automatically the proper locations of "
                     + "the dump files.",
                     style=INFO,
                 )
