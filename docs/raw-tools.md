@@ -100,12 +100,16 @@ apio raw -- gowin_pll -h
 Generate a PLL module for the Sipeed Nano 9K that converts a 27 MHz input to a 75 MHz output clock.
 
 ```
-apio raw -- gowin_pll -d "GW1NR-9 C6/I5" -i 27 -o 75 -f pll.v
+apio raw -- gowin_pll -d "GW1NR-LV9QN88PC6/I5" -i 27 -o 75 -f pll.v
 apio format pll.v
 ```
 
 The Apio example `sipeed-tang-nano-9k/pll` demonstrates a `pll.v` module that
 was generated with this command.
+
+> The value of the `-d` option is the `part-num` value from the output of the
+> command `apio api get-project`. For example, for the Tang Nano 20k board,
+> the value is `GW2AR-LV18QN88C8/I7`.
 
 ---
 
