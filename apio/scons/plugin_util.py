@@ -646,9 +646,19 @@ def source_files_issue_scanner_action() -> FunctionAction:
             # -- Read the testbench file text.
             file_text = file.get_text_contents()
 
-            # -- if contains $dumpfile, print a warning.
+            # -- if contains $dumpfile, it's a fatal error. Apio sets the
+            # -- default location of the testbenches output .vcd file.
             if testbench_dumpfile_re.findall(file_text):
-                cwarning("Avoid using $dumpfile() in Apio testbenches.")
+                cerror(
+                    f"The testbench file '{file.name}' contains '$dumpfile'."
+                )
+                cout(
+                    "Do not use $dumpfile(...) in your Apio testbenches.",
+                    "Let Apio configure automatically the proper location of "
+                    + "the dump files.",
+                    style=INFO,
+                )
+                sys.exit(1)
 
             # -- if contains $dumpfile, print a warning.
             if interactive_sim_re.findall(file_text):
