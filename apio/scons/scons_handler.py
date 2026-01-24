@@ -310,11 +310,13 @@ class SconsHandler:
 
         # -- Get values.
         sim_params: SimParams = params.target.sim
-        testbench = sim_params.testbench  # Optional.
 
         # -- Collect information for sim.
         testbench_info: TestbenchInfo = get_apio_sim_testbench_info(
-            apio_env, testbench, synth_srcs, test_srcs
+            apio_env,
+            sim_params,
+            synth_srcs,
+            test_srcs,
         )
 
         # -- Compilation builder and target
@@ -365,7 +367,10 @@ class SconsHandler:
         # -- Collect the test related values.
         test_params = params.target.test
         testbenches_infos = get_apio_test_testbenches_infos(
-            apio_env, test_params.testbench, synth_srcs, test_srcs
+            apio_env,
+            test_params,
+            synth_srcs,
+            test_srcs,
         )
 
         # -- Create compilation and simulation targets.

@@ -36,6 +36,7 @@ if (!`APIO_SIM) $fatal;
 apio sim                   # Simulate the default testbench.
 apio sim my_module_tb.v    # Simulate the specified testbench.
 apio sim my_module_tb.sv   # Simulate the specified testbench.
+apio sim util/led_tb.v     # Simulate a testbench in a sub-folder.
 apio sim --no-gtkwave      # Simulate but skip GTKWave.
 apio sim --detach          # Launch and forget gtkwave.
 ```

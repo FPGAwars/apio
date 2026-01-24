@@ -29,7 +29,7 @@ from SCons.Script.SConscript import SConsEnvironment
 from SCons.Node import NodeList
 from SCons.Node.Alias import Alias
 from apio.scons.apio_env import ApioEnv
-from apio.common.proto.apio_pb2 import SimParams
+from apio.common.proto.apio_pb2 import SimParams, ApioTestParams
 from apio.common.common_util import (
     PROJECT_BUILD_PATH,
     has_testbench_name,
@@ -496,7 +496,7 @@ def check_valid_testbench_name(testbench: str) -> None:
 
 def get_apio_sim_testbench_info(
     apio_env: ApioEnv,
-    testbench: str,
+    sim_params: SimParams,
     synth_srcs: List[str],
     test_srcs: List[str],
 ) -> TestbenchInfo:
@@ -507,10 +507,11 @@ def get_apio_sim_testbench_info(
 
     # -- Handle the testbench file selection. The end result is a single
     # -- testbench file name in testbench that we simulate, or a fatal error.
-    if testbench:
+    if sim_params.testbench_path:
         # -- Case 1 - Testbench file name is specified in the command or
         # -- apio.ini. Fatal error if invalid.
-        check_valid_testbench_name(testbench)
+        check_valid_testbench_name(sim_params.testbench_path)
+        testbench = sim_params.testbench_path
     elif len(test_srcs) == 0:
         # -- Case 2 Testbench name was not specified and no testbench files
         # -- were found in the project.
@@ -527,8 +528,8 @@ def get_apio_sim_testbench_info(
         # -- testbench files in the project.
         cerror("Multiple testbench files found in the project.")
         cout(
-            "Please specify the testbench file name in the command "
-            "or in apio.ini 'default-testbench' option.",
+            "Please specify the testbench file name in the command ",
+            "or specify the 'default-testbench' option in apio.ini.",
             style=INFO,
         )
         sys.exit(1)
@@ -546,7 +547,7 @@ def get_apio_sim_testbench_info(
 
 def get_apio_test_testbenches_infos(
     apio_env: ApioEnv,
-    testbench: str,
+    test_params: ApioTestParams,
     synth_srcs: List[str],
     test_srcs: list[str],
 ) -> List[TestbenchInfo]:
@@ -559,19 +560,35 @@ def get_apio_test_testbenches_infos(
 
     # -- Handle the testbench files selection. The end result is a list of one
     # -- or more testbench file names in testbenches that we test.
-    if testbench:
+    if test_params.testbench_path:
         # -- Case 1 - a testbench file name is specified in the command or
         # -- apio.ini. Fatal error if invalid.
-        check_valid_testbench_name(testbench)
-        testbenches = [testbench]
+        check_valid_testbench_name(test_params.testbench_path)
+        testbenches = [test_params.testbench_path]
     elif len(test_srcs) == 0:
         # -- Case 2 - Testbench file name was not specified and there are no
         # -- testbench files in the project.
         cerror("No testbench files found in the project.")
         cout(TESTBENCH_HINT, style=INFO)
         sys.exit(1)
+    elif test_params.default_option:
+        # -- Case 3: using --default option with no default testbench
+        # -- specified in apio.ini. If we have exacly one testbench that
+        # -- this is the default testbench, otherwise this is an error.
+        if len(test_srcs) == 1:
+            testbenches = [test_srcs[0]]
+        else:
+            cerror("Multiple testbench files found in the project.")
+            cout(
+                "To test only a single testbench, replace --default with the "
+                + "testbench",
+                "file path, or specify the 'default-testbench' "
+                + "option in apio.ini.",
+                style=INFO,
+            )
+            sys.exit(1)
     else:
-        # -- Case 3 - Testbench file name was not specified but there are one
+        # -- Case 4 - Testbench file name was not specified but there are one
         # -- or more testbench files in the project.
         testbenches = test_srcs
 

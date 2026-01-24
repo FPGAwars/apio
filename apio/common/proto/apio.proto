@@ -143,7 +143,7 @@ message GraphParams {
 message SimParams {
   // If not specified, scons will run if it finds a single testbench
   // file or exit with error if none or more than one.
-  optional string testbench = 1 [default = ""];
+  optional string testbench_path = 1 [default = ""];
 
   // Force rerun of simulation, even if not change from previous
   // run.
@@ -161,7 +161,10 @@ message SimParams {
 // confused pytest.
 message ApioTestParams {
   // If not specified, all the testbenches in the project are tested.
-  optional string testbench = 1 [ default = ""];
+  optional string testbench_path = 1 [ default = ""];
+
+  // If true, user specified the 'default' option.
+  required bool default_option = 2;
 }
 
 // Upload target specific params.

@@ -42,6 +42,7 @@ Example:[code]
   apio sim                   # Simulate the default testbench.
   apio sim my_module_tb.v    # Simulate the specified testbench.
   apio sim my_module_tb.sv   # Simulate the specified testbench.
+  apio sim util/led_tb.v     # Simulate a testbench in a sub-folder.
   apio sim --no-gtkwave      # Simulate but skip GTKWave.
   apio sim --detach          # Launch and forget gtkwave.[/code]
 
@@ -100,7 +101,12 @@ detach_option = click.option(
     help=APIO_SIM_HELP,
 )
 @click.pass_context
-@click.argument("testbench", nargs=1, required=False)
+@click.argument(
+    "testbench_path",
+    metavar="[TESTBENCH-PATH]",
+    nargs=1,
+    required=False,
+)
 @options.force_option_gen(short_help="Force simulation.")
 @options.env_option_gen()
 @no_gtkw_wave_option
@@ -109,7 +115,7 @@ detach_option = click.option(
 def cli(
     _: click.Context,
     # Arguments
-    testbench: str,
+    testbench_path: str,
     # Options
     force: bool,
     env: Optional[str],
@@ -137,16 +143,18 @@ def cli(
     scons = SConsManager(apio_ctx)
 
     # -- If testbench not given, try to get a default from apio.ini.
-    if not testbench:
+    if not testbench_path:
         # -- If the option is not specified, testbench is set to None and
         # -- we issue an error message in the scons process.
-        testbench = apio_ctx.project.get_str_option("default-testbench", None)
-        if testbench:
-            cout(f"Using default testbench: {testbench}", style=EMPH1)
+        testbench_path = apio_ctx.project.get_str_option(
+            "default-testbench", None
+        )
+        if testbench_path:
+            cout(f"Using default testbench: {testbench_path}", style=EMPH1)
 
     # -- Construct the scons sim params.
     sim_params = SimParams(
-        testbench=testbench,
+        testbench_path=testbench_path if testbench_path else None,
         force_sim=force,
         no_gtkwave=no_gtkwave,
         detach_gtkwave=detach,
