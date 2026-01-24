@@ -29,7 +29,7 @@ from SCons.Script.SConscript import SConsEnvironment
 from SCons.Node import NodeList
 from SCons.Node.Alias import Alias
 from apio.scons.apio_env import ApioEnv
-from apio.common.proto.apio_pb2 import SimParams
+from apio.common.proto.apio_pb2 import SimParams, ApioTestParams
 from apio.common.common_util import (
     PROJECT_BUILD_PATH,
     has_testbench_name,
@@ -330,8 +330,9 @@ def verilator_lint_action(
 
 
 @dataclass(frozen=True)
-class SimulationConfig:
-    """Simulation parameters, used by  sim and test commands."""
+class TestbenchInfo:
+    """Testbench simulation parameters, used by apio sim and apio test
+    commands."""
 
     testbench_path: str  # The relative testbench file path.
     build_testbench_name: str  # testbench_name prefixed by build dir.
@@ -400,9 +401,9 @@ def detached_action(api_env: ApioEnv, cmd: List[str]) -> Action:
 
 def gtkwave_target(
     api_env: ApioEnv,
-    target_name: str,  # 'sim'
+    target_name: str,  # always 'sim'
     vcd_file_target: NodeList,
-    sim_config: SimulationConfig,
+    testbench_info: TestbenchInfo,
     sim_params: SimParams,
 ) -> List[Alias]:
     """Construct a target to launch the QTWave signal viewer.
@@ -415,7 +416,7 @@ def gtkwave_target(
 
     # -- If needed, generate default .gtkw file to make sure the top level
     # -- signals are shown by default.
-    gtkw_path: str = sim_config.testbench_name + ".gtkw"
+    gtkw_path: str = testbench_info.testbench_name + ".gtkw"
     vcd_path = str(vcd_file_target[0])
 
     def create_default_gtkw_file(
@@ -425,7 +426,7 @@ def gtkwave_target(
         _ = (target, source, env)  # Unused.
         cout(f"Generating default {gtkw_path}")
         gtkwave_util.create_gtkwave_file(
-            sim_config.testbench_path, vcd_path, gtkw_path
+            testbench_info.testbench_path, vcd_path, gtkw_path
         )
 
     if gtkwave_util.is_user_gtkw_file(gtkw_path):
@@ -493,12 +494,12 @@ def check_valid_testbench_name(testbench: str) -> None:
         sys.exit(1)
 
 
-def get_sim_config(
+def get_apio_sim_testbench_info(
     apio_env: ApioEnv,
-    testbench: str,
+    sim_params: SimParams,
     synth_srcs: List[str],
     test_srcs: List[str],
-) -> SimulationConfig:
+) -> TestbenchInfo:
     """Returns a SimulationConfig for a sim command. 'testbench' is
     an optional testbench file name. 'synth_srcs' and 'test_srcs' are the
     all the project's synth and testbench files found in the project as
@@ -506,10 +507,11 @@ def get_sim_config(
 
     # -- Handle the testbench file selection. The end result is a single
     # -- testbench file name in testbench that we simulate, or a fatal error.
-    if testbench:
+    if sim_params.testbench_path:
         # -- Case 1 - Testbench file name is specified in the command or
         # -- apio.ini. Fatal error if invalid.
-        check_valid_testbench_name(testbench)
+        check_valid_testbench_name(sim_params.testbench_path)
+        testbench = sim_params.testbench_path
     elif len(test_srcs) == 0:
         # -- Case 2 Testbench name was not specified and no testbench files
         # -- were found in the project.
@@ -526,8 +528,8 @@ def get_sim_config(
         # -- testbench files in the project.
         cerror("Multiple testbench files found in the project.")
         cout(
-            "Please specify the testbench file name in the command "
-            "or in apio.ini 'default-testbench' option.",
+            "Please specify the testbench file name in the command ",
+            "or specify the 'default-testbench' option in apio.ini.",
             style=INFO,
         )
         sys.exit(1)
@@ -540,15 +542,15 @@ def get_sim_config(
     testbench_name = basename(testbench)
     build_testbench_name = str(apio_env.env_build_path / testbench_name)
     srcs = synth_srcs + [testbench]
-    return SimulationConfig(testbench, build_testbench_name, srcs)
+    return TestbenchInfo(testbench, build_testbench_name, srcs)
 
 
-def get_tests_configs(
+def get_apio_test_testbenches_infos(
     apio_env: ApioEnv,
-    testbench: str,
+    test_params: ApioTestParams,
     synth_srcs: List[str],
     test_srcs: list[str],
-) -> List[SimulationConfig]:
+) -> List[TestbenchInfo]:
     """Return a list of SimulationConfigs for each of the testbenches that
     need to be run for a 'apio test' command. If testbench is empty,
     all the testbenches in test_srcs will be tested. Otherwise, only the
@@ -558,19 +560,35 @@ def get_tests_configs(
 
     # -- Handle the testbench files selection. The end result is a list of one
     # -- or more testbench file names in testbenches that we test.
-    if testbench:
+    if test_params.testbench_path:
         # -- Case 1 - a testbench file name is specified in the command or
         # -- apio.ini. Fatal error if invalid.
-        check_valid_testbench_name(testbench)
-        testbenches = [testbench]
+        check_valid_testbench_name(test_params.testbench_path)
+        testbenches = [test_params.testbench_path]
     elif len(test_srcs) == 0:
         # -- Case 2 - Testbench file name was not specified and there are no
         # -- testbench files in the project.
         cerror("No testbench files found in the project.")
         cout(TESTBENCH_HINT, style=INFO)
         sys.exit(1)
+    elif test_params.default_option:
+        # -- Case 3: using --default option with no default testbench
+        # -- specified in apio.ini. If we have exacly one testbench that
+        # -- this is the default testbench, otherwise this is an error.
+        if len(test_srcs) == 1:
+            testbenches = [test_srcs[0]]
+        else:
+            cerror("Multiple testbench files found in the project.")
+            cout(
+                "To test only a single testbench, replace --default with the "
+                + "testbench",
+                "file path, or specify the 'default-testbench' "
+                + "option in apio.ini.",
+                style=INFO,
+            )
+            sys.exit(1)
     else:
-        # -- Case 3 - Testbench file name was not specified but there are one
+        # -- Case 4 - Testbench file name was not specified but there are one
         # -- or more testbench files in the project.
         testbenches = test_srcs
 
@@ -583,7 +601,7 @@ def get_tests_configs(
         testbench_name = basename(tb)
         build_testbench_name = str(apio_env.env_build_path / testbench_name)
         srcs = synth_srcs + [tb]
-        configs.append(SimulationConfig(tb, build_testbench_name, srcs))
+        configs.append(TestbenchInfo(tb, build_testbench_name, srcs))
 
     return configs
 

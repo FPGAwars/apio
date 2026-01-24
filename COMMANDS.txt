@@ -1101,7 +1101,7 @@ Options:
 
 apio sim
 
-Usage: apio sim [OPTIONS] [TESTBENCH]
+Usage: apio sim [OPTIONS] TESTBENCH-PATH
 
   The command 'apio sim' simulates the default or the specified
   testbench file and displays its simulation results in a graphical
@@ -1115,6 +1115,7 @@ Usage: apio sim [OPTIONS] [TESTBENCH]
     apio sim                   # Simulate the default testbench.
     apio sim my_module_tb.v    # Simulate the specified testbench.
     apio sim my_module_tb.sv   # Simulate the specified testbench.
+    apio sim util/led_tb.v     # Simulate a testbench in a sub-folder.
     apio sim --no-gtkwave      # Simulate but skip GTKWave.
     apio sim --detach          # Launch and forget gtkwave.
 
@@ -1161,7 +1162,7 @@ Options:
 
 apio test
 
-Usage: apio test [OPTIONS] [TESTBENCH_FILE]
+Usage: apio test [OPTIONS] TESTBENCH-PATH
 
   The command 'apio test' simulates one or all the testbenches in the
   project and is useful for automated testing of your design.
@@ -1170,16 +1171,24 @@ Usage: apio test [OPTIONS] [TESTBENCH_FILE]
   error is detected.
 
   Examples:
-    apio test                 # Run all *_tb.v testbenches.
-    apio test my_module_tb.v  # Run a single testbench.
+    apio test                  # Run all *_tb.v and *_tb.sv testbenches.
+    apio test my_module_tb.v   # Run a single testbench.
+    apio test my_module_tb.sv  # Run a single System Verilog testbench.
+    apio test util/led_tb.v    # Run a testbench in a sub-folder.
+    apio test --default        # Run only the default testbench.
 
   [NOTE] Testbench specification is always the testbench file path
   relative to the project directory, even if using the '--project-dir'
   option.
 
-  [IMPORTANT] Avoid using the Verilog '$dumpfile()' function in your
+  [IMPORTANT] Do not use the Verilog '$dumpfile()' function in your
   testbenches, as this may override the default name and location Apio
   sets for the generated .vcd file.
+
+  The default testbench is the same that is used by the 'apio sim'
+  command which is the one specified in 'apio.ini' using the
+  'default-testbench' option, or the only testbench, if the project
+  contains exactly one testbnech.
 
   For a sample testbench compatible with Apio features, see:
   https://github.com/FPGAwars/apio-examples/tree/master/upduino31/testbe
@@ -1189,6 +1198,7 @@ Usage: apio test [OPTIONS] [TESTBENCH_FILE]
   signals, refer to the 'apio sim' command.
 
 Options:
+  -d, --default           Test only the default testbench
   -e, --env name          Set the apio.ini env.
   -p, --project-dir path  Set the root directory for the project.
   -h, --help              Show this message and exit.

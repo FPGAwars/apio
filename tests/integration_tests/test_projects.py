@@ -167,6 +167,22 @@ def _test_project(
         assert not (sb.proj_dir / f"_build/default/{testbench}.out").exists()
         assert not (sb.proj_dir / f"_build/default/{testbench}.vcd").exists()
 
+        # -- 'apio test --default'
+        args = ["test", "--default"] + proj_arg
+        result = sb.invoke_apio_cmd(apio, args)
+        sb.assert_result_ok(result)
+        assert "SUCCESS" in result.output
+        assert getsize(sb.proj_dir / f"_build/default/{testbench}.out")
+        assert getsize(sb.proj_dir / f"_build/default/{testbench}.vcd")
+
+        # -- 'apio clean'
+        args = ["clean"] + proj_arg
+        result = sb.invoke_apio_cmd(apio, args)
+        sb.assert_result_ok(result)
+        assert "Cleanup completed" in result.output
+        assert not (sb.proj_dir / f"_build/default/{testbench}.out").exists()
+        assert not (sb.proj_dir / f"_build/default/{testbench}.vcd").exists()
+
         # -- 'apio sim --no-gtkwave'
         args = ["sim", "--no-gtkwave"] + proj_arg
         result = sb.invoke_apio_cmd(apio, args)
