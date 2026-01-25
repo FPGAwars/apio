@@ -38,7 +38,7 @@
         "name": "tools-oss-cad-suite"
       },
       "release": {
-        "tag": "2025-12-26",
+        "tag": "2026-01-25",
         "package": "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
