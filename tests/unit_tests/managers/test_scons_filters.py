@@ -4,7 +4,7 @@ Tests of scons_filters.py
 
 from apio.managers.scons_filter import PnrRangeDetector, PipeId
 
-# TODO: Add more tests.
+# TODO: Add testing of on_line() including line coloring and line ignoring.
 
 
 def test_pnr_range_detector():

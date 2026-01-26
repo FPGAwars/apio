@@ -17,7 +17,7 @@ from apio.utils import util
 
 
 # -- A table with line coloring rules. If a line matches any regex, it gets
-# -- The style of the first regex it matches.
+# -- The style of the first regex it matches. Patterns are case insensitive.
 LINE_COLORING_TABLE = [
     # -- Info patterns
     (r"^info:", INFO),
@@ -37,6 +37,13 @@ LINE_COLORING_TABLE = [
     (r"[$]finish called", SUCCESS),
     (r"^verify ok$", SUCCESS),
     (r"^done$", SUCCESS),
+]
+
+# -- Lines that contain a substring that match any of these regex's are
+# -- ignored. Regexs are case insensitive.
+LINE_IGNORE_LIST = [
+    # -- Per https://github.com/fpgawars/apio/issues/824
+    # r"Warning: define gw1n not used in the library",
 ]
 
 
@@ -257,6 +264,12 @@ class SconsFilter:
 
         # -- Update the range detectors.
         in_pnr_verbose_range = self._pnr_detector.update(pipe_id, line)
+
+        # -- If the line match any of the ignore patterns ignore it.
+        for regex in LINE_IGNORE_LIST:
+            if re.search(regex, line, re.IGNORECASE):
+                self._ignore_line(line)
+                return
 
         # -- Remove the 'Info: ' prefix. Nextpnr write a long log where
         # -- each line starts with "Info: "
