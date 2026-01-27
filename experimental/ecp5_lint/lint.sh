@@ -14,9 +14,9 @@ OSS_CAD_SUITE="${VIRTUAL_ENV}"
 
 echo "Running verilator"
 
-#verilator_bin --lint-only --bbox-unsup --timing -Wno-TIMESCALEMOD -Wno-MULTITOP _fixed_new_cells_bb.v
+verilator_bin --lint-only --bbox-unsup --timing -Wno-TIMESCALEMOD -Wno-MULTITOP _fixed_new_cells_bb.v
 
-verilator_bin --lint-only --bbox-unsup --timing -Wno-TIMESCALEMOD -Wno-MULTITOP old_cells_bb.v
+#verilator_bin --lint-only --bbox-unsup --timing -Wno-TIMESCALEMOD -Wno-MULTITOP old_cells_bb.v
 
 echo "Exit code = $?"
 
