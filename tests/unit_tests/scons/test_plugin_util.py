@@ -217,7 +217,12 @@ def test_make_verilator_config_builder(apio_runner: ApioRunner):
         apio_env = make_test_apio_env()
 
         # -- Call the tested method to create a builder.
-        builder = make_verilator_config_builder(sb.packages_dir)
+        builder = make_verilator_config_builder(
+            sb.packages_dir,
+            rules_to_supress=[
+                "SPECIFYIGN",
+            ],
+        )
 
         # -- Verify builder suffixes.
         assert builder.suffix == ".vlt"

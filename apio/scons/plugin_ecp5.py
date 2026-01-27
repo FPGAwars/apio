@@ -180,7 +180,10 @@ class PluginEcp5(PluginBase):
         assert self.apio_env.targeting_one_of("lint")
 
         # -- Make the builder.
-        return make_verilator_config_builder(self.yosys_lib_dir)
+        return make_verilator_config_builder(
+            self.yosys_lib_dir,
+            rules_to_supress=[],
+        )
 
     # @overrides
     def lint_builder(self) -> BuilderBase:
