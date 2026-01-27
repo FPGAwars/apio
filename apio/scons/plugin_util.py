@@ -893,9 +893,14 @@ def basename(file_name: str) -> str:
     return result
 
 
-def make_verilator_config_builder(lib_path: Path):
+def make_verilator_config_builder(
+    lib_path: Path, rules_to_supress: List[str]
+) -> Builder:
     """Create a scons Builder that writes a verilator config file
-    (hardware.vlt) that suppresses warnings in the lib directory."""
+    (hardware.vlt) that suppresses warnings in the lib directory.
+    Rules_to_supress is a list of Verilator rules that should be supressed
+    for the given lib_path.
+    """
     assert isinstance(lib_path, Path), lib_path
 
     # -- Construct a glob of all library files.
@@ -907,15 +912,7 @@ def make_verilator_config_builder(lib_path: Path):
     # -- Generate the files lines.  We suppress a union of all the errors we
     # -- encountered in all the architectures.
     lines = ["`verilator_config"]
-    for rule in [
-        "COMBDLY",
-        "WIDTHEXPAND",
-        "SPECIFYIGN",
-        "PINMISSING",
-        "ASSIGNIN",
-        "WIDTHTRUNC",
-        "INITIALDLY",
-    ]:
+    for rule in rules_to_supress:
         lines.append(f'lint_off -rule {rule}  -file "{glob_str}"')
 
     # -- Join the lines into text.

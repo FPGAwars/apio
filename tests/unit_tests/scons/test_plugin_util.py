@@ -217,7 +217,12 @@ def test_make_verilator_config_builder(apio_runner: ApioRunner):
         apio_env = make_test_apio_env()
 
         # -- Call the tested method to create a builder.
-        builder = make_verilator_config_builder(sb.packages_dir)
+        builder = make_verilator_config_builder(
+            sb.packages_dir,
+            rules_to_supress=[
+                "SPECIFYIGN",
+            ],
+        )
 
         # -- Verify builder suffixes.
         assert builder.suffix == ".vlt"
@@ -234,7 +239,7 @@ def test_make_verilator_config_builder(apio_runner: ApioRunner):
         # -- Verify that the file was created with the given text.
         text = sb.read_file("hardware.vlt")
         assert "verilator_config" in text, text
-        assert "lint_off -rule COMBDLY" in text, text
+        assert "lint_off -rule SPECIFYIGN" in text, text
 
 
 def test_verilator_lint_action_min(apio_runner: ApioRunner):

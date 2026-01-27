@@ -40,7 +40,8 @@ class PluginGowin(PluginBase):
         # -- Cache values.
         yosys_path = Path(apio_env.params.environment.yosys_path)
         self.yosys_lib_dir = yosys_path / "gowin"
-        self.yosys_lib_file = yosys_path / "gowin" / "cells_sim.v"
+        self.sim_lib_files = [yosys_path / "gowin" / "cells_sim.v"]
+        self.lint_lib_files = self.sim_lib_files
 
     def plugin_info(self) -> ArchPluginInfo:
         """Return plugin specific parameters."""
@@ -153,7 +154,7 @@ class PluginGowin(PluginBase):
                     vcd_output_name=testbench_name,
                     is_interactive=apio_env.targeting_one_of("sim"),
                     lib_dirs=[self.yosys_lib_dir],
-                    lib_files=[self.yosys_lib_file],
+                    lib_files=self.sim_lib_files,
                 ),
             ]
             return action
@@ -175,7 +176,12 @@ class PluginGowin(PluginBase):
         assert self.apio_env.targeting_one_of("lint")
 
         # -- Make the builder.
-        return make_verilator_config_builder(self.yosys_lib_dir)
+        return make_verilator_config_builder(
+            self.yosys_lib_dir,
+            rules_to_supress=[
+                "SPECIFYIGN",
+            ],
+        )
 
     # @overrides
     def lint_builder(self) -> BuilderBase:
@@ -185,7 +191,7 @@ class PluginGowin(PluginBase):
             action=verilator_lint_action(
                 self.apio_env,
                 lib_dirs=[self.yosys_lib_dir],
-                lib_files=[self.yosys_lib_file],
+                lib_files=self.lint_lib_files,
             ),
             src_suffix=SRC_SUFFIXES,
             source_scanner=self.verilog_src_scanner,
