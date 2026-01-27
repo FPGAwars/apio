@@ -40,7 +40,8 @@ class PluginIce40(PluginBase):
         # -- Cache values.
         yosys_path = Path(apio_env.params.environment.yosys_path)
         self.yosys_lib_dir = yosys_path / "ice40"
-        self.yosys_lib_file = yosys_path / "ice40" / "cells_sim.v"
+        self.sim_lib_files = [yosys_path / "ice40" / "cells_sim.v"]
+        self.lint_lib_files = self.sim_lib_files
 
     def plugin_info(self) -> ArchPluginInfo:
         """Return plugin specific parameters."""
@@ -150,7 +151,7 @@ class PluginIce40(PluginBase):
                     is_interactive=apio_env.targeting_one_of("sim"),
                     extra_params=["-DNO_ICE40_DEFAULT_ASSIGNMENTS"],
                     lib_dirs=[self.yosys_lib_dir],
-                    lib_files=[self.yosys_lib_file],
+                    lib_files=self.sim_lib_files,
                 ),
             ]
             return action
@@ -183,7 +184,7 @@ class PluginIce40(PluginBase):
                 self.apio_env,
                 extra_params=["-DNO_ICE40_DEFAULT_ASSIGNMENTS"],
                 lib_dirs=[self.yosys_lib_dir],
-                lib_files=[self.yosys_lib_file],
+                lib_files=self.lint_lib_files,
             ),
             src_suffix=SRC_SUFFIXES,
             source_scanner=self.verilog_src_scanner,

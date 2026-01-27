@@ -234,7 +234,7 @@ def test_make_verilator_config_builder(apio_runner: ApioRunner):
         # -- Verify that the file was created with the given text.
         text = sb.read_file("hardware.vlt")
         assert "verilator_config" in text, text
-        assert "lint_off -rule COMBDLY" in text, text
+        assert "lint_off -rule SPECIFYIGN" in text, text
 
 
 def test_verilator_lint_action_min(apio_runner: ApioRunner):

@@ -43,9 +43,9 @@ class PluginEcp5(PluginBase):
 
         self.database_path = trellis_path / "database"
         self.yosys_lib_dir = yosys_path / "ecp5"
-        self.yosys_lib_file = yosys_path / "ecp5" / "cells_sim.v"
+        self.sim_lib_files = [yosys_path / "ecp5" / "cells_sim.v"]
         # -- For black-box cells such as EHXPLLL PLL.
-        self.yosys_bb_lib_file = yosys_path / "ecp5" / "cells_bb.v"
+        self.lint_lib_files = [yosys_path / "ecp5" / "cells_bb.v"]
 
     def plugin_info(self) -> ArchPluginInfo:
         """Return plugin specific parameters."""
@@ -158,7 +158,7 @@ class PluginEcp5(PluginBase):
                     vcd_output_name=testbench_name,
                     is_interactive=apio_env.targeting_one_of("sim"),
                     lib_dirs=[self.yosys_lib_dir],
-                    lib_files=[self.yosys_lib_file],
+                    lib_files=self.sim_lib_files,
                 ),
             ]
             return action
@@ -190,7 +190,7 @@ class PluginEcp5(PluginBase):
             action=verilator_lint_action(
                 self.apio_env,
                 lib_dirs=[self.yosys_lib_dir],
-                lib_files=[self.yosys_lib_file, self.yosys_bb_lib_file],
+                lib_files=self.lint_lib_files,
             ),
             src_suffix=SRC_SUFFIXES,
             source_scanner=self.verilog_src_scanner,

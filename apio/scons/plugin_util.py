@@ -908,13 +908,13 @@ def make_verilator_config_builder(lib_path: Path):
     # -- encountered in all the architectures.
     lines = ["`verilator_config"]
     for rule in [
-        "COMBDLY",
-        "WIDTHEXPAND",
         "SPECIFYIGN",
-        "PINMISSING",
-        "ASSIGNIN",
-        "WIDTHTRUNC",
-        "INITIALDLY",
+        # "COMBDLY",
+        # "WIDTHEXPAND",
+        # "PINMISSING",
+        # "ASSIGNIN",
+        # "WIDTHTRUNC",
+        # "INITIALDLY",
     ]:
         lines.append(f'lint_off -rule {rule}  -file "{glob_str}"')
 
