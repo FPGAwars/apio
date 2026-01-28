@@ -64,6 +64,7 @@ nav:
   - Apio Projects:
       - Project structure: project-structure.md
       - Project file apio.ini: project-file.md
+      - Apio macros: apio-macros.md
       - Using System Verilog: using-system-verilog.md
   - FPGA Boards:
       - Supported boards: supported-boards.md
