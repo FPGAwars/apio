@@ -926,8 +926,14 @@ Usage: apio lint [OPTIONS]
     apio lint
     apio lint -t my_module
     apio lint --all
+    apio lint --nosynth
+
+  By default, 'apio lint' injects the 'SYNTHESIS' macro to lint the
+  synthesizable portion of the design. To lint code that is hidden by
+  'SYNTHESIS', use the '--nosynth' option.
 
 Options:
+  --nosynth               Do not inject the SUNTHESIS macro.
   --nostyle               Disable all style warnings.
   --nowarn nowarn         Disable specific warning(s).
   --warn warn             Enable specific warning(s).
@@ -1101,7 +1107,7 @@ Options:
 
 apio sim
 
-Usage: apio sim [OPTIONS] TESTBENCH-PATH
+Usage: apio sim [OPTIONS] [TESTBENCH-PATH]
 
   The command 'apio sim' simulates the default or the specified
   testbench file and displays its simulation results in a graphical
@@ -1162,7 +1168,7 @@ Options:
 
 apio test
 
-Usage: apio test [OPTIONS] TESTBENCH-PATH
+Usage: apio test [OPTIONS] [TESTBENCH-PATH]
 
   The command 'apio test' simulates one or all the testbenches in the
   project and is useful for automated testing of your design.

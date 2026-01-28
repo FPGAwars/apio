@@ -14,6 +14,10 @@ apio lint -t my_module   # Lint only 'my_module' and its dependencies
 apio lint --all          # Enable all warnings, including style warnings
 ```
 
+By default, `apio lint` injects the `SYNTHESIS` macro to lint the
+synthesizable portion of the design. To lint code that is hidden by
+`SYNTHESIS`, use the `--nosynth option`.
+
 <h3>Options</h3>
 
 ```

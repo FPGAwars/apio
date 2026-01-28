@@ -311,9 +311,10 @@ def verilator_lint_action(
     # -- Construct the action
     action = (
         "verilator_bin --lint-only --quiet --bbox-unsup --timing "
-        "-Wno-TIMESCALEMOD -Wno-MULTITOP -DSYNTHESIZE -DAPIO_SIM=0 "
-        "{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} $SOURCES"
+        "-Wno-TIMESCALEMOD -Wno-MULTITOP {0} -DAPIO_SIM=0 "
+        "{1} {2} {3} {4} {5} {6} {7} {8} {9} {10} $SOURCES"
     ).format(
+        "" if lint_params.nosynth else "-DSYNTHESIZE",
         "-Wall" if lint_params.verilator_all else "",
         "-Wno-style" if lint_params.verilator_no_style else "",
         map_params(lint_params.verilator_no_warns, "-Wno-{}"),
