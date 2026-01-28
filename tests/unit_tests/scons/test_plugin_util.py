@@ -270,7 +270,8 @@ def test_verilator_lint_action_min(apio_runner: ApioRunner):
         # -- Verify the string
         assert (
             "verilator_bin --lint-only --quiet --bbox-unsup --timing "
-            "-Wno-TIMESCALEMOD -Wno-MULTITOP -DAPIO_SIM=0 --top-module main "
+            "-Wno-TIMESCALEMOD -Wno-MULTITOP -DSYNTHESIZE -DAPIO_SIM=0 "
+            "--top-module main "
             f"_build{os.sep}default{os.sep}hardware.vlt $SOURCES"
             == normalized_cmd
         )
@@ -315,9 +316,9 @@ def test_verilator_lint_action_max(apio_runner: ApioRunner):
         # -- Verify the string
         assert (
             "verilator_bin --lint-only --quiet --bbox-unsup --timing "
-            "-Wno-TIMESCALEMOD -Wno-MULTITOP -DAPIO_SIM=0 -Wall -Wno-style "
-            "-Wno-aa -Wno-bb -Wwarn-cc -Wwarn-dd --top-module my_top_module "
-            'param1 param2 -I"dir1" -I"dir2" '
+            "-Wno-TIMESCALEMOD -Wno-MULTITOP -DSYNTHESIZE -DAPIO_SIM=0 -Wall "
+            "-Wno-style -Wno-aa -Wno-bb -Wwarn-cc -Wwarn-dd --top-module "
+            'my_top_module param1 param2 -I"dir1" -I"dir2" '
             f"_build{os.sep}default{os.sep}hardware.vlt "
             '"file1" "file2" $SOURCES' == normalized_cmd
         )

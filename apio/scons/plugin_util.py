@@ -311,7 +311,7 @@ def verilator_lint_action(
     # -- Construct the action
     action = (
         "verilator_bin --lint-only --quiet --bbox-unsup --timing "
-        "-Wno-TIMESCALEMOD -Wno-MULTITOP -DAPIO_SIM=0 "
+        "-Wno-TIMESCALEMOD -Wno-MULTITOP -DSYNTHESIZE -DAPIO_SIM=0 "
         "{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} $SOURCES"
     ).format(
         "-Wall" if lint_params.verilator_all else "",

@@ -105,10 +105,12 @@ def _test_project(
         sb.assert_result_ok(result)
         assert "SUCCESS" in result.output
         assert "yosys -p" in result.output
+        assert "-DSYNTHESIZE" in result.output
+        assert "-DAPIO_SIM" not in result.output
 
         assert getsize(sb.proj_dir / "_build/default" / bitstream)
 
-        # -- 'apio build' (no change)
+        # -- 'apio build' (no change, yosys is not invoked)
         args = ["build"] + proj_arg
         result = sb.invoke_apio_cmd(apio, args)
         sb.assert_result_ok(result)
@@ -129,18 +131,24 @@ def _test_project(
         sb.assert_result_ok(result)
         assert "SUCCESS" in result.output
         assert "yosys -p" in result.output
+        assert "-DSYNTHESIZE" in result.output
+        assert "-DAPIO_SIM" not in result.output
 
         # -- 'apio lint'
         args = ["lint"] + proj_arg
         result = sb.invoke_apio_cmd(apio, args)
         sb.assert_result_ok(result)
         assert "SUCCESS" in result.output
+        assert "-DSYNTHESIZE" in result.output
+        assert "-DAPIO_SIM=0" in result.output
         assert getsize(sb.proj_dir / "_build/default/hardware.vlt")
 
         # -- 'apio format'
         args = ["format"] + proj_arg
         result = sb.invoke_apio_cmd(apio, args)
         sb.assert_result_ok(result)
+        assert "-DSYNTHESIZE" not in result.output
+        assert "-DAPIO_SIM" not in result.output
 
         # -- 'apio format <testbench-file>'
         # -- This tests the project relative specification even when
@@ -158,6 +166,8 @@ def _test_project(
         assert getsize(sb.proj_dir / f"_build/default/{testbench}.vcd")
         # -- For issue https://github.com/FPGAwars/apio/issues/557
         assert "warning: Timing checks are not supported" not in result.output
+        assert "-DSYNTHESIZE" not in result.output
+        assert "-DAPIO_SIM=0" in result.output
 
         # -- 'apio clean'
         args = ["clean"] + proj_arg
@@ -172,6 +182,7 @@ def _test_project(
         result = sb.invoke_apio_cmd(apio, args)
         sb.assert_result_ok(result)
         assert "SUCCESS" in result.output
+        assert "-DAPIO_SIM=0" in result.output
         assert getsize(sb.proj_dir / f"_build/default/{testbench}.out")
         assert getsize(sb.proj_dir / f"_build/default/{testbench}.vcd")
 
@@ -192,6 +203,8 @@ def _test_project(
         assert getsize(sb.proj_dir / f"_build/default/{testbench}.vcd")
         # -- For issue https://github.com/FPGAwars/apio/issues/557
         assert "warning: Timing checks are not supported" not in result.output
+        assert "-DSYNTHESIZE" not in result.output
+        assert "-DAPIO_SIM=1" in result.output
 
         # -- 'apio clean'
         args = ["clean"] + proj_arg
@@ -234,6 +247,8 @@ def _test_project(
         result = sb.invoke_apio_cmd(apio, args)
         sb.assert_result_ok(result)
         assert "SUCCESS" in result.output
+        assert "-DSYNTHESIZE" in result.output
+        assert "-DAPIO_SIM" not in result.output
         assert report_item in result.output
         assert "─────┐" in result.output  # Graphical table border
         assert getsize(sb.proj_dir / "_build/default/hardware.pnr")
@@ -243,6 +258,8 @@ def _test_project(
         result = sb.invoke_apio_cmd(apio, args)
         sb.assert_result_ok(result)
         assert "SUCCESS" in result.output
+        assert "-DSYNTHESIZE" in result.output
+        assert "-DAPIO_SIM" not in result.output
         assert getsize(sb.proj_dir / "_build/default/graph.dot")
         assert getsize(sb.proj_dir / "_build/default/graph.svg")
 
