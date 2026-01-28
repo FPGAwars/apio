@@ -33,6 +33,14 @@ nosynth_option = click.option(
     cls=cmd_util.ApioOption,
 )
 
+novlt_option = click.option(
+    "novlt",  # Var name
+    "--novlt",
+    is_flag=True,
+    help="Disable warning suppression .vlt file.",
+    cls=cmd_util.ApioOption,
+)
+
 nostyle_option = click.option(
     "nostyle",  # Var name
     "--nostyle",
@@ -71,7 +79,8 @@ Examples:[code]
   apio lint
   apio lint -t my_module
   apio lint --all
-  apio lint --nosynth[/code]
+  apio lint --nosynth
+  apio lint --novlt[/code]
 
 By default, 'apio lint' injects the 'SYNTHESIS' macro to lint the \
 synthesizable portion of the design. To lint code that is hidden by \
@@ -87,6 +96,7 @@ synthesizable portion of the design. To lint code that is hidden by \
 )
 @click.pass_context
 @nosynth_option
+@novlt_option
 @nostyle_option
 @nowarn_option
 @warn_option
@@ -102,6 +112,7 @@ def cli(
     _: click.Context,
     # Options
     nosynth: bool,
+    novlt: bool,
     nostyle: bool,
     nowarn: str,
     warn: str,
@@ -139,6 +150,7 @@ def cli(
         verilator_no_warns=no_warns_list,
         verilator_warns=warns_list,
         nosynth=nosynth,
+        novlt=novlt,
     )
 
     assert lint_params.IsInitialized(), lint_params

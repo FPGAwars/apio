@@ -323,7 +323,7 @@ def verilator_lint_action(
         get_define_flags(apio_env),
         map_params(extra_params, "{}"),
         map_params(lib_dirs, '-I"{}"'),
-        apio_env.target + ".vlt",
+        "" if lint_params.novlt else apio_env.target + ".vlt",
         map_params(lib_files, '"{}"'),
     )
 

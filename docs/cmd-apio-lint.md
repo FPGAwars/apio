@@ -12,6 +12,8 @@ The `apio lint` command checks the project's source files for errors, inconsiste
 apio lint                # Lint the entire design
 apio lint -t my_module   # Lint only 'my_module' and its dependencies
 apio lint --all          # Enable all warnings, including style warnings
+apio lint --nosynth      # Do not define the SYNTHESIS macro.
+apio lint --novlt        # Disable the .vlt rule supression file.
 ```
 
 By default, `apio lint` injects the `SYNTHESIS` macro to lint the
@@ -21,6 +23,8 @@ synthesizable portion of the design. To lint code that is hidden by
 <h3>Options</h3>
 
 ```
+--nosynth               Do not inject the SUNTHESIS macro.
+--novlt                 Disable warning suppression .vlt file.
 --nostyle               Disable all style warnings
 --nowarn nowarn         Disable specific warning(s)
 --warn warn             Enable specific warning(s)
