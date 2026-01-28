@@ -19,8 +19,6 @@ Apio handles Verilog marcros in two ways
 | `apio test`           |     0      |             |
 | `apio sim`            |     1      |             |
 
-\
-
 ### APIO_SIM macro
 
 This macro is intended for use in testbenches to distinguish between
