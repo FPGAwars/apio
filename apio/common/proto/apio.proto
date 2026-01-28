@@ -123,6 +123,7 @@ message LintParams {
   repeated string verilator_no_warns = 4;
   repeated string verilator_warns = 5;
   optional bool nosynth = 6 [default = false];
+  optional bool novlt = 7 [default = false];
 }
 
 // Graph target specific params.

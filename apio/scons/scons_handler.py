@@ -270,14 +270,23 @@ class SconsHandler:
         assert apio_env.targeting_one_of("lint")
         assert params.target.HasField("lint")
 
-        # -- Create the builder and target of the config file creation.
-        apio_env.builder(LINT_CONFIG_BUILDER, plugin.lint_config_builder())
+        # -- Get lint params proto.
+        lint_params = params.target.lint
 
-        lint_config_target = apio_env.builder_target(
-            builder_id=LINT_CONFIG_BUILDER,
-            target=apio_env.target,
-            sources=[],
-        )
+        # -- Create the builder and target of the config file creation.
+        extra_dependencies = []
+
+        if not lint_params.novlt:
+            # -- The auto generated verilator config file with supression
+            # -- of some librariy warnings is enable.
+            apio_env.builder(LINT_CONFIG_BUILDER, plugin.lint_config_builder())
+
+            lint_config_target = apio_env.builder_target(
+                builder_id=LINT_CONFIG_BUILDER,
+                target=apio_env.target,
+                sources=[],
+            )
+            extra_dependencies.append(lint_config_target)
 
         # -- Create the builder and target the lint operation.
         apio_env.builder(LINT_BUILDER, plugin.lint_builder())
@@ -286,7 +295,7 @@ class SconsHandler:
             builder_id=LINT_BUILDER,
             target=apio_env.target,
             sources=synth_srcs + test_srcs,
-            extra_dependencies=[lint_config_target],
+            extra_dependencies=extra_dependencies,
         )
 
         # -- Create the top level "lint" target.

@@ -323,7 +323,7 @@ def verilator_lint_action(
         get_define_flags(apio_env),
         map_params(extra_params, "{}"),
         map_params(lib_dirs, '-I"{}"'),
-        apio_env.target + ".vlt",
+        "" if lint_params.novlt else apio_env.target + ".vlt",
         map_params(lib_files, '"{}"'),
     )
 
@@ -755,6 +755,9 @@ def _maybe_print_pnr_clocks_report(
     for clk_net, vals in clocks.items():
         # -- Extract clock name from the net name.
         clk_signal = clk_net.split("$")[clk_name_index]
+        # -- Remove trailing '_'. Otherwise, on alhambra-ii/pll example, the
+        # -- internal clock 'sys_clk' is reported as 'sys_clk_'.
+        clk_signal = clk_signal.rstrip("_")
         # -- Extract speed
         max_mhz = vals["achieved"]
         # -- Add row.
@@ -807,6 +810,7 @@ def report_action(clk_name_index: int, verbose: bool) -> FunctionAction:
         friendly way."""
         _ = (target, env)  # Unused
         json_file: File = source[0]
+        print(f"{str(json_file)=}")
         json_txt: str = json_file.get_text_contents()
         _print_pnr_report(json_txt, clk_name_index, verbose)
 

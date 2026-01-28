@@ -132,20 +132,22 @@ class ApioEnvParams(_message.Message):
     def __init__(self, env_name: _Optional[str] = ..., board_id: _Optional[str] = ..., top_module: _Optional[str] = ..., defines: _Optional[_Iterable[str]] = ..., yosys_synth_extra_options: _Optional[_Iterable[str]] = ..., nextpnr_extra_options: _Optional[_Iterable[str]] = ..., constraint_file: _Optional[str] = ...) -> None: ...
 
 class LintParams(_message.Message):
-    __slots__ = ("top_module", "verilator_all", "verilator_no_style", "verilator_no_warns", "verilator_warns", "nosynth")
+    __slots__ = ("top_module", "verilator_all", "verilator_no_style", "verilator_no_warns", "verilator_warns", "nosynth", "novlt")
     TOP_MODULE_FIELD_NUMBER: _ClassVar[int]
     VERILATOR_ALL_FIELD_NUMBER: _ClassVar[int]
     VERILATOR_NO_STYLE_FIELD_NUMBER: _ClassVar[int]
     VERILATOR_NO_WARNS_FIELD_NUMBER: _ClassVar[int]
     VERILATOR_WARNS_FIELD_NUMBER: _ClassVar[int]
     NOSYNTH_FIELD_NUMBER: _ClassVar[int]
+    NOVLT_FIELD_NUMBER: _ClassVar[int]
     top_module: str
     verilator_all: bool
     verilator_no_style: bool
     verilator_no_warns: _containers.RepeatedScalarFieldContainer[str]
     verilator_warns: _containers.RepeatedScalarFieldContainer[str]
     nosynth: bool
-    def __init__(self, top_module: _Optional[str] = ..., verilator_all: bool = ..., verilator_no_style: bool = ..., verilator_no_warns: _Optional[_Iterable[str]] = ..., verilator_warns: _Optional[_Iterable[str]] = ..., nosynth: bool = ...) -> None: ...
+    novlt: bool
+    def __init__(self, top_module: _Optional[str] = ..., verilator_all: bool = ..., verilator_no_style: bool = ..., verilator_no_warns: _Optional[_Iterable[str]] = ..., verilator_warns: _Optional[_Iterable[str]] = ..., nosynth: bool = ..., novlt: bool = ...) -> None: ...
 
 class GraphParams(_message.Message):
     __slots__ = ("output_type", "top_module", "open_viewer")
