@@ -25,6 +25,13 @@ from apio.common.proto.apio_pb2 import LintParams
 
 # ------- apio lint
 
+nosynth_option = click.option(
+    "nosynth",  # Var name
+    "--nosynth",
+    is_flag=True,
+    help="Do not inject the SUNTHESIS macro.",
+    cls=cmd_util.ApioOption,
+)
 
 nostyle_option = click.option(
     "nostyle",  # Var name
@@ -63,7 +70,12 @@ which is included with the standard Apio installation.
 Examples:[code]
   apio lint
   apio lint -t my_module
-  apio lint --all[/code]
+  apio lint --all
+  apio lint --nosynth[/code]
+
+By default, 'apio lint' injects the 'SYNTHESIS' macro to lint the \
+synthesizable portion of the design. To lint code that is hidden by \
+'SYNTHESIS', use the '--nosynth' option.
 """
 
 
@@ -74,6 +86,7 @@ Examples:[code]
     help=APIO_LINT_HELP,
 )
 @click.pass_context
+@nosynth_option
 @nostyle_option
 @nowarn_option
 @warn_option
@@ -88,6 +101,7 @@ Examples:[code]
 def cli(
     _: click.Context,
     # Options
+    nosynth: bool,
     nostyle: bool,
     nowarn: str,
     warn: str,
@@ -124,6 +138,7 @@ def cli(
         verilator_no_style=nostyle,
         verilator_no_warns=no_warns_list,
         verilator_warns=warns_list,
+        nosynth=nosynth,
     )
 
     assert lint_params.IsInitialized(), lint_params

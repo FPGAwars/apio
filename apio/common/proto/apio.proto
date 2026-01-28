@@ -122,6 +122,7 @@ message LintParams {
   optional bool verilator_no_style = 3 [default = false];
   repeated string verilator_no_warns = 4;
   repeated string verilator_warns = 5;
+  optional bool nosynth = 6 [default = false];
 }
 
 // Graph target specific params.
