@@ -8,15 +8,16 @@ Apio handles Verilog marcros in two ways
 2. Automatic macros that are defined by the various apio commands as described
    below.
 
-| Command       | \`APIO_SIM | \`SYNTHESIS |
-| :------------ | :--------: | :---------: |
-| `apio build`  |            |   defined   |
-| `apio lint`   |     0      |   defined   |
-| `apio graph`  |            |   defined   |
-| `apio report` |            |   defined   |
-| `apio format` |            |             |
-| `apio test`   |     0      |             |
-| `apio sim`    |     1      |             |
+| Command               | \`APIO_SIM | \`SYNTHESIS |
+| :-------------------- | :--------: | :---------: |
+| `apio build`          |            |   defined   |
+| `apio lint`           |     0      |   defined   |
+| `apio lint --nosynth` |     0      |             |
+| `apio graph`          |            |   defined   |
+| `apio report`         |            |   defined   |
+| `apio format`         |            |             |
+| `apio test`           |     0      |             |
+| `apio sim`            |     1      |             |
 
 ### APIO_SIM macro
 
