@@ -19,7 +19,7 @@ from apio.commands import options
 # from apio.managers import packages
 from apio.managers.examples import Examples, ExampleInfo
 from apio.common.apio_console import cout, cerror
-from apio.common.apio_styles import INFO
+from apio.common.apio_styles import INFO, ERROR, SUCCESS, WARNING
 from apio.common.common_util import get_project_source_files
 from apio.utils import cmd_util, usb_util, serial_util, util
 from apio.utils.usb_util import UsbDevice
@@ -770,6 +770,81 @@ def _scan_devices_cli(
     write_as_json_doc(top_dict, output, force)
 
 
+# ------ apio api echo
+
+
+# -- Text in the rich-text format of the python rich library.
+APIO_API_ECHO_HELP = """
+The command 'apio api echo' allows external programs such as the Apio VS Code \
+extension to print a short message in a format that is consistent with \
+that Apio theme that is currently selected in the user preferences.
+
+The required '--style' option should have one of these values: OK, \
+INFO, WARNING, or ERROR.
+
+Examples:[code]
+  apio api echo -t "Hello world", -s "INFO"
+  apio api echo -t "Task completed successfully", -s "OK"
+  apio api echo -t "Task failed", -s "ERROR"[/code]
+"""
+
+# -- Supported style names
+STYLES = {
+    "OK": SUCCESS,
+    "INFO": INFO,
+    "WARNING": WARNING,
+    "ERROR": ERROR,
+}
+
+text_option = click.option(
+    "text",  # Var name.
+    "-t",
+    "--text",
+    type=str,
+    metavar="MESSAGE",
+    required=True,
+    help="Set message to echo.",
+    cls=cmd_util.ApioOption,
+)
+
+
+style_option = click.option(
+    "style",  # Var name.
+    "-s",
+    "--style",
+    type=click.Choice(STYLES.keys()),
+    metavar="STYLE",
+    required=True,
+    help="Set style to use.",
+    cls=cmd_util.ApioOption,
+)
+
+
+@click.command(
+    name="echo",
+    cls=ApioCommand,
+    short_help="Print a message in given format.",
+    help=APIO_API_ECHO_HELP,
+)
+@text_option
+@style_option
+def _echo_cli(
+    # Options
+    text: str,
+    style: str,
+):
+    """Implements the 'apio apio echo command."""
+
+    # -- Instanatiate Apio context, project and packages are not needed.
+    _ = ApioContext(
+        project_policy=ProjectPolicy.NO_PROJECT,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
+    )
+
+    cout(text, style=STYLES[style])
+
+
 # ------ apio apio
 
 # -- Text in the rich-text format of the python rich library.
@@ -792,6 +867,7 @@ SUBGROUPS = [
             _get_examples_cli,
             _get_commands_cli,
             _scan_devices_cli,
+            _echo_cli,
         ],
     )
 ]

@@ -91,6 +91,33 @@ Subcommands:
   apio api get-examples     Retrieve examples information.
   apio api get-commands     Retrieve apio commands information.
   apio api scan-devices     Scan and report available devices.
+  apio api echo             Print a message in given format.
+
+
+
+--------------------------------------------
+
+apio api echo
+
+Usage: apio api echo [OPTIONS]
+
+  The command 'apio api echo' allows external programs such as the Apio
+  VS Code extension to print a short message in a format that is
+  consistent with that Apio theme that is currently selected in the user
+  preferences.
+
+  The required '--style' option should have one of these values: OK,
+  INFO, WARNING, or ERROR.
+
+  Examples:
+    apio api echo -t "Hello world", -s "INFO"
+    apio api echo -t "Task completed successfully", -s "OK"
+    apio api echo -t "Task failed", -s "ERROR"
+
+Options:
+  -t, --text MESSAGE  Set message to echo.  [required]
+  -s, --style STYLE   Set style to use.  [required]
+  -h, --help          Show this message and exit.
 
 
 
@@ -927,6 +954,7 @@ Usage: apio lint [OPTIONS]
     apio lint -t my_module
     apio lint --all
     apio lint --nosynth
+    apio lint --novlt
 
   By default, 'apio lint' injects the 'SYNTHESIS' macro to lint the
   synthesizable portion of the design. To lint code that is hidden by
@@ -934,6 +962,7 @@ Usage: apio lint [OPTIONS]
 
 Options:
   --nosynth               Do not inject the SUNTHESIS macro.
+  --novlt                 Disable warning suppression .vlt file.
   --nostyle               Disable all style warnings.
   --nowarn nowarn         Disable specific warning(s).
   --warn warn             Enable specific warning(s).

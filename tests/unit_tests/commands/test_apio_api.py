@@ -314,3 +314,22 @@ def test_apio_api_scan_devices(apio_runner: ApioRunner):
         assert data["timestamp"] == "xyz"
         assert "usb-devices" in data
         assert "serial-devices" in data
+
+
+def test_apio_api_echo(apio_runner: ApioRunner):
+    """Test "apio api echo" """
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Execute "apio api scan-devices -t xyz". We run it in a
+        # -- subprocess such that it releases the libusb1 file it uses.
+        # -- This also means that it's not included in the pytest test
+        # -- coverage report.
+        result = sb.invoke_apio_cmd(
+            apio,
+            ["api", "echo", "-t", "Hello world", "-s", "OK"],
+            in_subprocess=True,
+        )
+        sb.assert_result_ok(result)
+
+        assert "Hello world" in result.output
