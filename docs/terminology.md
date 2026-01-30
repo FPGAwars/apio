@@ -1,8 +1,8 @@
-- **APIO CLI** - The command line version of Apio. User interacts with Apio using
+- **Apio CLI** - The command line version of Apio. User interacts with Apio using
   command lines. The Apio CLI downloads and installs automatically the
   Apio Packages it uses.
 
-- **APIO IDE** - The IDE version of Apio. Installed as a Visual Studio Code extension
+- **Apio IDE** - The IDE version of Apio. Installed as a Visual Studio Code extension
   and provides the Apio functionality using menus and buttons. Apio IDE uses
   Apio CLI which it downloads and installs automatically.
 

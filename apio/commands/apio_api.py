@@ -19,11 +19,20 @@ from apio.commands import options
 # from apio.managers import packages
 from apio.managers.examples import Examples, ExampleInfo
 from apio.common.apio_console import cout, cerror
-from apio.common.apio_styles import INFO, ERROR, SUCCESS, WARNING
 from apio.common.common_util import get_project_source_files
 from apio.utils import cmd_util, usb_util, serial_util, util
 from apio.utils.usb_util import UsbDevice
 from apio.utils.serial_util import SerialDevice
+from apio.common.apio_styles import (
+    INFO,
+    ERROR,
+    SUCCESS,
+    WARNING,
+    EMPH1,
+    EMPH2,
+    EMPH3,
+    TITLE,
+)
 from apio.apio_context import (
     ApioContext,
     PackagesPolicy,
@@ -779,8 +788,9 @@ The command 'apio api echo' allows external programs such as the Apio VS Code \
 extension to print a short message in a format that is consistent with \
 that Apio theme that is currently selected in the user preferences.
 
-The required '--style' option should have one of these values: OK, \
-INFO, WARNING, or ERROR.
+The required option '--style' should have one of these values: OK, \
+INFO, WARNING, ERROR, TITLE, EMPH1, EMPH2, or EMPH3. The style colors can \
+be viewed with the command 'apio info themes'.
 
 Examples:[code]
   apio api echo -t "Hello world", -s "INFO"
@@ -794,6 +804,10 @@ STYLES = {
     "INFO": INFO,
     "WARNING": WARNING,
     "ERROR": ERROR,
+    "TITLE": TITLE,
+    "EMPH1": EMPH1,
+    "EMPH2": EMPH2,
+    "EMPH3": EMPH3,
 }
 
 text_option = click.option(
