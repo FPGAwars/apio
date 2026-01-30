@@ -249,29 +249,28 @@ apio api scan-devices  -o apio.json  # Write to a file
 
 ---
 
-
 ## apio api echo
 
+The command `apio api echo` allows external programs such as the Apio
+VS Code extension to print a short message in a format that is
+consistent with that Apio theme that is currently selected in the user
+preferences.
 
-  The command `apio api echo` allows external programs such as the Apio
-  VS Code extension to print a short message in a format that is
-  consistent with that Apio theme that is currently selected in the user
-  preferences.
+The required option `--style` should have one of these values: `OK`,
+`INFO`, `WARNING`, `ERROR`, `TITLE`, `EMPH1`, `EMPH2`, or `EMPH3`.
+The style colors can be viewed with the command `apio info themes`.
 
-  The required `--style` option should have one of these values: `OK`,
-  `INFO`, `WARNING`, or `ERROR`.
-
- <h3>Examples</h3>
- ```
-    apio api echo -t "Hello world", -s INFO
-    apio api echo -t "Task completed successfully", -s OK
-    apio api echo -t "Task failed", -s ERROR
-  ```
+<h3>Examples</h3>
+```
+apio api echo -t "Hello world", -s INFO
+apio api echo -t "Task completed successfully", -s OK
+apio api echo -t "Task failed", -s ERROR
+```
 
 <h3>Options</h3>
 
 ```
-  -t, --text MESSAGE  Set message to echo.  [required]
-  -s, --style STYLE   Set style to use.  [required]
-  -h, --help          Show this message and exit.
+-t, --text MESSAGE  Set message to echo.  [required]
+-s, --style STYLE   Set style to use.  [required]
+-h, --help          Show this message and exit.
 ```
