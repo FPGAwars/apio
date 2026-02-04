@@ -12,9 +12,11 @@ function load() {
 
   compact="${tag//-/}"
 
-  mkdir -p packages
+  PACKAGES="/Users/user/Downloads/oss-packages"
 
-  cd packages
+  mkdir -p ${PACKAGES}
+
+  cd ${PACKAGES}
 
   rm -f oss-cad-suite-${tag}.tgz
   rm -rf oss-cad-suite-${tag}
@@ -31,7 +33,7 @@ function load() {
 
   cd ..
 
-  head "packages/oss-cad-suite-${tag}/share/yosys/ecp5/cells_bb.v"
+  head "${PACKAGES}/oss-cad-suite-${tag}/share/yosys/ecp5/cells_bb.v"
 }
 
 function report() {
@@ -44,41 +46,16 @@ function report() {
 
   #compact="${tag//-/}"
 
-  file="packages/oss-cad-suite-${tag}/share/yosys/ecp5/cells_bb.v"
+  file="${PACKAGES}/oss-cad-suite-${tag}/share/yosys/ecp5/cells_bb.v"
 
   echo "$file"
   echo
   head "$file"
 }
 
-load "2026-01-25"
+load "2025-10-08"
+load "2026-02-02"
 
-#load "2025-10-08"
-#load "2025-10-09"
+# report "2025-10-08"
+# report "2026-02-02"
 
-#report "2025-10-08"
-#report "2025-10-09"
-
-
-#load "2025-09-23"
-
-#load "2025-10-01"
-
-#load "2025-10-05"
-#load "2025-10-06"
-#load "2025-10-07"
-#load "2025-10-08"
-#load "2025-10-09"
-#load "2025-10-10"
-
-
-#load "2025-10-10"
-#load "2025-10-15"
-#load "2025-10-20"
-#load "2025-10-25"
-
-
-#load "2025-11-01"
-#load "2025-12-01"
-#load "2026-01-01"
-#load "2026-01-25"
