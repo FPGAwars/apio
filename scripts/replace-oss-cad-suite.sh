@@ -1,9 +1,16 @@
 #!/bin/bash -x
 
 # A script to replace the install oss-cad-suite with one downloaded
-# from yosys HQ. Note that loading a package directly from yosys
-# is unsafe in general because it doesn't include possible modification
-# that the Apio oss-cad-suite package builder may perform.
+# from yosys HQ. Useful for evaluating new yosys versions before building
+# an Apio package for them.
+#
+# CAVEATS
+# - The package that is installed from yosys doesn't have any modification
+#   that the Apio oss-cad-suite package building may perform.
+# - The script just replaces the ~/.apio/packages/oss-cad-suite directory
+#   but leave the original downloaded package metadata as is.
+# - This doesn't not affect tests that run using Tox (e.g. 'inv test') which
+#   download their own package.
 #
 # To restore Apio's standard oss-cad-suite, run 'apio packages install -f'
 
