@@ -43,7 +43,8 @@ LINE_COLORING_TABLE = [
 # -- ignored. Regexs are case insensitive.
 LINE_IGNORE_LIST = [
     # -- Per https://github.com/fpgawars/apio/issues/824
-    # r"Warning: define gw1n not used in the library",
+    # -- TODO: Remove when fixed.
+    r"Warning: define gw1n not used in the library",
 ]
 
 
