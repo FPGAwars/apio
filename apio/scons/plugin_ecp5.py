@@ -157,6 +157,8 @@ class PluginEcp5(PluginBase):
                     verbose=params.verbosity.all,
                     vcd_output_name=testbench_name,
                     is_interactive=apio_env.targeting_one_of("sim"),
+                    # -- Per https://github.com/YosysHQ/yosys/issues/5668
+                    extra_params=["-DNO_INCLUDES"],
                     lib_dirs=[self.yosys_lib_dir],
                     lib_files=self.sim_lib_files,
                 ),

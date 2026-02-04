@@ -59,7 +59,7 @@ def map_params(params: Optional[List[Union[str, Path]]], fmt: str) -> str:
     if params is None:
         params = []
 
-    # Convert parmas to stripped strings.
+    # Convert params to stripped strings.
     params = [str(x).strip() for x in params]
 
     # Drop the empty params and map the rest.
@@ -862,7 +862,7 @@ def iverilog_action(
     * vcd_output_name: Value for the macro VCD_OUTPUT.
     * is_interactive: True for apio sim, False otherwise.
     * extra_params: Optional list of additional IVerilog params.
-    * lib_dirs: Optional list of dir pathes to include.
+    * lib_dirs: Optional list of dir paths to include.
     * lib_files: Optional list of library files to compile.
     *
     * Returns the scons action string for the IVerilog command.
