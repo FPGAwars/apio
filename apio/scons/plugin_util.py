@@ -401,16 +401,20 @@ def detached_action(api_env: ApioEnv, cmd: List[str]) -> Action:
 
 
 def gtkwave_target(
-    api_env: ApioEnv,
+    apio_env: ApioEnv,
     target_name: str,  # always 'sim'
     vcd_file_target: NodeList,
     testbench_info: TestbenchInfo,
     sim_params: SimParams,
+    gtkwave_extra_options: Optional[List[str]],
 ) -> List[Alias]:
     """Construct a target to launch the QTWave signal viewer.
     vcd_file_target is the simulator target that generated the vcd file
     with the signals. Returns the new targets.
     """
+
+    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-positional-arguments
 
     # -- Construct the list of actions.
     actions = []
@@ -452,31 +456,31 @@ def gtkwave_target(
         # -- The time penalty is negligible.
         # -- With the stock oss-cad-suite windows package, this is done in the
         # -- environment.bat script.
-        if api_env.is_windows:
+        if apio_env.is_windows:
             actions.append("gdk-pixbuf-query-loaders --update-cache")
 
         # -- The actual wave viewer command.
-        gtkwave_cmd = [
-            "gtkwave",
-            "--rcvar",
-            "splash_disable on",
-            "--rcvar",
-            "do_initial_zoom_fit 1",
-            vcd_path,
-            gtkw_path,
-        ]
+        gtkwave_cmd = ["gtkwave"]
+        # -- NOTE: Users can override these rcvars by adding the desired
+        # -- rcvar options in apio.ini gtkwave-extra-options which will win
+        # -- since they will appear later in the command line.
+        gtkwave_cmd.append("--rcvar=splash_disable on")
+        gtkwave_cmd.append("--rcvar=do_initial_zoom_fit 1")
+        if gtkwave_extra_options:
+            gtkwave_cmd.extend(gtkwave_extra_options)
+        gtkwave_cmd.extend([vcd_path, gtkw_path])
 
         # -- Handle the case where gtkwave is run as a detached app, not
         # -- waiting for it to close and not showing its output.
         if sim_params.detach_gtkwave:
-            gtkwave_action = detached_action(api_env, gtkwave_cmd)
+            gtkwave_action = detached_action(apio_env, gtkwave_cmd)
         else:
             gtkwave_action = subprocess.list2cmdline(gtkwave_cmd)
 
         actions.append(gtkwave_action)
 
     # -- Define a target with the action(s) we created.
-    target = api_env.alias(
+    target = apio_env.alias(
         target_name,
         source=vcd_file_target,
         action=actions,

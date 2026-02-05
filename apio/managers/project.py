@@ -90,6 +90,10 @@ ENV_OPTIONS_SPEC = {
         name="nextpnr-extra-options",
         is_list=True,
     ),
+    "gtkwave-extra-options": EnvOptionSpec(
+        name="gtkwave-extra-options",
+        is_list=True,
+    ),
     "constraint-file": EnvOptionSpec(
         name="constraint-file",
     ),

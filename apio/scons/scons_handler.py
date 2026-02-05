@@ -349,7 +349,7 @@ class SconsHandler:
             builder_id=TESTBENCH_RUN_BUILDER,
             target=testbench_info.build_testbench_name,
             sources=[sim_out_target],
-            always_build=sim_params,
+            always_build=sim_params.force_sim,
         )
 
         # -- The top level "sim" target.
@@ -359,6 +359,7 @@ class SconsHandler:
             sim_vcd_target,
             testbench_info,
             sim_params,
+            params.apio_env_params.gtkwave_extra_options,
         )
 
     def _register_apio_test_target(self, synth_srcs, test_srcs):

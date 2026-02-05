@@ -169,6 +169,19 @@ format-verible-options =
 For the list of the Verible formatter options, run the command `apio 
 raw -- verible-verilog-format --helpfull`
 
+### gtkwave-extra-options
+
+The optional `gtkwave-extra-options` string list option allows adding options to the
+gtkwave command that that is invoked by the `apio sim`.
+For example, the option below disables the var `do_initial_zoom_fit` to prevent
+gtkwave from forcing a fully-out zoom upon start.
+
+```
+[env:default]
+gtkwave-extra-options =
+    --rcvar=do_initial_zoom_fit 0
+```
+
 ### nextpnr-extra-options
 
 The optional `nextpnr-extra-options` string list option allows adding options to the

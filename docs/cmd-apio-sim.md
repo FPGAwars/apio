@@ -18,6 +18,17 @@ signals, modify them in GTKWave and save your configuration using the
 `File > Write Save File` menu command. The `apio sim` command will never
 overwrite a `.gtkw` files that were saved in this way.
 
+The command line that used to invoke the signal viewer `gtkwave` can be 
+customized using the `apio.ini` option `gtkwave-extra-options`. 
+For example, the option below disables the var `do_initial_zoom_fit` to prevent
+gtkwave from forcing a fully-out zoom upon start.
+
+```
+[env:default]
+gtkwave-extra-options =
+    --rcvar=do_initial_zoom_fit 0
+```
+
 The `apio sim` command defines the macro `APIO_SIM=1`, which allows failed
 assertions to skip the `$fatal` call. This lets the simulation continue and
 display faulty signals in the GTKWave viewer.
