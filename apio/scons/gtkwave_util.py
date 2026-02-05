@@ -12,7 +12,7 @@ from apio.common.apio_console import cerror
 GTKW_AUTO_FILE_MARKER = "THIS FILE WAS GENERATED AUTOMATICALLY BY APIO"
 
 
-def _get_gtkw_file_header(testbench_path: Path) -> str:
+def _get_gtkw_file_header(testbench_path: str) -> str:
     """Return a header string for the auto generated .gtkw file. 'testbench'
     is the relative path of the testbench file."""
 
@@ -21,7 +21,8 @@ def _get_gtkw_file_header(testbench_path: Path) -> str:
 
     lines = [
         f"# GTKWave display configuration for 'apio sim {tb_path_posix}'",
-        f"# {GTKW_AUTO_FILE_MARKER}. DO NOT EDIT IT MANUALLY!",
+        f"# {GTKW_AUTO_FILE_MARKER}.",
+        "# DO NOT EDIT IT MANUALLY!",
         f"# To customize this file, run 'apio sim {tb_path_posix}'",
         "# and save the file from GTKWave.",
         "",
@@ -33,20 +34,29 @@ def _get_gtkw_file_header(testbench_path: Path) -> str:
     return "\n".join(lines) + "\n"
 
 
-def _signal_sort_key(s: str) -> Tuple[int, str]:
-    """Given a signal name, returns a key to use for signals sorting."""
-    lcs = s.lower()
+def _signal_sort_key(signal: str) -> Tuple[int, str]:
+    """Given a top level signal name, returns a key to use for signals
+    sorting. Signal is expected to have a two part format
+    top-module.signal-name.
+    """
+    # -- Parse signal
+    parts = signal.split(".")
+    assert len(parts) == 2, signal
+
+    # -- Prepare value to test.
+    lc_name1 = parts[0].lower()
+    lc_name2 = parts[1].lower()
 
     # -- Priority 1: clock signals..
-    if re.search(r"clk|clock", s):
-        return (1, lcs)
+    if re.search(r"clk|clock", lc_name2):
+        return (lc_name1, 1, lc_name2)
 
     # -- Priority 2: reset signals.
-    if re.search(r"reset|rst", s):
-        return (2, lcs)
+    if re.search(r"reset|rst", lc_name2):
+        return (lc_name1, 2, lc_name2)
 
     # -- Priority 3: all the rest.
-    return (3, lcs)
+    return (lc_name1, 3, lc_name2)
 
 
 def create_gtkwave_file(
@@ -68,11 +78,7 @@ def create_gtkwave_file(
     vcd = VCDVCD(vcd_path, signal_res=[pattern], store_tvs=False)
 
     # -- Get a list with raw names of matching signals.
-    raw_signals = list(vcd.references_to_ids.keys())
-
-    # -- Strip range suffixes such as "[31:0]""
-    range_pattern = re.compile(r"\[\d+:\d+\]$")
-    signals = [range_pattern.sub("", sig) for sig in raw_signals]
+    signals = list(vcd.references_to_ids.keys())
 
     # -- Use basic heuristics to sort the files.
     signals.sort(key=_signal_sort_key)
