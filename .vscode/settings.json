@@ -170,6 +170,7 @@
         "pytest",
         "pyxx",
         "rankdir",
+        "rcvar",
         "readmemh",
         "realpath",
         "recursesubdirs",

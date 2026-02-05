@@ -28,6 +28,7 @@ TEST_APIO_INI_DICT = {
         "format-verible-options": "\n  --aaa bbb\n  --ccc ddd",
         "yosys-synth-extra-options": "-dsp -xyz",
         "nextpnr-extra-options": "--freq 13",
+        "gtkwave-extra-options": "--rcvar=do_initial_zoom_fit 1",
     }
 }
 
@@ -61,6 +62,7 @@ apio_env_params {
   top_module: "my_module"
   yosys_synth_extra_options: "-dsp -xyz"
   nextpnr_extra_options: "--freq 13"
+  gtkwave_extra_options: '--rcvar=do_initial_zoom_fit 1'
 }
 """
 
@@ -97,6 +99,7 @@ apio_env_params {
   top_module: "my_module"
   yosys_synth_extra_options: "-dsp -xyz"
   nextpnr_extra_options: "--freq 13"
+  gtkwave_extra_options: '--rcvar=do_initial_zoom_fit 1'
 }
 target {
   lint {

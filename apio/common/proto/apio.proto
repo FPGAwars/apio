@@ -111,8 +111,10 @@ message ApioEnvParams {
   repeated string yosys_synth_extra_options = 5;
   // The optional value of 'nextpnr-extra-options' option in apio.ini.
   repeated string nextpnr_extra_options = 6;
+  // The optional value of 'gtkwave-extra-options' option in apio.ini.
+  repeated string gtkwave_extra_options = 7;
   // The optional value of the 'constraint-file' option in apio.ini.
-  optional string constraint_file = 7 [default = ''];
+  optional string constraint_file = 8 [default = ''];
 }
 
 // Lint target specific params.
