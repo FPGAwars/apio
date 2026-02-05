@@ -173,13 +173,13 @@ raw -- verible-verilog-format --helpfull`
 
 The optional `gtkwave-extra-options` string list option allows adding options to the
 gtkwave command that that is invoked by the `apio sim`.
-In the example below, it enable the flag `do_initial_zoom_fit` to force
-gtkwave to always start with a fully zoomed out view of the signals.
+For example, the option below disables the var `do_initial_zoom_fit` to prevent
+gtkwave from forcing a fully-out zoom upon start.
 
 ```
 [env:default]
 gtkwave-extra-options =
-    --rcvar=do_initial_zoom_fit 1
+    --rcvar=do_initial_zoom_fit 0
 ```
 
 ### nextpnr-extra-options
