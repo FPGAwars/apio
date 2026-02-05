@@ -4,7 +4,6 @@
 
 import re
 import sys
-from typing import Tuple
 from pathlib import Path
 from vcdvcd import VCDVCD
 from apio.common.apio_console import cerror
@@ -34,31 +33,6 @@ def _get_gtkw_file_header(testbench_path: str) -> str:
     return "\n".join(lines) + "\n"
 
 
-def _signal_sort_key(signal: str) -> Tuple[int, str]:
-    """Given a top level signal name, returns a key to use for signals
-    sorting. Signal is expected to have a two part format
-    top-module.signal-name.
-    """
-    # -- Parse signal
-    parts = signal.split(".")
-    assert len(parts) == 2, signal
-
-    # -- Prepare value to test.
-    lc_name1 = parts[0].lower()
-    lc_name2 = parts[1].lower()
-
-    # -- Priority 1: clock signals..
-    if re.search(r"clk|clock", lc_name2):
-        return (lc_name1, 1, lc_name2)
-
-    # -- Priority 2: reset signals.
-    if re.search(r"reset|rst", lc_name2):
-        return (lc_name1, 2, lc_name2)
-
-    # -- Priority 3: all the rest.
-    return (lc_name1, 3, lc_name2)
-
-
 def create_gtkwave_file(
     testbench_path: str, vcd_path: str, gtkw_path: str
 ) -> None:
@@ -80,8 +54,8 @@ def create_gtkwave_file(
     # -- Get a list with raw names of matching signals.
     signals = list(vcd.references_to_ids.keys())
 
-    # -- Use basic heuristics to sort the files.
-    signals.sort(key=_signal_sort_key)
+    # -- Sort, case insensitive.
+    signals.sort(key=str.casefold)
 
     # -- Write the output file.
     with open(gtkw_path, "w", encoding="utf-8") as f:

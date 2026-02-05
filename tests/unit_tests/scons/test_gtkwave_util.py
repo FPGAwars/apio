@@ -5,7 +5,7 @@ Tests of gtkwave_util.py
 from pathlib import Path
 from tests.conftest import ApioRunner
 from apio.commands.apio import apio_top_cli as apio
-from apio.scons.gtkwave_util import create_gtkwave_file, _signal_sort_key
+from apio.scons.gtkwave_util import create_gtkwave_file
 
 # Expected default gtkw file lines for the examples we use below.
 EXPECTED_GTKW_LINES = [
@@ -25,32 +25,6 @@ EXPECTED_GTKW_LINES = [
     "testbench.LED2",
     "",
 ]
-
-
-def test_signal_sort_key():
-    """Test the default signals sorting heuristic."""
-
-    # -- Priority 1: clock.
-    assert _signal_sort_key("tb.clk") == ("tb", 1, "clk")
-    assert _signal_sort_key("tb.Clk") == ("tb", 1, "clk")
-    assert _signal_sort_key("tb.sys_clk") == ("tb", 1, "sys_clk")
-    assert _signal_sort_key("tb.clock1") == ("tb", 1, "clock1")
-    assert _signal_sort_key("tb.CLOCK1") == ("tb", 1, "clock1")
-
-    # -- Priority 2: reset.
-    assert _signal_sort_key("tb.rst") == ("tb", 2, "rst")
-    assert _signal_sort_key("tb.RST") == ("tb", 2, "rst")
-    assert _signal_sort_key("tb.Reset") == ("tb", 2, "reset")
-    assert _signal_sort_key("tb.reset") == ("tb", 2, "reset")
-    assert _signal_sort_key("tb.reset_n") == ("tb", 2, "reset_n")
-    assert _signal_sort_key("tb.sys_rst") == ("tb", 2, "sys_rst")
-    assert _signal_sort_key("tb.sys_reset") == ("tb", 2, "sys_reset")
-    assert _signal_sort_key("tb.RESET_N") == ("tb", 2, "reset_n")
-
-    # -- Priority 3: all other signals.
-    assert _signal_sort_key("tb.other") == ("tb", 3, "other")
-    assert _signal_sort_key("tb.Other") == ("tb", 3, "other")
-    assert _signal_sort_key("tb.OTHER") == ("tb", 3, "other")
 
 
 def test_create_gtkwave_file(apio_runner: ApioRunner):
