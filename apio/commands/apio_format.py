@@ -14,7 +14,7 @@ from glob import glob
 from typing import Tuple, List, Optional
 import click
 from apio.common.apio_console import cout, cerror, cstyle
-from apio.common.apio_styles import EMPH3, SUCCESS, INFO
+from apio.common.apio_styles import EMPH3, SUCCESS, INFO, ERROR
 from apio.common.common_util import PROJECT_BUILD_PATH, sort_files
 from apio.apio_context import (
     ApioContext,
@@ -136,6 +136,7 @@ def cli(
     # -- Iterate the files and format one at a time. We could format
     # -- all of them at once but this way we can make the output more
     # -- user friendly.
+    failures = 0
     for f in files:
         # -- Convert to a Path object.
         path = Path(f)
@@ -168,7 +169,16 @@ def cli(
         exit_code = os.system(command)
         if exit_code != 0:
             cerror(f"Formatting of '{f}' failed")
-            return exit_code
+            failures += 1
+
+    # -- Report failures, if eny.
+    if failures:
+        cout()
+        cout(
+            f"Encountered {util.plurality(failures, 'failure')}.",
+            style=ERROR,
+        )
+        sys.exit(1)
 
     # -- All done ok.
     cout(f"Processed {util.plurality(files, 'file')}.", style=SUCCESS)

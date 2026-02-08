@@ -1,0 +1,11 @@
+{
+    // Supress the welcome editor.
+    "workbench.startupEditor": "none"
+
+    // NOTE:
+    //   Ideally we would like to include the extension  "chipsalliance.verible" in 
+    //   the "extensions.json recomendations file and set here the path to the verible
+    //   language server "verible.path" "~/.apio/packages/verible/bin/verible-verilog-ls"
+    //   but we couldn't figure out yet how to set the path here platform and user
+    //   independent.
+}
