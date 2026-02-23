@@ -30,7 +30,9 @@ apio build --verbose-pnr     # Verbose place and route info
 
 <h3>Notes</h3>
 
+- The files are sorted in a deterministic lexicographic order.
 - Specify the top module using the `top-module` option in `apio.ini`.
 - Testbench files (`*_tb.v` and `*_tb.sv`) are ignored during build.
 - Running `apio build` before `apio upload` is usually unnecessary.
 - Run `apio clean` before building to force a full rebuild.
+- The `--gui` option launches a Yosys's experimental diagnostics tool.

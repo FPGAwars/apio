@@ -46,8 +46,9 @@ class PluginIce40(PluginBase):
     def plugin_info(self) -> ArchPluginInfo:
         """Return plugin specific parameters."""
         return ArchPluginInfo(
-            constrains_file_ext=".pcf",
-            bin_file_suffix=".bin",
+            constrains_file_suffix=".pcf",
+            pnr_file_suffix=".asc",
+            bitstream_file_suffix=".bin",
             clk_name_index=0,
         )
 
@@ -93,13 +94,14 @@ class PluginIce40(PluginBase):
         return Builder(
             action=(
                 "nextpnr-ice40 --{0} --package {1} --json $SOURCE "
-                "--asc $TARGET --report {2} --pcf {3} {4} {5}"
+                "--asc $TARGET --report {2} --pcf {3} {4} {5} {6}"
             ).format(
                 params.fpga_info.ice40.type,
                 params.fpga_info.ice40.pack,
                 apio_env.target + ".pnr",
                 self.constrain_file(),
                 "" if params.verbosity.all or params.verbosity.pnr else "-q",
+                "--gui" if params.nextpnr_gui else "",
                 " ".join(params.apio_env_params.nextpnr_extra_options),
             ),
             suffix=".asc",

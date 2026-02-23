@@ -46,8 +46,9 @@ class PluginGowin(PluginBase):
     def plugin_info(self) -> ArchPluginInfo:
         """Return plugin specific parameters."""
         return ArchPluginInfo(
-            constrains_file_ext=".cst",
-            bin_file_suffix=".fs",
+            constrains_file_suffix=".cst",
+            pnr_file_suffix=".pnr.json",
+            bitstream_file_suffix=".fs",
             clk_name_index=0,
         )
 
@@ -94,13 +95,14 @@ class PluginGowin(PluginBase):
             action=(
                 "nextpnr-himbaechel --device {0} --json $SOURCE "
                 "--write $TARGET --report {1} --vopt family={2} "
-                "--vopt cst={3} {4} {5}"
+                "--vopt cst={3} {4} {6} {5}"
             ).format(
                 params.fpga_info.part_num,
                 apio_env.target + ".pnr",
                 params.fpga_info.gowin.family,
                 self.constrain_file(),
                 "" if params.verbosity.all or params.verbosity.pnr else "-q",
+                "--gui" if params.nextpnr_gui else "",
                 " ".join(params.apio_env_params.nextpnr_extra_options),
             ),
             suffix=".pnr.json",

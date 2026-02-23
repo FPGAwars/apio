@@ -213,8 +213,11 @@ message SconsParams {
   // General information about the project
   required ApioEnvParams apio_env_params = 6;
 
+  // If true, if running nextpnr, add the "--gui" flag.
+  optional bool nextpnr_gui = 7 [default = false];
+
   // Additional params for for scons targets that need it.
-  optional TargetParams target = 7;
+  optional TargetParams target = 8;
 
 
 }

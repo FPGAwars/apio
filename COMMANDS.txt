@@ -372,10 +372,12 @@ Usage: apio build [OPTIONS]
 
   NOTES:
   * The files are sorted in a deterministic lexicographic order.
-  * You can specify the name of the top module in apio.ini.
+  * The top module in apio.ini using the 'top-module' option.
   * The build command ignores testbench files (*_tb.v, and *_tb.sv).
   * It is unnecessary to run 'apio build' before 'apio upload'.
   * To force a rebuild from scratch use the command 'apio clean' first.
+  * The '--gui' option launches a Yosys's experimental diagnostics tool.
+    synthesis.
 
 Options:
   -e, --env name          Set the apio.ini env.
@@ -383,6 +385,7 @@ Options:
   -v, --verbose           Show detailed output.
   --verbose-synth         Show detailed synth stage output.
   --verbose-pnr           Show detailed pnr stage output.
+  -g, --gui               Launch experimental nextpnr GUI.
   -h, --help              Show this message and exit.
 
 

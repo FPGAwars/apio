@@ -40,8 +40,13 @@ SUPPORTED_GRAPH_TYPES = ["svg", "pdf", "png"]
 class ArchPluginInfo:
     """Provides information about the plugin."""
 
-    constrains_file_ext: str
-    bin_file_suffix: str
+    # -- The suffix of the constraint file.
+    constrains_file_suffix: str
+    # -- The suffix of the nextpnr generated file.
+    pnr_file_suffix: str
+    # -- The suffix of the bitstream file.
+    bitstream_file_suffix: str
+    # -- Index of the significant term when parsing clock names.
     clk_name_index: int
 
 
@@ -69,7 +74,7 @@ class PluginBase:
         # -- On first call, determine and cache.
         if self._constrain_file is None:
             self._constrain_file = get_constraint_file(
-                apio_env, self.plugin_info().constrains_file_ext
+                apio_env, self.plugin_info().constrains_file_suffix
             )
         return self._constrain_file
 

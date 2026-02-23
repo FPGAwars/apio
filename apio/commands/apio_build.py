@@ -38,11 +38,21 @@ Examples:[code]
 
 NOTES:
 * The files are sorted in a deterministic lexicographic order.
-* You can specify the name of the top module in apio.ini.
+* The top module in apio.ini using the 'top-module' option.
 * The build command ignores testbench files (*_tb.v, and *_tb.sv).
 * It is unnecessary to run 'apio build' before 'apio upload'.
 * To force a rebuild from scratch use the command 'apio clean' first.
+* The '--gui' option launches a Yosys's experimental diagnostics tool.
 """
+
+gui_option = click.option(
+    "nextpnr_gui",  # Var name.
+    "-g",
+    "--gui",
+    is_flag=True,
+    help="Launch experimental nextpnr GUI.",
+    cls=cmd_util.ApioOption,
+)
 
 
 @click.command(
@@ -57,6 +67,7 @@ NOTES:
 @options.verbose_option
 @options.verbose_synth_option
 @options.verbose_pnr_option
+@gui_option
 def cli(
     _: click.Context,
     # Options
@@ -65,10 +76,14 @@ def cli(
     verbose: bool,
     verbose_synth: bool,
     verbose_pnr: bool,
+    nextpnr_gui: bool,
 ):
     """Implements the apio build command. It invokes the toolchain
     to synthesize the source files into a bitstream file.
     """
+
+    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-positional-arguments
 
     # -- Create the apio context.
     apio_ctx = ApioContext(
@@ -84,7 +99,8 @@ def cli(
 
     # -- Build the project with the given parameters
     exit_code = scons.build(
-        Verbosity(all=verbose, synth=verbose_synth, pnr=verbose_pnr)
+        nextpnr_gui,
+        Verbosity(all=verbose, synth=verbose_synth, pnr=verbose_pnr),
     )
 
     # -- Done!
