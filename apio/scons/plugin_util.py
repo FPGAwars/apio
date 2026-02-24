@@ -319,18 +319,16 @@ def verilator_lint_action(
         # -- Linting only a few files and top module was not specified.
         top_module = None
 
+    print(f"{params.apio_env_params.verilator_extra_options=}")
     # -- Construct the action
     action = (
         "verilator_bin --lint-only --quiet --bbox-unsup --timing "
         "-Wno-TIMESCALEMOD -Wno-MULTITOP {0} {1} -DAPIO_SIM=0 "
-        "{2} {3} {4} {5} {6} {7} {8} {9} {10} {11} $SOURCES"
+        "{2} {3} {4} {5} {6} {7} {8} $SOURCES"
     ).format(
         "" if lint_params.nosynth else "-DSYNTHESIZE",
         "" if lint_whole_project else "-Wno-MODMISSING",
-        "-Wall" if lint_params.verilator_all else "",
-        "-Wno-style" if lint_params.verilator_no_style else "",
-        map_params(lint_params.verilator_no_warns, "-Wno-{}"),
-        map_params(lint_params.verilator_warns, "-Wwarn-{}"),
+        " ".join(params.apio_env_params.verilator_extra_options),
         f"--top-module {top_module}" if top_module else "",
         get_define_flags(apio_env),
         map_params(extra_params, "{}"),

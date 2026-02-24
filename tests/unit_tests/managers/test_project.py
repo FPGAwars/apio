@@ -64,9 +64,10 @@ def test_all_options_env(apio_runner: ApioRunner, capsys: LogCaptureFixture):
             "format-verible-options": "\n  --aaa bbb\n  --ccc ddd",
             "programmer-cmd": "iceprog ${VID}:${PID}",
             "top-module": "my_module",
-            "yosys-synth-extra-options": "-dsp -xyz",
+            "yosys-extra-options": "-dsp -xyz",
             "nextpnr-extra-options": "--freq 13",
             "gtkwave-extra-options": "--rcvar=do_initial_zoom_fit 1",
+            "verilator-extra-options": "-Wno-fatal",
             "constraint-file": "pinout.lpf",
         }
     }
@@ -89,9 +90,10 @@ def test_all_options_env(apio_runner: ApioRunner, capsys: LogCaptureFixture):
         "format-verible-options": ["--aaa bbb", "--ccc ddd"],
         "programmer-cmd": "iceprog ${VID}:${PID}",
         "top-module": "my_module",
-        "yosys-synth-extra-options": ["-dsp -xyz"],
+        "yosys-extra-options": ["-dsp -xyz"],
         "nextpnr-extra-options": ["--freq 13"],
         "gtkwave-extra-options": ["--rcvar=do_initial_zoom_fit 1"],
+        "verilator-extra-options": ["-Wno-fatal"],
         "constraint-file": "pinout.lpf",
     }
 
@@ -133,7 +135,7 @@ def test_list_options(apio_runner: ApioRunner, capsys: LogCaptureFixture):
             "[env:default]": {
                 "board": "alhambra-ii",
                 "top-module": "my_top_module",
-                "yosys-synth-extra-options": "  k1=v1  k2=v2 \n\n k3=v3 \n\n",
+                "yosys-extra-options": "  k1=v1  k2=v2 \n\n k3=v3 \n\n",
                 "nextpnr-extra-options": "  k5=v5  k6=v6 \n\n k7=v7 \n\n",
             }
         },
@@ -142,7 +144,7 @@ def test_list_options(apio_runner: ApioRunner, capsys: LogCaptureFixture):
         capsys=capsys,
     )
 
-    assert project.get_list_option("yosys-synth-extra-options") == [
+    assert project.get_list_option("yosys-extra-options") == [
         "k1=v1  k2=v2",
         "k3=v3",
     ]

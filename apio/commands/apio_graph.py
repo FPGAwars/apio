@@ -97,6 +97,7 @@ env is different than 'default' change the commands accordingly).
 @options.verbose_option
 def cli(
     cmd_ctx: click.Context,
+    *,
     # Options
     svg: bool,
     png: bool,
@@ -110,7 +111,6 @@ def cli(
     """Implements the apio graph command."""
 
     # pylint: disable=too-many-arguments
-    # pylint: disable=too-many-positional-arguments
 
     # -- Make pylint happy.
     _ = (svg,)

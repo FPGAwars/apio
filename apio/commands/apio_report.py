@@ -49,6 +49,7 @@ Examples:[code]
 @options.verbose_option
 def cli(
     _: click.Context,
+    *,
     # Options
     env: Optional[str],
     project_dir: Optional[Path],

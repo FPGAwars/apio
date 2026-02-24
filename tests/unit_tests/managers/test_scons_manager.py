@@ -26,9 +26,10 @@ TEST_APIO_INI_DICT = {
         # -- Optional.
         "top-module": "my_module",
         "format-verible-options": "\n  --aaa bbb\n  --ccc ddd",
-        "yosys-synth-extra-options": "-dsp -xyz",
+        "yosys-extra-options": "-dsp -xyz",
         "nextpnr-extra-options": "--freq 13",
         "gtkwave-extra-options": "--rcvar=do_initial_zoom_fit 1",
+        "verilator-extra-options": "-Wno-fatal",
     }
 }
 
@@ -60,9 +61,10 @@ apio_env_params {
   env_name: "default"
   board_id: "alhambra-ii"
   top_module: "my_module"
-  yosys_synth_extra_options: "-dsp -xyz"
+  yosys_extra_options: "-dsp -xyz"
   nextpnr_extra_options: "--freq 13"
   gtkwave_extra_options: '--rcvar=do_initial_zoom_fit 1'
+  verilator_extra_options: "-Wno-fatal",
 }
 """
 
@@ -97,19 +99,14 @@ apio_env_params {
   env_name: "default"
   board_id: "alhambra-ii"
   top_module: "my_module"
-  yosys_synth_extra_options: "-dsp -xyz"
+  yosys_extra_options: "-dsp -xyz"
   nextpnr_extra_options: "--freq 13"
   gtkwave_extra_options: '--rcvar=do_initial_zoom_fit 1'
+  verilator_extra_options: "-Wno-fatal"
 }
 target {
   lint {
     top_module: "my_module"
-    verilator_all: true
-    verilator_no_style: true
-    verilator_no_warns: "aa"
-    verilator_no_warns: "bb"
-    verilator_warns: "cc"
-    verilator_warns: "dd"
   }
 }
 """
@@ -167,10 +164,6 @@ def test_explicit_params(apio_runner: ApioRunner):
         target_params = TargetParams(
             lint=LintParams(
                 top_module="my_module",
-                verilator_all=True,
-                verilator_no_style=True,
-                verilator_no_warns=["aa", "bb"],
-                verilator_warns=["cc", "dd"],
             )
         )
         verbosity = Verbosity(all=True, synth=True, pnr=True)

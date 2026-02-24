@@ -50,8 +50,9 @@ class PluginEcp5(PluginBase):
     def plugin_info(self) -> ArchPluginInfo:
         """Return plugin specific parameters."""
         return ArchPluginInfo(
-            constrains_file_ext=".lpf",
-            bin_file_suffix=".bit",
+            constrains_file_suffix=".lpf",
+            pnr_file_suffix=".config",
+            bitstream_file_suffix=".bit",
             clk_name_index=2,
         )
 
@@ -70,7 +71,7 @@ class PluginEcp5(PluginBase):
                 "{2} -DSYNTHESIZE {3} $SOURCES"
             ).format(
                 params.apio_env_params.top_module,
-                " ".join(params.apio_env_params.yosys_synth_extra_options),
+                " ".join(params.apio_env_params.yosys_extra_options),
                 "" if params.verbosity.all or params.verbosity.synth else "-q",
                 get_define_flags(apio_env),
             ),
@@ -98,7 +99,8 @@ class PluginEcp5(PluginBase):
             action=(
                 "nextpnr-ecp5 --{0} --package {1} --speed {2} "
                 "--json $SOURCE --textcfg $TARGET "
-                "--report {3} --lpf {4} {5} {6} --timing-allow-fail --force"
+                "--report {3} --lpf {4} --timing-allow-fail --force "
+                "{5} {6} {7}"
             ).format(
                 params.fpga_info.ecp5.type,
                 params.fpga_info.ecp5.pack,
@@ -106,6 +108,7 @@ class PluginEcp5(PluginBase):
                 apio_env.target + ".pnr",
                 self.constrain_file(),
                 "" if params.verbosity.all or params.verbosity.pnr else "-q",
+                "--gui" if params.nextpnr_gui else "",
                 " ".join(params.apio_env_params.nextpnr_extra_options),
             ),
             suffix=".config",

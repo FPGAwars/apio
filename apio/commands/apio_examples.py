@@ -196,7 +196,11 @@ def list_examples_docs_format(apio_ctx: ApioContext):
 )
 @options.docs_format_option
 @options.verbose_option
-def _list_cli(docs: bool, verbose: bool):
+def _list_cli(
+    *,
+    docs: bool,
+    verbose: bool,
+):
     """Implements the 'apio examples list' command group."""
 
     # -- Create the apio context.
@@ -239,6 +243,7 @@ Examples:[code]
 @click.argument("example", metavar="EXAMPLE", nargs=1, required=True)
 @options.dst_option_gen(short_help="Set a different destination directory.")
 def _fetch_cli(
+    *,
     # Arguments
     example: str,
     # Options

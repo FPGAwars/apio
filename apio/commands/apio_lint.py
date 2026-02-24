@@ -11,7 +11,6 @@ from typing import Optional
 from pathlib import Path
 import click
 from apio.managers.scons_manager import SConsManager
-from apio.utils import util
 from apio.utils import cmd_util
 from apio.commands import options
 from apio.apio_context import (
@@ -29,7 +28,7 @@ nosynth_option = click.option(
     "nosynth",  # Var name
     "--nosynth",
     is_flag=True,
-    help="Do not inject the SUNTHESIS macro.",
+    help="Do not define the SYNTHESIS macro.",
     cls=cmd_util.ApioOption,
 )
 
@@ -38,33 +37,6 @@ novlt_option = click.option(
     "--novlt",
     is_flag=True,
     help="Disable warning suppression .vlt file.",
-    cls=cmd_util.ApioOption,
-)
-
-nostyle_option = click.option(
-    "nostyle",  # Var name
-    "--nostyle",
-    is_flag=True,
-    help="Disable all style warnings.",
-    cls=cmd_util.ApioOption,
-)
-
-
-nowarn_option = click.option(
-    "nowarn",  # Var name
-    "--nowarn",
-    type=str,
-    metavar="nowarn",
-    help="Disable specific warning(s).",
-    cls=cmd_util.ApioOption,
-)
-
-warn_option = click.option(
-    "warn",  # Var name
-    "--warn",
-    type=str,
-    metavar="warn",
-    help="Enable specific warning(s).",
     cls=cmd_util.ApioOption,
 )
 
@@ -89,6 +61,10 @@ Examples:[code]
 By default, 'apio lint' injects the 'SYNTHESIS' macro to lint the \
 synthesizable portion of the design. To lint code that is hidden by \
 'SYNTHESIS', use the '--nosynth' option.
+
+To customize the behavior of the 'verilator' linter, add the option \
+'verilator-extra-option' in the project file 'apio.ini' with the extra \
+options you would like to use.
 """
 
 
@@ -102,12 +78,6 @@ synthesizable portion of the design. To lint code that is hidden by \
 @click.argument("files", nargs=-1, required=False)
 @nosynth_option
 @novlt_option
-@nostyle_option
-@nowarn_option
-@warn_option
-@options.all_option_gen(
-    short_help="Enable all warnings, including code style warnings."
-)
 @options.top_module_option_gen(
     short_help="Restrict linting to this module and its dependencies."
 )
@@ -115,15 +85,12 @@ synthesizable portion of the design. To lint code that is hidden by \
 @options.project_dir_option
 def cli(
     _: click.Context,
+    *,
     # Args
     files,
     # Options
     nosynth: bool,
     novlt: bool,
-    nostyle: bool,
-    nowarn: str,
-    warn: str,
-    all_: bool,
     top_module: str,
     env: Optional[str],
     project_dir: Optional[Path],
@@ -131,7 +98,6 @@ def cli(
     """Lint the source code."""
 
     # pylint: disable=too-many-arguments
-    # pylint: disable=too-many-positional-arguments
 
     # -- Create the apio context.
     apio_ctx = ApioContext(
@@ -145,17 +111,9 @@ def cli(
     # -- Create the scons manager.
     scons = SConsManager(apio_ctx)
 
-    # -- Convert the comma separated args values to python lists
-    no_warns_list = util.split(nowarn, ",", strip=True, keep_empty=False)
-    warns_list = util.split(warn, ",", strip=True, keep_empty=False)
-
     # -- Create the lint params
     lint_params = LintParams(
         top_module=top_module if top_module else None,
-        verilator_all=all_,
-        verilator_no_style=nostyle,
-        verilator_no_warns=no_warns_list,
-        verilator_warns=warns_list,
         nosynth=nosynth,
         novlt=novlt,
         file_names=files,

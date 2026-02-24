@@ -114,44 +114,38 @@ class Environment(_message.Message):
     def __init__(self, platform_id: _Optional[str] = ..., is_windows: bool = ..., terminal_mode: _Optional[_Union[TerminalMode, str]] = ..., theme_name: _Optional[str] = ..., debug_level: _Optional[int] = ..., yosys_path: _Optional[str] = ..., trellis_path: _Optional[str] = ..., scons_shell_id: _Optional[str] = ...) -> None: ...
 
 class ApioEnvParams(_message.Message):
-    __slots__ = ("env_name", "board_id", "top_module", "defines", "yosys_synth_extra_options", "nextpnr_extra_options", "gtkwave_extra_options", "constraint_file")
+    __slots__ = ("env_name", "board_id", "top_module", "defines", "yosys_extra_options", "nextpnr_extra_options", "gtkwave_extra_options", "verilator_extra_options", "constraint_file")
     ENV_NAME_FIELD_NUMBER: _ClassVar[int]
     BOARD_ID_FIELD_NUMBER: _ClassVar[int]
     TOP_MODULE_FIELD_NUMBER: _ClassVar[int]
     DEFINES_FIELD_NUMBER: _ClassVar[int]
-    YOSYS_SYNTH_EXTRA_OPTIONS_FIELD_NUMBER: _ClassVar[int]
+    YOSYS_EXTRA_OPTIONS_FIELD_NUMBER: _ClassVar[int]
     NEXTPNR_EXTRA_OPTIONS_FIELD_NUMBER: _ClassVar[int]
     GTKWAVE_EXTRA_OPTIONS_FIELD_NUMBER: _ClassVar[int]
+    VERILATOR_EXTRA_OPTIONS_FIELD_NUMBER: _ClassVar[int]
     CONSTRAINT_FILE_FIELD_NUMBER: _ClassVar[int]
     env_name: str
     board_id: str
     top_module: str
     defines: _containers.RepeatedScalarFieldContainer[str]
-    yosys_synth_extra_options: _containers.RepeatedScalarFieldContainer[str]
+    yosys_extra_options: _containers.RepeatedScalarFieldContainer[str]
     nextpnr_extra_options: _containers.RepeatedScalarFieldContainer[str]
     gtkwave_extra_options: _containers.RepeatedScalarFieldContainer[str]
+    verilator_extra_options: _containers.RepeatedScalarFieldContainer[str]
     constraint_file: str
-    def __init__(self, env_name: _Optional[str] = ..., board_id: _Optional[str] = ..., top_module: _Optional[str] = ..., defines: _Optional[_Iterable[str]] = ..., yosys_synth_extra_options: _Optional[_Iterable[str]] = ..., nextpnr_extra_options: _Optional[_Iterable[str]] = ..., gtkwave_extra_options: _Optional[_Iterable[str]] = ..., constraint_file: _Optional[str] = ...) -> None: ...
+    def __init__(self, env_name: _Optional[str] = ..., board_id: _Optional[str] = ..., top_module: _Optional[str] = ..., defines: _Optional[_Iterable[str]] = ..., yosys_extra_options: _Optional[_Iterable[str]] = ..., nextpnr_extra_options: _Optional[_Iterable[str]] = ..., gtkwave_extra_options: _Optional[_Iterable[str]] = ..., verilator_extra_options: _Optional[_Iterable[str]] = ..., constraint_file: _Optional[str] = ...) -> None: ...
 
 class LintParams(_message.Message):
-    __slots__ = ("top_module", "verilator_all", "verilator_no_style", "verilator_no_warns", "verilator_warns", "nosynth", "novlt", "file_names")
+    __slots__ = ("top_module", "nosynth", "novlt", "file_names")
     TOP_MODULE_FIELD_NUMBER: _ClassVar[int]
-    VERILATOR_ALL_FIELD_NUMBER: _ClassVar[int]
-    VERILATOR_NO_STYLE_FIELD_NUMBER: _ClassVar[int]
-    VERILATOR_NO_WARNS_FIELD_NUMBER: _ClassVar[int]
-    VERILATOR_WARNS_FIELD_NUMBER: _ClassVar[int]
     NOSYNTH_FIELD_NUMBER: _ClassVar[int]
     NOVLT_FIELD_NUMBER: _ClassVar[int]
     FILE_NAMES_FIELD_NUMBER: _ClassVar[int]
     top_module: str
-    verilator_all: bool
-    verilator_no_style: bool
-    verilator_no_warns: _containers.RepeatedScalarFieldContainer[str]
-    verilator_warns: _containers.RepeatedScalarFieldContainer[str]
     nosynth: bool
     novlt: bool
     file_names: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, top_module: _Optional[str] = ..., verilator_all: bool = ..., verilator_no_style: bool = ..., verilator_no_warns: _Optional[_Iterable[str]] = ..., verilator_warns: _Optional[_Iterable[str]] = ..., nosynth: bool = ..., novlt: bool = ..., file_names: _Optional[_Iterable[str]] = ...) -> None: ...
+    def __init__(self, top_module: _Optional[str] = ..., nosynth: bool = ..., novlt: bool = ..., file_names: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class GraphParams(_message.Message):
     __slots__ = ("output_type", "top_module", "open_viewer")
@@ -204,13 +198,14 @@ class TargetParams(_message.Message):
     def __init__(self, lint: _Optional[_Union[LintParams, _Mapping]] = ..., graph: _Optional[_Union[GraphParams, _Mapping]] = ..., sim: _Optional[_Union[SimParams, _Mapping]] = ..., test: _Optional[_Union[ApioTestParams, _Mapping]] = ..., upload: _Optional[_Union[UploadParams, _Mapping]] = ...) -> None: ...
 
 class SconsParams(_message.Message):
-    __slots__ = ("timestamp", "arch", "fpga_info", "verbosity", "environment", "apio_env_params", "target")
+    __slots__ = ("timestamp", "arch", "fpga_info", "verbosity", "environment", "apio_env_params", "nextpnr_gui", "target")
     TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
     ARCH_FIELD_NUMBER: _ClassVar[int]
     FPGA_INFO_FIELD_NUMBER: _ClassVar[int]
     VERBOSITY_FIELD_NUMBER: _ClassVar[int]
     ENVIRONMENT_FIELD_NUMBER: _ClassVar[int]
     APIO_ENV_PARAMS_FIELD_NUMBER: _ClassVar[int]
+    NEXTPNR_GUI_FIELD_NUMBER: _ClassVar[int]
     TARGET_FIELD_NUMBER: _ClassVar[int]
     timestamp: str
     arch: ApioArch
@@ -218,5 +213,6 @@ class SconsParams(_message.Message):
     verbosity: Verbosity
     environment: Environment
     apio_env_params: ApioEnvParams
+    nextpnr_gui: bool
     target: TargetParams
-    def __init__(self, timestamp: _Optional[str] = ..., arch: _Optional[_Union[ApioArch, str]] = ..., fpga_info: _Optional[_Union[FpgaInfo, _Mapping]] = ..., verbosity: _Optional[_Union[Verbosity, _Mapping]] = ..., environment: _Optional[_Union[Environment, _Mapping]] = ..., apio_env_params: _Optional[_Union[ApioEnvParams, _Mapping]] = ..., target: _Optional[_Union[TargetParams, _Mapping]] = ...) -> None: ...
+    def __init__(self, timestamp: _Optional[str] = ..., arch: _Optional[_Union[ApioArch, str]] = ..., fpga_info: _Optional[_Union[FpgaInfo, _Mapping]] = ..., verbosity: _Optional[_Union[Verbosity, _Mapping]] = ..., environment: _Optional[_Union[Environment, _Mapping]] = ..., apio_env_params: _Optional[_Union[ApioEnvParams, _Mapping]] = ..., nextpnr_gui: bool = ..., target: _Optional[_Union[TargetParams, _Mapping]] = ...) -> None: ...

@@ -372,10 +372,11 @@ Usage: apio build [OPTIONS]
 
   NOTES:
   * The files are sorted in a deterministic lexicographic order.
-  * You can specify the name of the top module in apio.ini.
+  * The top module in apio.ini using the 'top-module' option.
   * The build command ignores testbench files (*_tb.v, and *_tb.sv).
   * It is unnecessary to run 'apio build' before 'apio upload'.
   * To force a rebuild from scratch use the command 'apio clean' first.
+  * The '--gui' option launches a Yosys's experimental diagnostics tool.
 
 Options:
   -e, --env name          Set the apio.ini env.
@@ -383,6 +384,7 @@ Options:
   -v, --verbose           Show detailed output.
   --verbose-synth         Show detailed synth stage output.
   --verbose-pnr           Show detailed pnr stage output.
+  -g, --gui               Launch experimental nextpnr GUI.
   -h, --help              Show this message and exit.
 
 
@@ -965,13 +967,13 @@ Usage: apio lint [OPTIONS] [FILES]...
   synthesizable portion of the design. To lint code that is hidden by
   'SYNTHESIS', use the '--nosynth' option.
 
+  To customize the behavior of the 'verilator' linter, add the option
+  'verilator-extra-option' in the project file 'apio.ini' with the extra
+  options you would like to use.
+
 Options:
-  --nosynth               Do not inject the SUNTHESIS macro.
+  --nosynth               Do not define the SYNTHESIS macro.
   --novlt                 Disable warning suppression .vlt file.
-  --nostyle               Disable all style warnings.
-  --nowarn nowarn         Disable specific warning(s).
-  --warn warn             Enable specific warning(s).
-  -a, --all               Enable all warnings, including code style warnings.
   -t, --top-module name   Restrict linting to this module and its
                           dependencies.
   -e, --env name          Set the apio.ini env.

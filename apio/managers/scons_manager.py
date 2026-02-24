@@ -144,12 +144,15 @@ class SConsManager:
         return self._run_scons_subprocess("test", scons_params=scons_params)
 
     @on_exception(exit_code=1)
-    def build(self, verbosity: Verbosity) -> int:
+    def build(self, nextpnr_gui: bool, verbosity: Verbosity) -> int:
         """Runs a scons subprocess with the 'build' target. Returns process
         exit code, 0 if ok."""
 
         # -- Construct the scons params object.
-        scons_params = self.construct_scons_params(verbosity=verbosity)
+        scons_params = self.construct_scons_params(
+            nextpnr_gui=nextpnr_gui,
+            verbosity=verbosity,
+        )
 
         # -- Run the scons process.
         return self._run_scons_subprocess("build", scons_params=scons_params)
@@ -187,6 +190,7 @@ class SConsManager:
         self,
         *,
         target_params: TargetParams = None,
+        nextpnr_gui: bool = False,
         verbosity: Verbosity = None,
     ) -> SconsParams:
         """Populate and return the SconsParam proto to pass to the scons
@@ -198,6 +202,10 @@ class SConsManager:
         # -- Create an empty proto object that will be populated.
         result = SconsParams()
 
+        # -- Set the nextpnr_gui if True.
+        if nextpnr_gui:
+            result.nextpnr_gui = True
+
         # -- Populate the timestamp. We use to to make sure scons reads the
         # -- correct version of the scons.params file.
         ts = datetime.now()
@@ -208,7 +216,7 @@ class SConsManager:
         assert apio_ctx.has_project, "Scons encountered a missing project."
         project = apio_ctx.project
 
-        # -- Get the project resource.s
+        # -- Get the project resources.
         pr = apio_ctx.project_resources
 
         # -- Populate the common values of FpgaInfo.
@@ -287,14 +295,17 @@ class SConsManager:
                 defines=apio_ctx.project.get_list_option(
                     "defines", default=[]
                 ),
-                yosys_synth_extra_options=apio_ctx.project.get_list_option(
-                    "yosys-synth-extra-options", None
+                yosys_extra_options=apio_ctx.project.get_list_option(
+                    "yosys-extra-options", None
                 ),
                 nextpnr_extra_options=apio_ctx.project.get_list_option(
                     "nextpnr-extra-options", None
                 ),
                 gtkwave_extra_options=apio_ctx.project.get_list_option(
                     "gtkwave-extra-options", None
+                ),
+                verilator_extra_options=apio_ctx.project.get_list_option(
+                    "verilator-extra-options", None
                 ),
                 constraint_file=apio_ctx.project.get_str_option(
                     "constraint-file", None

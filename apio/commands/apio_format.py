@@ -79,6 +79,7 @@ _FILE_TYPES = [".v", ".sv", ".vh", ".svh"]
 @options.project_dir_option
 @options.verbose_option
 def cli(
+    *,
     # Arguments
     files: Tuple[str],
     env: Optional[str],

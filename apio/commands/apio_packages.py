@@ -197,6 +197,7 @@ added to the examples package.
 @options.force_option_gen(short_help="Force reinstallation.")
 @options.verbose_option
 def _install_cli(
+    *,
     # Options
     force: bool,
     verbose: bool,

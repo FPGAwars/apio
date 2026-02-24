@@ -82,8 +82,8 @@ ENV_OPTIONS_SPEC = {
     "programmer-cmd": EnvOptionSpec(
         name="programmer-cmd",
     ),
-    "yosys-synth-extra-options": EnvOptionSpec(
-        name="yosys-synth-extra-options",
+    "yosys-extra-options": EnvOptionSpec(
+        name="yosys-extra-options",
         is_list=True,
     ),
     "nextpnr-extra-options": EnvOptionSpec(
@@ -92,6 +92,10 @@ ENV_OPTIONS_SPEC = {
     ),
     "gtkwave-extra-options": EnvOptionSpec(
         name="gtkwave-extra-options",
+        is_list=True,
+    ),
+    "verilator-extra-options": EnvOptionSpec(
+        name="verilator-extra-options",
         is_list=True,
     ),
     "constraint-file": EnvOptionSpec(

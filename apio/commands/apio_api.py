@@ -131,6 +131,7 @@ Examples:[code]
 @output_option
 @options.force_option_gen(short_help="Overwrite output file.")
 def _get_system_cli(
+    *,
     # Options
     timestamp: str,
     output: str,
@@ -218,6 +219,7 @@ Examples:[code]
 @output_option
 @options.force_option_gen(short_help="Overwrite output file.")
 def _get_project_cli(
+    *,
     # Options
     env: str,
     project_dir: Optional[Path],
@@ -307,6 +309,7 @@ Examples:[code]
 @output_option
 @options.force_option_gen(short_help="Overwrite output file.")
 def _get_boards_cli(
+    *,
     # Options
     timestamp: str,
     output: str,
@@ -391,6 +394,7 @@ Examples:[code]
 @output_option
 @options.force_option_gen(short_help="Overwrite output file.")
 def _get_fpgas_cli(
+    *,
     # Options
     timestamp: str,
     output: str,
@@ -460,6 +464,7 @@ Examples:[code]
 @output_option
 @options.force_option_gen(short_help="Overwrite output file.")
 def _get_programmers_cli(
+    *,
     # Options
     timestamp: str,
     output: str,
@@ -521,6 +526,7 @@ Examples:[code]
 @output_option
 @options.force_option_gen(short_help="Overwrite output file.")
 def _get_examples_cli(
+    *,
     # Options
     timestamp: str,
     output: str,
@@ -645,6 +651,7 @@ Examples:[code]
 def _get_commands_cli(
     # Click context
     cmd_ctx: ApioCmdContext,
+    *,
     # Options
     timestamp: str,
     output: str,
@@ -711,6 +718,7 @@ Examples:[code]
 @output_option
 @options.force_option_gen(short_help="Overwrite output file.")
 def _scan_devices_cli(
+    *,
     # Options
     timestamp: str,
     output: str,
@@ -843,6 +851,7 @@ style_option = click.option(
 @text_option
 @style_option
 def _echo_cli(
+    *,
     # Options
     text: str,
     style: str,

@@ -107,26 +107,24 @@ message ApioEnvParams {
   required string top_module = 3;
   // The optional values of 'defines' option in apio.ini.
   repeated string defines = 4;
-  // The optional value of 'yosys-synth-extra-options' option in apio.ini.
-  repeated string yosys_synth_extra_options = 5;
+  // The optional value of 'yosys-extra-options' option in apio.ini.
+  repeated string yosys_extra_options = 5;
   // The optional value of 'nextpnr-extra-options' option in apio.ini.
   repeated string nextpnr_extra_options = 6;
   // The optional value of 'gtkwave-extra-options' option in apio.ini.
   repeated string gtkwave_extra_options = 7;
+  // The optional value of 'gtkwave-extra-options' option in apio.ini.
+  repeated string verilator_extra_options = 8;
   // The optional value of the 'constraint-file' option in apio.ini.
-  optional string constraint_file = 8 [default = ''];
+  optional string constraint_file = 9 [default = ''];
 }
 
 // Lint target specific params.
 message LintParams {
   optional string top_module = 1 [default = ""];
-  optional bool verilator_all = 2 [default = false];
-  optional bool verilator_no_style = 3 [default = false];
-  repeated string verilator_no_warns = 4;
-  repeated string verilator_warns = 5;
-  optional bool nosynth = 6 [default = false];
-  optional bool novlt = 7 [default = false];
-  repeated string file_names = 8;  // Is specified, lint only these files.
+  optional bool nosynth = 2 [default = false];
+  optional bool novlt = 3 [default = false];
+  repeated string file_names = 4;  // Is specified, lint only these files.
 }
 
 // Graph target specific params.
@@ -213,8 +211,11 @@ message SconsParams {
   // General information about the project
   required ApioEnvParams apio_env_params = 6;
 
+  // If true, if running nextpnr, add the "--gui" flag.
+  optional bool nextpnr_gui = 7 [default = false];
+
   // Additional params for for scons targets that need it.
-  optional TargetParams target = 7;
+  optional TargetParams target = 8;
 
 
 }

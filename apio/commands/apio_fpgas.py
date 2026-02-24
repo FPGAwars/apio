@@ -250,6 +250,7 @@ Examples:[code]
 @options.docs_format_option
 @options.project_dir_option
 def cli(
+    *,
     # Options
     verbose: bool,
     docs: bool,

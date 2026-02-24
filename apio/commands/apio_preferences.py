@@ -150,6 +150,7 @@ colors_option = click.option(
 @options.list_option_gen(short_help="List the preferences.")
 def cli(
     cmd_ctx: click.Context,
+    *,
     # -- Options
     theme_name: str,
     colors: bool,

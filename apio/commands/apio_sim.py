@@ -114,6 +114,7 @@ detach_option = click.option(
 @options.project_dir_option
 def cli(
     _: click.Context,
+    *,
     # Arguments
     testbench_path: str,
     # Options
@@ -128,7 +129,6 @@ def cli(
     """
 
     # pylint: disable=too-many-arguments
-    # pylint: disable=too-many-positional-arguments
 
     # -- Create the apio context.
     apio_ctx = ApioContext(

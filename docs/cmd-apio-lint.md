@@ -21,14 +21,18 @@ apio lint --nosynth      # Do not define the SYNTHESIS macro.
 apio lint --novlt        # Disable the .vlt rule supression file.
 ```
 
-By default, `apio lint` injects the `SYNTHESIS` macro to lint the
+By default, `apio lint` defines the `SYNTHESIS` macro to lint the
 synthesizable portion of the design. To lint code that is hidden by
 `SYNTHESIS`, use the `--nosynth option`.
+
+To customize the behavior of the `verilator` linter, add the option
+`verilator-extra-option` in the project file `apio.ini` with the extra
+options you would like to use. 
 
 <h3>Options</h3>
 
 ```
---nosynth               Do not inject the SUNTHESIS macro.
+--nosynth               Do not define the SUNTHESIS macro.
 --novlt                 Disable warning suppression .vlt file.
 --nostyle               Disable all style warnings
 --nowarn nowarn         Disable specific warning(s)

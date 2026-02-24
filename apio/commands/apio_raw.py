@@ -95,6 +95,7 @@ command itself and those of the executed command.
 @options.verbose_option
 def cli(
     cmd_ctx: click.Context,
+    *,
     # Arguments
     cmd: Tuple[str],
     # Options
