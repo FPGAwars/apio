@@ -29,6 +29,7 @@ TEST_APIO_INI_DICT = {
         "yosys-synth-extra-options": "-dsp -xyz",
         "nextpnr-extra-options": "--freq 13",
         "gtkwave-extra-options": "--rcvar=do_initial_zoom_fit 1",
+        "verilator-extra-options": "-Wno-fatal",
     }
 }
 
@@ -63,6 +64,7 @@ apio_env_params {
   yosys_synth_extra_options: "-dsp -xyz"
   nextpnr_extra_options: "--freq 13"
   gtkwave_extra_options: '--rcvar=do_initial_zoom_fit 1'
+  verilator_extra_options: "-Wno-fatal",
 }
 """
 
@@ -100,16 +102,11 @@ apio_env_params {
   yosys_synth_extra_options: "-dsp -xyz"
   nextpnr_extra_options: "--freq 13"
   gtkwave_extra_options: '--rcvar=do_initial_zoom_fit 1'
+  verilator_extra_options: "-Wno-fatal"
 }
 target {
   lint {
     top_module: "my_module"
-    verilator_all: true
-    verilator_no_style: true
-    verilator_no_warns: "aa"
-    verilator_no_warns: "bb"
-    verilator_warns: "cc"
-    verilator_warns: "dd"
   }
 }
 """
@@ -167,10 +164,6 @@ def test_explicit_params(apio_runner: ApioRunner):
         target_params = TargetParams(
             lint=LintParams(
                 top_module="my_module",
-                verilator_all=True,
-                verilator_no_style=True,
-                verilator_no_warns=["aa", "bb"],
-                verilator_warns=["cc", "dd"],
             )
         )
         verbosity = Verbosity(all=True, synth=True, pnr=True)

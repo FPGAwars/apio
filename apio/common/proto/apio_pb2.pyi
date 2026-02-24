@@ -114,7 +114,7 @@ class Environment(_message.Message):
     def __init__(self, platform_id: _Optional[str] = ..., is_windows: bool = ..., terminal_mode: _Optional[_Union[TerminalMode, str]] = ..., theme_name: _Optional[str] = ..., debug_level: _Optional[int] = ..., yosys_path: _Optional[str] = ..., trellis_path: _Optional[str] = ..., scons_shell_id: _Optional[str] = ...) -> None: ...
 
 class ApioEnvParams(_message.Message):
-    __slots__ = ("env_name", "board_id", "top_module", "defines", "yosys_synth_extra_options", "nextpnr_extra_options", "gtkwave_extra_options", "constraint_file")
+    __slots__ = ("env_name", "board_id", "top_module", "defines", "yosys_synth_extra_options", "nextpnr_extra_options", "gtkwave_extra_options", "verilator_extra_options", "constraint_file")
     ENV_NAME_FIELD_NUMBER: _ClassVar[int]
     BOARD_ID_FIELD_NUMBER: _ClassVar[int]
     TOP_MODULE_FIELD_NUMBER: _ClassVar[int]
@@ -122,6 +122,7 @@ class ApioEnvParams(_message.Message):
     YOSYS_SYNTH_EXTRA_OPTIONS_FIELD_NUMBER: _ClassVar[int]
     NEXTPNR_EXTRA_OPTIONS_FIELD_NUMBER: _ClassVar[int]
     GTKWAVE_EXTRA_OPTIONS_FIELD_NUMBER: _ClassVar[int]
+    VERILATOR_EXTRA_OPTIONS_FIELD_NUMBER: _ClassVar[int]
     CONSTRAINT_FILE_FIELD_NUMBER: _ClassVar[int]
     env_name: str
     board_id: str
@@ -130,28 +131,21 @@ class ApioEnvParams(_message.Message):
     yosys_synth_extra_options: _containers.RepeatedScalarFieldContainer[str]
     nextpnr_extra_options: _containers.RepeatedScalarFieldContainer[str]
     gtkwave_extra_options: _containers.RepeatedScalarFieldContainer[str]
+    verilator_extra_options: _containers.RepeatedScalarFieldContainer[str]
     constraint_file: str
-    def __init__(self, env_name: _Optional[str] = ..., board_id: _Optional[str] = ..., top_module: _Optional[str] = ..., defines: _Optional[_Iterable[str]] = ..., yosys_synth_extra_options: _Optional[_Iterable[str]] = ..., nextpnr_extra_options: _Optional[_Iterable[str]] = ..., gtkwave_extra_options: _Optional[_Iterable[str]] = ..., constraint_file: _Optional[str] = ...) -> None: ...
+    def __init__(self, env_name: _Optional[str] = ..., board_id: _Optional[str] = ..., top_module: _Optional[str] = ..., defines: _Optional[_Iterable[str]] = ..., yosys_synth_extra_options: _Optional[_Iterable[str]] = ..., nextpnr_extra_options: _Optional[_Iterable[str]] = ..., gtkwave_extra_options: _Optional[_Iterable[str]] = ..., verilator_extra_options: _Optional[_Iterable[str]] = ..., constraint_file: _Optional[str] = ...) -> None: ...
 
 class LintParams(_message.Message):
-    __slots__ = ("top_module", "verilator_all", "verilator_no_style", "verilator_no_warns", "verilator_warns", "nosynth", "novlt", "file_names")
+    __slots__ = ("top_module", "nosynth", "novlt", "file_names")
     TOP_MODULE_FIELD_NUMBER: _ClassVar[int]
-    VERILATOR_ALL_FIELD_NUMBER: _ClassVar[int]
-    VERILATOR_NO_STYLE_FIELD_NUMBER: _ClassVar[int]
-    VERILATOR_NO_WARNS_FIELD_NUMBER: _ClassVar[int]
-    VERILATOR_WARNS_FIELD_NUMBER: _ClassVar[int]
     NOSYNTH_FIELD_NUMBER: _ClassVar[int]
     NOVLT_FIELD_NUMBER: _ClassVar[int]
     FILE_NAMES_FIELD_NUMBER: _ClassVar[int]
     top_module: str
-    verilator_all: bool
-    verilator_no_style: bool
-    verilator_no_warns: _containers.RepeatedScalarFieldContainer[str]
-    verilator_warns: _containers.RepeatedScalarFieldContainer[str]
     nosynth: bool
     novlt: bool
     file_names: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, top_module: _Optional[str] = ..., verilator_all: bool = ..., verilator_no_style: bool = ..., verilator_no_warns: _Optional[_Iterable[str]] = ..., verilator_warns: _Optional[_Iterable[str]] = ..., nosynth: bool = ..., novlt: bool = ..., file_names: _Optional[_Iterable[str]] = ...) -> None: ...
+    def __init__(self, top_module: _Optional[str] = ..., nosynth: bool = ..., novlt: bool = ..., file_names: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class GraphParams(_message.Message):
     __slots__ = ("output_type", "top_module", "open_viewer")

@@ -94,6 +94,10 @@ ENV_OPTIONS_SPEC = {
         name="gtkwave-extra-options",
         is_list=True,
     ),
+    "verilator-extra-options": EnvOptionSpec(
+        name="verilator-extra-options",
+        is_list=True,
+    ),
     "constraint-file": EnvOptionSpec(
         name="constraint-file",
     ),

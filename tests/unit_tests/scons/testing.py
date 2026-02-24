@@ -8,7 +8,7 @@ import SCons.Environment
 import SCons.Script.Main
 from google.protobuf import text_format
 from apio.scons.apio_env import ApioEnv
-from apio.common.proto.apio_pb2 import SconsParams, TargetParams
+from apio.common.proto.apio_pb2 import SconsParams, TargetParams, ApioEnvParams
 
 
 TEST_PARAMS = """
@@ -85,11 +85,15 @@ def make_test_apio_env(
     platform_id: str = None,
     is_windows: bool = None,
     debug_level: int = 0,
+    apio_env_params: ApioEnvParams = None,
     target_params: TargetParams = None,
 ) -> ApioEnv:
     """Creates a fresh apio env for testing. The env is created
     with the current directory as the root dir.
     """
+
+    # pylint: disable=too-many-arguments
+
     # -- Specify both or nether.
     assert (platform_id is None) == (is_windows is None)
 
@@ -107,6 +111,8 @@ def make_test_apio_env(
         scons_params.environment.platform_id = platform_id
     if is_windows is not None:
         scons_params.environment.is_windows = is_windows
+    if apio_env_params is not None:
+        scons_params.apio_env_params.MergeFrom(apio_env_params)
     if target_params is not None:
         scons_params.target.MergeFrom(target_params)
 

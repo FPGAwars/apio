@@ -13,7 +13,12 @@ from tests.unit_tests.scons.testing import make_test_apio_env
 from tests.conftest import ApioRunner
 from apio.common.apio_console import cunstyle
 from apio.common import apio_console
-from apio.common.proto.apio_pb2 import TargetParams, UploadParams, LintParams
+from apio.common.proto.apio_pb2 import (
+    TargetParams,
+    UploadParams,
+    LintParams,
+    ApioEnvParams,
+)
 from apio.scons.plugin_util import (
     get_constraint_file,
     verilog_src_scanner,
@@ -285,13 +290,12 @@ def test_verilator_lint_action_max(apio_runner: ApioRunner):
         # -- Create apio scons env.
         apio_env = make_test_apio_env(
             targets=["lint"],
+            apio_env_params=ApioEnvParams(
+                verilator_extra_options=["--opt1", "--opt2"]
+            ),
             target_params=TargetParams(
                 lint=LintParams(
                     top_module="my_top_module",
-                    verilator_all=True,
-                    verilator_no_style=True,
-                    verilator_no_warns=["aa", "bb"],
-                    verilator_warns=["cc", "dd"],
                 )
             ),
         )
@@ -313,12 +317,13 @@ def test_verilator_lint_action_max(apio_runner: ApioRunner):
 
         # -- Collapse consecutive spaces in the string.
         normalized_cmd = re.sub(r"\s+", " ", action[1])
+
         # -- Verify the string
         assert (
             "verilator_bin --lint-only --quiet --bbox-unsup --timing "
-            "-Wno-TIMESCALEMOD -Wno-MULTITOP -DSYNTHESIZE -DAPIO_SIM=0 -Wall "
-            "-Wno-style -Wno-aa -Wno-bb -Wwarn-cc -Wwarn-dd --top-module "
-            'my_top_module param1 param2 -I"dir1" -I"dir2" '
-            f"_build{os.sep}default{os.sep}hardware.vlt "
-            '"file1" "file2" $SOURCES' == normalized_cmd
+            "-Wno-TIMESCALEMOD -Wno-MULTITOP -DSYNTHESIZE -DAPIO_SIM=0 "
+            "--opt1 --opt2 "
+            '--top-module my_top_module param1 param2 -I"dir1" -I"dir2" '
+            f'_build{os.sep}default{os.sep}hardware.vlt "file1" "file2" '
+            "$SOURCES" == normalized_cmd
         )

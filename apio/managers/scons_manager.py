@@ -304,6 +304,9 @@ class SConsManager:
                 gtkwave_extra_options=apio_ctx.project.get_list_option(
                     "gtkwave-extra-options", None
                 ),
+                verilator_extra_options=apio_ctx.project.get_list_option(
+                    "verilator-extra-options", None
+                ),
                 constraint_file=apio_ctx.project.get_str_option(
                     "constraint-file", None
                 ),

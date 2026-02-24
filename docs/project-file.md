@@ -226,6 +226,20 @@ design.
 top-module = Blinky
 ```
 
+### verilator-extra-options
+
+The optional `verilator-extra-options` string list option allows adding options to the
+verilator command that that is invoked by the `apio lint`. For a list of
+verilator's command line options type `apio raw -- verilator --help`.
+
+Example:
+```
+[env:default]
+verilator-extra-options =
+    -Wpedantic
+    -Wno-fatal
+```
+
 ### yosys-synth-extra-options
 
 The optional `yosys-synth-extra-options` string list option allows adding options to the

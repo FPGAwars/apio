@@ -146,6 +146,7 @@
         "nextpnr",
         "nofailsafe",
         "nostyle",
+        "nosynth",
         "novlt",
         "nowarn",
         "obijuan",

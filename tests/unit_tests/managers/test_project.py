@@ -67,6 +67,7 @@ def test_all_options_env(apio_runner: ApioRunner, capsys: LogCaptureFixture):
             "yosys-synth-extra-options": "-dsp -xyz",
             "nextpnr-extra-options": "--freq 13",
             "gtkwave-extra-options": "--rcvar=do_initial_zoom_fit 1",
+            "verilator-extra-options": "-Wno-fatal",
             "constraint-file": "pinout.lpf",
         }
     }
@@ -92,6 +93,7 @@ def test_all_options_env(apio_runner: ApioRunner, capsys: LogCaptureFixture):
         "yosys-synth-extra-options": ["-dsp -xyz"],
         "nextpnr-extra-options": ["--freq 13"],
         "gtkwave-extra-options": ["--rcvar=do_initial_zoom_fit 1"],
+        "verilator-extra-options": ["-Wno-fatal"],
         "constraint-file": "pinout.lpf",
     }
 
