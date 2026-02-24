@@ -514,6 +514,7 @@ Examples:[code]
 )
 @options.docs_format_option
 def _commands_cli(
+    *,
     # Options
     docs,
 ):

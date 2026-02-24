@@ -83,6 +83,7 @@ the apio.ini option 'programmer-cmd'.
 @options.project_dir_option
 def cli(
     _: click.Context,
+    *,
     # Options
     serial_port: str,
     serial_num: str,

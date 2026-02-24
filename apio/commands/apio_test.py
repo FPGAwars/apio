@@ -89,6 +89,7 @@ option_default = click.option(
 @options.project_dir_option
 def cli(
     cmd_ctx: click.Context,
+    *,
     # Arguments
     testbench_path: str,
     # Options

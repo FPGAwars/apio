@@ -70,6 +70,7 @@ gui_option = click.option(
 @gui_option
 def cli(
     _: click.Context,
+    *,
     # Options
     env: Optional[str],
     project_dir: Optional[Path],
@@ -83,7 +84,6 @@ def cli(
     """
 
     # pylint: disable=too-many-arguments
-    # pylint: disable=too-many-positional-arguments
 
     # -- Create the apio context.
     apio_ctx = ApioContext(

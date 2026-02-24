@@ -20,7 +20,7 @@ from apio.utils.cmd_util import (
 @click.option("_opt2", "--opt2", is_flag=True, cls=ApioOption)
 @click.option("_opt3", "--opt3", is_flag=True, cls=ApioOption)
 @click.option("_opt4", "--opt4", is_flag=True, cls=ApioOption)
-def fake_cmd(_opt1, _opt2, _opt3, _opt4):
+def fake_cmd(*, _opt1, _opt2, _opt3, _opt4):
     """Fake click command for testing."""
     sys.exit(0)
 

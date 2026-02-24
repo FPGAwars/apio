@@ -98,6 +98,7 @@ Example:[code]
 )
 @options.project_dir_option
 def cli(
+    *,
     # Options
     project_dir: Optional[Path],
 ):

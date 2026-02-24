@@ -50,6 +50,7 @@ commands_option = click.option(
 )
 @commands_option
 def cli(
+    *,
     # Options
     commands,
 ):

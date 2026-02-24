@@ -66,6 +66,7 @@ complete and buildable project. To create complete projects, refer to the \
 @options.project_dir_option
 def cli(
     _: click.Context,
+    *,
     # Options
     board: str,
     top_module: str,
