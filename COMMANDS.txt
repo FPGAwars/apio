@@ -972,7 +972,7 @@ Usage: apio lint [OPTIONS] [FILES]...
   options you would like to use.
 
 Options:
-  --nosynth               Do not define the SUNTHESIS macro.
+  --nosynth               Do not define the SYNTHESIS macro.
   --novlt                 Disable warning suppression .vlt file.
   -t, --top-module name   Restrict linting to this module and its
                           dependencies.

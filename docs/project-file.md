@@ -240,9 +240,9 @@ verilator-extra-options =
     -Wno-fatal
 ```
 
-### yosys-synth-extra-options
+### yosys-extra-options
 
-The optional `yosys-synth-extra-options` string list option allows adding options to the
+The optional `yosys-extra-options` string list option allows adding options to the
 Yosys synth command used by the `apio build` command. In the example below, it adds the option `-dsp`,
 which enables on some FPGAs the use of `DSP` cells to implement
 multiply operations. This is an advanced option that is
@@ -250,7 +250,7 @@ typically not needed.
 
 ```
 [env:default]
-yosys-synth-extra-options =
+yosys-extra-options =
     -dsp
     -verbose
 ```

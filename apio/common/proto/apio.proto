@@ -107,8 +107,8 @@ message ApioEnvParams {
   required string top_module = 3;
   // The optional values of 'defines' option in apio.ini.
   repeated string defines = 4;
-  // The optional value of 'yosys-synth-extra-options' option in apio.ini.
-  repeated string yosys_synth_extra_options = 5;
+  // The optional value of 'yosys-extra-options' option in apio.ini.
+  repeated string yosys_extra_options = 5;
   // The optional value of 'nextpnr-extra-options' option in apio.ini.
   repeated string nextpnr_extra_options = 6;
   // The optional value of 'gtkwave-extra-options' option in apio.ini.

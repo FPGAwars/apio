@@ -295,8 +295,8 @@ class SConsManager:
                 defines=apio_ctx.project.get_list_option(
                     "defines", default=[]
                 ),
-                yosys_synth_extra_options=apio_ctx.project.get_list_option(
-                    "yosys-synth-extra-options", None
+                yosys_extra_options=apio_ctx.project.get_list_option(
+                    "yosys-extra-options", None
                 ),
                 nextpnr_extra_options=apio_ctx.project.get_list_option(
                     "nextpnr-extra-options", None

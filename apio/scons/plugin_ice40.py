@@ -67,7 +67,7 @@ class PluginIce40(PluginBase):
                 "{2} -DSYNTHESIZE {3} $SOURCES"
             ).format(
                 params.apio_env_params.top_module,
-                " ".join(params.apio_env_params.yosys_synth_extra_options),
+                " ".join(params.apio_env_params.yosys_extra_options),
                 "" if params.verbosity.all or params.verbosity.synth else "-q",
                 get_define_flags(apio_env),
             ),
