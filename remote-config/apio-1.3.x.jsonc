@@ -16,7 +16,7 @@
         "name": "apio-definitions"
       },
       "release": {
-        "tag": "2026-02-21",
+        "tag": "2026-02-24",
         "package": "apio-definitions-${YYYYMMDD}.tgz"
       }
     },
