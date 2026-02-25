@@ -28,7 +28,9 @@
         "VERILATOR_ROOT": "%p/share/verilator",
         "ICEBOX": "%p/share/icebox",
         "TRELLIS": "%p/share/trellis",
-        "YOSYS_LIB": "%p/share/yosys"
+        "YOSYS_LIB": "%p/share/yosys",
+        // For 'apio build -g' on windows.
+        "QT_PLUGIN_PATH": "%p/lib/qt5/plugins"
       }
     }
   },
