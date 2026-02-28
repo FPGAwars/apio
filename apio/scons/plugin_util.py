@@ -35,7 +35,7 @@ from apio.common.common_util import (
     has_testbench_name,
     is_source_file,
 )
-from apio.common.apio_console import cout, cerror, cwarning, ctable
+from apio.common.apio_console import cout, cerror, ctable
 from apio.common.apio_styles import INFO, BORDER, EMPH1, EMPH2, EMPH3
 from apio.scons import gtkwave_util
 
@@ -655,9 +655,6 @@ def source_files_issue_scanner_action() -> FunctionAction:
     # A regex to identify "$dumpfile(" in testbenches.
     testbench_dumpfile_re = re.compile(r"[$]dumpfile\s*[(]")
 
-    # A regex to identify "INTERACTIVE_SIM" in testbenches
-    interactive_sim_re = re.compile(r"INTERACTIVE_SIM")
-
     def report_source_files_issues(
         target: List[Alias],
         source: List[File],
@@ -692,13 +689,6 @@ def source_files_issue_scanner_action() -> FunctionAction:
                     style=INFO,
                 )
                 sys.exit(1)
-
-            # -- if contains $dumpfile, print a warning.
-            if interactive_sim_re.findall(file_text):
-                cwarning(
-                    "The Apio macro `INTERACTIVE_SIM is deprecated. "
-                    "Use `APIO_SIM (0 or 1) instead."
-                )
 
     # -- Run the action but don't announce the action. We will print
     # -- ourselves in report_source_files_issues.
@@ -890,14 +880,12 @@ def iverilog_action(
     # -- Construct the action string.
     # -- The -g2012 is for system-verilog support.
     action = (
-        "iverilog -g2012 {0} -o $TARGET {1} {2} {3} {4} {5} {6} {7} $SOURCES"
+        "iverilog -g2012 {0} -o $TARGET {1} {2} {3} {4} {5} {6} $SOURCES"
     ).format(
         "-v" if verbose else "",
         f"-DVCD_OUTPUT={escaped_vcd_output_name}",
         get_define_flags(apio_env),
         f"-DAPIO_SIM={int(is_interactive)}",
-        # 'INTERACTIVE_SIM is deprecated and will go away.
-        "-DINTERACTIVE_SIM" if is_interactive else "",
         map_params(extra_params, "{}"),
         map_params(lib_dirs, '-I"{}"'),
         map_params(lib_files, '"{}"'),
