@@ -9,8 +9,16 @@ import hashlib
 # NOTE: To render the .dot online use
 # https://www.tools-online.app/tools/graphviz
 
-# -- The yosys generated .json file.
-YOSYS_JSON_FILE = "data/hardware-gowin1-256.json"
+
+# YOSYS_JSON_FILE = "data/hardware-gowin1-256.json"
+# NETS = {6, 144, 97, 135, 137, 71, 136, 138, 139}
+
+# YOSYS_JSON_FILE = "data/hardware-gowin2-external.json"
+# NETS = {6, 222}
+
+YOSYS_JSON_FILE = "data/hardware-gowin2-internal.json"
+NETS = {6, 140}
+
 
 # -- Adjust for the design.
 TOP_MODULE_NAME = "main"
@@ -287,9 +295,10 @@ def main():
     # Parse into a Design object.
     design = parse_design(yosys_json)
 
-    # Report given nets.
-    nets = {6, 144, 97, 135, 137, 71, 136, 138, 139}
-    gen_dot_graph(design, nets)
+
+
+
+    gen_dot_graph(design, NETS)
 
 
 if __name__ == "__main__":
