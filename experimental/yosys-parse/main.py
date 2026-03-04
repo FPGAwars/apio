@@ -10,7 +10,7 @@ import hashlib
 # https://www.tools-online.app/tools/graphviz
 
 # -- The yosys generated .json file.
-YOSYS_JSON_FILE = "data/hardware-gowin-256.json"
+YOSYS_JSON_FILE = "data/hardware-gowin1-256.json"
 
 # -- Adjust for the design.
 TOP_MODULE_NAME = "main"
