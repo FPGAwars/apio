@@ -13,11 +13,11 @@ import hashlib
 # YOSYS_JSON_FILE = "data/hardware-gowin1-256.json"
 # NETS = {6, 144, 97, 135, 137, 71, 136, 138, 139}
 
-# YOSYS_JSON_FILE = "data/hardware-gowin2-external.json"
-# NETS = {6, 222}
+# YOSYS_JSON_FILE = "data/hardware-gowin2-with-probe.json"
+# NETS = {6, 7, 223, 10, 222}
 
-YOSYS_JSON_FILE = "data/hardware-gowin2-internal.json"
-NETS = {6, 140}
+YOSYS_JSON_FILE = "data/hardware-gowin2-no-probe.json"
+NETS = {6, 151, 98, 143, 145}
 
 
 # -- Adjust for the design.
