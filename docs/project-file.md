@@ -7,8 +7,8 @@ section and the require configuration options.
 
 ```
 [env:default]
-board = alhambra-ii   ; Board id
-top-module = Main     ; Top Verilog module name
+board = alhambra-ii
+top-module = Main
 ```
 
 Below is a more complex `apio.ini` file that contains two `[env:name]` sections named `env1` and `env2`, a `[common]` section with settings that are shared by all envs, and an `[apio]` section the selects the `env2` as the default env.
@@ -254,3 +254,16 @@ yosys-extra-options =
     -dsp
     -verbose
 ```
+
+In the example below, the command `write_verilog` is added to the Yosys 
+build command to generate all file `_build/default/hardware-synth.v` with
+a flattened representation of the synthesized design. This is helpful when
+diagnosing Yosys related synthesis issues.
+
+```
+[env:my-env]
+board = alhambra-ii
+top-module = leds
+yosys-extra-options =
+  \; write_verilog _build/my-env/hardware-synth.v
+``

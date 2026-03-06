@@ -343,6 +343,14 @@ class Project:
         return env_name
 
     @staticmethod
+    def _unescape_value(s: str) -> str:
+        """Unescape # and ; in values. This allows to add these two
+        chars in values."""
+        s = s.replace("\\#", "#")
+        s = s.replace("\\;", ";")
+        return s
+
+    @staticmethod
     def _parse_env_options(
         env_name: str,
         common_section: Dict[str, str],
@@ -364,11 +372,11 @@ class Project:
         # -- Add common options that are not in env section
         for name, val in common_section.items():
             if name not in env_section:
-                result[name] = val
+                result[name] = Project._unescape_value(val)
 
         # -- Add all the options from the env section.
         for name, val in env_section.items():
-            result[name] = val
+            result[name] = Project._unescape_value(val)
 
         # -- check that all the required options exist.
         for option_spec in ENV_OPTIONS_SPEC.values():
