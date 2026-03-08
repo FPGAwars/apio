@@ -63,7 +63,7 @@ class PluginIce40(PluginBase):
         # -- The yosys synth builder.
         return Builder(
             action=(
-                'yosys -p "synth_ice40 -top {0} {1} -json $TARGET" '
+                'yosys -p "synth_ice40 -top {0} -json $TARGET {1}" '
                 "{2} -DSYNTHESIZE {3} $SOURCES"
             ).format(
                 params.apio_env_params.top_module,

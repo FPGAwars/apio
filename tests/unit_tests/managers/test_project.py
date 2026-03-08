@@ -128,7 +128,7 @@ def test_required_options_only_env(
 
 
 def test_list_options(apio_runner: ApioRunner, capsys: LogCaptureFixture):
-    """Tests list optionss."""
+    """Tests list options."""
 
     project, _ = load_apio_ini(
         apio_ini={
@@ -152,6 +152,32 @@ def test_list_options(apio_runner: ApioRunner, capsys: LogCaptureFixture):
     assert project.get_list_option("nextpnr-extra-options") == [
         "k5=v5  k6=v6",
         "k7=v7",
+    ]
+
+
+def test_escaping(apio_runner: ApioRunner, capsys: LogCaptureFixture):
+    """Tests escaping of comment markers in values.."""
+
+    project, _ = load_apio_ini(
+        apio_ini={
+            "[env:default]": {
+                "board": "alhambra-ii",
+                "top-module": "my_top_module",
+                "constraint-file": " \\; value ",
+                "yosys-extra-options": "  k1=\\;v1  k2=v2; \n ; "
+                "Comment \n k3=v3\\# \n\n",
+            }
+        },
+        env_arg=None,
+        apio_runner=apio_runner,
+        capsys=capsys,
+    )
+
+    assert project.get_str_option("constraint-file") == "; value"
+
+    assert project.get_list_option("yosys-extra-options") == [
+        "k1=;v1  k2=v2;",
+        "k3=v3#",
     ]
 
 
