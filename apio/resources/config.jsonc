@@ -29,7 +29,7 @@
   // For testing using the local remote config
   // export APIO_REMOTE_CONFIG_URL="file:///projects/apio-dev/repo/remote-config/apio-{major}.{minor}.x.jsonc"
 
-  "remote-config-url": "https://github.com/fpgawars/apio/raw/main/remote-config/apio-{major}.{minor}.x.jsonc"
+  "remote-config-url": "https://github.com/zapta/apio/raw/main/remote-config/apio-{major}.{minor}.x.jsonc"
 }
 
 

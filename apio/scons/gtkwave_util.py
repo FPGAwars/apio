@@ -19,11 +19,11 @@ def _get_gtkw_file_header(testbench_path: str) -> str:
     tb_path_posix = Path(testbench_path).as_posix()
 
     lines = [
-        f"# GTKWave display configuration for 'apio sim {tb_path_posix}'",
-        f"# {GTKW_AUTO_FILE_MARKER}.",
-        "# DO NOT EDIT IT MANUALLY!",
-        f"# To customize this file, run 'apio sim {tb_path_posix}'",
-        "# and save the file from GTKWave.",
+        f"[*] GTKWave display configuration for 'apio sim {tb_path_posix}'",
+        f"[*] {GTKW_AUTO_FILE_MARKER}.",
+        "[*] DO NOT EDIT IT MANUALLY!",
+        f"[*] To customize this file, run 'apio sim {tb_path_posix}'",
+        "[*] and save the file from GTKWave.",
         "",
         "[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI",
         "",
