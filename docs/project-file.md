@@ -38,9 +38,22 @@ At runtime, apio select the env to use based using the following rules in decrea
 2. The value of the `default-env` option in the `[apio]` section, if exists.
 3. The first env that is listed in `apio.ini`.
 
+
 When apio determines the env to use, it collects its options
 from the `[common]` and the [env:name] section, with options in the `[env:name]` section
 having higher priority, and executes the command with the resolved set options.
+
+## Value macros
+
+When processing env values, apio replaces the following macros with their
+respective values.
+
+| MACRO_NAME    | VALUE                                                            |
+| :------------ | :--------------------------------------------------------------- |
+| `{semicolon}` | The character `;`                                                |
+| `{hash}`      | The character `#`                                                |
+| `{env-name}`  | The env name, e.g. `my-env`.                                     |
+| `{env-build}` | The posix path of the env build directory, e.g. `_build/my-env`. |
 
 ---
 
@@ -92,11 +105,11 @@ board ID must be from that file.
 
 The optional `constraint-file` option allows to specify the constraint file
 (aka pinout file) and to use different constraint file for different envs. Its
-value is a relative path to a constraint file under the project's root. 
+value is a relative path to a constraint file under the project's root.
 The constraint file extension must be the one expected by the
 FPGA architecture, for example `.lpf` for ICE40 architecture.
 
-If `constraint-file` is not specified and the project directory tree 
+If `constraint-file` is not specified and the project directory tree
 contains exactly one file with the expected extension, that files is used
 automatically as the constraint file, otherwise Apio exists with an error
 message.
@@ -233,6 +246,7 @@ verilator command that that is invoked by the `apio lint`. For a list of
 verilator's command line options type `apio raw -- verilator --help`.
 
 Example:
+
 ```
 [env:default]
 verilator-extra-options =
@@ -255,8 +269,8 @@ yosys-extra-options =
     -verbose
 ```
 
-In the example below, the command `write_verilog` is added to the Yosys 
-build command to generate all file `_build/default/hardware-synth.v` with
+In the example below, the command `write_verilog` is added to the Yosys
+build command to generate all file `_build/default/yosys-synth.v` with
 a flattened representation of the synthesized design. This is helpful when
 diagnosing Yosys related synthesis issues.
 
@@ -265,5 +279,6 @@ diagnosing Yosys related synthesis issues.
 board = alhambra-ii
 top-module = leds
 yosys-extra-options =
-  \; write_verilog _build/my-env/hardware-synth.v
+  {semicolon} write_verilog {env-build}/yosys-synth.v
 ``
+```
