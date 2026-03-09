@@ -20,6 +20,7 @@ from configobj import ConfigObj
 from apio.utils import util
 from apio.common.apio_console import cout, cerror, cwarning
 from apio.common.apio_styles import INFO, SUCCESS, EMPH2
+from apio.common.common_util import PROJECT_BUILD_PATH
 
 
 DEFAULT_TOP_MODULE = "main"
@@ -343,11 +344,10 @@ class Project:
         return env_name
 
     @staticmethod
-    def _unescape_value(s: str) -> str:
-        """Unescape # and ; in values. This allows to add these two
-        chars in values."""
-        s = s.replace("\\#", "#")
-        s = s.replace("\\;", ";")
+    def _expand_value(s: str, macros: Dict[str, str]) -> str:
+        """Expand macros by replacing macros keys with macro values."""
+        for k, v in macros.items():
+            s = s.replace(k, v)
         return s
 
     @staticmethod
@@ -361,6 +361,18 @@ class Project:
         and list options are returned as list of strings.
         """
 
+        # -- Key/Value dict for macro expansion.
+        macros = {
+            # -- The ';' char.  (de-conflicted from ; comment)
+            "{semicolon}": ";",
+            # -- The '#' char.  (de-conflicted from # comment)
+            "{hash}": "#",
+            # -- The env name.
+            "{env-name}": env_name,
+            # -- The relative path to env build directory (linux / style)
+            "{env-build}": (PROJECT_BUILD_PATH / env_name).as_posix(),
+        }
+
         # -- Select the env section by name.
         env_section = env_sections[env_name]
 
@@ -372,11 +384,11 @@ class Project:
         # -- Add common options that are not in env section
         for name, val in common_section.items():
             if name not in env_section:
-                result[name] = Project._unescape_value(val)
+                result[name] = Project._expand_value(val, macros)
 
         # -- Add all the options from the env section.
         for name, val in env_section.items():
-            result[name] = Project._unescape_value(val)
+            result[name] = Project._expand_value(val, macros)
 
         # -- check that all the required options exist.
         for option_spec in ENV_OPTIONS_SPEC.values():

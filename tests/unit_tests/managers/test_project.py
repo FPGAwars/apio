@@ -155,17 +155,17 @@ def test_list_options(apio_runner: ApioRunner, capsys: LogCaptureFixture):
     ]
 
 
-def test_escaping(apio_runner: ApioRunner, capsys: LogCaptureFixture):
-    """Tests escaping of comment markers in values.."""
+def test_macro_expansion(apio_runner: ApioRunner, capsys: LogCaptureFixture):
+    """Tests the expansion of macros within values."""
 
     project, _ = load_apio_ini(
         apio_ini={
             "[env:default]": {
                 "board": "alhambra-ii",
                 "top-module": "my_top_module",
-                "constraint-file": " \\; value ",
-                "yosys-extra-options": "  k1=\\;v1  k2=v2; \n ; "
-                "Comment \n k3=v3\\# \n\n",
+                "constraint-file": " {semicolon} value ",
+                "yosys-extra-options": "  k1={env-build}/v1  k2=v2; \n ; "
+                "Comment \n k3=v3{hash} {env-name}\n\n",
             }
         },
         env_arg=None,
@@ -176,8 +176,8 @@ def test_escaping(apio_runner: ApioRunner, capsys: LogCaptureFixture):
     assert project.get_str_option("constraint-file") == "; value"
 
     assert project.get_list_option("yosys-extra-options") == [
-        "k1=;v1  k2=v2;",
-        "k3=v3#",
+        "k1=_build/default/v1  k2=v2;",
+        "k3=v3# default",
     ]
 
 
