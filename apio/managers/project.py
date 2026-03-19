@@ -364,13 +364,13 @@ class Project:
         # -- Key/Value dict for macro expansion.
         macros = {
             # -- The ';' char.  (de-conflicted from ; comment)
-            "{semicolon}": ";",
+            "${SEMICOLON}": ";",
             # -- The '#' char.  (de-conflicted from # comment)
-            "{hash}": "#",
+            "${HASH}": "#",
             # -- The env name.
-            "{env-name}": env_name,
+            "${ENV_NAME}": env_name,
             # -- The relative path to env build directory (linux / style)
-            "{env-build}": (PROJECT_BUILD_PATH / env_name).as_posix(),
+            "${ENV_BUILD}": (PROJECT_BUILD_PATH / env_name).as_posix(),
         }
 
         # -- Select the env section by name.

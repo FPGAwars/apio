@@ -163,9 +163,9 @@ def test_macro_expansion(apio_runner: ApioRunner, capsys: LogCaptureFixture):
             "[env:default]": {
                 "board": "alhambra-ii",
                 "top-module": "my_top_module",
-                "constraint-file": " {semicolon} value ",
-                "yosys-extra-options": "  k1={env-build}/v1  k2=v2; \n ; "
-                "Comment \n k3=v3{hash} {env-name}\n\n",
+                "constraint-file": " ${SEMICOLON} value ",
+                "yosys-extra-options": "  k1=${ENV_BUILD}/v1  k2=v2; \n ; "
+                "Comment \n k3=v3${HASH} ${ENV_NAME}\n\n",
             }
         },
         env_arg=None,
