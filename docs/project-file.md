@@ -38,22 +38,23 @@ At runtime, apio select the env to use based using the following rules in decrea
 2. The value of the `default-env` option in the `[apio]` section, if exists.
 3. The first env that is listed in `apio.ini`.
 
-
 When apio determines the env to use, it collects its options
 from the `[common]` and the [env:name] section, with options in the `[env:name]` section
 having higher priority, and executes the command with the resolved set options.
 
-## Value macros
+## Project macros
 
-When processing env values, apio replaces the following macros with their
+When processing env values in apio.ini, apio replaces the following macros with their
 respective values.
 
-| MACRO_NAME    | VALUE                                                            |
-| :------------ | :--------------------------------------------------------------- |
-| `{semicolon}` | The character `;`                                                |
-| `{hash}`      | The character `#`                                                |
-| `{env-name}`  | The env name, e.g. `my-env`.                                     |
-| `{env-build}` | The posix path of the env build directory, e.g. `_build/my-env`. |
+| MACRO_NAME     | VALUE                                                            |
+| :------------- | :--------------------------------------------------------------- |
+| `${SEMICOLON}` | The character `;`                                                |
+| `${HASH}`      | The character `#`                                                |
+| `${ENV_NAME}`  | The env name, e.g. `my-env`.                                     |
+| `${ENV_BUILD}` | The posix path of the env build directory, e.g. `_build/my-env`. |
+
+> Hint: The `${SEMICOLON}` and `${HASH}` macros are provided to avoid interpretation as comment markers.
 
 ---
 
@@ -279,6 +280,6 @@ diagnosing Yosys related synthesis issues.
 board = alhambra-ii
 top-module = leds
 yosys-extra-options =
-  {semicolon} write_verilog {env-build}/yosys-synth.v
+  ${SEMICOLON} write_verilog ${ENV_BUILD}/yosys-synth.v
 ``
 ```
