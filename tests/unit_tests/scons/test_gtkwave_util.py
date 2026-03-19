@@ -9,11 +9,11 @@ from apio.scons.gtkwave_util import create_gtkwave_file
 
 # Expected default gtkw file lines for the examples we use below.
 EXPECTED_GTKW_LINES = [
-    "# GTKWave display configuration for 'apio sim main_tb.v'",
-    "# THIS FILE WAS GENERATED AUTOMATICALLY BY APIO.",
-    "# DO NOT EDIT IT MANUALLY!",
-    "# To customize this file, run 'apio sim main_tb.v'",
-    "# and save the file from GTKWave.",
+    "[*] GTKWave display configuration for 'apio sim main_tb.v'",
+    "[*] THIS FILE WAS GENERATED AUTOMATICALLY BY APIO.",
+    "[*] DO NOT EDIT IT MANUALLY!",
+    "[*] To customize this file, run 'apio sim main_tb.v'",
+    "[*] and save the file from GTKWave.",
     "",
     "[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI",
     "",
