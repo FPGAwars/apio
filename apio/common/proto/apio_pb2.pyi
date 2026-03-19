@@ -44,28 +44,32 @@ PNG: GraphOutputType
 PDF: GraphOutputType
 
 class Ice40FpgaInfo(_message.Message):
-    __slots__ = ("type", "pack")
+    __slots__ = ("type", "package")
     TYPE_FIELD_NUMBER: _ClassVar[int]
-    PACK_FIELD_NUMBER: _ClassVar[int]
+    PACKAGE_FIELD_NUMBER: _ClassVar[int]
     type: str
-    pack: str
-    def __init__(self, type: _Optional[str] = ..., pack: _Optional[str] = ...) -> None: ...
+    package: str
+    def __init__(self, type: _Optional[str] = ..., package: _Optional[str] = ...) -> None: ...
 
 class Ecp5FpgaInfo(_message.Message):
-    __slots__ = ("type", "pack", "speed")
+    __slots__ = ("type", "package", "speed")
     TYPE_FIELD_NUMBER: _ClassVar[int]
-    PACK_FIELD_NUMBER: _ClassVar[int]
+    PACKAGE_FIELD_NUMBER: _ClassVar[int]
     SPEED_FIELD_NUMBER: _ClassVar[int]
     type: str
-    pack: str
+    package: str
     speed: str
-    def __init__(self, type: _Optional[str] = ..., pack: _Optional[str] = ..., speed: _Optional[str] = ...) -> None: ...
+    def __init__(self, type: _Optional[str] = ..., package: _Optional[str] = ..., speed: _Optional[str] = ...) -> None: ...
 
 class GowinFpgaInfo(_message.Message):
-    __slots__ = ("family",)
-    FAMILY_FIELD_NUMBER: _ClassVar[int]
-    family: str
-    def __init__(self, family: _Optional[str] = ...) -> None: ...
+    __slots__ = ("yosys_family", "nextpnr_family", "packager_device")
+    YOSYS_FAMILY_FIELD_NUMBER: _ClassVar[int]
+    NEXTPNR_FAMILY_FIELD_NUMBER: _ClassVar[int]
+    PACKAGER_DEVICE_FIELD_NUMBER: _ClassVar[int]
+    yosys_family: str
+    nextpnr_family: str
+    packager_device: str
+    def __init__(self, yosys_family: _Optional[str] = ..., nextpnr_family: _Optional[str] = ..., packager_device: _Optional[str] = ...) -> None: ...
 
 class FpgaInfo(_message.Message):
     __slots__ = ("fpga_id", "part_num", "size", "ice40", "ecp5", "gowin")
