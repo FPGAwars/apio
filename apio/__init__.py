@@ -31,4 +31,4 @@ __url__ = "https://github.com/FPGAwars/apio"
 __author__ = "Jesús Arroyo Torrens"
 __email__ = "jesus.arroyo.torrens@gmail.com"
 
-__license__ = "GPLv2"
+__license__ = "GPLv3+"
