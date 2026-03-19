@@ -103,7 +103,7 @@ class PluginEcp5(PluginBase):
                 "{5} {6} {7}"
             ).format(
                 params.fpga_info.ecp5_params.type,
-                params.fpga_info.ecp5_params.pack,
+                params.fpga_info.ecp5_params.package,
                 params.fpga_info.ecp5_params.speed,
                 apio_env.target + ".pnr",
                 self.constrain_file(),

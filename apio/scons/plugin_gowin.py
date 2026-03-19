@@ -91,15 +91,20 @@ class PluginGowin(PluginBase):
             return target, source
 
         # -- Create the builder.
+        gowin_params = params.fpga_info.gowin_params
         return Builder(
             action=(
                 "nextpnr-himbaechel --device {0} --json $SOURCE "
-                "--write $TARGET --report {1} --vopt family={2} "
+                "--write $TARGET --report {1} {2} "
                 "--vopt cst={3} {4} {6} {5}"
             ).format(
                 params.fpga_info.part_num,
                 apio_env.target + ".pnr",
-                params.fpga_info.gowin_params.family,
+                (
+                    f"--vopt family={gowin_params.nextpnr_family}"
+                    if gowin_params.nextpnr_family
+                    else ""
+                ),
                 self.constrain_file(),
                 "" if params.verbosity.all or params.verbosity.pnr else "-q",
                 "--gui" if params.nextpnr_gui else "",
@@ -116,7 +121,7 @@ class PluginGowin(PluginBase):
 
         return Builder(
             action="gowin_pack -d {0} -o $TARGET $SOURCE".format(
-                self.apio_env.params.fpga_info.gowin_params.family
+                self.apio_env.params.fpga_info.gowin_params.packer_device
             ),
             suffix=".fs",
             src_suffix=".pnr.json",

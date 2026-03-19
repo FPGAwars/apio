@@ -40,6 +40,10 @@ def test_apio_api_get_boards(apio_runner: ApioRunner):
                 "part-num": "ICE40HX4K-TQ144",
                 "arch": "ice40",
                 "size": "8k",
+                "ice40-params": {
+                    "package": "tq144:4k",
+                    "type": "hx8k",
+                },
             },
             "programmer": {"id": "openfpgaloader"},
         }
@@ -71,6 +75,10 @@ def test_apio_api_get_fpgas(apio_runner: ApioRunner):
             "part-num": "ICE40HX4K-TQ144",
             "arch": "ice40",
             "size": "8k",
+            "ice40-params": {
+                "package": "tq144:4k",
+                "type": "hx8k",
+            },
         }
 
 
@@ -236,10 +244,12 @@ def test_apio_api_get_project(apio_runner: ApioRunner):
                 "fpga": {
                     "id": "ice40hx4k-tq144-8k",
                     "arch": "ice40",
-                    "pack": "tq144:4k",
                     "part-num": "ICE40HX4K-TQ144",
                     "size": "8k",
-                    "type": "hx8k",
+                    "ice40-params": {
+                        "package": "tq144:4k",
+                        "type": "hx8k",
+                    },
                 },
                 "programmer": {
                     "id": "openfpgaloader",

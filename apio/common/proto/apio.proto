@@ -49,9 +49,9 @@ message Ecp5FpgaParams {
 // Gowin specific fpga attributes.
 // Matches definition file fpgas.jsonc.
 message GowinFpgaParams {
-  optional string yosys_family = 1;
-  optional string nextpnr_family = 2;
-  required string packager_device = 3;
+  optional string yosys_family = 1 [default = ""];
+  optional string nextpnr_family = 2 [default = ""];
+  required string packer_device = 3;
 }
 
 // General fpga info.

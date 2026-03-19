@@ -38,8 +38,10 @@ CUSTOM_FPGAS = """
     "part-num": "CUSTOM-FPGA",
     "arch": "ice40",
     "size": "5k",
-    "type": "up5k",
-    "pack": "sg48"
+    "ice40-params": {
+      "type": "up5k",
+      "package": "sg48"
+    }
   }
 }
 """

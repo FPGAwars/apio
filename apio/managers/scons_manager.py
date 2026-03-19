@@ -68,7 +68,7 @@ def on_exception(*, exit_code: int):
 
                 if not util.is_debug(1):
                     cout(
-                        "Running with APIO_DEBUG=1 may provide "
+                        "Setting env var APIO_DEBUG=1 may provide "
                         "additional diagnostic information.",
                         style=INFO,
                     )
@@ -218,39 +218,48 @@ class SConsManager:
 
         # -- Get the project resources.
         pr = apio_ctx.project_resources
+        fpga_info = pr.fpga_info
 
         # -- Populate the common values of FpgaInfo.
         result.fpga_info.MergeFrom(
             FpgaInfo(
                 fpga_id=pr.fpga_id,
-                part_num=pr.fpga_info["part-num"],
-                size=pr.fpga_info["size"],
+                part_num=fpga_info["part-num"],
+                size=fpga_info["size"],
             )
         )
 
         # - Populate the architecture specific values of result.fpga_info.
-        fpga_arch = pr.fpga_info["arch"]
+        fpga_arch = fpga_info["arch"]
         match fpga_arch:
             case "ice40":
+                params = fpga_info["ice40-params"]
                 result.arch = ApioArch.ICE40
                 result.fpga_info.ice40_params.MergeFrom(
                     Ice40FpgaParams(
-                        type=pr.fpga_info["type"], pack=pr.fpga_info["pack"]
+                        type=params["type"],
+                        package=params["package"],
                     )
                 )
             case "ecp5":
+                params = fpga_info["ecp5-params"]
                 result.arch = ApioArch.ECP5
                 result.fpga_info.ecp5_params.MergeFrom(
                     Ecp5FpgaParams(
-                        type=pr.fpga_info["type"],
-                        pack=pr.fpga_info["pack"],
-                        speed=pr.fpga_info["speed"],
+                        type=params["type"],
+                        package=params["package"],
+                        speed=params["speed"],
                     )
                 )
             case "gowin":
+                params = fpga_info["gowin-params"]
                 result.arch = ApioArch.GOWIN
                 result.fpga_info.gowin_params.MergeFrom(
-                    GowinFpgaParams(family=pr.fpga_info["type"])
+                    GowinFpgaParams(
+                        yosys_family=params["yosys-family"],
+                        nextpnr_family=params["nextpnr-family"],
+                        packer_device=params["packer-device"],
+                    )
                 )
             case _:
                 cerror(f"Unexpected fpga_arch value {fpga_arch}")

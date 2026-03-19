@@ -4,6 +4,7 @@ Tests of apio_context.py
 
 import re
 from tests.conftest import ApioRunner
+from apio.utils import resource_util
 from apio.apio_context import (
     ApioContext,
     PackagesPolicy,
@@ -15,7 +16,7 @@ from apio.utils.resource_util import (
     validate_packages,
     validate_platforms,
     _validate_board_info,
-    _validate_fpga_info,
+    validate_fpga_info,
     _validate_programmer_info,
     collect_project_resources,
     validate_project_resources,
@@ -127,7 +128,7 @@ def test_resources_are_valid(apio_runner: ApioRunner):
         validate_platforms(apio_ctx.platforms)
 
         for fpga_id, fpga_info in apio_ctx.fpgas.items():
-            _validate_fpga_info(fpga_id, fpga_info)
+            validate_fpga_info(fpga_id, fpga_info)
 
         for programmer_id, programmer_info in apio_ctx.programmers.items():
             _validate_programmer_info(programmer_id, programmer_info)
@@ -158,60 +159,4 @@ def test_fpga_definitions(apio_runner: ApioRunner):
         )
 
         for fpga_id, fpga_info in apio_ctx.fpgas.items():
-
-            context = f"In fpga definition {fpga_id}"
-
-            # -- Verify the "arch" field.
-            assert "arch" in fpga_info, context
-            arch = fpga_info["arch"]
-
-            # -- Ice40
-            if arch == "ice40":
-                assert fpga_info.keys() == {
-                    "part-num",
-                    "arch",
-                    "size",
-                    "type",
-                    "pack",
-                }, context
-                assert fpga_info["part-num"], context
-                assert fpga_info["arch"], context
-                assert fpga_info["size"], context
-                assert fpga_info["type"], context
-                assert fpga_info["pack"], context
-                continue
-
-            # -- Ecp5
-            if arch == "ecp5":
-                assert set(fpga_info.keys()) == {
-                    "part-num",
-                    "arch",
-                    "size",
-                    "type",
-                    "pack",
-                    "speed",
-                }, context
-                assert fpga_info["part-num"], context
-                assert fpga_info["arch"], context
-                assert fpga_info["size"], context
-                assert fpga_info["type"], context
-                assert fpga_info["pack"], context
-                assert fpga_info["speed"], context
-                continue
-
-            # -- Gowin
-            if arch == "gowin":
-                assert fpga_info.keys() == {
-                    "part-num",
-                    "arch",
-                    "size",
-                    "type",
-                }, context
-                assert fpga_info["part-num"], context
-                assert fpga_info["arch"], context
-                assert fpga_info["size"], context
-                assert fpga_info["type"], context
-                continue
-
-            # -- Unknown arch
-            raise ValueError(f"Unknown arch value: {arch}")
+            resource_util.validate_fpga_info(fpga_id, fpga_info)

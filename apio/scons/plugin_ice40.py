@@ -97,7 +97,7 @@ class PluginIce40(PluginBase):
                 "--asc $TARGET --report {2} --pcf {3} {4} {5} {6}"
             ).format(
                 params.fpga_info.ice40_params.type,
-                params.fpga_info.ice40_params.pack,
+                params.fpga_info.ice40_params.package,
                 apio_env.target + ".pnr",
                 self.constrain_file(),
                 "" if params.verbosity.all or params.verbosity.pnr else "-q",

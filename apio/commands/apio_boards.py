@@ -43,9 +43,6 @@ class Entry:
     fpga_size: str
     fpga_id: str
     fpga_part_num: str
-    fpga_type: str
-    fpga_pack: str
-    fpga_speed: str
     programmer: str
 
     def sort_key(self):
@@ -54,8 +51,6 @@ class Entry:
 
 
 def _collect_board_entries(apio_ctx) -> List[Entry]:
-
-    # pylint: disable=too-many-locals
 
     # -- Get examples counts by board. This is a sparse dictionary.
     examples = Examples(apio_ctx)
@@ -72,9 +67,6 @@ def _collect_board_entries(apio_ctx) -> List[Entry]:
         fpga_arch = fpga_info.get("arch", "")
         fpga_size = fpga_info.get("size", "")
         fpga_part_num = fpga_info.get("part-num", "")
-        fpga_type = fpga_info.get("type", "")
-        fpga_pack = fpga_info.get("pack", "")
-        fpga_speed = fpga_info.get("speed", "")
         programmer_id = board_info.get("programmer", {}).get("id", "")
 
         result.append(
@@ -86,9 +78,6 @@ def _collect_board_entries(apio_ctx) -> List[Entry]:
                 fpga_size=fpga_size,
                 fpga_id=fpga_id,
                 fpga_part_num=fpga_part_num,
-                fpga_type=fpga_type,
-                fpga_pack=fpga_pack,
-                fpga_speed=fpga_speed,
                 programmer=programmer_id,
             )
         )
