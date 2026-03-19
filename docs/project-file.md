@@ -281,5 +281,4 @@ board = alhambra-ii
 top-module = leds
 yosys-extra-options =
   ${SEMICOLON} write_verilog ${ENV_BUILD}/yosys-synth.v
-``
 ```
