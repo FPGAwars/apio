@@ -29,9 +29,9 @@ from apio.common.proto.apio_pb2 import (
     TargetParams,
     FpgaInfo,
     ApioEnvParams,
-    Ice40FpgaInfo,
-    Ecp5FpgaInfo,
-    GowinFpgaInfo,
+    Ice40FpgaParams,
+    Ecp5FpgaParams,
+    GowinFpgaParams,
     ApioArch,
     GraphParams,
     LintParams,
@@ -233,15 +233,15 @@ class SConsManager:
         match fpga_arch:
             case "ice40":
                 result.arch = ApioArch.ICE40
-                result.fpga_info.ice40.MergeFrom(
-                    Ice40FpgaInfo(
+                result.fpga_info.ice40_params.MergeFrom(
+                    Ice40FpgaParams(
                         type=pr.fpga_info["type"], pack=pr.fpga_info["pack"]
                     )
                 )
             case "ecp5":
                 result.arch = ApioArch.ECP5
-                result.fpga_info.ecp5.MergeFrom(
-                    Ecp5FpgaInfo(
+                result.fpga_info.ecp5_params.MergeFrom(
+                    Ecp5FpgaParams(
                         type=pr.fpga_info["type"],
                         pack=pr.fpga_info["pack"],
                         speed=pr.fpga_info["speed"],
@@ -249,8 +249,8 @@ class SConsManager:
                 )
             case "gowin":
                 result.arch = ApioArch.GOWIN
-                result.fpga_info.gowin.MergeFrom(
-                    GowinFpgaInfo(family=pr.fpga_info["type"])
+                result.fpga_info.gowin_params.MergeFrom(
+                    GowinFpgaParams(family=pr.fpga_info["type"])
                 )
             case _:
                 cerror(f"Unexpected fpga_arch value {fpga_arch}")
