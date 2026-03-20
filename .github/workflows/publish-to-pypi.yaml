@@ -51,7 +51,7 @@ jobs:
 
       # -- Checkout the main branch
       - name: Checkout at release ${{ inputs.release_tag }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           # Checks out the exact tag entered by the user
           ref: ${{ inputs.release_tag }}

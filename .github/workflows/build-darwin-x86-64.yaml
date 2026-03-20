@@ -78,7 +78,7 @@ jobs:
 
       # We checkout the repo into a subdirectory not to step on build-info.json.
       - name: Checkout this repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{env.APIO_REPO}}
           ref: ${{env.APIO_COMMIT}}
@@ -221,14 +221,14 @@ jobs:
           work-dir-name: _work_dir
 
       - name: Export the pyinstaller bundle as an artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           if-no-files-found: error
           name: "apio-cli-darwin-x86-64-bundle"
           path: "apio-cli-darwin-x86-64-${{env.PACKAGE_TAG}}-bundle.tgz"
 
       - name: Export the installer file as an artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           if-no-files-found: error
           name: "apio-cli-darwin-x86-64-installer"
