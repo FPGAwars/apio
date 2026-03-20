@@ -86,6 +86,7 @@
         "envlist",
         "EXMPLS",
         "expandsz",
+        "fastcrc",
         "FGPA",
         "fomu",
         "fontname",
