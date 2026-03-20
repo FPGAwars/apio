@@ -33,7 +33,7 @@ jobs:
           arch: x86_64
 
       - name: Download build-info.json artifact from main job
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           merge-multiple: true
           name: build-info
@@ -72,7 +72,7 @@ jobs:
 
       # -- This is the python that will be included in pyinstaller.
       - name: Install python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
