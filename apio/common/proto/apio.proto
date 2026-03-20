@@ -32,24 +32,30 @@ enum TerminalMode {
 }
 
 // Ice40 specific fpga attributes.
-message Ice40FpgaInfo {
+// Matches definition file fpgas.jsonc.
+message Ice40FpgaParams {
   required string type = 1;
-  required string pack = 2;
+  required string package = 2;
 }
 
 // Ecp5 specific fpga attributes.
-message Ecp5FpgaInfo {
-  required string type = 4;
-  required string pack = 5;
-  required string speed = 6;
+// Matches definition file fpgas.jsonc.
+message Ecp5FpgaParams {
+  required string type = 1;
+  required string package = 2;
+  required string speed = 3;
 }
 
 // Gowin specific fpga attributes.
-message GowinFpgaInfo {
-  required string family = 4;
+// Matches definition file fpgas.jsonc.
+message GowinFpgaParams {
+  optional string yosys_family = 1 [default = ""];
+  optional string nextpnr_family = 2 [default = ""];
+  required string packer_device = 3;
 }
 
 // General fpga info.
+// Matches definition file fpgas.jsonc.
 message FpgaInfo {
   // Common fpga attributes.
   required string fpga_id = 1;
@@ -57,9 +63,9 @@ message FpgaInfo {
   required string size = 3;
   // Architecture specific fpga attributes.
   oneof arch {
-    Ice40FpgaInfo ice40 = 10;
-    Ecp5FpgaInfo ecp5 = 11;
-    GowinFpgaInfo gowin = 12;
+    Ice40FpgaParams ice40_params = 10;
+    Ecp5FpgaParams ecp5_params = 11;
+    GowinFpgaParams gowin_params = 12;
   }
 }
 

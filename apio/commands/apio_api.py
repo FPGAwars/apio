@@ -342,13 +342,11 @@ def _get_boards_cli(
         board_dict["description"] = board_info.get("description", None)
 
         # -- Add board's fpga information.
-        fpga_dict = {}
         fpga_id = board_info.get("fpga-id", None)
         fpga_info = apio_ctx.fpgas.get(fpga_id, {})
-        fpga_dict["id"] = fpga_id
-        fpga_dict["part-num"] = fpga_info.get("part-num", None)
-        fpga_dict["arch"] = fpga_info.get("arch", None)
-        fpga_dict["size"] = fpga_info.get("size", None)
+        assert "id" not in fpga_info
+        fpga_dict = {"id": fpga_id}
+        fpga_dict.update(fpga_info)
         board_dict["fpga"] = fpga_dict
 
         # -- Add board's programmer information.
@@ -420,15 +418,7 @@ def _get_fpgas_cli(
     # -- Generate the fpgas section
     section = {}
     for fpga_id, fpga_info in apio_ctx.fpgas.items():
-        # -- The fpga output dict.
-        fpga_dict = {}
-
-        fpga_dict["part-num"] = fpga_info.get("part-num", None)
-        fpga_dict["arch"] = fpga_info.get("arch", None)
-        fpga_dict["size"] = fpga_info.get("size", None)
-
-        # -- Add the fpga to the fpgas dict.
-        section[fpga_id] = fpga_dict
+        section[fpga_id] = fpga_info
 
     top_dict["fpgas"] = section
 

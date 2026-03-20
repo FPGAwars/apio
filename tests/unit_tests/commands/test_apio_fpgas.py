@@ -9,15 +9,19 @@ CUSTOM_FPGAS = """
     "part-num": "CUSTOM-ICE40HX4K-BG121",
     "arch": "ice40",
     "size": "4k",
-    "type": "hx4k",
-    "pack": "bg121"
+    "ice40-params": {
+      "type": "hx4k",
+      "package": "bg121"
+    }
   },
   "ice40hx4k-tq144-8k": {
     "part-num": "MODIFIED-ICE40HX4K-TQ144",
     "arch": "ice40",
     "size": "8k",
-    "type": "hx8k",
-    "pack": "tq144:4k"
+    "ice40-params": {
+      "type": "hx8k",
+      "package": "tq144:4k"
+    }
   }
 }
 """

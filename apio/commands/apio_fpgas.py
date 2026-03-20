@@ -24,7 +24,7 @@ from apio.apio_context import (
     ProjectPolicy,
     RemoteConfigPolicy,
 )
-from apio.utils import util, cmd_util
+from apio.utils import util, cmd_util, resource_util
 from apio.commands import options
 
 
@@ -32,16 +32,12 @@ from apio.commands import options
 class Entry:
     """A class to hold the field of a single line of the report."""
 
-    # pylint: disable=too-many-instance-attributes
-
     fpga: str
     board_count: int
     fpga_arch: str
     fpga_part_num: str
     fpga_size: str
-    fpga_type: str
-    fpga_pack: str
-    fpga_speed: str
+    fpga_params: str
 
     def sort_key(self):
         """A key for sorting the fpga entries in our preferred order."""
@@ -67,9 +63,12 @@ def _collect_fpgas_entries(apio_ctx: ApioContext) -> List[Entry]:
         fpga_arch = fpga_info.get("arch", "")
         fpga_part_num = fpga_info.get("part-num", "")
         fpga_size = fpga_info.get("size", "")
-        fpga_type = fpga_info.get("type", "")
-        fpga_pack = fpga_info.get("pack", "")
-        fpga_speed = fpga_info.get("speed", "")
+
+        # -- Arch specific params summary string.
+        _, params = resource_util.get_fpga_arch_params(fpga_info)
+        values = [f"\\[{v}]" for v in params.values()]
+        fpga_params = " ".join(values)
+
         # -- Append to the list
         result.append(
             Entry(
@@ -78,9 +77,7 @@ def _collect_fpgas_entries(apio_ctx: ApioContext) -> List[Entry]:
                 fpga_arch=fpga_arch,
                 fpga_part_num=fpga_part_num,
                 fpga_size=fpga_size,
-                fpga_type=fpga_type,
-                fpga_pack=fpga_pack,
-                fpga_speed=fpga_speed,
+                fpga_params=fpga_params,
             )
         )
 
@@ -114,9 +111,7 @@ def _list_fpgas(apio_ctx: ApioContext, verbose: bool):
     table.add_column("PART-NUMBER", no_wrap=True)
     table.add_column("SIZE", no_wrap=True, justify="right")
     if verbose:
-        table.add_column("TYPE", no_wrap=True)
-        table.add_column("PACK", no_wrap=True)
-        table.add_column("SPEED", no_wrap=True, justify="center")
+        table.add_column("PARAMETERS", no_wrap=True)
 
     # -- Add rows.
     last_arch = None
@@ -134,9 +129,7 @@ def _list_fpgas(apio_ctx: ApioContext, verbose: bool):
         values.append(entry.fpga_part_num)
         values.append(entry.fpga_size)
         if verbose:
-            values.append(entry.fpga_type)
-            values.append(entry.fpga_pack)
-            values.append(entry.fpga_speed)
+            values.append(entry.fpga_params)
 
         # -- Add row.
         table.add_row(*values)

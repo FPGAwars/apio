@@ -18,9 +18,9 @@ fpga_info {
   fpga_id: "ice40hx4k-tq144-8k"
   part_num: "ICE40HX4K-TQ144"
   size: "8k"
-  ice40 {
+  ice40_params {
     type: "hx8k"
-    pack: "tq144:4k"
+    package: "tq144:4k"
   }
 }
 verbosity {

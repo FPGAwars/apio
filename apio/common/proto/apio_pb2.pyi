@@ -43,45 +43,49 @@ SVG: GraphOutputType
 PNG: GraphOutputType
 PDF: GraphOutputType
 
-class Ice40FpgaInfo(_message.Message):
-    __slots__ = ("type", "pack")
+class Ice40FpgaParams(_message.Message):
+    __slots__ = ("type", "package")
     TYPE_FIELD_NUMBER: _ClassVar[int]
-    PACK_FIELD_NUMBER: _ClassVar[int]
+    PACKAGE_FIELD_NUMBER: _ClassVar[int]
     type: str
-    pack: str
-    def __init__(self, type: _Optional[str] = ..., pack: _Optional[str] = ...) -> None: ...
+    package: str
+    def __init__(self, type: _Optional[str] = ..., package: _Optional[str] = ...) -> None: ...
 
-class Ecp5FpgaInfo(_message.Message):
-    __slots__ = ("type", "pack", "speed")
+class Ecp5FpgaParams(_message.Message):
+    __slots__ = ("type", "package", "speed")
     TYPE_FIELD_NUMBER: _ClassVar[int]
-    PACK_FIELD_NUMBER: _ClassVar[int]
+    PACKAGE_FIELD_NUMBER: _ClassVar[int]
     SPEED_FIELD_NUMBER: _ClassVar[int]
     type: str
-    pack: str
+    package: str
     speed: str
-    def __init__(self, type: _Optional[str] = ..., pack: _Optional[str] = ..., speed: _Optional[str] = ...) -> None: ...
+    def __init__(self, type: _Optional[str] = ..., package: _Optional[str] = ..., speed: _Optional[str] = ...) -> None: ...
 
-class GowinFpgaInfo(_message.Message):
-    __slots__ = ("family",)
-    FAMILY_FIELD_NUMBER: _ClassVar[int]
-    family: str
-    def __init__(self, family: _Optional[str] = ...) -> None: ...
+class GowinFpgaParams(_message.Message):
+    __slots__ = ("yosys_family", "nextpnr_family", "packer_device")
+    YOSYS_FAMILY_FIELD_NUMBER: _ClassVar[int]
+    NEXTPNR_FAMILY_FIELD_NUMBER: _ClassVar[int]
+    PACKER_DEVICE_FIELD_NUMBER: _ClassVar[int]
+    yosys_family: str
+    nextpnr_family: str
+    packer_device: str
+    def __init__(self, yosys_family: _Optional[str] = ..., nextpnr_family: _Optional[str] = ..., packer_device: _Optional[str] = ...) -> None: ...
 
 class FpgaInfo(_message.Message):
-    __slots__ = ("fpga_id", "part_num", "size", "ice40", "ecp5", "gowin")
+    __slots__ = ("fpga_id", "part_num", "size", "ice40_params", "ecp5_params", "gowin_params")
     FPGA_ID_FIELD_NUMBER: _ClassVar[int]
     PART_NUM_FIELD_NUMBER: _ClassVar[int]
     SIZE_FIELD_NUMBER: _ClassVar[int]
-    ICE40_FIELD_NUMBER: _ClassVar[int]
-    ECP5_FIELD_NUMBER: _ClassVar[int]
-    GOWIN_FIELD_NUMBER: _ClassVar[int]
+    ICE40_PARAMS_FIELD_NUMBER: _ClassVar[int]
+    ECP5_PARAMS_FIELD_NUMBER: _ClassVar[int]
+    GOWIN_PARAMS_FIELD_NUMBER: _ClassVar[int]
     fpga_id: str
     part_num: str
     size: str
-    ice40: Ice40FpgaInfo
-    ecp5: Ecp5FpgaInfo
-    gowin: GowinFpgaInfo
-    def __init__(self, fpga_id: _Optional[str] = ..., part_num: _Optional[str] = ..., size: _Optional[str] = ..., ice40: _Optional[_Union[Ice40FpgaInfo, _Mapping]] = ..., ecp5: _Optional[_Union[Ecp5FpgaInfo, _Mapping]] = ..., gowin: _Optional[_Union[GowinFpgaInfo, _Mapping]] = ...) -> None: ...
+    ice40_params: Ice40FpgaParams
+    ecp5_params: Ecp5FpgaParams
+    gowin_params: GowinFpgaParams
+    def __init__(self, fpga_id: _Optional[str] = ..., part_num: _Optional[str] = ..., size: _Optional[str] = ..., ice40_params: _Optional[_Union[Ice40FpgaParams, _Mapping]] = ..., ecp5_params: _Optional[_Union[Ecp5FpgaParams, _Mapping]] = ..., gowin_params: _Optional[_Union[GowinFpgaParams, _Mapping]] = ...) -> None: ...
 
 class Verbosity(_message.Message):
     __slots__ = ("all", "synth", "pnr")

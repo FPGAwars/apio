@@ -59,14 +59,20 @@ class PluginGowin(PluginBase):
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params
+        gowin_params = params.fpga_info.gowin_params
 
         # -- The yosys synth builder.
         return Builder(
             action=(
-                'yosys -p "synth_gowin -top {0} -json $TARGET {1}" '
-                "{2} -DSYNTHESIZE {3} $SOURCES"
+                'yosys -p "synth_gowin -top {0} {1} -json $TARGET  {2}" '
+                "{3} -DSYNTHESIZE {4} $SOURCES"
             ).format(
                 params.apio_env_params.top_module,
+                (
+                    f"-family {gowin_params.yosys_family}"
+                    if gowin_params.yosys_family
+                    else ""
+                ),
                 " ".join(params.apio_env_params.yosys_extra_options),
                 "" if params.verbosity.all or params.verbosity.synth else "-q",
                 get_define_flags(apio_env),
@@ -83,6 +89,7 @@ class PluginGowin(PluginBase):
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params
+        gowin_params = params.fpga_info.gowin_params
 
         # -- We use an emmiter to add to the builder a second output file.
         def emitter(target, source, env):
@@ -94,12 +101,16 @@ class PluginGowin(PluginBase):
         return Builder(
             action=(
                 "nextpnr-himbaechel --device {0} --json $SOURCE "
-                "--write $TARGET --report {1} --vopt family={2} "
+                "--write $TARGET --report {1} {2} "
                 "--vopt cst={3} {4} {6} {5}"
             ).format(
                 params.fpga_info.part_num,
                 apio_env.target + ".pnr",
-                params.fpga_info.gowin.family,
+                (
+                    f"--vopt family={gowin_params.nextpnr_family}"
+                    if gowin_params.nextpnr_family
+                    else ""
+                ),
                 self.constrain_file(),
                 "" if params.verbosity.all or params.verbosity.pnr else "-q",
                 "--gui" if params.nextpnr_gui else "",
@@ -116,7 +127,7 @@ class PluginGowin(PluginBase):
 
         return Builder(
             action="gowin_pack -d {0} -o $TARGET $SOURCE".format(
-                self.apio_env.params.fpga_info.gowin.family
+                self.apio_env.params.fpga_info.gowin_params.packer_device
             ),
             suffix=".fs",
             src_suffix=".pnr.json",

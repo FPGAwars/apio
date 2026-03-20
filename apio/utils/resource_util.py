@@ -1,7 +1,8 @@
 """Utilities related to the Apio resource files."""
 
 import sys
-from typing import Any, Dict
+import re
+from typing import Any, Dict, Tuple
 from dataclasses import dataclass
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
@@ -66,17 +67,44 @@ BOARD_SCHEMA = schema = {
 FPGA_SCHEMA = schema = {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
-    "required": ["part-num", "arch", "size", "type"],
     "properties": {
         "part-num": {"type": "string"},
         "arch": {"type": "string", "enum": ["ice40", "ecp5", "gowin"]},
         "size": {"type": "string"},
-        "type": {"type": "string"},
-        "pack": {"type": "string"},
-        "speed": {"type": "string"},
+        "ice40-params": {
+            "type": "object",
+            "properties": {
+                "type": {"type": "string"},
+                "package": {"type": "string"},
+            },
+            "required": ["type", "package"],
+            "additionalProperties": False,
+        },
+        "ecp5-params": {
+            "type": "object",
+            "properties": {
+                "type": {"type": "string"},
+                "package": {"type": "string"},
+                "speed": {"type": "string"},
+            },
+            "required": ["type", "package", "speed"],
+            "additionalProperties": False,
+        },
+        "gowin-params": {
+            "type": "object",
+            "properties": {
+                "yosys-family": {"type": "string"},
+                "nextpnr-family": {"type": "string"},
+                "packer-device": {"type": "string"},
+            },
+            "required": ["yosys-family", "nextpnr-family", "packer-device"],
+            "additionalProperties": False,
+        },
     },
+    "required": ["part-num", "arch", "size"],
     "additionalProperties": False,
 }
+
 
 # -- JSON schema for validating programmer definitions in programmers.jsonc.
 PROGRAMMER_SCHEMA = {
@@ -164,41 +192,21 @@ def _validate_board_info(board_id: str, board_info: dict) -> None:
         sys.exit(1)
 
 
-def _validate_fpga_info(fpga_id: str, fpga_info: dict) -> None:
+def validate_fpga_info(fpga_id: str, fpga_info: dict) -> None:
     """Check the given fpga info and raise a fatal error on any error."""
     try:
         validate(instance=fpga_info, schema=FPGA_SCHEMA)
     except ValidationError as e:
-        cerror(f"Invalid fpga definitions [{fpga_id}]: {e.message}")
+        cerror(f"Invalid fpga definition [{fpga_id}]: {e.message}")
         sys.exit(1)
 
-    # -- Architecture based validation. See scons.py for the architecture
-    # -- dependent use of the fields.
-    arch = fpga_info["arch"]
-    match arch:
-        # -- Special validation for ice40.
-        case "ice40":
-            if "pack" not in fpga_info:
-                cerror(f"Field 'pack' is missing in ice40 fpga '{fpga_id}'")
-                sys.exit(1)
-
-        # -- Special validation for ecp5
-        case "ecp5":
-            if "pack" not in fpga_info:
-                cerror(f"Field 'pack' is missing in ecp5 fpga '{fpga_id}'")
-                sys.exit(1)
-            if "speed" not in fpga_info:
-                cerror(f"Field 'pack' is missing in ecp5 fpga '{fpga_id}'")
-                sys.exit(1)
-
-        # -- Special validation for gowin.
-        case "gowin":
-            pass
-
-        # -- Unknown arch. Should not happen since the schema validates the
-        # -- arch field.
-        case _:
-            raise ValidationError(f"Unknown arch '{arch}' in fpga '{fpga_id}'")
+    # -- Expecting a params field for the specified architecture.
+    params_pattern = re.compile(r".*-params$")
+    actual_params = [key for key in fpga_info if params_pattern.match(key)]
+    expected_params = [fpga_info["arch"] + "-params"]
+    if actual_params != expected_params:
+        cerror(f"Unexpected params {actual_params} in fpga {fpga_id}")
+        sys.exit(1)
 
 
 def _validate_programmer_info(
@@ -243,7 +251,7 @@ def validate_project_resources(res: ProjectResources) -> None:
     """Check the resources of the current project. Exit with an error
     message on any error."""
     _validate_board_info(res.board_id, res.board_info)
-    _validate_fpga_info(res.fpga_id, res.fpga_info)
+    validate_fpga_info(res.fpga_id, res.fpga_info)
     _validate_programmer_info(res.programmer_id, res.programmer_info)
 
     # TODO: Add here additional check.
@@ -294,3 +302,12 @@ def collect_project_resources(
 
     # -- All done
     return project_resources
+
+
+def get_fpga_arch_params(fpga_info: Dict) -> Tuple[str, Dict]:
+    """Extracts the arch specific params of an fpga, Returns a tuple
+    with the field name and the field value."""
+    arch = fpga_info["arch"]
+    field_name = arch + "-params"
+    field_value = fpga_info[field_name]
+    return (field_name, field_value)
