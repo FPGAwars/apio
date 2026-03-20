@@ -59,14 +59,20 @@ class PluginGowin(PluginBase):
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params
+        gowin_params = params.fpga_info.gowin_params
 
         # -- The yosys synth builder.
         return Builder(
             action=(
-                'yosys -p "synth_gowin -top {0} -json $TARGET {1}" '
-                "{2} -DSYNTHESIZE {3} $SOURCES"
+                'yosys -p "synth_gowin -top {0} {1} -json $TARGET  {2}" '
+                "{3} -DSYNTHESIZE {4} $SOURCES"
             ).format(
                 params.apio_env_params.top_module,
+                (
+                    f"-family {gowin_params.yosys_family}"
+                    if gowin_params.yosys_family
+                    else ""
+                ),
                 " ".join(params.apio_env_params.yosys_extra_options),
                 "" if params.verbosity.all or params.verbosity.synth else "-q",
                 get_define_flags(apio_env),
@@ -83,6 +89,7 @@ class PluginGowin(PluginBase):
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params
+        gowin_params = params.fpga_info.gowin_params
 
         # -- We use an emmiter to add to the builder a second output file.
         def emitter(target, source, env):
@@ -91,7 +98,6 @@ class PluginGowin(PluginBase):
             return target, source
 
         # -- Create the builder.
-        gowin_params = params.fpga_info.gowin_params
         return Builder(
             action=(
                 "nextpnr-himbaechel --device {0} --json $SOURCE "
