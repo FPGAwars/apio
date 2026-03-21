@@ -275,7 +275,11 @@ class SConsManager:
 
         # -- Populate the Environment params.
         assert apio_ctx.platform_id, "Missing platform_id in apio context"
-        oss_vars = apio_ctx.all_packages["oss-cad-suite"]["env"]["vars"]
+        oss_set_vars = apio_ctx.all_packages["oss-cad-suite"]["env"][
+            "set-vars"
+        ]
+        assert "YOSYS_LIB" in oss_set_vars, oss_set_vars
+        assert "TRELLIS" in oss_set_vars, oss_set_vars
 
         result.environment.MergeFrom(
             Environment(
@@ -288,8 +292,8 @@ class SConsManager:
                 ),
                 theme_name=apio_console.current_theme_name(),
                 debug_level=util.debug_level(),
-                yosys_path=oss_vars["YOSYS_LIB"],
-                trellis_path=oss_vars["TRELLIS"],
+                yosys_path=oss_set_vars["YOSYS_LIB"],
+                trellis_path=oss_set_vars["TRELLIS"],
                 scons_shell_id=apio_ctx.scons_shell_id,
             )
         )

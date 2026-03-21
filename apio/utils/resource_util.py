@@ -168,7 +168,11 @@ PACKAGES_SCHEMA = {
                     "type": "object",
                     "properties": {
                         "path": {"type": "array", "items": {"type": "string"}},
-                        "vars": {
+                        "unset-vars": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                        },
+                        "set-vars": {
                             "type": "object",
                             "additionalProperties": {"type": "string"},
                         },

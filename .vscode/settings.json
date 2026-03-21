@@ -175,6 +175,7 @@
         "pyproject",
         "pyserial",
         "pytest",
+        "PYTHONPATH",
         "pyxx",
         "rankdir",
         "rcvar",

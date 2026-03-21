@@ -91,6 +91,8 @@ def test_files_order(apio_runner: ApioRunner):
             ["examples", "fetch", "alhambra-ii/ledon"],
             terminal_mode=False,
         )
+        sb.assert_result_ok(result)
+        print(result.output)
 
         # -- Add dummy source files
         Path("aa").mkdir(parents=True)

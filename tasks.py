@@ -160,6 +160,7 @@ def lint_task(ctx: Context):
 def check_task(ctx: Context):
     """Lint and run all tests using the latest Python."""
     announce_task("test")
+    # NOTE: Add '-x' after the '--' below to abort on first failure.
     run(
         ctx,
         [
