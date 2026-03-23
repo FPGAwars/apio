@@ -236,15 +236,15 @@ class ApioSandbox:
         all_var_names = set(os.environ.keys()).union(original_env.keys())
         for name in all_var_names:
             # Get the env and dict values. None if doesn't exist.
-            env_val = os.environ.get(name, None)
-            dict_val = original_env.get(name, None)
+            current_val = os.environ.get(name, None)
+            original_val = original_env.get(name, None)
             # -- If values are not the same, update the env.
-            if env_val != dict_val:
-                print(f"  set ${name}={dict_val}  (was {env_val})")
-                if dict_val is None:
+            if current_val != original_val:
+                print(f"  set ${name}={original_val}  (was {current_val})")
+                if original_val is None:
                     os.environ.pop(name)
                 else:
-                    os.environ[name] = dict_val
+                    os.environ[name] = original_val
 
         # -- Sanity check. System env and the dict should be the same.
         assert os.environ == original_env

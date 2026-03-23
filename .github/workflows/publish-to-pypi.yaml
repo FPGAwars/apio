@@ -51,7 +51,7 @@ jobs:
 
       # -- Checkout the main branch
       - name: Checkout at release ${{ inputs.release_tag }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           # Checks out the exact tag entered by the user
           ref: ${{ inputs.release_tag }}
@@ -66,7 +66,7 @@ jobs:
 
       # -- Install and and configure python
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.13"
 

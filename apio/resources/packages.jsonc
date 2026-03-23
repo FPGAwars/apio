@@ -4,7 +4,6 @@
 // Additional packages information is fetched dynamically from the remote 
 // config and is saved in .apio/profile.json.
 //
-// TODO: Delete "file_name" and "extension". They move to the remote config.
 {
   // "definitions" package
   "definitions": {
@@ -20,11 +19,16 @@
   "oss-cad-suite": {
     "description": "Yosys HQ oss-cad-suite",
     "env": {
+      "unset-vars": [
+        // Delete this var, if exists, o isolate the oss-cad-suite
+        // embedded python from the local python.
+        "PYTHONPATH"
+      ],
       "path": [
         "%p/bin",
         "%p/lib"
       ],
-      "vars": {
+      "set-vars": {
         "VERILATOR_ROOT": "%p/share/verilator",
         "ICEBOX": "%p/share/icebox",
         "TRELLIS": "%p/share/trellis",

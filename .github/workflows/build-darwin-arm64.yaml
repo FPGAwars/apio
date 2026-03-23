@@ -27,11 +27,8 @@ jobs:
           os: darwin
           arch: arm64
 
-      # - name: Checkout this repo (for builder)
-      #   uses: actions/checkout@v4
-
       - name: Download build-info.json artifact from main job
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           merge-multiple: true
           name: build-info
@@ -70,13 +67,13 @@ jobs:
 
       # -- This is the python that will be included in pyinstaller.
       - name: Install python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
       # We checkout the repo into a subdirectory not to step on build-info.json.
       - name: Checkout this repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{env.APIO_REPO}}
           ref: ${{env.APIO_COMMIT}}
@@ -217,14 +214,14 @@ jobs:
           work-dir-name: _work_dir
 
       - name: Export the pyinstaller bundle as an artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           if-no-files-found: error
           name: "apio-cli-darwin-arm64-bundle"
           path: "apio-cli-darwin-arm64-${{env.PACKAGE_TAG}}-bundle.tgz"
 
       - name: Export the installer file as an artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           if-no-files-found: error
           name: "apio-cli-darwin-arm64-installer"

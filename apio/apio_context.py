@@ -13,9 +13,9 @@ import platform
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import List, Optional, Dict, Tuple
+from typing import List, Optional, Dict
 from apio.common.apio_console import cout, cerror, cstyle
-from apio.common.apio_styles import EMPH3, INFO, EMPH1
+from apio.common.apio_styles import INFO, EMPH1, EMPH2, EMPH3
 from apio.common.common_util import env_build_path
 from apio.profile import Profile, RemoteConfigPolicy
 from apio.utils import jsonc, util, env_options
@@ -99,10 +99,14 @@ class ApioDefinitions:
 class EnvMutations:
     """Contains mutations to the system env."""
 
+    # -- List of env vars to unset.
+    unset_vars: List[str]
+
     # -- PATH items to add.
     paths: List[str]
-    # -- Vars name/value pairs.
-    vars_list: List[Tuple[str, str]]
+
+    # -- Dict with env vars name/value to set.
+    set_vars: Dict[str, str]
 
 
 class ProjectPolicy(Enum):
@@ -496,7 +500,7 @@ class ApioContext:
         return resource
 
     @staticmethod
-    def _expand_env_template(template: str, package_path: Path) -> str:
+    def _expand_env_values(template: Optional[str], package_path: Path) -> str:
         """Fills a packages env value template as they appear in
         packages.jsonc. Currently it recognizes only a single place holder
         '%p' representing the package absolute path. The '%p" can appear only
@@ -508,7 +512,7 @@ class ApioContext:
         needs. If needed, extend or modify it.
         """
 
-        # Case 1: No place holder.
+        # Case 1: No place holder -> no change.
         if "%p" not in template:
             return template
 
@@ -527,7 +531,7 @@ class ApioContext:
     def _resolve_package_envs(
         packages_: Dict[str, Dict], packages_dir: Path
     ) -> None:
-        """Resolve in place the path and var value templates in the
+        """Resolve in-place the path and var value templates in the
         given packages dictionary. For example, %p is replaced with
         the package's absolute path."""
 
@@ -541,18 +545,21 @@ class ApioContext:
             assert "env" in package_config
             package_env = package_config["env"]
 
+            # -- NOTE: There is no need to expand values in the "unset-env"
+            # -- section since it contains env names only.
+
             # -- Expand the values in the "path" section, if any.
             path_section = package_env.get("path", [])
             for i, path_template in enumerate(path_section):
-                path_section[i] = ApioContext._expand_env_template(
+                path_section[i] = ApioContext._expand_env_values(
                     path_template, package_path
                 )
 
-            # -- Expand the values in the "vars" section, if any.
-            vars_section = package_env.get("vars", {})
-            for var_name, val_template in vars_section.items():
-                vars_section[var_name] = ApioContext._expand_env_template(
-                    val_template, package_path
+            # -- Expand the values in the "set-vars" section, if any.
+            set_vars_section = package_env.get("set-vars", {})
+            for var_name, var_value in set_vars_section.items():
+                set_vars_section[var_name] = ApioContext._expand_env_values(
+                    var_value, package_path
                 )
 
     def get_required_package_info(self, package_name: str) -> str:
@@ -739,56 +746,82 @@ class ApioContext:
         """Collects the env mutation for each of the defined packages,
         in the order they are defined."""
 
-        result = EnvMutations([], [])
+        unset_vars: List[str] = []
+        paths: List[str] = []
+        set_vars: Dict[str, str] = {}
         for _, package_config in self.required_packages.items():
             # -- Get the json 'env' section. We require it, even if it's empty,
             # -- for clarity reasons.
             assert "env" in package_config
             package_env = package_config["env"]
 
+            # -- Collect the env vars to unset.
+            unset_vars_section = package_env.get("unset-vars", [])
+            for var_name in unset_vars_section:
+                # -- Detect duplicates.
+                assert var_name not in unset_vars, var_name
+                unset_vars.append(var_name)
+
             # -- Collect the path values.
-            path_list = package_env.get("path", [])
-            result.paths.extend(path_list)
+            package_paths = package_env.get("path", [])
+            paths.extend(package_paths)
 
-            # -- Collect the env vars (name, value) pairs.
-            vars_section = package_env.get("vars", {})
-            for var_name, var_value in vars_section.items():
-                result.vars_list.append((var_name, var_value))
+            # -- Collect the env vars to set (name, value) pairs.
+            set_vars_section = package_env.get("set-vars", {})
+            for var_name, var_value in set_vars_section.items():
+                # -- Detect duplicates.
+                assert var_name not in set_vars, var_name
+                set_vars[var_name] = var_value
 
-        return result
+        return EnvMutations(unset_vars, paths, set_vars)
 
     def _dump_env_mutations(self, mutations: EnvMutations) -> None:
         """Dumps a user friendly representation of the env mutations."""
-        cout("Environment settings:", style=EMPH3)
+        cout("Environment settings:", style=EMPH2)
 
         # -- Print PATH mutations.
         windows = self.is_windows
+
+        # -- Print unset vars.
+        for name in mutations.unset_vars:
+            styled_name = cstyle(name, style=EMPH3)
+            if windows:
+                cout(f"  set {styled_name}=")
+            else:
+                cout(f"  unset {styled_name}")
+
+        # -- Dump paths.
         for p in reversed(mutations.paths):
             styled_name = cstyle("PATH", style=EMPH3)
             if windows:
-                cout(f"set {styled_name}={p};%PATH%")
+                cout(f"  set {styled_name}={p};%PATH%")
             else:
-                cout(f'{styled_name}="{p}:$PATH"')
+                cout(f'  {styled_name}="{p}:$PATH"')
 
-        # -- Print vars mutations.
-        for name, val in mutations.vars_list:
+        # -- Print set vars.
+        for name, val in mutations.set_vars.items():
             styled_name = cstyle(name, style=EMPH3)
             if windows:
-                cout(f"set {styled_name}={val}")
+                cout(f"  set {styled_name}={val}")
             else:
-                cout(f'{styled_name}="{val}"')
+                cout(f'  {styled_name}="{val}"')
 
     def _apply_env_mutations(self, mutations: EnvMutations) -> None:
         """Apply a given set of env mutations, while preserving their order."""
 
+        # -- Apply the unset var mutations
+        for name in mutations.unset_vars:
+            os.environ.pop(name, None)
+
         # -- Apply the path mutations, while preserving order.
+        # -- NOTE: We treat the old path items as a single items.
         old_val = os.environ["PATH"]
         items = mutations.paths + [old_val]
         new_val = os.pathsep.join(items)
         os.environ["PATH"] = new_val
 
-        # -- Apply the vars mutations, while preserving order.
-        for name, value in mutations.vars_list:
+        # -- Apply the set var mutations
+        for name, value in mutations.set_vars.items():
             os.environ[name] = value
 
     def set_env_for_packages(

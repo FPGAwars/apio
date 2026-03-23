@@ -45,6 +45,10 @@ LINE_IGNORE_LIST = [
     # -- Per https://github.com/fpgawars/apio/issues/824
     # -- TODO: Remove when fixed.
     r"Warning: define gw1n not used in the library",
+    # -- Per https://github.com/YosysHQ/oss-cad-suite-build/issues/194
+    r"Numpy is not available, performance will be degraded",
+    r"Msgspec is not available, performance will be degraded",
+    r"fastcrc is not available, performance will be degraded",
 ]
 
 
