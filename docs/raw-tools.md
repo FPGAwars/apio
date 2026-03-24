@@ -25,7 +25,7 @@ apio raw -- icepll -h
 Generate a PLL module that converts a 12 MHz input to a 48 MHz output clock.
 
 ```
-apio raw -- icepll -i 12 -o 48 -q -m -f pll.v
+apio raw -- icepll -i 12 -o 48 -m -f pll.v
 apio format pll.v
 ```
 
