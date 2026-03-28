@@ -72,8 +72,8 @@ jobs:
                 apio sim --no-gtkwave
                 apio graph -n
                 apio format
-                apio devices scan-usb
-                apio devices scan-serial
+                apio devices usb
+                apio devices serial
 
                 find .
 
