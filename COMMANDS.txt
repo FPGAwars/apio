@@ -56,7 +56,7 @@ Setup commands:
   apio preferences  Manage the apio user preferences.
   apio packages     Manage the apio packages.
   apio drivers      Manage the operating system drivers.
-  apio devices      List attached devices.
+  apio devices      Scan attached devices.
 
 Utility commands:
   apio boards       List available board definitions.
@@ -439,31 +439,30 @@ apio devices
 Usage: apio devices [OPTIONS] COMMAND [ARGS]...
 
   The command group 'apio devices' includes subcommands that lists
-  devices
-  that are attached to the computer. It's main usage is diagnostics or
-  devices connectivity and drivers.
+  devices that are attached to the computer. It's main usage is
+  diagnostics or devices connectivity and drivers.
 
 Options:
   -h, --help  Show this message and exit.
 
 Subcommands:
-  apio devices usb     List USB devices.
-  apio devices serial  List serial devices.
+  apio devices scan-usb     Scan for USB devices.
+  apio devices scan-serial  Scan for serial devices.
 
 
 
 --------------------------------------------
 
-apio devices serial
+apio devices scan-serial
 
-Usage: apio devices serial [OPTIONS]
+Usage: apio devices scan-serial [OPTIONS]
 
-  The command 'apio devices serial' displays the serial devices
-  currently connected to your computer. It is useful for diagnosing FPGA
-  board connectivity issues.
+  The command 'apio devices scan-serial' scans and displays the serial
+  devicescurrently connected to your computer. It is useful for
+  diagnosing FPGA board connectivity issues.
 
   Examples:
-    apio devices serial    # List the serial devices.
+    apio devices scan-serial    # List the serial devices.
 
   Note that devices such as FTDI FTDI2232 that have more than one
   channel are listed as multiple rows, one for each of their serial
@@ -480,16 +479,16 @@ Options:
 
 --------------------------------------------
 
-apio devices usb
+apio devices scan-usb
 
-Usage: apio devices usb [OPTIONS]
+Usage: apio devices scan-usb [OPTIONS]
 
-  The command 'apio devices usb' displays the USB devices currently
-  connected to your computer. It is useful for diagnosing FPGA board
-  connectivity issues.
+  The command 'apio devices scan-usb' scans and display the USB devices
+  currently connected to your computer. It is useful for diagnosing FPGA
+  board connectivity issues.
 
   Examples:
-    apio devices usb    # List the usb devices.
+    apio devices scan-usb    # List the usb devices.
 
 Options:
   -h, --help  Show this message and exit.

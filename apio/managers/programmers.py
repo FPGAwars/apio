@@ -298,7 +298,7 @@ def _match_serial_device(
     if not matching:
         cerror("No matching serial device.")
         cout(
-            "Type 'apio devices serial' for available serial devices.",
+            "Type 'apio devices scan-serial' for available serial devices.",
             style=INFO,
         )
         sys.exit(1)
@@ -307,7 +307,7 @@ def _match_serial_device(
     if len(matching) > 1:
         cerror("Found multiple matching serial devices.")
         cout(
-            "Type 'apio devices serial' for available serial devices.",
+            "Type 'apio devices scan-serial' for available serial devices.",
             style=INFO,
         )
         sys.exit(1)
@@ -364,7 +364,7 @@ def _match_usb_device(
     if not matching:
         cerror("No matching USB device.")
         cout(
-            "Type 'apio devices usb' for available usb devices.",
+            "Type 'apio devices scan-usb' for available usb devices.",
             style=INFO,
         )
         sys.exit(1)
@@ -373,7 +373,7 @@ def _match_usb_device(
     if len(matching) > 1:
         cerror("Found multiple matching usb devices.")
         cout(
-            "Type 'apio devices usb' for available usb device.",
+            "Type 'apio devices scan-usb' for available usb device.",
             style=INFO,
         )
         sys.exit(1)
@@ -424,7 +424,7 @@ def _check_device_presence(apio_ctx: ApioContext, scanner: _DeviceScanner):
     if not matching_devices:
         cerror("No matching device.")
         cout(
-            "Type 'apio devices usb' for available usb devices.",
+            "Type 'apio devices scan-usb' for available usb devices.",
             style=INFO,
         )
         sys.exit(1)

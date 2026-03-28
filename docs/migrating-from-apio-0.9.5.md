@@ -26,7 +26,7 @@ Remove from your testbenches all calls to the Verilog function `$dumpfile()`. Th
 
 ## Know the new commands
 
-The hierarchy and names of some Apio CLI commands were changed in Apio CLI 1.x.x, and the table below will help you migrate from the old to the new commands. You can also use the `-h` option for detailed information on any command level, for example `apio -h`, `apio devices -h`, and `apio devices usb -h`.
+The hierarchy and names of some Apio CLI commands were changed in Apio CLI 1.x.x, and the table below will help you migrate from the old to the new commands. You can also use the `-h` option for detailed information on any command level, for example `apio -h`, `apio devices -h`, and `apio devices scan-usb -h`.
 
 | Apio CLI 0.9.5               | Apio CLI 1.x.x              | Comments                     |
 | :--------------------------- | :-------------------------- | :--------------------------- |
@@ -38,7 +38,7 @@ The hierarchy and names of some Apio CLI commands were changed in Apio CLI 1.x.x
 | `apio init`                  | `apio create`               | Create an apio.ini file      |
 | `apio install --all`         | `apio packages install`     | Install Apio CLI packages    |
 | `apio install --list`        | `apio packages list`        | List installed apio packages |
-| `apio system --lsftdi`       | `apio devices usb`          | List FTDI and USB devices    |
-| `apio system --lsserial`     | `apio devices serial`       | List serial ports            |
+| `apio system --lsftdi`       | `apio devices scan-usb`     | List FTDI and USB devices    |
+| `apio system --lsserial`     | `apio devices scan-serial`  | List serial ports            |
 | `apio time`                  | `apio report`               | Report design timing.        |
 | `apio verify`                | `apio lint`                 | Verify the source code.      |

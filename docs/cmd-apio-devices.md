@@ -4,8 +4,8 @@
 
 ## apio devices
 
-The `apio devices` command group lists devices connected to your computer.
-It is mainly used for diagnosing connectivity or driver issues.
+The `apio devices` command group scans and displays devices connected to your
+computer. It is mainly used for diagnosing connectivity or driver issues.
 
 <h3>Options</h3>
 
@@ -16,22 +16,22 @@ It is mainly used for diagnosing connectivity or driver issues.
 <h3>Subcommands</h3>
 
 ```
-apio devices usb
-apio devices serial
+apio devices scan-usb
+apio devices scan-serial
 ```
 
 ---
 
-## apio devices usb
+## apio devices scan-usb
 
-The command `apio devices usb` displays the USB devices currently
-connected to your computer. It is useful for diagnosing FPGA board
+The command `apio devices scan-usb` scans and displays the USB devices 
+currently connected to your computer. It is useful for diagnosing FPGA board
 connectivity issues.
 
 <h3>Examples</h3>
 
 ```
-apio devices usb    # List USB devices.
+apio devices scan-usb    # Lists USB devices.
 ```
 
 <h3>Options</h3>
@@ -42,20 +42,20 @@ apio devices usb    # List USB devices.
 
 Example output
 
-![](assets/apio-devices-usb.png)
+![](assets/apio-devices-scanusb.png)
 
 ---
 
-## apio devices serial
+## apio devices scan-serial
 
-The command `apio devices serial` displays the serial devices
+The command `apio devices scan-serial` scans and displays the serial devices
 currently connected to your computer. It is useful for diagnosing FPGA
 board connectivity issues.
 
 <h3>Examples</h3>
 
 ```
-apio devices serial    # List serial devices.
+apio devices scan-serial    # List serial devices.
 ```
 
 <h3>Options</h3>
@@ -70,8 +70,9 @@ apio devices serial    # List serial devices.
   multiple entries—one per serial port.
 
 - On Windows, manufacturer and product strings of FTDI based devices may
-  show their FTDI generic values rather than the custom values such as 'Alhambra II' set by the device manufacturer.
+  show their FTDI generic values rather than the custom values such as
+  'Alhambra II' set by the device manufacturer.
 
 Example output
 
-![](assets/apio-devices-serial.png)
+![](assets/apio-devices-scanserial.png)

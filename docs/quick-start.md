@@ -100,10 +100,10 @@ main_tb.v:45: $finish called at 966000 (1ps)
 
 ## Step 6: Program the FPGA board
 
-In this step, we build the project if needed and upload it to the FPGA board. With some systems and boards, this requires driver installation using the `apio drivers install` command, while others work out of the box. To test if the board is accessible, we will try to list it with the `apio devices` command. Since Alhambra-ii uses plain USB rather than a serial port, we will try to list it using the command `apio devices usb`.
+In this step, we build the project if needed and upload it to the FPGA board. With some systems and boards, this requires driver installation using the `apio drivers install` command, while others work out of the box. To test if the board is accessible, we will try to list it with the `apio devices` command. Since Alhambra-ii uses plain USB rather than a serial port, we will try to list it using the command `apio devices scan-usb`.
 
 ```
-project$ apio devices usb
+project$ apio devices scan-usb
 
 USB Devices
 ┌───────────┬─────────┬──────────────┬───────────────────┬────────────┬─────────┐

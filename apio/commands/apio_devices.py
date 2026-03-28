@@ -23,11 +23,11 @@ from apio.common.apio_styles import BORDER, SUCCESS, ERROR, EMPH3
 from apio.utils import serial_util, usb_util, util
 
 
-# --- apio devices usb
+# --- apio devices scan-usb
 
 
 def _list_usb_devices(apio_ctx: ApioContext) -> None:
-    """Lists the connected USB devices in table format."""
+    """Scans and display the connected USB devices in table format."""
 
     devices = usb_util.scan_usb_devices(apio_ctx=apio_ctx)
 
@@ -74,25 +74,25 @@ def _list_usb_devices(apio_ctx: ApioContext) -> None:
 
 
 # -- Text in the rich-text format of the python rich library.
-APIO_DEVICES_USB_HELP = """
-The command 'apio devices usb' displays the USB devices currently \
-connected to your computer. It is useful for diagnosing FPGA board \
+APIO_DEVICES_SCAN_USB_HELP = """
+The command 'apio devices scan-usb' scans and display the USB devices \
+currently connected to your computer. It is useful for diagnosing FPGA board \
 connectivity issues.
 
 Examples:[code]
-  apio devices usb    # List the usb devices.[/code]
+  apio devices scan-usb    # List the usb devices.[/code]
 
 """
 
 
 @click.command(
-    name="usb",
+    name="scan-usb",
     cls=ApioCommand,
-    short_help="List USB devices.",
-    help=APIO_DEVICES_USB_HELP,
+    short_help="Scan for USB devices.",
+    help=APIO_DEVICES_SCAN_USB_HELP,
 )
-def _usb_cli():
-    """Implements the 'apio devices usb' command."""
+def _scan_usb_cli():
+    """Implements the 'apio devices scan-usb' command."""
 
     # Create the apio context.
     apio_ctx = ApioContext(
@@ -106,11 +106,11 @@ def _usb_cli():
     sys.exit(0)
 
 
-# -- apio devices serial
+# -- apio devices scan-serial
 
 
 def _list_serial_devices() -> None:
-    """Lists the connected serial devices in table format."""
+    """Scans and displays the connected serial devices in table format."""
 
     devices = serial_util.scan_serial_devices()
 
@@ -157,13 +157,13 @@ def _list_serial_devices() -> None:
 
 
 # -- Text in the rich-text format of the python rich library.
-APIO_DEVICES_SERIAL_HELP = """
-The command 'apio devices serial' displays the serial devices currently \
-connected to your computer. It is useful for diagnosing FPGA board \
+APIO_DEVICES_SCAN_SERIAL_HELP = """
+The command 'apio devices scan-serial' scans and displays the serial devices\
+currently connected to your computer. It is useful for diagnosing FPGA board \
 connectivity issues.
 
 Examples:[code]
-  apio devices serial    # List the serial devices.[/code]
+  apio devices scan-serial    # List the serial devices.[/code]
 
 Note that devices such as FTDI FTDI2232 that have more than one channel \
 are listed as multiple rows, one for each of their serial ports.
@@ -175,13 +175,13 @@ such as 'Alhambra II' set by the device manufacturer.
 
 
 @click.command(
-    name="serial",
+    name="scan-serial",
     cls=ApioCommand,
-    short_help="List serial devices.",
-    help=APIO_DEVICES_SERIAL_HELP,
+    short_help="Scan for serial devices.",
+    help=APIO_DEVICES_SCAN_SERIAL_HELP,
 )
-def _serial_cli():
-    """Implements the 'apio devices serial' command."""
+def _scan_serial_cli():
+    """Implements the 'apio devices scan-serial' command."""
 
     # -- Create the apio context. We create it for consistency though
     # -- we don't use .t
@@ -200,8 +200,8 @@ def _serial_cli():
 
 # -- Text in the rich-text format of the python rich library.
 APIO_DEVICES_HELP = """
-The command group 'apio devices' includes subcommands that lists devices
-that are attached to the computer. It's main usage is diagnostics or
+The command group 'apio devices' includes subcommands that lists devices \
+that are attached to the computer. It's main usage is diagnostics or \
 devices connectivity and drivers.
 """
 
@@ -210,8 +210,8 @@ SUBGROUPS = [
     ApioSubgroup(
         "Subcommands",
         [
-            _usb_cli,
-            _serial_cli,
+            _scan_usb_cli,
+            _scan_serial_cli,
         ],
     )
 ]
@@ -221,7 +221,7 @@ SUBGROUPS = [
     name="devices",
     cls=ApioGroup,
     subgroups=SUBGROUPS,
-    short_help="List attached devices.",
+    short_help="Scan attached devices.",
     help=APIO_DEVICES_HELP,
 )
 def cli():
