@@ -52,7 +52,7 @@ FTDI_INSTALL_INSTRUCTIONS_WINDOWS = f"""
   8. {E1}Disconnect and reconnect[/] your FPGA board for the new driver
      to take affect.
 
-  9. {E1}Run the command 'apio devices usb'[/] and verify that
+  9. {E1}Run the command 'apio devices scan-usb'[/] and verify that
      your board is listed.
 """
 
@@ -100,7 +100,7 @@ computer.
   3. Find the Serial installer window and {E1}follow the instructions.[/]
 
   4. To verify, {E1}disconnect and reconnect the board[/] and run the command
-      {E1}'apio devices serial'.[/]
+      {E1}'apio devices scan-serial'.[/]
 """
 
 # -- Text in the rich-text format of the python rich library.

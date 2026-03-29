@@ -13,4 +13,4 @@ Apio provides two types of driver: `ftdi` and `serial`. The table below compares
 | Platforms        | Linux, Windows                | Linux, Windows                  |
 | Driver install   | `apio drivers install ftdi`   | `apio drivers install serial`   |
 | Driver uninstall | `apio drivers uninstall ftdi` | `apio drivers uninstall serial` |
-| List devices     | `apio devices usb`            | `apio devices serial`           |
+| List devices     | `apio devices scan-usb`       | `apio devices scan-serial`      |
