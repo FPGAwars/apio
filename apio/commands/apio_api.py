@@ -755,7 +755,9 @@ def _scan_devices_cli(
     top_dict["usb-devices"] = section
 
     # -- Scan and report serial devices.
-    serial_devices: List[SerialDevice] = serial_util.scan_serial_devices()
+    serial_devices: List[SerialDevice] = serial_util.scan_serial_devices(
+        apio_ctx
+    )
 
     section = []
     for device in serial_devices:
