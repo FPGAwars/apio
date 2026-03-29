@@ -253,7 +253,7 @@ def test_apio_api_get_project(apio_runner: ApioRunner):
                 },
                 "programmer": {
                     "id": "openfpgaloader",
-                    "args": "",
+                    "args": "--force-terminal-mode",
                     "command": "openFPGALoader",
                 },
             },
