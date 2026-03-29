@@ -108,7 +108,7 @@ def test_apio_api_get_programmers(apio_runner: ApioRunner):
         assert data["timestamp"] == "xyz"
         assert data["programmers"]["openfpgaloader"] == {
             "command": "openFPGALoader",
-            "args": "",
+            "args": "--force-terminal-mode",
         }
 
 
