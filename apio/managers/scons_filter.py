@@ -135,7 +135,7 @@ class PnrRangeDetector(RangeDetector):
         ):
             return RangeEvents.START_AFTER
 
-        # Range end: The end message of nextnpr.
+        # Range end: The end message of nextpnr.
         if pipe_id == PipeId.STDERR and "Program finished normally." in line:
             return RangeEvents.END_AFTER
 
