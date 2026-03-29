@@ -108,7 +108,7 @@ def test_apio_api_get_programmers(apio_runner: ApioRunner):
         assert data["timestamp"] == "xyz"
         assert data["programmers"]["openfpgaloader"] == {
             "command": "openFPGALoader",
-            "args": "--force-terminal-mode",
+            "args": "--force-terminal-mode --verify",
         }
 
 
@@ -230,7 +230,7 @@ def test_apio_api_get_project(apio_runner: ApioRunner):
                     "description": "Alhambra II",
                     "fpga-id": "ice40hx4k-tq144-8k",
                     "programmer": {
-                        "extra-args": "--verify -b ice40_generic"
+                        "extra-args": "-b ice40_generic"
                         + " --vid ${VID} --pid ${PID} "
                         "--busdev-num ${BUS}:${DEV}",
                         "id": "openfpgaloader",
@@ -253,7 +253,7 @@ def test_apio_api_get_project(apio_runner: ApioRunner):
                 },
                 "programmer": {
                     "id": "openfpgaloader",
-                    "args": "--force-terminal-mode",
+                    "args": "--force-terminal-mode --verify",
                     "command": "openFPGALoader",
                 },
             },
