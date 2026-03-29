@@ -49,6 +49,8 @@ LINE_IGNORE_LIST = [
     r"Numpy is not available, performance will be degraded",
     r"Msgspec is not available, performance will be degraded",
     r"fastcrc is not available, performance will be degraded",
+    # -- For openFPGAloader
+    r"Verifying write [(]May take time[)]",
 ]
 
 
@@ -133,7 +135,7 @@ class PnrRangeDetector(RangeDetector):
         ):
             return RangeEvents.START_AFTER
 
-        # Range end: The end message of nextnpr.
+        # Range end: The end message of nextpnr.
         if pipe_id == PipeId.STDERR and "Program finished normally." in line:
             return RangeEvents.END_AFTER
 

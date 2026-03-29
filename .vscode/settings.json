@@ -183,6 +183,7 @@
         "realpath",
         "recursesubdirs",
         "redirector",
+        "Regexs",
         "scons",
         "sconsign",
         "sconstruct",
