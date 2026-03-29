@@ -123,7 +123,8 @@ def test_default_cmd_template(
 
         # -- Check result.
         assert (
-            programmer_cmd == "openFPGALoader --verify -b ice40_generic "
+            programmer_cmd == "openFPGALoader --force-terminal-mode --verify "
+            "-b ice40_generic "
             "--vid ${VID} --pid ${PID} "
             "--busdev-num ${BUS}:${DEV} "
             "${BIN_FILE}"
