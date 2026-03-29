@@ -49,6 +49,8 @@ LINE_IGNORE_LIST = [
     r"Numpy is not available, performance will be degraded",
     r"Msgspec is not available, performance will be degraded",
     r"fastcrc is not available, performance will be degraded",
+    # -- For openFPGAloader
+    r"Verifying write [(]May take time[)]",
 ]
 
 
