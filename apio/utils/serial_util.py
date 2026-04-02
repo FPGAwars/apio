@@ -7,6 +7,7 @@ from serial.tools.list_ports import comports
 from serial.tools.list_ports_common import ListPortInfo
 from apio.common.apio_console import cout
 from apio.utils import util, usb_util
+from apio.apio_context import ApioContext
 
 
 @dataclass()
@@ -40,7 +41,7 @@ class SerialDevice:
         )
 
 
-def scan_serial_devices() -> List[SerialDevice]:
+def scan_serial_devices(_: ApioContext) -> List[SerialDevice]:
     """Scan the connected serial devices and return their information."""
 
     # -- Initial empty device list
@@ -72,6 +73,17 @@ def scan_serial_devices() -> List[SerialDevice]:
         if not port.vid or not port.pid:
             continue
 
+        # -- If needed, append A or B to the serial numbers of a dual channel
+        # -- FTDI devices such as FT2232H.
+        # --
+        # -- Ideally these should be done in the comports() function of
+        # -- the pyserial library.
+        serial_number = port.serial_number or ""
+        if serial_number and port.device.endswith(f"-{serial_number}0"):
+            serial_number += "A"
+        elif serial_number and port.device.endswith(f"-{serial_number}1"):
+            serial_number += "B"
+
         # -- Add device to list.
         devices.append(
             SerialDevice(
@@ -81,7 +93,7 @@ def scan_serial_devices() -> List[SerialDevice]:
                 product_id=f"{port.pid:04X}",
                 manufacturer=port.manufacturer,
                 product=port.product,
-                serial_number=port.serial_number or "",
+                serial_number=serial_number,
                 device_type=usb_util.get_device_type(port.vid, port.pid),
                 location=port.location,
             )

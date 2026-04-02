@@ -109,10 +109,10 @@ def _scan_usb_cli():
 # -- apio devices scan-serial
 
 
-def _list_serial_devices() -> None:
+def _list_serial_devices(apio_ctx: ApioContext) -> None:
     """Scans and displays the connected serial devices in table format."""
 
-    devices = serial_util.scan_serial_devices()
+    devices = serial_util.scan_serial_devices(apio_ctx)
 
     # -- If not found, print a message and exit.
     if not devices:
@@ -183,16 +183,15 @@ such as 'Alhambra II' set by the device manufacturer.
 def _scan_serial_cli():
     """Implements the 'apio devices scan-serial' command."""
 
-    # -- Create the apio context. We create it for consistency though
-    # -- we don't use .t
-    _ = ApioContext(
+    # -- Create the apio context.
+    apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
         remote_config_policy=RemoteConfigPolicy.CACHED_OK,
         packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
 
     # -- List all connected serial devices
-    _list_serial_devices()
+    _list_serial_devices(apio_ctx)
     sys.exit(0)
 
 

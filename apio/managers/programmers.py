@@ -56,7 +56,9 @@ class _DeviceScanner:
     def get_serial_devices(self) -> List[UsbDevice]:
         """Scan serial devices, with caching."""
         if self._serial_devices is None:
-            self._serial_devices = serial_util.scan_serial_devices()
+            self._serial_devices = serial_util.scan_serial_devices(
+                self._apio_ctx
+            )
             assert isinstance(self._serial_devices, list)
         return self._serial_devices
 
