@@ -40,7 +40,7 @@ requires = [
     'debugpy==1.8.19',
     'packaging==25.0',
     'pyserial==3.5',
-    'requests==2.32.4',
+    'requests==2.33.1',
     'scons==4.8.1',
     'semantic_version==2.10.0',
     'wheel==0.45.1',
