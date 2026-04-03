@@ -16,7 +16,7 @@
         "name": "apio-definitions"
       },
       "release": {
-        "tag": "2026-04-02",
+        "tag": "2026-04-03",
         "package": "apio-definitions-${YYYYMMDD}.tgz"
       }
     },
@@ -27,7 +27,7 @@
         "name": "apio-examples"
       },
       "release": {
-        "tag": "2026-04-02",
+        "tag": "2026-04-03",
         "package": "apio-examples-${YYYYMMDD}.tgz"
       }
     },
