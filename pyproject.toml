@@ -59,12 +59,6 @@ requires = [
 # TODO: Revisit 'exclude`. What else we don't need in the package?
 exclude = ["tests/"]
 
-[tool.flit.metadata.requires-extra]
-blackiceprog = ['blackiceprog==2.0.0']
-litterbox = ['litterbox==0.2.2']
-tinyfpgab = ['tinyfpgab==1.1.0']
-icefunprog = ['icefunprog==2.0.3']
-
 [tool.flit.scripts]
 apio = "apio.__main__:main"
 
