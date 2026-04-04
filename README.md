@@ -34,7 +34,7 @@ This README page is optimized for its appearance in the github repo rather than 
 ---
 
 
-> **NOTE:&nbsp;&nbsp;Apio IDE for Visual Studio Code**
+> **NOTE:&nbsp;&nbsp;Apio IDE for Visual Studio Code.**
 > Apio is also available as an extension for Visual Studio Code. To install it, visit the [Apio IDE page](https://marketplace.visualstudio.com/items?itemName=fpgawars.apio) in the Visual Studio Code Marketplace. 
 > The rest of this page describes the command line version of Apio.
 
