@@ -34,14 +34,10 @@ This README page is optimized for its appearance in the github repo rather than 
 ---
 
 
-<div style="border: 2px solid #4CAF50; border-radius: 8px; padding: 16px; background-color: #f8fff8; margin: 20px 0;">
-
-**📦&nbsp;&nbsp;Apio IDE for Visual Studio Code**
-
-Apio is also available as an extension for Visual Studio Code. To install it
-visit the [Apio IDE page](https://marketplace.visualstudio.com/items?itemName=fpgawars.apio) in the Visual Studio Code marketplace.
-
-</div>
+> **NOTE:&nbsp;&nbsp;Apio IDE for Visual Studio Code**
+> Apio is also available as an extension for Visual Studio Code.  
+> To install it, visit the [Apio IDE page](https://marketplace.visualstudio.com/items?itemName=fpgawars.apio) in the Visual Studio Code Marketplace. 
+> The rest of this page describes the command line version of Apio.
 
 
 Apio CLI is an easy to install and use command-line tool for FPGA design from A to Z. For a quick start, visit the [Getting started with Apio](https://fpgawars.github.io/apio/docs/quick-start) guide.
