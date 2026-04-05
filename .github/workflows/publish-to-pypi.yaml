@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: "Release tag, e.g. 2025-12-10"
+        description: "Apio CLI release tag, e.g. 2025-12-10"
         required: true
         type: string
 
