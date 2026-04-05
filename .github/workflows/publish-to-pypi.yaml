@@ -31,21 +31,25 @@ jobs:
           # Dump RELEASE_JSON for debugging.
           # echo $RELEASE_JSON | jq .
 
+          # Since the pypi package is independent of the apio release
+          # packages, there is no need to verify that the tag represent
+          # a stable release and not a pre-release.
+
           # Extract draft and prerelease flags
-          DRAFT=$(echo "$RELEASE_JSON" | jq -r '.draft')
-          PRERELEASE=$(echo "$RELEASE_JSON" | jq -r '.prerelease')
+          # DRAFT=$(echo "$RELEASE_JSON" | jq -r '.draft')
+          # PRERELEASE=$(echo "$RELEASE_JSON" | jq -r '.prerelease')
 
-          if [ "$DRAFT" = "true" ]; then
-            echo "::error ::Release $TAG is a draft, must be stable."
-            exit 1
-          fi
+          # if [ "$DRAFT" = "true" ]; then
+          #   echo "::error ::Release $TAG is a draft, must be stable."
+          #   exit 1
+          # fi
 
-          if [ "$PRERELEASE" = "true" ]; then
-            echo "::error ::Release $TAG is a prerelease, must be stable."
-            exit 1
-          fi
+          # if [ "$PRERELEASE" = "true" ]; then
+          #   echo "::error ::Release $TAG is a prerelease, must be stable."
+          #   exit 1
+          # fi
 
-          echo "Release $TAG is stable (non pre-release or draft)"
+          # echo "Release $TAG is stable (non pre-release or draft)"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
