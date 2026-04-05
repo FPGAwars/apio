@@ -56,8 +56,15 @@ requires = [
 ]
 
 [tool.flit.sdist]
-# TODO: Revisit 'exclude`. What else we don't need in the package?
-exclude = ["tests/"]
+# Note that we don't include 'media/' nor do we have relative references
+# from README.md to resources in media since pypi doesn't show them 
+# correctly. Instead we use absolute links to github.
+include = [
+    "apio/",
+    "pyproject.toml",
+    "README.md",
+    "LICENSE",
+]
 
 [tool.flit.scripts]
 apio = "apio.__main__:main"
