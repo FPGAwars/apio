@@ -10,7 +10,7 @@ This README page is optimized for its appearance in the github repo rather than 
 [![python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue)](https://pypi.org/project/apio)
 
 <!-- Platforms badges -->
-![linux](https://raw.githubusercontent.com/zapta/apio/main/media/linux-logo.png)&nbsp;&nbsp;&nbsp;![macos](https://raw.githubusercontent.com/zapta/apio/main/media/macosx-logo.png)&nbsp;&nbsp;&nbsp;![windows](https://raw.githubusercontent.com/zapta/apio/main/media/windows-logo.png)&nbsp;&nbsp;&nbsp;![raspberry-pi](media/raspbian-logo.png)
+![linux](https://raw.githubusercontent.com/zapta/apio/main/media/linux-logo.png)&nbsp;&nbsp;&nbsp;![macos](https://raw.githubusercontent.com/zapta/apio/main/media/macosx-logo.png)&nbsp;&nbsp;&nbsp;![windows](https://raw.githubusercontent.com/zapta/apio/main/media/windows-logo.png)&nbsp;&nbsp;&nbsp;![raspberry-pi](https://raw.githubusercontent.com/zapta/apio/main/media/raspbian-logo.png)
 
 <!-- Status badges -->
 [![cli-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/test.yaml?label=cli-test)](https://github.com/fpgawars/apio/actions/workflows/test.yaml)
