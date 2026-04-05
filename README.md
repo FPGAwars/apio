@@ -3,14 +3,14 @@ This README page is optimized for its appearance in the github repo rather than 
 -->
 
 <!-- Page banner -->
-![apio-cli-banner](media/apio-cli-banner.png)
+![apio-cli-banner](https://raw.githubusercontent.com/zapta/apio/main/media/apio-cli-banner.png)
 
 <!-- Attributes badges -->
 [![license](https://img.shields.io/badge/License-GPL%203.0-blue.svg)](https://github.com/FPGAwars/apio/blob/main/LICENSE)
 [![python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue)](https://pypi.org/project/apio)
 
 <!-- Platforms badges -->
-![linux](media/linux-logo.png)&nbsp;&nbsp;&nbsp;![macos](media/macosx-logo.png)&nbsp;&nbsp;&nbsp;![windows](media/windows-logo.png)&nbsp;&nbsp;&nbsp;![raspberry-pi](media/raspbian-logo.png)
+![linux](https://raw.githubusercontent.com/zapta/apio/main/media/linux-logo.png)&nbsp;&nbsp;&nbsp;![macos](https://raw.githubusercontent.com/zapta/apio/main/media/macosx-logo.png)&nbsp;&nbsp;&nbsp;![windows](https://raw.githubusercontent.com/zapta/apio/main/media/windows-logo.png)&nbsp;&nbsp;&nbsp;![raspberry-pi](media/raspbian-logo.png)
 
 <!-- Status badges -->
 [![cli-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/test.yaml?label=cli-test)](https://github.com/fpgawars/apio/actions/workflows/test.yaml)
@@ -33,13 +33,18 @@ This README page is optimized for its appearance in the github repo rather than 
 
 ---
 
+
+> **NOTE:&nbsp;&nbsp;Apio IDE for Visual Studio Code.**
+> Apio is also available as an extension for Visual Studio Code. To install it, visit the [Apio IDE page](https://marketplace.visualstudio.com/items?itemName=fpgawars.apio) in the Visual Studio Code Marketplace. 
+> The rest of this page describes the command line version of Apio.
+
+
 Apio CLI is an easy to install and use command-line tool for FPGA design from A to Z. For a quick start, visit the [Getting started with Apio](https://fpgawars.github.io/apio/docs/quick-start) guide.
 
-<br>
 
 Simulation example:
 
-![GTKWave screenshot](media/sim-gtkwave.png)
+![GTKWave screenshot](https://raw.githubusercontent.com/zapta/apio/main/media/sim-gtkwave.png)
 
 ## Description
 
@@ -57,7 +62,7 @@ Apio CLI currently supports over 80 FPGA boards, custom boards can be easily add
 4. `apio sim` - simulate the design and show signals.
 5. `apio upload` - program the FPGA board.
 
-![apio-cli-animation](media/apio-cli-animation.gif)
+![apio-cli-animation](https://raw.githubusercontent.com/zapta/apio/main/media/apio-cli-animation.gif)
 
 ## Apio CLI in the media
 

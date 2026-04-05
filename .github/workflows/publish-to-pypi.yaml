@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: "Release tag, e.g. 2025-12-10"
+        description: "Apio CLI release tag, e.g. 2025-12-10"
         required: true
         type: string
 
@@ -78,6 +78,10 @@ jobs:
         run: |
           # Creates dist/*.tar.gz and dist/*.whl from pyproject.toml
           python -m build
+
+      - name: List package items
+        run: |
+          tar -tzf dist/*.tar.gz | tree --fromfile .
 
       # -- Publish to Pypi!!
       - name: Publish to PyPi

@@ -14,7 +14,7 @@
 # -- DEVELOPER:
 # -- Change this release number and date when releasing a new Apio CLI version.
 # -- If incrementing Major or Minor, a new remote config file is required.
-APIO_VERSION = (1, 4, 0)  # Major, Minor, Patch.
+APIO_VERSION = (1, 4, 1)  # Major, Minor, Patch.
 
 # -- This is set automatically during build or publishing information to
 # -- provide additional information about the release. This string is included

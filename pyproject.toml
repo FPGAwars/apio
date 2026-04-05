@@ -9,8 +9,8 @@ build-backend = "flit_core.buildapi"
 "Homepage" = "https://github.com/fpgawars/apio"
 "Documentation" = "https://fpgawars.github.io/apio/docs"
 "Bugs Tracker" = "https://github.com/fpgawars/apio/issues"
-"Wiki" = "https://github.com/fpgawars/apio/wiki"
 "Discussions" = "https://github.com/fpgawars/apio/discussions"
+"Apio IDE" = "https://marketplace.visualstudio.com/items?itemName=fpgawars.apio"
 
 [tool.flit.metadata]
 module = "apio"
@@ -56,14 +56,15 @@ requires = [
 ]
 
 [tool.flit.sdist]
-# TODO: Revisit 'exclude`. What else we don't need in the package?
-exclude = ["tests/"]
-
-[tool.flit.metadata.requires-extra]
-blackiceprog = ['blackiceprog==2.0.0']
-litterbox = ['litterbox==0.2.2']
-tinyfpgab = ['tinyfpgab==1.1.0']
-icefunprog = ['icefunprog==2.0.3']
+# Note that we don't include 'media/' nor do we have relative references
+# from README.md to resources in media since pypi doesn't show them 
+# correctly. Instead we use absolute links to github.
+include = [
+    "apio/",
+    "pyproject.toml",
+    "README.md",
+    "LICENSE",
+]
 
 [tool.flit.scripts]
 apio = "apio.__main__:main"
