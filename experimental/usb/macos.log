@@ -1,0 +1,168 @@
+/projects/apio-dev/repo/experimental/usb$ python test.py 
+
+DEVICE ID 1d50:602b on Bus 000 Address 002 =================
+ bLength                :   0x12 (18 bytes)
+ bDescriptorType        :    0x1 Device
+ bcdUSB                 :  0x210 USB 2.1
+ bDeviceClass           :   0xef Miscellaneous
+ bDeviceSubClass        :    0x2
+ bDeviceProtocol        :    0x1
+ bMaxPacketSize0        :   0x40 (64 bytes)
+ idVendor               : 0x1d50
+ idProduct              : 0x602b
+ bcdDevice              :  0x100 Device 1.0
+ iManufacturer          :    0x1 MuseLab
+ iProduct               :    0x2 DAPLink CMSIS-DAP
+ iSerialNumber          :    0x3 0710000100380027390000074e514b43a5a5a5a597969908
+ bNumConfigurations     :    0x1
+  CONFIGURATION 1: 500 mA ==================================
+   bLength              :    0x9 (9 bytes)
+   bDescriptorType      :    0x2 Configuration
+   wTotalLength         :   0x8b (139 bytes)
+   bNumInterfaces       :    0x5
+   bConfigurationValue  :    0x1
+   iConfiguration       :    0x0 
+   bmAttributes         :   0x80 Bus Powered
+   bMaxPower            :   0xfa (500 mA)
+    INTERFACE 0: Mass Storage ==============================
+     bLength            :    0x9 (9 bytes)
+     bDescriptorType    :    0x4 Interface
+     bInterfaceNumber   :    0x0
+     bAlternateSetting  :    0x0
+     bNumEndpoints      :    0x2
+     bInterfaceClass    :    0x8 Mass Storage
+     bInterfaceSubClass :    0x6
+     bInterfaceProtocol :   0x50
+     iInterface         :    0x8 USB_MSC
+      ENDPOINT 0x82: Bulk IN ===============================
+       bLength          :    0x7 (7 bytes)
+       bDescriptorType  :    0x5 Endpoint
+       bEndpointAddress :   0x82 IN
+       bmAttributes     :    0x2 Bulk
+       wMaxPacketSize   :   0x40 (64 bytes)
+       bInterval        :    0x0
+      ENDPOINT 0x2: Bulk OUT ===============================
+       bLength          :    0x7 (7 bytes)
+       bDescriptorType  :    0x5 Endpoint
+       bEndpointAddress :    0x2 OUT
+       bmAttributes     :    0x2 Bulk
+       wMaxPacketSize   :   0x40 (64 bytes)
+       bInterval        :    0x0
+    INTERFACE 1: CDC Communication =========================
+     bLength            :    0x9 (9 bytes)
+     bDescriptorType    :    0x4 Interface
+     bInterfaceNumber   :    0x1
+     bAlternateSetting  :    0x0
+     bNumEndpoints      :    0x1
+     bInterfaceClass    :    0x2 CDC Communication
+     bInterfaceSubClass :    0x2
+     bInterfaceProtocol :    0x1
+     iInterface         :    0x4 mbed Serial Port
+      ENDPOINT 0x83: Interrupt IN ==========================
+       bLength          :    0x7 (7 bytes)
+       bDescriptorType  :    0x5 Endpoint
+       bEndpointAddress :   0x83 IN
+       bmAttributes     :    0x3 Interrupt
+       wMaxPacketSize   :   0x10 (16 bytes)
+       bInterval        :   0x20
+    INTERFACE 2: CDC Data ==================================
+     bLength            :    0x9 (9 bytes)
+     bDescriptorType    :    0x4 Interface
+     bInterfaceNumber   :    0x2
+     bAlternateSetting  :    0x0
+     bNumEndpoints      :    0x2
+     bInterfaceClass    :    0xa CDC Data
+     bInterfaceSubClass :    0x0
+     bInterfaceProtocol :    0x0
+     iInterface         :    0x5 mbed Serial Port
+      ENDPOINT 0x4: Bulk OUT ===============================
+       bLength          :    0x7 (7 bytes)
+       bDescriptorType  :    0x5 Endpoint
+       bEndpointAddress :    0x4 OUT
+       bmAttributes     :    0x2 Bulk
+       wMaxPacketSize   :   0x10 (16 bytes)
+       bInterval        :    0x0
+      ENDPOINT 0x84: Bulk IN ===============================
+       bLength          :    0x7 (7 bytes)
+       bDescriptorType  :    0x5 Endpoint
+       bEndpointAddress :   0x84 IN
+       bmAttributes     :    0x2 Bulk
+       wMaxPacketSize   :   0x10 (16 bytes)
+       bInterval        :    0x0
+    INTERFACE 3: Human Interface Device ====================
+     bLength            :    0x9 (9 bytes)
+     bDescriptorType    :    0x4 Interface
+     bInterfaceNumber   :    0x3
+     bAlternateSetting  :    0x0
+     bNumEndpoints      :    0x2
+     bInterfaceClass    :    0x3 Human Interface Device
+     bInterfaceSubClass :    0x0
+     bInterfaceProtocol :    0x0
+     iInterface         :    0x6 CMSIS-DAP-v1-MuseLab
+      ENDPOINT 0x81: Interrupt IN ==========================
+       bLength          :    0x7 (7 bytes)
+       bDescriptorType  :    0x5 Endpoint
+       bEndpointAddress :   0x81 IN
+       bmAttributes     :    0x3 Interrupt
+       wMaxPacketSize   :   0x40 (64 bytes)
+       bInterval        :    0x1
+      ENDPOINT 0x1: Interrupt OUT ==========================
+       bLength          :    0x7 (7 bytes)
+       bDescriptorType  :    0x5 Endpoint
+       bEndpointAddress :    0x1 OUT
+       bmAttributes     :    0x3 Interrupt
+       wMaxPacketSize   :   0x40 (64 bytes)
+       bInterval        :    0x1
+    INTERFACE 4: Vendor Specific ===========================
+     bLength            :    0x9 (9 bytes)
+     bDescriptorType    :    0x4 Interface
+     bInterfaceNumber   :    0x4
+     bAlternateSetting  :    0x0
+     bNumEndpoints      :    0x0
+     bInterfaceClass    :   0xff Vendor Specific
+     bInterfaceSubClass :    0x3
+     bInterfaceProtocol :    0x0
+     iInterface         :    0x7 WebUSB: CMSIS-DAP
+
+
+DEVICE ID 05e3:0610 on Bus 000 Address 001 =================
+ bLength                :   0x12 (18 bytes)
+ bDescriptorType        :    0x1 Device
+ bcdUSB                 :  0x210 USB 2.1
+ bDeviceClass           :    0x9 Hub
+ bDeviceSubClass        :    0x0
+ bDeviceProtocol        :    0x1
+ bMaxPacketSize0        :   0x40 (64 bytes)
+ idVendor               : 0x05e3
+ idProduct              : 0x0610
+ bcdDevice              :  0x663 Device 6.63
+ iManufacturer          :    0x1 GenesysLogic
+ iProduct               :    0x2 USB2.1 Hub
+ iSerialNumber          :    0x0 
+ bNumConfigurations     :    0x1
+  CONFIGURATION 1: 100 mA ==================================
+   bLength              :    0x9 (9 bytes)
+   bDescriptorType      :    0x2 Configuration
+   wTotalLength         :   0x19 (25 bytes)
+   bNumInterfaces       :    0x1
+   bConfigurationValue  :    0x1
+   iConfiguration       :    0x0 
+   bmAttributes         :   0xe0 Self Powered, Remote Wakeup
+   bMaxPower            :   0x32 (100 mA)
+    INTERFACE 0: Hub =======================================
+     bLength            :    0x9 (9 bytes)
+     bDescriptorType    :    0x4 Interface
+     bInterfaceNumber   :    0x0
+     bAlternateSetting  :    0x0
+     bNumEndpoints      :    0x1
+     bInterfaceClass    :    0x9 Hub
+     bInterfaceSubClass :    0x0
+     bInterfaceProtocol :    0x0
+     iInterface         :    0x0 
+      ENDPOINT 0x81: Interrupt IN ==========================
+       bLength          :    0x7 (7 bytes)
+       bDescriptorType  :    0x5 Endpoint
+       bEndpointAddress :   0x81 IN
+       bmAttributes     :    0x3 Interrupt
+       wMaxPacketSize   :    0x1 (1 bytes)
+       bInterval        :    0xc
