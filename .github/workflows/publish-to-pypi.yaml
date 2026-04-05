@@ -79,6 +79,10 @@ jobs:
           # Creates dist/*.tar.gz and dist/*.whl from pyproject.toml
           python -m build
 
+      - name: List package items
+        run: |
+          tar -tzf dist/*.tar.gz | tree --fromfile .
+
       # -- Publish to Pypi!!
       - name: Publish to PyPi
         env:
