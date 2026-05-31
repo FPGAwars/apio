@@ -51,7 +51,7 @@ def construct_remote_config_status_str(apio_ctx: ApioContext) -> str:
     # -- Handle the case of a having a cached config.
     if config:
         config_days = days_between_datetime_stamps(
-            metadata.get("loaded-at", ""), timestamp_now, None
+            metadata.get("loaded-at", ""), timestamp_now, 0
         )
         # -- Determine cache age in days, if possible.
         if config_days is not None:
