@@ -26,7 +26,7 @@ import subprocess
 from subprocess import CompletedProcess
 from typing import Optional, List
 from importlib.metadata import version, PackageNotFoundError
-from invoke import task
+from invoke.tasks import task
 from invoke.context import Context
 
 
