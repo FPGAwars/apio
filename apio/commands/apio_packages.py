@@ -66,7 +66,7 @@ def print_packages_report(apio_ctx: ApioContext) -> bool:
     table.add_column("DESCRIPTION", no_wrap=True)
     table.add_column("STATUS", no_wrap=True)
 
-    required_packages_rows: Dict[RequiredPackageRow] = {}
+    required_packages_rows: Dict[str, RequiredPackageRow] = {}
 
     # -- Collect rows of required packages that are installed OK.
     for package_name in scan.installed_ok_package_names:
