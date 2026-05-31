@@ -99,7 +99,7 @@ class AsyncPipe(Thread):
         # -- next line but redraw on the same line.
         with os.fdopen(self._fd_read, "rb") as f:
             while True:
-                b: Optional[bytearray] = f.read(1)
+                b: bytes = f.read(1)
                 assert len(b) <= 1
 
                 # -- Handle end of file
