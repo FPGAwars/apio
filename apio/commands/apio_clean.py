@@ -132,7 +132,7 @@ def cli(
     candidates += glob("*_tb.out")
 
     # -- Clean the root build directory.
-    candidates.append(PROJECT_BUILD_PATH)
+    candidates.append(str(PROJECT_BUILD_PATH))
 
     # -- Clean and report.
     _delete_candidates(candidates)

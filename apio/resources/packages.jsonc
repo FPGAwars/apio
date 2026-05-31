@@ -1,7 +1,7 @@
 // Definition of apio software packages. These are packages with various
-// data and utilities that are installed by apio. 
+// data and utilities that are installed by apio.
 //
-// Additional packages information is fetched dynamically from the remote 
+// Additional packages information is fetched dynamically from the remote
 // config and is saved in .apio/profile.json.
 //
 {
