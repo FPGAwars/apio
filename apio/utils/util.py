@@ -493,9 +493,7 @@ def resolve_packages_dir(apio_home_dir: Path) -> Path:
     """
 
     # -- Get the optional apio packages env.
-    apio_packages_dir_env = env_options.get(
-        env_options.APIO_PACKAGES, default=None
-    )
+    apio_packages_dir_env = env_options.get(env_options.APIO_PACKAGES)
 
     # -- If the env vars specified an packages dir then use it.
     if apio_packages_dir_env:
