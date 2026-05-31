@@ -15,12 +15,12 @@
             "request": "launch",
             "program": "${workspaceFolder}/apio/__main__.py",
             "args": [
-                "sim",
-                "--detach"
+                "packages",
+                "list"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "/Users/user/work",
+            "cwd": "${workspaceFolder}",
             "subProcess": false
         },
         {
