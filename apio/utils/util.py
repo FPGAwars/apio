@@ -529,28 +529,6 @@ def resolve_packages_dir(apio_home_dir: Path) -> Path:
     return packages_dir
 
 
-def split(
-    s: str,
-    separator: str,
-    strip: bool = False,
-    keep_empty: bool = True,
-) -> str:
-    """Split a string into parts."""
-    # -- A workaround for python's "".split(",") returning [''].
-    s = s.split(separator) if s else []
-
-    # -- Strip the elements if requested.
-    if strip:
-        s = [x.strip() for x in s]
-
-    # -- Remove empty elements if requested.
-    if not keep_empty:
-        s = [x for x in s if x]
-
-    # --All done.
-    return s
-
-
 def fpga_arch_sort_key(fpga_arch: str) -> Any:
     """Given an fpga arch name such as 'ice40', return a sort key
     got force our preferred order of sorting by architecture. Used in
