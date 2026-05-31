@@ -160,17 +160,17 @@ def cli(
         sys.exit(0)
 
     # -- Convert the tuple of strings to a list of strings.
-    cmd: List[str] = list(cmd)
+    _cmd: List[str] = list(cmd)
 
     # -- Echo the commands. The apio raw command is platform dependent
     # -- so this may help us and the user diagnosing issues.
     if verbose:
-        cout(f"\n---- Executing {cmd}:")
+        cout(f"\n---- Executing {_cmd}:")
 
     # -- Invoke the command.
     # try:
     # exit_code = subprocess.call(cmd, shell=False)
-    exit_code = run_command_with_possible_elevation(apio_ctx, cmd)
+    exit_code = run_command_with_possible_elevation(apio_ctx, _cmd)
     # except FileNotFoundError as e:
     #     cout(f"{e}", style=ERROR)
     #     sys.exit(1)
