@@ -455,7 +455,7 @@ def resolve_home_dir() -> Path:
     """
 
     # -- Get the optional apio home env.
-    apio_home_dir_env = env_options.get(env_options.APIO_HOME, default=None)
+    apio_home_dir_env = env_options.get(env_options.APIO_HOME)
 
     # -- If the env vars specified an home dir then use it.
     if apio_home_dir_env:
