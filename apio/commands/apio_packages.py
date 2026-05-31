@@ -35,7 +35,7 @@ class RequiredPackageRow:
     # -- The status column text value.
     status: str
     # -- The style to use for the row.
-    style: str
+    style: str | None
 
 
 def print_packages_report(apio_ctx: ApioContext) -> bool:
@@ -104,7 +104,8 @@ def print_packages_report(apio_ctx: ApioContext) -> bool:
     for package_name in apio_ctx.required_packages:
         row_info = required_packages_rows[package_name]
         version, platform_id = get_installed_package_info(package_name)
-        description = get_required_package_info(package_name)["description"]
+        info = get_required_package_info(package_name)
+        description = info["description"]
         table.add_row(
             package_name,
             version,

@@ -562,7 +562,7 @@ class ApioContext:
                     var_value, package_path
                 )
 
-    def get_required_package_info(self, package_name: str) -> str:
+    def get_required_package_info(self, package_name: str) -> Dict:
         """Returns the information of the package with given name.
         The information is a JSON dict originated at packages.json().
         Exits with an error message if the package is not defined.
