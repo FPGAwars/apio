@@ -229,7 +229,7 @@ def exec_command(
 
     # -- The command does not exist!
     except FileNotFoundError:
-        cerror("Command not found:", cmd)
+        cerror("Command not found:", str(cmd))
         sys.exit(1)
 
     # -- Extract stdout text
