@@ -279,7 +279,7 @@ class ApioGroup(click.Group):
     ) -> None:
         """Overrides the parent method that formats the command's help text."""
         assert isinstance(ctx, ApioCmdContext)
-        _format_apio_rich_text_help_text(self.help, formatter)
+        _format_apio_rich_text_help_text(str(self.help), formatter)
 
     # @override
     def format_options(
@@ -305,7 +305,7 @@ class ApioGroup(click.Group):
         ]
 
         # -- Find the length of the longest name.
-        max_name_len = max(len(name) for name in cmd_names)
+        max_name_len = max(len(str(name)) for name in cmd_names)
 
         # -- Generate the subcommands short help, grouped by subgroup.
         for subgroup in self.subgroups:
@@ -367,7 +367,7 @@ class ApioCommand(click.Command):
     ) -> None:
         """Overrides the parent method that formats the command's help text."""
         assert isinstance(ctx, ApioCmdContext), type(ctx)
-        _format_apio_rich_text_help_text(self.help, formatter)
+        _format_apio_rich_text_help_text(str(self.help), formatter)
 
 
 class ApioCmdContext(click.Context):
