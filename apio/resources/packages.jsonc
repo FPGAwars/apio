@@ -38,6 +38,21 @@
       }
     }
   },
+
+  // "openxc7" package
+  "openxc7": {
+    "description": "Openxc7 toolchain (Xilinx FPGAs)",
+    "restricted-to-platforms": [
+      "linux-x86-64"
+    ],
+    "env": {
+      "path": [
+        "%p/bin",
+        "%p/lib"
+      ]
+    }
+  },
+
   // "graphviz" package
   "graphviz": {
     "restricted-to-platforms": [
