@@ -299,7 +299,10 @@ def get_python_ver_tuple() -> Tuple[int, int, int]:
 
 
 def plurality(
-    obj: Any, singular: str, plural: str = None, include_num: bool = True
+    obj: Any,
+    singular: str,
+    plural: str | None = None,
+    include_num: bool = True,
 ) -> str:
     """Returns singular or plural based on the size of the object."""
     # -- Figure out the size of the object
