@@ -362,7 +362,7 @@ class Profile:
         apio_console.configure(theme_name=theme)
 
     @staticmethod
-    def read_preferences_theme(*, default: str = "light") -> Optional[str]:
+    def read_preferences_theme(*, default: str = "light") -> str:
         """Returns the value of the theme preference or default if not
         specified. This is a static method because we may need this value
         before creating  the profile object, for example when printing command
@@ -378,10 +378,9 @@ class Profile:
             # -- Get the colors preferences value, if exists.
             data = json.load(f)
             preferences = data.get("preferences", {})
-            theme = preferences.get("theme", None)
+            theme = preferences.get("theme", default)
 
-        # -- Get the click context, if exists.
-        return theme if theme else default
+        return theme
 
     def get_installed_package_info(self, package_name: str) -> Tuple[str, str]:
         """Return (package_version, platform_id) of the given installed
