@@ -1,4 +1,4 @@
-// Remote config file for Apio versions 1.3.x.
+// Remote config file for Apio versions 1.5.x.
 //
 // Supported vars (see installer.py for details):
 //
@@ -49,7 +49,7 @@
         "name": "tools-openxc7"
       },
       "release": {
-        "tag": "2026-05-29",
+        "tag": "2026-05-31",
         "package": "apio-openxc7-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
