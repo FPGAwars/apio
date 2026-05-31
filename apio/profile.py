@@ -137,9 +137,7 @@ def days_between_datetime_stamps(ts1: str, ts2: str, default: Any) -> int:
     return delta_days
 
 
-def minutes_between_datetime_stamps(
-    ts1: str, ts2: str, default: Any
-) -> Optional[int]:
+def minutes_between_datetime_stamps(ts1: str, ts2: str, default: Any) -> int:
     """Return the number of minutes from ts1 to ts2 or default if any of
     the timestamps is invalid."""
 
