@@ -423,7 +423,7 @@ class ApioContext:
         return self.definitions.programmers
 
     @property
-    def env_build_path(self) -> str:
+    def env_build_path(self) -> Path:
         """Returns the relative path of the current env build directory from
         the project dir. Should be called only when has_project is True."""
         assert self.has_project, "project(): project is not loaded"
