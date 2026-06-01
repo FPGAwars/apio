@@ -189,9 +189,9 @@ class SConsManager:
     def construct_scons_params(
         self,
         *,
-        target_params: TargetParams = None,
+        target_params: TargetParams | None = None,
         nextpnr_gui: bool = False,
-        verbosity: Verbosity = None,
+        verbosity: Verbosity | None = None,
     ) -> SconsParams:
         """Populate and return the SconsParam proto to pass to the scons
         process."""
@@ -337,8 +337,8 @@ class SConsManager:
         return result
 
     def _run_scons_subprocess(
-        self, scons_command: str, *, scons_params: SconsParams = None
-    ):
+        self, scons_command: str, *, scons_params: SconsParams | None = None
+    ) -> int:
         """Invoke an scons subprocess."""
 
         # pylint: disable=too-many-locals
