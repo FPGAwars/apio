@@ -16,6 +16,7 @@ class ApioArch(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     ICE40: _ClassVar[ApioArch]
     ECP5: _ClassVar[ApioArch]
     GOWIN: _ClassVar[ApioArch]
+    XILINX: _ClassVar[ApioArch]
 
 class TerminalMode(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
@@ -34,6 +35,7 @@ ARCH_UNSPECIFIED: ApioArch
 ICE40: ApioArch
 ECP5: ApioArch
 GOWIN: ApioArch
+XILINX: ApioArch
 TERMINAL_UNSPECIFIED: TerminalMode
 AUTO_TERMINAL: TerminalMode
 FORCE_TERMINAL: TerminalMode
@@ -71,21 +73,35 @@ class GowinFpgaParams(_message.Message):
     packer_device: str
     def __init__(self, yosys_family: _Optional[str] = ..., nextpnr_family: _Optional[str] = ..., packer_device: _Optional[str] = ...) -> None: ...
 
+class XilinxFpgaParams(_message.Message):
+    __slots__ = ("yosys_family", "type", "package", "speed")
+    YOSYS_FAMILY_FIELD_NUMBER: _ClassVar[int]
+    TYPE_FIELD_NUMBER: _ClassVar[int]
+    PACKAGE_FIELD_NUMBER: _ClassVar[int]
+    SPEED_FIELD_NUMBER: _ClassVar[int]
+    yosys_family: str
+    type: str
+    package: str
+    speed: str
+    def __init__(self, yosys_family: _Optional[str] = ..., type: _Optional[str] = ..., package: _Optional[str] = ..., speed: _Optional[str] = ...) -> None: ...
+
 class FpgaInfo(_message.Message):
-    __slots__ = ("fpga_id", "part_num", "size", "ice40_params", "ecp5_params", "gowin_params")
+    __slots__ = ("fpga_id", "part_num", "size", "ice40_params", "ecp5_params", "gowin_params", "xilinx_params")
     FPGA_ID_FIELD_NUMBER: _ClassVar[int]
     PART_NUM_FIELD_NUMBER: _ClassVar[int]
     SIZE_FIELD_NUMBER: _ClassVar[int]
     ICE40_PARAMS_FIELD_NUMBER: _ClassVar[int]
     ECP5_PARAMS_FIELD_NUMBER: _ClassVar[int]
     GOWIN_PARAMS_FIELD_NUMBER: _ClassVar[int]
+    XILINX_PARAMS_FIELD_NUMBER: _ClassVar[int]
     fpga_id: str
     part_num: str
     size: str
     ice40_params: Ice40FpgaParams
     ecp5_params: Ecp5FpgaParams
     gowin_params: GowinFpgaParams
-    def __init__(self, fpga_id: _Optional[str] = ..., part_num: _Optional[str] = ..., size: _Optional[str] = ..., ice40_params: _Optional[_Union[Ice40FpgaParams, _Mapping]] = ..., ecp5_params: _Optional[_Union[Ecp5FpgaParams, _Mapping]] = ..., gowin_params: _Optional[_Union[GowinFpgaParams, _Mapping]] = ...) -> None: ...
+    xilinx_params: XilinxFpgaParams
+    def __init__(self, fpga_id: _Optional[str] = ..., part_num: _Optional[str] = ..., size: _Optional[str] = ..., ice40_params: _Optional[_Union[Ice40FpgaParams, _Mapping]] = ..., ecp5_params: _Optional[_Union[Ecp5FpgaParams, _Mapping]] = ..., gowin_params: _Optional[_Union[GowinFpgaParams, _Mapping]] = ..., xilinx_params: _Optional[_Union[XilinxFpgaParams, _Mapping]] = ...) -> None: ...
 
 class Verbosity(_message.Message):
     __slots__ = ("all", "synth", "pnr")

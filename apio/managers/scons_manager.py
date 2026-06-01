@@ -33,6 +33,7 @@ from apio.common.proto.apio_pb2 import (
     Ice40FpgaParams,
     Ecp5FpgaParams,
     GowinFpgaParams,
+    XilinxFpgaParams,
     ApioArch,
     GraphParams,
     LintParams,
@@ -262,6 +263,17 @@ class SConsManager:
                         yosys_family=params["yosys-family"],
                         nextpnr_family=params["nextpnr-family"],
                         packer_device=params["packer-device"],
+                    )
+                )
+            case "xilinx":
+                params = fpga_info["xilinx-params"]
+                result.arch = ApioArch.XILINX
+                result.fpga_info.xilinx_params.MergeFrom(
+                    XilinxFpgaParams(
+                        yosys_family=params["yosys-family"],
+                        type=params["type"],
+                        package=params["package"],
+                        speed=params["speed"]
                     )
                 )
             case _:

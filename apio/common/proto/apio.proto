@@ -1,7 +1,7 @@
 // Protocol buffers definitions used by apio.  Currently we use them just
 // for passing parameters from the apio process to the scons process.
 
-// IMPORTANT: After making changes in this file, run the command 'update-proto.sh' 
+// IMPORTANT: After making changes in this file, run the command 'update-proto.sh'
 // to propagate them to the python stubs. Otherwise they do not take affect.
 
 // Online proto formatter at https://formatter.org/protobuf-formatter
@@ -10,10 +10,10 @@
 // of apio, protocol buffers text mode and binary mode backward compatibility
 // considerations do not apply.
 
-// Using proto2 for features such as 'has' and 'required'. 
+// Using proto2 for features such as 'has' and 'required'.
 syntax = "proto2";
 
- 
+
 package apio.common.proto;
 
 // The supported FPGA architectures, each with its own handler.
@@ -22,6 +22,7 @@ enum ApioArch {
   ICE40 = 1;
   ECP5 = 2;
   GOWIN = 3;
+  XILINX = 4;
 }
 
 enum TerminalMode {
@@ -54,6 +55,17 @@ message GowinFpgaParams {
   required string packer_device = 3;
 }
 
+// Xilinx specific fpga attributes
+// Matches definition file fpgas.jsonc
+message XilinxFpgaParams {
+  required string yosys_family = 1 [default = ""];
+  required string type = 2;
+  required string package = 3;
+  required string speed = 4;
+}
+
+
+
 // General fpga info.
 // Matches definition file fpgas.jsonc.
 message FpgaInfo {
@@ -66,6 +78,7 @@ message FpgaInfo {
     Ice40FpgaParams ice40_params = 10;
     Ecp5FpgaParams ecp5_params = 11;
     GowinFpgaParams gowin_params = 12;
+    XilinxFpgaParams xilinx_params = 13;
   }
 }
 
