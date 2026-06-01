@@ -69,7 +69,10 @@ FPGA_SCHEMA = schema = {
     "type": "object",
     "properties": {
         "part-num": {"type": "string"},
-        "arch": {"type": "string", "enum": ["ice40", "ecp5", "gowin"]},
+        "arch": {
+            "type": "string",
+            "enum": ["ice40", "ecp5", "gowin", "xilinx"],
+        },
         "size": {"type": "string"},
         "ice40-params": {
             "type": "object",
@@ -98,6 +101,17 @@ FPGA_SCHEMA = schema = {
                 "packer-device": {"type": "string"},
             },
             "required": ["yosys-family", "nextpnr-family", "packer-device"],
+            "additionalProperties": False,
+        },
+        "xilinx-params": {
+            "type": "object",
+            "properties": {
+                "yosys-family": {"type": "string"},
+                "type": {"type": "string"},
+                "package": {"type": "string"},
+                "speed": {"type": "string"},
+            },
+            "required": ["yosys-family", "type", "package", "speed"],
             "additionalProperties": False,
         },
     },
