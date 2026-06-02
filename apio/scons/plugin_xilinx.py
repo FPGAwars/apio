@@ -1,0 +1,226 @@
+# -*- coding: utf-8 -*-
+# -- This file is part of the Apio project
+# -- (C) 2016-2018 FPGAwars
+# -- Author Jesús Arroyo
+# -- License GPLv2
+# -- Derived from:
+# ---- Platformio project
+# ---- (C) 2014-2016 Ivan Kravets <me@ikravets.com>
+# ---- License Apache v2
+
+"""Apio scons plugin for the xilinx architecture."""
+
+# pylint: disable=duplicate-code
+
+from pathlib import Path
+from SCons.Script import Builder
+from SCons.Builder import BuilderBase,  CompositeBuilder
+from apio.common.common_util import SRC_SUFFIXES
+from apio.scons.apio_env import ApioEnv
+from apio.scons.plugin_base import PluginBase, ArchPluginInfo
+from apio.scons.plugin_util import (
+    verilator_lint_action,
+    has_testbench_name,
+    announce_testbench_action,
+    source_files_issue_scanner_action,
+    iverilog_action,
+    basename,
+    make_verilator_config_builder,
+    get_define_flags,
+)
+
+
+class PluginXilinx(PluginBase):
+    """Apio scons plugin for the Xilinx architecture."""
+
+    def __init__(self, apio_env: ApioEnv):
+        # -- Call parent constructor.
+        super().__init__(apio_env)
+
+        # -- Cache values.
+        yosys_path = Path(apio_env.params.environment.yosys_path)
+        self.yosys_lib_dir = yosys_path / "xilinx"
+        self.sim_lib_files = [yosys_path / "xilinx" / "cells_sim.v"]
+        self.lint_lib_files = self.sim_lib_files
+
+    def plugin_info(self) -> ArchPluginInfo:
+        """Return plugin specific parameters."""
+        return ArchPluginInfo(
+            constrains_file_suffix=".xdc",
+            pnr_file_suffix=".frames",  # -- TODO
+            bitstream_file_suffix=".bit",  # -- TODO
+            clk_name_index=0,
+        )
+
+    # @overrides
+    def synth_builder(self) -> BuilderBase | CompositeBuilder:
+        """Creates and returns the synth builder."""
+
+        # -- Keep short references.
+        apio_env = self.apio_env
+        params = apio_env.params
+        # xilinx_params = params.fpga_info.xilinx_params
+
+        # -- The yosys synth builder.
+        return Builder(
+            action=(
+                'yosys -p "synth_xilinx -arch xc7 -top {0}; '
+                'write_json $TARGET  {1} " '
+                "{2} -DSYNTHESIZE {3} $SOURCES"
+            ).format(
+                params.apio_env_params.top_module,
+                " ".join(params.apio_env_params.yosys_extra_options),
+                "" if params.verbosity.all or params.verbosity.synth else "-q",
+                get_define_flags(apio_env),
+            ),
+            suffix=".json",
+            src_suffix=SRC_SUFFIXES,
+            source_scanner=self.verilog_src_scanner,
+        )
+
+    # @overrides
+    def pnr_builder(self) -> BuilderBase | CompositeBuilder:
+        """Creates and returns the pnr builder."""
+
+        # -- Keep short references.
+        apio_env = self.apio_env
+        # params = apio_env.params
+        # xilinx_params = params.fpga_info.xilinx_params
+
+        # -- We use an emmiter to add to the builder a second output file.
+        def emitter(target, source, env):
+            _ = env  # Unused
+            target.append(apio_env.target + ".fasm")
+            return target, source
+
+        # -- Create the builder.
+        return Builder(
+            action=(
+                "nextpnr-xilinx --chipdb {0} --xdc {1} --json $SOURCE "
+                "--fasm $TARGET"
+            ).format(
+                "xc7a35tcpg236.bin",  # params.fpga_info.part_num,
+                self.constrain_file(),
+                # apio_env.target + ".fasm",
+                # (
+                #     f"--vopt family={xilinx_params.yosys_family}"
+                #     if xilinx_params.yosys_family
+                #     else ""
+                # ),
+                # "" if params.verbosity.all or params.verbosity.pnr else "-q",
+                # "--gui" if params.nextpnr_gui else "",
+                # " ".join(params.apio_env_params.nextpnr_extra_options),
+            ),
+            suffix=".fasm",
+            src_suffix=".json",
+            emitter=emitter,
+        )
+
+    # @overrides
+    def bitstream_pre_builder(self) -> BuilderBase | CompositeBuilder:
+        """Creates and returns the bitstream builder."""
+
+        return Builder(
+            action="fasm2frames --part {0} --db-root {1} "
+                   " $SOURCE > $TARGET ".format(
+                        "xc7a35tcpg236-1",
+                        "/home/obijuan/.apio/packages/openxc7/"
+                        "share/nextpnr/external/prjxray-db/artix7",
+                    ),
+            suffix=".frames",
+            src_suffix=".fasm",
+        )
+
+    # @overrides
+    def bitstream_builder(self) -> BuilderBase | CompositeBuilder:
+        """Creates and returns the bitstream builder."""
+
+        return Builder(
+            action="xc7frames2bit --part_file {0} --part_name {1} "
+                   "--frm_file "
+                   "$SOURCE --output_file $TARGET".format(
+                        "/home/obijuan/.apio/packages/openxc7/"
+                        "share/nextpnr/external/prjxray-db/"
+                        "artix7/xc7a35tcpg236-1/part.yaml",
+                        "xc7a35tcpg236-1",
+                    ),
+            suffix=".bit",
+            src_suffix=".frames",
+        )
+
+    # @overrides
+    def testbench_compile_builder(self) -> BuilderBase | CompositeBuilder:
+        """Creates and returns the testbench compile builder."""
+
+        # -- Keep short references.
+        apio_env = self.apio_env
+        params = apio_env.params
+
+        # -- Sanity checks
+        assert apio_env.targeting_one_of("sim", "test")
+        assert params.target.HasField("sim") or params.target.HasField("test")
+
+        # -- We use a generator because we need a different action
+        # -- string for sim and test.
+        def action_generator(target, source, env, for_signature):
+            _ = (source, env, for_signature)  # Unused
+            # Extract testbench name from target file name.
+            testbench_file = str(target[0])
+            assert has_testbench_name(testbench_file), testbench_file
+            testbench_name = basename(testbench_file)
+
+            # Construct the actions list.
+            action = [
+                # -- Print a testbench title.
+                announce_testbench_action(),
+                # -- Scan source files for issues.
+                source_files_issue_scanner_action(),
+                # -- Perform the actual test or sim compilation.
+                iverilog_action(
+                    apio_env,
+                    verbose=params.verbosity.all,
+                    vcd_output_name=testbench_name,
+                    is_interactive=apio_env.targeting_one_of("sim"),
+                    lib_dirs=[self.yosys_lib_dir],
+                    lib_files=self.sim_lib_files,
+                ),
+            ]
+            return action
+
+        # -- The testbench compiler builder.
+        return Builder(
+            # -- Dynamic action string generator.
+            generator=action_generator,
+            suffix=".out",
+            src_suffix=SRC_SUFFIXES,
+            source_scanner=self.verilog_src_scanner,
+        )
+
+    # @overrides
+    def lint_config_builder(self) -> BuilderBase:
+        """Creates and returns the lint config builder."""
+
+        # -- Sanity checks
+        assert self.apio_env.targeting_one_of("lint")
+
+        # -- Make the builder.
+        return make_verilator_config_builder(
+            self.yosys_lib_dir,
+            rules_to_supress=[
+                "SPECIFYIGN",
+            ],
+        )
+
+    # @overrides
+    def lint_builder(self) -> BuilderBase | CompositeBuilder:
+        """Creates and returns the lint builder."""
+
+        return Builder(
+            action=verilator_lint_action(
+                self.apio_env,
+                lib_dirs=[self.yosys_lib_dir],
+                lib_files=self.lint_lib_files,
+            ),
+            src_suffix=SRC_SUFFIXES,
+            source_scanner=self.verilog_src_scanner,
+        )

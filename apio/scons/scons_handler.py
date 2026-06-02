@@ -18,12 +18,14 @@ from apio.common.common_util import get_project_source_files
 from apio.scons.plugin_ice40 import PluginIce40
 from apio.scons.plugin_ecp5 import PluginEcp5
 from apio.scons.plugin_gowin import PluginGowin
+from apio.scons.plugin_xilinx import PluginXilinx
 from apio.common.proto.apio_pb2 import (
     SimParams,
     SconsParams,
     ICE40,
     ECP5,
     GOWIN,
+    XILINX,
 )
 from apio.common import apio_console
 from apio.scons.apio_env import ApioEnv
@@ -96,6 +98,8 @@ class SconsHandler:
             plugin = PluginEcp5(apio_env)
         elif params.arch == GOWIN:
             plugin = PluginGowin(apio_env)
+        elif params.arch == XILINX:
+            plugin = PluginXilinx(apio_env)
         else:
             cout(
                 f"Apio SConstruct dispatch error: unknown arch [{params.arch}]"
