@@ -93,9 +93,9 @@ class SConsManager:
         os.chdir(apio_ctx.project_dir)
 
     @on_exception(exit_code=1)
-    def graph(self,
-              graph_params: GraphParams,
-              verbosity: Verbosity) -> Optional[int]:
+    def graph(
+        self, graph_params: GraphParams, verbosity: Verbosity
+    ) -> Optional[int]:
         """Runs a scons subprocess with the 'graph' target. Returns process
         exit code, 0 if ok."""
 
@@ -273,7 +273,7 @@ class SConsManager:
                         yosys_family=params["yosys-family"],
                         type=params["type"],
                         package=params["package"],
-                        speed=params["speed"]
+                        speed=params["speed"],
                     )
                 )
             case _:

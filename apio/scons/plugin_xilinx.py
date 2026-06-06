@@ -14,7 +14,7 @@
 
 from pathlib import Path
 from SCons.Script import Builder
-from SCons.Builder import BuilderBase,  CompositeBuilder
+from SCons.Builder import BuilderBase, CompositeBuilder
 from apio.common.common_util import SRC_SUFFIXES
 from apio.scons.apio_env import ApioEnv
 from apio.scons.plugin_base import PluginBase, ArchPluginInfo
@@ -122,11 +122,11 @@ class PluginXilinx(PluginBase):
 
         return Builder(
             action="fasm2frames --part {0} --db-root {1} "
-                   " $SOURCE > $TARGET ".format(
-                        "xc7a35tcpg236-1",
-                        "/home/obijuan/.apio/packages/openxc7/"
-                        "share/nextpnr/external/prjxray-db/artix7",
-                    ),
+            " $SOURCE > $TARGET ".format(
+                "xc7a35tcpg236-1",
+                "/home/obijuan/.apio/packages/openxc7/"
+                "share/nextpnr/external/prjxray-db/artix7",
+            ),
             suffix=".frames",
             src_suffix=".fasm",
         )
@@ -137,13 +137,13 @@ class PluginXilinx(PluginBase):
 
         return Builder(
             action="xc7frames2bit --part_file {0} --part_name {1} "
-                   "--frm_file "
-                   "$SOURCE --output_file $TARGET".format(
-                        "/home/obijuan/.apio/packages/openxc7/"
-                        "share/nextpnr/external/prjxray-db/"
-                        "artix7/xc7a35tcpg236-1/part.yaml",
-                        "xc7a35tcpg236-1",
-                    ),
+            "--frm_file "
+            "$SOURCE --output_file $TARGET".format(
+                "/home/obijuan/.apio/packages/openxc7/"
+                "share/nextpnr/external/prjxray-db/"
+                "artix7/xc7a35tcpg236-1/part.yaml",
+                "xc7a35tcpg236-1",
+            ),
             suffix=".bit",
             src_suffix=".frames",
         )
