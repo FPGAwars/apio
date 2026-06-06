@@ -86,10 +86,6 @@ class PluginBase:
         """Creates and returns the pnr builder."""
         raise NotImplementedError("Implement in subclass.")
 
-    def bitstream_pre_builder(self) -> BuilderBase:  # pragma: no cover
-        """Intermiate phase. Create a bitstream, but not the final one"""
-        raise NotImplementedError("Implement in subclass")
-
     def bitstream_builder(self) -> BuilderBase:  # pragma: no cover
         """Creates and returns the bitstream builder."""
         raise NotImplementedError("Implement in subclass.")
