@@ -44,6 +44,7 @@ from apio.common.apio_console import cerror, cout
 # -- Scons builders ids.
 SYNTH_BUILDER = "SYNTH_BUILDER"
 PNR_BUILDER = "PNR_BUILDER"
+BITSTREAM_PRE_BUILDER = "BITSTREAM_PRE_BUILDER"
 BITSTREAM_BUILDER = "BITSTREAM_BUILDER"
 TESTBENCH_COMPILE_BUILDER = "TESTBENCH_COMPILE_BUILDER"
 TESTBENCH_RUN_BUILDER = "TESTBENCH_RUN_BUILDER"
@@ -75,8 +76,8 @@ class SconsHandler:
         params: SconsParams = text_format.Parse(proto_text, SconsParams())
 
         # -- Compare the params timestamp to the timestamp in the command.
-        timestamp = ARGUMENTS["timestamp"]
-        assert params.timestamp == timestamp
+        # timestamp = ARGUMENTS["timestamp"]
+        # assert params.timestamp == timestamp
 
         # -- If running on windows, apply the lib library workaround
         if params.environment.is_windows:
@@ -144,14 +145,40 @@ class SconsHandler:
             always_build=(params.verbosity.all or params.verbosity.pnr),
         )
 
-        # -- Bitstream builder builder and target
-        apio_env.builder(BITSTREAM_BUILDER, plugin.bitstream_builder())
+        # -- DEBUG
+        # -- Special case for xilinx
+        if apio_env.params.arch == XILINX:
 
-        apio_env.builder_target(
-            builder_id=BITSTREAM_BUILDER,
-            target=apio_env.target,
-            sources=pnr_target,
-        )
+            # -- The bitstream builder consist of two stages
+            # -- First stage: pre_builder
+            apio_env.builder(BITSTREAM_PRE_BUILDER,
+                             plugin.bitstream_pre_builder())
+
+            pre_builder_target = apio_env.builder_target(
+                builder_id=BITSTREAM_PRE_BUILDER,
+                target=apio_env.target,
+                sources=pnr_target,
+            )
+
+            # -- Second stage: builder
+            apio_env.builder(BITSTREAM_BUILDER, plugin.bitstream_builder())
+
+            apio_env.builder_target(
+                builder_id=BITSTREAM_BUILDER,
+                target=apio_env.target,
+                sources=pre_builder_target,
+            )
+
+        else:
+
+            # -- Bitstream builder builder and target
+            apio_env.builder(BITSTREAM_BUILDER, plugin.bitstream_builder())
+
+            apio_env.builder_target(
+                builder_id=BITSTREAM_BUILDER,
+                target=apio_env.target,
+                sources=pnr_target,
+            )
 
     def _register_apio_build_target(self, synth_srcs):
         """Register the 'build' target which creates the binary bitstream."""
@@ -164,6 +191,25 @@ class SconsHandler:
 
         # -- Register the common targets for synth, pnr, and bitstream.
         self._register_common_targets(synth_srcs)
+
+        # -- SPECIAL CASE FOR XILINX ARCH: Another build step is needed
+        # -- before building the final bitstream. We call this step as
+        # -- bitstream pre-built
+        # if params.arch == XILINX:
+
+        #     # -- Bitstream pre-builder and target
+        #     apio_env.builder(BITSTREAM_PRE_BUILDER,
+        #                      plugin.bitstream_pre_builder())
+
+        #     # -- TODO: Hay que engancharlo bien... PENSAR!!!!
+        #     # --- Llevarlo todo a una funciona nueva!!!
+        #     # --- Cuando funcione... se puede simplificar....
+        #     pnr_target = apio_env.builder_target(
+        #         builder_id=PNR_BUILDER,
+        #         target=apio_env.target,
+        #         sources=[synth_target, self.arch_plugin.constrain_file()],
+        #         always_build=(params.verbosity.all or params.verbosity.pnr),
+        #     )
 
         # -- Determine target file. Normally it's the bitstream file but
         # -- if building with nextpnr --gui flag we skip the packing step
@@ -382,6 +428,11 @@ class SconsHandler:
             always_build=sim_params.force_sim,
         )
 
+        # -- Get the gtkwave extra options (with the correct type)
+        # -- for avoiding pylance warnings
+        gtkwave_extra_options = params.apio_env_params.gtkwave_extra_options
+        gtkwave_extra_options = [str(x) for x in gtkwave_extra_options]
+
         # -- The top level "sim" target.
         gtkwave_target(
             apio_env,
@@ -389,7 +440,7 @@ class SconsHandler:
             sim_vcd_target,
             testbench_info,
             sim_params,
-            params.apio_env_params.gtkwave_extra_options,
+            gtkwave_extra_options,
         )
 
     def _register_apio_test_target(self, synth_srcs, test_srcs):
