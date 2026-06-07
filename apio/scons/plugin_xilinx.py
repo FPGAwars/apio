@@ -105,15 +105,6 @@ class PluginXilinx(PluginBase):
             ).format(
                 database,  # params.fpga_info.part_num,
                 self.constrain_file(),
-                # apio_env.target + ".fasm",
-                # (
-                #     f"--vopt family={xilinx_params.yosys_family}"
-                #     if xilinx_params.yosys_family
-                #     else ""
-                # ),
-                # "" if params.verbosity.all or params.verbosity.pnr else "-q",
-                # "--gui" if params.nextpnr_gui else "",
-                # " ".join(params.apio_env_params.nextpnr_extra_options),
             ),
             suffix=".fasm",
             src_suffix=".json",
