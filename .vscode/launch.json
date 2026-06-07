@@ -15,12 +15,11 @@
             "request": "launch",
             "program": "${workspaceFolder}/apio/__main__.py",
             "args": [
-                "packages",
-                "list"
+                "build"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/ledon",
             "subProcess": false
         },
         {
@@ -49,5 +48,22 @@
             "justMyCode": false,
             "subProcess": false
         },
+        {
+            "name": "Debug SConstruct",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/.venv/bin/scons",
+            "args": [
+                "-f", "${workspaceFolder}/apio/scons/SConstruct",
+                "build",
+                "params=${workspaceFolder}/ledon/_build/default/scons.params",
+                "timestamp=02180043484"
+                
+                //"--directory=${workspaceFolder}/apio/scons",
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "cwd": "${workspaceFolder}/ledon",
+        }
     ]
 }

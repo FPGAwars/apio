@@ -270,8 +270,8 @@ class SConsManager:
                 result.arch = ApioArch.XILINX
                 result.fpga_info.xilinx_params.MergeFrom(
                     XilinxFpgaParams(
-                        yosys_family=params["yosys-family"],
-                        type=params["type"],
+                        family=params["family"],
+                        yosys_arch=params["yosys-arch"],
                         package=params["package"],
                         speed=params["speed"],
                     )

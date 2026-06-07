@@ -58,8 +58,8 @@ message GowinFpgaParams {
 // Xilinx specific fpga attributes
 // Matches definition file fpgas.jsonc
 message XilinxFpgaParams {
-  required string yosys_family = 1 [default = ""];
-  required string type = 2;
+  required string family = 1 [default = ""];
+  required string yosys_arch = 2;
   required string package = 3;
   required string speed = 4;
 }

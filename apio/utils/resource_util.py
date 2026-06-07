@@ -106,12 +106,12 @@ FPGA_SCHEMA = schema = {
         "xilinx-params": {
             "type": "object",
             "properties": {
-                "yosys-family": {"type": "string"},
-                "type": {"type": "string"},
+                "family": {"type": "string"},
+                "yosys-arch": {"type": "string"},
                 "package": {"type": "string"},
                 "speed": {"type": "string"},
             },
-            "required": ["yosys-family", "type", "package", "speed"],
+            "required": ["family", "yosys-arch", "package", "speed"],
             "additionalProperties": False,
         },
     },
