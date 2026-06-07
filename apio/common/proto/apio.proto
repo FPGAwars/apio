@@ -114,6 +114,10 @@ message Environment {
   // The default shell id. This is the shell that scons
   // is expected to use. See ApioContext for values.
   required string scons_shell_id = 8;
+
+  //-- Path to the prjxray_db, located
+  //-- in the openxc7 apio package (only for Xilinx FPGAs)
+  required string prjxray_db_path = 9;
 }
 
 // Information about the expanded active env from apio.ini.

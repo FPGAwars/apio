@@ -114,7 +114,7 @@ class Verbosity(_message.Message):
     def __init__(self, all: bool = ..., synth: bool = ..., pnr: bool = ...) -> None: ...
 
 class Environment(_message.Message):
-    __slots__ = ("platform_id", "is_windows", "terminal_mode", "theme_name", "debug_level", "yosys_path", "trellis_path", "scons_shell_id")
+    __slots__ = ("platform_id", "is_windows", "terminal_mode", "theme_name", "debug_level", "yosys_path", "trellis_path", "scons_shell_id", "prjxray_db_path")
     PLATFORM_ID_FIELD_NUMBER: _ClassVar[int]
     IS_WINDOWS_FIELD_NUMBER: _ClassVar[int]
     TERMINAL_MODE_FIELD_NUMBER: _ClassVar[int]
@@ -123,6 +123,7 @@ class Environment(_message.Message):
     YOSYS_PATH_FIELD_NUMBER: _ClassVar[int]
     TRELLIS_PATH_FIELD_NUMBER: _ClassVar[int]
     SCONS_SHELL_ID_FIELD_NUMBER: _ClassVar[int]
+    PRJXRAY_DB_PATH_FIELD_NUMBER: _ClassVar[int]
     platform_id: str
     is_windows: bool
     terminal_mode: TerminalMode
@@ -131,7 +132,8 @@ class Environment(_message.Message):
     yosys_path: str
     trellis_path: str
     scons_shell_id: str
-    def __init__(self, platform_id: _Optional[str] = ..., is_windows: bool = ..., terminal_mode: _Optional[_Union[TerminalMode, str]] = ..., theme_name: _Optional[str] = ..., debug_level: _Optional[int] = ..., yosys_path: _Optional[str] = ..., trellis_path: _Optional[str] = ..., scons_shell_id: _Optional[str] = ...) -> None: ...
+    prjxray_db_path: str
+    def __init__(self, platform_id: _Optional[str] = ..., is_windows: bool = ..., terminal_mode: _Optional[_Union[TerminalMode, str]] = ..., theme_name: _Optional[str] = ..., debug_level: _Optional[int] = ..., yosys_path: _Optional[str] = ..., trellis_path: _Optional[str] = ..., scons_shell_id: _Optional[str] = ..., prjxray_db_path: _Optional[str] = ...) -> None: ...
 
 class ApioEnvParams(_message.Message):
     __slots__ = ("env_name", "board_id", "top_module", "defines", "yosys_extra_options", "nextpnr_extra_options", "gtkwave_extra_options", "verilator_extra_options", "constraint_file")

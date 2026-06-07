@@ -142,6 +142,12 @@ def test_default_params(apio_runner: ApioRunner):
         )
         expected.environment.scons_shell_id = apio_ctx.scons_shell_id
 
+        expected.environment.prjxray_db_path = str(
+            sb.packages_dir / "openxc7/share/nextpnr/external/prjxray-db"
+        )
+
+        # -- TODO: For the missing platforms it should be the null string ""
+
         # -- Compare actual to expected values.
         assert str(scons_params) == str(expected)
 
@@ -183,6 +189,10 @@ def test_explicit_params(apio_runner: ApioRunner):
             sb.packages_dir / "oss-cad-suite/share/trellis"
         )
         expected.environment.scons_shell_id = apio_ctx.scons_shell_id
+
+        expected.environment.prjxray_db_path = str(
+            sb.packages_dir / "openxc7/share/nextpnr/external/prjxray-db"
+        )
 
         # -- Compare actual to expected values.
         assert str(scons_params) == str(expected)

@@ -296,6 +296,19 @@ class SConsManager:
         assert "YOSYS_LIB" in oss_set_vars, oss_set_vars
         assert "TRELLIS" in oss_set_vars, oss_set_vars
 
+        # -- Currently openxc7 is only supported in Linux
+        # -- If there is an exception, let's ignore it...
+        try:
+            openxc7_set_vars = apio_ctx.all_packages["openxc7"]["env"][
+                "set-vars"
+            ]
+
+        # -- Platform not supported. Ignore it!
+        except KeyError:
+            openxc7_set_vars = {
+                "PRJXRAY_DB_DIR": ""
+            }
+
         result.environment.MergeFrom(
             Environment(
                 platform_id=apio_ctx.platform_id,
@@ -310,6 +323,7 @@ class SConsManager:
                 yosys_path=oss_set_vars["YOSYS_LIB"],
                 trellis_path=oss_set_vars["TRELLIS"],
                 scons_shell_id=apio_ctx.scons_shell_id,
+                prjxray_db_path=openxc7_set_vars["PRJXRAY_DB_DIR"]
             )
         )
         assert result.environment.IsInitialized(), result
