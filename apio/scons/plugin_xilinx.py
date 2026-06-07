@@ -64,10 +64,11 @@ class PluginXilinx(PluginBase):
         # -- The yosys synth builder.
         return Builder(
             action=(
-                'yosys -p "synth_xilinx -arch xc7 -top {0}; '
-                'write_json $TARGET  {1} " '
-                "{2} -DSYNTHESIZE {3} $SOURCES"
+                'yosys -p "synth_xilinx -arch {0} -top {1}; '
+                'write_json $TARGET  {2} " '
+                "{3} -DSYNTHESIZE {4} $SOURCES"
             ).format(
+                params.fpga_info.xilinx_params.yosys_arch,
                 params.apio_env_params.top_module,
                 " ".join(params.apio_env_params.yosys_extra_options),
                 "" if params.verbosity.all or params.verbosity.synth else "-q",
