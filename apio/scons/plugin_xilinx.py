@@ -122,12 +122,24 @@ class PluginXilinx(PluginBase):
 
     # @overrides
     def bitstream_pre_builder(self) -> BuilderBase | CompositeBuilder:
-        """Creates and returns the bitstream builder."""
+        """Creates and returns the pre-bitstream builder."""
+
+        # -- Keep short references.
+        apio_env = self.apio_env
+        params = apio_env.params
+        xilinx_params = params.fpga_info.xilinx_params
+
+        # -- TODO: Change format!!
+        # -- Change speed param from "-1" to "1"
+        # -- The '-' should be added here!
+        part1 = f"{xilinx_params.package}{xilinx_params.speed}"
 
         return Builder(
             action="fasm2frames --part {0} --db-root {1} "
             " $SOURCE > $TARGET ".format(
-                "xc7a35tcpg236-1",
+                part1,
+
+                # -- TODO: Get openxc7 path from apio!
                 "/home/obijuan/.apio/packages/openxc7/"
                 "share/nextpnr/external/prjxray-db/artix7",
             ),
@@ -139,6 +151,19 @@ class PluginXilinx(PluginBase):
     def bitstream_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the bitstream builder."""
 
+        # -- Keep short references.
+        apio_env = self.apio_env
+        params = apio_env.params
+        xilinx_params = params.fpga_info.xilinx_params
+
+        # -- TODO: Change format!!
+        # -- Change speed param from "-1" to "1"
+        # -- The '-' should be added here!
+        part1 = f"{xilinx_params.package}{xilinx_params.speed}"
+
+        # -- TODO
+        part_file = ""
+
         return Builder(
             action="xc7frames2bit --part_file {0} --part_name {1} "
             "--frm_file "
@@ -146,7 +171,7 @@ class PluginXilinx(PluginBase):
                 "/home/obijuan/.apio/packages/openxc7/"
                 "share/nextpnr/external/prjxray-db/"
                 "artix7/xc7a35tcpg236-1/part.yaml",
-                "xc7a35tcpg236-1",
+                part1,
             ),
             suffix=".bit",
             src_suffix=".frames",
