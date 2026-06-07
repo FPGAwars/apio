@@ -133,15 +133,14 @@ class PluginXilinx(PluginBase):
         # -- Change speed param from "-1" to "1"
         # -- The '-' should be added here!
         part1 = f"{xilinx_params.package}{xilinx_params.speed}"
+        prjxray_db = Path(apio_env.params.environment.prjxray_db_path)
+        prjxray_db = prjxray_db / xilinx_params.family
 
         return Builder(
             action="fasm2frames --part {0} --db-root {1} "
             " $SOURCE > $TARGET ".format(
                 part1,
-
-                # -- TODO: Get openxc7 path from apio!
-                "/home/obijuan/.apio/packages/openxc7/"
-                "share/nextpnr/external/prjxray-db/artix7",
+                prjxray_db,
             ),
             suffix=".frames",
             src_suffix=".fasm",
@@ -161,16 +160,21 @@ class PluginXilinx(PluginBase):
         # -- The '-' should be added here!
         part1 = f"{xilinx_params.package}{xilinx_params.speed}"
 
-        # -- TODO
-        part_file = ""
+        # part.yaml
+
+        # -- TODO: Change format!!
+        # -- Change speed param from "-1" to "1"
+        # -- The '-' should be added here!
+        part1 = f"{xilinx_params.package}{xilinx_params.speed}"
+        prjxray_db = Path(apio_env.params.environment.prjxray_db_path)
+        prjxray_db = prjxray_db / xilinx_params.family
+        part_file = prjxray_db / part1 / "part.yaml"
 
         return Builder(
             action="xc7frames2bit --part_file {0} --part_name {1} "
             "--frm_file "
             "$SOURCE --output_file $TARGET".format(
-                "/home/obijuan/.apio/packages/openxc7/"
-                "share/nextpnr/external/prjxray-db/"
-                "artix7/xc7a35tcpg236-1/part.yaml",
+                part_file,
                 part1,
             ),
             suffix=".bit",
