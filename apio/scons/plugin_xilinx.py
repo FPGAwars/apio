@@ -59,7 +59,7 @@ class PluginXilinx(PluginBase):
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params
-        # xilinx_params = params.fpga_info.xilinx_params
+        xilinx_params = params.fpga_info.xilinx_params
 
         # -- The yosys synth builder.
         return Builder(
@@ -68,7 +68,7 @@ class PluginXilinx(PluginBase):
                 'write_json $TARGET  {2} " '
                 "{3} -DSYNTHESIZE {4} $SOURCES"
             ).format(
-                params.fpga_info.xilinx_params.yosys_arch,
+                xilinx_params.yosys_arch,
                 params.apio_env_params.top_module,
                 " ".join(params.apio_env_params.yosys_extra_options),
                 "" if params.verbosity.all or params.verbosity.synth else "-q",
@@ -85,8 +85,8 @@ class PluginXilinx(PluginBase):
 
         # -- Keep short references.
         apio_env = self.apio_env
-        # params = apio_env.params
-        # xilinx_params = params.fpga_info.xilinx_params
+        params = apio_env.params
+        xilinx_params = params.fpga_info.xilinx_params
 
         # -- We use an emmiter to add to the builder a second output file.
         def emitter(target, source, env):
@@ -94,13 +94,16 @@ class PluginXilinx(PluginBase):
             target.append(apio_env.target + ".fasm")
             return target, source
 
+        package = xilinx_params.package
+        database = f"{package}.bin"
+
         # -- Create the builder.
         return Builder(
             action=(
                 "nextpnr-xilinx --chipdb {0} --xdc {1} --json $SOURCE "
                 "--fasm $TARGET"
             ).format(
-                "xc7a35tcpg236.bin",  # params.fpga_info.part_num,
+                database,  # params.fpga_info.part_num,
                 self.constrain_file(),
                 # apio_env.target + ".fasm",
                 # (
