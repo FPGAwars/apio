@@ -193,25 +193,6 @@ class SconsHandler:
         # -- Register the common targets for synth, pnr, and bitstream.
         self._register_common_targets(synth_srcs)
 
-        # -- SPECIAL CASE FOR XILINX ARCH: Another build step is needed
-        # -- before building the final bitstream. We call this step as
-        # -- bitstream pre-built
-        # if params.arch == XILINX:
-
-        #     # -- Bitstream pre-builder and target
-        #     apio_env.builder(BITSTREAM_PRE_BUILDER,
-        #                      plugin.bitstream_pre_builder())
-
-        #     # -- TODO: Hay que engancharlo bien... PENSAR!!!!
-        #     # --- Llevarlo todo a una funciona nueva!!!
-        #     # --- Cuando funcione... se puede simplificar....
-        #     pnr_target = apio_env.builder_target(
-        #         builder_id=PNR_BUILDER,
-        #         target=apio_env.target,
-        #         sources=[synth_target, self.arch_plugin.constrain_file()],
-        #         always_build=(params.verbosity.all or params.verbosity.pnr),
-        #     )
-
         # -- Determine target file. Normally it's the bitstream file but
         # -- if building with nextpnr --gui flag we skip the packing step
         # -- and stop after the nextpnr step.
