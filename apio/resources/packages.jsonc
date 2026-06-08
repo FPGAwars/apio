@@ -51,7 +51,8 @@
         "%p/lib"
       ],
       "set-vars": {
-        "PRJXRAY_DB_DIR": "%p/share/nextpnr/external/prjxray-db"
+        "PRJXRAY_DB_DIR": "%p/share/nextpnr/external/prjxray-db",
+        "CHIPDB_DIR": "%p/chipdb"
       }
     }
   },

@@ -95,7 +95,11 @@ class PluginXilinx(PluginBase):
             return target, source
 
         package = xilinx_params.package
+
+        # TODO: Add the path to the xc7a35tcpg236.bin file
+        # openxc7/chipdb/xc7a35tcpg236.bin
         database = f"{package}.bin"
+        chipdb = Path(apio_env.params.environment.chipdb_path)
 
         # -- Create the builder.
         return Builder(
@@ -103,7 +107,7 @@ class PluginXilinx(PluginBase):
                 "nextpnr-xilinx --chipdb {0} --xdc {1} --json $SOURCE "
                 "--fasm $TARGET"
             ).format(
-                database,  # params.fpga_info.part_num,
+                chipdb / database,
                 self.constrain_file(),
             ),
             suffix=".fasm",

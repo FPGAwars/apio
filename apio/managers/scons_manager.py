@@ -306,7 +306,8 @@ class SConsManager:
         # -- Platform not supported. Ignore it!
         except KeyError:
             openxc7_set_vars = {
-                "PRJXRAY_DB_DIR": ""
+                "PRJXRAY_DB_DIR": "",
+                "CHIPDB_DIR": ""
             }
 
         result.environment.MergeFrom(
@@ -323,7 +324,8 @@ class SConsManager:
                 yosys_path=oss_set_vars["YOSYS_LIB"],
                 trellis_path=oss_set_vars["TRELLIS"],
                 scons_shell_id=apio_ctx.scons_shell_id,
-                prjxray_db_path=openxc7_set_vars["PRJXRAY_DB_DIR"]
+                prjxray_db_path=openxc7_set_vars["PRJXRAY_DB_DIR"],
+                chipdb_path=openxc7_set_vars["CHIPDB_DIR"]
             )
         )
         assert result.environment.IsInitialized(), result

@@ -118,6 +118,9 @@ message Environment {
   //-- Path to the prjxray_db, located
   //-- in the openxc7 apio package (only for Xilinx FPGAs)
   required string prjxray_db_path = 9;
+
+  //-- Path to the chipdb folder, located in openxc7/chipdb
+  required string chipdb_path = 10;
 }
 
 // Information about the expanded active env from apio.ini.
