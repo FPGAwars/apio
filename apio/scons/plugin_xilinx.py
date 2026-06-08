@@ -47,8 +47,8 @@ class PluginXilinx(PluginBase):
         """Return plugin specific parameters."""
         return ArchPluginInfo(
             constrains_file_suffix=".xdc",
-            pnr_file_suffix=".frames",  # -- TODO
-            bitstream_file_suffix=".bit",  # -- TODO
+            pnr_file_suffix=".frames",
+            bitstream_file_suffix=".bit",
             clk_name_index=0,
         )
 
@@ -120,10 +120,7 @@ class PluginXilinx(PluginBase):
         params = apio_env.params
         xilinx_params = params.fpga_info.xilinx_params
 
-        # -- TODO: Change format!!
-        # -- Change speed param from "-1" to "1"
-        # -- The '-' should be added here!
-        part1 = f"{xilinx_params.package}{xilinx_params.speed}"
+        part1 = f"{xilinx_params.package}-{xilinx_params.speed}"
         prjxray_db = Path(apio_env.params.environment.prjxray_db_path)
         prjxray_db = prjxray_db / xilinx_params.family
 
@@ -145,18 +142,8 @@ class PluginXilinx(PluginBase):
         apio_env = self.apio_env
         params = apio_env.params
         xilinx_params = params.fpga_info.xilinx_params
+        part1 = f"{xilinx_params.package}-{xilinx_params.speed}"
 
-        # -- TODO: Change format!!
-        # -- Change speed param from "-1" to "1"
-        # -- The '-' should be added here!
-        part1 = f"{xilinx_params.package}{xilinx_params.speed}"
-
-        # part.yaml
-
-        # -- TODO: Change format!!
-        # -- Change speed param from "-1" to "1"
-        # -- The '-' should be added here!
-        part1 = f"{xilinx_params.package}{xilinx_params.speed}"
         prjxray_db = Path(apio_env.params.environment.prjxray_db_path)
         prjxray_db = prjxray_db / xilinx_params.family
         part_file = prjxray_db / part1 / "part.yaml"
