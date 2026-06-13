@@ -539,7 +539,7 @@ def fpga_arch_sort_key(fpga_arch: str) -> Any:
 
     # -- The preferred order of architectures, Add more if adding new
     # -- architectures.
-    archs = ["ice40", "ecp5", "gowin"]
+    archs = ["ice40", "ecp5", "gowin", "xilinx"]
 
     # -- Primary key with preferred architecture first and  in the
     # -- preferred order.

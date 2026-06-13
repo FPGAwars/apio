@@ -7,6 +7,7 @@ from os.path import getsize
 from pathlib import Path
 from tests.conftest import ApioRunner
 from apio.commands.apio import apio_top_cli as apio
+from typing import cast
 
 
 def test_project_with_legacy_board_id(apio_runner: ApioRunner):
@@ -118,9 +119,9 @@ def _test_project(
         assert "yosys -p" not in result.output
 
         # -- Modify apio.ini
-        apio_ini_lines = sb.read_file(
+        apio_ini_lines = cast(list[str], sb.read_file(
             sb.proj_dir / "apio.ini", lines_mode=True
-        )
+        ))
         apio_ini_lines.append(" ")
         sb.write_file(sb.proj_dir / "apio.ini", apio_ini_lines, exists_ok=True)
 
