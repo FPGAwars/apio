@@ -3,7 +3,7 @@ Tests of project.py
 """
 
 from typing import Dict, Optional, Tuple
-from pytest import LogCaptureFixture
+from _pytest.capture import CaptureFixture
 import pytest
 from tests.conftest import ApioRunner
 from apio.managers.project import Project, ENV_OPTIONS_SPEC
@@ -22,7 +22,7 @@ def load_apio_ini(
     apio_ini: Dict[str, Dict[str, str]],
     env_arg: Optional[str],
     apio_runner: ApioRunner,
-    capsys: LogCaptureFixture,
+    capsys: CaptureFixture[str]
 ) -> Tuple[Project, str]:
     """A helper function load apio.ini.  Returns (project, stdout)"""
 
@@ -53,7 +53,7 @@ def test_env_options_specs():
         assert name == env_options_spec.name
 
 
-def test_all_options_env(apio_runner: ApioRunner, capsys: LogCaptureFixture):
+def test_all_options_env(apio_runner: ApioRunner, capsys: CaptureFixture[str]):
     """Tests an apio.ini with all options"""
 
     apio_ini = {
@@ -104,7 +104,7 @@ def test_all_options_env(apio_runner: ApioRunner, capsys: LogCaptureFixture):
 
 
 def test_required_options_only_env(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
+    apio_runner: ApioRunner, capsys: CaptureFixture
 ):
     """Tests a minimal apio.ini with required only options."""
 
@@ -127,7 +127,7 @@ def test_required_options_only_env(
     }
 
 
-def test_list_options(apio_runner: ApioRunner, capsys: LogCaptureFixture):
+def test_list_options(apio_runner: ApioRunner, capsys: CaptureFixture):
     """Tests list options."""
 
     project, _ = load_apio_ini(
@@ -155,7 +155,7 @@ def test_list_options(apio_runner: ApioRunner, capsys: LogCaptureFixture):
     ]
 
 
-def test_macro_expansion(apio_runner: ApioRunner, capsys: LogCaptureFixture):
+def test_macro_expansion(apio_runner: ApioRunner, capsys: CaptureFixture):
     """Tests the expansion of macros within values."""
 
     project, _ = load_apio_ini(
@@ -181,7 +181,7 @@ def test_macro_expansion(apio_runner: ApioRunner, capsys: LogCaptureFixture):
     ]
 
 
-def test_legacy_board_id(apio_runner: ApioRunner, capsys: LogCaptureFixture):
+def test_legacy_board_id(apio_runner: ApioRunner, capsys: CaptureFixture):
     """Tests with 'board' option having a legacy board id. It should
     be converted to the canonical board id"""
 
@@ -208,7 +208,7 @@ def test_legacy_board_id(apio_runner: ApioRunner, capsys: LogCaptureFixture):
     )
 
 
-def test_legacy_apio_ini(apio_runner: ApioRunner, capsys: LogCaptureFixture):
+def test_legacy_apio_ini(apio_runner: ApioRunner, capsys: CaptureFixture):
     """Tests with an old style apio.ini that has a single [env] section."""
 
     project, stdout = load_apio_ini(
@@ -235,7 +235,7 @@ def test_legacy_apio_ini(apio_runner: ApioRunner, capsys: LogCaptureFixture):
 
 
 def test_first_env_is_default(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
+    apio_runner: ApioRunner, capsys: CaptureFixture
 ):
     """Tests that with no --env and no default-env, the first env in
     apio.ini is selected"""
@@ -268,7 +268,7 @@ def test_first_env_is_default(
 
 
 def test_env_selection_from_apio_ini(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
+    apio_runner: ApioRunner, capsys: CaptureFixture
 ):
     """Tests that with no --env, and with default env defined in apio.ini
     using default-env option."""
@@ -304,7 +304,7 @@ def test_env_selection_from_apio_ini(
 
 
 def test_env_selection_from_env_arg(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
+    apio_runner: ApioRunner, capsys: CaptureFixture
 ):
     """Tests that with --env overriding default-env in apio.ini."""
 
@@ -343,7 +343,7 @@ def error_tester(
     apio_ini: Dict[str, Dict[str, str]],
     expected_error: str,
     apio_runner: ApioRunner,
-    capsys: LogCaptureFixture,
+    capsys: CaptureFixture,
 ):
     """A helper function to tests apio.ini content that is expected to
     exit with an error."""
@@ -368,7 +368,7 @@ def error_tester(
         assert expected_error in capture
 
 
-def test_validation_errors(apio_runner: ApioRunner, capsys: LogCaptureFixture):
+def test_validation_errors(apio_runner: ApioRunner, capsys: CaptureFixture):
     """Tests the validation of apio.ini errors."""
 
     # -- No [env:name] section.
