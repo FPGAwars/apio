@@ -206,7 +206,10 @@ def exec_command(
     # -- Execute the command
     try:
         with subprocess.Popen(
-            cmd, stdout=stdout, stderr=stderr, shell=False
+            cmd,
+            stdout=stdout.fileno(),
+            stderr=stderr.fileno(),
+            shell=False
         ) as proc:
 
             # -- Wait for completion.
