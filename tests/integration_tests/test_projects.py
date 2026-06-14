@@ -406,3 +406,16 @@ def test_project_gowin_system_verilog(apio_runner: ApioRunner):
         bitstream="hardware.fs",
         report_item="LUT4",
     )
+
+
+def test_project_xilinx_local_dir(apio_runner: ApioRunner):
+    """Tests building and testing a Xilinx project as the current working
+    dir."""
+    _test_project(
+        apio_runner,
+        remote_proj_dir=False,
+        example="alhambra-ii/bcd-counter",
+        testbench_file="main_tb.v",
+        bitstream="hardware.bin",
+        report_item="ICESTORM_LC",
+    )

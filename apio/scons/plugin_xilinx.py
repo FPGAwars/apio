@@ -95,20 +95,25 @@ class PluginXilinx(PluginBase):
             return target, source
 
         package = xilinx_params.package
-
-        # TODO: Add the path to the xc7a35tcpg236.bin file
-        # openxc7/chipdb/xc7a35tcpg236.bin
         database = f"{package}.bin"
         chipdb = Path(apio_env.params.environment.chipdb_path)
 
-        # -- Create the builder.
+        # -- Python file that is passed to nextpnr-xilinx for generating
+        # -- the report file
+        apio_home_path = Path(params.environment.apio_home_path)
+        report_py_rel_dir = "apio/scons/report-xilinx.py"
+        report_py = apio_home_path / report_py_rel_dir
+
+        # -- Create the builder
         return Builder(
             action=(
                 "nextpnr-xilinx --chipdb {0} --xdc {1} --json $SOURCE "
-                "--fasm $TARGET"
+                "--fasm $TARGET "
+                "--post-route {2}"
             ).format(
                 chipdb / database,
                 self.constrain_file(),
+                report_py
             ),
             suffix=".fasm",
             src_suffix=".json",

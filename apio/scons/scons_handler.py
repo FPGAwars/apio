@@ -149,10 +149,16 @@ class SconsHandler:
         # -- Special case for xilinx
         if apio_env.params.arch == XILINX:
 
+            # -- Access to plugin.pre_builder()
+            # -- But using getattr pylance does not complain
+            # -- Cannot access attribute "bitstream_pre_builder"
+            # -- for class "PluginBase" (reportAttributeAccessIssue)
+            pre_builder = getattr(plugin, "bitstream_pre_builder")
+
             # -- The bitstream builder consist of two stages
             # -- First stage: pre_builder
             apio_env.builder(
-                BITSTREAM_PRE_BUILDER, plugin.bitstream_pre_builder()
+                BITSTREAM_PRE_BUILDER, pre_builder
             )
 
             pre_builder_target = apio_env.builder_target(
