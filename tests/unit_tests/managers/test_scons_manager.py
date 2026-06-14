@@ -143,6 +143,7 @@ def test_default_params(apio_runner: ApioRunner):
             sb.packages_dir / "oss-cad-suite/share/trellis"
         )
         expected.environment.scons_shell_id = apio_ctx.scons_shell_id
+        expected.environment.apio_home_path = str(apio_ctx.apio_home_dir)
 
         # -- TODO: For the missing platforms it should be the null string ""
         expected.environment.prjxray_db_path = str(
@@ -195,6 +196,7 @@ def test_explicit_params(apio_runner: ApioRunner):
             sb.packages_dir / "oss-cad-suite/share/trellis"
         )
         expected.environment.scons_shell_id = apio_ctx.scons_shell_id
+        expected.environment.apio_home_path = str(apio_ctx.apio_home_dir)
 
         # -- TODO: For the missing platforms it should be the null string ""
         expected.environment.prjxray_db_path = str(

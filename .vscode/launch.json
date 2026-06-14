@@ -15,7 +15,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/apio/__main__.py",
             "args": [
-                "build"
+                "report"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
@@ -55,10 +55,10 @@
             "program": "${workspaceFolder}/.venv/bin/scons",
             "args": [
                 "-f", "${workspaceFolder}/apio/scons/SConstruct",
-                "build",
+                "report",
                 "params=${workspaceFolder}/ledon/_build/default/scons.params",
                 "timestamp=02180043484"
-                
+
                 //"--directory=${workspaceFolder}/apio/scons",
             ],
             "console": "integratedTerminal",

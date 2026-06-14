@@ -323,6 +323,7 @@ class SConsManager:
                 scons_shell_id=apio_ctx.scons_shell_id,
                 prjxray_db_path=openxc7_set_vars["PRJXRAY_DB_DIR"],
                 chipdb_path=openxc7_set_vars["CHIPDB_DIR"],
+                apio_home_path=str(apio_ctx.apio_home_dir)
             )
         )
         assert result.environment.IsInitialized(), result
