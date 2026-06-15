@@ -43,8 +43,8 @@ class _DeviceScanner:
 
     def __init__(self, apio_ctx: ApioContext):
         self._apio_ctx: ApioContext = apio_ctx
-        self._usb_devices: List[UsbDevice] = None
-        self._serial_devices: List[SerialDevice] = None
+        self._usb_devices: List[UsbDevice] | None = None
+        self._serial_devices: List[SerialDevice] | None = None
 
     def get_usb_devices(self) -> List[UsbDevice]:
         """Scan usb devices, with caching."""
@@ -53,7 +53,7 @@ class _DeviceScanner:
             assert isinstance(self._usb_devices, list)
         return self._usb_devices
 
-    def get_serial_devices(self) -> List[UsbDevice]:
+    def get_serial_devices(self) -> List[SerialDevice]:
         """Scan serial devices, with caching."""
         if self._serial_devices is None:
             self._serial_devices = serial_util.scan_serial_devices(
