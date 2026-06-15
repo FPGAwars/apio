@@ -203,13 +203,13 @@ def cflush() -> None:
 
 def cout(
     *text_lines: str,
-    style: Optional[str] = None,
+    style: str = "",
     nl: bool = True,
 ) -> None:
     """Prints lines of text to the console, using the optional style."""
     # -- If no args, just do an empty println.
     if not text_lines:
-        text_lines = [""]
+        text_lines = ("",)
 
     for text_line in text_lines:
         # -- User is responsible to conversion to strings.
@@ -224,9 +224,9 @@ def cout(
         # -- We first convert it to Text as a workaround for
         # -- https://github.com/Textualize/rich/discussions/3779.
         console().print(
-            Text.from_ansi(text_line, style=style, end=None),
+            Text.from_ansi(text_line, style=style, end=""),
             highlight=False,
-            end=None,
+            end="",
         )
 
         # console().file.flush()
