@@ -107,8 +107,8 @@ class PluginXilinx(PluginBase):
         # -- The parent folder is the apio root folder
         apio_root = current_python_file.parent.parent
 
-        # -- Add the report-xilinx.py folder to the path
-        report_py = apio_root / "scons/report-xilinx.py"
+        # -- Add the report_xilinx.py folder to the path
+        report_py = apio_root / "scons/report_xilinx.py"
 
         # -- Create the builder
         return Builder(
@@ -117,11 +117,7 @@ class PluginXilinx(PluginBase):
                 "--fasm $TARGET "
                 "--post-route {2} "
                 "-q "
-            ).format(
-                chipdb / database,
-                self.constrain_file(),
-                report_py
-            ),
+            ).format(chipdb / database, self.constrain_file(), report_py),
             suffix=".fasm",
             src_suffix=".json",
             emitter=emitter,

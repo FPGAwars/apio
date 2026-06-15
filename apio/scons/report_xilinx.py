@@ -1,11 +1,12 @@
+"""
+This script is called by the `nextpnr-xilinx` tool for generating
+a report, because it lacks the option `--report`
+"""
+
 import json
 import os
 from pathlib import Path
 
-# --------------------------------------------------------------------------
-# -- This script is called by the `nextpnr-xilinx` tool for generating
-# -- a report, because it lacks the option `--report`
-# --------------------------------------------------------------------------
 
 # -- DEBUG: show all the env variables
 # variables = os.environ
@@ -27,6 +28,11 @@ env_build_path = Path(os.environ["ENV_BUILD_PATH"])
 # -- Report file
 report_file = env_build_path / "hardware.pnr"
 
+# -- Ignore pylint errores
+# pylint: disable=self-assigning-variable
+# pylint: disable=undefined-variable
+# pylint: disable=invalid-name
+
 # -- Ignore all hte pylance and Flake8 errors related to
 # -- ctx (that is generated dynamically when calling nextpnr-xilinx)
 ctx = ctx  # noqa: F821 # pyright: ignore[reportUndefinedVariable]
@@ -46,25 +52,14 @@ for cell_name, cell_info in ctx.cells:
     resources_used[cell_type] = resources_used.get(cell_type, 0) + 1
 
 # -- Build the final blank report json file
-report = {
-    "critical_paths": [],
-    "fmax": {},
-    "utilization": {
-    }
-}
+report = {"critical_paths": [], "fmax": {}, "utilization": {}}
 
 # --- Fill in the report json
 for res, amount in resources_used.items():
-    cell = {
-        "available": resources_total[res],
-        "used": amount
-    }
+    cell = {"available": resources_total[res], "used": amount}
     report["utilization"][res] = cell
     # print(f"* {res}: {amount} / {resources_total[res]}")
 
 # -- Generate the report file
-with open(report_file, "w") as f:
+with open(report_file, "w", encoding="utf8") as f:
     json.dump(report, f, indent=4)
-
-
-

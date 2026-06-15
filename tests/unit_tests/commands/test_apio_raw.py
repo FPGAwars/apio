@@ -35,9 +35,7 @@ def test_raw(apio_runner: ApioRunner):
         assert "hello" in result.output
 
         # -- Run a command without the required '--'
-        result = sb.invoke_apio_cmd(
-            apio, ["raw", "echo"], in_subprocess=True
-        )
+        result = sb.invoke_apio_cmd(apio, ["raw", "echo"], in_subprocess=True)
         assert result.exit_code != 0, result.output
         assert "command separator '--' was not found" in result.output
 

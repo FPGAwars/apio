@@ -157,9 +157,7 @@ class SconsHandler:
 
             # -- The bitstream builder consist of two stages
             # -- First stage: pre_builder
-            apio_env.builder(
-                BITSTREAM_PRE_BUILDER, pre_builder()
-            )
+            apio_env.builder(BITSTREAM_PRE_BUILDER, pre_builder())
 
             pre_builder_target = apio_env.builder_target(
                 builder_id=BITSTREAM_PRE_BUILDER,

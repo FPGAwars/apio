@@ -22,7 +22,7 @@ def load_apio_ini(
     apio_ini: Dict[str, Dict[str, str]],
     env_arg: Optional[str],
     apio_runner: ApioRunner,
-    capsys: CaptureFixture[str]
+    capsys: CaptureFixture[str],
 ) -> Tuple[Project, str]:
     """A helper function load apio.ini.  Returns (project, stdout)"""
 
@@ -234,9 +234,7 @@ def test_legacy_apio_ini(apio_runner: ApioRunner, capsys: CaptureFixture):
     )
 
 
-def test_first_env_is_default(
-    apio_runner: ApioRunner, capsys: CaptureFixture
-):
+def test_first_env_is_default(apio_runner: ApioRunner, capsys: CaptureFixture):
     """Tests that with no --env and no default-env, the first env in
     apio.ini is selected"""
 
