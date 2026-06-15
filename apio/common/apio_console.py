@@ -11,7 +11,7 @@
 
 from io import StringIO
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, IO
 from rich.console import Console
 from rich.ansi import AnsiDecoder
 from rich.theme import Theme
@@ -26,6 +26,7 @@ from apio.common.proto.apio_pb2 import (
     FORCE_TERMINAL,
     AUTO_TERMINAL,
 )
+
 
 # -- The Rich library colors names are listed at:
 # -- https://rich.readthedocs.io/en/stable/appendix/colors.html
@@ -296,8 +297,8 @@ class ConsoleCapture:
     """A context manager to output into a string."""
 
     def __init__(self):
-        self._saved_file = None
-        self._buffer = None
+        self._saved_file: Optional[IO[str]] = None
+        self._buffer: Optional[StringIO] = None
 
     def __enter__(self):
         cflush()
@@ -307,12 +308,16 @@ class ConsoleCapture:
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        console().file = self._saved_file
+        if self._saved_file is not None:
+            console().file = self._saved_file
+        # console().file = self._saved_file
 
     @property
     def value(self):
         """Returns the captured text."""
-        return self._buffer.getvalue()
+        if self._buffer is not None:
+            return self._buffer.getvalue()
+        return ""
 
 
 def cstyle(text: str, style: Optional[str] = None) -> str:
@@ -343,4 +348,6 @@ def cwidth():
 def get_theme() -> ApioTheme:
     """Return the the current theme."""
     check_apio_console_configured()
+
+    assert _state is not None and _state.theme is not None
     return _state.theme
