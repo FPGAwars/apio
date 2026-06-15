@@ -93,13 +93,13 @@ def cli(
         sys.exit(1)
 
     # -- Determine the new project directory. Create if needed.
-    project_dir: Path = util.user_directory_or_cwd(
+    project_dir_new: Path = util.user_directory_or_cwd(
         project_dir, description="Project", create_if_missing=True
     )
 
     # Create the apio.ini file. It exists with an error status if any error.
     create_project_file(
-        project_dir,
+        project_dir_new,
         board,
         top_module,
     )
