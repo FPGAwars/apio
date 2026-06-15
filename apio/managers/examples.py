@@ -9,7 +9,7 @@
 import shutil
 import sys
 import os
-from pathlib import Path, PosixPath
+from pathlib import Path
 from dataclasses import dataclass
 from typing import Optional, List, Dict
 from apio.common.apio_console import cout, cstyle, cerror
@@ -24,7 +24,7 @@ class ExampleInfo:
 
     board_id: str
     example_name: str
-    path: PosixPath
+    path: Path
     description: str
     fpga_arch: str
     fpga_part_num: str
@@ -75,7 +75,7 @@ class Examples:
         Returns null if an error."""
 
         # -- Collect the examples home dir each board.
-        boards_dirs: List[PosixPath] = []
+        boards_dirs: List[Path] = []
 
         for board_dir in self.examples_dir.iterdir():
             if board_dir.is_dir():
@@ -162,7 +162,9 @@ class Examples:
         """
 
         # Check that the example name exists.
-        example_info: ExampleInfo = self.lookup_example_info(example_name)
+        example_info: ExampleInfo | None = (
+            self.lookup_example_info(example_name)
+        )
 
         if not example_info:
             cerror(f"Example '{example_name}' not found.")
