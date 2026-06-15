@@ -500,7 +500,7 @@ class ApioContext:
         return resource
 
     @staticmethod
-    def _expand_env_values(template: Optional[str], package_path: Path) -> str:
+    def _expand_env_values(template: str, package_path: Path) -> str:
         """Fills a packages env value template as they appear in
         packages.jsonc. Currently it recognizes only a single place holder
         '%p' representing the package absolute path. The '%p" can appear only
