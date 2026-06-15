@@ -52,7 +52,10 @@
       ],
       "set-vars": {
         "PRJXRAY_DB_DIR": "%p/share/nextpnr/external/prjxray-db",
-        "CHIPDB_DIR": "%p/chipdb"
+        "CHIPDB_DIR": "%p/chipdb",
+
+        //-- Default value. It is overriden before calling scons
+        "ENV_BUILD_PATH": "_build/default"
       }
     }
   },

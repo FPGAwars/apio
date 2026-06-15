@@ -27,19 +27,19 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\napio.proto\x12\x11\x61pio.common.proto\"0\n\x0fIce40FpgaParams\x12\x0c\n\x04type\x18\x01 \x02(\t\x12\x0f\n\x07package\x18\x02 \x02(\t\">\n\x0e\x45\x63p5FpgaParams\x12\x0c\n\x04type\x18\x01 \x02(\t\x12\x0f\n\x07package\x18\x02 \x02(\t\x12\r\n\x05speed\x18\x03 \x02(\t\"Z\n\x0fGowinFpgaParams\x12\x16\n\x0cyosys_family\x18\x01 \x01(\t:\x00\x12\x18\n\x0enextpnr_family\x18\x02 \x01(\t:\x00\x12\x15\n\rpacker_device\x18\x03 \x02(\t\"X\n\x10XilinxFpgaParams\x12\x10\n\x06\x66\x61mily\x18\x01 \x02(\t:\x00\x12\x12\n\nyosys_arch\x18\x02 \x02(\t\x12\x0f\n\x07package\x18\x03 \x02(\t\x12\r\n\x05speed\x18\x04 \x02(\t\"\xb3\x02\n\x08\x46pgaInfo\x12\x0f\n\x07\x66pga_id\x18\x01 \x02(\t\x12\x10\n\x08part_num\x18\x02 \x02(\t\x12\x0c\n\x04size\x18\x03 \x02(\t\x12:\n\x0cice40_params\x18\n \x01(\x0b\x32\".apio.common.proto.Ice40FpgaParamsH\x00\x12\x38\n\x0b\x65\x63p5_params\x18\x0b \x01(\x0b\x32!.apio.common.proto.Ecp5FpgaParamsH\x00\x12:\n\x0cgowin_params\x18\x0c \x01(\x0b\x32\".apio.common.proto.GowinFpgaParamsH\x00\x12<\n\rxilinx_params\x18\r \x01(\x0b\x32#.apio.common.proto.XilinxFpgaParamsH\x00\x42\x06\n\x04\x61rch\"I\n\tVerbosity\x12\x12\n\x03\x61ll\x18\x01 \x01(\x08:\x05\x66\x61lse\x12\x14\n\x05synth\x18\x02 \x01(\x08:\x05\x66\x61lse\x12\x12\n\x03pnr\x18\x03 \x01(\x08:\x05\x66\x61lse\"\x9f\x02\n\x0b\x45nvironment\x12\x13\n\x0bplatform_id\x18\x01 \x02(\t\x12\x12\n\nis_windows\x18\x02 \x02(\x08\x12\x36\n\rterminal_mode\x18\x03 \x02(\x0e\x32\x1f.apio.common.proto.TerminalMode\x12\x12\n\ntheme_name\x18\x04 \x02(\t\x12\x13\n\x0b\x64\x65\x62ug_level\x18\x05 \x02(\x05\x12\x12\n\nyosys_path\x18\x06 \x02(\t\x12\x14\n\x0ctrellis_path\x18\x07 \x02(\t\x12\x16\n\x0escons_shell_id\x18\x08 \x02(\t\x12\x17\n\x0fprjxray_db_path\x18\t \x02(\t\x12\x13\n\x0b\x63hipdb_path\x18\n \x02(\t\x12\x16\n\x0e\x61pio_home_path\x18\x0b \x02(\t\"\xef\x01\n\rApioEnvParams\x12\x10\n\x08\x65nv_name\x18\x01 \x02(\t\x12\x10\n\x08\x62oard_id\x18\x02 \x02(\t\x12\x12\n\ntop_module\x18\x03 \x02(\t\x12\x0f\n\x07\x64\x65\x66ines\x18\x04 \x03(\t\x12\x1b\n\x13yosys_extra_options\x18\x05 \x03(\t\x12\x1d\n\x15nextpnr_extra_options\x18\x06 \x03(\t\x12\x1d\n\x15gtkwave_extra_options\x18\x07 \x03(\t\x12\x1f\n\x17verilator_extra_options\x18\x08 \x03(\t\x12\x19\n\x0f\x63onstraint_file\x18\t \x01(\t:\x00\"d\n\nLintParams\x12\x14\n\ntop_module\x18\x01 \x01(\t:\x00\x12\x16\n\x07nosynth\x18\x02 \x01(\x08:\x05\x66\x61lse\x12\x14\n\x05novlt\x18\x03 \x01(\x08:\x05\x66\x61lse\x12\x12\n\nfile_names\x18\x04 \x03(\t\"o\n\x0bGraphParams\x12\x37\n\x0boutput_type\x18\x01 \x02(\x0e\x32\".apio.common.proto.GraphOutputType\x12\x12\n\ntop_module\x18\x02 \x01(\t\x12\x13\n\x0bopen_viewer\x18\x03 \x02(\x08\"d\n\tSimParams\x12\x18\n\x0etestbench_path\x18\x01 \x01(\t:\x00\x12\x11\n\tforce_sim\x18\x02 \x02(\x08\x12\x12\n\nno_gtkwave\x18\x03 \x02(\x08\x12\x16\n\x0e\x64\x65tach_gtkwave\x18\x04 \x02(\x08\"B\n\x0e\x41pioTestParams\x12\x18\n\x0etestbench_path\x18\x01 \x01(\t:\x00\x12\x16\n\x0e\x64\x65\x66\x61ult_option\x18\x02 \x02(\x08\"&\n\x0cUploadParams\x12\x16\n\x0eprogrammer_cmd\x18\x01 \x01(\t\"\x8b\x02\n\x0cTargetParams\x12-\n\x04lint\x18\n \x01(\x0b\x32\x1d.apio.common.proto.LintParamsH\x00\x12/\n\x05graph\x18\x0b \x01(\x0b\x32\x1e.apio.common.proto.GraphParamsH\x00\x12+\n\x03sim\x18\x0c \x01(\x0b\x32\x1c.apio.common.proto.SimParamsH\x00\x12\x31\n\x04test\x18\r \x01(\x0b\x32!.apio.common.proto.ApioTestParamsH\x00\x12\x31\n\x06upload\x18\x0e \x01(\x0b\x32\x1f.apio.common.proto.UploadParamsH\x00\x42\x08\n\x06target\"\xe9\x02\n\x0bSconsParams\x12\x11\n\ttimestamp\x18\x01 \x02(\t\x12)\n\x04\x61rch\x18\x02 \x02(\x0e\x32\x1b.apio.common.proto.ApioArch\x12.\n\tfpga_info\x18\x03 \x02(\x0b\x32\x1b.apio.common.proto.FpgaInfo\x12/\n\tverbosity\x18\x04 \x01(\x0b\x32\x1c.apio.common.proto.Verbosity\x12\x33\n\x0b\x65nvironment\x18\x05 \x02(\x0b\x32\x1e.apio.common.proto.Environment\x12\x39\n\x0f\x61pio_env_params\x18\x06 \x02(\x0b\x32 .apio.common.proto.ApioEnvParams\x12\x1a\n\x0bnextpnr_gui\x18\x07 \x01(\x08:\x05\x66\x61lse\x12/\n\x06target\x18\x08 \x01(\x0b\x32\x1f.apio.common.proto.TargetParams*L\n\x08\x41pioArch\x12\x14\n\x10\x41RCH_UNSPECIFIED\x10\x00\x12\t\n\x05ICE40\x10\x01\x12\x08\n\x04\x45\x43P5\x10\x02\x12\t\n\x05GOWIN\x10\x03\x12\n\n\x06XILINX\x10\x04*_\n\x0cTerminalMode\x12\x18\n\x14TERMINAL_UNSPECIFIED\x10\x00\x12\x11\n\rAUTO_TERMINAL\x10\x01\x12\x12\n\x0e\x46ORCE_TERMINAL\x10\x02\x12\x0e\n\nFORCE_PIPE\x10\x03*B\n\x0fGraphOutputType\x12\x14\n\x10TYPE_UNSPECIFIED\x10\x00\x12\x07\n\x03SVG\x10\x01\x12\x07\n\x03PNG\x10\x02\x12\x07\n\x03PDF\x10\x03')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\napio.proto\x12\x11\x61pio.common.proto\"0\n\x0fIce40FpgaParams\x12\x0c\n\x04type\x18\x01 \x02(\t\x12\x0f\n\x07package\x18\x02 \x02(\t\">\n\x0e\x45\x63p5FpgaParams\x12\x0c\n\x04type\x18\x01 \x02(\t\x12\x0f\n\x07package\x18\x02 \x02(\t\x12\r\n\x05speed\x18\x03 \x02(\t\"Z\n\x0fGowinFpgaParams\x12\x16\n\x0cyosys_family\x18\x01 \x01(\t:\x00\x12\x18\n\x0enextpnr_family\x18\x02 \x01(\t:\x00\x12\x15\n\rpacker_device\x18\x03 \x02(\t\"X\n\x10XilinxFpgaParams\x12\x10\n\x06\x66\x61mily\x18\x01 \x02(\t:\x00\x12\x12\n\nyosys_arch\x18\x02 \x02(\t\x12\x0f\n\x07package\x18\x03 \x02(\t\x12\r\n\x05speed\x18\x04 \x02(\t\"\xb3\x02\n\x08\x46pgaInfo\x12\x0f\n\x07\x66pga_id\x18\x01 \x02(\t\x12\x10\n\x08part_num\x18\x02 \x02(\t\x12\x0c\n\x04size\x18\x03 \x02(\t\x12:\n\x0cice40_params\x18\n \x01(\x0b\x32\".apio.common.proto.Ice40FpgaParamsH\x00\x12\x38\n\x0b\x65\x63p5_params\x18\x0b \x01(\x0b\x32!.apio.common.proto.Ecp5FpgaParamsH\x00\x12:\n\x0cgowin_params\x18\x0c \x01(\x0b\x32\".apio.common.proto.GowinFpgaParamsH\x00\x12<\n\rxilinx_params\x18\r \x01(\x0b\x32#.apio.common.proto.XilinxFpgaParamsH\x00\x42\x06\n\x04\x61rch\"I\n\tVerbosity\x12\x12\n\x03\x61ll\x18\x01 \x01(\x08:\x05\x66\x61lse\x12\x14\n\x05synth\x18\x02 \x01(\x08:\x05\x66\x61lse\x12\x12\n\x03pnr\x18\x03 \x01(\x08:\x05\x66\x61lse\"\xb7\x02\n\x0b\x45nvironment\x12\x13\n\x0bplatform_id\x18\x01 \x02(\t\x12\x12\n\nis_windows\x18\x02 \x02(\x08\x12\x36\n\rterminal_mode\x18\x03 \x02(\x0e\x32\x1f.apio.common.proto.TerminalMode\x12\x12\n\ntheme_name\x18\x04 \x02(\t\x12\x13\n\x0b\x64\x65\x62ug_level\x18\x05 \x02(\x05\x12\x12\n\nyosys_path\x18\x06 \x02(\t\x12\x14\n\x0ctrellis_path\x18\x07 \x02(\t\x12\x16\n\x0escons_shell_id\x18\x08 \x02(\t\x12\x17\n\x0fprjxray_db_path\x18\t \x02(\t\x12\x13\n\x0b\x63hipdb_path\x18\n \x02(\t\x12\x16\n\x0e\x61pio_home_path\x18\x0b \x02(\t\x12\x16\n\x0e\x65nv_build_path\x18\x0c \x02(\t\"\xef\x01\n\rApioEnvParams\x12\x10\n\x08\x65nv_name\x18\x01 \x02(\t\x12\x10\n\x08\x62oard_id\x18\x02 \x02(\t\x12\x12\n\ntop_module\x18\x03 \x02(\t\x12\x0f\n\x07\x64\x65\x66ines\x18\x04 \x03(\t\x12\x1b\n\x13yosys_extra_options\x18\x05 \x03(\t\x12\x1d\n\x15nextpnr_extra_options\x18\x06 \x03(\t\x12\x1d\n\x15gtkwave_extra_options\x18\x07 \x03(\t\x12\x1f\n\x17verilator_extra_options\x18\x08 \x03(\t\x12\x19\n\x0f\x63onstraint_file\x18\t \x01(\t:\x00\"d\n\nLintParams\x12\x14\n\ntop_module\x18\x01 \x01(\t:\x00\x12\x16\n\x07nosynth\x18\x02 \x01(\x08:\x05\x66\x61lse\x12\x14\n\x05novlt\x18\x03 \x01(\x08:\x05\x66\x61lse\x12\x12\n\nfile_names\x18\x04 \x03(\t\"o\n\x0bGraphParams\x12\x37\n\x0boutput_type\x18\x01 \x02(\x0e\x32\".apio.common.proto.GraphOutputType\x12\x12\n\ntop_module\x18\x02 \x01(\t\x12\x13\n\x0bopen_viewer\x18\x03 \x02(\x08\"d\n\tSimParams\x12\x18\n\x0etestbench_path\x18\x01 \x01(\t:\x00\x12\x11\n\tforce_sim\x18\x02 \x02(\x08\x12\x12\n\nno_gtkwave\x18\x03 \x02(\x08\x12\x16\n\x0e\x64\x65tach_gtkwave\x18\x04 \x02(\x08\"B\n\x0e\x41pioTestParams\x12\x18\n\x0etestbench_path\x18\x01 \x01(\t:\x00\x12\x16\n\x0e\x64\x65\x66\x61ult_option\x18\x02 \x02(\x08\"&\n\x0cUploadParams\x12\x16\n\x0eprogrammer_cmd\x18\x01 \x01(\t\"\x8b\x02\n\x0cTargetParams\x12-\n\x04lint\x18\n \x01(\x0b\x32\x1d.apio.common.proto.LintParamsH\x00\x12/\n\x05graph\x18\x0b \x01(\x0b\x32\x1e.apio.common.proto.GraphParamsH\x00\x12+\n\x03sim\x18\x0c \x01(\x0b\x32\x1c.apio.common.proto.SimParamsH\x00\x12\x31\n\x04test\x18\r \x01(\x0b\x32!.apio.common.proto.ApioTestParamsH\x00\x12\x31\n\x06upload\x18\x0e \x01(\x0b\x32\x1f.apio.common.proto.UploadParamsH\x00\x42\x08\n\x06target\"\xe9\x02\n\x0bSconsParams\x12\x11\n\ttimestamp\x18\x01 \x02(\t\x12)\n\x04\x61rch\x18\x02 \x02(\x0e\x32\x1b.apio.common.proto.ApioArch\x12.\n\tfpga_info\x18\x03 \x02(\x0b\x32\x1b.apio.common.proto.FpgaInfo\x12/\n\tverbosity\x18\x04 \x01(\x0b\x32\x1c.apio.common.proto.Verbosity\x12\x33\n\x0b\x65nvironment\x18\x05 \x02(\x0b\x32\x1e.apio.common.proto.Environment\x12\x39\n\x0f\x61pio_env_params\x18\x06 \x02(\x0b\x32 .apio.common.proto.ApioEnvParams\x12\x1a\n\x0bnextpnr_gui\x18\x07 \x01(\x08:\x05\x66\x61lse\x12/\n\x06target\x18\x08 \x01(\x0b\x32\x1f.apio.common.proto.TargetParams*L\n\x08\x41pioArch\x12\x14\n\x10\x41RCH_UNSPECIFIED\x10\x00\x12\t\n\x05ICE40\x10\x01\x12\x08\n\x04\x45\x43P5\x10\x02\x12\t\n\x05GOWIN\x10\x03\x12\n\n\x06XILINX\x10\x04*_\n\x0cTerminalMode\x12\x18\n\x14TERMINAL_UNSPECIFIED\x10\x00\x12\x11\n\rAUTO_TERMINAL\x10\x01\x12\x12\n\x0e\x46ORCE_TERMINAL\x10\x02\x12\x0e\n\nFORCE_PIPE\x10\x03*B\n\x0fGraphOutputType\x12\x14\n\x10TYPE_UNSPECIFIED\x10\x00\x12\x07\n\x03SVG\x10\x01\x12\x07\n\x03PNG\x10\x02\x12\x07\n\x03PDF\x10\x03')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'apio_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_APIOARCH']._serialized_start=2305
-  _globals['_APIOARCH']._serialized_end=2381
-  _globals['_TERMINALMODE']._serialized_start=2383
-  _globals['_TERMINALMODE']._serialized_end=2478
-  _globals['_GRAPHOUTPUTTYPE']._serialized_start=2480
-  _globals['_GRAPHOUTPUTTYPE']._serialized_end=2546
+  _globals['_APIOARCH']._serialized_start=2329
+  _globals['_APIOARCH']._serialized_end=2405
+  _globals['_TERMINALMODE']._serialized_start=2407
+  _globals['_TERMINALMODE']._serialized_end=2502
+  _globals['_GRAPHOUTPUTTYPE']._serialized_start=2504
+  _globals['_GRAPHOUTPUTTYPE']._serialized_end=2570
   _globals['_ICE40FPGAPARAMS']._serialized_start=33
   _globals['_ICE40FPGAPARAMS']._serialized_end=81
   _globals['_ECP5FPGAPARAMS']._serialized_start=83
@@ -53,21 +53,21 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_VERBOSITY']._serialized_start=639
   _globals['_VERBOSITY']._serialized_end=712
   _globals['_ENVIRONMENT']._serialized_start=715
-  _globals['_ENVIRONMENT']._serialized_end=1002
-  _globals['_APIOENVPARAMS']._serialized_start=1005
-  _globals['_APIOENVPARAMS']._serialized_end=1244
-  _globals['_LINTPARAMS']._serialized_start=1246
-  _globals['_LINTPARAMS']._serialized_end=1346
-  _globals['_GRAPHPARAMS']._serialized_start=1348
-  _globals['_GRAPHPARAMS']._serialized_end=1459
-  _globals['_SIMPARAMS']._serialized_start=1461
-  _globals['_SIMPARAMS']._serialized_end=1561
-  _globals['_APIOTESTPARAMS']._serialized_start=1563
-  _globals['_APIOTESTPARAMS']._serialized_end=1629
-  _globals['_UPLOADPARAMS']._serialized_start=1631
-  _globals['_UPLOADPARAMS']._serialized_end=1669
-  _globals['_TARGETPARAMS']._serialized_start=1672
-  _globals['_TARGETPARAMS']._serialized_end=1939
-  _globals['_SCONSPARAMS']._serialized_start=1942
-  _globals['_SCONSPARAMS']._serialized_end=2303
+  _globals['_ENVIRONMENT']._serialized_end=1026
+  _globals['_APIOENVPARAMS']._serialized_start=1029
+  _globals['_APIOENVPARAMS']._serialized_end=1268
+  _globals['_LINTPARAMS']._serialized_start=1270
+  _globals['_LINTPARAMS']._serialized_end=1370
+  _globals['_GRAPHPARAMS']._serialized_start=1372
+  _globals['_GRAPHPARAMS']._serialized_end=1483
+  _globals['_SIMPARAMS']._serialized_start=1485
+  _globals['_SIMPARAMS']._serialized_end=1585
+  _globals['_APIOTESTPARAMS']._serialized_start=1587
+  _globals['_APIOTESTPARAMS']._serialized_end=1653
+  _globals['_UPLOADPARAMS']._serialized_start=1655
+  _globals['_UPLOADPARAMS']._serialized_end=1693
+  _globals['_TARGETPARAMS']._serialized_start=1696
+  _globals['_TARGETPARAMS']._serialized_end=1963
+  _globals['_SCONSPARAMS']._serialized_start=1966
+  _globals['_SCONSPARAMS']._serialized_end=2327
 # @@protoc_insertion_point(module_scope)

@@ -27,25 +27,26 @@ def test_raw(apio_runner: ApioRunner):
         assert "PATH" in result.output
         assert "YOSYS_LIB" in result.output
 
-        # -- Run 'apio raw  "nextpnr-ice40 --help"'.
+        # -- Run 'apio raw -- echo hello'.
         result = sb.invoke_apio_cmd(
-            apio, ["raw", "--", "nextpnr-ice40", "--help"], in_subprocess=True
+            apio, ["raw", "--", "echo", "hello"], in_subprocess=True
         )
         sb.assert_result_ok(result, bad_words=[])
+        assert "hello" in result.output
 
         # -- Run a command without the required '--'
         result = sb.invoke_apio_cmd(
-            apio, ["raw", "nextpnr-ice40"], in_subprocess=True
+            apio, ["raw", "echo"], in_subprocess=True
         )
         assert result.exit_code != 0, result.output
         assert "command separator '--' was not found" in result.output
 
         # -- Run a command with a token before the '--' separator.
         result = sb.invoke_apio_cmd(
-            apio, ["raw", "nextpnr-ice40", "--", "--help"], in_subprocess=True
+            apio, ["raw", "echo", "--", "--help"], in_subprocess=True
         )
         assert result.exit_code != 0, result.output
-        assert "Invalid arguments: ['nextpnr-ice40']" in result.output
+        assert "Invalid arguments: ['echo']" in result.output
 
         # -- Run 'apio raw -v'
         result = sb.invoke_apio_cmd(apio, ["raw", "-v"], in_subprocess=True)

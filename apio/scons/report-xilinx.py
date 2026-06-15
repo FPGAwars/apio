@@ -1,13 +1,31 @@
 import json
+import os
+from pathlib import Path
 
 # --------------------------------------------------------------------------
 # -- This script is called by the `nextpnr-xilinx` tool for generating
 # -- a report, because it lacks the option `--report`
 # --------------------------------------------------------------------------
 
+# -- DEBUG: show all the env variables
+# variables = os.environ
+# print(f"{'VARIABLE':<30} | {'VALUE'}")
+# print("-" * 80)
+
+# # Short it alfabetically
+# for key in sorted(variables.keys()):
+#     value = variables[key]
+#     print(f"{key:<30} | {value}")
+
+# import sys
+# sys.exit()
+
+# -- Read the ENV_BUILD_PATH variable, with the build environment folder
+env_build_path = Path(os.environ["ENV_BUILD_PATH"])
+# print(f"* env_build_path: {env_build_path}")
+
 # -- Report file
-# -- TODO: It is wired now, but it should be read from the environmnet
-REPORT_FILE = "_build/default/hardware.pnr"
+report_file = env_build_path / "hardware.pnr"
 
 # -- Ignore all hte pylance and Flake8 errors related to
 # -- ctx (that is generated dynamically when calling nextpnr-xilinx)
@@ -45,19 +63,8 @@ for res, amount in resources_used.items():
     # print(f"* {res}: {amount} / {resources_total[res]}")
 
 # -- Generate the report file
-with open(REPORT_FILE, "w") as f:
+with open(report_file, "w") as f:
     json.dump(report, f, indent=4)
 
 
-# -- DEBUG: Mostrar las variables de entorno
-# import os
 
-
-# variables = os.environ
-# print(f"{'VARIABLE':<30} | {'VALOR'}")
-# print("-" * 80)
-
-# # Ordenamos las claves alfabéticamente para que sea fácil localizarlas
-# for clave in sorted(variables.keys()):
-#     valor = variables[clave]
-#     print(f"{clave:<30} | {valor}")

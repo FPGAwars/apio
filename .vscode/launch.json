@@ -15,7 +15,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/apio/__main__.py",
             "args": [
-                "report"
+                "raw",
+                "-v"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,

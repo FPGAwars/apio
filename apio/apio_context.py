@@ -820,6 +820,17 @@ class ApioContext:
         new_val = os.pathsep.join(items)
         os.environ["PATH"] = new_val
 
+        # -- SPECIAL CASE
+        # -- For the Xilinx architecture it is necesary to know
+        # -- the build environment folder, so it is passed in the
+        # -- ENV_BUILD_PATH
+        # -- It is needed by the report-xilinx.py script that is executed
+        # -- by the nextpnr-xilinx tool (Not by scons)
+        # -- NOTE! Not sure if this is the correct place to set
+        # --  this env variable
+        if self.env_was_already_set:
+            mutations.set_vars['ENV_BUILD_PATH'] = str(self.env_build_path)
+
         # -- Apply the set var mutations
         for name, value in mutations.set_vars.items():
             os.environ[name] = value
