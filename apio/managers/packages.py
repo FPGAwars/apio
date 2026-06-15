@@ -38,7 +38,7 @@ class PackagesContext:
     # -- Same as ApioContext.platform_id
     platform_id: str
     # -- Same as ApioContext.packages_dir
-    packages_dir: str
+    packages_dir: Path
 
     def __post_init__(self):
         """Assert that all fields initialized to actual values."""
