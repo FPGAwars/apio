@@ -223,7 +223,7 @@ class ApioContext:
 
         # -- Determine if we need to load the project, and if so, set
         # -- self._project_dir to the project dir, otherwise, leave it None.
-        self._project_dir: Path = None
+        self._project_dir: Path | None = None
         if project_policy == ProjectPolicy.PROJECT_REQUIRED:
             self._project_dir = util.user_directory_or_cwd(
                 project_dir_arg, description="Project", must_exist=True
