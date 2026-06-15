@@ -10,9 +10,11 @@
 """Functions to workaround the rich library bugs when stdout is piped out
 on windows."""
 
+import io
 import sys
 import platform
 import rich.console
+from typing import cast
 
 
 def fix_windows_stdout_encoding() -> bool:
@@ -24,7 +26,8 @@ def fix_windows_stdout_encoding() -> bool:
         platform.system().lower() == "windows"
         and sys.stdout.encoding != "utf-8"
     ):
-        sys.stdout.reconfigure(encoding="utf-8")
+        cast(io.TextIOWrapper, sys.stdout).reconfigure(encoding="utf-8")
+        # sys.stdout.reconfigure(encoding="utf-8")
         return True
     # -- Else.
     return False
