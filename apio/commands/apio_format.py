@@ -112,33 +112,34 @@ def cli(
     apio_ctx.set_env_for_packages(quiet=not verbose)
 
     # -- Convert the tuple with file names into a list.
-    files: List[str] = list(files)
+    _files: List[str] = list(files)
 
     # -- Change to the project's folder.
     os.chdir(apio_ctx.project_dir)
 
     # -- If user didn't specify files to format, all all source files to
     # -- the list.
-    if not files:
+    if not _files:
         for ext in _FILE_TYPES:
-            files.extend(glob("**/*" + ext, recursive=True))
+            _files.extend(glob("**/*" + ext, recursive=True))
 
         # -- Filter out files that are under the _build directory.
-        files = [f for f in files if PROJECT_BUILD_PATH not in Path(f).parents]
+        _files = [f for f in _files
+                  if PROJECT_BUILD_PATH not in Path(f).parents]
 
         # -- Error if no file to format.
-        if not files:
+        if not _files:
             cerror(f"No files of types {_FILE_TYPES}")
             sys.exit(1)
 
     # -- Sort files, case insensitive.
-    files = sort_files(files)
+    _files = sort_files(_files)
 
     # -- Iterate the files and format one at a time. We could format
     # -- all of them at once but this way we can make the output more
     # -- user friendly.
     failures = 0
-    for f in files:
+    for f in _files:
         # -- Convert to a Path object.
         path = Path(f)
 
@@ -182,5 +183,5 @@ def cli(
         sys.exit(1)
 
     # -- All done ok.
-    cout(f"Processed {util.plurality(files, 'file')}.", style=SUCCESS)
+    cout(f"Processed {util.plurality(_files, 'file')}.", style=SUCCESS)
     sys.exit(0)
