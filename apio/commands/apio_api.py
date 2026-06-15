@@ -9,7 +9,7 @@
 
 import sys
 import os
-from typing import Dict, List, Self, Optional
+from typing import Dict, List, Self, Optional, cast
 from dataclasses import dataclass
 import json
 from pathlib import Path
@@ -640,7 +640,7 @@ Examples:[code]
 @options.force_option_gen(short_help="Overwrite output file.")
 def _get_commands_cli(
     # Click context
-    cmd_ctx: ApioCmdContext,
+    cmd_ctx: click.Context,
     *,
     # Options
     timestamp: str,
@@ -651,7 +651,7 @@ def _get_commands_cli(
 
     # -- Find the top cli which is the "apio" command. Would access it
     # -- directly but it would create a circular python import.
-    ctx = cmd_ctx
+    ctx = cast(ApioCmdContext, cmd_ctx)
     while ctx.parent:
         ctx = ctx.parent
         assert isinstance(ctx, ApioCmdContext), type(ctx)
