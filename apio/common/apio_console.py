@@ -60,15 +60,15 @@ class ConsoleState:
 
 
 # -- Initialized by Configure().
-_state: ConsoleState = None
+_state: ConsoleState | None = None
 
 
 # NOTE: not declaring terminal_mode and  theme_name is Optional[] because it
 # causes the tests to fail with python 3.9.
 def configure(
     *,
-    terminal_mode: TerminalMode = None,
-    theme_name: str = None,
+    terminal_mode: TerminalMode | None = None,
+    theme_name: str | None = None,
 ) -> None:
     """Change the apio console settings."""
 
@@ -153,18 +153,21 @@ def configure(
 
 def check_apio_console_configured():
     """A common check that the apio console has been configured."""
+    assert _state is not None
     assert _state.console, "The apio console is not configured."
 
 
 def is_colors_enabled() -> bool:
     """Returns True if colors are enabled."""
     check_apio_console_configured()
+    assert _state is not None
     return _state.theme.colors_enabled
 
 
 def current_theme_name() -> str:
     """Return the current theme name."""
     check_apio_console_configured()
+    assert _state is not None
     return _state.theme.name
 
 
@@ -172,6 +175,7 @@ def console():
     """Returns the underlying console. This value should not be cached as
     the console object changes when the configure() or reset() are called."""
     check_apio_console_configured()
+    assert _state is not None
     return _state.console
 
 
@@ -179,6 +183,7 @@ def cunstyle(text: str) -> str:
     """A replacement for click unstyle(). This function removes ansi colors
     from a string."""
     check_apio_console_configured()
+    assert _state is not None
     text_obj: Text = _state.decoder.decode_line(text)
     return text_obj.plain
 
