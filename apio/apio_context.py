@@ -331,7 +331,7 @@ class ApioContext:
         # -- If we determined that we need to load the project, load the
         # -- apio.ini data.
         self._project: Optional[Project] = None
-        self._project_resources: ProjectResources = None
+        self._project_resources: ProjectResources | None = None
 
         if self._project_dir:
             # -- Load the project object
@@ -391,7 +391,7 @@ class ApioContext:
         True."""
         # -- Failure here is a programming error, not a user error.
         assert self.has_project, "project(): project is not loaded"
-        return self._project
+        return self._project  # pyright: ignore[reportReturnType]
 
     @property
     def project_resources(self) -> ProjectResources:
@@ -399,7 +399,7 @@ class ApioContext:
         has_project() is True."""
         # -- Failure here is a programming error, not a user error.
         assert self.has_project, "project(): project is not loaded"
-        return self._project_resources
+        return self._project_resources  # pyright: ignore[reportReturnType]
 
     @property
     def definitions(self) -> ApioDefinitions:
