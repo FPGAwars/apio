@@ -20,6 +20,8 @@ from rich.progress import track
 from apio.utils import util
 from apio.common.apio_console import cout, console
 from apio.common.apio_styles import ERROR
+from pathlib import Path
+
 
 # -- Timeout for getting a response from the server when downloading
 # -- a file (in seconds). We had github tests failing with timeout=10
@@ -48,7 +50,7 @@ class FileDownloader:
         self.fname = url.split("/")[-1]
 
         # -- Build the destination path
-        self.destination = self.fname
+        self.destination: Path = Path(self.fname)
         if dest_dir:
 
             # -- Add the path

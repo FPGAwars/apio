@@ -94,7 +94,7 @@ def _construct_package_download_url(
     return url
 
 
-def _download_package_file(url: str, dir_path: Path) -> str:
+def _download_package_file(url: str, dir_path: Path) -> Path:
     """Download the given file (url). Return the path of local destination
     file. Exits with a user message and error code if any error.
 
@@ -104,7 +104,7 @@ def _download_package_file(url: str, dir_path: Path) -> str:
       * The path of the destination file
     """
 
-    filepath = None
+    filepath: Path | None = None
 
     try:
         # -- Object for downloading the file
@@ -440,7 +440,7 @@ class PackageScanResults:
             and len(self.broken_package_names) == 0
         )
 
-    def num_errors_to_fix(self) -> bool:
+    def num_errors_to_fix(self) -> int:
         """Returns the number of errors that required , having a non installed
         packages is not considered an error that need to be fix."""
         return (
