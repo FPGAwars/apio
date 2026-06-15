@@ -91,7 +91,7 @@ class PluginXilinx(PluginBase):
         # -- We use an emmiter to add to the builder a second output file.
         def emitter(target, source, env):
             _ = env  # Unused
-            target.append(apio_env.target + ".fasm")
+            target.append(apio_env.target + ".pnr")
             return target, source
 
         package = xilinx_params.package
@@ -100,16 +100,23 @@ class PluginXilinx(PluginBase):
 
         # -- Python file that is passed to nextpnr-xilinx for generating
         # -- the report file
-        apio_home_path = Path(params.environment.apio_home_path)
-        report_py_rel_dir = "apio/scons/report-xilinx.py"
-        report_py = apio_home_path / report_py_rel_dir
+
+        # -- Get the full path of this file (plugin_xilinx.py)
+        current_python_file = Path(__file__)
+
+        # -- The parent folder is the apio root folder
+        apio_root = current_python_file.parent.parent
+
+        # -- Add the report-xilinx.py folder to the path
+        report_py = apio_root / "scons/report-xilinx.py"
 
         # -- Create the builder
         return Builder(
             action=(
                 "nextpnr-xilinx --chipdb {0} --xdc {1} --json $SOURCE "
                 "--fasm $TARGET "
-                "--post-route {2}"
+                "--post-route {2} "
+                "-q "
             ).format(
                 chipdb / database,
                 self.constrain_file(),
