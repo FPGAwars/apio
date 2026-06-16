@@ -50,7 +50,7 @@ def scan_serial_devices(_: ApioContext) -> List[SerialDevice]:
     # -- Use the serial.tools.list_ports module for reading the
     # -- serial ports. More info:
     # --   https://pyserial.readthedocs.io/en/latest/tools.html
-    list_port_info: List[ListPortInfo] = comports()
+    list_port_info: List[ListPortInfo] = list(comports())
     assert isinstance(list_port_info, list)
     if list_port_info:
         assert isinstance(list_port_info[0], ListPortInfo)
@@ -91,11 +91,11 @@ def scan_serial_devices(_: ApioContext) -> List[SerialDevice]:
                 port_name=port.name,
                 vendor_id=f"{port.vid:04X}",
                 product_id=f"{port.pid:04X}",
-                manufacturer=port.manufacturer,
-                product=port.product,
+                manufacturer=port.manufacturer or "",
+                product=port.product or "",
                 serial_number=serial_number,
                 device_type=usb_util.get_device_type(port.vid, port.pid),
-                location=port.location,
+                location=port.location or "",
             )
         )
 
@@ -118,11 +118,11 @@ class SerialDeviceFilter:
     the caller passes as filters are not unintentionally None or empty
     unintentionally."""
 
-    _vendor_id: str = None
-    _product_id: str = None
-    _product_regex: str = None
-    _serial_port: str = None
-    _serial_num: str = None
+    _vendor_id: str | None = None
+    _product_id: str | None = None
+    _product_regex: str | None = None
+    _serial_port: str | None = None
+    _serial_num: str | None = None
 
     def summary(self) -> str:
         """User friendly representation of the filter"""
