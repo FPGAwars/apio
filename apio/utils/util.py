@@ -349,7 +349,7 @@ def debug_level() -> int:
     # -- We get a fresh value so it can be adjusted dynamically when needed.
     level_str = env_options.get(env_options.APIO_DEBUG, "0")
     try:
-        level_int = int(level_str)
+        level_int = int(level_str)  # pyright: ignore[reportArgumentType]
     except ValueError:
         cerror(f"APIO_DEBUG value '{level_str}' is not an int.")
         sys.exit(1)
