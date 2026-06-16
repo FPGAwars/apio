@@ -3,7 +3,7 @@
 import sys
 import re
 from glob import glob
-from typing import List, Optional
+from typing import List, Optional, Any
 from dataclasses import dataclass
 import usb.core
 import usb.backend.libusb1
@@ -82,7 +82,7 @@ def _get_usb_str(
     """Extract usb string by its index."""
     # pylint: disable=broad-exception-caught
     try:
-        s = usb.util.get_string(device, index)
+        s = str(usb.util.get_string(device, index))
         # For Tang 9K which contains a null char as a string separator.
         # It's not USB standard but C tools do that implicitly.
         s = s.split("\x00", 1)[0]
@@ -95,6 +95,7 @@ def _get_usb_str(
 
 def scan_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
     """Query and return a list with usb device info."""
+    # pylint: disable=too-many-arguments, too-many-locals
 
     # -- Track the names we searched for. For diagnostics.
     searched_names = []
@@ -134,9 +135,8 @@ def scan_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
         sys.exit(1)
 
     # -- Find the usb devices.
-    devices: List[usb.core.Device] = usb.core.find(
-        find_all=True, backend=backend
-    )
+    raw_devices = usb.core.find(find_all=True, backend=backend)
+    devices: List[Any] = list(raw_devices) if raw_devices else []
 
     # -- Collect the devices
     result: List[UsbDevice] = []
@@ -150,28 +150,44 @@ def scan_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
         # -- Sanity check.
         assert isinstance(device, usb.core.Device), type(device)
 
-        # -- Skip hubs, they are not interesting.
-        if device.bDeviceClass == 0x09:
+        # -- Skip hubs, they are not interesting
+        d = device.bDeviceClass  # pyright: ignore[reportAttributeAccessIssue]
+        if d == 0x09:
             continue
 
         # -- Lookup device type or "" if not found.
-        device_type = get_device_type(device.idVendor, device.idProduct)
+        device_type = get_device_type(
+            device.idVendor,  # pyright: ignore[reportAttributeAccessIssue]
+            device.idProduct,  # pyright: ignore[reportAttributeAccessIssue]
+        )  # pyright: ignore[reportAttributeAccessIssue]
 
         # -- Create the device object.
         unavail = "--unavail--"
+        vid = device.idVendor  # pyright: ignore[reportAttributeAccessIssue]
+        pid = device.idProduct  # pyright: ignore[reportAttributeAccessIssue]
+
+        d = device
+        man = d.iManufacturer  # pyright: ignore[reportAttributeAccessIssue]
+        iser = d.iSerialNumber  # pyright: ignore[reportAttributeAccessIssue]
         item = UsbDevice(
-            vendor_id=f"{device.idVendor:04X}",
-            product_id=f"{device.idProduct:04X}",
-            bus=device.bus,
-            device=device.address,
+            vendor_id=f"{vid:04X}",
+            product_id=f"{pid:04X}",
+            bus=device.bus,  # pyright: ignore[reportArgumentType]
+            device=device.address or 0,
             manufacturer=_get_usb_str(
-                device,
-                device.iManufacturer,
+                device,  # pyright: ignore[reportArgumentType]
+                man,
                 default=unavail,
             ),
-            product=_get_usb_str(device, device.iProduct, default=unavail),
+            product=_get_usb_str(
+                device,  # pyright: ignore[reportArgumentType]
+                device.iProduct,  # pyright: ignore[reportAttributeAccessIssue]
+                default=unavail,
+            ),
             serial_number=_get_usb_str(
-                device, device.iSerialNumber, default=""
+                device,  # pyright: ignore[reportArgumentType]
+                iser,  # pyright: ignore[reportAttributeAccessIssue]
+                default="",
             ),
             device_type=device_type,
         )
@@ -204,10 +220,10 @@ class UsbDeviceFilter:
     the caller passes as filters are not unintentionally None or empty
     unintentionally."""
 
-    _vendor_id: str = None
-    _product_id: str = None
-    product_regex: str = None
-    _serial_num: str = None
+    _vendor_id: str | None = None
+    _product_id: str | None = None
+    product_regex: str | None = None
+    _serial_num: str | None = None
 
     def summary(self) -> str:
         """User friendly representation of the filter"""
