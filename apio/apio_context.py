@@ -269,7 +269,7 @@ class ApioContext:
         self.profile = Profile(
             self.apio_home_dir,
             self.apio_packages_dir,
-            remote_config_url,
+            str(remote_config_url),
             remote_config_ttl_days,
             remote_config_retry_minutes,
             remote_config_policy,
