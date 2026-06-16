@@ -18,7 +18,7 @@ import json
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Dict, Optional, Union, Callable
+from typing import List, Dict, Optional, Union
 from rich.table import Table
 from rich import box
 from SCons import Scanner
@@ -263,7 +263,9 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
                 cout(f"  {dependency}", style=EMPH2)
 
         # All done
-        return apio_env.scons_env.File(dependencies)
+        return apio_env.scons_env.File(
+            dependencies
+        )  # pyright: ignore[reportReturnType]
 
     return apio_env.scons_env.Scanner(function=verilog_src_scanner_func)
 
@@ -271,20 +273,21 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
 def verilator_lint_action(
     apio_env: ApioEnv,
     *,
-    extra_params: List[str] = None,
-    lib_dirs: List[Path] = None,
-    lib_files: List[Path] = None,
-) -> List[
-    Callable[
-        [
-            List[File],
-            List[Alias],
-            SConsEnvironment,
-        ],
-        None,
-    ]
-    | str,
-]:
+    extra_params: List[str] | None = None,
+    lib_dirs: List[Path] | None = None,
+    lib_files: List[Path] | None = None,
+) -> List[FunctionAction | str]:
+    #   -> List[
+    #     Callable[
+    #         [
+    #             List[File],
+    #             List[Alias],
+    #             SConsEnvironment,
+    #         ],
+    #         None,
+    #     ]
+    #     | str,
+    # ]:
     """Construct an verilator scons action.
     * extra_params: Optional additional arguments.
     * libs_dirs: Optional directories for include search.
@@ -331,13 +334,29 @@ def verilator_lint_action(
         " ".join(params.apio_env_params.verilator_extra_options),
         f"--top-module {top_module}" if top_module else "",
         get_define_flags(apio_env),
-        map_params(extra_params, "{}"),
-        map_params(lib_dirs, '-I"{}"') if lint_whole_project else "",
+        map_params(extra_params, "{}"),  # pyright: ignore[reportArgumentType]
+        (
+            map_params(
+                lib_dirs, '-I"{}"'  # pyright: ignore[reportArgumentType]
+            )
+            if lint_whole_project
+            else ""
+        ),
         apio_env.target + ".vlt" if using_vlt else "",
-        map_params(lib_files, '"{}"') if lint_whole_project else "",
+        (
+            map_params(
+                lib_files, '"{}"'  # pyright: ignore[reportArgumentType]
+            )
+            if lint_whole_project
+            else ""
+        ),
     )
 
-    return [source_files_issue_scanner_action(), action]
+    # pyright: ignore[reportReturnType]
+    return [
+        source_files_issue_scanner_action(),
+        str(action),
+    ]
 
 
 @dataclass(frozen=True)
@@ -355,7 +374,9 @@ class TestbenchInfo:
         return basename(self.testbench_path)
 
 
-def detached_action(api_env: ApioEnv, cmd: List[str]) -> Action:
+def detached_action(
+    api_env: ApioEnv, cmd: List[str]
+) -> Action:  # pyright: ignore[reportGeneralTypeIssues]
     """
     Launch the given command, given as a list of tokens, in a detached
     (non blocking) mode.
@@ -376,10 +397,10 @@ def detached_action(api_env: ApioEnv, cmd: List[str]) -> Action:
 
         # -- Handle the case of Window.
         if api_env.is_windows:
-            creationflags = (
-                subprocess.DETACHED_PROCESS
-                | subprocess.CREATE_NEW_PROCESS_GROUP
-            )
+            detached_flag = getattr(subprocess, "DETACHED_PROCESS", 0)
+            group_flag = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
+            creationflags = detached_flag | group_flag
+
             subprocess.Popen(
                 cmd,
                 creationflags=creationflags,
@@ -405,7 +426,7 @@ def detached_action(api_env: ApioEnv, cmd: List[str]) -> Action:
     cmd_str: str = subprocess.list2cmdline(cmd)
     display_str: str = "[detached] " + cmd_str
 
-    # -- Create the action and return.
+    # -- Create the action and return
     action = Action(action_func, display_str)
     return action
 
@@ -645,7 +666,10 @@ def announce_testbench_action() -> FunctionAction:
         cout(f"Testbench {testbenches[0]}", style=EMPH3)
 
     # -- Run the action but don't announce the action.
-    return Action(announce_testbench, strfunction=None)
+    return Action(
+        announce_testbench,  # pyright: ignore[reportReturnType]
+        strfunction=None,
+    )
 
 
 def source_files_issue_scanner_action() -> FunctionAction:
@@ -692,10 +716,15 @@ def source_files_issue_scanner_action() -> FunctionAction:
 
     # -- Run the action but don't announce the action. We will print
     # -- ourselves in report_source_files_issues.
-    return Action(report_source_files_issues, strfunction=None)
+    return Action(
+        report_source_files_issues,  # pyright: ignore[reportReturnType]
+        strfunction=None,
+    )
 
 
-def _print_pnr_utilization_report(report: Dict[str, any]):
+def _print_pnr_utilization_report(
+    report: Dict[str, any],  # pyright: ignore[reportGeneralTypeIssues]
+):
     table = Table(
         show_header=True,
         show_lines=False,
@@ -732,7 +761,8 @@ def _print_pnr_utilization_report(report: Dict[str, any]):
 
 
 def _maybe_print_pnr_clocks_report(
-    report: Dict[str, any], clk_name_index: int
+    report: Dict[str, any],  # pyright: ignore[reportGeneralTypeIssues]
+    clk_name_index: int,
 ) -> bool:
     clocks = report["fmax"]
     if len(clocks) == 0:
@@ -781,7 +811,9 @@ def _print_pnr_report(
     """Accepts the text of the pnr json report and prints it in
     a user friendly way. Used by the 'apio report' command."""
     # -- Parse the json text into a tree of dicts.
-    report: Dict[str, any] = json.loads(json_txt)
+    report: Dict[str, any] = (  # pyright: ignore[reportGeneralTypeIssues]
+        json.loads(json_txt)
+    )
 
     # -- Print the utilization table.
     _print_pnr_utilization_report(report)
@@ -818,7 +850,10 @@ def report_action(clk_name_index: int, verbose: bool) -> FunctionAction:
         json_txt: str = json_file.get_text_contents()
         _print_pnr_report(json_txt, clk_name_index, verbose)
 
-    return Action(print_pnr_report, "Formatting pnr report.")
+    return Action(
+        print_pnr_report,  # pyright: ignore[reportReturnType]
+        "Formatting pnr report.",
+    )
 
 
 def get_programmer_cmd(apio_env: ApioEnv) -> str:
@@ -856,9 +891,9 @@ def iverilog_action(
     verbose: bool,
     vcd_output_name: str,
     is_interactive: bool,
-    extra_params: List[str] = None,
-    lib_dirs: List[Path] = None,
-    lib_files: List[Path] = None,
+    extra_params: List[str] | None = None,
+    lib_dirs: List[Path] | None = None,
+    lib_files: List[Path] | None = None,
 ) -> str:
     """Construct an iverilog scons action string.
     * env: Rhe scons environment.
@@ -886,9 +921,9 @@ def iverilog_action(
         f"-DVCD_OUTPUT={escaped_vcd_output_name}",
         get_define_flags(apio_env),
         f"-DAPIO_SIM={int(is_interactive)}",
-        map_params(extra_params, "{}"),
-        map_params(lib_dirs, '-I"{}"'),
-        map_params(lib_files, '"{}"'),
+        map_params(extra_params, "{}"),  # pyright: ignore[reportArgumentType]
+        map_params(lib_dirs, '-I"{}"'),  # pyright: ignore[reportArgumentType]
+        map_params(lib_files, '"{}"'),  # pyright: ignore[reportArgumentType]
     )
 
     return action
@@ -902,7 +937,7 @@ def basename(file_name: str) -> str:
 
 def make_verilator_config_builder(
     lib_path: Path, rules_to_supress: List[str]
-) -> Builder:
+) -> Builder:  # pyright: ignore[reportGeneralTypeIssues]
     """Create a scons Builder that writes a verilator config file
     (hardware.vlt) that suppresses warnings in the lib directory.
     Rules_to_supress is a list of Verilator rules that should be supressed
