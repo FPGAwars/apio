@@ -12,14 +12,15 @@
 
 from pathlib import Path
 from dataclasses import dataclass
-from typing import List
+from typing import List, cast
 import webbrowser
-from SCons.Builder import BuilderBase
+from SCons.Builder import BuilderBase, CompositeBuilder
 from SCons.Action import Action
 from SCons.Script import Builder
 from SCons.Node.FS import File
 from SCons.Script.SConscript import SConsEnvironment
-from SCons.Node.Alias import Alias
+
+# from SCons.Node.Alias import Alias
 from apio.common.apio_console import cout
 from apio.common.apio_styles import SUCCESS
 from apio.common.common_util import SRC_SUFFIXES
@@ -60,7 +61,7 @@ class PluginBase:
         self.verilog_src_scanner = verilog_src_scanner(apio_env)
 
         # -- A placeholder for the constraint file name.
-        self._constrain_file: str = None
+        self._constrain_file: str | None = None
 
     def plugin_info(self) -> ArchPluginInfo:  # pragma: no cover
         """Return plugin specific parameters."""
@@ -94,7 +95,7 @@ class PluginBase:
         """Creates and returns the testbench compile builder."""
         raise NotImplementedError("Implement in subclass.")
 
-    def testbench_run_builder(self) -> BuilderBase:
+    def testbench_run_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the testbench run builder."""
 
         # -- Sanity checks
@@ -109,7 +110,7 @@ class PluginBase:
             src_suffix=".out",
         )
 
-    def yosys_dot_builder(self) -> BuilderBase:
+    def yosys_dot_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the yosys dot builder. Should be called
         only when serving the graph command."""
 
@@ -171,7 +172,7 @@ class PluginBase:
         assert type_str, f"Unexpected graph type {graph_params.output_type}"
 
         def completion_action(
-            target: List[Alias],
+            target: List[File],
             source: List[File],
             env: SConsEnvironment,
         ):  # noqa
@@ -199,11 +200,14 @@ class PluginBase:
             Action(completion_action, "completion_action"),
         ]
 
-        graphviz_builder = Builder(
-            # Expecting graphviz dot to be installed and in the path.
-            action=actions,
-            suffix=f".{type_str}",
-            src_suffix=".dot",
+        graphviz_builder = cast(
+            BuilderBase,
+            Builder(
+                # Expecting graphviz dot to be installed and in the path.
+                action=actions,
+                suffix=f".{type_str}",
+                src_suffix=".dot",
+            ),
         )
 
         return graphviz_builder
