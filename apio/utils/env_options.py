@@ -62,7 +62,7 @@ _SUPPORTED_APIO_VARS = [
 ]
 
 
-def get(var_name: str, default: str = None):
+def get(var_name: str, default: str | None = None):
     """Return the given APIO config env value or default if not found.
     var_name must be in _SUPPORTED_APIO_VARS. The returned
     value is not cached such that mutating the var in this program will
