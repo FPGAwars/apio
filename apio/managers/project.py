@@ -143,8 +143,8 @@ class Project:
 
         # -- Patch legacy board ids in the common and env sections.
         Project._patch_legacy_board_id(
-            common_section,  # pyright: ignore[reportArgumentType]
-            boards)
+            common_section, boards  # pyright: ignore[reportArgumentType]
+        )
         for section_options in env_sections.values():
             Project._patch_legacy_board_id(section_options, boards)
 
@@ -572,9 +572,6 @@ def create_project_file(
 
     config = ConfigObj(str(ini_path))
     config.initial_comment = TOP_COMMENT.split("\n")
-    config[section_name] = {
-        "board": board_id,
-        "top-module": top_module
-    }
+    config[section_name] = {"board": board_id, "top-module": top_module}
     config.write()
     cout(f"The file '{ini_path}' was created successfully.", style=SUCCESS)

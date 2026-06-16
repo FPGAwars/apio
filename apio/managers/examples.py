@@ -162,8 +162,8 @@ class Examples:
         """
 
         # Check that the example name exists.
-        example_info: ExampleInfo | None = (
-            self.lookup_example_info(example_name)
+        example_info: ExampleInfo | None = self.lookup_example_info(
+            example_name
         )
 
         if not example_info:

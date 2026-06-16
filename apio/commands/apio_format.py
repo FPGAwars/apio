@@ -124,8 +124,9 @@ def cli(
             _files.extend(glob("**/*" + ext, recursive=True))
 
         # -- Filter out files that are under the _build directory.
-        _files = [f for f in _files
-                  if PROJECT_BUILD_PATH not in Path(f).parents]
+        _files = [
+            f for f in _files if PROJECT_BUILD_PATH not in Path(f).parents
+        ]
 
         # -- Error if no file to format.
         if not _files:

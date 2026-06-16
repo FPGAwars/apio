@@ -13,8 +13,8 @@ on windows."""
 import io
 import sys
 import platform
-import rich.console
 from typing import cast
+import rich.console
 
 
 def fix_windows_stdout_encoding() -> bool:

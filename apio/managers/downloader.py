@@ -15,12 +15,12 @@ packages release repositories.
 # Motivation is simplifying the usage.
 
 from math import ceil
+from pathlib import Path
 import requests
 from rich.progress import track
 from apio.utils import util
 from apio.common.apio_console import cout, console
 from apio.common.apio_styles import ERROR
-from pathlib import Path
 
 
 # -- Timeout for getting a response from the server when downloading
