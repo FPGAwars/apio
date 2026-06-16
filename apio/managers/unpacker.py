@@ -125,7 +125,10 @@ class FileUnpacker:
         """Start unpacking the file"""
 
         # -- Build an array with all the files inside the tarball
-        items = self._unpacker.get_items()
+        if self._unpacker is not None:
+            items = self._unpacker.get_items()
+        else:
+            items = []
 
         # -- Unpack while displaying a progress bar.
         for i in track(
@@ -133,6 +136,7 @@ class FileUnpacker:
             description="Unpacking  ",
             console=console(),
         ):
-            self._unpacker.extract_item(items[i], self._dest_dir)
+            if self._unpacker is not None:
+                self._unpacker.extract_item(items[i], self._dest_dir)
 
         return True
