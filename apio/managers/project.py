@@ -113,10 +113,10 @@ class Project:
     def __init__(
         self,
         *,
-        apio_section: Optional[Dict[str, str]],
-        common_section: Optional[Dict[str, str]],
-        env_sections: Dict[str, Dict[str, str]],
-        env_arg: Optional[str],
+        apio_section: Dict[str, str],
+        common_section: Dict[str, Dict],
+        env_sections: Dict[str, Dict],
+        env_arg: str | None,
         boards: Dict[str, Dict],
     ):
         """Construct the project with information from apio.ini, command
@@ -142,7 +142,9 @@ class Project:
                 sys.exit(1)
 
         # -- Patch legacy board ids in the common and env sections.
-        Project._patch_legacy_board_id(common_section, boards)
+        Project._patch_legacy_board_id(
+            common_section,  # pyright: ignore[reportArgumentType]
+            boards)
         for section_options in env_sections.values():
             Project._patch_legacy_board_id(section_options, boards)
 
@@ -181,7 +183,7 @@ class Project:
 
     @staticmethod
     def _patch_legacy_board_id(
-        section_options: Dict[str, Dict[str, str]], boards: Dict[str, Dict]
+        section_options: Dict[str, str], boards: Dict[str, Dict]
     ) -> Optional[str]:
         """Temporary patching of old board ids to new in an env or common
         section. If there is a "board" option with a legacy board id,
@@ -214,8 +216,8 @@ class Project:
 
     @staticmethod
     def _validate_all_sections(
-        apio_section: Optional[Dict[str, str]],
-        common_section: Optional[Dict[str, str]],
+        apio_section: Dict[str, str],
+        common_section: Dict,
         env_sections: Dict[str, Dict[str, str]],
         boards: Dict[str, Dict],
     ):
@@ -353,7 +355,7 @@ class Project:
     @staticmethod
     def _parse_env_options(
         env_name: str,
-        common_section: Dict[str, str],
+        common_section: Dict,
         env_sections: Dict[str, Dict[str, Union[str, List[str]]]],
     ) -> Dict[str, Union[str, List[str]]]:
         """Expand the options of given env name. The given common and envs
@@ -388,7 +390,7 @@ class Project:
 
         # -- Add all the options from the env section.
         for name, val in env_section.items():
-            result[name] = Project._expand_value(val, macros)
+            result[name] = Project._expand_value(str(val), macros)
 
         # -- check that all the required options exist.
         for option_spec in ENV_OPTIONS_SPEC.values():
@@ -401,12 +403,13 @@ class Project:
 
         # -- Convert the list options from strings to list.
         for name, str_val in result.items():
-            option_spec: EnvOptionSpec = ENV_OPTIONS_SPEC.get(name)
-            if option_spec.is_list:
-                list_val = str_val.split("\n")
-                # -- Select the non empty items.
-                list_val = [x for x in list_val if x]
-                result[name] = list_val
+            option_spec: EnvOptionSpec | None = ENV_OPTIONS_SPEC.get(name)
+            if option_spec and option_spec.is_list:
+                if isinstance(str_val, str):
+                    list_val = str_val.split("\n")
+                    # -- Select the non empty items.
+                    list_val = [x for x in list_val if x]
+                    result[name] = list_val
 
         return result
 
@@ -416,7 +419,7 @@ class Project:
         """Lookup an env option value by name. Returns default if not found."""
 
         # -- If this fails, this is a programming error.
-        option_spec: EnvOptionSpec = ENV_OPTIONS_SPEC.get(option, None)
+        option_spec: EnvOptionSpec | None = ENV_OPTIONS_SPEC.get(option, None)
         assert option_spec, f"Invalid env option: [{option}]"
         assert not option_spec.is_list, f"Not a simple str option: {option}"
 
@@ -437,7 +440,7 @@ class Project:
         must be in OPTIONS."""
 
         # -- If this fails, this is a programming error.
-        option_spec: EnvOptionSpec = ENV_OPTIONS_SPEC.get(option, None)
+        option_spec: EnvOptionSpec | None = ENV_OPTIONS_SPEC.get(option, None)
         assert option_spec, f"Invalid env option: [{option}]"
         assert option_spec.is_list, f"Not a list option: {option}"
 
@@ -480,7 +483,7 @@ def load_project_from_file(
     try:
         parser.read(file_path)
     except configparser.Error as e:
-        cerror(e)
+        cerror(str(e))
         sys.exit(1)
 
     # -- Iterate and collect the sections in the order they appear in
@@ -538,7 +541,9 @@ def load_project_from_file(
     # -- Construct the Project object. Its constructor validates the options.
     return Project(
         apio_section=apio_section or {},
-        common_section=common_section or {},
+        common_section=(
+            common_section or {}
+        ),  # pyright: ignore[reportArgumentType]
         env_sections=env_sections,
         env_arg=env_arg,
         boards=boards,
@@ -567,9 +572,9 @@ def create_project_file(
 
     config = ConfigObj(str(ini_path))
     config.initial_comment = TOP_COMMENT.split("\n")
-    config[section_name] = {}
-    config[section_name]["board"] = board_id
-    config[section_name]["top-module"] = top_module
-
+    config[section_name] = {
+        "board": board_id,
+        "top-module": top_module
+    }
     config.write()
     cout(f"The file '{ini_path}' was created successfully.", style=SUCCESS)
