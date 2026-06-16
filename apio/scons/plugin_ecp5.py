@@ -14,7 +14,7 @@
 
 from pathlib import Path
 from SCons.Script import Builder
-from SCons.Builder import BuilderBase
+from SCons.Builder import BuilderBase, CompositeBuilder
 from apio.common.common_util import SRC_SUFFIXES
 from apio.scons.apio_env import ApioEnv
 from apio.scons.plugin_base import PluginBase, ArchPluginInfo
@@ -57,7 +57,7 @@ class PluginEcp5(PluginBase):
         )
 
     # @overrides
-    def synth_builder(self) -> BuilderBase:
+    def synth_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the synth builder."""
 
         # -- Keep short references.
@@ -81,7 +81,7 @@ class PluginEcp5(PluginBase):
         )
 
     # @overrides
-    def pnr_builder(self) -> BuilderBase:
+    def pnr_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the pnr builder."""
 
         # -- Keep short references.
@@ -117,7 +117,7 @@ class PluginEcp5(PluginBase):
         )
 
     # @overrides
-    def bitstream_builder(self) -> BuilderBase:
+    def bitstream_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the bitstream builder."""
 
         return Builder(
@@ -129,7 +129,7 @@ class PluginEcp5(PluginBase):
         )
 
     # @overrides
-    def testbench_compile_builder(self) -> BuilderBase:
+    def testbench_compile_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the testbench compile builder."""
         # -- Keep short references.
         apio_env = self.apio_env
@@ -191,7 +191,7 @@ class PluginEcp5(PluginBase):
         )
 
     # @overrides
-    def lint_builder(self) -> BuilderBase:
+    def lint_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the lint builder."""
 
         return Builder(
