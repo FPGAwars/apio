@@ -9,9 +9,8 @@
 # ---- License Apache v2
 """A class with common services for the apio scons handlers."""
 
-
 import os
-from typing import List, Optional
+from typing import List, Optional, Any
 from SCons.Script.SConscript import SConsEnvironment
 from SCons.Environment import BuilderWrapper
 import SCons.Defaults
@@ -111,7 +110,7 @@ class ApioEnv:
         *,
         builder_id: str,
         target,
-        sources: List,
+        sources: List[Any],
         extra_dependencies: Optional[List] = None,
         always_build: bool = False,
     ):
@@ -122,7 +121,9 @@ class ApioEnv:
         # -- Scons wraps the builder with a wrapper. We use it to create the
         # -- new target.
         builder_wrapper: BuilderWrapper = getattr(self.scons_env, builder_id)
-        target = builder_wrapper(target, sources)
+        target = builder_wrapper(
+            target, sources  # pyright: ignore[reportArgumentType]
+        )
         # -- Mark as 'always build' if requested.
         if always_build:
             self.scons_env.AlwaysBuild(target)
@@ -141,7 +142,10 @@ class ApioEnv:
 
     def dump_env_vars(self) -> None:
         """Prints a list of the environment variables. For debugging."""
-        dictionary = self.scons_env.Dictionary()
+        sc = self.scons_env
+        dictionary: dict = (
+            sc.Dictionary()  # pyright: ignore[reportAssignmentType]
+        )
         keys = list(dictionary.keys())
         keys.sort()
         cout("")
