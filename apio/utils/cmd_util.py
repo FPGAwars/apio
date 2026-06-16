@@ -86,7 +86,7 @@ def _params_ids_to_aliases(
         )
         if isinstance(param_obj, click.Option):
             # For options we pick their longest alias
-            param_alias = max(param_obj.aliases, key=len)
+            param_alias = max(param_obj.opts, key=len)
         else:
             # For arguments we pick its user facing name, e.g. "PACKAGES"
             # for argument packages.
@@ -323,7 +323,7 @@ class ApioGroup(click.Group):
             formatter.write("\n")
 
     # @override
-    def get_command(self, ctx, cmd_name) -> click.Command:
+    def get_command(self, ctx, cmd_name) -> click.Command | None:
         """Overrides the method that matches a token in the command line to
         a sub-command. This alternative implementation allows to specify also
         a prefix of the command name, as long as it matches exactly one
@@ -337,7 +337,9 @@ class ApioGroup(click.Group):
 
         # -- First priority is for exact match. For this we use the click
         # -- default implementation from the parent class.
-        cmd: click.Command = click.Group.get_command(self, ctx, cmd_name)
+        cmd: click.Command | None = click.Group.get_command(
+            self, ctx, cmd_name
+        )
         if cmd is not None:
             return cmd
 
