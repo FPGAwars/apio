@@ -118,7 +118,7 @@ class PnrRangeDetector(RangeDetector):
     """Implements a RangeDetector for the nextpnr command verbose
     log lines."""
 
-    def classify_line(self, pipe_id: PipeId, line: str) -> RangeEvents:
+    def classify_line(self, pipe_id: PipeId, line: str) -> RangeEvents | None:
         # -- Break line into words.
         tokens = line.split()
 
@@ -186,7 +186,9 @@ class SconsFilter:
 
     @staticmethod
     def _assign_line_color(
-        line: str, patterns: List[Tuple[str, str]], default_color: str = None
+        line: str,
+        patterns: List[Tuple[str, str]],
+        default_color: str | None = None,
     ) -> Optional[str]:
         """Assigns a color for a given line using a list of (regex, color)
         pairs. Returns the color of the first matching regex (case
