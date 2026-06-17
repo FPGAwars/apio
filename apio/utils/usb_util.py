@@ -95,7 +95,7 @@ def _get_usb_str(
 
 def scan_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
     """Query and return a list with usb device info."""
-    # pylint: disable=too-many-arguments, too-many-locals
+    # pylint: disable=too-many-locals
 
     # -- Track the names we searched for. For diagnostics.
     searched_names = []

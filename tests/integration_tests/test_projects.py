@@ -414,8 +414,8 @@ def test_project_xilinx_local_dir(apio_runner: ApioRunner):
     _test_project(
         apio_runner,
         remote_proj_dir=False,
-        example="alhambra-ii/bcd-counter",
-        testbench_file="main_tb.v",
-        bitstream="hardware.bin",
-        report_item="ICESTORM_LC",
+        example="basys3/ledon",
+        testbench_file="ledon_tb.v",
+        bitstream="hardware.bit",
+        report_item="PSEUDO_GND",
     )

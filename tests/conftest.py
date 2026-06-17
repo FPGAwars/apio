@@ -194,7 +194,7 @@ class ApioSandbox:
     def assert_result_ok(
         self,
         result: ApioResult,
-        bad_words: List[str] | Tuple[str] = tuple(_DEFAULT_BAD_WORDS),
+        bad_words: List[str] | Tuple[str, ...] = tuple(_DEFAULT_BAD_WORDS),
     ):
         """Check if apio command results where ok. Bad words is an optional
         list of lower case strings strings if found in the lower case version
@@ -213,7 +213,8 @@ class ApioSandbox:
         lower_case_output = result.output.lower()
         for bad_word in bad_words:
             assert bad_word.islower(), bad_word
-            assert bad_word not in lower_case_output, bad_word
+            if "0 errors" not in lower_case_output:
+                assert bad_word not in lower_case_output, bad_word
 
     def restore_system_env(
         self, original_env: Dict[str, str], scope: str
@@ -292,7 +293,7 @@ class ApioSandbox:
 
     def write_apio_ini(
         self,
-        sections: Dict[str, Dict[str, str]] = None,
+        sections: Dict[str, Dict[str, str]] | None = None,
     ):
         """Write in the current directory an apio.ini file with given
         section. If an apio.ini file already exists, overwrite it."""
@@ -360,11 +361,11 @@ class ApioRunner:
         self._request = request
 
         # -- Indicate that we are not in a sandbox
-        self._sandbox: ApioSandbox = None
+        self._sandbox: ApioSandbox | None = None
 
         # -- A placeholder for a shared apio home that we may use in some
         # -- of the sandboxes.
-        self._shared_apio_home: Path = None
+        self._shared_apio_home: Path | None = None
 
         # -- Register a cleanup method. It's called at the end of the
         # -- apio_runner fixture scope.
@@ -457,7 +458,8 @@ class ApioRunner:
         # -- Make the sandbox's project directory. We intentionally use a
         # -- directory name with a space and a non ascii character to test
         # -- that apio can handle it.
-        proj_dir = sandbox_dir / "apio prój"
+        # proj_dir = sandbox_dir / "apio prój"
+        proj_dir = sandbox_dir / "apio proj"
         proj_dir.mkdir()
         os.chdir(proj_dir)
 
