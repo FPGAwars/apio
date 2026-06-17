@@ -213,7 +213,14 @@ class ApioSandbox:
         lower_case_output = result.output.lower()
         for bad_word in bad_words:
             assert bad_word.islower(), bad_word
+
+            # -- Special case. For Xilinx arch it may be the case that
+            # -- the message contains the string "0 errors". It has the
+            # -- bad word 'error', but it is NOT an error
+            # -- We exclude that case
             if "0 errors" not in lower_case_output:
+
+                # -- Check for no errors
                 assert bad_word not in lower_case_output, bad_word
 
     def restore_system_env(
@@ -455,10 +462,14 @@ class ApioRunner:
         # -- change to it.
         sandbox_dir = Path(tempfile.mkdtemp(prefix=SANDBOX_MARKER + "-"))
 
-        # -- Make the sandbox's project directory. We intentionally use a
-        # -- directory name with a space and a non ascii character to test
+        # -- Make the sandbox's project directory.
+        # -- Initially, we intentionally used a
+        # -- directory name with non ascii character to test
         # -- that apio can handle it.
         # proj_dir = sandbox_dir / "apio prój"
+        # -- I works ok for the architectures: ice40, ecp5, gowin
+        # -- BUT not for Xilinx. If the path contains a non-ascii character
+        # -- it complains
         proj_dir = sandbox_dir / "apio proj"
         proj_dir.mkdir()
         os.chdir(proj_dir)
