@@ -11,6 +11,11 @@ import pytest
 from tests.conftest import ApioRunner
 from apio.commands.apio import apio_top_cli as apio
 
+# -- Message to show for the tests that only run on Linux
+ONLY_LINUX_MSG = (
+    "Currently, the Xilinx arch is only implemented for Linux, "
+    "so this test only run on linux platforms"
+)
 
 # -- For non-linux platfoms (windows and mac)
 is_not_linux = not sys.platform.startswith("linux")
@@ -414,17 +419,27 @@ def test_project_gowin_system_verilog(apio_runner: ApioRunner):
     )
 
 
-@pytest.mark.skipif(
-    is_not_linux,
-    reason="Currently, the Xilinx arch is only implemented for Linux"
-    "so this test only run on linux platforms",
-)
+@pytest.mark.skipif(is_not_linux, reason=ONLY_LINUX_MSG)
 def test_project_xilinx_local_dir(apio_runner: ApioRunner):
     """Tests building and testing a Xilinx project as the current working
     dir."""
     _test_project(
         apio_runner,
         remote_proj_dir=False,
+        example="basys3/ledon",
+        testbench_file="ledon_tb.v",
+        bitstream="hardware.bit",
+        report_item="PSEUDO_GND",
+    )
+
+
+@pytest.mark.skipif(is_not_linux, reason=ONLY_LINUX_MSG)
+def test_project_xilinx_remote_dir(apio_runner: ApioRunner):
+    """Tests building and testing an ice40 project from a remote dir, using
+    the -p option."""
+    _test_project(
+        apio_runner,
+        remote_proj_dir=True,
         example="basys3/ledon",
         testbench_file="ledon_tb.v",
         bitstream="hardware.bit",
