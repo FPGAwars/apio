@@ -296,8 +296,10 @@ class SConsManager:
         assert "YOSYS_LIB" in oss_set_vars, oss_set_vars
         assert "TRELLIS" in oss_set_vars, oss_set_vars
 
-        # -- Currently openxc7 is only supported in Linux
-        # -- If there is an exception, let's ignore it...
+        # -- openxc7 is available only on the platforms listed in its
+        # -- "restricted-to-platforms" field (see packages.jsonc). On a
+        # -- platform where it isn't available, all_packages["openxc7"] is
+        # -- absent, so fall back to empty paths.
         try:
             openxc7_set_vars = apio_ctx.all_packages["openxc7"]["env"][
                 "set-vars"
