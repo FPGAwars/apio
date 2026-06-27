@@ -9,7 +9,7 @@ import atexit
 # -- subprocess, we don't add here dependency on util.py and use a light
 # -- weight debug env var detection.
 # -- Set APIO_DEBUG=1 to enable.
-debug_enabled = int(os.environ.get("APIO_DEBUG", "0")) > 0
+debug_enabled = os.environ.get("APIO_DEBUG", "0").strip().lower() in ("1", "true", "yes")
 
 
 def on_exit(msg):
