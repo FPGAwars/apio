@@ -14,6 +14,10 @@ print(f"{apio_dir=}")
 added_files = [
     ( apio_dir / 'resources/*', 'apio/resources' ),
     ( apio_dir / 'scons/SConstruct', 'apio/scons' ),
+    # report_xilinx.py is run by nextpnr-xilinx via --post-route (not imported
+    # by apio), so it must ship as an on-disk file; hiddenimports/collect_
+    # submodules only freezes it into the archive, which nextpnr cannot read.
+    ( apio_dir / 'scons/report_xilinx.py', 'apio/scons' ),
 ]
 
 hiddenimports = (
