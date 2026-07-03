@@ -9,7 +9,26 @@ import atexit
 # -- subprocess, we don't add here dependency on util.py and use a light
 # -- weight debug env var detection.
 # -- Set APIO_DEBUG=1 to enable.
-debug_enabled = int(os.environ.get("APIO_DEBUG", "0")) > 0
+
+
+def _is_debug_enabled() -> bool:
+    """Lightweight detection of the APIO_DEBUG env var. Malformed values
+    are treated here as 'disabled'; util.debug_level() reports them to the
+    user with a proper error message, on the commands that reach it."""
+    value = os.environ.get("APIO_DEBUG", "0")
+
+    # -- For windows benefit, remove optional quotes, same as
+    # -- env_options.get() does.
+    if value.startswith('"') and value.endswith('"'):
+        value = value[1:-1]
+
+    try:
+        return int(value) > 0
+    except ValueError:
+        return False
+
+
+debug_enabled = _is_debug_enabled()
 
 
 def on_exit(msg):
