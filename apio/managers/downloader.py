@@ -42,6 +42,10 @@ class FileDownloader:
           * dest_dir: Destination folder (where to download the file)
         """
 
+        # -- Initialize the request field first, so that __del__ works even
+        # -- if the construction fails below, e.g. on a connection timeout.
+        self._request = None
+
         # -- Store the url
         self._url = url
 
@@ -105,5 +109,11 @@ class FileDownloader:
     def __del__(self):
         """Close any pending request"""
 
-        if self._request:
-            self._request.close()
+        # -- Using getattr() since __del__ can run on a partially constructed
+        # -- object, and an exception here would surface as an 'unraisable
+        # -- exception' at an arbitrary point of the program. Comparing to
+        # -- None rather than testing truthiness since bool(Response) is
+        # -- Response.ok, which is False for non-2xx error responses.
+        request = getattr(self, "_request", None)
+        if request is not None:
+            request.close()
