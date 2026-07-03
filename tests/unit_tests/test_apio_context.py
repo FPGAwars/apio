@@ -3,9 +3,12 @@ Tests of apio_context.py
 """
 
 import os
+import sys
+import subprocess
 from pathlib import Path
 from pytest import LogCaptureFixture, raises
 from tests.conftest import ApioRunner
+from apio import __main__ as apio_main
 from apio.apio_context import (
     ApioContext,
     PackagesPolicy,
@@ -67,10 +70,40 @@ def test_home_dir_with_a_bad_character(
                     packages_policy=PackagesPolicy.ENSURE_PACKAGES,
                 )
             assert e.value.code == 1
+            # -- The space char is reported by its name, for visibility.
+            char_name = "space" if invalid_char == " " else invalid_char
             assert (
-                f"Unsupported character [{invalid_char}]"
+                f"Unsupported character [{char_name}]"
                 in capsys.readouterr().out
             )
+
+
+def test_home_dir_with_a_space_in_subprocess(apio_runner: ApioRunner):
+    """Tests that a home dir with a space fails with a clean error message
+    also when running apio as a fresh process, whose console has not been
+    configured yet. This is a regression test for a crash with an unhandled
+    AssertionError that the in-process tests can't catch because the test
+    fixtures pre-configure the console."""
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Make up a home dir path with a space.
+        invalid_home_dir = sb.sandbox_dir / "apio home"
+
+        # -- Run an apio command in a fresh process. It should exit with a
+        # -- clean error message, not an AssertionError crash.
+        result = subprocess.run(
+            [sys.executable, apio_main.__file__, "--version"],
+            env={**os.environ, "APIO_HOME": str(invalid_home_dir)},
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+        assert result.returncode == 1
+        output = result.stdout + result.stderr
+        assert "Unsupported character [space]" in output, output
+        assert "AssertionError" not in output, output
 
 
 def test_home_dir_with_relative_path(

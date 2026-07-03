@@ -420,7 +420,7 @@ def _check_apio_dir(apio_dir: Path, desc: str, env_var: str):
             f"Apio {desc} should be an absolute path " f"[{str(apio_dir)}].",
         )
         cout(
-            f"You can use the system env var {env_var} to set "
+            f"You can use the system env var '{env_var}' to set "
             f"a different apio {desc}.",
             style=INFO,
         )
@@ -431,14 +431,21 @@ def _check_apio_dir(apio_dir: Path, desc: str, env_var: str):
     # -- See here https://github.com/FPGAwars/apio/issues/515
     for ch in str(apio_dir):
         if ord(ch) < 33 or ord(ch) > 127:
+            # -- Name the char if it has no visible glyph, e.g. space or tab.
+            if ch == " ":
+                ch_name = "space"
+            elif ch.isprintable():
+                ch_name = ch
+            else:
+                ch_name = repr(ch)
             cerror(
-                f"Unsupported character [{ch}] in apio {desc}: "
+                f"Unsupported character [{ch_name}] in apio {desc}: "
                 f"[{str(apio_dir)}].",
             )
             cout(
                 "Only the ASCII characters in the range 33 to 127 are "
-                "allowed. You can use the\n"
-                f"system env var '{env_var}' to set a different apio"
+                "allowed, with no spaces. You can use the "
+                f"system env var '{env_var}' to set a different apio "
                 f"{desc}.",
                 style=INFO,
             )
@@ -475,8 +482,9 @@ def resolve_home_dir() -> Path:
     # -- Create the folder if it does not exist
     try:
         home_dir.mkdir(parents=True, exist_ok=True)
-    except PermissionError:
-        cerror(f"No usable home directory {home_dir}")
+    except OSError as e:
+        # -- E.g. no permission, or the path exists as a plain file.
+        cerror(f"No usable home directory {home_dir}", f"{e}")
         sys.exit(1)
 
     # Return the home_dir as a Path

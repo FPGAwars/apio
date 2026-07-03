@@ -355,6 +355,12 @@ class Profile:
     @staticmethod
     def apply_color_preferences():
         """Apply currently preferred theme."""
+        # -- Make sure the console is configured, with the default theme,
+        # -- before reading the preferences. Reading the preferences resolves
+        # -- the apio home dir which may exit with a console error message,
+        # -- for example if the home dir path contains a space.
+        apio_console.configure()
+
         # -- If not specified, read the theme from file.
         theme: str = Profile.read_preferences_theme()
 
