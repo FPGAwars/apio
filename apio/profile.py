@@ -16,9 +16,21 @@ import requests
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 from apio.common import apio_console
-from apio.common.apio_console import cout
+from apio.common.apio_console import cout, cerror
+from apio.common.apio_themes import THEMES_TABLE
 from apio.common.apio_styles import INFO, EMPH3, ERROR
 from apio.utils import util, jsonc
+
+
+def _check_json_dict(value: Any, desc: str) -> None:
+    """Raises a ValueError if 'value' is not a dict. For validating the
+    shape of values from user editable json files."""
+    if not isinstance(value, dict):
+        raise ValueError(
+            f"Expected {desc} to be a json dict, "
+            f"found {type(value).__name__}"
+        )
+
 
 # -- JSON schema for validating a remote config file.
 REMOTE_CONFIG_SCHEMA = {
@@ -380,11 +392,22 @@ class Profile:
         if not profile_path.exists():
             return default
 
-        with open(profile_path, "r", encoding="utf8") as f:
-            # -- Get the colors preferences value, if exists.
-            data = json.load(f)
-            preferences = data.get("preferences", {})
-            theme = preferences.get("theme", default)
+        try:
+            with open(profile_path, "r", encoding="utf8") as f:
+                # -- Get the colors preferences value, if exists.
+                data = json.load(f)
+                preferences = data.get("preferences", {})
+                theme = preferences.get("theme", default)
+        except (OSError, ValueError, AttributeError):
+            # -- A corrupt profile file. Not reporting it here since
+            # -- _load_profile_file() reports it with a proper error message.
+            return default
+
+        # -- Fall back to the default for unknown theme names or values,
+        # -- e.g. from a hand edited or old profile file, since
+        # -- apio_console.configure() accepts only known theme names.
+        if not isinstance(theme, str) or theme not in THEMES_TABLE:
+            return default
 
         return theme
 
@@ -430,22 +453,39 @@ class Profile:
         if not self._profile_path.exists():
             return
 
-        # -- Read the profile file as a json dict.
-        with open(self._profile_path, "r", encoding="utf8") as f:
-            data = json.load(f)
+        # -- Read the profile file as a json dict and extract its fields.
+        # -- Handle invalid content gracefully, e.g. a corrupt or hand
+        # -- edited file, since this runs on every apio command.
+        try:
+            with open(self._profile_path, "r", encoding="utf8") as f:
+                data = json.load(f)
+            _check_json_dict(data, "the file content")
 
-        # -- Determine if the cached remote config is usable.
-        remote_config = data.get("remote-config", {})
-        config_apio_version = remote_config.get("metadata", {}).get(
-            "loaded-by", ""
-        )
-        config_usable = config_apio_version == util.get_apio_version_str()
+            # -- Determine if the cached remote config is usable.
+            remote_config = data.get("remote-config", {})
+            config_apio_version = remote_config.get("metadata", {}).get(
+                "loaded-by", ""
+            )
+            config_usable = config_apio_version == util.get_apio_version_str()
 
-        # -- Extract the fields. If remote config is of a different apio
-        # -- version, drop it.
-        self.preferences = data.get("preferences", {})
-        self.installed_packages = data.get("installed-packages", {})
-        self._cached_remote_config = remote_config if config_usable else {}
+            # -- Extract the fields. If remote config is of a different
+            # -- apio version, drop it.
+            self.preferences = data.get("preferences", {})
+            self.installed_packages = data.get("installed-packages", {})
+            self._cached_remote_config = remote_config if config_usable else {}
+
+            # -- Validate the shape of the extracted fields.
+            _check_json_dict(self.preferences, "'preferences'")
+            _check_json_dict(self.installed_packages, "'installed-packages'")
+            for name, info in self.installed_packages.items():
+                _check_json_dict(info, f"package '{name}'")
+        except (OSError, ValueError, AttributeError) as e:
+            cerror(f"Invalid profile file {self._profile_path}", f"{e}")
+            cout(
+                "You can delete the file and let apio recreate it.",
+                style=INFO,
+            )
+            sys.exit(1)
 
     def _load_installed_packages_file(self):
         """Load the installed packages index file if exists, e.g.
@@ -454,9 +494,27 @@ class Profile:
 
         if self._packages_index_path.exists():
 
-            # -- Read the file as a json dict.
-            with open(self._packages_index_path, "r", encoding="utf8") as f:
-                self.installed_packages = json.load(f)
+            # -- Read the file as a json dict. Handle invalid content
+            # -- gracefully, since this runs on every apio command.
+            try:
+                with open(
+                    self._packages_index_path, "r", encoding="utf8"
+                ) as f:
+                    self.installed_packages = json.load(f)
+                _check_json_dict(self.installed_packages, "the file content")
+                for name, info in self.installed_packages.items():
+                    _check_json_dict(info, f"package '{name}'")
+            except (OSError, ValueError) as e:
+                cerror(
+                    f"Invalid packages index file "
+                    f"{self._packages_index_path}",
+                    f"{e}",
+                )
+                cout(
+                    "You can delete the file and let apio recreate it.",
+                    style=INFO,
+                )
+                sys.exit(1)
 
     def _save(self):
         """Save the profile file"""
