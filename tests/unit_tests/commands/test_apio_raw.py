@@ -1,5 +1,7 @@
 """Test for the "apio raw" command."""
 
+import os
+import sys
 from tests.conftest import ApioRunner
 from apio.commands.apio import apio_top_cli as apio
 
@@ -51,3 +53,52 @@ def test_raw(apio_runner: ApioRunner):
         sb.assert_result_ok(result)
         assert "Environment settings:" in result.output
         assert "YOSYS_LIB" in result.output
+
+
+def test_raw_preserves_argv_and_cwd(apio_runner: ApioRunner):
+    """Tests that 'apio raw' passes the wrapped command's arguments
+    verbatim as an argv list (no re-splitting at spaces, no quote
+    mangling) and runs it in the caller's current directory. This is
+    a regression test for a Windows bug where the args were joined with
+    POSIX quoting and re-tokenized by cmd.exe, breaking paths with
+    spaces or backslashes."""
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- A probe command that reports its cwd and its argv, one
+        # -- element per line. Note that the sandbox's current directory
+        # -- ('apio proj') contains a space.
+        probe = (
+            "import os, sys; "
+            "print('PROBE-CWD=<' + os.getcwd() + '>'); "
+            "[print('PROBE-ARG-%d=<%s>' % (i, a)) "
+            "for i, a in enumerate(sys.argv[1:])]"
+        )
+
+        result = sb.invoke_apio_cmd(
+            apio,
+            [
+                "raw",
+                "--",
+                sys.executable,
+                "-c",
+                probe,
+                "a b c.txt",
+                r"_build\default\hardware.bit",
+            ],
+            in_subprocess=True,
+        )
+        sb.assert_result_ok(result, bad_words=[])
+
+        # -- The wrapped command must inherit the caller's cwd.
+        assert f"PROBE-CWD=<{os.getcwd()}>" in result.output
+
+        # -- An arg with spaces must arrive as a single argv element.
+        assert "PROBE-ARG-0=<a b c.txt>" in result.output
+
+        # -- An arg with backslashes must arrive verbatim, without
+        # -- added quotes.
+        assert "PROBE-ARG-1=<_build\\default\\hardware.bit>" in result.output
+
+        # -- There must be no extra args from re-splitting.
+        assert "PROBE-ARG-2" not in result.output

@@ -9,7 +9,6 @@
 
 import sys
 import subprocess
-import shlex
 from typing import Tuple, List
 import click
 from apio.common.apio_console import cout, cerror
@@ -27,24 +26,22 @@ from apio.utils.cmd_util import ApioCommand
 # ----------- apio raw
 
 
-def run_command_with_possible_elevation(
-    apio_ctx: ApioContext, arg_list: List[str]
-) -> int:
+def run_command_with_possible_elevation(arg_list: List[str]) -> int:
     """
     Runs a command and returns its exit code.
-    On Windows: allows UAC elevation (like os.system), e.g. for zadig.
-    On macOS/Linux: runs directly
-    Never raises — always returns an int (even on catastrophic errors.
+
+    On all platforms the command is executed with its arguments passed
+    verbatim as an argv list (no intermediate shell that would
+    re-tokenize them) and with the caller's current directory.
+
+    On Windows, if the executable's manifest requires elevation (e.g.
+    zadig), the direct execution fails with ERROR_ELEVATION_REQUIRED
+    and we retry through cmd.exe which triggers the UAC prompt.
     """
     if not arg_list:
         return 0  # nothing to run
 
     try:
-        if apio_ctx.is_windows:
-            cmd_line = " ".join(shlex.quote(arg) for arg in arg_list)
-            return subprocess.call(["cmd.exe", "/c", cmd_line], shell=False)
-
-        # Mac and linux.
         return subprocess.call(arg_list, shell=False)
 
     # Specific common errors — give user-friendly feedback
@@ -52,9 +49,19 @@ def run_command_with_possible_elevation(
         cout(f"Error: Command not found → {arg_list[0]}", style=ERROR)
         return 127
 
-    except PermissionError:
-        cout(f"Error: Permission denied → {arg_list[0]}", style=ERROR)
-        return 126
+    except OSError as e:
+        # -- Windows only: ERROR_ELEVATION_REQUIRED. Unlike CreateProcess,
+        # -- cmd.exe falls back to ShellExecute which shows the UAC
+        # -- elevation prompt. Passing the args as a list (not a joined
+        # -- string) lets subprocess apply proper Windows quoting.
+        if getattr(e, "winerror", None) == 740:
+            return subprocess.call(["cmd.exe", "/c"] + arg_list, shell=False)
+
+        if isinstance(e, PermissionError):
+            cout(f"Error: Permission denied → {arg_list[0]}", style=ERROR)
+            return 126
+
+        raise
 
 
 # -- Text in the rich-text format of the python rich library.
@@ -168,12 +175,7 @@ def cli(
         cout(f"\n---- Executing {_cmd}:")
 
     # -- Invoke the command.
-    # try:
-    # exit_code = subprocess.call(cmd, shell=False)
-    exit_code = run_command_with_possible_elevation(apio_ctx, _cmd)
-    # except FileNotFoundError as e:
-    #     cout(f"{e}", style=ERROR)
-    #     sys.exit(1)
+    exit_code = run_command_with_possible_elevation(_cmd)
 
     if verbose:
         cout("----\n")
