@@ -5,6 +5,7 @@
 
 import json
 import os
+from pathlib import Path
 from tests.conftest import ApioRunner
 from apio.commands.apio import apio_top_cli as apio
 
@@ -258,6 +259,80 @@ def test_apio_api_get_project(apio_runner: ApioRunner):
                 },
             },
         }
+
+
+def test_apio_api_get_build_report_no_build(apio_runner: ApioRunner):
+    """Test "apio api get-build-report" when no prior build exists."""
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Create a fake apio project but don't build it.
+        sb.write_default_apio_ini()
+
+        # -- Execute "apio api get-build-report". Since there is no
+        # -- 'hardware.pnr' file, it should fail with a non-zero exit
+        # -- code and a clear error message, and not raise an exception.
+        result = sb.invoke_apio_cmd(apio, ["api", "get-build-report"])
+        assert result.exit_code != 0
+        assert not result.exception
+        assert "no build report found" in result.output.lower()
+
+
+def test_apio_api_get_build_report(apio_runner: ApioRunner):
+    """Test "apio api get-build-report" with a prior build present."""
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Create a fake apio project.
+        sb.write_default_apio_ini()
+
+        # -- Fake the artifacts of a prior 'apio build'/'apio report' run.
+        # -- 'build_dir' mirrors ApioContext.env_build_path, which is a path
+        # -- relative to the project dir (e.g. "_build/default").
+        rel_build_dir = Path("_build") / "default"
+        build_dir = sb.proj_dir / rel_build_dir
+        pnr_data = {
+            "utilization": {
+                "LUT": {"used": 12, "available": 7680},
+            },
+            "fmax": {
+                "clk$glb_clk": {"achieved": 123.45},
+            },
+        }
+        sb.write_file(
+            build_dir / "hardware.pnr", json.dumps(pnr_data), exists_ok=True
+        )
+        sb.write_file(build_dir / "hardware.bin", "", exists_ok=True)
+
+        # -- Execute "apio api get-build-report -t xyz"  (stdout)
+        result = sb.invoke_apio_cmd(
+            apio, ["api", "get-build-report", "-t", "xyz"]
+        )
+        sb.assert_result_ok(result)
+
+        # -- Execute "apio api get-build-report -t xyz -o <dir>"  (file)
+        path = sb.proj_dir / "apio.json"
+        result = sb.invoke_apio_cmd(
+            apio,
+            ["api", "get-build-report", "-t", "xyz", "-o", str(path)],
+        )
+        sb.assert_result_ok(result)
+
+        # -- Read and verify the file.
+        text = sb.read_file(path)
+        data = json.loads(text)
+        assert data["timestamp"] == "xyz"
+        report = data["build-report"]
+        assert report["env-name"] == "default"
+        assert report["board-id"] == "alhambra-ii"
+        assert report["fpga-id"] == "ice40hx4k-tq144-8k"
+        assert report["build-dir"] == str(rel_build_dir)
+        assert report["pnr-report-file"] == str(rel_build_dir / "hardware.pnr")
+        assert report["utilization"] == pnr_data["utilization"]
+        assert report["fmax"] == pnr_data["fmax"]
+        assert report["bitstream-files"] == [
+            str(rel_build_dir / "hardware.bin")
+        ]
 
 
 def test_apio_api_get_examples(apio_runner: ApioRunner):

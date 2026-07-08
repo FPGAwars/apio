@@ -281,6 +281,126 @@ def _get_project_cli(
     write_as_json_doc(top_dict, output, force)
 
 
+# ------ apio api get-build-report
+
+
+# -- Text in the rich-text format of the python rich library.
+APIO_API_GET_BUILD_REPORT_HELP = """
+The command 'apio api get-build-report' retrieves the resource utilization \
+and timing (fmax) metrics from the most recent 'apio build' or 'apio report' \
+run and emits them as a structured JSON document.
+
+This command is designed for machine-readable pipeline automation and is \
+completely decoupled from the human-centric text output of 'apio report'. \
+The two commands share the same underlying build artifact (.pnr file) but \
+serve distinct audiences: 'apio report' is for developers reading a terminal, \
+while 'apio api get-build-report' is for scripts, CI pipelines, and tooling.
+
+If no prior build data exists in the workspace, the command prints a clear \
+error message to stderr and exits with a non-zero status code.
+
+Examples:[code]
+  apio api get-build-report                 # Write to stdout
+  apio api get-build-report -e env1         # Use specified env
+  apio api get-build-report -p foo/bar      # Project in another dir
+  apio api get-build-report -o report.json  # Write to a file[/code]
+"""
+
+
+@click.command(
+    name="get-build-report",
+    cls=ApioCommand,
+    short_help="Retrieve last build report as JSON.",
+    help=APIO_API_GET_BUILD_REPORT_HELP,
+)
+@options.env_option_gen()
+@options.project_dir_option
+@timestamp_option
+@output_option
+@options.force_option_gen(short_help="Overwrite output file.")
+def _get_build_report_cli(
+    *,
+    env: str,
+    project_dir: Optional[Path],
+    timestamp: str,
+    output: str,
+    force: bool,
+):
+    """Implements the 'apio api get-build-report' command."""
+
+    apio_ctx = ApioContext(
+        project_policy=ProjectPolicy.PROJECT_REQUIRED,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
+        project_dir_arg=project_dir,
+        env_arg=env,
+    )
+
+    # -- Change to the project's folder.
+    os.chdir(apio_ctx.project_dir)
+
+    # -- Resolve the build directory for the active env.
+    build_dir: Path = apio_ctx.env_build_path
+
+    # -- The PNR JSON report written by the last build or report run.
+    # -- The file name is always 'hardware.pnr' (apio_env.py target suffix).
+    pnr_file: Path = build_dir / "hardware.pnr"
+
+    # -- Enforce the strict boundary: no prior build data → non-zero exit.
+    if not pnr_file.exists():
+        print(
+            f"Error: No build report found. Expected: {pnr_file}\n"
+            "Run 'apio build' or 'apio report' first.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    # -- Load and parse the PNR JSON report.
+    try:
+        pnr_data = json.loads(pnr_file.read_text(encoding="utf-8"))
+    except Exception as exc:
+        print(
+            f"Error: Failed to read or parse {pnr_file}: {exc}",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    # -- Detect any bitstream artefacts alongside the .pnr file.
+    # -- Glob for hardware.* files excluding the .pnr report itself so that
+    # -- automation scripts can locate the bitstream without hardcoding the
+    # -- architecture-specific file extension.
+    bitstream_files = [
+        str(p)
+        for p in sorted(build_dir.glob("hardware.*"))
+        if p.suffix != ".pnr"
+    ]
+
+    # -- Gather project and board metadata from the loaded context.
+    pr = apio_ctx.project_resources
+
+    # -- Assemble the top-level JSON document.
+    top_dict = {}
+
+    # -- Append user timestamp if specified.
+    if timestamp:
+        top_dict["timestamp"] = timestamp
+
+    section_dict = {}
+    section_dict["env-name"] = apio_ctx.project.env_name
+    section_dict["board-id"] = pr.board_id
+    section_dict["fpga-id"] = pr.fpga_id
+    section_dict["build-dir"] = str(build_dir)
+    section_dict["pnr-report-file"] = str(pnr_file)
+    section_dict["bitstream-files"] = bitstream_files
+    section_dict["utilization"] = pnr_data.get("utilization", {})
+    section_dict["fmax"] = pnr_data.get("fmax", {})
+
+    top_dict["build-report"] = section_dict
+
+    # -- Write out.
+    write_as_json_doc(top_dict, output, force)
+
+
 # ------ apio api get-boards
 
 
@@ -876,6 +996,7 @@ SUBGROUPS = [
         [
             _get_system_cli,
             _get_project_cli,
+            _get_build_report_cli,
             _get_boards_cli,
             _get_fpgas_cli,
             _get_programmers_cli,
