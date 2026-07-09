@@ -20,6 +20,7 @@ from apio.commands import options
 from apio.managers.examples import Examples, ExampleInfo
 from apio.common.apio_console import cout, cerror
 from apio.common.common_util import get_project_source_files
+from apio.common.pnr_util import extract_clocks_from_pnr
 from apio.utils import cmd_util, usb_util, serial_util, util
 from apio.utils.usb_util import UsbDevice
 from apio.utils.serial_util import SerialDevice
@@ -346,7 +347,7 @@ def _get_build_report_cli(
     # -- The file name is always 'hardware.pnr' (apio_env.py target suffix).
     pnr_file: Path = build_dir / "hardware.pnr"
 
-    # -- Enforce the strict boundary: no prior build data → non-zero exit.
+    # -- Enforce the strict boundary: no prior build data -> non-zero exit.
     if not pnr_file.exists():
         print(
             f"Error: No build report found. Expected: {pnr_file}\n"
@@ -365,19 +366,6 @@ def _get_build_report_cli(
         )
         sys.exit(1)
 
-    # -- Detect any bitstream artefacts alongside the .pnr file.
-    # -- Glob for hardware.* files excluding the .pnr report itself so that
-    # -- automation scripts can locate the bitstream without hardcoding the
-    # -- architecture-specific file extension.
-    bitstream_files = [
-        str(p)
-        for p in sorted(build_dir.glob("hardware.*"))
-        if p.suffix != ".pnr"
-    ]
-
-    # -- Gather project and board metadata from the loaded context.
-    pr = apio_ctx.project_resources
-
     # -- Assemble the top-level JSON document.
     top_dict = {}
 
@@ -387,13 +375,12 @@ def _get_build_report_cli(
 
     section_dict = {}
     section_dict["env-name"] = apio_ctx.project.env_name
-    section_dict["board-id"] = pr.board_id
-    section_dict["fpga-id"] = pr.fpga_id
     section_dict["build-dir"] = str(build_dir)
     section_dict["pnr-report-file"] = str(pnr_file)
-    section_dict["bitstream-files"] = bitstream_files
     section_dict["utilization"] = pnr_data.get("utilization", {})
-    section_dict["fmax"] = pnr_data.get("fmax", {})
+    # -- Extract clock metrics via the shared utility. Always returns a dict
+    # -- (never None), with {} when no fmax data is present in the PNR report.
+    section_dict["clocks"] = extract_clocks_from_pnr(pnr_data)
 
     top_dict["build-report"] = section_dict
 
