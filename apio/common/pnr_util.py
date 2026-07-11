@@ -35,9 +35,14 @@ def extract_clocks_from_pnr(pnr_data: Dict) -> Dict:
         A dict mapping each clock name to its achieved fmax in MHz,
         or {} when the 'fmax' section is absent or empty.
     """
-    raw_fmax: Dict = pnr_data.get("fmax", {})
+    raw_fmax = pnr_data.get("fmax", {})
     clocks: Dict = {}
+    if not isinstance(raw_fmax, dict):
+        return clocks
+
     for clock_name, clock_data in raw_fmax.items():
+        if not isinstance(clock_data, dict):
+            continue
         achieved = clock_data.get("achieved")
         if achieved is not None:
             clocks[clock_name] = {"fmax": achieved}
