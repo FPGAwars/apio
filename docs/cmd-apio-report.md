@@ -46,3 +46,7 @@ Clock Information
 │  CLK    │           119.15  │
 └─────────┴───────────────────┘
 ```
+
+To get this same utilization and fmax data programmatically (e.g. for
+scripts or CI pipelines) instead of the human-readable report above,
+see [`apio api get-build-report`](cmd-apio-api.md#apio-api-get-build-report).

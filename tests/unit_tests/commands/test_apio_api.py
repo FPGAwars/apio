@@ -274,7 +274,8 @@ def test_apio_api_get_build_report_no_build(apio_runner: ApioRunner):
         # -- code and a clear error message, and not raise an exception.
         result = sb.invoke_apio_cmd(apio, ["api", "get-build-report"])
         assert result.exit_code != 0
-        assert not result.exception
+        assert isinstance(result.exception, SystemExit)
+        assert result.exception.code == 1
         assert "no build report found" in result.output.lower()
 
 

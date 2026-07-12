@@ -332,6 +332,7 @@ def _get_build_report_cli(
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.PROJECT_REQUIRED,
         remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        # TODO: Does this command require the packages?
         packages_policy=PackagesPolicy.ENSURE_PACKAGES,
         project_dir_arg=project_dir,
         env_arg=env,
