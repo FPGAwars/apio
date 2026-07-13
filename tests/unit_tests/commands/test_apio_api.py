@@ -279,6 +279,30 @@ def test_apio_api_get_build_report_no_build(apio_runner: ApioRunner):
         assert "no build report found" in result.output.lower()
 
 
+def test_apio_api_get_build_report_corrupt_pnr(apio_runner: ApioRunner):
+    """Test "apio api get-build-report" when 'hardware.pnr' exists but
+    contains invalid JSON. Must fail cleanly with a non-zero exit code
+    and a clear error message, rather than crashing with a raw traceback.
+    """
+
+    with apio_runner.in_sandbox() as sb:
+
+        sb.write_default_apio_ini()
+
+        rel_build_dir = Path("_build") / "default"
+        build_dir = sb.proj_dir / rel_build_dir
+        # -- Not valid JSON.
+        sb.write_file(
+            build_dir / "hardware.pnr", "{not valid json", exists_ok=True
+        )
+
+        result = sb.invoke_apio_cmd(apio, ["api", "get-build-report"])
+        assert result.exit_code != 0
+        assert isinstance(result.exception, SystemExit)
+        assert result.exception.code == 1
+        assert "failed to read or parse" in result.output.lower()
+
+
 def test_apio_api_get_build_report(apio_runner: ApioRunner):
     """Test "apio api get-build-report" with a prior build present."""
 
