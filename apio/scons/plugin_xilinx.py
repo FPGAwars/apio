@@ -117,7 +117,13 @@ class PluginXilinx(PluginBase):
                 "--fasm $TARGET "
                 "--post-route {2} "
                 "-q "
-            ).format(chipdb / database, self.constrain_file(), report_py),
+                "{3}"
+            ).format(
+                chipdb / database,
+                self.constrain_file(),
+                report_py,
+                " ".join(params.apio_env_params.nextpnr_extra_options),
+            ),
             suffix=".fasm",
             src_suffix=".json",
             emitter=emitter,
