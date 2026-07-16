@@ -60,6 +60,7 @@ for res, amount in resources_used.items():
     report["utilization"][res] = cell
     # print(f"* {res}: {amount} / {resources_total[res]}")
 
+
 # -- Fill in the per-clock fmax. Older nextpnr-xilinx builds (openxc7
 # -- package < 2026-07-17) don't expose the timing results; leave the
 # -- table empty for them, as before.
@@ -70,7 +71,7 @@ if hasattr(ctx, "reportClockFmaxJson"):
         # -- name cleanup; alias them. '$iopadmap$<port>' is the net yosys
         # -- inserts for a clock input port -> show the port name itself.
         if clk_net.startswith("$iopadmap$"):
-            name = clk_net[len("$iopadmap$"):]
+            name = clk_net.removeprefix("$iopadmap$")
         elif clk_net.startswith("$"):
             name = "(internal) " + clk_net.split("$")[-1]
         else:
