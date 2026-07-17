@@ -44,8 +44,14 @@ class PluginEcp5(PluginBase):
         self.database_path = trellis_path / "database"
         self.yosys_lib_dir = yosys_path / "ecp5"
         self.sim_lib_files = [yosys_path / "ecp5" / "cells_sim.v"]
-        # -- For black-box cells such as EHXPLLL PLL.
-        self.lint_lib_files = [yosys_path / "ecp5" / "cells_bb.v"]
+        # -- For lint, the simulation models PLUS the black-box cells that
+        # -- have no model in cells_sim.v (EHXPLLL, DCUA, ...). Passing only
+        # -- cells_bb.v (as before) made verilator fail with MODMISSING on
+        # -- designs that instantiate simulation-modeled cells (IO cells,
+        # -- DP16KD, ...). The two files declare disjoint modules.
+        self.lint_lib_files = self.sim_lib_files + [
+            yosys_path / "ecp5" / "cells_bb.v"
+        ]
 
     def plugin_info(self) -> ArchPluginInfo:
         """Return plugin specific parameters."""
@@ -187,7 +193,14 @@ class PluginEcp5(PluginBase):
         # -- Make the builder.
         return make_verilator_config_builder(
             self.yosys_lib_dir,
-            rules_to_supress=[],
+            rules_to_supress=[
+                # -- cells_sim.v double-includes cells_ff.vh/cells_io.vh
+                # -- (directly and via common_sim.vh); the duplicates are
+                # -- identical and verilator keeps the first definition.
+                "MODDUP",
+                # -- Benign width mismatch in common_sim.vh (BB model).
+                "WIDTHEXPAND",
+            ],
         )
 
     # @overrides

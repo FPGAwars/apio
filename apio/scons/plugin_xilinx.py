@@ -41,7 +41,13 @@ class PluginXilinx(PluginBase):
         yosys_path = Path(apio_env.params.environment.yosys_path)
         self.yosys_lib_dir = yosys_path / "xilinx"
         self.sim_lib_files = [yosys_path / "xilinx" / "cells_sim.v"]
-        self.lint_lib_files = self.sim_lib_files
+        # -- For lint, also pass the black-box declarations of the primitives
+        # -- that have no simulation model in cells_sim.v (PLLE2_*, MMCME2_*,
+        # -- etc.); without them verilator fails with MODMISSING on any design
+        # -- that instantiates one. The two files declare disjoint modules.
+        self.lint_lib_files = self.sim_lib_files + [
+            yosys_path / "xilinx" / "cells_xtra.v"
+        ]
 
     def plugin_info(self) -> ArchPluginInfo:
         """Return plugin specific parameters."""

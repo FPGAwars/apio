@@ -41,7 +41,24 @@ class PluginGowin(PluginBase):
         yosys_path = Path(apio_env.params.environment.yosys_path)
         self.yosys_lib_dir = yosys_path / "gowin"
         self.sim_lib_files = [yosys_path / "gowin" / "cells_sim.v"]
+        # -- For lint, also pass the black-box declarations of the primitives
+        # -- that have no simulation model in cells_sim.v. The file is
+        # -- per-family (derived from the part number); a few modules are
+        # -- declared in both files — cells_sim.v goes first so its models
+        # -- win, and the duplicates are waived with the MODDUP rule below
+        # -- (scoped to the yosys lib dir).
         self.lint_lib_files = self.sim_lib_files
+        part_num = apio_env.params.fpga_info.part_num.upper()
+        for prefix, family in (
+            ("GW1N", "gw1n"),
+            ("GW2A", "gw2a"),
+            ("GW5A", "gw5a"),
+        ):
+            if part_num.startswith(prefix):
+                self.lint_lib_files = self.sim_lib_files + [
+                    yosys_path / "gowin" / f"cells_xtra_{family}.v"
+                ]
+                break
 
     def plugin_info(self) -> ArchPluginInfo:
         """Return plugin specific parameters."""
@@ -193,6 +210,10 @@ class PluginGowin(PluginBase):
             self.yosys_lib_dir,
             rules_to_supress=[
                 "SPECIFYIGN",
+                # -- cells_xtra_gw2a/gw5a re-declare a few modules that also
+                # -- have simulation models in cells_sim.v (DQS, IDES4_MEM,
+                # -- OSER4_MEM); verilator keeps the first definition.
+                "MODDUP",
             ],
         )
 
