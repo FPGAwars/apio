@@ -200,6 +200,11 @@ class PluginEcp5(PluginBase):
                 "MODDUP",
                 # -- Benign width mismatch in common_sim.vh (BB model).
                 "WIDTHEXPAND",
+                # -- The techmap wrappers in cells_io.vh/cells_ff.vh
+                # -- instantiate TRELLIS_* cells with partial pin lists on
+                # -- purpose; user instances keep full pin checking (the
+                # -- waiver is scoped to the yosys lib dir).
+                "PINMISSING",
             ],
         )
 
