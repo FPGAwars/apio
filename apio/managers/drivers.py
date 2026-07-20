@@ -6,7 +6,9 @@
 """Manage board drivers"""
 
 
+import getpass
 import os
+import shlex
 import shutil
 import subprocess
 from pathlib import Path
@@ -232,19 +234,19 @@ class Drivers:
         # -- Check if the target rules file already exists
         if not self.ftdi_rules_system_path.exists():
 
-            # -- The file does not exist. Copy!
-            # -- Execute the cmd: sudo cp src_file target_file, exit on error.
-            util.subprocess_call(
-                [
-                    "sudo",
-                    "cp",
-                    str(self.ftdi_rules_local_path),
-                    str(self.ftdi_rules_system_path),
-                ]
-            )
-
-            # -- Execute the commands for reloading the udev system
-            self._reload_rules_linux()
+            # -- Copy the rules file and reload udev, all in ONE sudo
+            # -- invocation (a single password prompt).
+            steps = [
+                (
+                    "cp "
+                    f"{shlex.quote(str(self.ftdi_rules_local_path))} "
+                    f"{shlex.quote(str(self.ftdi_rules_system_path))}",
+                    "install the FTDI udev rules file",
+                ),
+            ] + self._udev_reload_steps()
+            exit_code = self._sudo_steps_linux(steps)
+            if exit_code != 0:
+                return exit_code
 
             cout("FTDI drivers installed", style=SUCCESS)
             cout("Unplug and reconnect your board", style=INFO)
@@ -263,11 +265,16 @@ class Drivers:
         if self.ftdi_rules_system_path.exists():
             cout("Revert FTDI drivers configuration")
 
-            # -- Execute the sudo rm rules_file command
-            subprocess.call(["sudo", "rm", str(self.ftdi_rules_system_path)])
-
-            # -- # -- Execute the commands for reloading the udev system
-            self._reload_rules_linux()
+            # -- Remove the rules file and reload udev in ONE sudo call.
+            steps = [
+                (
+                    f"rm {shlex.quote(str(self.ftdi_rules_system_path))}",
+                    "remove the FTDI udev rules file",
+                ),
+            ] + self._udev_reload_steps()
+            exit_code = self._sudo_steps_linux(steps)
+            if exit_code != 0:
+                return exit_code
 
             cout("FTDI drivers uninstalled", style=SUCCESS)
             cout("Unplug and reconnect your board", style=INFO)
@@ -283,23 +290,33 @@ class Drivers:
 
         # -- Check if the target rules file already exists
         if not self.serial_rules_system_path.exists():
-            # -- Add the user to the dialout group for
-            # -- having access to the serial port
-            group_added = self._add_dialout_group_linux()
+            steps = []
 
-            # -- The file does not exist. Copy!
-            # -- Execute the cmd: sudo cp src_file target_file, exit on error.
-            util.subprocess_call(
-                [
-                    "sudo",
-                    "cp",
-                    str(self.serial_rules_local_path),
-                    str(self.serial_rules_system_path),
-                ]
-            )
+            # -- Add the user to the dialout group for having access to the
+            # -- serial port, if not a member yet.
+            group_added = self._needs_dialout_group_linux()
+            if group_added:
+                steps.append(
+                    (
+                        "usermod -a -G dialout "
+                        f"{shlex.quote(getpass.getuser())}",
+                        "add the user to the dialout group",
+                    )
+                )
 
-            # -- Execute the commands for reloading the udev system
-            self._reload_rules_linux()
+            # -- Copy the rules file and reload udev; everything runs in
+            # -- ONE sudo invocation (a single password prompt).
+            steps += [
+                (
+                    "cp "
+                    f"{shlex.quote(str(self.serial_rules_local_path))} "
+                    f"{shlex.quote(str(self.serial_rules_system_path))}",
+                    "install the serial udev rules file",
+                ),
+            ] + self._udev_reload_steps()
+            exit_code = self._sudo_steps_linux(steps)
+            if exit_code != 0:
+                return exit_code
 
             cout("Serial drivers installed", style=SUCCESS)
             cout("Unplug and reconnect your board", style=INFO)
@@ -321,11 +338,17 @@ class Drivers:
         if self.serial_rules_system_path.exists():
             cout("Revert Serial drivers configuration")
 
-            # -- Execute the sudo rm rule_file cmd
-            subprocess.call(["sudo", "rm", str(self.serial_rules_system_path)])
+            # -- Remove the rules file and reload udev in ONE sudo call.
+            steps = [
+                (
+                    f"rm {shlex.quote(str(self.serial_rules_system_path))}",
+                    "remove the serial udev rules file",
+                ),
+            ] + self._udev_reload_steps()
+            exit_code = self._sudo_steps_linux(steps)
+            if exit_code != 0:
+                return exit_code
 
-            # -- Execute the commands for reloading the udev system
-            self._reload_rules_linux()
             cout("Serial drivers uninstalled", style=SUCCESS)
             cout("Unplug and reconnect your board", style=INFO)
         else:
@@ -333,32 +356,68 @@ class Drivers:
 
         return 0
 
-    def _reload_rules_linux(self):
-        """Execute the commands for reloading the udev system"""
+    # -- Exit code of the first step of a _sudo_steps_linux() script; the
+    # -- following steps use consecutive codes. High enough to not collide
+    # -- with sudo's own exit codes (1 = auth failure).
+    _FIRST_STEP_EXIT_CODE = 10
 
-        # -- Reload the udev rules and re-apply them to the devices already
-        # -- present. Restarting the daemon is NOT needed for rule changes,
-        # -- and the legacy unit name it used ('udev') only exists on distros
-        # -- with the Debian/Ubuntu compat alias (issue #899 on other
-        # -- distros: "Failed to restart udev.service: Unit udev.service
-        # -- not found"). One sudo call less, too.
-        subprocess.call(["sudo", "udevadm", "control", "--reload-rules"])
-        subprocess.call(["sudo", "udevadm", "trigger"])
+    def _sudo_steps_linux(self, steps) -> int:
+        """Run the given root steps as a SINGLE sudo invocation, so the
+        user is prompted for the password at most once. 'steps' is a list
+        of (shell_command, action_description) tuples; each command gets a
+        distinct exit code so a failure is reported precisely (their
+        stderr also reaches the console). Returns the process exit code,
+        0 on success."""
 
-    def _add_dialout_group_linux(self):
-        """Add the current user to the dialout group on Linux systems"""
+        cout(
+            "This one-time setup needs administrator privileges "
+            "(a single sudo prompt)",
+            style=INFO,
+        )
 
-        # -- This operation is needed for granting access to the serial port
+        # -- Build 'cmd1 || exit 10; cmd2 || exit 11; ...'
+        script = "; ".join(
+            f"{cmd} || exit {self._FIRST_STEP_EXIT_CODE + i}"
+            for i, (cmd, _) in enumerate(steps)
+        )
+        exit_code = subprocess.call(["sudo", "sh", "-c", script])
+        if exit_code == 0:
+            return 0
+
+        # -- Map the exit code back to the step that failed.
+        step = exit_code - self._FIRST_STEP_EXIT_CODE
+        if 0 <= step < len(steps):
+            cerror(f"Failed to {steps[step][1]}.")
+        else:
+            # -- sudo itself failed (wrong password, no sudo rights, ...)
+            cerror("Could not get administrator privileges (sudo failed).")
+        return exit_code
+
+    def _udev_reload_steps(self):
+        """The root steps for reloading the udev rules, for
+        _sudo_steps_linux(). Restarting the udev daemon is NOT needed for
+        rule changes and the legacy unit name it used ('udev') only exists
+        on distros with the Debian/Ubuntu compat alias (issue #899 on
+        other distros: "Failed to restart udev.service: Unit udev.service
+        not found")."""
+
+        return [
+            ("udevadm control --reload-rules", "reload the udev rules"),
+            (
+                "udevadm trigger",
+                "apply the udev rules to the connected devices",
+            ),
+        ]
+
+    def _needs_dialout_group_linux(self):
+        """True if the user must be added to the dialout group (needed for
+        access to the serial port)."""
 
         # -- Get the current groups of the user
         groups = subprocess.check_output("groups")
 
-        # -- If it does not belong to the dialout group, add it!!
-        if "dialout" not in groups.decode():
-            # -- Command for adding the user to the dialout group
-            subprocess.call("sudo usermod -a -G dialout $USER", shell=True)
-            return True
-        return None
+        # -- True if it does not belong to the dialout group yet.
+        return "dialout" not in groups.decode()
 
     def _ftdi_install_darwin(self) -> int:
         """Installs FTDI driver on darwin. Returns process status code."""
