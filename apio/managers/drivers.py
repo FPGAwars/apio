@@ -336,11 +336,14 @@ class Drivers:
     def _reload_rules_linux(self):
         """Execute the commands for reloading the udev system"""
 
-        # -- These are Linux commands that should be executed on
-        # -- the shell
+        # -- Reload the udev rules and re-apply them to the devices already
+        # -- present. Restarting the daemon is NOT needed for rule changes,
+        # -- and the legacy unit name it used ('udev') only exists on distros
+        # -- with the Debian/Ubuntu compat alias (issue #899 on other
+        # -- distros: "Failed to restart udev.service: Unit udev.service
+        # -- not found"). One sudo call less, too.
         subprocess.call(["sudo", "udevadm", "control", "--reload-rules"])
         subprocess.call(["sudo", "udevadm", "trigger"])
-        subprocess.call(["sudo", "service", "udev", "restart"])
 
     def _add_dialout_group_linux(self):
         """Add the current user to the dialout group on Linux systems"""
