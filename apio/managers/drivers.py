@@ -380,7 +380,18 @@ class Drivers:
             f"{cmd} || exit {self._FIRST_STEP_EXIT_CODE + i}"
             for i, (cmd, _) in enumerate(steps)
         )
-        exit_code = subprocess.call(["sudo", "sh", "-c", script])
+
+        # -- Honor a graphical askpass helper when the caller provides one
+        # -- (SUDO_ASKPASS): GUI launchers like Icestudio spawn apio without
+        # -- an interactive terminal, so sudo cannot prompt on a tty; with
+        # -- -A it asks through the helper instead (issue #899). Terminal
+        # -- users without SUDO_ASKPASS keep the classic tty prompt (-A
+        # -- without a helper would fail instead of prompting).
+        sudo_cmd = ["sudo"]
+        if os.environ.get("SUDO_ASKPASS"):
+            sudo_cmd.append("-A")
+
+        exit_code = subprocess.call(sudo_cmd + ["sh", "-c", script])
         if exit_code == 0:
             return 0
 
