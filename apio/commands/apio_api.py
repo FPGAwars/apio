@@ -20,6 +20,7 @@ from apio.commands import options
 from apio.managers.examples import Examples, ExampleInfo
 from apio.common.apio_console import cout, cerror
 from apio.common.common_util import get_project_source_files
+from apio.common.pnr_util import extract_clocks_from_pnr
 from apio.utils import cmd_util, usb_util, serial_util, util
 from apio.utils.usb_util import UsbDevice
 from apio.utils.serial_util import SerialDevice
@@ -278,6 +279,113 @@ def _get_project_cli(
     top_dict["project"] = section_dict
 
     # -- Write out
+    write_as_json_doc(top_dict, output, force)
+
+
+# ------ apio api get-build-report
+
+
+# -- Text in the rich-text format of the python rich library.
+APIO_API_GET_BUILD_REPORT_HELP = """
+The command 'apio api get-build-report' retrieves the resource utilization \
+and timing (fmax) metrics from the most recent 'apio build' or 'apio report' \
+run and emits them as a structured JSON document.
+
+This command is designed for machine-readable pipeline automation and is \
+completely decoupled from the human-centric text output of 'apio report'. \
+The two commands share the same underlying build artifact (.pnr file) but \
+serve distinct audiences: 'apio report' is for developers reading a terminal, \
+while 'apio api get-build-report' is for scripts, CI pipelines, and tooling.
+
+If no prior build data exists in the workspace, the command prints a clear \
+error message to stderr and exits with a non-zero status code.
+
+Examples:[code]
+  apio api get-build-report                 # Write to stdout
+  apio api get-build-report -e env1         # Use specified env
+  apio api get-build-report -p foo/bar      # Project in another dir
+  apio api get-build-report -o report.json  # Write to a file[/code]
+"""
+
+
+@click.command(
+    name="get-build-report",
+    cls=ApioCommand,
+    short_help="Retrieve last build report as JSON.",
+    help=APIO_API_GET_BUILD_REPORT_HELP,
+)
+@options.env_option_gen()
+@options.project_dir_option
+@timestamp_option
+@output_option
+@options.force_option_gen(short_help="Overwrite output file.")
+def _get_build_report_cli(
+    *,
+    env: str,
+    project_dir: Optional[Path],
+    timestamp: str,
+    output: str,
+    force: bool,
+):
+    """Implements the 'apio api get-build-report' command."""
+
+    apio_ctx = ApioContext(
+        project_policy=ProjectPolicy.PROJECT_REQUIRED,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        # TODO: Does this command require the packages?
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
+        project_dir_arg=project_dir,
+        env_arg=env,
+    )
+
+    # -- Change to the project's folder.
+    os.chdir(apio_ctx.project_dir)
+
+    # -- Resolve the build directory for the active env.
+    build_dir: Path = apio_ctx.env_build_path
+
+    # -- The PNR JSON report written by the last build or report run.
+    # -- The file name is always 'hardware.pnr' (apio_env.py target suffix).
+    pnr_file: Path = build_dir / "hardware.pnr"
+
+    # -- Enforce the strict boundary: no prior build data -> non-zero exit.
+    if not pnr_file.exists():
+        print(
+            f"Error: No build report found. Expected: {pnr_file}\n"
+            "Run 'apio build' or 'apio report' first.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    # -- Load and parse the PNR JSON report.
+    try:
+        pnr_data = json.loads(pnr_file.read_text(encoding="utf-8"))
+    except Exception as exc:
+        print(
+            f"Error: Failed to read or parse {pnr_file}: {exc}",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    # -- Assemble the top-level JSON document.
+    top_dict = {}
+
+    # -- Append user timestamp if specified.
+    if timestamp:
+        top_dict["timestamp"] = timestamp
+
+    section_dict = {}
+    section_dict["env-name"] = apio_ctx.project.env_name
+    section_dict["build-dir"] = str(build_dir)
+    section_dict["pnr-report-file"] = str(pnr_file)
+    section_dict["utilization"] = pnr_data.get("utilization", {})
+    # -- Extract clock metrics via the shared utility. Always returns a dict
+    # -- (never None), with {} when no fmax data is present in the PNR report.
+    section_dict["clocks"] = extract_clocks_from_pnr(pnr_data)
+
+    top_dict["build-report"] = section_dict
+
+    # -- Write out.
     write_as_json_doc(top_dict, output, force)
 
 
@@ -876,6 +984,7 @@ SUBGROUPS = [
         [
             _get_system_cli,
             _get_project_cli,
+            _get_build_report_cli,
             _get_boards_cli,
             _get_fpgas_cli,
             _get_programmers_cli,

@@ -5,6 +5,7 @@
 
 import json
 import os
+from pathlib import Path
 from tests.conftest import ApioRunner
 from apio.commands.apio import apio_top_cli as apio
 
@@ -260,6 +261,149 @@ def test_apio_api_get_project(apio_runner: ApioRunner):
         }
 
 
+def test_apio_api_get_build_report_no_build(apio_runner: ApioRunner):
+    """Test "apio api get-build-report" when no prior build exists."""
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Create a fake apio project but don't build it.
+        sb.write_default_apio_ini()
+
+        # -- Execute "apio api get-build-report". Since there is no
+        # -- 'hardware.pnr' file, it should fail with a non-zero exit
+        # -- code and a clear error message, and not raise an exception.
+        result = sb.invoke_apio_cmd(apio, ["api", "get-build-report"])
+        assert result.exit_code != 0
+        assert isinstance(result.exception, SystemExit)
+        assert result.exception.code == 1
+        assert "no build report found" in result.output.lower()
+
+
+def test_apio_api_get_build_report_corrupt_pnr(apio_runner: ApioRunner):
+    """Test "apio api get-build-report" when 'hardware.pnr' exists but
+    contains invalid JSON. Must fail cleanly with a non-zero exit code
+    and a clear error message, rather than crashing with a raw traceback.
+    """
+
+    with apio_runner.in_sandbox() as sb:
+
+        sb.write_default_apio_ini()
+
+        rel_build_dir = Path("_build") / "default"
+        build_dir = sb.proj_dir / rel_build_dir
+        # -- Not valid JSON.
+        sb.write_file(
+            build_dir / "hardware.pnr", "{not valid json", exists_ok=True
+        )
+
+        result = sb.invoke_apio_cmd(apio, ["api", "get-build-report"])
+        assert result.exit_code != 0
+        assert isinstance(result.exception, SystemExit)
+        assert result.exception.code == 1
+        assert "failed to read or parse" in result.output.lower()
+
+
+def test_apio_api_get_build_report(apio_runner: ApioRunner):
+    """Test "apio api get-build-report" with a prior build present."""
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Create a fake apio project.
+        sb.write_default_apio_ini()
+
+        # -- Fake the artifacts of a prior 'apio build'/'apio report' run.
+        # -- 'build_dir' mirrors ApioContext.env_build_path, which is a path
+        # -- relative to the project dir (e.g. "_build/default").
+        rel_build_dir = Path("_build") / "default"
+        build_dir = sb.proj_dir / rel_build_dir
+        pnr_data = {
+            "utilization": {
+                "LUT": {"used": 12, "available": 7680},
+            },
+            "fmax": {
+                "clk$glb_clk": {"achieved": 123.45},
+            },
+        }
+        sb.write_file(
+            build_dir / "hardware.pnr", json.dumps(pnr_data), exists_ok=True
+        )
+
+        # -- Execute "apio api get-build-report -t xyz"  (stdout)
+        result = sb.invoke_apio_cmd(
+            apio, ["api", "get-build-report", "-t", "xyz"]
+        )
+        sb.assert_result_ok(result)
+
+        # -- Execute "apio api get-build-report -t xyz -o <dir>"  (file)
+        path = sb.proj_dir / "apio.json"
+        result = sb.invoke_apio_cmd(
+            apio,
+            ["api", "get-build-report", "-t", "xyz", "-o", str(path)],
+        )
+        sb.assert_result_ok(result)
+
+        # -- Read and verify the file.
+        text = sb.read_file(path)
+        data = json.loads(text)
+        assert data["timestamp"] == "xyz"
+        report = data["build-report"]
+        assert report["env-name"] == "default"
+        # -- board-id, fpga-id, and bitstream-files were removed per
+        # -- maintainer review to prevent stale project state mismatches
+        # -- and unsafe glob-based file discovery.
+        assert "board-id" not in report
+        assert "fpga-id" not in report
+        assert "bitstream-files" not in report
+        assert report["build-dir"] == str(rel_build_dir)
+        assert report["pnr-report-file"] == str(
+            rel_build_dir / "hardware.pnr"
+        )
+        assert report["utilization"] == pnr_data["utilization"]
+        # -- Clocks use the new named dict schema: {name: {fmax: MHz}}.
+        assert report["clocks"] == {
+            "clk$glb_clk": {"fmax": 123.45},
+        }
+
+
+def test_apio_api_get_build_report_empty_clocks(apio_runner: ApioRunner):
+    """Test that get-build-report returns clocks: {} when PNR has no fmax.
+
+    The 'clocks' key must always be present and must be an explicit empty
+    dict -- never missing or None -- so that CI consumers can iterate over it
+    without first testing for its existence.
+    """
+
+    with apio_runner.in_sandbox() as sb:
+
+        sb.write_default_apio_ini()
+
+        rel_build_dir = Path("_build") / "default"
+        build_dir = sb.proj_dir / rel_build_dir
+        # -- PNR data with utilization only -- no 'fmax' section at all.
+        pnr_data = {
+            "utilization": {
+                "LUT": {"used": 5, "available": 7680},
+            },
+        }
+        sb.write_file(
+            build_dir / "hardware.pnr", json.dumps(pnr_data), exists_ok=True
+        )
+
+        path = sb.proj_dir / "apio.json"
+        result = sb.invoke_apio_cmd(
+            apio,
+            ["api", "get-build-report", "-o", str(path)],
+        )
+        sb.assert_result_ok(result)
+
+        text = sb.read_file(path)
+        data = json.loads(text)
+        report = data["build-report"]
+        # -- clocks must be an explicit empty dict, never a missing key.
+        assert "clocks" in report
+        assert report["clocks"] == {}
+
+
 def test_apio_api_get_examples(apio_runner: ApioRunner):
     """Test "apio api get-examples" """
 
@@ -331,10 +475,6 @@ def test_apio_api_echo(apio_runner: ApioRunner):
 
     with apio_runner.in_sandbox() as sb:
 
-        # -- Execute "apio api scan-devices -t xyz". We run it in a
-        # -- subprocess such that it releases the libusb1 file it uses.
-        # -- This also means that it's not included in the pytest test
-        # -- coverage report.
         result = sb.invoke_apio_cmd(
             apio,
             ["api", "echo", "-t", "Hello world", "-s", "OK"],

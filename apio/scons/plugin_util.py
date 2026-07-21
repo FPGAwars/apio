@@ -37,6 +37,7 @@ from apio.common.common_util import (
 )
 from apio.common.apio_console import cout, cerror, ctable
 from apio.common.apio_styles import INFO, BORDER, EMPH1, EMPH2, EMPH3
+from apio.common.pnr_util import extract_clocks_from_pnr
 from apio.scons import gtkwave_util
 
 
@@ -764,7 +765,7 @@ def _maybe_print_pnr_clocks_report(
     report: Dict[str, any],  # pyright: ignore[reportGeneralTypeIssues]
     clk_name_index: int,
 ) -> bool:
-    clocks = report["fmax"]
+    clocks = extract_clocks_from_pnr(report)
     if len(clocks) == 0:
         return False
 
@@ -785,7 +786,6 @@ def _maybe_print_pnr_clocks_report(
     )
 
     # -- Add rows.
-    clocks = report["fmax"]
     for clk_net, vals in clocks.items():
         # -- Extract clock name from the net name.
         clk_signal = clk_net.split("$")[clk_name_index]
@@ -793,7 +793,7 @@ def _maybe_print_pnr_clocks_report(
         # -- internal clock 'sys_clk' is reported as 'sys_clk_'.
         clk_signal = clk_signal.rstrip("_")
         # -- Extract speed
-        max_mhz = vals["achieved"]
+        max_mhz = vals["fmax"]
         # -- Add row.
         table.add_row(clk_signal, f"{max_mhz:.2f}")
 
