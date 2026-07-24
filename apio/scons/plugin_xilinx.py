@@ -126,12 +126,16 @@ class PluginXilinx(PluginBase):
                 "nextpnr-xilinx --chipdb {0} --xdc {1} --json $SOURCE "
                 "--fasm $TARGET "
                 "--post-route {2} "
-                "-q "
-                "{3}"
+                "{3} "
+                "{4}"
             ).format(
                 chipdb / database,
                 self.constrain_file(),
                 report_py,
+                # -- Honor --verbose-pnr like the other archs (ice40/ecp5/
+                # -- gowin), which show the full nextpnr log (fmax, critical
+                # -- path). The xilinx plugin used to hard-code -q.
+                "" if params.verbosity.all or params.verbosity.pnr else "-q",
                 " ".join(params.apio_env_params.nextpnr_extra_options),
             ),
             suffix=".fasm",
