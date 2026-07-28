@@ -10,7 +10,7 @@
 
 import sys
 import os
-from typing import Dict, List, Self, Optional, cast
+from typing import Dict, Optional
 from dataclasses import dataclass
 import json
 from pathlib import Path
@@ -159,7 +159,7 @@ def _get_system_cli(
     # -- Add fields.
     section_dict["apio-cli-version"] = util.get_apio_version_str()
     section_dict["release-info"] = util.get_apio_release_info()
-    section_dict["python-version"] = util.get_apio_version_str()
+    section_dict["python-version"] = sys.version
     section_dict["python-executable"] = sys.executable
     section_dict["platform-id"] = apio_ctx.platform_id
     section_dict["platform-info"] = util.get_platform_info()
@@ -351,21 +351,24 @@ def _get_build_report_cli(
 
     # -- Enforce the strict boundary: no prior build data -> non-zero exit.
     if not pnr_file.exists():
-        print(
-            f"Error: No build report found. Expected: {pnr_file}\n"
-            "Run 'apio build' or 'apio report' first.",
-            file=sys.stderr,
-        )
+        error_obj = {
+            "error": "No build report found",
+            "path": str(pnr_file),
+            "hint": "Run 'apio build' or 'apio report' first.",
+        }
+        print(json.dumps(error_obj), file=sys.stderr)
         sys.exit(1)
 
     # -- Load and parse the PNR JSON report.
     try:
         pnr_data = json.loads(pnr_file.read_text(encoding="utf-8"))
     except Exception as exc:  # pylint: disable=broad-exception-caught
-        print(
-            f"Error: Failed to read or parse {pnr_file}: {exc}",
-            file=sys.stderr,
-        )
+        error_obj = {
+            "error": "Failed to read or parse build report",
+            "path": str(pnr_file),
+            "detail": str(exc),
+        }
+        print(json.dumps(error_obj), file=sys.stderr)
         sys.exit(1)
 
     # -- Assemble the top-level JSON document.
