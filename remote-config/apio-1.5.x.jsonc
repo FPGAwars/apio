@@ -49,7 +49,7 @@
         "name": "tools-openxc7"
       },
       "release": {
-        "tag": "2026-07-24",
+        "tag": "2026-07-31",
         "package": "apio-openxc7-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
