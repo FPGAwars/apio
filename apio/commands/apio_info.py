@@ -106,6 +106,8 @@ def _system_cli():
         packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
 
+    platform = apio_ctx.platform
+
     # -- Define the table.
     table = Table(
         show_header=True,
@@ -125,8 +127,11 @@ def _system_cli():
     table.add_row("Release info", util.get_apio_release_info() or "(none)")
     table.add_row("Python version", util.get_python_version())
     table.add_row("Python executable", sys.executable)
-    table.add_row("Platform id", apio_ctx.platform_id)
-    table.add_row("Platform info", apio_platforms.get_system_info())
+    table.add_row("System info", apio_platforms.get_system_info())
+    table.add_row("Platform id", platform.id)
+    table.add_row("Is Darwin", str(platform.is_darwin))
+    table.add_row("Is Linux", str(platform.is_linux))
+    table.add_row("Is Windows", str(platform.is_windows))
     table.add_row("Scons shell id", apio_ctx.scons_shell_id)
     table.add_row("VSCode debugger", str(util.is_under_vscode_debugger()))
     table.add_row("Pyinstaller", str(util.is_pyinstaller_app()))
