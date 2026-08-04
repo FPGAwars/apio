@@ -269,7 +269,7 @@ class ApioContext:
         )
 
         # -- Get the underlying platform information.
-        self.platform: ApioPlatform = apio_platforms.determine_apio_platform()
+        self.platform: ApioPlatform = apio_platforms.get_apio_platform()
         self.platform_id: str = self.platform.id
 
         # -- Determine the shell id that scons will use.

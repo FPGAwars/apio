@@ -126,7 +126,7 @@ def _determine_system_platform_id() -> str:
     return platform_str
 
 
-def determine_apio_platform() -> ApioPlatform:
+def get_apio_platform() -> ApioPlatform:
     """Determines and returns the platform id based on system info and
     optional override."""
     # -- Use override and get from the underlying system.
