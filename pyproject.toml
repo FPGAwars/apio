@@ -31,6 +31,9 @@ classifiers=[
         "Programming Language :: Python :: 3.14",
         'Natural Language :: English',
         'Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)',
+        "Operating System :: Microsoft :: Windows",
+        "Operating System :: POSIX :: Linux",
+        "Operating System :: MacOS",
 ]
 requires-python = ">=3.11"
 requires = [
