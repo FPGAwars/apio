@@ -8,11 +8,9 @@ Apio CLI is tested on the following platforms (as of Nov 2025):
 
 | Apio Platform Code | Description           | Tested Github Versions |
 | :----------------- | :-------------------- | :--------------------- |
-| darwin_arm64       | macOS (Apple Silicon) | macos-latest           |
-| darwin_x86_64      | macOS (Intel)         | macos-15-intel         |
-| linux_x86_64       | Linux x86 64-bit      | ubuntu-22.04           |
-| linux_aarch64      | Linux ARM 64-bit      | (not tested)           |
-| windows_amd64      | Windows x86 64-bit    | windows-latest         |
+| darwin-arm64       | macOS (Apple Silicon) | macos-latest           |
+| linux-x86-64       | Linux x86 64-bit      | ubuntu-22.04           |
+| windows-amd64      | Windows x86 64-bit    | windows-latest         |
 
 > The tested version are set in the Apio CLI github test workflow.
 

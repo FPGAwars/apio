@@ -18,6 +18,8 @@ from apio.utils import env_options
 from apio.common.apio_console import cout, cerror
 from apio.common.apio_styles import INFO
 
+# TODO: Delete the commented out platforms and the xilinx_supported attribute.
+
 # -- The list of supported platforms and their attribute. The fields match
 # -- the dataclass ApioPlatform below.
 _SUPPORTED_PLATFORMS = {
@@ -25,31 +27,16 @@ _SUPPORTED_PLATFORMS = {
         "type": "Mac OSX",
         "variant": "ARM 64 bit (Apple Silicon)",
         "is_darwin": True,
-        "supports_xilinx": True,
-    },
-    "darwin-x86-64": {
-        "type": "Mac OSX",
-        "variant": "x86 64 bit (Intel)",
-        "is_darwin": True,
-        "supports_xilinx": False,
     },
     "linux-x86-64": {
         "type": "Linux",
         "variant": "X86 64 bit",
         "is_linux": True,
-        "supports_xilinx": True,
-    },
-    "linux-aarch64": {
-        "type": "Linux",
-        "variant": "ARM 64 bit",
-        "is_linux": True,
-        "supports_xilinx": False,
     },
     "windows-amd64": {
         "type": "Windows",
         "variant": "x86 64 bit",
         "is_windows": True,
-        "supports_xilinx": False,
     },
 }
 
@@ -66,9 +53,6 @@ class ApioPlatform:
 
     # -- Human readable variant of the platform type.
     variant: str
-
-    # -- True if xlinx is supported on this platform.
-    supports_xilinx: bool
 
     # -- Set to True exactly one of these
     is_darwin: bool = False
