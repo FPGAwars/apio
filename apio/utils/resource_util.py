@@ -145,25 +145,6 @@ CONFIG_SCHEMA = {
     "additionalProperties": False,
 }
 
-# -- JSON schema for validating platforms.jsonc.
-PLATFORMS_SCHEMA = {
-    "type": "object",
-    "patternProperties": {
-        "^[a-z]+(-[a-z0-9]+)+$": {  # matches keys like "darwin-arm64"
-            "type": "object",
-            "required": ["type", "variant"],
-            "properties": {
-                "type": {
-                    "type": "string",
-                    "enum": ["Mac OSX", "Linux", "Windows"],
-                },
-                "variant": {"type": "string"},
-            },
-            "additionalProperties": False,
-        }
-    },
-    "additionalProperties": False,
-}
 
 # -- JSON schema for validating packages.jsonc.
 PACKAGES_SCHEMA = {
@@ -247,17 +228,8 @@ def validate_config(config: dict) -> None:
         sys.exit(1)
 
 
-def validate_platforms(platforms: dict) -> None:
-    """Check the platforms resource from platforms.jsonc."""
-    try:
-        validate(instance=platforms, schema=PLATFORMS_SCHEMA)
-    except ValidationError as e:
-        cerror(f"Invalid platforms resource: {e.message}")
-        sys.exit(1)
-
-
 def validate_packages(packages: dict) -> None:
-    """Check the packages resource from platforms.jsonc."""
+    """Check the packages resource from packages.jsonc."""
     try:
         validate(instance=packages, schema=PACKAGES_SCHEMA)
     except ValidationError as e:

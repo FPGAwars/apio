@@ -94,7 +94,7 @@ message Verbosity {
 
 // Information about the environment.
 message Environment {
-  // The underlying platform id as it appears in platforms.jsonc.
+  // The underlying platform id as it defined in apio_platforms.py.
   required string platform_id = 1;
   required bool is_windows = 2;
 

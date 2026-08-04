@@ -20,7 +20,7 @@ from apio.commands import options
 from apio.managers.examples import Examples, ExampleInfo
 from apio.common.apio_console import cout, cerror
 from apio.common.common_util import get_project_source_files
-from apio.utils import cmd_util, usb_util, serial_util, util
+from apio.utils import cmd_util, usb_util, serial_util, util, apio_platforms
 from apio.utils.usb_util import UsbDevice
 from apio.utils.serial_util import SerialDevice
 from apio.common.apio_styles import (
@@ -145,6 +145,8 @@ def _get_system_cli(
         packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
 
+    platform = apio_ctx.platform
+
     # -- The top dict that we will emit as json.
     top_dict = {}
 
@@ -159,8 +161,11 @@ def _get_system_cli(
     section_dict["release-info"] = util.get_apio_release_info()
     section_dict["python-version"] = util.get_python_version()
     section_dict["python-executable"] = sys.executable
-    section_dict["platform-id"] = apio_ctx.platform_id
-    section_dict["platform-info"] = util.get_platform_info()
+    section_dict["platform-info"] = apio_platforms.get_system_info()
+    section_dict["platform-id"] = platform.id
+    section_dict["is-darwin"] = platform.is_darwin
+    section_dict["is-linux"] = platform.is_linux
+    section_dict["is-windows"] = platform.is_windows
     section_dict["scons-shell-id"] = apio_ctx.scons_shell_id
     section_dict["vscode-debugger"] = str(
         util.is_under_vscode_debugger()

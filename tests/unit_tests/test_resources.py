@@ -14,7 +14,6 @@ from apio.apio_context import (
 from apio.utils.resource_util import (
     validate_config,
     validate_packages,
-    validate_platforms,
     _validate_board_info,
     validate_fpga_info,
     _validate_programmer_info,
@@ -125,7 +124,6 @@ def test_resources_are_valid(apio_runner: ApioRunner):
 
         validate_config(apio_ctx.config)
         validate_packages(apio_ctx.all_packages)
-        validate_platforms(apio_ctx.platforms)
 
         for fpga_id, fpga_info in apio_ctx.fpgas.items():
             validate_fpga_info(fpga_id, fpga_info)

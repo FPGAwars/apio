@@ -18,7 +18,8 @@ from apio.common.apio_console import cout, cerror, cstyle
 from apio.common.apio_styles import INFO, EMPH1, EMPH2, EMPH3
 from apio.common.common_util import env_build_path
 from apio.profile import Profile, RemoteConfigPolicy
-from apio.utils import jsonc, util, env_options
+from apio.utils import jsonc, util, env_options, apio_platforms
+from apio.utils.apio_platforms import ApioPlatform
 from apio.managers.project import Project, load_project_from_file
 from apio.managers import packages
 from apio.managers.packages import PackagesContext
@@ -27,20 +28,12 @@ from apio.utils.resource_util import (
     collect_project_resources,
     validate_project_resources,
     validate_config,
-    validate_platforms,
     validate_packages,
 )
-
 
 # ---------- RESOURCES
 RESOURCES_DIR = "resources"
 
-# ---------------------------------------
-# ---- File: resources/platforms.jsonc
-# --------------------------------------
-# -- This file contains  the information regarding the supported platforms
-# -- and their attributes.
-PLATFORMS_JSONC = "platforms.jsonc"
 
 # ---------------------------------------
 # ---- File: resources/packages.jsonc
@@ -146,7 +139,7 @@ class ApioContext:
         "apio_packages_dir",
         "config",
         "profile",
-        "platforms",
+        "platform",
         "platform_id",
         "scons_shell_id",
         "all_packages",
@@ -275,16 +268,13 @@ class ApioContext:
             remote_config_policy,
         )
 
-        # -- Read the platforms information.
-        self.platforms = self._load_resource(PLATFORMS_JSONC, resources_dir)
-        validate_platforms(self.platforms)
-
-        # -- Determine the platform_id for this APIO session.
-        self.platform_id = self._determine_platform_id(self.platforms)
+        # -- Get the underlying platform information.
+        self.platform: ApioPlatform = apio_platforms.get_apio_platform()
+        self.platform_id: str = self.platform.id
 
         # -- Determine the shell id that scons will use.
         # -- See _determine_scons_shell_id() for possible values.
-        self.scons_shell_id = self._determine_scons_shell_id(self.platform_id)
+        self.scons_shell_id = self._determine_scons_shell_id(self.platform)
 
         # -- Read the apio packages information
         self.all_packages = self._load_resource(PACKAGES_JSONC, resources_dir)
@@ -297,7 +287,8 @@ class ApioContext:
 
         # The subset of packages that are applicable to this platform.
         self.required_packages = self._select_required_packages_for_platform(
-            self.all_packages, self.platform_id, self.platforms
+            self.all_packages,
+            self.platform_id,
         )
 
         # -- Case 1: IGNORE_PACKAGES
@@ -588,34 +579,7 @@ class ApioContext:
         return tmp_dir
 
     @staticmethod
-    def _determine_platform_id(platforms: Dict[str, Dict]) -> str:
-        """Determines and returns the platform io based on system info and
-        optional override."""
-        # -- Use override and get from the underlying system.
-        platform_id_override = env_options.get(env_options.APIO_PLATFORM)
-        if platform_id_override:
-            platform_id = platform_id_override
-        else:
-            platform_id = ApioContext._get_system_platform_id()
-
-        # Stick to the naming conventions we use for boards, fpgas, etc.
-        platform_id = platform_id.replace("_", "-")
-
-        # -- Verify it's valid. This can be a user error if the override
-        # -- is invalid.
-        if platform_id not in platforms.keys():
-            cerror(f"Unknown platform id: [{platform_id}]")
-            cout(
-                "See Apio's documentation for supported platforms.",
-                style=INFO,
-            )
-            sys.exit(1)
-
-        # -- All done ok.
-        return platform_id
-
-    @staticmethod
-    def _determine_scons_shell_id(platform_id: str) -> str:
+    def _determine_scons_shell_id(apio_platform: ApioPlatform) -> str:
         """
         Returns a simplified string name of the shell that SCons will use
         for executing shell-dependent commands. See code below for possible
@@ -625,7 +589,7 @@ class ApioContext:
         # pylint: disable=too-many-return-statements
 
         # -- Handle windows.
-        if "windows" in platform_id:
+        if apio_platform.is_windows:
             comspec = os.environ.get("COMSPEC", "").lower()
             if "powershell.exe" in comspec or "pwsh.exe" in comspec:
                 return "powershell"
@@ -633,7 +597,7 @@ class ApioContext:
                 return "cmd"
             return "unknown"
 
-        # -- Handle macOS, Linux, etc.
+        # -- Handle the rest (macOS, Linux, etc.)
         shell_path = os.environ.get("SHELL", "").lower()
         if "bash" in shell_path:
             return "bash"
@@ -656,7 +620,7 @@ class ApioContext:
         return PackagesContext(
             profile=self.profile,
             required_packages=self.required_packages,
-            platform_id=self.platform_id,
+            platform=self.platform,
             packages_dir=self.apio_packages_dir,
         )
 
@@ -664,15 +628,17 @@ class ApioContext:
     def _select_required_packages_for_platform(
         all_packages: Dict[str, Dict],
         platform_id: str,
-        platforms: Dict[str, Dict],
     ) -> Dict:
         """Given a dictionary with the packages.jsonc packages infos,
         returns subset dictionary with packages that are available for
         'platform_id'.
         """
 
+        # -- Dict of all supported platforms.
+        all_apio_platforms = apio_platforms.get_all_apio_platforms()
+
         # -- If fails, this is a programming error.
-        assert platform_id in platforms, platform
+        assert platform_id in all_apio_platforms, platform
 
         # -- Final dict with the output packages
         filtered_packages = {}
@@ -687,13 +653,13 @@ class ApioContext:
             # -- available. The package is available on all platforms unless
             # -- restricted by the ""restricted-to-platforms" field.
             required_for_platforms = package_info.get(
-                "restricted-to-platforms", platforms.keys()
+                "restricted-to-platforms", all_apio_platforms.keys()
             )
 
             # -- Sanity check that all platform ids are valid. If fails it's
             # -- a programming error.
             for p in required_for_platforms:
-                assert p in platforms.keys(), platform
+                assert p in all_apio_platforms.keys(), platform
 
             # -- If available for 'platform_id', add it.
             if platform_id in required_for_platforms:
@@ -702,45 +668,20 @@ class ApioContext:
         # -- Return the subset dict with the packages for 'platform_id'.
         return filtered_packages
 
-    @staticmethod
-    def _get_system_platform_id() -> str:
-        """Return a String with the current platform:
-        ex. linux-x86-64
-        ex. windows-amd64"""
-
-        # -- Get the platform: linux, windows, darwin
-        type_ = platform.system().lower()
-        platform_str = f"{type_}"
-
-        # -- Get the architecture
-        arch = platform.machine().lower()
-
-        # -- Special case for windows
-        if type_ == "windows":
-            # -- Assume all the windows to be 64-bits
-            arch = "amd64"
-
-        # -- Add the architecture, if it exists
-        if arch:
-            platform_str += f"_{arch}"
-
-        # -- Return the full platform
-        return platform_str
-
     @property
     def is_linux(self) -> bool:
-        """Returns True iff platform_id indicates linux."""
-        return "linux" in self.platform_id
+        """Returns True iff underlying platform is a Linux."""
+        return self.platform.is_linux
 
     @property
     def is_darwin(self) -> bool:
-        """Returns True iff platform_id indicates Mac OSX."""
-        return "darwin" in self.platform_id
+        """Returns True iff underlying platform is a Mac OSX."""
+        return self.platform.is_darwin
 
     @property
     def is_windows(self) -> bool:
-        """Returns True iff platform_id indicates windows."""
-        return "windows" in self.platform_id
+        """Returns True iff underlying platform is a Windows."""
+        return self.platform.is_windows
 
     def _get_env_mutations_for_packages(self) -> EnvMutations:
         """Collects the env mutation for each of the defined packages,

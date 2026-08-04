@@ -2,23 +2,12 @@
 Test various "apio" commands.
 """
 
-import sys
 import os
 from os.path import getsize
 from pathlib import Path
 from typing import cast
-import pytest
 from tests.conftest import ApioRunner
 from apio.commands.apio import apio_top_cli as apio
-
-# -- Message to show for the tests that only run on Linux
-ONLY_LINUX_MSG = (
-    "Currently, the Xilinx arch is only implemented for Linux, "
-    "so this test only run on linux platforms"
-)
-
-# -- For non-linux platfoms (windows and mac)
-is_not_linux = not sys.platform.startswith("linux")
 
 
 def test_project_with_legacy_board_id(apio_runner: ApioRunner):
@@ -419,7 +408,6 @@ def test_project_gowin_system_verilog(apio_runner: ApioRunner):
     )
 
 
-@pytest.mark.skipif(is_not_linux, reason=ONLY_LINUX_MSG)
 def test_project_xilinx_local_dir(apio_runner: ApioRunner):
     """Tests building and testing a Xilinx project as the current working
     dir."""
@@ -433,7 +421,6 @@ def test_project_xilinx_local_dir(apio_runner: ApioRunner):
     )
 
 
-@pytest.mark.skipif(is_not_linux, reason=ONLY_LINUX_MSG)
 def test_project_xilinx_remote_dir(apio_runner: ApioRunner):
     """Tests building and testing an ice40 project from a remote dir, using
     the -p option."""
