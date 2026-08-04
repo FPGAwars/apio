@@ -20,7 +20,7 @@ from apio.commands import options
 from apio.managers.examples import Examples, ExampleInfo
 from apio.common.apio_console import cout, cerror
 from apio.common.common_util import get_project_source_files
-from apio.utils import cmd_util, usb_util, serial_util, util
+from apio.utils import cmd_util, usb_util, serial_util, util, apio_platforms
 from apio.utils.usb_util import UsbDevice
 from apio.utils.serial_util import SerialDevice
 from apio.common.apio_styles import (
@@ -160,7 +160,7 @@ def _get_system_cli(
     section_dict["python-version"] = util.get_python_version()
     section_dict["python-executable"] = sys.executable
     section_dict["platform-id"] = apio_ctx.platform_id
-    section_dict["platform-info"] = util.get_platform_info()
+    section_dict["platform-info"] = apio_platforms.get_system_info()
     section_dict["scons-shell-id"] = apio_ctx.scons_shell_id
     section_dict["vscode-debugger"] = str(
         util.is_under_vscode_debugger()

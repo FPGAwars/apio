@@ -16,7 +16,7 @@ from rich.text import Text
 from rich import box
 from rich.color import ANSI_COLOR_NAMES
 from apio.common.apio_styles import BORDER, EMPH1, EMPH2, EMPH3, INFO
-from apio.utils import util
+from apio.utils import util, apio_platforms
 from apio.commands import options
 from apio.apio_context import (
     ApioContext,
@@ -36,7 +36,6 @@ from apio.common.apio_console import (
     get_theme,
     configure,
 )
-
 
 # ------ apio info system
 
@@ -127,7 +126,7 @@ def _system_cli():
     table.add_row("Python version", util.get_python_version())
     table.add_row("Python executable", sys.executable)
     table.add_row("Platform id", apio_ctx.platform_id)
-    table.add_row("Platform info", util.get_platform_info())
+    table.add_row("Platform info", apio_platforms.get_system_info())
     table.add_row("Scons shell id", apio_ctx.scons_shell_id)
     table.add_row("VSCode debugger", str(util.is_under_vscode_debugger()))
     table.add_row("Pyinstaller", str(util.is_pyinstaller_app()))
@@ -205,9 +204,10 @@ def _platforms_cli():
     table.add_column("VARIANT", no_wrap=True)
 
     # -- Add rows.
-    for platform_id, platform_info in apio_ctx.platforms.items():
-        platform_type = platform_info.get("type")
-        platform_variant = platform_info.get("variant")
+    for (
+        platform_id,
+        apio_platform,
+    ) in apio_platforms.get_all_apio_platforms().items():
 
         # -- Mark the current platform.
         if platform_id == apio_ctx.platform_id:
@@ -219,8 +219,8 @@ def _platforms_cli():
 
         table.add_row(
             f"{marker}{platform_id}",
-            platform_type,
-            platform_variant,
+            apio_platform.type,
+            apio_platform.variant,
             style=style,
         )
 

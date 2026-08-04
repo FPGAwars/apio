@@ -18,6 +18,7 @@ from apio.common.apio_styles import WARNING, ERROR, SUCCESS, EMPH3
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
 from apio.utils import util
+from apio.utils.apio_platforms import ApioPlatform
 from apio.profile import Profile, PackageRemoteConfig
 
 
@@ -35,8 +36,8 @@ class PackagesContext:
     profile: Profile
     # -- Same as ApioContext.required_packages
     required_packages: Dict
-    # -- Same as ApioContext.platform_id
-    platform_id: str
+    # -- Same as ApioContext.platform
+    platform: ApioPlatform
     # -- Same as ApioContext.packages_dir
     packages_dir: Path
 
@@ -44,7 +45,7 @@ class PackagesContext:
         """Assert that all fields initialized to actual values."""
         assert self.profile
         assert self.required_packages
-        assert self.platform_id
+        assert self.platform
         assert self.packages_dir
 
 
@@ -56,7 +57,7 @@ def _construct_package_download_url(
 
     # -- Create vars mapping.
     url_vars = {
-        "${PLATFORM}": packages_ctx.platform_id,
+        "${PLATFORM}": packages_ctx.platform.id,
         "${YYYYMMDD}": package_remote_config.release_tag.replace("-", ""),
     }
     if util.is_debug(1):
@@ -303,7 +304,7 @@ def install_package(
         # -- nothing to do.
         if (
             target_version == installed_version
-            and package_platform_id == packages_ctx.platform_id
+            and package_platform_id == packages_ctx.platform.id
         ):
             if verbose:
                 cout(
@@ -320,7 +321,7 @@ def install_package(
         cout(pending_announcement)
         pending_announcement = True
 
-    cout(f"Fetching version {target_version} ({packages_ctx.platform_id})")
+    cout(f"Fetching version {target_version} ({packages_ctx.platform.id})")
 
     # -- Construct the download URL.
     download_url = _construct_package_download_url(
@@ -358,7 +359,7 @@ def install_package(
 
     # -- Add package to profile and save.
     packages_ctx.profile.add_package(
-        package_name, target_version, packages_ctx.platform_id, download_url
+        package_name, target_version, packages_ctx.platform.id, download_url
     )
     # packages_ctx.profile.save()
 
@@ -487,7 +488,7 @@ def package_version_ok(
     current_ver, package_platform_id = (
         packages_ctx.profile.get_installed_package_info(package_name)
     )
-    if not current_ver or package_platform_id != packages_ctx.platform_id:
+    if not current_ver or package_platform_id != packages_ctx.platform.id:
         return False
 
     # -- Get the package remote config.

@@ -11,7 +11,6 @@
 
 import sys
 import os
-import platform
 from contextlib import contextmanager
 from enum import Enum
 from dataclasses import dataclass
@@ -603,8 +602,3 @@ def is_under_vscode_debugger() -> bool:
     if os.environ.get("DEBUGPY_RUNNING"):
         return True
     return False
-
-
-def get_platform_info() -> str:
-    """Return a short string with additional platform info such as version."""
-    return platform.platform()

@@ -2,7 +2,7 @@
 //
 // Supported vars (see installer.py for details):
 //
-//   ${PLATFORM}         - platform id (from platforms.jsonc)
+//   ${PLATFORM}         - platform id (from apio_platforms.py)
 //   ${YYYYMMDD}         - the YYYY-MM_DD tag converted to YYYYMMDD
 //
 // NOTE: Github has a cache propagation of about 1 min between the
