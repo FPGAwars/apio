@@ -55,7 +55,6 @@ class PluginXilinx(PluginBase):
             constrains_file_suffix=".xdc",
             pnr_file_suffix=".frames",
             bitstream_file_suffix=".bit",
-            clk_name_index=0,
         )
 
     # @overrides

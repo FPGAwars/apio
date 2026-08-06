@@ -88,7 +88,7 @@ example$ apio report
 
 FPGA Resource Utilization
 ┌────────────────┬────────┬──────────┬─────────┐
-│  RESOURCE      │  USED  │   TOTAL  │  UTIL.  │
+│  RESOURCE      │  USED  │   TOTAL  │  USED%  │
 ├────────────────┼────────┼──────────┼─────────┤
 │  ICESTORM_LC   │    69  │    7680  │     0%  │
 │  ICESTORM_PLL  │        │       2  │         │

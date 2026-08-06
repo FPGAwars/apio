@@ -9,16 +9,14 @@
 # ---- License Apache v2
 """Helper functions for apio scons plugins."""
 
-
 from glob import glob
 import sys
 import os
 import re
-import json
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Dict, Optional, Union
+from typing import List, Optional, Union
 from rich.table import Table
 from rich import box
 from SCons import Scanner
@@ -38,7 +36,7 @@ from apio.common.common_util import (
 from apio.common.apio_console import cout, cerror, ctable
 from apio.common.apio_styles import INFO, BORDER, EMPH1, EMPH2, EMPH3
 from apio.scons import gtkwave_util
-
+from apio.common.build_report import BuildReport, read_build_report
 
 TESTBENCH_HINT = "Testbench file names must end with '_tb.v' or '_tb.sv'."
 
@@ -722,9 +720,13 @@ def source_files_issue_scanner_action() -> FunctionAction:
     )
 
 
-def _print_pnr_utilization_report(
-    report: Dict[str, any],  # pyright: ignore[reportGeneralTypeIssues]
-):
+def _print_pnr_report(
+    build_report: BuildReport,
+    verbose: bool,
+) -> None:
+    """Emit a user friendly report from build report."""
+
+    # -- Utilization table
     table = Table(
         show_header=True,
         show_lines=False,
@@ -739,99 +741,61 @@ def _print_pnr_utilization_report(
     table.add_column("RESOURCE", no_wrap=True)
     table.add_column("USED", no_wrap=True, justify="right")
     table.add_column("TOTAL", no_wrap=True, justify="right")
-    table.add_column("UTIL.", no_wrap=True, justify="right")
+    table.add_column("USED%", no_wrap=True, justify="right")
 
     # -- Add rows
-    utilization = report["utilization"]
-    for resource, vals in utilization.items():
-        used = vals["used"]
-        used_str = f"{used}  " if used else ""
-        available = vals["available"]
-        available_str = f"{available}  "
-        percents = int(100 * used / available)
-        percents_str = f"{percents}%  " if used else ""
-        style = EMPH3 if used > 0 else None
+    for res in build_report.resources:
+        # used = vals["used"]
+        used_str = f"{res.used}  " if res.used else ""
+        # available = vals["available"]
+        available_str = f"{res.available}  "
+        percents = int(100 * res.used / res.available)
+        percents_str = f"{percents}%  " if res.used else ""
+        style = EMPH3 if res.used > 0 else None
         table.add_row(
-            resource, used_str, available_str, percents_str, style=style
+            res.name, used_str, available_str, percents_str, style=style
         )
 
-    # -- Render the table
+    # -- Render the utilization table table
     cout()
     ctable(table)
 
+    # -- Clocks table, if there is at least one clock.
+    if len(build_report.clocks) > 0:
 
-def _maybe_print_pnr_clocks_report(
-    report: Dict[str, any],  # pyright: ignore[reportGeneralTypeIssues]
-    clk_name_index: int,
-) -> bool:
-    clocks = report["fmax"]
-    if len(clocks) == 0:
-        return False
+        table = Table(
+            show_header=True,
+            show_lines=True,
+            box=box.SQUARE,
+            border_style=BORDER,
+            title="Clock Information",
+            title_justify="left",
+            padding=(0, 2),
+        )
 
-    table = Table(
-        show_header=True,
-        show_lines=True,
-        box=box.SQUARE,
-        border_style=BORDER,
-        title="Clock Information",
-        title_justify="left",
-        padding=(0, 2),
-    )
+        # -- Add columns
+        table.add_column("CLOCK", no_wrap=True)
+        table.add_column(
+            "MAX SPEED [Mhz]", no_wrap=True, justify="right", style=EMPH3
+        )
 
-    # -- Add columns
-    table.add_column("CLOCK", no_wrap=True)
-    table.add_column(
-        "MAX SPEED [Mhz]", no_wrap=True, justify="right", style=EMPH3
-    )
+        # -- Add rows.
+        for clk in build_report.clocks:
+            table.add_row(clk.name, f"{clk.fmax_mhz:.2f}")
 
-    # -- Add rows.
-    clocks = report["fmax"]
-    for clk_net, vals in clocks.items():
-        # -- Extract clock name from the net name.
-        clk_signal = clk_net.split("$")[clk_name_index]
-        # -- Remove trailing '_'. Otherwise, on alhambra-ii/pll example, the
-        # -- internal clock 'sys_clk' is reported as 'sys_clk_'.
-        clk_signal = clk_signal.rstrip("_")
-        # -- Extract speed
-        max_mhz = vals["achieved"]
-        # -- Add row.
-        table.add_row(clk_signal, f"{max_mhz:.2f}")
-
-    # -- Render the table
-    cout()
-    ctable(table)
-    return True
-
-
-def _print_pnr_report(
-    json_txt: str,
-    clk_name_index: int,
-    verbose: bool,
-) -> None:
-    """Accepts the text of the pnr json report and prints it in
-    a user friendly way. Used by the 'apio report' command."""
-    # -- Parse the json text into a tree of dicts.
-    report: Dict[str, any] = (  # pyright: ignore[reportGeneralTypeIssues]
-        json.loads(json_txt)
-    )
-
-    # -- Print the utilization table.
-    _print_pnr_utilization_report(report)
-
-    # -- Print the optional clocks table.
-    clock_report_printed = _maybe_print_pnr_clocks_report(
-        report, clk_name_index
-    )
+        # -- Render the clocks table
+        cout()
+        ctable(table)
 
     # -- Print summary.
     cout("")
-    if not clock_report_printed:
+    if len(build_report.clocks) == 0:
         cout("No clocks were found in the design.", style=INFO)
     if not verbose:
         cout("Run 'apio report --verbose' for more details.", style=INFO)
 
 
-def report_action(clk_name_index: int, verbose: bool) -> FunctionAction:
+def report_action(verbose: bool) -> FunctionAction:
     """Returns a SCons action to format and print the PNR reort from the
     PNR json report file. Used by the 'apio report' command.
     'script_id' identifies the calling SConstruct script and 'verbose'
@@ -845,10 +809,10 @@ def report_action(clk_name_index: int, verbose: bool) -> FunctionAction:
         """Action function. Loads the pnr json report and print in a user
         friendly way."""
         _ = (target, env)  # Unused
-        json_file: File = source[0]
-        print(f"{str(json_file)=}")
-        json_txt: str = json_file.get_text_contents()
-        _print_pnr_report(json_txt, clk_name_index, verbose)
+        pnr_json_file: File = source[0]
+        pnr_json_path: Path = Path(pnr_json_file.get_path())
+        build_report: BuildReport = read_build_report(pnr_json_path)
+        _print_pnr_report(build_report, verbose)
 
     return Action(
         print_pnr_report,  # pyright: ignore[reportReturnType]

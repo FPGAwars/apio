@@ -29,7 +29,7 @@ apio report --verbose  # Show detailed report
 ```
 FPGA Resource Utilization
 ┌────────────────┬────────┬──────────┬─────────┐
-│  RESOURCE      │  USED  │   TOTAL  │  UTIL.  │
+│  RESOURCE      │  USED  │   TOTAL  │  USED%  │
 ├────────────────┼────────┼──────────┼─────────┤
 │  ICESTORM_LC   │    90  │    7680  │     1%  │
 │  ICESTORM_PLL  │        │       2  │         │

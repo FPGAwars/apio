@@ -49,7 +49,6 @@ class PluginIce40(PluginBase):
             constrains_file_suffix=".pcf",
             pnr_file_suffix=".asc",
             bitstream_file_suffix=".bin",
-            clk_name_index=0,
         )
 
     # @overrides
