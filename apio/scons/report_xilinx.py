@@ -55,9 +55,9 @@ for cell_name, cell_info in ctx.cells:
 report = {"critical_paths": [], "fmax": {}, "utilization": {}}
 
 # --- Fill in the report json
-for res, amount in resources_used.items():
-    cell = {"available": resources_total[res], "used": amount}
-    report["utilization"][res] = cell
+for res, avail in resources_total.items():
+    res_values = {"available": avail, "used": resources_used.get(res, 0)}
+    report["utilization"][res] = res_values
     # print(f"* {res}: {amount} / {resources_total[res]}")
 
 
