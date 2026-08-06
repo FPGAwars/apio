@@ -121,11 +121,6 @@ message Environment {
 
   //-- Path to the chipdb folder, located in openxc7/chipdb
   required string chipdb_path = 10;
-
-  //-- Path to the apio home dir
-  //-- It is used by xilinx to locate the file report_xilinx.py
-  required string apio_home_path = 11;
-  required string env_build_path = 12;
 }
 
 // Information about the expanded active env from apio.ini.
