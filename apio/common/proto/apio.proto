@@ -115,12 +115,11 @@ message Environment {
   // is expected to use. See ApioContext for values.
   required string scons_shell_id = 8;
 
-  //-- Path to the prjxray_db, located
-  //-- in the openxc7 apio package (only for Xilinx FPGAs)
-  required string prjxray_db_path = 9;
+  //-- Path to the xilinx prjxray_db, located in the openxc7 apio package.
+  required string xilinx_prjxray_db_path = 9;
 
-  //-- Path to the chipdb folder, located in openxc7/chipdb
-  required string chipdb_path = 10;
+  //-- Path to the xilinx chipdb folder, located in openxc7 apio package.
+  required string xilinx_chipdb_path = 10;
 }
 
 // Information about the expanded active env from apio.ini.

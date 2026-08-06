@@ -302,18 +302,9 @@ class SConsManager:
         assert "YOSYS_LIB" in oss_set_vars, oss_set_vars
         assert "TRELLIS" in oss_set_vars, oss_set_vars
 
-        # -- openxc7 is available only on the platforms listed in its
-        # -- "restricted-to-platforms" field (see packages.jsonc). On a
-        # -- platform where it isn't available, all_packages["openxc7"] is
-        # -- absent, so fall back to empty paths.
-        try:
-            openxc7_set_vars = apio_ctx.all_packages["openxc7"]["env"][
-                "set-vars"
-            ]
-
-        # -- Platform not supported. Ignore it!
-        except KeyError:
-            openxc7_set_vars = {"PRJXRAY_DB_DIR": "", "CHIPDB_DIR": ""}
+        openxc7_set_vars = apio_ctx.all_packages["openxc7"]["env"]["set-vars"]
+        assert "PRJXRAY_DB_DIR" in openxc7_set_vars, open
+        assert "CHIPDB_DIR" in openxc7_set_vars, open
 
         result.environment.MergeFrom(
             Environment(
@@ -329,8 +320,8 @@ class SConsManager:
                 yosys_path=oss_set_vars["YOSYS_LIB"],
                 trellis_path=oss_set_vars["TRELLIS"],
                 scons_shell_id=apio_ctx.scons_shell_id,
-                prjxray_db_path=openxc7_set_vars["PRJXRAY_DB_DIR"],
-                chipdb_path=openxc7_set_vars["CHIPDB_DIR"],
+                xilinx_prjxray_db_path=openxc7_set_vars["PRJXRAY_DB_DIR"],
+                xilinx_chipdb_path=openxc7_set_vars["CHIPDB_DIR"],
             )
         )
         assert result.environment.IsInitialized(), result

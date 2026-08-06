@@ -56,8 +56,8 @@ environment {
   yosys_path: "TBD"
   trellis_path: "TBD"
   scons_shell_id: ""
-  prjxray_db_path: "TBD"
-  chipdb_path: "TBD"
+  xilinx_prjxray_db_path: "TBD"
+  xilinx_chipdb_path: "TBD"
 }
 apio_env_params {
   env_name: "default"
@@ -145,12 +145,12 @@ def test_default_params(apio_runner: ApioRunner):
         expected.environment.scons_shell_id = apio_ctx.scons_shell_id
 
         # -- TODO: For the missing platforms it should be the null string ""
-        expected.environment.prjxray_db_path = str(
+        expected.environment.xilinx_prjxray_db_path = str(
             sb.packages_dir / "openxc7/share/nextpnr/external/prjxray-db"
         )
 
         # -- TODO: For the missing platforms it should be the null string ""
-        expected.environment.chipdb_path = str(
+        expected.environment.xilinx_chipdb_path = str(
             sb.packages_dir / "openxc7/chipdb"
         )
 
@@ -197,12 +197,12 @@ def test_explicit_params(apio_runner: ApioRunner):
         expected.environment.scons_shell_id = apio_ctx.scons_shell_id
 
         # -- TODO: For the missing platforms it should be the null string ""
-        expected.environment.prjxray_db_path = str(
+        expected.environment.xilinx_prjxray_db_path = str(
             sb.packages_dir / "openxc7/share/nextpnr/external/prjxray-db"
         )
 
         # -- TODO: For the missing platforms it should be the null string ""
-        expected.environment.chipdb_path = str(
+        expected.environment.xilinx_chipdb_path = str(
             sb.packages_dir / "openxc7/chipdb"
         )
 
