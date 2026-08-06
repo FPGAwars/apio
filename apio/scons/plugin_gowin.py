@@ -66,7 +66,6 @@ class PluginGowin(PluginBase):
             constrains_file_suffix=".cst",
             pnr_file_suffix=".pnr.json",
             bitstream_file_suffix=".fs",
-            clk_name_index=0,
         )
 
     # @overrides

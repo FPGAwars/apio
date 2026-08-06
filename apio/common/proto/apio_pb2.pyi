@@ -114,7 +114,7 @@ class Verbosity(_message.Message):
     def __init__(self, all: bool = ..., synth: bool = ..., pnr: bool = ...) -> None: ...
 
 class Environment(_message.Message):
-    __slots__ = ("platform_id", "is_windows", "terminal_mode", "theme_name", "debug_level", "yosys_path", "trellis_path", "scons_shell_id", "prjxray_db_path", "chipdb_path", "apio_home_path", "env_build_path")
+    __slots__ = ("platform_id", "is_windows", "terminal_mode", "theme_name", "debug_level", "yosys_path", "trellis_path", "scons_shell_id", "xilinx_prjxray_db_path", "xilinx_chipdb_path")
     PLATFORM_ID_FIELD_NUMBER: _ClassVar[int]
     IS_WINDOWS_FIELD_NUMBER: _ClassVar[int]
     TERMINAL_MODE_FIELD_NUMBER: _ClassVar[int]
@@ -123,10 +123,8 @@ class Environment(_message.Message):
     YOSYS_PATH_FIELD_NUMBER: _ClassVar[int]
     TRELLIS_PATH_FIELD_NUMBER: _ClassVar[int]
     SCONS_SHELL_ID_FIELD_NUMBER: _ClassVar[int]
-    PRJXRAY_DB_PATH_FIELD_NUMBER: _ClassVar[int]
-    CHIPDB_PATH_FIELD_NUMBER: _ClassVar[int]
-    APIO_HOME_PATH_FIELD_NUMBER: _ClassVar[int]
-    ENV_BUILD_PATH_FIELD_NUMBER: _ClassVar[int]
+    XILINX_PRJXRAY_DB_PATH_FIELD_NUMBER: _ClassVar[int]
+    XILINX_CHIPDB_PATH_FIELD_NUMBER: _ClassVar[int]
     platform_id: str
     is_windows: bool
     terminal_mode: TerminalMode
@@ -135,11 +133,9 @@ class Environment(_message.Message):
     yosys_path: str
     trellis_path: str
     scons_shell_id: str
-    prjxray_db_path: str
-    chipdb_path: str
-    apio_home_path: str
-    env_build_path: str
-    def __init__(self, platform_id: _Optional[str] = ..., is_windows: bool = ..., terminal_mode: _Optional[_Union[TerminalMode, str]] = ..., theme_name: _Optional[str] = ..., debug_level: _Optional[int] = ..., yosys_path: _Optional[str] = ..., trellis_path: _Optional[str] = ..., scons_shell_id: _Optional[str] = ..., prjxray_db_path: _Optional[str] = ..., chipdb_path: _Optional[str] = ..., apio_home_path: _Optional[str] = ..., env_build_path: _Optional[str] = ...) -> None: ...
+    xilinx_prjxray_db_path: str
+    xilinx_chipdb_path: str
+    def __init__(self, platform_id: _Optional[str] = ..., is_windows: bool = ..., terminal_mode: _Optional[_Union[TerminalMode, str]] = ..., theme_name: _Optional[str] = ..., debug_level: _Optional[int] = ..., yosys_path: _Optional[str] = ..., trellis_path: _Optional[str] = ..., scons_shell_id: _Optional[str] = ..., xilinx_prjxray_db_path: _Optional[str] = ..., xilinx_chipdb_path: _Optional[str] = ...) -> None: ...
 
 class ApioEnvParams(_message.Message):
     __slots__ = ("env_name", "board_id", "top_module", "defines", "yosys_extra_options", "nextpnr_extra_options", "gtkwave_extra_options", "verilator_extra_options", "constraint_file")
@@ -174,6 +170,12 @@ class LintParams(_message.Message):
     novlt: bool
     file_names: _containers.RepeatedScalarFieldContainer[str]
     def __init__(self, top_module: _Optional[str] = ..., nosynth: bool = ..., novlt: bool = ..., file_names: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class ReportParams(_message.Message):
+    __slots__ = ("report_all",)
+    REPORT_ALL_FIELD_NUMBER: _ClassVar[int]
+    report_all: bool
+    def __init__(self, report_all: bool = ...) -> None: ...
 
 class GraphParams(_message.Message):
     __slots__ = ("output_type", "top_module", "open_viewer")
@@ -212,18 +214,20 @@ class UploadParams(_message.Message):
     def __init__(self, programmer_cmd: _Optional[str] = ...) -> None: ...
 
 class TargetParams(_message.Message):
-    __slots__ = ("lint", "graph", "sim", "test", "upload")
+    __slots__ = ("report", "lint", "graph", "sim", "test", "upload")
+    REPORT_FIELD_NUMBER: _ClassVar[int]
     LINT_FIELD_NUMBER: _ClassVar[int]
     GRAPH_FIELD_NUMBER: _ClassVar[int]
     SIM_FIELD_NUMBER: _ClassVar[int]
     TEST_FIELD_NUMBER: _ClassVar[int]
     UPLOAD_FIELD_NUMBER: _ClassVar[int]
+    report: ReportParams
     lint: LintParams
     graph: GraphParams
     sim: SimParams
     test: ApioTestParams
     upload: UploadParams
-    def __init__(self, lint: _Optional[_Union[LintParams, _Mapping]] = ..., graph: _Optional[_Union[GraphParams, _Mapping]] = ..., sim: _Optional[_Union[SimParams, _Mapping]] = ..., test: _Optional[_Union[ApioTestParams, _Mapping]] = ..., upload: _Optional[_Union[UploadParams, _Mapping]] = ...) -> None: ...
+    def __init__(self, report: _Optional[_Union[ReportParams, _Mapping]] = ..., lint: _Optional[_Union[LintParams, _Mapping]] = ..., graph: _Optional[_Union[GraphParams, _Mapping]] = ..., sim: _Optional[_Union[SimParams, _Mapping]] = ..., test: _Optional[_Union[ApioTestParams, _Mapping]] = ..., upload: _Optional[_Union[UploadParams, _Mapping]] = ...) -> None: ...
 
 class SconsParams(_message.Message):
     __slots__ = ("timestamp", "arch", "fpga_info", "verbosity", "environment", "apio_env_params", "nextpnr_gui", "target")

@@ -47,8 +47,6 @@ class ArchPluginInfo:
     pnr_file_suffix: str
     # -- The suffix of the bitstream file.
     bitstream_file_suffix: str
-    # -- Index of the significant term when parsing clock names.
-    clk_name_index: int
 
 
 class PluginBase:

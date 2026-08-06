@@ -55,7 +55,6 @@ class PluginXilinx(PluginBase):
             constrains_file_suffix=".xdc",
             pnr_file_suffix=".frames",
             bitstream_file_suffix=".bit",
-            clk_name_index=0,
         )
 
     # @overrides
@@ -106,7 +105,7 @@ class PluginXilinx(PluginBase):
 
         package = xilinx_params.package
         database = f"{package}.bin"
-        chipdb = Path(apio_env.params.environment.chipdb_path)
+        chipdb = Path(apio_env.params.environment.xilinx_chipdb_path)
 
         # -- Python file that is passed to nextpnr-xilinx for generating
         # -- the report file
@@ -153,7 +152,7 @@ class PluginXilinx(PluginBase):
         xilinx_params = params.fpga_info.xilinx_params
 
         part1 = f"{xilinx_params.package}-{xilinx_params.speed}"
-        prjxray_db = Path(apio_env.params.environment.prjxray_db_path)
+        prjxray_db = Path(apio_env.params.environment.xilinx_prjxray_db_path)
         prjxray_db = prjxray_db / xilinx_params.family
 
         return Builder(
@@ -176,7 +175,7 @@ class PluginXilinx(PluginBase):
         xilinx_params = params.fpga_info.xilinx_params
         part1 = f"{xilinx_params.package}-{xilinx_params.speed}"
 
-        prjxray_db = Path(apio_env.params.environment.prjxray_db_path)
+        prjxray_db = Path(apio_env.params.environment.xilinx_prjxray_db_path)
         prjxray_db = prjxray_db / xilinx_params.family
         part_file = prjxray_db / part1 / "part.yaml"
 

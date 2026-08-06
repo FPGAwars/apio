@@ -59,7 +59,6 @@ class PluginEcp5(PluginBase):
             constrains_file_suffix=".lpf",
             pnr_file_suffix=".config",
             bitstream_file_suffix=".bit",
-            clk_name_index=2,
         )
 
     # @overrides

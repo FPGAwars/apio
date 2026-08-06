@@ -248,7 +248,7 @@ class SconsHandler:
         PNR generated .pnr file."""
         apio_env = self.apio_env
         params = apio_env.params
-        plugin_info = self.arch_plugin.plugin_info()
+        report_params = params.target.report
 
         # -- Sanity check
         assert apio_env.targeting_one_of("report")
@@ -261,7 +261,7 @@ class SconsHandler:
             "report",
             source=apio_env.target + ".pnr",
             action=report_action(
-                plugin_info.clk_name_index, params.verbosity.pnr
+                report_params.report_all, params.verbosity.pnr
             ),
             always_build=True,
         )

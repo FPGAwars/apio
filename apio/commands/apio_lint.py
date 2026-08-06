@@ -54,7 +54,6 @@ Examples:[code]
   apio lint
   apio lint -t my_module
   apio lint file1.v file2.v
-  apio lint --all
   apio lint --nosynth
   apio lint --novlt[/code]
 

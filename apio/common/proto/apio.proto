@@ -115,17 +115,11 @@ message Environment {
   // is expected to use. See ApioContext for values.
   required string scons_shell_id = 8;
 
-  //-- Path to the prjxray_db, located
-  //-- in the openxc7 apio package (only for Xilinx FPGAs)
-  required string prjxray_db_path = 9;
+  //-- Path to the xilinx prjxray_db, located in the openxc7 apio package.
+  required string xilinx_prjxray_db_path = 9;
 
-  //-- Path to the chipdb folder, located in openxc7/chipdb
-  required string chipdb_path = 10;
-
-  //-- Path to the apio home dir
-  //-- It is used by xilinx to locate the file report_xilinx.py
-  required string apio_home_path = 11;
-  required string env_build_path = 12;
+  //-- Path to the xilinx chipdb folder, located in openxc7 apio package.
+  required string xilinx_chipdb_path = 10;
 }
 
 // Information about the expanded active env from apio.ini.
@@ -156,6 +150,12 @@ message LintParams {
   optional bool nosynth = 2 [default = false];
   optional bool novlt = 3 [default = false];
   repeated string file_names = 4;  // Is specified, lint only these files.
+}
+
+// Report target specific params.
+message ReportParams {
+  // If true, report also unused resources.
+  required bool report_all = 1;
 }
 
 // Graph target specific params.
@@ -209,11 +209,12 @@ message UploadParams {
 // Some scons targets requires additional params.
 message TargetParams {
   oneof target {
-    LintParams lint = 10;
-    GraphParams graph = 11;
-    SimParams sim = 12;
-    ApioTestParams test = 13;
-    UploadParams upload = 14;
+    ReportParams report = 1;
+    LintParams lint = 2;
+    GraphParams graph = 3;
+    SimParams sim = 4;
+    ApioTestParams test = 5;
+    UploadParams upload = 6;
   }
 }
 
