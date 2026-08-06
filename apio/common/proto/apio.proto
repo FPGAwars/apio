@@ -158,6 +158,12 @@ message LintParams {
   repeated string file_names = 4;  // Is specified, lint only these files.
 }
 
+// Report target specific params.
+message ReportParams {
+  // If true, report also unused resources.
+  required bool report_all = 1;
+}
+
 // Graph target specific params.
 
 enum GraphOutputType {
@@ -209,11 +215,12 @@ message UploadParams {
 // Some scons targets requires additional params.
 message TargetParams {
   oneof target {
-    LintParams lint = 10;
-    GraphParams graph = 11;
-    SimParams sim = 12;
-    ApioTestParams test = 13;
-    UploadParams upload = 14;
+    ReportParams report = 1;
+    LintParams lint = 2;
+    GraphParams graph = 3;
+    SimParams sim = 4;
+    ApioTestParams test = 5;
+    UploadParams upload = 6;
   }
 }
 

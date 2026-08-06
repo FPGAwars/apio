@@ -175,6 +175,12 @@ class LintParams(_message.Message):
     file_names: _containers.RepeatedScalarFieldContainer[str]
     def __init__(self, top_module: _Optional[str] = ..., nosynth: bool = ..., novlt: bool = ..., file_names: _Optional[_Iterable[str]] = ...) -> None: ...
 
+class ReportParams(_message.Message):
+    __slots__ = ("report_all",)
+    REPORT_ALL_FIELD_NUMBER: _ClassVar[int]
+    report_all: bool
+    def __init__(self, report_all: bool = ...) -> None: ...
+
 class GraphParams(_message.Message):
     __slots__ = ("output_type", "top_module", "open_viewer")
     OUTPUT_TYPE_FIELD_NUMBER: _ClassVar[int]
@@ -212,18 +218,20 @@ class UploadParams(_message.Message):
     def __init__(self, programmer_cmd: _Optional[str] = ...) -> None: ...
 
 class TargetParams(_message.Message):
-    __slots__ = ("lint", "graph", "sim", "test", "upload")
+    __slots__ = ("report", "lint", "graph", "sim", "test", "upload")
+    REPORT_FIELD_NUMBER: _ClassVar[int]
     LINT_FIELD_NUMBER: _ClassVar[int]
     GRAPH_FIELD_NUMBER: _ClassVar[int]
     SIM_FIELD_NUMBER: _ClassVar[int]
     TEST_FIELD_NUMBER: _ClassVar[int]
     UPLOAD_FIELD_NUMBER: _ClassVar[int]
+    report: ReportParams
     lint: LintParams
     graph: GraphParams
     sim: SimParams
     test: ApioTestParams
     upload: UploadParams
-    def __init__(self, lint: _Optional[_Union[LintParams, _Mapping]] = ..., graph: _Optional[_Union[GraphParams, _Mapping]] = ..., sim: _Optional[_Union[SimParams, _Mapping]] = ..., test: _Optional[_Union[ApioTestParams, _Mapping]] = ..., upload: _Optional[_Union[UploadParams, _Mapping]] = ...) -> None: ...
+    def __init__(self, report: _Optional[_Union[ReportParams, _Mapping]] = ..., lint: _Optional[_Union[LintParams, _Mapping]] = ..., graph: _Optional[_Union[GraphParams, _Mapping]] = ..., sim: _Optional[_Union[SimParams, _Mapping]] = ..., test: _Optional[_Union[ApioTestParams, _Mapping]] = ..., upload: _Optional[_Union[UploadParams, _Mapping]] = ...) -> None: ...
 
 class SconsParams(_message.Message):
     __slots__ = ("timestamp", "arch", "fpga_info", "verbosity", "environment", "apio_env_params", "nextpnr_gui", "target")

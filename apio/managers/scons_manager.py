@@ -36,6 +36,7 @@ from apio.common.proto.apio_pb2 import (
     XilinxFpgaParams,
     ApioArch,
     GraphParams,
+    ReportParams,
     LintParams,
     SimParams,
     ApioTestParams,
@@ -162,12 +163,17 @@ class SConsManager:
         return self._run_scons_subprocess("build", scons_params=scons_params)
 
     @on_exception(exit_code=1)
-    def report(self, verbosity: Verbosity) -> Optional[int]:
+    def report(
+        self, report_params: ReportParams, verbosity: Verbosity
+    ) -> Optional[int]:
         """Runs a scons subprocess with the 'report' target. Returns process
         exit code, 0 if ok."""
 
         # -- Construct the scons params object.
-        scons_params = self.construct_scons_params(verbosity=verbosity)
+        scons_params = self.construct_scons_params(
+            target_params=TargetParams(report=report_params),
+            verbosity=verbosity,
+        )
 
         # -- Run the scons process.
         return self._run_scons_subprocess("report", scons_params=scons_params)

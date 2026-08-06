@@ -342,7 +342,7 @@ def test_project_ecp5_local_dir(apio_runner: ApioRunner):
         example="colorlight-5a-75b-v8/ledon",
         testbench_file="ledon_tb.v",
         bitstream="hardware.bit",
-        report_item="ALU54B",
+        report_item="TRELLIS_IO",
     )
 
 
@@ -354,7 +354,7 @@ def test_project_ecp5_remote_dir(apio_runner: ApioRunner):
         example="colorlight-5a-75b-v8/ledon",
         testbench_file="ledon_tb.v",
         bitstream="hardware.bit",
-        report_item="ALU54B",
+        report_item="TRELLIS_IO",
     )
 
 
@@ -367,7 +367,7 @@ def test_project_ecp5_system_verilog(apio_runner: ApioRunner):
         example="colorlight-5a-75b-v8/ledon-sv",
         testbench_file="ledon_tb.sv",
         bitstream="hardware.bit",
-        report_item="ALU54B",
+        report_item="TRELLIS_IO",
     )
 
 

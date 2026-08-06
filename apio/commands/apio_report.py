@@ -19,9 +19,8 @@ from apio.apio_context import (
     ProjectPolicy,
     RemoteConfigPolicy,
 )
-from apio.common.proto.apio_pb2 import Verbosity
+from apio.common.proto.apio_pb2 import Verbosity, ReportParams
 from apio.utils import cmd_util
-
 
 # ---------- apio report
 
@@ -31,8 +30,13 @@ The command 'apio report' provides information on the utilization and timing \
 of the design. It is useful for analyzing utilization bottlenecks and \
 verifying that the design can operate at the desired clock speed.
 
+By default, the command reports only the used resources. To also include \
+unused resources, use the '--all' option. The '--verbose' option prints \
+additional information and implies '--all'.
+
 Examples:[code]
   apio report            # Print report.
+  apio report --all      # Report also unused resources.
   apio report --verbose  # Print extra information.[/code]
 """
 
@@ -44,6 +48,7 @@ Examples:[code]
     help=APIO_REPORT_HELP,
 )
 @click.pass_context
+@options.all_option_gen(short_help="Show also unused resources.")
 @options.env_option_gen()
 @options.project_dir_option
 @options.verbose_option
@@ -51,6 +56,7 @@ def cli(
     _: click.Context,
     *,
     # Options
+    all_: bool,
     env: Optional[str],
     project_dir: Optional[Path],
     verbose: bool,
@@ -69,11 +75,11 @@ def cli(
     # -- Create the scons manager.
     scons = SConsManager(apio_ctx)
 
-    # -- Create the verbosity params.
-    verbosity = Verbosity(pnr=verbose)
-
-    # Run scons
-    exit_code = scons.report(verbosity)
+    # Run scons with the report target.
+    exit_code = scons.report(
+        report_params=ReportParams(report_all=(all_ or verbose)),
+        verbosity=Verbosity(pnr=verbose),
+    )
 
     # -- Done!
     sys.exit(exit_code)

@@ -722,9 +722,13 @@ def source_files_issue_scanner_action() -> FunctionAction:
 
 def _print_pnr_report(
     build_report: BuildReport,
+    report_all: bool,
     verbose: bool,
 ) -> None:
     """Emit a user friendly report from build report."""
+
+    # -- Determine table title.
+    title = "All FPGA resources" if report_all else "Used FPGA Resource"
 
     # -- Utilization table
     table = Table(
@@ -732,7 +736,7 @@ def _print_pnr_report(
         show_lines=False,
         box=box.SQUARE,
         border_style=BORDER,
-        title="FPGA Resource Utilization",
+        title=title,
         title_justify="left",
         padding=(0, 2),
     )
@@ -744,10 +748,14 @@ def _print_pnr_report(
     table.add_column("USED%", no_wrap=True, justify="right")
 
     # -- Add rows
+    skipped_resources = 0
     for res in build_report.resources:
-        # used = vals["used"]
+        # -- By default we skip unused resources
+        if not res.used and not report_all:
+            skipped_resources += 1
+            continue
+
         used_str = f"{res.used}  " if res.used else ""
-        # available = vals["available"]
         available_str = f"{res.available}  "
         percents = int(100 * res.used / res.available)
         percents_str = f"{percents}%  " if res.used else ""
@@ -787,15 +795,20 @@ def _print_pnr_report(
         cout()
         ctable(table)
 
-    # -- Print summary.
+    # -- Print hints.
     cout("")
+    if skipped_resources:
+        cout(
+            "Use --all to report also unused resources.",
+            style=INFO,
+        )
     if len(build_report.clocks) == 0:
         cout("No clocks were found in the design.", style=INFO)
     if not verbose:
-        cout("Run 'apio report --verbose' for more details.", style=INFO)
+        cout("Use '--verbose' for additional details.", style=INFO)
 
 
-def report_action(verbose: bool) -> FunctionAction:
+def report_action(report_all: bool, verbose: bool) -> FunctionAction:
     """Returns a SCons action to format and print the PNR reort from the
     PNR json report file. Used by the 'apio report' command.
     'script_id' identifies the calling SConstruct script and 'verbose'
@@ -812,7 +825,7 @@ def report_action(verbose: bool) -> FunctionAction:
         pnr_json_file: File = source[0]
         pnr_json_path: Path = Path(pnr_json_file.get_path())
         build_report: BuildReport = read_build_report(pnr_json_path)
-        _print_pnr_report(build_report, verbose)
+        _print_pnr_report(build_report, report_all, verbose)
 
     return Action(
         print_pnr_report,  # pyright: ignore[reportReturnType]
