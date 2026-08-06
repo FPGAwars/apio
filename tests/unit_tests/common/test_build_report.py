@@ -20,6 +20,10 @@ ECP5_TEST_SUMMARY = """
     "bla-bla": "bla-bla"
   },
   "utilization": {
+      "TRELLIS_ECLKBUF": {
+      "available": 8,
+      "used": 0
+    },
     "SIOLOGIC": {
       "available": 69,
       "used": 0
@@ -27,10 +31,6 @@ ECP5_TEST_SUMMARY = """
     "TRELLIS_COMB": {
       "available": 24288,
       "used": 12144
-    },
-    "TRELLIS_ECLKBUF": {
-      "available": 8,
-      "used": 0
     }
   },
   "fmax": {
@@ -52,13 +52,13 @@ NON_ECP5_TEST_SUMMARY = """
     "bla-bla": "bla-bla"
   },
   "utilization": {
-    "ICESTORM_LC": {
-      "available": 7680,
-      "used": 27
-    },
     "ICESTORM_PLL": {
       "available": 2,
       "used": 0
+    },
+    "ICESTORM_LC": {
+      "available": 7680,
+      "used": 27
     }
   },
   "fmax": {

@@ -47,7 +47,8 @@ class BuildReport:
 def read_build_report(pnr_json_file_path: Path) -> BuildReport:
     """Read the given hardware.pnr file, parse it, and return
     a summary in the form of a BuildReport object. Fatal error on any
-    error."""
+    error. The resources and the clocks in the result are sorted
+    alphabetically by name, case insensitive"""
 
     # pylint: disable=too-many-locals
     # pylint: disable=broad-exception-caught
@@ -91,6 +92,9 @@ def read_build_report(pnr_json_file_path: Path) -> BuildReport:
             ResourceReport(resource_name, available, used, percentage)
         )
 
+    # -- Sort resources alphabetically, case insensitive.
+    resources.sort(key=lambda r: r.name.lower())
+
     # -- Collect clocks
     clocks: List[ClockReport] = []
     for clk_net, vals in json_dict["fmax"].items():
@@ -113,6 +117,9 @@ def read_build_report(pnr_json_file_path: Path) -> BuildReport:
 
         # -- Append to clock list.
         clocks.append(ClockReport(name, fmax_mhz))
+
+    # -- Sort clocks alphabetically, case insensitive.
+    clocks.sort(key=lambda r: r.name.lower())
 
     result = BuildReport(resources, clocks)
     return result
