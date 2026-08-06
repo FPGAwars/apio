@@ -260,6 +260,54 @@ def test_apio_api_get_project(apio_runner: ApioRunner):
         }
 
 
+def test_apio_api_get_build_report(apio_runner: ApioRunner):
+    """Test "apio api get-project" """
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Execute "apio examples fetch alhambra-ii/blinky"
+        result = sb.invoke_apio_cmd(
+            apio, ["examples", "fetch", "alhambra-ii/blinky"]
+        )
+        sb.assert_result_ok(result)
+
+        # -- Execute "apio build"
+        result = sb.invoke_apio_cmd(apio, ["build"])
+        sb.assert_result_ok(result)
+
+        # -- Execute "apio api get-build-report -t xyz"  (stdout)
+        result = sb.invoke_apio_cmd(
+            apio, ["api", "get-build-report", "-t", "xyz"]
+        )
+        sb.assert_result_ok(result)
+
+        # -- Sanity check the output
+        assert '"env": "default"' in result.output
+        assert '"ICESTORM_LC":' in result.output
+        assert '"CLK":' in result.output
+        assert '"fmax_mhz":' in result.output
+
+        # -- Execute "apio api get-build-report -t xyz  -o <dir>"  (file)
+        path = sb.proj_dir / "apio.json"
+        result = sb.invoke_apio_cmd(
+            apio, ["api", "get-build-report", "-t", "xyz", "-o", str(path)]
+        )
+        sb.assert_result_ok(result)
+
+        # -- Read and sanity check the file.
+        text = sb.read_file(path)
+        data = json.loads(text)
+        print(data)
+
+        assert data["timestamp"] == "xyz"
+        assert data["build-report"]["env"] == "default"
+        assert (
+            data["build-report"]["resources"]["ICESTORM_LC"]["available"]
+            == 7680
+        )
+        assert "fmax_mhz" in data["build-report"]["clocks"]["CLK"]
+
+
 def test_apio_api_get_examples(apio_runner: ApioRunner):
     """Test "apio api get-examples" """
 
