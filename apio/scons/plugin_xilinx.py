@@ -103,12 +103,16 @@ class PluginXilinx(PluginBase):
             target.append(apio_env.target + ".pnr")
             return target, source
 
-        package = xilinx_params.package
-        database = f"{package}.bin"
-        chipdb = Path(apio_env.params.environment.xilinx_chipdb_path)
+        # -- Get params.
+        chipdb_dir = Path(apio_env.params.environment.xilinx_chipdb_path)
+        package_name = xilinx_params.package
 
-        # -- Python file that is passed to nextpnr-xilinx for generating
-        # -- the report file
+        # -- The chipdb is one to one with the package name.
+        chipdb_file_path = chipdb_dir / f"{package_name}.bin"
+
+        # -- Find the path of the report_xilinx utility that is used to
+        # -- generate the report file hardware.pnr. It's embedded in the Apio
+        # -- source tree.
 
         # -- Get the full path of this file (plugin_xilinx.py)
         current_python_file = Path(__file__)
@@ -128,7 +132,7 @@ class PluginXilinx(PluginBase):
                 "{3} "
                 "{4}"
             ).format(
-                chipdb / database,
+                chipdb_file_path,
                 self.constrain_file(),
                 report_py,
                 # -- Honor --verbose-pnr like the other archs (ice40/ecp5/

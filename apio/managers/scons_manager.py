@@ -24,6 +24,7 @@ from apio.managers.scons_filter import SconsFilter
 from apio.common.proto.apio_pb2 import (
     FORCE_PIPE,
     FORCE_TERMINAL,
+    XILINX,
     Verbosity,
     Environment,
     SconsParams,
@@ -92,6 +93,24 @@ class SConsManager:
 
         # -- Change to the project's folder.
         os.chdir(apio_ctx.project_dir)
+
+    def _fetch_support_files_on_demand(
+        self, scons_target, scons_params: SconsParams
+    ):
+        """Called before invoking scons to optionally fetch missing support
+        files on the file."""
+
+        # -- Only these targets may require support files. For all the rest
+        # -- we don't need to do anything.
+        if scons_target not in ["build", "report", "upload"]:
+            return
+
+        # -- Only xilinx architecture may requires support files. For all the
+        # -- rest we don't need to do anything.
+        if scons_params.arch != XILINX:
+            return
+
+        # -- TODO: Implement the xilinx on-demand chipdb file download.
 
     @on_exception(exit_code=1)
     def graph(
@@ -364,7 +383,7 @@ class SConsManager:
         return result
 
     def _run_scons_subprocess(
-        self, scons_command: str, *, scons_params: SconsParams
+        self, scons_target: str, *, scons_params: SconsParams
     ) -> Optional[int]:
         """Invoke an scons subprocess."""
 
@@ -372,6 +391,9 @@ class SConsManager:
 
         # -- Create a shortcut.
         apio_ctx = self.apio_ctx
+
+        # -- Fetch missing files on demand.
+        self._fetch_support_files_on_demand(scons_target, scons_params)
 
         # -- Pass to the scons process the name of the sconstruct file it
         # -- should use.
@@ -395,7 +417,7 @@ class SConsManager:
 
         if util.is_debug(1):
             cout("\nSCONS CALL:", style=EMPH3)
-            cout(f"* command:       {scons_command}")
+            cout(f"* target:        {scons_target}")
             cout(f"* variables:     {variables}")
             cout(f"* scons params: \n{scons_params}")
             cout()
@@ -434,7 +456,7 @@ class SConsManager:
         # -- deployment in case the scons binary is not on the PATH.
         cmd = (
             [sys.executable, "-m", "apio", "--scons"]
-            + ["-Q", scons_command]
+            + ["-Q", scons_target]
             + debug_options
             + variables
         )
