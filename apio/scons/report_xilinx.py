@@ -8,25 +8,21 @@ import os
 from pathlib import Path
 
 
-# -- DEBUG: show all the env variables
-# variables = os.environ
-# print(f"{'VARIABLE':<30} | {'VALUE'}")
-# print("-" * 80)
+# Get the output file path from env. Apio set it up before invoking
+# nextpnr-xilinx which invokes this script.
+value = os.environ.get("APIO_XILINX_REPORT_FILE")
+if not value:
+    raise RuntimeError(
+        "Environment variable APIO_XILINX_REPORT_FILE is not set. "
+        "It is a workaround that Apio uses to pass to the nextpnr-xilinx "
+        "--post-route script the path of the report output file "
+        "'_build/(env)/hardware.pnr'."
+    )
 
-# # Short it alfabetically
-# for key in sorted(variables.keys()):
-#     value = variables[key]
-#     print(f"{key:<30} | {value}")
+report_file = Path(value)
 
-# import sys
-# sys.exit()
+print(f"[report_xilinx.py: writing report to {report_file}]")
 
-# -- Read the ENV_BUILD_PATH variable, with the build environment folder
-env_build_path = Path(os.environ["ENV_BUILD_PATH"])
-# print(f"* env_build_path: {env_build_path}")
-
-# -- Report file
-report_file = env_build_path / "hardware.pnr"
 
 # -- Ignore pylint errores
 # pylint: disable=self-assigning-variable
