@@ -51,7 +51,9 @@
         "PRJXRAY_DB_DIR": "%p/share/nextpnr/external/prjxray-db",
         "CHIPDB_DIR": "%p/chipdb",
 
-        //-- Default value. It is overriden before calling scons
+        //-- Place holder value. The value is overridden in apio_context.py 
+        // -- with the actual project env name before invoking scons, 
+        // -- though, at the moment it doesn't really work.
         "ENV_BUILD_PATH": "_build/default"
       }
     }
