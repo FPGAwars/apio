@@ -113,6 +113,38 @@ was generated with this command.
 
 ---
 
+## Xilinx 7-series PLL generator
+
+The Xilinx 7-series PLL Generator is a command-line tool that creates a
+Xilinx 7-series PLL module (`PLLE2_BASE`) from specified flags. It is used
+to run the design at a different, typically higher, frequency than that of
+the external clock. The tool is included in the `openxc7` package.
+
+Get help text.
+
+```
+apio raw -- xc7pll -h
+```
+
+Generate a PLL module that converts a 100 MHz input to a 200 MHz output clock.
+
+```
+apio raw -- xc7pll -i 100 -o 200 -f pll.v
+apio format pll.v
+```
+
+> The `-o` option can be repeated to generate up to six output clocks from
+> a single PLL, for example `xc7pll -i 100 -o 100 -o 200 -f pll.v`.
+> When a requested frequency cannot be synthesized exactly, the tool picks
+> the closest achievable value and reports the deviation; run it with
+> `--report` to see the frequency report instead of the module. Output
+> frequencies must be within the PLL range of 6.25 to 1600 MHz.
+
+> The generated module specifies all PLL signals, including the unused
+> ones, and passes `apio lint` as is.
+
+---
+
 ## Zadig (Windows only)
 
 Zadig is a third party Windows tool that allow to manage and replace USB
