@@ -8,6 +8,7 @@
 """Implementation of 'apio raw' command"""
 
 import sys
+import shlex
 import subprocess
 from typing import Tuple, List
 import click
@@ -26,42 +27,43 @@ from apio.utils.cmd_util import ApioCommand
 # ----------- apio raw
 
 
-def run_command_with_possible_elevation(arg_list: List[str]) -> int:
+def _run_raw_command(
+    arg_list: List[str], is_windows: bool, verbose: bool
+) -> int:
     """
     Runs a command and returns its exit code.
 
-    On all platforms the command is executed with its arguments passed
-    verbatim as an argv list (no intermediate shell that would
-    re-tokenize them) and with the caller's current directory.
+    This functionality has a few special requeiements so we placed it in a
+    method of its own despite its simplicity. If you change it for any reason,
+    make sure that your new code doesn't break anything.
 
-    On Windows, if the executable's manifest requires elevation (e.g.
-    zadig), the direct execution fails with ERROR_ELEVATION_REQUIRED
-    and we retry through cmd.exe which triggers the UAC prompt.
+    Requirements:
+
+    1. Users should be able to copy commands such as yosys and nextpnr
+       that are printed by apio scons and paste them with no change after
+       `apio raw --` for proper execution. This applies to the native shell
+       of each platform (e.g. on windows cmd or powershell rather than gitbash)
+
+    2. On window, commands such as 'apio raw -- zadig' will handle privilege
+       elevation properly and will ask the user for approval.
+
+    3. On windows, commands such as `apio raw -- xyz` should match also the
+       files xyz.exe, xyz.cmd and xyz.bat.
     """
     if not arg_list:
         return 0  # nothing to run
 
-    try:
-        return subprocess.call(arg_list, shell=False)
+    # -- Join the args with proper quotes for the native shell.
+    if is_windows:
+        cmd_str = subprocess.list2cmdline(arg_list)
+    else:
+        cmd_str = shlex.join(arg_list)
 
-    # Specific common errors — give user-friendly feedback
-    except FileNotFoundError:
-        cout(f"Error: Command not found → {arg_list[0]}", style=ERROR)
-        return 127
+    # -- Run the command and return the exit code.
+    if verbose:
+        cout(f"\n---- Executing: [{cmd_str}]")
 
-    except OSError as e:
-        # -- Windows only: ERROR_ELEVATION_REQUIRED. Unlike CreateProcess,
-        # -- cmd.exe falls back to ShellExecute which shows the UAC
-        # -- elevation prompt. Passing the args as a list (not a joined
-        # -- string) lets subprocess apply proper Windows quoting.
-        if getattr(e, "winerror", None) == 740:
-            return subprocess.call(["cmd.exe", "/c"] + arg_list, shell=False)
-
-        if isinstance(e, PermissionError):
-            cout(f"Error: Permission denied → {arg_list[0]}", style=ERROR)
-            return 126
-
-        raise
+    return subprocess.call(cmd_str, shell=True)
 
 
 # -- Text in the rich-text format of the python rich library.
@@ -167,15 +169,10 @@ def cli(
         sys.exit(0)
 
     # -- Convert the tuple of strings to a list of strings.
-    _cmd: List[str] = list(cmd)
-
-    # -- Echo the commands. The apio raw command is platform dependent
-    # -- so this may help us and the user diagnosing issues.
-    if verbose:
-        cout(f"\n---- Executing {_cmd}:")
+    arg_list: List[str] = list(cmd)
 
     # -- Invoke the command.
-    exit_code = run_command_with_possible_elevation(_cmd)
+    exit_code = _run_raw_command(arg_list, apio_ctx.is_windows, verbose)
 
     if verbose:
         cout("----\n")
