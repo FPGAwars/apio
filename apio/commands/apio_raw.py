@@ -7,9 +7,13 @@
 # -- License GPLv2
 """Implementation of 'apio raw' command"""
 
-import sys
+import os
+import re
+import shutil
 import subprocess
-from typing import Tuple, List
+import sys
+from pathlib import Path
+from typing import List, Optional, Tuple
 import click
 from apio.common.apio_console import cout, cerror
 from apio.common.apio_styles import SUCCESS, ERROR, INFO
@@ -26,6 +30,77 @@ from apio.utils.cmd_util import ApioCommand
 # ----------- apio raw
 
 
+PYTHON_EXECUTABLE_RE = re.compile(
+    r"python(?:\d+(?:\.\d+)*)?(?:\.exe)?", re.IGNORECASE
+)
+
+
+def _find_path_file(command: str) -> Optional[Path]:
+    """Find an exact file name in PATH without applying PATHEXT."""
+    if os.path.dirname(command):
+        candidates = [Path(command)]
+    else:
+        candidates = [
+            Path(item.strip('"') or os.curdir) / command
+            for item in os.environ.get("PATH", "").split(os.pathsep)
+        ]
+
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate.resolve()
+
+    return None
+
+
+def _has_python_shebang(script_path: Path) -> bool:
+    """Return whether a script has a Python shebang."""
+    try:
+        with script_path.open(
+            encoding="utf-8", errors="replace"
+        ) as script_file:
+            first_line = script_file.readline(256)
+    except OSError:
+        return False
+
+    if not first_line.startswith("#!"):
+        return False
+
+    tokens = first_line[2:].strip().split()
+    if not tokens:
+        return False
+
+    executable = os.path.basename(tokens[0])
+    if executable.lower() == "env":
+        if len(tokens) < 2:
+            return False
+        executable = tokens[1]
+
+    executable = os.path.basename(executable)
+    return PYTHON_EXECUTABLE_RE.fullmatch(executable) is not None
+
+
+def _run_windows_python_script(arg_list: List[str]) -> Optional[int]:
+    """Run a Python shebang script that Windows cannot launch directly."""
+    if sys.platform != "win32":
+        return None
+
+    script_path = _find_path_file(arg_list[0])
+    if script_path is None or not _has_python_shebang(script_path):
+        return None
+
+    if getattr(sys, "frozen", False):
+        interpreter = shutil.which("python") or shutil.which("python3")
+    else:
+        interpreter = sys.executable
+
+    if not interpreter:
+        return None
+
+    return subprocess.call(
+        [interpreter, str(script_path), *arg_list[1:]], shell=False
+    )
+
+
 def run_command_with_possible_elevation(arg_list: List[str]) -> int:
     """
     Runs a command and returns its exit code.
@@ -37,6 +112,9 @@ def run_command_with_possible_elevation(arg_list: List[str]) -> int:
     On Windows, if the executable's manifest requires elevation (e.g.
     zadig), the direct execution fails with ERROR_ELEVATION_REQUIRED
     and we retry through cmd.exe which triggers the UAC prompt.
+
+    Windows cannot execute extensionless scripts with POSIX shebangs.
+    Python scripts found on PATH are retried through a Python interpreter.
     """
     if not arg_list:
         return 0  # nothing to run
@@ -44,17 +122,22 @@ def run_command_with_possible_elevation(arg_list: List[str]) -> int:
     try:
         return subprocess.call(arg_list, shell=False)
 
-    # Specific common errors — give user-friendly feedback
-    except FileNotFoundError:
-        cout(f"Error: Command not found → {arg_list[0]}", style=ERROR)
-        return 127
-
     except OSError as e:
+        winerror = getattr(e, "winerror", None)
+        if isinstance(e, FileNotFoundError) or winerror == 193:
+            script_exit_code = _run_windows_python_script(arg_list)
+            if script_exit_code is not None:
+                return script_exit_code
+
+        if isinstance(e, FileNotFoundError):
+            cout(f"Error: Command not found → {arg_list[0]}", style=ERROR)
+            return 127
+
         # -- Windows only: ERROR_ELEVATION_REQUIRED. Unlike CreateProcess,
         # -- cmd.exe falls back to ShellExecute which shows the UAC
         # -- elevation prompt. Passing the args as a list (not a joined
         # -- string) lets subprocess apply proper Windows quoting.
-        if getattr(e, "winerror", None) == 740:
+        if winerror == 740:
             return subprocess.call(["cmd.exe", "/c"] + arg_list, shell=False)
 
         if isinstance(e, PermissionError):

@@ -2,8 +2,10 @@
 
 import os
 import sys
+import pytest
 from tests.conftest import ApioRunner
 from apio.commands.apio import apio_top_cli as apio
+from apio.commands.apio_raw import run_command_with_possible_elevation
 
 
 def test_raw(apio_runner: ApioRunner):
@@ -102,3 +104,59 @@ def test_raw_preserves_argv_and_cwd(apio_runner: ApioRunner):
 
         # -- There must be no extra args from re-splitting.
         assert "PROBE-ARG-2" not in result.output
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="Windows-specific")
+def test_raw_runs_python_shebang_from_path(tmp_path, monkeypatch):
+    """Tests an extensionless Python tool found on PATH."""
+    tool_dir = tmp_path / "tool package" / "bin"
+    tool_dir.mkdir(parents=True)
+    script_path = tool_dir / "path_probe"
+    script_path.write_text(
+        "\n".join(
+            [
+                "#!/usr/bin/env python3",
+                "import os",
+                "import sys",
+                "from pathlib import Path",
+                "Path(sys.argv[1]).write_text(",
+                "    '\\n'.join([os.getcwd(), *sys.argv[2:]]),",
+                "    encoding='utf-8',",
+                ")",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    work_dir = tmp_path / "working directory"
+    work_dir.mkdir()
+    result_path = tmp_path / "probe result.txt"
+    monkeypatch.chdir(work_dir)
+    monkeypatch.setenv("PATH", f"{tool_dir}{os.pathsep}{os.environ['PATH']}")
+
+    exit_code = run_command_with_possible_elevation(
+        ["path_probe", str(result_path), "a b", r"_build\default\file.bit"]
+    )
+
+    assert exit_code == 0
+    assert result_path.read_text(encoding="utf-8").splitlines() == [
+        str(work_dir),
+        "a b",
+        r"_build\default\file.bit",
+    ]
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="Windows-specific")
+def test_raw_does_not_interpret_other_shebangs(tmp_path, monkeypatch):
+    """Tests that the fallback is limited to Python scripts."""
+    script_path = tmp_path / "shell_probe"
+    script_path.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
+    monkeypatch.setenv("PATH", f"{tmp_path}{os.pathsep}{os.environ['PATH']}")
+    monkeypatch.setattr(
+        "apio.commands.apio_raw.cout", lambda *args, **kwargs: None
+    )
+
+    exit_code = run_command_with_possible_elevation(["shell_probe"])
+
+    assert exit_code == 127
