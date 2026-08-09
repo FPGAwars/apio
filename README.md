@@ -28,6 +28,7 @@ This README page is optimized for its appearance in the github repo rather than 
 [![verible-build](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-verible/build-pre-release.yaml?label=verible-build)](https://github.com/fpgawars/tools-verible/actions/workflows/build-pre-release.yaml)
 [![graphviz-build](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-graphviz/build-pre-release.yaml?label=graphviz-build)](https://github.com/fpgawars/tools-graphviz/actions/workflows/build-pre-release.yaml)
 [![drivers-build](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-drivers/build-pre-release.yaml?label=drivers-build)](https://github.com/fpgawars/tools-drivers/actions/workflows/build-pre-release.yaml)
+[![openxc7-build](https://img.shields.io/github/actions/workflow/status/fpgawars/tools-openxc7/build-pre-release.yaml?label=openxc7-build)](https://github.com/fpgawars/tools-openxc7/actions/workflows/build-pre-release.yaml)
 [![workflows-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-workflows/test.yaml?label=workflows-test)](https://github.com/fpgawars/apio-workflows/actions/workflows/test.yaml)
 [![apio-backup](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-workflows/backup-apio-repos.yaml?label=apio-backup)](https://github.com/fpgawars/apio-workflows/actions/workflows/backup-apio-repos.yaml)
 
