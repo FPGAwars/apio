@@ -97,6 +97,14 @@ def _test_project(
         assert "fetched successfully" in result.output
         assert getsize(sb.proj_dir / "apio.ini")
 
+        # -- 'apio packages list'.
+        # -- We perform it after the 'apio examples fetch' above to make sure
+        # -- it installed the packages if running in a clean environment.
+        args = ["packages", "list"]
+        result = sb.invoke_apio_cmd(apio, args)
+        sb.assert_result_ok(result)
+        print(result.output)
+
         # -- Remember the original list of project files.
         project_files = os.listdir(sb.proj_dir)
 
