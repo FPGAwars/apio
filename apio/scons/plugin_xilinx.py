@@ -12,9 +12,8 @@
 
 # pylint: disable=duplicate-code
 
-import os
 from pathlib import Path
-from SCons.Script import Builder, Action
+from SCons.Script import Builder
 from SCons.Builder import BuilderBase, CompositeBuilder
 from apio.common.common_util import SRC_SUFFIXES
 from apio.scons.apio_env import ApioEnv
@@ -111,71 +110,21 @@ class PluginXilinx(PluginBase):
         # -- The chipdb is one to one with the package name.
         chipdb_file_path = chipdb_dir / f"{package_name}.bin"
 
-        # -- Find the path of the report_xilinx utility that is used to
-        # -- generate the report file hardware.pnr. It's embedded in the Apio
-        # -- source tree.
-
-        # -- Get the full path of this file (plugin_xilinx.py)
-        current_python_file = Path(__file__)
-
-        # -- The parent folder is the apio root folder
-        apio_root = current_python_file.parent.parent
-
-        # -- Add the report_xilinx.py folder to the path. As of Aug 2026,
-        # -- nextpnr-xilinx doesn't support the --report flag so we workaround
-        # -- by running a report generation script on a --post-route trigger.
-        # --
-        # -- TODO: Clean it up once nextpnr-xilinx gets the --report flag.
-        report_py = apio_root / "scons/report_xilinx.py"
-
-        report_file = apio_env.target + ".pnr"
-
-        # -- Print action (platform independent)
-        def print_report_var(target, source, env):
-            _ = (target, source, env)  # Unused
-            print(f"[Setting APIO_XILINX_REPORT_FILE={report_file}]")
-            return 0  # success
-
         # -- Create the builder
         return Builder(
-            action=[
-                # -- Action 1: Inform user about the env setting.
-                Action(
-                    print_report_var,
-                    strfunction=lambda target, source, env: "",  # hide
-                ),
-                # -- Action 2: The actual nextpnr.
-                (
-                    "nextpnr-xilinx --chipdb {0} --xdc {1} --json $SOURCE "
-                    "--fasm $TARGET "
-                    "--post-route {2} "
-                    "{3} "
-                    "{4}"
-                ).format(
-                    chipdb_file_path,
-                    self.constrain_file(),
-                    report_py,
-                    # -- Honor --verbose-pnr like the other archs (ice40/ecp5/
-                    # -- gowin), which show the full nextpnr log (fmax,
-                    # -- critical path). The xilinx plugin used to hard-code
-                    # -- -q.
-                    (
-                        ""
-                        if params.verbosity.all or params.verbosity.pnr
-                        else "-q"
-                    ),
-                    " ".join(params.apio_env_params.nextpnr_extra_options),
-                ),
-            ],
+            action=(
+                "nextpnr-xilinx --chipdb {0} --xdc {1} --json $SOURCE "
+                "--fasm $TARGET --report {2} {3} {4}"
+            ).format(
+                chipdb_file_path,
+                self.constrain_file(),
+                apio_env.target + ".pnr",
+                ("" if params.verbosity.all or params.verbosity.pnr else "-q"),
+                " ".join(params.apio_env_params.nextpnr_extra_options),
+            ),
             suffix=".fasm",
             src_suffix=".json",
             emitter=emitter,
-            # -- Pass to the report_xiling.py script the path of its output
-            # -- file.
-            ENV={
-                **os.environ,
-                "APIO_XILINX_REPORT_FILE": report_file,
-            },
         )
 
     # @overrides
