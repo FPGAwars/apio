@@ -44,7 +44,7 @@ def print_packages_report(apio_ctx: ApioContext) -> bool:
     """
 
     # -- Scan the packages
-    scan = packages.scan_packages(apio_ctx.packages_context)
+    scan = packages.scan_packages(apio_ctx.packages_ctx)
 
     # -- Shortcuts to reduce clutter.
     get_installed_package_info = apio_ctx.profile.get_installed_package_info
@@ -215,12 +215,12 @@ def _install_cli(
 
     # -- First thing, fix broken packages, if any. This forces fetching
     # -- of the latest remote config file.
-    packages.scan_and_fix_packages(apio_ctx.packages_context)
+    packages.scan_and_fix_packages(apio_ctx.packages_ctx)
 
     # -- Install the packages, one by one.
     for package in apio_ctx.required_packages:
         packages.install_package(
-            apio_ctx.packages_context,
+            apio_ctx.packages_ctx,
             package_name=package,
             force_reinstall=force,
             verbose=verbose,
@@ -229,20 +229,27 @@ def _install_cli(
     # -- If verbose, print a full report.
     if verbose:
         package_ok = print_packages_report(apio_ctx)
-        sys.exit(0 if package_ok else 1)
+        if not package_ok:
+            sys.exit(1)
 
     # -- When not in verbose mode, we run a scan and print a short status.
-    scan = packages.scan_packages(apio_ctx.packages_context)
-    if not scan.is_all_ok():
-        cerror("Failed to install some packages.")
-        cout(
-            "Run 'apio packages list' to view the packages.",
-            style=INFO,
-        )
-        sys.exit(1)
+    else:
+        scan = packages.scan_packages(apio_ctx.packages_ctx)
+        if not scan.is_all_ok():
+            cerror("Failed to install some packages.")
+            cout(
+                "Run 'apio packages list' to view the packages.",
+                style=INFO,
+            )
+            sys.exit(1)
 
-    # -- Here when packages are ok.
-    cout("All Apio packages are installed OK.", style=SUCCESS)
+        # -- In the verbose case above, this is already printed by
+        # -- the print_packages_report() method.
+        cout("All Apio packages are installed OK.", style=SUCCESS)
+
+    # -- We believe that we have the exactly the correct packages
+    # -- installed. Perform a few final checks.
+    packages.check_packages(apio_ctx.packages_ctx)
 
 
 # ------ apio packages list
@@ -268,6 +275,8 @@ Examples:[code]
 def _list_cli():
     """Implements the 'apio packages list' command."""
 
+    # -- It's important that will command will use IGNORE_PACKAGES so we
+    # -- can list the current state of packages without mutating it.
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
         remote_config_policy=RemoteConfigPolicy.GET_FRESH,

@@ -300,9 +300,11 @@ class ApioContext:
             assert packages_policy == PackagesPolicy.ENSURE_PACKAGES
 
             # -- Install missing packages. At this point, the fields that are
-            # -- required by self.packages_context are already initialized.
+            # -- required by self.packages_ctx are already initialized.
+            # --
+            # -- TODO: Set verbose=True if APIO_DEBUG is above some level.
             packages.install_missing_packages_on_the_fly(
-                self.packages_context, verbose=False
+                self.packages_ctx, verbose=False
             )
 
             # -- Load the definitions from the definitions file with possible
@@ -614,7 +616,7 @@ class ApioContext:
         return "unknown"
 
     @property
-    def packages_context(self) -> PackagesContext:
+    def packages_ctx(self) -> PackagesContext:
         """Return a PackagesContext with info extracted from this
         ApioContext."""
         return PackagesContext(

@@ -489,10 +489,6 @@ class Drivers:
             return exit_code
 
     def _ftdi_uninstall_windows(self) -> int:
-        # -- Check that the required packages exist.
-        # packages.install_missing_packages_on_the_fly(
-        #     self.apio_ctx.packages_context
-        # )
 
         cout("", "Launching the interactive Device Manager.")
         cmarkdown(FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS)
