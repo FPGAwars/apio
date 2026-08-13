@@ -32,7 +32,7 @@ def _check_json_dict(value: Any, desc: str) -> None:
         )
 
 
-# -- JSON schema for validating a remote config file.
+# -- JSON schema for validating the downloaded remote config files.
 REMOTE_CONFIG_SCHEMA = {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
@@ -471,14 +471,11 @@ class Profile:
             # -- Extract the fields. If remote config is of a different
             # -- apio version, drop it.
             self.preferences = data.get("preferences", {})
-            self.installed_packages = data.get("installed-packages", {})
             self._cached_remote_config = remote_config if config_usable else {}
 
             # -- Validate the shape of the extracted fields.
             _check_json_dict(self.preferences, "'preferences'")
-            _check_json_dict(self.installed_packages, "'installed-packages'")
-            for name, info in self.installed_packages.items():
-                _check_json_dict(info, f"package '{name}'")
+
         except (OSError, ValueError, AttributeError) as e:
             cerror(f"Invalid profile file {self._profile_path}", f"{e}")
             cout(
@@ -501,12 +498,15 @@ class Profile:
                     self._packages_index_path, "r", encoding="utf8"
                 ) as f:
                     self.installed_packages = json.load(f)
+
                 _check_json_dict(self.installed_packages, "the file content")
+
                 for name, info in self.installed_packages.items():
                     _check_json_dict(info, f"package '{name}'")
+
             except (OSError, ValueError) as e:
                 cerror(
-                    f"Invalid packages index file "
+                    f"Invalid downloaded packages index file "
                     f"{self._packages_index_path}",
                     f"{e}",
                 )
@@ -549,7 +549,7 @@ class Profile:
         if not path.exists():
             path.mkdir()
 
-        # -- Write to profile file.
+        # -- Write to installed packages file.
         with open(self._packages_index_path, "w", encoding="utf8") as f:
             json.dump(self.installed_packages, f, indent=4)
 

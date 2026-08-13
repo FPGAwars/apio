@@ -149,7 +149,6 @@ def test_profile_loading_config_stale_version(apio_runner: ApioRunner):
         # -- Verify. Remote config should be a fresh one, loaded by this
         # -- apio version.
         assert profile.preferences == test_data["preferences"]
-        # assert profile.installed_packages == test_data["installed-packages"]
         assert (
             profile.remote_config["metadata"]["loaded-by"]
             == util.get_apio_version_str()
@@ -167,7 +166,6 @@ def test_profile_with_corrupt_profile_file(
         "[1, 2, 3]",  # -- Not a json dict.
         '{"remote-config": "corrupt"}',  # -- Field is not a dict.
         '{"preferences": "corrupt"}',  # -- Field is not a dict.
-        '{"installed-packages": {"examples": 5}}',  # -- Package not a dict.
     ]
 
     with apio_runner.in_sandbox() as sb:
@@ -257,7 +255,10 @@ def test_profile_with_corrupt_packages_index(
                     RemoteConfigPolicy.CACHED_OK,
                 )
             assert e.value.code == 1, bad_content
-            assert "Invalid packages index file" in capsys.readouterr().out
+            assert (
+                "Invalid downloaded packages index file"
+                in capsys.readouterr().out
+            )
 
 
 def test_datetime_stamp_diff_days():
