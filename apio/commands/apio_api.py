@@ -19,6 +19,7 @@ import click
 from apio.commands import options
 
 # from apio.managers import packages
+from apio.managers import packages
 from apio.managers.examples import Examples, ExampleInfo
 from apio.common.apio_console import cout, cerror
 from apio.common.common_util import get_project_source_files
@@ -161,6 +162,9 @@ def _get_system_cli(
     # -- Add fields.
     section_dict["apio-cli-version"] = util.get_apio_version_str()
     section_dict["release-info"] = util.get_apio_release_info()
+    section_dict["yosys-release-tag"] = packages.get_yosys_release_tag(
+        apio_ctx.packages_ctx
+    )
     section_dict["python-version"] = util.get_python_version()
     section_dict["python-executable"] = sys.executable
     section_dict["platform-info"] = apio_platforms.get_system_info()
@@ -821,8 +825,7 @@ def _scan_devices_cli(
     """Implements the 'apio apio scan-devices' command."""
 
     # -- For now, the information is not in a project context. That may
-    # -- change in the future. We need the config since we use libusb from
-    # -- the packages.
+    # -- change in the future. We need the packages for the libusb operation.
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
         remote_config_policy=RemoteConfigPolicy.CACHED_OK,
@@ -835,9 +838,6 @@ def _scan_devices_cli(
     # -- Append user timestamp if specified.
     if timestamp:
         top_dict["timestamp"] = timestamp
-
-    # -- We need the packages for the 'libusb' backend.
-    # packages.install_missing_packages_on_the_fly(apio_ctx.packages_context)
 
     usb_devices: List[UsbDevice] = usb_util.scan_usb_devices(apio_ctx)
 

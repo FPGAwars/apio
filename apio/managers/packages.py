@@ -9,12 +9,13 @@ Used by the 'apio packages' command.
 
 import sys
 import os
+import json
 from dataclasses import dataclass
 from typing import Dict, List
 from pathlib import Path
 import shutil
 from apio.common.apio_console import cout, cerror, cstyle
-from apio.common.apio_styles import WARNING, ERROR, SUCCESS, EMPH3
+from apio.common.apio_styles import ERROR, SUCCESS, EMPH3, INFO
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
 from apio.utils import util
@@ -47,6 +48,13 @@ class PackagesContext:
         assert self.required_packages
         assert self.platform
         assert self.packages_dir
+
+    def package_dir(self, package_name) -> Path:
+        """Return the local root directory of the package with given name"""
+        # -- Validate the package name
+        assert package_name in self.required_packages, package_name
+        # -- Construct the path
+        return self.packages_dir / package_name
 
 
 def _construct_package_download_url(
@@ -202,15 +210,19 @@ def install_missing_packages_on_the_fly(
     """Install on the fly any missing packages. Does not print a thing if
     all packages are already ok. This function is intended for on demand
     package fetching by commands such as apio build, and thus is allowed
-    to use fetched remote config instead of fetching a fresh one."""
+    to use fetched remote config instead of fetching a fresh one. Exists with
+    error code if any error."""
 
     # -- Scan and fix broken package.
     # -- Since this is a on-the-fly operation, we don't require a fresh
     # -- remote config file for required packages versions.
     installed_ok = scan_and_fix_packages(packages_ctx)
 
-    # -- If all the packages are installed, we are done.
+    # -- If the packages are installed we are done, we are done.
     if installed_ok:
+        # -- Final sanity check of the packages.
+        check_packages(packages_ctx)
+        # -- Installed ok.
         return
 
     # -- Here when we need to install some packages. Since we just fixed
@@ -234,11 +246,14 @@ def install_missing_packages_on_the_fly(
     # -- Here all packages should be ok but we check again just in case.
     scan_results = scan_packages(packages_ctx)
     if not scan_results.is_all_ok():
-        cout(
-            "Warning: packages issues detected. Use "
-            "'apio packages list' to investigate.",
-            style=WARNING,
+        cerror(
+            "Packages issues detected. Use "
+            "'apio packages list' to investigate."
         )
+        sys.exit(1)
+
+    # -- Final sanity check of the packages.
+    check_packages(packages_ctx)
 
 
 def install_package(
@@ -470,6 +485,65 @@ class PackageScanResults:
         cout(f"  Orphan ids    {self.orphan_package_names}")
         cout(f"  Orphan dirs   {self.orphan_dir_names}")
         cout(f"  Orphan files  {self.orphan_file_names}")
+
+
+def read_package_build_info(
+    packages_ctx: PackagesContext, package_name: str
+) -> str:
+    """Returns the BUILD-INFO.json of the package as a dict. Fatal
+    error if doesn't exist or can't parse."""
+
+    build_info_path = (
+        packages_ctx.package_dir(package_name) / "BUILD-INFO.json"
+    )
+
+    # pylint: disable=broad-exception-caught
+
+    try:
+        with open(build_info_path, encoding="utf-8") as f:
+            build_info = json.load(f)
+    except Exception as e:
+        cerror(f"Reading/parsing [{build_info_path}] failed.", str(e))
+        sys.exit(1)
+
+    return build_info
+
+
+def get_yosys_release_tag(packages_ctx: PackagesContext) -> str:
+    """Return the version tag (e.g. "2026-03-21") of the underlying Yosys.
+    This value is extract from the BUILD-INFO.json file of the apio
+    oss-cad-suite package."""
+    build_info = read_package_build_info(packages_ctx, "oss-cad-suite")
+    return build_info["yosys-release-tag"]
+
+
+def check_packages(packages_ctx: PackagesContext):
+    """Called after the Apio packages were installed or fixed and are
+    believed to be correct. Performs additional validation of the apio packages
+    and exits with an error on any error."""
+
+    # -- Read the build info of the two packages.
+    build_info1 = read_package_build_info(packages_ctx, "oss-cad-suite")
+    build_info2 = read_package_build_info(packages_ctx, "openxc7")
+
+    # -- Extract the version of the underlying yosys
+    yosys_release_tag1 = build_info1["yosys-release-tag"]
+    yosys_release_tag2 = build_info2["yosys-release-tag"]
+
+    # -- Compare the versions.
+    if yosys_release_tag1 != yosys_release_tag2:
+        cerror(
+            'The packages "oss-cad-suite" and "openxc7" were built with '
+            'different "yosys-release-tag".',
+            f"Their respective BUILD-INFO.json files "
+            f'contain "{yosys_release_tag1}" vs "{yosys_release_tag2}"',
+        )
+        cout(
+            "This typically happens due to corrupt packages or bad remote "
+            "configuration by the Apio team.",
+            style=INFO,
+        )
+        sys.exit(1)
 
 
 def package_version_ok(
