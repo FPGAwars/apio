@@ -7,6 +7,12 @@
 //
 // NOTE: Github has a cache propagation of about 1 min between the
 // time this file is submitted and until it's available for download.
+//
+// NOTE: Apio examines at runtie the BUILD-INFO.json files of the
+// oss-cad-suite and openxc7 packages and asserts that they have
+// the same "yosys-release-tag" value. That is, they were built
+// against the same release of the Yosys oss-cad-suite package.
+//
 {
   "packages": {
     // -- Definitions package
