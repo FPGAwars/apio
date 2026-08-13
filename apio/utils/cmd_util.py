@@ -15,7 +15,7 @@ from typing import List, Dict, Union
 import click
 from click.formatting import HelpFormatter
 from apio.common import apio_console
-from apio.profile import Profile
+from apio.managers.profile import Profile
 from apio.common.apio_styles import CMD_NAME
 from apio.common.apio_console import (
     ConsoleCapture,

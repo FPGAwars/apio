@@ -6,7 +6,7 @@ import json
 from datetime import datetime, timedelta
 from pytest import LogCaptureFixture, raises
 from tests.conftest import ApioRunner
-from apio.profile import (
+from apio.managers.profile import (
     Profile,
     get_datetime_stamp,
     days_between_datetime_stamps,

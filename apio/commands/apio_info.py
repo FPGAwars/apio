@@ -27,7 +27,10 @@ from apio.apio_context import (
 )
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 from apio.common.apio_themes import THEMES_TABLE, THEME_LIGHT
-from apio.profile import get_datetime_stamp, days_between_datetime_stamps
+from apio.managers.profile import (
+    get_datetime_stamp,
+    days_between_datetime_stamps,
+)
 from apio.common.apio_console import (
     PADDING,
     cout,

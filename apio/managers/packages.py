@@ -20,7 +20,7 @@ from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
 from apio.utils import util
 from apio.utils.apio_platforms import ApioPlatform
-from apio.profile import Profile, PackageRemoteConfig
+from apio.managers.profile import Profile, PackageRemoteConfig
 
 
 @dataclass(frozen=True)

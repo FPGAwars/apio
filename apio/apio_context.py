@@ -17,7 +17,7 @@ from typing import List, Optional, Dict
 from apio.common.apio_console import cout, cerror, cstyle
 from apio.common.apio_styles import INFO, EMPH1, EMPH2, EMPH3
 from apio.common.common_util import env_build_path
-from apio.profile import Profile, RemoteConfigPolicy
+from apio.managers.profile import Profile, RemoteConfigPolicy
 from apio.utils import jsonc, util, env_options, apio_platforms
 from apio.utils.apio_platforms import ApioPlatform
 from apio.managers.project import Project, load_project_from_file
