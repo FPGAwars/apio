@@ -35,6 +35,7 @@ from apio.common.proto.apio_pb2 import (
     Ecp5FpgaParams,
     GowinFpgaParams,
     XilinxFpgaParams,
+    ShrikeFpgaParams,
     ApioArch,
     GraphParams,
     ReportParams,
@@ -299,6 +300,15 @@ class SConsManager:
                         yosys_arch=params["yosys-arch"],
                         package=params["package"],
                         speed=params["speed"],
+                    )
+                )
+            case "shrike":
+                params = fpga_info["shrike-params"]
+                result.arch = ApioArch.SHRIKE
+                result.fpga_info.shrike_params.MergeFrom(
+                    ShrikeFpgaParams(
+                        family=params["family"],
+                        package=params["package"],
                     )
                 )
             case _:

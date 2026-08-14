@@ -23,6 +23,7 @@ enum ApioArch {
   ECP5 = 2;
   GOWIN = 3;
   XILINX = 4;
+  SHRIKE = 5;
 }
 
 enum TerminalMode {
@@ -64,7 +65,12 @@ message XilinxFpgaParams {
   required string speed = 4;
 }
 
-
+// Shrike Lite / Renesas SLG47910V specific fpga attributes.
+// Matches definition file fpgas.jsonc.
+message ShrikeFpgaParams {
+  required string family = 1;
+  required string package = 2;
+}
 
 // General fpga info.
 // Matches definition file fpgas.jsonc.
@@ -79,6 +85,7 @@ message FpgaInfo {
     Ecp5FpgaParams ecp5_params = 11;
     GowinFpgaParams gowin_params = 12;
     XilinxFpgaParams xilinx_params = 13;
+    ShrikeFpgaParams shrike_params = 14;
   }
 }
 

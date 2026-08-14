@@ -17,6 +17,7 @@ class ApioArch(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     ECP5: _ClassVar[ApioArch]
     GOWIN: _ClassVar[ApioArch]
     XILINX: _ClassVar[ApioArch]
+    SHRIKE: _ClassVar[ApioArch]
 
 class TerminalMode(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
@@ -36,6 +37,7 @@ ICE40: ApioArch
 ECP5: ApioArch
 GOWIN: ApioArch
 XILINX: ApioArch
+SHRIKE: ApioArch
 TERMINAL_UNSPECIFIED: TerminalMode
 AUTO_TERMINAL: TerminalMode
 FORCE_TERMINAL: TerminalMode
@@ -85,8 +87,16 @@ class XilinxFpgaParams(_message.Message):
     speed: str
     def __init__(self, family: _Optional[str] = ..., yosys_arch: _Optional[str] = ..., package: _Optional[str] = ..., speed: _Optional[str] = ...) -> None: ...
 
+class ShrikeFpgaParams(_message.Message):
+    __slots__ = ("family", "package")
+    FAMILY_FIELD_NUMBER: _ClassVar[int]
+    PACKAGE_FIELD_NUMBER: _ClassVar[int]
+    family: str
+    package: str
+    def __init__(self, family: _Optional[str] = ..., package: _Optional[str] = ...) -> None: ...
+
 class FpgaInfo(_message.Message):
-    __slots__ = ("fpga_id", "part_num", "size", "ice40_params", "ecp5_params", "gowin_params", "xilinx_params")
+    __slots__ = ("fpga_id", "part_num", "size", "ice40_params", "ecp5_params", "gowin_params", "xilinx_params", "shrike_params")
     FPGA_ID_FIELD_NUMBER: _ClassVar[int]
     PART_NUM_FIELD_NUMBER: _ClassVar[int]
     SIZE_FIELD_NUMBER: _ClassVar[int]
@@ -94,6 +104,7 @@ class FpgaInfo(_message.Message):
     ECP5_PARAMS_FIELD_NUMBER: _ClassVar[int]
     GOWIN_PARAMS_FIELD_NUMBER: _ClassVar[int]
     XILINX_PARAMS_FIELD_NUMBER: _ClassVar[int]
+    SHRIKE_PARAMS_FIELD_NUMBER: _ClassVar[int]
     fpga_id: str
     part_num: str
     size: str
@@ -101,7 +112,8 @@ class FpgaInfo(_message.Message):
     ecp5_params: Ecp5FpgaParams
     gowin_params: GowinFpgaParams
     xilinx_params: XilinxFpgaParams
-    def __init__(self, fpga_id: _Optional[str] = ..., part_num: _Optional[str] = ..., size: _Optional[str] = ..., ice40_params: _Optional[_Union[Ice40FpgaParams, _Mapping]] = ..., ecp5_params: _Optional[_Union[Ecp5FpgaParams, _Mapping]] = ..., gowin_params: _Optional[_Union[GowinFpgaParams, _Mapping]] = ..., xilinx_params: _Optional[_Union[XilinxFpgaParams, _Mapping]] = ...) -> None: ...
+    shrike_params: ShrikeFpgaParams
+    def __init__(self, fpga_id: _Optional[str] = ..., part_num: _Optional[str] = ..., size: _Optional[str] = ..., ice40_params: _Optional[_Union[Ice40FpgaParams, _Mapping]] = ..., ecp5_params: _Optional[_Union[Ecp5FpgaParams, _Mapping]] = ..., gowin_params: _Optional[_Union[GowinFpgaParams, _Mapping]] = ..., xilinx_params: _Optional[_Union[XilinxFpgaParams, _Mapping]] = ..., shrike_params: _Optional[_Union[ShrikeFpgaParams, _Mapping]] = ...) -> None: ...
 
 class Verbosity(_message.Message):
     __slots__ = ("all", "synth", "pnr")
