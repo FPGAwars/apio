@@ -89,7 +89,6 @@ class PackageScanResults:
         cout(f"  Orphan files  {self.orphan_file_names}")
 
 
-@dataclass(frozen=True)
 class PackageManager:
     """Context for package managements operations.
     This class provides the information needed for package management
@@ -99,21 +98,33 @@ class PackageManager:
     the ApioContext object is fully initialized.
     """
 
-    # -- Same as ApioContext.profile
-    profile: Profile
-    # -- Same as ApioContext.remote_config
-    remote_config: RemoteConfig
-    # -- Same as ApioContext.required_packages
-    required_packages: Dict
-    # -- Same as ApioContext.platform
-    platform: ApioPlatform
-    # -- Same as ApioContext.apio_home_dir
-    apio_home_dir: Path
-    # -- Same as ApioContext.packages_dir
-    packages_dir: Path
+    def __init__(
+        self,
+        profile: Profile,
+        remote_config: RemoteConfig,
+        required_packages: Dict,
+        platform: ApioPlatform,
+        apio_home_dir: Path,
+        packages_dir: Path,
+    ):
 
-    def __post_init__(self):
-        """Assert that all fields initialized to actual values."""
+        # pylint: disable=too-many-arguments
+        # pylint: disable=too-many-positional-arguments
+
+        # -- Same as ApioContext.profile
+        self.profile = profile
+        # -- Same as ApioContext.remote_config
+        self.remote_config = remote_config
+        # -- Same as ApioContext.required_packages
+        self.required_packages = required_packages
+        # -- platform: ApioPlatform
+        self.platform = platform
+        # -- Same as ApioContext.apio_home_dir
+        self.apio_home_dir = apio_home_dir
+        # -- Same as ApioContext.packages_dir
+        self.packages_dir = packages_dir
+
+        # -- Sanity checks.
         assert isinstance(self.remote_config, RemoteConfig)
         assert self.required_packages
         assert self.platform
