@@ -18,7 +18,6 @@ from rich.color import ANSI_COLOR_NAMES
 from apio.common.apio_styles import BORDER, EMPH1, EMPH2, EMPH3, INFO
 from apio.utils import util, apio_platforms
 from apio.commands import options
-from apio.managers import packages
 from apio.apio_context import (
     ApioContext,
     PackagesPolicy,
@@ -131,7 +130,7 @@ def _system_cli():
     table.add_row("Release info", util.get_apio_release_info() or "(none)")
     table.add_row(
         "Yosys release tag",
-        packages.get_yosys_release_tag(apio_ctx.packages_ctx),
+        apio_ctx.package_manager.get_yosys_release_tag(),
     )
     table.add_row("Python version", util.get_python_version())
     table.add_row("Python executable", sys.executable)

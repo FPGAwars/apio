@@ -22,8 +22,7 @@ from apio.managers.remote_config import RemoteConfig, RemoteConfigPolicy
 from apio.utils import jsonc, util, env_options, apio_platforms
 from apio.utils.apio_platforms import ApioPlatform
 from apio.managers.project import Project, load_project_from_file
-from apio.managers import packages
-from apio.managers.packages import PackagesContext
+from apio.managers.package_manager import PackageManager
 from apio.utils.resource_util import (
     ProjectResources,
     collect_project_resources,
@@ -141,6 +140,7 @@ class ApioContext:
         "config",
         "profile",
         "remote_config",
+        "package_manager",
         "platform",
         "platform_id",
         "scons_shell_id",
@@ -291,11 +291,24 @@ class ApioContext:
             self.all_packages, self.apio_packages_dir
         )
 
-        # The subset of packages that are applicable to this platform.
+        # -- The subset of packages that are applicable to this platform.
         self.required_packages = self._select_required_packages_for_platform(
             self.all_packages,
             self.platform_id,
         )
+
+        # -- Instantiate the package manager. All self.* args were already
+        # -- initialized above.
+        self.package_manager: PackageManager = PackageManager(
+            profile=self.profile,
+            remote_config=self.remote_config,
+            required_packages=self.required_packages,
+            platform=self.platform,
+            apio_home_dir=self.apio_home_dir,
+            packages_dir=self.apio_packages_dir,
+        )
+
+        # -- Apply package policy
 
         # -- Case 1: IGNORE_PACKAGES
         if packages_policy == PackagesPolicy.IGNORE_PACKAGES:
@@ -306,11 +319,11 @@ class ApioContext:
             assert packages_policy == PackagesPolicy.ENSURE_PACKAGES
 
             # -- Install missing packages. At this point, the fields that are
-            # -- required by self.packages_ctx are already initialized.
+            # -- required by self.package_manager are already initialized.
             # --
             # -- TODO: Set verbose=True if APIO_DEBUG is above some level.
-            packages.install_missing_packages_on_the_fly(
-                self.packages_ctx, verbose=False
+            self.package_manager.install_missing_packages_on_the_fly(
+                verbose=False
             )
 
             # -- Load the definitions from the definitions file with possible
@@ -620,18 +633,6 @@ class ApioContext:
         if "csh" in shell_path or "tcsh" in shell_path:
             return "cshell"
         return "unknown"
-
-    @property
-    def packages_ctx(self) -> PackagesContext:
-        """Return a PackagesContext with info extracted from this
-        ApioContext."""
-        return PackagesContext(
-            profile=self.profile,
-            remote_config=self.remote_config,
-            required_packages=self.required_packages,
-            platform=self.platform,
-            packages_dir=self.apio_packages_dir,
-        )
 
     @staticmethod
     def _select_required_packages_for_platform(

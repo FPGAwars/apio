@@ -17,9 +17,6 @@ import json
 from pathlib import Path
 import click
 from apio.commands import options
-
-# from apio.managers import packages
-from apio.managers import packages
 from apio.managers.examples import Examples, ExampleInfo
 from apio.common.apio_console import cout, cerror
 from apio.common.common_util import get_project_source_files
@@ -162,8 +159,8 @@ def _get_system_cli(
     # -- Add fields.
     section_dict["apio-cli-version"] = util.get_apio_version_str()
     section_dict["release-info"] = util.get_apio_release_info()
-    section_dict["yosys-release-tag"] = packages.get_yosys_release_tag(
-        apio_ctx.packages_ctx
+    section_dict["yosys-release-tag"] = (
+        apio_ctx.package_manager.get_yosys_release_tag()
     )
     section_dict["python-version"] = util.get_python_version()
     section_dict["python-executable"] = sys.executable

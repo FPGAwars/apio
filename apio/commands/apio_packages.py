@@ -15,7 +15,6 @@ from rich.table import Table
 from rich import box
 from apio.common.apio_console import cout, ctable, cerror
 from apio.common.apio_styles import INFO, BORDER, ERROR, SUCCESS
-from apio.managers import packages
 from apio.commands import options
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 from apio.apio_context import (
@@ -44,7 +43,8 @@ def print_packages_report(apio_ctx: ApioContext) -> bool:
     """
 
     # -- Scan the packages
-    scan = packages.scan_packages(apio_ctx.packages_ctx)
+    # scan = packages.scan_packages(apio_ctx.package_manager)
+    scan = apio_ctx.package_manager.scan_packages()
 
     # -- Shortcuts to reduce clutter.
     get_installed_package_info = apio_ctx.profile.get_installed_package_info
@@ -215,12 +215,11 @@ def _install_cli(
 
     # -- First thing, fix broken packages, if any. This forces fetching
     # -- of the latest remote config file.
-    packages.scan_and_fix_packages(apio_ctx.packages_ctx)
+    apio_ctx.package_manager.scan_and_fix_packages()
 
     # -- Install the packages, one by one.
     for package in apio_ctx.required_packages:
-        packages.install_package(
-            apio_ctx.packages_ctx,
+        apio_ctx.package_manager.install_package(
             package_name=package,
             force_reinstall=force,
             verbose=verbose,
@@ -234,7 +233,8 @@ def _install_cli(
 
     # -- When not in verbose mode, we run a scan and print a short status.
     else:
-        scan = packages.scan_packages(apio_ctx.packages_ctx)
+        # scan = packages.scan_packages(apio_ctx.package_manager)
+        scan = apio_ctx.package_manager.scan_packages()
         if not scan.is_all_ok():
             cerror("Failed to install some packages.")
             cout(
@@ -249,7 +249,7 @@ def _install_cli(
 
     # -- We believe that we have the exactly the correct packages
     # -- installed. Perform a few final checks.
-    packages.check_packages(apio_ctx.packages_ctx)
+    apio_ctx.package_manager.check_packages()
 
 
 # ------ apio packages list
