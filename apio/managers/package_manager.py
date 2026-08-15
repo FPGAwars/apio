@@ -10,8 +10,9 @@ Used by the 'apio packages' command.
 import sys
 import os
 import json
+from datetime import datetime
 from dataclasses import dataclass
-from typing import Dict, List
+from typing import Dict, List, Tuple, Optional
 from pathlib import Path
 import shutil
 from apio.common.apio_console import cout, cerror, cstyle
@@ -20,7 +21,6 @@ from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
 from apio.utils import util
 from apio.utils.apio_platforms import ApioPlatform
-from apio.managers.profile import Profile
 from apio.managers.remote_config import RemoteConfig, PackageRemoteConfig
 
 
@@ -37,9 +37,9 @@ class PackageScanResults:
     # -- Normal. Packages in required_packages that are uninstalled properly.
     uninstalled_package_names: List[str]
     # -- Error. Packages in required_packages with broken installation. E.g,
-    # -- registered in profile but package directory is missing.
+    # -- registered in installed packages but the package directory is missing.
     broken_package_names: List[str]
-    # -- Error. Packages that are marked in profile as registered but are not
+    # -- Error. Packages that are in installed packages but are not
     # -- in required_packages.
     orphan_package_names: List[str]
     # -- Error. Basenames of directories in packages dir that don't match
@@ -89,6 +89,13 @@ class PackageScanResults:
         cout(f"  Orphan files  {self.orphan_file_names}")
 
 
+def get_datetime_stamp(dt: Optional[datetime] = None) -> str:
+    """Returns a string with time now as yyyy-mm-dd-hh-mm"""
+    if dt is None:
+        dt = datetime.now()
+    return dt.strftime("%Y-%m-%d-%H-%M")
+
+
 class PackageManager:
     """Context for package managements operations.
     This class provides the information needed for package management
@@ -100,7 +107,6 @@ class PackageManager:
 
     def __init__(
         self,
-        profile: Profile,
         remote_config: RemoteConfig,
         required_packages: Dict,
         platform: ApioPlatform,
@@ -111,8 +117,6 @@ class PackageManager:
         # pylint: disable=too-many-arguments
         # pylint: disable=too-many-positional-arguments
 
-        # -- Same as ApioContext.profile
-        self.profile = profile
         # -- Same as ApioContext.remote_config
         self.remote_config = remote_config
         # -- Same as ApioContext.required_packages
@@ -129,6 +133,17 @@ class PackageManager:
         assert self.required_packages
         assert self.platform
         assert self.packages_dir
+
+        # -- Initialized installed packages, a copy of
+        # -- installed-packages.json.
+        self.installed_packages = {}
+
+        # -- Cache the packages index file path
+        # -- Ex. '/home/obijuan/.apio/packages/installed_packages.json'
+        self._packages_index_path = packages_dir / "installed_packages.json"
+
+        # -- Read the installed packages file, if exists.
+        self._maybe_load_installed_packages_file()
 
     def package_dir(self, package_name) -> Path:
         """Return the local root directory of the package with given name"""
@@ -304,7 +319,7 @@ class PackageManager:
         # -- installed ok, and not installed.
         # --
         # -- Get lists of installed and required packages.
-        installed_packages = self.profile.installed_packages
+        installed_packages = self.installed_packages
         required_packages_names = self.required_packages.keys()
 
         # -- Install any required package that is not installed.
@@ -378,7 +393,7 @@ class PackageManager:
             # -- Get the version of the installed package, None if not
             # -- installed.
             installed_version, package_platform_id = (
-                self.profile.get_installed_package_info(package_name)
+                self.get_installed_package_info(package_name)
             )
 
             if verbose:
@@ -441,8 +456,8 @@ class PackageManager:
             cout(f"Deleting package file {local_package_file}")
         local_package_file.unlink()
 
-        # -- Add package to profile and save.
-        self.profile.add_package(
+        # -- Add package and save.
+        self.add_package(
             package_name, target_version, self.platform.id, download_url
         )
 
@@ -455,16 +470,16 @@ class PackageManager:
         for package_name in scan.bad_version_package_names:
             cout(f"Uninstalling incompatible version of '{package_name}'")
             self._delete_package_dir(package_name, verbose=False)
-            self.profile.remove_package(package_name)
+            self.remove_package(package_name)
 
         for package_name in scan.broken_package_names:
             cout(f"Uninstalling broken package '{package_name}'")
             self._delete_package_dir(package_name, verbose=False)
-            self.profile.remove_package(package_name)
+            self.remove_package(package_name)
 
         for package_name in scan.orphan_package_names:
             cout(f"Uninstalling unknown package '{package_name}'")
-            self.profile.remove_package(package_name)
+            self.remove_package(package_name)
 
         for dir_name in scan.orphan_dir_names:
             cout(f"Deleting unknown package dir '{dir_name}'")
@@ -542,9 +557,9 @@ class PackageManager:
         self,
         package_name: str,
     ) -> bool:
-        """Return true if the package is both in profile and required packages
-        and its version in the profile meet the requirements in the
-        config.jsonc file. Otherwise return false."""
+        """Return true if the package is both in installed packages and in
+        required packages and its version in the installed packages meet the
+        requirements in the config.jsonc file. Otherwise return false."""
 
         # If this package is not applicable to this platform, return False.
         if package_name not in self.required_packages:
@@ -552,8 +567,8 @@ class PackageManager:
 
         # -- If the current version is not available, the package is not
         # -- installed.
-        current_ver, package_platform_id = (
-            self.profile.get_installed_package_info(package_name)
+        current_ver, package_platform_id = self.get_installed_package_info(
+            package_name
         )
         if not current_ver or package_platform_id != self.platform.id:
             return False
@@ -587,27 +602,27 @@ class PackageManager:
             platform_folder_names.add(package_name)
 
             # -- Classify the package as one of four cases.
-            in_profile = package_name in self.profile.installed_packages
+            in_installed_packages = package_name in self.installed_packages
             package_dir = self.packages_dir / package_name
             has_dir = package_dir.is_dir()
             version_ok = self.package_version_ok(package_name)
-            if in_profile and has_dir:
+            if in_installed_packages and has_dir:
                 if version_ok:
                     # Case 1: Package installed ok.
                     result.installed_ok_package_names.append(package_name)
                 else:
                     # -- Case 2: Package installed but version mismatch.
                     result.bad_version_package_names.append(package_name)
-            elif not in_profile and not has_dir:
+            elif not in_installed_packages and not has_dir:
                 # -- Case 3: Package not installed.
                 result.uninstalled_package_names.append(package_name)
             else:
                 # -- Case 4: Package is broken.
                 result.broken_package_names.append(package_name)
 
-        # -- Scan the packages ids that are registered in profile as installed
-        # -- the ones that are not required_packages as orphans.
-        for package_name in self.profile.installed_packages:
+        # -- Scan the installed packages and mark the non required one as
+        # -- orphans
+        for package_name in self.installed_packages:
             if package_name not in self.required_packages:
                 result.orphan_package_names.append(package_name)
 
@@ -630,3 +645,91 @@ class PackageManager:
             result.dump()
 
         return result
+
+    def _maybe_load_installed_packages_file(self):
+        """Load the installed packages index file if exists, e.g.
+        ~/.apio/packages/installed_packages.json, populates
+        self.installed_packages with the data read.
+        """
+
+        # -- Do nothing if the file doesn't exist.
+        if not self._packages_index_path.exists():
+            return
+
+        # -- Read the file as a json dict. Handle invalid content
+        # -- gracefully, since this runs on every apio command.
+        try:
+            with open(self._packages_index_path, "r", encoding="utf8") as f:
+                self.installed_packages = json.load(f)
+
+            # -- Perform a shallow sanity check.
+            # -- TODO: Do a full json validation.
+            assert isinstance(
+                self.installed_packages, dict
+            ), "Install packages not a dict"
+            for name, info in self.installed_packages.items():
+                assert isinstance(
+                    info, dict
+                ), f"installed package '{name}' not a dict"
+
+        except (OSError, ValueError, AssertionError) as e:
+            cerror(
+                f"Invalid installed packages index file "
+                f"{self._packages_index_path}",
+                f"{e}",
+            )
+            cout(
+                "You can delete the file, "
+                "Apio will recreate it automatically.",
+                style=INFO,
+            )
+            sys.exit(1)
+
+    def _save_installed_packages(self):
+        """Save the installed packages file"""
+
+        # -- Create the enclosing folder, if it does not exist yet
+        parent = self._packages_index_path.parent
+        if not parent.exists():
+            parent.mkdir()
+
+        # -- Write to installed packages file.
+        with open(self._packages_index_path, "w", encoding="utf8") as f:
+            json.dump(self.installed_packages, f, indent=4)
+
+        # -- Dump for debugging.
+        if util.is_debug(1):
+            cout("Saved installed packages index:", style=EMPH3)
+            cout(json.dumps(self.installed_packages, indent=2))
+
+    def get_installed_package_info(self, package_name: str) -> Tuple[str, str]:
+        """Return (package_version, platform_id) of the given installed
+        package. Values are replaced with "" if not installed or a value is
+        missing."""
+        package_info = self.installed_packages.get(package_name, {})
+        package_version = package_info.get("version", "")
+        platform_id = package_info.get("platform", "")
+        return (package_version, platform_id)
+
+    def add_package(self, name: str, version: str, platform_id: str, url: str):
+        """Add a package to the installed packages and save."""
+
+        # -- Updated the installed package data.
+        self.installed_packages[name] = {
+            "version": version,
+            "platform": platform_id,
+            "loaded-by": util.get_apio_version_str(),
+            "loaded-at": get_datetime_stamp(),
+            "loaded-from": url,
+        }
+        # self._save()
+        self._save_installed_packages()
+
+    def remove_package(self, name: str):
+        """Remove a package from the installed packages file. Do nothing
+        if not in installed packages."""
+
+        if name in self.installed_packages.keys():
+            del self.installed_packages[name]
+            # self._save()
+            self._save_installed_packages()

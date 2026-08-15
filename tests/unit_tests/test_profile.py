@@ -32,10 +32,7 @@ def test_profile_loading(apio_runner: ApioRunner):
         )
 
         # -- Read back the content.
-        profile = Profile(
-            sb.home_dir,
-            sb.packages_dir,
-        )
+        profile = Profile(sb.home_dir)
 
         # -- Verify
         assert profile.preferences == TEST_DATA["preferences"]
@@ -55,10 +52,6 @@ def test_profile_with_corrupt_profile_file(
 
     with apio_runner.in_sandbox() as sb:
 
-        # -- A packages dir that is private to this test. We don't use
-        # -- sb.packages_dir since it may point to the shared packages cache.
-        packages_dir = sb.sandbox_dir / "packages"
-
         for bad_content in bad_contents:
 
             # -- Write a corrupt profile.json file.
@@ -71,10 +64,7 @@ def test_profile_with_corrupt_profile_file(
 
             # -- Loading the profile should exit with a clean error message.
             with raises(SystemExit) as e:
-                Profile(
-                    sb.home_dir,
-                    packages_dir,
-                )
+                Profile(sb.home_dir)
             assert e.value.code == 1, bad_content
             assert "Invalid profile file" in capsys.readouterr().out
 
@@ -96,43 +86,3 @@ def test_profile_with_unknown_theme(apio_runner: ApioRunner):
 
             # -- The theme reader should quietly fall back to the default.
             assert Profile.read_preferences_theme(default="light") == "light"
-
-
-def test_profile_with_corrupt_packages_index(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
-    """Tests that a corrupt installed_packages.json results in a clean
-    error message instead of an unhandled exception on every command."""
-
-    bad_contents = [
-        "not json",  # -- Not a valid json.
-        "[1, 2, 3]",  # -- Not a json dict.
-        '{"examples": "boom"}',  # -- Package info is not a dict.
-    ]
-
-    with apio_runner.in_sandbox() as sb:
-
-        # -- A packages dir that is private to this test. We don't use
-        # -- sb.packages_dir since it may point to the shared packages cache.
-        packages_dir = sb.sandbox_dir / "packages"
-
-        for bad_content in bad_contents:
-
-            # -- Write a corrupt installed_packages.json file.
-            sb.write_file(
-                packages_dir / "installed_packages.json",
-                bad_content,
-                exists_ok=True,
-            )
-
-            # -- Loading the profile should exit with a clean error message.
-            with raises(SystemExit) as e:
-                Profile(
-                    sb.home_dir,
-                    packages_dir,
-                )
-            assert e.value.code == 1, bad_content
-            assert (
-                "Invalid downloaded packages index file"
-                in capsys.readouterr().out
-            )

@@ -47,7 +47,9 @@ def print_packages_report(apio_ctx: ApioContext) -> bool:
     scan = apio_ctx.package_manager.scan_packages()
 
     # -- Shortcuts to reduce clutter.
-    get_installed_package_info = apio_ctx.profile.get_installed_package_info
+    get_installed_package_info = (
+        apio_ctx.package_manager.get_installed_package_info
+    )
     get_required_package_info = apio_ctx.get_required_package_info
 
     table = Table(

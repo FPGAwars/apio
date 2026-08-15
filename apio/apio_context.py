@@ -253,7 +253,6 @@ class ApioContext:
         # -- Read the user profile from ~/.apio/profile.json.
         self.profile = Profile(
             self.apio_home_dir,
-            self.apio_packages_dir,
         )
 
         # -- Read remote config information, from local cache or remotely..
@@ -300,7 +299,6 @@ class ApioContext:
         # -- Instantiate the package manager. All self.* args were already
         # -- initialized above.
         self.package_manager: PackageManager = PackageManager(
-            profile=self.profile,
             remote_config=self.remote_config,
             required_packages=self.required_packages,
             platform=self.platform,
