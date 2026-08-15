@@ -17,7 +17,8 @@ from typing import List, Optional, Dict
 from apio.common.apio_console import cout, cerror, cstyle
 from apio.common.apio_styles import INFO, EMPH1, EMPH2, EMPH3
 from apio.common.common_util import env_build_path
-from apio.managers.profile import Profile, RemoteConfigPolicy
+from apio.managers.profile import Profile
+from apio.managers.remote_config import RemoteConfig, RemoteConfigPolicy
 from apio.utils import jsonc, util, env_options, apio_platforms
 from apio.utils.apio_platforms import ApioPlatform
 from apio.managers.project import Project, load_project_from_file
@@ -139,6 +140,7 @@ class ApioContext:
         "apio_packages_dir",
         "config",
         "profile",
+        "remote_config",
         "platform",
         "platform_id",
         "scons_shell_id",
@@ -248,9 +250,13 @@ class ApioContext:
         self.config = self._load_resource(CONFIG_JSONC, resources_dir)
         validate_config(self.config)
 
-        # -- Profile information, from ~/.apio/profile.json. We provide it with
-        # -- the remote config url template from distribution.jsonc such that
-        # -- can it fetch the remote config on demand.
+        # -- Read the user profile from ~/.apio/profile.json.
+        self.profile = Profile(
+            self.apio_home_dir,
+            self.apio_packages_dir,
+        )
+
+        # -- Read remote config information, from local cache or remotely..
         remote_config_url = env_options.get(
             env_options.APIO_REMOTE_CONFIG_URL,
             default=self.config["remote-config-url"],
@@ -259,9 +265,9 @@ class ApioContext:
         remote_config_retry_minutes = self.config[
             "remote-config-retry-minutes"
         ]
-        self.profile = Profile(
+
+        self.remote_config = RemoteConfig(
             self.apio_home_dir,
-            self.apio_packages_dir,
             str(remote_config_url),
             remote_config_ttl_days,
             remote_config_retry_minutes,
@@ -621,6 +627,7 @@ class ApioContext:
         ApioContext."""
         return PackagesContext(
             profile=self.profile,
+            remote_config=self.remote_config,
             required_packages=self.required_packages,
             platform=self.platform,
             packages_dir=self.apio_packages_dir,

@@ -182,7 +182,9 @@ def _get_system_cli(
     )
     section_dict["apio-home-dir"] = str(apio_ctx.apio_home_dir)
     section_dict["apio-packages-dir"] = str(apio_ctx.apio_packages_dir)
-    section_dict["remote-config-url"] = apio_ctx.profile.remote_config_url
+    section_dict["remote-config-url"] = (
+        apio_ctx.remote_config.remote_config_url
+    )
     section_dict["verible-formatter"] = str(
         apio_ctx.apio_packages_dir / "verible/bin/verible-verilog-format"
     )

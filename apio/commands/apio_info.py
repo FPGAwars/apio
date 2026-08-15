@@ -27,7 +27,7 @@ from apio.apio_context import (
 )
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 from apio.common.apio_themes import THEMES_TABLE, THEME_LIGHT
-from apio.managers.profile import (
+from apio.managers.remote_config import (
     get_datetime_stamp,
     days_between_datetime_stamps,
 )
@@ -47,7 +47,7 @@ from apio.common.apio_console import (
 def construct_remote_config_status_str(apio_ctx: ApioContext) -> str:
     """Query the apio profile and construct a short string indicating the
     status of the cached remote config."""
-    config = apio_ctx.profile.remote_config
+    config = apio_ctx.remote_config.data
     metadata = config.get("metadata", {})
     timestamp_now = get_datetime_stamp()
     config_status = []
@@ -148,7 +148,9 @@ def _system_cli():
     )
     table.add_row("Apio home dir", str(apio_ctx.apio_home_dir))
     table.add_row("Apio packages dir", str(apio_ctx.apio_packages_dir))
-    table.add_row("Remote config URL", apio_ctx.profile.remote_config_url)
+    table.add_row(
+        "Remote config URL", apio_ctx.remote_config.remote_config_url
+    )
     table.add_row(
         "Remote config status", construct_remote_config_status_str(apio_ctx)
     )

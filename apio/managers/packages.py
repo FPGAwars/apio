@@ -20,7 +20,8 @@ from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
 from apio.utils import util
 from apio.utils.apio_platforms import ApioPlatform
-from apio.managers.profile import Profile, PackageRemoteConfig
+from apio.managers.profile import Profile
+from apio.managers.remote_config import RemoteConfig, PackageRemoteConfig
 
 
 @dataclass(frozen=True)
@@ -35,6 +36,8 @@ class PackagesContext:
 
     # -- Same as ApioContext.profile
     profile: Profile
+    # -- Same as ApioContext.remote_config
+    remote_config: RemoteConfig
     # -- Same as ApioContext.required_packages
     required_packages: Dict
     # -- Same as ApioContext.platform
@@ -44,7 +47,7 @@ class PackagesContext:
 
     def __post_init__(self):
         """Assert that all fields initialized to actual values."""
-        assert self.profile
+        assert isinstance(self.remote_config, RemoteConfig)
         assert self.required_packages
         assert self.platform
         assert self.packages_dir
@@ -295,7 +298,7 @@ def install_package(
     # -- Get package remote config from the cache. Caller can refresh the
     # -- cache with the latest remote config if desired.
     package_config: PackageRemoteConfig = (
-        packages_ctx.profile.get_package_config(package_name)
+        packages_ctx.remote_config.get_package_config(package_name)
     )
 
     # -- Get the version we should have.
@@ -567,7 +570,7 @@ def package_version_ok(
 
     # -- Get the package remote config.
     package_config: PackageRemoteConfig = (
-        packages_ctx.profile.get_package_config(package_name)
+        packages_ctx.remote_config.get_package_config(package_name)
     )
 
     # -- Compare to the required version. We expect the two version to be
