@@ -15,12 +15,11 @@
             "request": "launch",
             "program": "${workspaceFolder}/apio/__main__.py",
             "args": [
-                "raw",
-                "-v"
+                "build"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/ledon",
+            "cwd": "/Users/user/work",
             "subProcess": false
         },
         {
@@ -31,7 +30,7 @@
             "args": [
                 "-s",
                 "-vv",
-                "test/unit_tests/utils/test_usb_util.py::test_device_summaries"
+                "tests/unit_tests/test_remote_config.py::test_loading_cached_config_ok"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,

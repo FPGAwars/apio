@@ -17,12 +17,12 @@ from typing import List, Optional, Dict
 from apio.common.apio_console import cout, cerror, cstyle
 from apio.common.apio_styles import INFO, EMPH1, EMPH2, EMPH3
 from apio.common.common_util import env_build_path
-from apio.profile import Profile, RemoteConfigPolicy
+from apio.managers.profile import Profile
+from apio.managers.remote_config import RemoteConfig, RemoteConfigPolicy
 from apio.utils import jsonc, util, env_options, apio_platforms
 from apio.utils.apio_platforms import ApioPlatform
 from apio.managers.project import Project, load_project_from_file
-from apio.managers import packages
-from apio.managers.packages import PackagesContext
+from apio.managers.package_manager import PackageManager
 from apio.utils.resource_util import (
     ProjectResources,
     collect_project_resources,
@@ -139,6 +139,8 @@ class ApioContext:
         "apio_packages_dir",
         "config",
         "profile",
+        "remote_config",
+        "package_manager",
         "platform",
         "platform_id",
         "scons_shell_id",
@@ -248,9 +250,12 @@ class ApioContext:
         self.config = self._load_resource(CONFIG_JSONC, resources_dir)
         validate_config(self.config)
 
-        # -- Profile information, from ~/.apio/profile.json. We provide it with
-        # -- the remote config url template from distribution.jsonc such that
-        # -- can it fetch the remote config on demand.
+        # -- Read the user profile from ~/.apio/profile.json.
+        self.profile = Profile(
+            self.apio_home_dir,
+        )
+
+        # -- Read remote config information, from local cache or remotely..
         remote_config_url = env_options.get(
             env_options.APIO_REMOTE_CONFIG_URL,
             default=self.config["remote-config-url"],
@@ -259,9 +264,9 @@ class ApioContext:
         remote_config_retry_minutes = self.config[
             "remote-config-retry-minutes"
         ]
-        self.profile = Profile(
+
+        self.remote_config = RemoteConfig(
             self.apio_home_dir,
-            self.apio_packages_dir,
             str(remote_config_url),
             remote_config_ttl_days,
             remote_config_retry_minutes,
@@ -285,11 +290,23 @@ class ApioContext:
             self.all_packages, self.apio_packages_dir
         )
 
-        # The subset of packages that are applicable to this platform.
+        # -- The subset of packages that are applicable to this platform.
         self.required_packages = self._select_required_packages_for_platform(
             self.all_packages,
             self.platform_id,
         )
+
+        # -- Instantiate the package manager. All self.* args were already
+        # -- initialized above.
+        self.package_manager: PackageManager = PackageManager(
+            remote_config=self.remote_config,
+            required_packages=self.required_packages,
+            platform=self.platform,
+            apio_home_dir=self.apio_home_dir,
+            packages_dir=self.apio_packages_dir,
+        )
+
+        # -- Apply package policy
 
         # -- Case 1: IGNORE_PACKAGES
         if packages_policy == PackagesPolicy.IGNORE_PACKAGES:
@@ -300,11 +317,11 @@ class ApioContext:
             assert packages_policy == PackagesPolicy.ENSURE_PACKAGES
 
             # -- Install missing packages. At this point, the fields that are
-            # -- required by self.packages_ctx are already initialized.
+            # -- required by self.package_manager are already initialized.
             # --
             # -- TODO: Set verbose=True if APIO_DEBUG is above some level.
-            packages.install_missing_packages_on_the_fly(
-                self.packages_ctx, verbose=False
+            self.package_manager.install_missing_packages_on_the_fly(
+                verbose=False
             )
 
             # -- Load the definitions from the definitions file with possible
@@ -555,18 +572,6 @@ class ApioContext:
                     var_value, package_path
                 )
 
-    def get_required_package_info(self, package_name: str) -> Dict:
-        """Returns the information of the package with given name.
-        The information is a JSON dict originated at packages.json().
-        Exits with an error message if the package is not defined.
-        """
-        package_info = self.required_packages.get(package_name, None)
-        if package_info is None:
-            cerror(f"Unknown package '{package_name}'")
-            sys.exit(1)
-
-        return package_info
-
     def get_package_dir(self, package_name: str) -> Path:
         """Returns the root path of a package with given name."""
 
@@ -614,17 +619,6 @@ class ApioContext:
         if "csh" in shell_path or "tcsh" in shell_path:
             return "cshell"
         return "unknown"
-
-    @property
-    def packages_ctx(self) -> PackagesContext:
-        """Return a PackagesContext with info extracted from this
-        ApioContext."""
-        return PackagesContext(
-            profile=self.profile,
-            required_packages=self.required_packages,
-            platform=self.platform,
-            packages_dir=self.apio_packages_dir,
-        )
 
     @staticmethod
     def _select_required_packages_for_platform(

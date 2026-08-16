@@ -153,7 +153,9 @@ def _list_fpgas_docs_format(apio_ctx: ApioContext):
 
     # -- Get the version of the 'definitions' package use. At this point it's
     # -- expected to be installed.
-    def_version, _ = apio_ctx.profile.get_installed_package_info("definitions")
+    def_version, _ = apio_ctx.package_manager.get_installed_package_info(
+        "definitions"
+    )
 
     # -- Collect the fpagas info into a list of entires, one per fpga.
     entries: List[Entry] = _collect_fpgas_entries(apio_ctx)
