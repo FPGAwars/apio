@@ -93,14 +93,13 @@ class PluginIce40(PluginBase):
         return Builder(
             action=(
                 "nextpnr-ice40 --{0} --package {1} --json $SOURCE "
-                "--asc $TARGET --report {2} --pcf {3} {4} {5} {6}"
+                "--asc $TARGET --report {2} --pcf {3} {4} {5}"
             ).format(
                 params.fpga_info.ice40_params.type,
                 params.fpga_info.ice40_params.package,
                 apio_env.target + ".pnr",
                 self.constrain_file(),
                 "" if params.verbosity.all or params.verbosity.pnr else "-q",
-                "--gui" if params.nextpnr_gui else "",
                 " ".join(params.apio_env_params.nextpnr_extra_options),
             ),
             suffix=".asc",

@@ -118,7 +118,7 @@ class PluginGowin(PluginBase):
             action=(
                 "nextpnr-himbaechel --device {0} --json $SOURCE "
                 "--write $TARGET --report {1} {2} "
-                "--vopt cst={3} {4} {6} {5}"
+                "--vopt cst={3} {4} {5}"
             ).format(
                 params.fpga_info.part_num,
                 apio_env.target + ".pnr",
@@ -129,7 +129,6 @@ class PluginGowin(PluginBase):
                 ),
                 self.constrain_file(),
                 "" if params.verbosity.all or params.verbosity.pnr else "-q",
-                "--gui" if params.nextpnr_gui else "",
                 " ".join(params.apio_env_params.nextpnr_extra_options),
             ),
             suffix=".pnr.json",

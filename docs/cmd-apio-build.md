@@ -35,4 +35,3 @@ apio build --verbose-pnr     # Verbose place and route info
 - Testbench files (`*_tb.v` and `*_tb.sv`) are ignored during build.
 - Running `apio build` before `apio upload` is usually unnecessary.
 - Run `apio clean` before building to force a full rebuild.
-- The `--gui` option launches a Yosys's experimental diagnostics tool.
