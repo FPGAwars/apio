@@ -797,13 +797,15 @@ def _print_pnr_report(
 
     # -- Print hints.
     cout("")
-    if skipped_resources:
-        cout(
-            "Use --all to report also unused resources.",
-            style=INFO,
-        )
     if len(build_report.clocks) == 0:
         cout("No clocks were found in the design.", style=INFO)
+
+    if skipped_resources:
+        cout(
+            "Use --all to report unused resources.",
+            style=INFO,
+        )
+
     if not verbose:
         cout("Use '--verbose' for additional details.", style=INFO)
 
