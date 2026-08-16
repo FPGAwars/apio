@@ -572,18 +572,6 @@ class ApioContext:
                     var_value, package_path
                 )
 
-    def get_required_package_info(self, package_name: str) -> Dict:
-        """Returns the information of the package with given name.
-        The information is a JSON dict originated at packages.json().
-        Exits with an error message if the package is not defined.
-        """
-        package_info = self.required_packages.get(package_name, None)
-        if package_info is None:
-            cerror(f"Unknown package '{package_name}'")
-            sys.exit(1)
-
-        return package_info
-
     def get_package_dir(self, package_name: str) -> Path:
         """Returns the root path of a package with given name."""
 

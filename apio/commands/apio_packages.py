@@ -50,7 +50,9 @@ def print_packages_report(apio_ctx: ApioContext) -> bool:
     get_installed_package_info = (
         apio_ctx.package_manager.get_installed_package_info
     )
-    get_required_package_info = apio_ctx.get_required_package_info
+    get_required_package_info = (
+        apio_ctx.package_manager.get_required_package_info
+    )
 
     table = Table(
         show_header=True,

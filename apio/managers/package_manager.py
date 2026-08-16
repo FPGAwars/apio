@@ -733,3 +733,15 @@ class PackageManager:
             del self.installed_packages[name]
             # self._save()
             self._save_installed_packages()
+
+    def get_required_package_info(self, package_name: str) -> Dict:
+        """Returns the information of the package with given name.
+        The information is a JSON dict originated at packages.json().
+        Exits with an error message if the package is not defined.
+        """
+        package_info = self.required_packages.get(package_name, None)
+        if package_info is None:
+            cerror(f"Unknown package '{package_name}'")
+            sys.exit(1)
+
+        return package_info
