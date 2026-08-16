@@ -197,19 +197,10 @@ class SconsHandler:
         # -- Register the common targets for synth, pnr, and bitstream.
         self._register_common_targets(synth_srcs)
 
-        # -- Determine target file. Normally it's the bitstream file but
-        # -- if building with nextpnr --gui flag we skip the packing step
-        # -- and stop after the nextpnr step.
-        if params.nextpnr_gui:
-            # -- Target is the pnr output file.
-            target_file = (
-                apio_env.target + plugin.plugin_info().pnr_file_suffix
-            )
-        else:
-            # -- Target is the packager's output bitstream file.
-            target_file = (
-                apio_env.target + plugin.plugin_info().bitstream_file_suffix
-            )
+        # -- Target is the packager's output bitstream file.
+        target_file = (
+            apio_env.target + plugin.plugin_info().bitstream_file_suffix
+        )
 
         # -- Top level "build" target.
         apio_env.alias(

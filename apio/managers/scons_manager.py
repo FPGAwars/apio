@@ -168,13 +168,12 @@ class SConsManager:
         return self._run_scons_subprocess("test", scons_params=scons_params)
 
     @on_exception(exit_code=1)
-    def build(self, nextpnr_gui: bool, verbosity: Verbosity) -> Optional[int]:
+    def build(self, verbosity: Verbosity) -> Optional[int]:
         """Runs a scons subprocess with the 'build' target. Returns process
         exit code, 0 if ok."""
 
         # -- Construct the scons params object.
         scons_params = self.construct_scons_params(
-            nextpnr_gui=nextpnr_gui,
             verbosity=verbosity,
         )
 
@@ -219,7 +218,6 @@ class SConsManager:
         self,
         *,
         target_params: TargetParams | None = None,
-        nextpnr_gui: bool = False,
         verbosity: Verbosity | None = None,
     ) -> SconsParams:
         """Populate and return the SconsParam proto to pass to the scons
@@ -230,10 +228,6 @@ class SConsManager:
 
         # -- Create an empty proto object that will be populated.
         result = SconsParams()
-
-        # -- Set the nextpnr_gui if True.
-        if nextpnr_gui:
-            result.nextpnr_gui = True
 
         # -- Populate the timestamp. We use to to make sure scons reads the
         # -- correct version of the scons.params file.

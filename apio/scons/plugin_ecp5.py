@@ -105,7 +105,7 @@ class PluginEcp5(PluginBase):
                 "nextpnr-ecp5 --{0} --package {1} --speed {2} "
                 "--json $SOURCE --textcfg $TARGET "
                 "--report {3} --lpf {4} --timing-allow-fail --force "
-                "{5} {6} {7}"
+                "{5} {6}"
             ).format(
                 params.fpga_info.ecp5_params.type,
                 params.fpga_info.ecp5_params.package,
@@ -113,7 +113,6 @@ class PluginEcp5(PluginBase):
                 apio_env.target + ".pnr",
                 self.constrain_file(),
                 "" if params.verbosity.all or params.verbosity.pnr else "-q",
-                "--gui" if params.nextpnr_gui else "",
                 " ".join(params.apio_env_params.nextpnr_extra_options),
             ),
             suffix=".config",
