@@ -125,7 +125,7 @@ def test_apio_api_get_commands(apio_runner: ApioRunner):
         assert '"api"' in result.output
         assert '"get-boards"' in result.output
 
-        # -- Execute "apio api get-boards -t xyz -o <dir>"  (file)
+        # -- Execute "apio api get-commands -t xyz -o <dir>"  (file)
         path = sb.proj_dir / "apio.json"
         result = sb.invoke_apio_cmd(
             apio, ["api", "get-commands", "-t", "xyz", "-o", str(path)]
@@ -141,6 +141,34 @@ def test_apio_api_get_commands(apio_runner: ApioRunner):
                 "get-boards"
             ]
             == {}
+        )
+
+
+def test_apio_api_get_packages(apio_runner: ApioRunner):
+    """Test "apio api get-packages" """
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Execute "apio api get-packages -t xyz"  (stdout)
+        result = sb.invoke_apio_cmd(apio, ["api", "get-packages", "-t", "xyz"])
+        sb.assert_result_ok(result)
+        assert '"packages":' in result.output
+        assert '"oss-cad-suite":' in result.output
+
+        # -- Execute "apio api get-packages -t xyz -o <dir>"  (file)
+        path = sb.proj_dir / "apio.json"
+        result = sb.invoke_apio_cmd(
+            apio, ["api", "get-packages", "-t", "xyz", "-o", str(path)]
+        )
+        sb.assert_result_ok(result)
+
+        # -- Read and verify the file.
+        text = sb.read_file(path)
+        data = json.loads(text)
+        assert data["timestamp"] == "xyz"
+        assert (
+            "yosys-release-tag"
+            in data["packages"]["oss-cad-suite"]["build-info"]
         )
 
 
