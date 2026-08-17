@@ -46,9 +46,7 @@ apio info platforms   # List supported platform IDs
 
 The `apio info system` command displays general information about your system and Apio installation. Useful for diagnosing setup or environment issues.
 
-
 > [NOTE] For programmatic access to this information use `apio api get-system`.
-
 
 > [ADVANCED] The default location of the Apio home directory, where it saves preferences and packages, is `.apio` under your home directory. This can be changed using the `APIO_HOME` environment variable. The location of the packages directory can be set using the `APIO_PACKAGES` environment variable.
 
@@ -62,6 +60,30 @@ apio info system   # Show system information
 
 ```
 -h, --help  Show this message and exit
+```
+
+---
+
+## apio info project
+
+The command `apio info project` collects general information an apio
+project and displays it in a table format.
+
+> [NOTE] For programmatic access to this information use `apio api get-project`.
+
+<h3>Examples</h3>
+
+```
+apio info project               # Show project info.
+apio info project --env my-env  # Select a specific project env.
+```
+
+<h3>Options</h3>
+
+```
+-e, --env name          Set the apio.ini env.
+-p, --project-dir path  Set the root directory for the project.
+-h, --help              Show this message and exit.
 ```
 
 ---

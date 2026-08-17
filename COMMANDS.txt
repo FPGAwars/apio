@@ -881,6 +881,7 @@ Options:
 
 Subcommands:
   apio info system     Show system information.
+  apio info project    Show project information.
   apio info platforms  Supported platforms.
   apio info colors     Colors table.
   apio info themes     Show apio themes.
@@ -948,6 +949,29 @@ Usage: apio info platforms [OPTIONS]
 
 Options:
   -h, --help  Show this message and exit.
+
+
+
+--------------------------------------------
+
+apio info project
+
+Usage: apio info project [OPTIONS]
+
+  The command 'apio info project' collects general information an apio
+  project and displays it in a table format.
+
+  Examples:
+    apio info project               # Project info.
+    apio info project --env my-env  # Select a specific project env.
+
+  [NOTE] For programmatic access to this information use 'apio api
+  get-project'.
+
+Options:
+  -e, --env name          Set the apio.ini env.
+  -p, --project-dir path  Set the root directory for the project.
+  -h, --help              Show this message and exit.
 
 
 

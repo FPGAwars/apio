@@ -69,3 +69,24 @@ def test_apio_info(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(apio, ["info", "system"])
         sb.assert_result_ok(result)
         assert result.output != cunstyle(result.output)  # Colored
+
+
+def test_apio_info_project(apio_runner: ApioRunner):
+    """Test "apio info project"""
+
+    with apio_runner.in_sandbox() as sb:
+        # -- For debugging table column truncation in github testing.
+        print(f"Apio console width = {cwidth()}")
+
+        # -- Execute "apio examples fetch alhambra-ii/blinky"
+        # -- This will create a valid project in the current directory.
+        result = sb.invoke_apio_cmd(
+            apio, ["examples", "fetch", "alhambra-ii/blinky"]
+        )
+        sb.assert_result_ok(result)
+        assert "'alhambra-ii/blinky' fetched successfully" in result.output
+
+        # -- Execute "apio info project"
+        result = sb.invoke_apio_cmd(apio, ["info", "project"])
+        sb.assert_result_ok(result)
+        assert re.search(r"Active env.*│.*default", result.output)

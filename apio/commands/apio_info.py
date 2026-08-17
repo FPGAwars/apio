@@ -8,7 +8,8 @@
 """Implementation of 'apio info' command"""
 
 import sys
-from typing import List
+from typing import List, Optional
+from pathlib import Path
 from datetime import date
 import click
 from rich.table import Table
@@ -167,6 +168,87 @@ def _system_cli():
     ctable(table)
     cout(
         "For programmatic system info use 'apio api get-system'.",
+        style=INFO,
+    )
+
+
+# ------ apio info project
+
+# -- Text in the rich-text format of the python rich library.
+APIO_INFO_PROJECT_HELP = """
+The command 'apio info project' collects general information an apio \
+project and displays it in a table format.
+
+Examples:[code]
+  apio info project               # Project info.
+  apio info project --env my-env  # Select a specific project env.[/code]
+
+[NOTE] For programmatic access to this information use 'apio api get-project'.
+"""
+
+
+@click.command(
+    name="project",
+    cls=ApioCommand,
+    short_help="Show project information.",
+    help=APIO_INFO_PROJECT_HELP,
+)
+@options.env_option_gen()
+@options.project_dir_option
+def _project_cli(
+    *,
+    # Options
+    env: str,
+    project_dir: Optional[Path],
+):
+    """Implements the 'apio info project' command."""
+
+    # -- Create the apio context. We use 'cached_ok' to cause the config
+    # -- to be loaded so we can report it.
+    apio_ctx = ApioContext(
+        project_policy=ProjectPolicy.PROJECT_REQUIRED,
+        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
+        project_dir_arg=project_dir,
+        env_arg=env,
+        report_env=False,
+    )
+
+    # -- Shortcuts
+    project = apio_ctx.project
+    res = apio_ctx.project_resources
+
+    # -- Define the table.
+    table = Table(
+        show_header=True,
+        show_lines=True,
+        padding=PADDING,
+        box=box.SQUARE,
+        border_style=BORDER,
+        title="Apio project Information",
+        title_justify="left",
+    )
+
+    table.add_column("ITEM", no_wrap=True, min_width=20)
+    table.add_column("VALUE", no_wrap=True, style=EMPH1)
+
+    # -- Add rows
+
+    table.add_row("Total envs", str(len(project.env_names)))
+    table.add_row("Active env", project.env_name)
+    table.add_row("Top module", project.env_options.get("top-module", ""))
+    table.add_row("Board", project.env_options.get("board", ""))
+    table.add_row("Architecture", res.fpga_info.get("arch", ""))
+    table.add_row("FPGA id", res.fpga_id)
+    table.add_row("FPGA part num", res.fpga_info.get("part-num", ""))
+    table.add_row("FPGA size", res.fpga_info.get("size", ""))
+    table.add_row("Programmer", res.programmer_id)
+
+    # -- Render the table.
+    cout()
+    ctable(table)
+    cout(
+        "For programmatic system info use 'apio api get-project'.",
         style=INFO,
     )
 
@@ -578,6 +660,7 @@ SUBGROUPS = [
         "Subcommands",
         [
             _system_cli,
+            _project_cli,
             _platforms_cli,
             _colors_cli,
             _themes_cli,
