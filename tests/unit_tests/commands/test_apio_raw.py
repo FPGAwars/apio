@@ -2,6 +2,7 @@
 
 import os
 import sys
+import re
 from tests.conftest import ApioRunner
 from apio.commands.apio import apio_top_cli as apio
 
@@ -102,3 +103,126 @@ def test_raw_preserves_argv_and_cwd(apio_runner: ApioRunner):
 
         # -- There must be no extra args from re-splitting.
         assert "PROBE-ARG-2" not in result.output
+
+
+def test_raw_icepll(apio_runner: ApioRunner):
+    """Tests that the icepll raw command works"""
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Run 'apio raw -- icepll -i 20 -i 60 -m -f pll.v'
+        result = sb.invoke_apio_cmd(
+            apio,
+            [
+                "raw",
+                "--",
+                "icepll",
+                "-i",
+                "20",
+                "-o",
+                "60",
+                "-m",
+                "-f",
+                "pll.v",
+            ],
+            in_subprocess=True,
+        )
+        print(result.output)
+        sb.assert_result_ok(result)
+        module = sb.read_file("pll.v")
+        print(module)
+
+        assert "module pll" in module
+        assert "SB_PLL40_CORE" in module
+        assert re.search(r"Achieved.+60.000", module)
+        assert "endmodule" in module
+
+
+def test_raw_ecppll(apio_runner: ApioRunner):
+    """Tests that the ecppll raw command works"""
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Run 'apio raw -- ecppll -i 25 -o 120 -f ecppll.v'
+        result = sb.invoke_apio_cmd(
+            apio,
+            ["raw", "--", "ecppll", "-i", "20", "-o", "60", "-f", "pll.v"],
+            in_subprocess=True,
+        )
+        print(result.output)
+        sb.assert_result_ok(result)
+        module = sb.read_file("pll.v")
+        print(module)
+
+        assert "module pll" in module
+        assert "EHXPLLL" in module
+        assert re.search(r"clkout0.+60 MHz", module)
+        assert "endmodule" in module
+
+
+def test_raw_gowin_pll(apio_runner: ApioRunner):
+    """Tests that the gowin_pll raw command works"""
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Run the command
+        # 'apio raw -- gowin_pll -d "GW1NR-LV9QN88PC6/I5"
+        #     -i 27 -o 75 -f pll.v'
+        result = sb.invoke_apio_cmd(
+            apio,
+            [
+                "raw",
+                "--",
+                "gowin_pll",
+                "-d",
+                '"GW1NR-LV9QN88PC6/I5"',
+                "-i",
+                "20",
+                "-o",
+                "60",
+                "-f",
+                "pll.v",
+            ],
+            in_subprocess=True,
+        )
+        print(result.output)
+        sb.assert_result_ok(result)
+        module = sb.read_file("pll.v")
+        print(module)
+
+        assert "module pll" in module
+        assert "rPLL" in module
+        assert re.search(r"Achieved.+60.000", module)
+        assert "endmodule" in module
+
+
+def test_raw_xc7pll(apio_runner: ApioRunner):
+    """Tests that the xc7pll raw command works"""
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Run 'apio raw -- xc7pll -i 100 -o 200 -f pll.v'
+        result = sb.invoke_apio_cmd(
+            apio,
+            [
+                "raw",
+                "--",
+                "xc7pll",
+                "-i",
+                "100",
+                "-o",
+                "200",
+                "-f",
+                "pll.v",
+            ],
+            in_subprocess=True,
+        )
+        print(result.output)
+        sb.assert_result_ok(result)
+        module = sb.read_file("pll.v")
+        print(module)
+
+        assert "module pll" in module
+        assert "PLLE2_BASE" in module
+        assert "requested 200 MHz, exact" in module
+        assert "endmodule" in module

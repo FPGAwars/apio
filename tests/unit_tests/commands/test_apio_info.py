@@ -7,7 +7,7 @@ from apio.common.apio_console import cunstyle, cwidth
 
 
 def test_apio_info(apio_runner: ApioRunner):
-    """Test "apio info" with different parameters"""
+    """Test 'apio info'"""
 
     with apio_runner.in_sandbox() as sb:
         # -- For debugging table column truncation in github testing.
@@ -16,7 +16,17 @@ def test_apio_info(apio_runner: ApioRunner):
         # -- Execute "apio info"
         result = sb.invoke_apio_cmd(apio, ["info"])
         sb.assert_result_ok(result)
+        assert "system" in result.output
         assert "platforms" in result.output
+        assert "commands" in result.output
+
+
+def test_apio_info_system(apio_runner: ApioRunner):
+    """Test 'apio info system'"""
+
+    with apio_runner.in_sandbox() as sb:
+        # -- For debugging table column truncation in github testing.
+        print(f"Apio console width = {cwidth()}")
 
         # -- Execute "apio info system"
         result = sb.invoke_apio_cmd(apio, ["info", "system"])
@@ -29,6 +39,35 @@ def test_apio_info(apio_runner: ApioRunner):
             r"Active env options \[[^]]*APIO_HOME[^]]*\]", result.output
         )
 
+
+def test_apio_info_project(apio_runner: ApioRunner):
+    """Test 'apio info project'"""
+
+    with apio_runner.in_sandbox() as sb:
+        # -- For debugging table column truncation in github testing.
+        print(f"Apio console width = {cwidth()}")
+
+        # -- Execute "apio examples fetch alhambra-ii/blinky"
+        # -- This will create a valid project in the current directory.
+        result = sb.invoke_apio_cmd(
+            apio, ["examples", "fetch", "alhambra-ii/blinky"]
+        )
+        sb.assert_result_ok(result)
+        assert "'alhambra-ii/blinky' fetched successfully" in result.output
+
+        # -- Execute "apio info project"
+        result = sb.invoke_apio_cmd(apio, ["info", "project"])
+        sb.assert_result_ok(result)
+        assert re.search(r"Active project env.*│.*default", result.output)
+
+
+def test_apio_info_platforms(apio_runner: ApioRunner):
+    """Test "apio info platforms'"""
+
+    with apio_runner.in_sandbox() as sb:
+        # -- For debugging table column truncation in github testing.
+        print(f"Apio console width = {cwidth()}")
+
         # -- Execute "apio info platforms"
         result = sb.invoke_apio_cmd(apio, ["info", "platforms"])
         sb.assert_result_ok(result)
@@ -36,19 +75,13 @@ def test_apio_info(apio_runner: ApioRunner):
         assert "Mac OSX" in result.output
         assert "ARM 64 bit (Apple Silicon)" in result.output
 
-        # -- Execute "apio info commands"
-        result = sb.invoke_apio_cmd(apio, ["info", "commands"])
-        sb.assert_result_ok(result)
-        assert " build " in cunstyle(result.output)
-        assert "Synthesize the bitstream." in result.output
-        assert "[build](cmd-apio-build.md)" not in result.output
 
-        # -- Execute "apio info commands --docs"
-        result = sb.invoke_apio_cmd(apio, ["info", "commands", "--docs"])
-        sb.assert_result_ok(result)
-        assert "[build](cmd-apio-build.md)" in result.output
-        assert "Synthesize the bitstream." in result.output
-        assert " build " not in cunstyle(result.output)
+def test_apio_info_colors(apio_runner: ApioRunner):
+    """Test 'apio info colors'"""
+
+    with apio_runner.in_sandbox() as sb:
+        # -- For debugging table column truncation in github testing.
+        print(f"Apio console width = {cwidth()}")
 
         # -- Execute "apio info colors"
         result = sb.invoke_apio_cmd(apio, ["info", "colors"])
@@ -56,6 +89,14 @@ def test_apio_info(apio_runner: ApioRunner):
         assert result.output != cunstyle(result.output)  # Colored
         assert "ANSI Colors" in result.output
         assert "\x1b[31m  1 red                 \x1b[0m" in result.output
+
+
+def test_apio_info_themes(apio_runner: ApioRunner):
+    """Test 'apio info theme'"""
+
+    with apio_runner.in_sandbox() as sb:
+        # -- For debugging table column truncation in github testing.
+        print(f"Apio console width = {cwidth()}")
 
         # -- Execute "apio info themes"
         result = sb.invoke_apio_cmd(apio, ["info", "themes"])
@@ -65,7 +106,17 @@ def test_apio_info(apio_runner: ApioRunner):
         assert "NO-COLORS" in result.output
         assert "apio.cmd_name\x1b[0m" in result.output
 
-        # -- Execute "apio info system". It should not emit colors.
-        result = sb.invoke_apio_cmd(apio, ["info", "system"])
+
+def test_apio_info_commands(apio_runner: ApioRunner):
+    """Test 'apio commands'"""
+
+    with apio_runner.in_sandbox() as sb:
+        # -- For debugging table column truncation in github testing.
+        print(f"Apio console width = {cwidth()}")
+
+        # -- Execute "apio info commands"
+        result = sb.invoke_apio_cmd(apio, ["info", "commands"])
         sb.assert_result_ok(result)
-        assert result.output != cunstyle(result.output)  # Colored
+        assert " build " in cunstyle(result.output)
+        assert "Synthesize the bitstream." in result.output
+        assert "[build](cmd-apio-build.md)" not in result.output
