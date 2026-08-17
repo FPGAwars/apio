@@ -58,7 +58,7 @@ def test_apio_info_project(apio_runner: ApioRunner):
         # -- Execute "apio info project"
         result = sb.invoke_apio_cmd(apio, ["info", "project"])
         sb.assert_result_ok(result)
-        assert re.search(r"Active env.*│.*default", result.output)
+        assert re.search(r"Active project env.*│.*default", result.output)
 
 
 def test_apio_info_platforms(apio_runner: ApioRunner):

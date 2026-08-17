@@ -104,35 +104,23 @@ class ApioDefinitions:
         assert self.fpgas
         assert self.programmers
 
-    def annotate_custom_board(
-        self, board_id: str, fmt: str = "{} [custom]"
-    ) -> str:
-        """If board is a project's custom definition, apply to it fmt,
-        otherwise return it as is."""
+    def is_custom_board(self, board_id: str) -> bool:
+        """Returns true if the board's definition was loaded from a
+        project's boards.jsonc file."""
         assert board_id in self.boards, board_id
-        if board_id in self.custom_boards_ids:
-            return fmt.format(board_id)
-        return board_id
+        return board_id in self.custom_boards_ids
 
-    def annotate_custom_fpga(
-        self, fpga_id: str, fmt: str = "{} [custom]"
-    ) -> str:
-        """If fpga is a project's custom definition, apply to it fmt,
-        otherwise return it as is."""
+    def is_custom_fpga(self, fpga_id: str) -> bool:
+        """Returns true if the fpga's definition was loaded from a
+        project's fpgas.jsonc file."""
         assert fpga_id in self.fpgas, fpga_id
-        if fpga_id in self.custom_fpgas_ids:
-            return fmt.format(fpga_id)
-        return fpga_id
+        return fpga_id in self.custom_fpgas_ids
 
-    def annotate_custom_programmer(
-        self, programmer_id: str, fmt: str = "{} [custom]"
-    ) -> str:
-        """If programmer is a project's custom definition, apply to it fmt,
-        otherwise return it as is."""
+    def is_custom_programmer(self, programmer_id: str) -> bool:
+        """Returns true if the programmer's definition was loaded from a
+        project's programmers.jsonc file."""
         assert programmer_id in self.programmers, programmer_id
-        if programmer_id in self.custom_programmers_ids:
-            return fmt.format(programmer_id)
-        return programmer_id
+        return programmer_id in self.custom_programmers_ids
 
 
 @dataclass(frozen=True)

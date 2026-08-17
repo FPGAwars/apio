@@ -234,15 +234,36 @@ def _project_cli(
 
     # -- Add rows
 
-    table.add_row("Total envs", str(len(project.env_names)))
-    table.add_row("Active env", project.env_name)
-    table.add_row("Top module", project.env_options.get("top-module", ""))
-    table.add_row("Board", project.env_options.get("board", ""))
-    table.add_row("Architecture", res.fpga_info.get("arch", ""))
-    table.add_row("FPGA id", res.fpga_id)
+    board_id = project.env_options["board"]
+    fpga_id = res.fpga_id
+    programmer_id = res.programmer_id
+
+    defs = apio_ctx.definitions
+
+    board_definition = (
+        "User custom" if defs.is_custom_board(board_id) else "Apio standard"
+    )
+    fpga_definition = (
+        "User custom" if defs.is_custom_fpga(fpga_id) else "Apio standard"
+    )
+    programmer_definition = (
+        "User custom"
+        if defs.is_custom_programmer(programmer_id)
+        else "Apio standard"
+    )
+
+    table.add_row("Total project envs", str(len(project.env_names)))
+    table.add_row("Active project env", project.env_name)
+    table.add_row("Top module name", project.env_options.get("top-module", ""))
+    table.add_row("Board id", board_id)
+    table.add_row("Board definition", board_definition)
+    table.add_row("FPGA id", fpga_id)
+    table.add_row("FPGA definition", fpga_definition)
     table.add_row("FPGA part num", res.fpga_info.get("part-num", ""))
+    table.add_row("FPGA Architecture", res.fpga_info.get("arch", ""))
     table.add_row("FPGA size", res.fpga_info.get("size", ""))
-    table.add_row("Programmer", res.programmer_id)
+    table.add_row("Programmer id", programmer_id)
+    table.add_row("Programmer definition", programmer_definition)
 
     # -- Render the table.
     cout()
