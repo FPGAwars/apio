@@ -132,9 +132,9 @@ jobs:
     uses: ./.github/workflows/build-windows-amd64.yaml
     secrets: inherit
 
-  # # ----- Release creation job
+  # # ----- Create the pre-release with the generated files.
 
-  release:
+  pre-release:
     needs:
       [prepare, build-darwin-arm64, prepare, build-linux-x86-64, build-windows-amd64]
 
