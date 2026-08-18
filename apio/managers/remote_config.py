@@ -244,7 +244,7 @@ class RemoteConfig:
     def _skipping_cache_msg(reason: str):
         """Show a message indicating that the cached remote config is being
         skipped."""
-        cout(f"Cached remote config unsuitable ({reason}).", style=INFO)
+        cout(f"Cached remote config is unsuitable ({reason}).", style=INFO)
 
     def _apply_remote_config_policy(self) -> None:
         """Called after loading the profile file, to apply the remote config
