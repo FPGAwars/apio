@@ -22,7 +22,7 @@
         "name": "apio-definitions"
       },
       "release": {
-        "tag": "2026-08-07",
+        "tag": "2026-08-18",
         "package": "apio-definitions-${YYYYMMDD}.tgz"
       }
     },
