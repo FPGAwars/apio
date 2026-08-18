@@ -344,7 +344,8 @@ def _get_project_cli(
         report_env=False,
     )
 
-    # -- Change to the project's folder.
+    # -- Change to the project's folder for function such as
+    # -- get_project_source_files() which expects to run at the project root.
     os.chdir(apio_ctx.project_dir)
 
     # -- The top dict that we will emit as json.
