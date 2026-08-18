@@ -20,7 +20,14 @@ from apio.commands import options
 from apio.managers.examples import Examples, ExampleInfo
 from apio.common.apio_console import cout, cerror
 from apio.common.common_util import get_project_source_files
-from apio.utils import cmd_util, usb_util, serial_util, util, apio_platforms
+from apio.utils import (
+    cmd_util,
+    usb_util,
+    serial_util,
+    util,
+    apio_platforms,
+    env_options,
+)
 from apio.utils.usb_util import UsbDevice
 from apio.utils.serial_util import SerialDevice
 from apio.common.apio_styles import (
@@ -188,6 +195,12 @@ def _get_system_cli(
     section_dict["verible-language-server"] = str(
         apio_ctx.apio_packages_dir / "verible/bin/verible-verilog-ls"
     )
+
+    # -- Include all supported apio env vars, defined and undefined.
+    apio_vars_dict = {
+        var: env_options.get(var, None) for var in env_options.get_all()
+    }
+    section_dict["apio-env-vars"] = apio_vars_dict
 
     # -- Add section
     top_dict["system"] = section_dict

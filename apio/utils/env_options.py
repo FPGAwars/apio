@@ -57,8 +57,8 @@ _SUPPORTED_APIO_VARS = [
     APIO_HOME,
     APIO_PACKAGES,
     APIO_PLATFORM,
-    APIO_DEBUG,
     APIO_REMOTE_CONFIG_URL,
+    APIO_DEBUG,
 ]
 
 
@@ -112,3 +112,8 @@ def get_defined() -> List[str]:
         if is_defined(var):
             result.append(var)
     return result
+
+
+def get_all() -> List[str]:
+    """Return the list of all of apio supported env vars."""
+    return _SUPPORTED_APIO_VARS.copy()
