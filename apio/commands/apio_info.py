@@ -15,9 +15,10 @@ import click
 from rich.table import Table
 from rich.text import Text
 from rich import box
+from rich import markup
 from rich.color import ANSI_COLOR_NAMES
 from apio.common.apio_styles import BORDER, EMPH1, EMPH2, EMPH3, INFO
-from apio.utils import util, apio_platforms
+from apio.utils import util, apio_platforms, env_options
 from apio.commands import options
 from apio.apio_context import (
     ApioContext,
@@ -162,6 +163,11 @@ def _system_cli():
         "Veriable language server",
         str(apio_ctx.apio_packages_dir / "verible/bin/verible-verilog-ls"),
     )
+
+    # -- Add a row for each define apio env var (e.g.APIO_DEBUG)
+    for var in env_options.get_defined():
+        val = env_options.get(var)
+        table.add_row(var, markup.escape(val))
 
     # -- Render the table.
     cout()

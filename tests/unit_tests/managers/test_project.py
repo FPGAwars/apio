@@ -181,31 +181,31 @@ def test_macro_expansion(apio_runner: ApioRunner, capsys: CaptureFixture):
     ]
 
 
-def test_legacy_board_id(apio_runner: ApioRunner, capsys: CaptureFixture):
-    """Tests with 'board' option having a legacy board id. It should
-    be converted to the canonical board id"""
+# def test_legacy_board_id(apio_runner: ApioRunner, capsys: CaptureFixture):
+#     """Tests with 'board' option having a legacy board id. It should
+#     be converted to the canonical board id"""
 
-    project, stdout = load_apio_ini(
-        apio_ini={
-            "[env:default]": {
-                "board": "iCE40-HX8K",
-                "top-module": "my_top_module",
-            }
-        },
-        env_arg=None,
-        apio_runner=apio_runner,
-        capsys=capsys,
-    )
+#     project, stdout = load_apio_ini(
+#         apio_ini={
+#             "[env:default]": {
+#                 "board": "iCE40-HX8K",
+#                 "top-module": "my_top_module",
+#             }
+#         },
+#         env_arg=None,
+#         apio_runner=apio_runner,
+#         capsys=capsys,
+#     )
 
-    assert project.env_name == "default"
-    assert project.env_options == {
-        "board": "ice40-hx8k",
-        "top-module": "my_top_module",
-    }
-    assert (
-        "Warning: 'Board iCE40-HX8K' was renamed to 'ice40-hx8k'. "
-        "Please update apio.ini" in stdout
-    )
+#     assert project.env_name == "default"
+#     assert project.env_options == {
+#         "board": "ice40-hx8k",
+#         "top-module": "my_top_module",
+#     }
+#     assert (
+#         "Warning: 'Board iCE40-HX8K' was renamed to 'ice40-hx8k'. "
+#         "Please update apio.ini" in stdout
+#     )
 
 
 def test_legacy_apio_ini(apio_runner: ApioRunner, capsys: CaptureFixture):

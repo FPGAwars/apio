@@ -29,7 +29,6 @@ BOARD_SCHEMA = schema = {
     "required": ["description", "fpga-id", "programmer"],
     "properties": {
         "description": {"type": "string"},
-        "legacy-name": {"type": "string"},
         "fpga-id": {"type": "string"},
         "programmer": {
             "type": "object",

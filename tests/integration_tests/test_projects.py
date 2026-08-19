@@ -10,43 +10,6 @@ from tests.conftest import ApioRunner
 from apio.commands.apio import apio_top_cli as apio
 
 
-def test_project_with_legacy_board_id(apio_runner: ApioRunner):
-    """Test a project that uses a legacy board id."""
-
-    # -- We shared the apio home with the other tests in this file to speed
-    # -- up apio package installation. Tests should not mutate the shared home
-    # -- to avoid cross-interference between tests in this file.
-    with apio_runner.in_sandbox() as sb:
-
-        # -- Fetch an example of a board that has a legacy name.
-        result = sb.invoke_apio_cmd(
-            apio, ["examples", "fetch", "ice40-hx8k/leds"]
-        )
-        sb.assert_result_ok(result)
-
-        # -- Run 'apio build'
-        result = sb.invoke_apio_cmd(apio, ["build"])
-        sb.assert_result_ok(result)
-
-        # -- Modify the apio.ini to have the legacy board id
-        sb.write_apio_ini(
-            {
-                "[env:default]": {
-                    "board": "iCE40-HX8K",
-                    "top-module": "leds",
-                }
-            }
-        )
-
-        # -- Run 'apio clean'
-        result = sb.invoke_apio_cmd(apio, ["clean"])
-        sb.assert_result_ok(result)
-
-        # -- Run 'apio build' again. It should also succeed.
-        result = sb.invoke_apio_cmd(apio, ["build"])
-        sb.assert_result_ok(result)
-
-
 def _test_project(
     apio_runner: ApioRunner,
     *,

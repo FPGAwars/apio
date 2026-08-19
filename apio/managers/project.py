@@ -141,13 +141,6 @@ class Project:
                 cout(ENV_NAME_HINT, style=INFO)
                 sys.exit(1)
 
-        # -- Patch legacy board ids in the common and env sections.
-        Project._patch_legacy_board_id(
-            common_section, boards  # pyright: ignore[reportArgumentType]
-        )
-        for section_options in env_sections.values():
-            Project._patch_legacy_board_id(section_options, boards)
-
         # -- Validate the apio.ini sections. We prefer to perform as much
         # -- validation as possible before we expand the env because the env
         # -- expansion may hide some options.
@@ -180,39 +173,6 @@ class Project:
             cout(f"  {self.env_name}\n")
             cout("Expanded env options:", style=EMPH2)
             cout(f"  {self.env_options}\n")
-
-    @staticmethod
-    def _patch_legacy_board_id(
-        section_options: Dict[str, str], boards: Dict[str, Dict]
-    ) -> Optional[str]:
-        """Temporary patching of old board ids to new in an env or common
-        section. If there is a "board" option with a legacy board id,
-        then change it to the board's canonical name. Otherwise, leave the
-        options as are."""
-
-        # -- Get the value of the "board" option.
-        board_id = section_options.get("board", None)
-
-        # -- Nothing to do if no "board" option.
-        if board_id is None:
-            return
-
-        # -- Nothing to do if board_id is in the boards dict. It's
-        # -- a good (new style) board id.
-        if board_id in boards:
-            return
-
-        # -- Iterate the boards and if board_id matches the legacy name of
-        # -- a board, change the "board" option to the canonical name of that
-        # -- board.
-        for canonical_id, board_info in boards.items():
-            if board_id == board_info.get("legacy-name", None):
-                section_options["board"] = canonical_id
-                cwarning(
-                    f"'Board {board_id}' was renamed to '{canonical_id}'. "
-                    "Please update apio.ini."
-                )
-                return
 
     @staticmethod
     def _validate_all_sections(

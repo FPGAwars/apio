@@ -169,7 +169,7 @@ def test_cached_config_ok(apio_runner: ApioRunner, capsys: LogCaptureFixture):
             packages_policy=PackagesPolicy.IGNORE_PACKAGES,
         )
         log = capsys.readouterr().out
-        assert "Cached remote config unsuitable" not in log
+        assert "Cached remote config is unsuitable" not in log
         assert "Fetching" not in log
         assert apio_ctx.remote_config.data == test_data["remote-config"]
 
@@ -214,7 +214,9 @@ def test_cached_config_different_apio_version(
         )
 
         log = capsys.readouterr().out
-        assert "Cached remote config unsuitable (Apio version mismatch)" in log
+        assert (
+            "Cached remote config is unsuitable (Apio version mismatch)" in log
+        )
         assert "Fetching" in log
         assert apio_ctx.remote_config.data == base_apio_ctx.remote_config.data
 
@@ -260,7 +262,9 @@ def test_cached_config_different_apio_src_url(
         )
 
         log = capsys.readouterr().out
-        assert "Cached remote config unsuitable (source URL mismatch)" in log
+        assert (
+            "Cached remote config is unsuitable (source URL mismatch)" in log
+        )
         assert "Fetching" in log
         assert apio_ctx.remote_config.data == base_apio_ctx.remote_config.data
 
@@ -304,7 +308,7 @@ def test_cached_remote_config_too_old(
             packages_policy=PackagesPolicy.IGNORE_PACKAGES,
         )
         log = capsys.readouterr().out
-        assert "Cached remote config unsuitable (stale)" in log
+        assert "Cached remote config is unsuitable (stale)" in log
         assert "Fetching" in log
         assert apio_ctx.remote_config.data == base_apio_ctx.remote_config.data
 
@@ -350,7 +354,7 @@ def test_cached_remote_config_too_new(
             packages_policy=PackagesPolicy.IGNORE_PACKAGES,
         )
         log = capsys.readouterr().out
-        assert "Cached remote config unsuitable (stale)" in log
+        assert "Cached remote config is unsuitable (stale)" in log
         assert "Fetching" in log
         assert apio_ctx.remote_config.data == base_apio_ctx.remote_config.data
 
@@ -392,7 +396,7 @@ def test_corrupt_cached_remote_config(
             packages_policy=PackagesPolicy.IGNORE_PACKAGES,
         )
         log = capsys.readouterr().out
-        assert "Cached remote config unsuitable (could'nt parse)" in log
+        assert "Cached remote config is unsuitable (could'nt parse)" in log
         assert "Fetching" in log
         assert apio_ctx.remote_config.data == base_apio_ctx.remote_config.data
 
@@ -417,7 +421,7 @@ def test_no_cached_remote_config(
             packages_policy=PackagesPolicy.IGNORE_PACKAGES,
         )
         log = capsys.readouterr().out
-        assert "Cached remote config unsuitable (no cache file)" in log
+        assert "Cached remote config is unsuitable (no cache file)" in log
         assert "Fetching" in log
         assert "oss-cad-suite" in apio_ctx.remote_config.data["packages"]
 
@@ -462,6 +466,6 @@ def test_forced_fresh_remote_config_ok(
             packages_policy=PackagesPolicy.IGNORE_PACKAGES,
         )
         log = capsys.readouterr().out
-        assert "Cached remote config unsuitable" not in log
+        assert "Cached remote config is unsuitable" not in log
         assert "Fetching" in log
         assert apio_ctx.remote_config.data == base_apio_ctx.remote_config.data
