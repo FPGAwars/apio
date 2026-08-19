@@ -53,7 +53,7 @@ Apio CLI is a powerful yet easy-to-use command line tool for FPGA development us
 
 Apio CLI supports every stage of the FPGA workflow, from simulating and testing, to building and programming the FPGA, using simple commands such as `apio test`, `apio build`, and `apio upload` that do what you expect them to do.
 
-Apio CLI currently supports over 80 FPGA boards, custom boards can be easily added, and it includes over 60 ready-to-use example projects. Apio CLI currently supports the ICE40, ECP5, and GOWIN FPGA architectures.
+Apio CLI currently supports over 80 FPGA boards, custom boards can be easily added, and it includes over 60 ready-to-use example projects. Apio CLI currently supports the ICE40, ECP5, and Gowin FPGA and Xilinx architectures.
 
 ## Sample Apio CLI session
 
