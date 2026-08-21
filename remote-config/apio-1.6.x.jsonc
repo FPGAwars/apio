@@ -18,8 +18,8 @@
     // -- Definitions package
     "definitions": {
       "repository": {
-        "organization": "fpgawars",
-        "name": "apio-definitions"
+        "name": "apio-definitions",
+        "organization": "fpgawars"
       },
       "release": {
         "tag": "2026-08-19",
@@ -29,8 +29,8 @@
     // -- Examples package
     "examples": {
       "repository": {
-        "organization": "fpgawars",
-        "name": "apio-examples"
+        "name": "apio-examples",
+        "organization": "fpgawars"
       },
       "release": {
         "tag": "2026-08-19",
@@ -40,8 +40,8 @@
     // -- OSS Cad Suite package (Yosys)
     "oss-cad-suite": {
       "repository": {
-        "organization": "fpgawars",
-        "name": "tools-oss-cad-suite"
+        "name": "tools-oss-cad-suite",
+        "organization": "fpgawars"
       },
       "release": {
         "tag": "2026-08-19",
@@ -51,8 +51,8 @@
     // -- Openxc7 toolchain (nextpnr-xilinx)
     "openxc7": {
       "repository": {
-        "organization": "fpgawars",
-        "name": "tools-openxc7"
+        "name": "tools-openxc7",
+        "organization": "fpgawars"
       },
       "release": {
         "tag": "2026-08-20",
@@ -62,8 +62,8 @@
     // -- Graphviz package
     "graphviz": {
       "repository": {
-        "organization": "fpgawars",
-        "name": "tools-graphviz"
+        "name": "tools-graphviz",
+        "organization": "fpgawars"
       },
       "release": {
         "tag": "2026-08-19",
@@ -73,8 +73,8 @@
     // -- Verible package
     "verible": {
       "repository": {
-        "organization": "fpgawars",
-        "name": "tools-verible"
+        "name": "tools-verible",
+        "organization": "fpgawars"
       },
       "release": {
         "tag": "2026-08-19",
@@ -84,8 +84,8 @@
     // -- Drivers package
     "drivers": {
       "repository": {
-        "organization": "fpgawars",
-        "name": "tools-drivers"
+        "name": "tools-drivers",
+        "organization": "fpgawars"
       },
       "release": {
         "tag": "2026-08-19",
