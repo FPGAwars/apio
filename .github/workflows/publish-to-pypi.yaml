@@ -75,8 +75,11 @@ jobs:
           python-version: "3.13"
 
       # -- Install dependencies.
+      # --
+      # -- TODO: Using an old flit as a quick workaround for publishing
+      # -- failure in Apio issue 948. Find a more long term solution.
       - name: Install dependencies
-        run: python -m pip install --upgrade pip build flit
+        run: python -m pip install --upgrade pip build "flit<4"
 
       - name: Build package distributions
         run: |
