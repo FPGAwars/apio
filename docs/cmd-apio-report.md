@@ -8,22 +8,19 @@ The `apio report` command provides resource utilization and timing
 information for the design. It helps identify bottlenecks and verify
 whether the design meets its target clock speed.
 
-By default, the command reports only the used resources. To also
-include unused resources, use the `--all` option. The `--verbose`
-option prints additional information and implies `--all`.
+The `--verbose` option prints additional information such as as unused
+resources and critical nets.
 
 <h3>Examples</h3>
 
 ```
 apio report            # Show report
-apio report --all      # Report also unused resources.
 apio report --verbose  # Show detailed report
 ```
 
 <h3>Options</h3>
 
 ```
--a, --all               Show also unused resources.
 -e, --env name          Use a named environment from apio.ini
 -p, --project-dir path  Specify the project root directory
 -v, --verbose           Show detailed output

@@ -40,19 +40,6 @@ def env_option_gen(*, short_help: str = "Set the apio.ini env."):
     )
 
 
-def all_option_gen(*, short_help: str):
-    """Generate an --all option with given help text."""
-
-    return click.option(
-        "all_",  # Var name. Deconflicting from Python'g builtin 'all'.
-        "-a",
-        "--all",
-        is_flag=True,
-        help=short_help,
-        cls=cmd_util.ApioOption,
-    )
-
-
 def force_option_gen(*, short_help: str):
     """Generate a --force option with given help text."""
 
