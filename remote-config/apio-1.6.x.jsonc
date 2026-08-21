@@ -1,0 +1,96 @@
+// Remote config file for Apio versions 1.6.x.
+//
+// Supported vars (see installer.py for details):
+//
+//   ${PLATFORM}         - platform id (from apio_platforms.py)
+//   ${YYYYMMDD}         - the YYYY-MM_DD tag converted to YYYYMMDD
+//
+// NOTE: Github has a cache propagation of about 1 min between the
+// time this file is submitted and until it's available for download.
+//
+// NOTE: Apio examines at runtie the BUILD-INFO.json files of the
+// oss-cad-suite and openxc7 packages and asserts that they have
+// the same "yosys-release-tag" value. That is, they were built
+// against the same release of the Yosys oss-cad-suite package.
+//
+{
+  "packages": {
+    // -- Definitions package
+    "definitions": {
+      "repository": {
+        "organization": "fpgawars",
+        "name": "apio-definitions"
+      },
+      "release": {
+        "tag": "2026-08-19",
+        "package": "apio-definitions-${YYYYMMDD}.tgz"
+      }
+    },
+    // -- Examples package
+    "examples": {
+      "repository": {
+        "organization": "fpgawars",
+        "name": "apio-examples"
+      },
+      "release": {
+        "tag": "2026-08-19",
+        "package": "apio-examples-${YYYYMMDD}.tgz"
+      }
+    },
+    // -- OSS Cad Suite package (Yosys)
+    "oss-cad-suite": {
+      "repository": {
+        "organization": "fpgawars",
+        "name": "tools-oss-cad-suite"
+      },
+      "release": {
+        "tag": "2026-08-19",
+        "package": "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.tgz"
+      }
+    },
+    // -- Openxc7 toolchain (nextpnr-xilinx)
+    "openxc7": {
+      "repository": {
+        "organization": "fpgawars",
+        "name": "tools-openxc7"
+      },
+      "release": {
+        "tag": "2026-08-20",
+        "package": "apio-openxc7-${PLATFORM}-${YYYYMMDD}.tgz"
+      }
+    },
+    // -- Graphviz package
+    "graphviz": {
+      "repository": {
+        "organization": "fpgawars",
+        "name": "tools-graphviz"
+      },
+      "release": {
+        "tag": "2026-08-19",
+        "package": "apio-graphviz-${PLATFORM}-${YYYYMMDD}.tgz"
+      }
+    },
+    // -- Verible package
+    "verible": {
+      "repository": {
+        "organization": "fpgawars",
+        "name": "tools-verible"
+      },
+      "release": {
+        "tag": "2026-08-19",
+        "package": "apio-verible-${PLATFORM}-${YYYYMMDD}.tgz"
+      }
+    },
+    // -- Drivers package
+    "drivers": {
+      "repository": {
+        "organization": "fpgawars",
+        "name": "tools-drivers"
+      },
+      "release": {
+        "tag": "2026-08-19",
+        "package": "apio-drivers-${PLATFORM}-${YYYYMMDD}.tgz"
+      }
+    }
+  }
+}
