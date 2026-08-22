@@ -1126,11 +1126,16 @@ Usage: apio packages list [OPTIONS]
   Apio packages. The list of available packages depends on the operating
   system you are using and may vary between operating systems.
 
+  The option '--check' causes the command to fail and exit with an error
+  status code if the packages are not installed properly.
+
   Examples:
-    apio packages list
+    apio packages list          # Just report
+    apio packages list --check  # Also fail if packages unhealthy
 
 Options:
-  -h, --help  Show this message and exit.
+  -c, --check  Error on unhealthy packages.
+  -h, --help   Show this message and exit.
 
 
 
