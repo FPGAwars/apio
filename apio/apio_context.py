@@ -13,7 +13,7 @@ import platform
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import List, Optional, Dict, Set, Tuple
+from typing import List, Optional, Dict
 from apio.common.apio_console import cout, cerror, cstyle
 from apio.common.apio_styles import INFO, EMPH1, EMPH2, EMPH3
 from apio.common.common_util import env_build_path
@@ -23,10 +23,11 @@ from apio.utils import jsonc, util, env_options, apio_platforms
 from apio.utils.apio_platforms import ApioPlatform
 from apio.managers.project import Project, load_project_from_file
 from apio.managers.package_manager import PackageManager
+from apio.managers.apio_definitions import ApioDefinitions
 from apio.utils.resource_util import (
     ProjectResources,
     collect_project_resources,
-    validate_project_resources,
+    # validate_project_resources,
     validate_config,
     validate_packages,
 )
@@ -42,85 +43,12 @@ RESOURCES_DIR = "resources"
 # -- packages: Repository, version, name...
 PACKAGES_JSONC = "packages.jsonc"
 
-# -----------------------------------------
-# ---- File: resources/boards.jsonc
-# -----------------------------------------
-# -- Information about all the supported boards
-# -- names, fpga family, programmer, ftdi description, vendor id, product id
-BOARDS_JSONC = "boards.jsonc"
-
-# -----------------------------------------
-# ---- File: resources/fpgas.jsonc
-# -----------------------------------------
-# -- Information about all the supported fpgas
-# -- arch, type, size, packaging
-FPGAS_JSONC = "fpgas.jsonc"
-
-# -----------------------------------------
-# ---- File: resources/programmers.jsonc
-# -----------------------------------------
-# -- Information about all the supported programmers
-# -- name, command to execute, arguments...
-PROGRAMMERS_JSONC = "programmers.jsonc"
 
 # -----------------------------------------
 # ---- File: resources/config.jsonc
 # -----------------------------------------
 # -- General config information.
 CONFIG_JSONC = "config.jsonc"
-
-
-@dataclass(frozen=True)
-class ApioDefinitions:
-    """Contains the apio definitions in the form of json dictionaries."""
-
-    # -- A json dict with the content of boards.jsonc (apio standard +
-    # -- project custom, with project custom having higher priority)
-    boards: Dict[str, Dict]
-
-    # -- A subset of the keys in self.fpgas that where found in a project
-    # -- specific custom boards.jsonc
-    custom_boards_ids: Set[str]
-
-    # -- A json dict with the content of fpgas.jsonc (apio standard +
-    # -- project custom, with project custom having higher priority)
-    fpgas: Dict[str, Dict]
-
-    # -- A subset of the keys in self.fpgas that where found in a project
-    # -- custom fpgas.jsonc
-    custom_fpgas_ids: Set[str]
-
-    # -- A json dict with the content of programmers.jsonc (apio standard +
-    # -- project custom, with project custom having higher priority)
-    programmers: Dict[str, Dict]
-
-    # -- A subset of the keys in self.programmers that where found in a project
-    # -- custom programmers.jsonc
-    custom_programmers_ids: Set[str]
-
-    def __post_init__(self):
-        """Assert that all fields initialized to actual values."""
-        assert self.boards
-        assert self.fpgas
-        assert self.programmers
-
-    def is_custom_board(self, board_id: str) -> bool:
-        """Returns true if the board's definition was loaded from a
-        project's boards.jsonc file."""
-        assert board_id in self.boards, board_id
-        return board_id in self.custom_boards_ids
-
-    def is_custom_fpga(self, fpga_id: str) -> bool:
-        """Returns true if the fpga's definition was loaded from a
-        project's fpgas.jsonc file."""
-        assert fpga_id in self.fpgas, fpga_id
-        return fpga_id in self.custom_fpgas_ids
-
-    def is_custom_programmer(self, programmer_id: str) -> bool:
-        """Returns true if the programmer's definition was loaded from a
-        project's programmers.jsonc file."""
-        assert programmer_id in self.programmers, programmer_id
-        return programmer_id in self.custom_programmers_ids
 
 
 @dataclass(frozen=True)
@@ -185,7 +113,7 @@ class ApioContext:
         "_project_dir",
         "_project",
         "_project_resources",
-        "_definitions",
+        "definitions",
     )
 
     def __init__(
@@ -216,7 +144,6 @@ class ApioContext:
 
         # pylint: disable=too-many-arguments
         # pylint: disable=too-many-statements
-        # pylint: disable=too-many-locals
 
         # -- Sanity check the policies.
         assert isinstance(project_policy, ProjectPolicy)
@@ -282,7 +209,7 @@ class ApioContext:
         resources_dir = util.get_path_in_apio_package(RESOURCES_DIR)
 
         # -- Read and validate the config information
-        self.config, _ = self._load_resource(CONFIG_JSONC, resources_dir)
+        self.config = self._load_resource_file(CONFIG_JSONC, resources_dir)
         validate_config(self.config)
 
         # -- Read the user profile from ~/.apio/profile.json.
@@ -317,7 +244,7 @@ class ApioContext:
         self.scons_shell_id = self._determine_scons_shell_id(self.platform)
 
         # -- Read the apio packages information
-        self.all_packages, _ = self._load_resource(
+        self.all_packages = self._load_resource_file(
             PACKAGES_JSONC, resources_dir
         )
         validate_packages(self.all_packages)
@@ -347,7 +274,7 @@ class ApioContext:
 
         # -- Case 1: IGNORE_PACKAGES
         if packages_policy == PackagesPolicy.IGNORE_PACKAGES:
-            self._definitions = None
+            self.definitions = None
 
         # -- Case 2: ENSURE_PACKAGES
         else:
@@ -361,25 +288,11 @@ class ApioContext:
                 verbose=False
             )
 
-            # -- Load the definitions from the definitions file with possible
-            # -- override by the optional project file.
-            definitions_dir = self.apio_packages_dir / "definitions"
-            boards, custom_boards_ids = self._load_resource(
-                BOARDS_JSONC, definitions_dir, self._project_dir
-            )
-            fpgas, custom_fpgas_ids = self._load_resource(
-                FPGAS_JSONC, definitions_dir, self._project_dir
-            )
-            programmers, custom_programmers_ids = self._load_resource(
-                PROGRAMMERS_JSONC, definitions_dir, self._project_dir
-            )
-            self._definitions = ApioDefinitions(
-                boards,
-                custom_boards_ids,
-                fpgas,
-                custom_fpgas_ids,
-                programmers,
-                custom_programmers_ids,
+            # -- Load the boards, fpgas, and programmer definitions, including
+            # -- optional custom overrides in project's dir.
+            self.definitions = ApioDefinitions(
+                self.get_package_dir("definitions"),
+                self._project_dir,
             )
 
         # -- If we determined that we need to load the project, load the
@@ -390,7 +303,7 @@ class ApioContext:
         if self._project_dir:
             # -- Load the project object
             self._project = load_project_from_file(
-                self._project_dir, env_arg, self.boards
+                self._project_dir, env_arg, self.definitions.boards
             )
             assert self.has_project, "init(): project not loaded"
             # -- Inform the user about the active env, if needed..
@@ -400,12 +313,8 @@ class ApioContext:
             # -- The project is already validated to have the required "board.
             self._project_resources = collect_project_resources(
                 self._project.get_str_option("board"),
-                self.boards,
-                self.fpgas,
-                self.programmers,
+                self.definitions,
             )
-            # -- Validate the project resources.
-            validate_project_resources(self._project_resources)
         else:
             assert not self.has_project, "init(): project loaded"
 
@@ -456,71 +365,19 @@ class ApioContext:
         return self._project_resources  # pyright: ignore[reportReturnType]
 
     @property
-    def definitions(self) -> ApioDefinitions:
-        """Return apio definitions."""
-        assert self._definitions, "Apio context as no definitions"
-        return self._definitions
-
-    @property
-    def boards(self) -> dict:
-        """Returns the apio board definitions"""
-        return self.definitions.boards
-
-    @property
-    def fpgas(self) -> dict:
-        """Returns the apio fpgas definitions"""
-        return self.definitions.fpgas
-
-    @property
-    def programmers(self) -> dict:
-        """Returns the apio programmers definitions"""
-        return self.definitions.programmers
-
-    @property
     def env_build_path(self) -> Path:
         """Returns the relative path of the current env build directory from
         the project dir. Should be called only when has_project is True."""
         assert self.has_project, "project(): project is not loaded"
         return env_build_path(self.project.env_name)
 
-    def _load_resource(
-        self, name: str, standard_dir: Path, custom_dir: Optional[Path] = None
-    ) -> Tuple[Dict[str, Dict], Set[str]]:
-        """Load a jsonc file. Try first from custom_dir, if given, and then
-        from standard dir. This method is called for resource files in
-        apio/resources and definitions files in the definitions packages.
-        Returns a tuple with the merged standard and custom resource
-        definitions (custom wins) and a set of boards ids in the custom
-        resource file.
-        """
+    @classmethod
+    def _load_resource_file(cls, name: str, resources_dir: Path) -> dict:
+        """Load a .jsonc resource file and return its content as a
+        json dict."""
 
-        # -- Load the standard definition as a json dict.
-        filepath = standard_dir / name
-        combined_dict = self._load_resource_file(filepath)
-        custom_ids = set()
-
-        # -- If there is a project specific override file, apply it on
-        # -- top of the standard apio definition dict.
-        if custom_dir:
-            filepath = custom_dir / name
-            if filepath.exists():
-                # -- Load the override json dict.
-                cout(f"Loading custom '{name}'.")
-                custom_dict = self._load_resource_file(filepath)
-                # -- Apply the override. Entries in override replace same
-                # -- key entries in result or if unique are added.
-                combined_dict.update(custom_dict)
-                custom_ids.update(custom_dict.keys())
-
-        # -- All done.
-        return (combined_dict, custom_ids)
-
-    @staticmethod
-    def _load_resource_file(filepath: Path) -> dict:
-        """Load the resources from a given jsonc file path
-        * OUTPUT: A dictionary with the jsonc file data
-          In case of error it raises an exception and finish
-        """
+        # -- Construct file path.
+        filepath = resources_dir / name
 
         # -- Read the jsonc file
         try:
@@ -536,7 +393,10 @@ class ApioContext:
         except FileNotFoundError as exc:
 
             # -- Display error information
-            cerror("[Internal] .jsonc file not found", f"{exc}")
+            cerror(
+                f"[Internal] couldn't not read resource file file {name}",
+                f"{exc}",
+            )
 
             # -- Abort!
             sys.exit(1)
@@ -546,17 +406,21 @@ class ApioContext:
 
         # -- Parse the json format!
         try:
-            resource = json.loads(data_json)
+            data = json.loads(data_json)
 
         # -- Invalid json format! This is an apio system error
         # -- It should never occur unless a developer has
         # -- made a mistake when changing the jsonc file
         except json.decoder.JSONDecodeError as exc:
-            cerror(f"'{filepath}' has bad format", f"{exc}")
+            cerror(
+                f"[Internal] couldn't not parse resource file file {name}",
+                f"{exc}",
+            )
+
             sys.exit(1)
 
         # -- Return the object for the resource
-        return resource
+        return data
 
     @staticmethod
     def _expand_env_values(template: str, package_path: Path) -> str:
