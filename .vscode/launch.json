@@ -30,7 +30,7 @@
             "args": [
                 "-s",
                 "-vv",
-                "tests/unit_tests/test_remote_config.py::test_loading_cached_config_ok"
+                "tests/unit_tests/managers/test_apio_definitions.py::test_loading_ok"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
